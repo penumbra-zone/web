@@ -1,9 +1,22 @@
 module.exports = {
-  extends: ['prettier', 'next/core-web-vitals', 'eslint:recommended', 'next', 'turbo'],
+  extends: [
+    'prettier',
+    'next/core-web-vitals',
+    'eslint:recommended',
+    'next',
+    'turbo',
+    'plugin:tailwindcss/recommended',
+  ],
   rules: {},
   parserOptions: {
     babelOptions: {
       presets: [require.resolve('next/babel')],
     },
   },
+  overrides: [
+    {
+      files: ['*.ts', '*.tsx', '*.js'],
+      parser: '@typescript-eslint/parser',
+    },
+  ],
 };

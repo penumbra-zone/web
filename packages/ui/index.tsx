@@ -1,3 +1,6 @@
-// component exports
-export * from './Button';
-export * from './Header';
+// styles
+// import './src/styles.css';
+
+// components
+export * from './src/Button';
+export * from './src/Header';
