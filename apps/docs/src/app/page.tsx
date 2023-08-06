@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import Head from 'next/head';
 import { Button } from 'ui';
 
 export const metadata: Metadata = {
