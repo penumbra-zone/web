@@ -5,10 +5,11 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
+    "lint": "turbo run lint -- --max-warnings=0",
+    "lint:fix": "turbo run lint -- --fix",
     "test": "turbo run test",
     "clean": "turbo clean",
-    "format": "prettier --write .",
+    "format": "pnpm lint:fix && prettier --write .",
     "format-check": "prettier --check .",
     "ui:add": "pnpm --filter ui ui:add"
   },

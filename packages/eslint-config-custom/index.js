@@ -21,4 +21,7 @@ module.exports = {
       parser: '@typescript-eslint/parser',
     },
   ],
+  env: {
+    webextensions: true,
+  },
 };
