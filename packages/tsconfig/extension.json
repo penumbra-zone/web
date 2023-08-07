@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "extension",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["DOM", "ESNext", "WebWorker"],
+    "module": "ESNext",
+    "target": "es6",
+    "types": ["chrome", "firefox-webext-browser"]
+  }
+}
