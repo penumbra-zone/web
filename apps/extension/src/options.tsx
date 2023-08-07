@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
 const Options = () => {
@@ -6,20 +6,20 @@ const Options = () => {
   const [status, setStatus] = useState<string>('');
   const [like, setLike] = useState<boolean>(false);
 
-  useEffect(() => {
-    // Restores select box and checkbox state using the preferences
-    // stored in chrome.storage.
-    chrome.storage.sync.get(
-      {
-        favoriteColor: 'red',
-        likesColor: true,
-      },
-      (items) => {
-        setColor(items['favoriteColor']);
-        setLike(items['likesColor']);
-      },
-    );
-  }, []);
+  // useEffect(() => {
+  //   // Restores select box and checkbox state using the preferences
+  //   // stored in chrome.storage.
+  //   chrome.storage.sync.get(
+  //     {
+  //       favoriteColor: 'red',
+  //       likesColor: true,
+  //     },
+  //     (items) => {
+  //       setColor(items['favoriteColor']);
+  //       setLike(items['likesColor']);
+  //     },
+  //   );
+  // }, []);
 
   const saveOptions = () => {
     // Saves options to chrome.storage.sync.
@@ -34,7 +34,9 @@ const Options = () => {
         const id = setTimeout(() => {
           setStatus('');
         }, 1000);
-        return () => clearTimeout(id);
+        return () => {
+          clearTimeout(id);
+        };
       },
     );
   };
@@ -43,7 +45,12 @@ const Options = () => {
     <>
       <div>
         Favorite color:{' '}
-        <select value={color} onChange={(event) => setColor(event.target.value)}>
+        <select
+          value={color}
+          onChange={(event) => {
+            setColor(event.target.value);
+          }}
+        >
           <option value='red'>red</option>
           <option value='green'>green</option>
           <option value='blue'>blue</option>
@@ -55,7 +62,9 @@ const Options = () => {
           <input
             type='checkbox'
             checked={like}
-            onChange={(event) => setLike(event.target.checked)}
+            onChange={(event) => {
+              setLike(event.target.checked);
+            }}
           />
           I like colors.
         </label>
@@ -66,6 +75,7 @@ const Options = () => {
   );
 };
 
+// eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
 const root = createRoot(document.getElementById('root')!);
 
 root.render(
