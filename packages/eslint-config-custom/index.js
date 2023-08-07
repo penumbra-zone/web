@@ -6,7 +6,10 @@ module.exports = {
     'next',
     'turbo',
     'plugin:tailwindcss/recommended',
+    'plugin:@typescript-eslint/strict-type-checked',
+    'plugin:@typescript-eslint/stylistic-type-checked',
   ],
+  plugins: ['@typescript-eslint', 'turbo'],
   rules: {
     '@next/next/no-html-link-for-pages': 'off',
   },

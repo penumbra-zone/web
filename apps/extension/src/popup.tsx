@@ -5,9 +5,9 @@ const Popup = () => {
   const [count, setCount] = useState(0);
   const [currentURL, setCurrentURL] = useState<string>();
 
-  useEffect(() => {
-    chrome.action.setBadgeText({ text: count.toString() });
-  }, [count]);
+  // useEffect(() => {
+  //   chrome.action.setBadgeText({ text: count.toString() });
+  // }, [count]);
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -40,7 +40,12 @@ const Popup = () => {
         <li>Current URL: {currentURL}</li>
         <li>Current Time: {new Date().toLocaleTimeString()}</li>
       </ul>
-      <button onClick={() => setCount(count + 1)} style={{ marginRight: '5px' }}>
+      <button
+        onClick={() => {
+          setCount(count + 1);
+        }}
+        style={{ marginRight: '5px' }}
+      >
         count up
       </button>
       <button onClick={changeBackground}>change background</button>
@@ -48,6 +53,7 @@ const Popup = () => {
   );
 };
 
+// eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
 const root = createRoot(document.getElementById('root')!);
 
 root.render(
