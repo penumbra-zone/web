@@ -24,4 +24,5 @@ module.exports = {
   env: {
     webextensions: true,
   },
+  ignorePatterns: ['dist/*'],
 };
