@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { Button } from 'ui';
+import 'ui/styles/globals.css';
 
 const Popup = () => {
   const [count, setCount] = useState(0);
@@ -36,6 +38,10 @@ const Popup = () => {
 
   return (
     <>
+      <h1 className='bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-5xl font-extrabold text-transparent'>
+        In popup
+      </h1>
+      <Button>Click me</Button>
       <ul style={{ minWidth: '700px' }}>
         <li>Current URL: {currentURL}</li>
         <li>Current Time: {new Date().toLocaleTimeString()}</li>
