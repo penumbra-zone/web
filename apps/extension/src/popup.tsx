@@ -59,11 +59,20 @@ const Popup = () => {
   );
 };
 
-// eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
-const root = createRoot(document.getElementById('root')!);
+const startExtension = async () => {
+  console.log('starting extension!');
 
-root.render(
-  <React.StrictMode>
-    <Popup />
-  </React.StrictMode>,
-);
+  await chrome.tabs.create({ url: chrome.runtime.getURL('welcome.html') });
+  // window.close();
+
+  const root = createRoot(document.getElementById('root') as HTMLDivElement);
+  root.render(
+    <React.StrictMode>
+      <Popup />
+    </React.StrictMode>,
+  );
+};
+
+void (async function () {
+  await startExtension();
+})();

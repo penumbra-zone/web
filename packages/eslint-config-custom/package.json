@@ -12,7 +12,8 @@
     "eslint-config-turbo": "^1.10.12",
     "eslint-plugin-react": "7.33.1",
     "eslint-plugin-tailwindcss": "^3.13.0",
-    "eslint-plugin-turbo": "^1.10.12"
+    "eslint-plugin-turbo": "^1.10.12",
+    "next": "^13.4.13"
   },
   "publishConfig": {
     "access": "public"
