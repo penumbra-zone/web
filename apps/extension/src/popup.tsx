@@ -1,41 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Button } from 'ui';
 import 'ui/styles/globals.css';
 
 const Popup = () => {
-  const [count, setCount] = useState(0);
-  const [currentURL, setCurrentURL] = useState<string>();
-
-  // useEffect(() => {
-  //   chrome.action.setBadgeText({ text: count.toString() });
-  // }, [count]);
-
-  useEffect(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      if (tabs[0]) {
-        setCurrentURL(tabs[0].url);
-      }
-    });
-  }, []);
-
-  const changeBackground = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const tab = tabs[0];
-      if (tab?.id) {
-        chrome.tabs.sendMessage(
-          tab.id,
-          {
-            color: '#555555',
-          },
-          (msg) => {
-            console.log('result message:', msg);
-          },
-        );
-      }
-    });
-  };
-
   return (
     <>
       <h1 className='bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-5xl font-extrabold text-transparent'>
@@ -43,18 +11,8 @@ const Popup = () => {
       </h1>
       <Button>Click me</Button>
       <ul style={{ minWidth: '700px' }}>
-        <li>Current URL: {currentURL}</li>
         <li>Current Time: {new Date().toLocaleTimeString()}</li>
       </ul>
-      <button
-        onClick={() => {
-          setCount(count + 1);
-        }}
-        style={{ marginRight: '5px' }}
-      >
-        count up
-      </button>
-      <button onClick={changeBackground}>change background</button>
     </>
   );
 };
@@ -62,8 +20,12 @@ const Popup = () => {
 const startExtension = async () => {
   console.log('starting extension!');
 
-  await chrome.tabs.create({ url: chrome.runtime.getURL('page.html') });
-  // window.close();
+  const password = await chrome.storage.session.get('password');
+  const isEmpty = Object.keys(password).length === 0;
+  if (isEmpty) {
+    await chrome.tabs.create({ url: chrome.runtime.getURL('page.html') });
+    window.close();
+  }
 
   const root = createRoot(document.getElementById('root') as HTMLDivElement);
   root.render(

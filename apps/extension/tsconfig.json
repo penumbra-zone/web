@@ -2,6 +2,7 @@
   "extends": "tsconfig/extension.json",
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "./dist",
     "paths": {
       "@ui/*": ["../../packages/ui/*"]
