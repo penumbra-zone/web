@@ -2,7 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import 'ui/styles/globals.css';
 
-const Welcome = () => {
+const Page = () => {
   return (
     <>
       <h1 className='bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-5xl font-extrabold text-transparent'>
@@ -18,6 +18,6 @@ const root = createRoot(document.getElementById('root')!);
 
 root.render(
   <React.StrictMode>
-    <Welcome />
+    <Page />
   </React.StrictMode>,
 );

@@ -62,7 +62,7 @@ const Popup = () => {
 const startExtension = async () => {
   console.log('starting extension!');
 
-  await chrome.tabs.create({ url: chrome.runtime.getURL('welcome.html') });
+  await chrome.tabs.create({ url: chrome.runtime.getURL('page.html') });
   // window.close();
 
   const root = createRoot(document.getElementById('root') as HTMLDivElement);
