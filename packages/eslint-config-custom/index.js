@@ -12,6 +12,7 @@ module.exports = {
   plugins: ['@typescript-eslint', 'turbo'],
   rules: {
     '@next/next/no-html-link-for-pages': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
   },
   parserOptions: {
     babelOptions: {

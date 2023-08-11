@@ -1,7 +1,17 @@
 import { AllSlices } from './index';
 import { diff } from 'deep-object-diff';
-import { isLocalKey, localExtStorage, LocalStorageValue } from '../storage/local';
-import { isSessionKey, sessionExtStorage, SessionStorageValue } from '../storage/session';
+import {
+  isLocalKey,
+  localExtStorage,
+  LocalStorageState,
+  LocalStorageValue,
+} from '../storage/local';
+import {
+  isSessionKey,
+  sessionExtStorage,
+  SessionStorageState,
+  SessionStorageValue,
+} from '../storage/session';
 
 export const storeDiffInChromeStorage = (newState: AllSlices, prevState: AllSlices) => {
   void (async function () {
@@ -16,10 +26,9 @@ export const storeDiffInChromeStorage = (newState: AllSlices, prevState: AllSlic
   })();
 };
 
-export const restorePersistedState = async (): Promise<Partial<AllSlices>> => {
-  // should be a loop
+export const restorePersistedState = async (): Promise<SessionStorageState & LocalStorageState> => {
+  // should be a loop?
   return {
-    bears: await localExtStorage.get('bears'),
-    fishes: await sessionExtStorage.get('fishes'),
+    password: await sessionExtStorage.get('password'),
   };
 };
