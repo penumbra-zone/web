@@ -1,22 +1,17 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { redirectIfNoAccount } from './utils/redirect';
-import { popupRouter } from './routes/popup/router';
 import { RouterProvider } from 'react-router-dom';
 
 import 'ui/styles/globals.css';
+import { pageRouter } from './routes/page/router';
 
-const startExtension = async () => {
-  await redirectIfNoAccount();
-
+const initializePage = () => {
   const rootElement = document.getElementById('root') as HTMLDivElement;
   createRoot(rootElement).render(
     <StrictMode>
-      <RouterProvider router={popupRouter} />
+      <RouterProvider router={pageRouter} />
     </StrictMode>,
   );
 };
 
-void (async function () {
-  await startExtension();
-})();
+initializePage();

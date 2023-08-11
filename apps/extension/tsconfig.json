@@ -2,9 +2,13 @@
   "extends": "tsconfig/extension.json",
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "./dist",
+    "declaration": false,
+    "declarationMap": false,
     "paths": {
-      "@ui/*": ["../../packages/ui/*"]
+      "@ui/components/*": ["../../packages/ui/components/*"],
+      "@ui/lib/*": ["../../packages/ui/lib/*"]
     }
   }
 }
