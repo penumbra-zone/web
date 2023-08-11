@@ -12,7 +12,4 @@ const initializePage = () => {
   );
 };
 
-void (async function () {
-  // sync state management
-  initializePage();
-})();
+initializePage();

@@ -17,16 +17,7 @@ const Popup = () => {
   );
 };
 
-const startExtension = async () => {
-  console.log('starting extension!');
-
-  const password = await chrome.storage.session.get('password');
-  const isEmpty = Object.keys(password).length === 0;
-  if (isEmpty) {
-    await chrome.tabs.create({ url: chrome.runtime.getURL('page.html') });
-    window.close();
-  }
-
+const startExtension = () => {
   const root = createRoot(document.getElementById('root') as HTMLDivElement);
   root.render(
     <React.StrictMode>
@@ -35,6 +26,4 @@ const startExtension = async () => {
   );
 };
 
-void (async function () {
-  await startExtension();
-})();
+startExtension();
