@@ -4,8 +4,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "./dist",
+    "declaration": false,
     "paths": {
-      "@ui/*": ["../../packages/ui/*"]
+      "@ui/components/*": ["../../packages/ui/components/*"],
+      "@ui/lib/*": ["../../packages/ui/lib/*"]
     }
   }
 }

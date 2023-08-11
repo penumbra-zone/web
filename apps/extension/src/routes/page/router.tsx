@@ -1,6 +1,6 @@
 import { createMemoryRouter, Outlet, RouteObject } from 'react-router-dom';
-import { pagePaths } from './paths';
 import { PageIndex } from './index';
+import { pagePaths } from './paths';
 
 export const pageRoutes: RouteObject[] = [
   {
