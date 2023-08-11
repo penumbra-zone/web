@@ -10,11 +10,11 @@
     "postui:add": "ts-node --esm ./scripts/generateIndex.mts"
   },
   "devDependencies": {
-    "@types/node": "^20.4.8",
-    "@types/react": "^18.2.19",
+    "@types/node": "^20.4.9",
+    "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "autoprefixer": "^10.4.14",
-    "eslint": "^8.46.0",
+    "eslint": "^8.47.0",
     "eslint-config-custom": "workspace:*",
     "postcss": "^8.4.27",
     "react": "^18.2.0",

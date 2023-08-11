@@ -5,9 +5,11 @@
   "scripts": {
     "dev": "webpack --config webpack/webpack.dev.js --watch",
     "build": "webpack --config webpack/webpack.prod.js",
-    "lint": "eslint \"**/*.ts*\""
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest"
   },
   "dependencies": {
+    "crypto-js": "^4.1.1",
     "deep-object-diff": "^1.1.9",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -17,9 +19,10 @@
   },
   "devDependencies": {
     "@types/chrome": "0.0.243",
+    "@types/crypto-js": "^4.1.1",
     "@types/firefox-webext-browser": "^111.0.1",
-    "@types/node": "^20.4.8",
-    "@types/react": "^18.2.19",
+    "@types/node": "^20.4.9",
+    "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "autoprefixer": "^10.4.14",
@@ -33,6 +36,7 @@
     "ts-loader": "^9.4.4",
     "tsconfig": "workspace:*",
     "typescript": "^5.1.6",
+    "vitest": "^0.34.1",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
     "webpack-merge": "^5.9.0"

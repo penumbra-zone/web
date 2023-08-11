@@ -1,8 +1,6 @@
 import { StateCreator } from 'zustand';
-import { BearSlice, FishSlice } from './accounts';
 import { restorePersistedState, storeDiffInChromeStorage } from './persist';
-
-export type AllSlices = BearSlice & FishSlice;
+import { AllSlices } from './index';
 
 type Persist = (f: StateCreator<AllSlices>, name?: string) => StateCreator<AllSlices>;
 

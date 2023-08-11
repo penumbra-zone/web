@@ -1,44 +1,30 @@
 import { SliceCreator } from './index';
+import { decrypt, encrypt, repeatedHash } from '../utils/encryption';
 
-export interface FishSlice {
-  fishes: number;
-  salmon: number;
-  addFish: () => void;
-  addSalmon: () => void;
+export interface AccountsSlice {
+  hashedPassword: string | undefined;
+  encryptedSeedPhrase: string | undefined;
+  setPassword: (password: string) => void;
+  setSeedPhrase: (password: string, seedPhrase: string) => void;
+  isPassword: (password: string) => boolean;
 }
 
-export interface BearSlice {
-  bears: number;
-  groupName: string | undefined;
-  addBear: () => void;
-}
-
-export const createBearSlice: SliceCreator<BearSlice> = (set) => ({
-  bears: 0,
-  groupName: undefined,
-  addBear: () => {
-    set((state) => {
-      return {
-        bears: state.bears + 1,
-      };
-    });
+export const createAccountsSlice: SliceCreator<AccountsSlice> = (set, get) => ({
+  hashedPassword: undefined,
+  encryptedSeedPhrase: undefined,
+  setPassword: (password) => {
+    set(() => ({ hashedPassword: repeatedHash(password) }));
   },
-});
-
-export interface FishSlice {
-  fishes: number;
-  salmon: number;
-  addFish: () => void;
-  addSalmon: () => void;
-}
-
-export const createFishSlice: SliceCreator<FishSlice> = (set) => ({
-  fishes: 0,
-  salmon: 0,
-  addFish: () => {
-    set((state) => ({ fishes: state.fishes + 1 }));
+  setSeedPhrase: (password, seedPhrase) => {
+    const encryptedSeedPhrase = encrypt(seedPhrase, repeatedHash(password));
+    set(() => ({ encryptedSeedPhrase }));
   },
-  addSalmon: () => {
-    set((state) => ({ salmon: state.salmon + 1 }));
+  isPassword: (password) => {
+    try {
+      decrypt(get().encryptedSeedPhrase!, repeatedHash(password));
+      return true; // The above decrypted without error ✅
+    } catch {
+      return false; // invalid password ❌
+    }
   },
 });
