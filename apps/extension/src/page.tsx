@@ -1,14 +1,16 @@
-import React from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
+
 import 'ui/styles/globals.css';
-import { Home } from './components/home';
+import { pageRouter } from './routes/page/router';
 
 const initializePage = () => {
-  const root = createRoot(document.getElementById('root') as HTMLDivElement);
-  root.render(
-    <React.StrictMode>
-      <Home />
-    </React.StrictMode>,
+  const rootElement = document.getElementById('root') as HTMLDivElement;
+  createRoot(rootElement).render(
+    <StrictMode>
+      <RouterProvider router={pageRouter} />
+    </StrictMode>,
   );
 };
 
