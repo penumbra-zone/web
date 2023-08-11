@@ -27,8 +27,8 @@ export const storeDiffInChromeStorage = (newState: AllSlices, prevState: AllSlic
 };
 
 export const restorePersistedState = async (): Promise<SessionStorageState & LocalStorageState> => {
-  // should be a loop?
   return {
-    password: await sessionExtStorage.get('password'),
+    encryptedSeedPhrase: await localExtStorage.get('encryptedSeedPhrase'),
+    hashedPassword: await sessionExtStorage.get('hashedPassword'),
   };
 };

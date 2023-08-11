@@ -2,10 +2,10 @@ import { ExtensionStorage } from './generic';
 import { AllSlices } from '../state';
 import { STORAGE_VERSION } from '../config/constants';
 
-export type LocalStorageState = Pick<AllSlices, 'password'>;
+export type LocalStorageState = Pick<AllSlices, 'encryptedSeedPhrase'>;
 
 const defaults: LocalStorageState = {
-  password: undefined,
+  encryptedSeedPhrase: undefined,
 };
 
 export type LocalStorageValue = LocalStorageState[keyof LocalStorageState];
