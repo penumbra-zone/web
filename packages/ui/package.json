@@ -10,10 +10,10 @@
     "postui:add": "ts-node --esm ./scripts/generateIndex.mts"
   },
   "devDependencies": {
-    "@types/node": "^20.4.9",
+    "@types/node": "^20.5.0",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
-    "autoprefixer": "^10.4.14",
+    "autoprefixer": "^10.4.15",
     "eslint": "^8.47.0",
     "eslint-config-custom": "workspace:*",
     "postcss": "^8.4.27",
@@ -26,7 +26,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
-    "lucide-react": "^0.265.0",
+    "lucide-react": "^0.267.0",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.6"
   }

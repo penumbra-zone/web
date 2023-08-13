@@ -4,6 +4,6 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   test: {
-    setupFiles: ['./src/utils/tests.js'],
+    setupFiles: ['./src/utils/tests-setup.js'],
   },
 });

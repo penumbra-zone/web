@@ -1,5 +1,5 @@
 import { EmptyObject } from '../utils/types';
-import { objIsEmpty } from '../utils/assertions';
+import { isEmptyObj } from '../utils/assertions';
 
 export interface IStorage {
   get(key: string): Promise<Record<string, unknown>>;
@@ -18,7 +18,7 @@ export class ExtensionStorage<T> {
     const versionedKey = this.versionKey(key);
     const result = (await this.storage.get(versionedKey)) as Record<string, T[K]> | EmptyObject;
 
-    if (objIsEmpty(result)) {
+    if (isEmptyObj(result)) {
       return this.defaults[key];
     } else {
       return result[versionedKey]!;

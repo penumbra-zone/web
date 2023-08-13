@@ -12,11 +12,8 @@ describe('AccountsSlice', () => {
   });
 
   test('password can be set and verified', () => {
-    const stateA = useStore.getState();
     useStore.getState().accounts.setPassword(password);
-    const stateB = useStore.getState();
     useStore.getState().accounts.setSeedPhrase(password, 'apple monkey test ...');
-    const stateC = useStore.getState();
     expect(useStore.getState().accounts.isPassword(password)).toBe(true);
   });
 
