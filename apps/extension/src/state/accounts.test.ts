@@ -1,28 +1,29 @@
-import { AccountsSlice, createAccountsSlice } from './accounts'; // replace with the correct import path
-import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
-import { AllSlices } from './index';
+import { AllSlices, initializeStore } from './index';
+import { beforeEach, describe, expect, test } from 'vitest';
+import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
 
 describe('AccountsSlice', () => {
   const password = 'correcthorsebatterystaple';
-  let useStore: UseBoundStore<StoreApi<AccountsSlice>>;
+  let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
   beforeEach(() => {
-    useStore = create<AllSlices>()((setState, getState, store) => ({
-      ...createAccountsSlice(setState, getState, store),
-    }));
+    useStore = create<AllSlices>()(initializeStore(mockSessionExtStorage, mockLocalExtStorage));
   });
 
   test('password can be set and verified', () => {
-    useStore.getState().setPassword(password);
-    useStore.getState().setSeedPhrase(password, 'apple monkey test ...');
-    expect(useStore.getState().isPassword(password)).toBe(true);
+    const stateA = useStore.getState();
+    useStore.getState().accounts.setPassword(password);
+    const stateB = useStore.getState();
+    useStore.getState().accounts.setSeedPhrase(password, 'apple monkey test ...');
+    const stateC = useStore.getState();
+    expect(useStore.getState().accounts.isPassword(password)).toBe(true);
   });
 
   test('raises when trying to validate password without a seed phrase (invalid state)', () => {
     try {
-      useStore.getState().setPassword(password);
-      useStore.getState().isPassword(password);
+      useStore.getState().accounts.setPassword(password);
+      useStore.getState().accounts.isPassword(password);
     } catch (error) {
       expect(true).toBe(true); // This is expected
     }
@@ -30,11 +31,11 @@ describe('AccountsSlice', () => {
 
   test('incorrect password should not verify', () => {
     const wrongPassword = 'wrong-password-123';
-    useStore.getState().setPassword(password);
-    expect(useStore.getState().isPassword(wrongPassword)).toBe(false);
+    useStore.getState().accounts.setPassword(password);
+    expect(useStore.getState().accounts.isPassword(wrongPassword)).toBe(false);
   });
 
   test('password is initially undefined', () => {
-    expect(useStore.getState().hashedPassword).toBeUndefined();
+    expect(useStore.getState().accounts.hashedPassword).toBeUndefined();
   });
 });

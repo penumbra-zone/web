@@ -1,21 +1,16 @@
 import { ExtensionStorage } from './generic';
-import { AllSlices } from '../state';
 import { STORAGE_VERSION } from '../config/constants';
 
-export type LocalStorageState = Pick<AllSlices, 'encryptedSeedPhrase'>;
+export interface LocalStorageState {
+  encryptedSeedPhrase: string | undefined;
+}
 
-const defaults: LocalStorageState = {
+export const localDefaults: LocalStorageState = {
   encryptedSeedPhrase: undefined,
-};
-
-export type LocalStorageValue = LocalStorageState[keyof LocalStorageState];
-
-export const isLocalKey = (key: string): key is keyof LocalStorageState => {
-  return key in defaults;
 };
 
 export const localExtStorage = new ExtensionStorage<LocalStorageState>(
   chrome.storage.local,
-  defaults,
+  localDefaults,
   STORAGE_VERSION,
 );
