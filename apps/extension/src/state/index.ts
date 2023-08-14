@@ -6,9 +6,11 @@ import { customPersist } from './persist';
 import { ExtensionStorage } from '../storage/generic';
 import { sessionExtStorage, SessionStorageState } from '../storage/session';
 import { localExtStorage, LocalStorageState } from '../storage/local';
+import { createPasswordSlice, PasswordSlice } from './password';
 
 export interface AllSlices {
   accounts: AccountsSlice;
+  password: PasswordSlice;
   network: NetworkSlice;
 }
 
@@ -19,17 +21,13 @@ export type SliceCreator<SliceInterface> = StateCreator<
   SliceInterface
 >;
 
-export type SliceCreatorWithStorage<SliceInterface> = (
-  session: ExtensionStorage<SessionStorageState>,
-  local: ExtensionStorage<LocalStorageState>,
-) => SliceCreator<SliceInterface>;
-
 export const initializeStore = (
   session: ExtensionStorage<SessionStorageState>,
   local: ExtensionStorage<LocalStorageState>,
 ) => {
   return immer((setState, getState: () => AllSlices, store) => ({
-    accounts: createAccountsSlice(session, local)(setState, getState, store),
+    accounts: createAccountsSlice(local)(setState, getState, store),
+    password: createPasswordSlice(session, local)(setState, getState, store),
     network: createNetworkSlice(setState, getState, store),
   }));
 };

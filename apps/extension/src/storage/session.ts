@@ -9,6 +9,7 @@ export const sessionDefaults: SessionStorageState = {
   hashedPassword: undefined,
 };
 
+// TODO: Document. Storage that is short lived.
 export const sessionExtStorage = new ExtensionStorage<SessionStorageState>(
   chrome.storage.session,
   sessionDefaults,

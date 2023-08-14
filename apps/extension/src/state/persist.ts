@@ -17,12 +17,12 @@ type Persist = (f: StateCreator<AllSlices>) => StateCreator<AllSlices>;
 export const customPersistImpl: Persist = (f) => (set, get, store) => {
   void (async function () {
     const hashedPassword = await sessionExtStorage.get('hashedPassword');
-    const encryptedSeedPhrase = await localExtStorage.get('encryptedSeedPhrase');
+    const accounts = await localExtStorage.get('accounts');
 
     set(
       produce((state: AllSlices) => {
-        state.accounts.hashedPassword = hashedPassword;
-        state.accounts.encryptedSeedPhrase = encryptedSeedPhrase;
+        state.password.hashedPassword = hashedPassword;
+        state.accounts.all = accounts;
       }),
     );
   })();

@@ -1,10 +1,11 @@
-// import { localExtStorage } from '../storage/local';
+import { localExtStorage } from '../storage/local';
 
 export const redirectIfNoAccount = async () => {
   // Check for seed phrase. If none, need to create a new account.
-  // const seedPhrasePresent = await localExtStorage.get('encryptedSeedPhrase');
-  // if (!seedPhrasePresent) {
-  await chrome.tabs.create({ url: chrome.runtime.getURL('page.html') });
-  window.close();
-  // }
+  // needs to be first, not until zustand checks it given zustand store initialized with zero
+  const accounts = await localExtStorage.get('accounts');
+  if (!accounts.length) {
+    await chrome.tabs.create({ url: chrome.runtime.getURL('page.html') });
+    window.close();
+  }
 };

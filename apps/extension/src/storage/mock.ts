@@ -34,14 +34,12 @@ export class MockStorageArea implements IStorage {
   }
 }
 
-export const mockSessionExtStorage = new ExtensionStorage<SessionStorageState>(
-  new MockStorageArea(),
-  sessionDefaults,
-  STORAGE_VERSION,
-);
+export const mockSessionExtStorage = () =>
+  new ExtensionStorage<SessionStorageState>(
+    new MockStorageArea(),
+    sessionDefaults,
+    STORAGE_VERSION,
+  );
 
-export const mockLocalExtStorage = new ExtensionStorage<LocalStorageState>(
-  new MockStorageArea(),
-  localDefaults,
-  STORAGE_VERSION,
-);
+export const mockLocalExtStorage = () =>
+  new ExtensionStorage<LocalStorageState>(new MockStorageArea(), localDefaults, STORAGE_VERSION);
