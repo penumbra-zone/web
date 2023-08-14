@@ -1,7 +1,7 @@
 import { useStore } from '../../state';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { popupPaths } from './paths';
+import { PopupPath } from './paths';
 
 export const EnterPassword = () => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export const EnterPassword = () => {
           void (async function () {
             if (await isPassword(inputTx)) {
               setPassword(inputTx);
-              navigate(popupPaths.INDEX);
+              navigate(PopupPath.INDEX);
             }
           })();
         }}

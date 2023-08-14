@@ -6,10 +6,12 @@ import { ExtensionStorage } from '../storage/generic';
 import { sessionExtStorage, SessionStorageState } from '../storage/session';
 import { localExtStorage, LocalStorageState } from '../storage/local';
 import { createPasswordSlice, PasswordSlice } from './password';
+import { createOnboardingSlice, OnboardingSlice } from './onboarding';
 
 export interface AllSlices {
   accounts: AccountsSlice;
   password: PasswordSlice;
+  onboarding: OnboardingSlice;
 }
 
 export type SliceCreator<SliceInterface> = StateCreator<
@@ -26,6 +28,7 @@ export const initializeStore = (
   return immer((setState, getState: () => AllSlices, store) => ({
     accounts: createAccountsSlice(local)(setState, getState, store),
     password: createPasswordSlice(session, local)(setState, getState, store),
+    onboarding: createOnboardingSlice(setState, getState, store),
   }));
 };
 

@@ -1,3 +1,4 @@
-export const pagePaths = {
-  INDEX: '/',
-};
+export enum PagePath {
+  INDEX = '/',
+  ONBOARDING = '/onboarding',
+}

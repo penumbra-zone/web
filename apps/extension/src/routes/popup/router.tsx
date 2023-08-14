@@ -1,6 +1,6 @@
 import { createMemoryRouter, Outlet, RouteObject } from 'react-router-dom';
-import { popupPaths } from './paths';
-import { PopupIndex } from './index';
+import { PopupPath } from './paths';
+import { PopupIndex, popupIndexLoader } from './index';
 import { EnterPassword } from './enter-password';
 
 export const popupRoutes: RouteObject[] = [
@@ -8,11 +8,12 @@ export const popupRoutes: RouteObject[] = [
     element: <Outlet />,
     children: [
       {
-        path: popupPaths.INDEX,
+        path: PopupPath.INDEX,
         element: <PopupIndex />,
+        loader: popupIndexLoader,
       },
       {
-        path: popupPaths.ENTER_PASSWORD,
+        path: PopupPath.ENTER_PASSWORD,
         element: <EnterPassword />,
       },
     ],

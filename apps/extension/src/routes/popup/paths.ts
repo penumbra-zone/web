@@ -1,4 +1,4 @@
-export const popupPaths = {
-  INDEX: '/',
-  ENTER_PASSWORD: '/password',
-};
+export enum PopupPath {
+  INDEX = '/',
+  ENTER_PASSWORD = '/password',
+}

@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../state';
-import { popupPaths } from '../routes/popup/paths';
 import { passwordStoredSelector } from '../state/password';
 import { useEffect } from 'react';
 import { allAccountsSelector } from '../state/accounts';
+import { PopupPath } from '../routes/popup/paths';
 
 // Meant to:
 // - Direct users to onboarding flow if new
@@ -19,7 +19,7 @@ export const useAccessCheck = () => {
     }
 
     if (!passwordInStorage) {
-      navigate(popupPaths.ENTER_PASSWORD);
+      navigate(PopupPath.ENTER_PASSWORD);
     }
   }, [accounts.length, navigate, passwordInStorage]);
 };

@@ -1,37 +1,28 @@
-import { Button } from '@ui/components/ui/button';
-import { useStore } from '../../state';
+import { redirect, useNavigate } from 'react-router-dom';
+import { Button } from 'ui';
+import { PagePath } from './paths';
+import { localExtStorage } from '../../storage/local';
+
+// Because Zustand initializes default empty (prior to persisted storage synced),
+// We need to manually check storage for accounts in the loader.
+// Will redirect to onboarding if necessary.
+export const pageIndexLoader = async () => {
+  const accounts = await localExtStorage.get('accounts');
+  return !accounts.length ? redirect(PagePath.ONBOARDING) : null;
+};
 
 export const PageIndex = () => {
-  const { hashedPassword, setPassword } = useStore((state) => state.password);
-  const { addAccount, all } = useStore((state) => state.accounts);
+  const navigate = useNavigate();
   return (
-    <>
-      <h1 className='bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-5xl font-extrabold text-transparent'>
-        Welcome to Penumbra
-      </h1>
-
-      <div>
-        <h2>hashedPassword: {hashedPassword}</h2>
-        <Button
-          onClick={() => {
-            setPassword('password123');
-          }}
-        >
-          Set hashedPassword
-        </Button>
-
-        <h2>Accounts: {JSON.stringify(all)}</h2>
-        <Button
-          onClick={() => {
-            addAccount({
-              label: 'account xyz',
-              encryptedSeedPhrase: 'cat dog mouse 2342342341342',
-            });
-          }}
-        >
-          Add account
-        </Button>
-      </div>
-    </>
+    <div>
+      Dashboard page
+      <Button
+        onClick={() => {
+          navigate(PagePath.ONBOARDING);
+        }}
+      >
+        Go to onboarding
+      </Button>
+    </div>
   );
 };
