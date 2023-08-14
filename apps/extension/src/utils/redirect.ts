@@ -1,10 +1,13 @@
 import { localExtStorage } from '../storage/local';
 
-export async function redirectIfNoAccount() {
-  // Check for seed phrase. If none, need to create a new account.
-  const seedPhrasePresent = await localExtStorage.get('encryptedSeedPhrase');
-  if (!seedPhrasePresent) {
-    void chrome.tabs.create({ url: chrome.runtime.getURL('page.html') });
+// Users without any accounts setup, need to be directed to the onboarding flow.
+// Because Zustand initializes default empty (prior to persisted storage synced),
+// the useAccessCheck() hook believes it needs to re-direct immediately.
+// Therefore, this redirect function is necessary to be used in `popup.tsx`.
+export const redirectIfNoAccount = async () => {
+  const accounts = await localExtStorage.get('accounts');
+  if (!accounts.length) {
+    await chrome.tabs.create({ url: chrome.runtime.getURL('page.html') });
     window.close();
   }
-}
+};

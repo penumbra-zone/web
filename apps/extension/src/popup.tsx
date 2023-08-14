@@ -1,8 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { redirectIfNoAccount } from './utils/redirect';
 import { popupRouter } from './routes/popup/router';
 import { RouterProvider } from 'react-router-dom';
+import { redirectIfNoAccount } from './utils/redirect';
 
 import 'ui/styles/globals.css';
 

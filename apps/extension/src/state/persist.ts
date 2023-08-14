@@ -1,34 +1,33 @@
+import { StateCreator, StoreMutatorIdentifier } from 'zustand';
 import { AllSlices } from './index';
-import { diff } from 'deep-object-diff';
-import {
-  isLocalKey,
-  localExtStorage,
-  LocalStorageState,
-  LocalStorageValue,
-} from '../storage/local';
-import {
-  isSessionKey,
-  sessionExtStorage,
-  SessionStorageState,
-  SessionStorageValue,
-} from '../storage/session';
+import { sessionExtStorage } from '../storage/session';
+import { localExtStorage } from '../storage/local';
+import { produce } from 'immer';
 
-export const storeDiffInChromeStorage = (newState: AllSlices, prevState: AllSlices) => {
+type Middleware = <
+  T,
+  Mps extends [StoreMutatorIdentifier, unknown][] = [],
+  Mcs extends [StoreMutatorIdentifier, unknown][] = [],
+>(
+  f: StateCreator<T, Mps, Mcs>,
+) => StateCreator<T, Mps, Mcs>;
+
+type Persist = (f: StateCreator<AllSlices>) => StateCreator<AllSlices>;
+
+export const customPersistImpl: Persist = (f) => (set, get, store) => {
   void (async function () {
-    const changes = diff(prevState, newState) as Partial<AllSlices>;
-    for (const [key, val] of Object.entries(changes)) {
-      if (isSessionKey(key)) {
-        await sessionExtStorage.set(key, val as SessionStorageValue);
-      } else if (isLocalKey(key)) {
-        await localExtStorage.set(key, val as LocalStorageValue);
-      }
-    }
+    const hashedPassword = await sessionExtStorage.get('hashedPassword');
+    const accounts = await localExtStorage.get('accounts');
+
+    set(
+      produce((state: AllSlices) => {
+        state.password.hashedPassword = hashedPassword;
+        state.accounts.all = accounts;
+      }),
+    );
   })();
+
+  return f(set, get, store);
 };
 
-export const restorePersistedState = async (): Promise<SessionStorageState & LocalStorageState> => {
-  return {
-    encryptedSeedPhrase: await localExtStorage.get('encryptedSeedPhrase'),
-    hashedPassword: await sessionExtStorage.get('hashedPassword'),
-  };
-};
+export const customPersist = customPersistImpl as Middleware;

@@ -1,21 +1,20 @@
 import { ExtensionStorage } from './generic';
-import { AllSlices } from '../state';
 import { STORAGE_VERSION } from '../config/constants';
+import { Account } from '../types/accounts';
 
-export type LocalStorageState = Pick<AllSlices, 'encryptedSeedPhrase'>;
+export interface LocalStorageState {
+  hashedPassword: string | undefined;
+  accounts: Account[];
+}
 
-const defaults: LocalStorageState = {
-  encryptedSeedPhrase: undefined,
+export const localDefaults: LocalStorageState = {
+  hashedPassword: undefined,
+  accounts: [],
 };
 
-export type LocalStorageValue = LocalStorageState[keyof LocalStorageState];
-
-export const isLocalKey = (key: string): key is keyof LocalStorageState => {
-  return key in defaults;
-};
-
+// Meant to be used for long-term persisted data. It is cleared when the extension is removed.
 export const localExtStorage = new ExtensionStorage<LocalStorageState>(
   chrome.storage.local,
-  defaults,
+  localDefaults,
   STORAGE_VERSION,
 );

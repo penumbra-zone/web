@@ -1,19 +1,15 @@
 import { ExtensionStorage } from './generic';
-import { AllSlices } from '../state';
 import { STORAGE_VERSION } from '../config/constants';
 
-export type SessionStorageState = Pick<AllSlices, 'hashedPassword'>;
+export interface SessionStorageState {
+  hashedPassword: string | undefined;
+}
 
 export const sessionDefaults: SessionStorageState = {
   hashedPassword: undefined,
 };
 
-export type SessionStorageValue = SessionStorageState[keyof SessionStorageState];
-
-export const isSessionKey = (key: string): key is keyof SessionStorageState => {
-  return key in sessionDefaults;
-};
-
+// Meant to be used for short-term persisted data. Holds data in memory for the duration of a browser session.
 export const sessionExtStorage = new ExtensionStorage<SessionStorageState>(
   chrome.storage.session,
   sessionDefaults,

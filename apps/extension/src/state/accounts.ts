@@ -1,30 +1,27 @@
-import { SliceCreator } from './index';
-import { decrypt, encrypt, repeatedHash } from '../utils/encryption';
+import { AllSlices, SliceCreator } from './index';
+import { Account } from '../types/accounts';
+import { ExtensionStorage } from '../storage/generic';
+import { LocalStorageState } from '../storage/local';
 
 export interface AccountsSlice {
-  hashedPassword: string | undefined;
-  encryptedSeedPhrase: string | undefined;
-  setPassword: (password: string) => void;
-  setSeedPhrase: (password: string, seedPhrase: string) => void;
-  isPassword: (password: string) => boolean;
+  all: Account[];
+  addAccount: (account: Account) => void;
 }
 
-export const createAccountsSlice: SliceCreator<AccountsSlice> = (set, get) => ({
-  hashedPassword: undefined,
-  encryptedSeedPhrase: undefined,
-  setPassword: (password) => {
-    set(() => ({ hashedPassword: repeatedHash(password) }));
-  },
-  setSeedPhrase: (password, seedPhrase) => {
-    const encryptedSeedPhrase = encrypt(seedPhrase, repeatedHash(password));
-    set(() => ({ encryptedSeedPhrase }));
-  },
-  isPassword: (password) => {
-    try {
-      decrypt(get().encryptedSeedPhrase!, repeatedHash(password));
-      return true; // The above decrypted without error ✅
-    } catch {
-      return false; // invalid password ❌
-    }
-  },
-});
+export const createAccountsSlice =
+  (local: ExtensionStorage<LocalStorageState>): SliceCreator<AccountsSlice> =>
+  (set) => {
+    return {
+      all: [],
+      addAccount: (newAccount) => {
+        set((state) => {
+          state.accounts.all.unshift(newAccount);
+        });
+        void local.get('accounts').then((accounts) => {
+          void local.set('accounts', [newAccount, ...accounts]);
+        });
+      },
+    };
+  };
+
+export const allAccountsSelector = (state: AllSlices) => state.accounts.all;

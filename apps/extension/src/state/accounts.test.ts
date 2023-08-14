@@ -1,40 +1,45 @@
-import { AccountsSlice, createAccountsSlice } from './accounts'; // replace with the correct import path
-import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
-import { AllSlices } from './index';
+import { AllSlices, initializeStore } from './index';
+import { beforeEach, describe, expect, test } from 'vitest';
+import { mockLocalExtStorage } from '../storage/mock';
+import { ExtensionStorage } from '../storage/generic';
+import { LocalStorageState } from '../storage/local';
+import { flushPromises } from '../utils/test-helpers';
 
-describe('AccountsSlice', () => {
-  const password = 'correcthorsebatterystaple';
-  let useStore: UseBoundStore<StoreApi<AccountsSlice>>;
+describe('Accounts Slice', () => {
+  let useStore: UseBoundStore<StoreApi<AllSlices>>;
+  let localStorage: ExtensionStorage<LocalStorageState>;
 
   beforeEach(() => {
-    useStore = create<AllSlices>()((setState, getState, store) => ({
-      ...createAccountsSlice(setState, getState, store),
-    }));
+    localStorage = mockLocalExtStorage();
+    useStore = create<AllSlices>()(initializeStore(mockLocalExtStorage(), localStorage));
   });
 
-  test('password can be set and verified', () => {
-    useStore.getState().setPassword(password);
-    useStore.getState().setSeedPhrase(password, 'apple monkey test ...');
-    expect(useStore.getState().isPassword(password)).toBe(true);
+  test('accounts start off empty', () => {
+    expect(useStore.getState().accounts.all).toStrictEqual([]);
   });
 
-  test('raises when trying to validate password without a seed phrase (invalid state)', () => {
-    try {
-      useStore.getState().setPassword(password);
-      useStore.getState().isPassword(password);
-    } catch (error) {
-      expect(true).toBe(true); // This is expected
-    }
-  });
+  test('accounts can be added', async () => {
+    const accountA = { label: 'Account #1', encryptedSeedPhrase: 'xyz' };
+    useStore.getState().accounts.addAccount(accountA);
+    expect(useStore.getState().accounts.all.length).toBe(1);
+    expect(useStore.getState().accounts.all.at(0)).toBe(accountA);
 
-  test('incorrect password should not verify', () => {
-    const wrongPassword = 'wrong-password-123';
-    useStore.getState().setPassword(password);
-    expect(useStore.getState().isPassword(wrongPassword)).toBe(false);
-  });
+    await flushPromises();
+    const accountsPt1 = await localStorage.get('accounts');
+    expect(accountsPt1.length).toBe(1);
+    expect(accountsPt1.at(0)).toBe(accountA);
 
-  test('password is initially undefined', () => {
-    expect(useStore.getState().hashedPassword).toBeUndefined();
+    const accountB = { label: 'Account #2', encryptedSeedPhrase: 'abc' };
+    useStore.getState().accounts.addAccount(accountB);
+    expect(useStore.getState().accounts.all.length).toBe(2);
+    expect(useStore.getState().accounts.all.at(0)).toBe(accountB);
+    expect(useStore.getState().accounts.all.at(1)).toBe(accountA);
+
+    await flushPromises();
+    const accountsPt2 = await localStorage.get('accounts');
+    expect(accountsPt2.length).toBe(2);
+    expect(accountsPt2.at(0)).toBe(accountB);
+    expect(accountsPt2.at(1)).toBe(accountA);
   });
 });
