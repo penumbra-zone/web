@@ -3,6 +3,7 @@ import { ExtensionStorage, IStorage } from './generic';
 import { localDefaults, LocalStorageState } from './local';
 import { sessionDefaults, SessionStorageState } from './session';
 
+// Helpful for testing interactions with session & local storage
 export class MockStorageArea implements IStorage {
   private store = new Map<string, unknown>();
 

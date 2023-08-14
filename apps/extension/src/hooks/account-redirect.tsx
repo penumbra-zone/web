@@ -5,7 +5,9 @@ import { passwordStoredSelector } from '../state/password';
 import { useEffect } from 'react';
 import { allAccountsSelector } from '../state/accounts';
 
-// TODO: Document
+// Meant to:
+// - Direct users to onboarding flow if new
+// - Guard in the case that session password has expired, requiring them to re-enter it
 export const useAccessCheck = () => {
   const navigate = useNavigate();
   const accounts = useStore(allAccountsSelector);

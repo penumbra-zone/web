@@ -1,7 +1,6 @@
 import { create, StateCreator } from 'zustand';
 import { AccountsSlice, createAccountsSlice } from './accounts';
 import { immer } from 'zustand/middleware/immer';
-import { createNetworkSlice, NetworkSlice } from './network';
 import { customPersist } from './persist';
 import { ExtensionStorage } from '../storage/generic';
 import { sessionExtStorage, SessionStorageState } from '../storage/session';
@@ -11,7 +10,6 @@ import { createPasswordSlice, PasswordSlice } from './password';
 export interface AllSlices {
   accounts: AccountsSlice;
   password: PasswordSlice;
-  network: NetworkSlice;
 }
 
 export type SliceCreator<SliceInterface> = StateCreator<
@@ -28,7 +26,6 @@ export const initializeStore = (
   return immer((setState, getState: () => AllSlices, store) => ({
     accounts: createAccountsSlice(local)(setState, getState, store),
     password: createPasswordSlice(session, local)(setState, getState, store),
-    network: createNetworkSlice(setState, getState, store),
   }));
 };
 

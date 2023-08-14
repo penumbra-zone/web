@@ -21,7 +21,7 @@ describe('Password Slice', () => {
 
   test('password can be set and verified', async () => {
     useStore.getState().password.setPassword(password);
-    expect(useStore.getState().password.isPassword(password)).toBe(true);
+    expect(await useStore.getState().password.isPassword(password)).toBe(true);
     expect(await sessionStorage.get('hashedPassword')).toBe(repeatedHash(password));
     expect(await localStorage.get('hashedPassword')).toBe(repeatedHash(password));
   });
@@ -29,16 +29,16 @@ describe('Password Slice', () => {
   test('password can be removed', async () => {
     useStore.getState().password.setPassword(password);
     useStore.getState().password.clearPassword();
-    expect(useStore.getState().password.isPassword(password)).toBe(false);
+    expect(await useStore.getState().password.isPassword(password)).toBe(false);
 
     expect(await sessionStorage.get('hashedPassword')).toBe(undefined);
     expect(await localStorage.get('hashedPassword')).toBe(undefined);
   });
 
-  test('incorrect password should not verify', () => {
+  test('incorrect password should not verify', async () => {
     const wrongPassword = 'wrong-password-123';
     useStore.getState().password.setPassword(password);
-    expect(useStore.getState().password.isPassword(wrongPassword)).toBe(false);
+    expect(await useStore.getState().password.isPassword(wrongPassword)).toBe(false);
   });
 
   test('password is initially undefined', () => {

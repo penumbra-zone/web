@@ -1,6 +1,7 @@
 import { vi } from 'vitest';
 
-// Explanation
+// chrome.storage persistence middleware is run upon importing from `state/index.ts`.
+// For tests, this is problematic as it uses globals. This mocks those out.
 global.chrome = {
   storage: {
     local: {

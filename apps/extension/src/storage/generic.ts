@@ -1,4 +1,4 @@
-import { EmptyObject } from '../utils/helper-types';
+import { EmptyObject } from '../types/utility';
 import { isEmptyObj } from '../utils/assertions';
 
 export interface IStorage {

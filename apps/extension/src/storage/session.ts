@@ -9,7 +9,7 @@ export const sessionDefaults: SessionStorageState = {
   hashedPassword: undefined,
 };
 
-// TODO: Document. Storage that is short lived.
+// Meant to be used for short-term persisted data. Holds data in memory for the duration of a browser session.
 export const sessionExtStorage = new ExtensionStorage<SessionStorageState>(
   chrome.storage.session,
   sessionDefaults,

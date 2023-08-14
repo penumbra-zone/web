@@ -12,7 +12,7 @@ export const localDefaults: LocalStorageState = {
   accounts: [],
 };
 
-// TODO: Document. Storage that is long lived.
+// Meant to be used for long-term persisted data. It is cleared when the extension is removed.
 export const localExtStorage = new ExtensionStorage<LocalStorageState>(
   chrome.storage.local,
   localDefaults,
