@@ -1,7 +1,8 @@
-import { redirect, useNavigate } from 'react-router-dom';
+import { redirect } from 'react-router-dom';
 import { PagePath } from './paths';
 import { localExtStorage } from '../../storage/local';
 import { Button } from '@ui/components';
+import { usePageNav } from '../../utils/navigate';
 
 // Because Zustand initializes default empty (prior to persisted storage synced),
 // We need to manually check storage for accounts in the loader.
@@ -12,7 +13,7 @@ export const pageIndexLoader = async () => {
 };
 
 export const PageIndex = () => {
-  const navigate = useNavigate();
+  const navigate = usePageNav();
   return (
     <div>
       Dashboard page

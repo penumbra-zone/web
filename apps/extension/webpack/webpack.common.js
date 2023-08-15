@@ -1,6 +1,7 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const srcDir = path.join(__dirname, '..', 'src');
+const webpack = require('webpack');
 
 module.exports = {
   entry: {
@@ -28,6 +29,7 @@ module.exports = {
         exclude: /node_modules/,
       },
       {
+        test: /\.css$/i,
         use: [
           'style-loader',
           'css-loader',
@@ -41,7 +43,13 @@ module.exports = {
             },
           },
         ],
-        test: /\.css$/i,
+      },
+      {
+        test: /\.mp4$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'videos/[hash][ext][query]',
+        },
       },
     ],
   },
@@ -52,6 +60,9 @@ module.exports = {
     },
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
     new CopyPlugin({
       patterns: [{ from: '.', to: '../', context: 'public' }],
       options: {},

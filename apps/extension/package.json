@@ -11,12 +11,12 @@
   "dependencies": {
     "framer-motion": "^10.15.2",
     "immer": "^10.0.2",
+    "penumbra-crypto-ts": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.15.0",
     "react-use-measure": "^2.1.1",
     "ui": "workspace:*",
-    "penumbra-crypto-ts": "workspace:*",
     "zustand": "^4.4.1"
   },
   "devDependencies": {
@@ -27,6 +27,7 @@
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "autoprefixer": "^10.4.15",
+    "buffer": "^6.0.3",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
     "eslint-config-custom": "workspace:*",

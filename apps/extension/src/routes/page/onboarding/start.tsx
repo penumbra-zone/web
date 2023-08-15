@@ -1,15 +1,22 @@
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@ui/components';
-import { useNavigate } from 'react-router-dom';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CompressedVideoLogo,
+} from '@ui/components';
 import { PagePath } from '../paths';
-import { Logo } from '@ui/components/ui/logo';
 import { FadeTransition } from '../../../components/fade-transition';
+import { usePageNav } from '../../../utils/navigate';
 
 export const OnboardingStart = () => {
-  const navigate = useNavigate();
+  const navigate = usePageNav();
 
   return (
     <FadeTransition>
-      <Logo className='mb-12 self-center' />
+      <CompressedVideoLogo className='mb-12 self-center' />
       <Card className='w-[450px] p-6' gradient>
         <CardHeader className='items-center'>
           <CardTitle>Explore private trading</CardTitle>
