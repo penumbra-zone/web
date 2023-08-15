@@ -1,6 +1,6 @@
 import { AllSlices, SliceCreator } from './index';
 import { repeatedHash } from '../utils/encryption';
-import { ExtensionStorage } from '../storage/generic';
+import { ExtensionStorage } from '../storage/base';
 import { SessionStorageState } from '../storage/session';
 import { LocalStorageState } from '../storage/local';
 

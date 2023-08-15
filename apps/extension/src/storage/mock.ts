@@ -1,5 +1,4 @@
-import { STORAGE_VERSION } from '../config/constants';
-import { ExtensionStorage, IStorage } from './generic';
+import { ExtensionStorage, IStorage, StorageVersion } from './base';
 import { localDefaults, LocalStorageState } from './local';
 import { sessionDefaults, SessionStorageState } from './session';
 
@@ -39,8 +38,8 @@ export const mockSessionExtStorage = () =>
   new ExtensionStorage<SessionStorageState>(
     new MockStorageArea(),
     sessionDefaults,
-    STORAGE_VERSION,
+    StorageVersion.V1,
   );
 
 export const mockLocalExtStorage = () =>
-  new ExtensionStorage<LocalStorageState>(new MockStorageArea(), localDefaults, STORAGE_VERSION);
+  new ExtensionStorage<LocalStorageState>(new MockStorageArea(), localDefaults, StorageVersion.V1);

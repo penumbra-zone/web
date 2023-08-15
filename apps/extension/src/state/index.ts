@@ -2,7 +2,7 @@ import { create, StateCreator } from 'zustand';
 import { AccountsSlice, createAccountsSlice } from './accounts';
 import { immer } from 'zustand/middleware/immer';
 import { customPersist } from './persist';
-import { ExtensionStorage } from '../storage/generic';
+import { ExtensionStorage } from '../storage/base';
 import { sessionExtStorage, SessionStorageState } from '../storage/session';
 import { localExtStorage, LocalStorageState } from '../storage/local';
 import { createPasswordSlice, PasswordSlice } from './password';

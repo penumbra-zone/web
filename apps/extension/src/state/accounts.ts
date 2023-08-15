@@ -1,6 +1,6 @@
 import { AllSlices, SliceCreator } from './index';
 import { Account } from '../types/accounts';
-import { ExtensionStorage } from '../storage/generic';
+import { ExtensionStorage } from '../storage/base';
 import { LocalStorageState } from '../storage/local';
 
 export interface AccountsSlice {

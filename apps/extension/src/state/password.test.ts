@@ -2,7 +2,7 @@ import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
-import { ExtensionStorage } from '../storage/generic';
+import { ExtensionStorage } from '../storage/base';
 import { SessionStorageState } from '../storage/session';
 import { LocalStorageState } from '../storage/local';
 import { repeatedHash } from '../utils/encryption';
