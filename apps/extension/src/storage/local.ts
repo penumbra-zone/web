@@ -1,5 +1,4 @@
-import { ExtensionStorage } from './generic';
-import { STORAGE_VERSION } from '../config/constants';
+import { ExtensionStorage, StorageVersion } from './base';
 import { Account } from '../types/accounts';
 
 export interface LocalStorageState {
@@ -16,5 +15,5 @@ export const localDefaults: LocalStorageState = {
 export const localExtStorage = new ExtensionStorage<LocalStorageState>(
   chrome.storage.local,
   localDefaults,
-  STORAGE_VERSION,
+  StorageVersion.V1,
 );

@@ -6,26 +6,28 @@
     "dev": "webpack --config webpack/webpack.dev.js --watch",
     "build": "webpack --config webpack/webpack.prod.js",
     "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "dependencies": {
-    "crypto-js": "^4.1.1",
+    "framer-motion": "^10.15.2",
     "immer": "^10.0.2",
+    "penumbra-crypto-ts": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.15.0",
+    "react-use-measure": "^2.1.1",
     "ui": "workspace:*",
     "zustand": "^4.4.1"
   },
   "devDependencies": {
     "@types/chrome": "0.0.243",
-    "@types/crypto-js": "^4.1.1",
     "@types/firefox-webext-browser": "^111.0.1",
     "@types/node": "^20.5.0",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
-    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
     "autoprefixer": "^10.4.15",
+    "buffer": "^6.0.3",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
     "eslint-config-custom": "workspace:*",

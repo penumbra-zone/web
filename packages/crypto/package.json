@@ -1,0 +1,21 @@
+{
+  "name": "penumbra-crypto-ts",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "bip39": "^3.1.0",
+    "crypto-js": "^4.1.1",
+    "eslint": "^8.47.0",
+    "eslint-config-custom": "workspace:*",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.1.6"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.1.1",
+    "vitest": "^0.34.1"
+  }
+}

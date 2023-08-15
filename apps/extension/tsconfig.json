@@ -7,8 +7,7 @@
     "declaration": false,
     "declarationMap": false,
     "paths": {
-      "@ui/components/*": ["../../packages/ui/components/*"],
-      "@ui/lib/*": ["../../packages/ui/lib/*"]
+      "@ui/*": ["../../packages/ui/*"]
     }
   }
 }

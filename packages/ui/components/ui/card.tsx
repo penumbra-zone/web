@@ -2,14 +2,24 @@ import * as React from 'react';
 
 import { cn } from '@ui/lib/utils';
 
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn('bg-card text-card-foreground rounded-lg border shadow-sm', className)}
-      {...props}
-    />
-  ),
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  gradient?: boolean;
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, gradient, children, ...props }, ref) => {
+    const baseClasses = 'bg-charcoal rounded-2xl text-white shadow-sm';
+    return gradient ? (
+      <div ref={ref} className={cn(baseClasses, 'relative', className)} {...props}>
+        <div className='relative z-10'>{children}</div>
+        <div className='bg-card-radial absolute inset-0 z-0 rounded-2xl p-6 opacity-20' />
+      </div>
+    ) : (
+      <div ref={ref} className={cn(baseClasses, className)} {...props}>
+        {children}
+      </div>
+    );
+  },
 );
 Card.displayName = 'Card';
 
