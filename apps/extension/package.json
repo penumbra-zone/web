@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "crypto-js": "^4.1.1",
+    "framer-motion": "^10.15.2",
     "immer": "^10.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.15.0",
+    "react-use-measure": "^2.1.1",
     "ui": "workspace:*",
     "zustand": "^4.4.1"
   },
