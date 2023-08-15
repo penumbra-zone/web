@@ -8,7 +8,7 @@ export const ImportSeedPhrase = () => {
   return (
     <OnboardingCard>
       <BackIcon className='float-left' onClick={() => navigate(-1)} />
-      <Card className='w-[450px] p-6'>
+      <Card className='w-[450px] p-6' gradient>
         <div>import phrase</div>
       </Card>
     </OnboardingCard>

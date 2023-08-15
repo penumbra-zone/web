@@ -34,41 +34,14 @@
     --ring: 215 20.2% 65.1%;
 
     --radius: 0.5rem;
+
+    /* Penumbra base color palette */
+    --charcoal: #1d1d1d;
+    --teal: #629994;
+    --sand: #847a5b;
+    --rust: #8d5728;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: ;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 85.7% 97.3%;
-
-    --ring: 217.2 32.6% 17.5%;
-  }
-}
-
-@layer base {
   * {
     @apply border-border;
   }
@@ -88,29 +61,29 @@
   @font-face {
     font-family: 'Faktum Bold';
     src:
-      local('Faktum Bold'),
-      url('../fonts/Faktum-Bold.ttf') format('truetype');
+            local('Faktum Bold'),
+            url('../fonts/Faktum-Bold.ttf') format('truetype');
   }
 
   @font-face {
     font-family: 'Faktum Medium';
     src:
-      local('Faktum Medium'),
-      url('../fonts/Faktum-Medium.ttf') format('truetype');
+            local('Faktum Medium'),
+            url('../fonts/Faktum-Medium.ttf') format('truetype');
   }
 
   @font-face {
     font-family: 'Faktum SemiBold';
     src:
-      local('Faktum SemiBold'),
-      url('../fonts/Faktum-SemiBold.ttf') format('truetype');
+            local('Faktum SemiBold'),
+            url('../fonts/Faktum-SemiBold.ttf') format('truetype');
   }
 
   @font-face {
     font-family: 'Devanagari Sangam Regular';
     src:
-      local('Devanagari Sangam Regular'),
-      url('../fonts/Devanagari-Sangam-Regular.ttf') format('truetype');
+            local('Devanagari Sangam Regular'),
+            url('../fonts/Devanagari-Sangam-Regular.ttf') format('truetype');
   }
 
   h1 {
@@ -127,16 +100,23 @@
 
   .button-gradient {
     background-size: 300% 300%;
-    background-image: linear-gradient(
-      to right,
-      rgba(139, 228, 217, 0.6) 0%,
-      rgba(255, 144, 47, 0.5) 50%,
-      rgba(139, 228, 217, 0.6) 100%
-    );
     transition: 0.5s;
+    background-image: linear-gradient(
+                        to right,
+                        rgba(139, 228, 217, 0.6) 0%,
+                        rgba(255, 144, 47, 0.5) 50%,
+                        rgba(139, 228, 217, 0.6) 100%
+                      );
   }
 
   .button-gradient:hover {
     background-position: right center;
   }
+
+  .bg-card-radial {
+    background: radial-gradient(33% 50% at 15% 44%, var(--rust), transparent),
+                radial-gradient(33% 40% at 105% 42%, var(--teal), transparent),
+                radial-gradient(33% 80% at 85% 124%, var(--teal), transparent);
+  }
 }
+

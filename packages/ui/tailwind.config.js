@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ['class'],
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -19,7 +18,7 @@ module.exports = {
     extend: {
       fontFamily: {
         body: ['Devanagari Sangam Regular', 'sans-serif'],
-        headline: ['Faktum Bold', 'sans-serif'],
+        headline: ['Faktum SemiBold', 'sans-serif'],
       },
       colors: {
         border: 'hsl(var(--border))',
@@ -55,17 +54,17 @@ module.exports = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        'dark-grey': {
-          DEFAULT: '#1d1d1d',
+        charcoal: {
+          DEFAULT: 'var(--charcoal)',
         },
-        'sea-green': {
-          DEFAULT: '#629994',
+        teal: {
+          DEFAULT: 'var(--teal)',
         },
-        taupe: {
-          DEFAULT: '#847a5b',
+        sand: {
+          DEFAULT: 'var(--sand)',
         },
         rust: {
-          DEFAULT: '#8d5728',
+          DEFAULT: 'var(--rust)',
         },
       },
       borderRadius: {

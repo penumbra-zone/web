@@ -10,7 +10,7 @@ export const OnboardingStart = () => {
   return (
     <OnboardingCard>
       <Logo className='mb-12 self-center' />
-      <Card className='w-[450px] p-6'>
+      <Card className='w-[450px] p-6' gradient>
         <CardHeader className='items-center'>
           <CardTitle>Explore private trading</CardTitle>
           <CardDescription className='text-center'>
