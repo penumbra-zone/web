@@ -5,7 +5,7 @@ import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
 import { ExtensionStorage } from '../storage/base';
 import { SessionStorageState } from '../storage/session';
 import { LocalStorageState } from '../storage/local';
-import { repeatedHash } from '../utils/encryption';
+import { repeatedHash } from 'penumbra-crypto-ts';
 
 describe('Password Slice', () => {
   const password = 'correcthorsebatterystaple';

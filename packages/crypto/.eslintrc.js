@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  extends: ['custom', 'next/core-web-vitals', 'next'],
+  extends: ['custom'],
   parserOptions: {
     project: true,
     tsconfigRootDir: __dirname,

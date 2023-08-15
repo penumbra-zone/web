@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import React from 'react';
 
-export const OnboardingCard = ({ children }: { children: React.ReactNode }) => {
+// Required to wrap in <AnimatePresence>
+export const FadeTransition = ({ children }: { children: React.ReactNode }) => {
   return (
     <motion.div
       className='flex min-h-[100vh] w-[100%] flex-col items-center justify-center'

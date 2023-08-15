@@ -1,8 +1,8 @@
 import { AllSlices, SliceCreator } from './index';
-import { repeatedHash } from '../utils/encryption';
 import { ExtensionStorage } from '../storage/base';
 import { SessionStorageState } from '../storage/session';
 import { LocalStorageState } from '../storage/local';
+import { repeatedHash } from 'penumbra-crypto-ts';
 
 export interface PasswordSlice {
   hashedPassword: string | undefined;

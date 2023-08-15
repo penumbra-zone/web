@@ -61,29 +61,29 @@
   @font-face {
     font-family: 'Faktum Bold';
     src:
-            local('Faktum Bold'),
-            url('../fonts/Faktum-Bold.ttf') format('truetype');
+      local('Faktum Bold'),
+      url('../fonts/Faktum-Bold.ttf') format('truetype');
   }
 
   @font-face {
     font-family: 'Faktum Medium';
     src:
-            local('Faktum Medium'),
-            url('../fonts/Faktum-Medium.ttf') format('truetype');
+      local('Faktum Medium'),
+      url('../fonts/Faktum-Medium.ttf') format('truetype');
   }
 
   @font-face {
     font-family: 'Faktum SemiBold';
     src:
-            local('Faktum SemiBold'),
-            url('../fonts/Faktum-SemiBold.ttf') format('truetype');
+      local('Faktum SemiBold'),
+      url('../fonts/Faktum-SemiBold.ttf') format('truetype');
   }
 
   @font-face {
     font-family: 'Devanagari Sangam Regular';
     src:
-            local('Devanagari Sangam Regular'),
-            url('../fonts/Devanagari-Sangam-Regular.ttf') format('truetype');
+      local('Devanagari Sangam Regular'),
+      url('../fonts/Devanagari-Sangam-Regular.ttf') format('truetype');
   }
 
   h1 {
@@ -102,11 +102,11 @@
     background-size: 300% 300%;
     transition: 0.5s;
     background-image: linear-gradient(
-                        to right,
-                        rgba(139, 228, 217, 0.6) 0%,
-                        rgba(255, 144, 47, 0.5) 50%,
-                        rgba(139, 228, 217, 0.6) 100%
-                      );
+      to right,
+      rgba(139, 228, 217, 0.6) 0%,
+      rgba(255, 144, 47, 0.5) 50%,
+      rgba(139, 228, 217, 0.6) 100%
+    );
   }
 
   .button-gradient:hover {
@@ -115,8 +115,7 @@
 
   .bg-card-radial {
     background: radial-gradient(33% 50% at 15% 44%, var(--rust), transparent),
-                radial-gradient(33% 40% at 105% 42%, var(--teal), transparent),
-                radial-gradient(33% 80% at 85% 124%, var(--teal), transparent);
+      radial-gradient(33% 40% at 105% 42%, var(--teal), transparent),
+      radial-gradient(33% 80% at 85% 124%, var(--teal), transparent);
   }
 }
-

@@ -1,9 +1,7 @@
 module.exports = {
   extends: [
     'prettier',
-    'next/core-web-vitals',
     'eslint:recommended',
-    'next',
     'turbo',
     'plugin:tailwindcss/recommended',
     'plugin:@typescript-eslint/strict-type-checked',

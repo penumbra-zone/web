@@ -2,13 +2,13 @@ import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } fro
 import { useNavigate } from 'react-router-dom';
 import { PagePath } from '../paths';
 import { Logo } from '@ui/components/ui/logo';
-import { OnboardingCard } from '../../../components/onboarding-card';
+import { FadeTransition } from '../../../components/fade-transition';
 
 export const OnboardingStart = () => {
   const navigate = useNavigate();
 
   return (
-    <OnboardingCard>
+    <FadeTransition>
       <Logo className='mb-12 self-center' />
       <Card className='w-[450px] p-6' gradient>
         <CardHeader className='items-center'>
@@ -35,6 +35,6 @@ export const OnboardingStart = () => {
           </Button>
         </CardContent>
       </Card>
-    </OnboardingCard>
+    </FadeTransition>
   );
 };

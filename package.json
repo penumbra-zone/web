@@ -10,12 +10,11 @@
     "test": "turbo run test",
     "clean": "turbo clean",
     "format": "pnpm lint:fix && prettier --write .",
-    "format-check": "prettier --check .",
-    "ui:add": "pnpm --filter ui ui:add"
+    "format-check": "prettier --check ."
   },
   "devDependencies": {
     "@turbo/gen": "^1.10.12",
-    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
     "eslint": "^8.47.0",
     "eslint-config-custom": "workspace:*",
     "prettier": "^3.0.1",
