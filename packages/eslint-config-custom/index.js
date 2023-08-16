@@ -6,8 +6,9 @@ module.exports = {
     'plugin:tailwindcss/recommended',
     'plugin:@typescript-eslint/strict-type-checked',
     'plugin:@typescript-eslint/stylistic-type-checked',
+    'plugin:vitest/recommended',
   ],
-  plugins: ['@typescript-eslint', 'turbo'],
+  plugins: ['@typescript-eslint', 'turbo', 'vitest'],
   rules: {
     '@next/next/no-html-link-for-pages': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',

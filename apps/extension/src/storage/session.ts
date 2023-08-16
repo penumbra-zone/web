@@ -1,4 +1,8 @@
-import { ExtensionStorage, StorageVersion } from './base';
+import { ExtensionStorage } from './base';
+
+export enum SessionStorageVersion {
+  V1 = 'V1',
+}
 
 export interface SessionStorageState {
   hashedPassword: string | undefined;
@@ -12,5 +16,6 @@ export const sessionDefaults: SessionStorageState = {
 export const sessionExtStorage = new ExtensionStorage<SessionStorageState>(
   chrome.storage.session,
   sessionDefaults,
-  StorageVersion.V1,
+  SessionStorageVersion.V1,
+  {},
 );

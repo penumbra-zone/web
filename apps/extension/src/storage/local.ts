@@ -1,5 +1,9 @@
-import { ExtensionStorage, StorageVersion } from './base';
+import { ExtensionStorage } from './base';
 import { Account } from '../types/accounts';
+
+export enum LocalStorageVersion {
+  V1 = 'V1',
+}
 
 export interface LocalStorageState {
   hashedPassword: string | undefined;
@@ -15,5 +19,6 @@ export const localDefaults: LocalStorageState = {
 export const localExtStorage = new ExtensionStorage<LocalStorageState>(
   chrome.storage.local,
   localDefaults,
-  StorageVersion.V1,
+  LocalStorageVersion.V1,
+  {},
 );

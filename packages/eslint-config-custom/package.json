@@ -10,9 +10,10 @@
     "eslint-config-next": "^13.4.16",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-turbo": "^1.10.12",
-    "eslint-plugin-react": "7.33.1",
+    "eslint-plugin-react": "7.33.2",
     "eslint-plugin-tailwindcss": "^3.13.0",
     "eslint-plugin-turbo": "^1.10.12",
+    "eslint-plugin-vitest": "^0.2.8",
     "next": "^13.4.16"
   },
   "publishConfig": {
