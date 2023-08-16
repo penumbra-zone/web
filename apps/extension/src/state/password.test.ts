@@ -31,8 +31,8 @@ describe('Password Slice', () => {
     useStore.getState().password.clearPassword();
     expect(await useStore.getState().password.isPassword(password)).toBe(false);
 
-    expect(await sessionStorage.get('hashedPassword')).toBe(undefined);
-    expect(await localStorage.get('hashedPassword')).toBe(undefined);
+    expect(await sessionStorage.get('hashedPassword')).toBeUndefined();
+    expect(await localStorage.get('hashedPassword')).toBeUndefined();
   });
 
   test('incorrect password should not verify', async () => {

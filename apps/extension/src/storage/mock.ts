@@ -1,4 +1,4 @@
-import { ExtensionStorage, IStorage, StorageVersion } from './base';
+import { ExtensionStorage, IStorage } from './base';
 import { localDefaults, LocalStorageState } from './local';
 import { sessionDefaults, SessionStorageState } from './session';
 
@@ -34,12 +34,22 @@ export class MockStorageArea implements IStorage {
   }
 }
 
+enum MockStorageVersion {
+  V1 = 'V1',
+}
+
 export const mockSessionExtStorage = () =>
   new ExtensionStorage<SessionStorageState>(
     new MockStorageArea(),
     sessionDefaults,
-    StorageVersion.V1,
+    MockStorageVersion.V1,
+    {},
   );
 
 export const mockLocalExtStorage = () =>
-  new ExtensionStorage<LocalStorageState>(new MockStorageArea(), localDefaults, StorageVersion.V1);
+  new ExtensionStorage<LocalStorageState>(
+    new MockStorageArea(),
+    localDefaults,
+    MockStorageVersion.V1,
+    {},
+  );
