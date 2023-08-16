@@ -1,6 +1,7 @@
 # Spinning things up
 
 Installation Requirements:
+
 - [Nodejs](https://nodejs.org/en)
 - [pnpm](https://pnpm.io/installation)
 

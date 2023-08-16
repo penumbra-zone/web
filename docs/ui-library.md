@@ -20,6 +20,6 @@ In the `ui` package, to install a new component, the command looks like:
 npx shadcn-ui@latest add badge
 ```
 
-Go to the website to get them. 
+Go to the website to get them.
 
 If you are getting stuck with turborepo config with this library, [check out this starter](https://github.com/dan5py/turborepo-shadcn-ui.git) for inspiration.
