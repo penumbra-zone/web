@@ -6,42 +6,40 @@ import {
   validationFields,
 } from 'penumbra-crypto-ts/src/mnemonic';
 
-export interface OnboardingSlice {
-  plaintextPassword: string;
-  seedPhrase: string[];
+export interface SeedPhraseSlice {
+  phrase: string[];
   validationFields: ValidationField[];
   userValidationAttempt: ValidationField[];
   generateRandomSeedPhrase: (length: SeedPhraseLength) => void;
-  updateUserAttempt: (field: ValidationField) => void;
-  allCorrect: () => boolean;
+  updateUserValidationAttempt: (field: ValidationField) => void;
+  seedPhraseValidationCorrect: () => boolean;
 }
 
-export const createOnboardingSlice: SliceCreator<OnboardingSlice> = (set, get) => {
+export const createSeedPhraseSlice: SliceCreator<SeedPhraseSlice> = (set, get) => {
   return {
-    plaintextPassword: '',
-    seedPhrase: [],
+    phrase: [],
     validationFields: [],
     userValidationAttempt: [],
     generateRandomSeedPhrase: (length) => {
       set((state) => {
         const newSeedPhrase = generateSeedPhrase(length);
-        state.onboarding.seedPhrase = newSeedPhrase;
-        state.onboarding.validationFields = validationFields(newSeedPhrase, 3);
-        state.onboarding.userValidationAttempt = [];
+        state.seedPhrase.phrase = newSeedPhrase;
+        state.seedPhrase.validationFields = validationFields(newSeedPhrase, 3);
+        state.seedPhrase.userValidationAttempt = [];
       });
     },
-    updateUserAttempt: (attempt) => {
+    updateUserValidationAttempt: (attempt) => {
       set((state) => {
-        const match = state.onboarding.userValidationAttempt.find((v) => v.index === attempt.index);
+        const match = state.seedPhrase.userValidationAttempt.find((v) => v.index === attempt.index);
         if (match) {
           match.word = attempt.word;
         } else {
-          state.onboarding.userValidationAttempt.push(attempt);
+          state.seedPhrase.userValidationAttempt.push(attempt);
         }
       });
     },
-    allCorrect: () => {
-      const { userValidationAttempt, validationFields } = get().onboarding;
+    seedPhraseValidationCorrect: () => {
+      const { userValidationAttempt, validationFields } = get().seedPhrase;
       return (
         userValidationAttempt.length === validationFields.length &&
         userValidationAttempt.every((f) => {

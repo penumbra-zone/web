@@ -6,7 +6,7 @@ import { repeatedHash } from 'penumbra-crypto-ts';
 
 export interface PasswordSlice {
   hashedPassword: string | undefined;
-  setPassword: (password: string) => void;
+  setPassword: (password: string) => string;
   clearPassword: () => void;
   isPassword: (password: string) => Promise<boolean>;
 }
@@ -26,6 +26,7 @@ export const createPasswordSlice =
         });
         void session.set('hashedPassword', hashedPassword);
         void local.set('hashedPassword', hashedPassword);
+        return hashedPassword;
       },
       clearPassword: () => {
         set((state) => {

@@ -6,4 +6,5 @@ export enum PagePath {
   CONFIRM_BACKUP = '/welcome/confirm-backup',
   IMPORT_SEED_PHRASE = '/welcome/import',
   ONBOARDING_SUCCESS = '/welcome/success',
+  SET_PASSWORD = '/welcome/set-password',
 }

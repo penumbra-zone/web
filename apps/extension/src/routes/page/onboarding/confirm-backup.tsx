@@ -16,11 +16,7 @@ import { useState } from 'react';
 
 export const ConfirmBackup = () => {
   const navigate = usePageNav();
-  const { validationFields, allCorrect, userValidationAttempt } = useStore(
-    (state) => state.onboarding,
-  );
-
-  console.log(userValidationAttempt);
+  const { validationFields, seedPhraseValidationCorrect } = useStore((state) => state.seedPhrase);
 
   return (
     <FadeTransition>
@@ -40,8 +36,8 @@ export const ConfirmBackup = () => {
           </div>
           <Button
             variant='gradient'
-            disabled={!allCorrect()}
-            onClick={() => navigate(PagePath.ONBOARDING_SUCCESS)}
+            disabled={!seedPhraseValidationCorrect()}
+            onClick={() => navigate(PagePath.SET_PASSWORD)}
           >
             Next
           </Button>
@@ -53,16 +49,16 @@ export const ConfirmBackup = () => {
 
 const ValidationInput = ({ word, index }: { word: string; index: number }) => {
   const [text, setText] = useState('');
-  const { updateUserAttempt } = useStore((state) => state.onboarding);
+  const { updateUserValidationAttempt } = useStore((state) => state.seedPhrase);
 
   return (
     <div className='flex flex-row items-center justify-center gap-2'>
       <div className='w-7 text-right'>{index + 1}.</div>
       <Input
-        valid={!text.length ? undefined : text === word}
+        variant={!text.length ? 'default' : text === word ? 'success' : 'error'}
         onChange={({ target: { value } }) => {
           setText(value);
-          updateUserAttempt({ word: value, index });
+          updateUserValidationAttempt({ word: value, index });
         }}
       />
     </div>

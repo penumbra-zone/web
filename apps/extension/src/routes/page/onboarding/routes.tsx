@@ -4,6 +4,7 @@ import { GenerateSeedPhrase } from './generate';
 import { ConfirmBackup } from './confirm-backup';
 import { ImportSeedPhrase } from './import';
 import { OnboardingSuccess } from './success';
+import { SetPassword } from './set-password';
 
 export const onboardingRoutes = [
   {
@@ -25,5 +26,9 @@ export const onboardingRoutes = [
   {
     path: PagePath.ONBOARDING_SUCCESS,
     element: <OnboardingSuccess />,
+  },
+  {
+    path: PagePath.SET_PASSWORD,
+    element: <SetPassword />,
   },
 ];

@@ -21,13 +21,13 @@ import { PagePath } from '../paths';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();
-  const { seedPhrase, generateRandomSeedPhrase } = useStore((state) => state.onboarding);
+  const { phrase, generateRandomSeedPhrase } = useStore((state) => state.seedPhrase);
   const [count, { startCountdown }] = useCountdown({ countStart: 3 });
   const [reveal, setReveal] = useState(false);
 
   // On render, generate a new seed phrase
   useEffect(() => {
-    if (!seedPhrase.length) {
+    if (!phrase.length) {
       generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
     }
     startCountdown();
@@ -36,7 +36,7 @@ export const GenerateSeedPhrase = () => {
   return (
     <FadeTransition>
       <BackIcon className='float-left' onClick={() => navigate(-1)} />
-      <Card className={cn('p-6', seedPhrase.length === 12 ? 'w-[550px]' : 'w-[750px]')} gradient>
+      <Card className={cn('p-6', phrase.length === 12 ? 'w-[550px]' : 'w-[750px]')} gradient>
         <CardHeader className='items-center'>
           <CardTitle>New Recovery Phrase</CardTitle>
         </CardHeader>
@@ -46,29 +46,27 @@ export const GenerateSeedPhrase = () => {
               <div className='flex gap-3 rounded-xl bg-black p-2'>
                 <Toggle
                   onClick={() => generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS)}
-                  pressed={seedPhrase.length === 12}
+                  pressed={phrase.length === 12}
                 >
                   12 words
                 </Toggle>
                 <Toggle
                   onClick={() => generateRandomSeedPhrase(SeedPhraseLength.TWENTY_FOUR_WORDS)}
-                  pressed={seedPhrase.length === 24}
+                  pressed={phrase.length === 24}
                 >
                   24 words
                 </Toggle>
               </div>
             </div>
-            <div
-              className={cn('grid gap-4', seedPhrase.length === 12 ? 'grid-cols-3' : 'grid-cols-4')}
-            >
-              {seedPhrase.map((word, i) => (
+            <div className={cn('grid gap-4', phrase.length === 12 ? 'grid-cols-3' : 'grid-cols-4')}>
+              {phrase.map((word, i) => (
                 <div className='flex flex-row items-center justify-center gap-2' key={i}>
                   <div className='w-7 text-right'>{i + 1}.</div>
                   <Input readOnly value={word} />
                 </div>
               ))}
             </div>
-            <CopyToClipboard text={seedPhrase.join(' ')} />
+            <CopyToClipboard text={phrase.join(' ')} />
           </div>
           <div className='flex flex-col justify-center gap-6'>
             <div>
