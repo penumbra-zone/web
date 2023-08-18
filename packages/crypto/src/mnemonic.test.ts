@@ -55,10 +55,10 @@ describe('Mnemonic tests', () => {
       Array.from({ length: 200 }).forEach(() => {
         const seedPhrase = generateSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
         const fields = validationFields(seedPhrase, 3);
-        const allMatch = fields.every((f) => seedPhrase.at(f.index) === f.word);
+        const allMatch = fields.every(f => seedPhrase.at(f.index) === f.word);
         expect(allMatch).toBeTruthy();
 
-        const isAscendingByIndex = valuesAscend(fields.map((f) => f.index));
+        const isAscendingByIndex = valuesAscend(fields.map(f => f.index));
         expect(isAscendingByIndex).toBeTruthy();
       });
     });
@@ -67,10 +67,10 @@ describe('Mnemonic tests', () => {
       Array.from({ length: 200 }).forEach(() => {
         const seedPhrase = generateSeedPhrase(SeedPhraseLength.TWENTY_FOUR_WORDS);
         const fields = validationFields(seedPhrase, 5);
-        const allMatch = fields.every((f) => seedPhrase.at(f.index) === f.word);
+        const allMatch = fields.every(f => seedPhrase.at(f.index) === f.word);
         expect(allMatch).toBeTruthy();
 
-        const isAscendingByIndex = valuesAscend(fields.map((f) => f.index));
+        const isAscendingByIndex = valuesAscend(fields.map(f => f.index));
         expect(isAscendingByIndex).toBeTruthy();
       });
     });
@@ -163,7 +163,7 @@ describe('Mnemonic tests', () => {
         'shift',
         'helmet',
       ];
-      validWords.forEach((w) => {
+      validWords.forEach(w => {
         expect(isInWordList(w)).toBeTruthy();
       });
     });
@@ -181,7 +181,7 @@ describe('Mnemonic tests', () => {
         'Buch',
         'Schule',
       ];
-      invalidWords.forEach((w) => {
+      invalidWords.forEach(w => {
         expect(isInWordList(w)).toBeFalsy();
       });
     });

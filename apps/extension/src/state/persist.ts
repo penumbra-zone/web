@@ -14,7 +14,7 @@ export type Middleware = <
 
 type Persist = (f: StateCreator<AllSlices>) => StateCreator<AllSlices>;
 
-export const customPersistImpl: Persist = (f) => (set, get, store) => {
+export const customPersistImpl: Persist = f => (set, get, store) => {
   void (async function () {
     const hashedPassword = await sessionExtStorage.get('hashedPassword');
     const accounts = await localExtStorage.get('accounts');

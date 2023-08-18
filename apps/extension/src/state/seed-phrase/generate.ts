@@ -1,4 +1,4 @@
-import { SliceCreator } from '../index';
+import { AllSlices, SliceCreator } from '../index';
 import { SeedPhraseSlice } from './index';
 import {
   generateSeedPhrase,
@@ -21,30 +21,28 @@ export const createGenerate: SliceCreator<SeedPhraseSlice['generate']> = (set, g
   phrase: [],
   validationFields: [],
   userValidationAttempt: [],
-  generateRandomSeedPhrase: (length) => {
-    set((state) => {
+  generateRandomSeedPhrase: length => {
+    set(({ seedPhrase: { generate } }) => {
       const newSeedPhrase = generateSeedPhrase(length);
-      state.seedPhrase.generate.phrase = newSeedPhrase;
-      state.seedPhrase.generate.validationFields = validationFields(newSeedPhrase, 3);
-      state.seedPhrase.generate.userValidationAttempt = [];
+      generate.phrase = newSeedPhrase;
+      generate.validationFields = validationFields(newSeedPhrase, 3);
+      generate.userValidationAttempt = [];
     });
   },
   cleanup: () => {
-    set((state) => {
-      state.seedPhrase.generate.phrase = [];
-      state.seedPhrase.generate.validationFields = [];
-      state.seedPhrase.generate.userValidationAttempt = [];
+    set(({ seedPhrase: { generate } }) => {
+      generate.phrase = [];
+      generate.validationFields = [];
+      generate.userValidationAttempt = [];
     });
   },
-  updateAttempt: (attempt) => {
-    set((state) => {
-      const match = state.seedPhrase.generate.userValidationAttempt.find(
-        (v) => v.index === attempt.index,
-      );
+  updateAttempt: attempt => {
+    set(({ seedPhrase: { generate } }) => {
+      const match = generate.userValidationAttempt.find(v => v.index === attempt.index);
       if (match) {
         match.word = attempt.word;
       } else {
-        state.seedPhrase.generate.userValidationAttempt.push(attempt);
+        generate.userValidationAttempt.push(attempt);
       }
     });
   },
@@ -52,9 +50,11 @@ export const createGenerate: SliceCreator<SeedPhraseSlice['generate']> = (set, g
     const { userValidationAttempt, validationFields } = get().seedPhrase.generate;
     return (
       userValidationAttempt.length === validationFields.length &&
-      userValidationAttempt.every((f) => {
-        return validationFields.find((v) => v.index === f.index)?.word === f.word;
+      userValidationAttempt.every(f => {
+        return validationFields.find(v => v.index === f.index)?.word === f.word;
       })
     );
   },
 });
+
+export const generateSelector = (state: AllSlices) => state.seedPhrase.generate;

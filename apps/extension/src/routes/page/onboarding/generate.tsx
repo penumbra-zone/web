@@ -18,10 +18,11 @@ import { cn } from '@ui/lib/utils';
 import { ExclamationTriangleIcon, LockClosedIcon } from '@radix-ui/react-icons';
 import { useCountdown } from 'usehooks-ts';
 import { PagePath } from '../paths';
+import { generateSelector } from '../../../state/seed-phrase/generate';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();
-  const { phrase, generateRandomSeedPhrase } = useStore((state) => state.seedPhrase.generate);
+  const { phrase, generateRandomSeedPhrase } = useStore(generateSelector);
   const [count, { startCountdown }] = useCountdown({ countStart: 3 });
   const [reveal, setReveal] = useState(false);
 

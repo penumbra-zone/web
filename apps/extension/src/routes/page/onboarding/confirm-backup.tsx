@@ -13,10 +13,11 @@ import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { useStore } from '../../../state';
 import { useState } from 'react';
+import { generateSelector } from '../../../state/seed-phrase/generate';
 
 export const ConfirmBackup = () => {
   const navigate = usePageNav();
-  const { validationFields, userAttemptCorrect } = useStore((state) => state.seedPhrase.generate);
+  const { validationFields, userAttemptCorrect } = useStore(generateSelector);
 
   return (
     <FadeTransition>
@@ -49,7 +50,7 @@ export const ConfirmBackup = () => {
 
 const ValidationInput = ({ word, index }: { word: string; index: number }) => {
   const [text, setText] = useState('');
-  const { updateAttempt } = useStore((state) => state.seedPhrase.generate);
+  const { updateAttempt } = useStore(generateSelector);
 
   return (
     <div className='flex flex-row items-center justify-center gap-2'>

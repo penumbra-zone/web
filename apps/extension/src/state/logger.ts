@@ -4,7 +4,7 @@ import { Middleware } from './persist';
 
 type LoggerImpl = (f: StateCreator<AllSlices>) => StateCreator<AllSlices>;
 
-const loggerImpl: LoggerImpl = (f) => (set, get, store) => {
+const loggerImpl: LoggerImpl = f => (set, get, store) => {
   const loggedSet: typeof set = (...a) => {
     set(...a);
     console.log(get()); // Can specify more specific slices here

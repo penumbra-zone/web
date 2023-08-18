@@ -7,7 +7,7 @@ export class MockStorageArea implements IStorage {
   private store = new Map<string, unknown>();
 
   async get(key: string): Promise<Record<string, unknown>> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const value = this.store.get(key);
       if (value !== undefined) {
         resolve({ [key]: value });
@@ -18,14 +18,14 @@ export class MockStorageArea implements IStorage {
   }
 
   async remove(key: string): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       this.store.delete(key);
       resolve();
     });
   }
 
   async set(items: Record<string, unknown>): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       for (const key in items) {
         this.store.set(key, items[key]);
       }

@@ -50,10 +50,10 @@ interface Migrations {
 
 const migrations: Migrations = {
   seedPhrase: {
-    [MockStorageVersion.V1]: (old) => old.split(' '),
+    [MockStorageVersion.V1]: old => old.split(' '),
   },
   accounts: {
-    [MockStorageVersion.V1]: (old) =>
+    [MockStorageVersion.V1]: old =>
       old.map(({ encryptedSeedPhrase }) => {
         return {
           encryptedSeedPhrase,
@@ -61,7 +61,7 @@ const migrations: Migrations = {
           spendKey: 'v3-view-key-xyz',
         };
       }),
-    [MockStorageVersion.V2]: (old) =>
+    [MockStorageVersion.V2]: old =>
       old.map(({ encryptedSeedPhrase, viewKey }) => {
         return {
           encryptedSeedPhrase,
