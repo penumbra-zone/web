@@ -4,7 +4,7 @@ import { sessionExtStorage } from '../storage/session';
 import { localExtStorage } from '../storage/local';
 import { produce } from 'immer';
 
-type Middleware = <
+export type Middleware = <
   T,
   Mps extends [StoreMutatorIdentifier, unknown][] = [],
   Mcs extends [StoreMutatorIdentifier, unknown][] = [],

@@ -29,7 +29,7 @@ export const OnboardingStart = () => {
           <Button
             variant='gradient'
             className='w-full'
-            onClick={() => navigate(PagePath.SET_PASSWORD)}
+            onClick={() => navigate(PagePath.GENERATE_SEED_PHRASE)}
           >
             Create a new wallet
           </Button>

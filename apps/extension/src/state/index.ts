@@ -7,6 +7,7 @@ import { sessionExtStorage, SessionStorageState } from '../storage/session';
 import { localExtStorage, LocalStorageState } from '../storage/local';
 import { createPasswordSlice, PasswordSlice } from './password';
 import { createSeedPhraseSlice, SeedPhraseSlice } from './seed-phrase';
+import { logger } from './logger';
 
 export interface AllSlices {
   accounts: AccountsSlice;
@@ -32,6 +33,7 @@ export const initializeStore = (
   }));
 };
 
+// Wrap in logger() middleware if wanting to see store changes in console
 export const useStore = create<AllSlices>()(
-  customPersist(initializeStore(sessionExtStorage, localExtStorage)),
+  logger(customPersist(initializeStore(sessionExtStorage, localExtStorage))),
 );

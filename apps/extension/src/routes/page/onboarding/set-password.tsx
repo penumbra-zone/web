@@ -13,12 +13,14 @@ import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { useState } from 'react';
 import { useOnboardingSave } from '../../../hooks/onboarding';
+import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 
 export const SetPassword = () => {
   const navigate = usePageNav();
   const finalOnboardingSave = useOnboardingSave();
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
+  const [reveal, setReveal] = useState(false);
 
   return (
     <FadeTransition>
@@ -38,12 +40,21 @@ export const SetPassword = () => {
                 {Boolean(password.length) && password.length < 8 && 'password too short'}
               </div>
             </div>
-            <Input
-              type='password'
-              variant={!password.length ? 'default' : password.length >= 8 ? 'success' : 'warn'}
-              value={password}
-              onChange={({ target: { value } }) => setPassword(value)}
-            />
+            <div className='relative w-full'>
+              <div className='absolute inset-y-0 right-4 flex cursor-pointer items-center'>
+                {reveal ? (
+                  <EyeOpenIcon onClick={() => setReveal(false)} />
+                ) : (
+                  <EyeClosedIcon onClick={() => setReveal(true)} className='text-gray-500' />
+                )}
+              </div>
+              <Input
+                type={reveal ? 'text' : 'password'}
+                variant={!password.length ? 'default' : password.length >= 8 ? 'success' : 'warn'}
+                value={password}
+                onChange={({ target: { value } }) => setPassword(value)}
+              />
+            </div>
           </div>
           <div className='flex flex-col items-center justify-center gap-2'>
             <div className='flex gap-2 self-start'>
