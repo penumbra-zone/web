@@ -79,7 +79,7 @@ export const GenerateSeedPhrase = () => {
               </p>
             </div>
             <div>
-              <p className='text-teal flex items-center gap-2'>
+              <p className='flex items-center gap-2 text-teal'>
                 <LockClosedIcon /> Back this up safely
               </p>
               <p className='text-sm'>
