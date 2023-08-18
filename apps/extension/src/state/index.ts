@@ -6,12 +6,13 @@ import { ExtensionStorage } from '../storage/base';
 import { sessionExtStorage, SessionStorageState } from '../storage/session';
 import { localExtStorage, LocalStorageState } from '../storage/local';
 import { createPasswordSlice, PasswordSlice } from './password';
-import { createOnboardingSlice, OnboardingSlice } from './onboarding';
+import { logger } from './logger';
+import { createSeedPhraseSlice, SeedPhraseSlice } from './seed-phrase';
 
 export interface AllSlices {
   accounts: AccountsSlice;
   password: PasswordSlice;
-  onboarding: OnboardingSlice;
+  seedPhrase: SeedPhraseSlice;
 }
 
 export type SliceCreator<SliceInterface> = StateCreator<
@@ -28,10 +29,11 @@ export const initializeStore = (
   return immer((setState, getState: () => AllSlices, store) => ({
     accounts: createAccountsSlice(local)(setState, getState, store),
     password: createPasswordSlice(session, local)(setState, getState, store),
-    onboarding: createOnboardingSlice(setState, getState, store),
+    seedPhrase: createSeedPhraseSlice(setState, getState, store),
   }));
 };
 
+// Wrap in logger() middleware if wanting to see store changes in console
 export const useStore = create<AllSlices>()(
-  customPersist(initializeStore(sessionExtStorage, localExtStorage)),
+  logger(customPersist(initializeStore(sessionExtStorage, localExtStorage))),
 );
