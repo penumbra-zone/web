@@ -13,7 +13,6 @@ export const useOnboardingSave = () => {
     const hashedPassword = setPassword(plaintextPassword);
     // Determine which routes it came through to get here
     const phrase = generatedPhrase.length ? generatedPhrase : importedPhrase;
-    console.log('ending phrase', phrase);
     const encryptedSeedPhrase = encrypt(phrase.join(' '), hashedPassword);
     addAccount({ label: 'Account #1', encryptedSeedPhrase });
   };
