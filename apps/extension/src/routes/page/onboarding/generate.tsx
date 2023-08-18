@@ -21,7 +21,7 @@ import { PagePath } from '../paths';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();
-  const { phrase, generateRandomSeedPhrase } = useStore((state) => state.seedPhrase);
+  const { phrase, generateRandomSeedPhrase } = useStore((state) => state.seedPhrase.generate);
   const [count, { startCountdown }] = useCountdown({ countStart: 3 });
   const [reveal, setReveal] = useState(false);
 

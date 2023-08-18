@@ -6,13 +6,13 @@ import { ExtensionStorage } from '../storage/base';
 import { sessionExtStorage, SessionStorageState } from '../storage/session';
 import { localExtStorage, LocalStorageState } from '../storage/local';
 import { createPasswordSlice, PasswordSlice } from './password';
-import { createSeedPhraseSlice, SeedPhraseSlice } from './seed-phrase';
 import { logger } from './logger';
+import { createSeedPhraseSlice, SeedPhraseSlice } from './seed-phrase';
 
 export interface AllSlices {
   accounts: AccountsSlice;
-  seedPhrase: SeedPhraseSlice;
   password: PasswordSlice;
+  seedPhrase: SeedPhraseSlice;
 }
 
 export type SliceCreator<SliceInterface> = StateCreator<

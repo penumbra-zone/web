@@ -16,7 +16,7 @@ import { useState } from 'react';
 
 export const ConfirmBackup = () => {
   const navigate = usePageNav();
-  const { validationFields, seedPhraseValidationCorrect } = useStore((state) => state.seedPhrase);
+  const { validationFields, userAttemptCorrect } = useStore((state) => state.seedPhrase.generate);
 
   return (
     <FadeTransition>
@@ -36,7 +36,7 @@ export const ConfirmBackup = () => {
           </div>
           <Button
             variant='gradient'
-            disabled={!seedPhraseValidationCorrect()}
+            disabled={!userAttemptCorrect()}
             onClick={() => navigate(PagePath.SET_PASSWORD)}
           >
             Next
@@ -49,7 +49,7 @@ export const ConfirmBackup = () => {
 
 const ValidationInput = ({ word, index }: { word: string; index: number }) => {
   const [text, setText] = useState('');
-  const { updateUserValidationAttempt } = useStore((state) => state.seedPhrase);
+  const { updateAttempt } = useStore((state) => state.seedPhrase.generate);
 
   return (
     <div className='flex flex-row items-center justify-center gap-2'>
@@ -58,7 +58,7 @@ const ValidationInput = ({ word, index }: { word: string; index: number }) => {
         variant={!text.length ? 'default' : text === word ? 'success' : 'error'}
         onChange={({ target: { value } }) => {
           setText(value);
-          updateUserValidationAttempt({ word: value, index });
+          updateAttempt({ word: value, index });
         }}
       />
     </div>

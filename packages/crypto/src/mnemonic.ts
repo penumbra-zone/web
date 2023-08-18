@@ -1,9 +1,9 @@
-import { generateMnemonic } from 'bip39';
+import { generateMnemonic, validateMnemonic, wordlists } from 'bip39';
 import { sampleSize } from 'lodash';
 
 export enum SeedPhraseLength {
-  TWELVE_WORDS, // 128bits
-  TWENTY_FOUR_WORDS, // 256bits
+  TWELVE_WORDS = 12, // 128bits
+  TWENTY_FOUR_WORDS = 24, // 256bits
 }
 
 export const generateSeedPhrase = (length: SeedPhraseLength): string[] => {
@@ -22,4 +22,12 @@ const sortByIndex = (fieldA: ValidationField, fieldB: ValidationField) =>
 export const validationFields = (seedPhrase: string[], amount: number): ValidationField[] => {
   const allWords = seedPhrase.map((word, index) => ({ word, index }));
   return sampleSize(allWords, amount).sort(sortByIndex);
+};
+
+export const validateSeedPhrase = (seedPhrase: string[]): boolean => {
+  return validateMnemonic(seedPhrase.join(' '));
+};
+
+export const isInWordList = (word: string): boolean => {
+  return wordlists['EN']!.includes(word);
 };
