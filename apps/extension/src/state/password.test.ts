@@ -20,7 +20,8 @@ describe('Password Slice', () => {
   });
 
   test('password can be set and verified', async () => {
-    useStore.getState().password.setPassword(password);
+    const hashed = useStore.getState().password.setPassword(password);
+    expect(hashed).toBe(repeatedHash(password));
     expect(await useStore.getState().password.isPassword(password)).toBe(true);
     expect(await sessionStorage.get('hashedPassword')).toBe(repeatedHash(password));
     expect(await localStorage.get('hashedPassword')).toBe(repeatedHash(password));

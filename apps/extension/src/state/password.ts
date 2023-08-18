@@ -16,12 +16,12 @@ export const createPasswordSlice =
     session: ExtensionStorage<SessionStorageState>,
     local: ExtensionStorage<LocalStorageState>,
   ): SliceCreator<PasswordSlice> =>
-  (set) => {
+  set => {
     return {
       hashedPassword: undefined,
-      setPassword: (password) => {
+      setPassword: password => {
         const hashedPassword = repeatedHash(password);
-        set((state) => {
+        set(state => {
           state.password.hashedPassword = hashedPassword;
         });
         void session.set('hashedPassword', hashedPassword);
@@ -29,17 +29,17 @@ export const createPasswordSlice =
         return hashedPassword;
       },
       clearPassword: () => {
-        set((state) => {
+        set(state => {
           state.password.hashedPassword = undefined;
         });
         void session.remove('hashedPassword');
         void local.remove('hashedPassword');
       },
-      isPassword: async (password) => {
+      isPassword: async password => {
         const locallyStoredPassword = await local.get('hashedPassword');
         return locallyStoredPassword === repeatedHash(password);
       },
     };
   };
 
-export const passwordStoredSelector = (state: AllSlices) => Boolean(state.password.hashedPassword);
+export const passwordSelector = (state: AllSlices) => state.password;

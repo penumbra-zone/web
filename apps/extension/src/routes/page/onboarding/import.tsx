@@ -16,11 +16,13 @@ import {
 } from '@ui/components';
 import { cn } from '@ui/lib/utils';
 import { PagePath } from '../paths';
+import { importSelector } from '../../../state/seed-phrase/import';
+import { generateSelector } from '../../../state/seed-phrase/generate';
 
 export const ImportSeedPhrase = () => {
   const navigate = usePageNav();
-  const { phrase, setLength, phraseIsValid } = useStore((state) => state.seedPhrase.import);
-  const { cleanup } = useStore((state) => state.seedPhrase.generate);
+  const { phrase, setLength, phraseIsValid } = useStore(importSelector);
+  const { cleanup } = useStore(generateSelector);
 
   useEffect(() => {
     if (!phrase.length) {
@@ -64,10 +66,10 @@ export const ImportSeedPhrase = () => {
           <Button
             className='mt-4'
             variant='gradient'
-            disabled={!phrase.every((w) => w.length > 0) || !phraseIsValid()}
+            disabled={!phrase.every(w => w.length > 0) || !phraseIsValid()}
             onClick={() => navigate(PagePath.SET_PASSWORD)}
           >
-            {!phrase.length || !phrase.every((w) => w.length > 0)
+            {!phrase.length || !phrase.every(w => w.length > 0)
               ? 'Fill in passphrase'
               : !phraseIsValid()
               ? 'Phrase is invalid'
@@ -80,7 +82,7 @@ export const ImportSeedPhrase = () => {
 };
 
 const ImportInput = ({ index }: { index: number }) => {
-  const { update, phrase, wordIsValid } = useStore((state) => state.seedPhrase.import);
+  const { update, phrase, wordIsValid } = useStore(importSelector);
 
   return (
     <div className='flex flex-row items-center justify-center gap-2'>

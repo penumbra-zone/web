@@ -1,19 +1,22 @@
 import { useStore } from '../state';
 import { encrypt } from 'penumbra-crypto-ts';
+import { generateSelector } from '../state/seed-phrase/generate';
+import { importSelector } from '../state/seed-phrase/import';
+import { passwordSelector } from '../state/password';
+import { accountsSelector } from '../state/accounts';
 
 // Saves hashed password, uses that hash to encrypt the seed phrase
 // and then saves that to session + local storage
 export const useOnboardingSave = () => {
-  const { setPassword } = useStore((state) => state.password);
-  const { phrase: generatedPhrase } = useStore((state) => state.seedPhrase.generate);
-  const { phrase: importedPhrase } = useStore((state) => state.seedPhrase.import);
-  const { addAccount } = useStore((state) => state.accounts);
+  const { setPassword } = useStore(passwordSelector);
+  const { phrase: generatedPhrase } = useStore(generateSelector);
+  const { phrase: importedPhrase } = useStore(importSelector);
+  const { addAccount } = useStore(accountsSelector);
 
   return (plaintextPassword: string) => {
     const hashedPassword = setPassword(plaintextPassword);
     // Determine which routes it came through to get here
     const phrase = generatedPhrase.length ? generatedPhrase : importedPhrase;
-    console.log('ending phrase', phrase);
     const encryptedSeedPhrase = encrypt(phrase.join(' '), hashedPassword);
     addAccount({ label: 'Account #1', encryptedSeedPhrase });
   };

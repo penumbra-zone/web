@@ -1,4 +1,4 @@
-import { SliceCreator } from '../index';
+import { AllSlices, SliceCreator } from '../index';
 import { SeedPhraseSlice } from './index';
 import {
   isInWordList,
@@ -23,7 +23,7 @@ export const createImport: SliceCreator<SeedPhraseSlice['import']> = (set, get) 
       .split(' ')
       .slice(0, get().seedPhrase.import.phrase.length - position);
     words.forEach((word, i) => {
-      set((state) => {
+      set(state => {
         state.seedPhrase.import.phrase[position + i] = word;
       });
     });
@@ -45,6 +45,8 @@ export const createImport: SliceCreator<SeedPhraseSlice['import']> = (set, get) 
       });
     }
   },
-  wordIsValid: (word) => isInWordList(word),
+  wordIsValid: word => isInWordList(word),
   phraseIsValid: () => validateSeedPhrase(get().seedPhrase.import.phrase),
 });
+
+export const importSelector = (state: AllSlices) => state.seedPhrase.import;
