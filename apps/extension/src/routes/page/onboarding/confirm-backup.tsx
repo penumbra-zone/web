@@ -1,4 +1,5 @@
 import {
+  BackIcon,
   Button,
   Card,
   CardContent,
@@ -6,9 +7,8 @@ import {
   CardHeader,
   CardTitle,
   Input,
-} from '@ui/components';
+} from 'ui/components';
 import { FadeTransition } from '../../../components/fade-transition';
-import { BackIcon } from '@ui/components/ui/back-icon';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { useStore } from '../../../state';

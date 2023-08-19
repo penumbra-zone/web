@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ArrowLeftIcon } from '@radix-ui/react-icons';
-import { cn } from '@ui/lib/utils';
 import { IconProps } from '@radix-ui/react-icons/dist/types';
+import { cn } from '../../lib/utils';
 
 export type BackIconProps = IconProps & React.RefAttributes<SVGSVGElement>;
 

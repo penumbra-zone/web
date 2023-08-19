@@ -1,7 +1,7 @@
 import { redirect } from 'react-router-dom';
 import { PagePath } from './paths';
 import { localExtStorage } from '../../storage/local';
-import { Button } from '@ui/components';
+import { Button } from 'ui/components';
 import { usePageNav } from '../../utils/navigate';
 
 // Because Zustand initializes default empty (prior to persisted storage synced),

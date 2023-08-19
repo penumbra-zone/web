@@ -6,3 +6,4 @@ export * from './ui/logo/hd-video';
 export * from './ui/toggle';
 export * from './ui/input';
 export * from './ui/copy-to-clipboard';
+export * from './ui/back-icon';

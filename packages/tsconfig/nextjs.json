@@ -13,13 +13,7 @@
     "module": "esnext",
     "noEmit": true,
     "resolveJsonModule": true,
-    "target": "es5",
-    "paths": {
-      "@/*": ["./*"],
-      "@ui/*": ["../../packages/ui/*"],
-      "@ui/lib/*": ["../../packages/ui/lib/*"],
-      "@ui/components/*": ["../../packages/ui/components/ui/*"]
-    }
+    "target": "es5"
   },
   "include": ["src", "next-env.d.ts"],
   "exclude": ["node_modules"]

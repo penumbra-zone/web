@@ -2,9 +2,9 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import { Button } from '@ui/components';
-import { cn } from '@ui/lib/utils';
 import { CheckCircledIcon } from '@radix-ui/react-icons';
+import { Button } from './button';
+import { cn } from '../../lib/utils';
 
 export interface CopyToClipboardProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;

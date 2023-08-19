@@ -1,4 +1,5 @@
 import {
+  BackIcon,
   Button,
   Card,
   CardContent,
@@ -7,18 +8,17 @@ import {
   CopyToClipboard,
   Input,
   Toggle,
-} from '@ui/components';
+} from 'ui/components';
 import { FadeTransition } from '../../../components/fade-transition';
-import { BackIcon } from '@ui/components/ui/back-icon';
 import { useStore } from '../../../state';
 import { useEffect, useState } from 'react';
 import { SeedPhraseLength } from 'penumbra-crypto-ts/src/mnemonic';
 import { usePageNav } from '../../../utils/navigate';
-import { cn } from '@ui/lib/utils';
 import { ExclamationTriangleIcon, LockClosedIcon } from '@radix-ui/react-icons';
 import { useCountdown } from 'usehooks-ts';
 import { PagePath } from '../paths';
 import { generateSelector } from '../../../state/seed-phrase/generate';
+import { cn } from 'ui/lib/utils';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();
