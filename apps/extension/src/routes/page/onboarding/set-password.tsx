@@ -6,21 +6,18 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  Input,
 } from 'ui/components';
-import { FadeTransition } from '../../../components/fade-transition';
+import { FadeTransition, PasswordInput } from '../../../components';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { useState } from 'react';
 import { useOnboardingSave } from '../../../hooks/onboarding';
-import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 
 export const SetPassword = () => {
   const navigate = usePageNav();
   const finalOnboardingSave = useOnboardingSave();
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
-  const [reveal, setReveal] = useState(false);
 
   return (
     <FadeTransition>
@@ -33,47 +30,20 @@ export const SetPassword = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className='grid gap-4'>
-          <div className='flex flex-col items-center justify-center gap-2'>
-            <div className='flex gap-2 self-start'>
-              <div>New password</div>
-              <div className='italic text-yellow-300'>
-                {Boolean(password.length) && password.length < 8 && 'password too short'}
-              </div>
-            </div>
-            <div className='relative w-full'>
-              <div className='absolute inset-y-0 right-4 flex cursor-pointer items-center'>
-                {reveal ? (
-                  <EyeOpenIcon onClick={() => setReveal(false)} />
-                ) : (
-                  <EyeClosedIcon onClick={() => setReveal(true)} className='text-gray-500' />
-                )}
-              </div>
-              <Input
-                type={reveal ? 'text' : 'password'}
-                variant={!password.length ? 'default' : password.length >= 8 ? 'success' : 'warn'}
-                value={password}
-                onChange={({ target: { value } }) => setPassword(value)}
-              />
-            </div>
-          </div>
-          <div className='flex flex-col items-center justify-center gap-2'>
-            <div className='flex gap-2 self-start'>
-              <div>Confirm password</div>
-              <div className='italic text-yellow-300'>
-                {Boolean(confirmation.length) &&
-                  password !== confirmation &&
-                  "passwords don't match"}
-              </div>
-            </div>
-            <Input
-              type='password'
-              variant={
-                !confirmation.length ? 'default' : password === confirmation ? 'success' : 'warn'
-              }
-              value={confirmation}
-              onChange={({ target: { value } }) => setConfirmation(value)}
-            />
-          </div>
+          <PasswordInput
+            value={password}
+            label='New password'
+            isHelper={Boolean(password.length) && password.length < 8}
+            helper='password too short'
+            onChange={({ target: { value } }) => setPassword(value)}
+          />
+          <PasswordInput
+            value={confirmation}
+            label='Confirm password'
+            isHelper={Boolean(confirmation.length) && password !== confirmation}
+            helper="passwords don't match"
+            onChange={({ target: { value } }) => setConfirmation(value)}
+          />
           <Button
             variant='gradient'
             disabled={password.length < 8 || password !== confirmation}
