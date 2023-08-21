@@ -1,10 +1,10 @@
 import { FadeTransition } from '../../../components/fade-transition';
-import { BackIcon } from '@ui/components/ui/back-icon';
 import { usePageNav } from '../../../utils/navigate';
 import { useEffect } from 'react';
 import { useStore } from '../../../state';
 import { SeedPhraseLength } from 'penumbra-crypto-ts/src/mnemonic';
 import {
+  BackIcon,
   Button,
   Card,
   CardContent,
@@ -13,8 +13,8 @@ import {
   CardTitle,
   Input,
   Toggle,
-} from '@ui/components';
-import { cn } from '@ui/lib/utils';
+} from 'ui/components';
+import { cn } from 'ui/lib/utils';
 import { PagePath } from '../paths';
 import { importSelector } from '../../../state/seed-phrase/import';
 import { generateSelector } from '../../../state/seed-phrase/generate';

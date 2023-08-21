@@ -1,6 +1,6 @@
 import * as React from 'react';
 import RayHd from './ray-hd.mp4';
-import { VideoLogo, VideoLogoProps } from '@ui/components';
+import { VideoLogo, VideoLogoProps } from './compressed-video';
 
 // Segmented out (instead of a prop) so that the extension does not bundle these together
 // and end up packaging both the hd and compressed video.
