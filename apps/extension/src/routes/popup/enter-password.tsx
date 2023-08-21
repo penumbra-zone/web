@@ -36,9 +36,16 @@ export const EnterPassword = () => {
     setMatchError(true);
   };
 
+  const gotoRestorePage = () =>
+    void (async function () {
+      await chrome.tabs.create({
+        url: `${chrome.runtime.getURL('page.html')}`,
+      });
+    })();
+
   return (
     <FadeTransition>
-      <Card className='w-[100%] p-6' gradient>
+      <Card className='w-[300px] p-2' gradient>
         <CardHeader className='items-center'>
           <CardTitle>Welcome back!</CardTitle>
           <CardDescription className='text-center'>A decentralized network awaits</CardDescription>
@@ -62,19 +69,19 @@ export const EnterPassword = () => {
               Unlock
             </Button>
           </form>
-          <Button
-            className='text-white'
-            variant='link'
-            onClick={() =>
-              void (async function () {
-                await chrome.tabs.create({
-                  url: chrome.runtime.getURL('page.html'),
-                });
-              })()
-            }
-          >
+          <Button className='text-white' variant='link' onClick={gotoRestorePage}>
             Forgot Password?
           </Button>
+          <p className='text-sm'>
+            Need help? Contact{' '}
+            <a
+              className='cursor-pointer text-sm text-green-600 hover:underline'
+              target='_blank'
+              href='https://guide.penumbra.zone/main/extension.html'
+            >
+              Penumbra Support
+            </a>
+          </p>
         </CardContent>
       </Card>
     </FadeTransition>

@@ -9,6 +9,7 @@ export interface PasswordSlice {
   setPassword: (password: string) => string;
   clearPassword: () => void;
   isPassword: (password: string) => Promise<boolean>;
+  clearSessionPassword: () => void;
 }
 
 export const createPasswordSlice =
@@ -35,6 +36,13 @@ export const createPasswordSlice =
         void session.remove('hashedPassword');
         void local.remove('hashedPassword');
       },
+      clearSessionPassword: () => {
+        set(state => {
+          state.password.hashedPassword = undefined;
+        });
+        void session.remove('hashedPassword');
+      },
+
       isPassword: async password => {
         const locallyStoredPassword = await local.get('hashedPassword');
         return locallyStoredPassword === repeatedHash(password);
