@@ -6,7 +6,7 @@ import { RouterProvider } from 'react-router-dom';
 import 'ui/styles/globals.css';
 
 const startExtension = () => {
-  const rootElement = document.getElementById('root') as HTMLDivElement;
+  const rootElement = document.getElementById('popup-root') as HTMLDivElement;
   createRoot(rootElement).render(
     <StrictMode>
       <RouterProvider router={popupRouter} />

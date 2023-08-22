@@ -1,18 +1,10 @@
-import { useStore } from '../../state';
 import { useState } from 'react';
-import { PopupPath } from './paths';
-import { usePopupNav } from '../../utils/navigate';
-import { passwordSelector } from '../../state/password';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  InputProps,
-} from 'ui/components';
+import { Button, InputProps } from 'ui/components';
 import { FadeTransition, PasswordInput } from '../../components';
+import { useStore } from '../../state';
+import { passwordSelector } from '../../state/password';
+import { usePopupNav } from '../../utils/navigate';
+import { PopupPath } from './paths';
 
 export const EnterPassword = () => {
   const navigate = usePopupNav();
@@ -39,18 +31,18 @@ export const EnterPassword = () => {
   const gotoRestorePage = () =>
     void (async function () {
       await chrome.tabs.create({
-        url: `${chrome.runtime.getURL('page.html')}`,
+        url: chrome.runtime.getURL('page.html'),
       });
     })();
 
   return (
     <FadeTransition>
-      <Card className='w-[300px] p-2' gradient>
-        <CardHeader className='items-center'>
-          <CardTitle>Welcome back!</CardTitle>
-          <CardDescription className='text-center'>A decentralized network awaits</CardDescription>
-        </CardHeader>
-        <CardContent className='grid gap-4'>
+      <div className='grid gap-4 p-6 text-white shadow-sm'>
+        <p className='text-center text-2xl font-semibold leading-none tracking-tight'>
+          Welcome back!
+        </p>
+        <p className='text-center text-sm text-muted-foreground'>A decentralized network awaits</p>
+        <div className='grid gap-4 p-6 pt-0'>
           <form
             onSubmit={e => {
               e.preventDefault();
@@ -59,11 +51,16 @@ export const EnterPassword = () => {
             className='grid gap-4'
           >
             <PasswordInput
-              value={password}
+              passwordValue={password}
               label='Password'
-              isHelper={!matchError}
-              helper='wrong password'
               onChange={handleChangePassword}
+              validations={[
+                {
+                  type: 'error',
+                  error: 'wrong password',
+                  checkFn: (txt: string) => Boolean(txt) && !matchError,
+                },
+              ]}
             />
             <Button variant='gradient' disabled={!matchError} onClick={handleUnlock} type='button'>
               Unlock
@@ -75,15 +72,15 @@ export const EnterPassword = () => {
           <p className='text-sm'>
             Need help? Contact{' '}
             <a
-              className='cursor-pointer text-sm text-green-600 hover:underline'
+              className='cursor-pointer text-sm text-teal-500 hover:underline'
               target='_blank'
-              href='https://guide.penumbra.zone/main/extension.html'
+              href='https://discord.com/channels/824484045370818580/1077672871251415141'
             >
               Penumbra Support
             </a>
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </FadeTransition>
   );
 };

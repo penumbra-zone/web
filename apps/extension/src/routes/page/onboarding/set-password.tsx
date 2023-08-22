@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   BackIcon,
   Button,
@@ -8,10 +9,9 @@ import {
   CardTitle,
 } from 'ui/components';
 import { FadeTransition, PasswordInput } from '../../../components';
+import { useOnboardingSave } from '../../../hooks/onboarding';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { useState } from 'react';
-import { useOnboardingSave } from '../../../hooks/onboarding';
 
 export const SetPassword = () => {
   const navigate = usePageNav();
@@ -31,18 +31,28 @@ export const SetPassword = () => {
         </CardHeader>
         <CardContent className='grid gap-4'>
           <PasswordInput
-            value={password}
+            passwordValue={password}
             label='New password'
-            isHelper={Boolean(password.length) && password.length < 8}
-            helper='password too short'
             onChange={({ target: { value } }) => setPassword(value)}
+            validations={[
+              {
+                type: 'warn',
+                error: 'password too short',
+                checkFn: (txt: string) => Boolean(txt.length) && txt.length < 8,
+              },
+            ]}
           />
           <PasswordInput
-            value={confirmation}
+            passwordValue={confirmation}
             label='Confirm password'
-            isHelper={Boolean(confirmation.length) && password !== confirmation}
-            helper="passwords don't match"
             onChange={({ target: { value } }) => setConfirmation(value)}
+            validations={[
+              {
+                type: 'warn',
+                error: "passwords don't match",
+                checkFn: (txt: string) => Boolean(txt.length) && password !== txt,
+              },
+            ]}
           />
           <Button
             variant='gradient'

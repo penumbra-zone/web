@@ -42,12 +42,18 @@
     --rust: #8d5728;
   }
 
+  #popup-root {
+    width: 400px;
+    height: 600px;
+    @apply bg-card-radial bg-opacity-20;
+  }
+
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-card;
   }
 
   body,
