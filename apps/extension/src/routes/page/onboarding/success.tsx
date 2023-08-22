@@ -7,8 +7,11 @@ import {
   CompressedVideoLogo,
 } from 'ui/components';
 import { FadeTransition } from '../../../components/fade-transition';
+import { useStore } from '../../../state';
+import { passwordSelector } from '../../../state/password';
 
 export const OnboardingSuccess = () => {
+  const { clearSessionPassword } = useStore(passwordSelector);
   return (
     <FadeTransition>
       <div className='absolute inset-0 flex w-screen items-center justify-center'>
@@ -34,6 +37,9 @@ export const OnboardingSuccess = () => {
             }}
           >
             Visit testnet web app
+          </Button>
+          <Button variant='gradient' onClick={clearSessionPassword}>
+            Logout
           </Button>
         </CardContent>
       </Card>

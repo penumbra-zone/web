@@ -11,7 +11,7 @@ export const PopupRoot = () => {
 
   useEffect(() => {
     // redirect to login page after logout
-    if (!hashedPassword) navigate(PopupPath.ENTER_PASSWORD);
+    !hashedPassword ? navigate(PopupPath.ENTER_PASSWORD) : navigate(PopupPath.INDEX);
   }, [hashedPassword]);
 
   return <Outlet />;

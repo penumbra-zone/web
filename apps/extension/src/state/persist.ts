@@ -25,6 +25,17 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
         state.accounts.all = accounts;
       }),
     );
+    
+    chrome.storage.onChanged.addListener(changes => {
+      if (changes['hashedPassword']) {
+        const newValues = changes['hashedPassword'].newValue as { value: string } | undefined;
+        set(
+          produce((state: AllSlices) => {
+            state.password.hashedPassword = newValues ? newValues.value : undefined;
+          }),
+        );
+      }
+    });
   })();
 
   return f(set, get, store);

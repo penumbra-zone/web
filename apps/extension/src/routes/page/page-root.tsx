@@ -11,7 +11,7 @@ export const PageRoot = () => {
 
   useEffect(() => {
     // redirect to login page after logout
-    if (!hashedPassword) navigate(PagePath.INDEX);
+    !hashedPassword ? navigate(PagePath.INDEX) : navigate(PagePath.ONBOARDING_SUCCESS);
   }, [hashedPassword]);
 
   useEffect(() => {
