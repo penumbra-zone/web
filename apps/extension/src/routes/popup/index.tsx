@@ -13,8 +13,6 @@ import {
   CompressedVideoLogo,
 } from 'ui/components';
 import { useStore } from '../../state';
-import { useEffect } from 'react';
-import { usePopupNav } from '../../utils/navigate';
 
 // Because Zustand initializes default empty (prior to persisted storage synced),
 // We need to manually check storage for accounts & password in the loader.
@@ -35,12 +33,7 @@ export const popupIndexLoader = async () => {
 };
 
 export const PopupIndex = () => {
-  const navigate = usePopupNav();
-  const { clearSessionPassword, hashedPassword } = useStore(passwordSelector);
-
-  useEffect(() => {
-    if (!hashedPassword) navigate(PopupPath.ENTER_PASSWORD);
-  }, [hashedPassword]);
+  const { clearSessionPassword } = useStore(passwordSelector);
 
   return (
     <FadeTransition>
@@ -50,7 +43,7 @@ export const PopupIndex = () => {
       <Card className='w-[300] p-6' gradient>
         <CardHeader>
           <CardTitle className='bg-gradient-to-r from-teal-400 via-neutral-300 to-orange-400 bg-clip-text text-xl text-transparent opacity-80'>
-            Successfull login
+            Successfully login
           </CardTitle>
         </CardHeader>
         <CardContent className='grid gap-4'>

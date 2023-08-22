@@ -1,4 +1,4 @@
-import { FadeTransition } from '../../../components/fade-transition';
+import { FadeTransition, ImportInput } from '../../../components';
 import { usePageNav } from '../../../utils/navigate';
 import { useEffect } from 'react';
 import { useStore } from '../../../state';
@@ -11,7 +11,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  Input,
   Toggle,
 } from 'ui/components';
 import { cn } from 'ui/lib/utils';
@@ -78,24 +77,5 @@ export const ImportSeedPhrase = () => {
         </CardContent>
       </Card>
     </FadeTransition>
-  );
-};
-
-const ImportInput = ({ index }: { index: number }) => {
-  const { update, phrase, wordIsValid } = useStore(importSelector);
-
-  return (
-    <div className='flex flex-row items-center justify-center gap-2'>
-      <div className='w-7 text-right'>{index + 1}.</div>
-      <Input
-        variant={
-          !phrase[index]?.length ? 'default' : wordIsValid(phrase[index]!) ? 'success' : 'error'
-        }
-        value={phrase[index] ?? ''}
-        onChange={({ target: { value } }) => {
-          update(value, index);
-        }}
-      />
-    </div>
   );
 };

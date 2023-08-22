@@ -13,6 +13,7 @@ import {
   InputProps,
 } from 'ui/components';
 import { FadeTransition, PasswordInput } from '../../components';
+import { PagePath } from '../page/paths';
 
 export const EnterPassword = () => {
   const navigate = usePopupNav();
@@ -39,7 +40,7 @@ export const EnterPassword = () => {
   const gotoRestorePage = () =>
     void (async function () {
       await chrome.tabs.create({
-        url: `${chrome.runtime.getURL('page.html')}`,
+        url: `${chrome.runtime.getURL('page.html')}#${PagePath.FORGOT_PASSWORD}`,
       });
     })();
 

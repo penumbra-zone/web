@@ -1,13 +1,14 @@
-import { createMemoryRouter, Outlet, RouteObject } from 'react-router-dom';
+import { createMemoryRouter, RouteObject } from 'react-router-dom';
 import { PageIndex, pageIndexLoader } from './index';
 import { PagePath } from './paths';
 import { Onboarding } from './onboarding';
 import { onboardingRoutes } from './onboarding/routes';
 import { ForgotPassword } from './forgot-password';
+import { PageRoot } from './page-root';
 
 export const pageRoutes: RouteObject[] = [
   {
-    element: <Outlet />,
+    element: <PageRoot />,
     children: [
       {
         path: PagePath.FORGOT_PASSWORD,
