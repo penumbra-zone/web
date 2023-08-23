@@ -45,4 +45,13 @@ describe('Password Slice', () => {
   test('password is initially undefined', () => {
     expect(useStore.getState().password.hashedPassword).toBeUndefined();
   });
+
+  test('password can be removed only from session storage', async () => {
+    useStore.getState().password.setPassword(password);
+    useStore.getState().password.clearSessionPassword();
+    expect(await useStore.getState().password.isPassword(password)).toBe(true);
+
+    expect(await sessionStorage.get('hashedPassword')).toBeUndefined();
+    expect(await localStorage.get('hashedPassword')).toBe(repeatedHash(password));
+  });
 });

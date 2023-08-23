@@ -42,12 +42,18 @@
     --rust: #8d5728;
   }
 
+  #popup-root {
+    width: 400px;
+    height: 600px;
+    @apply bg-charcoal;
+  }
+
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-card;
   }
 
   body,
@@ -111,11 +117,5 @@
 
   .button-gradient:hover {
     background-position: right center;
-  }
-
-  .bg-card-radial {
-    background: radial-gradient(33% 50% at 15% 44%, var(--rust), transparent),
-      radial-gradient(33% 40% at 105% 42%, var(--teal), transparent),
-      radial-gradient(33% 80% at 85% 124%, var(--teal), transparent);
   }
 }

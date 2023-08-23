@@ -14,6 +14,7 @@ export const pageIndexLoader = async () => {
 
 export const PageIndex = () => {
   const navigate = usePageNav();
+
   return (
     <div>
       Dashboard page

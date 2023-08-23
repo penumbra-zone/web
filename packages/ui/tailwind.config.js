@@ -97,6 +97,10 @@ module.exports = {
           },
         },
       },
+      backgroundImage: {
+        'card-radial':
+          'radial-gradient(33% 50% at 15% 44%, var(--rust), transparent),radial-gradient(33% 40% at 105% 42%, var(--teal), transparent),radial-gradient(33% 80% at 85% 124%, var(--teal), transparent)',
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],

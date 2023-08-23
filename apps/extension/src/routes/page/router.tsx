@@ -3,11 +3,16 @@ import { PageIndex, pageIndexLoader } from './index';
 import { PagePath } from './paths';
 import { Onboarding } from './onboarding';
 import { onboardingRoutes } from './onboarding/routes';
+import { ForgotPassword } from './forgot-password';
 
 export const pageRoutes: RouteObject[] = [
   {
     element: <Outlet />,
     children: [
+      {
+        path: PagePath.FORGOT_PASSWORD,
+        element: <ForgotPassword />,
+      },
       {
         path: PagePath.INDEX,
         element: <PageIndex />,
