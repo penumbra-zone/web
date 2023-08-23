@@ -7,6 +7,7 @@ import { FadeTransition } from '../../components';
 import { Button } from 'ui/components';
 import { useStore } from '../../state';
 import { usePopupNav } from '../../utils/navigate';
+import { PopupLayout } from './popup-layout';
 
 // Because Zustand initializes default empty (prior to persisted storage synced),
 // We need to manually check storage for accounts & password in the loader.
@@ -36,29 +37,31 @@ export const PopupIndex = () => {
   };
 
   return (
-    <FadeTransition>
-      <div className='grid gap-4 p-6 text-white shadow-sm'>
-        <p className='text-center text-2xl font-semibold leading-none tracking-tight'>
-          Successfull login
-        </p>
-        <p className=' text-center text-sm'>A You are all set!</p>
-        <p className='text-center text-sm'>
-          Use your account to transact, stake, swap or market make. All of it is shielded and
-          private.
-        </p>
-        <Button
-          variant='gradient'
-          onClick={() => {
-            window.open('https://app.testnet.penumbra.zone/', '_blank');
-            window.close();
-          }}
-        >
-          Visit testnet web app
-        </Button>
-        <Button variant='gradient' onClick={handleLogout}>
-          Logout
-        </Button>
-      </div>
-    </FadeTransition>
+    <PopupLayout>
+      <FadeTransition>
+        <div className='grid gap-4 p-6 text-white shadow-sm'>
+          <p className='text-center text-2xl font-semibold leading-none tracking-tight'>
+            Successfull login
+          </p>
+          <p className=' text-center text-sm'>A You are all set!</p>
+          <p className='text-center text-sm'>
+            Use your account to transact, stake, swap or market make. All of it is shielded and
+            private.
+          </p>
+          <Button
+            variant='gradient'
+            onClick={() => {
+              window.open('https://app.testnet.penumbra.zone/', '_blank');
+              window.close();
+            }}
+          >
+            Visit testnet web app
+          </Button>
+          <Button variant='gradient' onClick={handleLogout}>
+            Logout
+          </Button>
+        </div>
+      </FadeTransition>
+    </PopupLayout>
   );
 };

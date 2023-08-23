@@ -24,34 +24,24 @@ export const PasswordInput = ({
 }: PasswordInputProps) => {
   const [reveal, setReveal] = useState(false);
 
-  const validationResult = useMemo(() => {
-    const validation = validations.map(i => ({
-      check: i.checkFn(passwordValue),
-      variant: i.type,
-      error: i.error,
-    }));
-
-    const error = validation.find(i => i.variant === 'error' && i.check);
-    if (error) return error;
-
-    const warn = validation.find(i => i.variant === 'warn' && i.check);
-    if (warn) return warn;
-
-    return null;
+  const priorityResult = useMemo(() => {
+    const results = validations.filter(v => v.checkFn(passwordValue));
+    const error = results.find(v => v.type === 'error');
+    return error ? error : results.find(v => v.type === 'warn');
   }, [validations, passwordValue]);
 
   return (
     <div className='flex flex-col items-center justify-center gap-2'>
       <div className='flex gap-2 self-start'>
         <div>{label}</div>
-        {validationResult ? (
+        {priorityResult ? (
           <div
             className={cn(
               'italic',
-              validationResult.variant === 'warn' ? 'text-yellow-300' : 'text-red-400',
+              priorityResult.type === 'warn' ? 'text-yellow-300' : 'text-red-400',
             )}
           >
-            {validationResult.error}
+            {priorityResult.error}
           </div>
         ) : null}
       </div>
@@ -65,7 +55,7 @@ export const PasswordInput = ({
         </div>
         <Input
           type={reveal ? 'text' : 'password'}
-          variant={validationResult?.variant ?? 'default'}
+          variant={priorityResult?.type ?? 'default'}
           value={passwordValue}
           onChange={onChange}
         />

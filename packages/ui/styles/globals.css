@@ -45,7 +45,7 @@
   #popup-root {
     width: 400px;
     height: 600px;
-    @apply bg-card-radial bg-opacity-20;
+    @apply bg-charcoal ;
   }
 
   * {
