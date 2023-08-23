@@ -47,7 +47,7 @@ export const createGenerate: SliceCreator<SeedPhraseSlice['generate']> = (set, g
     });
   },
   userAttemptCorrect: () => {
-    const { userValidationAttempt, validationFields, } = get().seedPhrase.generate;
+    const { userValidationAttempt, validationFields } = get().seedPhrase.generate;
     return (
       userValidationAttempt.length === validationFields.length &&
       userValidationAttempt.every(f => {
