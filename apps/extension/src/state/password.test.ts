@@ -54,4 +54,29 @@ describe('Password Slice', () => {
     expect(await sessionStorage.get('hashedPassword')).toBeUndefined();
     expect(await localStorage.get('hashedPassword')).toBe(repeatedHash(password));
   });
+
+  test('isCorrectPassword is initially true', () => {
+    expect(useStore.getState().password.isCorrectPassword).toBeTruthy();
+  });
+
+  test('isCorrectPassword is false when incorrect password', async () => {
+    const wrongPassword = 'wrong-password-123';
+    useStore.getState().password.setPassword(password);
+    await useStore.getState().password.isUnlock(wrongPassword);
+    expect(useStore.getState().password.isCorrectPassword).toBeFalsy();
+  });
+
+  test('isCorrectPassword is true when correct password', async () => {
+    useStore.getState().password.setPassword(password);
+    await useStore.getState().password.isUnlock(password);
+    expect(useStore.getState().password.isCorrectPassword).toBeTruthy();
+  });
+
+  test('isCorrectPassword is true after setCorrectPassword', async () => {
+    const wrongPassword = 'wrong-password-123';
+    useStore.getState().password.setPassword(password);
+    await useStore.getState().password.isUnlock(wrongPassword);
+    useStore.getState().password.setCorrectPassword();
+    expect(useStore.getState().password.isCorrectPassword).toBeTruthy();
+  });
 });

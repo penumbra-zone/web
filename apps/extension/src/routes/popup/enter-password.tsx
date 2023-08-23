@@ -8,24 +8,20 @@ import { PopupPath } from './paths';
 
 export const EnterPassword = () => {
   const navigate = usePopupNav();
-  const { isPassword, setPassword } = useStore(passwordSelector);
+  const { isCorrectPassword, isUnlock, setCorrectPassword } = useStore(passwordSelector);
   const [password, setPasswordValue] = useState('');
-  const [matchError, setMatchError] = useState(true);
 
   const handleUnlock = () => {
     void (async function () {
-      if (await isPassword(password)) {
-        setPassword(password);
+      if (await isUnlock(password)) {
         navigate(PopupPath.INDEX);
-      } else {
-        setMatchError(false);
       }
     })();
   };
 
   const handleChangePassword: InputProps['onChange'] = e => {
     setPasswordValue(e.target.value);
-    setMatchError(true);
+    setCorrectPassword();
   };
 
   const gotoRestorePage = () =>
@@ -58,11 +54,16 @@ export const EnterPassword = () => {
                 {
                   type: 'error',
                   error: 'wrong password',
-                  checkFn: (txt: string) => Boolean(txt) && !matchError,
+                  checkFn: (txt: string) => Boolean(txt) && !isCorrectPassword,
                 },
               ]}
             />
-            <Button variant='gradient' disabled={!matchError} onClick={handleUnlock} type='button'>
+            <Button
+              variant='gradient'
+              disabled={!isCorrectPassword}
+              onClick={handleUnlock}
+              type='button'
+            >
               Unlock
             </Button>
           </form>
