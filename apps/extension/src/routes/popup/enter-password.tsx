@@ -9,20 +9,24 @@ import { PopupLayout } from './popup-layout';
 
 export const EnterPassword = () => {
   const navigate = usePopupNav();
-  const { isCorrectPassword, isUnlock, setCorrectPassword } = useStore(passwordSelector);
-  const [password, setPasswordValue] = useState('');
+  const { setPassword, isPassword } = useStore(passwordSelector);
+  const [input, setInputValue] = useState('');
+  const [enteredIncorrect, setEnteredIncorrect] = useState(false);
 
   const handleUnlock = () => {
     void (async function () {
-      if (await isUnlock(password)) {
+      if (await isPassword(input)) {
+        setPassword(input); // saves to session state
         navigate(PopupPath.INDEX);
+      } else {
+        setEnteredIncorrect(true);
       }
     })();
   };
 
   const handleChangePassword: InputProps['onChange'] = e => {
-    setPasswordValue(e.target.value);
-    setCorrectPassword();
+    setInputValue(e.target.value);
+    setEnteredIncorrect(false);
   };
 
   const gotoRestorePage = () =>
@@ -51,20 +55,20 @@ export const EnterPassword = () => {
               className='grid gap-4'
             >
               <PasswordInput
-                passwordValue={password}
+                passwordValue={input}
                 label='Password'
                 onChange={handleChangePassword}
                 validations={[
                   {
                     type: 'error',
                     error: 'wrong password',
-                    checkFn: (txt: string) => Boolean(txt) && !isCorrectPassword,
+                    checkFn: (txt: string) => Boolean(txt) && enteredIncorrect,
                   },
                 ]}
               />
               <Button
                 variant='gradient'
-                disabled={!isCorrectPassword}
+                disabled={!input || enteredIncorrect}
                 onClick={handleUnlock}
                 type='button'
               >
