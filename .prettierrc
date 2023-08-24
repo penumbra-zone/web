@@ -3,5 +3,6 @@
   "jsxSingleQuote": true,
   "printWidth": 100,
   "trailingComma": "all",
-  "arrowParens": "avoid"
+  "arrowParens": "avoid",
+  "plugins": ["prettier-plugin-tailwindcss"]
 }

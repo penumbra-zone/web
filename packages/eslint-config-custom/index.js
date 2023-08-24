@@ -15,7 +15,7 @@ module.exports = {
     '@typescript-eslint/no-confusing-void-expression': ['error', { ignoreArrowShorthand: true }],
     'tailwindcss/classnames-order': 'warn',
     'tailwindcss/no-custom-classname': [
-      'error',
+      'warn',
       {
         whitelist: [
           'bg\\-card-radial',
@@ -35,7 +35,7 @@ module.exports = {
           'bg\\-destructive',
           'text\\-destructive-foreground',
           'bg\\-destructive/90',
-          'text\\-primary'
+          'text\\-primary',
         ],
       },
     ],
