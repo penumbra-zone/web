@@ -28,7 +28,7 @@ export const LoginForm = () => {
     setInputValue(e.target.value);
     setEnteredIncorrect(false);
   };
-  
+
   return (
     <form
       onSubmit={e => {

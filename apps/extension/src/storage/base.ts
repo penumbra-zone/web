@@ -6,7 +6,7 @@ export interface IStorage {
   remove(key: string): Promise<void>;
 }
 
-interface StorageItem<T> {
+export interface StorageItem<T> {
   version: string;
   value: T;
 }
