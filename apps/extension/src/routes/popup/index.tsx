@@ -21,7 +21,7 @@ export const popupIndexLoader = async () => {
   const password = await sessionExtStorage.get('hashedPassword');
 
   if (!password) {
-    return redirect(PopupPath.ENTER_PASSWORD);
+    return redirect(PopupPath.LOGIN);
   }
   return null;
 };
@@ -32,14 +32,14 @@ export const PopupIndex = () => {
 
   const handleLogout = () => {
     clearSessionPassword();
-    navigate(PopupPath.ENTER_PASSWORD);
+    navigate(PopupPath.LOGIN);
   };
 
   return (
     <FadeTransition>
       <div className='grid gap-4 p-6 text-white shadow-sm'>
         <p className='text-center text-2xl font-semibold leading-none tracking-tight'>
-          Successfull login
+          Successfully login
         </p>
         <p className=' text-center text-sm'>A You are all set!</p>
         <p className='text-center text-sm'>
