@@ -42,7 +42,7 @@ export const EnterPassword = () => {
         <p className='text-center text-2xl font-semibold leading-none tracking-tight'>
           Welcome back!
         </p>
-        <p className='text-muted-foreground text-center text-sm'>A decentralized network awaits</p>
+        <p className='text-center text-sm text-muted-foreground'>A decentralized network awaits</p>
         <div className='grid gap-4 p-6 pt-0'>
           <form
             onSubmit={e => {
