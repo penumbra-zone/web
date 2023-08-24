@@ -5,7 +5,7 @@ import React from 'react';
 export const FadeTransition = ({ children }: { children: React.ReactNode }) => {
   return (
     <motion.div
-      className='flex min-h-[100vh] w-[100%] flex-col items-center justify-center '
+      className='flex min-h-[100vh] w-[100%] flex-col items-center justify-center'
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { duration: 0.3, ease: 'easeOut' } }}
       exit={{ opacity: 0 }}

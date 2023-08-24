@@ -13,7 +13,6 @@ module.exports = {
     '@next/next/no-html-link-for-pages': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-confusing-void-expression': ['error', { ignoreArrowShorthand: true }],
-    'tailwindcss/classnames-order': 'off',
     'tailwindcss/no-custom-classname': [
       'warn',
       {
@@ -25,7 +24,6 @@ module.exports = {
         ],
       },
     ],
-    'tailwindcss/no-contradicting-classname': 'error',
   },
   parserOptions: {
     babelOptions: {
