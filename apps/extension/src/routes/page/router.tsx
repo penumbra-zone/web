@@ -10,10 +10,6 @@ export const pageRoutes: RouteObject[] = [
     element: <Outlet />,
     children: [
       {
-        path: PagePath.FORGOT_PASSWORD,
-        element: <ForgotPassword />,
-      },
-      {
         path: PagePath.INDEX,
         element: <PageIndex />,
         loader: pageIndexLoader,
@@ -22,6 +18,10 @@ export const pageRoutes: RouteObject[] = [
         path: PagePath.WELCOME,
         element: <Onboarding />,
         children: onboardingRoutes,
+      },
+      {
+        path: PagePath.FORGOT_PASSWORD,
+        element: <ForgotPassword />,
       },
     ],
   },
