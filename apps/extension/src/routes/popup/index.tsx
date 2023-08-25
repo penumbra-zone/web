@@ -41,7 +41,7 @@ export const PopupIndex = () => {
       <FadeTransition>
         <div className='grid gap-4 p-6 text-white shadow-sm'>
           <p className='text-center text-2xl font-semibold leading-none tracking-tight'>
-            Successfull login
+            Successful login
           </p>
           <p className=' text-center text-sm'>A You are all set!</p>
           <p className='text-center text-sm'>
