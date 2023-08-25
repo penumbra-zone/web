@@ -34,11 +34,6 @@ export const PageIndex = () => {
 
   const { clearSessionPassword } = useStore(passwordSelector);
 
-  const handleLogout = () => {
-    clearSessionPassword();
-    navigate(PagePath.LOGIN);
-  };
-
   return (
     <FadeTransition>
       <div className='absolute inset-0 flex w-screen items-center justify-center'>
@@ -47,7 +42,7 @@ export const PageIndex = () => {
       <Card className='w-[650px] p-6' gradient>
         <CardHeader>
           <CardTitle className='bg-gradient-to-r from-teal-400 via-neutral-300 to-orange-400 bg-clip-text text-6xl text-transparent opacity-80'>
-            Successfully login
+            Successful login
           </CardTitle>
           <CardDescription>
             Use your account to transact, stake, swap or market make. All of it is shielded and
@@ -64,7 +59,13 @@ export const PageIndex = () => {
           >
             Visit testnet web app
           </Button>
-          <Button variant='gradient' onClick={handleLogout}>
+          <Button
+            variant='gradient'
+            onClick={() => {
+              clearSessionPassword();
+              navigate(PagePath.LOGIN);
+            }}
+          >
             Logout
           </Button>
         </CardContent>

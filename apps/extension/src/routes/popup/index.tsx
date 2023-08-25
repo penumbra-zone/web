@@ -29,16 +29,11 @@ export const PopupIndex = () => {
   const navigate = usePopupNav();
   const { clearSessionPassword } = useStore(passwordSelector);
 
-  const handleLogout = () => {
-    clearSessionPassword();
-    navigate(PopupPath.LOGIN);
-  };
-
   return (
     <FadeTransition>
       <div className='grid gap-4 p-6 text-white shadow-sm'>
         <p className='text-center text-2xl font-semibold leading-none tracking-tight'>
-          Successfully login
+          Successful login
         </p>
         <p className=' text-center text-sm'>A You are all set!</p>
         <p className='text-center text-sm'>
@@ -54,7 +49,13 @@ export const PopupIndex = () => {
         >
           Visit testnet web app
         </Button>
-        <Button variant='gradient' onClick={handleLogout}>
+        <Button
+          variant='gradient'
+          onClick={() => {
+            clearSessionPassword();
+            navigate(PopupPath.LOGIN);
+          }}
+        >
           Logout
         </Button>
       </div>
