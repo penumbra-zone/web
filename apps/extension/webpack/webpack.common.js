@@ -68,4 +68,7 @@ module.exports = {
       options: {},
     }),
   ],
+  experiments: {
+    asyncWebAssembly: true,
+  },
 };

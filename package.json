@@ -13,11 +13,11 @@
     "format-check": "prettier --check ."
   },
   "devDependencies": {
-    "@turbo/gen": "^1.10.12",
-    "@typescript-eslint/eslint-plugin": "^6.4.0",
+    "@turbo/gen": "^1.10.13",
+    "@typescript-eslint/eslint-plugin": "^6.4.1",
     "eslint": "^8.47.0",
     "eslint-config-custom": "workspace:*",
     "prettier": "^3.0.2",
-    "turbo": "^1.10.12"
+    "turbo": "^1.10.13"
   }
 }
