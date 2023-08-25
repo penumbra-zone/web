@@ -1,5 +1,5 @@
 {
-  "name": "penumbra-crypto-ts",
+  "name": "penumbra-wasm-ts",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
@@ -7,17 +7,16 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "bip39": "^3.1.0",
-    "crypto-js": "^4.1.1",
     "eslint": "^8.47.0",
     "eslint-config-custom": "workspace:*",
-    "lodash": "^4.17.21",
+    "penumbra-wasm": "0.59.0",
+    "penumbra-wasm-xyz-temp-bundler": "^0.59.0",
+    "penumbra-wasm-xyz-temp-nodejs": "^0.59.0",
     "tsconfig": "workspace:*",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "zod": "^3.22.2"
   },
   "devDependencies": {
-    "@types/crypto-js": "^4.1.1",
-    "@types/lodash": "^4.14.197",
     "vitest": "^0.34.2"
   }
 }
