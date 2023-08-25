@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   BackIcon,
   Button,
@@ -12,21 +12,12 @@ import { FadeTransition, PasswordInput } from '../../../components';
 import { useOnboardingSave } from '../../../hooks/onboarding';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { useStore } from '../../../state';
-import { passwordSelector } from '../../../state/password';
 
 export const SetPassword = () => {
   const navigate = usePageNav();
-  const { hashedPassword } = useStore(passwordSelector);
   const finalOnboardingSave = useOnboardingSave();
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
-  console.log(window.location.hash);
-
-  useEffect(() => {
-    // redirect to main route after login from other tabs or popup, needed to clean up url
-    if (hashedPassword) window.location.replace(chrome.runtime.getURL('page.html'));
-  }, [hashedPassword]);
 
   return (
     <FadeTransition>
@@ -68,7 +59,7 @@ export const SetPassword = () => {
             disabled={password.length < 8 || password !== confirmation}
             onClick={() => {
               finalOnboardingSave(password);
-              navigate(PagePath.INDEX);
+              navigate(PagePath.ONBOARDING_SUCCESS);
             }}
           >
             Next

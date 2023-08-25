@@ -3,13 +3,6 @@ import { FadeTransition, LoginForm } from '../../components';
 import { PagePath } from '../page/paths';
 
 export const Login = () => {
-  const gotoRestorePage = () =>
-    void (async function () {
-      await chrome.tabs.create({
-        url: `${chrome.runtime.getURL('page.html')}#${PagePath.RESTORE_PASSWORD}`,
-      });
-    })();
-
   return (
     <FadeTransition>
       <div className='grid gap-4 p-6 text-white shadow-sm'>
@@ -19,7 +12,17 @@ export const Login = () => {
         <p className='text-center text-sm text-muted-foreground'>A decentralized network awaits</p>
         <div className='grid gap-4 p-6 pt-0'>
           <LoginForm />
-          <Button className='text-white' variant='link' onClick={gotoRestorePage}>
+          <Button
+            className='text-white'
+            variant='link'
+            onClick={() =>
+              void (async function () {
+                await chrome.tabs.create({
+                  url: `${chrome.runtime.getURL('page.html')}#${PagePath.RESTORE_PASSWORD}`,
+                });
+              })()
+            }
+          >
             Forgot Password?
           </Button>
           <p className='text-sm'>

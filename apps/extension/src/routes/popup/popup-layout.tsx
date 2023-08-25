@@ -11,9 +11,9 @@ export const PopupLayout = () => {
 
   useEffect(() => {
     hashedPassword
-      ? // redirect to index after login from tab
+      ? // password is in session, direct to index
         navigate(PopupPath.INDEX)
-      : // redirect to login after logout from tab
+      : // session storage expired, needs to re-login
         navigate(PopupPath.LOGIN);
   }, [hashedPassword]);
 

@@ -1,4 +1,4 @@
-import { createMemoryRouter, RouteObject } from 'react-router-dom';
+import { createHashRouter, RouteObject } from 'react-router-dom';
 import { RestorePassword } from './restore-password';
 import { PageIndex, pageIndexLoader } from './index';
 import { Login } from './login';
@@ -33,4 +33,4 @@ export const pageRoutes: RouteObject[] = [
   },
 ];
 
-export const pageRouter = createMemoryRouter(pageRoutes);
+export const pageRouter = createHashRouter(pageRoutes);
