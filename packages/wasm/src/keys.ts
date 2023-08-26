@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { generate_spend_key } from 'penumbra-wasm-xyz-temp-bundler'; // TODO: Temporary until new npm publishing pipeline setup for each type
+import { generate_spend_key } from '@penumbra-zone/wasm-bundler';
 
 const SpendKeySchema = z.string();
 
