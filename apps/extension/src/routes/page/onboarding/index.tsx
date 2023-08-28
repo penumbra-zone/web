@@ -8,12 +8,12 @@ import { PagePath } from '../paths';
 // We need to manually check storage for accounts in the loader.
 // Will redirect to onboarding if necessary.
 export const onboardingIndexLoader = async () => {
-  const isInitialized = await localExtStorage.get('isInitialized');
+  const accounts = await localExtStorage.get('accounts');
   const password = await sessionExtStorage.get('hashedPassword');
 
-  if (isInitialized && password) return redirect(PagePath.INDEX);
+  if (accounts.length && password) return redirect(PagePath.INDEX);
 
-  if (isInitialized && !password) return redirect(PagePath.LOGIN);
+  if (accounts.length && !password) return redirect(PagePath.LOGIN);
 
   return null;
 };

@@ -9,9 +9,9 @@ import { Button } from 'ui/components';
 // We need to manually check storage for accounts & password in the loader.
 // Will redirect to onboarding or password check if necessary.
 export const popupIndexLoader = async () => {
-  const isInitialized = await localExtStorage.get('isInitialized');
+  const accounts = await localExtStorage.get('accounts');
 
-  if (!isInitialized) {
+  if (!accounts.length) {
     await chrome.tabs.create({ url: chrome.runtime.getURL(`page.html`) });
     window.close();
   }

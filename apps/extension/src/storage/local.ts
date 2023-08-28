@@ -8,13 +8,11 @@ export enum LocalStorageVersion {
 export interface LocalStorageState {
   hashedPassword: string | undefined;
   accounts: Account[];
-  isInitialized: boolean;
 }
 
 export const localDefaults: LocalStorageState = {
   hashedPassword: undefined,
   accounts: [],
-  isInitialized: false,
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.

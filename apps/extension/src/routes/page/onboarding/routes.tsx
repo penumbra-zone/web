@@ -6,7 +6,7 @@ import { ImportSeedPhrase } from './import';
 import { OnboardingSuccess } from './success';
 import { SetPassword } from './set-password';
 import { onboardingIndexLoader } from '.';
-import { pageIndexLoader } from '..'
+import { pageIndexLoader } from '..';
 
 export const onboardingRoutes = [
   {
