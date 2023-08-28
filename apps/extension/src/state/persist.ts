@@ -24,11 +24,13 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
   void (async function () {
     const hashedPassword = await sessionExtStorage.get('hashedPassword');
     const accounts = await localExtStorage.get('accounts');
+    const isInitialized = await localExtStorage.get('isInitialized');
 
     set(
       produce((state: AllSlices) => {
         state.password.hashedPassword = hashedPassword;
         state.accounts.all = accounts;
+        state.accounts.isInitialized = isInitialized;
       }),
     );
 

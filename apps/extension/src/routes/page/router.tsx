@@ -1,15 +1,15 @@
-import { createHashRouter, RouteObject } from 'react-router-dom';
-import { RestorePassword } from './restore-password';
+import { createHashRouter, Outlet, RouteObject } from 'react-router-dom';
 import { PageIndex, pageIndexLoader } from './index';
-import { Login } from './login';
+import { Login, noPasswordIndexLoader } from './login';
 import { Onboarding } from './onboarding';
 import { onboardingRoutes } from './onboarding/routes';
-import { PageLayout } from './page-layout';
 import { PagePath } from './paths';
+import { RestorePasswordIndex } from './restore-password';
+import { restorePasswordRoutes } from './restore-password/routes';
 
 export const pageRoutes: RouteObject[] = [
   {
-    element: <PageLayout />,
+    element: <Outlet />,
     children: [
       {
         path: PagePath.INDEX,
@@ -23,11 +23,14 @@ export const pageRoutes: RouteObject[] = [
       },
       {
         path: PagePath.RESTORE_PASSWORD,
-        element: <RestorePassword />,
+        element: <RestorePasswordIndex />,
+        children: restorePasswordRoutes,
+        loader: noPasswordIndexLoader,
       },
       {
         path: PagePath.LOGIN,
         element: <Login />,
+        loader: noPasswordIndexLoader,
       },
     ],
   },

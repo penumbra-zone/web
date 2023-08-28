@@ -1,6 +1,3 @@
-import { FadeTransition } from '../../../components/fade-transition';
-import { usePageNav } from '../../../utils/navigate';
-import { useStore } from '../../../state';
 import {
   BackIcon,
   Button,
@@ -11,20 +8,22 @@ import {
   CardTitle,
 } from 'ui/components';
 import { cn } from 'ui/lib/utils';
+import { FadeTransition, ImportForm } from '../../../components';
+import { useStore } from '../../../state';
 import { importSelector } from '../../../state/seed-phrase/import';
-import { ImportForm } from '../../../components';
+import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 
-export const ImportSeedPhrase = () => {
+export const RestorePassword = () => {
   const navigate = usePageNav();
   const { phrase, phraseIsValid } = useStore(importSelector);
 
   return (
     <FadeTransition>
-      <BackIcon className='float-left' onClick={() => navigate(-1)} />
+      <BackIcon className='float-left' onClick={() => navigate(PagePath.LOGIN)} />
       <Card className={cn('p-6', phrase.length === 12 ? 'w-[550px]' : 'w-[750px]')} gradient>
         <CardHeader className='items-center'>
-          <CardTitle>Import wallet with recovery phrase</CardTitle>
+          <CardTitle>Reset wallet with recovery phrase</CardTitle>
           <CardDescription>
             Feel free to paste it into the first box and the rest will fill
           </CardDescription>
@@ -35,7 +34,7 @@ export const ImportSeedPhrase = () => {
             className='mt-4'
             variant='gradient'
             disabled={!phrase.every(w => w.length > 0) || !phraseIsValid()}
-            onClick={() => navigate(PagePath.SET_PASSWORD)}
+            onClick={() => navigate(PagePath.RESTORE_PASSWORD_SET_PASSWORD)}
           >
             {!phrase.length || !phrase.every(w => w.length > 0)
               ? 'Fill in passphrase'

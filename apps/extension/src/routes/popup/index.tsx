@@ -2,18 +2,16 @@ import { redirect } from 'react-router-dom';
 import { localExtStorage } from '../../storage/local';
 import { PopupPath } from './paths';
 import { sessionExtStorage } from '../../storage/session';
-import { passwordSelector } from '../../state/password';
 import { FadeTransition } from '../../components';
 import { Button } from 'ui/components';
-import { useStore } from '../../state';
-import { usePopupNav } from '../../utils/navigate';
 
 // Because Zustand initializes default empty (prior to persisted storage synced),
 // We need to manually check storage for accounts & password in the loader.
 // Will redirect to onboarding or password check if necessary.
 export const popupIndexLoader = async () => {
-  const accounts = await localExtStorage.get('accounts');
-  if (!accounts.length) {
+  const isInitialized = await localExtStorage.get('isInitialized');
+
+  if (!isInitialized) {
     await chrome.tabs.create({ url: chrome.runtime.getURL(`page.html`) });
     window.close();
   }
@@ -26,9 +24,6 @@ export const popupIndexLoader = async () => {
 };
 
 export const PopupIndex = () => {
-  const navigate = usePopupNav();
-  const { clearSessionPassword } = useStore(passwordSelector);
-
   return (
     <FadeTransition>
       <div className='grid gap-4 p-6 text-white shadow-sm'>
@@ -48,15 +43,6 @@ export const PopupIndex = () => {
           }}
         >
           Visit testnet web app
-        </Button>
-        <Button
-          variant='gradient'
-          onClick={() => {
-            clearSessionPassword();
-            navigate(PopupPath.LOGIN);
-          }}
-        >
-          Logout
         </Button>
       </div>
     </FadeTransition>

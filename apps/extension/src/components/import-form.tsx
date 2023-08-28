@@ -1,17 +1,14 @@
 import { useEffect } from 'react';
-import { Button, Toggle } from 'ui/components';
-import { usePageNav } from '../utils/navigate';
+import { Toggle } from 'ui/components';
 import { useStore } from '../state';
 import { importSelector } from '../state/seed-phrase/import';
 import { generateSelector } from '../state/seed-phrase/generate';
 import { SeedPhraseLength } from 'penumbra-crypto-ts/src/mnemonic';
 import { ImportInput } from './import-input';
-import { PagePath } from '../routes/page/paths';
 import { cn } from 'ui/lib/utils';
 
 export const ImportForm = () => {
-  const navigate = usePageNav();
-  const { phrase, setLength, phraseIsValid } = useStore(importSelector);
+  const { phrase, setLength } = useStore(importSelector);
   const { cleanup } = useStore(generateSelector);
 
   useEffect(() => {
@@ -44,18 +41,6 @@ export const ImportForm = () => {
           <ImportInput key={i} index={i} />
         ))}
       </div>
-      <Button
-        className='mt-4'
-        variant='gradient'
-        disabled={!phrase.every(w => w.length > 0) || !phraseIsValid()}
-        onClick={() => navigate(PagePath.SET_PASSWORD)}
-      >
-        {!phrase.length || !phrase.every(w => w.length > 0)
-          ? 'Fill in passphrase'
-          : !phraseIsValid()
-          ? 'Phrase is invalid'
-          : 'Import'}
-      </Button>
     </>
   );
 };

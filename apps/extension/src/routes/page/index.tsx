@@ -20,8 +20,8 @@ import { sessionExtStorage } from '../../storage/session';
 // We need to manually check storage for accounts in the loader.
 // Will redirect to onboarding if necessary.
 export const pageIndexLoader = async () => {
-  const accounts = await localExtStorage.get('accounts');
-  if (!accounts.length) return redirect(PagePath.WELCOME);
+  const isInitialized = await localExtStorage.get('isInitialized');
+  if (!isInitialized) return redirect(PagePath.WELCOME);
 
   const password = await sessionExtStorage.get('hashedPassword');
   if (!password) return redirect(PagePath.LOGIN);
