@@ -13,7 +13,9 @@ export const LoginForm = () => {
   const [input, setInputValue] = useState('');
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
 
-  const handleUnlock = () => {
+  const handleUnlock = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     void (async function () {
       if (await isPassword(input)) {
         setPassword(input); // saves to session state
@@ -43,12 +45,7 @@ export const LoginForm = () => {
           },
         ]}
       />
-      <Button
-        variant='gradient'
-        disabled={!input || enteredIncorrect}
-        onClick={handleUnlock}
-        type='button'
-      >
+      <Button variant='gradient' disabled={!input || enteredIncorrect} type='submit'>
         Unlock
       </Button>
     </form>

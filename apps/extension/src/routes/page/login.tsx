@@ -2,19 +2,6 @@ import { Button, Card, CardContent, CompressedVideoLogo } from 'ui/components';
 import { FadeTransition, LoginForm } from '../../components';
 import { usePageNav } from '../../utils/navigate';
 import { PagePath } from './paths';
-import { localExtStorage } from '../../storage/local';
-import { sessionExtStorage } from '../../storage/session';
-import { redirect } from 'react-router-dom';
-
-export const noPasswordIndexLoader = async () => {
-  const accounts = await localExtStorage.get('accounts');
-  if (!accounts.length) return redirect(PagePath.WELCOME);
-
-  const password = await sessionExtStorage.get('hashedPassword');
-  if (password) return redirect(PagePath.INDEX);
-
-  return null;
-};
 
 export const Login = () => {
   const navigate = usePageNav();

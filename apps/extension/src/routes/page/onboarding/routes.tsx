@@ -5,7 +5,6 @@ import { ConfirmBackup } from './confirm-backup';
 import { ImportSeedPhrase } from './import';
 import { OnboardingSuccess } from './success';
 import { SetPassword } from './set-password';
-import { onboardingIndexLoader } from '.';
 import { pageIndexLoader } from '..';
 
 export const onboardingRoutes = [
@@ -16,17 +15,14 @@ export const onboardingRoutes = [
   {
     path: PagePath.GENERATE_SEED_PHRASE,
     element: <GenerateSeedPhrase />,
-    loader: onboardingIndexLoader,
   },
   {
     path: PagePath.CONFIRM_BACKUP,
     element: <ConfirmBackup />,
-    loader: onboardingIndexLoader,
   },
   {
     path: PagePath.IMPORT_SEED_PHRASE,
     element: <ImportSeedPhrase />,
-    loader: onboardingIndexLoader,
   },
   {
     path: PagePath.ONBOARDING_SUCCESS,
@@ -36,6 +32,5 @@ export const onboardingRoutes = [
   {
     path: PagePath.SET_PASSWORD,
     element: <SetPassword />,
-    loader: onboardingIndexLoader,
   },
 ];

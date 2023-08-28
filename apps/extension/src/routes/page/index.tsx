@@ -10,10 +10,7 @@ import {
   CardTitle,
   CompressedVideoLogo,
 } from 'ui/components';
-import { usePageNav } from '../../utils/navigate';
 import { FadeTransition } from '../../components';
-import { useStore } from '../../state';
-import { passwordSelector } from '../../state/password';
 import { sessionExtStorage } from '../../storage/session';
 
 // Because Zustand initializes default empty (prior to persisted storage synced),
@@ -30,10 +27,6 @@ export const pageIndexLoader = async () => {
 };
 
 export const PageIndex = () => {
-  const navigate = usePageNav();
-
-  const { clearSessionPassword } = useStore(passwordSelector);
-
   return (
     <FadeTransition>
       <div className='absolute inset-0 flex w-screen items-center justify-center'>
@@ -58,15 +51,6 @@ export const PageIndex = () => {
             }}
           >
             Visit testnet web app
-          </Button>
-          <Button
-            variant='gradient'
-            onClick={() => {
-              clearSessionPassword();
-              navigate(PagePath.LOGIN);
-            }}
-          >
-            Logout
           </Button>
         </CardContent>
       </Card>
