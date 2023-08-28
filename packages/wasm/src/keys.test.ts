@@ -13,7 +13,7 @@ describe('keys', () => {
   // don't use this seed phrase for personal use
   const seedPhrase =
     'mushroom hole price march grid pepper goat position print gaze dignity music milk surge file casino unveil betray observe ethics image topic sphere clap';
-    
+
   describe('generateSpendKey()', () => {
     it('does not raise zod validation error', () => {
       expect(() => {
