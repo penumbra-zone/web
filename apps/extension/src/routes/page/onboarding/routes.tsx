@@ -12,7 +12,6 @@ export const onboardingRoutes = [
   {
     path: PagePath.WELCOME_INDEX,
     element: <OnboardingStart />,
-    loader: onboardingIndexLoader,
   },
   {
     path: PagePath.GENERATE_SEED_PHRASE,

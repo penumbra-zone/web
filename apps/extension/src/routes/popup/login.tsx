@@ -13,7 +13,7 @@ export const Login = () => {
         <div className='grid gap-4 p-6 pt-0'>
           <LoginForm />
           <Button
-            className='text-white'
+            className='text-muted-foreground'
             variant='link'
             onClick={() =>
               void (async function () {
@@ -25,7 +25,7 @@ export const Login = () => {
           >
             Forgot Password?
           </Button>
-          <p className='text-sm'>
+          <p className='text-sm text-muted-foreground'>
             Need help? Contact{' '}
             <a
               className='cursor-pointer text-sm text-teal-500 hover:underline'

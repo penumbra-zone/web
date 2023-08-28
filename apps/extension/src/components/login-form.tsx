@@ -31,10 +31,7 @@ export const LoginForm = () => {
 
   return (
     <form
-      onSubmit={e => {
-        e.preventDefault();
-        handleUnlock();
-      }}
+      onSubmit={handleUnlock}
       className='grid gap-4'
     >
       <PasswordInput

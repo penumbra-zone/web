@@ -27,15 +27,11 @@ export const Login = () => {
           <LoginForm />
         </CardContent>
       </Card>
-      <div className='mt-12 flex flex-col items-center'>
-        <Button
-          className='text-gray-500'
-          variant='link'
-          onClick={() => navigate(PagePath.RESTORE_PASSWORD)}
-        >
+      <div className='mt-12 flex flex-col items-center text-muted-foreground'>
+        <Button className='text-muted-foreground' variant='link' onClick={() => navigate(PagePath.RESTORE_PASSWORD)}>
           Forgot Password?
         </Button>
-        <p className='text-center text-sm text-gray-500'>
+        <p className='text-center text-sm'>
           Need help? Contact{' '}
           <a
             className='cursor-pointer text-sm text-teal-500 hover:underline'
