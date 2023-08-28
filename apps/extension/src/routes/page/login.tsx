@@ -28,7 +28,11 @@ export const Login = () => {
         </CardContent>
       </Card>
       <div className='mt-12 flex flex-col items-center text-muted-foreground'>
-        <Button className='text-muted-foreground' variant='link' onClick={() => navigate(PagePath.RESTORE_PASSWORD)}>
+        <Button
+          className='text-muted-foreground'
+          variant='link'
+          onClick={() => navigate(PagePath.RESTORE_PASSWORD)}
+        >
           Forgot Password?
         </Button>
         <p className='text-center text-sm'>

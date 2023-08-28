@@ -30,10 +30,7 @@ export const LoginForm = () => {
   };
 
   return (
-    <form
-      onSubmit={handleUnlock}
-      className='grid gap-4'
-    >
+    <form onSubmit={handleUnlock} className='grid gap-4'>
       <PasswordInput
         passwordValue={input}
         label='Password'
