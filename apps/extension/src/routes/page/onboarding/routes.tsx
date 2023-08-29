@@ -5,6 +5,7 @@ import { ConfirmBackup } from './confirm-backup';
 import { ImportSeedPhrase } from './import';
 import { OnboardingSuccess } from './success';
 import { SetPassword } from './set-password';
+import { pageIndexLoader } from '..';
 
 export const onboardingRoutes = [
   {
@@ -26,6 +27,7 @@ export const onboardingRoutes = [
   {
     path: PagePath.ONBOARDING_SUCCESS,
     element: <OnboardingSuccess />,
+    loader: pageIndexLoader,
   },
   {
     path: PagePath.SET_PASSWORD,

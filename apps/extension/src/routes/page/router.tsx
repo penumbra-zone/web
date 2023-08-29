@@ -1,18 +1,16 @@
-import { createMemoryRouter, Outlet, RouteObject } from 'react-router-dom';
+import { createHashRouter, Outlet, RouteObject } from 'react-router-dom';
 import { PageIndex, pageIndexLoader } from './index';
-import { PagePath } from './paths';
+import { Login } from './login';
 import { Onboarding } from './onboarding';
 import { onboardingRoutes } from './onboarding/routes';
-import { ForgotPassword } from './forgot-password';
+import { PagePath } from './paths';
+import { RestorePasswordIndex } from './restore-password';
+import { restorePasswordRoutes } from './restore-password/routes';
 
 export const pageRoutes: RouteObject[] = [
   {
     element: <Outlet />,
     children: [
-      {
-        path: PagePath.FORGOT_PASSWORD,
-        element: <ForgotPassword />,
-      },
       {
         path: PagePath.INDEX,
         element: <PageIndex />,
@@ -23,8 +21,17 @@ export const pageRoutes: RouteObject[] = [
         element: <Onboarding />,
         children: onboardingRoutes,
       },
+      {
+        path: PagePath.RESTORE_PASSWORD,
+        element: <RestorePasswordIndex />,
+        children: restorePasswordRoutes,
+      },
+      {
+        path: PagePath.LOGIN,
+        element: <Login />,
+      },
     ],
   },
 ];
 
-export const pageRouter = createMemoryRouter(pageRoutes);
+export const pageRouter = createHashRouter(pageRoutes);
