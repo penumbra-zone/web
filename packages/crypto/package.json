@@ -16,8 +16,8 @@
     "typescript": "^5.2.2"
   },
   "devDependencies": {
-    "@types/crypto-js": "^4.1.1",
-    "@types/lodash": "^4.14.197",
+    "@types/crypto-js": "^4.1.2",
+    "@types/lodash": "^4.14.198",
     "vitest": "^0.34.3"
   }
 }
