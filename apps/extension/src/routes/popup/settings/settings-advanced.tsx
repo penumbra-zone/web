@@ -1,13 +1,13 @@
 import { FadeTransition } from '../../../components';
 import { BackIcon } from 'ui/components';
-import { usePageNav } from '../../../utils/navigate';
+import { usePopupNav } from '../../../utils/navigate';
 
 export const SettingsAdvanced = () => {
-  const navigate = usePageNav();
+  const navigate = usePopupNav();
   return (
     <FadeTransition className='flex flex-col items-stretch justify-start'>
-      <BackIcon className='absolute bg-red top-6' onClick={() => navigate(-1)} />
-      <h1 className='pt-5 pb-2 border-b text-center'>Advanced</h1>
+      <BackIcon className='absolute top-6 text-foreground' onClick={() => navigate(-1)} />
+      <h1 className='border-b border-[rgba(75,75,75,0.50)] pb-2 pt-5 text-center'>Advanced</h1>
     </FadeTransition>
   );
 };

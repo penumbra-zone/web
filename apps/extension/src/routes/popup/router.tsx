@@ -3,8 +3,8 @@ import { PopupIndex, popupIndexLoader } from './index';
 import { Login } from './login';
 import { PopupPath } from './paths';
 import { PopupLayout } from './popup-layout';
-import { Settings } from './settings'
-import { settingsRoutes } from './settings/routes'
+import { Settings } from './settings';
+import { settingsRoutes } from './settings/routes';
 
 export const popupRoutes: RouteObject[] = [
   {

@@ -7,5 +7,5 @@ export enum PopupPath {
   SETTINGS_CONTACTS = '/settings/contacts',
   SETTINGS_SECURITY = '/settings/security',
   SETTINGS_NETWORKS = '/settings/network',
-  SETTINGS_PERMISSION = '/settings/permission'
+  SETTINGS_PERMISSION = '/settings/permission',
 }

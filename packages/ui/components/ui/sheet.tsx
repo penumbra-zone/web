@@ -72,7 +72,10 @@ const SheetContent = React.forwardRef<
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 
 const SheetHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn('flex flex-col text-center border-b pb-[10px]', className)} {...props} />
+  <div
+    className={cn('flex flex-col justify-center text-center border-b h-9 pb-1', className)}
+    {...props}
+  />
 );
 SheetHeader.displayName = 'SheetHeader';
 

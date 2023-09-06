@@ -1,21 +1,10 @@
 import {
-  GlobeIcon,
   HamburgerMenuIcon,
-  LockClosedIcon,
   MixerHorizontalIcon,
   PersonIcon,
   SizeIcon,
-  TextAlignLeftIcon,
 } from '@radix-ui/react-icons';
-import {
-  Button,
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from 'ui/components';
+import { Button, Sheet, SheetContent, SheetFooter, SheetHeader, SheetTrigger } from 'ui/components';
 import { useStore } from '../state';
 import { passwordSelector } from '../state/password';
 import { usePopupNav } from '../utils/navigate';
@@ -24,29 +13,14 @@ import { PagePath } from '../routes/page/paths';
 
 const links = [
   {
-    title: 'Advanced',
-    icon: <MixerHorizontalIcon className='w-5 h-5 text-foreground' />,
-    href: PopupPath.SETTINGS_ADVANCED,
+    title: 'Settings',
+    icon: <MixerHorizontalIcon className='h-5 w-5 text-foreground' />,
+    href: PopupPath.SETTINGS,
   },
   {
     title: 'Contact Information',
-    icon: <PersonIcon className='w-5 h-5 text-foreground' />,
+    icon: <PersonIcon className='h-5 w-5 text-foreground' />,
     href: PopupPath.SETTINGS_CONTACTS,
-  },
-  {
-    title: 'Security and Privacy',
-    icon: <LockClosedIcon className='w-5 h-5 text-foreground' />,
-    href: PopupPath.SETTINGS_SECURITY,
-  },
-  {
-    title: 'Networks',
-    icon: <GlobeIcon className='w-5 h-5 text-foreground' />,
-    href: PopupPath.SETTINGS_NETWORKS,
-  },
-  {
-    title: 'Permission',
-    icon: <TextAlignLeftIcon className='w-5 h-5 text-foreground' />,
-    href: PopupPath.SETTINGS_PERMISSION,
   },
 ];
 
@@ -59,15 +33,13 @@ export const SettingSheet = () => {
         <HamburgerMenuIcon className='h-6 w-6 hover:opacity-50' />
       </SheetTrigger>
       <SheetContent side='left'>
-        <SheetHeader>
-          <SheetTitle>Settings</SheetTitle>
-        </SheetHeader>
-        <div className='flex-1 flex flex-col items-start gap-4 px-4'>
+        <SheetHeader className=''></SheetHeader>
+        <div className='flex flex-1 flex-col items-start gap-4 px-4'>
           {links.map(i => (
             <Button
               key={i.href}
               variant='ghost'
-              className='flex items-center justify-start gap-2 p-[10px] hover:bg-transparent  hover:opacity-50 w-full text-left'
+              className='flex w-full items-center justify-start gap-2 p-[10px]  text-left hover:bg-transparent hover:opacity-50'
               onClick={() => navigate(i.href)}
             >
               {i.icon}
@@ -76,7 +48,7 @@ export const SettingSheet = () => {
           ))}
           <Button
             variant='ghost'
-            className='flex items-center justify-between p-[10px] hover:bg-transparent  hover:opacity-50 w-full text-left'
+            className='flex w-full items-center justify-between p-[10px]  text-left hover:bg-transparent hover:opacity-50'
             onClick={() =>
               void (async function () {
                 await chrome.tabs.create({
@@ -85,8 +57,8 @@ export const SettingSheet = () => {
               })()
             }
           >
-            <p className='text-foreground'>Expand view</p>
-            <SizeIcon className='w-5 h-5 text-foreground' />
+            <p className='text-foreground'>Expand View</p>
+            <SizeIcon className='h-5 w-5 text-foreground' />
           </Button>
         </div>
         <SheetFooter>
