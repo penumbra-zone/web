@@ -5,7 +5,7 @@ import { LocalStorageState } from '../storage/local';
 
 export interface AccountsSlice {
   all: Account[];
-  addAccount: (account: Account) => void;
+  addAccount: (account: Account) => Promise<void>;
 }
 
 export const createAccountsSlice =
@@ -13,13 +13,13 @@ export const createAccountsSlice =
   set => {
     return {
       all: [],
-      addAccount: newAccount => {
+      addAccount: async newAccount => {
         set(state => {
           state.accounts.all.unshift(newAccount);
         });
-        void local.get('accounts').then(accounts => {
-          void local.set('accounts', [newAccount, ...accounts]);
-        });
+
+        const accounts = await local.get('accounts');
+        await local.set('accounts', [newAccount, ...accounts]);
       },
     };
   };

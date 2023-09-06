@@ -13,11 +13,11 @@ export const useOnboardingSave = () => {
   const { phrase: importedPhrase } = useStore(importSelector);
   const { addAccount } = useStore(accountsSelector);
 
-  return (plaintextPassword: string) => {
+  return async (plaintextPassword: string) => {
     const hashedPassword = setPassword(plaintextPassword);
     // Determine which routes it came through to get here
     const phrase = generatedPhrase.length ? generatedPhrase : importedPhrase;
     const encryptedSeedPhrase = encrypt(phrase.join(' '), hashedPassword);
-    addAccount({ label: 'Account #1', encryptedSeedPhrase });
+    await addAccount({ label: 'Account #1', encryptedSeedPhrase });
   };
 };

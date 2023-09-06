@@ -58,8 +58,10 @@ export const SetPassword = () => {
             variant='gradient'
             disabled={password.length < 8 || password !== confirmation}
             onClick={() => {
-              finalOnboardingSave(password);
-              navigate(PagePath.ONBOARDING_SUCCESS);
+              void (async function () {
+                await finalOnboardingSave(password);
+                navigate(PagePath.ONBOARDING_SUCCESS);
+              })();
             }}
           >
             Next
