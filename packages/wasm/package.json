@@ -7,11 +7,11 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "eslint": "^8.48.0",
-    "eslint-config-custom": "workspace:*",
-    "penumbra-wasm": "0.59.0",
     "@penumbra-zone/wasm-bundler": "^0.59.0",
     "@penumbra-zone/wasm-nodejs": "^0.59.0",
+    "@types/chrome": "^0.0.245",
+    "eslint": "^8.48.0",
+    "eslint-config-custom": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "^5.2.2",
     "zod": "^3.22.2"
