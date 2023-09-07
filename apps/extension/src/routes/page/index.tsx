@@ -18,7 +18,6 @@ import { sessionExtStorage } from '../../storage/session';
 // Will redirect to onboarding if necessary.
 export const pageIndexLoader = async () => {
   const accounts = await localExtStorage.get('accounts');
-  console.log(accounts);
 
   if (!accounts.length) return redirect(PagePath.WELCOME);
 

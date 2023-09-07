@@ -1,11 +1,11 @@
 import { redirect } from 'react-router-dom';
-import { localExtStorage } from '../../storage/local';
-import { PopupPath } from './paths';
-import { sessionExtStorage } from '../../storage/session';
-import { FadeTransition } from '../../components';
-import { accountsSelector } from '../../state/accounts';
-import { useStore } from '../../state';
 import { CopyToClipboard } from 'ui/components';
+import { FadeTransition, SettingsHeader } from '../../components';
+import { useStore } from '../../state';
+import { accountsSelector } from '../../state/accounts';
+import { localExtStorage } from '../../storage/local';
+import { sessionExtStorage } from '../../storage/session';
+import { PopupPath } from './paths';
 
 // Because Zustand initializes default empty (prior to persisted storage synced),
 // We need to manually check storage for accounts & password in the loader.
@@ -28,7 +28,8 @@ export const popupIndexLoader = async () => {
 export const PopupIndex = () => {
   const { all } = useStore(accountsSelector);
   return (
-    <FadeTransition className='flex min-h-[calc(100vh-68px)] flex-col items-stretch justify-start'>
+    <FadeTransition className='flex flex-col items-stretch justify-start'>
+      <SettingsHeader />
       <div className='flex flex-col items-center px-7'>
         <div className='relative -bottom-20 -z-10 flex h-[142px] w-[284px] items-end justify-center rounded-t-[142px] border-[6px]  border-b-0 border-teal bg-transparent'></div>
         <h1 className='pb-4'>{all[0]?.label}</h1>

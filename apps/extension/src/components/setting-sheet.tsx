@@ -26,6 +26,7 @@ const links = [
 
 export const SettingSheet = () => {
   const navigate = usePopupNav();
+
   const { clearSessionPassword } = useStore(passwordSelector);
   return (
     <Sheet>
@@ -33,7 +34,7 @@ export const SettingSheet = () => {
         <HamburgerMenuIcon className='h-6 w-6 hover:opacity-50' />
       </SheetTrigger>
       <SheetContent side='left'>
-        <SheetHeader className=''></SheetHeader>
+        <SheetHeader />
         <div className='flex flex-1 flex-col items-start gap-4 px-4'>
           {links.map(i => (
             <Button

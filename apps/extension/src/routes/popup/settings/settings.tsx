@@ -37,6 +37,7 @@ const links = [
     href: PopupPath.SETTINGS_PERMISSION,
   },
 ];
+
 export const Settings = () => {
   const navigate = usePopupNav();
   return (
