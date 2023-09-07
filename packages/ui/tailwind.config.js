@@ -76,7 +76,6 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'gradient-x': 'gradient-x 1s ease-out',
-        'fake-animation': 'fake 1s cubic-bezier(0.23, 1, 0.32, 1) forwards',
       },
       keyframes: {
         'accordion-down': {
@@ -95,10 +94,6 @@ module.exports = {
           '50%': {
             'background-size': '200% 200%',
             'background-position': 'right center',
-          },
-          fake: {
-            from: { opacity: 1 },
-            to: { opacity: 1 },
           },
         },
       },
