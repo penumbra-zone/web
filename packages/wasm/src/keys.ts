@@ -5,17 +5,16 @@ import {
   get_short_address_by_index,
 } from '@penumbra-zone/wasm-bundler';
 import { z } from 'zod';
-
-const StringSchema = z.string();
+import { validateSchema } from './utils';
 
 export const generateSpendKey = (seedPhrase: string): string =>
-  StringSchema.parse(generate_spend_key(seedPhrase));
+  validateSchema(z.string(), generate_spend_key(seedPhrase));
 
 export const getFullViewingKey = (spendKey: string): string =>
-  StringSchema.parse(get_full_viewing_key(spendKey));
+  validateSchema(z.string(), get_full_viewing_key(spendKey));
 
 export const getAddressByIndex = (fullViewingKey: string, index: number): string =>
-  StringSchema.parse(get_address_by_index(fullViewingKey, index));
+  validateSchema(z.string(), get_address_by_index(fullViewingKey, index));
 
 export const getShortAddressByIndex = (fullViewingKey: string, index: number): string =>
-  StringSchema.parse(get_short_address_by_index(fullViewingKey, index));
+  validateSchema(z.string(), get_short_address_by_index(fullViewingKey, index));
