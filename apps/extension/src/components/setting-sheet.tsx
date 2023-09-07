@@ -33,7 +33,7 @@ export const SettingSheet = () => {
       <SheetTrigger>
         <HamburgerMenuIcon className='h-6 w-6 hover:opacity-50' />
       </SheetTrigger>
-      <SheetContent side='left'>
+      <SheetContent side='left' className='flex flex-col'>
         <SheetHeader />
         <div className='flex flex-1 flex-col items-start gap-4 px-4'>
           {links.map(i => (

@@ -76,6 +76,7 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'gradient-x': 'gradient-x 1s ease-out',
+        'fake-animation': 'fake 1s cubic-bezier(0.23, 1, 0.32, 1) forwards',
       },
       keyframes: {
         'accordion-down': {
@@ -95,8 +96,13 @@ module.exports = {
             'background-size': '200% 200%',
             'background-position': 'right center',
           },
+          fake: {
+            from: { opacity: 1 },
+            to: { opacity: 1 },
+          },
         },
       },
+
       backgroundImage: {
         'card-radial':
           'radial-gradient(33% 50% at 15% 44%, var(--rust), transparent),radial-gradient(33% 40% at 105% 42%, var(--teal), transparent),radial-gradient(33% 80% at 85% 124%, var(--teal), transparent)',
