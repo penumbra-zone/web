@@ -12,6 +12,8 @@
     "framer-motion": "^10.16.4",
     "immer": "^10.0.2",
     "penumbra-crypto-ts": "workspace:*",
+    "penumbra-indexed-db": "workspace:*",
+    "penumbra-query": "workspace:*",
     "penumbra-wasm-ts": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -42,7 +44,7 @@
     "tsconfig": "workspace:*",
     "typescript": "^5.2.2",
     "vite": "^4.4.9",
-    "vitest": "^0.34.3",
+    "vitest": "^0.34.4",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
     "webpack-merge": "^5.9.0"

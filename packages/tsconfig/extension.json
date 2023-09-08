@@ -6,7 +6,6 @@
     "jsx": "react-jsx",
     "lib": ["DOM", "ESNext", "WebWorker"],
     "module": "ESNext",
-    "target": "es6",
     "types": ["chrome", "firefox-webext-browser"]
   }
 }
