@@ -2,7 +2,6 @@ import {
   GlobeIcon,
   LockClosedIcon,
   MixerHorizontalIcon,
-  PersonIcon,
   TextAlignLeftIcon,
 } from '@radix-ui/react-icons';
 import { PopupPath } from '../paths';
@@ -15,11 +14,6 @@ const links = [
     title: 'Advanced',
     icon: <MixerHorizontalIcon className='h-5 w-5 text-foreground' />,
     href: PopupPath.SETTINGS_ADVANCED,
-  },
-  {
-    title: 'Contact Information',
-    icon: <PersonIcon className='h-5 w-5 text-foreground' />,
-    href: PopupPath.SETTINGS_CONTACTS,
   },
   {
     title: 'Security & Privacy',
