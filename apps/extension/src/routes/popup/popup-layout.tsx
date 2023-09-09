@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom';
+
 export const PopupLayout = () => {
   return (
     <div className='relative flex flex-col bg-charcoal'>
