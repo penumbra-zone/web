@@ -5,7 +5,7 @@ import { RouterProvider } from 'react-router-dom';
 
 import 'ui/styles/globals.css';
 
-const startExtension = () => {
+const startPopup = () => {
   const rootElement = document.getElementById('popup-root') as HTMLDivElement;
   createRoot(rootElement).render(
     <StrictMode>
@@ -14,4 +14,4 @@ const startExtension = () => {
   );
 };
 
-startExtension();
+startPopup();

@@ -8,7 +8,7 @@ Different kinds of testing examples:
 
 - Unit tests: [packages/crypto/src/encryption.test.ts](../packages/crypto/src/encryption.test.ts)
 - Zustand store tests: [apps/extension/src/state/password.test.ts](../apps/extension/src/state/password.test.ts)
-- Zod tests to validate types: [packages/wasm/src/keys.test.ts](../packages/wasm/src/keys.test.ts)
+- Zod tests to validate types: [packages/wasm/src/client.test.ts](../packages/wasm/src/keys.test.ts)
 
 ### Vitest
 
