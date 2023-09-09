@@ -8,7 +8,7 @@ import { SettingsSecurity } from './settings-security';
 
 export const settingsRoutes = [
   {
-    path: PopupPath.SETTINGS_INDEX,
+    path: PopupPath.SETTINGS,
     element: <Settings />,
   },
   {
