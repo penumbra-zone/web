@@ -1,5 +1,6 @@
 import { ExtensionStorage } from './base';
-import { Account } from '../types/accounts';
+import { Wallet } from '../types/wallet';
+import { testnetConstants } from 'penumbra-constants';
 
 export enum LocalStorageVersion {
   V1 = 'V1',
@@ -7,12 +8,14 @@ export enum LocalStorageVersion {
 
 export interface LocalStorageState {
   hashedPassword: string | undefined;
-  accounts: Account[];
+  wallets: Wallet[];
+  grpcEndpoint: string;
 }
 
 export const localDefaults: LocalStorageState = {
   hashedPassword: undefined,
-  accounts: [],
+  wallets: [],
+  grpcEndpoint: testnetConstants.grpcEndpoint,
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.

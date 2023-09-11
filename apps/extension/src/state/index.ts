@@ -1,5 +1,5 @@
 import { create, StateCreator } from 'zustand';
-import { AccountsSlice, createAccountsSlice } from './accounts';
+import { createWalletsSlice, WalletsSlice } from './wallets';
 import { immer } from 'zustand/middleware/immer';
 import { customPersist } from './persist';
 import { ExtensionStorage } from '../storage/base';
@@ -7,11 +7,13 @@ import { sessionExtStorage, SessionStorageState } from '../storage/session';
 import { localExtStorage, LocalStorageState } from '../storage/local';
 import { createPasswordSlice, PasswordSlice } from './password';
 import { createSeedPhraseSlice, SeedPhraseSlice } from './seed-phrase';
+import { createNetworkSlice, NetworkSlice } from './network';
 
 export interface AllSlices {
-  accounts: AccountsSlice;
+  wallets: WalletsSlice;
   password: PasswordSlice;
   seedPhrase: SeedPhraseSlice;
+  network: NetworkSlice;
 }
 
 export type SliceCreator<SliceInterface> = StateCreator<
@@ -26,9 +28,10 @@ export const initializeStore = (
   local: ExtensionStorage<LocalStorageState>,
 ) => {
   return immer((setState, getState: () => AllSlices, store) => ({
-    accounts: createAccountsSlice(local)(setState, getState, store),
+    wallets: createWalletsSlice(local)(setState, getState, store),
     password: createPasswordSlice(session, local)(setState, getState, store),
     seedPhrase: createSeedPhraseSlice(setState, getState, store),
+    network: createNetworkSlice(setState, getState, store),
   }));
 };
 

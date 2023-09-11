@@ -16,28 +16,28 @@ describe('Accounts Slice', () => {
   });
 
   test('accounts start off empty', () => {
-    expect(useStore.getState().accounts.all).toStrictEqual([]);
+    expect(useStore.getState().wallets.all).toStrictEqual([]);
   });
 
   test('accounts can be added', async () => {
-    const accountA = { label: 'Account #1', encryptedSeedPhrase: 'xyz' };
-    await useStore.getState().accounts.addAccount(accountA);
-    expect(useStore.getState().accounts.all.length).toBe(1);
-    expect(useStore.getState().accounts.all.at(0)).toBe(accountA);
+    const accountA = { label: 'Account #1', encryptedSeedPhrase: 'xyz', fullViewingKey: '1234' };
+    await useStore.getState().wallets.addWallet(accountA);
+    expect(useStore.getState().wallets.all.length).toBe(1);
+    expect(useStore.getState().wallets.all.at(0)).toBe(accountA);
 
     await flushPromises();
-    const accountsPt1 = await localStorage.get('accounts');
+    const accountsPt1 = await localStorage.get('wallets');
     expect(accountsPt1.length).toBe(1);
     expect(accountsPt1.at(0)).toBe(accountA);
 
-    const accountB = { label: 'Account #2', encryptedSeedPhrase: 'abc' };
-    await useStore.getState().accounts.addAccount(accountB);
-    expect(useStore.getState().accounts.all.length).toBe(2);
-    expect(useStore.getState().accounts.all.at(0)).toBe(accountB);
-    expect(useStore.getState().accounts.all.at(1)).toBe(accountA);
+    const accountB = { label: 'Account #2', encryptedSeedPhrase: 'abc', fullViewingKey: '1234' };
+    await useStore.getState().wallets.addWallet(accountB);
+    expect(useStore.getState().wallets.all.length).toBe(2);
+    expect(useStore.getState().wallets.all.at(0)).toBe(accountB);
+    expect(useStore.getState().wallets.all.at(1)).toBe(accountA);
 
     await flushPromises();
-    const accountsPt2 = await localStorage.get('accounts');
+    const accountsPt2 = await localStorage.get('wallets');
     expect(accountsPt2.length).toBe(2);
     expect(accountsPt2.at(0)).toBe(accountB);
     expect(accountsPt2.at(1)).toBe(accountA);

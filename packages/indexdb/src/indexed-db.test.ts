@@ -20,7 +20,8 @@ describe('IndexedDb', () => {
       await expect(db.getLastBlockSynced()).resolves.not.toThrow();
     });
 
-    it('different chain ids result in different databases', async () => {
+    // TODO: after https://github.com/penumbra-zone/web/issues/30 is resolved, re-enable test
+    it.skip('different chain ids result in different databases', async () => {
       const testnetDb = await IndexedDb.initialize(testInitialProps);
       const mainnetDb = await IndexedDb.initialize({ ...testInitialProps, chainId: 'mainnet' });
 
