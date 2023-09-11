@@ -15,11 +15,11 @@ const buttonVariants = cva(
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
+        link: 'text-muted-foreground underline-offset-4 hover:underline',
       },
       size: {
         default: 'h-9 md:h-11',
-        sm: 'h-9 rounded-md px-3',
+        sm: 'h-[22px]',
         lg: 'h-11 rounded-md px-8',
         icon: 'h-10 w-10',
       },

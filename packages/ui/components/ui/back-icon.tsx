@@ -9,7 +9,7 @@ const BackIcon = React.forwardRef<SVGSVGElement, BackIconProps>(({ className, ..
   return (
     <ArrowLeftIcon
       className={cn(
-        'mb-8 ml-4 h-6 w-6 md:h-8 md:w-8 cursor-pointer text-neutral-600 hover:text-white',
+        'h-6 w-6 cursor-pointer text-muted-foreground hover:text-white',
         className,
       )}
       ref={ref}

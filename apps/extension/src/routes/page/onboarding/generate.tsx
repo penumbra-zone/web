@@ -36,15 +36,15 @@ export const GenerateSeedPhrase = () => {
 
   return (
     <FadeTransition>
-      <BackIcon className='float-left' onClick={() => navigate(-1)} />
-      <Card className={cn('p-6', phrase.length === 12 ? 'w-[550px]' : 'w-[750px]')} gradient>
+      <BackIcon className='float-left mb-4' onClick={() => navigate(-1)} />
+      <Card className={cn('', phrase.length === 12 ? 'w-[550px]' : 'w-[750px]')} gradient>
         <CardHeader className='items-center'>
           <CardTitle>New Recovery Phrase</CardTitle>
         </CardHeader>
-        <CardContent className='grid gap-4'>
+        <CardContent className='grid gap-6 mt-[14px]'>
           <div className={cn('grid gap-4', !reveal && 'blur')}>
             <div className='flex items-center justify-center'>
-              <div className='flex gap-3 rounded-xl bg-black p-2'>
+              <div className='flex gap-3 rounded-lg bg-background p-2'>
                 <Toggle
                   onClick={() => generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS)}
                   pressed={phrase.length === 12}
@@ -59,31 +59,36 @@ export const GenerateSeedPhrase = () => {
                 </Toggle>
               </div>
             </div>
-            <div className={cn('grid gap-4', phrase.length === 12 ? 'grid-cols-3' : 'grid-cols-4')}>
+            <div
+              className={cn(
+                'grid gap-4 mt-2',
+                phrase.length === 12 ? 'grid-cols-3' : 'grid-cols-4',
+              )}
+            >
               {phrase.map((word, i) => (
                 <div className='flex flex-row items-center justify-center gap-2' key={i}>
-                  <div className='w-7 text-right'>{i + 1}.</div>
-                  <Input readOnly value={word} />
+                  <div className='w-7 text-right text-xl_medium text-headline'>{i + 1}.</div>
+                  <Input readOnly value={word} className='text-lg_bold' />
                 </div>
               ))}
             </div>
             <CopyToClipboard text={phrase.join(' ')} />
           </div>
-          <div className='flex flex-col justify-center gap-6'>
-            <div>
-              <p className='flex items-center gap-2 text-amber-500'>
+          <div className='flex flex-col justify-center gap-4'>
+            <div className='flex flex-col gap-1'>
+              <p className='flex items-center gap-2 text-lg_bold text-rust'>
                 <ExclamationTriangleIcon /> Do not share this with anyone
               </p>
-              <p className='text-sm'>
+              <p className='text-lg_bold'>
                 Never share your recovery passphrase with anyone, not even Penumbra employees. Your
                 phrase grants full access to your funds.
               </p>
             </div>
-            <div>
-              <p className='flex items-center gap-2 text-teal'>
+            <div className='flex flex-col gap-1'>
+              <p className='flex items-center gap-2 text-lg_bold text-teal'>
                 <LockClosedIcon /> Back this up safely
               </p>
-              <p className='text-sm'>
+              <p className='text-lg_bold'>
                 Save to a password manager or keep it in a bank vault. Without the backup, you
                 cannot recover your account.
               </p>

@@ -17,7 +17,7 @@
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
 
-    --border: 0, 3%, 15%;
+    --border: 0, 2%, 21%; /* border as light-brown */
     --input: 214.3 31.8% 91.4%;
 
     --primary: 222.2 47.4% 11.2%;
@@ -42,7 +42,7 @@
     --charcoal: #1d1d1d;
     --teal: #629994;
     --sand: #847a5b;
-    --rust: #8d5728;
+    --rust: #8D5728;
   }
 
   #popup-root {

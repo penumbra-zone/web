@@ -19,11 +19,12 @@ const CopyToClipboard = React.forwardRef<HTMLButtonElement, CopyToClipboardProps
       <Button
         className={cn(
           childType === 'text' ? 'm-auto w-48' : 'w-4',
-          copied ? 'cursor-default text-teal-500 hover:no-underline' : 'text-white',
+          copied && 'cursor-default text-teal-500 hover:no-underline',
           className,
         )}
         variant='link'
         ref={ref}
+        size='sm'
         onClick={() => {
           setCopied(true);
           setTimeout(() => {
@@ -34,7 +35,7 @@ const CopyToClipboard = React.forwardRef<HTMLButtonElement, CopyToClipboardProps
         {...props}
       >
         {copied ? (
-          <span className={cn(childType === 'text' && 'flex gap-2')}>
+          <span className={cn(childType === 'text' && 'flex items-center gap-2')}>
             {childType === 'text' && <span>Copied</span>}
             <CheckCircledIcon />
           </span>
