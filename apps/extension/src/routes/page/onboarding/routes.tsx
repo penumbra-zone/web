@@ -9,7 +9,7 @@ import { pageIndexLoader } from '..';
 
 export const onboardingRoutes = [
   {
-    path: PagePath.WELCOME_INDEX,
+    path: PagePath.WELCOME,
     element: <OnboardingStart />,
   },
   {

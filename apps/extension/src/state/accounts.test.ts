@@ -21,7 +21,7 @@ describe('Accounts Slice', () => {
 
   test('accounts can be added', async () => {
     const accountA = { label: 'Account #1', encryptedSeedPhrase: 'xyz' };
-    useStore.getState().accounts.addAccount(accountA);
+    await useStore.getState().accounts.addAccount(accountA);
     expect(useStore.getState().accounts.all.length).toBe(1);
     expect(useStore.getState().accounts.all.at(0)).toBe(accountA);
 
@@ -31,7 +31,7 @@ describe('Accounts Slice', () => {
     expect(accountsPt1.at(0)).toBe(accountA);
 
     const accountB = { label: 'Account #2', encryptedSeedPhrase: 'abc' };
-    useStore.getState().accounts.addAccount(accountB);
+    await useStore.getState().accounts.addAccount(accountB);
     expect(useStore.getState().accounts.all.length).toBe(2);
     expect(useStore.getState().accounts.all.at(0)).toBe(accountB);
     expect(useStore.getState().accounts.all.at(1)).toBe(accountA);

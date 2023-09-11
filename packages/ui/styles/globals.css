@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --background: 0, 0%, 0%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 0, 4%, 73%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -16,7 +16,7 @@
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
 
-    --border: 214.3 31.8% 91.4%;
+    --border: 0, 3%, 15%;
     --input: 214.3 31.8% 91.4%;
 
     --primary: 222.2 47.4% 11.2%;
@@ -34,6 +34,8 @@
     --ring: 215 20.2% 65.1%;
 
     --radius: 0.5rem;
+
+    --text-secondary: 0, 0%, 100%;
 
     /* Penumbra base color palette */
     --charcoal: #1d1d1d;
@@ -53,7 +55,7 @@
   }
 
   body {
-    @apply bg-background text-foreground text-card;
+    @apply bg-background text-card min-h-screen;
   }
 
   body,
@@ -61,7 +63,7 @@
   li,
   a,
   button {
-    @apply font-body text-base leading-6;
+    @apply font-headline text-sm md:text-[15px] md:leading-[22px] font-semibold md:font-medium;
   }
 
   @font-face {
@@ -93,11 +95,11 @@
   }
 
   h1 {
-    @apply font-headline text-4xl leading-10;
+    @apply font-headline text-xl leading-[30px] md:text-4xl;
   }
 
   h2 {
-    @apply font-headline text-3xl leading-8;
+    @apply font-headline text-base md:text-3xl md:leading-8;
   }
 
   h3 {

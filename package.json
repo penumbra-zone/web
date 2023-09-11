@@ -4,7 +4,7 @@
   "packageManager": "pnpm@8.6.11",
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev  --concurrency 11",
     "lint": "turbo run lint -- --max-warnings=0",
     "lint:fix": "turbo run lint -- --fix",
     "test": "turbo run test",
