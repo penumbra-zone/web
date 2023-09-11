@@ -37,7 +37,7 @@ export const GenerateSeedPhrase = () => {
   return (
     <FadeTransition>
       <BackIcon className='float-left mb-4' onClick={() => navigate(-1)} />
-      <Card className={cn('', phrase.length === 12 ? 'w-[550px]' : 'w-[750px]')} gradient>
+      <Card className={cn(phrase.length === 12 ? 'w-[550px]' : 'w-[750px]')} gradient>
         <CardHeader className='items-center'>
           <CardTitle>New Recovery Phrase</CardTitle>
         </CardHeader>

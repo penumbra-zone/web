@@ -21,16 +21,16 @@ export const ConfirmBackup = () => {
 
   return (
     <FadeTransition>
-      <BackIcon className='float-left' onClick={() => navigate(-1)} />
-      <Card className='w-[650px] p-6' gradient>
+      <BackIcon className='float-left mb-4' onClick={() => navigate(-1)} />
+      <Card className='w-[400px]' gradient>
         <CardHeader className='items-center'>
-          <CardTitle>Confirm your recovery passphrase</CardTitle>
+          <CardTitle className='text-center'>Confirm your recovery passphrase</CardTitle>
           <CardDescription className='text-center'>
             Verify you have made a backup by filling in these positions
           </CardDescription>
         </CardHeader>
-        <CardContent className='grid gap-4'>
-          <div className='grid grid-cols-3 gap-4'>
+        <CardContent className='grid gap-6 mt-6'>
+          <div className='flex flex-col gap-4'>
             {validationFields.map(({ word, index }) => (
               <ValidationInput key={index} index={index} word={word} />
             ))}
@@ -54,7 +54,7 @@ const ValidationInput = ({ word, index }: { word: string; index: number }) => {
 
   return (
     <div className='flex flex-row items-center justify-center gap-2'>
-      <div className='w-7 text-right'>{index + 1}.</div>
+      <div className='w-7 text-right xl_medium font-headline'>{index + 1}.</div>
       <Input
         variant={!text.length ? 'default' : text === word ? 'success' : 'error'}
         onChange={({ target: { value } }) => {
