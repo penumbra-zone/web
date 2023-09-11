@@ -15,7 +15,94 @@ module.exports = {
         '2xl': '1400px',
       },
     },
+
     extend: {
+      fontSize: {
+        '5xl': [
+          '30px',
+          {
+            lineHeight: '40px',
+            fontWeight: '600',
+          },
+        ],
+        '4xl': [
+          '24px',
+          {
+            lineHeight: '36px',
+            fontWeight: '700',
+          },
+        ],
+        '3xl': [
+          '20px',
+          {
+            lineHeight: '30px',
+            fontWeight: 'semibold',
+          },
+        ],
+        '2xl': [
+          '18px',
+          {
+            lineHeight: '26px',
+            fontWeight: 'semibold',
+          },
+        ],
+        xl_medium: [
+          '16px',
+          {
+            lineHeight: '24px',
+            fontWeight: '500',
+          },
+        ],
+        xl_semiBold: [
+          '16px',
+          {
+            lineHeight: '24px',
+            fontWeight: '600',
+          },
+        ],
+        lg_bold: [
+          '15px',
+          {
+            lineHeight: '22px',
+            fontWeight: '700',
+          },
+        ],
+        lg_medium: [
+          '15px',
+          {
+            lineHeight: '22px',
+            fontWeight: '500',
+          },
+        ],
+        base_semiBold: [
+          '14px',
+          {
+            lineHeight: '20px',
+            fontWeight: '600',
+          },
+        ],
+        base_bold: [
+          '14px',
+          {
+            lineHeight: '20px',
+            fontWeight: '700',
+          },
+        ],
+        sm: [
+          '12px',
+          {
+            lineHeight: '18px',
+            fontWeight: 'semibold',
+          },
+        ],
+        xs: [
+          '10px',
+          {
+            lineHeight: '16px',
+            fontWeight: 'medium',
+          },
+        ],
+      },
       fontFamily: {
         body: ['Devanagari Sangam Regular', 'sans-serif'],
         headline: ['Faktum SemiBold', 'sans-serif'],
