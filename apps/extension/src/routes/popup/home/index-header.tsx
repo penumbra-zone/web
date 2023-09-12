@@ -1,9 +1,9 @@
 import { HamburgerMenuIcon, PersonIcon } from '@radix-ui/react-icons';
-import { NetworksPopover } from './networks-popover';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
+import { NetworksPopover } from './networks-popover';
 
-export const SettingsHeader = () => {
+export const IndexHeader = () => {
   const navigate = usePopupNav();
   return (
     <header className='top-0 z-40 w-full'>

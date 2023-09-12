@@ -1,12 +1,12 @@
 import { redirect } from 'react-router-dom';
 import { CopyToClipboard, Progress } from 'ui/components';
+import { FadeTransition } from '../../../shared';
+import { useStore } from '../../../state';
+import { accountsSelector } from '../../../state/accounts';
 import { localExtStorage } from '../../../storage/local';
 import { sessionExtStorage } from '../../../storage/session';
 import { PopupPath } from '../paths';
-import { useStore } from '../../../state';
-import { accountsSelector } from '../../../state/accounts';
-import { FadeTransition } from '../../../shared';
-import { SettingsHeader } from './settings-header';
+import { IndexHeader } from './index-header';
 
 // Because Zustand initializes default empty (prior to persisted storage synced),
 // We need to manually check storage for accounts & password in the loader.
@@ -30,7 +30,7 @@ export const PopupIndex = () => {
   const { all } = useStore(accountsSelector);
   return (
     <FadeTransition className='flex flex-col items-stretch justify-start px-7'>
-      <SettingsHeader />
+      <IndexHeader />
       <div className='w-full flex flex-col mb-[108px]'>
         <div className='max-h-[170px] h-[170px] w-[388px] overflow-hidden relative -bottom-[48px] -z-10 right-5'>
           <img src='/penumbra-logo.png' className='object-cover' />

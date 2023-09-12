@@ -6,4 +6,7 @@ export enum PopupPath {
   SETTINGS_SECURITY = '/settings/security',
   SETTINGS_NETWORKS = '/settings/network',
   SETTINGS_PERMISSION = '/settings/permission',
+  SETTINGS_CONNECTED_SITES = '/settings/connected-sites',
+  SETTINGS_AUTO_LOCK = '/settings/auto-lock',
+  SETTINGS_CLEAR_CACHE = '/settings/clear-cache',
 }
