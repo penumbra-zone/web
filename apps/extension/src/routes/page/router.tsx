@@ -1,6 +1,5 @@
 import { createHashRouter, Outlet, RouteObject } from 'react-router-dom';
 import { PageIndex, pageIndexLoader } from './index';
-import { Login } from './login';
 import { Onboarding } from './onboarding';
 import { onboardingRoutes } from './onboarding/routes';
 import { PagePath } from './paths';
@@ -25,10 +24,6 @@ export const pageRoutes: RouteObject[] = [
         path: PagePath.RESTORE_PASSWORD,
         element: <RestorePasswordIndex />,
         children: restorePasswordRoutes,
-      },
-      {
-        path: PagePath.LOGIN,
-        element: <Login />,
       },
     ],
   },

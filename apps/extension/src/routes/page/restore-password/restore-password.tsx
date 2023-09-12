@@ -1,12 +1,4 @@
-import {
-  BackIcon,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from 'ui/components';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/components';
 import { cn } from 'ui/lib/utils';
 import { useStore } from '../../../state';
 import { importSelector } from '../../../state/seed-phrase/import';
@@ -20,15 +12,14 @@ export const RestorePassword = () => {
 
   return (
     <FadeTransition>
-      <BackIcon className='float-left' onClick={() => navigate(PagePath.LOGIN)} />
-      <Card className={cn('p-6', phrase.length === 12 ? 'w-[550px]' : 'w-[750px]')} gradient>
+      <Card className={cn(phrase.length === 12 ? 'w-[550px]' : 'w-[750px]')} gradient>
         <CardHeader className='items-center'>
           <CardTitle>Reset wallet with recovery phrase</CardTitle>
           <CardDescription>
             Feel free to paste it into the first box and the rest will fill
           </CardDescription>
         </CardHeader>
-        <CardContent className='grid gap-4'>
+        <CardContent className='grid gap-6 mt-[14px]'>
           <ImportForm />
           <Button
             className='mt-4'

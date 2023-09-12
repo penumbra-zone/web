@@ -1,20 +1,65 @@
-import { Button } from 'ui/components';
-import { LoginForm } from '../../components';
+import { Button, InputProps } from 'ui/components';
 import { PagePath } from '../page/paths';
-import { FadeTransition } from '../../shared';
+import { FadeTransition, PasswordInput } from '../../shared';
+import { usePopupNav } from '../../utils/navigate';
+import { useStore } from '../../state';
+import { passwordSelector } from '../../state/password';
+import { useState } from 'react';
+import { PopupPath } from './paths';
 
 export const Login = () => {
+  const navigate = usePopupNav();
+
+  const { setPassword, isPassword } = useStore(passwordSelector);
+  const [input, setInputValue] = useState('');
+  const [enteredIncorrect, setEnteredIncorrect] = useState(false);
+
+  const handleUnlock = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    void (async function () {
+      if (await isPassword(input)) {
+        setPassword(input); // saves to session state
+        navigate(PopupPath.INDEX);
+      } else {
+        setEnteredIncorrect(true);
+      }
+    })();
+  };
+
+  const handleChangePassword: InputProps['onChange'] = e => {
+    setInputValue(e.target.value);
+    setEnteredIncorrect(false);
+  };
+
   return (
-    <FadeTransition>
-      <div className='grid gap-4 p-6 text-white shadow-sm'>
-        <p className='text-center text-2xl font-semibold leading-none tracking-tight'>
-          Welcome back!
-        </p>
-        <p className='text-center text-sm text-muted-foreground'>A decentralized network awaits</p>
-        <div className='grid gap-4 p-6 pt-0'>
-          <LoginForm />
+    <FadeTransition className='flex flex-col items-stretch justify-start'>
+      <div className='flex flex-col justify-between p-[30px] pt-10 h-screen '>
+        <img src='/logo.png' alt='logo' className='w-[148px] h-[78px] my-0 mx-auto' />
+        <form onSubmit={handleUnlock} className='grid gap-4'>
+          <PasswordInput
+            passwordValue={input}
+            label={
+              <p className='bg-gradient-to-r from-[rgba(139,228,217,0.70)] via-[rgba(200,184,128,0.70)] to-[rgba(255,144,47,0.60)] bg-clip-text text-transparent'>
+                Enter your password
+              </p>
+            }
+            onChange={handleChangePassword}
+            validations={[
+              {
+                type: 'error',
+                error: 'wrong password',
+                checkFn: (txt: string) => Boolean(txt) && enteredIncorrect,
+              },
+            ]}
+          />
+          <Button variant='gradient' disabled={!input || enteredIncorrect} type='submit'>
+            Unlock
+          </Button>
+        </form>
+        <div className='flex flex-col gap-2'>
           <Button
-            className='text-muted-foreground'
+            className='text-base_bold text-muted-foreground font-body'
             variant='link'
             onClick={() =>
               void (async function () {
@@ -26,10 +71,10 @@ export const Login = () => {
           >
             Forgot Password?
           </Button>
-          <p className='text-sm text-muted-foreground'>
+          <p className='text-base_bold text-muted-foreground text-center'>
             Need help? Contact{' '}
             <a
-              className='cursor-pointer text-sm text-teal-500 hover:underline'
+              className='cursor-pointer text-base_bold text-teal hover:underline'
               target='_blank'
               href='https://discord.com/channels/824484045370818580/1077672871251415141'
             >

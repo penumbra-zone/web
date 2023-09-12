@@ -1,5 +1,5 @@
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
-import { useMemo, useState } from 'react';
+import { ReactElement, useMemo, useState } from 'react';
 import { Input, InputProps } from 'ui/components';
 import { cn } from 'ui/lib/utils';
 
@@ -11,7 +11,7 @@ interface Validation {
 
 interface PasswordInputProps {
   passwordValue: string;
-  label: string;
+  label: string | ReactElement;
   validations: Validation[];
   onChange: InputProps['onChange'];
 }
