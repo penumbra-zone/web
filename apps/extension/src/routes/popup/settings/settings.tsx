@@ -5,9 +5,9 @@ import {
   TextAlignLeftIcon,
 } from '@radix-ui/react-icons';
 import { PopupPath } from '../paths';
-import { FadeTransition } from '../../../components';
 import { BackIcon, Button } from 'ui/components';
 import { usePopupNav } from '../../../utils/navigate';
+import { FadeTransition } from '../../../shared';
 
 const links = [
   {

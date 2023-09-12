@@ -1,6 +1,6 @@
-import { FadeTransition } from '../../../components';
 import { BackIcon } from 'ui/components';
 import { usePopupNav } from '../../../utils/navigate';
+import { FadeTransition } from '../../../shared';
 
 export const SettingsAdvanced = () => {
   const navigate = usePopupNav();

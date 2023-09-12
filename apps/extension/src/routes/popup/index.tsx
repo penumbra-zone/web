@@ -1,11 +1,12 @@
 import { redirect } from 'react-router-dom';
 import { CopyToClipboard } from 'ui/components';
-import { FadeTransition, SettingsHeader } from '../../components';
+import { SettingsHeader } from '../../components';
 import { useStore } from '../../state';
 import { accountsSelector } from '../../state/accounts';
 import { localExtStorage } from '../../storage/local';
 import { sessionExtStorage } from '../../storage/session';
 import { PopupPath } from './paths';
+import { FadeTransition } from '../../shared';
 
 // Because Zustand initializes default empty (prior to persisted storage synced),
 // We need to manually check storage for accounts & password in the loader.

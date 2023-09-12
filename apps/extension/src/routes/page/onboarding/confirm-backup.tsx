@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   BackIcon,
   Button,
@@ -8,12 +9,11 @@ import {
   CardTitle,
   Input,
 } from 'ui/components';
-import { FadeTransition } from '../../../components/fade-transition';
+import { useStore } from '../../../state';
+import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { useStore } from '../../../state';
-import { useState } from 'react';
-import { generateSelector } from '../../../state/seed-phrase/generate';
+import { FadeTransition } from '../../../shared'
 
 export const ConfirmBackup = () => {
   const navigate = usePageNav();

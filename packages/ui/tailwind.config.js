@@ -105,7 +105,7 @@ module.exports = {
       },
       fontFamily: {
         body: ['Devanagari Sangam Regular', 'sans-serif'],
-        headline: ['Faktum SemiBold', 'sans-serif'],
+        headline: ['Faktum', 'sans-serif'],
       },
       colors: {
         border: 'hsl(var(--border))',

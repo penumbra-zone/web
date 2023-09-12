@@ -8,11 +8,11 @@ import {
   CardTitle,
 } from 'ui/components';
 import { cn } from 'ui/lib/utils';
-import { FadeTransition, ImportForm } from '../../../components';
 import { useStore } from '../../../state';
 import { importSelector } from '../../../state/seed-phrase/import';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
+import { FadeTransition, ImportForm } from '../../../shared';
 
 export const RestorePassword = () => {
   const navigate = usePageNav();

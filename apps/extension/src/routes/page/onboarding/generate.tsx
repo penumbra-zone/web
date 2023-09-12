@@ -1,3 +1,6 @@
+import { ExclamationTriangleIcon, LockClosedIcon } from '@radix-ui/react-icons';
+import { SeedPhraseLength } from 'penumbra-crypto-ts/src/mnemonic';
+import { useEffect, useState } from 'react';
 import {
   BackIcon,
   Button,
@@ -7,18 +10,14 @@ import {
   CardTitle,
   CopyToClipboard,
   Input,
-  Toggle,
 } from 'ui/components';
-import { FadeTransition } from '../../../components/fade-transition';
-import { useStore } from '../../../state';
-import { useEffect, useState } from 'react';
-import { SeedPhraseLength } from 'penumbra-crypto-ts/src/mnemonic';
-import { usePageNav } from '../../../utils/navigate';
-import { ExclamationTriangleIcon, LockClosedIcon } from '@radix-ui/react-icons';
-import { useCountdown } from 'usehooks-ts';
-import { PagePath } from '../paths';
-import { generateSelector } from '../../../state/seed-phrase/generate';
 import { cn } from 'ui/lib/utils';
+import { useCountdown } from 'usehooks-ts';
+import { useStore } from '../../../state';
+import { generateSelector } from '../../../state/seed-phrase/generate';
+import { usePageNav } from '../../../utils/navigate';
+import { PagePath } from '../paths';
+import { FadeTransition, WordLengthToogles } from '../../../shared';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();
@@ -43,22 +42,7 @@ export const GenerateSeedPhrase = () => {
         </CardHeader>
         <CardContent className='grid gap-6 mt-[14px]'>
           <div className={cn('grid gap-4', !reveal && 'blur')}>
-            <div className='flex items-center justify-center'>
-              <div className='flex gap-3 rounded-lg bg-background p-2'>
-                <Toggle
-                  onClick={() => generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS)}
-                  pressed={phrase.length === 12}
-                >
-                  12 words
-                </Toggle>
-                <Toggle
-                  onClick={() => generateRandomSeedPhrase(SeedPhraseLength.TWENTY_FOUR_WORDS)}
-                  pressed={phrase.length === 24}
-                >
-                  24 words
-                </Toggle>
-              </div>
-            </div>
+            <WordLengthToogles toogleClick={generateRandomSeedPhrase} phrase={phrase} />
             <div
               className={cn(
                 'grid gap-4 mt-2',
@@ -67,7 +51,9 @@ export const GenerateSeedPhrase = () => {
             >
               {phrase.map((word, i) => (
                 <div className='flex flex-row items-center justify-center gap-2' key={i}>
-                  <div className='w-7 text-right text-xl_medium text-headline'>{i + 1}.</div>
+                  <div className='w-7 text-right text-xl_medium text-headline text-lg_medium'>
+                    {i + 1}.
+                  </div>
                   <Input readOnly value={word} className='text-lg_bold' />
                 </div>
               ))}

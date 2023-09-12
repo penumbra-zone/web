@@ -1,7 +1,8 @@
 import { Button, Card, CardContent, CompressedVideoLogo } from 'ui/components';
-import { FadeTransition, LoginForm } from '../../components';
+import { LoginForm } from '../../components';
 import { usePageNav } from '../../utils/navigate';
 import { PagePath } from './paths';
+import { FadeTransition } from '../../shared';
 
 export const Login = () => {
   const navigate = usePageNav();

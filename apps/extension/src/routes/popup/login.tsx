@@ -1,6 +1,7 @@
 import { Button } from 'ui/components';
-import { FadeTransition, LoginForm } from '../../components';
+import { LoginForm } from '../../components';
 import { PagePath } from '../page/paths';
+import { FadeTransition } from '../../shared';
 
 export const Login = () => {
   return (

@@ -7,9 +7,9 @@ import {
   CardTitle,
   CompressedVideoLogo,
 } from 'ui/components';
-import { PagePath } from '../paths';
-import { FadeTransition } from '../../../components/fade-transition';
 import { usePageNav } from '../../../utils/navigate';
+import { PagePath } from '../paths';
+import { FadeTransition } from '../../../shared';
 
 export const OnboardingStart = () => {
   const navigate = usePageNav();
