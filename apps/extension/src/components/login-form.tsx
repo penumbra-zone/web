@@ -1,10 +1,10 @@
+import { useState } from 'react';
 import { Button, InputProps } from 'ui/components';
-import { PasswordInput } from './password-input';
+import { PagePath } from '../routes/page/paths';
 import { useStore } from '../state';
 import { passwordSelector } from '../state/password';
-import { useState } from 'react';
 import { usePageNav } from '../utils/navigate';
-import { PagePath } from '../routes/page/paths';
+import { PasswordInput } from '../shared'
 
 export const LoginForm = () => {
   const navigate = usePageNav();

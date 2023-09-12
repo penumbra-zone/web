@@ -8,11 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from 'ui/components';
-import { PasswordInput } from '../../../components';
 import { useOnboardingSave } from '../../../hooks/onboarding';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { FadeTransition } from '../../../shared';
+import { PasswordInput } from '../../../shared';
 
 export const SetPassword = () => {
   const navigate = usePageNav();
