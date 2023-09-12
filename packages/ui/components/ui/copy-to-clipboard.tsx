@@ -43,7 +43,7 @@ const CopyToClipboard = React.forwardRef<HTMLButtonElement, CopyToClipboardProps
           'Copy to clipboard'
         ) : (
           <div>
-            <CopyIcon className='h-4 w-4 text-foreground hover:opacity-50' />
+            <CopyIcon className='h-4 w-4 text-muted-foreground hover:opacity-50' />
           </div>
         )}
       </Button>

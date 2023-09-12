@@ -1,8 +1,8 @@
 import { PersonIcon } from '@radix-ui/react-icons';
 import { Button, Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from 'ui/components';
-import { useStore } from '../state';
-import { accountsSelector } from '../state/accounts';
-import { AccountActionPopover } from './account-action-popover';
+import { AccountActionPopover } from '../../../components/account-action-popover';
+import { useStore } from '../../../state';
+import { accountsSelector } from '../../../state/accounts';
 
 export const AccountsSheet = () => {
   const { all } = useStore(accountsSelector);

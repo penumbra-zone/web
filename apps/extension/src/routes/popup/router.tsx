@@ -1,10 +1,10 @@
 import { createMemoryRouter, RouteObject } from 'react-router-dom';
-import { PopupIndex, popupIndexLoader } from './index';
 import { Login } from './login';
 import { PopupPath } from './paths';
 import { PopupLayout } from './popup-layout';
 import { Settings } from './settings';
 import { settingsRoutes } from './settings/routes';
+import { PopupIndex, popupIndexLoader } from './home';
 
 export const popupRoutes: RouteObject[] = [
   {

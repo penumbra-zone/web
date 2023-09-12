@@ -1,9 +1,9 @@
 import { HamburgerMenuIcon, MixerHorizontalIcon } from '@radix-ui/react-icons';
 import { Button, Sheet, SheetContent, SheetFooter, SheetHeader, SheetTrigger } from 'ui/components';
-import { useStore } from '../state';
-import { passwordSelector } from '../state/password';
-import { usePopupNav } from '../utils/navigate';
-import { PopupPath } from '../routes/popup/paths';
+import { useStore } from '../../../state';
+import { passwordSelector } from '../../../state/password';
+import { usePopupNav } from '../../../utils/navigate';
+import { PopupPath } from '../paths';
 
 const links = [
   {
