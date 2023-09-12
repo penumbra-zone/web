@@ -2,7 +2,7 @@ import { redirect } from 'react-router-dom';
 import { CopyToClipboard } from 'ui/components';
 import { FadeTransition, SettingsHeader } from '../../components';
 import { useStore } from '../../state';
-import { accountsSelector } from '../../state/accounts';
+import { walletsSelector } from '../../state/wallets';
 import { localExtStorage } from '../../storage/local';
 import { sessionExtStorage } from '../../storage/session';
 import { PopupPath } from './paths';
@@ -11,9 +11,9 @@ import { PopupPath } from './paths';
 // We need to manually check storage for accounts & password in the loader.
 // Will redirect to onboarding or password check if necessary.
 export const popupIndexLoader = async () => {
-  const accounts = await localExtStorage.get('accounts');
+  const wallets = await localExtStorage.get('wallets');
 
-  if (!accounts.length) {
+  if (!wallets.length) {
     await chrome.tabs.create({ url: chrome.runtime.getURL(`page.html`) });
     window.close();
   }
@@ -26,7 +26,7 @@ export const popupIndexLoader = async () => {
 };
 
 export const PopupIndex = () => {
-  const { all } = useStore(accountsSelector);
+  const { all } = useStore(walletsSelector);
   return (
     <FadeTransition className='flex flex-col items-stretch justify-start'>
       <SettingsHeader />

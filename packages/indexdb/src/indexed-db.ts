@@ -5,16 +5,16 @@ import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
-  // Concatenated fields to generate unique db key
   chainId: string;
-  accountAddr: string;
 }
 
 export class IndexedDb implements IndexedDbInterface {
   private constructor(private readonly db: IDBPDatabase<PenumbraDb>) {}
 
-  static async initialize({ chainId, dbVersion, accountAddr }: IndexedDbProps): Promise<IndexedDb> {
-    const dbKey = `${chainId}-${accountAddr}`;
+  static async initialize({ dbVersion }: IndexedDbProps): Promise<IndexedDb> {
+    // TODO: https://github.com/penumbra-zone/web/issues/30
+    const dbKey = 'penumbra';
+
     const db = await openDB<PenumbraDb>(dbKey, dbVersion, {
       upgrade(db: IDBPDatabase<PenumbraDb>) {
         db.createObjectStore('last_block_synced');
@@ -26,6 +26,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('nct_forgotten');
         db.createObjectStore('nct_commitments', { autoIncrement: true, keyPath: 'id' });
         db.createObjectStore('nct_hashes', { autoIncrement: true, keyPath: 'id' });
+        db.createObjectStore('spendable_notes');
       },
     });
     return new this(db);

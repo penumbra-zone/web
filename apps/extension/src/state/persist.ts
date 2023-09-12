@@ -1,7 +1,7 @@
 import { StateCreator, StoreMutatorIdentifier } from 'zustand';
 import { AllSlices } from './index';
-import { SessionStorageState, sessionExtStorage } from '../storage/session';
-import { LocalStorageState, localExtStorage } from '../storage/local';
+import { sessionExtStorage, SessionStorageState } from '../storage/session';
+import { localExtStorage, LocalStorageState } from '../storage/local';
 import { produce } from 'immer';
 import { StorageItem } from '../storage/base';
 
@@ -22,19 +22,22 @@ type Setter = (
 
 export const customPersistImpl: Persist = f => (set, get, store) => {
   void (async function () {
+    // Part 1: Get storage values and sync them to store
     const hashedPassword = await sessionExtStorage.get('hashedPassword');
-    const accounts = await localExtStorage.get('accounts');
+    const wallets = await localExtStorage.get('wallets');
+    const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 
     set(
       produce((state: AllSlices) => {
         state.password.hashedPassword = hashedPassword;
-        state.accounts.all = accounts;
+        state.wallets.all = wallets;
+        state.network.grpcEndpoint = grpcEndpoint;
       }),
     );
 
+    // Part 2: when chrome.storage changes sync select fields to store
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === 'local') syncLocal(changes, set);
-
       if (area === 'session') syncSession(changes, set);
     });
   })();
@@ -45,11 +48,11 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
 function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: Setter) {
   if (changes['accounts']) {
     const item = changes['accounts'].newValue as
-      | StorageItem<LocalStorageState['accounts']>
+      | StorageItem<LocalStorageState['wallets']>
       | undefined;
     set(
       produce((state: AllSlices) => {
-        state.accounts.all = item ? item.value : [];
+        state.wallets.all = item ? item.value : [];
       }),
     );
   }
