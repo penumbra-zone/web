@@ -28,7 +28,7 @@ export const ImportSeedPhrase = () => {
             Feel free to paste it into the first box and the rest will fill
           </CardDescription>
         </CardHeader>
-        <CardContent className='grid gap-6 mt-[14px]'>
+        <CardContent className='mt-[14px] grid gap-6'>
           <ImportForm />
           <Button
             className='mt-4'

@@ -9,4 +9,7 @@ export enum PopupPath {
   SETTINGS_CONNECTED_SITES = '/settings/connected-sites',
   SETTINGS_AUTO_LOCK = '/settings/auto-lock',
   SETTINGS_CLEAR_CACHE = '/settings/clear-cache',
+  SETTINGS_RECOVERY_PASSPHRASE = '/settings/recovery-passphrase',
+  SETTINGS_FVK = '/settings/fvk',
+  SETTINGS_SK = '/settings/sk',
 }

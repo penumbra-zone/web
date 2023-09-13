@@ -11,7 +11,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     return gradient ? (
       <div ref={ref} className={cn(baseClasses, 'relative', className)} {...props}>
         <div className='relative z-10 flex flex-col'>{children}</div>
-        <div className='absolute inset-0 z-0 rounded-2xl bg-card-radial opacity-20 px-5 py-[30px] ' />
+        <div className='absolute inset-0 z-0 rounded-2xl bg-card-radial px-5 py-[30px] opacity-20 ' />
       </div>
     ) : (
       <div ref={ref} className={cn(baseClasses, className)} {...props}>

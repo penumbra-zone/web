@@ -13,7 +13,7 @@ import { useStore } from '../../../state';
 import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { FadeTransition } from '../../../shared'
+import { FadeTransition } from '../../../shared';
 
 export const ConfirmBackup = () => {
   const navigate = usePageNav();
@@ -29,7 +29,7 @@ export const ConfirmBackup = () => {
             Verify you have made a backup by filling in these positions
           </CardDescription>
         </CardHeader>
-        <CardContent className='grid gap-6 mt-6'>
+        <CardContent className='mt-6 grid gap-6'>
           <div className='flex flex-col gap-4'>
             {validationFields.map(({ word, index }) => (
               <ValidationInput key={index} index={index} word={word} />
@@ -54,7 +54,7 @@ const ValidationInput = ({ word, index }: { word: string; index: number }) => {
 
   return (
     <div className='flex flex-row items-center justify-center gap-2'>
-      <div className='w-7 text-right xl_medium font-headline'>{index + 1}.</div>
+      <div className='w-7 text-right font-headline text-xl_medium'>{index + 1}.</div>
       <Input
         variant={!text.length ? 'default' : text === word ? 'success' : 'error'}
         onChange={({ target: { value } }) => {

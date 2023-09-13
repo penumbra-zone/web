@@ -40,14 +40,34 @@
     /* Penumbra base color palette */
     --charcoal: #1d1d1d;
     --teal: #629994;
-    --sand: #847A5B;
-    --rust: #8d5728;
+    --sand: #847a5b;
+    --rust: #847a5b;
   }
 
   #popup-root {
     width: 400px;
     height: 600px;
+    /* overflow-y: auto; */
     @apply bg-charcoal;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.25);
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
   }
 
   * {

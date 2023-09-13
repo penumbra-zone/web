@@ -5,8 +5,8 @@ export const NetworksPopover = () => {
   return (
     <Popover open={false}>
       <PopoverTrigger>
-        <div className='flex items-center justify-between gap-4 py-2 px-3 rounded-lg border border-border bg-background'>
-          <p className='text-base_semiBold text-muted-foreground font-headline'>penumbra-testnet</p>
+        <div className='flex items-center justify-between gap-4 rounded-lg border border-border bg-background px-3 py-2'>
+          <p className='font-headline text-base_semiBold text-muted-foreground'>penumbra-testnet</p>
           <CaretDownIcon className='h-5 w-5 hover:opacity-50' />
         </div>
       </PopoverTrigger>

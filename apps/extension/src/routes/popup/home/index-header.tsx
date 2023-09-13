@@ -7,13 +7,13 @@ export const IndexHeader = () => {
   const navigate = usePopupNav();
   return (
     <header className='top-0 z-40 w-full'>
-      <div className='flex pt-4 items-center justify-between'>
+      <div className='flex items-center justify-between pt-4'>
         <HamburgerMenuIcon
           onClick={() => navigate(PopupPath.SETTINGS)}
-          className='h-6 w-6 hover:opacity-50 cursor-pointer'
+          className='h-6 w-6 cursor-pointer hover:opacity-50'
         />
         <NetworksPopover />
-        <PersonIcon className='h-6 w-6 rounded-full border border-white hover:opacity-50 cursor-pointer' />
+        <PersonIcon className='h-6 w-6 cursor-pointer rounded-full border border-white hover:opacity-50' />
       </div>
     </header>
   );

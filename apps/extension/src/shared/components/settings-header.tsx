@@ -6,10 +6,10 @@ export const SettingsHeader = ({ title }: { title: string }) => {
   return (
     <>
       <BackIcon
-        className='absolute h-6 w-6 text-muted-foreground ml-[30px] mt-6'
+        className='absolute ml-[30px] mt-6 h-6 w-6 text-muted-foreground'
         onClick={() => navigate(-1)}
       />
-      <h1 className='border-b h-[60px] border-[rgba(75,75,75,0.50)] pb-2 pt-5 text-center text-3xl font-headline'>
+      <h1 className='h-[60px] border-b border-[rgba(75,75,75,0.50)] pb-2 pt-5 text-center font-headline text-3xl'>
         {title}
       </h1>
     </>

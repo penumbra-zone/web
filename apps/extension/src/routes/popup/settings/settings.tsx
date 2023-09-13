@@ -43,10 +43,10 @@ const links = [
 export const Settings = () => {
   const navigate = usePopupNav();
   const { clearSessionPassword } = useStore(passwordSelector);
-  
+
   return (
     <FadeTransition>
-      <div className='min-h-[100vh] w-[100vw] flex flex-col justify-between gap-6'>
+      <div className='flex min-h-[100vh] w-[100vw] flex-col justify-between gap-6'>
         <SettingsHeader title='Settings' />
         <div className='flex flex-1 flex-col items-start gap-4 px-4'>
           {links.map(i => (
@@ -58,7 +58,7 @@ export const Settings = () => {
             />
           ))}
         </div>
-        <div className='border-t h-[66px] border-[rgba(75,75,75,0.50)] pt-2 pb-[30px] px-5'>
+        <div className='h-[66px] border-t border-[rgba(75,75,75,0.50)] px-5 pb-[30px] pt-2'>
           <CustomLink
             title='Lock Wallet'
             icon={<ExitIcon className='h-5 w-5 text-muted-foreground' />}

@@ -35,7 +35,7 @@ const ImportInput = ({ index }: { index: number }) => {
 
   return (
     <div className='flex flex-row items-center justify-center gap-2'>
-      <div className='w-7 text-right xl_medium font-headline'>{index + 1}.</div>
+      <div className='w-7 text-right font-headline text-xl_medium'>{index + 1}.</div>
       <Input
         variant={
           !phrase[index]?.length ? 'default' : wordIsValid(phrase[index]!) ? 'success' : 'error'

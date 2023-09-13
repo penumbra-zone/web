@@ -40,7 +40,7 @@ export const GenerateSeedPhrase = () => {
         <CardHeader className='items-center'>
           <CardTitle>New Recovery Phrase</CardTitle>
         </CardHeader>
-        <CardContent className='grid gap-6 mt-[14px]'>
+        <CardContent className='mt-[14px] grid gap-6'>
           <div className={cn('grid gap-4', !reveal && 'blur')}>
             <WordLengthToogles toogleClick={generateRandomSeedPhrase} phrase={phrase} />
             <div
@@ -51,14 +51,21 @@ export const GenerateSeedPhrase = () => {
             >
               {phrase.map((word, i) => (
                 <div className='flex flex-row items-center justify-center gap-2' key={i}>
-                  <div className='w-7 text-right text-xl_medium text-headline text-lg_medium'>
-                    {i + 1}.
-                  </div>
+                  <div className='w-7 text-right font-headline text-lg_medium'>{i + 1}.</div>
                   <Input readOnly value={word} className='text-lg_bold' />
                 </div>
               ))}
             </div>
-            <CopyToClipboard text={phrase.join(' ')} />
+            <CopyToClipboard
+              text={phrase.join(' ')}
+              label={
+                <p className='font-headline text-lg_medium text-muted-foreground'>
+                  Copy to clipboard
+                </p>
+              }
+              className='m-auto w-48'
+              isSuccessCopyText
+            />
           </div>
           <div className='flex flex-col justify-center gap-4'>
             <div className='flex flex-col gap-1'>

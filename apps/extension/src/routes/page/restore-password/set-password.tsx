@@ -22,7 +22,7 @@ export const SetPassword = () => {
 
   return (
     <FadeTransition>
-       <BackIcon className='float-left mb-4' onClick={() => navigate(-1)} />
+      <BackIcon className='float-left mb-4' onClick={() => navigate(-1)} />
       <Card className='w-[400px]' gradient>
         <CardHeader className='items-center'>
           <CardTitle>Create a password</CardTitle>
@@ -30,7 +30,7 @@ export const SetPassword = () => {
             We will use this password to encrypt your data and you'll need it to unlock your wallet.
           </CardDescription>
         </CardHeader>
-        <CardContent className='grid gap-4 mt-10'>
+        <CardContent className='mt-10 grid gap-4'>
           <PasswordInput
             passwordValue={password}
             label='New password'

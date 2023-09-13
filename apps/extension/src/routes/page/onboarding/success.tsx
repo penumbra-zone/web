@@ -16,13 +16,13 @@ export const OnboardingSuccess = () => {
       </div>
       <Card className='w-[400px]' gradient>
         <CardHeader>
-          <CardTitle className='bg-gradient-to-r from-teal-700 via-rust-700 to-orange-400 bg-clip-text text-4xl text-transparent opacity-80 text-center'>
+          <CardTitle className='bg-gradient-to-r from-teal-700 via-[rgba(200,184,128,0.70)] to-orange-400 bg-clip-text text-center text-4xl text-transparent opacity-80'>
             Account created
           </CardTitle>
         </CardHeader>
-        <CardContent className='grid mt-2 gap-1 lg_bold'>
+        <CardContent className='mt-2 grid gap-1 text-lg_bold'>
           <p className='text-center'>You are all set!</p>
-          <p className='text-muted-foreground text-center'>
+          <p className='text-center text-muted-foreground'>
             Use your account to transact, stake, swap or market make. All of it is shielded and
             private.
           </p>

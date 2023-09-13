@@ -3,7 +3,7 @@ declare module '*.mp4' {
   export default src;
 }
 
-declare module "*.png" {
+declare module '*.png' {
   const content: string;
   export default content;
 }

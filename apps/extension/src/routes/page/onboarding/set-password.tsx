@@ -30,7 +30,7 @@ export const SetPassword = () => {
             We will use this password to encrypt your data and you'll need it to unlock your wallet.
           </CardDescription>
         </CardHeader>
-        <CardContent className='grid gap-4 mt-10'>
+        <CardContent className='mt-10 grid gap-4'>
           <PasswordInput
             passwordValue={password}
             label='New password'

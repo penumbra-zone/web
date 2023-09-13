@@ -25,7 +25,7 @@ export const OnboardingStart = () => {
             information to the world.
           </CardDescription>
         </CardHeader>
-        <CardContent className='grid gap-4 mt-6'>
+        <CardContent className='mt-6 grid gap-4'>
           <Button
             variant='gradient'
             className='w-full'

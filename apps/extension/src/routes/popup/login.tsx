@@ -34,13 +34,13 @@ export const Login = () => {
 
   return (
     <FadeTransition className='flex flex-col items-stretch justify-start'>
-      <div className='flex flex-col justify-between p-[30px] pt-10 h-screen '>
-        <img src='/logo.png' alt='logo' className='w-[148px] h-[78px] my-0 mx-auto' />
+      <div className='flex h-screen flex-col justify-between p-[30px] pt-10 '>
+        <img src='/logo.png' alt='logo' className='mx-auto my-0 h-[78px] w-[148px]' />
         <form onSubmit={handleUnlock} className='grid gap-4'>
           <PasswordInput
             passwordValue={input}
             label={
-              <p className='bg-gradient-to-r from-[rgba(139,228,217,0.70)] via-[rgba(200,184,128,0.70)] to-[rgba(255,144,47,0.60)] bg-clip-text text-transparent'>
+              <p className='bg-gradient-to-r from-[rgba(139,228,217,0.70)] via-[rgba(200,184,128,0.70)] to-[rgba(255,144,47,0.60)] bg-clip-text text-4xl text-transparent'>
                 Enter your password
               </p>
             }
@@ -59,7 +59,7 @@ export const Login = () => {
         </form>
         <div className='flex flex-col gap-2'>
           <Button
-            className='text-base_bold text-muted-foreground font-body'
+            className='font-body text-base_bold text-muted-foreground'
             variant='link'
             onClick={() =>
               void (async function () {
@@ -71,7 +71,7 @@ export const Login = () => {
           >
             Forgot Password?
           </Button>
-          <p className='text-base_bold text-muted-foreground text-center'>
+          <p className='text-center text-base_bold text-muted-foreground'>
             Need help? Contact{' '}
             <a
               className='cursor-pointer text-base_bold text-teal hover:underline'
