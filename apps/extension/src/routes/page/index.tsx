@@ -16,9 +16,9 @@ import { FadeTransition } from '../../shared';
 // We need to manually check storage for accounts in the loader.
 // Will redirect to onboarding if necessary.
 export const pageIndexLoader = async () => {
-  const accounts = await localExtStorage.get('accounts');
+  const wallets = await localExtStorage.get('wallets');
 
-  if (!accounts.length) return redirect(PagePath.WELCOME);
+  if (!wallets.length) return redirect(PagePath.WELCOME);
 
   return null;
 };

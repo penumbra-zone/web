@@ -1,11 +1,11 @@
 import { PersonIcon } from '@radix-ui/react-icons';
 import { Button, Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from 'ui/components';
-import { AccountActionPopover } from '../../../components/account-action-popover';
 import { useStore } from '../../../state';
-import { accountsSelector } from '../../../state/accounts';
+import { walletsSelector } from '../../../state/wallets';
+import { AccountActionPopover } from '../../../components/account-action-popover';
 
 export const AccountsSheet = () => {
-  const { all } = useStore(accountsSelector);
+  const { all } = useStore(walletsSelector);
   return (
     <Sheet>
       <SheetTrigger>
