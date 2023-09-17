@@ -1,4 +1,4 @@
-import { SliceCreator } from './index';
+import { AllSlices, SliceCreator } from './index';
 
 export interface NetworkSlice {
   grpcEndpoint: string | undefined;
@@ -11,3 +11,5 @@ export const createNetworkSlice: SliceCreator<NetworkSlice> = () => {
     grpcEndpoint: undefined,
   };
 };
+
+export const networkSelector = (state: AllSlices) => state.network;

@@ -5,6 +5,7 @@ import { SettingsAutoLock } from './settings-auto-lock';
 import { SettingsClearCache } from './settings-clear-cache';
 import { SettingsConnectedSites } from './settings-connected-sites';
 import { SettingsFVK } from './settings-fvk';
+import { SettingsNetworkEdit } from './settings-network-edit';
 import { SettingsNetworks } from './settings-networks';
 import { SettingsPassphrase } from './settings-passphrase';
 import { SettingsPermission } from './settings-permission';
@@ -55,5 +56,9 @@ export const settingsRoutes = [
   {
     path: PopupPath.SETTINGS_SK,
     element: <SettingsSK />,
+  },
+  {
+    path: PopupPath.SETTINGS_NETWORK_NAME,
+    element: <SettingsNetworkEdit />,
   },
 ];
