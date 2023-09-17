@@ -18,8 +18,8 @@ export const Accounts = () => {
           <Button className='h-9 w-full' variant='gradient'>
             Add Wallet
           </Button>
-          <div className='flex items-center justify-between border rounded-lg bg-background py-[10px] px-3 w-full gap-1'>
-            <div className='flex gap-4 items-center'>
+          <div className='flex w-full items-center justify-between gap-1 rounded-lg border bg-background px-3 py-[10px]'>
+            <div className='flex items-center gap-4'>
               <img
                 src='https://avatar.vercel.sh/rauchg'
                 alt='icon'
@@ -34,32 +34,32 @@ export const Accounts = () => {
               <PopoverTrigger>
                 <DotsVerticalIcon className='h-5 w-5 cursor-pointer hover:opacity-50' />
               </PopoverTrigger>
-              <PopoverContent align='center' className='p-0 pb-3 w-[240px]'>
+              <PopoverContent align='center' className='w-[240px] p-0 pb-3'>
                 <Button
                   onClick={() => navigate(PopupPath.SETTINGS_RECOVERY_PASSPHRASE)}
                   variant='outline'
-                  className='w-full flex justify-start px-5 h-11'
+                  className='flex h-11 w-full justify-start px-5'
                 >
                   View Recovery Passphrase
                 </Button>
                 <Button
                   onClick={() => navigate(PopupPath.SETTINGS_FVK)}
                   variant='outline'
-                  className='w-full flex justify-start px-5 h-11'
+                  className='flex h-11 w-full justify-start px-5'
                 >
                   View Full Viewing Key
                 </Button>
                 <Button
                   onClick={() => navigate(PopupPath.SETTINGS_SK)}
                   variant='outline'
-                  className='w-full flex justify-start px-5 h-11'
+                  className='flex h-11 w-full justify-start px-5'
                 >
                   View Spend key
                 </Button>
-                <Button variant='outline' className='w-full flex justify-start px-5 h-11'>
+                <Button variant='outline' className='flex h-11 w-full justify-start px-5'>
                   Change Wallet Name
                 </Button>
-                <Button variant='outline' className='w-full flex justify-start px-5 h-11'>
+                <Button variant='outline' className='flex h-11 w-full justify-start px-5'>
                   Delete Wallet
                 </Button>
               </PopoverContent>

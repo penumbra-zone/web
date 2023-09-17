@@ -24,9 +24,9 @@ export const SettingsNetworks = () => {
           <ShareGradientIcon />
         </div>
         <div className='flex flex-col gap-4 px-5'>
-          <div className='relative w-full flex items-center justify-center gap-2'>
+          <div className='relative flex w-full items-center justify-center gap-2'>
             <div className='absolute inset-y-0 left-3 flex items-center'>
-              <MagnifyingGlassIcon className='w-5 h-5 text-muted-foreground' />
+              <MagnifyingGlassIcon className='h-5 w-5 text-muted-foreground' />
             </div>
             <Input
               className='pl-10'
@@ -39,7 +39,7 @@ export const SettingsNetworks = () => {
             {filteredNetworks.map((i, index) => (
               <Button
                 key={index}
-                className='rounded-lg border border-border bg-background flex items-center justify-start gap-3 text-left h-11 px-3'
+                className='flex h-11 items-center justify-start gap-3 rounded-lg border border-border bg-background px-3 text-left'
                 onClick={() =>
                   navigate(PopupPath.SETTINGS_NETWORK_NAME.replace(':name', i) as PopupPath)
                 }

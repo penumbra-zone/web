@@ -23,7 +23,7 @@ export const SettingsAdvanced = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-4'>
         <SettingsHeader title='Advanced' />
-        <div className='mx-auto h-[60px] w-[60px] mb-6'>
+        <div className='mx-auto mb-6 h-[60px] w-[60px]'>
           <DashboardGradientIcon />
         </div>
         <div className='flex flex-1 flex-col items-start gap-2 px-[30px]'>

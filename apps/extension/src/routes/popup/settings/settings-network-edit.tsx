@@ -14,13 +14,13 @@ export const SettingsNetworkEdit = () => {
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-10'>
         <SettingsHeader title='Edit network' />
         <div className='flex flex-1 flex-col items-start justify-between px-[30px] pb-[30px]'>
-          <div className='flex flex-col gap-4 w-full'>
+          <div className='flex w-full flex-col gap-4'>
             <div className='flex flex-col gap-2'>
-              <p className='text-xl_semiBold font-headline'>Network name</p>
+              <p className='font-headline text-xl_semiBold'>Network name</p>
               <Input readOnly value={name} />
             </div>
             <div className='flex flex-col gap-2'>
-              <p className='text-xl_semiBold font-headline'>Network name</p>
+              <p className='font-headline text-xl_semiBold'>Network name</p>
               <Input value={grpcEndpoint} />
             </div>
           </div>

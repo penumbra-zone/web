@@ -56,7 +56,7 @@ export const SettingsSK = () => {
                 ]}
               />
             ) : (
-              <div className='rounded-lg border border-border bg-background p-4 break-all text-base_bold text-muted-foreground'>
+              <div className='break-all rounded-lg border border-border bg-background p-4 text-base_bold text-muted-foreground'>
                 {sk}
               </div>
             )}
@@ -68,7 +68,7 @@ export const SettingsSK = () => {
                     Copy to clipboard
                   </p>
                 }
-                className='m-auto w-48 mb-2'
+                className='m-auto mb-2 w-48'
                 isSuccessCopyText
               />
             )}
