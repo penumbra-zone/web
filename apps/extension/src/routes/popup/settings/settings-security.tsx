@@ -22,6 +22,7 @@ const links = [
 
 export const SettingsSecurity = () => {
   const navigate = usePopupNav();
+  
   return (
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-10'>

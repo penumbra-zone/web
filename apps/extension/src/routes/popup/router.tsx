@@ -5,6 +5,7 @@ import { PopupLayout } from './popup-layout';
 import { Settings } from './settings';
 import { settingsRoutes } from './settings/routes';
 import { PopupIndex, popupIndexLoader } from './home';
+import { Accounts } from './accounts';
 
 export const popupRoutes: RouteObject[] = [
   {
@@ -23,6 +24,10 @@ export const popupRoutes: RouteObject[] = [
         path: PopupPath.SETTINGS,
         element: <Settings />,
         children: settingsRoutes,
+      },
+      {
+        path: PopupPath.ACCOUNTS,
+        element: <Accounts />,
       },
     ],
   },

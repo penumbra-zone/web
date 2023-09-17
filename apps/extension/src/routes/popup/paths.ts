@@ -13,4 +13,5 @@ export enum PopupPath {
   SETTINGS_RECOVERY_PASSPHRASE = '/settings/recovery-passphrase',
   SETTINGS_FVK = '/settings/fvk',
   SETTINGS_SK = '/settings/sk',
+  ACCOUNTS = '/accounts',
 }
