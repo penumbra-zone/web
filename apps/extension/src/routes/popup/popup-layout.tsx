@@ -1,8 +1,18 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
+import { cn } from 'ui/lib/utils';
+import { PopupPath } from './paths';
+import { useMemo } from 'react';
 
 export const PopupLayout = () => {
+  const location = useLocation();
+
+  const isDarkBg = useMemo(() => {
+    const pathname = location.pathname as PopupPath;
+    return pathname === PopupPath.INDEX || pathname === PopupPath.LOGIN;
+  }, [location]);
+
   return (
-    <div className='relative flex flex-col bg-charcoal'>
+    <div className={cn('relative flex flex-col', isDarkBg ? 'bg-chachoal' : 'bg-[#141010]')}>
       <div className='relative z-10'>
         <Outlet />
       </div>

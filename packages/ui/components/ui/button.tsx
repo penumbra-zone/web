@@ -13,7 +13,8 @@ const buttonVariants = cva(
         //TODO add hover to secondary
         secondary: 'bg-secondary hover:bg-neutral-600',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-        outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+        outline:
+          'border-b border-border bg-background text-base_semiBold text-muted-foreground font-headline rounded-none hover:opacity-50',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-muted-foreground underline-offset-4 hover:underline',
       },
