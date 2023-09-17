@@ -12,7 +12,7 @@ export const SettingsPassphrase = () => {
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
   const [phrase, setPhrase] = useState<string[]>([]);
 
-  const getSeedPhrase = (e: React.FormEvent<HTMLFormElement>) => {
+  const sumbit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     void (async function () {
@@ -47,7 +47,7 @@ export const SettingsPassphrase = () => {
         </div>
         <form
           className='flex flex-1 flex-col items-start justify-between px-[30px] pb-[30px]'
-          onSubmit={getSeedPhrase}
+          onSubmit={sumbit}
         >
           <div className='flex flex-col gap-4'>
             <p className='text-base_bold text-muted-foreground'>
@@ -78,7 +78,7 @@ export const SettingsPassphrase = () => {
             ) : (
               <div className='flex flex-col gap-2'>
                 <p className='font-headline text-xl_semiBold'>Recovery secret phrase</p>
-                <div className='mb-[6px] grid grid-cols-3 gap-4 rounded-lg border borde˝r-border bg-background p-5'>
+                <div className='mb-[6px] grid grid-cols-3 gap-4 rounded-lg border border-border bg-background p-5'>
                   {phrase.map((word, i) => (
                     <div className='flex' key={i}>
                       <p className='w-5 text-left text-base_bold text-muted-foreground'>{i + 1}.</p>
