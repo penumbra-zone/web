@@ -45,7 +45,7 @@ export const SettingsNetworks = () => {
                 }
               >
                 <CheckCircledIcon className='h-5 w-5 text-teal' />
-                <p className='text-base_bold'>{i}</p>
+                <p className='text-base-bold'>{i}</p>
               </Button>
             ))}
           </div>

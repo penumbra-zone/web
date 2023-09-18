@@ -41,7 +41,7 @@ export const SettingsSK = () => {
               <PasswordInput
                 passwordValue={input}
                 label={
-                  <p className='font-headline text-xl_semiBold text-muted-foreground'>Password</p>
+                  <p className='font-headline text-xl-semibold text-muted-foreground'>Password</p>
                 }
                 onChange={e => {
                   setInputValue(e.target.value);
@@ -56,7 +56,7 @@ export const SettingsSK = () => {
                 ]}
               />
             ) : (
-              <div className='break-all rounded-lg border border-border bg-background p-4 text-base_bold text-muted-foreground'>
+              <div className='break-all rounded-lg border border-border bg-background p-4 text-base-bold text-muted-foreground'>
                 {sk}
               </div>
             )}
@@ -64,7 +64,7 @@ export const SettingsSK = () => {
               <CopyToClipboard
                 text={sk}
                 label={
-                  <p className='font-headline text-base_bold text-muted-foreground'>
+                  <p className='font-headline text-base-bold text-muted-foreground'>
                     Copy to clipboard
                   </p>
                 }
@@ -72,7 +72,7 @@ export const SettingsSK = () => {
                 isSuccessCopyText
               />
             )}
-            <p className='mb-2 flex items-center gap-2 text-base_bold text-rust'>
+            <p className='mb-2 flex items-center gap-2 text-base-bold text-rust'>
               <span>
                 <ExclamationTriangleIcon />
               </span>

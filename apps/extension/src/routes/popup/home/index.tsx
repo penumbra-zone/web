@@ -39,7 +39,7 @@ export const PopupIndex = () => {
         <p className='mb-4 text-center font-headline text-3xl'>{all[0]?.label}</p>
         <div className='flex items-center justify-between gap-2 break-all rounded-lg border border-border bg-background px-3 py-4'>
           <img src='https://avatar.vercel.sh/rauchg' alt='icon' className='h-6 w-6 rounded-full' />
-          <p className='text-center text-base_bold text-muted-foreground'>
+          <p className='text-center text-base-bold text-muted-foreground'>
             penumbrav2t13vh0fkf3qkqjacpm59g23uf...
           </p>
           <CopyToClipboard

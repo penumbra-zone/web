@@ -46,42 +46,42 @@ module.exports = {
             fontWeight: 'semibold',
           },
         ],
-        xl_medium: [
+        'xl-medium': [
           '16px',
           {
             lineHeight: '24px',
             fontWeight: '500',
           },
         ],
-        xl_semiBold: [
+        "xl-semibold": [
           '16px',
           {
             lineHeight: '24px',
             fontWeight: '600',
           },
         ],
-        lg_bold: [
+        "lg-bold": [
           '15px',
           {
             lineHeight: '22px',
             fontWeight: '700',
           },
         ],
-        lg_medium: [
+        "lg-medium": [
           '15px',
           {
             lineHeight: '22px',
             fontWeight: '500',
           },
         ],
-        base_semiBold: [
+       "base-semibold": [
           '14px',
           {
             lineHeight: '20px',
             fontWeight: '600',
           },
         ],
-        base_bold: [
+        "base-bold": [
           '14px',
           {
             lineHeight: '20px',

@@ -38,7 +38,7 @@ export const SettingsConnectedSites = () => {
                 key={index}
                 className='flex items-center justify-between rounded-lg border border-border bg-background p-4'
               >
-                <p className='text-base_bold'>{i}</p>
+                <p className='text-base-bold'>{i}</p>
                 <Popover>
                   <PopoverTrigger>
                     <DotsVerticalIcon className='h-5 w-5 cursor-pointer hover:opacity-50' />

@@ -54,7 +54,7 @@ const ValidationInput = ({ word, index }: { word: string; index: number }) => {
 
   return (
     <div className='flex flex-row items-center justify-center gap-2'>
-      <div className='w-7 text-right font-headline text-xl_medium'>{index + 1}.</div>
+      <div className='w-7 text-right font-headline text-xl-medium'>{index + 1}.</div>
       <Input
         variant={!text.length ? 'default' : text === word ? 'success' : 'error'}
         onChange={({ target: { value } }) => {

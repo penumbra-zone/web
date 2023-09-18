@@ -51,15 +51,15 @@ export const GenerateSeedPhrase = () => {
             >
               {phrase.map((word, i) => (
                 <div className='flex flex-row items-center justify-center gap-2' key={i}>
-                  <div className='w-7 text-right font-headline text-lg_medium'>{i + 1}.</div>
-                  <Input readOnly value={word} className='text-lg_bold' />
+                  <div className='w-7 text-right font-headline text-xl-medium'>{i + 1}.</div>
+                  <Input readOnly value={word} className='text-lg-bold' />
                 </div>
               ))}
             </div>
             <CopyToClipboard
               text={phrase.join(' ')}
               label={
-                <p className='font-headline text-lg_medium text-muted-foreground'>
+                <p className='font-headline text-lg-medium text-muted-foreground'>
                   Copy to clipboard
                 </p>
               }
@@ -69,19 +69,19 @@ export const GenerateSeedPhrase = () => {
           </div>
           <div className='flex flex-col justify-center gap-4'>
             <div className='flex flex-col gap-1'>
-              <p className='flex items-center gap-2 text-lg_bold text-rust'>
+              <p className='flex items-center gap-2 text-lg-bold text-rust'>
                 <ExclamationTriangleIcon /> Do not share this with anyone
               </p>
-              <p className='text-lg_bold'>
+              <p className='text-lg-bold'>
                 Never share your recovery passphrase with anyone, not even Penumbra employees. Your
                 phrase grants full access to your funds.
               </p>
             </div>
             <div className='flex flex-col gap-1'>
-              <p className='flex items-center gap-2 text-lg_bold text-teal'>
+              <p className='flex items-center gap-2 text-lg-bold text-teal'>
                 <LockClosedIcon /> Back this up safely
               </p>
-              <p className='text-lg_bold'>
+              <p className='text-lg-bold'>
                 Save to a password manager or keep it in a bank vault. Without the backup, you
                 cannot recover your account.
               </p>

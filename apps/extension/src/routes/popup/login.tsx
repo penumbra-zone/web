@@ -59,7 +59,7 @@ export const Login = () => {
         </form>
         <div className='flex flex-col gap-2'>
           <Button
-            className='font-body text-base_bold text-muted-foreground'
+            className='font-body text-base-bold text-muted-foreground'
             variant='link'
             onClick={() =>
               void (async function () {
@@ -71,10 +71,10 @@ export const Login = () => {
           >
             Forgot Password?
           </Button>
-          <p className='text-center text-base_bold text-muted-foreground'>
+          <p className='text-center text-base-bold text-muted-foreground'>
             Need help? Contact{' '}
             <a
-              className='cursor-pointer text-base_bold text-teal hover:underline'
+              className='cursor-pointer text-base-bold text-teal hover:underline'
               target='_blank'
               href='https://discord.com/channels/824484045370818580/1077672871251415141'
             >

@@ -50,18 +50,18 @@ export const SettingsPassphrase = () => {
           onSubmit={sumbit}
         >
           <div className='flex flex-col gap-4'>
-            <p className='text-base_bold text-muted-foreground'>
+            <p className='text-base-bold text-muted-foreground'>
               If you change browser or switch to another computer, you will need this recovery
               passphrase to access your accounts.
             </p>
-            <p className='mb-2 flex items-center gap-2 text-base_bold text-rust'>
+            <p className='mb-2 flex items-center gap-2 text-base-bold text-rust'>
               <ExclamationTriangleIcon /> Don’t share this phrase with anyone
             </p>
             {!phrase.length ? (
               <PasswordInput
                 passwordValue={input}
                 label={
-                  <p className='font-headline text-xl_semiBold text-muted-foreground'>Password</p>
+                  <p className='font-headline text-xl-semibold text-muted-foreground'>Password</p>
                 }
                 onChange={e => {
                   setInputValue(e.target.value);
@@ -77,27 +77,27 @@ export const SettingsPassphrase = () => {
               />
             ) : (
               <div className='flex flex-col gap-2'>
-                <p className='font-headline text-xl_semiBold'>Recovery secret phrase</p>
+                <p className='font-headline text-xl-semibold'>Recovery secret phrase</p>
                 <div className='mb-[6px] grid grid-cols-3 gap-4 rounded-lg border border-border bg-background p-5'>
                   {phrase.map((word, i) => (
                     <div className='flex' key={i}>
-                      <p className='w-5 text-left text-base_bold text-muted-foreground'>{i + 1}.</p>
-                      <p className='text-base_bold text-muted-foreground'>{word}</p>
+                      <p className='w-5 text-left text-base-bold text-muted-foreground'>{i + 1}.</p>
+                      <p className='text-base-bold text-muted-foreground'>{word}</p>
                     </div>
                   ))}
                 </div>
                 <div className='flex gap-[18px]'>
                   <CopyToClipboard
-                    className='h-9 w-[50%] rounded-lg bg-teal font-headline text-base_semiBold text-muted opacity-80 hover:no-underline hover:opacity-50'
+                    className='h-9 w-[50%] rounded-lg bg-teal font-headline text-base-semibold text-muted opacity-80 hover:no-underline hover:opacity-50'
                     label={
-                      <p className='flex items-center gap-2 text-base_semiBold'>
+                      <p className='flex items-center gap-2 text-base-semibold'>
                         <CopyIcon /> Copy
                       </p>
                     }
                     text={phrase.join(' ')}
                   />
                   <Button className='h-9 w-[50%] bg-sand opacity-80 hover:opacity-50'>
-                    <p className='flex items-center gap-2 text-base_semiBold'>
+                    <p className='flex items-center gap-2 text-base-semibold'>
                       <DownloadIcon /> CSV
                     </p>
                   </Button>

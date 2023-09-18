@@ -25,7 +25,7 @@ export const Accounts = () => {
                 alt='icon'
                 className='h-6 w-6 rounded-full'
               />
-              <div className='flex flex-col text-base_bold'>
+              <div className='flex flex-col text-base-bold'>
                 <p>{all[0]?.label}</p>
                 <p className='text-muted-foreground'>penumbrav2t156t9s3s0786ghjnpk20jjawe..</p>
               </div>

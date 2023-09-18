@@ -13,12 +13,12 @@ export const SettingsClearCache = () => {
         </div>
         <div className='flex flex-1 flex-col items-start justify-between px-[30px] pb-[30px]'>
           <div className='flex flex-col items-center gap-2'>
-            <p className='font-headline text-xl_semiBold'>Are you sure?</p>
-            <p className='text-center text-base_bold text-muted-foreground'>
+            <p className='font-headline text-xl-semibold'>Are you sure?</p>
+            <p className='text-center text-base-bold text-muted-foreground'>
               Do you really want to clear cache? All view service data will be deleted and
               resynchronized.
             </p>
-            <p className='mt-4 flex items-center gap-2 font-headline text-xl_semiBold text-rust'>
+            <p className='mt-4 flex items-center gap-2 font-headline text-xl-semibold text-rust'>
               <ExclamationTriangleIcon className='h-[30px] w-[30px] text-rust' /> You private keys
               won’t be lost!
             </p>
