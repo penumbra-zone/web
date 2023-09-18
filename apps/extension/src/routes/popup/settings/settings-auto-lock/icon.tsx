@@ -1,32 +1,4 @@
-import { FadeTransition, SettingsHeader } from '../../../shared';
-import { Button, Input } from 'ui/components';
-
-export const SettingsAutoLock = () => {
-  return (
-    <FadeTransition>
-      <div className='flex min-h-[100vh] w-[100vw] flex-col gap-10'>
-        <SettingsHeader title='Auto-lock timer' />
-        <div className='mx-auto h-[60px] w-[60px]'>
-          <TimerGradientIcon />
-        </div>
-        <div className='flex flex-1 flex-col items-start justify-between px-[30px] pb-[30px]'>
-          <div className='flex flex-col gap-2'>
-            <p className='font-headline text-xl-semibold'>Auto - lock timer (minutes)</p>
-            <p className='text-base-bold text-muted-foreground'>
-              Set the inactivity time in the coming minutes before Penumbra is blocked.
-            </p>
-            <Input />
-          </div>
-          <Button variant='gradient' className='h-11 w-full'>
-            Save
-          </Button>
-        </div>
-      </div>
-    </FadeTransition>
-  );
-};
-
-const TimerGradientIcon = () => (
+export const TimerGradientIcon = () => (
   <svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60' fill='none'>
     <path
       d='M16.4687 12.0219C11.0215 16.1282 7.5 22.6529 7.5 30C7.5 42.4264 17.5736 52.5 30 52.5C42.4264 52.5 52.5 42.4264 52.5 30C52.5 17.5736 42.4264 7.5 30 7.5V17.5'
