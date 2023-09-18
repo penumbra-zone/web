@@ -33,10 +33,10 @@ export class Controllers {
       dbVersion: indexedDbVersion,
     });
 
-    const viewServer = new ViewServer({
+    const viewServer = await ViewServer.initialize({
       fullViewingKey,
       epochDuration,
-      getStoredTree: () => indexedDb.loadStoredTree(),
+      getStoredTree: () => indexedDb.getStateCommitmentTree(),
     });
 
     const blockProcessor = new BlockProcessor({

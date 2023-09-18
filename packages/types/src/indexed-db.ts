@@ -1,42 +1,53 @@
-import { SpendableNoteRecord, StoreCommitment, StoredPosition, StoredTree, StoreHash } from './tct';
 import { DBSchema } from 'idb';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/crypto/v1alpha1/crypto_pb';
+import {
+  NctUpdates,
+  NewNoteRecord,
+  StateCommitmentTree,
+  StoreCommitment,
+  StoredPosition,
+  StoreHash,
+} from './state-commitment-tree';
+import { Base64Str } from './base64';
 
 export interface IndexedDbInterface {
   getLastBlockSynced(): Promise<bigint | undefined>;
-  saveLastBlockSynced(height: bigint): Promise<void>;
-  saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
+  getNoteByNullifier(nullifier: Base64Str): Promise<NewNoteRecord | undefined>;
+  saveSpendableNote(note: NewNoteRecord): Promise<void>;
+  getAssetsMetadata(assetId: Uint8Array): Promise<DenomMetadata | undefined>;
   saveAssetsMetadata(metadata: DenomMetadata): Promise<void>;
-  loadStoredTree(): Promise<StoredTree>;
+  getStateCommitmentTree(): Promise<StateCommitmentTree>;
+  updateStateCommitmentTree(updates: NctUpdates, height: bigint): Promise<void>;
 }
 
 export interface PenumbraDb extends DBSchema {
-  assets: {
-    key: Uint8Array;
-    value: DenomMetadata;
-  };
-  nct_position: {
-    key: 'position';
-    value: StoredPosition;
-  };
-  nct_forgotten: {
-    key: 'forgotten';
-    value: Uint8Array;
-  };
-  nct_commitments: {
-    key: string;
-    value: StoreCommitment;
-  };
-  nct_hashes: {
-    key: string;
-    value: StoreHash;
-  };
   last_block_synced: {
     key: 'last_block';
     value: bigint;
   };
-  spendable_notes: {
+  tree_last_position: {
+    key: 'last_position';
+    value: StoredPosition;
+  };
+  tree_last_forgotten: {
+    key: 'last_forgotten';
+    value: number;
+  };
+  tree_hashes: {
     key: Uint8Array;
-    value: SpendableNoteRecord;
+    value: StoreHash;
+  };
+  tree_commitments: {
+    key: Uint8Array;
+    value: StoreCommitment;
+  };
+  assets: {
+    key: Uint8Array;
+    value: DenomMetadata;
+  };
+  spendable_notes: {
+    key: Base64Str;
+    value: NewNoteRecord;
+    indexes: { nullifier: Base64Str };
   };
 }
