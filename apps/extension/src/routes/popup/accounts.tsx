@@ -13,10 +13,10 @@ export const Accounts = () => {
   return (
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col justify-between gap-6'>
-        <SettingsHeader title='Select Wallet' />
+        <SettingsHeader title='Select Account' />
         <div className='flex flex-1 flex-col items-start gap-4 px-[30px]'>
           <Button className='h-9 w-full' variant='gradient'>
-            Add Wallet
+            Add Account
           </Button>
           <div className='flex w-full items-center justify-between gap-1 rounded-lg border bg-background px-3 py-[10px]'>
             <div className='flex items-center gap-4'>
@@ -43,14 +43,14 @@ export const Accounts = () => {
                   View Recovery Passphrase
                 </Button>
                 <Button
-                  onClick={() => navigate(PopupPath.SETTINGS_FVK)}
+                  onClick={() => navigate(PopupPath.SETTINGS_FULL_VIEWING_KEY)}
                   variant='outline'
                   className='flex h-11 w-full justify-start px-5'
                 >
                   View Full Viewing Key
                 </Button>
                 <Button
-                  onClick={() => navigate(PopupPath.SETTINGS_SK)}
+                  onClick={() => navigate(PopupPath.SETTINGS_SPEND_KEY)}
                   variant='outline'
                   className='flex h-11 w-full justify-start px-5'
                 >

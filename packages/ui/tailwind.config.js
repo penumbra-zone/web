@@ -53,35 +53,35 @@ module.exports = {
             fontWeight: '500',
           },
         ],
-        "xl-semibold": [
+        'xl-semibold': [
           '16px',
           {
             lineHeight: '24px',
             fontWeight: '600',
           },
         ],
-        "lg-bold": [
+        'lg-bold': [
           '15px',
           {
             lineHeight: '22px',
             fontWeight: '700',
           },
         ],
-        "lg-medium": [
+        'lg-medium': [
           '15px',
           {
             lineHeight: '22px',
             fontWeight: '500',
           },
         ],
-       "base-semibold": [
+        'base-semibold': [
           '14px',
           {
             lineHeight: '20px',
             fontWeight: '600',
           },
         ],
-        "base-bold": [
+        'base-bold': [
           '14px',
           {
             lineHeight: '20px',
@@ -143,6 +143,7 @@ module.exports = {
         },
         charcoal: {
           DEFAULT: 'var(--charcoal)',
+          secondary: 'var(--charcoal-secondary)',
         },
         teal: {
           DEFAULT: 'var(--teal)',
@@ -152,6 +153,9 @@ module.exports = {
         },
         rust: {
           DEFAULT: 'var(--rust)',
+        },
+        black: {
+          DEFAULT: 'var(--black)',
         },
       },
       borderRadius: {

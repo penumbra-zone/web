@@ -5,7 +5,7 @@ import { Button, CopyToClipboard } from 'ui/components';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
 
-export const SettingsFVK = () => {
+export const SettingsFullViewingKey = () => {
   const { isPassword } = useStore(passwordSelector);
 
   const [input, setInputValue] = useState('');

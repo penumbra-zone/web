@@ -2,7 +2,10 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { FadeTransition, SettingsHeader } from '../../../shared';
 import { Button } from 'ui/components';
 
-// There we shold clear indexedDB, balances; stop sync, logout
+// Clearing cache should:
+//  - Delete indexeddb database
+//  - Restart block sync
+//  - Redirect to popup index
 export const SettingsClearCache = () => {
   return (
     <FadeTransition>
@@ -15,7 +18,7 @@ export const SettingsClearCache = () => {
           <div className='flex flex-col items-center gap-2'>
             <p className='font-headline text-xl-semibold'>Are you sure?</p>
             <p className='text-center text-base-bold text-muted-foreground'>
-              Do you really want to clear cache? All view service data will be deleted and
+              Do you really want to clear cache? All local data will be deleted and
               resynchronized.
             </p>
             <p className='mt-4 flex items-center gap-2 font-headline text-xl-semibold text-rust'>

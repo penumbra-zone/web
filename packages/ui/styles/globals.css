@@ -39,6 +39,7 @@
 
     /* Penumbra base color palette */
     --charcoal: #1d1d1d;
+    --charcoal-secondary: #141010;
     --teal: #629994;
     --sand: #847a5b;
     --rust: #8d5728;
@@ -47,7 +48,6 @@
   #popup-root {
     width: 400px;
     height: 600px;
-    /* overflow-y: auto; */
     @apply bg-charcoal;
   }
 

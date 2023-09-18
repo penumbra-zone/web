@@ -35,7 +35,9 @@ export const Login = () => {
   return (
     <FadeTransition className='flex flex-col items-stretch justify-start'>
       <div className='flex h-screen flex-col justify-between p-[30px] pt-10 '>
-        <img src='/logo.png' alt='logo' className='mx-auto my-0 h-[78px] w-[148px]' />
+        <div className='mx-auto my-0 h-[100px] w-[200px]'>
+        <img src='/logo.svg' alt='logo' className='object-fit' />
+        </div>
         <form onSubmit={handleUnlock} className='grid gap-4'>
           <PasswordInput
             passwordValue={input}

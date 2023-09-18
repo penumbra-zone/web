@@ -11,12 +11,12 @@ const links = [
   {
     title: 'Full viewing key',
     icon: <KeyIcon />,
-    href: PopupPath.SETTINGS_FVK,
+    href: PopupPath.SETTINGS_FULL_VIEWING_KEY,
   },
   {
     title: 'Spending key',
     icon: <AccountKeyIcon />,
-    href: PopupPath.SETTINGS_SK,
+    href: PopupPath.SETTINGS_SPEND_KEY,
   },
 ];
 

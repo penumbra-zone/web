@@ -1,6 +1,5 @@
 import { redirect } from 'react-router-dom';
 import { CopyToClipboard, Progress } from 'ui/components';
-import { FadeTransition } from '../../../shared';
 import { useStore } from '../../../state';
 import { localExtStorage } from '../../../storage/local';
 import { sessionExtStorage } from '../../../storage/session';
@@ -29,12 +28,13 @@ export const popupIndexLoader = async () => {
 
 export const PopupIndex = () => {
   const { all } = useStore(walletsSelector);
+
   return (
-    <FadeTransition className='flex flex-col items-stretch justify-start px-7'>
+    <div className='flex flex-col items-stretch justify-start px-7'>
       <IndexHeader />
       <div className='mb-[108px] flex w-full flex-col'>
         <div className='relative bottom-[-48px] right-5 -z-10 h-[170px] max-h-[170px] w-[388px] overflow-hidden'>
-          <img src='/penumbra-logo.png' className='object-cover' />
+          <img src='/penumbra-logo.svg' className='object-cover' />
         </div>
         <p className='mb-4 text-center font-headline text-3xl'>{all[0]?.label}</p>
         <div className='flex items-center justify-between gap-2 break-all rounded-lg border border-border bg-background px-3 py-4'>
@@ -60,6 +60,6 @@ export const PopupIndex = () => {
         </p>
         <Progress value={73} />
       </div>
-    </FadeTransition>
+    </div>
   );
 };

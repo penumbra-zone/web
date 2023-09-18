@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { FadeTransition, PasswordInput, SettingsHeader } from '../../../shared';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { useState } from 'react';
 import { Button, CopyToClipboard } from 'ui/components';
+import { FadeTransition, PasswordInput, SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
 
-export const SettingsSK = () => {
+export const SettingsSpendKey = () => {
   const { isPassword } = useStore(passwordSelector);
 
   const [input, setInputValue] = useState('');
