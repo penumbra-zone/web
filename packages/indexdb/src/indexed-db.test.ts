@@ -4,8 +4,18 @@ import { IndexedDb } from './indexed-db';
 import {
   AssetId,
   DenomMetadata,
-  DenomUnit,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/crypto/v1alpha1/crypto_pb';
+import { base64ToUint8Array } from 'penumbra-types';
+
+const denomMetadataA = new DenomMetadata({
+  symbol: 'usdc',
+  penumbraAssetId: new AssetId({ altBaseDenom: 'usdc', inner: base64ToUint8Array('dXNkYw==') }),
+});
+
+const denomMetadataB = new DenomMetadata({
+  symbol: 'dai',
+  penumbraAssetId: new AssetId({ altBaseDenom: 'dai', inner: base64ToUint8Array('ZGFp') }),
+});
 
 describe('IndexedDb', () => {
   beforeEach(() => {
@@ -25,46 +35,27 @@ describe('IndexedDb', () => {
       const testnetDb = await IndexedDb.initialize(testInitialProps);
       const mainnetDb = await IndexedDb.initialize({ ...testInitialProps, chainId: 'mainnet' });
 
-      await testnetDb.saveLastBlockSynced(12n);
-      await mainnetDb.saveLastBlockSynced(67n);
+      await testnetDb.saveAssetsMetadata(denomMetadataA);
+      await mainnetDb.saveAssetsMetadata(denomMetadataB);
 
-      expect(await testnetDb.getLastBlockSynced()).toBe(12n);
-      expect(await mainnetDb.getLastBlockSynced()).toBe(67n);
+      expect(await testnetDb.getAssetsMetadata(denomMetadataA.penumbraAssetId!.inner)).toBe(
+        denomMetadataA,
+      );
+      expect(await mainnetDb.getAssetsMetadata(denomMetadataB.penumbraAssetId!.inner)).toBe(
+        denomMetadataB,
+      );
     });
 
     it('same version uses same db', async () => {
       const dbA = await IndexedDb.initialize(testInitialProps);
-      await dbA.saveLastBlockSynced(12n);
+      await dbA.saveAssetsMetadata(denomMetadataA);
 
       const dbB = await IndexedDb.initialize(testInitialProps);
-      expect(await dbB.getLastBlockSynced()).toBe(12n);
+      expect((await dbB.getAssetsMetadata(denomMetadataA.penumbraAssetId!.inner))?.name).toBe(
+        denomMetadataA.name,
+      );
     });
   });
 
   // TODO: Write tests for each asset
-  describe('assets', () => {
-    it('gets and puts as expected', async () => {
-      const db = await IndexedDb.initialize(testInitialProps);
-
-      const assetId = new AssetId();
-      // TODO: Let's replace this with real data after we do a live request
-      const metadata = new DenomMetadata({
-        symbol: 'usdc',
-        description: 'stable coin',
-        denomUnits: [new DenomUnit({ denom: 'usdc', exponent: 18, aliases: [] })],
-        base: 'string',
-        display: 'usdc',
-        name: 'circle usdc',
-        uri: 'usdc:uri',
-        uriHash: '0x2489dfaoj23f',
-        penumbraAssetId: assetId,
-      });
-      await db.saveAssetsMetadata(metadata);
-
-      const result = await db.getAssetsMetadata(assetId.inner);
-      expect(result).toBeDefined();
-      expect(result?.symbol).toEqual(metadata.symbol);
-      expect(result?.penumbraAssetId).toEqual(assetId);
-    });
-  });
 });
