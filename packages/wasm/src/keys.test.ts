@@ -12,7 +12,7 @@ vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/was
 describe('keys', () => {
   // don't use this seed phrase for personal use
   const seedPhrase =
-    'mushroom hole price march grid pepper goat position print gaze dignity music milk surge file casino unveil betray observe ethics image topic sphere clap';
+    'benefit cherry cannon tooth exhibit law avocado spare tooth that amount pumpkin scene foil tape mobile shine apology add crouch situate sun business explain';
 
   describe('generateSpendKey()', () => {
     it('does not raise zod validation error', () => {

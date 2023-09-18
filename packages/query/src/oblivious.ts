@@ -4,6 +4,7 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import {
   ChainParametersRequest,
   CompactBlockRangeRequest,
+  InfoRequest,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/client/v1alpha1/client_pb';
 
 interface ObliviousQuerierProps {
@@ -26,9 +27,14 @@ export class ObliviousQuerier {
   }
 
   async chainParameters() {
-    const req = new ChainParametersRequest({});
+    const req = new ChainParametersRequest();
     const res = await this.client.chainParameters(req);
     return res.chainParameters!;
+  }
+
+  async info() {
+    const req = new InfoRequest();
+    return this.client.info(req);
   }
 
   private createClient(grpcEndpoint: string): PromiseClient<typeof ObliviousQueryService> {

@@ -1,7 +1,13 @@
-import { IDBPDatabase, openDB, StoreNames } from 'idb';
-import { StoreKey, StoreValue } from 'idb/build/entry';
-import { IndexedDbInterface, PenumbraDb, SpendableNoteRecord, StoredTree } from 'penumbra-types';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/crypto/v1alpha1/crypto_pb';
+import { IDBPDatabase, openDB } from 'idb';
+import {
+  Base64Str,
+  IndexedDbInterface,
+  NctUpdates,
+  NewNoteRecord,
+  PenumbraDb,
+  StateCommitmentTree,
+} from 'penumbra-types';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -18,62 +24,85 @@ export class IndexedDb implements IndexedDbInterface {
     const db = await openDB<PenumbraDb>(dbKey, dbVersion, {
       upgrade(db: IDBPDatabase<PenumbraDb>) {
         db.createObjectStore('last_block_synced');
-        db.createObjectStore('assets', {
-          autoIncrement: true,
-          keyPath: 'penumbraAssetId.inner',
+        db.createObjectStore('assets', { keyPath: 'penumbraAssetId.inner' });
+        db.createObjectStore('tree_last_position');
+        db.createObjectStore('tree_last_forgotten');
+        db.createObjectStore('tree_commitments', { keyPath: 'commitment.inner' });
+        db.createObjectStore('tree_hashes', { keyPath: 'hash' });
+        db.createObjectStore('spendable_notes').createIndex('nullifier', 'nullifier.inner', {
+          unique: true,
         });
-        db.createObjectStore('nct_position');
-        db.createObjectStore('nct_forgotten');
-        db.createObjectStore('nct_commitments', { autoIncrement: true, keyPath: 'id' });
-        db.createObjectStore('nct_hashes', { autoIncrement: true, keyPath: 'id' });
-        db.createObjectStore('spendable_notes');
       },
     });
     return new this(db);
   }
 
-  public async loadStoredTree(): Promise<StoredTree> {
+  public async getStateCommitmentTree(): Promise<StateCommitmentTree> {
+    const lastPosition = await this.db.get('tree_last_position', 'last_position');
+    const lastForgotten = await this.db.get('tree_last_forgotten', 'last_forgotten');
+    const hashes = await this.db.getAll('tree_hashes');
+    const commitments = await this.db.getAll('tree_commitments');
+
     return {
-      last_position: await this.get('nct_position', 'position'),
-      last_forgotten: await this.get('nct_forgotten', 'forgotten'),
-      commitments: await this.getAll('nct_commitments'),
-      hashes: await this.getAll('nct_hashes'),
+      last_position: lastPosition ?? { Position: { epoch: 0, block: 0, commitment: 0 } },
+      last_forgotten: lastForgotten ?? 0,
+      hashes,
+      commitments,
     };
   }
 
+  // All updates must be atomic in order to prevent invalid tree state
+  public async updateStateCommitmentTree(updates: NctUpdates, height: bigint) {
+    const tx = this.db.transaction(
+      [
+        'last_block_synced',
+        'tree_last_position',
+        'tree_last_forgotten',
+        'tree_commitments',
+        'tree_hashes',
+      ],
+      'readwrite',
+    );
+
+    if (updates.set_position) {
+      await tx.objectStore('tree_last_position').put(updates.set_position, 'last_position');
+    }
+
+    if (updates.set_forgotten)
+      await tx.objectStore('tree_last_forgotten').put(updates.set_forgotten, 'last_forgotten');
+
+    for (const c of updates.store_commitments) {
+      await tx.objectStore('tree_commitments').put(c);
+    }
+
+    for (const h of updates.store_hashes) {
+      await tx.objectStore('tree_hashes').put(h);
+    }
+
+    await tx.objectStore('last_block_synced').put(height, 'last_block');
+
+    await tx.done;
+
+    // TODO: What about updates.delete_ranges?
+  }
+
   async getLastBlockSynced() {
-    return this.get('last_block_synced', 'last_block');
+    return this.db.get('last_block_synced', 'last_block');
   }
 
-  async saveLastBlockSynced(height: bigint) {
-    await this.put('last_block_synced', height, 'last_block');
+  async getNoteByNullifier(nullifier: Base64Str) {
+    return this.db.getFromIndex('spendable_notes', 'nullifier', nullifier);
   }
 
-  async saveSpendableNote(note: SpendableNoteRecord) {
-    await this.put('spendable_notes', note, note.noteCommitment.inner);
+  async saveSpendableNote(note: NewNoteRecord) {
+    await this.db.put('spendable_notes', note, note.noteCommitment.inner);
   }
 
-  async getAssetsMetadata(assetIdInner: Uint8Array) {
-    return this.get('assets', assetIdInner);
+  async getAssetsMetadata(assetId: Uint8Array) {
+    return this.db.get('assets', assetId);
   }
 
   async saveAssetsMetadata(metadata: DenomMetadata) {
-    await this.put('assets', metadata);
-  }
-
-  private async get<T extends StoreNames<PenumbraDb>>(table: T, key: StoreKey<PenumbraDb, T>) {
-    return this.db.get(table, key);
-  }
-
-  private async getAll<T extends StoreNames<PenumbraDb>>(table: T) {
-    return this.db.getAll(table);
-  }
-
-  private async put<T extends StoreNames<PenumbraDb>>(
-    table: T,
-    value: StoreValue<PenumbraDb, T>,
-    key?: StoreKey<PenumbraDb, T>,
-  ) {
-    return this.db.put(table, value, key);
+    await this.db.put('assets', metadata);
   }
 }

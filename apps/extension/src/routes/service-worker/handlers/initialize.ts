@@ -22,6 +22,5 @@ export const initializeHandler: SwMessageHandler<InitializeMessage> = async ({
 export const initializeControllers = async (props: ControllersProps) => {
   const controllers = await Controllers.initialize(props);
   services.setControllers(controllers);
-  // TODO: Should sync blocks here
-  // await services.controllers.blockProcessor.syncBlocks()
+  await services.controllers.blockProcessor.syncBlocks();
 };

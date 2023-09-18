@@ -21,23 +21,21 @@ export class Services {
   }
 
   async onServiceWorkerInit() {
-    await this.initializeListeners();
-
-    const wallets = await localExtStorage.get('wallets');
-    if (wallets.length) {
-      await initializeControllers({
-        grpcEndpoint: testnetConstants.grpcEndpoint,
-        indexedDbVersion: testnetConstants.indexedDbVersion,
-        fullViewingKey: wallets[0]!.fullViewingKey,
-      });
-    }
-  }
-
-  private async initializeListeners() {
     chrome.runtime.onMessage.addListener(swMessageHandler);
 
     // Forces the waiting service worker to become the active service worker
     await sw.skipWaiting();
     await sw.clients.claim();
+
+    const wallets = await localExtStorage.get('wallets');
+    if (wallets.length) {
+      const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+
+      await initializeControllers({
+        grpcEndpoint,
+        indexedDbVersion: testnetConstants.indexedDbVersion,
+        fullViewingKey: wallets[0]!.fullViewingKey,
+      });
+    }
   }
 }
