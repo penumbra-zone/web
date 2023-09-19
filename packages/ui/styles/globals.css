@@ -17,6 +17,7 @@
     --card-foreground: 222.2 84% 4.9%;
 
     --border: 0, 2%, 21%; /* border as light-brown */
+    --border-secondary: rgba(75, 75, 75, 0.5); /* border as light-brown */
     --input: 214.3 31.8% 91.4%;
 
     --primary: 222.2 47.4% 11.2%;
@@ -43,6 +44,9 @@
     --teal: #629994;
     --sand: #847a5b;
     --rust: #8d5728;
+    --teal-700: rgba(139, 228, 217, 0.7);
+    --sand-700: rgba(200, 184, 128, 0.7);
+    --rust-600: rgba(255, 144, 47, 0.6);
   }
 
   #popup-root {

@@ -12,14 +12,14 @@ export const RestorePassword = () => {
 
   return (
     <FadeTransition>
-      <Card className={cn(phrase.length === 12 ? 'w-[550px]' : 'w-[750px]')} gradient>
+      <Card className={cn(phrase.length === 12 ? 'w-[600px]' : 'w-[816px]')} gradient>
         <CardHeader className='items-center'>
           <CardTitle>Reset wallet with recovery phrase</CardTitle>
           <CardDescription>
             Feel free to paste it into the first box and the rest will fill
           </CardDescription>
         </CardHeader>
-        <CardContent className='mt-[14px] grid gap-6'>
+        <CardContent className='mt-6 grid gap-4'>
           <ImportForm />
           <Button
             className='mt-4'

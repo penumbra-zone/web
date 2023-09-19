@@ -12,17 +12,17 @@ export const OnboardingSuccess = () => {
   return (
     <FadeTransition>
       <div className='absolute inset-0 flex w-screen items-center justify-center'>
-        <CompressedVideoLogo noWords className='w-[850px]' />
+        <CompressedVideoLogo noWords className='w-[calc(100%-15vw)]' />
       </div>
-      <Card className='w-[400px]' gradient>
-        <CardHeader>
-          <CardTitle className='bg-gradient-to-r from-teal-700 via-[rgba(200,184,128,0.70)] to-orange-400 bg-clip-text text-center text-4xl text-transparent opacity-80'>
+      <Card className='w-[608px]' gradient>
+        <CardHeader className='items-start'>
+          <CardTitle className='bg-gradient-to-r from-teal-700 via-sand-700 to-rust-600 bg-clip-text text-[40px] font-bold leading-9 text-transparent opacity-80'>
             Account created
           </CardTitle>
         </CardHeader>
-        <CardContent className='mt-2 grid gap-1 text-lg-bold'>
-          <p className='text-center'>You are all set!</p>
-          <p className='text-center text-muted-foreground'>
+        <CardContent className='mt-4 grid gap-2 text-xl-medium'>
+          <p>You are all set!</p>
+          <p>
             Use your account to transact, stake, swap or market make. All of it is shielded and
             private.
           </p>
@@ -32,7 +32,7 @@ export const OnboardingSuccess = () => {
               window.open('https://app.testnet.penumbra.zone/', '_blank');
               window.close();
             }}
-            className='mt-6'
+            className='mt-4'
           >
             Visit testnet web app
           </Button>

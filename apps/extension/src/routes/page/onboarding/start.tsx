@@ -17,7 +17,7 @@ export const OnboardingStart = () => {
   return (
     <FadeTransition>
       <CompressedVideoLogo className='mb-10 self-center' />
-      <Card className='w-[440px]' gradient>
+      <Card className='w-[400px] ' gradient>
         <CardHeader className='items-center'>
           <CardTitle>Explore private trading</CardTitle>
           <CardDescription className='text-center'>

@@ -36,11 +36,11 @@ export const GenerateSeedPhrase = () => {
   return (
     <FadeTransition>
       <BackIcon className='float-left mb-4' onClick={() => navigate(-1)} />
-      <Card className={cn(phrase.length === 12 ? 'w-[550px]' : 'w-[750px]')} gradient>
+      <Card className={cn(phrase.length === 12 ? 'w-[600px]' : 'w-[816px]')} gradient>
         <CardHeader className='items-center'>
           <CardTitle>New Recovery Phrase</CardTitle>
         </CardHeader>
-        <CardContent className='mt-[14px] grid gap-6'>
+        <CardContent className='mt-6 grid gap-4'>
           <div className={cn('grid gap-4', !reveal && 'blur')}>
             <WordLengthToogles toogleClick={generateRandomSeedPhrase} phrase={phrase} />
             <div
@@ -51,7 +51,7 @@ export const GenerateSeedPhrase = () => {
             >
               {phrase.map((word, i) => (
                 <div className='flex flex-row items-center justify-center gap-2' key={i}>
-                  <div className='w-7 text-right font-headline text-xl-medium'>{i + 1}.</div>
+                  <div className='w-7 text-right text-xl-medium'>{i + 1}.</div>
                   <Input readOnly value={word} className='text-lg-bold' />
                 </div>
               ))}
@@ -59,7 +59,7 @@ export const GenerateSeedPhrase = () => {
             <CopyToClipboard
               text={phrase.join(' ')}
               label={
-                <p className='font-headline text-lg-medium text-muted-foreground'>
+                <p className='text-lg-medium text-muted-foreground'>
                   Copy to clipboard
                 </p>
               }
@@ -67,7 +67,7 @@ export const GenerateSeedPhrase = () => {
               isSuccessCopyText
             />
           </div>
-          <div className='flex flex-col justify-center gap-4'>
+          <div className='mt-2 flex flex-col justify-center gap-4'>
             <div className='flex flex-col gap-1'>
               <p className='flex items-center gap-2 text-lg-bold text-rust'>
                 <ExclamationTriangleIcon /> Do not share this with anyone

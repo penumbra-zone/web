@@ -37,7 +37,7 @@ export const SettingsConnectedSites = () => {
             {filteredDapps.map((i, index) => (
               <div
                 key={index}
-                className='flex items-center justify-between rounded-lg border border-border bg-background p-4'
+                className='flex items-center justify-between rounded-lg border bg-background p-4'
               >
                 <p className='text-base-bold'>{i}</p>
                 <Popover>

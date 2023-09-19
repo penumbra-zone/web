@@ -40,7 +40,7 @@ export const SettingsNetworks = () => {
             {filteredNetworks.map((i, index) => (
               <Button
                 key={index}
-                className='flex h-11 items-center justify-start gap-3 rounded-lg border border-border bg-background px-3 text-left'
+                className='flex h-11 items-center justify-start gap-3 rounded-lg border bg-background px-3 text-left'
                 onClick={() =>
                   navigate(PopupPath.SETTINGS_NETWORK_NAME.replace(':name', i) as PopupPath)
                 }

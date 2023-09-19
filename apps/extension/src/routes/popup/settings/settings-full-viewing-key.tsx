@@ -59,7 +59,7 @@ export const SettingsFullViewingKey = () => {
                 ]}
               />
             ) : (
-              <div className='break-all rounded-lg border border-border bg-background p-4 text-base-bold text-muted-foreground'>
+              <div className='break-all rounded-lg border bg-background p-4 text-base-bold text-muted-foreground'>
                 {fvk}
               </div>
             )}

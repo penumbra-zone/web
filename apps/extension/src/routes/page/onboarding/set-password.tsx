@@ -30,7 +30,7 @@ export const SetPassword = () => {
             We will use this password to encrypt your data and you'll need it to unlock your wallet.
           </CardDescription>
         </CardHeader>
-        <CardContent className='mt-10 grid gap-4'>
+        <CardContent className='mt-6 grid gap-4'>
           <PasswordInput
             passwordValue={password}
             label='New password'
@@ -57,7 +57,7 @@ export const SetPassword = () => {
           />
           <Button
             variant='gradient'
-            className='mt-6'
+            className='mt-2'
             disabled={password.length < 8 || password !== confirmation}
             onClick={() => {
               void (async function () {

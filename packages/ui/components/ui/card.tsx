@@ -7,11 +7,11 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, gradient, children, ...props }, ref) => {
-    const baseClasses = 'bg-charcoal rounded-lg shadow-sm px-5 py-[30px]';
+    const baseClasses = 'bg-charcoal rounded-lg shadow-sm p-[30px]';
     return gradient ? (
       <div ref={ref} className={cn(baseClasses, 'relative', className)} {...props}>
         <div className='relative z-10 flex flex-col'>{children}</div>
-        <div className='absolute inset-0 z-0 rounded-2xl bg-card-radial px-5 py-[30px] opacity-20 ' />
+        <div className='absolute inset-0 z-0 rounded-2xl bg-card-radial p-[30px] opacity-20 ' />
       </div>
     ) : (
       <div ref={ref} className={cn(baseClasses, className)} {...props}>
@@ -40,7 +40,7 @@ const CardDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn('text-muted-foreground', className)} {...props} />
+  <p ref={ref} className={cn('text-lg-bold text-muted-foreground', className)} {...props} />
 ));
 CardDescription.displayName = 'CardDescription';
 

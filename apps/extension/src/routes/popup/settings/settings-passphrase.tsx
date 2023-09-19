@@ -79,7 +79,7 @@ export const SettingsPassphrase = () => {
             ) : (
               <div className='flex flex-col gap-2'>
                 <p className='font-headline text-xl-semibold'>Recovery secret phrase</p>
-                <div className='mb-[6px] grid grid-cols-3 gap-4 rounded-lg border border-border bg-background p-5'>
+                <div className='mb-[6px] grid grid-cols-3 gap-4 rounded-lg border bg-background p-5'>
                   {phrase.map((word, i) => (
                     <div className='flex' key={i}>
                       <p className='w-5 text-left text-base-bold text-muted-foreground'>{i + 1}.</p>

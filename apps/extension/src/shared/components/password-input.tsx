@@ -32,8 +32,8 @@ export const PasswordInput = ({
 
   return (
     <div className='flex flex-col items-center justify-center gap-2'>
-      <div className='flex gap-2 self-start items-end'>
-        <div className='font-headline text-2xl'>{label}</div>
+      <div className='flex items-center gap-2 self-start'>
+        <div className='text-xl-medium'>{label}</div>
         {priorityResult ? (
           <div
             className={cn(

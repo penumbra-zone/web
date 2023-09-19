@@ -42,8 +42,8 @@ export const Login = () => {
           <PasswordInput
             passwordValue={input}
             label={
-              <p className='bg-gradient-to-r from-[rgba(139,228,217,0.70)] via-[rgba(200,184,128,0.70)] to-[rgba(255,144,47,0.60)] bg-clip-text text-4xl text-transparent'>
-                Enter your password
+              <p className='bg-gradient-to-r from-teal-700 via-sand-700 to-rust-600 bg-clip-text text-4xl text-transparent'>
+                Enter password
               </p>
             }
             onChange={handleChangePassword}

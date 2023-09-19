@@ -108,7 +108,10 @@ module.exports = {
         headline: ['Faktum', 'sans-serif'],
       },
       colors: {
-        border: 'hsl(var(--border))',
+        border: {
+          DEFAULT: 'hsl(var(--border))',
+          secondary: 'var(--border-secondary)'
+        },
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
@@ -147,12 +150,15 @@ module.exports = {
         },
         teal: {
           DEFAULT: 'var(--teal)',
+          700: 'var(--teal-700)',
         },
         sand: {
           DEFAULT: 'var(--sand)',
+          700: 'var(--sand-700)',
         },
         rust: {
           DEFAULT: 'var(--rust)',
+          600: 'var(--rust-600)',
         },
         black: {
           DEFAULT: 'var(--black)',
