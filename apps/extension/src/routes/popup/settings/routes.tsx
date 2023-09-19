@@ -4,12 +4,12 @@ import { SettingsAdvanced } from './settings-advanced';
 import { SettingsAutoLock } from './settings-auto-lock';
 import { SettingsClearCache } from './settings-clear-cache';
 import { SettingsConnectedSites } from './settings-connected-sites';
-import { SettingsFullViewingKey } from './settings-full-viewing-key/index.tsx';
+import { SettingsFullViewingKey } from './settings-full-viewing-key';
 import { SettingsNetworkEdit } from './settings-network-edit';
 import { SettingsNetworks } from './settings-networks';
 import { SettingsPassphrase } from './settings-passphrase';
 import { SettingsPermission } from './settings-permission';
-import { SettingsSecurity } from './settings-security/index.tsx';
+import { SettingsSecurity } from './settings-security';
 import { SettingsSpendKey } from './settings-spend-key';
 
 export const settingsRoutes = [

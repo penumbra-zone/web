@@ -1,10 +1,10 @@
 import { CheckCircledIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useMemo, useState } from 'react';
 import { Button, Input } from 'ui/components';
-import { FadeTransition, SettingsHeader } from '../../../../shared';
-import { usePopupNav } from '../../../../utils/navigate';
-import { PopupPath } from '../../paths';
-import { ShareGradientIcon } from './icon';
+import { FadeTransition, SettingsHeader } from '../../../shared';
+import { usePopupNav } from '../../../utils/navigate';
+import { PopupPath } from '../paths';
+import { ShareGradientIcon } from '../../../icons';
 
 const networks = ['penumbra-testnet'];
 
@@ -21,7 +21,7 @@ export const SettingsNetworks = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-10'>
         <SettingsHeader title='Networks' />
-        <div className='mx-auto h-[60px] w-[60px]'>
+        <div className='mx-auto h-20 w-20'>
           <ShareGradientIcon />
         </div>
         <div className='flex flex-col gap-4 px-5'>

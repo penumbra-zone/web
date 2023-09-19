@@ -1,10 +1,10 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
 import { Button, CopyToClipboard } from 'ui/components';
-import { FadeTransition, PasswordInput, SettingsHeader } from '../../../../shared';
-import { useStore } from '../../../../state';
-import { passwordSelector } from '../../../../state/password';
-import { AccountKeyIcon } from './icon';
+import { FadeTransition, PasswordInput, SettingsHeader } from '../../../shared';
+import { useStore } from '../../../state';
+import { passwordSelector } from '../../../state/password';
+import { AccountKeyGradientIcon } from '../../../icons';
 
 export const SettingsSpendKey = () => {
   const { isPassword } = useStore(passwordSelector);
@@ -30,8 +30,8 @@ export const SettingsSpendKey = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-10'>
         <SettingsHeader title='Spending Key' />
-        <div className='mx-auto h-[60px] w-[60px]'>
-          <AccountKeyIcon />
+        <div className='mx-auto h-20 w-20'>
+          <AccountKeyGradientIcon />
         </div>
         <form
           className='flex flex-1 flex-col items-start justify-between px-[30px] pb-[30px]'

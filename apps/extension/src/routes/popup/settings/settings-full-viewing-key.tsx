@@ -1,10 +1,10 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
 import { Button, CopyToClipboard } from 'ui/components';
-import { FadeTransition, PasswordInput, SettingsHeader } from '../../../../shared';
-import { useStore } from '../../../../state';
-import { passwordSelector } from '../../../../state/password';
-import { KeyGradientIcon } from './icon'
+import { FadeTransition, PasswordInput, SettingsHeader } from '../../../shared';
+import { useStore } from '../../../state';
+import { passwordSelector } from '../../../state/password';
+import { KeyGradientIcon } from '../../../icons';
 
 export const SettingsFullViewingKey = () => {
   const { isPassword } = useStore(passwordSelector);
@@ -32,7 +32,7 @@ export const SettingsFullViewingKey = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-10'>
         <SettingsHeader title='Full Viewing Key' />
-        <div className='mx-auto h-[60px] w-[60px]'>
+        <div className='mx-auto h-20 w-20'>
           <KeyGradientIcon />
         </div>
         <form

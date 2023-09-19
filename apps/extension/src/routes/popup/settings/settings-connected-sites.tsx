@@ -1,8 +1,8 @@
 import { DotsVerticalIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useMemo, useState } from 'react';
 import { Button, Input, Popover, PopoverContent, PopoverTrigger } from 'ui/components';
-import { FadeTransition, SettingsHeader } from '../../../../shared';
-import { LinkGradientIcon } from './icon';
+import { FadeTransition, SettingsHeader } from '../../../shared';
+import { LinkGradientIcon } from '../../../icons';
 
 const dapps = ['app.testnet.penumbra.zone', 'testnet.penumbra.zone'];
 
@@ -18,7 +18,7 @@ export const SettingsConnectedSites = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-10'>
         <SettingsHeader title='Connected sites' />
-        <div className='mx-auto h-[60px] w-[60px]'>
+        <div className='mx-auto h-20 w-20'>
           <LinkGradientIcon />
         </div>
         <div className='flex flex-col gap-4 px-5'>

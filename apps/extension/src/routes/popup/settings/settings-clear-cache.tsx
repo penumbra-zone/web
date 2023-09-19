@@ -1,7 +1,7 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { Button } from 'ui/components';
-import { FadeTransition, SettingsHeader } from '../../../../shared';
-import { TrashGradientIcon } from './icon';
+import { FadeTransition, SettingsHeader } from '../../../shared';
+import { TrashGradientIcon } from '../../../icons';
 
 // Clearing cache should:
 //  - Delete indexeddb database
@@ -12,7 +12,7 @@ export const SettingsClearCache = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-10'>
         <SettingsHeader title='Clear cache' />
-        <div className='mx-auto h-[60px] w-[60px]'>
+        <div className='mx-auto h-20 w-20'>
           <TrashGradientIcon />
         </div>
         <div className='flex flex-1 flex-col items-start justify-between px-[30px] pb-[30px]'>

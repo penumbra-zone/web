@@ -1,7 +1,7 @@
-import { CustomLink, FadeTransition, SettingsHeader } from '../../../../shared';
-import { usePopupNav } from '../../../../utils/navigate';
-import { PopupPath } from '../../paths';
-import { AccountKeyIcon, EyeGradientIcon, FileTextIcon, KeyIcon } from './icon';
+import { AccountKeyIcon, EyeGradientIcon, FileTextIcon, KeyIcon } from '../../../icons';
+import { CustomLink, FadeTransition, SettingsHeader } from '../../../shared';
+import { usePopupNav } from '../../../utils/navigate';
+import { PopupPath } from '../paths';
 
 const links = [
   {
@@ -28,7 +28,7 @@ export const SettingsSecurity = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-10'>
         <SettingsHeader title='Security & Privacy' />
-        <div className='mx-auto h-[60px] w-[60px]'>
+        <div className='mx-auto h-20 w-20'>
           <EyeGradientIcon />
         </div>
         <div className='flex flex-1 flex-col items-start gap-2 px-[30px]'>

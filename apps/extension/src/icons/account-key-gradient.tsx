@@ -1,49 +1,49 @@
-export const AccountKeyIcon = () => (
-  <svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40' fill='none'>
+export const AccountKeyGradientIcon = () => (
+  <svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80' fill='none'>
     <path
-      d='M18.4167 33.6334C17.6833 33.0501 16.75 32.3501 16.75 31.3334C20.2833 28.2501 23.6167 24.9334 27.25 21.9668C27.0366 21.1716 27.0068 20.3383 27.1627 19.5298C27.3186 18.7214 27.6562 17.9589 28.15 17.3001C28.7241 16.5068 29.5363 15.9173 30.4686 15.6175C31.4009 15.3178 32.4045 15.3234 33.3333 15.6334C36.3333 16.8334 37.7167 21.8001 34.75 23.7501C34.0422 24.2325 33.2114 24.5029 32.3552 24.5295C31.499 24.5561 30.653 24.3377 29.9167 23.9001C28.7333 24.9168 27.6833 26.0001 26.5833 27.0834'
+      d='M36.8333 67.2667C35.3667 66.1 33.5 64.7 33.5 62.6666C40.5667 56.5 47.2333 49.8667 54.5 43.9333C54.0733 42.3429 54.0136 40.6763 54.3254 39.0594C54.6372 37.4425 55.3124 35.9176 56.3 34.6C57.4481 33.0133 59.0727 31.8344 60.9372 31.2348C62.8017 30.6353 64.8089 30.6465 66.6667 31.2667C72.6667 33.6667 75.4333 43.6 69.5 47.5C68.0844 48.4648 66.4227 49.0056 64.7104 49.0588C62.998 49.1119 61.3061 48.6752 59.8333 47.8C57.4667 49.8333 55.3667 52 53.1667 54.1667'
       stroke='url(#paint0_linear_2508_5894)'
       strokeWidth='1.02'
       strokeLinecap='round'
       strokeLinejoin='round'
     />
     <path
-      d='M18.4167 33.6333C19.2167 33.4365 19.9377 33.0005 20.4834 32.3833'
+      d='M36.8333 67.2666C38.4332 66.8731 39.8751 66.0009 40.9666 64.7666'
       stroke='url(#paint1_linear_2508_5894)'
       strokeWidth='1.02'
       strokeLinecap='round'
       strokeLinejoin='round'
     />
     <path
-      d='M22.1001 30.7C22.7098 31.2475 23.2677 31.85 23.7668 32.5'
+      d='M44.2 61.3999C45.4193 62.4949 46.5352 63.7 47.5333 64.9999'
       stroke='url(#paint2_linear_2508_5894)'
       strokeWidth='1.02'
       strokeLinecap='round'
       strokeLinejoin='round'
     />
     <path
-      d='M24.3501 28.75C24.6168 29.0667 24.8834 29.3667 25.1668 29.6667'
+      d='M48.7 57.5C49.2333 58.1333 49.7666 58.7333 50.3333 59.3333'
       stroke='url(#paint3_linear_2508_5894)'
       strokeWidth='1.02'
       strokeLinecap='round'
       strokeLinejoin='round'
     />
     <path
-      d='M29.2166 19.8501C29.2517 19.5443 29.3469 19.2485 29.4968 18.9798C29.6467 18.711 29.8483 18.4745 30.09 18.284C30.3316 18.0935 30.6086 17.9526 30.9049 17.8695C31.2012 17.7865 31.5111 17.7629 31.8166 17.8001'
+      d='M58.4333 39.7001C58.5036 39.0886 58.6941 38.4971 58.9939 37.9595C59.2937 37.422 59.6968 36.9491 60.1801 36.568C60.6635 36.1869 61.2174 35.9052 61.8101 35.7391C62.4027 35.573 63.0224 35.5257 63.6333 35.6001'
       stroke='url(#paint4_linear_2508_5894)'
       strokeWidth='0.77'
       strokeLinecap='round'
       strokeLinejoin='round'
     />
     <path
-      d='M15.25 4.38339L14.45 4.65005C8.69998 6.85005 8.33332 17.7834 15.5667 17.7167C16.8721 17.7567 18.1628 17.4316 19.2934 16.7779C20.4241 16.1242 21.3499 15.168 21.9667 14.0167C24.2667 9.11672 20.7167 3.00005 15.25 4.38339Z'
+      d='M30.5 8.76677L28.9 9.3001C17.4 13.7001 16.6666 35.5668 31.1333 35.4334C33.7441 35.5134 36.3255 34.8632 38.5869 33.5558C40.8482 32.2485 42.6998 30.3359 43.9333 28.0334C48.5333 18.2334 41.4333 6.0001 30.5 8.76677Z'
       stroke='url(#paint5_linear_2508_5894)'
       strokeWidth='1.02'
       strokeLinecap='round'
       strokeLinejoin='round'
     />
     <path
-      d='M23.7999 20.0001C21.9999 17.6334 17.55 17.4001 14.8833 17.8834C13.0891 18.1811 11.3905 18.8976 9.92517 19.9749C8.45987 21.0522 7.26925 22.4598 6.44995 24.0834C5.44839 26.0264 4.85296 28.1529 4.69995 30.3334V30.8668'
+      d='M47.5999 39.9999C43.9999 35.2666 35.0999 34.7999 29.7666 35.7666C26.1783 36.3619 22.7809 37.795 19.8503 39.9496C16.9197 42.1041 14.5385 44.9193 12.8999 48.1666C10.8968 52.0525 9.70591 56.3056 9.3999 60.6666V61.7333'
       stroke='url(#paint6_linear_2508_5894)'
       strokeWidth='1.02'
       strokeLinecap='round'
@@ -52,10 +52,10 @@ export const AccountKeyIcon = () => (
     <defs>
       <linearGradient
         id='paint0_linear_2508_5894'
-        x1='16.75'
-        y1='24.5151'
-        x2='38.5888'
-        y2='24.5151'
+        x1='33.5'
+        y1='49.0299'
+        x2='77.1776'
+        y2='49.0299'
         gradientUnits='userSpaceOnUse'
       >
         <stop stopColor='#8BE4D9' stopOpacity='0.7' />
@@ -64,10 +64,10 @@ export const AccountKeyIcon = () => (
       </linearGradient>
       <linearGradient
         id='paint1_linear_2508_5894'
-        x1='18.4167'
-        y1='33.0083'
-        x2='20.7138'
-        y2='33.0083'
+        x1='36.8333'
+        y1='66.0166'
+        x2='41.4274'
+        y2='66.0166'
         gradientUnits='userSpaceOnUse'
       >
         <stop stopColor='#8BE4D9' stopOpacity='0.7' />
@@ -76,10 +76,10 @@ export const AccountKeyIcon = () => (
       </linearGradient>
       <linearGradient
         id='paint2_linear_2508_5894'
-        x1='22.1001'
-        y1='31.6'
-        x2='23.9526'
-        y2='31.6'
+        x1='44.2'
+        y1='63.1999'
+        x2='47.9049'
+        y2='63.1999'
         gradientUnits='userSpaceOnUse'
       >
         <stop stopColor='#8BE4D9' stopOpacity='0.7' />
@@ -88,10 +88,10 @@ export const AccountKeyIcon = () => (
       </linearGradient>
       <linearGradient
         id='paint3_linear_2508_5894'
-        x1='24.3501'
-        y1='29.2083'
-        x2='25.2578'
-        y2='29.2083'
+        x1='48.7'
+        y1='58.4167'
+        x2='50.5154'
+        y2='58.4167'
         gradientUnits='userSpaceOnUse'
       >
         <stop stopColor='#8BE4D9' stopOpacity='0.7' />
@@ -100,10 +100,10 @@ export const AccountKeyIcon = () => (
       </linearGradient>
       <linearGradient
         id='paint4_linear_2508_5894'
-        x1='29.2166'
-        y1='18.8165'
-        x2='32.1064'
-        y2='18.8165'
+        x1='58.4333'
+        y1='37.633'
+        x2='64.2131'
+        y2='37.633'
         gradientUnits='userSpaceOnUse'
       >
         <stop stopColor='#8BE4D9' stopOpacity='0.7' />
@@ -112,10 +112,10 @@ export const AccountKeyIcon = () => (
       </linearGradient>
       <linearGradient
         id='paint5_linear_2508_5894'
-        x1='10.1355'
-        y1='10.9523'
-        x2='24.0765'
-        y2='10.9523'
+        x1='20.271'
+        y1='21.9046'
+        x2='48.153'
+        y2='21.9046'
         gradientUnits='userSpaceOnUse'
       >
         <stop stopColor='#8BE4D9' stopOpacity='0.7' />
@@ -124,10 +124,10 @@ export const AccountKeyIcon = () => (
       </linearGradient>
       <linearGradient
         id='paint6_linear_2508_5894'
-        x1='4.69995'
-        y1='24.2716'
-        x2='25.9293'
-        y2='24.2716'
+        x1='9.3999'
+        y1='48.543'
+        x2='51.8587'
+        y2='48.543'
         gradientUnits='userSpaceOnUse'
       >
         <stop stopColor='#8BE4D9' stopOpacity='0.7' />

@@ -1,8 +1,8 @@
 import { TimerIcon, TrashIcon } from '@radix-ui/react-icons';
-import { CustomLink, FadeTransition, SettingsHeader } from '../../../../shared';
-import { usePopupNav } from '../../../../utils/navigate';
-import { PopupPath } from '../../paths';
-import { DashboardGradientIcon } from './icon';
+import { CustomLink, FadeTransition, SettingsHeader } from '../../../shared';
+import { usePopupNav } from '../../../utils/navigate';
+import { PopupPath } from '../paths';
+import { DashboardGradientIcon } from '../../../icons';
 
 const links = [
   {
@@ -24,7 +24,7 @@ export const SettingsAdvanced = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-4'>
         <SettingsHeader title='Advanced' />
-        <div className='mx-auto mb-6 h-[60px] w-[60px]'>
+        <div className='mx-auto mb-6 h-20 w-20'>
           <DashboardGradientIcon />
         </div>
         <div className='flex flex-1 flex-col items-start gap-2 px-[30px]'>

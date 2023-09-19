@@ -1,13 +1,13 @@
 import { Button, Input } from 'ui/components';
-import { FadeTransition, SettingsHeader } from '../../../../shared';
-import { TimerGradientIcon } from './icon';
+import { FadeTransition, SettingsHeader } from '../../../shared';
+import { TimerGradientIcon } from '../../../icons';
 
 export const SettingsAutoLock = () => {
   return (
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-10'>
         <SettingsHeader title='Auto-lock timer' />
-        <div className='mx-auto h-[60px] w-[60px]'>
+        <div className='mx-auto h-20 w-20'>
           <TimerGradientIcon />
         </div>
         <div className='flex flex-1 flex-col items-start justify-between px-[30px] pb-[30px]'>
