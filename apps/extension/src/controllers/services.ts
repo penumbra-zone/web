@@ -1,8 +1,8 @@
 import { Controllers } from './initialize';
 import { localExtStorage } from '../storage/local';
-import { initializeControllers } from '../routes/service-worker/handlers/initialize';
+import { initializeControllers } from '../routes/service-worker/internal/initialize';
 import { testnetConstants } from 'penumbra-constants';
-import { swMessageHandler } from '../routes/service-worker/message-handler';
+import { swMessageHandler } from '../routes/service-worker/root-router';
 
 const sw = self as unknown as ServiceWorkerGlobalScope & typeof globalThis;
 

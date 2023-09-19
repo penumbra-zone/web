@@ -4,7 +4,7 @@
   "packageManager": "pnpm@8.6.11",
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev  --concurrency 11",
+    "dev": "turbo run dev  --concurrency 15",
     "lint": "turbo run lint -- --max-warnings=0",
     "lint:fix": "turbo run lint -- --fix",
     "test": "turbo run test",
@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@turbo/gen": "^1.10.14",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
     "eslint": "^8.49.0",
     "eslint-config-custom": "workspace:*",
     "prettier": "^3.0.3",
