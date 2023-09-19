@@ -1,26 +1,71 @@
-import SHA256 from 'crypto-js/sha256';
-import AES from 'crypto-js/aes';
-import Utf8 from 'crypto-js/enc-utf8';
+// Salts & initialization vectors should be stored
+export const random128Bits = (): Uint8Array => {
+  return crypto.getRandomValues(new Uint8Array(16)); // 128 bits
+};
 
-const STRETCH_ROUNDS = 5000;
+export const hashPassword = async (password: string, salt: Uint8Array): Promise<CryptoKey> => {
+  const enc = new TextEncoder();
+  const importedKey = await crypto.subtle.importKey(
+    'raw',
+    enc.encode(password),
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits', 'deriveKey'],
+  );
 
-// In cryptography, key stretching techniques are used to make brute-force attacks more difficult.
-// The idea is to "stretch" the key (or in this case, the password) by applying a computationally intensive
-// operation to it multiple times. This makes each attempt to guess the password more time-consuming,
-// which in turn makes brute-force attacks less feasible.
-export const repeatedHash = (message: string) => {
-  let hash = SHA256(message);
-  for (let i = 0; i < STRETCH_ROUNDS; i++) {
-    hash = SHA256(hash.toString());
+  return crypto.subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt: salt,
+      // Recommended config by: https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Password_Storage_Cheat_Sheet.md
+      iterations: 210000,
+      hash: 'SHA-512',
+    },
+    importedKey,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt'],
+  );
+};
+
+export const isPassword = async (
+  password: string,
+  salt: Uint8Array,
+  encryptedSeedPhrase: ArrayBuffer,
+  initializationVector: Uint8Array,
+): Promise<boolean> => {
+  try {
+    const key = await hashPassword(password, salt);
+    await decrypt(encryptedSeedPhrase, initializationVector, key);
+    return true;
+  } catch (error) {
+    return false;
   }
-  return hash.toString();
 };
 
-export const encrypt = (message: string, key: string) => {
-  return AES.encrypt(message, key).toString();
+export const encrypt = async (
+  message: string,
+  initializationVector: Uint8Array,
+  key: CryptoKey,
+): Promise<ArrayBuffer> => {
+  const enc = new TextEncoder();
+  return crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv: initializationVector },
+    key,
+    enc.encode(message),
+  );
 };
 
-export const decrypt = (ciphertext: string, key: string) => {
-  const decrypted = AES.decrypt(ciphertext, key);
-  return decrypted.toString(Utf8);
+export const decrypt = async (
+  ciphertext: ArrayBuffer,
+  initializationVector: Uint8Array, // You need to provide both the same iv & key used for encryption
+  key: CryptoKey,
+): Promise<string> => {
+  const dec = new TextDecoder();
+  const decrypted = await crypto.subtle.decrypt(
+    { name: 'AES-GCM', iv: initializationVector },
+    key,
+    ciphertext,
+  );
+  return dec.decode(decrypted);
 };

@@ -7,13 +7,13 @@ export enum LocalStorageVersion {
 }
 
 export interface LocalStorageState {
-  hashedPassword: string | undefined;
   wallets: Wallet[];
+  passwordSalt: Uint8Array | undefined;
   grpcEndpoint: string;
 }
 
 export const localDefaults: LocalStorageState = {
-  hashedPassword: undefined,
+  passwordSalt: undefined,
   wallets: [],
   grpcEndpoint: testnetConstants.grpcEndpoint,
 };

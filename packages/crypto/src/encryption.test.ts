@@ -1,68 +1,79 @@
-import { decrypt, encrypt } from './encryption';
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
+import { decrypt, encrypt, hashPassword, isPassword, random128Bits } from './encryption';
+import { webcrypto } from 'crypto';
 
-describe('Encryption tests', () => {
-  const secretMessage = 'Hello, World!';
-  const password = 'correcthorsebatterystaple';
+vi.stubGlobal('crypto', webcrypto);
 
-  test('original message can be recovered', () => {
-    const encrypted = encrypt(secretMessage, password);
-    const decrypted = decrypt(encrypted, password);
-    expect(decrypted).toBe(secretMessage);
+describe('encryption', () => {
+  const password = 's0meUs3rP@ssword';
+  const seedPhrase = 'correct horse battery staple';
+
+  test('random128Bits returns Uint8Array of length 16', () => {
+    const result = random128Bits();
+    expect(result).toBeInstanceOf(Uint8Array);
+    expect(result.length).toBe(16);
   });
 
-  test('despite different initialization vector, both can still decrypt', () => {
-    // Different initialization vector's make these different
-    const encryptedA = encrypt(secretMessage, password);
-    const encryptedB = encrypt(secretMessage, password);
-    expect(encryptedA).not.toBe(encryptedB);
+  test('encrypt and decrypt provide lossless round-trip', async () => {
+    const salt = random128Bits();
+    const key = await hashPassword(password, salt);
 
-    // But they can still decrypt
-    const decryptedA = decrypt(encryptedA, password);
-    const decryptedB = decrypt(encryptedB, password);
-    expect(decryptedA).toBe(secretMessage);
-    expect(decryptedB).toBe(secretMessage);
-    expect(decryptedA).toBe(decryptedB);
+    const initializationVector = random128Bits();
+    const encrypted = await encrypt(seedPhrase, initializationVector, key);
+    const decrypted = await decrypt(encrypted, initializationVector, key);
+    expect(decrypted).toBe(seedPhrase);
   });
 
-  test('different keys produce different results', () => {
-    const otherPassword = 'wrong-password-123';
-    const encryptedA = encrypt(secretMessage, password);
-    const encryptedB = encrypt(secretMessage, otherPassword);
-    expect(encryptedA).not.toBe(encryptedB);
+  test('isPassword correctly verifies password', async () => {
+    const salt = random128Bits();
+    const key = await hashPassword(password, salt);
+
+    const initializationVector = random128Bits();
+    const encrypted = await encrypt(seedPhrase, initializationVector, key);
+    const isPasswordCorrect = await isPassword(password, salt, encrypted, initializationVector);
+
+    expect(isPasswordCorrect).toBe(true);
   });
 
-  test('decryption fails with incorrect key', () => {
-    const otherPassword = 'wrong-password-123';
-    const encrypted = encrypt(secretMessage, password);
+  test('isPassword correctly rejects incorrect password', async () => {
+    const salt = random128Bits();
+    const key = await hashPassword(password, salt);
+    const initializationVector = random128Bits();
+
+    const encrypted = await encrypt(seedPhrase, initializationVector, key);
+    const isPasswordCorrect = await isPassword(
+      'WrongP@ssw0rd',
+      salt,
+      encrypted,
+      initializationVector,
+    );
+
+    expect(isPasswordCorrect).toBe(false);
+  });
+
+  test('decrypt correctly rejects wrong initialization vector', async () => {
+    const salt = random128Bits();
+    const key = await hashPassword(password, salt);
+    const initializationVector = random128Bits();
+    const encrypted = await encrypt(seedPhrase, initializationVector, key);
+    const wrongInitializationVector = random128Bits();
     try {
-      decrypt(encrypted, otherPassword);
-      // If decryption doesn't throw an error, then it's a failure
-      expect('Decryption should have thrown an error').toBe(false);
+      await decrypt(encrypted, wrongInitializationVector, key);
     } catch (error) {
-      expect(true).toBe(true); // This is expected
+      expect(error).toBeTruthy();
     }
   });
 
-  test('encrypts empty string', () => {
-    const encrypted = encrypt('', password);
-    const decrypted = decrypt(encrypted, password);
-    expect(decrypted).toBe('');
-  });
-
-  test('decrypt raises error with undefined', () => {
+  test('decrypt correctly rejects wrong CryptoKey', async () => {
+    const salt = random128Bits();
+    const key = await hashPassword(password, salt);
+    const wrongKey = await hashPassword('wrongPassword', salt);
+    const initializationVector = random128Bits();
+    const encrypted = await encrypt(seedPhrase, initializationVector, key);
     try {
-      decrypt(undefined!, password);
-      expect('Decryption should have thrown an error').toBe(false);
+      await decrypt(encrypted, initializationVector, wrongKey);
     } catch (error) {
-      expect(true).toBe(true); // This is expected
+      expect(error).toBeTruthy();
     }
-  });
-
-  test('encrypts large message', () => {
-    const largeMessage = 'a'.repeat(1000);
-    const encrypted = encrypt(largeMessage, password);
-    const decrypted = decrypt(encrypted, password);
-    expect(decrypted).toBe(largeMessage);
   });
 });

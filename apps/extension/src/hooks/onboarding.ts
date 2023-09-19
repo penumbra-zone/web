@@ -1,5 +1,5 @@
 import { useStore } from '../state';
-import { encrypt } from 'penumbra-crypto-ts';
+import { encrypt, random128Bits } from 'penumbra-crypto-ts';
 import { generateSelector } from '../state/seed-phrase/generate';
 import { importSelector } from '../state/seed-phrase/import';
 import { passwordSelector } from '../state/password';
@@ -18,17 +18,27 @@ export const useOnboardingSave = () => {
   const { addWallet } = useStore(walletsSelector);
 
   return async (plaintextPassword: string) => {
-    const hashedPassword = setPassword(plaintextPassword);
     // Determine which routes it came through to get here
     const phrase = generatedPhrase.length ? generatedPhrase : importedPhrase;
-    const encryptedSeedPhrase = encrypt(phrase.join(' '), hashedPassword);
-
     const phraseString = phrase.join(' ');
+
+    const hashedPassword = await setPassword(plaintextPassword);
+    const initializationVector = random128Bits();
+    const encryptedSeedPhrase = await encrypt(
+      phraseString,
+      initializationVector,
+      hashedPassword.key,
+    );
     const spendKey = generateSpendKey(phraseString);
     const fullViewingKey = getFullViewingKey(spendKey);
 
-    await addWallet({ label: 'Wallet #1', encryptedSeedPhrase, fullViewingKey });
-    await sendSwMessage<InitializeMessage>({
+    await addWallet({
+      label: 'Wallet #1',
+      encryptedSeedPhrase,
+      fullViewingKey,
+      initializationVector,
+    });
+    void sendSwMessage<InitializeMessage>({
       type: 'INITIALIZE',
       data: {
         grpcEndpoint: testnetConstants.grpcEndpoint,

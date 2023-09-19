@@ -1,11 +1,12 @@
 import { ExtensionStorage } from './base';
+import { HashedPassword } from '../state/password';
 
 export enum SessionStorageVersion {
   V1 = 'V1',
 }
 
 export interface SessionStorageState {
-  hashedPassword: string | undefined;
+  hashedPassword: HashedPassword | undefined;
 }
 
 export const sessionDefaults: SessionStorageState = {

@@ -1,0 +1,18 @@
+# Custody
+
+### Password
+
+When setting up for the first time, you'll need to set a password.
+
+This password is hashed via `PBKDF2`, see [hashPassword() function](../packages/crypto/src/encryption.ts). It utilizes a pseudorandom function along with a salt value and iteration. The use of a salt provides protection against pre-computed attacks such as rainbow tables, and the iteration count slows down brute-force attacks.
+
+This hashed key+salt is stored in `chrome.storage.session` used for deriving spending keys for wallets later.
+
+The salt is also stored in `chrome.storage.local` to later validate logins when session storage is wiped.
+
+### New wallet
+
+Upon importing or generating a new seed phrase, it is:
+
+- Encrypted using `AES-GCM`, see [encrypt() function](../packages/crypto/src/encryption.ts)
+- Stored in `chrome.storage.local` along with the generated `initialization vector` (needed on decryption)
