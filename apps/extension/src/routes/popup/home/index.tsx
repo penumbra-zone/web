@@ -36,10 +36,12 @@ export const PopupIndex = () => {
         <div className='relative bottom-[-48px] right-5 -z-10 h-[170px] max-h-[170px] w-[388px] overflow-hidden'>
           <img src='/penumbra-logo.svg' className='object-cover' />
         </div>
-        <p className='mb-4 text-center font-headline text-3xl'>{all[0]?.label}</p>
+        <p className='mb-4 text-center font-headline text-xl font-semibold leading-[30px]'>
+          {all[0]?.label}
+        </p>
         <div className='flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
           <img src='https://avatar.vercel.sh/rauchg' alt='icon' className='h-6 w-6 rounded-full' />
-          <p className='text-center text-base-bold text-muted-foreground'>
+          <p className='text-center text-[12px] font-bold leading-[18px] text-muted-foreground'>
             penumbrav2t13vh0fkf3qkqjacpm59g23uf...
           </p>
           <CopyToClipboard
@@ -54,9 +56,11 @@ export const PopupIndex = () => {
         </div>
       </div>
       <div className='flex flex-col items-center gap-1'>
-        <p className='font-headline text-3xl text-sand mb-1'>Syncing blocks...</p>
+        <p className='mb-1 font-headline text-xl font-semibold leading-[30px] text-sand'>
+          Syncing blocks...
+        </p>
         <Progress value={73} />
-        <p className='text-[24px] font-medium leading-[30px] text-sand'>10982/121312</p>
+        <p className='text-2xl font-bold leading-[30px] text-sand'>10982/121312</p>
       </div>
     </div>
   );

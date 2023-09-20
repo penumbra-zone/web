@@ -48,7 +48,7 @@ export const Settings = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col justify-between gap-6'>
         <SettingsHeader title='Settings' />
-        <div className='flex flex-1 flex-col items-start gap-4 px-[30px]'>
+        <div className='flex flex-1 flex-col items-start gap-5 px-[30px]'>
           {links.map(i => (
             <CustomLink
               key={i.href}
@@ -61,7 +61,9 @@ export const Settings = () => {
         <div className='h-[66px] border-t border-[rgba(75,75,75,0.50)] px-5 pb-[30px] pt-2'>
           <CustomLink
             title='Lock Wallet'
-            icon={<ExitIcon className='h-5 w-5 text-muted-foreground' />}
+            icon={
+              <ExitIcon className='h-5 w-5 text-muted-foreground' />
+            }
             onClick={() => {
               clearSessionPassword();
               navigate(PopupPath.LOGIN);

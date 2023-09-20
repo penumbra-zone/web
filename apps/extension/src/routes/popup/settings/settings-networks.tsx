@@ -19,12 +19,12 @@ export const SettingsNetworks = () => {
 
   return (
     <FadeTransition>
-      <div className='flex min-h-[100vh] w-[100vw] flex-col gap-10'>
+      <div className='flex min-h-[100vh] w-[100vw] flex-col gap-6'>
         <SettingsHeader title='Networks' />
         <div className='mx-auto h-20 w-20'>
           <ShareGradientIcon />
         </div>
-        <div className='flex flex-col gap-4 px-5'>
+        <div className='flex flex-col gap-4 px-[30px]'>
           <div className='relative flex w-full items-center justify-center gap-2'>
             <div className='absolute inset-y-0 left-3 flex items-center'>
               <MagnifyingGlassIcon className='h-5 w-5 text-muted-foreground' />
@@ -36,7 +36,7 @@ export const SettingsNetworks = () => {
               placeholder='Network name...'
             />
           </div>
-          <div className='flex flex-col'>
+          <div className='flex flex-col gap-4'>
             {filteredNetworks.map((i, index) => (
               <Button
                 key={index}
@@ -46,7 +46,7 @@ export const SettingsNetworks = () => {
                 }
               >
                 <CheckCircledIcon className='h-5 w-5 text-teal' />
-                <p className='text-base-bold'>{i}</p>
+                <p className='font-normal'>{i}</p>
               </Button>
             ))}
           </div>

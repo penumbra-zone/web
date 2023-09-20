@@ -28,13 +28,13 @@ export const SettingsSpendKey = () => {
 
   return (
     <FadeTransition>
-      <div className='flex min-h-[100vh] w-[100vw] flex-col gap-10'>
+      <div className='flex min-h-[100vh] w-[100vw] flex-col gap-6'>
         <SettingsHeader title='Spending Key' />
         <div className='mx-auto h-20 w-20'>
           <AccountKeyGradientIcon />
         </div>
         <form
-          className='flex flex-1 flex-col items-start justify-between px-[30px] pb-[30px]'
+          className='flex flex-1 flex-col items-start justify-between px-[30px] pb-5'
           onSubmit={submit}
         >
           <div className='flex flex-col gap-4'>
@@ -42,7 +42,7 @@ export const SettingsSpendKey = () => {
               <PasswordInput
                 passwordValue={input}
                 label={
-                  <p className='font-headline text-xl-semibold text-muted-foreground'>Password</p>
+                  <p className='font-headline font-semibold text-muted-foreground'>Password</p>
                 }
                 onChange={e => {
                   setInputValue(e.target.value);
@@ -57,23 +57,19 @@ export const SettingsSpendKey = () => {
                 ]}
               />
             ) : (
-              <div className='break-all rounded-lg border bg-background p-4 text-base-bold text-muted-foreground'>
+              <div className='break-all rounded-lg border bg-background px-[18px] py-[14px] text-muted-foreground'>
                 {sk}
               </div>
             )}
             {sk && (
               <CopyToClipboard
                 text={sk}
-                label={
-                  <p className='font-headline text-base-bold text-muted-foreground'>
-                    Copy to clipboard
-                  </p>
-                }
-                className='m-auto mb-2 w-48'
+                label={<span className='font-bold text-muted-foreground'>Copy to clipboard</span>}
+                className='m-auto mb-2'
                 isSuccessCopyText
               />
             )}
-            <p className='mb-2 flex items-center gap-2 text-base-bold text-rust'>
+            <p className='flex items-center gap-2 text-rust'>
               <span>
                 <ExclamationTriangleIcon />
               </span>
@@ -82,7 +78,7 @@ export const SettingsSpendKey = () => {
             </p>
           </div>
           {!sk ? (
-            <Button variant='gradient' className='h-11 w-full' type='submit'>
+            <Button variant='gradient' size='lg' className='w-full' type='submit'>
               Confirm
             </Button>
           ) : (

@@ -26,12 +26,12 @@ export const SettingsSecurity = () => {
 
   return (
     <FadeTransition>
-      <div className='flex min-h-[100vh] w-[100vw] flex-col gap-10'>
+      <div className='flex min-h-[100vh] w-[100vw] flex-col gap-6'>
         <SettingsHeader title='Security & Privacy' />
         <div className='mx-auto h-20 w-20'>
           <EyeGradientIcon />
         </div>
-        <div className='flex flex-1 flex-col items-start gap-2 px-[30px]'>
+        <div className='flex flex-1 flex-col items-start gap-4 px-[30px]'>
           {links.map(i => (
             <CustomLink
               key={i.href}

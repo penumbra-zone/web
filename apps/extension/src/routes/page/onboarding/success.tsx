@@ -20,7 +20,7 @@ export const OnboardingSuccess = () => {
             Account created
           </CardTitle>
         </CardHeader>
-        <CardContent className='mt-4 grid gap-2 text-xl-medium'>
+        <CardContent className='mt-4 grid gap-2 text-base font-bold'>
           <p>You are all set!</p>
           <p>
             Use your account to transact, stake, swap or market make. All of it is shielded and
