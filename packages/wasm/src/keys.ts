@@ -5,7 +5,7 @@ import {
   get_short_address_by_index,
 } from '@penumbra-zone/wasm-bundler';
 import { z } from 'zod';
-import { validateSchema } from './utils';
+import { validateSchema } from 'penumbra-types';
 
 export const generateSpendKey = (seedPhrase: string): string =>
   validateSchema(z.string(), generate_spend_key(seedPhrase));
