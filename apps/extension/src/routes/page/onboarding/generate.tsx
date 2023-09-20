@@ -77,7 +77,7 @@ export const GenerateSeedPhrase = () => {
               <p className='flex items-center gap-2 text-teal'>
                 <LockClosedIcon /> Back this up safely
               </p>
-              <p >
+              <p>
                 Save to a password manager or keep it in a bank vault. Without the backup, you
                 cannot recover your account.
               </p>

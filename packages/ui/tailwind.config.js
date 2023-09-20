@@ -18,7 +18,7 @@ module.exports = {
 
     extend: {
       fontFamily: {
-        body: ['Devanagari Sangam Regular', 'sans-serif'],
+        body: ['Devanagari Sangam', 'sans-serif'],
         headline: ['Faktum', 'sans-serif'],
       },
       colors: {

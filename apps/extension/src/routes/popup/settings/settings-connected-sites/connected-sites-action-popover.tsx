@@ -11,7 +11,10 @@ export const ConnectedSitesActionPopover = () => {
         <Button variant='outline' className='flex h-11 w-full justify-start rounded-t-lg px-5'>
           Delete
         </Button>
-        <Button variant='outline' className='flex h-11 w-full justify-start rounded-b-lg border-b-0 px-5'>
+        <Button
+          variant='outline'
+          className='flex h-11 w-full justify-start rounded-b-lg border-b-0 px-5'
+        >
           Edit
         </Button>
       </PopoverContent>

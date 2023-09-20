@@ -32,7 +32,6 @@ export const SettingsPassphrase = () => {
           'coffee',
           'pretty',
           'occur',
-          
         ]);
       } else {
         setEnteredIncorrect(true);

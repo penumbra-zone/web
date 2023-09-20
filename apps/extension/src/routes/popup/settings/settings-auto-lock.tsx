@@ -12,7 +12,9 @@ export const SettingsAutoLock = () => {
         </div>
         <div className='flex flex-1 flex-col items-start justify-between px-[30px] pb-5'>
           <div className='flex flex-col gap-1'>
-            <p className='mb-1 font-headline text-base font-semibold'>Auto - lock timer (minutes)</p>
+            <p className='mb-1 font-headline text-base font-semibold'>
+              Auto - lock timer (minutes)
+            </p>
             <p className='text-muted-foreground'>
               Set the inactivity time in the coming minutes before Penumbra is blocked.
             </p>

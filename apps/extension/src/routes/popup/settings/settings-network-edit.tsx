@@ -16,11 +16,11 @@ export const SettingsNetworkEdit = () => {
           <div className='flex w-full flex-col gap-4'>
             <div className='flex flex-col gap-2'>
               <p className='font-headline text-base font-semibold'>Network name</p>
-              <Input readOnly value={name} />
+              <Input readOnly value={name} className='text-muted-foreground' />
             </div>
             <div className='flex flex-col gap-2'>
               <p className='font-headline text-base font-semibold'>Network name</p>
-              <Input value={grpcEndpoint} />
+              <Input value={grpcEndpoint} className='text-muted-foreground' />
             </div>
           </div>
           <Button variant='gradient' size='lg' className='w-full'>

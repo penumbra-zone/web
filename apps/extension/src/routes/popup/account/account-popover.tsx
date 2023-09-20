@@ -35,7 +35,10 @@ export const AccountPopover = () => {
         <Button variant='outline' className='flex h-11 w-full justify-start px-5'>
           Change Wallet Name
         </Button>
-        <Button variant='outline' className='flex h-11 w-full justify-start rounded-b-lg border-b-0 px-5'>
+        <Button
+          variant='outline'
+          className='flex h-11 w-full justify-start rounded-b-lg border-b-0 px-5'
+        >
           Delete Wallet
         </Button>
       </PopoverContent>
