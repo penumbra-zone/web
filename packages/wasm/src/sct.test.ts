@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { decodeNctRoot } from './sct';
+import { base64ToBech32, decodeNctRoot } from './sct';
 
 // Replace the wasm-pack import with the nodejs version so tests can run
 vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
@@ -14,6 +14,14 @@ describe('tct', () => {
 
       expect(() => {
         decodeNctRoot(root);
+      }).not.toThrow();
+    });
+  });
+
+  describe('base64ToBech32()', () => {
+    it('does not raise zod validation error', () => {
+      expect(() => {
+        base64ToBech32('6KBVsPINa8gWSHhfH+kAFJC4afEJA3EtuB2HyCqJUws=');
       }).not.toThrow();
     });
   });
