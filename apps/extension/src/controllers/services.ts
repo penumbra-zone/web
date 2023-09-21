@@ -21,21 +21,25 @@ export class Services {
   }
 
   async onServiceWorkerInit() {
-    chrome.runtime.onMessage.addListener(swMessageHandler);
+    try {
+      chrome.runtime.onMessage.addListener(swMessageHandler);
 
-    // Forces the waiting service worker to become the active service worker
-    await sw.skipWaiting();
-    await sw.clients.claim();
+      // Forces the waiting service worker to become the active service worker
+      await sw.skipWaiting();
+      await sw.clients.claim();
 
-    const wallets = await localExtStorage.get('wallets');
-    if (wallets.length) {
-      const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+      const wallets = await localExtStorage.get('wallets');
+      if (wallets.length) {
+        const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 
-      await initializeControllers({
-        grpcEndpoint,
-        indexedDbVersion: testnetConstants.indexedDbVersion,
-        fullViewingKey: wallets[0]!.fullViewingKey,
-      });
+        await initializeControllers({
+          grpcEndpoint,
+          indexedDbVersion: testnetConstants.indexedDbVersion,
+          fullViewingKey: wallets[0]!.fullViewingKey,
+        });
+      }
+    } catch (e) {
+      console.error(e);
     }
   }
 }

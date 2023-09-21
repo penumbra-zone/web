@@ -18,6 +18,7 @@ export interface IndexedDbInterface {
   saveAssetsMetadata(metadata: DenomMetadata): Promise<void>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
   updateStateCommitmentTree(updates: NctUpdates, height: bigint): Promise<void>;
+  getAllNotes(): Promise<NewNoteRecord[]>;
 }
 
 export interface PenumbraDb extends DBSchema {

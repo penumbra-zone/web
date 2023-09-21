@@ -25,7 +25,7 @@ export const generateMetadata = (assetId: Uint8Array): DenomMetadata => {
   });
 };
 
-export const UNNAMED_ASSET_PREFIX = 'unnamed_asset';
+export const UNNAMED_ASSET_PREFIX = 'passet';
 
 export const base64ToBech32 = (base64Str: string): string => {
   const validated = validateSchema(Base64StringSchema, base64Str);

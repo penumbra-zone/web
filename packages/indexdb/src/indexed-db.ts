@@ -29,9 +29,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('tree_last_forgotten');
         db.createObjectStore('tree_commitments', { keyPath: 'commitment.inner' });
         db.createObjectStore('tree_hashes', { keyPath: 'hash' });
-        db.createObjectStore('spendable_notes').createIndex('nullifier', 'nullifier.inner', {
-          unique: true,
-        });
+        db.createObjectStore('spendable_notes').createIndex('nullifier', 'nullifier.inner');
       },
     });
     return new this(db);
@@ -104,5 +102,9 @@ export class IndexedDb implements IndexedDbInterface {
 
   async saveAssetsMetadata(metadata: DenomMetadata) {
     await this.db.put('assets', metadata);
+  }
+
+  async getAllNotes() {
+    return this.db.getAll('spendable_notes');
   }
 }
