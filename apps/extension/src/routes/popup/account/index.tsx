@@ -24,7 +24,7 @@ export const Accounts = () => {
               />
               <div className='flex flex-col'>
                 <p>{all[0]?.label}</p>
-                <p className=' text-xs font-bold text-muted-foreground'>
+                <p className='text-xs font-bold text-muted-foreground'>
                   penumbrav2t156t9s3s0786ghjnpk20jjawe..
                 </p>
               </div>

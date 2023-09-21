@@ -40,10 +40,16 @@ export const PopupIndex = () => {
           {all[0]?.label}
         </p>
         <div className='flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
-          <img src='https://avatar.vercel.sh/rauchg' alt='icon' className='h-6 w-6 rounded-full' />
-          <p className='text-center text-[12px] font-bold leading-[18px] text-muted-foreground'>
-            penumbrav2t13vh0fkf3qkqjacpm59g23uf...
-          </p>
+          <div className='flex items-center gap-[6px]'>
+            <img
+              src='https://avatar.vercel.sh/rauchg'
+              alt='icon'
+              className='h-6 w-6 rounded-full'
+            />
+            <p className='text-center text-[12px] font-bold leading-[18px] text-muted-foreground'>
+              penumbrav2t13vh0fkf3qkqjacpm59g23uf...
+            </p>
+          </div>
           <CopyToClipboard
             text='penumbrav2t1ruaj9ff230y0tffr7nr9y6ata6gv0fxrjs2dn5ptl86fuveuv73ql8p9n36frwcsdlgmm4x22rfa8884ek6e3yv7r9c8q4st4sfc339hym9jlfx390e54uv9fcqcnnx8frsncp'
             label={
