@@ -14,7 +14,7 @@ export const CustomLink = ({ icon, title, onClick }: LinkProps) => {
       className='flex w-full items-center justify-start gap-2 p-[10px] text-left hover:bg-transparent hover:opacity-50'
       onClick={onClick}
     >
-      {icon}
+      <div className='h-[22px]'>{icon}</div>
       <p className='text-muted-foreground'>{title}</p>
     </Button>
   );

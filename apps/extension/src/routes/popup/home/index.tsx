@@ -55,12 +55,10 @@ export const PopupIndex = () => {
           />
         </div>
       </div>
-      <div className='flex flex-col items-center gap-1'>
-        <p className='mb-1 font-headline text-xl font-semibold leading-[30px] text-sand'>
-          Syncing blocks...
-        </p>
+      <div className='flex flex-col items-center gap-1 font-headline text-xl font-semibold leading-[30px] text-sand'>
+        <p>Syncing blocks...</p>
         <Progress value={73} />
-        <p className='text-2xl font-bold leading-[30px] text-sand'>10982/121312</p>
+        <p>10982/121312</p>
       </div>
     </div>
   );
