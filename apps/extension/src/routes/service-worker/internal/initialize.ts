@@ -1,4 +1,4 @@
-import { SwMessage, SwMessageHandler } from '../types';
+import { SwMessage, SwMessageHandler } from './types';
 
 import { Controllers, ControllersProps } from '../../../controllers/initialize';
 import { services } from '../../../service-worker';
