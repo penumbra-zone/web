@@ -1,5 +1,5 @@
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
-import { useMemo, useState } from 'react';
+import { ReactElement, useMemo, useState } from 'react';
 import { Input, InputProps } from 'ui/components';
 import { cn } from 'ui/lib/utils';
 
@@ -11,7 +11,7 @@ interface Validation {
 
 interface PasswordInputProps {
   passwordValue: string;
-  label: string;
+  label: string | ReactElement;
   validations: Validation[];
   onChange: InputProps['onChange'];
 }
@@ -32,8 +32,8 @@ export const PasswordInput = ({
 
   return (
     <div className='flex flex-col items-center justify-center gap-2'>
-      <div className='flex gap-2 self-start'>
-        <div>{label}</div>
+      <div className='flex items-center gap-2 self-start'>
+        <div className='text-base font-bold'>{label}</div>
         {priorityResult ? (
           <div
             className={cn(

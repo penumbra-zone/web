@@ -6,21 +6,21 @@ import {
   CardTitle,
   CompressedVideoLogo,
 } from 'ui/components';
-import { FadeTransition } from '../../../components/fade-transition';
+import { FadeTransition } from '../../../shared';
 
 export const OnboardingSuccess = () => {
   return (
     <FadeTransition>
       <div className='absolute inset-0 flex w-screen items-center justify-center'>
-        <CompressedVideoLogo noWords className='w-[850px]' />
+        <CompressedVideoLogo noWords className='w-[calc(100%-25vw)]' />
       </div>
-      <Card className='w-[650px] p-6' gradient>
-        <CardHeader>
-          <CardTitle className='bg-gradient-to-r from-teal-400 via-neutral-300 to-orange-400 bg-clip-text text-6xl text-transparent opacity-80'>
+      <Card className='w-[608px]' gradient>
+        <CardHeader className='items-start'>
+          <CardTitle className='bg-text-linear bg-clip-text text-[40px] font-bold leading-9 text-transparent opacity-80'>
             Account created
           </CardTitle>
         </CardHeader>
-        <CardContent className='grid gap-4'>
+        <CardContent className='mt-4 grid gap-2 text-base font-bold'>
           <p>You are all set!</p>
           <p>
             Use your account to transact, stake, swap or market make. All of it is shielded and
@@ -32,6 +32,7 @@ export const OnboardingSuccess = () => {
               window.open('https://app.testnet.penumbra.zone/', '_blank');
               window.close();
             }}
+            className='mt-4'
           >
             Visit testnet web app
           </Button>

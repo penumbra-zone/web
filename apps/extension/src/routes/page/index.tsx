@@ -10,8 +10,7 @@ import {
   CardTitle,
   CompressedVideoLogo,
 } from 'ui/components';
-import { FadeTransition } from '../../components';
-import { sessionExtStorage } from '../../storage/session';
+import { FadeTransition } from '../../shared';
 
 // Because Zustand initializes default empty (prior to persisted storage synced),
 // We need to manually check storage for accounts in the loader.
@@ -20,9 +19,6 @@ export const pageIndexLoader = async () => {
   const wallets = await localExtStorage.get('wallets');
 
   if (!wallets.length) return redirect(PagePath.WELCOME);
-
-  const password = await sessionExtStorage.get('hashedPassword');
-  if (!password) return redirect(PagePath.LOGIN);
 
   return null;
 };

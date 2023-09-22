@@ -9,3 +9,4 @@ export * from './ui/copy-to-clipboard';
 export * from './ui/back-icon';
 export * from './ui/sheet';
 export * from './ui/popover';
+export * from './ui/progress';

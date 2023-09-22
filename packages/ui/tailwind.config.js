@@ -15,13 +15,17 @@ module.exports = {
         '2xl': '1400px',
       },
     },
+
     extend: {
       fontFamily: {
-        body: ['Devanagari Sangam Regular', 'sans-serif'],
-        headline: ['Faktum SemiBold', 'sans-serif'],
+        body: ['Devanagari Sangam', 'sans-serif'],
+        headline: ['Faktum', 'sans-serif'],
       },
       colors: {
-        border: 'hsl(var(--border))',
+        border: {
+          DEFAULT: 'hsl(var(--border))',
+          secondary: 'var(--border-secondary)',
+        },
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
@@ -56,15 +60,22 @@ module.exports = {
         },
         charcoal: {
           DEFAULT: 'var(--charcoal)',
+          secondary: 'var(--charcoal-secondary)',
         },
         teal: {
           DEFAULT: 'var(--teal)',
+          700: 'var(--teal-700)',
         },
         sand: {
           DEFAULT: 'var(--sand)',
+          700: 'var(--sand-700)',
         },
         rust: {
           DEFAULT: 'var(--rust)',
+          600: 'var(--rust-600)',
+        },
+        black: {
+          DEFAULT: 'var(--black)',
         },
       },
       borderRadius: {
@@ -97,10 +108,15 @@ module.exports = {
           },
         },
       },
-
       backgroundImage: {
         'card-radial':
           'radial-gradient(33% 50% at 15% 44%, var(--rust), transparent),radial-gradient(33% 40% at 105% 42%, var(--teal), transparent),radial-gradient(33% 80% at 85% 124%, var(--teal), transparent)',
+        'button-gradient':
+          'linear-gradient(90deg, var(--teal-700) 0%, var(--sand-700) 25%, var(--rust-600) 50%, var(--rust-600) 50%, var(--sand-700) 75%, var(--teal-700) 100%)',
+        'text-linear': 'linear-gradient(90deg, var(--teal-700), var(--sand-700), var(--rust-600))',
+      },
+      backgroundPosition: {
+        'right-center': 'right center',
       },
     },
   },
