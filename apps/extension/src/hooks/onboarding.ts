@@ -4,8 +4,8 @@ import { generateSelector } from '../state/seed-phrase/generate';
 import { importSelector } from '../state/seed-phrase/import';
 import { passwordSelector } from '../state/password';
 import { walletsSelector } from '../state/wallets';
-import { sendSwMessage } from '../routes/service-worker/sender';
-import { InitializeMessage } from '../routes/service-worker/handlers/initialize';
+import { sendSwMessage } from '../routes/service-worker/internal/sender';
+import { InitializeMessage } from '../routes/service-worker/internal/initialize';
 import { testnetConstants } from 'penumbra-constants';
 import { generateSpendKey, getFullViewingKey } from 'penumbra-wasm-ts';
 
