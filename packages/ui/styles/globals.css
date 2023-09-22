@@ -112,18 +112,15 @@
     src: url('../fonts/Devanagari-Sangam-Bold.ttf') format('truetype');
   }
 
-  .button-gradient {
-    background-size: 300% 300%;
-    transition: 0.5s;
-    background-image: linear-gradient(
-      to right,
-      rgba(139, 228, 217, 0.6) 0%,
-      rgba(255, 144, 47, 0.5) 50%,
-      rgba(139, 228, 217, 0.6) 100%
-    );
+  .background-size-200 {
+    background-size: 200%;
   }
 
-  .button-gradient:hover {
-    background-position: right center;
+  .border-mask {
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    mask-composite: exclude;
   }
 }

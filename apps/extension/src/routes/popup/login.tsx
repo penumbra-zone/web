@@ -42,7 +42,7 @@ export const Login = () => {
           <PasswordInput
             passwordValue={input}
             label={
-              <p className='bg-gradient-to-r from-teal-700 via-sand-700 to-rust-600 bg-clip-text font-headline text-2xl font-bold text-transparent'>
+              <p className='bg-text-linear bg-clip-text font-headline text-2xl font-bold text-transparent'>
                 Enter password
               </p>
             }

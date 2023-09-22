@@ -12,11 +12,11 @@ export const OnboardingSuccess = () => {
   return (
     <FadeTransition>
       <div className='absolute inset-0 flex w-screen items-center justify-center'>
-        <CompressedVideoLogo noWords className='w-[calc(100%-15vw)]' />
+        <CompressedVideoLogo noWords className='w-[calc(100%-25vw)]' />
       </div>
       <Card className='w-[608px]' gradient>
         <CardHeader className='items-start'>
-          <CardTitle className='bg-gradient-to-r from-teal-700 via-sand-700 to-rust-600 bg-clip-text text-[40px] font-bold leading-9 text-transparent opacity-80'>
+          <CardTitle className='bg-text-linear bg-clip-text text-[40px] font-bold leading-9 text-transparent opacity-80'>
             Account created
           </CardTitle>
         </CardHeader>

@@ -9,8 +9,10 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: 'hover:bg-teal/80 bg-teal',
-        gradient: 'button-gradient transition-all duration-500',
-        secondary: 'bg-secondary hover:bg-neutral-600',
+        gradient:
+          'bg-button-gradient transition-all duration-500 background-size-200 hover:bg-right-center',
+        secondary:
+          'relative before:content-[""] before:absolute before:inset-0 before:rounded-lg before:p-[1px] before:bg-button-gradient before:border-mask before:background-size-200 before:hover:bg-right-center before:transition-all before:duration-500',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline:
           'rounded-none border-b border-border-secondary bg-background font-body font-bold text-muted-foreground hover:opacity-50',
