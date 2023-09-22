@@ -22,8 +22,8 @@ describe('Accounts Slice', () => {
   test('accounts can be added', async () => {
     const accountA = {
       label: 'Account #1',
-      encryptedSeedPhrase: new ArrayBuffer(12),
-      initializationVector: new Uint8Array(12),
+      encryptedSeedPhrase: 'JPum4gUZn4KaLL9Y4xEIC8Tf+F1ZknmrBQLOlI4l72cd/bJWSz/EmVkr99g=',
+      initializationVector: '+VzsTs4/j3wZct7oaDhHOg==',
       fullViewingKey: '1234',
     };
     await useStore.getState().wallets.addWallet(accountA);
@@ -37,8 +37,8 @@ describe('Accounts Slice', () => {
 
     const accountB = {
       label: 'Account #2',
-      encryptedSeedPhrase: new ArrayBuffer(4),
-      initializationVector: new Uint8Array(16),
+      encryptedSeedPhrase: 'JPum4gUZn4KaLL9Y4xEIC8Tf+F1ZknmrBQLOlI4l72cd/bJWSz/EmVkr99g=',
+      initializationVector: '+VzsTs4/j3wZct7oaDhHOg==',
       fullViewingKey: '1234',
     };
     await useStore.getState().wallets.addWallet(accountB);

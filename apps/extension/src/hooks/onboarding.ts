@@ -1,13 +1,13 @@
 import { useStore } from '../state';
-import { encrypt, random128Bits } from 'penumbra-crypto-ts';
+import { passwordSelector } from '../state/password';
 import { generateSelector } from '../state/seed-phrase/generate';
 import { importSelector } from '../state/seed-phrase/import';
-import { passwordSelector } from '../state/password';
 import { walletsSelector } from '../state/wallets';
+import { encrypt, randomBase64str } from 'penumbra-crypto-ts';
+import { generateSpendKey, getFullViewingKey } from 'penumbra-wasm-ts';
 import { sendSwMessage } from '../routes/service-worker/internal/sender';
 import { InitializeMessage } from '../routes/service-worker/internal/initialize';
 import { testnetConstants } from 'penumbra-constants';
-import { generateSpendKey, getFullViewingKey } from 'penumbra-wasm-ts';
 
 // Saves hashed password, uses that hash to encrypt the seed phrase
 // and then saves that to session + local storage
@@ -23,7 +23,7 @@ export const useOnboardingSave = () => {
     const phraseString = phrase.join(' ');
 
     const hashedPassword = await setPassword(plaintextPassword);
-    const initializationVector = random128Bits();
+    const initializationVector = randomBase64str();
     const encryptedSeedPhrase = await encrypt(
       phraseString,
       initializationVector,

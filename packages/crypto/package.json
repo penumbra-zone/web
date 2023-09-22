@@ -16,9 +16,9 @@
     "typescript": "^5.2.2"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.4",
     "@types/crypto-js": "^4.1.2",
     "@types/lodash": "^4.14.199",
+    "penumbra-types": "workspace:*",
     "vitest": "^0.34.5"
   }
 }

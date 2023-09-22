@@ -2,13 +2,14 @@ import { AllSlices, SliceCreator } from './index';
 import { ExtensionStorage } from '../storage/base';
 import { SessionStorageState } from '../storage/session';
 import { LocalStorageState } from '../storage/local';
-import { hashPassword, isPassword, random128Bits } from 'penumbra-crypto-ts';
+import { hashPassword, isPassword, randomBase64str } from 'penumbra-crypto-ts';
+import { Base64Str } from 'penumbra-types';
 
 // Documentation in /docs/custody.md
 
 export interface HashedPassword {
-  key: CryptoKey;
-  salt: Uint8Array;
+  key: JsonWebKey;
+  salt: Base64Str;
 }
 
 export interface PasswordSlice {
@@ -27,14 +28,14 @@ export const createPasswordSlice =
     return {
       hashedPassword: undefined,
       setPassword: async password => {
-        const salt = random128Bits();
+        const salt = randomBase64str();
         const key = await hashPassword(password, salt);
         const hashedPassword = { key, salt };
         set(state => {
           state.password.hashedPassword = hashedPassword;
         });
-        void session.set('hashedPassword', hashedPassword);
-        void local.set('passwordSalt', salt); // Salt must be persisted in local to later validate logins
+        await session.set('hashedPassword', hashedPassword);
+        await local.set('passwordSalt', salt); // Salt must be persisted in local to later validate logins
         return hashedPassword;
       },
       clearSessionPassword: () => {

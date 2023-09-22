@@ -30,5 +30,5 @@ module.exports = {
   env: {
     webextensions: true,
   },
-  ignorePatterns: ['dist/*'],
+  ignorePatterns: ['dist/*', '**/*.snap'],
 };

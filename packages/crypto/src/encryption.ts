@@ -1,9 +1,12 @@
+import { Base64Str, base64ToUint8Array, uint8ArrayToBase64 } from 'penumbra-types';
+
 // Salts & initialization vectors should be stored
-export const random128Bits = (): Uint8Array => {
-  return crypto.getRandomValues(new Uint8Array(16)); // 128 bits
+export const randomBase64str = (): Base64Str => {
+  const uintArr = crypto.getRandomValues(new Uint8Array(16)); // 128 bits
+  return uint8ArrayToBase64(uintArr);
 };
 
-export const hashPassword = async (password: string, salt: Uint8Array): Promise<CryptoKey> => {
+export const hashPassword = async (password: string, salt: Base64Str): Promise<JsonWebKey> => {
   const enc = new TextEncoder();
   const importedKey = await crypto.subtle.importKey(
     'raw',
@@ -13,26 +16,27 @@ export const hashPassword = async (password: string, salt: Uint8Array): Promise<
     ['deriveBits', 'deriveKey'],
   );
 
-  return crypto.subtle.deriveKey(
+  const derivedKey = await crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
-      salt: salt,
-      // Recommended config by: https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Password_Storage_Cheat_Sheet.md
-      iterations: 210000,
+      salt: base64ToUint8Array(salt),
+      iterations: 210_000,
       hash: 'SHA-512',
     },
     importedKey,
     { name: 'AES-GCM', length: 256 },
-    false,
+    true,
     ['encrypt', 'decrypt'],
   );
+
+  return crypto.subtle.exportKey('jwk', derivedKey);
 };
 
 export const isPassword = async (
   password: string,
-  salt: Uint8Array,
-  encryptedSeedPhrase: ArrayBuffer,
-  initializationVector: Uint8Array,
+  salt: Base64Str,
+  encryptedSeedPhrase: Base64Str,
+  initializationVector: Base64Str,
 ): Promise<boolean> => {
   try {
     const key = await hashPassword(password, salt);
@@ -45,27 +49,45 @@ export const isPassword = async (
 
 export const encrypt = async (
   message: string,
-  initializationVector: Uint8Array,
-  key: CryptoKey,
-): Promise<ArrayBuffer> => {
+  initializationVector: Base64Str,
+  jwkKey: JsonWebKey,
+): Promise<Base64Str> => {
+  const key = await crypto.subtle.importKey(
+    'jwk',
+    jwkKey,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt'],
+  );
+
   const enc = new TextEncoder();
-  return crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv: initializationVector },
+  const buffer = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv: base64ToUint8Array(initializationVector) },
     key,
     enc.encode(message),
   );
+  return uint8ArrayToBase64(new Uint8Array(buffer));
 };
 
 export const decrypt = async (
-  ciphertext: ArrayBuffer,
-  initializationVector: Uint8Array, // You need to provide both the same iv & key used for encryption
-  key: CryptoKey,
+  ciphertext: Base64Str,
+  initializationVector: Base64Str, // You need to provide both the same iv & key used for encryption
+  jwkKey: JsonWebKey,
 ): Promise<string> => {
+  // Import the key
+  const key = await crypto.subtle.importKey(
+    'jwk',
+    jwkKey,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt'],
+  );
+
   const dec = new TextDecoder();
   const decrypted = await crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv: initializationVector },
+    { name: 'AES-GCM', iv: base64ToUint8Array(initializationVector) },
     key,
-    ciphertext,
+    base64ToUint8Array(ciphertext),
   );
   return dec.decode(decrypted);
 };

@@ -272,6 +272,9 @@ importers:
       '@types/lodash':
         specifier: ^4.14.199
         version: 4.14.199
+      penumbra-types:
+        specifier: workspace:*
+        version: link:../types
       vitest:
         specifier: ^0.34.5
         version: 0.34.5

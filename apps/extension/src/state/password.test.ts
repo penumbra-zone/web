@@ -5,7 +5,7 @@ import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
 import { ExtensionStorage } from '../storage/base';
 import { SessionStorageState } from '../storage/session';
 import { LocalStorageState } from '../storage/local';
-import { encrypt, isPassword, random128Bits } from 'penumbra-crypto-ts';
+import { encrypt, isPassword, randomBase64str } from 'penumbra-crypto-ts';
 import { webcrypto } from 'crypto';
 
 vi.stubGlobal('crypto', webcrypto);
@@ -31,7 +31,7 @@ describe('Password Slice', () => {
 
   test('password can be set and verified', async () => {
     const hashed = await useStore.getState().password.setPassword(password);
-    const iv = random128Bits();
+    const iv = randomBase64str();
     const encryptedSeedPhrase = await encrypt(seedPhrase, iv, hashed.key);
     await useStore.getState().wallets.addWallet({
       label: 'Account #1',
@@ -57,7 +57,7 @@ describe('Password Slice', () => {
 
   test('incorrect password should not verify', async () => {
     const hashed = await useStore.getState().password.setPassword(password);
-    const iv = random128Bits();
+    const iv = randomBase64str();
     const encryptedSeedPhrase = await encrypt(seedPhrase, iv, hashed.key);
     await useStore.getState().wallets.addWallet({
       label: 'Account #1',

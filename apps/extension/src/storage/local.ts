@@ -1,6 +1,7 @@
 import { ExtensionStorage } from './base';
 import { Wallet } from '../types/wallet';
 import { testnetConstants } from 'penumbra-constants';
+import { Base64Str } from 'penumbra-types';
 
 export enum LocalStorageVersion {
   V1 = 'V1',
@@ -8,7 +9,7 @@ export enum LocalStorageVersion {
 
 export interface LocalStorageState {
   wallets: Wallet[];
-  passwordSalt: Uint8Array | undefined;
+  passwordSalt: Base64Str | undefined;
   grpcEndpoint: string;
 }
 
