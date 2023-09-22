@@ -1,7 +1,7 @@
 import { HamburgerMenuIcon, PersonIcon } from '@radix-ui/react-icons';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
-import { NetworksPopover } from './networks-popover';
+import { NetworksPopover } from 'ui/components';
 
 export const IndexHeader = () => {
   const navigate = usePopupNav();
