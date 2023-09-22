@@ -7,11 +7,18 @@
     "default_icon": "icon.png",
     "default_popup": "popup.html"
   },
-  "content_scripts": [],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/content-scripts.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
   "background": {
     "service_worker": "js/service-worker.js"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "unlimitedStorage"],
   "host_permissions": ["<all_urls>"],
   "content_security_policy": {
     "extension_pages": "object-src 'self'; script-src 'self' 'wasm-unsafe-eval'"

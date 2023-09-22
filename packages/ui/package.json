@@ -20,13 +20,13 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@types/node": "^20.6.2",
-    "@types/react": "^18.2.21",
+    "@types/node": "^20.6.3",
+    "@types/react": "^18.2.22",
     "@types/react-dom": "^18.2.7",
-    "autoprefixer": "^10.4.15",
+    "autoprefixer": "^10.4.16",
     "eslint": "^8.49.0",
     "eslint-config-custom": "workspace:*",
-    "postcss": "^8.4.29",
+    "postcss": "^8.4.30",
     "react": "^18.2.0",
     "tailwindcss": "^3.3.3",
     "tsconfig": "workspace:*",
