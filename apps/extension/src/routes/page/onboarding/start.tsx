@@ -7,17 +7,17 @@ import {
   CardTitle,
   CompressedVideoLogo,
 } from 'ui/components';
-import { PagePath } from '../paths';
-import { FadeTransition } from '../../../components/fade-transition';
 import { usePageNav } from '../../../utils/navigate';
+import { PagePath } from '../paths';
+import { FadeTransition } from '../../../shared';
 
 export const OnboardingStart = () => {
   const navigate = usePageNav();
 
   return (
     <FadeTransition>
-      <CompressedVideoLogo className='mb-12 self-center' />
-      <Card className='w-[450px] p-6' gradient>
+      <CompressedVideoLogo className='mb-10 self-center' />
+      <Card className='w-[400px] ' gradient>
         <CardHeader className='items-center'>
           <CardTitle>Explore private trading</CardTitle>
           <CardDescription className='text-center'>
@@ -25,7 +25,7 @@ export const OnboardingStart = () => {
             information to the world.
           </CardDescription>
         </CardHeader>
-        <CardContent className='grid gap-4'>
+        <CardContent className='mt-6 grid gap-4'>
           <Button
             variant='gradient'
             className='w-full'

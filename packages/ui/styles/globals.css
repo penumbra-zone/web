@@ -4,11 +4,11 @@
 
 @layer base {
   :root {
-    --background: 0, 0%, 0%;
+    --background: 0, 0%, 0%; /* black bg */
     --foreground: 0, 4%, 73%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 0, 0%, 100%; /* white text */
+    --muted-foreground: 0, 4%, 73%; /* light-grey text*/
 
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
@@ -16,13 +16,14 @@
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
 
-    --border: 0, 3%, 15%;
+    --border: 0, 2%, 21%; /* border as light-brown */
+    --border-secondary: rgba(75, 75, 75, 0.5); /* border as light-brown */
     --input: 214.3 31.8% 91.4%;
 
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
+    --secondary: 0, 2%, 21%; /* secondary btn bg  */
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --accent: 210 40% 96.1%;
@@ -39,9 +40,13 @@
 
     /* Penumbra base color palette */
     --charcoal: #1d1d1d;
+    --charcoal-secondary: #141010;
     --teal: #629994;
     --sand: #847a5b;
     --rust: #8d5728;
+    --teal-700: rgba(139, 228, 217, 0.7);
+    --sand-700: rgba(200, 184, 128, 0.7);
+    --rust-600: rgba(255, 144, 47, 0.6);
   }
 
   #popup-root {
@@ -50,74 +55,72 @@
     @apply bg-charcoal;
   }
 
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.25);
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-card min-h-screen;
-  }
-
-  body,
-  p,
-  li,
-  a,
-  button {
-    @apply font-headline text-sm md:text-[15px] md:leading-[22px] font-semibold md:font-medium;
+    @apply bg-background text-muted min-h-screen text-[15px] leading-[22px] font-normal font-body;
   }
 
   @font-face {
-    font-family: 'Faktum Bold';
-    src:
-      local('Faktum Bold'),
-      url('../fonts/Faktum-Bold.ttf') format('truetype');
+    font-family: 'Faktum';
+    font-weight: 700;
+    src: url('../fonts/Faktum-Bold.ttf') format('truetype');
   }
 
   @font-face {
-    font-family: 'Faktum Medium';
-    src:
-      local('Faktum Medium'),
-      url('../fonts/Faktum-Medium.ttf') format('truetype');
+    font-family: 'Faktum';
+    font-weight: 500;
+    src: url('../fonts/Faktum-Medium.ttf') format('truetype');
   }
 
   @font-face {
-    font-family: 'Faktum SemiBold';
-    src:
-      local('Faktum SemiBold'),
-      url('../fonts/Faktum-SemiBold.ttf') format('truetype');
+    font-family: 'Faktum';
+    font-weight: 600;
+    src: url('../fonts/Faktum-SemiBold.ttf') format('truetype');
   }
 
   @font-face {
-    font-family: 'Devanagari Sangam Regular';
-    src:
-      local('Devanagari Sangam Regular'),
-      url('../fonts/Devanagari-Sangam-Regular.ttf') format('truetype');
+    font-family: 'Devanagari Sangam';
+    font-weight: 400;
+    src: url('../fonts/Devanagari-Sangam-Regular.ttf') format('truetype');
   }
 
-  h1 {
-    @apply font-headline text-xl leading-[30px] md:text-4xl;
+  @font-face {
+    font-family: 'Devanagari Sangam';
+    font-weight: 700;
+    src: url('../fonts/Devanagari-Sangam-Bold.ttf') format('truetype');
   }
 
-  h2 {
-    @apply font-headline text-base md:text-3xl md:leading-8;
+  .background-size-200 {
+    background-size: 200%;
   }
 
-  h3 {
-    @apply font-headline text-2xl leading-7;
-  }
-
-  .button-gradient {
-    background-size: 300% 300%;
-    transition: 0.5s;
-    background-image: linear-gradient(
-      to right,
-      rgba(139, 228, 217, 0.6) 0%,
-      rgba(255, 144, 47, 0.5) 50%,
-      rgba(139, 228, 217, 0.6) 100%
-    );
-  }
-
-  .button-gradient:hover {
-    background-position: right center;
+  .border-mask {
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    mask-composite: exclude;
   }
 }

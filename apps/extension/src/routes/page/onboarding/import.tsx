@@ -1,6 +1,3 @@
-import { FadeTransition } from '../../../components/fade-transition';
-import { usePageNav } from '../../../utils/navigate';
-import { useStore } from '../../../state';
 import {
   BackIcon,
   Button,
@@ -11,9 +8,11 @@ import {
   CardTitle,
 } from 'ui/components';
 import { cn } from 'ui/lib/utils';
+import { useStore } from '../../../state';
 import { importSelector } from '../../../state/seed-phrase/import';
-import { ImportForm } from '../../../components';
+import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
+import { FadeTransition, ImportForm } from '../../../shared';
 
 export const ImportSeedPhrase = () => {
   const navigate = usePageNav();
@@ -21,15 +20,15 @@ export const ImportSeedPhrase = () => {
 
   return (
     <FadeTransition>
-      <BackIcon className='float-left' onClick={() => navigate(-1)} />
-      <Card className={cn('p-6', phrase.length === 12 ? 'w-[550px]' : 'w-[750px]')} gradient>
+      <BackIcon className='float-left mb-4' onClick={() => navigate(-1)} />
+      <Card className={cn('p-6', phrase.length === 12 ? 'w-[600px]' : 'w-[816px]')} gradient>
         <CardHeader className='items-center'>
-          <CardTitle>Import wallet with recovery phrase</CardTitle>
+          <CardTitle className='font-semibold'>Import wallet with recovery phrase</CardTitle>
           <CardDescription>
             Feel free to paste it into the first box and the rest will fill
           </CardDescription>
         </CardHeader>
-        <CardContent className='grid gap-4'>
+        <CardContent className='mt-6 grid gap-4'>
           <ImportForm />
           <Button
             className='mt-4'

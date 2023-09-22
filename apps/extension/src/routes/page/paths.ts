@@ -9,5 +9,4 @@ export enum PagePath {
   RESTORE_PASSWORD = '/restore-password',
   RESTORE_PASSWORD_INDEX = '/restore-password/',
   RESTORE_PASSWORD_SET_PASSWORD = '/restore-password/set-password',
-  LOGIN = '/login',
 }
