@@ -17,7 +17,7 @@ const NetworksPopover = ({ triggerClassName }: NetworksPopoverProps) => {
         )}
       >
         <p>penumbra-testnet</p>
-        <CaretDownIcon className='h-5 w-5 hover:opacity-50' />
+        <CaretDownIcon className='h-5 w-5' />
       </PopoverTrigger>
       <PopoverContent></PopoverContent>
     </Popover>

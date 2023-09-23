@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { FadeTransition, SettingsHeader } from '../../../shared';
-import { Button, Input } from 'ui/components';
+import { Button, Input } from 'ui';
 import { useStore } from '../../../state';
 import { networkSelector } from '../../../state/network';
 

@@ -1,5 +1,5 @@
 import { SeedPhraseLength } from 'penumbra-crypto-ts/src/mnemonic';
-import { Toggle } from 'ui/components';
+import { Toggle } from 'ui';
 
 interface WordLengthTooglesProsp {
   toogleClick: (length: SeedPhraseLength) => void;

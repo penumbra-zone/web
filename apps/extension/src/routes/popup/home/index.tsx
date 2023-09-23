@@ -1,5 +1,5 @@
 import { redirect } from 'react-router-dom';
-import { CopyToClipboard, Progress } from 'ui/components';
+import { CopyToClipboard, Progress } from 'ui';
 import { useStore } from '../../../state';
 import { localExtStorage } from '../../../storage/local';
 import { sessionExtStorage } from '../../../storage/session';

@@ -1,4 +1,4 @@
-import { Button } from 'ui/components/ui/button';
+import { Button } from 'ui';
 import Link from 'next/link';
 
 export default function Page() {

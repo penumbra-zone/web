@@ -7,7 +7,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from 'ui/components';
+} from 'ui';
 import { useOnboardingSave } from '../../../hooks/onboarding';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';

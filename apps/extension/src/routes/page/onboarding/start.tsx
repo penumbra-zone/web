@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
   CompressedVideoLogo,
-} from 'ui/components';
+} from 'ui';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { FadeTransition } from '../../../shared';

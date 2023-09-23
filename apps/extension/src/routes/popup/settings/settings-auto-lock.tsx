@@ -1,4 +1,4 @@
-import { Button, Input } from 'ui/components';
+import { Button, Input } from 'ui';
 import { FadeTransition, SettingsHeader } from '../../../shared';
 import { TimerGradientIcon } from '../../../icons';
 

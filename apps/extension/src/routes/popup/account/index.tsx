@@ -1,4 +1,4 @@
-import { Button } from 'ui/components';
+import { Button } from 'ui';
 import { FadeTransition, SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { walletsSelector } from '../../../state/wallets';

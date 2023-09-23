@@ -1,4 +1,4 @@
-import { Button, InputProps } from 'ui/components';
+import { Button, InputProps } from 'ui';
 import { PagePath } from '../page/paths';
 import { FadeTransition, PasswordInput } from '../../shared';
 import { usePopupNav } from '../../utils/navigate';

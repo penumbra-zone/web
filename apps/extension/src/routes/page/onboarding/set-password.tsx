@@ -1,13 +1,5 @@
 import { useState } from 'react';
-import {
-  BackIcon,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from 'ui/components';
+import { BackIcon, Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui';
 import { useOnboardingSave } from '../../../hooks/onboarding';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';

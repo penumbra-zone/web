@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
   CompressedVideoLogo,
-} from 'ui/components';
+} from 'ui';
 import { FadeTransition } from '../../shared';
 
 // Because Zustand initializes default empty (prior to persisted storage synced),

@@ -1,5 +1,5 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { Button } from 'ui/components';
+import { Button } from 'ui';
 import { FadeTransition, SettingsHeader } from '../../../shared';
 import { TrashGradientIcon } from '../../../icons';
 

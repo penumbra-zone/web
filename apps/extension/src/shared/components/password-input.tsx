@@ -1,6 +1,6 @@
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { ReactElement, useMemo, useState } from 'react';
-import { Input, InputProps } from 'ui/components';
+import { Input, InputProps } from 'ui';
 import { cn } from 'ui/lib/utils';
 
 interface Validation {

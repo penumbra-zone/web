@@ -10,7 +10,7 @@ import {
   CardTitle,
   CopyToClipboard,
   Input,
-} from 'ui/components';
+} from 'ui';
 import { cn } from 'ui/lib/utils';
 import { useCountdown } from 'usehooks-ts';
 import { useStore } from '../../../state';

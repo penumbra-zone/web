@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from 'ui/components';
+} from 'ui';
 import { cn } from 'ui/lib/utils';
 import { useStore } from '../../../state';
 import { importSelector } from '../../../state/seed-phrase/import';

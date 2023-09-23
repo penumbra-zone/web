@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { Button } from 'ui/components';
+import { Button } from 'ui';
 
 interface LinkProps {
   icon: ReactElement;
