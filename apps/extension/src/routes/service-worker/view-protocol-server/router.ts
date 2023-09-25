@@ -49,7 +49,7 @@ export const viewServerRouter = (
 const viewServerRootHandler = async (req: ViewProtocolReq): Promise<ViewProtocolRes> => {
   switch (req.messageTypeName) {
     case ChainParametersRequest.typeName: {
-      const parameters = await services.controllers.obliviousQuerier.chainParameters();
+      const parameters = await services.controllers.querier.viewService.chainParameters();
       return new ChainParametersResponse({ parameters });
     }
     default:

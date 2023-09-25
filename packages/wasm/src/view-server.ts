@@ -7,7 +7,7 @@ import {
   ViewServerInterface,
 } from 'penumbra-types';
 import { validateSchema } from 'penumbra-types/src/validation';
-import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/chain/v1alpha1/chain_pb';
+import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
 
 interface ViewServerProps {
   fullViewingKey: string;
