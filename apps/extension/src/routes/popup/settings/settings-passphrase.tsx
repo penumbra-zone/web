@@ -1,8 +1,8 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
-import { Button, CopyToClipboard } from 'ui/components';
+import { Button, CopyToClipboard, FadeTransition } from 'ui';
 import { FileTextGradientIcon } from '../../../icons';
-import { FadeTransition, PasswordInput, SettingsHeader } from '../../../shared';
+import { PasswordInput, SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
 
@@ -20,6 +20,18 @@ export const SettingsPassphrase = () => {
       if (await isPassword(input)) {
         // add logic to get seed
         setPhrase([
+          'aware',
+          'midnight',
+          'urge',
+          'hint',
+          'refuse',
+          'quote',
+          'marriage',
+          'health',
+          'ugly',
+          'coffee',
+          'pretty',
+          'occur',
           'aware',
           'midnight',
           'urge',

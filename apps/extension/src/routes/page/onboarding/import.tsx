@@ -6,13 +6,14 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from 'ui/components';
+  FadeTransition,
+} from 'ui';
 import { cn } from 'ui/lib/utils';
 import { useStore } from '../../../state';
 import { importSelector } from '../../../state/seed-phrase/import';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { FadeTransition, ImportForm } from '../../../shared';
+import { ImportForm } from '../../../shared';
 
 export const ImportSeedPhrase = () => {
   const navigate = usePageNav();

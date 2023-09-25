@@ -5,8 +5,8 @@ import {
   CardHeader,
   CardTitle,
   CompressedVideoLogo,
-} from 'ui/components';
-import { FadeTransition } from '../../../shared';
+  FadeTransition,
+} from 'ui';
 
 export const OnboardingSuccess = () => {
   return (

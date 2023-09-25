@@ -1,6 +1,6 @@
-import { Button, InputProps } from 'ui/components';
+import { Button, FadeTransition, InputProps } from 'ui';
 import { PagePath } from '../page/paths';
-import { FadeTransition, PasswordInput } from '../../shared';
+import { PasswordInput } from '../../shared';
 import { usePopupNav } from '../../utils/navigate';
 import { useStore } from '../../state';
 import { passwordSelector } from '../../state/password';

@@ -1,5 +1,5 @@
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
-import { Button, Popover, PopoverContent, PopoverTrigger } from 'ui/components';
+import { Button, Popover, PopoverContent, PopoverTrigger } from 'ui';
 
 export const ConnectedSitesActionPopover = () => {
   return (

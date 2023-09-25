@@ -1,6 +1,6 @@
 import { SeedPhraseLength } from 'penumbra-crypto-ts/src/mnemonic';
 import { useEffect } from 'react';
-import { Input } from 'ui/components';
+import { Input } from 'ui';
 import { cn } from 'ui/lib/utils';
 import { useStore } from '../../state';
 import { generateSelector } from '../../state/seed-phrase/generate';

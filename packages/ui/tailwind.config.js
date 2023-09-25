@@ -15,7 +15,6 @@ module.exports = {
         '2xl': '1400px',
       },
     },
-
     extend: {
       fontFamily: {
         body: ['Devanagari Sangam', 'sans-serif'],
@@ -64,18 +63,27 @@ module.exports = {
         },
         teal: {
           DEFAULT: 'var(--teal)',
+          420: 'var(--teal-420)',
           700: 'var(--teal-700)',
         },
         sand: {
           DEFAULT: 'var(--sand)',
+          420: 'var(--sand-420)',
           700: 'var(--sand-700)',
         },
         rust: {
           DEFAULT: 'var(--rust)',
+          420: 'var(--rust-420)',
           600: 'var(--rust-600)',
         },
         black: {
           DEFAULT: 'var(--black)',
+        },
+        green: {
+          DEFAULT: 'var(--green)',
+        },
+        red: {
+          DEFAULT: 'var(--red)',
         },
       },
       borderRadius: {
@@ -114,6 +122,8 @@ module.exports = {
         'button-gradient':
           'linear-gradient(90deg, var(--teal-700) 0%, var(--sand-700) 25%, var(--rust-600) 50%, var(--rust-600) 50%, var(--sand-700) 75%, var(--teal-700) 100%)',
         'text-linear': 'linear-gradient(90deg, var(--teal-700), var(--sand-700), var(--rust-600))',
+        'button-gradient-secondary':
+          'linear-gradient(90deg, var(--teal-420) 0%, var(--sand-420) 50%, var(--rust-420) 100%)',
       },
       backgroundPosition: {
         'right-center': 'right center',

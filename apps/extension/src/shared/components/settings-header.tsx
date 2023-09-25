@@ -1,4 +1,4 @@
-import { BackIcon } from 'ui/components';
+import { BackIcon } from 'ui';
 import { usePopupNav } from '../../utils/navigate';
 
 export const SettingsHeader = ({ title }: { title: string }) => {

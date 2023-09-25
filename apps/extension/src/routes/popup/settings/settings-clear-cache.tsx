@@ -1,6 +1,6 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { Button } from 'ui/components';
-import { FadeTransition, SettingsHeader } from '../../../shared';
+import { Button, FadeTransition } from 'ui';
+import { SettingsHeader } from '../../../shared';
 import { TrashGradientIcon } from '../../../icons';
 
 // Clearing cache should:

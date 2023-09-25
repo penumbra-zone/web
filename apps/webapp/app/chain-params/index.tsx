@@ -3,7 +3,7 @@
 import { client } from '../../extension-client';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { Button } from 'ui/components/ui/button';
+import { Button } from 'ui';
 
 export default function ChainParams() {
   const { data, isLoading, isError } = useQuery({

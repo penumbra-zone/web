@@ -1,10 +1,18 @@
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from 'ui/components';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  FadeTransition,
+} from 'ui';
 import { cn } from 'ui/lib/utils';
 import { useStore } from '../../../state';
 import { importSelector } from '../../../state/seed-phrase/import';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { FadeTransition, ImportForm } from '../../../shared';
+import { ImportForm } from '../../../shared';
 
 export const RestorePassword = () => {
   const navigate = usePageNav();

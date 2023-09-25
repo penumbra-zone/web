@@ -1,7 +1,7 @@
 import { CheckCircledIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useMemo, useState } from 'react';
-import { Button, Input } from 'ui/components';
-import { FadeTransition, SettingsHeader } from '../../../shared';
+import { Button, FadeTransition, Input } from 'ui';
+import { SettingsHeader } from '../../../shared';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
 import { ShareGradientIcon } from '../../../icons';

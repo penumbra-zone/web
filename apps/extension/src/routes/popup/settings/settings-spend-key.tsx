@@ -1,7 +1,7 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
-import { Button, CopyToClipboard } from 'ui/components';
-import { FadeTransition, PasswordInput, SettingsHeader } from '../../../shared';
+import { Button, CopyToClipboard, FadeTransition } from 'ui';
+import { PasswordInput, SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
 import { AccountKeyGradientIcon } from '../../../icons';
