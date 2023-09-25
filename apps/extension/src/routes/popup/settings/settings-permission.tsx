@@ -1,4 +1,5 @@
-import { FadeTransition, SettingsHeader } from '../../../shared';
+import { FadeTransition } from 'ui';
+import { SettingsHeader } from '../../../shared';
 
 export const SettingsPermission = () => {
   return (

@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
   CopyToClipboard,
+  FadeTransition,
   Input,
 } from 'ui';
 import { cn } from 'ui/lib/utils';
@@ -17,7 +18,7 @@ import { useStore } from '../../../state';
 import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { FadeTransition, WordLengthToogles } from '../../../shared';
+import { WordLengthToogles } from '../../../shared';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();

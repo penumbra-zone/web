@@ -1,5 +1,5 @@
-import { Button } from 'ui';
-import { FadeTransition, SettingsHeader } from '../../../shared';
+import { Button, FadeTransition } from 'ui';
+import { SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { walletsSelector } from '../../../state/wallets';
 import { AccountPopover } from './account-popover';

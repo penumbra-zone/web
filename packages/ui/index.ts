@@ -11,3 +11,4 @@ export * from './components/ui/popover';
 export * from './components/ui/progress';
 export * from './components/ui/sheet';
 export * from './components/ui/toggle';
+export * from './components/ui/fade-transition';

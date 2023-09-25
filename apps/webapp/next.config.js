@@ -1,7 +1,10 @@
 module.exports = {
   reactStrictMode: true,
   transpilePackages: ['ui'],
-  webpack: (config) => {
+  images: {
+    domains: ['avatar.vercel.sh'],
+  },
+  webpack: config => {
     config.module.rules.push({
       test: /\.mp4$/,
       type: 'asset/resource',

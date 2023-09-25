@@ -1,8 +1,8 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useMemo, useState } from 'react';
-import { Input } from 'ui';
+import { FadeTransition, Input } from 'ui';
 import { LinkGradientIcon } from '../../../../icons';
-import { FadeTransition, SettingsHeader } from '../../../../shared';
+import { SettingsHeader } from '../../../../shared';
 import { ConnectedSitesActionPopover } from './connected-sites-action-popover';
 
 const dapps = ['app.testnet.penumbra.zone', 'testnet.penumbra.zone'];

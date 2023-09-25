@@ -1,5 +1,5 @@
-import { Button, Input } from 'ui';
-import { FadeTransition, SettingsHeader } from '../../../shared';
+import { Button, FadeTransition, Input } from 'ui';
+import { SettingsHeader } from '../../../shared';
 import { TimerGradientIcon } from '../../../icons';
 
 export const SettingsAutoLock = () => {

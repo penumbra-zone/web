@@ -7,11 +7,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  FadeTransition,
 } from 'ui';
 import { useOnboardingSave } from '../../../hooks/onboarding';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { FadeTransition } from '../../../shared';
 import { PasswordInput } from '../../../shared';
 
 export const SetPassword = () => {

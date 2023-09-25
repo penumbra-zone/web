@@ -1,5 +1,6 @@
+import { FadeTransition } from 'ui';
 import { AccountKeyIcon, EyeGradientIcon, FileTextIcon, KeyIcon } from '../../../icons';
-import { CustomLink, FadeTransition, SettingsHeader } from '../../../shared';
+import { CustomLink, SettingsHeader } from '../../../shared';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
 

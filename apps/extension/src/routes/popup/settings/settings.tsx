@@ -6,11 +6,12 @@ import {
   Share1Icon,
   TextAlignLeftIcon,
 } from '@radix-ui/react-icons';
-import { CustomLink, FadeTransition, SettingsHeader } from '../../../shared';
+import { CustomLink, SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
+import { FadeTransition } from 'ui';
 
 const links = [
   {

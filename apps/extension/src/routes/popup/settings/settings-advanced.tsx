@@ -1,8 +1,9 @@
 import { TimerIcon, TrashIcon } from '@radix-ui/react-icons';
-import { CustomLink, FadeTransition, SettingsHeader } from '../../../shared';
+import { CustomLink, SettingsHeader } from '../../../shared';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
 import { DashboardGradientIcon } from '../../../icons';
+import { FadeTransition } from 'ui';
 
 const links = [
   {

@@ -7,13 +7,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  FadeTransition,
   Input,
 } from 'ui';
 import { useStore } from '../../../state';
 import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { FadeTransition } from '../../../shared';
 
 export const ConfirmBackup = () => {
   const navigate = usePageNav();

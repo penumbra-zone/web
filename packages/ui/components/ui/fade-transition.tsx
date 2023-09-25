@@ -1,9 +1,10 @@
+'use client';
+
 import { motion } from 'framer-motion';
 import React from 'react';
-import { cn } from 'ui/lib/utils';
+import { cn } from '../../lib/utils';
 
-// Required to wrap in <AnimatePresence>
-export const FadeTransition = ({
+const FadeTransition = ({
   children,
   className,
 }: {
@@ -21,3 +22,7 @@ export const FadeTransition = ({
     </motion.div>
   );
 };
+
+FadeTransition.displayName = 'FadeTransition';
+
+export { FadeTransition };
