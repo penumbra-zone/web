@@ -9,8 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.3.1-20230920170024-ef0b0a62eccc.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.0.0-20230920170024-ef0b0a62eccc.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.3.1-20230924001252-57fdc610ee23.1",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.0.0-20230924001252-57fdc610ee23.1",
     "@connectrpc/connect": "^1.0.0",
     "@tanstack/react-query": "^4.35.3",
     "next": "^13.5.2",
@@ -20,7 +20,7 @@
     "ui": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^20.6.3",
+    "@types/node": "^20.6.5",
     "@types/react": "^18.2.22",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.7.2",

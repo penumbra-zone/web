@@ -1,8 +1,7 @@
-import { ObliviousQuerier } from 'penumbra-query/src/oblivious';
-import { SpecificQuerier } from 'penumbra-query/src/specific';
 import { IndexedDb } from 'penumbra-indexed-db';
 import { ViewServer } from 'penumbra-wasm-ts';
 import { BlockProcessor } from 'penumbra-query';
+import { RootQuerier } from 'penumbra-query/src/root-querier';
 
 export interface ControllersProps {
   fullViewingKey: string;
@@ -12,8 +11,7 @@ export interface ControllersProps {
 
 export class Controllers {
   private constructor(
-    readonly obliviousQuerier: ObliviousQuerier,
-    readonly specificQuerier: SpecificQuerier,
+    readonly querier: RootQuerier,
     readonly indexedDb: IndexedDb,
     readonly viewServer: ViewServer,
     readonly blockProcessor: BlockProcessor,
@@ -24,10 +22,9 @@ export class Controllers {
     indexedDbVersion,
     fullViewingKey,
   }: ControllersProps): Promise<Controllers> {
-    const oblQuerier = new ObliviousQuerier({ grpcEndpoint });
-    const specQuerier = new SpecificQuerier({ grpcEndpoint });
+    const querier = new RootQuerier({ grpcEndpoint });
 
-    const { chainId, epochDuration } = await oblQuerier.chainParameters();
+    const { chainId, epochDuration } = await querier.app.chainParameters();
     const indexedDb = await IndexedDb.initialize({
       chainId,
       dbVersion: indexedDbVersion,
@@ -41,10 +38,9 @@ export class Controllers {
 
     const blockProcessor = new BlockProcessor({
       viewServer,
-      specQuerier,
-      oblQuerier,
+      querier,
       indexedDb,
     });
-    return new this(oblQuerier, specQuerier, indexedDb, viewServer, blockProcessor);
+    return new this(querier, indexedDb, viewServer, blockProcessor);
   }
 }

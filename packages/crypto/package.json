@@ -9,7 +9,7 @@
   "dependencies": {
     "bip39": "^3.1.0",
     "crypto-js": "^4.1.1",
-    "eslint": "^8.49.0",
+    "eslint": "^8.50.0",
     "eslint-config-custom": "workspace:*",
     "lodash": "^4.17.21",
     "tsconfig": "workspace:*",
@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@types/crypto-js": "^4.1.2",
-    "@types/lodash": "^4.14.198",
-    "vitest": "^0.34.4"
+    "@types/lodash": "^4.14.199",
+    "vitest": "^0.34.5"
   }
 }

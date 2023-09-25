@@ -1,5 +1,3 @@
-import { ObliviousQuerier } from './oblivious';
-import { SpecificQuerier } from './specific';
 import {
   base64ToUint8Array,
   IndexedDbInterface,
@@ -7,28 +5,26 @@ import {
   uint8ArrayToBase64,
   ViewServerInterface,
 } from 'penumbra-types';
-import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/chain/v1alpha1/chain_pb';
-import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/crypto/v1alpha1/crypto_pb';
 import { decodeNctRoot, generateMetadata } from 'penumbra-wasm-ts/src/sct';
+import { RootQuerier } from './root-querier';
+import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
 
 interface QueryClientProps {
-  oblQuerier: ObliviousQuerier;
-  specQuerier: SpecificQuerier;
+  querier: RootQuerier;
   indexedDb: IndexedDbInterface;
   viewServer: ViewServerInterface;
 }
 
 export class BlockProcessor {
-  private readonly oblQuerier: ObliviousQuerier;
-  private readonly specQuerier: SpecificQuerier;
+  private readonly querier: RootQuerier;
   private readonly indexedDb: IndexedDbInterface;
   private readonly viewServer: ViewServerInterface;
 
-  constructor({ indexedDb, viewServer, oblQuerier, specQuerier }: QueryClientProps) {
+  constructor({ indexedDb, viewServer, querier }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
-    this.oblQuerier = oblQuerier;
-    this.specQuerier = specQuerier;
+    this.querier = querier;
   }
 
   async syncBlocks() {
@@ -49,7 +45,7 @@ export class BlockProcessor {
       const assetId = base64ToUint8Array(n.note.value.assetId.inner);
       const storedDenomData = await this.indexedDb.getAssetsMetadata(assetId);
       if (!storedDenomData) {
-        const metadata = await this.specQuerier.denomMetadata(n.note.value.assetId.inner);
+        const metadata = await this.querier.shieldedPool.denomMetadata(n.note.value.assetId.inner);
         if (metadata) {
           await this.indexedDb.saveAssetsMetadata(metadata);
         } else {
@@ -78,7 +74,7 @@ export class BlockProcessor {
   }
 
   private async assertRootValid(blockHeight: bigint): Promise<void> {
-    const sourceOfTruth = await this.specQuerier.keyValue(`sct/anchor/${blockHeight}`);
+    const sourceOfTruth = await this.querier.app.keyValue(`sct/anchor/${blockHeight}`);
     const inMemoryRoot = this.viewServer.getNctRoot();
 
     if (decodeNctRoot(sourceOfTruth) !== inMemoryRoot) {
@@ -91,10 +87,10 @@ export class BlockProcessor {
   private async syncAndStore() {
     const lastBlockSynced = await this.indexedDb.getLastBlockSynced();
     const startHeight = lastBlockSynced ? lastBlockSynced + 1n : 0n;
-    const { lastBlockHeight } = await this.oblQuerier.info();
+    const { lastBlockHeight } = await this.querier.narsil.info();
 
     // Continuously runs as new blocks are committed
-    for await (const res of this.oblQuerier.compactBlockRange(startHeight, true)) {
+    for await (const res of this.querier.compactBlock.compactBlockRange(startHeight, true)) {
       if (!res.compactBlock) throw new Error('No compant block in response');
 
       // Scanning has a side effect of updating viewServer's internal tree.
