@@ -1,11 +1,12 @@
 import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { IndexedDb } from './indexed-db';
+
+import { base64ToUint8Array } from 'penumbra-types';
 import {
   AssetId,
   DenomMetadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/crypto/v1alpha1/crypto_pb';
-import { base64ToUint8Array } from 'penumbra-types';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 const denomMetadataA = new DenomMetadata({
   symbol: 'usdc',

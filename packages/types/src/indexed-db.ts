@@ -1,5 +1,4 @@
 import { DBSchema } from 'idb';
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/crypto/v1alpha1/crypto_pb';
 import {
   NctUpdates,
   NewNoteRecord,
@@ -9,6 +8,7 @@ import {
   StoreHash,
 } from './state-commitment-tree';
 import { Base64Str } from './base64';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 export interface IndexedDbInterface {
   getLastBlockSynced(): Promise<bigint | undefined>;

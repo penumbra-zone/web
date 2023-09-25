@@ -1,4 +1,3 @@
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/crypto/v1alpha1/crypto_pb';
 import { IDBPDatabase, openDB } from 'idb';
 import {
   Base64Str,
@@ -8,6 +7,7 @@ import {
   PenumbraDb,
   StateCommitmentTree,
 } from 'penumbra-types';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes

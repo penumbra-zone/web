@@ -7,7 +7,7 @@ import {
   validateSchema,
 } from 'penumbra-types';
 import { z } from 'zod';
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/crypto/v1alpha1/crypto_pb';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 export const decodeNctRoot = (hash: Uint8Array): string => {
   const hexString = uint8ArrayToHex(hash);
