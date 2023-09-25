@@ -24,7 +24,7 @@ export class Controllers {
   }: ControllersProps): Promise<Controllers> {
     const querier = new RootQuerier({ grpcEndpoint });
 
-    const { chainId, epochDuration } = await querier.viewService.chainParameters();
+    const { chainId, epochDuration } = await querier.app.chainParameters();
     const indexedDb = await IndexedDb.initialize({
       chainId,
       dbVersion: indexedDbVersion,
