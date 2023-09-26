@@ -14,6 +14,7 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-confusing-void-expression': ['error', { ignoreArrowShorthand: true }],
     '@typescript-eslint/switch-exhaustiveness-check': 'error',
+    '@typescript-eslint/no-unnecessary-condition': ['error', { allowConstantLoopConditions: true }],
   },
   parserOptions: {
     babelOptions: {
