@@ -5,10 +5,12 @@ import {
   uint8ArrayToBase64,
   ViewServerInterface,
 } from 'penumbra-types';
-import { decodeNctRoot, generateMetadata } from 'penumbra-wasm-ts/src/sct';
+import { decodeNctRoot } from 'penumbra-wasm-ts/src/sct';
 import { RootQuerier } from './root-querier';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { bech32 } from 'bech32';
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -87,14 +89,14 @@ export class BlockProcessor {
   private async syncAndStore() {
     const lastBlockSynced = await this.indexedDb.getLastBlockSynced();
     const startHeight = lastBlockSynced ? lastBlockSynced + 1n : 0n;
-    const { lastBlockHeight } = await this.querier.narsil.info();
+    const lastBlockHeight = await this.querier.tendermint.lastBlockHeight();
 
     // Continuously runs as new blocks are committed
     for await (const res of this.querier.compactBlock.compactBlockRange(startHeight, true)) {
-      if (!res.compactBlock) throw new Error('No compant block in response');
+      if (!res.compactBlock) throw new Error('No block in response');
 
       // Scanning has a side effect of updating viewServer's internal tree.
-      const scanResult = this.viewServer.scanBlock(res.compactBlock);
+      const scanResult = await this.viewServer.scanBlock(res.compactBlock);
 
       // TODO: We should not store new blocks as we find them, but only when sync progress is saved: https://github.com/penumbra-zone/web/issues/34
       //       However, the current wasm crate discards the new notes on every block scan.
@@ -115,4 +117,17 @@ export class BlockProcessor {
 // - if not, every 1000th block
 const shouldStoreProgress = (block: CompactBlock, upToDateBlock: bigint): boolean => {
   return block.height >= upToDateBlock || block.height % 1000n === 0n;
+};
+
+export const UNNAMED_ASSET_PREFIX = 'passet';
+
+const generateMetadata = (assetId: Uint8Array): DenomMetadata => {
+  const words = bech32.toWords(assetId);
+  const denom = bech32.encode(UNNAMED_ASSET_PREFIX, words);
+  return new DenomMetadata({
+    base: denom,
+    denomUnits: [{ aliases: [], denom, exponent: 0 }],
+    display: denom,
+    penumbraAssetId: { inner: assetId },
+  });
 };
