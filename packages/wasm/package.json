@@ -18,6 +18,7 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
+    "fake-indexeddb": "^4.0.2",
     "vitest": "^0.34.5"
   }
 }
