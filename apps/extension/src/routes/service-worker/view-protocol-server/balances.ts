@@ -8,6 +8,7 @@ import {
   addLoHi,
   Base64Str,
   base64ToUint8Array,
+  IndexedDbInterface,
   NewNoteRecord,
   uint8ArrayToBase64,
 } from 'penumbra-types';
@@ -18,7 +19,6 @@ import {
   Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
-import { IndexedDb } from 'penumbra-indexed-db';
 
 type AssetIdStr = Base64Str;
 type BalancesMap = Record<AssetIdStr, BalancesResponse>;
@@ -44,16 +44,8 @@ const initializeProto = (noteRecord: NewNoteRecord, accountNumber: number): Bala
 // Handles aggregating amounts and filtering by account number/asset id
 export const handleBalancesReq = async function* (
   req: BalancesReq,
+  indexedDb: IndexedDbInterface,
 ): AsyncIterable<BalancesResponse> {
-  // const allNotes = await services.controllers.indexedDb.getAllNotes(); // TODO: wait till chain upgrade
-  const indexedDb = await IndexedDb.initialize({
-    chainId: 'xyz',
-    dbVersion: 12,
-  });
-
-  // Test aggregation
-  // Test filtering asset id
-  // Test filtering account
   const allNotes = await indexedDb.getAllNotes();
 
   const accounts: AccountMap = {};

@@ -3,6 +3,7 @@ import { handleChainParamsReq, isChainParamsRequest } from './chain-params';
 import { errorResponse, ViewProtocolReq, ViewProtocolRes } from './helpers/generic';
 import { isStreamingMethod, streamResponse } from './helpers/streaming';
 import { unaryResponse } from './helpers/unary';
+import { services } from '../../../service-worker';
 
 export const viewServerRouter = (req: ViewProtocolReq, sender: chrome.runtime.MessageSender) => {
   const id = sender.tab!.id!; // Guaranteed given request is from dapp
@@ -31,7 +32,7 @@ const unaryHandler = async (req: ViewProtocolReq): Promise<ViewProtocolRes> => {
 
 const streamingHandler = (req: ViewProtocolReq): AsyncIterable<ViewProtocolRes> => {
   if (isBalancesRequest(req)) {
-    return handleBalancesReq(req);
+    return handleBalancesReq(req, services.controllers.indexedDb);
   }
   throw new Error(`Non-supported streaming request: ${req.requestMethod.getType().typeName}`);
 };
