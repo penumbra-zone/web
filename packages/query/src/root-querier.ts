@@ -1,6 +1,6 @@
 import { CompactBlockQuerier } from './queriers/compact-block';
 import { AppQuerier } from './queriers/app';
-import { NarsilQuerier } from './queriers/narsil';
+import { TendermintQuerier } from './queriers/tendermint';
 import { ShieldedPoolQuerier } from './queriers/shielded-pool';
 
 // Given the amount of query services, this root querier aggregates them all
@@ -8,13 +8,13 @@ import { ShieldedPoolQuerier } from './queriers/shielded-pool';
 export class RootQuerier {
   readonly app: AppQuerier;
   readonly compactBlock: CompactBlockQuerier;
-  readonly narsil: NarsilQuerier;
+  readonly tendermint: TendermintQuerier;
   readonly shieldedPool: ShieldedPoolQuerier;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
     this.app = new AppQuerier({ grpcEndpoint });
     this.compactBlock = new CompactBlockQuerier({ grpcEndpoint });
-    this.narsil = new NarsilQuerier({ grpcEndpoint });
+    this.tendermint = new TendermintQuerier({ grpcEndpoint });
     this.shieldedPool = new ShieldedPoolQuerier({ grpcEndpoint });
   }
 }

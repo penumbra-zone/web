@@ -28,21 +28,20 @@ export class ViewServer implements ViewServerInterface {
     epochDuration,
     getStoredTree,
   }: ViewServerProps): Promise<ViewServer> {
-    return new this(
-      new WasmViewServer(fullViewingKey, epochDuration, await getStoredTree()),
+    // The constructor is an async fn. Should consider a `new()` function instead of a constructor.
+    const vsPromise = new WasmViewServer(
       fullViewingKey,
       epochDuration,
-      getStoredTree,
-    );
+      await getStoredTree(),
+    ) as unknown as Promise<WasmViewServer>;
+    return new this(await vsPromise, fullViewingKey, epochDuration, getStoredTree);
   }
 
   // Decrypts blocks with viewing key for notes, swaps, and updates revealed for user
   // Makes update to internal state-commitment-tree as a side effect.
   // Should extract updates and save locally.
-  scanBlock(compactBlock: CompactBlock): ScanResult {
-    const result = this.wasmViewServer.scan_block_without_updates(
-      compactBlock.toJson(),
-    ) as ScanResult;
+  async scanBlock(compactBlock: CompactBlock): Promise<ScanResult> {
+    const result = (await this.wasmViewServer.scan_block(compactBlock.toJson())) as ScanResult;
     return validateSchema(ScanResultSchema, result);
   }
 
