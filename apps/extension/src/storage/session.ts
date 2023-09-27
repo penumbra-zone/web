@@ -1,16 +1,16 @@
 import { ExtensionStorage } from './base';
-import { HashedPassword } from '../state/password';
+import { KeyJson } from 'penumbra-crypto-ts';
 
 export enum SessionStorageVersion {
   V1 = 'V1',
 }
 
 export interface SessionStorageState {
-  hashedPassword: HashedPassword | undefined;
+  passwordKey: KeyJson | undefined;
 }
 
 export const sessionDefaults: SessionStorageState = {
-  hashedPassword: undefined,
+  passwordKey: undefined,
 };
 
 // Meant to be used for short-term persisted data. Holds data in memory for the duration of a browser session.

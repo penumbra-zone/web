@@ -111,7 +111,11 @@ export const uintArraysEqual = (a: Uint8Array, b: Uint8Array): boolean => {
   return a.length === b.length && a.every((num, i) => b[i] === num);
 };
 
-// Private key. Do not serialize and store. Only store KeyPrint & Box.
+export interface KeyJson {
+  _inner: JsonWebKey;
+}
+
+// Private key used to encrypt & decrypt messages. Do not expose publicly.
 export class Key {
   private constructor(private readonly key: CryptoKey) {}
 
@@ -137,6 +141,17 @@ export class Key {
     const hashedKey = await crypto.subtle.digest('SHA-256', buffer);
 
     if (!uintArraysEqual(print.hash, new Uint8Array(hashedKey))) return null;
+    return new Key(key);
+  }
+
+  static async fromJson(jwk: KeyJson): Promise<Key> {
+    const key = await crypto.subtle.importKey(
+      'jwk',
+      jwk._inner,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt', 'decrypt'],
+    );
     return new Key(key);
   }
 
@@ -166,15 +181,8 @@ export class Key {
       throw e;
     }
   }
-}
 
-// Helper to check if a provided password can unseal an encrypted message
-export const isPassword = async (
-  password: string,
-  print: KeyPrint,
-  encryptedSeedPhrase: Box,
-): Promise<boolean> => {
-  const key = await Key.recreate(password, print);
-  const result = await key?.unseal(encryptedSeedPhrase);
-  return Boolean(result);
-};
+  async toJson(): Promise<KeyJson> {
+    return { _inner: await crypto.subtle.exportKey('jwk', this.key) };
+  }
+}

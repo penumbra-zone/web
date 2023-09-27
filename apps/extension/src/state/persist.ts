@@ -23,13 +23,13 @@ type Setter = (
 export const customPersistImpl: Persist = f => (set, get, store) => {
   void (async function () {
     // Part 1: Get storage values and sync them to store
-    const hashedPassword = await sessionExtStorage.get('hashedPassword');
+    const hashedPassword = await sessionExtStorage.get('passwordKey');
     const wallets = await localExtStorage.get('wallets');
     const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 
     set(
       produce((state: AllSlices) => {
-        state.password.hashedPassword = hashedPassword;
+        state.password.plainText = hashedPassword;
         state.wallets.all = wallets;
         state.network.grpcEndpoint = grpcEndpoint;
       }),
@@ -61,11 +61,11 @@ function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: S
 function syncSession(changes: Record<string, chrome.storage.StorageChange>, set: Setter) {
   if (changes['hashedPassword']) {
     const item = changes['hashedPassword'].newValue as
-      | StorageItem<SessionStorageState['hashedPassword']>
+      | StorageItem<SessionStorageState['passwordKey']>
       | undefined;
     set(
       produce((state: AllSlices) => {
-        state.password.hashedPassword = item ? item.value : undefined;
+        state.password.plainText = item ? item.value : undefined;
       }),
     );
   }

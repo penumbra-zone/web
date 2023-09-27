@@ -1,10 +1,13 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index';
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
 import { ExtensionStorage } from '../storage/base';
 import { LocalStorageState } from '../storage/local';
 import { flushPromises } from '../utils/test-helpers';
+
+// Replace the wasm-pack import with the nodejs version so tests can run
+vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
 
 describe('Accounts Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;

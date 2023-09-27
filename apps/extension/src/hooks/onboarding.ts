@@ -3,7 +3,6 @@ import { passwordSelector } from '../state/password';
 import { generateSelector } from '../state/seed-phrase/generate';
 import { importSelector } from '../state/seed-phrase/import';
 import { walletsSelector } from '../state/wallets';
-import { generateSpendKey, getFullViewingKey } from 'penumbra-wasm-ts';
 import { sendSwMessage } from '../routes/service-worker/internal/sender';
 import { InitializeMessage } from '../routes/service-worker/internal/initialize';
 import { testnetConstants } from 'penumbra-constants';
@@ -18,24 +17,12 @@ export const useOnboardingSave = () => {
 
   return async (plaintextPassword: string) => {
     // Determine which routes it came through to get here
-    const phrase = generatedPhrase.length ? generatedPhrase : importedPhrase;
-    const phraseString = phrase.join(' ');
+    const seedPhrase = generatedPhrase.length ? generatedPhrase : importedPhrase;
+    await setPassword(plaintextPassword);
 
-    const hashedPassword = await setPassword(plaintextPassword);
-    const initializationVector = randomSalt();
-    const encryptedSeedPhrase = await encrypt(
-      phraseString,
-      initializationVector,
-      hashedPassword.key,
-    );
-    const spendKey = generateSpendKey(phraseString);
-    const fullViewingKey = getFullViewingKey(spendKey);
-
-    await addWallet({
+    const { fullViewingKey } = await addWallet({
       label: 'Wallet #1',
-      encryptedSeedPhrase,
-      fullViewingKey,
-      initializationVector,
+      seedPhrase,
     });
     void sendSwMessage<InitializeMessage>({
       type: 'INITIALIZE',

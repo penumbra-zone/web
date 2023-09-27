@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, test } from 'vitest';
-import { Box, isPassword, Key, KeyPrint, uintArraysEqual } from './encryption';
+import { describe, expect, test } from 'vitest';
+import { Box, Key, KeyPrint, uintArraysEqual } from './encryption';
 
 // NOTE: the web crypto API requires running in a browser environment
 
@@ -71,45 +71,6 @@ describe('encryption', () => {
         const unsealedMessage = await key.unseal({ nonce: 123, cipherText: 456 });
         expect(unsealedMessage).toBeNull();
       });
-    });
-  });
-
-  describe('isPassword', () => {
-    const password = 's0meUs3rP@ssword';
-    const seedPhrase = 'correct horse battery staple';
-    let keyPrint: KeyPrint;
-    let box: Box;
-
-    beforeEach(async () => {
-      const { key, keyPrint: newKeyPrint } = await Key.create(password);
-      keyPrint = newKeyPrint;
-      box = await key.seal(seedPhrase);
-    });
-
-    test('returns true if the password can unseal the encrypted data', async () => {
-      const result = await isPassword(password, keyPrint, box);
-      expect(result).toBe(true);
-    });
-
-    test('returns false if the password cannot unseal the encrypted data', async () => {
-      const wrongPassword = 'WrongPassword123!';
-      const result = await isPassword(wrongPassword, keyPrint, box);
-      expect(result).toBe(false);
-    });
-
-    test('returns false if the key print is incorrect', async () => {
-      const wrongKeyPrint = KeyPrint.fromJson({ hash: 'd3JvbmdIYXNo', salt: 'd3JvbmdTYWx0' });
-      const result = await isPassword(password, wrongKeyPrint, box);
-      expect(result).toBe(false);
-    });
-
-    test('returns false if the encrypted seed phrase (box) is incorrect', async () => {
-      const wrongBox = Box.fromJson({
-        nonce: 'd3JvbmdOb25jZQ==',
-        cipherText: 'd3JvbmdDaXBoZXJUZXh0',
-      });
-      const result = await isPassword(password, keyPrint, wrongBox);
-      expect(result).toBe(false);
     });
   });
 
