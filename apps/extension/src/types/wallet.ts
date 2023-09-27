@@ -40,3 +40,6 @@ export class Wallet {
     };
   }
 }
+
+export const walletsFromJson = (wallets: WalletJson[]): Wallet[] =>
+  wallets.map(w => Wallet.fromJson(w));

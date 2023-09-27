@@ -1,13 +1,11 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
 import { ExtensionStorage } from '../storage/base';
 import { LocalStorageState } from '../storage/local';
 import { flushPromises } from '../utils/test-helpers';
-
-// Replace the wasm-pack import with the nodejs version so tests can run
-vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
+import { WalletCreate } from '../types/wallet';
 
 describe('Accounts Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
@@ -23,11 +21,9 @@ describe('Accounts Slice', () => {
   });
 
   test('accounts can be added', async () => {
-    const accountA = {
+    const accountA: WalletCreate = {
       label: 'Account #1',
-      encryptedSeedPhrase: 'JPum4gUZn4KaLL9Y4xEIC8Tf+F1ZknmrBQLOlI4l72cd/bJWSz/EmVkr99g=',
-      initializationVector: '+VzsTs4/j3wZct7oaDhHOg==',
-      fullViewingKey: '1234',
+      seedPhrase: ['apple', 'banana', 'orange'],
     };
     await useStore.getState().wallets.addWallet(accountA);
     expect(useStore.getState().wallets.all.length).toBe(1);
@@ -38,11 +34,9 @@ describe('Accounts Slice', () => {
     expect(accountsPt1.length).toBe(1);
     expect(accountsPt1.at(0)).toBe(accountA);
 
-    const accountB = {
+    const accountB: WalletCreate = {
       label: 'Account #2',
-      encryptedSeedPhrase: 'JPum4gUZn4KaLL9Y4xEIC8Tf+F1ZknmrBQLOlI4l72cd/bJWSz/EmVkr99g=',
-      initializationVector: '+VzsTs4/j3wZct7oaDhHOg==',
-      fullViewingKey: '1234',
+      seedPhrase: ['pear', 'grape', 'cashew'],
     };
     await useStore.getState().wallets.addWallet(accountB);
     expect(useStore.getState().wallets.all.length).toBe(2);

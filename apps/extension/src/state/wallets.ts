@@ -3,6 +3,7 @@ import { Wallet, WalletCreate } from '../types/wallet';
 import { ExtensionStorage } from '../storage/base';
 import { LocalStorageState } from '../storage/local';
 import { generateSpendKey, getFullViewingKey } from 'penumbra-wasm-ts';
+import { Key } from 'penumbra-crypto-ts';
 
 export interface WalletsSlice {
   all: Wallet[];
@@ -22,8 +23,8 @@ export const createWalletsSlice =
         const passwordKey = get().password.key;
         if (!passwordKey) throw new Error('Password Key not in storage');
 
-        const encryptedSeedPhrase = await passwordKey.seal(seedPhraseStr);
-
+        const key = await Key.fromJson(passwordKey);
+        const encryptedSeedPhrase = await key.seal(seedPhraseStr);
         const accountGroup = ''; // TODO: Should derive this from the key when implemented in wasm crate
         const newWallet = new Wallet(label, accountGroup, fullViewingKey, encryptedSeedPhrase);
 

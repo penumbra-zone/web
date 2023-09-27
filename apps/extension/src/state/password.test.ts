@@ -6,14 +6,13 @@ import { ExtensionStorage } from '../storage/base';
 import { SessionStorageState } from '../storage/session';
 import { LocalStorageState } from '../storage/local';
 import { webcrypto } from 'crypto';
+import { Key, KeyPrint } from 'penumbra-crypto-ts';
 
 vi.stubGlobal('crypto', webcrypto);
-// Replace the wasm-pack import with the nodejs version so tests can run
-vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
 
 describe('Password Slice', () => {
   const password = 's0meUs3rP@ssword';
-  const seedPhrase = 'correct horse battery staple';
+  const seedPhrase = ['correct horse battery staple'];
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
   let sessionStorage: ExtensionStorage<SessionStorageState>;
@@ -29,49 +28,30 @@ describe('Password Slice', () => {
     await useStore.getState().password.setPassword(password);
     await expect(useStore.getState().password.isPassword(password)).rejects.toThrow();
   });
-  //
-  // test('password can be set and verified', async () => {
-  //   const keyPrint = await useStore.getState().password.setPassword(password);
-  //
-  //   const encryptedSeedPhrase = await encrypt(seedPhrase, iv, hashed.key);
-  //   await useStore.getState().wallets.addWallet({
-  //     label: 'Account #1',
-  //     encryptedSeedPhrase,
-  //     initializationVector: iv,
-  //     fullViewingKey: '1234',
-  //   });
-  //   // Slice method works
-  //   expect(await isPassword(password, hashed.salt, encryptedSeedPhrase, iv)).toBeTruthy();
-  //   expect(await useStore.getState().password.isPassword(password)).toBeTruthy();
-  //
-  //   // Session stored hash is validated
-  //   const sessionStoredHash = await sessionStorage.get('passwordKey');
-  //   expect(
-  //     await isPassword(password, sessionStoredHash!.salt, encryptedSeedPhrase, iv),
-  //   ).toBeTruthy();
-  //
-  //   // Locally stored salt is validated
-  //   const localStoredSalt = await localStorage.get('passwordSalt');
-  //   expect(localStoredSalt).toBeDefined();
-  //   expect(await isPassword(password, localStoredSalt!, encryptedSeedPhrase, iv)).toBeTruthy();
-  // });
-  //
-  // test('incorrect password should not verify', async () => {
-  //   const hashed = await useStore.getState().password.setPassword(password);
-  //   const iv = randomSalt();
-  //   const encryptedSeedPhrase = await encrypt(seedPhrase, iv, hashed.key);
-  //   await useStore.getState().wallets.addWallet({
-  //     label: 'Account #1',
-  //     encryptedSeedPhrase,
-  //     initializationVector: iv,
-  //     fullViewingKey: '1234',
-  //   });
-  //
-  //   const wrongPassword = 'wrong-password-123';
-  //   expect(await useStore.getState().password.isPassword(wrongPassword)).toBe(false);
-  // });
-  //
-  // test('password is initially undefined', () => {
-  //   expect(useStore.getState().password.plainText).toBeUndefined();
-  // });
+
+  test('password can be set and verified', async () => {
+    await useStore.getState().password.setPassword(password);
+    await useStore.getState().wallets.addWallet({
+      label: 'Account #1',
+      seedPhrase,
+    });
+
+    // Saves to session storage
+    const sessionKey = await sessionStorage.get('passwordKey');
+    expect(sessionKey).toBeTruthy();
+    await expect(Key.fromJson(sessionKey!)).resolves.not.toThrow();
+
+    // Saves to local storage
+    const localPrint = await localStorage.get('passwordKeyPrint');
+    expect(localPrint).toBeTruthy();
+    await expect(KeyPrint.fromJson(localPrint!)).resolves.not.toThrow();
+
+    // Slice method works
+    expect(await useStore.getState().password.isPassword(password)).toBeTruthy();
+    expect(await useStore.getState().password.isPassword('wrong password')).toBeFalsy();
+  });
+
+  test('password key is initially undefined', () => {
+    expect(useStore.getState().password.key).toBeUndefined();
+  });
 });

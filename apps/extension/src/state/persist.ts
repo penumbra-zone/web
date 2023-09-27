@@ -4,6 +4,7 @@ import { sessionExtStorage, SessionStorageState } from '../storage/session';
 import { localExtStorage, LocalStorageState } from '../storage/local';
 import { produce } from 'immer';
 import { StorageItem } from '../storage/base';
+import { walletsFromJson } from '../types/wallet';
 
 export type Middleware = <
   T,
@@ -23,14 +24,14 @@ type Setter = (
 export const customPersistImpl: Persist = f => (set, get, store) => {
   void (async function () {
     // Part 1: Get storage values and sync them to store
-    const hashedPassword = await sessionExtStorage.get('passwordKey');
+    const passwordKey = await sessionExtStorage.get('passwordKey');
     const wallets = await localExtStorage.get('wallets');
     const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 
     set(
       produce((state: AllSlices) => {
-        state.password.plainText = hashedPassword;
-        state.wallets.all = wallets;
+        state.password.key = passwordKey;
+        state.wallets.all = walletsFromJson(wallets);
         state.network.grpcEndpoint = grpcEndpoint;
       }),
     );
@@ -47,12 +48,12 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
 
 function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: Setter) {
   if (changes['accounts']) {
-    const item = changes['accounts'].newValue as
+    const wallets = changes['accounts'].newValue as
       | StorageItem<LocalStorageState['wallets']>
       | undefined;
     set(
       produce((state: AllSlices) => {
-        state.wallets.all = item ? item.value : [];
+        state.wallets.all = wallets ? walletsFromJson(wallets.value) : [];
       }),
     );
   }
@@ -65,7 +66,7 @@ function syncSession(changes: Record<string, chrome.storage.StorageChange>, set:
       | undefined;
     set(
       produce((state: AllSlices) => {
-        state.password.plainText = item ? item.value : undefined;
+        state.password.key = item ? item.value : undefined;
       }),
     );
   }
