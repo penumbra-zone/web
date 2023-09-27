@@ -4,6 +4,8 @@ module.exports = {
   images: {
     domains: ['avatar.vercel.sh'],
   },
+  distDir: 'dist',
+  output: 'export',
   webpack: config => {
     config.module.rules.push({
       test: /\.mp4$/,

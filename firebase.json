@@ -1,0 +1,27 @@
+{
+  "hosting": {
+    "public": "apps/webapp/dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "frameworksBackend": {
+      "region": "europe-west1"
+    }
+  },
+  "emulators": {
+    "ui": {
+      "enabled": true
+    },
+    "functions": {
+      "port": 5001
+    },
+    "hosting": {
+      "enabled": true,
+      "port": 5000
+    }
+  }
+}
