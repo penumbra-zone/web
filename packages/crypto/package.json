@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest run"
+    "run-browser-tests": "vitest run --config browser.config.ts",
+    "test": "vitest run && npm run run-browser-tests"
   },
   "dependencies": {
     "bip39": "^3.1.0",
@@ -18,7 +19,11 @@
   "devDependencies": {
     "@types/crypto-js": "^4.1.2",
     "@types/lodash": "^4.14.199",
+    "@vitest/browser": "^0.34.5",
     "penumbra-types": "workspace:*",
-    "vitest": "^0.34.5"
+    "playwright": "^1.38.1",
+    "vite": "^4.4.9",
+    "vitest": "^0.34.5",
+    "webdriverio": "^8.16.15"
   }
 }

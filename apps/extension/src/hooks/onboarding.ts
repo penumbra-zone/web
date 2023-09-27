@@ -3,7 +3,6 @@ import { passwordSelector } from '../state/password';
 import { generateSelector } from '../state/seed-phrase/generate';
 import { importSelector } from '../state/seed-phrase/import';
 import { walletsSelector } from '../state/wallets';
-import { encrypt, randomBase64str } from 'penumbra-crypto-ts';
 import { generateSpendKey, getFullViewingKey } from 'penumbra-wasm-ts';
 import { sendSwMessage } from '../routes/service-worker/internal/sender';
 import { InitializeMessage } from '../routes/service-worker/internal/initialize';
@@ -23,7 +22,7 @@ export const useOnboardingSave = () => {
     const phraseString = phrase.join(' ');
 
     const hashedPassword = await setPassword(plaintextPassword);
-    const initializationVector = randomBase64str();
+    const initializationVector = randomSalt();
     const encryptedSeedPhrase = await encrypt(
       phraseString,
       initializationVector,

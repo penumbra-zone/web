@@ -2,7 +2,7 @@ import { AllSlices, SliceCreator } from './index';
 import { ExtensionStorage } from '../storage/base';
 import { SessionStorageState } from '../storage/session';
 import { LocalStorageState } from '../storage/local';
-import { hashPassword, isPassword, randomBase64str } from 'penumbra-crypto-ts';
+import { hashPassword, isPassword, randomSalt } from 'penumbra-crypto-ts';
 import { Base64Str } from 'penumbra-types';
 
 // Documentation in /docs/custody.md
@@ -28,7 +28,7 @@ export const createPasswordSlice =
     return {
       hashedPassword: undefined,
       setPassword: async password => {
-        const salt = randomBase64str();
+        const salt = randomSalt();
         const key = await hashPassword(password, salt);
         const hashedPassword = { key, salt };
         set(state => {
