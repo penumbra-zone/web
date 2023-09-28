@@ -12,6 +12,8 @@ import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { bech32 } from 'bech32';
+import { Code, ConnectError } from '@connectrpc/connect';
+import { backOff } from 'exponential-backoff';
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -23,6 +25,7 @@ export class BlockProcessor {
   private readonly querier: RootQuerier;
   private readonly indexedDb: IndexedDbInterface;
   private readonly viewServer: ViewServerInterface;
+  private readonly abortController: AbortController = new AbortController();
 
   constructor({ indexedDb, viewServer, querier }: QueryClientProps) {
     this.indexedDb = indexedDb;
@@ -30,13 +33,19 @@ export class BlockProcessor {
     this.querier = querier;
   }
 
+  // After a failure, retrying the sync is critical. An exponential-backoff is used.
   async syncBlocks() {
     try {
-      await this.syncAndStore();
-    } catch (e) {
-      await this.viewServer.resetTreeToStored();
-      console.error(e);
-      throw e;
+      await backOff(() => this.syncAndStore(), {
+        maxDelay: 30_000, // 30 seconds
+        numOfAttempts: Infinity,
+        retry: async error => {
+          await this.viewServer.resetTreeToStored();
+          return !isAbortSignal(error);
+        },
+      });
+    } catch {
+      // Was signaled to abort, can swallow this error
     }
   }
 
@@ -95,7 +104,11 @@ export class BlockProcessor {
     const lastBlockHeight = await this.querier.tendermint.lastBlockHeight();
 
     // Continuously runs as new blocks are committed
-    for await (const res of this.querier.compactBlock.compactBlockRange(startHeight, true)) {
+    for await (const res of this.querier.compactBlock.compactBlockRange({
+      startHeight,
+      keepAlive: true,
+      abortSignal: this.abortController.signal,
+    })) {
       if (!res.compactBlock) throw new Error('No block in response');
 
       // Scanning has a side effect of updating viewServer's internal tree.
@@ -116,6 +129,9 @@ export class BlockProcessor {
     }
   }
 }
+
+const isAbortSignal = (error: unknown): boolean =>
+  error instanceof ConnectError && error.code === Code.Canceled;
 
 // Writing to disc is expensive, so storing progress occurs:
 // - if syncing is up-to-date, on every block
