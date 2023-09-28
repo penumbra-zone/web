@@ -21,9 +21,7 @@
     "@types/lodash": "^4.14.199",
     "@vitest/browser": "^0.34.5",
     "penumbra-types": "workspace:*",
-    "playwright": "^1.38.1",
     "vite": "^4.4.9",
-    "vitest": "^0.34.5",
-    "webdriverio": "^8.16.15"
+    "vitest": "^0.34.5"
   }
 }

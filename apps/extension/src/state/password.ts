@@ -7,7 +7,7 @@ import { Box, Key, KeyJson, KeyPrint } from 'penumbra-crypto-ts';
 // Documentation in /docs/custody.md
 
 export interface PasswordSlice {
-  key: KeyJson | undefined; // Given we are using immer, the private class fields clash with immer's copying mechanics
+  key: KeyJson | undefined; // Given we are using immer, the private class fields in `Key` clash with immer's copying mechanics
   setPassword: (password: string) => Promise<void>;
   isPassword: (password: string) => Promise<boolean>;
   clearSessionPassword: () => void;
@@ -25,7 +25,9 @@ export const createPasswordSlice =
         const { key, keyPrint } = await Key.create(password);
         const keyJson = await key.toJson();
 
-        set(state => (state.password.key = keyJson));
+        set(state => {
+          state.password.key = keyJson;
+        });
         await session.set('passwordKey', keyJson);
         await local.set('passwordKeyPrint', keyPrint.toJson());
       },

@@ -5,10 +5,15 @@ import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
 import { ExtensionStorage } from '../storage/base';
 import { SessionStorageState } from '../storage/session';
 import { LocalStorageState } from '../storage/local';
-import { webcrypto } from 'crypto';
 import { Key, KeyPrint } from 'penumbra-crypto-ts';
+import { webcrypto } from 'crypto';
 
 vi.stubGlobal('crypto', webcrypto);
+
+vi.mock('penumbra-wasm-ts', () => ({
+  generateSpendKey: () => 'spend_key',
+  getFullViewingKey: () => 'full_viewing_key',
+}));
 
 describe('Password Slice', () => {
   const password = 's0meUs3rP@ssword';
@@ -44,7 +49,7 @@ describe('Password Slice', () => {
     // Saves to local storage
     const localPrint = await localStorage.get('passwordKeyPrint');
     expect(localPrint).toBeTruthy();
-    await expect(KeyPrint.fromJson(localPrint!)).resolves.not.toThrow();
+    expect(() => KeyPrint.fromJson(localPrint!)).not.toThrow();
 
     // Slice method works
     expect(await useStore.getState().password.isPassword(password)).toBeTruthy();

@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { Box, Key, KeyPrint, uintArraysEqual } from './encryption';
 
-// NOTE: the web crypto API requires running in a browser environment
+// NOTE: To have the most accurate representation, these the web crypto API tests run in a browser environment
 
 describe('encryption', () => {
   describe('Key', () => {

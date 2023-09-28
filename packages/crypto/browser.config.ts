@@ -5,7 +5,8 @@ export default defineConfig({
   test: {
     include: ['**/encryption.test.ts'],
     browser: {
-      name: 'chrome',
+      name: 'chromium',
+      provider: 'playwright',
       enabled: true,
       headless: true,
     },
