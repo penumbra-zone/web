@@ -29,8 +29,7 @@ describe('Password Slice', () => {
     useStore = create<AllSlices>()(initializeStore(sessionStorage, localStorage));
   });
 
-  test('password cannot be verified without a wallet', async () => {
-    await useStore.getState().password.setPassword(password);
+  test('password cannot be verified without a KeyPrint', async () => {
     await expect(useStore.getState().password.isPassword(password)).rejects.toThrow();
   });
 
