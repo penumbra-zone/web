@@ -1,9 +1,11 @@
 module.exports = () => {
-  const isDev = process.env.NODE_ENV !== 'production';
-  const prodConfig = !isDev ? { output: 'export' } : {};
+  const isProd = process.env.NODE_ENV === 'production';
 
-  return {
-    ...prodConfig,
+  /**
+   * @type {import('next').NextConfig}
+   */
+  const nextJsConfig = {
+    output: isProd ? 'export' : undefined,
     reactStrictMode: true,
     transpilePackages: ['ui'],
     images: {
@@ -29,4 +31,6 @@ module.exports = () => {
       return config;
     },
   };
+
+  return nextJsConfig;
 };
