@@ -1,8 +1,11 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '../index';
 import { mockLocalExtStorage, mockSessionExtStorage } from '../../storage/mock';
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { SeedPhraseLength } from 'penumbra-crypto-ts/src/mnemonic';
+
+// Note: .wasm imports need to be mocked in nodejs
+vi.mock('penumbra-wasm-ts', () => ({}));
 
 describe('Import Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;

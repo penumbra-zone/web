@@ -4,7 +4,7 @@ import { PasswordInput } from '../../shared';
 import { usePopupNav } from '../../utils/navigate';
 import { useStore } from '../../state';
 import { passwordSelector } from '../../state/password';
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { PopupPath } from './paths';
 
 export const Login = () => {
@@ -14,12 +14,12 @@ export const Login = () => {
   const [input, setInputValue] = useState('');
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
 
-  const handleUnlock = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleUnlock = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     void (async function () {
       if (await isPassword(input)) {
-        setPassword(input); // saves to session state
+        await setPassword(input); // saves to session state
         navigate(PopupPath.INDEX);
       } else {
         setEnteredIncorrect(true);

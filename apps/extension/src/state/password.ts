@@ -2,12 +2,13 @@ import { AllSlices, SliceCreator } from './index';
 import { ExtensionStorage } from '../storage/base';
 import { SessionStorageState } from '../storage/session';
 import { LocalStorageState } from '../storage/local';
-import { repeatedHash } from 'penumbra-crypto-ts';
+import { Key, KeyJson, KeyPrint } from 'penumbra-crypto-ts';
+
+// Documentation in /docs/custody.md
 
 export interface PasswordSlice {
-  hashedPassword: string | undefined;
-  setPassword: (password: string) => string;
-  clearPassword: () => void;
+  key: KeyJson | undefined; // Given we are using immer, the private class fields in `Key` clash with immer's copying mechanics
+  setPassword: (password: string) => Promise<void>;
   isPassword: (password: string) => Promise<boolean>;
   clearSessionPassword: () => void;
 }
@@ -19,32 +20,27 @@ export const createPasswordSlice =
   ): SliceCreator<PasswordSlice> =>
   set => {
     return {
-      hashedPassword: undefined,
-      setPassword: password => {
-        const hashedPassword = repeatedHash(password);
+      key: undefined,
+      setPassword: async password => {
+        const { key, keyPrint } = await Key.create(password);
+        const keyJson = await key.toJson();
+
         set(state => {
-          state.password.hashedPassword = hashedPassword;
+          state.password.key = keyJson;
         });
-        void session.set('hashedPassword', hashedPassword);
-        void local.set('hashedPassword', hashedPassword);
-        return hashedPassword;
-      },
-      clearPassword: () => {
-        set(state => {
-          state.password.hashedPassword = undefined;
-        });
-        void session.remove('hashedPassword');
-        void local.remove('hashedPassword');
+        await session.set('passwordKey', keyJson);
+        await local.set('passwordKeyPrint', keyPrint.toJson());
       },
       clearSessionPassword: () => {
-        set(state => {
-          state.password.hashedPassword = undefined;
-        });
-        void session.remove('hashedPassword');
+        set(state => (state.password.key = undefined));
+        void session.remove('passwordKey');
       },
-      isPassword: async password => {
-        const locallyStoredPassword = await local.get('hashedPassword');
-        return locallyStoredPassword === repeatedHash(password);
+      isPassword: async attempt => {
+        const keyPrintJson = await local.get('passwordKeyPrint');
+        if (!keyPrintJson) throw new Error('Password KeyPrint not in storage');
+
+        const key = await Key.recreate(attempt, KeyPrint.fromJson(keyPrintJson));
+        return Boolean(key);
       },
     };
   };

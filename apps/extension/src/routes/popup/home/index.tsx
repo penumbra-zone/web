@@ -19,7 +19,7 @@ export const popupIndexLoader = async () => {
     window.close();
   }
 
-  const password = await sessionExtStorage.get('hashedPassword');
+  const password = await sessionExtStorage.get('passwordKey');
 
   if (!password) return redirect(PopupPath.LOGIN);
 
