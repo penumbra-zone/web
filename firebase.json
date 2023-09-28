@@ -2,15 +2,13 @@
   "hosting": {
     "public": "apps/webapp/dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "cleanUrls": true,
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/**", 
+        "dynamicLinks": true
       }
-    ],
-    "frameworksBackend": {
-      "region": "europe-west1"
-    }
+    ]
   },
   "emulators": {
     "ui": {

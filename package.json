@@ -11,7 +11,7 @@
     "clean": "turbo clean",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
-    "deploy": "turbo run build --filter=webapp && turbo run deploy --filter=webapp"
+    "host": "turbo run build --filter=webapp && turbo run host --filter=webapp"
   },
   "devDependencies": {
     "@turbo/gen": "^1.10.14",
