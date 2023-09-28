@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "apps/webapp/dist",
+    "public": "dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "cleanUrls": true,
     "rewrites": [
