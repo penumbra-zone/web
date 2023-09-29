@@ -38,3 +38,5 @@ export type SwResponse = Responses<SwRequestMessage>;
 export type AwaitedResponse<T> = T extends SwMessage<infer Type, unknown, infer Res>
   ? { type: Type; data: Awaited<Res> }
   : never;
+
+export type NoParams = Record<string, never>;

@@ -1,4 +1,4 @@
-import { Services } from './controllers/services';
+import { Services } from './services';
 
 export const services = new Services();
-void services.onServiceWorkerInit();
+await services.onServiceWorkerInit();

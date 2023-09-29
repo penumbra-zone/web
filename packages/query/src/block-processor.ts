@@ -40,6 +40,7 @@ export class BlockProcessor {
         maxDelay: 30_000, // 30 seconds
         numOfAttempts: Infinity,
         retry: async error => {
+          console.log('something failed trying again', error);
           await this.viewServer.resetTreeToStored();
           return !isAbortSignal(error);
         },
@@ -111,6 +112,8 @@ export class BlockProcessor {
     })) {
       if (!res.compactBlock) throw new Error('No block in response');
 
+      console.log(res.compactBlock);
+
       // Scanning has a side effect of updating viewServer's internal tree.
       const scanResult = await this.viewServer.scanBlock(res.compactBlock);
 
@@ -137,7 +140,9 @@ const isAbortSignal = (error: unknown): boolean =>
 // - if syncing is up-to-date, on every block
 // - if not, every 1000th block
 const shouldStoreProgress = (block: CompactBlock, upToDateBlock: bigint): boolean => {
-  return block.height >= upToDateBlock || block.height % 1000n === 0n;
+  if (block.height === 0n) return false;
+  const interval = isDevEnv() ? 100n : 1000n;
+  return block.height >= upToDateBlock || block.height % interval === 0n;
 };
 
 export const UNNAMED_ASSET_PREFIX = 'passet';

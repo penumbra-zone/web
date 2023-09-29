@@ -13,6 +13,6 @@ export const isChainParamsRequest = (req: ViewProtocolReq): req is ChainParamsRe
 };
 
 export const handleChainParamsReq = async (): Promise<ChainParametersResponse> => {
-  const parameters = await services.controllers.querier.app.chainParameters();
+  const parameters = await services.querier.app.chainParameters();
   return new ChainParametersResponse({ parameters });
 };
