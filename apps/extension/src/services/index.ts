@@ -14,7 +14,7 @@ interface WalletServices {
 }
 
 export class Services {
-  private walletServices: WalletServices | undefined; // need a lock?
+  private walletServicesPromise: Promise<WalletServices> | undefined;
 
   private _querier: RootQuerier | undefined;
 
@@ -65,11 +65,13 @@ export class Services {
     }
   }
 
+  // If getWalletServices() is called multiple times concurrently,
+  // they'll all wait for the same promise rather than each starting their own initialization process.
   async getWalletServices(): Promise<WalletServices> {
-    if (!this.walletServices) {
-      this.walletServices = await this.initializeWalletServices();
+    if (!this.walletServicesPromise) {
+      this.walletServicesPromise = this.initializeWalletServices();
     }
-    return this.walletServices;
+    return this.walletServicesPromise;
   }
 
   async initializeWalletServices(): Promise<WalletServices> {

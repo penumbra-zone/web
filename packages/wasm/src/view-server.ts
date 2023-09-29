@@ -64,9 +64,7 @@ export class ViewServer implements ViewServerInterface {
   // changes in that tree since that last stored checkpoint.
   async updatesSinceCheckpoint(): Promise<NctUpdates> {
     const { last_position, last_forgotten } = await this.getStoredTree();
-    console.log('last_position', last_position);
     const scanResult = this.wasmViewServer.get_updates(last_position, last_forgotten) as ScanResult;
-    console.log('scanResult', scanResult);
     return validateSchema(ScanResultSchema, scanResult).nct_updates;
   }
 }
