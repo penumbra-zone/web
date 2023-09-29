@@ -40,7 +40,6 @@ export class BlockProcessor {
         maxDelay: 30_000, // 30 seconds
         numOfAttempts: Infinity,
         retry: async error => {
-          console.log('something failed trying again', error);
           await this.viewServer.resetTreeToStored();
           return !isAbortSignal(error);
         },
@@ -120,7 +119,7 @@ export class BlockProcessor {
       await this.storeNewNotes(scanResult.new_notes);
       await this.markNotesSpent(res.compactBlock.nullifiers, res.compactBlock.height);
 
-      if (!isDevEnv()) {
+      if (isDevEnv()) {
         await this.assertRootValid(res.compactBlock.height);
       }
 
@@ -136,7 +135,7 @@ const isAbortSignal = (error: unknown): boolean =>
 
 // Writing to disc is expensive, so storing progress occurs:
 // - if syncing is up-to-date, on every block
-// - if dev environment, every block
+// - if dev environment, every 100th block
 // - if not, every 1000th block
 const shouldStoreProgress = (block: CompactBlock, upToDateBlock: bigint): boolean => {
   if (block.height === 0n) return false;
