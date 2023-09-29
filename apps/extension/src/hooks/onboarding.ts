@@ -4,8 +4,7 @@ import { generateSelector } from '../state/seed-phrase/generate';
 import { importSelector } from '../state/seed-phrase/import';
 import { walletsSelector } from '../state/wallets';
 import { sendSwMessage } from '../routes/service-worker/internal/sender';
-import { InitializeMessage } from '../routes/service-worker/internal/initialize';
-import { testnetConstants } from 'penumbra-constants';
+import { SyncBlocksMessage } from '../routes/service-worker/internal/sync';
 
 // Saves hashed password, uses that hash to encrypt the seed phrase
 // and then saves that to session + local storage
@@ -20,17 +19,7 @@ export const useOnboardingSave = () => {
     const seedPhrase = generatedPhrase.length ? generatedPhrase : importedPhrase;
     await setPassword(plaintextPassword);
 
-    const { fullViewingKey } = await addWallet({
-      label: 'Wallet #1',
-      seedPhrase,
-    });
-    void sendSwMessage<InitializeMessage>({
-      type: 'INITIALIZE',
-      data: {
-        grpcEndpoint: testnetConstants.grpcEndpoint,
-        indexedDbVersion: testnetConstants.indexedDbVersion,
-        fullViewingKey,
-      },
-    });
+    await addWallet({ label: 'Wallet #1', seedPhrase });
+    void sendSwMessage<SyncBlocksMessage>({ type: 'SYNC_BLOCKS', data: {} });
   };
 };

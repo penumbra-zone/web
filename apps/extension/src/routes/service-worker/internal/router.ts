@@ -5,7 +5,7 @@ import {
   ServiceWorkerResponse,
   SwResponse,
 } from './types';
-import { initializeHandler, InitializeMessage } from './initialize';
+import { syncBlocksHandler, SyncBlocksMessage } from './sync';
 import { pingHandler, PingMessage } from './ping';
 
 // Narrows message to ensure it's one intended for service worker
@@ -38,13 +38,13 @@ export const internalRouter = (
 };
 
 // List all service worker messages here
-export type SwRequestMessage = InitializeMessage | PingMessage;
+export type SwRequestMessage = SyncBlocksMessage | PingMessage;
 
 // The router that matches the requests with their handlers
 const typedMessageRouter = async (req: IncomingRequest<SwRequestMessage>): Promise<SwResponse> => {
   switch (req.type) {
-    case 'INITIALIZE': {
-      return initializeHandler(req.data);
+    case 'SYNC_BLOCKS': {
+      return syncBlocksHandler(req.data);
     }
     case 'PING':
       return pingHandler(req.data);

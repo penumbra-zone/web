@@ -135,9 +135,12 @@ const isAbortSignal = (error: unknown): boolean =>
 
 // Writing to disc is expensive, so storing progress occurs:
 // - if syncing is up-to-date, on every block
+// - if dev environment, every 100th block
 // - if not, every 1000th block
 const shouldStoreProgress = (block: CompactBlock, upToDateBlock: bigint): boolean => {
-  return block.height >= upToDateBlock || block.height % 1000n === 0n;
+  if (block.height === 0n) return false;
+  const interval = isDevEnv() ? 100n : 1000n;
+  return block.height >= upToDateBlock || block.height % interval === 0n;
 };
 
 export const UNNAMED_ASSET_PREFIX = 'passet';

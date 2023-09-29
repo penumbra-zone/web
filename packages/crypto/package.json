@@ -19,9 +19,9 @@
   "devDependencies": {
     "@types/crypto-js": "^4.1.2",
     "@types/lodash": "^4.14.199",
-    "@vitest/browser": "^0.34.5",
+    "@vitest/browser": "^0.34.6",
     "penumbra-types": "workspace:*",
     "vite": "^4.4.9",
-    "vitest": "^0.34.5"
+    "vitest": "^0.34.6"
   }
 }
