@@ -1,6 +1,6 @@
 // NOTE: Code taken and modified from original: https://github.com/turbocrime/transport-demo
 
-import { createRouterTransport, ServiceImpl } from '@connectrpc/connect';
+import { Code, ConnectError, createRouterTransport, ServiceImpl } from '@connectrpc/connect';
 import { MethodKind, ServiceType } from '@bufbuild/protobuf';
 import {
   CreateAnyImplMethod,
@@ -54,10 +54,13 @@ const outputEventListener =
           resolve(event.data);
         }
       } else {
-        throw new Error(`Type of response not handled ${JSON.stringify(event.data)}`);
+        throw new ConnectError(
+          `Type of response not handled ${JSON.stringify(event.data)}`,
+          Code.Unimplemented,
+        );
       }
     } else {
-      throw new Error(`No pending requests for sequence: ${sequence}`);
+      throw new ConnectError(`No pending requests for sequence: ${sequence}`, Code.NotFound);
     }
   };
 
@@ -66,7 +69,10 @@ const outputEventListener =
 const getResFromReq = <S extends ServiceType>(service: S, req: GrpcRequest<S>): GrpcResponse<S> => {
   const match = Object.values(service.methods).find(m => m.I.typeName === req.getType().typeName);
   if (!match)
-    throw new Error(`Cannot find corresponding response method for ${req.getType().typeName}`);
+    throw new ConnectError(
+      `Cannot find corresponding response method for ${req.getType().typeName}`,
+      Code.Unimplemented,
+    );
   return match.O as GrpcResponse<S>;
 };
 
@@ -82,8 +88,6 @@ const makeEventImplMethod =
         };
       case MethodKind.ServerStreaming:
         return async function* (request: GrpcRequest<S>) {
-          // TODO: this isn't throwing errors in a way the frontend can consume.
-          //       Is there a canonical way to throw errors in grpc?
           const stream = serverStreamIO(pending, request, service.typeName);
           for await (const res of stream) {
             yield getResFromReq(service, request).fromJson(res);

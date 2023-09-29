@@ -73,7 +73,7 @@ export const isDappGrpcResponse = (message: unknown): message is DappMessageResp
 
 export interface RequestRecord<S extends ServiceType> {
   resolve: (m: ResultResponse<S> | StreamResponse<S>) => void;
-  reject: (e: ErrorResponse<S>) => void;
+  reject: (e: ErrorResponse<S>) => void; // To propagate correctly, it must be of type `ConnectError` when thrown
 }
 
 export interface PendingRequests<S extends ServiceType> {

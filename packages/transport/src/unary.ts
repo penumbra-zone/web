@@ -6,9 +6,11 @@ import {
   GrpcRequest,
   GrpcResponse,
   INCOMING_GRPC_MESSAGE,
+  isErrorResponse,
   isResultResponse,
   PendingRequests,
 } from './types';
+import { Code, ConnectError } from '@connectrpc/connect';
 
 export const unaryIO = async <S extends ServiceType, M extends GrpcRequest<S>>(
   pending: PendingRequests<S>,
@@ -26,10 +28,12 @@ export const unaryIO = async <S extends ServiceType, M extends GrpcRequest<S>>(
     requestTypeName: requestMethod.getType().typeName,
     serviceTypeName,
   } satisfies DappMessageRequest<S, M>);
-  const response = await promiseResponse;
-  if (isResultResponse(response)) {
-    return response.result;
+  const res = await promiseResponse;
+  if (isResultResponse(res)) {
+    return res.result;
+  } else if (isErrorResponse(res)) {
+    throw new ConnectError(res.error);
   } else {
-    throw new Error('Other response types not handled');
+    throw new ConnectError('Other response types not handled', Code.Unimplemented);
   }
 };
