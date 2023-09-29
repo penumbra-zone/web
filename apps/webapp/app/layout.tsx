@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           />
           <div className='relative flex min-h-screen flex-col'>
             <Header />
-            <main className='flex-1'>{children}</main>
+            <main className='flex-1 pt-10'>{children}</main>
           </div>
         </Providers>
       </body>
