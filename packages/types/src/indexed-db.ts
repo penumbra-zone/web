@@ -39,7 +39,7 @@ export interface PenumbraDb extends DBSchema {
     value: StoreHash;
   };
   tree_commitments: {
-    key: Uint8Array;
+    key: number;
     value: StoreCommitment;
   };
   assets: {
