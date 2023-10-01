@@ -28,7 +28,10 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('tree_last_position');
         db.createObjectStore('tree_last_forgotten');
         db.createObjectStore('tree_commitments', { keyPath: 'commitment.inner' });
-        db.createObjectStore('tree_hashes', { keyPath: 'hash' });
+        db.createObjectStore('tree_hashes', {
+          autoIncrement: true,
+          keyPath: 'index',
+        });
         db.createObjectStore('spendable_notes').createIndex('nullifier', 'nullifier.inner');
       },
     });
