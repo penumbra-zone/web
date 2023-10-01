@@ -34,7 +34,7 @@ export const PopupIndex = () => {
 
   return (
     <div className='relative flex h-full flex-col items-stretch justify-start bg-left-bottom px-[30px]'>
-      <div className='absolute bottom-[50px] left-[-10px] -z-10 h-[715px] w-[900px] bg-logo opacity-25' />
+      <div className='absolute bottom-[50px] left-[-10px] -z-10 h-[715px] w-[900px] overflow-hidden bg-logo opacity-10' />
       <IndexHeader />
       <div className='mb-[150px] flex w-full flex-col'>
         <div className='mt-24 flex justify-between'>

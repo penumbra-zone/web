@@ -16,14 +16,15 @@
     "@radix-ui/react-toggle": "^1.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "djb2a": "^2.0.0",
     "framer-motion": "^10.16.4",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
-    "@types/node": "^20.7.2",
-    "@types/react": "^18.2.23",
+    "@types/node": "^20.8.0",
+    "@types/react": "^18.2.24",
     "@types/react-dom": "^18.2.8",
     "@types/tinycolor2": "^1.4.4",
     "autoprefixer": "^10.4.16",
