@@ -517,6 +517,9 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.3.3)
+      tinycolor2:
+        specifier: ^1.6.0
+        version: 1.6.0
     devDependencies:
       '@types/node':
         specifier: ^20.7.2
@@ -527,6 +530,9 @@ importers:
       '@types/react-dom':
         specifier: ^18.2.8
         version: 18.2.8
+      '@types/tinycolor2':
+        specifier: ^1.4.4
+        version: 1.4.4
       autoprefixer:
         specifier: ^10.4.16
         version: 10.4.16(postcss@8.4.31)
@@ -563,6 +569,9 @@ importers:
       '@penumbra-zone/wasm-nodejs':
         specifier: ^0.61.0
         version: 0.61.0
+      bech32:
+        specifier: ^2.0.0
+        version: 2.0.0
       eslint:
         specifier: ^8.50.0
         version: 8.50.0
@@ -6174,7 +6183,6 @@ packages:
 
   /tinycolor2@1.6.0:
     resolution: {integrity: sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw==}
-    dev: true
 
   /tinygradient@1.1.5:
     resolution: {integrity: sha512-8nIfc2vgQ4TeLnk2lFj4tRLvvJwEfQuabdsmvDdQPT0xlk9TaNtpGd6nNRxXoK6vQhN6RSzj+Cnp5tTQmpxmbw==}

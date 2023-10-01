@@ -1,11 +1,11 @@
 import { Button, FadeTransition } from 'ui';
 import { SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
-import { walletsSelector } from '../../../state/wallets';
+import { getActiveWallet } from '../../../state/wallets';
 import { AccountPopover } from './account-popover';
 
 export const Accounts = () => {
-  const { all } = useStore(walletsSelector);
+  const wallet = useStore(getActiveWallet);
 
   return (
     <FadeTransition>
@@ -23,7 +23,7 @@ export const Accounts = () => {
                 className='h-6 w-6 rounded-full'
               />
               <div className='flex flex-col'>
-                <p>{all[0]?.label}</p>
+                <p>{wallet?.label}</p>
                 <p className='text-xs font-bold text-muted-foreground'>
                   penumbrav2t156t9s3s0786ghjnpk20jjawe..
                 </p>
