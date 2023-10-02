@@ -1,4 +1,4 @@
-import { HamburgerMenuIcon, PersonIcon } from '@radix-ui/react-icons';
+import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
 import { NetworksPopover } from 'ui';
@@ -13,10 +13,6 @@ export const IndexHeader = () => {
           className='h-6 w-6 cursor-pointer hover:opacity-50'
         />
         <NetworksPopover />
-        <PersonIcon
-          className='h-6 w-6 cursor-pointer rounded-full border border-white hover:opacity-50'
-          onClick={() => navigate(PopupPath.ACCOUNTS)}
-        />
       </div>
     </header>
   );

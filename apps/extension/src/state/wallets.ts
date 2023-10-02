@@ -40,3 +40,4 @@ export const createWalletsSlice =
   };
 
 export const walletsSelector = (state: AllSlices) => state.wallets;
+export const getActiveWallet = (state: AllSlices) => state.wallets.all[0];
