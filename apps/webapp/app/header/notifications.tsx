@@ -38,10 +38,8 @@ export const Notifications = () => {
   return (
     <Popover>
       <PopoverTrigger className='relative'>
-        <div className='relative'>
-          <div className='absolute right-[2px] top-[5px] h-[10px] w-[10px] rounded-full bg-sand'></div>
-          <ResponsiveImage src='/bell.svg' alt='Bell' className='h-[30px] w-[30px]' />
-        </div>
+        <div className='absolute right-[2px] top-[5px] h-[10px] w-[10px] rounded-full bg-sand z-10'></div>
+        <ResponsiveImage src='/bell.svg' alt='Bell' className='h-[30px] w-[30px]' />
       </PopoverTrigger>
       <PopoverContent className='relative flex w-[400px] flex-col gap-10 bg-charcoal-secondary px-[30px] pb-[46px] pt-5'>
         <div className='relative z-10 flex flex-col gap-2'>

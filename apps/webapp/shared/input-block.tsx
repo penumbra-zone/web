@@ -1,13 +1,13 @@
-import { Input } from 'ui';
+import { Input, InputProps } from 'ui';
 import { cn } from 'ui/lib/utils';
 
-interface InputBlockProps {
+interface InputBlockProps extends InputProps {
   label: string;
   placeholder: string;
   className?: string;
 }
 
-export const InputBlock = ({ label, placeholder, className }: InputBlockProps) => {
+export const InputBlock = ({ label, placeholder, className, ...props }: InputBlockProps) => {
   return (
     <div
       className={cn(
@@ -16,7 +16,7 @@ export const InputBlock = ({ label, placeholder, className }: InputBlockProps) =
       )}
     >
       <p className='text-base font-bold'>{label}</p>
-      <Input variant='transparent' placeholder={placeholder} />
+      <Input variant='transparent' placeholder={placeholder} {...props} />
     </div>
   );
 };

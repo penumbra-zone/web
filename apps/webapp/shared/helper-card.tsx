@@ -1,5 +1,5 @@
 import { Card } from 'ui';
-import { ResponsiveImage } from './components/responsive-image';
+import { ResponsiveImage } from './responsive-image';
 
 interface HelperCardProps {
   src: string;

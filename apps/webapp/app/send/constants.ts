@@ -1,6 +1,6 @@
-import { TabHelper } from './types';
+import { Asset, TabHelper } from './types';
 
-export const tabHelperInfo: TabHelper = {
+export const tabsHelper: TabHelper = {
   send: {
     src: '/funds-gradient.svg',
     label: 'Sending funds',
@@ -14,3 +14,14 @@ export const tabHelperInfo: TabHelper = {
     label: 'IBC funds',
   },
 };
+
+export const assets: Asset[] = [
+  {
+    name: 'ETH',
+    icon: '/test-asset-icon.svg',
+  },
+  {
+    name: 'BNB',
+    icon: '/test-asset-icon-2.svg',
+  },
+];

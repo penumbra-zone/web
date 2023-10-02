@@ -11,3 +11,8 @@ export type TabHelper = Record<
     label: string;
   }
 >;
+
+export interface Asset {
+  name: string;
+  icon: string;
+}
