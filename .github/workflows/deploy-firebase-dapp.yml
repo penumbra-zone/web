@@ -1,7 +1,6 @@
 ---
-# Builds the static site via webpack in a container image,
-# then copies that directory to localhost and pushes to Firebase, at:
-# https://app.testnet.penumbra.zone
+# Builds the static site via pnpm, then copies that local directory's contents
+# to Firebase, at: https://app.testnet.penumbra.zone
 name: Deploy static site
 on:
   # Support ad-hoc runs via dispatch, so we can deploy from
@@ -18,10 +17,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
       - name: Build static site
-        run: ./build-static-site
+        run: pnpm build
 
       - name: Deploy dapp static site to firebase
         uses: w9jds/firebase-action@v2.0.0
