@@ -1,10 +1,17 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index';
-import { beforeEach, describe, expect, test } from 'vitest';
-import { mockLocalExtStorage } from '../storage/mock';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
 import { ExtensionStorage } from '../storage/base';
 import { LocalStorageState } from '../storage/local';
-import { flushPromises } from '../utils/test-helpers';
+import { WalletCreate } from '../types/wallet';
+import { webcrypto } from 'crypto';
+
+vi.stubGlobal('crypto', webcrypto);
+vi.mock('penumbra-wasm-ts', () => ({
+  generateSpendKey: () => 'spend_key',
+  getFullViewingKey: () => 'full_viewing_key',
+}));
 
 describe('Accounts Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
@@ -12,34 +19,49 @@ describe('Accounts Slice', () => {
 
   beforeEach(() => {
     localStorage = mockLocalExtStorage();
-    useStore = create<AllSlices>()(initializeStore(mockLocalExtStorage(), localStorage));
+    useStore = create<AllSlices>()(initializeStore(mockSessionExtStorage(), localStorage));
   });
 
   test('accounts start off empty', () => {
     expect(useStore.getState().wallets.all).toStrictEqual([]);
   });
 
+  test('throws if no password in storage', async () => {
+    const accountA: WalletCreate = {
+      label: 'Account #1',
+      seedPhrase: ['apple', 'banana', 'orange'],
+    };
+    await expect(useStore.getState().wallets.addWallet(accountA)).rejects.toThrow();
+  });
+
   test('accounts can be added', async () => {
-    const accountA = { label: 'Account #1', encryptedSeedPhrase: 'xyz', fullViewingKey: '1234' };
+    await useStore.getState().password.setPassword('user_password_123');
+    const accountA: WalletCreate = {
+      label: 'Account #1',
+      seedPhrase: ['apple', 'banana', 'orange'],
+    };
     await useStore.getState().wallets.addWallet(accountA);
     expect(useStore.getState().wallets.all.length).toBe(1);
-    expect(useStore.getState().wallets.all.at(0)).toBe(accountA);
+    expect(useStore.getState().wallets.all.at(0)!.label).toBe(accountA.label);
 
-    await flushPromises();
+    // Test in long term storage
     const accountsPt1 = await localStorage.get('wallets');
     expect(accountsPt1.length).toBe(1);
-    expect(accountsPt1.at(0)).toBe(accountA);
+    expect(accountsPt1.at(0)!.label).toBe(accountA.label);
 
-    const accountB = { label: 'Account #2', encryptedSeedPhrase: 'abc', fullViewingKey: '1234' };
+    const accountB: WalletCreate = {
+      label: 'Account #2',
+      seedPhrase: ['pear', 'grape', 'cashew'],
+    };
     await useStore.getState().wallets.addWallet(accountB);
     expect(useStore.getState().wallets.all.length).toBe(2);
-    expect(useStore.getState().wallets.all.at(0)).toBe(accountB);
-    expect(useStore.getState().wallets.all.at(1)).toBe(accountA);
+    expect(useStore.getState().wallets.all.at(0)!.label).toBe(accountB.label);
+    expect(useStore.getState().wallets.all.at(1)!.label).toBe(accountA.label);
 
-    await flushPromises();
+    // Test in long term storage
     const accountsPt2 = await localStorage.get('wallets');
     expect(accountsPt2.length).toBe(2);
-    expect(accountsPt2.at(0)).toBe(accountB);
-    expect(accountsPt2.at(1)).toBe(accountA);
+    expect(accountsPt2.at(0)!.label).toBe(accountB.label);
+    expect(accountsPt2.at(1)!.label).toBe(accountA.label);
   });
 });

@@ -21,5 +21,6 @@
 - [UI library](ui-library.md)
 - [Message passing](message-passing.md)
 - [Testing](testing.md)
+- [Custody](custody.md)
 - [Web Workers](web-workers.md)
 - [Protobufs](protobufs.md)

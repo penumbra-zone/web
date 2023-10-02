@@ -131,6 +131,7 @@ module.exports = {
         'text-linear': 'linear-gradient(90deg, var(--teal-700), var(--sand-700), var(--rust-600))',
         'button-gradient-secondary':
           'linear-gradient(90deg, var(--teal-420) 0%, var(--sand-420) 50%, var(--rust-420) 100%)',
+        logo: "url('penumbra-logo.svg')",
       },
       backgroundPosition: {
         'right-center': 'right center',

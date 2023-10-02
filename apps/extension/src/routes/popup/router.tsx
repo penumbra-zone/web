@@ -1,5 +1,4 @@
 import { createMemoryRouter, RouteObject } from 'react-router-dom';
-import { Accounts } from './account';
 import { PopupIndex, popupIndexLoader } from './home';
 import { Login } from './login';
 import { PopupPath } from './paths';
@@ -24,10 +23,6 @@ export const popupRoutes: RouteObject[] = [
         path: PopupPath.SETTINGS,
         element: <Settings />,
         children: settingsRoutes,
-      },
-      {
-        path: PopupPath.ACCOUNTS,
-        element: <Accounts />,
       },
     ],
   },

@@ -45,7 +45,7 @@ export class ViewServer implements ViewServerInterface {
     return validateSchema(ScanResultSchema, result);
   }
 
-  // If a sync fails, the state of the wasmViewServer should reset to the one set in storage
+  // Resets the state of the wasmViewServer to the one set in storage
   async resetTreeToStored() {
     this.wasmViewServer = new WasmViewServer(
       this.fullViewingKey,

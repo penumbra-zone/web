@@ -3,6 +3,12 @@ import { CompactBlockRangeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_e
 import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/compact_block/v1alpha1/compact_block_connect';
 import { createClient } from './utils';
 
+interface CompactBlockRangeParams {
+  startHeight: bigint;
+  keepAlive: boolean; // Will continuously receive blocks as long as service worker is running
+  abortSignal: AbortSignal;
+}
+
 export class CompactBlockQuerier {
   private readonly client: PromiseClient<typeof QueryService>;
 
@@ -10,11 +16,8 @@ export class CompactBlockQuerier {
     this.client = createClient(grpcEndpoint, QueryService);
   }
 
-  compactBlockRange(
-    startHeight: bigint,
-    keepAlive: boolean, // Will continuously receive blocks as long as service worker is running
-  ) {
+  compactBlockRange({ startHeight, keepAlive, abortSignal }: CompactBlockRangeParams) {
     const req = new CompactBlockRangeRequest({ keepAlive, startHeight });
-    return this.client.compactBlockRange(req);
+    return this.client.compactBlockRange(req, { signal: abortSignal });
   }
 }
