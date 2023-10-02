@@ -1,6 +1,6 @@
-import { ExtensionStorage, IStorage } from './base';
-import { localDefaults, LocalStorageState } from './local';
-import { sessionDefaults, SessionStorageState } from './session';
+import { ExtensionStorage, IStorage } from '../base';
+import { localDefaults, LocalStorageState } from '../local';
+import { sessionDefaults, SessionStorageState } from '../session';
 
 // Helpful for testing interactions with session & local storage
 export class MockStorageArea implements IStorage {

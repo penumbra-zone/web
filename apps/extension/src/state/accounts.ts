@@ -17,7 +17,6 @@ export interface AccountsSlice {
 export const createAccountsSlice: SliceCreator<AccountsSlice> = (set, get) => {
   return {
     index: 0, // Start with index 0
-    active: undefined,
     previous: () => {
       const current = get().accounts.index;
       set(state => {

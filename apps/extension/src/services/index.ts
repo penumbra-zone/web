@@ -1,8 +1,7 @@
-import { localExtStorage } from '../storage/local';
 import { testnetConstants } from 'penumbra-constants';
 import { swMessageHandler } from '../routes/service-worker/root-router';
 import { RootQuerier } from 'penumbra-query/src/root-querier';
-import { IndexedDb } from 'penumbra-indexed-db';
+import { IndexedDb, localExtStorage, syncLastBlockWithLocal } from 'penumbra-storage';
 import { ViewServer } from 'penumbra-wasm-ts';
 import { BlockProcessor } from 'penumbra-query';
 
@@ -43,6 +42,7 @@ export class Services {
       this._indexedDb = await IndexedDb.initialize({
         chainId,
         dbVersion: testnetConstants.indexedDbVersion,
+        updateNotifiers: [syncLastBlockWithLocal()],
       });
 
       await this.tryToSync();

@@ -1,4 +1,4 @@
-import { Box, BoxJson } from 'penumbra-types';
+import { Box, BoxJson } from './box';
 
 export interface WalletCreate {
   label: string;

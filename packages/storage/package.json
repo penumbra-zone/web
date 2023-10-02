@@ -1,5 +1,5 @@
 {
-  "name": "penumbra-indexed-db",
+  "name": "penumbra-storage",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
@@ -11,11 +11,15 @@
     "eslint": "^8.50.0",
     "eslint-config-custom": "workspace:*",
     "idb": "^7.1.1",
+    "penumbra-constants": "workspace:*",
+    "penumbra-crypto-ts": "workspace:*",
     "penumbra-types": "workspace:*",
     "tsconfig": "workspace:*",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vite": "^4.4.9"
   },
   "devDependencies": {
+    "@types/chrome": "0.0.246",
     "fake-indexeddb": "^4.0.2",
     "vitest": "^0.34.6"
   }

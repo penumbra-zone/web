@@ -1,6 +1,5 @@
 import { redirect } from 'react-router-dom';
 import { PagePath } from './paths';
-import { localExtStorage } from '../../storage/local';
 import {
   Button,
   Card,
@@ -11,6 +10,7 @@ import {
   CompressedVideoLogo,
   FadeTransition,
 } from 'ui';
+import { localExtStorage } from 'penumbra-storage';
 
 // Because Zustand initializes default empty (prior to persisted storage synced),
 // We need to manually check storage for accounts in the loader.

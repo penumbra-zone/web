@@ -1,4 +1,4 @@
-import { EmptyObject, isEmptyObj } from '../types/utility';
+import { EmptyObject, isEmptyObj } from 'penumbra-types';
 
 export interface IStorage {
   get(key: string): Promise<Record<string, unknown>>;

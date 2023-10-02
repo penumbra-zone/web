@@ -2,13 +2,17 @@ import { create, StateCreator } from 'zustand';
 import { createWalletsSlice, WalletsSlice } from './wallets';
 import { immer } from 'zustand/middleware/immer';
 import { customPersist } from './persist';
-import { ExtensionStorage } from '../storage/base';
-import { sessionExtStorage, SessionStorageState } from '../storage/session';
-import { localExtStorage, LocalStorageState } from '../storage/local';
 import { createPasswordSlice, PasswordSlice } from './password';
 import { createSeedPhraseSlice, SeedPhraseSlice } from './seed-phrase';
 import { createNetworkSlice, NetworkSlice } from './network';
 import { AccountsSlice, createAccountsSlice } from './accounts';
+import {
+  ExtensionStorage,
+  localExtStorage,
+  LocalStorageState,
+  sessionExtStorage,
+  SessionStorageState,
+} from 'penumbra-storage';
 
 export interface AllSlices {
   wallets: WalletsSlice;
