@@ -1,5 +1,3 @@
-// https://nextjs.org/docs/messages/next-image-upgrade-to-13
-
 import Image from 'next/image';
 import { cn } from 'ui/lib/utils';
 
@@ -9,8 +7,7 @@ interface ResponsiveImageProps {
   className?: string;
 }
 
-export const ResponsiveImage = ({ src, alt, className }: ResponsiveImageProps) => {
-
+export const ImageWrapper = ({ src, alt, className }: ResponsiveImageProps) => {
   return (
     <div className={cn('relative', className)}>
       <Image

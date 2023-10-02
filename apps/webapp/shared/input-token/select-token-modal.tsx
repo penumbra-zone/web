@@ -1,8 +1,8 @@
 'use client';
 
-import React, { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogPrimitive, DialogTrigger, Input } from 'ui';
-import { ResponsiveImage } from '../responsive-image';
+import { ImageWrapper } from '../image-wrapper';
 
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { assets } from '../../app/send/constants';
@@ -11,10 +11,10 @@ import { formatNumber } from '../../utils';
 
 interface SelectTokenModalProps {
   asset: Asset;
-  setAsset: Dispatch<SetStateAction<Asset>>;
+  selectAsset: (asset: Asset) => () => void;
 }
 
-export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => {
+export const SelectTokenModal = ({ asset, selectAsset }: SelectTokenModalProps) => {
   const [search, setSearch] = useState('');
 
   const filteredAsset = useMemo(() => {
@@ -32,7 +32,7 @@ export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => 
     <Dialog>
       <DialogTrigger asChild>
         <div className='flex items-center gap-2 bg-light-brown px-6 py-[6px] rounded-lg cursor-pointer'>
-          <ResponsiveImage src={asset.icon} alt='Asset' className='w-6 h-6' />
+          <ImageWrapper src={asset.icon} alt='Asset' className='w-6 h-6' />
           <p className='text-base font-bold text-light-grey'>{asset.name}</p>
         </div>
       </DialogTrigger>
@@ -60,10 +60,10 @@ export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => 
                 <DialogPrimitive.Close key={asset.name}>
                   <div
                     className='flex justify-between items-center py-[10px] cursor-pointer'
-                    onClick={() => setAsset(asset)}
+                    onClick={selectAsset(asset)}
                   >
                     <div className='flex items-start gap-[6px]'>
-                      <ResponsiveImage src={asset.icon} alt='Asset' className='w-5 h-5' />
+                      <ImageWrapper src={asset.icon} alt='Asset' className='w-5 h-5' />
                       <p className='font-bold text-muted-foreground'>{asset.name}</p>
                     </div>
                     <p className='font-bold text-muted-foreground'>{formatNumber(asset.balance)}</p>

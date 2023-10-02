@@ -1,20 +1,20 @@
 'use client';
 
-import { Dispatch, SetStateAction, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Input, InputProps } from 'ui';
 import { cn } from 'ui/lib/utils';
-import { ResponsiveImage } from '../responsive-image';
-import { SelectTokenModal } from './select-token-modal';
 import { Asset } from '../../types/asset';
-import { formatNumber } from '../../utils';
 import { Validation } from '../../types/utillity';
+import { formatNumber } from '../../utils';
+import { ImageWrapper } from '../image-wrapper';
+import { SelectTokenModal } from './select-token-modal';
 
 interface InputTokenProps extends InputProps {
   label: string;
   asset: Asset;
   placeholder: string;
   className?: string;
-  setAsset: Dispatch<SetStateAction<Asset>>;
+  selectAsset: (asset: Asset) => () => void;
   validations?: Validation[];
 }
 
@@ -24,7 +24,7 @@ export const InputToken = ({
   asset,
   className,
   validations,
-  setAsset,
+  selectAsset,
   ...props
 }: InputTokenProps) => {
   const priorityResult = useMemo(() => {
@@ -44,14 +44,14 @@ export const InputToken = ({
       )}
     >
       <div className='flex justify-between items-center'>
-      <div className='flex items-center gap-2 self-start'>
-        <p className='text-base font-bold'>{label}</p>
-        {priorityResult ? (
-          <div className={cn('italic', 'text-red-400')}>{priorityResult.error}</div>
-        ) : null}
-      </div>
+        <div className='flex items-center gap-2 self-start'>
+          <p className='text-base font-bold'>{label}</p>
+          {priorityResult ? (
+            <div className={cn('italic', 'text-red-400')}>{priorityResult.error}</div>
+          ) : null}
+        </div>
         <div className='flex items-start gap-1'>
-          <ResponsiveImage src='/wallet.svg' alt='Wallet' className='w-5 h-5' />
+          <ImageWrapper src='/wallet.svg' alt='Wallet' className='w-5 h-5' />
           <p className='font-bold text-muted-foreground'>{formatNumber(asset.balance)}</p>
         </div>
       </div>
@@ -63,7 +63,7 @@ export const InputToken = ({
           className='w-auto'
           {...props}
         />
-        <SelectTokenModal asset={asset} setAsset={setAsset} />
+        <SelectTokenModal asset={asset} selectAsset={selectAsset} />
       </div>
     </div>
   );

@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { InputBlock, InputToken, ResponsiveImage } from '../../shared';
+import { useState } from 'react';
 import { Button, Switch } from 'ui';
-import { assets } from './constants';
+import { ImageWrapper, InputBlock, InputToken } from '../../shared';
 import { Asset } from '../../types/asset';
+import { assets } from './constants';
 import { SendValidationErrors } from './types';
 
 export const SendForm = () => {
@@ -18,17 +18,20 @@ export const SendForm = () => {
     amount: false,
   });
 
-  useEffect(() => {
-    setValidationErrors(state => ({
-      ...state,
-      amount: validateAmount(amount),
-    }));
-  }, [asset]);
-
-  const validateAmount = (value: string) => Boolean(value) && Number(value) > asset.balance;
+  const validateAmount = (value: string, balance: number) =>
+    Boolean(value) && Number(value) > balance;
 
   const validateRecepient = (value: string) =>
     Boolean(value) && (value.length !== 146 || !value.startsWith('penumbrav2t'));
+
+  const selectAsset = (asset: Asset) => () => {
+    setAsset(asset);
+
+    setValidationErrors(state => ({
+      ...state,
+      amount: validateAmount(amount, asset.balance),
+    }));
+  };
 
   return (
     <form
@@ -62,13 +65,13 @@ export const SendForm = () => {
         placeholder='Enter an amount'
         className='mb-1'
         asset={asset}
-        setAsset={setAsset}
+        selectAsset={selectAsset}
         value={amount}
         onChange={e => {
           if (Number(e.target.value) < 0) return;
           setValidationErrors(state => ({
             ...state,
-            amount: validateAmount(e.target.value),
+            amount: validateAmount(e.target.value, asset.balance),
           }));
           setAmount(e.target.value);
         }}
@@ -76,7 +79,7 @@ export const SendForm = () => {
           {
             type: 'error',
             error: 'insufficient funds',
-            checkFn: (txt: string) => validateAmount(txt),
+            checkFn: (txt: string) => validateAmount(txt, asset.balance),
           },
         ]}
       />
@@ -88,7 +91,7 @@ export const SendForm = () => {
       />
       <div className='flex items-center justify-between'>
         <div className='flex items-start gap-2'>
-          <ResponsiveImage src='/incognito.svg' alt='Incognito' className='h-5 w-5' />
+          <ImageWrapper src='/incognito.svg' alt='Incognito' className='h-5 w-5' />
           <p className='font-bold'>Hide Sender from Recipient</p>
         </div>
         <Switch id='sender-mode' checked={hidden} onCheckedChange={checked => setHidden(checked)} />

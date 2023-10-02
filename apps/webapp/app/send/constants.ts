@@ -32,7 +32,7 @@ export const assets: Asset[] = [
     icon: '/test-asset-icon-2.svg',
     balance: 0,
   },
-  
+
   {
     name: 'ETH 2',
     icon: '/test-asset-icon.svg',
