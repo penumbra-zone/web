@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Card, FadeTransition, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui';
-import { HelperCard } from '../../shared';
+import { EduInfoCard } from '../../shared';
 import { tabsHelper } from './constants';
 import { SendForm } from './send-form';
 import { SendPageTab } from './types';
@@ -34,7 +34,7 @@ export default function Page() {
             <TabsContent value={SendPageTab.IBC}></TabsContent>
           </Tabs>
         </Card>
-        <HelperCard src={tabsHelper[tab].src} label={tabsHelper[tab].label} />
+        <EduInfoCard src={tabsHelper[tab].src} label={tabsHelper[tab].label} />
       </div>
     </FadeTransition>
   );

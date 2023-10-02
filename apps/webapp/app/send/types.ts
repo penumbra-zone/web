@@ -4,7 +4,7 @@ export enum SendPageTab {
   IBC = 'ibc',
 }
 
-export type TabHelper = Record<
+export type SendTabMap = Record<
   SendPageTab,
   {
     src: string;
@@ -12,7 +12,7 @@ export type TabHelper = Record<
   }
 >;
 
-export interface Asset {
-  name: string;
-  icon: string;
+export interface SendValidationErrors {
+  recepient: boolean;
+  amount: boolean;
 }

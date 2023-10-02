@@ -3,9 +3,11 @@
 import React, { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogPrimitive, DialogTrigger, Input } from 'ui';
 import { ResponsiveImage } from '../responsive-image';
-import { Asset } from '../../app/send/types';
+
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { assets } from '../../app/send/constants';
+import { Asset } from '../../types/asset';
+import { formatNumber } from '../../utils';
 
 interface SelectTokenModalProps {
   asset: Asset;
@@ -16,8 +18,14 @@ export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => 
   const [search, setSearch] = useState('');
 
   const filteredAsset = useMemo(() => {
-    if (!search) return assets;
-    return assets.filter(asset => asset.name.toLowerCase().includes(search.toLowerCase()));
+    const sortedAsset = [...assets].sort((a, b) => {
+      if (a.balance !== b.balance) return b.balance - a.balance;
+
+      return a.name.localeCompare(b.name);
+    });
+
+    if (!search) return sortedAsset;
+    return sortedAsset.filter(asset => asset.name.toLowerCase().includes(search.toLowerCase()));
   }, [search]);
 
   return (
@@ -51,14 +59,14 @@ export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => 
               {filteredAsset.map(asset => (
                 <DialogPrimitive.Close key={asset.name}>
                   <div
-                    className='flex justify-between items-center py-[10px] px-4 cursor-pointer'
+                    className='flex justify-between items-center py-[10px] cursor-pointer'
                     onClick={() => setAsset(asset)}
                   >
                     <div className='flex items-start gap-[6px]'>
                       <ResponsiveImage src={asset.icon} alt='Asset' className='w-5 h-5' />
                       <p className='font-bold text-muted-foreground'>{asset.name}</p>
                     </div>
-                    <p className='font-bold text-muted-foreground'>234.00</p>
+                    <p className='font-bold text-muted-foreground'>{formatNumber(asset.balance)}</p>
                   </div>
                 </DialogPrimitive.Close>
               ))}

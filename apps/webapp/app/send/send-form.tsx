@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import { InputBlock, InputToken, ResponsiveImage } from '../../shared';
 import { Button, Switch } from 'ui';
-import { Asset } from './types';
 import { assets } from './constants';
+import { Asset } from '../../types/asset';
+import { SendValidationErrors } from './types';
 
 export const SendForm = () => {
   const [asset, setAsset] = useState<Asset>(assets[0]!);
@@ -12,6 +13,15 @@ export const SendForm = () => {
   const [memo, setMemo] = useState('');
   const [amount, setAmount] = useState('');
   const [hidden, setHidden] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<SendValidationErrors>({
+    recepient: false,
+    amount: false,
+  });
+
+  const validateAmount = (value: string) => Boolean(value) && Number(value) > asset.balance;
+
+  const validateRecepient = (value: string) =>
+    Boolean(value) && (value.length !== 146 || !value.startsWith('penumbrav2t'));
 
   return (
     <form
@@ -25,7 +35,20 @@ export const SendForm = () => {
         placeholder='Enter the address'
         className='mb-1'
         value={recepient}
-        onChange={e => setRecepient(e.target.value)}
+        onChange={e => {
+          setValidationErrors(state => ({
+            ...state,
+            recepient: validateRecepient(e.target.value),
+          }));
+          setRecepient(e.target.value);
+        }}
+        validations={[
+          {
+            type: 'error',
+            error: 'bad format',
+            checkFn: (txt: string) => validateRecepient(txt),
+          },
+        ]}
       />
       <InputToken
         label='Amount to send'
@@ -34,11 +57,25 @@ export const SendForm = () => {
         asset={asset}
         setAsset={setAsset}
         value={amount}
-        onChange={e => setAmount(e.target.value)}
+        onChange={e => {
+          if (Number(e.target.value) < 0) return;
+          setValidationErrors(state => ({
+            ...state,
+            amount: validateAmount(e.target.value),
+          }));
+          setAmount(e.target.value);
+        }}
+        validations={[
+          {
+            type: 'error',
+            error: 'insufficient funds',
+            checkFn: (txt: string) => validateAmount(txt),
+          },
+        ]}
       />
       <InputBlock
         label='Memo'
-        placeholder='Enter the text'
+        placeholder='Optional message'
         value={memo}
         onChange={e => setMemo(e.target.value)}
       />
@@ -49,7 +86,12 @@ export const SendForm = () => {
         </div>
         <Switch id='sender-mode' checked={hidden} onCheckedChange={checked => setHidden(checked)} />
       </div>
-      <Button type='submit' variant='gradient' className='mt-4'>
+      <Button
+        type='submit'
+        variant='gradient'
+        className='mt-4'
+        disabled={!amount || !recepient || !!Object.values(validationErrors).find(Boolean)}
+      >
         Send
       </Button>
     </form>

@@ -49,9 +49,6 @@ export const Notifications = () => {
             {status === 'notification' ? (
               <div className='absolute right-[2px] top-[5px] z-10 h-[11px] w-[11px] rounded-full bg-red'></div>
             ) : (
-              // <div className='absolute right-[2px] top-[5px] z-10 h-[15px] w-[15px]'>
-              //   <SyncIcon strokeWidth='8' prefix='first' />
-              // </div>
               <ResponsiveImage
                 src='/sync-bold.svg'
                 alt='Syncing blocks...'
