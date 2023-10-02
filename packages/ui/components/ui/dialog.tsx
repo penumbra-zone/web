@@ -105,5 +105,5 @@ export {
   DialogFooter,
   DialogTitle,
   DialogDescription,
-  DialogPrimitive
+  DialogPrimitive,
 };
