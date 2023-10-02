@@ -1,7 +1,5 @@
 import { redirect } from 'react-router-dom';
 import { CopyToClipboard } from 'ui';
-import { localExtStorage } from '../../../storage/local';
-import { sessionExtStorage } from '../../../storage/session';
 import { PopupPath } from '../paths';
 import { IndexHeader } from './index-header';
 import { ArrowLeftIcon, ArrowRightIcon, CopyIcon } from '@radix-ui/react-icons';
@@ -9,11 +7,16 @@ import { useStore } from '../../../state';
 import { accountsSelector, activeAccount } from '../../../state/accounts';
 import { Identicon } from 'ui/components/ui/identicon';
 import { BlockSync } from './block-sync';
+import { localExtStorage, sessionExtStorage } from 'penumbra-storage';
+
+export interface PopupLoaderData {
+  lastBlockSynced: number;
+}
 
 // Because Zustand initializes default empty (prior to persisted storage synced),
 // We need to manually check storage for accounts & password in the loader.
 // Will redirect to onboarding or password check if necessary.
-export const popupIndexLoader = async () => {
+export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> => {
   const wallets = await localExtStorage.get('wallets');
 
   if (!wallets.length) {
@@ -25,7 +28,8 @@ export const popupIndexLoader = async () => {
 
   if (!password) return redirect(PopupPath.LOGIN);
 
-  return null;
+  const lastBlockSynced = await localExtStorage.get('lastBlockSynced');
+  return { lastBlockSynced };
 };
 
 export const PopupIndex = () => {
@@ -41,7 +45,7 @@ export const PopupIndex = () => {
           {account?.index !== 0 ? (
             <ArrowLeftIcon onClick={previous} className='h-6 w-6 hover:cursor-pointer' />
           ) : (
-            <div className='h-6 w-6'></div>
+            <div className='h-6 w-6' />
           )}
           <p className='mb-4 select-none text-center font-headline text-xl font-semibold leading-[30px]'>
             {account?.index !== undefined && `Account #${account.index}`}

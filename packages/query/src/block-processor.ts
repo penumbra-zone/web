@@ -6,7 +6,6 @@ import {
   uint8ArrayToBase64,
   ViewServerInterface,
 } from 'penumbra-types';
-import { decodeNctRoot } from 'penumbra-wasm-ts/src/sct';
 import { RootQuerier } from './root-querier';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
@@ -14,6 +13,7 @@ import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { bech32 } from 'bech32';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { backOff } from 'exponential-backoff';
+import { decodeNctRoot } from 'penumbra-wasm-ts/src/sct';
 
 interface QueryClientProps {
   querier: RootQuerier;

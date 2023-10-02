@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from 'vitest';
-import { MockStorageArea } from './mock';
+import { MockStorageArea } from './test-utils/mock';
 import { ExtensionStorage } from './base';
-import { flushPromises } from '../utils/test-helpers';
+import { flushPromises } from './test-utils/utils';
 
 interface MockV1State {
   network: string;
