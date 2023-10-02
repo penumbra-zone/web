@@ -1,4 +1,5 @@
-import Image from 'next/image';
+// https://nextjs.org/docs/messages/next-image-upgrade-to-13
+import Image from 'next/legacy/image';
 import { cn } from 'ui/lib/utils';
 
 interface ResponsiveImageProps {

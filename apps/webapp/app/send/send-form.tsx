@@ -10,7 +10,6 @@ export const SendForm = () => {
       className='flex flex-col gap-2'
       onSubmit={e => {
         e.preventDefault();
-        console.log('asd');
       }}
     >
       <InputBlock label='Recepient' placeholder='Enter the address' className='mb-1' />
