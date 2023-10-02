@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { InputBlock, InputToken, ResponsiveImage } from '../../shared';
 import { Button, Switch } from 'ui';
 import { assets } from './constants';
@@ -17,6 +17,13 @@ export const SendForm = () => {
     recepient: false,
     amount: false,
   });
+
+  useEffect(() => {
+    setValidationErrors(state => ({
+      ...state,
+      amount: validateAmount(amount),
+    }));
+  }, [asset]);
 
   const validateAmount = (value: string) => Boolean(value) && Number(value) > asset.balance;
 
