@@ -1,10 +1,10 @@
 'use client';
 
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import Image from 'next/image';
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTrigger, Input } from 'ui';
 import { cn } from 'ui/lib/utils';
+import { ResponsiveImage } from './components/responsive-image';
 
 interface InputTokenProps {
   label: string;
@@ -25,9 +25,7 @@ export const InputToken = ({ label, placeholder, className }: InputTokenProps) =
       <div className='flex justify-between items-center'>
         <p className='text-base font-bold'>{label}</p>
         <div className='flex items-start gap-1'>
-          <div className='w-5 h-5'>
-            <Image src='/wallet.svg' alt='wallet' width={20} height={20} />
-          </div>
+          <ResponsiveImage src='/wallet.svg' alt='Wallet' className='w-5 h-5' />
           <p className='font-bold text-muted-foreground'>42.1</p>
         </div>
       </div>
@@ -36,9 +34,7 @@ export const InputToken = ({ label, placeholder, className }: InputTokenProps) =
         <Dialog>
           <DialogTrigger asChild>
             <div className='flex items-center gap-2 bg-light-brown px-6 py-[6px] rounded-lg'>
-              <div className='w-6 h-6'>
-                <Image src='/test-asset-icon.svg' alt='wallet' width={24} height={24} />
-              </div>
+              <ResponsiveImage src='/test-asset-icon.svg' alt='Asset' className='w-6 h-6' />
               <p className='text-base font-bold text-light-grey'>ETH</p>
             </div>
           </DialogTrigger>
@@ -65,9 +61,11 @@ export const InputToken = ({ label, placeholder, className }: InputTokenProps) =
                   {[1, 2, 3].map(i => (
                     <div key={i} className='flex justify-between items-center py-[10px] px-4'>
                       <div className='flex items-start gap-[6px]'>
-                        <div className='w-5 h-5'>
-                          <Image src='/test-asset-icon.svg' alt='wallet' width={20} height={20} />
-                        </div>
+                        <ResponsiveImage
+                          src='/test-asset-icon.svg'
+                          alt='Asset'
+                          className='w-5 h-5'
+                        />
                         <p className='font-bold text-muted-foreground'>ETH</p>
                       </div>
                       <p className='font-bold text-muted-foreground'>234.00</p>

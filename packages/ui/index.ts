@@ -14,3 +14,4 @@ export * from './components/ui/toggle';
 export * from './components/ui/fade-transition';
 export * from './components/ui/tabs';
 export * from './components/ui/dialog';
+export * from './components/ui/switch';

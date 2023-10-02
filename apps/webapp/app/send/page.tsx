@@ -1,14 +1,14 @@
 import { Card, FadeTransition, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui';
 import { SendForm } from './send-form';
+import { HelperCard } from '../../shared';
 
 export default function Page() {
   return (
-    <FadeTransition className='flex min-h-[calc(100vh-82px)] flex-col items-stretch justify-start'>
+    <FadeTransition className='flex min-h-[calc(100vh-122px)] flex-col items-stretch justify-start'>
       <div className='relative mx-auto grid max-w-[1276px] grid-cols-3 gap-5'>
         <div />
-
-        <Card gradient className='flex-1 p-5'>
-          <Tabs defaultValue='send' className='w-full gap-4'>
+        <Card gradient className='row-span-2 flex-1 p-5'>
+          <Tabs defaultValue='send' className='w-full'>
             <TabsList className='grid w-full grid-cols-3 gap-4'>
               <TabsTrigger value='send'>Send</TabsTrigger>
               <TabsTrigger value='receive'>Receive</TabsTrigger>
@@ -21,17 +21,7 @@ export default function Page() {
             <TabsContent value='ibc'></TabsContent>
           </Tabs>
         </Card>
-
-        <Card gradient className='flex-1 p-5'>
-          <p>
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
-            has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown
-            printer took a galley of type and scrambled it to make a type specimen book. It has
-            survived not only five centuries, but also the leap into electronic typesetting,
-            remaining essentially unchanged. It was popularised in the 1960s with the release of
-            Letraset learn more
-          </p>
-        </Card>
+        <HelperCard src='/funds.svg' label='Sending funds' />
       </div>
     </FadeTransition>
   );

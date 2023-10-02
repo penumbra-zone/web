@@ -4,14 +4,13 @@ import { Notifications } from './notifications';
 import { Navbar } from './navbar';
 import Link from 'next/link';
 import { DappPath } from './paths';
+import { ResponsiveImage } from '../../shared';
 
 export const Header = () => {
   return (
     <header className='flex h-[82px] w-full items-center justify-between px-12'>
       <Link href={DappPath.INDEX}>
-        <div className='h-4 w-[171px]'>
-          <Image src='/logo.svg' width={171} height={16} alt='Penumbra logo' />
-        </div>
+        <ResponsiveImage src='/logo.svg' alt='Penumbra logo' className='h-4 w-[171px]' />
       </Link>
       <Navbar />
       <div className='flex items-center gap-3'>
