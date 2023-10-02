@@ -28,10 +28,8 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('tree_last_position');
         db.createObjectStore('tree_last_forgotten');
         db.createObjectStore('tree_commitments', { keyPath: 'commitment.inner' });
-        db.createObjectStore('tree_hashes', {
-          autoIncrement: true,
-          keyPath: 'index',
-        });
+        // Can be the same hash for different positions. `autoIncrement` makes the item key an incremented index.
+        db.createObjectStore('tree_hashes', { autoIncrement: true });
         db.createObjectStore('spendable_notes').createIndex('nullifier', 'nullifier.inner');
       },
     });
