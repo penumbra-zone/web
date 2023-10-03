@@ -5,6 +5,7 @@ import { ImageWrapper } from '../../shared';
 import { Navbar } from './navbar';
 import { Notifications } from './notifications';
 import { DappPath } from './paths';
+import { UnoptimizedImage } from '../../shared';
 
 export const Header = () => {
   return (
@@ -17,7 +18,7 @@ export const Header = () => {
         <Notifications />
         <NetworksPopover triggerClassName='px-[9px]' />
         <div className='ml-1 flex items-center gap-3 rounded-lg border px-5 py-[7px]'>
-          <Image
+          <UnoptimizedImage
             src='https://avatar.vercel.sh/rauchg'
             alt='icon'
             width={20}

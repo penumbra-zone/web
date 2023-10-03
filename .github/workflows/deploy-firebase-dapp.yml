@@ -1,0 +1,36 @@
+---
+# Builds the static site via pnpm, then copies that local directory's contents
+# to Firebase, at: https://app.testnet.penumbra.zone
+name: Deploy static site
+on:
+  # Support ad-hoc runs via dispatch, so we can deploy from
+  # unmerged feature branches if necessary.
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  # Uncomment to run on PRs; useful while debugging.
+  # pull_request:
+jobs:
+  build:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the source code
+        uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Build static site
+        run: pnpm build
+
+      - name: Deploy dapp static site to firebase
+        uses: w9jds/firebase-action@v2.0.0
+        with:
+          args: deploy
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_ID: penumbra-dapp
+          PROJECT_PATH: apps/webapp/dist
