@@ -1,12 +1,15 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
-import { ExtensionStorage } from '../storage/base';
-import { SessionStorageState } from '../storage/session';
-import { LocalStorageState } from '../storage/local';
 import { Key, KeyPrint } from 'penumbra-crypto-ts';
 import { webcrypto } from 'crypto';
+import {
+  ExtensionStorage,
+  LocalStorageState,
+  mockLocalExtStorage,
+  mockSessionExtStorage,
+  SessionStorageState,
+} from 'penumbra-storage';
 
 vi.stubGlobal('crypto', webcrypto);
 

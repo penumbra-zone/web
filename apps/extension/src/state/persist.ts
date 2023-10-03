@@ -1,10 +1,14 @@
 import { StateCreator, StoreMutatorIdentifier } from 'zustand';
 import { AllSlices } from './index';
-import { sessionExtStorage, SessionStorageState } from '../storage/session';
-import { localExtStorage, LocalStorageState } from '../storage/local';
 import { produce } from 'immer';
-import { StorageItem } from '../storage/base';
 import { walletsFromJson } from '../types/wallet';
+import {
+  localExtStorage,
+  LocalStorageState,
+  sessionExtStorage,
+  SessionStorageState,
+  StorageItem,
+} from 'penumbra-storage';
 
 export type Middleware = <
   T,
@@ -47,13 +51,24 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
 };
 
 function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: Setter) {
-  if (changes['accounts']) {
-    const wallets = changes['accounts'].newValue as
+  if (changes['wallets']) {
+    const wallets = changes['wallets'].newValue as
       | StorageItem<LocalStorageState['wallets']>
       | undefined;
     set(
       produce((state: AllSlices) => {
         state.wallets.all = wallets ? walletsFromJson(wallets.value) : [];
+      }),
+    );
+  }
+
+  if (changes['lastBlockSynced']) {
+    const stored = changes['lastBlockSynced'].newValue as
+      | StorageItem<LocalStorageState['lastBlockSynced']>
+      | undefined;
+    set(
+      produce((state: AllSlices) => {
+        state.network.lastBlockSynced = stored?.value ?? 0;
       }),
     );
   }
