@@ -5,20 +5,20 @@ import { Button, Switch } from 'ui';
 import { FilledImage, InputBlock, InputToken } from '../../shared';
 import { useStore } from '../../state';
 import { sendSelector } from '../../state/send';
+import { validateAmount, validateRecipient } from '../../utils';
 import { assets } from './constants';
-import { validateAmount, validateRecepient } from '../../utils';
 
 export const SendForm = () => {
   const {
     amount,
     asset,
-    recepient,
+    recipient,
     memo,
     hidden,
     validationErrors,
     setAmount,
     setAsset,
-    setRecepient,
+    setRecipient,
     setMemo,
     setHidden,
   } = useStore(sendSelector);
@@ -37,16 +37,16 @@ export const SendForm = () => {
       }}
     >
       <InputBlock
-        label='Recepient'
+        label='Recipient'
         placeholder='Enter the address'
         className='mb-1'
-        value={recepient}
-        onChange={e => setRecepient(e.target.value)}
+        value={recipient}
+        onChange={e => setRecipient(e.target.value)}
         validations={[
           {
             type: 'error',
-            error: 'bad format',
-            checkFn: (txt: string) => validateRecepient(txt),
+            issue: 'invalid address',
+            checkFn: (txt: string) => validateRecipient(txt),
           },
         ]}
       />
@@ -65,7 +65,7 @@ export const SendForm = () => {
           validations={[
             {
               type: 'error',
-              error: 'insufficient funds',
+              issue: 'insufficient funds',
               checkFn: (txt: string) => validateAmount(txt, asset.balance),
             },
           ]}
@@ -88,7 +88,7 @@ export const SendForm = () => {
         type='submit'
         variant='gradient'
         className='mt-4'
-        disabled={!amount || !recepient || !!Object.values(validationErrors).find(Boolean)}
+        disabled={!amount || !recipient || !!Object.values(validationErrors).find(Boolean)}
       >
         Send
       </Button>

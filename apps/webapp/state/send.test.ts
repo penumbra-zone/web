@@ -18,11 +18,11 @@ describe('Send Slice', () => {
   test('the default is empty, false or undefined', () => {
     expect(useStore.getState().send.amount).toBe('');
     expect(useStore.getState().send.memo).toBe('');
-    expect(useStore.getState().send.recepient).toBe('');
+    expect(useStore.getState().send.recipient).toBe('');
     expect(useStore.getState().send.hidden).toBeFalsy();
     expect(useStore.getState().send.asset).toBeUndefined();
     expect(useStore.getState().send.validationErrors.amount).toBeFalsy();
-    expect(useStore.getState().send.validationErrors.recepient).toBeFalsy();
+    expect(useStore.getState().send.validationErrors.recipient).toBeFalsy();
   });
 
   describe('setAmount', () => {
@@ -85,30 +85,30 @@ describe('Send Slice', () => {
     });
   });
 
-  describe('setRecepient and validate', () => {
+  describe('setRecipient and validate', () => {
     const rightAddress =
       'penumbrav2t1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvxneea442q63sumem7r096p7rd2tywm2v6ppc4';
 
-    test('recepient can be set and validate', () => {
-      useStore.getState().send.setRecepient(rightAddress);
-      expect(useStore.getState().send.recepient).toBe(rightAddress);
-      expect(useStore.getState().send.validationErrors.recepient).toBeFalsy();
+    test('recipient can be set and validate', () => {
+      useStore.getState().send.setRecipient(rightAddress);
+      expect(useStore.getState().send.recipient).toBe(rightAddress);
+      expect(useStore.getState().send.validationErrors.recipient).toBeFalsy();
     });
 
-    test('recepient will have a validation error after entering an incorrect address length', () => {
+    test('recipient will have a validation error after entering an incorrect address length', () => {
       const badAddressLength =
         'penumbrav2t1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvxneea442q63sumem7r096p7rd';
 
-      useStore.getState().send.setRecepient(badAddressLength);
-      expect(useStore.getState().send.validationErrors.recepient).toBeTruthy();
+      useStore.getState().send.setRecipient(badAddressLength);
+      expect(useStore.getState().send.validationErrors.recipient).toBeTruthy();
     });
 
-    test('recepient will have a validation error after entering an address without penumbrav2t as prefix', () => {
+    test('recipient will have a validation error after entering an address without penumbrav2t as prefix', () => {
       const badAddressPrefix =
         'wwwwwwwwww1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvxneea442q63sumem7r096p7rd2tywm2v6ppc4d';
 
-      useStore.getState().send.setRecepient(badAddressPrefix);
-      expect(useStore.getState().send.validationErrors.recepient).toBeTruthy();
+      useStore.getState().send.setRecipient(badAddressPrefix);
+      expect(useStore.getState().send.validationErrors.recipient).toBeTruthy();
     });
   });
 

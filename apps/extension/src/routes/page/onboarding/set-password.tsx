@@ -38,7 +38,7 @@ export const SetPassword = () => {
             validations={[
               {
                 type: 'warn',
-                error: 'password too short',
+                issue: 'password too short',
                 checkFn: (txt: string) => Boolean(txt.length) && txt.length < 8,
               },
             ]}
@@ -50,7 +50,7 @@ export const SetPassword = () => {
             validations={[
               {
                 type: 'warn',
-                error: "passwords don't match",
+                issue: "passwords don't match",
                 checkFn: (txt: string) => Boolean(txt.length) && password !== txt,
               },
             ]}

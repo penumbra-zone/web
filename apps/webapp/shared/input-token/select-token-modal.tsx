@@ -3,7 +3,6 @@
 import { useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogPrimitive, DialogTrigger, Input } from 'ui';
 import { FilledImage } from '../filled-image';
-
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { assets } from '../../app/send/constants';
 import { Asset } from '../../types/asset';
@@ -19,12 +18,16 @@ export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => 
 
   const filteredAsset = useMemo(() => {
     const sortedAsset = [...assets].sort((a, b) => {
+      // Sort by balance in descending order (largest to smallest).
       if (a.balance !== b.balance) return b.balance - a.balance;
-
+      // If balances are equal, sort by asset name in ascending order
       return a.name.localeCompare(b.name);
     });
 
+    // If no search query is provided, return the sorted assets directly.
     if (!search) return sortedAsset;
+
+    // Filter the sorted assets based on a case-insensitive search query.
     return sortedAsset.filter(asset => asset.name.toLowerCase().includes(search.toLowerCase()));
   }, [search]);
 

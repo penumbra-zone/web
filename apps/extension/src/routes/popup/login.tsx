@@ -50,7 +50,7 @@ export const Login = () => {
             validations={[
               {
                 type: 'error',
-                error: 'wrong password',
+                issue: 'wrong password',
                 checkFn: (txt: string) => Boolean(txt) && enteredIncorrect,
               },
             ]}

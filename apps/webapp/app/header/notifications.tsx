@@ -65,7 +65,7 @@ export const Notifications = () => {
         <div className='relative z-10 flex flex-col gap-2'>
           <div className='flex items-center justify-between text-base text-sand'>
             <div className='flex items-center gap-2'>
-              <FilledImage src='/sync-thin.svg' alt='Syncing blocks...' className='h-6 w-6' />
+              <FilledImage src='/sync-bold.svg' alt='Syncing blocks...' className='h-6 w-6' />
               <p className='font-headline font-semibold'>Syncing blocks...</p>
             </div>
             <p className='font-bold'>10982/121312</p>

@@ -1,22 +1,22 @@
 import { Asset } from '../types/asset';
-import { validateAmount, validateRecepient } from '../utils';
+import { validateAmount, validateRecipient } from '../utils';
 import { AllSlices, SliceCreator } from './index';
 
 export interface SendValidationFields {
-  recepient: boolean;
+  recipient: boolean;
   amount: boolean;
 }
 
 export interface SendSlice {
   amount: string;
   asset: Asset | undefined;
-  recepient: string;
+  recipient: string;
   memo: string;
   hidden: boolean;
   validationErrors: SendValidationFields;
-  setAmount: (txt: string) => void;
+  setAmount: (amount: string) => void;
   setAsset: (asset: Asset) => void;
-  setRecepient: (txt: string) => void;
+  setRecipient: (addr: string) => void;
   setMemo: (txt: string) => void;
   setHidden: (checked: boolean) => void;
 }
@@ -25,19 +25,19 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   return {
     amount: '',
     asset: undefined,
-    recepient: '',
+    recipient: '',
     memo: '',
     hidden: false,
     validationErrors: {
-      recepient: false,
+      recipient: false,
       amount: false,
     },
-    setAmount: txt => {
+    setAmount: amount => {
       const { asset } = get().send;
 
       set(state => {
-        state.send.amount = txt;
-        state.send.validationErrors.amount = !asset ? false : validateAmount(txt, asset.balance);
+        state.send.amount = amount;
+        state.send.validationErrors.amount = !asset ? false : validateAmount(amount, asset.balance);
       });
     },
     setAsset: asset => {
@@ -48,10 +48,10 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.validationErrors.amount = validateAmount(amount, asset.balance);
       });
     },
-    setRecepient: txt => {
+    setRecipient: addr => {
       set(state => {
-        state.send.recepient = txt;
-        state.send.validationErrors.recepient = validateRecepient(txt);
+        state.send.recipient = addr;
+        state.send.validationErrors.recipient = validateRecipient(addr);
       });
     },
     setMemo: txt => {
