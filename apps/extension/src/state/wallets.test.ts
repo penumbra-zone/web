@@ -1,11 +1,14 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
-import { ExtensionStorage } from '../storage/base';
-import { LocalStorageState } from '../storage/local';
 import { WalletCreate } from '../types/wallet';
 import { webcrypto } from 'crypto';
+import {
+  ExtensionStorage,
+  LocalStorageState,
+  mockLocalExtStorage,
+  mockSessionExtStorage,
+} from 'penumbra-storage';
 
 vi.stubGlobal('crypto', webcrypto);
 vi.mock('penumbra-wasm-ts', () => ({

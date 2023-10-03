@@ -6,3 +6,6 @@ export * from './utils';
 export * from './validation';
 export * from './lo-hi';
 export * from './environment';
+export * from './box';
+export * from './wallet';
+export * from './utility';

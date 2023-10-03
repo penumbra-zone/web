@@ -1,4 +1,5 @@
 import { Base64Str, base64ToUint8Array, uint8ArrayToBase64 } from 'penumbra-types';
+import { Box } from 'penumbra-types/src/box';
 
 /**
  * ==== Internal ====
@@ -78,31 +79,6 @@ export class KeyPrint {
     return {
       hash: uint8ArrayToBase64(this.hash),
       salt: uint8ArrayToBase64(this.salt),
-    };
-  }
-}
-
-// Public, stored representation of Box
-export interface BoxJson {
-  nonce: Base64Str;
-  cipherText: Base64Str;
-}
-
-// Represents the encrypted data
-export class Box {
-  constructor(
-    readonly nonce: Uint8Array,
-    readonly cipherText: Uint8Array,
-  ) {}
-
-  static fromJson(json: BoxJson): Box {
-    return new Box(base64ToUint8Array(json.nonce), base64ToUint8Array(json.cipherText));
-  }
-
-  toJson(): BoxJson {
-    return {
-      nonce: uint8ArrayToBase64(this.nonce),
-      cipherText: uint8ArrayToBase64(this.cipherText),
     };
   }
 }
