@@ -4,6 +4,8 @@ import { TendermintQuerier } from 'penumbra-query/src/queriers/tendermint';
 import { PopupLoaderData } from '../routes/popup/home';
 import { useStore } from '../state';
 import { networkSelector } from '../state/network';
+import { sendSwMessage } from '../routes/service-worker/internal/sender';
+import { SyncBlocksMessage } from '../routes/service-worker/internal/sync';
 
 // There is a slight delay with Zustand loading up the last block synced.
 // To prevent the screen flicker, we use a loader to read it from chrome.storage.local.
@@ -16,6 +18,12 @@ const useLastBlockSynced = (): number => {
 export const useSyncProgress = () => {
   const lastBlockSynced = useLastBlockSynced();
   const { grpcEndpoint } = useStore(networkSelector);
+
+  // Wake up service worker so block syncing can resume
+  useQuery({
+    queryKey: ['sync-blocks', grpcEndpoint],
+    queryFn: () => sendSwMessage<SyncBlocksMessage>({ type: 'SYNC_BLOCKS', data: {} }),
+  });
 
   const { data } = useQuery({
     queryKey: ['lastBlockHeight'],

@@ -69,7 +69,11 @@ export class Services {
   // they'll all wait for the same promise rather than each starting their own initialization process.
   async getWalletServices(): Promise<WalletServices> {
     if (!this.walletServicesPromise) {
-      this.walletServicesPromise = this.initializeWalletServices();
+      this.walletServicesPromise = this.initializeWalletServices().catch(e => {
+        // If promise rejected, reset promise to `undefined` so next caller can try again
+        this.walletServicesPromise = undefined;
+        throw e;
+      });
     }
     return this.walletServicesPromise;
   }

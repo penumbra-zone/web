@@ -26,6 +26,7 @@ export class BlockProcessor {
   private readonly indexedDb: IndexedDbInterface;
   private readonly viewServer: ViewServerInterface;
   private readonly abortController: AbortController = new AbortController();
+  private blockSyncPromise: Promise<void> | undefined;
 
   constructor({ indexedDb, viewServer, querier }: QueryClientProps) {
     this.indexedDb = indexedDb;
@@ -33,8 +34,17 @@ export class BlockProcessor {
     this.querier = querier;
   }
 
+  // If syncBlocks() is called multiple times concurrently,
+  // they'll all wait for the same promise rather than each starting their own sync process.
+  async syncBlocks(): Promise<void> {
+    if (!this.blockSyncPromise) {
+      this.blockSyncPromise = this.autoRetrySync();
+    }
+    return this.blockSyncPromise;
+  }
+
   // After a failure, retrying the sync is critical. An exponential-backoff is used.
-  async syncBlocks() {
+  async autoRetrySync() {
     try {
       await backOff(() => this.syncAndStore(), {
         maxDelay: 30_000, // 30 seconds
@@ -139,7 +149,7 @@ const isAbortSignal = (error: unknown): boolean =>
 // - if not, every 1000th block
 const shouldStoreProgress = (block: CompactBlock, upToDateBlock: bigint): boolean => {
   if (block.height === 0n) return false;
-  const interval = isDevEnv() ? 100n : 1000n;
+  const interval = isDevEnv() ? 1n : 1000n;
   return block.height >= upToDateBlock || block.height % interval === 0n;
 };
 
