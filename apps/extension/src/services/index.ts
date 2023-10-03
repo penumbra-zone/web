@@ -5,8 +5,6 @@ import { IndexedDb, localExtStorage, syncLastBlockWithLocal } from 'penumbra-sto
 import { ViewServer } from 'penumbra-wasm-ts';
 import { BlockProcessor } from 'penumbra-query';
 
-const sw = self as unknown as ServiceWorkerGlobalScope & typeof globalThis;
-
 interface WalletServices {
   viewServer: ViewServer;
   blockProcessor: BlockProcessor;
@@ -31,10 +29,6 @@ export class Services {
 
   async onServiceWorkerInit(): Promise<void> {
     try {
-      // Forces the waiting service worker to become the active service worker
-      await sw.skipWaiting();
-      await sw.clients.claim();
-
       const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
       this._querier = new RootQuerier({ grpcEndpoint });
 
