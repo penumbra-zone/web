@@ -1,9 +1,14 @@
 import { StateCreator, StoreMutatorIdentifier } from 'zustand';
 import { AllSlices } from './index';
-import { sessionExtStorage, SessionStorageState } from '../storage/session';
-import { localExtStorage, LocalStorageState } from '../storage/local';
 import { produce } from 'immer';
-import { StorageItem } from '../storage/base';
+import { walletsFromJson } from '../types/wallet';
+import {
+  localExtStorage,
+  LocalStorageState,
+  sessionExtStorage,
+  SessionStorageState,
+  StorageItem,
+} from 'penumbra-storage';
 
 export type Middleware = <
   T,
@@ -23,14 +28,14 @@ type Setter = (
 export const customPersistImpl: Persist = f => (set, get, store) => {
   void (async function () {
     // Part 1: Get storage values and sync them to store
-    const hashedPassword = await sessionExtStorage.get('hashedPassword');
+    const passwordKey = await sessionExtStorage.get('passwordKey');
     const wallets = await localExtStorage.get('wallets');
     const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 
     set(
       produce((state: AllSlices) => {
-        state.password.hashedPassword = hashedPassword;
-        state.wallets.all = wallets;
+        state.password.key = passwordKey;
+        state.wallets.all = walletsFromJson(wallets);
         state.network.grpcEndpoint = grpcEndpoint;
       }),
     );
@@ -46,13 +51,24 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
 };
 
 function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: Setter) {
-  if (changes['accounts']) {
-    const item = changes['accounts'].newValue as
+  if (changes['wallets']) {
+    const wallets = changes['wallets'].newValue as
       | StorageItem<LocalStorageState['wallets']>
       | undefined;
     set(
       produce((state: AllSlices) => {
-        state.wallets.all = item ? item.value : [];
+        state.wallets.all = wallets ? walletsFromJson(wallets.value) : [];
+      }),
+    );
+  }
+
+  if (changes['lastBlockSynced']) {
+    const stored = changes['lastBlockSynced'].newValue as
+      | StorageItem<LocalStorageState['lastBlockSynced']>
+      | undefined;
+    set(
+      produce((state: AllSlices) => {
+        state.network.lastBlockSynced = stored?.value ?? 0;
       }),
     );
   }
@@ -61,11 +77,11 @@ function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: S
 function syncSession(changes: Record<string, chrome.storage.StorageChange>, set: Setter) {
   if (changes['hashedPassword']) {
     const item = changes['hashedPassword'].newValue as
-      | StorageItem<SessionStorageState['hashedPassword']>
+      | StorageItem<SessionStorageState['passwordKey']>
       | undefined;
     set(
       produce((state: AllSlices) => {
-        state.password.hashedPassword = item ? item.value : undefined;
+        state.password.key = item ? item.value : undefined;
       }),
     );
   }

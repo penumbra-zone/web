@@ -9,6 +9,7 @@ import {
   isStreamResponse,
   PendingRequests,
 } from './types';
+import { ConnectError } from '@connectrpc/connect';
 
 type PromiseResolver<T> = (value: T | PromiseLike<T>) => void;
 
@@ -71,7 +72,7 @@ export const serverStreamIO = async function* <S extends ServiceType, M extends 
           yield res.stream.value;
         }
       } else if (isErrorResponse(res)) {
-        throw new Error(res.error);
+        throw new ConnectError(res.error);
       }
     }
   }

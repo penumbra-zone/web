@@ -1,16 +1,19 @@
 import {
   base64ToUint8Array,
   IndexedDbInterface,
+  isDevEnv,
   NewNoteRecord,
   uint8ArrayToBase64,
   ViewServerInterface,
 } from 'penumbra-types';
-import { decodeNctRoot } from 'penumbra-wasm-ts/src/sct';
 import { RootQuerier } from './root-querier';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { bech32 } from 'bech32';
+import { Code, ConnectError } from '@connectrpc/connect';
+import { backOff } from 'exponential-backoff';
+import { decodeNctRoot } from 'penumbra-wasm-ts/src/sct';
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -22,6 +25,7 @@ export class BlockProcessor {
   private readonly querier: RootQuerier;
   private readonly indexedDb: IndexedDbInterface;
   private readonly viewServer: ViewServerInterface;
+  private readonly abortController: AbortController = new AbortController();
 
   constructor({ indexedDb, viewServer, querier }: QueryClientProps) {
     this.indexedDb = indexedDb;
@@ -29,13 +33,19 @@ export class BlockProcessor {
     this.querier = querier;
   }
 
+  // After a failure, retrying the sync is critical. An exponential-backoff is used.
   async syncBlocks() {
     try {
-      await this.syncAndStore();
-    } catch (e) {
-      await this.viewServer.resetTreeToStored();
-      console.error(e);
-      throw e;
+      await backOff(() => this.syncAndStore(), {
+        maxDelay: 30_000, // 30 seconds
+        numOfAttempts: Infinity,
+        retry: async error => {
+          await this.viewServer.resetTreeToStored();
+          return !isAbortSignal(error);
+        },
+      });
+    } catch {
+      // Was signaled to abort, can swallow this error
     }
   }
 
@@ -75,6 +85,8 @@ export class BlockProcessor {
     await this.indexedDb.updateStateCommitmentTree(updates, height);
   }
 
+  // Compares the locally stored, filtered SCT root with the actual one on chain. They should match.
+  // This is expensive to do every block, so should only be done in development.
   private async assertRootValid(blockHeight: bigint): Promise<void> {
     const sourceOfTruth = await this.querier.app.keyValue(`sct/anchor/${blockHeight}`);
     const inMemoryRoot = this.viewServer.getNctRoot();
@@ -92,7 +104,11 @@ export class BlockProcessor {
     const lastBlockHeight = await this.querier.tendermint.lastBlockHeight();
 
     // Continuously runs as new blocks are committed
-    for await (const res of this.querier.compactBlock.compactBlockRange(startHeight, true)) {
+    for await (const res of this.querier.compactBlock.compactBlockRange({
+      startHeight,
+      keepAlive: true,
+      abortSignal: this.abortController.signal,
+    })) {
       if (!res.compactBlock) throw new Error('No block in response');
 
       // Scanning has a side effect of updating viewServer's internal tree.
@@ -103,7 +119,9 @@ export class BlockProcessor {
       await this.storeNewNotes(scanResult.new_notes);
       await this.markNotesSpent(res.compactBlock.nullifiers, res.compactBlock.height);
 
-      await this.assertRootValid(res.compactBlock.height); // TODO: Put behind debug flag
+      if (isDevEnv()) {
+        await this.assertRootValid(res.compactBlock.height);
+      }
 
       if (shouldStoreProgress(res.compactBlock, lastBlockHeight)) {
         await this.saveSyncProgress(res.compactBlock.height);
@@ -112,11 +130,17 @@ export class BlockProcessor {
   }
 }
 
+const isAbortSignal = (error: unknown): boolean =>
+  error instanceof ConnectError && error.code === Code.Canceled;
+
 // Writing to disc is expensive, so storing progress occurs:
 // - if syncing is up-to-date, on every block
+// - if dev environment, every 100th block
 // - if not, every 1000th block
 const shouldStoreProgress = (block: CompactBlock, upToDateBlock: bigint): boolean => {
-  return block.height >= upToDateBlock || block.height % 1000n === 0n;
+  if (block.height === 0n) return false;
+  const interval = isDevEnv() ? 100n : 1000n;
+  return block.height >= upToDateBlock || block.height % interval === 0n;
 };
 
 export const UNNAMED_ASSET_PREFIX = 'passet';

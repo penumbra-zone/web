@@ -2,15 +2,21 @@ import { create, StateCreator } from 'zustand';
 import { createWalletsSlice, WalletsSlice } from './wallets';
 import { immer } from 'zustand/middleware/immer';
 import { customPersist } from './persist';
-import { ExtensionStorage } from '../storage/base';
-import { sessionExtStorage, SessionStorageState } from '../storage/session';
-import { localExtStorage, LocalStorageState } from '../storage/local';
 import { createPasswordSlice, PasswordSlice } from './password';
 import { createSeedPhraseSlice, SeedPhraseSlice } from './seed-phrase';
 import { createNetworkSlice, NetworkSlice } from './network';
+import { AccountsSlice, createAccountsSlice } from './accounts';
+import {
+  ExtensionStorage,
+  localExtStorage,
+  LocalStorageState,
+  sessionExtStorage,
+  SessionStorageState,
+} from 'penumbra-storage';
 
 export interface AllSlices {
   wallets: WalletsSlice;
+  accounts: AccountsSlice;
   password: PasswordSlice;
   seedPhrase: SeedPhraseSlice;
   network: NetworkSlice;
@@ -29,6 +35,7 @@ export const initializeStore = (
 ) => {
   return immer((setState, getState: () => AllSlices, store) => ({
     wallets: createWalletsSlice(local)(setState, getState, store),
+    accounts: createAccountsSlice(setState, getState, store),
     password: createPasswordSlice(session, local)(setState, getState, store),
     seedPhrase: createSeedPhraseSlice(setState, getState, store),
     network: createNetworkSlice(setState, getState, store),

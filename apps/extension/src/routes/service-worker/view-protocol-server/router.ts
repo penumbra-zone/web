@@ -32,7 +32,7 @@ const unaryHandler = async (req: ViewProtocolReq): Promise<ViewProtocolRes> => {
 
 const streamingHandler = (req: ViewProtocolReq): AsyncIterable<ViewProtocolRes> => {
   if (isBalancesRequest(req)) {
-    return handleBalancesReq(req, services.controllers.indexedDb);
+    return handleBalancesReq(req, services.indexedDb);
   }
   throw new Error(`Non-supported streaming request: ${req.requestMethod.getType().typeName}`);
 };

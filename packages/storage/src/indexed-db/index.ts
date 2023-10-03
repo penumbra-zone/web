@@ -8,16 +8,21 @@ import {
   StateCommitmentTree,
 } from 'penumbra-types';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { IbdUpdater, IbdUpdates, TableUpdateNotifier } from './updater';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
   chainId: string;
+  updateNotifiers?: TableUpdateNotifier[]; // Consumers subscribing to updates
 }
 
 export class IndexedDb implements IndexedDbInterface {
-  private constructor(private readonly db: IDBPDatabase<PenumbraDb>) {}
+  private constructor(
+    private readonly db: IDBPDatabase<PenumbraDb>,
+    private readonly u: IbdUpdater,
+  ) {}
 
-  static async initialize({ dbVersion }: IndexedDbProps): Promise<IndexedDb> {
+  static async initialize({ dbVersion, updateNotifiers }: IndexedDbProps): Promise<IndexedDb> {
     // TODO: https://github.com/penumbra-zone/web/issues/30
     const dbKey = 'penumbra';
 
@@ -25,14 +30,16 @@ export class IndexedDb implements IndexedDbInterface {
       upgrade(db: IDBPDatabase<PenumbraDb>) {
         db.createObjectStore('last_block_synced');
         db.createObjectStore('assets', { keyPath: 'penumbraAssetId.inner' });
+        db.createObjectStore('spendable_notes').createIndex('nullifier', 'nullifier.inner');
         db.createObjectStore('tree_last_position');
         db.createObjectStore('tree_last_forgotten');
         db.createObjectStore('tree_commitments', { keyPath: 'commitment.inner' });
-        db.createObjectStore('tree_hashes', { keyPath: 'hash' });
-        db.createObjectStore('spendable_notes').createIndex('nullifier', 'nullifier.inner');
+        // No unique id for given tree hash and hash can be the same for different positions. Using `autoIncrement` to make the item key an incremented index.
+        db.createObjectStore('tree_hashes', { autoIncrement: true });
       },
     });
-    return new this(db);
+    const updater = new IbdUpdater(db, updateNotifiers);
+    return new this(db, updater);
   }
 
   public async getStateCommitmentTree(): Promise<StateCommitmentTree> {
@@ -51,35 +58,35 @@ export class IndexedDb implements IndexedDbInterface {
 
   // All updates must be atomic in order to prevent invalid tree state
   public async updateStateCommitmentTree(updates: NctUpdates, height: bigint) {
-    const tx = this.db.transaction(
-      [
-        'last_block_synced',
-        'tree_last_position',
-        'tree_last_forgotten',
-        'tree_commitments',
-        'tree_hashes',
-      ],
-      'readwrite',
-    );
+    const txs = new IbdUpdates();
 
     if (updates.set_position) {
-      await tx.objectStore('tree_last_position').put(updates.set_position, 'last_position');
+      txs.add({
+        table: 'tree_last_position',
+        value: updates.set_position,
+        key: 'last_position',
+      });
     }
 
-    if (updates.set_forgotten)
-      await tx.objectStore('tree_last_forgotten').put(updates.set_forgotten, 'last_forgotten');
+    if (updates.set_forgotten) {
+      txs.add({
+        table: 'tree_last_forgotten',
+        value: updates.set_forgotten,
+        key: 'last_forgotten',
+      });
+    }
 
     for (const c of updates.store_commitments) {
-      await tx.objectStore('tree_commitments').put(c);
+      txs.add({ table: 'tree_commitments', value: c });
     }
 
     for (const h of updates.store_hashes) {
-      await tx.objectStore('tree_hashes').put(h);
+      txs.add({ table: 'tree_hashes', value: h });
     }
 
-    await tx.objectStore('last_block_synced').put(height, 'last_block');
+    txs.add({ table: 'last_block_synced', value: height, key: 'last_block' });
 
-    await tx.done;
+    await this.u.updateAll(txs);
 
     // TODO: What about updates.delete_ranges?
   }
@@ -93,7 +100,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveSpendableNote(note: NewNoteRecord) {
-    await this.db.put('spendable_notes', note, note.noteCommitment.inner);
+    await this.u.update({ table: 'spendable_notes', value: note, key: note.noteCommitment.inner });
   }
 
   async getAssetsMetadata(assetId: Uint8Array) {
@@ -101,7 +108,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveAssetsMetadata(metadata: DenomMetadata) {
-    await this.db.put('assets', metadata);
+    await this.u.update({ table: 'assets', value: metadata });
   }
 
   async getAllNotes() {
