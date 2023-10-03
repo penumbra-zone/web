@@ -201,6 +201,9 @@ importers:
       ui:
         specifier: workspace:*
         version: link:../../packages/ui
+      zustand:
+        specifier: ^4.4.1
+        version: registry.npmmirror.com/zustand@4.4.1(@types/react@18.2.24)(react@18.2.0)
     devDependencies:
       '@radix-ui/react-icons':
         specifier: ^1.3.0
@@ -677,7 +680,7 @@ packages:
     peerDependencies:
       '@bufbuild/protobuf': ^1.3.1
     dependencies:
-      '@bufbuild/protobuf': 1.3.1
+      '@bufbuild/protobuf': registry.npmmirror.com/@bufbuild/protobuf@1.3.1
     dev: false
 
   /@buf/cosmos_cosmos-proto.connectrpc_es@1.0.0-20211202220400-1935555c206d.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0):
@@ -686,7 +689,7 @@ packages:
       '@connectrpc/connect': ^1.0.0
     dependencies:
       '@buf/cosmos_cosmos-proto.bufbuild_es': 1.3.1-20211202220400-1935555c206d.1(@bufbuild/protobuf@1.3.1)
-      '@connectrpc/connect': registry.npmmirror.com/@connectrpc/connect@1.0.0(@bufbuild/protobuf@1.3.1)
+      '@connectrpc/connect': 1.0.0(@bufbuild/protobuf@1.3.1)
     transitivePeerDependencies:
       - '@bufbuild/protobuf'
     dev: false
@@ -699,7 +702,7 @@ packages:
       '@buf/cosmos_cosmos-proto.bufbuild_es': 1.3.1-20211202220400-1935555c206d.1(@bufbuild/protobuf@1.3.1)
       '@buf/cosmos_gogo-proto.bufbuild_es': 1.3.1-20221020125208-34d970b699f8.1(@bufbuild/protobuf@1.3.1)
       '@buf/googleapis_googleapis.bufbuild_es': 1.3.1-20221214150216-75b4300737fb.1(@bufbuild/protobuf@1.3.1)
-      '@bufbuild/protobuf': 1.3.1
+      '@bufbuild/protobuf': registry.npmmirror.com/@bufbuild/protobuf@1.3.1
     dev: false
 
   /@buf/cosmos_cosmos-sdk.bufbuild_es@1.3.1-20230719110346-aa25660f4ff7.1(@bufbuild/protobuf@1.3.1):
@@ -710,7 +713,7 @@ packages:
       '@buf/cosmos_cosmos-proto.bufbuild_es': 1.3.1-20211202220400-1935555c206d.1(@bufbuild/protobuf@1.3.1)
       '@buf/cosmos_gogo-proto.bufbuild_es': 1.3.1-20230509103710-5e5b9fdd0180.1(@bufbuild/protobuf@1.3.1)
       '@buf/googleapis_googleapis.bufbuild_es': 1.3.1-20230502210827-cc916c318597.1(@bufbuild/protobuf@1.3.1)
-      '@bufbuild/protobuf': 1.3.1
+      '@bufbuild/protobuf': registry.npmmirror.com/@bufbuild/protobuf@1.3.1
     dev: false
 
   /@buf/cosmos_cosmos-sdk.connectrpc_es@1.0.0-20230522115704-e7a85cef453e.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0):
@@ -722,7 +725,7 @@ packages:
       '@buf/cosmos_cosmos-sdk.bufbuild_es': 1.3.1-20230522115704-e7a85cef453e.1(@bufbuild/protobuf@1.3.1)
       '@buf/cosmos_gogo-proto.connectrpc_es': 1.0.0-20221020125208-34d970b699f8.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0)
       '@buf/googleapis_googleapis.connectrpc_es': 1.0.0-20221214150216-75b4300737fb.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0)
-      '@connectrpc/connect': registry.npmmirror.com/@connectrpc/connect@1.0.0(@bufbuild/protobuf@1.3.1)
+      '@connectrpc/connect': 1.0.0(@bufbuild/protobuf@1.3.1)
     transitivePeerDependencies:
       - '@bufbuild/protobuf'
     dev: false
@@ -736,7 +739,7 @@ packages:
       '@buf/cosmos_cosmos-sdk.bufbuild_es': 1.3.1-20230719110346-aa25660f4ff7.1(@bufbuild/protobuf@1.3.1)
       '@buf/cosmos_gogo-proto.connectrpc_es': 1.0.0-20230509103710-5e5b9fdd0180.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0)
       '@buf/googleapis_googleapis.connectrpc_es': 1.0.0-20230502210827-cc916c318597.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0)
-      '@connectrpc/connect': registry.npmmirror.com/@connectrpc/connect@1.0.0(@bufbuild/protobuf@1.3.1)
+      '@connectrpc/connect': 1.0.0(@bufbuild/protobuf@1.3.1)
     transitivePeerDependencies:
       - '@bufbuild/protobuf'
     dev: false
@@ -746,7 +749,7 @@ packages:
     peerDependencies:
       '@bufbuild/protobuf': ^1.3.1
     dependencies:
-      '@bufbuild/protobuf': 1.3.1
+      '@bufbuild/protobuf': registry.npmmirror.com/@bufbuild/protobuf@1.3.1
     dev: false
 
   /@buf/cosmos_gogo-proto.bufbuild_es@1.3.1-20230509103710-5e5b9fdd0180.1(@bufbuild/protobuf@1.3.1):
@@ -754,7 +757,7 @@ packages:
     peerDependencies:
       '@bufbuild/protobuf': ^1.3.1
     dependencies:
-      '@bufbuild/protobuf': 1.3.1
+      '@bufbuild/protobuf': registry.npmmirror.com/@bufbuild/protobuf@1.3.1
     dev: false
 
   /@buf/cosmos_gogo-proto.connectrpc_es@1.0.0-20221020125208-34d970b699f8.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0):
@@ -763,7 +766,7 @@ packages:
       '@connectrpc/connect': ^1.0.0
     dependencies:
       '@buf/cosmos_gogo-proto.bufbuild_es': 1.3.1-20221020125208-34d970b699f8.1(@bufbuild/protobuf@1.3.1)
-      '@connectrpc/connect': registry.npmmirror.com/@connectrpc/connect@1.0.0(@bufbuild/protobuf@1.3.1)
+      '@connectrpc/connect': 1.0.0(@bufbuild/protobuf@1.3.1)
     transitivePeerDependencies:
       - '@bufbuild/protobuf'
     dev: false
@@ -774,7 +777,7 @@ packages:
       '@connectrpc/connect': ^1.0.0
     dependencies:
       '@buf/cosmos_gogo-proto.bufbuild_es': 1.3.1-20230509103710-5e5b9fdd0180.1(@bufbuild/protobuf@1.3.1)
-      '@connectrpc/connect': registry.npmmirror.com/@connectrpc/connect@1.0.0(@bufbuild/protobuf@1.3.1)
+      '@connectrpc/connect': 1.0.0(@bufbuild/protobuf@1.3.1)
     transitivePeerDependencies:
       - '@bufbuild/protobuf'
     dev: false
@@ -789,7 +792,7 @@ packages:
       '@buf/cosmos_gogo-proto.bufbuild_es': 1.3.1-20221020125208-34d970b699f8.1(@bufbuild/protobuf@1.3.1)
       '@buf/cosmos_ics23.bufbuild_es': 1.3.1-20221207100654-55085f7c710a.1(@bufbuild/protobuf@1.3.1)
       '@buf/googleapis_googleapis.bufbuild_es': 1.3.1-20220908150232-8d7204855ec1.1(@bufbuild/protobuf@1.3.1)
-      '@bufbuild/protobuf': 1.3.1
+      '@bufbuild/protobuf': registry.npmmirror.com/@bufbuild/protobuf@1.3.1
     dev: false
 
   /@buf/cosmos_ibc.connectrpc_es@1.0.0-20230913112312-7ab44ae956a0.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0):
@@ -803,7 +806,7 @@ packages:
       '@buf/cosmos_ibc.bufbuild_es': 1.3.1-20230913112312-7ab44ae956a0.1(@bufbuild/protobuf@1.3.1)
       '@buf/cosmos_ics23.connectrpc_es': 1.0.0-20221207100654-55085f7c710a.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0)
       '@buf/googleapis_googleapis.connectrpc_es': 1.0.0-20220908150232-8d7204855ec1.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0)
-      '@connectrpc/connect': registry.npmmirror.com/@connectrpc/connect@1.0.0(@bufbuild/protobuf@1.3.1)
+      '@connectrpc/connect': 1.0.0(@bufbuild/protobuf@1.3.1)
     transitivePeerDependencies:
       - '@bufbuild/protobuf'
     dev: false
@@ -813,7 +816,7 @@ packages:
     peerDependencies:
       '@bufbuild/protobuf': ^1.3.1
     dependencies:
-      '@bufbuild/protobuf': 1.3.1
+      '@bufbuild/protobuf': registry.npmmirror.com/@bufbuild/protobuf@1.3.1
     dev: false
 
   /@buf/cosmos_ics23.connectrpc_es@1.0.0-20221207100654-55085f7c710a.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0):
@@ -822,7 +825,7 @@ packages:
       '@connectrpc/connect': ^1.0.0
     dependencies:
       '@buf/cosmos_ics23.bufbuild_es': 1.3.1-20221207100654-55085f7c710a.1(@bufbuild/protobuf@1.3.1)
-      '@connectrpc/connect': registry.npmmirror.com/@connectrpc/connect@1.0.0(@bufbuild/protobuf@1.3.1)
+      '@connectrpc/connect': 1.0.0(@bufbuild/protobuf@1.3.1)
     transitivePeerDependencies:
       - '@bufbuild/protobuf'
     dev: false
@@ -832,7 +835,7 @@ packages:
     peerDependencies:
       '@bufbuild/protobuf': ^1.3.1
     dependencies:
-      '@bufbuild/protobuf': 1.3.1
+      '@bufbuild/protobuf': registry.npmmirror.com/@bufbuild/protobuf@1.3.1
     dev: false
 
   /@buf/googleapis_googleapis.bufbuild_es@1.3.1-20221214150216-75b4300737fb.1(@bufbuild/protobuf@1.3.1):
@@ -840,7 +843,7 @@ packages:
     peerDependencies:
       '@bufbuild/protobuf': ^1.3.1
     dependencies:
-      '@bufbuild/protobuf': 1.3.1
+      '@bufbuild/protobuf': registry.npmmirror.com/@bufbuild/protobuf@1.3.1
     dev: false
 
   /@buf/googleapis_googleapis.bufbuild_es@1.3.1-20230502210827-cc916c318597.1(@bufbuild/protobuf@1.3.1):
@@ -848,7 +851,7 @@ packages:
     peerDependencies:
       '@bufbuild/protobuf': ^1.3.1
     dependencies:
-      '@bufbuild/protobuf': 1.3.1
+      '@bufbuild/protobuf': registry.npmmirror.com/@bufbuild/protobuf@1.3.1
     dev: false
 
   /@buf/googleapis_googleapis.connectrpc_es@1.0.0-20220908150232-8d7204855ec1.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0):
@@ -857,7 +860,7 @@ packages:
       '@connectrpc/connect': ^1.0.0
     dependencies:
       '@buf/googleapis_googleapis.bufbuild_es': 1.3.1-20220908150232-8d7204855ec1.1(@bufbuild/protobuf@1.3.1)
-      '@connectrpc/connect': registry.npmmirror.com/@connectrpc/connect@1.0.0(@bufbuild/protobuf@1.3.1)
+      '@connectrpc/connect': 1.0.0(@bufbuild/protobuf@1.3.1)
     transitivePeerDependencies:
       - '@bufbuild/protobuf'
     dev: false
@@ -868,7 +871,7 @@ packages:
       '@connectrpc/connect': ^1.0.0
     dependencies:
       '@buf/googleapis_googleapis.bufbuild_es': 1.3.1-20221214150216-75b4300737fb.1(@bufbuild/protobuf@1.3.1)
-      '@connectrpc/connect': registry.npmmirror.com/@connectrpc/connect@1.0.0(@bufbuild/protobuf@1.3.1)
+      '@connectrpc/connect': 1.0.0(@bufbuild/protobuf@1.3.1)
     transitivePeerDependencies:
       - '@bufbuild/protobuf'
     dev: false
@@ -879,7 +882,7 @@ packages:
       '@connectrpc/connect': ^1.0.0
     dependencies:
       '@buf/googleapis_googleapis.bufbuild_es': 1.3.1-20230502210827-cc916c318597.1(@bufbuild/protobuf@1.3.1)
-      '@connectrpc/connect': registry.npmmirror.com/@connectrpc/connect@1.0.0(@bufbuild/protobuf@1.3.1)
+      '@connectrpc/connect': 1.0.0(@bufbuild/protobuf@1.3.1)
     transitivePeerDependencies:
       - '@bufbuild/protobuf'
     dev: false
@@ -895,7 +898,7 @@ packages:
       '@buf/cosmos_ibc.bufbuild_es': 1.3.1-20230913112312-7ab44ae956a0.1(@bufbuild/protobuf@1.3.1)
       '@buf/cosmos_ics23.bufbuild_es': 1.3.1-20221207100654-55085f7c710a.1(@bufbuild/protobuf@1.3.1)
       '@buf/googleapis_googleapis.bufbuild_es': 1.3.1-20221214150216-75b4300737fb.1(@bufbuild/protobuf@1.3.1)
-      '@bufbuild/protobuf': 1.3.1
+      '@bufbuild/protobuf': registry.npmmirror.com/@bufbuild/protobuf@1.3.1
     dev: false
 
   /@buf/penumbra-zone_penumbra.connectrpc_es@1.0.0-20230924001252-57fdc610ee23.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0):
@@ -910,7 +913,7 @@ packages:
       '@buf/cosmos_ics23.connectrpc_es': 1.0.0-20221207100654-55085f7c710a.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0)
       '@buf/googleapis_googleapis.connectrpc_es': 1.0.0-20221214150216-75b4300737fb.1(@bufbuild/protobuf@1.3.1)(@connectrpc/connect@1.0.0)
       '@buf/penumbra-zone_penumbra.bufbuild_es': 1.3.1-20230924001252-57fdc610ee23.1(@bufbuild/protobuf@1.3.1)
-      '@connectrpc/connect': registry.npmmirror.com/@connectrpc/connect@1.0.0(@bufbuild/protobuf@1.3.1)
+      '@connectrpc/connect': 1.0.0(@bufbuild/protobuf@1.3.1)
     transitivePeerDependencies:
       - '@bufbuild/protobuf'
     dev: false
@@ -961,7 +964,7 @@ packages:
     peerDependencies:
       eslint: ^6.0.0 || ^7.0.0 || >=8.0.0
     dependencies:
-      eslint: 8.50.0
+      eslint: registry.npmmirror.com/eslint@8.50.0
       eslint-visitor-keys: 3.4.3
 
   /@eslint-community/regexpp@4.9.0:
@@ -6731,17 +6734,6 @@ packages:
     version: 1.5.0
     engines: {node: '>=0.1.90'}
     dev: true
-
-  registry.npmmirror.com/@connectrpc/connect@1.0.0(@bufbuild/protobuf@1.3.1):
-    resolution: {integrity: sha512-eqrCpSoAK8OHlKN3t3BbMGAzLT3rbl8XEgyazDokm5lyhYc68UcxN8ChfWjFzVpXOCMYaEAR/0NV64UOAEko9w==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@connectrpc/connect/-/connect-1.0.0.tgz}
-    id: registry.npmmirror.com/@connectrpc/connect/1.0.0
-    name: '@connectrpc/connect'
-    version: 1.0.0
-    peerDependencies:
-      '@bufbuild/protobuf': ^1.2.1
-    dependencies:
-      '@bufbuild/protobuf': 1.3.1
-    dev: false
 
   registry.npmmirror.com/@dabh/diagnostics@2.0.3:
     resolution: {integrity: sha512-hrlQOIi7hAfzsMqlGSFyVucrx38O+j6wiGOf//H2ecvIEqYN4ADBSS2iLMh5UFyDunCNniUIPk/q3riFv45xRA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@dabh/diagnostics/-/diagnostics-2.0.3.tgz}
@@ -14350,6 +14342,17 @@ packages:
       tslib: registry.npmmirror.com/tslib@2.6.2
     dev: false
 
+  registry.npmmirror.com/use-sync-external-store@1.2.0(react@18.2.0):
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz}
+    id: registry.npmmirror.com/use-sync-external-store/1.2.0
+    name: use-sync-external-store
+    version: 1.2.0
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
+
   registry.npmmirror.com/util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/util-deprecate/-/util-deprecate-1.0.2.tgz}
     name: util-deprecate
@@ -14790,3 +14793,26 @@ packages:
       compress-commons: registry.npmmirror.com/compress-commons@4.1.2
       readable-stream: registry.npmmirror.com/readable-stream@3.6.2
     dev: true
+
+  registry.npmmirror.com/zustand@4.4.1(@types/react@18.2.24)(react@18.2.0):
+    resolution: {integrity: sha512-QCPfstAS4EBiTQzlaGP1gmorkh/UL1Leaj2tdj+zZCZ/9bm0WS7sI2wnfD5lpOszFqWJ1DcPnGoY8RDL61uokw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/zustand/-/zustand-4.4.1.tgz}
+    id: registry.npmmirror.com/zustand/4.4.1
+    name: zustand
+    version: 4.4.1
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      '@types/react': '>=16.8'
+      immer: '>=9.0'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      '@types/react': 18.2.24
+      react: 18.2.0
+      use-sync-external-store: registry.npmmirror.com/use-sync-external-store@1.2.0(react@18.2.0)
+    dev: false

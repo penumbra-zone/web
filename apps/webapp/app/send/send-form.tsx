@@ -6,8 +6,13 @@ import { FilledImage, InputBlock, InputToken } from '../../shared';
 import { Asset } from '../../types/asset';
 import { assets } from './constants';
 import { SendValidationErrors } from './types';
+import { useStore } from '../../state';
+import { sendSelector } from '../../state/send';
 
 export const SendForm = () => {
+  const { key } = useStore(sendSelector);
+  console.log(key);
+
   const [asset, setAsset] = useState<Asset>(assets[0]!);
   const [recepient, setRecepient] = useState('');
   const [memo, setMemo] = useState('');
