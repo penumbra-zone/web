@@ -1,42 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { Button, Switch } from 'ui';
 import { FilledImage, InputBlock, InputToken } from '../../shared';
-import { Asset } from '../../types/asset';
-import { assets } from './constants';
-import { SendValidationErrors } from './types';
 import { useStore } from '../../state';
 import { sendSelector } from '../../state/send';
+import { assets } from './constants';
+import { validateAmount, validateRecepient } from '../../utils';
 
 export const SendForm = () => {
-  const { key } = useStore(sendSelector);
-  console.log(key);
+  const {
+    amount,
+    asset,
+    recepient,
+    memo,
+    hidden,
+    validationErrors,
+    setAmount,
+    setAsset,
+    setRecepient,
+    setMemo,
+    setHidden,
+  } = useStore(sendSelector);
 
-  const [asset, setAsset] = useState<Asset>(assets[0]!);
-  const [recepient, setRecepient] = useState('');
-  const [memo, setMemo] = useState('');
-  const [amount, setAmount] = useState('');
-  const [hidden, setHidden] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<SendValidationErrors>({
-    recepient: false,
-    amount: false,
-  });
-
-  const validateAmount = (value: string, balance: number) =>
-    Boolean(value) && Number(value) > balance;
-
-  const validateRecepient = (value: string) =>
-    Boolean(value) && (value.length !== 146 || !value.startsWith('penumbrav2t'));
-
-  const selectAsset = (asset: Asset) => () => {
-    setAsset(asset);
-
-    setValidationErrors(state => ({
-      ...state,
-      amount: validateAmount(amount, asset.balance),
-    }));
-  };
+  useEffect(() => {
+    // Test logic!!!
+    setAsset(assets[0]!);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <form
@@ -50,13 +41,7 @@ export const SendForm = () => {
         placeholder='Enter the address'
         className='mb-1'
         value={recepient}
-        onChange={e => {
-          setValidationErrors(state => ({
-            ...state,
-            recepient: validateRecepient(e.target.value),
-          }));
-          setRecepient(e.target.value);
-        }}
+        onChange={e => setRecepient(e.target.value)}
         validations={[
           {
             type: 'error',
@@ -65,29 +50,27 @@ export const SendForm = () => {
           },
         ]}
       />
-      <InputToken
-        label='Amount to send'
-        placeholder='Enter an amount'
-        className='mb-1'
-        asset={asset}
-        selectAsset={selectAsset}
-        value={amount}
-        onChange={e => {
-          if (Number(e.target.value) < 0) return;
-          setValidationErrors(state => ({
-            ...state,
-            amount: validateAmount(e.target.value, asset.balance),
-          }));
-          setAmount(e.target.value);
-        }}
-        validations={[
-          {
-            type: 'error',
-            error: 'insufficient funds',
-            checkFn: (txt: string) => validateAmount(txt, asset.balance),
-          },
-        ]}
-      />
+      {asset && (
+        <InputToken
+          label='Amount to send'
+          placeholder='Enter an amount'
+          className='mb-1'
+          asset={asset}
+          setAsset={setAsset}
+          value={amount}
+          onChange={e => {
+            if (Number(e.target.value) < 0) return;
+            setAmount(e.target.value);
+          }}
+          validations={[
+            {
+              type: 'error',
+              error: 'insufficient funds',
+              checkFn: (txt: string) => validateAmount(txt, asset.balance),
+            },
+          ]}
+        />
+      )}
       <InputBlock
         label='Memo'
         placeholder='Optional message'

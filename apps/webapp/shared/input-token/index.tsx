@@ -14,7 +14,7 @@ interface InputTokenProps extends InputProps {
   asset: Asset;
   placeholder: string;
   className?: string;
-  selectAsset: (asset: Asset) => () => void;
+  setAsset: (asset: Asset) => void;
   validations?: Validation[];
 }
 
@@ -24,7 +24,7 @@ export const InputToken = ({
   asset,
   className,
   validations,
-  selectAsset,
+  setAsset,
   ...props
 }: InputTokenProps) => {
   const priorityResult = useMemo(() => {
@@ -63,7 +63,7 @@ export const InputToken = ({
           className='w-auto'
           {...props}
         />
-        <SelectTokenModal asset={asset} selectAsset={selectAsset} />
+        <SelectTokenModal asset={asset} setAsset={setAsset} />
       </div>
     </div>
   );

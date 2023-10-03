@@ -11,8 +11,3 @@ export type SendTabMap = Record<
     label: string;
   }
 >;
-
-export interface SendValidationErrors {
-  recepient: boolean;
-  amount: boolean;
-}

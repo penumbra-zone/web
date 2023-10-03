@@ -11,10 +11,10 @@ import { formatNumber } from '../../utils';
 
 interface SelectTokenModalProps {
   asset: Asset;
-  selectAsset: (asset: Asset) => () => void;
+  setAsset: (asset: Asset) => void;
 }
 
-export const SelectTokenModal = ({ asset, selectAsset }: SelectTokenModalProps) => {
+export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => {
   const [search, setSearch] = useState('');
 
   const filteredAsset = useMemo(() => {
@@ -60,7 +60,7 @@ export const SelectTokenModal = ({ asset, selectAsset }: SelectTokenModalProps) 
                 <DialogPrimitive.Close key={asset.name}>
                   <div
                     className='flex justify-between items-center py-[10px] cursor-pointer'
-                    onClick={selectAsset(asset)}
+                    onClick={() => setAsset(asset)}
                   >
                     <div className='flex items-start gap-[6px]'>
                       <FilledImage src={asset.icon} alt='Asset' className='w-5 h-5' />
