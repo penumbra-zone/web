@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger, Progress } from 'ui';
 import { cn } from 'ui/lib/utils';
 import { BellIcon } from '../../icons';
-import { ImageWrapper } from '../../shared';
+import { FilledImage } from '../../shared';
 
 const txs = [
   {
@@ -49,7 +49,7 @@ export const Notifications = () => {
             {status === 'notification' ? (
               <div className='absolute right-[2px] top-[5px] z-10 h-[11px] w-[11px] rounded-full bg-red'></div>
             ) : (
-              <ImageWrapper
+              <FilledImage
                 src='/sync-bold.svg'
                 alt='Syncing blocks...'
                 className='absolute right-[2px] top-[5px] z-10 h-[15px] w-[15px]'
@@ -65,7 +65,7 @@ export const Notifications = () => {
         <div className='relative z-10 flex flex-col gap-2'>
           <div className='flex items-center justify-between text-base text-sand'>
             <div className='flex items-center gap-2'>
-              <ImageWrapper src='/sync-thin.svg' alt='Syncing blocks...' className='h-6 w-6' />
+              <FilledImage src='/sync-thin.svg' alt='Syncing blocks...' className='h-6 w-6' />
               <p className='font-headline font-semibold'>Syncing blocks...</p>
             </div>
             <p className='font-bold'>10982/121312</p>

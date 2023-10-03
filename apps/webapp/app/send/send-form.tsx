@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button, Switch } from 'ui';
-import { ImageWrapper, InputBlock, InputToken } from '../../shared';
+import { FilledImage, InputBlock, InputToken } from '../../shared';
 import { Asset } from '../../types/asset';
 import { assets } from './constants';
 import { SendValidationErrors } from './types';
@@ -91,7 +91,7 @@ export const SendForm = () => {
       />
       <div className='flex items-center justify-between'>
         <div className='flex items-start gap-2'>
-          <ImageWrapper src='/incognito.svg' alt='Incognito' className='h-5 w-5' />
+          <FilledImage src='/incognito.svg' alt='Incognito' className='h-5 w-5' />
           <p className='font-bold'>Hide Sender from Recipient</p>
         </div>
         <Switch id='sender-mode' checked={hidden} onCheckedChange={checked => setHidden(checked)} />

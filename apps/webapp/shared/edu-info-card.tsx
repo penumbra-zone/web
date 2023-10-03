@@ -1,5 +1,5 @@
 import { Card } from 'ui';
-import { ImageWrapper } from './image-wrapper';
+import { FilledImage } from './filled-image';
 
 interface HelperCardProps {
   src: string;
@@ -10,7 +10,7 @@ export const EduInfoCard = ({ src, label }: HelperCardProps) => {
   return (
     <Card gradient className='p-5 row-span-1'>
       <div className='flex gap-2'>
-        <ImageWrapper src={src} alt='icons' className='w-8 h-8' />
+        <FilledImage src={src} alt='icons' className='w-8 h-8' />
         <p className='text-2xl leading-9 font-bold bg-text-linear bg-clip-text text-transparent font-headline'>
           {label}
         </p>

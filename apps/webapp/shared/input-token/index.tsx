@@ -6,7 +6,7 @@ import { cn } from 'ui/lib/utils';
 import { Asset } from '../../types/asset';
 import { Validation } from '../../types/utillity';
 import { formatNumber } from '../../utils';
-import { ImageWrapper } from '../image-wrapper';
+import { FilledImage } from '../filled-image';
 import { SelectTokenModal } from './select-token-modal';
 
 interface InputTokenProps extends InputProps {
@@ -51,7 +51,7 @@ export const InputToken = ({
           ) : null}
         </div>
         <div className='flex items-start gap-1'>
-          <ImageWrapper src='/wallet.svg' alt='Wallet' className='w-5 h-5' />
+          <FilledImage src='/wallet.svg' alt='Wallet' className='w-5 h-5' />
           <p className='font-bold text-muted-foreground'>{formatNumber(asset.balance)}</p>
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogPrimitive, DialogTrigger, Input } from 'ui';
-import { ImageWrapper } from '../image-wrapper';
+import { FilledImage } from '../filled-image';
 
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { assets } from '../../app/send/constants';
@@ -32,7 +32,7 @@ export const SelectTokenModal = ({ asset, selectAsset }: SelectTokenModalProps) 
     <Dialog>
       <DialogTrigger asChild>
         <div className='flex items-center gap-2 bg-light-brown px-6 py-[6px] rounded-lg cursor-pointer'>
-          <ImageWrapper src={asset.icon} alt='Asset' className='w-6 h-6' />
+          <FilledImage src={asset.icon} alt='Asset' className='w-6 h-6' />
           <p className='text-base font-bold text-light-grey'>{asset.name}</p>
         </div>
       </DialogTrigger>
@@ -63,7 +63,7 @@ export const SelectTokenModal = ({ asset, selectAsset }: SelectTokenModalProps) 
                     onClick={selectAsset(asset)}
                   >
                     <div className='flex items-start gap-[6px]'>
-                      <ImageWrapper src={asset.icon} alt='Asset' className='w-5 h-5' />
+                      <FilledImage src={asset.icon} alt='Asset' className='w-5 h-5' />
                       <p className='font-bold text-muted-foreground'>{asset.name}</p>
                     </div>
                     <p className='font-bold text-muted-foreground'>{formatNumber(asset.balance)}</p>

@@ -1,17 +1,15 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { NetworksPopover } from 'ui';
-import { ImageWrapper } from '../../shared';
+import { FilledImage, UnoptimizedImage } from '../../shared';
 import { Navbar } from './navbar';
 import { Notifications } from './notifications';
 import { DappPath } from './paths';
-import { UnoptimizedImage } from '../../shared';
 
 export const Header = () => {
   return (
     <header className='flex h-[82px] w-full items-center justify-between px-12'>
       <Link href={DappPath.INDEX}>
-        <ImageWrapper src='/logo.svg' alt='Penumbra logo' className='h-4 w-[171px]' />
+        <FilledImage src='/logo.svg' alt='Penumbra logo' className='h-4 w-[171px]' />
       </Link>
       <Navbar />
       <div className='flex items-center gap-3'>
