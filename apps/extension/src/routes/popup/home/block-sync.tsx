@@ -13,7 +13,7 @@ export const BlockSync = () => {
       animate={{ opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }}
       exit={{ opacity: 0 }}
     >
-      {lastBlockSynced && lastBlockHeight ? (
+      {lastBlockHeight ? (
         // Is syncing ⏳
         lastBlockHeight - lastBlockSynced > 10 ? (
           <>
