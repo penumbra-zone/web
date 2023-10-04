@@ -24,7 +24,7 @@ export const SendForm = () => {
   } = useStore(sendSelector);
 
   useEffect(() => {
-    // Test logic!!!
+    // assign an asset when the page loads
     setAsset(assets[0]!);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
