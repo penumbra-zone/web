@@ -81,6 +81,8 @@ const NoteRecordSchema = z.object({
   heightSpent: z.bigint().optional(),
 });
 
+export type NoteSource = NewNoteRecord['source']['inner'];
+
 export type NewNoteRecord = z.infer<typeof NoteRecordSchema>;
 
 export const ScanResultSchema = z.object({

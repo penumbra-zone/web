@@ -1,8 +1,10 @@
 import {
+  Base64Str,
   base64ToUint8Array,
   IndexedDbInterface,
   isDevEnv,
   NewNoteRecord,
+  NoteSource,
   uint8ArrayToBase64,
   ViewServerInterface,
 } from 'penumbra-types';
@@ -50,6 +52,7 @@ export class BlockProcessor {
         maxDelay: 30_000, // 30 seconds
         numOfAttempts: Infinity,
         retry: async error => {
+          console.log('error happened!');
           await this.viewServer.resetTreeToStored();
           return !isAbortSignal(error);
         },
@@ -59,22 +62,17 @@ export class BlockProcessor {
     }
   }
 
-  async storeNewNotes(notes: NewNoteRecord[]) {
+  async storeNewNotes(blockHeight: bigint, notes: NewNoteRecord[]) {
+    const transactions = new Set<NoteSource>();
+
     for (const n of notes) {
       await this.indexedDb.saveSpendableNote(n);
+      await this.storeAssetDenoms(n.note.value.assetId.inner);
+      transactions.add(n.source.inner);
+    }
 
-      // We need to query separately to convert assetId's into readable denom strings. Persisting those to storage.
-      const assetId = base64ToUint8Array(n.note.value.assetId.inner);
-      const storedDenomData = await this.indexedDb.getAssetsMetadata(assetId);
-      if (!storedDenomData) {
-        const metadata = await this.querier.shieldedPool.denomMetadata(n.note.value.assetId.inner);
-        if (metadata) {
-          await this.indexedDb.saveAssetsMetadata(metadata);
-        } else {
-          const denomMetadata = generateMetadata(assetId);
-          await this.indexedDb.saveAssetsMetadata(denomMetadata);
-        }
-      }
+    if (transactions.size > 0) {
+      await this.storeTransactionInfo(blockHeight, transactions);
     }
   }
 
@@ -95,6 +93,31 @@ export class BlockProcessor {
     await this.indexedDb.updateStateCommitmentTree(updates, height);
   }
 
+  // TODO: Comment about querying block
+  // We query block and not tx directly...
+  // @ts-expect-error
+  private async storeTransactionInfo(blockHeight: bigint, noteSources: Set<NoteSource>) {
+    // @ts-expect-error
+    const res = await this.querier.tendermint.getBlock(blockHeight);
+
+    debugger;
+  }
+
+  // We need to query separately to convert assetId's into readable denom strings. Persisting those to storage.
+  private async storeAssetDenoms(assetIdStr: Base64Str) {
+    const assetId = base64ToUint8Array(assetIdStr);
+    const storedDenomData = await this.indexedDb.getAssetsMetadata(assetId);
+    if (!storedDenomData) {
+      const metadata = await this.querier.shieldedPool.denomMetadata(assetIdStr);
+      if (metadata) {
+        await this.indexedDb.saveAssetsMetadata(metadata);
+      } else {
+        const denomMetadata = generateMetadata(assetId);
+        await this.indexedDb.saveAssetsMetadata(denomMetadata);
+      }
+    }
+  }
+
   // Compares the locally stored, filtered SCT root with the actual one on chain. They should match.
   // This is expensive to do every block, so should only be done in development.
   private async assertRootValid(blockHeight: bigint): Promise<void> {
@@ -109,6 +132,7 @@ export class BlockProcessor {
   }
 
   private async syncAndStore() {
+    console.log('syncAndStore called!');
     const lastBlockSynced = await this.indexedDb.getLastBlockSynced();
     const startHeight = lastBlockSynced ? lastBlockSynced + 1n : 0n;
     const lastBlockHeight = await this.querier.tendermint.lastBlockHeight();
@@ -126,15 +150,15 @@ export class BlockProcessor {
 
       // TODO: We should not store new blocks as we find them, but only when sync progress is saved: https://github.com/penumbra-zone/web/issues/34
       //       However, the current wasm crate discards the new notes on every block scan.
-      await this.storeNewNotes(scanResult.new_notes);
+      await this.storeNewNotes(res.compactBlock.height, scanResult.new_notes);
       await this.markNotesSpent(res.compactBlock.nullifiers, res.compactBlock.height);
-
-      if (isDevEnv()) {
-        await this.assertRootValid(res.compactBlock.height);
-      }
 
       if (shouldStoreProgress(res.compactBlock, lastBlockHeight)) {
         await this.saveSyncProgress(res.compactBlock.height);
+
+        if (isDevEnv()) {
+          await this.assertRootValid(res.compactBlock.height);
+        }
       }
     }
   }
@@ -145,12 +169,10 @@ const isAbortSignal = (error: unknown): boolean =>
 
 // Writing to disc is expensive, so storing progress occurs:
 // - if syncing is up-to-date, on every block
-// - if dev environment, every 100th block
 // - if not, every 1000th block
 const shouldStoreProgress = (block: CompactBlock, upToDateBlock: bigint): boolean => {
   if (block.height === 0n) return false;
-  const interval = isDevEnv() ? 1n : 1000n;
-  return block.height >= upToDateBlock || block.height % interval === 0n;
+  return block.height >= upToDateBlock || block.height % 1000n === 0n;
 };
 
 export const UNNAMED_ASSET_PREFIX = 'passet';
