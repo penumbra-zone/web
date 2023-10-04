@@ -6,7 +6,7 @@ import { cn } from 'ui/lib/utils';
 interface Validation {
   checkFn: (txt: string) => boolean;
   type: 'warn' | 'error'; // corresponds to red or yellow
-  error: string;
+  issue: string;
 }
 
 interface PasswordInputProps {
@@ -24,7 +24,7 @@ export const PasswordInput = ({
 }: PasswordInputProps) => {
   const [reveal, setReveal] = useState(false);
 
-  const priorityResult = useMemo(() => {
+  const validationResult = useMemo(() => {
     const results = validations.filter(v => v.checkFn(passwordValue));
     const error = results.find(v => v.type === 'error');
     return error ? error : results.find(v => v.type === 'warn');
@@ -34,14 +34,14 @@ export const PasswordInput = ({
     <div className='flex flex-col items-center justify-center gap-2'>
       <div className='flex items-center gap-2 self-start'>
         <div className='text-base font-bold'>{label}</div>
-        {priorityResult ? (
+        {validationResult ? (
           <div
             className={cn(
               'italic',
-              priorityResult.type === 'warn' ? 'text-yellow-300' : 'text-red-400',
+              validationResult.type === 'warn' ? 'text-yellow-300' : 'text-red-400',
             )}
           >
-            {priorityResult.error}
+            {validationResult.issue}
           </div>
         ) : null}
       </div>
@@ -55,7 +55,7 @@ export const PasswordInput = ({
         </div>
         <Input
           type={reveal ? 'text' : 'password'}
-          variant={priorityResult?.type ?? 'default'}
+          variant={validationResult?.type ?? 'default'}
           value={passwordValue}
           onChange={onChange}
         />

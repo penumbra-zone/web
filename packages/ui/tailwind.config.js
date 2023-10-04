@@ -6,6 +6,7 @@ module.exports = {
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
     '../../packages/ui/components/**/*.{ts,tsx}',
+    './shared/**/*.{ts,tsx}',
   ],
   theme: {
     container: {
@@ -84,6 +85,12 @@ module.exports = {
         },
         red: {
           DEFAULT: 'var(--red)',
+        },
+        'light-brown': {
+          DEFAULT: 'var(--light-brown)',
+        },
+        'light-grey': {
+          DEFAULT: 'var(light-grey)',
         },
       },
       borderRadius: {

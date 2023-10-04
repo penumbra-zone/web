@@ -52,6 +52,8 @@
     --rust-420: rgba(255, 144, 47, 0.36);
     --green: #23be4e;
     --red: #af4545;
+    --light-brown: #363434;
+    --light-grey: #e3e3e3;
   }
 
   #popup-root {

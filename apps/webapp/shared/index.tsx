@@ -1,1 +1,5 @@
-export * from './components/unoptimized-image';
+export * from './edu-info-card';
+export * from './filled-image';
+export * from './input-block';
+export * from './input-token';
+export * from './unoptimized-image';
