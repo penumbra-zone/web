@@ -3,3 +3,8 @@ export interface Asset {
   icon: string;
   balance: number;
 }
+
+export interface Chain {
+  name: string;
+  icon: string;
+}

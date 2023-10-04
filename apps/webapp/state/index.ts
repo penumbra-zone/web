@@ -1,9 +1,11 @@
 import { create, StateCreator } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { createSendSlice, SendSlice } from './send';
+import { createIbcSlice, IbcSlice } from './ibc';
 
 export interface AllSlices {
   send: SendSlice;
+  ibc: IbcSlice;
 }
 
 export type SliceCreator<SliceInterface> = StateCreator<
@@ -16,6 +18,7 @@ export type SliceCreator<SliceInterface> = StateCreator<
 export const initializeStore = () => {
   return immer((setState, getState: () => AllSlices, store) => ({
     send: createSendSlice()(setState, getState, store),
+    ibc: createIbcSlice()(setState, getState, store),
   }));
 };
 

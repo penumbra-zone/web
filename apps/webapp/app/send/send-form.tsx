@@ -46,31 +46,34 @@ export const SendForm = () => {
           {
             type: 'error',
             issue: 'invalid address',
-            checkFn: (txt: string) => validateRecipient(txt),
+            checkFn: (addr: string) => validateRecipient(addr),
           },
         ]}
       />
-      {asset && (
-        <InputToken
-          label='Amount to send'
-          placeholder='Enter an amount'
-          className='mb-1'
-          asset={asset}
-          setAsset={setAsset}
-          value={amount}
-          onChange={e => {
-            if (Number(e.target.value) < 0) return;
-            setAmount(e.target.value);
-          }}
-          validations={[
-            {
-              type: 'error',
-              issue: 'insufficient funds',
-              checkFn: (txt: string) => validateAmount(txt, asset.balance),
-            },
-          ]}
-        />
-      )}
+      <InputToken
+        label='Amount to send'
+        placeholder='Enter an amount'
+        className='mb-1'
+        asset={asset}
+        setAsset={setAsset}
+        value={amount}
+        onChange={e => {
+          if (Number(e.target.value) < 0) return;
+          setAmount(e.target.value);
+        }}
+        validations={
+          asset
+            ? [
+                {
+                  type: 'error',
+                  issue: 'insufficient funds',
+                  checkFn: (amount: string) => validateAmount(amount, asset.balance),
+                },
+              ]
+            : undefined
+        }
+      />
+
       <InputBlock
         label='Memo'
         placeholder='Optional message'
@@ -88,7 +91,9 @@ export const SendForm = () => {
         type='submit'
         variant='gradient'
         className='mt-4'
-        disabled={!amount || !recipient || !!Object.values(validationErrors).find(Boolean)}
+        disabled={
+          !amount || !recipient || !asset || !!Object.values(validationErrors).find(Boolean)
+        }
       >
         Send
       </Button>

@@ -15,3 +15,4 @@ export * from './components/ui/fade-transition';
 export * from './components/ui/tabs';
 export * from './components/ui/dialog';
 export * from './components/ui/switch';
+export * from './components/ui/select';

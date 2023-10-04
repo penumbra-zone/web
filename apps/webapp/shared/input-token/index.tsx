@@ -11,12 +11,12 @@ import { useValidationResult } from '../../hooks';
 
 interface InputTokenProps extends InputProps {
   label: string;
-  asset: Asset;
+  asset: Asset | undefined;
   placeholder: string;
   className?: string;
   value: string;
   setAsset: (asset: Asset) => void;
-  validations?: Validation[];
+  validations: Validation[] | undefined;
 }
 
 export const InputToken = ({
@@ -49,7 +49,7 @@ export const InputToken = ({
         </div>
         <div className='flex items-start gap-1'>
           <FilledImage src='/wallet.svg' alt='Wallet' className='w-5 h-5' />
-          <p className='font-bold text-muted-foreground'>{formatNumber(asset.balance)}</p>
+          <p className='font-bold text-muted-foreground'>{formatNumber(asset?.balance ?? 0)}</p>
         </div>
       </div>
       <div className='flex justify-between items-center gap-4'>

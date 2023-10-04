@@ -9,7 +9,7 @@ import { Asset } from '../../types/asset';
 import { formatNumber } from '../../utils';
 
 interface SelectTokenModalProps {
-  asset: Asset;
+  asset: Asset | undefined;
   setAsset: (asset: Asset) => void;
 }
 
@@ -33,10 +33,16 @@ export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => 
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <div className='flex items-center gap-2 bg-light-brown px-6 py-[6px] rounded-lg cursor-pointer'>
-          <FilledImage src={asset.icon} alt='Asset' className='w-6 h-6' />
-          <p className='text-base font-bold text-light-grey'>{asset.name}</p>
+      <DialogTrigger disabled={!asset}>
+        <div className='flex items-center justify-center gap-2 bg-light-brown w-[100px] h-9 rounded-lg'>
+          {asset ? (
+            <>
+              <FilledImage src={asset.icon} alt='Asset' className='w-6 h-6' />
+              <p className='text-base font-bold text-light-grey'>{asset.name}</p>
+            </>
+          ) : (
+            <p className='text-base font-bold text-light-grey'>no assets</p>
+          )}
         </div>
       </DialogTrigger>
       <DialogContent className='max-w-[400px] bg-charcoal-secondary'>
