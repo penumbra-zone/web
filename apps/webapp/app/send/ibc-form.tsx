@@ -46,7 +46,7 @@ export const IbcForm = () => {
             : undefined
         }
       />
-      <div className='bg-background px-4 pt-3 pb-5 rounded-lg border flex flex-col gap-3'>
+      <div className='flex flex-col gap-3 rounded-lg border bg-background px-4 pb-5 pt-3'>
         <p className='text-base font-bold'>Chain</p>
         <Select
           value={chain?.name ?? ''}
@@ -56,7 +56,7 @@ export const IbcForm = () => {
             <SelectValue placeholder='Select chain'>
               {chain && (
                 <div className='flex gap-2'>
-                  <FilledImage src={chain.icon} alt='Chain' className='w-5 h-5' />
+                  <FilledImage src={chain.icon} alt='Chain' className='h-5 w-5' />
                   <p className='mt-[2px] text-muted-foreground'>{chain.name}</p>
                 </div>
               )}
@@ -66,7 +66,7 @@ export const IbcForm = () => {
             {chains.map((i, index) => (
               <SelectItem key={index} value={i.name}>
                 <div className='flex gap-2'>
-                  <FilledImage src={i.icon} alt='Chain' className='w-5 h-5' />
+                  <FilledImage src={i.icon} alt='Chain' className='h-5 w-5' />
                   <p className='mt-[2px]'>{i.name}</p>
                 </div>
               </SelectItem>
