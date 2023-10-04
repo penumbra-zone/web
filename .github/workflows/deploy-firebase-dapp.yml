@@ -23,6 +23,9 @@ jobs:
         with:
           version: 8
 
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Build static site
         run: pnpm build
 
