@@ -1,7 +1,6 @@
-import { useEffect } from 'react';
 import { useStore } from '../../state';
 import { ibcSelector } from '../../state/ibc';
-import { assets, chains } from './constants';
+import { chains } from './constants';
 import { FilledImage, InputToken } from '../../shared';
 import { validateAmount } from '../../utils';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui';
@@ -9,12 +8,6 @@ import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue }
 export const IbcForm = () => {
   const { amount, asset, chain, validationErrors, setAmount, setAsset, setChain } =
     useStore(ibcSelector);
-
-  useEffect(() => {
-    // assign an asset when the page loads
-    setAsset(assets[0]!);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <form
@@ -35,7 +28,7 @@ export const IbcForm = () => {
           setAmount(e.target.value);
         }}
         validations={
-            // if the user has no assets, do not confirm the validation
+          // if the user has no assets, do not confirm the validation
           asset
             ? [
                 {

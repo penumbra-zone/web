@@ -1,20 +1,12 @@
-import { useEffect } from 'react';
 import { FilledImage, InputToken } from '../../shared';
 import { useStore } from '../../state';
 import { SwapToken, swapSelector } from '../../state/swap';
-import { assets } from '../send/constants';
 import { Button } from 'ui';
 import { validateAmount } from '../../utils';
 
 export const SwapForm = () => {
   const { pay, receive, validationErrors, setAmount, setAsset, replaceAsset } =
     useStore(swapSelector);
-
-  useEffect(() => {
-    // assign assets when the page loads
-    setAsset(SwapToken.PAY)(assets[0]!);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <form

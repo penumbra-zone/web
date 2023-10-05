@@ -1,12 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
 import { Button, Switch } from 'ui';
 import { FilledImage, InputBlock, InputToken } from '../../shared';
 import { useStore } from '../../state';
 import { sendSelector } from '../../state/send';
 import { validateAmount, validateRecipient } from '../../utils';
-import { assets } from './constants';
 
 export const SendForm = () => {
   const {
@@ -22,12 +20,6 @@ export const SendForm = () => {
     setMemo,
     setHidden,
   } = useStore(sendSelector);
-
-  useEffect(() => {
-    // assign an asset when the page loads
-    setAsset(assets[0]!);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <form
