@@ -1,8 +1,9 @@
-import { FilledImage, InputToken } from '../../shared';
-import { useStore } from '../../state';
-import { SwapToken, swapSelector } from '../../state/swap';
 import { Button } from 'ui';
-import { validateAmount } from '../../utils';
+import { FilledImage } from '../../../shared';
+import { useStore } from '../../../state';
+import { SwapToken, swapSelector } from '../../../state/swap';
+import { validateAmount } from '../../../utils';
+import { SwapInput } from './swap-input';
 
 export const SwapForm = () => {
   const { pay, receive, validationErrors, setAmount, setAsset, replaceAsset } =
@@ -16,8 +17,7 @@ export const SwapForm = () => {
       }}
     >
       <div className='flex flex-col gap-2 relative'>
-        <InputToken
-          label='You pay'
+        <SwapInput
           placeholder='Enter an amount'
           asset={pay.asset}
           setAsset={setAsset(SwapToken.PAY)}
@@ -38,7 +38,7 @@ export const SwapForm = () => {
                 ]
               : undefined
           }
-          inputClassName='text-3xl leading-10 font-bold h-10 w-[calc(100%-160px)] '
+          showBalance
         />
         <Button
           variant='ghost'
@@ -52,8 +52,7 @@ export const SwapForm = () => {
             alt='Arrow'
           />
         </Button>
-        <InputToken
-          label='You receive'
+        <SwapInput
           placeholder='Enter an amount'
           asset={receive.asset}
           setAsset={setAsset(SwapToken.RECEIVE)}
@@ -75,7 +74,6 @@ export const SwapForm = () => {
                 ]
               : undefined
           }
-          inputClassName='text-3xl leading-10 font-bold h-10 w-[calc(100%-160px)] '
         />
       </div>
       <Button
@@ -89,7 +87,7 @@ export const SwapForm = () => {
           !!Object.values(validationErrors).find(Boolean)
         }
       >
-        Swap
+        {validationErrors.pay ? `Insufficient ${pay.asset?.name} balance` : 'Swap'}
       </Button>
     </form>
   );

@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { Card, FadeTransition, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui';
-import { SwapPageTab } from './types';
 import { EduInfoCard } from '../../shared';
 import { SwapForm } from './swap-form';
+import { SwapPageTab } from './types';
 
 export default function Page() {
   const [tab, setTab] = useState<SwapPageTab>(SwapPageTab.MARKET);

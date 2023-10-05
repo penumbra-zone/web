@@ -3,3 +3,4 @@ export * from './filled-image';
 export * from './input-block';
 export * from './input-token';
 export * from './unoptimized-image';
+export * from './select-token-modal';

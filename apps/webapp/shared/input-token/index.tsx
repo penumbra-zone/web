@@ -2,12 +2,12 @@
 
 import { Input, InputProps } from 'ui';
 import { cn } from 'ui/lib/utils';
+import { useValidationResult } from '../../hooks';
 import { Asset } from '../../types/asset';
 import { Validation } from '../../types/utility';
 import { formatNumber } from '../../utils';
 import { FilledImage } from '../filled-image';
-import { SelectTokenModal } from './select-token-modal';
-import { useValidationResult } from '../../hooks';
+import { SelectTokenModal } from '../select-token-modal';
 
 interface InputTokenProps extends InputProps {
   label: string;

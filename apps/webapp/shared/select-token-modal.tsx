@@ -1,12 +1,12 @@
 'use client';
 
+import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogPrimitive, DialogTrigger, Input } from 'ui';
-import { FilledImage } from '../filled-image';
-import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { assets } from '../../app/send/constants';
-import { Asset } from '../../types/asset';
-import { formatNumber } from '../../utils';
+import { assets } from '../app/send/constants';
+import { Asset } from '../types/asset';
+import { formatNumber } from '../utils';
+import { FilledImage } from './filled-image';
 
 interface SelectTokenModalProps {
   asset: Asset | undefined;
