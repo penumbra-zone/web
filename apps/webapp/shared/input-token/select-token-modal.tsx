@@ -33,12 +33,18 @@ export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => 
 
   return (
     <Dialog>
-      <DialogTrigger disabled={!asset}>
+      <DialogTrigger disabled={!assets.length}>
         <div className='flex items-center justify-center gap-2 bg-light-brown w-[100px] h-9 rounded-lg'>
-          {asset ? (
+          {assets.length ? (
             <>
-              <FilledImage src={asset.icon} alt='Asset' className='w-6 h-6' />
-              <p className='text-base font-bold text-light-grey'>{asset.name}</p>
+              {!asset ? (
+                <p className='text-base font-bold text-light-grey'>Select asset</p>
+              ) : (
+                <>
+                  <FilledImage src={asset.icon} alt='Asset' className='w-6 h-6' />
+                  <p className='text-base font-bold text-light-grey'>{asset.name}</p>
+                </>
+              )}
             </>
           ) : (
             <p className='text-base font-bold text-light-grey'>no assets</p>

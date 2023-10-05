@@ -13,7 +13,6 @@ export const SwapForm = () => {
   useEffect(() => {
     // assign assets when the page loads
     setAsset(SwapToken.PAY)(assets[0]!);
-    // setAsset(SwapToken.RECEIVE)(assets[1]!);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
