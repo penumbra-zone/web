@@ -51,9 +51,28 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
     },
     setAsset: type => asset => {
       const { amount } = get().swap[type];
+      let payAsset = get().swap.pay.asset;
+      let receiveAsset = get().swap.receive.asset;
+
+      // checking if we set the same asset in the pay (receive) field as
+      // in the receive (pay) field, then the value of the receive (pay)
+      // field is undefined
+      if (type === SwapToken.PAY) {
+        if (asset.name === receiveAsset?.name) {
+          receiveAsset = undefined;
+        }
+        payAsset = asset;
+      } else {
+        if (asset.name === payAsset?.name) {
+          payAsset = undefined;
+        }
+
+        receiveAsset = asset;
+      }
 
       set(state => {
-        state.swap[type].asset = asset;
+        state.swap.pay.asset = payAsset;
+        state.swap.receive.asset = receiveAsset;
         state.swap.validationErrors[type] = validateAmount(amount, asset.balance);
       });
     },
