@@ -4,11 +4,10 @@ import {
   IndexedDbInterface,
   isDevEnv,
   NewNoteRecord,
-  NoteSource,
   uint8ArrayToBase64,
   ViewServerInterface,
 } from 'penumbra-types';
-import { RootQuerier } from './root-querier';
+import { RootQuerier } from '../root-querier';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
@@ -16,6 +15,7 @@ import { bech32 } from 'bech32';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { backOff } from 'exponential-backoff';
 import { decodeNctRoot } from 'penumbra-wasm-ts/src/sct';
+import { Transactions } from './transactions';
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -50,11 +50,11 @@ export class BlockProcessor {
     try {
       await backOff(() => this.syncAndStore(), {
         maxDelay: 30_000, // 30 seconds
-        numOfAttempts: Infinity,
         retry: async error => {
-          console.log('error happened!');
           await this.viewServer.resetTreeToStored();
-          return !isAbortSignal(error);
+          if (isAbortSignal(error)) return false;
+          console.error('Syncing error', error);
+          return true;
         },
       });
     } catch {
@@ -63,7 +63,7 @@ export class BlockProcessor {
   }
 
   async storeNewNotes(blockHeight: bigint, notes: NewNoteRecord[]) {
-    const transactions = new Set<NoteSource>();
+    const transactions = new Transactions(blockHeight, this.querier.tendermint);
 
     for (const n of notes) {
       await this.indexedDb.saveSpendableNote(n);
@@ -71,9 +71,7 @@ export class BlockProcessor {
       transactions.add(n.source.inner);
     }
 
-    if (transactions.size > 0) {
-      await this.storeTransactionInfo(blockHeight, transactions);
-    }
+    await transactions.storeTransactionInfo();
   }
 
   // Each nullifier has a corresponding note stored. This marks them as spent at a specific block height.
@@ -91,16 +89,6 @@ export class BlockProcessor {
   async saveSyncProgress(height: bigint) {
     const updates = await this.viewServer.updatesSinceCheckpoint();
     await this.indexedDb.updateStateCommitmentTree(updates, height);
-  }
-
-  // TODO: Comment about querying block
-  // We query block and not tx directly...
-  // @ts-expect-error
-  private async storeTransactionInfo(blockHeight: bigint, noteSources: Set<NoteSource>) {
-    // @ts-expect-error
-    const res = await this.querier.tendermint.getBlock(blockHeight);
-
-    debugger;
   }
 
   // We need to query separately to convert assetId's into readable denom strings. Persisting those to storage.
