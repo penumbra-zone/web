@@ -58,7 +58,7 @@ const NoteValueSchema = z.object({
   assetId: InnerBase64Schema,
 });
 
-const NoteSchema = z.object({
+export const NoteSchema = z.object({
   value: NoteValueSchema,
   rseed: z.string(),
   address: InnerBase64Schema,

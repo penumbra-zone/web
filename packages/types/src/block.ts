@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { txBytesSchema } from './transaction';
+import { txBytesSchema } from './transaction/decoded';
 
 const blockIdSchema = z.object({
   hash: z.instanceof(Uint8Array),

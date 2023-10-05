@@ -18,19 +18,22 @@ import { decodeNctRoot } from 'penumbra-wasm-ts/src/sct';
 import { Transactions } from './transactions';
 
 interface QueryClientProps {
+  fullViewingKey: string;
   querier: RootQuerier;
   indexedDb: IndexedDbInterface;
   viewServer: ViewServerInterface;
 }
 
 export class BlockProcessor {
+  private readonly fullViewingKey: string;
   private readonly querier: RootQuerier;
   private readonly indexedDb: IndexedDbInterface;
   private readonly viewServer: ViewServerInterface;
   private readonly abortController: AbortController = new AbortController();
   private blockSyncPromise: Promise<void> | undefined;
 
-  constructor({ indexedDb, viewServer, querier }: QueryClientProps) {
+  constructor({ indexedDb, viewServer, querier, fullViewingKey }: QueryClientProps) {
+    this.fullViewingKey = fullViewingKey;
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
     this.querier = querier;
@@ -63,7 +66,11 @@ export class BlockProcessor {
   }
 
   async storeNewNotes(blockHeight: bigint, notes: NewNoteRecord[]) {
-    const transactions = new Transactions(blockHeight, this.querier.tendermint);
+    const transactions = new Transactions(
+      blockHeight,
+      this.querier.tendermint,
+      this.fullViewingKey,
+    );
 
     for (const n of notes) {
       await this.indexedDb.saveSpendableNote(n);

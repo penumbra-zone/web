@@ -1,6 +1,6 @@
 import { NoteSource } from 'penumbra-types';
 import { TendermintQuerier } from '../queriers/tendermint';
-import { decodeTx } from 'penumbra-wasm-ts/src/transaction';
+import { decodeTx, transactionInfo } from 'penumbra-wasm-ts/src/transaction';
 
 export class Transactions {
   private readonly all = new Set<NoteSource>();
@@ -9,6 +9,7 @@ export class Transactions {
     // private indexedDb: IndexedDbInterface,
     private blockHeight: bigint,
     private tendermint: TendermintQuerier,
+    private fullViewingKey: string,
   ) {}
 
   add(source: NoteSource) {
@@ -17,8 +18,11 @@ export class Transactions {
     this.all.add(source);
   }
 
-  // TODO: Comment about querying block
-  // We query block and not tx directly...
+  // Even though we already know the transaction id, we are not directly querying the node
+  // for more information on that specific transaction. Doing so would leak to the node that
+  // it belongs to the user. For that reason, we query the entire block, go through each
+  // transaction, and filter to the transaction(s) that belong to the user.
+  // We then decode and acquire more info on that transaction to store in the database.
   async storeTransactionInfo() {
     if (this.all.size <= 0) return;
 
@@ -28,7 +32,8 @@ export class Transactions {
     const b = await this.tendermint.getBlock(this.blockHeight);
     for (const txBytes of b.block.data.txs) {
       const tx = decodeTx(txBytes);
-      console.log(tx);
+      const txInfo = await transactionInfo(this.fullViewingKey, tx);
+      console.log(txInfo);
     }
   }
 }

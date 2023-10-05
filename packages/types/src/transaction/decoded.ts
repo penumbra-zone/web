@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Base64StringSchema, InnerBase64Schema } from './base64';
+import { Base64StringSchema, InnerBase64Schema } from '../base64';
 
 export const txBytesSchema = z.instanceof(Uint8Array);
 
