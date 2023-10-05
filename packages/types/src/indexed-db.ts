@@ -9,11 +9,13 @@ import {
 } from './state-commitment-tree';
 import { Base64Str } from './base64';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { StoredTransaction } from './transaction/view';
 
 export interface IndexedDbInterface {
   getLastBlockSynced(): Promise<bigint | undefined>;
   getNoteByNullifier(nullifier: Base64Str): Promise<NewNoteRecord | undefined>;
   saveSpendableNote(note: NewNoteRecord): Promise<void>;
+  saveTransactionInfo(tx: StoredTransaction): Promise<void>;
   getAssetsMetadata(assetId: Uint8Array): Promise<DenomMetadata | undefined>;
   saveAssetsMetadata(metadata: DenomMetadata): Promise<void>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
@@ -50,5 +52,9 @@ export interface PenumbraDb extends DBSchema {
     key: Base64Str;
     value: NewNoteRecord;
     indexes: { nullifier: Base64Str };
+  };
+  transactions: {
+    key: Base64Str;
+    value: StoredTransaction;
   };
 }

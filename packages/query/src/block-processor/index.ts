@@ -68,8 +68,9 @@ export class BlockProcessor {
   async storeNewNotes(blockHeight: bigint, notes: NewNoteRecord[]) {
     const transactions = new Transactions(
       blockHeight,
-      this.querier.tendermint,
       this.fullViewingKey,
+      this.indexedDb,
+      this.querier.tendermint,
     );
 
     for (const n of notes) {

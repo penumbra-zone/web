@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { Base64StringSchema, InnerBase64Schema } from '../base64';
-import { NotePayloadSchema } from './decoded';
+import { Base64Str, Base64StringSchema, InnerBase64Schema } from '../base64';
+import { DecodedTransaction, NotePayloadSchema } from './decoded';
 import { NoteValueSchema } from '../state-commitment-tree';
 
 const VisibleSchema = z.object({
@@ -63,18 +63,22 @@ const TxpSchema = z.object({
   }),
 });
 
+export type TransactionPerspective = z.infer<typeof TxpSchema>;
+
+const VisibleAddressSchema = z.object({
+  visible: z.object({
+    accountGroupId: InnerBase64Schema,
+    address: InnerBase64Schema,
+    index: z.object({
+      randomizer: Base64StringSchema,
+    }),
+  }),
+});
+
 const SpendNoteSchema = z.object({
   value: z.unknown(),
   rseed: z.string(),
-  address: z.object({
-    visible: z.object({
-      accountGroupId: InnerBase64Schema,
-      address: InnerBase64Schema,
-      index: z.object({
-        randomizer: Base64StringSchema,
-      }),
-    }),
-  }),
+  address: VisibleAddressSchema,
 });
 
 const SpendViewSchema = z.object({
@@ -86,21 +90,25 @@ const SpendViewSchema = z.object({
   }),
 });
 
+const OpaqueAddressSchema = z.object({
+  opaque: z.object({
+    address: InnerBase64Schema,
+  }),
+});
+
+const AddressVisibilitySchema = z.union([OpaqueAddressSchema, VisibleAddressSchema]);
+
 const OutputNoteSchema = z.object({
   value: z.unknown(),
   rseed: z.string(),
-  address: z.object({
-    opaque: z.object({
-      address: InnerBase64Schema,
-    }),
-  }),
+  address: AddressVisibilitySchema,
 });
 
 const OutputViewSchema = z.object({
   output: z.object({
     visible: z.object({
       note: OutputNoteSchema,
-      payloadKey: Base64StringSchema,
+      payloadKey: InnerBase64Schema,
       output: z.object({
         body: OutputBodySchema,
         proof: InnerBase64Schema,
@@ -138,9 +146,19 @@ const TxvSchema = z.object({
   bodyView: BodyViewSchema,
 });
 
+export type TransactionView = z.infer<typeof TxvSchema>;
+
 export const TransactionInfoSchema = z.object({
   txp: TxpSchema,
   txv: TxvSchema,
 });
 
 export type TransactionInfo = z.infer<typeof TransactionInfoSchema>;
+
+export interface StoredTransaction {
+  blockHeight: bigint;
+  id: Base64Str;
+  tx: DecodedTransaction;
+  perspective: TransactionPerspective;
+  view: TransactionView;
+}

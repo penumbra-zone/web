@@ -16,6 +16,7 @@
     "eslint": "^8.50.0",
     "eslint-config-custom": "workspace:*",
     "exponential-backoff": "^3.1.1",
+    "penumbra-crypto-ts": "workspace:^",
     "penumbra-types": "workspace:*",
     "penumbra-wasm-ts": "workspace:*",
     "tsconfig": "workspace:*",

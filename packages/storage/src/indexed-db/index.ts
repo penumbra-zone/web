@@ -9,6 +9,7 @@ import {
 } from 'penumbra-types';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { IbdUpdater, IbdUpdates, TableUpdateNotifier } from './updater';
+import { StoredTransaction } from 'penumbra-types/src/transaction/view';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -31,6 +32,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('last_block_synced');
         db.createObjectStore('assets', { keyPath: 'penumbraAssetId.inner' });
         db.createObjectStore('spendable_notes').createIndex('nullifier', 'nullifier.inner');
+        db.createObjectStore('transactions', { keyPath: 'id' });
         db.createObjectStore('tree_last_position');
         db.createObjectStore('tree_last_forgotten');
         db.createObjectStore('tree_commitments', { keyPath: 'commitment.inner' });
@@ -113,5 +115,9 @@ export class IndexedDb implements IndexedDbInterface {
 
   async getAllNotes() {
     return this.db.getAll('spendable_notes');
+  }
+
+  async saveTransactionInfo(tx: StoredTransaction): Promise<void> {
+    await this.u.update({ table: 'transactions', value: tx });
   }
 }

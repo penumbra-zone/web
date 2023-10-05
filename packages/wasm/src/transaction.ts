@@ -17,6 +17,5 @@ export const transactionInfo = async (
   tx: DecodedTransaction,
 ): Promise<TransactionInfo> => {
   const result = (await transaction_info(fullViewingKey, tx)) as TransactionInfo;
-  console.log('actual trans info', result);
   return validateSchema(TransactionInfoSchema, result);
 };

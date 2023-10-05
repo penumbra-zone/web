@@ -1,20 +1,23 @@
-import { NoteSource } from 'penumbra-types';
+import { IndexedDbInterface, NoteSource } from 'penumbra-types';
 import { TendermintQuerier } from '../queriers/tendermint';
 import { decodeTx, transactionInfo } from 'penumbra-wasm-ts/src/transaction';
+import { StoredTransaction } from 'penumbra-types/src/transaction/view';
+import { sha256Hash } from 'penumbra-crypto-ts';
 
 export class Transactions {
   private readonly all = new Set<NoteSource>();
 
   constructor(
-    // private indexedDb: IndexedDbInterface,
     private blockHeight: bigint,
-    private tendermint: TendermintQuerier,
     private fullViewingKey: string,
+    private indexedDb: IndexedDbInterface,
+    private tendermint: TendermintQuerier,
   ) {}
 
   add(source: NoteSource) {
+    // TODO: How do we filter out tx's?
     // filter out those already there
-    // this.indexedDb.getAllNotes(source)
+    this.indexedDb.getAllNotes(source);
     this.all.add(source);
   }
 
@@ -31,9 +34,22 @@ export class Transactions {
 
     const b = await this.tendermint.getBlock(this.blockHeight);
     for (const txBytes of b.block.data.txs) {
+      const txId = await sha256Hash(txBytes);
       const tx = decodeTx(txBytes);
-      const txInfo = await transactionInfo(this.fullViewingKey, tx);
-      console.log(txInfo);
+
+      if (this.all.has(txId)) {
+        const txInfo = await transactionInfo(this.fullViewingKey, tx);
+
+        const txToStore = {
+          blockHeight: this.blockHeight,
+          id: txId,
+          tx,
+          perspective: txInfo.txp,
+          view: txInfo.txv,
+        } satisfies StoredTransaction;
+
+        await this.indexedDb.saveTransactionInfo(txToStore);
+      }
     }
   }
 }
