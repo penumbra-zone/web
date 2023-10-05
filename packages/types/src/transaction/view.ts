@@ -1,17 +1,22 @@
 import { z } from 'zod';
 import { Base64StringSchema, InnerBase64Schema } from '../base64';
-import { NoteSchema } from '../state-commitment-tree';
+import { NotePayloadSchema } from './decoded';
+import { NoteValueSchema } from '../state-commitment-tree';
 
 const VisibleSchema = z.object({
-  accountGroupId: InnerBase64Schema,
-  address: InnerBase64Schema,
-  index: z.object({
-    randomizer: z.string(),
+  visible: z.object({
+    accountGroupId: InnerBase64Schema,
+    address: InnerBase64Schema,
+    index: z.object({
+      randomizer: Base64StringSchema,
+    }),
   }),
 });
 
 const OpaqueSchema = z.object({
-  address: InnerBase64Schema,
+  opaque: z.object({
+    address: InnerBase64Schema,
+  }),
 });
 
 const PayloadKeySchema = z.object({
@@ -19,8 +24,33 @@ const PayloadKeySchema = z.object({
   payloadKey: InnerBase64Schema,
 });
 
+const SpendBodySchema = z.object({
+  balanceCommitment: InnerBase64Schema,
+  nullifier: Base64StringSchema,
+  rk: Base64StringSchema,
+});
+
+const OutputBodySchema = z.object({
+  balanceCommitment: InnerBase64Schema,
+  notePayload: NotePayloadSchema,
+  ovkWrappedKey: Base64StringSchema,
+  wrappedMemoKey: Base64StringSchema,
+});
+
+const SpendSchema = z.object({
+  authSig: InnerBase64Schema,
+  proof: InnerBase64Schema,
+  body: SpendBodySchema,
+});
+
+const SpendNullifierNoteSchema = z.object({
+  value: NoteValueSchema,
+  rseed: z.string(),
+  address: InnerBase64Schema,
+});
+
 const SpendNullifierSchema = z.object({
-  note: NoteSchema,
+  note: SpendNullifierNoteSchema,
   nullifier: InnerBase64Schema,
 });
 
@@ -33,23 +63,35 @@ const TxpSchema = z.object({
   }),
 });
 
-const BodySchema = z.object({
-  balanceCommitment: InnerBase64Schema,
-  nullifier: Base64StringSchema,
-  rk: Base64StringSchema,
-});
-
-const SpendSchema = z.object({
-  authSig: InnerBase64Schema,
-  proof: InnerBase64Schema,
-  body: BodySchema,
+const SpendNoteSchema = z.object({
+  value: z.unknown(),
+  rseed: z.string(),
+  address: z.object({
+    visible: z.object({
+      accountGroupId: InnerBase64Schema,
+      address: InnerBase64Schema,
+      index: z.object({
+        randomizer: Base64StringSchema,
+      }),
+    }),
+  }),
 });
 
 const SpendViewSchema = z.object({
   spend: z.object({
     visible: z.object({
-      note: NoteSchema,
+      note: SpendNoteSchema,
       spend: SpendSchema,
+    }),
+  }),
+});
+
+const OutputNoteSchema = z.object({
+  value: z.unknown(),
+  rseed: z.string(),
+  address: z.object({
+    opaque: z.object({
+      address: InnerBase64Schema,
     }),
   }),
 });
@@ -57,18 +99,20 @@ const SpendViewSchema = z.object({
 const OutputViewSchema = z.object({
   output: z.object({
     visible: z.object({
-      note: NoteSchema,
+      note: OutputNoteSchema,
       payloadKey: Base64StringSchema,
       output: z.object({
-        body: BodySchema,
+        body: OutputBodySchema,
         proof: InnerBase64Schema,
       }),
     }),
   }),
 });
 
+const ActionViewSchema = z.union([SpendViewSchema, OutputViewSchema]);
+
 const BodyViewSchema = z.object({
-  actionViews: z.array(SpendViewSchema.or(OutputViewSchema)),
+  actionViews: z.array(ActionViewSchema),
   detectionData: z.object({
     fmdClues: z.array(InnerBase64Schema),
   }),

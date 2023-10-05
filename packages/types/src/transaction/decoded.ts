@@ -15,7 +15,7 @@ const SpendSchema = z.object({
   proof: InnerBase64Schema,
 });
 
-const NotePayloadSchema = z.object({
+export const NotePayloadSchema = z.object({
   encryptedNote: InnerBase64Schema,
   ephemeralKey: Base64StringSchema,
   noteCommitment: InnerBase64Schema,

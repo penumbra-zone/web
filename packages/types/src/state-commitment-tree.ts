@@ -50,7 +50,7 @@ export const NctUpdatesSchema = z.object({
 
 export type NctUpdates = z.infer<typeof NctUpdatesSchema>;
 
-const NoteValueSchema = z.object({
+export const NoteValueSchema = z.object({
   amount: z.object({
     lo: z.string(),
     hi: z.string().optional(),
