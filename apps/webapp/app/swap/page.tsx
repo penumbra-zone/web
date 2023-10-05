@@ -5,14 +5,16 @@ import { Card, FadeTransition, Tabs, TabsContent, TabsList, TabsTrigger } from '
 import { EduInfoCard } from '../../shared';
 import { SwapForm } from './swap-form';
 import { SwapPageTab } from './types';
+import { AssetStatistics } from './asset-statistics';
 
 export default function Page() {
   const [tab, setTab] = useState<SwapPageTab>(SwapPageTab.MARKET);
+
   return (
     <FadeTransition className='flex min-h-[calc(100vh-122px)] flex-col items-stretch justify-start'>
       <div className='relative mx-auto grid max-w-[1276px] grid-cols-3 gap-5'>
-        <div />
-        <Card gradient className='row-span-2 flex-1 p-5'>
+        <AssetStatistics />
+        <Card gradient className='row-span-3 flex-1 p-5'>
           <Tabs defaultValue={SwapPageTab.MARKET} className='w-full' value={tab}>
             <TabsList className='grid w-full grid-cols-3 gap-4'>
               <TabsTrigger value={SwapPageTab.MARKET} onClick={() => setTab(SwapPageTab.MARKET)}>
