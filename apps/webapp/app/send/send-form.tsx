@@ -62,6 +62,7 @@ export const SendForm = () => {
           setAmount(e.target.value);
         }}
         validations={
+          // if the user has no balance, do not confirm the validation
           asset
             ? [
                 {
@@ -73,7 +74,6 @@ export const SendForm = () => {
             : undefined
         }
       />
-
       <InputBlock
         label='Memo'
         placeholder='Optional message'

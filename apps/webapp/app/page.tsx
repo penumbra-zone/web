@@ -9,7 +9,7 @@ import { TransactionTable } from './dashboard/transaction-table';
 import { NftsTable } from './dashboard/nfts-table';
 
 export default function Page() {
-  const [tab, setTab] = useState<DashboardPageTab>(DashboardPageTab.TRANSACTIONS);
+  const [tab, setTab] = useState<DashboardPageTab>(DashboardPageTab.ASSETS);
 
   return (
     <FadeTransition className='flex min-h-[calc(100vh-122px)] flex-col items-stretch justify-start'>

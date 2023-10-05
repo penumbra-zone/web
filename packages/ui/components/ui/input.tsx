@@ -13,7 +13,7 @@ const inputVariants = cva(
         error: 'border-red-400',
         warn: 'border-yellow-300',
         transparent:
-          'h-[22px] rounded-[0px] border-none bg-transparent p-0 placeholder:font-bold placeholder:text-light-brown',
+          'h-[22px] rounded-[0px] border-none bg-transparent p-0 placeholder:font-bold placeholder:text-light-brown placeholder:text-[15px] placeholder:leading-[22px]',
       },
     },
     defaultVariants: {

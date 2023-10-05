@@ -35,6 +35,7 @@ export const IbcForm = () => {
           setAmount(e.target.value);
         }}
         validations={
+            // if the user has no assets, do not confirm the validation
           asset
             ? [
                 {

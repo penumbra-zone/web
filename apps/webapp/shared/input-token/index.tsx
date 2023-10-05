@@ -14,6 +14,7 @@ interface InputTokenProps extends InputProps {
   asset: Asset | undefined;
   placeholder: string;
   className?: string;
+  inputClassName?: string;
   value: string;
   setAsset: (asset: Asset) => void;
   validations: Validation[] | undefined;
@@ -26,6 +27,7 @@ export const InputToken = ({
   className,
   validations,
   value,
+  inputClassName,
   setAsset,
   ...props
 }: InputTokenProps) => {
@@ -57,7 +59,7 @@ export const InputToken = ({
           variant='transparent'
           placeholder={placeholder}
           type='number'
-          className='w-auto'
+          className={cn('w-auto', inputClassName)}
           value={value}
           {...props}
         />
