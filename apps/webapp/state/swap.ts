@@ -43,6 +43,17 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
     },
     setAmount: type => amount => {
       const { asset } = get().swap[type];
+      if (type === SwapToken.PAY) {
+        set(state => {
+          state.swap.receive.amount = '';
+          state.swap.validationErrors.receive = false;
+        });
+      } else {
+        set(state => {
+          state.swap.pay.amount = '';
+          state.swap.validationErrors.pay = false;
+        });
+      }
 
       set(state => {
         state.swap[type].amount = amount;

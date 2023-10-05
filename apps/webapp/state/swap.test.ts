@@ -38,6 +38,20 @@ describe('Swap Slice', () => {
         expect(useStore.getState().swap.pay.amount).toBe('2');
       });
 
+      test('pay amount set, receive should be empty and error is false', () => {
+        useStore.getState().swap.setAsset(SwapToken.PAY)(asset1);
+        useStore.getState().swap.setAmount(SwapToken.PAY)('2');
+
+        expect(useStore.getState().swap.pay.amount).toBe('2');
+        expect(useStore.getState().swap.validationErrors.pay).toBeTruthy();
+
+        useStore.getState().swap.setAsset(SwapToken.RECEIVE)(asset2);
+        useStore.getState().swap.setAmount(SwapToken.RECEIVE)('2');
+
+        expect(useStore.getState().swap.pay.amount).toBe('');
+        expect(useStore.getState().swap.validationErrors.pay).toBeFalsy();
+      });
+
       test('validate pay amount is falsy', () => {
         useStore.getState().swap.setAsset(SwapToken.PAY)(asset1);
         useStore.getState().swap.setAmount(SwapToken.PAY)('1');
@@ -75,6 +89,20 @@ describe('Swap Slice', () => {
       test('receive amount can be set', () => {
         useStore.getState().swap.setAmount(SwapToken.RECEIVE)('2');
         expect(useStore.getState().swap.receive.amount).toBe('2');
+      });
+
+      test('receive amount set, pay should be empty and error is false', () => {
+        useStore.getState().swap.setAsset(SwapToken.RECEIVE)(asset1);
+        useStore.getState().swap.setAmount(SwapToken.RECEIVE)('2');
+
+        expect(useStore.getState().swap.receive.amount).toBe('2');
+        expect(useStore.getState().swap.validationErrors.receive).toBeTruthy();
+
+        useStore.getState().swap.setAsset(SwapToken.PAY)(asset2);
+        useStore.getState().swap.setAmount(SwapToken.PAY)('2');
+
+        expect(useStore.getState().swap.receive.amount).toBe('');
+        expect(useStore.getState().swap.validationErrors.receive).toBeFalsy();
       });
 
       test('validate receive amount is falsy', () => {
@@ -178,8 +206,8 @@ describe('Swap Slice', () => {
     });
 
     test('set receive asset same that pay asset, pay asset should be undefined', () => {
-			useStore.getState().swap.setAsset(SwapToken.PAY)(asset2);
-			useStore.getState().swap.setAsset(SwapToken.RECEIVE)(asset2);
+      useStore.getState().swap.setAsset(SwapToken.PAY)(asset2);
+      useStore.getState().swap.setAsset(SwapToken.RECEIVE)(asset2);
 
       expect(useStore.getState().swap.receive.asset).toBe(asset2);
       expect(useStore.getState().swap.pay.asset).toBeUndefined();

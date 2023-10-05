@@ -38,12 +38,12 @@ export const SwapInput = ({
         className,
       )}
     >
-      <div className='flex justify-between items-center gap-4'>
+      <div className='flex items-center justify-between gap-4'>
         <Input
           variant='transparent'
           placeholder={placeholder}
           type='number'
-          className='text-3xl leading-10 font-bold h-10 w-[calc(100%-160px)]'
+          className='h-10 w-[calc(100%-160px)] text-3xl font-bold leading-10'
           value={value}
           {...props}
         />
@@ -55,7 +55,7 @@ export const SwapInput = ({
         </p>
         {showBalance && (
           <div className='flex items-start gap-1'>
-            <FilledImage src='/wallet.svg' alt='Wallet' className='w-5 h-5' />
+            <FilledImage src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
             <p className='font-bold text-muted-foreground'>{formatNumber(asset?.balance ?? 0)}</p>
           </div>
         )}

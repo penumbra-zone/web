@@ -16,7 +16,7 @@ export const SwapForm = () => {
         e.preventDefault();
       }}
     >
-      <div className='flex flex-col gap-2 relative'>
+      <div className='relative flex flex-col gap-2'>
         <SwapInput
           placeholder='Enter an amount'
           asset={pay.asset}
@@ -42,13 +42,13 @@ export const SwapForm = () => {
         />
         <Button
           variant='ghost'
-          className='group absolute top-[calc(50%-20px)] left-[calc(50%-20px)] hover:bg-transparent'
+          className='group absolute left-[calc(50%-20px)] top-[calc(50%-20px)] hover:bg-transparent'
           onClick={replaceAsset}
         >
-          <FilledImage src='/arrow-down.svg' className='w-10 h-10 group-hover:hidden' alt='Arrow' />
+          <FilledImage src='/arrow-down.svg' className='h-10 w-10 group-hover:hidden' alt='Arrow' />
           <FilledImage
             src='/arrow-replace.svg'
-            className='w-10 h-10 hidden  group-hover:block'
+            className='hidden h-10 w-10  group-hover:block'
             alt='Arrow'
           />
         </Button>
