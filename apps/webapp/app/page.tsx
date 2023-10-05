@@ -1,12 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { Card, FadeTransition, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui';
 import { EduInfoCard } from '../shared';
-import { DashboardPageTab } from './dashboard/types';
-import { useState } from 'react';
 import { AssetsTable } from './dashboard/assets-table';
-import { TransactionTable } from './dashboard/transaction-table';
+import { dashboardTabsHelper } from './dashboard/constants';
 import { NftsTable } from './dashboard/nfts-table';
+import { TransactionTable } from './dashboard/transaction-table';
+import { DashboardPageTab } from './dashboard/types';
 
 export default function Page() {
   const [tab, setTab] = useState<DashboardPageTab>(DashboardPageTab.ASSETS);
@@ -47,7 +48,7 @@ export default function Page() {
             </TabsContent>
           </Tabs>
         </Card>
-        <EduInfoCard src='/funds-gradient.svg' label='Sending funds' />
+        <EduInfoCard src={dashboardTabsHelper[tab].src} label={dashboardTabsHelper[tab].label} />
       </div>
     </FadeTransition>
   );

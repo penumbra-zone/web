@@ -1,7 +1,7 @@
 import { Asset, Chain } from '../../types/asset';
 import { SendTabMap } from './types';
 
-export const tabsHelper: SendTabMap = {
+export const sendTabsHelper: SendTabMap = {
   send: {
     src: '/funds-gradient.svg',
     label: 'Sending funds',

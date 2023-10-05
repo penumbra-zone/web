@@ -3,3 +3,11 @@ export enum DashboardPageTab {
   TRANSACTIONS = 'transactions',
   NFTS = 'nfts',
 }
+
+export type DashboardTabMap = Record<
+  DashboardPageTab,
+  {
+    src: string;
+    label: string;
+  }
+>;
