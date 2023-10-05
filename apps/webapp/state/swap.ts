@@ -66,7 +66,6 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         if (asset.name === payAsset?.name) {
           payAsset = undefined;
         }
-
         receiveAsset = asset;
       }
 
