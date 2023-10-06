@@ -93,11 +93,12 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
       set(state => {
         state.swap.pay.asset = receive.asset;
         state.swap.receive.asset = pay.asset;
-        state.swap.validationErrors.receive = validateAmount(
-          receive.amount,
-          pay.asset?.balance ?? 0,
-        );
-        state.swap.validationErrors.pay = validateAmount(pay.amount, receive.asset?.balance ?? 0);
+        state.swap.validationErrors.receive = pay.asset
+          ? validateAmount(receive.amount, pay.asset.balance)
+          : false;
+        state.swap.validationErrors.pay = receive.asset
+          ? validateAmount(pay.amount, receive.asset.balance)
+          : false;
       });
     },
   };
