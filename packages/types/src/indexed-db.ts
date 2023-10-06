@@ -8,7 +8,7 @@ import {
   StoreHash,
 } from './state-commitment-tree';
 import { Base64Str } from './base64';
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { DenomMetadata } from './denom';
 import { StoredTransaction } from './transaction/view';
 
 export interface IndexedDbInterface {
@@ -16,6 +16,7 @@ export interface IndexedDbInterface {
   getNoteByNullifier(nullifier: Base64Str): Promise<NewNoteRecord | undefined>;
   saveSpendableNote(note: NewNoteRecord): Promise<void>;
   saveTransactionInfo(tx: StoredTransaction): Promise<void>;
+  getTransaction(id: StoredTransaction['id']): Promise<StoredTransaction | undefined>;
   getAssetsMetadata(assetId: Uint8Array): Promise<DenomMetadata | undefined>;
   saveAssetsMetadata(metadata: DenomMetadata): Promise<void>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;

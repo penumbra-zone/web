@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { Base64Str, Base64StringSchema, InnerBase64Schema } from '../base64';
 import { DecodedTransaction, NotePayloadSchema } from './decoded';
-import { NoteValueSchema } from '../state-commitment-tree';
+import { NoteSchema, NoteValueSchema } from '../state-commitment-tree';
+import { DenomMetadataSchema } from '../denom';
 
 const VisibleSchema = z.object({
   visible: z.object({
@@ -61,6 +62,8 @@ const TxpSchema = z.object({
   transactionId: z.object({
     hash: Base64StringSchema,
   }),
+  adviceNotes: z.array(NoteSchema).optional(),
+  denoms: z.array(DenomMetadataSchema).optional(),
 });
 
 export type TransactionPerspective = z.infer<typeof TxpSchema>;

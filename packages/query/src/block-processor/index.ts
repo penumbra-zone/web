@@ -2,7 +2,6 @@ import {
   Base64Str,
   base64ToUint8Array,
   IndexedDbInterface,
-  isDevEnv,
   NewNoteRecord,
   uint8ArrayToBase64,
   ViewServerInterface,
@@ -76,7 +75,7 @@ export class BlockProcessor {
     for (const n of notes) {
       await this.indexedDb.saveSpendableNote(n);
       await this.storeAssetDenoms(n.note.value.assetId.inner);
-      transactions.add(n.source.inner);
+      await transactions.add(n.source.inner);
     }
 
     await transactions.storeTransactionInfo();
@@ -116,6 +115,7 @@ export class BlockProcessor {
 
   // Compares the locally stored, filtered SCT root with the actual one on chain. They should match.
   // This is expensive to do every block, so should only be done in development.
+  // @ts-expect-error Only used ad-hoc in dev
   private async assertRootValid(blockHeight: bigint): Promise<void> {
     const sourceOfTruth = await this.querier.app.keyValue(`sct/anchor/${blockHeight}`);
     const inMemoryRoot = this.viewServer.getNctRoot();
@@ -152,9 +152,8 @@ export class BlockProcessor {
       if (shouldStoreProgress(res.compactBlock, lastBlockHeight)) {
         await this.saveSyncProgress(res.compactBlock.height);
 
-        if (isDevEnv()) {
-          await this.assertRootValid(res.compactBlock.height);
-        }
+        // In dev mode, you may want to validate local sct against remote
+        // await this.assertRootValid(res.compactBlock.height);
       }
     }
   }

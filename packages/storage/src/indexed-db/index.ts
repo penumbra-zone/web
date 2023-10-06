@@ -1,13 +1,13 @@
 import { IDBPDatabase, openDB } from 'idb';
 import {
   Base64Str,
+  DenomMetadata,
   IndexedDbInterface,
   NctUpdates,
   NewNoteRecord,
   PenumbraDb,
   StateCommitmentTree,
 } from 'penumbra-types';
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { IbdUpdater, IbdUpdates, TableUpdateNotifier } from './updater';
 import { StoredTransaction } from 'penumbra-types/src/transaction/view';
 
@@ -119,5 +119,9 @@ export class IndexedDb implements IndexedDbInterface {
 
   async saveTransactionInfo(tx: StoredTransaction): Promise<void> {
     await this.u.update({ table: 'transactions', value: tx });
+  }
+
+  async getTransaction(id: StoredTransaction['id']): Promise<StoredTransaction | undefined> {
+    return this.db.get('transactions', id);
   }
 }

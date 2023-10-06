@@ -75,13 +75,9 @@ const NoteRecordSchema = z.object({
   addressIndex: AddressIndexSchema,
   nullifier: InnerBase64Schema,
   position: z.string(),
-  source: z.object({
-    inner: z.string(),
-  }),
+  source: InnerBase64Schema,
   heightSpent: z.bigint().optional(),
 });
-
-export type NoteSource = NewNoteRecord['source']['inner'];
 
 export type NewNoteRecord = z.infer<typeof NoteRecordSchema>;
 
