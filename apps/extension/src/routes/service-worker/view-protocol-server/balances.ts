@@ -1,5 +1,3 @@
-import { DappMessageRequest } from 'penumbra-transport';
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import {
   BalancesRequest,
   BalancesResponse,
@@ -12,7 +10,7 @@ import {
   NewNoteRecord,
   uint8ArrayToBase64,
 } from 'penumbra-types';
-import { ViewProtocolReq } from './helpers/generic';
+import { ViewReqMessage } from './helpers/generic';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import {
   AssetId,
@@ -24,9 +22,8 @@ type AssetIdStr = Base64Str;
 type BalancesMap = Record<AssetIdStr, BalancesResponse>;
 type AccountMap = Record<AddressIndex['account'], BalancesMap>;
 
-export type BalancesReq = DappMessageRequest<typeof ViewProtocolService, BalancesRequest>;
-export const isBalancesRequest = (req: ViewProtocolReq): req is BalancesReq => {
-  return req.requestTypeName === BalancesRequest.typeName;
+export const isBalancesRequest = (msg: ViewReqMessage): msg is BalancesRequest => {
+  return msg.getType().typeName === BalancesRequest.typeName;
 };
 
 const initializeProto = (noteRecord: NewNoteRecord, accountNumber: number): BalancesResponse =>
@@ -43,7 +40,7 @@ const initializeProto = (noteRecord: NewNoteRecord, accountNumber: number): Bala
 
 // Handles aggregating amounts and filtering by account number/asset id
 export const handleBalancesReq = async function* (
-  req: BalancesReq,
+  req: BalancesRequest,
   indexedDb: IndexedDbInterface,
 ): AsyncIterable<BalancesResponse> {
   const allNotes = await indexedDb.getAllNotes();
@@ -79,15 +76,15 @@ export const handleBalancesReq = async function* (
   const responses = Object.entries(accounts)
     .filter(
       ([accountNumber]) =>
-        !req.requestMethod.accountFilter || // No account filter requested
-        Number(accountNumber) === req.requestMethod.accountFilter.account, // Address indexes match
+        !req.accountFilter || // No account filter requested
+        Number(accountNumber) === req.accountFilter.account, // Address indexes match
     )
     .flatMap(([, balances]) =>
       Object.entries(balances)
         .filter(
           ([assetId]) =>
-            !req.requestMethod.assetIdFilter || // No asset id filter requested
-            assetId === uint8ArrayToBase64(req.requestMethod.assetIdFilter.inner), // Asset id's match
+            !req.assetIdFilter || // No asset id filter requested
+            assetId === uint8ArrayToBase64(req.assetIdFilter.inner), // Asset id's match
         )
         .map(([, balances]) => balances),
     );

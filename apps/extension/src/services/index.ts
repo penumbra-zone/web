@@ -84,6 +84,7 @@ export class Services {
       });
 
       const blockProcessor = new BlockProcessor({
+        fullViewingKey: wallets[0]!.fullViewingKey,
         viewServer,
         querier: this.querier,
         indexedDb: this.indexedDb,

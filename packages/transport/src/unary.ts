@@ -24,10 +24,10 @@ export const unaryIO = async <S extends ServiceType, M extends GrpcRequest<S>>(
   window.postMessage({
     type: INCOMING_GRPC_MESSAGE,
     sequence,
-    requestMethod,
+    jsonReq: requestMethod.toJson(),
     requestTypeName: requestMethod.getType().typeName,
     serviceTypeName,
-  } satisfies DappMessageRequest<S, M>);
+  } satisfies DappMessageRequest<S>);
   const res = await promiseResponse;
   if (isResultResponse(res)) {
     return res.result;

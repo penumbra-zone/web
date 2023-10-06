@@ -50,7 +50,7 @@ export const NctUpdatesSchema = z.object({
 
 export type NctUpdates = z.infer<typeof NctUpdatesSchema>;
 
-const NoteValueSchema = z.object({
+export const NoteValueSchema = z.object({
   amount: z.object({
     lo: z.string(),
     hi: z.string().optional(),
@@ -58,7 +58,7 @@ const NoteValueSchema = z.object({
   assetId: InnerBase64Schema,
 });
 
-const NoteSchema = z.object({
+export const NoteSchema = z.object({
   value: NoteValueSchema,
   rseed: z.string(),
   address: InnerBase64Schema,
@@ -75,9 +75,7 @@ const NoteRecordSchema = z.object({
   addressIndex: AddressIndexSchema,
   nullifier: InnerBase64Schema,
   position: z.string(),
-  source: z.object({
-    inner: z.string(),
-  }),
+  source: InnerBase64Schema,
   heightSpent: z.bigint().optional(),
 });
 
