@@ -51,7 +51,7 @@ export const SwapInput = ({
       </div>
       <div className='flex items-center justify-between'>
         <p className='text-base font-bold text-muted-foreground'>
-          ${formatNumber(asset?.dollarBalance ?? 0)}
+          ${formatNumber(asset?.usdcValue ?? 0)}
         </p>
         {showBalance && (
           <div className='flex items-start gap-1'>

@@ -1,14 +1,16 @@
 import { Card } from 'ui';
 import { FilledImage } from './filled-image';
+import { cn } from 'ui/lib/utils';
 
 interface HelperCardProps {
   src: string;
   label: string;
+  className?: string;
 }
 
-export const EduInfoCard = ({ src, label }: HelperCardProps) => {
+export const EduInfoCard = ({ src, label, className }: HelperCardProps) => {
   return (
-    <Card gradient className='p-5 row-span-2'>
+    <Card gradient className={cn('p-5 row-span-1', className)}>
       <div className='flex gap-2'>
         <FilledImage src={src} alt='icons' className='w-8 h-8' />
         <p className='text-2xl leading-9 font-bold bg-text-linear bg-clip-text text-transparent font-headline'>

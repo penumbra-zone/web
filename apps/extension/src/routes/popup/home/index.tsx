@@ -1,11 +1,10 @@
 import { redirect } from 'react-router-dom';
-import { CopyToClipboard } from 'ui';
+import { CopyToClipboard, Identicon } from 'ui';
 import { PopupPath } from '../paths';
 import { IndexHeader } from './index-header';
 import { ArrowLeftIcon, ArrowRightIcon, CopyIcon } from '@radix-ui/react-icons';
 import { useStore } from '../../../state';
 import { accountsSelector, activeAccount } from '../../../state/accounts';
-import { Identicon } from 'ui/components/ui/identicon';
 import { BlockSync } from './block-sync';
 import { localExtStorage, sessionExtStorage } from 'penumbra-storage';
 

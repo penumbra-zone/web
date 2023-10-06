@@ -6,7 +6,7 @@ export interface IbcValidationFields {
   amount: boolean;
 }
 
-export interface IbcSlice {
+export interface IbcSendSlice {
   amount: string;
   asset: Asset | undefined;
   chain: Chain | undefined;
@@ -16,7 +16,7 @@ export interface IbcSlice {
   setChain: (chain: Chain | undefined) => void;
 }
 
-export const createIbcSlice = (): SliceCreator<IbcSlice> => (set, get) => {
+export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) => {
   return {
     amount: '',
     asset: undefined,

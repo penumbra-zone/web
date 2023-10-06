@@ -21,32 +21,32 @@ export const assets: Asset[] = [
     name: 'ETH 1',
     icon: '/test-asset-icon.svg',
     balance: 2,
-    dollarBalance: 200,
+    usdcValue: 200,
   },
   {
     name: 'BNB 1',
     icon: '/test-asset-icon-2.svg',
     balance: 1,
-    dollarBalance: 10,
+    usdcValue: 10,
   },
   {
     name: 'BNB 2',
     icon: '/test-asset-icon-2.svg',
     balance: 0,
-    dollarBalance: 10000,
+    usdcValue: 10000,
   },
 
   {
     name: 'ETH 2',
     icon: '/test-asset-icon.svg',
     balance: 9,
-    dollarBalance: 0.122,
+    usdcValue: 0.122,
   },
   {
     name: 'BNB 3',
     icon: '/test-asset-icon.svg',
     balance: 2001,
-    dollarBalance: 213.123,
+    usdcValue: 213.123,
   },
 ];
 

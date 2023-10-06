@@ -42,7 +42,7 @@ export default function Page() {
             <TabsContent value={SwapPageTab.TWAP}></TabsContent>
           </Tabs>
         </Card>
-        <EduInfoCard src='/incognito.svg' label='Shielded Swaps' />
+        <EduInfoCard src='/incognito.svg' label='Shielded Swaps' className='row-span-2' />
       </div>
     </FadeTransition>
   );

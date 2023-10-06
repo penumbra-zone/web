@@ -1,6 +1,6 @@
 import { ArrowBottomLeftIcon, ChevronRightIcon, CopyIcon } from '@radix-ui/react-icons';
-import { CopyToClipboard, Table, TableBody, TableCell, TableRow } from 'ui';
-import { FilledImage, UnoptimizedImage } from '../../shared';
+import { CopyToClipboard, Identicon, Table, TableBody, TableCell, TableRow } from 'ui';
+import { FilledImage } from '../../shared';
 
 export const TransactionTable = () => {
   return (
@@ -28,12 +28,10 @@ export const TransactionTable = () => {
             </TableCell>
             <TableCell>
               <div className='flex items-center justify-center gap-[10px]'>
-                <UnoptimizedImage
-                  src='https://avatar.vercel.sh/rauchg'
-                  alt='icon'
-                  width={20}
-                  height={20}
-                  className='rounded-full'
+                {/* TODO add name in hardcore valur  */}
+                <Identicon
+                  name='penumbrav2t1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvsneeae42q63sumem7r096p7rd2tywm2v6ppc4'
+                  className='h-6 w-6 rounded-full'
                 />
                 <p>2t1m...2x95f</p>
               </div>
@@ -41,12 +39,10 @@ export const TransactionTable = () => {
             <TableCell>
               <div className='flex items-center justify-end gap-[34px]'>
                 <div className='flex items-center gap-2'>
-                  <UnoptimizedImage
-                    src='https://avatar.vercel.sh/rauchg'
-                    alt='icon'
-                    width={20}
-                    height={20}
-                    className='rounded-full'
+                  {/* TODO add name in hardcore valur  */}
+                  <Identicon
+                    name='penumbrav2t1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvsneeae42q63sumem7r096p7rd2tywm2v6ppc4'
+                    className='h-6 w-6 rounded-full'
                   />
                   <div className='flex flex-col items-center'>
                     <p>From</p>
@@ -55,13 +51,7 @@ export const TransactionTable = () => {
                 </div>
                 <ChevronRightIcon className='mx-[6px] h-6 w-6' />
                 <div className='flex items-center gap-2'>
-                  <UnoptimizedImage
-                    src='https://avatar.vercel.sh/rauchg'
-                    alt='icon'
-                    width={20}
-                    height={20}
-                    className='rounded-full'
-                  />
+                  <FilledImage src='/test-asset-icon.svg' className='h-6 w-6' alt='More' />
                   <div className='flex flex-col items-center'>
                     <p className='text-green'>+ 10.00</p>
                     <p className='text-[15px] font-normal leading-[22px]'>gn</p>

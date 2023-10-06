@@ -8,14 +8,6 @@ module.exports = () => {
     output: isProd ? 'export' : undefined,
     reactStrictMode: true,
     transpilePackages: ['ui'],
-    images: {
-      remotePatterns: [
-        {
-          protocol: 'https',
-          hostname: 'avatar.vercel.sh',
-        },
-      ],
-    },
     distDir: 'dist',
 
     webpack: config => {
