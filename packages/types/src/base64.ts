@@ -26,13 +26,3 @@ export const base64ToUint8Array = (base64: string): Uint8Array => {
 export const uint8ArrayToBase64 = (byteArray: Uint8Array): string => {
   return Buffer.from(byteArray).toString('base64');
 };
-
-export const base64ToHex = (base64: string): string => {
-  const buffer = Buffer.from(base64, 'base64');
-  return buffer.toString('hex');
-};
-
-export const hexToBase64 = (hex: string): string => {
-  const buffer = Buffer.from(hex, 'hex');
-  return buffer.toString('base64');
-};

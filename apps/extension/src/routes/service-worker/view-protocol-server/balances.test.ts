@@ -5,13 +5,11 @@ import {
   NewNoteRecord,
   uint8ArrayToBase64,
 } from 'penumbra-types';
-import { BalancesReq, handleBalancesReq } from './balances';
+import { handleBalancesReq } from './balances';
 import {
   BalancesRequest,
   BalancesResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { GrpcRequestTypename, INCOMING_GRPC_MESSAGE } from 'penumbra-transport';
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
@@ -29,29 +27,19 @@ function assertOnlyUniqueAssetIds(responses: BalancesResponse[], accountId: numb
 
 describe('Balances request handler', () => {
   let indexedDb: IndexedDbInterface;
-  let balRequest: BalancesRequest;
-  let dappReq: BalancesReq;
+  let req: BalancesRequest;
 
   beforeEach(() => {
     indexedDb = {
       getAllNotes: (): Promise<NewNoteRecord[]> => Promise.resolve(testData),
     } as unknown as IndexedDbInterface;
 
-    balRequest = new BalancesRequest({});
-    dappReq = {
-      type: INCOMING_GRPC_MESSAGE,
-      serviceTypeName: ViewProtocolService.typeName,
-      requestTypeName: balRequest.getType().typeName as GrpcRequestTypename<
-        typeof ViewProtocolService
-      >,
-      requestMethod: balRequest,
-      sequence: 0,
-    };
+    req = new BalancesRequest({});
   });
 
   test('aggregation, with no filtering', async () => {
     const responses: BalancesResponse[] = [];
-    for await (const res of handleBalancesReq(dappReq, indexedDb)) {
+    for await (const res of handleBalancesReq(req, indexedDb)) {
       responses.push(res);
     }
     expect(responses.length).toBe(23);
@@ -63,11 +51,11 @@ describe('Balances request handler', () => {
 
   test('filtering asset id', async () => {
     const assetIdStr = 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=';
-    balRequest.assetIdFilter = new AssetId({
+    req.assetIdFilter = new AssetId({
       inner: base64ToUint8Array(assetIdStr),
     });
     const responses: BalancesResponse[] = [];
-    for await (const res of handleBalancesReq(dappReq, indexedDb)) {
+    for await (const res of handleBalancesReq(req, indexedDb)) {
       responses.push(res);
     }
     expect(responses.length).toBe(4);
@@ -77,9 +65,9 @@ describe('Balances request handler', () => {
   });
 
   test('filtering account', async () => {
-    balRequest.accountFilter = new AddressIndex({ account: 3 });
+    req.accountFilter = new AddressIndex({ account: 3 });
     const responses: BalancesResponse[] = [];
-    for await (const res of handleBalancesReq(dappReq, indexedDb)) {
+    for await (const res of handleBalancesReq(req, indexedDb)) {
       responses.push(res);
     }
     expect(responses.length).toBe(2);

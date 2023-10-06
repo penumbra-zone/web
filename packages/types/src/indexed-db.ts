@@ -17,6 +17,7 @@ export interface IndexedDbInterface {
   saveSpendableNote(note: NewNoteRecord): Promise<void>;
   saveTransactionInfo(tx: StoredTransaction): Promise<void>;
   getTransaction(id: StoredTransaction['id']): Promise<StoredTransaction | undefined>;
+  getAllTransactions(): Promise<StoredTransaction[]>;
   getAssetsMetadata(assetId: Uint8Array): Promise<DenomMetadata | undefined>;
   saveAssetsMetadata(metadata: DenomMetadata): Promise<void>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;

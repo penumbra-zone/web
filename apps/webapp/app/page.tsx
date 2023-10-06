@@ -11,6 +11,9 @@ export default function Page() {
       <Link href='/balances'>
         <Button>View balances</Button>
       </Link>
+      <Link href='/transactions'>
+        <Button>View Transactions</Button>
+      </Link>
     </FadeTransition>
   );
 }

@@ -13,3 +13,4 @@ export * from './denom';
 export * from './note-source';
 export * from './transaction/view';
 export * from './transaction/decoded';
+export * from './hex';

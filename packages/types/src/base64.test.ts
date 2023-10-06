@@ -2,9 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   Base64StringSchema,
-  base64ToHex,
   base64ToUint8Array,
-  hexToBase64,
   InnerBase64Schema,
   uint8ArrayToBase64,
 } from './base64';
@@ -84,38 +82,5 @@ describe('uint8ArrayToBase64', () => {
     const largeArray = new Uint8Array(1024).fill(97); // 1024 bytes all set to ASCII for "a"
     const result = uint8ArrayToBase64(largeArray);
     expect(result).toBe(Buffer.from(largeArray).toString('base64')); // compare with Node's built-in conversion
-  });
-});
-
-describe('base64ToHex', () => {
-  it('should convert base64 string to hexadecimal', () => {
-    const base64 = 'SGVsbG8gd29ybGQ=';
-    const expectedHex = '48656c6c6f20776f726c64';
-    expect(base64ToHex(base64)).toBe(expectedHex);
-  });
-
-  it('should handle empty string', () => {
-    const base64 = '';
-    const expectedHex = '';
-    expect(base64ToHex(base64)).toBe(expectedHex);
-  });
-
-  it('should throw an error for invalid base64 string', () => {
-    const base64 = 'not a valid base64 string';
-    expect(() => base64ToHex(base64)).toThrow();
-  });
-});
-
-describe('hexToBase64', () => {
-  it('should convert hexadecimal string to base64', () => {
-    const hex = '48656c6c6f20776f726c64';
-    const expectedBase64 = 'SGVsbG8gd29ybGQ=';
-    expect(hexToBase64(hex)).toBe(expectedBase64);
-  });
-
-  it('should handle empty string', () => {
-    const hex = '';
-    const expectedBase64 = '';
-    expect(hexToBase64(hex)).toBe(expectedBase64);
   });
 });

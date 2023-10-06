@@ -96,6 +96,9 @@ export class BlockProcessor {
   async saveSyncProgress(height: bigint) {
     const updates = await this.viewServer.updatesSinceCheckpoint();
     await this.indexedDb.updateStateCommitmentTree(updates, height);
+
+    // In dev mode, you may want to validate local sct against remote
+    // await this.assertRootValid(res.compactBlock.height);
   }
 
   // We need to query separately to convert assetId's into readable denom strings. Persisting those to storage.
@@ -151,9 +154,6 @@ export class BlockProcessor {
 
       if (shouldStoreProgress(res.compactBlock, lastBlockHeight)) {
         await this.saveSyncProgress(res.compactBlock.height);
-
-        // In dev mode, you may want to validate local sct against remote
-        // await this.assertRootValid(res.compactBlock.height);
       }
     }
   }

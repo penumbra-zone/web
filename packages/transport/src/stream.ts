@@ -53,10 +53,10 @@ export const serverStreamIO = async function* <S extends ServiceType, M extends 
   window.postMessage({
     type: INCOMING_GRPC_MESSAGE,
     sequence,
-    requestMethod,
     requestTypeName: requestMethod.getType().typeName,
+    jsonReq: requestMethod.toJson(),
     serviceTypeName,
-  } satisfies DappMessageRequest<S, M>);
+  } satisfies DappMessageRequest<S>);
 
   while (true) {
     if (!queue.length) {

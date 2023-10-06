@@ -117,6 +117,10 @@ export class IndexedDb implements IndexedDbInterface {
     return this.db.getAll('spendable_notes');
   }
 
+  async getAllTransactions() {
+    return this.db.getAll('transactions');
+  }
+
   async saveTransactionInfo(tx: StoredTransaction): Promise<void> {
     await this.u.update({ table: 'transactions', value: tx });
   }
