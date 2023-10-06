@@ -14,7 +14,6 @@ import { handleTransactionInfoReq, isTransactionInfoRequest } from './transactio
 
 export const viewServerRouter = (req: ViewProtocolReq, sender: chrome.runtime.MessageSender) => {
   const id = sender.tab!.id!; // Guaranteed given request is from dapp
-  debugger;
   const msg = deserializeReq(req);
 
   (async function () {

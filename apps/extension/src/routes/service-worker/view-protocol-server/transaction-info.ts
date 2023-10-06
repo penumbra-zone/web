@@ -22,6 +22,7 @@ export const handleTransactionInfoReq = async function* (
   yield* responses;
 };
 
+// TODO: Next PR finish this ⬇️
 const storedTxToRes = (t: StoredTransaction): TransactionInfoResponse => {
   return new TransactionInfoResponse({
     txInfo: new TransactionInfo({

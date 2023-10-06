@@ -131,7 +131,6 @@ export class BlockProcessor {
   }
 
   private async syncAndStore() {
-    console.log('syncAndStore called!');
     const lastBlockSynced = await this.indexedDb.getLastBlockSynced();
     const startHeight = lastBlockSynced ? lastBlockSynced + 1n : 0n;
     const lastBlockHeight = await this.querier.tendermint.lastBlockHeight();
