@@ -117,7 +117,7 @@ describe('IBC Slice', () => {
     });
   });
 
-	describe('setAssetBalance', () => {
+  describe('setAssetBalance', () => {
     test('asset balance can be set', () => {
       useStore.getState().ibc.setAssetBalance(10);
       expect(useStore.getState().ibc.assetBalance).toBe(10);

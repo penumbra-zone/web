@@ -32,7 +32,7 @@ export const SwapForm = () => {
     };
 
     setAssetBalance(calculateBalance(loHi, pay.asset));
-  }, [balance, pay.asset]);
+  }, [balance, pay.asset, setAssetBalance]);
 
   return (
     <form

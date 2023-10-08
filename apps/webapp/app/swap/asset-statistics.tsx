@@ -1,31 +1,31 @@
 'use client';
 
 import { Card, Table, TableBody, TableCell, TableRow } from 'ui';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { FilledImage } from '../../shared';
 import { formatNumber } from '../../utils';
 import { cn } from 'ui/lib/utils';
 import { Asset } from 'penumbra-constants';
+import { useStore } from '../../state';
+import { swapSelector } from '../../state/swap';
 
 export const AssetStatistics = () => {
-  // const { pay, receive } = useStore(swapSelector);
+  const { pay, receive } = useStore(swapSelector);
 
-  const [firstAsset] = useState<(Asset & { price: number; '24h': number }) | undefined>(undefined);
-  const [secondAsset] = useState<(Asset & { price: number; '24h': number }) | undefined>(undefined);
+  const [firstAsset, setFirstAsset] = useState<
+    (Asset & { price: number; '24h': number }) | undefined
+  >(undefined);
+  const [secondAsset, setSecondAsset] = useState<
+    (Asset & { price: number; '24h': number }) | undefined
+  >(undefined);
 
-  // useEffect(() => {
-  //   const asset = assetsStatistics.find(i => i.name === pay.asset)!;
-  //   setFirstAsset({ ...asset, ...pay.asset });
-  // }, [pay]);
+  useEffect(() => {
+    setFirstAsset({ ...pay.asset, price: 10, '24h': -0.05 });
+  }, [pay]);
 
-  // useEffect(() => {
-  //   if (!receive.asset) {
-  //     setSecondAsset(undefined);
-  //     return;
-  //   }
-  //   const asset = assetsStatistics.find(i => i.name === receive.asset?.name)!;
-  //   setSecondAsset({ ...asset, ...receive.asset });
-  // }, [receive]);
+  useEffect(() => {
+    setSecondAsset({ ...receive.asset, price: 120, '24h': +20 });
+  }, [receive]);
 
   return (
     <>
@@ -38,7 +38,7 @@ export const AssetStatistics = () => {
               {[firstAsset, secondAsset].map((asset, index) => {
                 if (!asset) return <Fragment key={index} />;
                 return (
-                  <TableRow key={asset.name} className='border-b-[0px]'>
+                  <TableRow key={asset.display} className='border-b-[0px]'>
                     <TableCell className='py-3'>
                       <div className='flex items-end gap-2'>
                         {asset.icon && (
@@ -48,7 +48,7 @@ export const AssetStatistics = () => {
                             className='h-[30px] w-[30px]'
                           />
                         )}
-                        <p className='text-base font-bold text-light-grey'>{asset.name}</p>
+                        <p className='text-base font-bold text-light-grey'>{asset.display}</p>
                       </div>
                     </TableCell>
                     <TableCell className='py-3'>
