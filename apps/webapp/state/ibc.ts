@@ -1,7 +1,7 @@
 import { Asset, assets } from 'penumbra-constants';
 import { AllSlices, SliceCreator } from '.';
 import { Chain } from '../app/send/types';
-// import { validateAmount } from '../utils';
+import { validateAmount } from '../utils';
 
 export interface IbcValidationFields {
   amount: boolean;
@@ -11,40 +11,47 @@ export interface IbcSendSlice {
   amount: string;
   asset: Asset;
   chain: Chain | undefined;
+  assetBalance: number;
   validationErrors: IbcValidationFields;
   setAmount: (amount: string) => void;
   setAsset: (asset: Asset) => void;
   setChain: (chain: Chain | undefined) => void;
+  setAssetBalance: (amount: number) => void;
 }
 
-export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set) => {
+export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) => {
   return {
     amount: '',
     asset: assets[0]!,
     chain: undefined,
+    assetBalance: 0,
     validationErrors: {
       amount: false,
     },
     setAmount: amount => {
-      // const { asset } = get().ibc;
+      const { assetBalance } = get().ibc;
 
       set(state => {
         state.ibc.amount = amount;
-        // state.ibc.validationErrors.amount = !asset ? false : validateAmount(amount, asset.balance);
+        state.ibc.validationErrors.amount = validateAmount(amount, assetBalance);
       });
     },
     setAsset: asset => {
-      // const { amount } = get().ibc;
-
       set(state => {
         state.ibc.asset = asset;
-        // state.ibc.validationErrors.amount = validateAmount(amount, asset.balance);
       });
     },
 
     setChain: chain => {
       set(state => {
         state.ibc.chain = chain;
+      });
+    },
+    setAssetBalance: balance => {
+      const { amount } = get().ibc;
+      set(state => {
+        state.ibc.assetBalance = balance;
+        state.ibc.validationErrors.amount = validateAmount(amount, balance);
       });
     },
   };

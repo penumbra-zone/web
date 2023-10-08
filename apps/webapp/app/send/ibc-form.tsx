@@ -1,14 +1,47 @@
 import { useStore } from '../../state';
 import { ibcSelector } from '../../state/ibc';
-
 import { FilledImage, InputToken } from '../../shared';
-// import { validateAmount } from '../../utils';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui';
 import { chains } from './constants';
+import { useBalance } from '../../hooks';
+import { useEffect } from 'react';
+import { LoHi, uint8ArrayToBase64 } from 'penumbra-types';
+import { calculateBalance, validateAmount } from '../../utils';
 
 export const IbcForm = () => {
-  const { amount, asset, chain, validationErrors, setAmount, setAsset, setChain } =
-    useStore(ibcSelector);
+  const {
+    amount,
+    asset,
+    assetBalance,
+    chain,
+    validationErrors,
+    setAmount,
+    setAsset,
+    setChain,
+    setAssetBalance,
+  } = useStore(ibcSelector);
+  const balance = useBalance(0);
+
+  useEffect(() => {
+    if (!balance.end) return;
+    const selectedAsset = balance.data.find(
+      i =>
+        i.balance?.assetId?.inner &&
+        uint8ArrayToBase64(i.balance.assetId.inner) === asset.penumbraAssetId.inner,
+    );
+
+    if (!selectedAsset) {
+      setAssetBalance(0);
+      return;
+    }
+
+    const loHi: LoHi = {
+      lo: selectedAsset.balance?.amount?.lo ?? 0n,
+      hi: selectedAsset.balance?.amount?.hi ?? 0n,
+    };
+
+    setAssetBalance(calculateBalance(loHi, asset));
+  }, [balance, asset, setAssetBalance]);
 
   return (
     <form
@@ -22,19 +55,20 @@ export const IbcForm = () => {
         placeholder='Enter an amount'
         className='mb-1'
         asset={asset}
+        assetBalance={assetBalance}
         setAsset={setAsset}
         value={amount}
         onChange={e => {
           if (Number(e.target.value) < 0) return;
           setAmount(e.target.value);
         }}
-        // validations={[
-        //   {
-        //     type: 'error',
-        //     issue: 'insufficient funds',
-        //     checkFn: (amount: string) => validateAmount(amount, asset.balance),
-        //   },
-        // ]}
+        validations={[
+          {
+            type: 'error',
+            issue: 'insufficient funds',
+            checkFn: (amount: string) => validateAmount(amount, assetBalance),
+          },
+        ]}
       />
       <div className='flex flex-col gap-3 rounded-lg border bg-background px-4 pb-5 pt-3'>
         <p className='text-base font-bold'>Chain</p>
