@@ -2,13 +2,21 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'ui';
 import { FilledImage } from '../../shared';
-// import { formatNumber } from '../../utils';
-import { assets } from 'penumbra-constants';
+import { useSortedAssets } from '../../hooks/sorted-asset';
+import { formatNumber } from '../../utils';
+import { useMemo } from 'react';
 
-export const AssetsTable = () => {
-  // TODO get balances
-  // const balances = useMemo(() => client.balances({}), []);
-  // const { data, end, error } = useStreamQuery(balances);
+export default function AssetsTable() {
+  const sortedAssets = useSortedAssets('usdc');
+
+  const assettsWithPercentage = useMemo(() => {
+    const sum = sortedAssets.reduce((acc, asset) => acc + asset.usdcValue, 0);
+
+    return sortedAssets.map(asset => ({
+      ...asset,
+      percentageOf: (asset.usdcValue / sum) * 100,
+    }));
+  }, [sortedAssets]);
 
   return (
     <Table>
@@ -21,34 +29,38 @@ export const AssetsTable = () => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {assets.map(i => (
-          <TableRow key={i.display}>
-            <TableCell>
-              <div className='flex items-center gap-4'>
-                {i.icon && <FilledImage src={i.icon} alt='Asset' className='h-6 w-6' />}
-                <p className='text-base font-bold'>{i.display}</p>
-              </div>
-            </TableCell>
-            <TableCell className='text-center'>100%</TableCell>
-            <TableCell className='text-center'>
-              <div className='flex flex-col'>
-                <p>$1,577.15</p>
-                <p className='text-[15px] font-normal leading-[22px] text-red'>-$15.19 (-0.95%)</p>
-              </div>
-            </TableCell>
-            <TableCell className='text-center'>
-              <div className='flex flex-col'>
-                <p className='text-[15px] font-bold leading-[22px]'>
-                  {/* {formatNumber(i.balance)} {i.name} */}
-                </p>
-                <p className='text-[15px] font-normal leading-[22px] text-muted-foreground'>
-                  $1.58
-                </p>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
+        {assettsWithPercentage
+          .filter(asset => asset.usdcValue)
+          .map(asset => (
+            <TableRow key={asset.display}>
+              <TableCell>
+                <div className='flex items-center gap-4'>
+                  {asset.icon && <FilledImage src={asset.icon} alt='Asset' className='h-6 w-6' />}
+                  <p className='text-base font-bold'>{asset.display}</p>
+                </div>
+              </TableCell>
+              <TableCell className='text-center'>{formatNumber(asset.percentageOf)}%</TableCell>
+              <TableCell className='text-center'>
+                <div className='flex flex-col'>
+                  <p>$1,577.15</p>
+                  <p className='text-[15px] font-normal leading-[22px] text-red'>
+                    -$15.19 (-0.95%)
+                  </p>
+                </div>
+              </TableCell>
+              <TableCell className='text-center'>
+                <div className='flex flex-col'>
+                  <p className='text-[15px] font-bold leading-[22px]'>
+                    {formatNumber(asset.balance)} {asset.display}
+                  </p>
+                  <p className='text-[15px] font-normal leading-[22px] text-muted-foreground'>
+                    ${formatNumber(asset.usdcValue)}
+                  </p>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
       </TableBody>
     </Table>
   );
-};
+}

@@ -3,11 +3,14 @@
 import { useState } from 'react';
 import { Card, FadeTransition, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui';
 import { EduInfoCard } from '../shared';
-import { AssetsTable } from './dashboard/assets-table';
 import { dashboardTabsHelper } from './dashboard/constants';
 import { NftsTable } from './dashboard/nfts-table';
 import { TransactionTable } from './dashboard/transaction-table';
 import { DashboardPageTab } from './dashboard/types';
+import dynamic from 'next/dynamic';
+const AssetsTable = dynamic(() => import('./dashboard/assets-table'), {
+  ssr: false,
+});
 
 export default function Page() {
   const [tab, setTab] = useState<DashboardPageTab>(DashboardPageTab.ASSETS);
