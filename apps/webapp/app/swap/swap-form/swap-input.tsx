@@ -14,7 +14,7 @@ interface SwapInputProps extends InputProps {
   value: string;
   showBalance?: boolean;
   setAsset: (asset: Asset) => void;
-  validations: Validation[] | undefined;
+  validations?: Validation[];
 }
 
 export const SwapInput = ({

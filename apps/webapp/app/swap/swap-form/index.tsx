@@ -25,19 +25,15 @@ export const SwapForm = () => {
           onChange={e => {
             if (Number(e.target.value) < 0) return;
             setAmount(SwapToken.PAY)(e.target.value);
+            setAmount(SwapToken.RECEIVE)(String(Number(e.target.value) / 10));
           }}
-          validations={
-            // if the user has no balance, do not confirm the validation
-            pay.asset
-              ? [
-                  {
-                    type: 'error',
-                    issue: 'insufficient funds',
-                    checkFn: (amount: string) => validateAmount(amount, pay.asset?.balance ?? 0),
-                  },
-                ]
-              : undefined
-          }
+          validations={[
+            {
+              type: 'error',
+              issue: 'insufficient funds',
+              checkFn: (amount: string) => validateAmount(amount, pay.asset.balance),
+            },
+          ]}
           showBalance
         />
         <Button
@@ -53,41 +49,19 @@ export const SwapForm = () => {
           />
         </Button>
         <SwapInput
-          placeholder='Enter an amount'
+          placeholder='0.00'
           asset={receive.asset}
           setAsset={setAsset(SwapToken.RECEIVE)}
           value={receive.amount}
-          onChange={e => {
-            if (Number(e.target.value) < 0) return;
-            setAmount(SwapToken.RECEIVE)(e.target.value);
-          }}
-          validations={
-            // if the user has no balance, do not confirm the validation
-            receive.asset
-              ? [
-                  {
-                    type: 'error',
-                    issue: 'insufficient funds',
-                    checkFn: (amount: string) =>
-                      validateAmount(amount, receive.asset?.balance ?? 0),
-                  },
-                ]
-              : undefined
-          }
+          readOnly
         />
       </div>
       <Button
         type='submit'
         variant='gradient'
-        disabled={
-          !pay.asset ||
-          !pay.amount ||
-          !receive.asset ||
-          !receive.amount ||
-          !!Object.values(validationErrors).find(Boolean)
-        }
+        disabled={!pay.amount || !receive.amount || !!Object.values(validationErrors).find(Boolean)}
       >
-        {validationErrors.pay ? `Insufficient ${pay.asset?.name} balance` : 'Swap'}
+        {validationErrors.pay ? `Insufficient ${pay.asset.name} balance` : 'Swap'}
       </Button>
     </form>
   );
