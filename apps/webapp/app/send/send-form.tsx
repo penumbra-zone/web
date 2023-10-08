@@ -1,14 +1,14 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+import { LoHi, uint8ArrayToBase64 } from 'penumbra-types';
+import { useEffect } from 'react';
 import { Button, Switch } from 'ui';
+import { useBalances } from '../../hooks/balances';
 import { FilledImage, InputBlock } from '../../shared';
 import { useStore } from '../../state';
 import { sendSelector } from '../../state/send';
 import { calculateBalance, validateAmount, validateRecipient } from '../../utils';
-import { useEffect } from 'react';
-import { LoHi, uint8ArrayToBase64 } from 'penumbra-types';
-import dynamic from 'next/dynamic';
-import { useBalances } from '../../hooks/balances';
 const InputToken = dynamic(() => import('../../shared/input-token'), {
   ssr: false,
 });

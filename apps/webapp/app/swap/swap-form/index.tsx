@@ -1,5 +1,5 @@
 import { LoHi, uint8ArrayToBase64 } from 'penumbra-types';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from 'ui';
 import { FilledImage } from '../../../shared';
 import { useStore } from '../../../state';
@@ -7,11 +7,14 @@ import { SwapInputs, swapSelector } from '../../../state/swap';
 import { calculateBalance, validateAmount } from '../../../utils';
 import dynamic from 'next/dynamic';
 import { useBalances } from '../../../hooks/balances';
+import { cn } from 'ui/lib/utils';
 const SwapInput = dynamic(() => import('./swap-input'), {
   ssr: false,
 });
 
 export default function SwapForm() {
+  const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
+
   const { pay, receive, validationErrors, setAmount, setAsset, replaceAsset, setAssetBalance } =
     useStore(swapSelector);
 
@@ -65,13 +68,26 @@ export default function SwapForm() {
         />
         <Button
           variant='ghost'
-          className='group absolute left-[calc(50%-20px)] top-[calc(50%-20px)] hover:bg-transparent'
+          className='group absolute left-[calc(50%-20px)] top-[calc(50%-20px)] hover:bg-transparent transition-all duration-500 ease-bounce'
           onClick={replaceAsset}
+          onMouseEnter={() => setHoveringSwitchButton(true)}
+          onMouseLeave={() => setHoveringSwitchButton(false)}
         >
-          <FilledImage src='/arrow-down.svg' className='h-10 w-10 group-hover:hidden' alt='Arrow' />
+          <FilledImage
+            src='/arrow-down.svg'
+            className={cn(
+              'h-10 w-10 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ease-bounce',
+              isHoveringSwitchButton && 'rotate-180 opacity-0',
+            )}
+            alt='Arrow'
+          />
           <FilledImage
             src='/arrow-replace.svg'
-            className='hidden h-10 w-10  group-hover:block'
+            className={cn(
+              'h-11 w-11 transition-all duration-500 ease-bounce',
+              isHoveringSwitchButton && 'rotate-180 opacity-100',
+              !isHoveringSwitchButton && 'opacity-0',
+            )}
             alt='Arrow'
           />
         </Button>

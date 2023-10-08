@@ -51,7 +51,7 @@ export default function SwapInput({
         <SelectTokenModal asset={asset.asset} setAsset={setAsset} />
       </div>
       <div className='flex items-center justify-between'>
-        <p className='text-base font-bold text-muted-foreground'>
+        <p className='text-base font-bold text-muted-foreground break-all'>
           ${formatNumber(Number(asset.amount) * asset.price)}
         </p>
         {(asset.balance === 0 || asset.balance) && (

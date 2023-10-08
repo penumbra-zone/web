@@ -7,7 +7,7 @@ import { formatNumber } from '../../utils';
 import { useMemo } from 'react';
 
 export default function AssetsTable() {
-  const sortedAssets = useSortedAssets('usdc');
+  const sortedAssets = useSortedAssets('usdcValue');
 
   const assettsWithPercentage = useMemo(() => {
     const sum = sortedAssets.reduce((acc, asset) => acc + asset.usdcValue, 0);

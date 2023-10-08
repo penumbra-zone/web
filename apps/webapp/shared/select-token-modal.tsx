@@ -16,7 +16,7 @@ interface SelectTokenModalProps {
 export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalProps) {
   const [search, setSearch] = useState('');
 
-  const sortedAssets = useSortedAssets('asset', search);
+  const sortedAssets = useSortedAssets('balance', search);
 
   return (
     <Dialog>

@@ -1,13 +1,13 @@
+import dynamic from 'next/dynamic';
+import { LoHi, uint8ArrayToBase64 } from 'penumbra-types';
+import { useEffect } from 'react';
+import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui';
+import { useBalances } from '../../hooks/balances';
+import { FilledImage } from '../../shared';
 import { useStore } from '../../state';
 import { ibcSelector } from '../../state/ibc';
-import { FilledImage } from '../../shared';
-import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui';
-import { chains } from './constants';
-import { useEffect } from 'react';
-import { LoHi, uint8ArrayToBase64 } from 'penumbra-types';
 import { calculateBalance, validateAmount } from '../../utils';
-import dynamic from 'next/dynamic';
-import { useBalances } from '../../hooks/balances';
+import { chains } from './constants';
 const InputToken = dynamic(() => import('../../shared/input-token'), {
   ssr: false,
 });
