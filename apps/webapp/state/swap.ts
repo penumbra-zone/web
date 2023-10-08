@@ -1,7 +1,8 @@
 import { Asset, assets } from 'penumbra-constants';
 import { AllSlices, SliceCreator } from '.';
+import { validateAmount } from '../utils';
 
-export enum SwapToken {
+export enum SwapInputs {
   PAY = 'pay',
   RECEIVE = 'receive',
 }
@@ -10,19 +11,20 @@ export interface SwapValidationFields {
   pay: boolean;
 }
 
+export interface SwapAssetInfo {
+  amount: string;
+  asset: Asset;
+  balance?: number;
+}
+
 export interface SwapSlice {
-  pay: {
-    amount: string;
-    asset: Asset;
-  };
-  receive: {
-    amount: string;
-    asset: Asset;
-  };
+  pay: SwapAssetInfo;
+  receive: SwapAssetInfo;
   validationErrors: SwapValidationFields;
-  setAmount: (type: SwapToken) => (amount: string) => void;
-  setAsset: (type: SwapToken) => (asset: Asset) => void;
+  setAmount: (type: SwapInputs) => (amount: string) => void;
+  setAsset: (type: SwapInputs) => (asset: Asset) => void;
   replaceAsset: () => void;
+  setAssetBalance: (amount: number) => void;
 }
 
 export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
@@ -30,6 +32,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
     pay: {
       amount: '',
       asset: assets[0]!,
+      balance: 0,
     },
     receive: {
       amount: '',
@@ -43,29 +46,28 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         state.swap[type].amount = amount;
       });
 
-      // if (type === SwapToken.PAY) {
-      //   const { asset } = get().swap.pay;
-      //   set(state => {
-      //     state.swap.validationErrors.pay = validateAmount(amount, asset.balance);
-      //   });
-      // }
+      if (type === SwapInputs.PAY) {
+        const { balance } = get().swap.pay;
+        set(state => {
+          state.swap.validationErrors.pay = validateAmount(amount, balance!);
+        });
+      }
     },
     setAsset: type => asset => {
-      // const { amount } = get().swap.pay;
       let payAsset = get().swap.pay.asset;
       let receiveAsset = get().swap.receive.asset;
 
       // checking if we set the same asset in the pay (receive) field as
       // in the receive (pay) field, then the value of the receive (pay)
       // field is undefined
-      if (type === SwapToken.PAY) {
-        if (asset.name === receiveAsset.name) {
-          receiveAsset = assets.find(i => i.name !== asset.name)!;
+      if (type === SwapInputs.PAY) {
+        if (asset.display === receiveAsset.display) {
+          receiveAsset = assets.find(i => i.display !== asset.display)!;
         }
         payAsset = asset;
       } else {
-        if (asset.name === payAsset.name) {
-          payAsset = assets.find(i => i.name !== asset.name)!;
+        if (asset.display === payAsset.display) {
+          payAsset = assets.find(i => i.display !== asset.display)!;
         }
         receiveAsset = asset;
       }
@@ -73,7 +75,13 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
       set(state => {
         state.swap.pay.asset = payAsset;
         state.swap.receive.asset = receiveAsset;
-        // state.swap.validationErrors.pay = validateAmount(amount, payAsset.balance);
+      });
+    },
+    setAssetBalance: balance => {
+      const { amount } = get().swap.pay;
+      set(state => {
+        state.swap.pay.balance = balance;
+        state.swap.validationErrors.pay = validateAmount(amount, balance);
       });
     },
     replaceAsset: () => {
@@ -81,9 +89,8 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
       const receive = get().swap.receive;
 
       set(state => {
-        state.swap.pay = receive;
-        state.swap.receive = pay;
-        // state.swap.validationErrors.pay = validateAmount(receive.amount, receive.asset.balance);
+        state.swap.pay = { ...receive, balance: 0 };
+        state.swap.receive = { amount: pay.amount, asset: pay.asset };
       });
     },
   };

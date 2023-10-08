@@ -6,13 +6,12 @@ import { useValidationResult } from '../../../hooks';
 import { FilledImage, SelectTokenModal } from '../../../shared';
 import { formatNumber } from '../../../utils';
 import { Asset } from 'penumbra-constants';
+import { SwapAssetInfo } from '../../../state/swap';
 
 interface SwapInputProps extends InputProps {
-  asset: Asset;
+  asset: SwapAssetInfo & { price: number };
   placeholder: string;
   className?: string;
-  value: string;
-  showBalance?: boolean;
   setAsset: (asset: Asset) => void;
   validations?: Validation[];
 }
@@ -22,12 +21,10 @@ export const SwapInput = ({
   asset,
   className,
   validations,
-  value,
-  showBalance,
   setAsset,
   ...props
 }: SwapInputProps) => {
-  const validationResult = useValidationResult(value, validations);
+  const validationResult = useValidationResult(asset.amount, validations);
 
   return (
     <div
@@ -44,19 +41,19 @@ export const SwapInput = ({
           placeholder={placeholder}
           type='number'
           className='h-10 w-[calc(100%-160px)] text-3xl font-bold leading-10'
-          value={value}
+          value={asset.amount}
           {...props}
         />
-        <SelectTokenModal asset={asset} setAsset={setAsset} />
+        <SelectTokenModal asset={asset.asset} setAsset={setAsset} />
       </div>
       <div className='flex items-center justify-between'>
         <p className='text-base font-bold text-muted-foreground'>
-          {/* ${formatNumber(asset?.usdcValue ?? 0)} */}
+          ${formatNumber(Number(asset.amount) * asset.price)}
         </p>
-        {showBalance && (
+        {(asset.balance === 0 || asset.balance) && (
           <div className='flex items-start gap-1'>
             <FilledImage src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
-            {/* <p className='font-bold text-muted-foreground'>{formatNumber(asset?.balance ?? 0)}</p> */}
+            <p className='font-bold text-muted-foreground'>{formatNumber(asset.balance)}</p>
           </div>
         )}
       </div>
