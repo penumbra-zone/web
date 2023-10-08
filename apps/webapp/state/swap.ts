@@ -1,7 +1,5 @@
+import { Asset, assets } from 'penumbra-constants';
 import { AllSlices, SliceCreator } from '.';
-import { assets } from '../app/send/constants';
-import { Asset } from '../types/asset';
-import { validateAmount } from '../utils';
 
 export enum SwapToken {
   PAY = 'pay',
@@ -45,15 +43,15 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         state.swap[type].amount = amount;
       });
 
-      if (type === SwapToken.PAY) {
-        const { asset } = get().swap.pay;
-        set(state => {
-          state.swap.validationErrors.pay = validateAmount(amount, asset.balance);
-        });
-      }
+      // if (type === SwapToken.PAY) {
+      //   const { asset } = get().swap.pay;
+      //   set(state => {
+      //     state.swap.validationErrors.pay = validateAmount(amount, asset.balance);
+      //   });
+      // }
     },
     setAsset: type => asset => {
-      const { amount } = get().swap.pay;
+      // const { amount } = get().swap.pay;
       let payAsset = get().swap.pay.asset;
       let receiveAsset = get().swap.receive.asset;
 
@@ -75,7 +73,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
       set(state => {
         state.swap.pay.asset = payAsset;
         state.swap.receive.asset = receiveAsset;
-        state.swap.validationErrors.pay = validateAmount(amount, payAsset.balance);
+        // state.swap.validationErrors.pay = validateAmount(amount, payAsset.balance);
       });
     },
     replaceAsset: () => {
@@ -85,7 +83,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
       set(state => {
         state.swap.pay = receive;
         state.swap.receive = pay;
-        state.swap.validationErrors.pay = validateAmount(receive.amount, receive.asset.balance);
+        // state.swap.validationErrors.pay = validateAmount(receive.amount, receive.asset.balance);
       });
     },
   };

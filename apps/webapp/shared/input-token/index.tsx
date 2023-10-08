@@ -3,27 +3,29 @@
 import { Input, InputProps } from 'ui';
 import { cn } from 'ui/lib/utils';
 import { useValidationResult } from '../../hooks';
-import { Asset } from '../../types/asset';
 import { Validation } from '../../types/utility';
-import { formatNumber } from '../../utils';
 import { FilledImage } from '../filled-image';
 import { SelectTokenModal } from '../select-token-modal';
+import { Asset } from 'penumbra-constants';
+import { formatNumber } from '../../utils';
 
 interface InputTokenProps extends InputProps {
   label: string;
-  asset: Asset | undefined;
+  asset: Asset;
+  assetBalance: number;
   placeholder: string;
   className?: string;
   inputClassName?: string;
   value: string;
   setAsset: (asset: Asset) => void;
-  validations: Validation[] | undefined;
+  validations?: Validation[];
 }
 
 export const InputToken = ({
   label,
   placeholder,
   asset,
+  assetBalance,
   className,
   validations,
   value,
@@ -51,7 +53,7 @@ export const InputToken = ({
         </div>
         <div className='flex items-start gap-1'>
           <FilledImage src='/wallet.svg' alt='Wallet' className='w-5 h-5' />
-          <p className='font-bold text-muted-foreground'>{formatNumber(asset?.balance ?? 0)}</p>
+          <p className='font-bold text-muted-foreground'>{formatNumber(assetBalance)}</p>
         </div>
       </div>
       <div className='flex justify-between items-center gap-4'>

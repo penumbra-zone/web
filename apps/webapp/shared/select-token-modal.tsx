@@ -3,13 +3,12 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogPrimitive, DialogTrigger, Input } from 'ui';
-import { assets } from '../app/send/constants';
-import { Asset } from '../types/asset';
-import { formatNumber } from '../utils';
+// import { formatNumber } from '../utils';
 import { FilledImage } from './filled-image';
+import { Asset, assets } from 'penumbra-constants';
 
 interface SelectTokenModalProps {
-  asset: Asset | undefined;
+  asset: Asset;
   setAsset: (asset: Asset) => void;
 }
 
@@ -19,36 +18,24 @@ export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => 
   const filteredAsset = useMemo(() => {
     const sortedAsset = [...assets].sort((a, b) => {
       // Sort by balance in descending order (largest to smallest).
-      if (a.balance !== b.balance) return b.balance - a.balance;
+      // if (a.balance !== b.balance) return b.balance - a.balance;
       // If balances are equal, sort by asset name in ascending order
-      return a.name.localeCompare(b.name);
+      return a.name.localeCompare(b.display);
     });
 
     // If no search query is provided, return the sorted assets directly.
     if (!search) return sortedAsset;
 
     // Filter the sorted assets based on a case-insensitive search query.
-    return sortedAsset.filter(asset => asset.name.toLowerCase().includes(search.toLowerCase()));
+    return sortedAsset.filter(asset => asset.display.toLowerCase().includes(search.toLowerCase()));
   }, [search]);
 
   return (
     <Dialog>
       <DialogTrigger disabled={!assets.length}>
         <div className='flex items-center justify-center gap-2 bg-light-brown w-[100px] h-9 rounded-lg'>
-          {assets.length ? (
-            <>
-              {!asset ? (
-                <p className='text-base font-bold text-light-grey'>Select asset</p>
-              ) : (
-                <>
-                  <FilledImage src={asset.icon} alt='Asset' className='w-6 h-6' />
-                  <p className='text-base font-bold text-light-grey'>{asset.name}</p>
-                </>
-              )}
-            </>
-          ) : (
-            <p className='text-base font-bold text-light-grey'>no assets</p>
-          )}
+          {asset.icon && <FilledImage src={asset.icon} alt='Asset' className='w-6 h-6' />}
+          <p className='text-base font-bold text-light-grey'>{asset.display}</p>
         </div>
       </DialogTrigger>
       <DialogContent className='max-w-[400px] bg-charcoal-secondary'>
@@ -72,16 +59,18 @@ export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => 
             </div>
             <div className='flex flex-col gap-2'>
               {filteredAsset.map(asset => (
-                <DialogPrimitive.Close key={asset.name}>
+                <DialogPrimitive.Close key={asset.display}>
                   <div
                     className='flex justify-between items-center py-[10px] cursor-pointer'
                     onClick={() => setAsset(asset)}
                   >
                     <div className='flex items-start gap-[6px]'>
-                      <FilledImage src={asset.icon} alt='Asset' className='w-5 h-5' />
-                      <p className='font-bold text-muted-foreground'>{asset.name}</p>
+                      {asset.icon && (
+                        <FilledImage src={asset.icon} alt='Asset' className='w-5 h-5' />
+                      )}
+                      <p className='font-bold text-muted-foreground'>{asset.display}</p>
                     </div>
-                    <p className='font-bold text-muted-foreground'>{formatNumber(asset.balance)}</p>
+                    {/* <p className='font-bold text-muted-foreground'>{formatNumber(asset.balance)}</p> */}
                   </div>
                 </DialogPrimitive.Close>
               ))}

@@ -2,8 +2,8 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'ui';
 import { FilledImage } from '../../shared';
-import { assets } from '../send/constants';
-import { formatNumber } from '../../utils';
+// import { formatNumber } from '../../utils';
+import { assets } from 'penumbra-constants';
 
 export const AssetsTable = () => {
   // TODO get balances
@@ -22,11 +22,11 @@ export const AssetsTable = () => {
       </TableHeader>
       <TableBody>
         {assets.map(i => (
-          <TableRow key={i.name}>
+          <TableRow key={i.display}>
             <TableCell>
               <div className='flex items-center gap-4'>
-                <FilledImage src={i.icon} alt='Asset' className='h-6 w-6' />
-                <p className='text-base font-bold'>{i.name}</p>
+                {i.icon && <FilledImage src={i.icon} alt='Asset' className='h-6 w-6' />}
+                <p className='text-base font-bold'>{i.display}</p>
               </div>
             </TableCell>
             <TableCell className='text-center'>100%</TableCell>
@@ -39,7 +39,7 @@ export const AssetsTable = () => {
             <TableCell className='text-center'>
               <div className='flex flex-col'>
                 <p className='text-[15px] font-bold leading-[22px]'>
-                  {formatNumber(i.balance)} {i.name}
+                  {/* {formatNumber(i.balance)} {i.name} */}
                 </p>
                 <p className='text-[15px] font-normal leading-[22px] text-muted-foreground'>
                   $1.58

@@ -1,4 +1,4 @@
-import { Asset } from '../types/asset';
+import { Asset, assets } from 'penumbra-constants';
 import { validateAmount, validateRecipient } from '../utils';
 import { AllSlices, SliceCreator } from './index';
 
@@ -9,43 +9,43 @@ export interface SendValidationFields {
 
 export interface SendSlice {
   amount: string;
-  asset: Asset | undefined;
+  asset: Asset;
   recipient: string;
   memo: string;
   hidden: boolean;
   validationErrors: SendValidationFields;
+  assetBalance: number;
   setAmount: (amount: string) => void;
   setAsset: (asset: Asset) => void;
   setRecipient: (addr: string) => void;
   setMemo: (txt: string) => void;
   setHidden: (checked: boolean) => void;
+  setAssetBalance: (amount: number) => void;
 }
 
 export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   return {
     amount: '',
-    asset: undefined,
+    asset: assets[0]!,
     recipient: '',
     memo: '',
     hidden: false,
+    assetBalance: 0,
     validationErrors: {
       recipient: false,
       amount: false,
     },
     setAmount: amount => {
-      const { asset } = get().send;
+      const { assetBalance } = get().send;
 
       set(state => {
         state.send.amount = amount;
-        state.send.validationErrors.amount = !asset ? false : validateAmount(amount, asset.balance);
+        state.send.validationErrors.amount = validateAmount(amount, assetBalance);
       });
     },
     setAsset: asset => {
-      const { amount } = get().send;
-
       set(state => {
         state.send.asset = asset;
-        state.send.validationErrors.amount = validateAmount(amount, asset.balance);
       });
     },
     setRecipient: addr => {
@@ -62,6 +62,13 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     setHidden: (checked: boolean) => {
       set(state => {
         state.send.hidden = checked;
+      });
+    },
+    setAssetBalance: balance => {
+      const { amount } = get().send;
+      set(state => {
+        state.send.assetBalance = balance;
+        state.send.validationErrors.amount = validateAmount(amount, balance);
       });
     },
   };

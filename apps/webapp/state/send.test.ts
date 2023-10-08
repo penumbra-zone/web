@@ -4,9 +4,30 @@ import { AllSlices, initializeStore } from '.';
 
 describe('Send Slice', () => {
   const asset = {
-    name: 'BNB 1',
-    icon: '/test-asset-icon-2.svg',
-    balance: 1,
+    base: 'wtest_usd',
+    display: 'test_usd',
+    description: '',
+    name: '',
+    symbol: '',
+    uri: '',
+    uriHash: '',
+    penumbraAssetId: {
+      inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
+      altBaseDenom: '',
+      altBech32: '',
+    },
+    denomUnits: [
+      {
+        aliases: [],
+        denom: 'test_usd',
+        exponent: 18,
+      },
+      {
+        aliases: [],
+        denom: 'wtest_usd',
+        exponent: 0,
+      },
+    ],
   };
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
@@ -20,9 +41,10 @@ describe('Send Slice', () => {
     expect(useStore.getState().send.memo).toBe('');
     expect(useStore.getState().send.recipient).toBe('');
     expect(useStore.getState().send.hidden).toBeFalsy();
-    expect(useStore.getState().send.asset).toBeUndefined();
+    expect(useStore.getState().send.asset).toBeTruthy();
     expect(useStore.getState().send.validationErrors.amount).toBeFalsy();
     expect(useStore.getState().send.validationErrors.recipient).toBeFalsy();
+    expect(useStore.getState().send.assetBalance).toBe(0);
   });
 
   describe('setAmount', () => {
@@ -33,33 +55,49 @@ describe('Send Slice', () => {
 
     test('validate amount is falsy', () => {
       useStore.getState().send.setAsset(asset);
+      useStore.getState().send.setAssetBalance(2);
       useStore.getState().send.setAmount('1');
-      expect(useStore.getState().send.amount).toBe('1');
       expect(useStore.getState().send.validationErrors.amount).toBeFalsy();
     });
 
     test('validate amount is truthy when the quantity exceeds the balance of the asset', () => {
       useStore.getState().send.setAsset(asset);
-      useStore.getState().send.setAmount('2');
-      expect(useStore.getState().send.amount).toBe('2');
+      useStore.getState().send.setAssetBalance(2);
+      useStore.getState().send.setAmount('6');
       expect(useStore.getState().send.validationErrors.amount).toBeTruthy();
     });
 
     test('validate amount is falsy when an asset with a higher balance has changed', () => {
       const asset2 = {
-        name: 'BNB 1',
-        icon: '/test-asset-icon-2.svg',
-        balance: 2,
+        base: 'cube',
+        display: 'cube',
+        description: '',
+        name: '',
+        symbol: '',
+        uri: '',
+        uriHash: '',
+        penumbraAssetId: {
+          inner: '6KBVsPINa8gWSHhfH+kAFJC4afEJA3EtuB2HyCqJUws=',
+          altBaseDenom: '',
+          altBech32: '',
+        },
+        denomUnits: [
+          {
+            aliases: [],
+            denom: 'cube',
+            exponent: 0,
+          },
+        ],
       };
 
       useStore.getState().send.setAsset(asset);
+      useStore.getState().send.setAssetBalance(1);
       useStore.getState().send.setAmount('2');
-      expect(useStore.getState().send.amount).toBe('2');
       expect(useStore.getState().send.validationErrors.amount).toBeTruthy();
 
       // change asset with higher balance
       useStore.getState().send.setAsset(asset2);
-      expect(useStore.getState().send.amount).toBe('2');
+      useStore.getState().send.setAssetBalance(100);
       expect(useStore.getState().send.validationErrors.amount).toBeFalsy();
     });
   });
@@ -116,6 +154,13 @@ describe('Send Slice', () => {
     test('asset can be set', () => {
       useStore.getState().send.setAsset(asset);
       expect(useStore.getState().send.asset).toBe(asset);
+    });
+  });
+
+  describe('setAssetBalance', () => {
+    test('asset balance can be set', () => {
+      useStore.getState().send.setAssetBalance(10);
+      expect(useStore.getState().send.assetBalance).toBe(10);
     });
   });
 });

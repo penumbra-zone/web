@@ -4,7 +4,10 @@ import { Button, Switch } from 'ui';
 import { FilledImage, InputBlock, InputToken } from '../../shared';
 import { useStore } from '../../state';
 import { sendSelector } from '../../state/send';
-import { validateAmount, validateRecipient } from '../../utils';
+import { calculateBalance, validateAmount, validateRecipient } from '../../utils';
+import { useBalance } from '../../hooks';
+import { useEffect } from 'react';
+import { LoHi, uint8ArrayToBase64 } from 'penumbra-types';
 
 export const SendForm = () => {
   const {
@@ -14,12 +17,36 @@ export const SendForm = () => {
     memo,
     hidden,
     validationErrors,
+    assetBalance,
     setAmount,
     setAsset,
     setRecipient,
     setMemo,
     setHidden,
+    setAssetBalance,
   } = useStore(sendSelector);
+  const balance = useBalance(0);
+
+  useEffect(() => {
+    if (!balance.end) return;
+    const selectedAsset = balance.data.find(
+      i =>
+        i.balance?.assetId?.inner &&
+        uint8ArrayToBase64(i.balance.assetId.inner) === asset.penumbraAssetId.inner,
+    );
+
+    if (!selectedAsset) {
+      setAssetBalance(0);
+      return;
+    }
+
+    const loHi: LoHi = {
+      lo: selectedAsset.balance?.amount?.lo ?? 0n,
+      hi: selectedAsset.balance?.amount?.hi ?? 0n,
+    };
+
+    setAssetBalance(calculateBalance(loHi, asset));
+  }, [balance, asset, setAssetBalance]);
 
   return (
     <form
@@ -53,18 +80,14 @@ export const SendForm = () => {
           if (Number(e.target.value) < 0) return;
           setAmount(e.target.value);
         }}
-        validations={
-          // if the user has no balance, do not confirm the validation
-          asset
-            ? [
-                {
-                  type: 'error',
-                  issue: 'insufficient funds',
-                  checkFn: (amount: string) => validateAmount(amount, asset.balance),
-                },
-              ]
-            : undefined
-        }
+        assetBalance={assetBalance}
+        validations={[
+          {
+            type: 'error',
+            issue: 'insufficient funds',
+            checkFn: (amount: string) => validateAmount(amount, assetBalance),
+          },
+        ]}
       />
       <InputBlock
         label='Memo'
@@ -83,9 +106,7 @@ export const SendForm = () => {
         type='submit'
         variant='gradient'
         className='mt-4'
-        disabled={
-          !amount || !recipient || !asset || !!Object.values(validationErrors).find(Boolean)
-        }
+        disabled={!amount || !recipient || !!Object.values(validationErrors).find(Boolean)}
       >
         Send
       </Button>

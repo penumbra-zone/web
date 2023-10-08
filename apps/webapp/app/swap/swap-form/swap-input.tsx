@@ -1,14 +1,14 @@
 import React from 'react';
 import { Input, InputProps } from 'ui';
-import { Asset } from '../../../types/asset';
 import { Validation } from '../../../types/utility';
 import { cn } from 'ui/lib/utils';
 import { useValidationResult } from '../../../hooks';
 import { FilledImage, SelectTokenModal } from '../../../shared';
 import { formatNumber } from '../../../utils';
+import { Asset } from 'penumbra-constants';
 
 interface SwapInputProps extends InputProps {
-  asset: Asset | undefined;
+  asset: Asset;
   placeholder: string;
   className?: string;
   value: string;
@@ -51,12 +51,12 @@ export const SwapInput = ({
       </div>
       <div className='flex items-center justify-between'>
         <p className='text-base font-bold text-muted-foreground'>
-          ${formatNumber(asset?.usdcValue ?? 0)}
+          {/* ${formatNumber(asset?.usdcValue ?? 0)} */}
         </p>
         {showBalance && (
           <div className='flex items-start gap-1'>
             <FilledImage src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
-            <p className='font-bold text-muted-foreground'>{formatNumber(asset?.balance ?? 0)}</p>
+            {/* <p className='font-bold text-muted-foreground'>{formatNumber(asset?.balance ?? 0)}</p> */}
           </div>
         )}
       </div>

@@ -1,42 +1,31 @@
 'use client';
 
 import { Card, Table, TableBody, TableCell, TableRow } from 'ui';
-import { useStore } from '../../state';
-import { swapSelector } from '../../state/swap';
-import { Fragment, useEffect, useState } from 'react';
-import { Asset } from '../../types/asset';
-import { assetsStatistics } from './constants';
+import { Fragment, useState } from 'react';
 import { FilledImage } from '../../shared';
 import { formatNumber } from '../../utils';
 import { cn } from 'ui/lib/utils';
+import { Asset } from 'penumbra-constants';
 
 export const AssetStatistics = () => {
-  const { pay, receive } = useStore(swapSelector);
+  // const { pay, receive } = useStore(swapSelector);
 
-  const [firstAsset, setFirstAsset] = useState<
-    (Asset & { price: number; '24h': number }) | undefined
-  >(undefined);
-  const [secondAsset, setSecondAsset] = useState<
-    (Asset & { price: number; '24h': number }) | undefined
-  >(undefined);
+  const [firstAsset] = useState<(Asset & { price: number; '24h': number }) | undefined>(undefined);
+  const [secondAsset] = useState<(Asset & { price: number; '24h': number }) | undefined>(undefined);
 
-  useEffect(() => {
-    if (!pay.asset) {
-      setFirstAsset(undefined);
-      return;
-    }
-    const asset = assetsStatistics.find(i => i.name === pay.asset?.name)!;
-    setFirstAsset({ ...asset, ...pay.asset });
-  }, [pay]);
+  // useEffect(() => {
+  //   const asset = assetsStatistics.find(i => i.name === pay.asset)!;
+  //   setFirstAsset({ ...asset, ...pay.asset });
+  // }, [pay]);
 
-  useEffect(() => {
-    if (!receive.asset) {
-      setSecondAsset(undefined);
-      return;
-    }
-    const asset = assetsStatistics.find(i => i.name === receive.asset?.name)!;
-    setSecondAsset({ ...asset, ...receive.asset });
-  }, [receive]);
+  // useEffect(() => {
+  //   if (!receive.asset) {
+  //     setSecondAsset(undefined);
+  //     return;
+  //   }
+  //   const asset = assetsStatistics.find(i => i.name === receive.asset?.name)!;
+  //   setSecondAsset({ ...asset, ...receive.asset });
+  // }, [receive]);
 
   return (
     <>
@@ -52,11 +41,13 @@ export const AssetStatistics = () => {
                   <TableRow key={asset.name} className='border-b-[0px]'>
                     <TableCell className='py-3'>
                       <div className='flex items-end gap-2'>
-                        <FilledImage
-                          src={asset.icon}
-                          alt='Asset icon'
-                          className='h-[30px] w-[30px]'
-                        />
+                        {asset.icon && (
+                          <FilledImage
+                            src={asset.icon}
+                            alt='Asset icon'
+                            className='h-[30px] w-[30px]'
+                          />
+                        )}
                         <p className='text-base font-bold text-light-grey'>{asset.name}</p>
                       </div>
                     </TableCell>
