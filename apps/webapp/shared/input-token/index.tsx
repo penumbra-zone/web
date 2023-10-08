@@ -5,9 +5,12 @@ import { cn } from 'ui/lib/utils';
 import { useValidationResult } from '../../hooks';
 import { Validation } from '../../types/utility';
 import { FilledImage } from '../filled-image';
-import { SelectTokenModal } from '../select-token-modal';
 import { Asset } from 'penumbra-constants';
 import { formatNumber } from '../../utils';
+import dynamic from 'next/dynamic';
+const SelectTokenModal = dynamic(() => import('../select-token-modal'), {
+  ssr: false,
+});
 
 interface InputTokenProps extends InputProps {
   label: string;
@@ -21,7 +24,7 @@ interface InputTokenProps extends InputProps {
   validations?: Validation[];
 }
 
-export const InputToken = ({
+export default function InputToken({
   label,
   placeholder,
   asset,
@@ -32,7 +35,7 @@ export const InputToken = ({
   inputClassName,
   setAsset,
   ...props
-}: InputTokenProps) => {
+}: InputTokenProps) {
   const validationResult = useValidationResult(value, validations);
 
   return (
@@ -69,4 +72,4 @@ export const InputToken = ({
       </div>
     </div>
   );
-};
+}

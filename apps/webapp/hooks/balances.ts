@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { client } from '../extension-client';
 import { useStreamQuery } from 'penumbra-transport';
 
-export const useBalance = (account: number) => {
+export const useBalances = (account: number) => {
   const balances = useMemo(
     () =>
       client.balances({
@@ -15,7 +15,7 @@ export const useBalance = (account: number) => {
         // 	inner: base64ToUint8Array(assetId)
         // }
       }),
-    [account],
+    [],
   );
 
   const { data, end, error } = useStreamQuery(balances);

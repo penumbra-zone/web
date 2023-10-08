@@ -1,14 +1,18 @@
 import { useStore } from '../../state';
 import { ibcSelector } from '../../state/ibc';
-import { FilledImage, InputToken } from '../../shared';
+import { FilledImage } from '../../shared';
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui';
 import { chains } from './constants';
-import { useBalance } from '../../hooks';
 import { useEffect } from 'react';
 import { LoHi, uint8ArrayToBase64 } from 'penumbra-types';
 import { calculateBalance, validateAmount } from '../../utils';
+import dynamic from 'next/dynamic';
+import { useBalances } from '../../hooks/balances';
+const InputToken = dynamic(() => import('../../shared/input-token'), {
+  ssr: false,
+});
 
-export const IbcForm = () => {
+export default function IbcForm() {
   const {
     amount,
     asset,
@@ -20,11 +24,12 @@ export const IbcForm = () => {
     setChain,
     setAssetBalance,
   } = useStore(ibcSelector);
-  const balance = useBalance(0);
+
+  const { data, end } = useBalances(0);
 
   useEffect(() => {
-    if (!balance.end) return;
-    const selectedAsset = balance.data.find(
+    if (!end) return;
+    const selectedAsset = data.find(
       i =>
         i.balance?.assetId?.inner &&
         uint8ArrayToBase64(i.balance.assetId.inner) === asset.penumbraAssetId.inner,
@@ -41,7 +46,7 @@ export const IbcForm = () => {
     };
 
     setAssetBalance(calculateBalance(loHi, asset));
-  }, [balance, asset, setAssetBalance]);
+  }, [end, data, asset, setAssetBalance]);
 
   return (
     <form
@@ -108,4 +113,4 @@ export const IbcForm = () => {
       </Button>
     </form>
   );
-};
+}

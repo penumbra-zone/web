@@ -3,10 +3,14 @@ import { Input, InputProps } from 'ui';
 import { Validation } from '../../../types/utility';
 import { cn } from 'ui/lib/utils';
 import { useValidationResult } from '../../../hooks';
-import { FilledImage, SelectTokenModal } from '../../../shared';
+import { FilledImage } from '../../../shared';
 import { formatNumber } from '../../../utils';
 import { Asset } from 'penumbra-constants';
 import { SwapAssetInfo } from '../../../state/swap';
+import dynamic from 'next/dynamic';
+const SelectTokenModal = dynamic(() => import('../../../shared/select-token-modal'), {
+  ssr: false,
+});
 
 interface SwapInputProps extends InputProps {
   asset: SwapAssetInfo & { price: number };
@@ -16,14 +20,14 @@ interface SwapInputProps extends InputProps {
   validations?: Validation[];
 }
 
-export const SwapInput = ({
+export default function SwapInput({
   placeholder,
   asset,
   className,
   validations,
   setAsset,
   ...props
-}: SwapInputProps) => {
+}: SwapInputProps) {
   const validationResult = useValidationResult(asset.amount, validations);
 
   return (
@@ -59,4 +63,4 @@ export const SwapInput = ({
       </div>
     </div>
   );
-};
+}

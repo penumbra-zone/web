@@ -5,23 +5,23 @@ import { useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogPrimitive, DialogTrigger, Input } from 'ui';
 import { FilledImage } from './filled-image';
 import { Asset, assets } from 'penumbra-constants';
-import { useBalance } from '../hooks';
 import { uint8ArrayToBase64 } from 'penumbra-types';
 import { calculateBalance, formatNumber } from '../utils';
+import { useBalances } from '../hooks/balances';
 
 interface SelectTokenModalProps {
   asset: Asset;
   setAsset: (asset: Asset) => void;
 }
 
-export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => {
-  const balances = useBalance(0);
+export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalProps) {
+  const { data, end, error } = useBalances(0);
 
   const [search, setSearch] = useState('');
 
   const filteredAsset: (Asset & { balance: number })[] = useMemo(() => {
     // if tream in progress or error show asset list with zero balance
-    if (!balances.end || balances.error)
+    if (!end || error)
       return [...assets].map(asset => ({
         ...asset,
         balance: 0,
@@ -29,7 +29,7 @@ export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => 
 
     const assetCalculateBalance = [...assets].map(asset => {
       // find same asset from balances and asset list
-      const equalAsset = balances.data.find(
+      const equalAsset = data.find(
         bal =>
           bal.balance?.assetId?.inner &&
           uint8ArrayToBase64(bal.balance.assetId.inner) === asset.penumbraAssetId.inner,
@@ -63,7 +63,7 @@ export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => 
 
     // Filter the sorted assets based on a case-insensitive search query.
     return sortedAsset.filter(asset => asset.display.toLowerCase().includes(search.toLowerCase()));
-  }, [search, balances]);
+  }, [search, data, end, error]);
 
   return (
     <Dialog>
@@ -116,4 +116,4 @@ export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => 
       </DialogContent>
     </Dialog>
   );
-};
+}

@@ -1,21 +1,25 @@
+import { LoHi, uint8ArrayToBase64 } from 'penumbra-types';
+import { useEffect } from 'react';
 import { Button } from 'ui';
 import { FilledImage } from '../../../shared';
 import { useStore } from '../../../state';
 import { SwapInputs, swapSelector } from '../../../state/swap';
-import { SwapInput } from './swap-input';
-import { useBalance } from '../../../hooks';
-import { useEffect } from 'react';
-import { LoHi, uint8ArrayToBase64 } from 'penumbra-types';
 import { calculateBalance, validateAmount } from '../../../utils';
+import dynamic from 'next/dynamic';
+import { useBalances } from '../../../hooks/balances';
+const SwapInput = dynamic(() => import('./swap-input'), {
+  ssr: false,
+});
 
-export const SwapForm = () => {
+export default function SwapForm() {
   const { pay, receive, validationErrors, setAmount, setAsset, replaceAsset, setAssetBalance } =
     useStore(swapSelector);
-  const balance = useBalance(0);
+
+  const { data, end } = useBalances(0);
 
   useEffect(() => {
-    if (!balance.end) return;
-    const selectedAsset = balance.data.find(
+    if (!end) return;
+    const selectedAsset = data.find(
       i =>
         i.balance?.assetId?.inner &&
         uint8ArrayToBase64(i.balance.assetId.inner) === pay.asset.penumbraAssetId.inner,
@@ -32,7 +36,7 @@ export const SwapForm = () => {
     };
 
     setAssetBalance(calculateBalance(loHi, pay.asset));
-  }, [balance, pay.asset, setAssetBalance]);
+  }, [data, end, pay.asset, setAssetBalance]);
 
   return (
     <form
@@ -87,4 +91,4 @@ export const SwapForm = () => {
       </Button>
     </form>
   );
-};
+}

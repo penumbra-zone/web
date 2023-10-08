@@ -1,15 +1,19 @@
 'use client';
 
 import { Button, Switch } from 'ui';
-import { FilledImage, InputBlock, InputToken } from '../../shared';
+import { FilledImage, InputBlock } from '../../shared';
 import { useStore } from '../../state';
 import { sendSelector } from '../../state/send';
 import { calculateBalance, validateAmount, validateRecipient } from '../../utils';
-import { useBalance } from '../../hooks';
 import { useEffect } from 'react';
 import { LoHi, uint8ArrayToBase64 } from 'penumbra-types';
+import dynamic from 'next/dynamic';
+import { useBalances } from '../../hooks/balances';
+const InputToken = dynamic(() => import('../../shared/input-token'), {
+  ssr: false,
+});
 
-export const SendForm = () => {
+export default function SendForm() {
   const {
     amount,
     asset,
@@ -25,11 +29,12 @@ export const SendForm = () => {
     setHidden,
     setAssetBalance,
   } = useStore(sendSelector);
-  const balance = useBalance(0);
+
+  const { data, end } = useBalances(0);
 
   useEffect(() => {
-    if (!balance.end) return;
-    const selectedAsset = balance.data.find(
+    if (!end) return;
+    const selectedAsset = data.find(
       i =>
         i.balance?.assetId?.inner &&
         uint8ArrayToBase64(i.balance.assetId.inner) === asset.penumbraAssetId.inner,
@@ -46,7 +51,7 @@ export const SendForm = () => {
     };
 
     setAssetBalance(calculateBalance(loHi, asset));
-  }, [balance, asset, setAssetBalance]);
+  }, [data, end, asset, setAssetBalance]);
 
   return (
     <form
@@ -112,4 +117,4 @@ export const SendForm = () => {
       </Button>
     </form>
   );
-};
+}
