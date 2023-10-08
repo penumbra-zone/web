@@ -3,9 +3,11 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogPrimitive, DialogTrigger, Input } from 'ui';
-// import { formatNumber } from '../utils';
 import { FilledImage } from './filled-image';
 import { Asset, assets } from 'penumbra-constants';
+import { useBalance } from '../hooks';
+import { uint8ArrayToBase64 } from 'penumbra-types';
+import { calculateBalance, formatNumber } from '../utils';
 
 interface SelectTokenModalProps {
   asset: Asset;
@@ -13,12 +15,45 @@ interface SelectTokenModalProps {
 }
 
 export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => {
+  const balances = useBalance(0);
+
   const [search, setSearch] = useState('');
 
-  const filteredAsset = useMemo(() => {
-    const sortedAsset = [...assets].sort((a, b) => {
+  const filteredAsset: (Asset & { balance: number })[] = useMemo(() => {
+    // if tream in progress or error show asset list with zero balance
+    if (!balances.end || balances.error)
+      return [...assets].map(asset => ({
+        ...asset,
+        balance: 0,
+      }));
+
+    const assetCalculateBalance = [...assets].map(asset => {
+      // find same asset from balances and asset list
+      const equalAsset = balances.data.find(
+        bal =>
+          bal.balance?.assetId?.inner &&
+          uint8ArrayToBase64(bal.balance.assetId.inner) === asset.penumbraAssetId.inner,
+      );
+
+      //initial balance is 0
+      let balance = 0;
+
+      if (equalAsset) {
+        // if find same asset then calculate balance
+        const loHi = {
+          lo: equalAsset.balance?.amount?.lo ?? 0n,
+          hi: equalAsset.balance?.amount?.hi ?? 0n,
+        };
+
+        balance = calculateBalance(loHi, asset);
+      }
+
+      return { ...asset, balance };
+    });
+
+    const sortedAsset = [...assetCalculateBalance].sort((a, b) => {
       // Sort by balance in descending order (largest to smallest).
-      // if (a.balance !== b.balance) return b.balance - a.balance;
+      if (a.balance !== b.balance) return b.balance - a.balance;
       // If balances are equal, sort by asset name in ascending order
       return a.name.localeCompare(b.display);
     });
@@ -28,7 +63,7 @@ export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => 
 
     // Filter the sorted assets based on a case-insensitive search query.
     return sortedAsset.filter(asset => asset.display.toLowerCase().includes(search.toLowerCase()));
-  }, [search]);
+  }, [search, balances]);
 
   return (
     <Dialog>
@@ -70,7 +105,7 @@ export const SelectTokenModal = ({ asset, setAsset }: SelectTokenModalProps) => 
                       )}
                       <p className='font-bold text-muted-foreground'>{asset.display}</p>
                     </div>
-                    {/* <p className='font-bold text-muted-foreground'>{formatNumber(asset.balance)}</p> */}
+                    <p className='font-bold text-muted-foreground'>{formatNumber(asset.balance)}</p>
                   </div>
                 </DialogPrimitive.Close>
               ))}
