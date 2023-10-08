@@ -16,6 +16,7 @@
     "@connectrpc/connect": "^1.0.0",
     "@tanstack/react-query": "^4.35.7",
     "next": "^13.5.3",
+    "penumbra-constants": "workspace:*",
     "penumbra-transport": "workspace:*",
     "penumbra-types": "workspace:*",
     "react": "^18.2.0",

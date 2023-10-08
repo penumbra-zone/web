@@ -1,9 +1,15 @@
+'use client';
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'ui';
 import { FilledImage } from '../../shared';
 import { assets } from '../send/constants';
 import { formatNumber } from '../../utils';
 
 export const AssetsTable = () => {
+  // TODO get balances
+  // const balances = useMemo(() => client.balances({}), []);
+  // const { data, end, error } = useStreamQuery(balances);
+
   return (
     <Table>
       <TableHeader>
