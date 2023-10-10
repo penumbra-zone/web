@@ -64,6 +64,7 @@ const NoteRecordSchema = z.object({
   position: z.string(),
   source: InnerBase64Schema,
   heightSpent: z.bigint().optional(),
+  heightCreated: z.string().optional(),
 });
 
 export type NewNoteRecord = z.infer<typeof NoteRecordSchema>;
