@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { client } from '../extension-client';
 import { useStreamQuery } from 'penumbra-transport';
 
-export const useBalances = (account: number) => {
+export const useBalances = ({ account }: { account: number }) => {
   const balances = useMemo(
     () =>
       client.balances({

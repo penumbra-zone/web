@@ -30,7 +30,7 @@ export default function SendForm() {
     setAssetBalance,
   } = useStore(sendSelector);
 
-  const { data, end } = useBalances(0);
+  const { data, end } = useBalances({ account: 0 });
 
   useEffect(() => {
     if (!end) return;

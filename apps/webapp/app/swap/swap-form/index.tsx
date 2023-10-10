@@ -18,7 +18,7 @@ export default function SwapForm() {
   const { pay, receive, validationErrors, setAmount, setAsset, replaceAsset, setAssetBalance } =
     useStore(swapSelector);
 
-  const { data, end } = useBalances(0);
+  const { data, end } = useBalances({ account: 0 });
 
   useEffect(() => {
     if (!end) return;

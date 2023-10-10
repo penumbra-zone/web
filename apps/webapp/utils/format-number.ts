@@ -16,6 +16,9 @@ export const formatNumber = (number: number): string => {
     const zeroDecimalsLength = -Math.floor(Math.log(number) / Math.log(10) + 1);
     fraction.maximumFractionDigits = zeroDecimalsLength + 2;
     fraction.minimumFractionDigits = zeroDecimalsLength + 2;
+  } else if (number - Math.floor(number) === 0) {
+    fraction.maximumFractionDigits = 0;
+    fraction.minimumFractionDigits = 0;
   }
 
   return number.toLocaleString('en-US', fraction);

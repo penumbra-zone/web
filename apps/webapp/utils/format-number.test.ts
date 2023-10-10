@@ -20,7 +20,7 @@ describe('Format number tests', () => {
 
     test('a number greater than 1000 is separated by a thousandth comma', () => {
       const numThreeMillion = 3_000_000;
-      expect(formatNumber(numThreeMillion)).equal('3,000,000.00');
+      expect(formatNumber(numThreeMillion)).equal('3,000,000');
     });
 
     test('a number less than 1 with 6 zero decimals', () => {

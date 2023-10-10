@@ -25,7 +25,7 @@ export default function IbcForm() {
     setAssetBalance,
   } = useStore(ibcSelector);
 
-  const { data, end } = useBalances(0);
+  const { data, end } = useBalances({ account: 0 });
 
   useEffect(() => {
     if (!end) return;
