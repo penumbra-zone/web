@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import {
+  AssetId,
+  DenomMetadata as DenomMetadataProto,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 const AssetIdSchema = z.object({
   inner: z.instanceof(Uint8Array),
@@ -25,3 +29,20 @@ export const DenomMetadataSchema = z.object({
 });
 
 export type DenomMetadata = z.infer<typeof DenomMetadataSchema>;
+
+export const denomToProto = (d: DenomMetadata): DenomMetadataProto => {
+  return new DenomMetadataProto({
+    description: d.description,
+    denomUnits: d.denomUnits,
+    base: d.base,
+    display: d.display,
+    name: d.name,
+    symbol: d.symbol,
+    uri: d.uri,
+    uriHash: d.uriHash,
+    penumbraAssetId: d.penumbraAssetId ? d.penumbraAssetId : new AssetId(),
+  });
+};
+
+export const denomsToProto = (denoms: DenomMetadata[]): DenomMetadataProto[] =>
+  denoms.map(denomToProto);

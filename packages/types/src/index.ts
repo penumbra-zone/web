@@ -11,6 +11,6 @@ export * from './utility';
 export * from './block';
 export * from './denom';
 export * from './note-source';
-export * from './transaction/view';
-export * from './transaction/decoded';
+export * from './transaction';
 export * from './hex';
+export * from './note';

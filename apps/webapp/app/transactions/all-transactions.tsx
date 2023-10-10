@@ -19,6 +19,9 @@ export default function AllTransactions() {
           <div key={i}>
             <div>Tx hash: {r.txInfo?.id?.hash && uint8ArrayToHex(r.txInfo.id.hash)}</div>
             <div className='ml-5'>Block height: {Number(r.txInfo?.height)}</div>
+            <div className='ml-5'>
+              Actions: {r.txInfo?.transaction?.body?.actions.map(a => a.action.case).join(', ')}
+            </div>
           </div>
         );
       })}
