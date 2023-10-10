@@ -9,7 +9,7 @@ import { useMemo } from 'react';
 export default function AssetsTable() {
   const sortedAssets = useSortedAssets('usdcValue');
 
-  const assettsWithPercentage = useMemo(() => {
+  const assetsWithPercentage = useMemo(() => {
     const sum = sortedAssets.reduce((acc, asset) => acc + asset.balance.usdcValue, 0);
 
     return sortedAssets.map(asset => ({
@@ -17,6 +17,8 @@ export default function AssetsTable() {
       percentageOf: (asset.balance.usdcValue / sum) * 100,
     }));
   }, [sortedAssets]);
+
+  console.log(assetsWithPercentage);
 
   return (
     <Table>
@@ -29,7 +31,7 @@ export default function AssetsTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {assettsWithPercentage
+        {assetsWithPercentage
           .filter(asset => asset.balance.usdcValue)
           .map(asset => (
             <TableRow key={asset.denomMetadata.display}>
