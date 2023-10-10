@@ -14,10 +14,10 @@ export const AssetStatistics = () => {
 
   const [firstAsset, setFirstAsset] = useState<
     (Asset & { price: number; '24h': number }) | undefined
-  >(undefined);
+  >();
   const [secondAsset, setSecondAsset] = useState<
     (Asset & { price: number; '24h': number }) | undefined
-  >(undefined);
+  >();
 
   useEffect(() => {
     setFirstAsset({ ...pay.asset, price: 10, '24h': -0.05 });
