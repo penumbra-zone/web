@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import { InnerBase64Schema } from './base64';
-import { NoteSchema } from './note';
+import {
+  SpendableNoteRecord,
+  SwapRecord,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
 export const Position = z.object({
   epoch: z.number(),
@@ -28,7 +31,7 @@ export type StoreHash = z.infer<typeof StoreHashSchema>;
 
 export const StoreCommitmentSchema = z.object({
   position: Position,
-  commitment: z.unknown(),
+  commitment: InnerBase64Schema,
 });
 
 export type StoreCommitment = z.infer<typeof StoreCommitmentSchema>;
@@ -41,7 +44,7 @@ export const DeleteRange = z.object({
   }),
 });
 
-export const NctUpdatesSchema = z.object({
+export const SctUpdatesSchema = z.object({
   set_position: StoredPositionSchema.optional(),
   set_forgotten: z.number().optional(),
   store_commitments: z.array(StoreCommitmentSchema),
@@ -49,34 +52,50 @@ export const NctUpdatesSchema = z.object({
   delete_ranges: z.array(DeleteRange),
 });
 
-export type NctUpdates = z.infer<typeof NctUpdatesSchema>;
+export type SctUpdates = z.infer<typeof SctUpdatesSchema>;
 
-const AddressIndexSchema = z.object({
-  account: z.number().optional(),
-  randomizer: z.string(),
-});
+// const AddressIndexSchema = z.object({
+//   account: z.number().optional(),
+//   randomizer: z.string(),
+// });
 
-const NoteRecordSchema = z.object({
-  noteCommitment: InnerBase64Schema,
-  note: NoteSchema,
-  addressIndex: AddressIndexSchema,
-  nullifier: InnerBase64Schema,
-  position: z.string(),
-  source: InnerBase64Schema,
-  heightSpent: z.bigint().optional(),
-  heightCreated: z.string().optional(),
-});
+// const NoteRecordJsSchema = z.object({
+//   noteCommitment: InnerBase64Schema,
+//   note: NoteSchema,
+//   addressIndex: AddressIndexSchema,
+//   nullifier: InnerBase64Schema,
+//   position: z.string(),
+//   source: InnerBase64Schema,
+//   heightSpent: z.bigint().optional(),
+//   heightCreated: z.string().optional(),
+// });
 
-export type NewNoteRecord = z.infer<typeof NoteRecordSchema>;
+// export type NewNoteRecord = z.infer<typeof NoteRecordJsSchema>;
 
 export const ScanResultSchema = z.object({
   height: z.number(),
-  nct_updates: NctUpdatesSchema,
-  new_notes: z.array(NoteRecordSchema),
+  nct_updates: SctUpdatesSchema,
+  new_notes: z.array(z.unknown()),
   new_swaps: z.array(z.unknown()),
 });
 
-export type ScanResult = z.infer<typeof ScanResultSchema>;
+export type RawScanResult = z.infer<typeof ScanResultSchema>;
+
+export interface ScanResult {
+  height: number;
+  sctUpdates: z.infer<typeof SctUpdatesSchema>;
+  newNotes: SpendableNoteRecord[];
+  newSwaps: SwapRecord[];
+}
+
+export const parseScanResult = (r: RawScanResult): ScanResult => {
+  return {
+    height: r.height,
+    sctUpdates: r.nct_updates,
+    newNotes: r.new_notes.map(n => SpendableNoteRecord.fromJsonString(JSON.stringify(n))),
+    newSwaps: r.new_swaps.map(s => SwapRecord.fromJsonString(JSON.stringify(s))),
+  };
+};
 
 export const StateCommitmentTreeSchema = z.object({
   last_position: StoredPositionSchema,

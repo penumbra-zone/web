@@ -3,6 +3,7 @@ import { createClient } from './utils';
 import {
   ChainParametersRequest,
   KeyValueRequest,
+  KeyValueResponse_Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1alpha1/app_pb';
 import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/app/v1alpha1/app_connect';
 
@@ -19,7 +20,7 @@ export class AppQuerier {
     return res.chainParameters!;
   }
 
-  async keyValue(key: string): Promise<Uint8Array> {
+  async keyValue(key: string): Promise<KeyValueResponse_Value['value']> {
     const keyValueRequest = new KeyValueRequest({ key });
     const keyValue = await this.client.keyValue(keyValueRequest);
     return keyValue.value!.value;

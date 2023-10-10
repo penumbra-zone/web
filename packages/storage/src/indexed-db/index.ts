@@ -1,15 +1,19 @@
 import { IDBPDatabase, openDB } from 'idb';
 import {
-  Base64Str,
-  DenomMetadata,
   IndexedDbInterface,
-  NctUpdates,
-  NewNoteRecord,
   PenumbraDb,
+  SctUpdates,
   StateCommitmentTree,
   StoredTransaction,
 } from 'penumbra-types';
 import { IbdUpdater, IbdUpdates, TableUpdateNotifier } from './updater';
+import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import {
+  AssetId,
+  DenomMetadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -59,7 +63,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   // All updates must be atomic in order to prevent invalid tree state
-  public async updateStateCommitmentTree(updates: NctUpdates, height: bigint) {
+  public async updateStateCommitmentTree(updates: SctUpdates, height: bigint) {
     const txs = new IbdUpdates();
 
     if (updates.set_position) {
@@ -97,16 +101,17 @@ export class IndexedDb implements IndexedDbInterface {
     return this.db.get('last_block_synced', 'last_block');
   }
 
-  async getNoteByNullifier(nullifier: Base64Str) {
-    return this.db.getFromIndex('spendable_notes', 'nullifier', nullifier);
+  async getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined> {
+    return this.db.getFromIndex('spendable_notes', 'nullifier', nullifier.inner);
   }
 
-  async saveSpendableNote(note: NewNoteRecord) {
+  async saveSpendableNote(note: SpendableNoteRecord) {
+    if (!note.noteCommitment?.inner) throw new Error('noteCommitment not present');
     await this.u.update({ table: 'spendable_notes', value: note, key: note.noteCommitment.inner });
   }
 
-  async getAssetsMetadata(assetId: Uint8Array) {
-    return this.db.get('assets', assetId);
+  async getAssetsMetadata(assetId: AssetId): Promise<DenomMetadata | undefined> {
+    return this.db.get('assets', assetId.inner);
   }
 
   async saveAssetsMetadata(metadata: DenomMetadata) {
@@ -125,7 +130,7 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({ table: 'transactions', value: tx });
   }
 
-  async getTransaction(id: StoredTransaction['id']): Promise<StoredTransaction | undefined> {
-    return this.db.get('transactions', id);
+  async getTransaction(source: NoteSource): Promise<StoredTransaction | undefined> {
+    return this.db.get('transactions', source.inner);
   }
 }

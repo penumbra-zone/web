@@ -1,28 +1,33 @@
 import { DBSchema } from 'idb';
 import {
-  NctUpdates,
-  NewNoteRecord,
+  SctUpdates,
   StateCommitmentTree,
   StoreCommitment,
   StoredPosition,
   StoreHash,
 } from './state-commitment-tree';
-import { Base64Str } from './base64';
-import { DenomMetadata } from './denom';
 import { StoredTransaction } from './transaction';
+import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import {
+  AssetId,
+  DenomMetadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 
 export interface IndexedDbInterface {
   getLastBlockSynced(): Promise<bigint | undefined>;
-  getNoteByNullifier(nullifier: Base64Str): Promise<NewNoteRecord | undefined>;
-  saveSpendableNote(note: NewNoteRecord): Promise<void>;
+  getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
+  saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
   saveTransactionInfo(tx: StoredTransaction): Promise<void>;
-  getTransaction(id: StoredTransaction['id']): Promise<StoredTransaction | undefined>;
+  getTransaction(source: NoteSource): Promise<StoredTransaction | undefined>;
   getAllTransactions(): Promise<StoredTransaction[]>;
-  getAssetsMetadata(assetId: Uint8Array): Promise<DenomMetadata | undefined>;
+  getAssetsMetadata(assetId: AssetId): Promise<DenomMetadata | undefined>;
   saveAssetsMetadata(metadata: DenomMetadata): Promise<void>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
-  updateStateCommitmentTree(updates: NctUpdates, height: bigint): Promise<void>;
-  getAllNotes(): Promise<NewNoteRecord[]>;
+  updateStateCommitmentTree(updates: SctUpdates, height: bigint): Promise<void>;
+  getAllNotes(): Promise<SpendableNoteRecord[]>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -43,20 +48,20 @@ export interface PenumbraDb extends DBSchema {
     value: StoreHash;
   };
   tree_commitments: {
-    key: Uint8Array;
+    key: StoreCommitment['commitment']['inner'];
     value: StoreCommitment;
   };
   assets: {
-    key: Uint8Array;
+    key: AssetId['inner'];
     value: DenomMetadata;
   };
   spendable_notes: {
-    key: Base64Str;
-    value: NewNoteRecord;
-    indexes: { nullifier: Base64Str };
+    key: StateCommitment['inner'];
+    value: SpendableNoteRecord;
+    indexes: { nullifier: Nullifier['inner'] };
   };
   transactions: {
-    key: Base64Str;
+    key: NoteSource['inner'];
     value: StoredTransaction;
   };
 }
