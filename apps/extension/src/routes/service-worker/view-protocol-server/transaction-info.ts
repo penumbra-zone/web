@@ -18,7 +18,6 @@ export const handleTransactionInfoReq = async function* (
   const responses = allTxs
     .filter(tx => tx.blockHeight >= req.startHeight && endHeightInclusive(tx, req))
     .map(storedTransactionToProto);
-  console.log(responses);
   yield* responses;
 };
 

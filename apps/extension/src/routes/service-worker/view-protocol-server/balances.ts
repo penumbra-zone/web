@@ -65,7 +65,7 @@ export const handleBalancesReq = async function* (
     const newAmount = addLoHi(
       { lo: amount.lo, hi: amount.hi },
       {
-        lo: BigInt(noteRecord.note.value.amount.lo),
+        lo: BigInt(noteRecord.note.value.amount.lo ?? 0n),
         hi: BigInt(noteRecord.note.value.amount.hi ?? 0n),
       },
     );
