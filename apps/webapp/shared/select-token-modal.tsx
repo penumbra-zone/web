@@ -1,22 +1,22 @@
 'use client';
 
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { Asset, AssetId, assets } from 'penumbra-constants';
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogPrimitive, DialogTrigger, Input } from 'ui';
-import { FilledImage } from './filled-image';
-import { Asset, assets } from 'penumbra-constants';
-import { formatNumber } from '../utils';
 import { useSortedAssets } from '../hooks/sorted-asset';
+import { formatNumber } from '../utils';
+import { FilledImage } from './filled-image';
 
 interface SelectTokenModalProps {
   asset: Asset;
-  setAsset: (asset: Asset) => void;
+  setAsset: (asset: AssetId) => void;
 }
 
 export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalProps) {
   const [search, setSearch] = useState('');
 
-  const sortedAssets = useSortedAssets('balance', search);
+  const sortedAssets = useSortedAssets('amount', search);
 
   return (
     <Dialog>
@@ -47,18 +47,26 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
             </div>
             <div className='flex flex-col gap-2'>
               {sortedAssets.map(asset => (
-                <DialogPrimitive.Close key={asset.display}>
+                <DialogPrimitive.Close key={asset.denomMetadata.display}>
                   <div
                     className='flex justify-between items-center py-[10px] cursor-pointer'
-                    onClick={() => setAsset(asset)}
+                    onClick={() => setAsset(asset.denomMetadata.penumbraAssetId)}
                   >
                     <div className='flex items-start gap-[6px]'>
-                      {asset.icon && (
-                        <FilledImage src={asset.icon} alt='Asset' className='w-5 h-5' />
+                      {asset.denomMetadata.icon && (
+                        <FilledImage
+                          src={asset.denomMetadata.icon}
+                          alt='Asset'
+                          className='w-5 h-5'
+                        />
                       )}
-                      <p className='font-bold text-muted-foreground'>{asset.display}</p>
+                      <p className='font-bold text-muted-foreground'>
+                        {asset.denomMetadata.display}
+                      </p>
                     </div>
-                    <p className='font-bold text-muted-foreground'>{formatNumber(asset.balance)}</p>
+                    <p className='font-bold text-muted-foreground'>
+                      {formatNumber(asset.balance.amount)}
+                    </p>
                   </div>
                 </DialogPrimitive.Close>
               ))}

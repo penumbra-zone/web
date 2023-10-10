@@ -16,7 +16,7 @@ export const Header = () => {
         <Notifications />
         <NetworksPopover triggerClassName='px-[9px]' />
         <div className='ml-1 flex items-center gap-3 rounded-lg border px-5 py-[7px]'>
-          {/* TODO add name in hardcore valur  */}
+         {/* TODO: replace hardcoded value  */}
           <Identicon
             name='penumbrav2t1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvsneeae42q63sumem7r096p7rd2tywm2v6ppc4'
             className='h-5 w-5 rounded-full'

@@ -4,26 +4,34 @@ import { useMemo } from 'react';
 import { uint8ArrayToBase64 } from 'penumbra-types';
 import { calculateBalance } from '../utils';
 
-export interface AssetBalances {
-  balance: number;
+export interface AssetBalance {
+  amount: number;
   usdcValue: number;
 }
 
-export type AssetWithBalances = Asset & AssetBalances;
+// export type AssetWithBalances = Omit<Asset, ''> & AssetBalances;
+
+interface AssetWithBalance {
+  denomMetadata: Pick<Asset, 'display' | 'icon' | 'penumbraAssetId'>;
+  balance: AssetBalance;
+}
 
 export const useSortedAssets = (
-  sortBy: 'balance' | 'usdcValue',
+  sortBy: 'amount' | 'usdcValue',
   search?: string,
-): AssetWithBalances[] => {
+): AssetWithBalance[] => {
   const { data, end, error } = useBalances(0);
 
-  const sortedAssets: AssetWithBalances[] = useMemo(() => {
+  const sortedAssets: AssetWithBalance[] = useMemo(() => {
     // if stream in progress or error show asset list with zero balance
     if (!end || error)
       return [...assets].map(asset => ({
         ...asset,
-        balance: 0,
-        usdcValue: 0,
+        denomMetadata: { ...asset },
+        balance: {
+          amount: 0,
+          usdcValue: 0,
+        },
       }));
 
     const assetCalculateBalance = [...assets].map(asset => {
@@ -35,7 +43,7 @@ export const useSortedAssets = (
       );
 
       //initial balance is 0
-      let balance = 0;
+      let amount = 0;
       let usdcValue = 0;
 
       if (equalAsset) {
@@ -47,26 +55,35 @@ export const useSortedAssets = (
 
         const assetBalance = calculateBalance(loHi, asset);
         const price = 0.1;
-        balance = assetBalance;
+        amount = assetBalance;
         usdcValue = assetBalance * price;
       }
 
-      return { ...asset, balance, usdcValue };
+      return {
+        denomMetadata: { ...asset },
+        balance: {
+          amount,
+          usdcValue,
+        },
+      };
     });
 
     const sortedAsset = [...assetCalculateBalance].sort((a, b) => {
       // Sort by  in descending order (largest to smallest).
-      if (a[sortBy] !== b[sortBy]) return b[sortBy] - a[sortBy];
+      if (a.balance[sortBy] !== b.balance[sortBy]) return b.balance[sortBy] - a.balance[sortBy];
 
       // If balances are equal, sort by asset name in ascending order
-      return a.name.localeCompare(b.display);
+      return a.denomMetadata.display.localeCompare(b.denomMetadata.display);
+      // return a.name.localeCompare(b.display);
     });
 
     // If no search query is provided, return the sorted assets directly.
     if (!search) return sortedAsset;
 
     // Filter the sorted assets based on a case-insensitive search query.
-    return sortedAsset.filter(asset => asset.display.toLowerCase().includes(search.toLowerCase()));
+    return sortedAsset.filter(asset =>
+      asset.denomMetadata.display.toLowerCase().includes(search.toLowerCase()),
+    );
   }, [search, data, end, error, sortBy]);
 
   return sortedAssets;

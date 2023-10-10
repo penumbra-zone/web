@@ -8,6 +8,12 @@ export const testnetConstants: Constants = {
   indexedDbVersion: 12,
 };
 
+export interface AssetId {
+  inner: string;
+  altBech32: string;
+  altBaseDenom: string;
+}
+
 export interface Asset {
   base: string;
   description: string;
@@ -21,11 +27,7 @@ export interface Asset {
     exponent: number;
     aliases: never[];
   }[];
-  penumbraAssetId: {
-    inner: string;
-    altBech32: string;
-    altBaseDenom: string;
-  };
+  penumbraAssetId: AssetId;
   icon?: string;
 }
 

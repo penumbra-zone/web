@@ -1,13 +1,12 @@
-import React from 'react';
+import dynamic from 'next/dynamic';
+import { AssetId } from 'penumbra-constants';
 import { Input, InputProps } from 'ui';
-import { Validation } from '../../../types/utility';
 import { cn } from 'ui/lib/utils';
 import { useValidationResult } from '../../../hooks';
 import { FilledImage } from '../../../shared';
-import { formatNumber } from '../../../utils';
-import { Asset } from 'penumbra-constants';
 import { SwapAssetInfo } from '../../../state/swap';
-import dynamic from 'next/dynamic';
+import { Validation } from '../../../types/utility';
+import { formatNumber } from '../../../utils';
 const SelectTokenModal = dynamic(() => import('../../../shared/select-token-modal'), {
   ssr: false,
 });
@@ -16,7 +15,7 @@ interface SwapInputProps extends InputProps {
   asset: SwapAssetInfo & { price: number };
   placeholder: string;
   className?: string;
-  setAsset: (asset: Asset) => void;
+  setAsset: (asset: AssetId) => void;
   validations?: Validation[];
 }
 

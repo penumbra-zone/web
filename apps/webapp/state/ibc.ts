@@ -1,4 +1,4 @@
-import { Asset, assets } from 'penumbra-constants';
+import { Asset, AssetId, assets } from 'penumbra-constants';
 import { AllSlices, SliceCreator } from '.';
 import { Chain } from '../app/send/types';
 import { validateAmount } from '../utils';
@@ -14,7 +14,7 @@ export interface IbcSendSlice {
   assetBalance: number;
   validationErrors: IbcValidationFields;
   setAmount: (amount: string) => void;
-  setAsset: (asset: Asset) => void;
+  setAsset: (asset: AssetId) => void;
   setChain: (chain: Chain | undefined) => void;
   setAssetBalance: (amount: number) => void;
 }
@@ -37,8 +37,9 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
       });
     },
     setAsset: asset => {
+      const selectedAsset = assets.find(i => i.penumbraAssetId.inner === asset.inner)!;
       set(state => {
-        state.ibc.asset = asset;
+        state.ibc.asset = selectedAsset;
       });
     },
 

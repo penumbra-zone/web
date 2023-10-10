@@ -4,30 +4,9 @@ import { AllSlices, initializeStore } from '.';
 
 describe('Send Slice', () => {
   const asset = {
-    base: 'wtest_usd',
-    display: 'test_usd',
-    description: '',
-    name: '',
-    symbol: '',
-    uri: '',
-    uriHash: '',
-    penumbraAssetId: {
-      inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
-      altBaseDenom: '',
-      altBech32: '',
-    },
-    denomUnits: [
-      {
-        aliases: [],
-        denom: 'test_usd',
-        exponent: 18,
-      },
-      {
-        aliases: [],
-        denom: 'wtest_usd',
-        exponent: 0,
-      },
-    ],
+    inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
+    altBaseDenom: '',
+    altBech32: '',
   };
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
@@ -69,25 +48,9 @@ describe('Send Slice', () => {
 
     test('validate amount is falsy when an asset with a higher balance has changed', () => {
       const asset2 = {
-        base: 'cube',
-        display: 'cube',
-        description: '',
-        name: '',
-        symbol: '',
-        uri: '',
-        uriHash: '',
-        penumbraAssetId: {
-          inner: '6KBVsPINa8gWSHhfH+kAFJC4afEJA3EtuB2HyCqJUws=',
-          altBaseDenom: '',
-          altBech32: '',
-        },
-        denomUnits: [
-          {
-            aliases: [],
-            denom: 'cube',
-            exponent: 0,
-          },
-        ],
+        inner: '6KBVsPINa8gWSHhfH+kAFJC4afEJA3EtuB2HyCqJUws=',
+        altBaseDenom: '',
+        altBech32: '',
       };
 
       useStore.getState().send.setAsset(asset);
@@ -153,7 +116,7 @@ describe('Send Slice', () => {
   describe('setAsset', () => {
     test('asset can be set', () => {
       useStore.getState().send.setAsset(asset);
-      expect(useStore.getState().send.asset).toBe(asset);
+      expect(useStore.getState().send.asset.penumbraAssetId).toStrictEqual(asset);
     });
   });
 

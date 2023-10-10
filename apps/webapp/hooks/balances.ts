@@ -11,9 +11,6 @@ export const useBalances = (account: number) => {
         },
         // TODO receive asset balance by id
         // extension receive inner as  {1:12,2:34.....}, need format Uint8Array
-        // assetIdFilter: {
-        // 	inner: base64ToUint8Array(assetId)
-        // }
       }),
     [],
   );

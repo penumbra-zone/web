@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Asset } from 'penumbra-constants';
+import { Asset, AssetId } from 'penumbra-constants';
 import { Input, InputProps } from 'ui';
 import { cn } from 'ui/lib/utils';
 import { useValidationResult } from '../hooks';
@@ -20,7 +20,7 @@ interface InputTokenProps extends InputProps {
   className?: string;
   inputClassName?: string;
   value: string;
-  setAsset: (asset: Asset) => void;
+  setAsset: (asset: AssetId) => void;
   validations?: Validation[];
 }
 

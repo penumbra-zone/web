@@ -1,4 +1,4 @@
-import { Asset, assets } from 'penumbra-constants';
+import { Asset, AssetId, assets } from 'penumbra-constants';
 import { AllSlices, SliceCreator } from '.';
 import { validateAmount } from '../utils';
 
@@ -22,7 +22,7 @@ export interface SwapSlice {
   receive: SwapAssetInfo;
   validationErrors: SwapValidationFields;
   setAmount: (type: SwapInputs) => (amount: string) => void;
-  setAsset: (type: SwapInputs) => (asset: Asset) => void;
+  setAsset: (type: SwapInputs) => (asset: AssetId) => void;
   replaceAsset: () => void;
   setAssetBalance: (amount: number) => void;
 }
@@ -57,19 +57,21 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
       let payAsset = get().swap.pay.asset;
       let receiveAsset = get().swap.receive.asset;
 
+      const selectedAsset = assets.find(i => i.penumbraAssetId.inner === asset.inner)!;
+
       // checking if we set the same asset in the pay (receive) field as
       // in the receive (pay) field, then the value of the receive (pay)
       // field is undefined
       if (type === SwapInputs.PAY) {
-        if (asset.display === receiveAsset.display) {
-          receiveAsset = assets.find(i => i.display !== asset.display)!;
+        if (selectedAsset.display === receiveAsset.display) {
+          receiveAsset = assets.find(i => i.display !== selectedAsset.display)!;
         }
-        payAsset = asset;
+        payAsset = selectedAsset;
       } else {
-        if (asset.display === payAsset.display) {
-          payAsset = assets.find(i => i.display !== asset.display)!;
+        if (selectedAsset.display === payAsset.display) {
+          payAsset = assets.find(i => i.display !== selectedAsset.display)!;
         }
-        receiveAsset = asset;
+        receiveAsset = selectedAsset;
       }
 
       set(state => {

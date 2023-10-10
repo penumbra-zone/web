@@ -10,11 +10,11 @@ export default function AssetsTable() {
   const sortedAssets = useSortedAssets('usdcValue');
 
   const assettsWithPercentage = useMemo(() => {
-    const sum = sortedAssets.reduce((acc, asset) => acc + asset.usdcValue, 0);
+    const sum = sortedAssets.reduce((acc, asset) => acc + asset.balance.usdcValue, 0);
 
     return sortedAssets.map(asset => ({
       ...asset,
-      percentageOf: (asset.usdcValue / sum) * 100,
+      percentageOf: (asset.balance.usdcValue / sum) * 100,
     }));
   }, [sortedAssets]);
 
@@ -30,13 +30,15 @@ export default function AssetsTable() {
       </TableHeader>
       <TableBody>
         {assettsWithPercentage
-          .filter(asset => asset.usdcValue)
+          .filter(asset => asset.balance.usdcValue)
           .map(asset => (
-            <TableRow key={asset.display}>
+            <TableRow key={asset.denomMetadata.display}>
               <TableCell>
                 <div className='flex items-center gap-4'>
-                  {asset.icon && <FilledImage src={asset.icon} alt='Asset' className='h-6 w-6' />}
-                  <p className='text-base font-bold'>{asset.display}</p>
+                  {asset.denomMetadata.icon && (
+                    <FilledImage src={asset.denomMetadata.icon} alt='Asset' className='h-6 w-6' />
+                  )}
+                  <p className='text-base font-bold'>{asset.denomMetadata.display}</p>
                 </div>
               </TableCell>
               <TableCell className='text-center'>{formatNumber(asset.percentageOf)}%</TableCell>
@@ -51,10 +53,10 @@ export default function AssetsTable() {
               <TableCell className='text-center'>
                 <div className='flex flex-col'>
                   <p className='text-[15px] font-bold leading-[22px]'>
-                    {formatNumber(asset.balance)} {asset.display}
+                    {formatNumber(asset.balance.amount)} {asset.denomMetadata.display}
                   </p>
                   <p className='text-[15px] font-normal leading-[22px] text-muted-foreground'>
-                    ${formatNumber(asset.usdcValue)}
+                    ${formatNumber(asset.balance.usdcValue)}
                   </p>
                 </div>
               </TableCell>

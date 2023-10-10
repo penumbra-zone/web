@@ -5,52 +5,15 @@ import { SwapInputs } from './swap';
 
 describe('Swap Slice', () => {
   const asset1 = {
-    base: 'wtest_usd',
-    display: 'test_usd',
-    description: '',
-    name: '',
-    symbol: '',
-    uri: '',
-    uriHash: '',
-    penumbraAssetId: {
-      inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
-      altBaseDenom: '',
-      altBech32: '',
-    },
-    denomUnits: [
-      {
-        aliases: [],
-        denom: 'test_usd',
-        exponent: 18,
-      },
-      {
-        aliases: [],
-        denom: 'wtest_usd',
-        exponent: 0,
-      },
-    ],
+    inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
+    altBaseDenom: '',
+    altBech32: '',
   };
 
   const asset2 = {
-    base: 'cube',
-    display: 'cube',
-    description: '',
-    name: '',
-    symbol: '',
-    uri: '',
-    uriHash: '',
-    penumbraAssetId: {
-      inner: '6KBVsPINa8gWSHhfH+kAFJC4afEJA3EtuB2HyCqJUws=',
-      altBaseDenom: '',
-      altBech32: '',
-    },
-    denomUnits: [
-      {
-        aliases: [],
-        denom: 'cube',
-        exponent: 0,
-      },
-    ],
+    inner: '6KBVsPINa8gWSHhfH+kAFJC4afEJA3EtuB2HyCqJUws=',
+    altBaseDenom: '',
+    altBech32: '',
   };
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
@@ -123,10 +86,10 @@ describe('Swap Slice', () => {
       useStore.getState().swap.setAmount(SwapInputs.RECEIVE)('20');
       useStore.getState().swap.replaceAsset();
 
-      expect(useStore.getState().swap.pay.asset).toBe(asset2);
+      expect(useStore.getState().swap.pay.asset.penumbraAssetId).toStrictEqual(asset2);
       expect(useStore.getState().swap.pay.amount).toBe('20');
       expect(useStore.getState().swap.pay.balance).toBe(0);
-      expect(useStore.getState().swap.receive.asset).toBe(asset1);
+      expect(useStore.getState().swap.receive.asset.penumbraAssetId).toStrictEqual(asset1);
       expect(useStore.getState().swap.receive.amount).toBe('1');
     });
 
@@ -146,19 +109,19 @@ describe('Swap Slice', () => {
   describe('setAsset', () => {
     test('pay asset can be set', () => {
       useStore.getState().swap.setAsset(SwapInputs.PAY)(asset1);
-      expect(useStore.getState().swap.pay.asset).toBe(asset1);
+      expect(useStore.getState().swap.pay.asset.penumbraAssetId).toStrictEqual(asset1);
     });
 
     test('receive asset can be set', () => {
       useStore.getState().swap.setAsset(SwapInputs.RECEIVE)(asset2);
-      expect(useStore.getState().swap.receive.asset).toBe(asset2);
+      expect(useStore.getState().swap.receive.asset.penumbraAssetId).toStrictEqual(asset2);
     });
 
     test('set pay asset same that receive asset, receive asset should be undefined', () => {
       useStore.getState().swap.setAsset(SwapInputs.RECEIVE)(asset2);
       useStore.getState().swap.setAsset(SwapInputs.PAY)(asset2);
 
-      expect(useStore.getState().swap.pay.asset).toBe(asset2);
+      expect(useStore.getState().swap.pay.asset.penumbraAssetId).toStrictEqual(asset2);
       expect(useStore.getState().swap.receive.asset).toBeTruthy();
     });
 
@@ -166,7 +129,7 @@ describe('Swap Slice', () => {
       useStore.getState().swap.setAsset(SwapInputs.PAY)(asset2);
       useStore.getState().swap.setAsset(SwapInputs.RECEIVE)(asset2);
 
-      expect(useStore.getState().swap.receive.asset).toBe(asset2);
+      expect(useStore.getState().swap.receive.asset.penumbraAssetId).toStrictEqual(asset2);
       expect(useStore.getState().swap.pay.asset).toBeTruthy();
     });
   });

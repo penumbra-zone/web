@@ -1,4 +1,4 @@
-import { Asset, assets } from 'penumbra-constants';
+import { Asset, AssetId, assets } from 'penumbra-constants';
 import { validateAmount, validateRecipient } from '../utils';
 import { AllSlices, SliceCreator } from './index';
 
@@ -16,7 +16,7 @@ export interface SendSlice {
   validationErrors: SendValidationFields;
   assetBalance: number;
   setAmount: (amount: string) => void;
-  setAsset: (asset: Asset) => void;
+  setAsset: (asset: AssetId) => void;
   setRecipient: (addr: string) => void;
   setMemo: (txt: string) => void;
   setHidden: (checked: boolean) => void;
@@ -44,8 +44,9 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
       });
     },
     setAsset: asset => {
+      const selectedAsset = assets.find(i => i.penumbraAssetId.inner === asset.inner)!;
       set(state => {
-        state.send.asset = asset;
+        state.send.asset = selectedAsset;
       });
     },
     setRecipient: addr => {
