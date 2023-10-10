@@ -7,9 +7,9 @@ import {
   NewNoteRecord,
   PenumbraDb,
   StateCommitmentTree,
+  StoredTransaction,
 } from 'penumbra-types';
 import { IbdUpdater, IbdUpdates, TableUpdateNotifier } from './updater';
-import { StoredTransaction } from 'penumbra-types/src/transaction/view';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes

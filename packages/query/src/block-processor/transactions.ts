@@ -4,10 +4,10 @@ import {
   IndexedDbInterface,
   NoteSource,
   noteSourceFromBase64Str,
+  StoredTransaction,
 } from 'penumbra-types';
 import { TendermintQuerier } from '../queriers/tendermint';
 import { decodeTx, transactionInfo } from 'penumbra-wasm-ts/src/transaction';
-import { StoredTransaction } from 'penumbra-types/src/transaction/view';
 import { sha256Hash } from 'penumbra-crypto-ts';
 
 export class Transactions {

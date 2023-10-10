@@ -9,7 +9,7 @@ import {
 } from './state-commitment-tree';
 import { Base64Str } from './base64';
 import { DenomMetadata } from './denom';
-import { StoredTransaction } from './transaction/view';
+import { StoredTransaction } from './transaction';
 
 export interface IndexedDbInterface {
   getLastBlockSynced(): Promise<bigint | undefined>;

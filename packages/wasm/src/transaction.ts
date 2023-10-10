@@ -1,11 +1,13 @@
-import { uint8ArrayToBase64, validateSchema } from 'penumbra-types';
-import { decode_tx, transaction_info } from '@penumbra-zone/wasm-bundler';
 import {
   DecodedTransaction,
   DecodedTransactionSchema,
+  TransactionInfo,
+  TransactionInfoSchema,
   TxBytes,
-} from 'penumbra-types/src/transaction/decoded';
-import { TransactionInfo, TransactionInfoSchema } from 'penumbra-types/src/transaction/view';
+  uint8ArrayToBase64,
+  validateSchema,
+} from 'penumbra-types';
+import { decode_tx, transaction_info } from '@penumbra-zone/wasm-bundler';
 
 export const decodeTx = (txBytes: TxBytes): DecodedTransaction => {
   const base64Bytes = uint8ArrayToBase64(txBytes);
