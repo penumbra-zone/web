@@ -7,3 +7,4 @@ export * from './actions';
 export * from './actionViews';
 export * from './note-payload';
 export * from './perspective';
+export * from './output';

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { base64ToUint8Array, InnerBase64Schema } from '../base64';
-import { ActionViewSchema } from './actionViews';
+import { ActionViewsSchema, actionViewsToProto } from './actionViews';
 import {
   DetectionData,
   MemoView,
@@ -13,6 +13,7 @@ import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/compo
 import { AmountSchema, amountToProto } from '../amount';
 import { Clue } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/decaf377_fmd/v1alpha1/decaf377_fmd_pb';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 const VisibleMemoSchema = z.object({
   visible: z.object({
@@ -74,13 +75,13 @@ const memoToProto = (mv: z.infer<typeof MemoViewSchema>): MemoView => {
 };
 
 export const BodyViewSchema = z.object({
-  actionViews: z.array(ActionViewSchema),
+  actionViews: ActionViewsSchema,
   detectionData: z.object({
     fmdClues: z.array(InnerBase64Schema),
   }),
   fee: z.object({
     amount: AmountSchema,
-    assetId: InnerBase64Schema,
+    assetId: InnerBase64Schema.optional(),
   }),
   memoView: MemoViewSchema,
   transactionParameters: z.object({
@@ -90,13 +91,15 @@ export const BodyViewSchema = z.object({
 
 export const bodyViewToProto = (bv: z.infer<typeof BodyViewSchema>): TransactionBodyView => {
   return new TransactionBodyView({
-    // actionViews: ActionView[];
+    actionViews: actionViewsToProto(bv.actionViews),
     transactionParameters: new TransactionParameters({
       chainId: bv.transactionParameters.chainId,
     }),
     fee: new Fee({
       amount: amountToProto(bv.fee.amount),
-      assetId: { inner: base64ToUint8Array(bv.fee.assetId.inner) },
+      assetId: bv.fee.assetId?.inner
+        ? { inner: base64ToUint8Array(bv.fee.assetId.inner) }
+        : new AssetId(),
     }),
     detectionData: new DetectionData({
       fmdClues: bv.detectionData.fmdClues.map(

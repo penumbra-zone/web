@@ -8,12 +8,12 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import {
   Address,
-  AddressIndex,
   AddressView,
   AddressView_Opaque,
   AddressView_Visible,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { NoteSchema, notesToProto, noteToProto } from '../note';
+import { AddressIndexSchema, addressIndexToProto } from './address-index';
 
 const SpendNullifierSchema = z.object({
   note: NoteSchema,
@@ -72,10 +72,7 @@ const VisibleSchema = z.object({
   visible: z.object({
     accountGroupId: InnerBase64Schema,
     address: InnerBase64Schema,
-    index: z.object({
-      randomizer: Base64StringSchema,
-      account: z.number().optional(),
-    }),
+    index: AddressIndexSchema,
   }),
 });
 
@@ -85,10 +82,7 @@ const visibleToProto = (v: z.infer<typeof VisibleSchema>): AddressView => {
       case: 'visible',
       value: new AddressView_Visible({
         address: { inner: base64ToUint8Array(v.visible.address.inner) },
-        index: new AddressIndex({
-          account: v.visible.index.account ?? 0,
-          randomizer: base64ToUint8Array(v.visible.index.randomizer),
-        }),
+        index: addressIndexToProto(v.visible.index),
         accountGroupId: { inner: base64ToUint8Array(v.visible.accountGroupId.inner) },
       }),
     },

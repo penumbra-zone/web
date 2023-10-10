@@ -1,7 +1,8 @@
 import { z } from 'zod';
-import { SpendSchema, spendToProto } from './spend';
-import { OutputSchema, outputToProto } from './output';
+import { spendActionToProto, SpendSchema } from './spend';
+import { outputActionToProto } from './output';
 import { Action as ActionProto } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { OutputSchema } from '../output';
 
 export const ActionSchema = z.union([
   z.object({ spend: SpendSchema }),
@@ -34,9 +35,9 @@ type Action = z.infer<typeof ActionSchema>;
 
 const actionToProto = (action: Action): ActionProto => {
   if ('spend' in action) {
-    return spendToProto(action.spend);
+    return spendActionToProto(action.spend);
   } else if ('output' in action) {
-    return outputToProto(action.output);
+    return outputActionToProto(action.output);
   } else {
     console.error('Requires a type conversion for action');
     return new ActionProto({});
