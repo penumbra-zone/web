@@ -39,7 +39,7 @@ export const TransactionTable = () => {
             <TableCell>
               <div className='flex items-center justify-end gap-[34px]'>
                 <div className='flex items-center gap-2'>
-                 {/* TODO: replace hardcoded value  */}
+                  {/* TODO: replace hardcoded value  */}
                   <Identicon
                     name='penumbrav2t1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvsneeae42q63sumem7r096p7rd2tywm2v6ppc4'
                     className='h-6 w-6 rounded-full'

@@ -46,7 +46,7 @@ export default function SwapForm() {
         />
         <Button
           variant='ghost'
-          className='group absolute left-[calc(50%-20px)] top-[calc(50%-20px)] hover:bg-transparent transition-all duration-500 ease-bounce'
+          className='absolute left-[calc(50%-20px)] top-[calc(50%-20px)] transition-all duration-500 hover:bg-transparent'
           onClick={replaceAsset}
           onMouseEnter={() => setHoveringSwitchButton(true)}
           onMouseLeave={() => setHoveringSwitchButton(false)}

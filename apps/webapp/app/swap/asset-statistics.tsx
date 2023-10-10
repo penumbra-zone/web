@@ -9,8 +9,6 @@ import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
 import { Asset } from 'penumbra-types';
 
-
-
 export const AssetStatistics = () => {
   const { pay, receive } = useStore(swapSelector);
 
