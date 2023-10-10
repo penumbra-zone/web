@@ -1,3 +1,5 @@
+import { Asset } from 'penumbra-types';
+
 export interface Constants {
   grpcEndpoint: string;
   indexedDbVersion: number;
@@ -7,29 +9,6 @@ export const testnetConstants: Constants = {
   grpcEndpoint: 'https://grpc.testnet.penumbra.zone',
   indexedDbVersion: 12,
 };
-
-export interface AssetId {
-  inner: string;
-  altBech32: string;
-  altBaseDenom: string;
-}
-
-export interface Asset {
-  base: string;
-  description: string;
-  display: string;
-  name: string;
-  symbol: string;
-  uri: string;
-  uriHash: string;
-  denomUnits: {
-    denom: string;
-    exponent: number;
-    aliases: never[];
-  }[];
-  penumbraAssetId: AssetId;
-  icon?: string;
-}
 
 export const assets: Asset[] = [
   {

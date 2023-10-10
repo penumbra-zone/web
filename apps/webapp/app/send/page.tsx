@@ -7,10 +7,10 @@ import { sendTabsHelper } from './constants';
 import { SendPageTab } from './types';
 import dynamic from 'next/dynamic';
 const IbcForm = dynamic(() => import('./ibc-form'), {
-  ssr: true,
+  ssr: false,
 });
 const SendForm = dynamic(() => import('./send-form'), {
-  ssr: true,
+  ssr: false,
 });
 
 export default function Page() {

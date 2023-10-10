@@ -1,6 +1,7 @@
-import { Asset, AssetId, assets } from 'penumbra-constants';
+import { assets } from 'penumbra-constants';
 import { validateAmount, validateRecipient } from '../utils';
 import { AllSlices, SliceCreator } from './index';
+import { Asset, AssetId } from 'penumbra-types';
 
 export interface SendValidationFields {
   recipient: boolean;

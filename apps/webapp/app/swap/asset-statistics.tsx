@@ -5,9 +5,11 @@ import { Fragment, useEffect, useState } from 'react';
 import { FilledImage } from '../../shared';
 import { formatNumber } from '../../utils';
 import { cn } from 'ui/lib/utils';
-import { Asset } from 'penumbra-constants';
 import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
+import { Asset } from 'penumbra-types';
+
+
 
 export const AssetStatistics = () => {
   const { pay, receive } = useStore(swapSelector);

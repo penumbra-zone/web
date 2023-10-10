@@ -1,12 +1,13 @@
 'use client';
 
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { Asset, AssetId, assets } from 'penumbra-constants';
+import { assets } from 'penumbra-constants';
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogPrimitive, DialogTrigger, Input } from 'ui';
 import { useSortedAssets } from '../hooks/sorted-asset';
 import { formatNumber } from '../utils';
 import { FilledImage } from './filled-image';
+import { Asset, AssetId } from 'penumbra-types';
 
 interface SelectTokenModalProps {
   asset: Asset;

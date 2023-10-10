@@ -1,6 +1,7 @@
-import { Asset, AssetId, assets } from 'penumbra-constants';
+import { assets } from 'penumbra-constants';
 import { AllSlices, SliceCreator } from '.';
 import { validateAmount } from '../utils';
+import { Asset, AssetId } from 'penumbra-types';
 
 export enum SwapInputs {
   PAY = 'pay',

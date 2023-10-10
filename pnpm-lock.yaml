@@ -259,6 +259,9 @@ importers:
       eslint-config-custom:
         specifier: workspace:*
         version: link:../eslint-config-custom
+      penumbra-types:
+        specifier: workspace:*
+        version: link:../types
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig

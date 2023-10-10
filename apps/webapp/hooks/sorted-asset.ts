@@ -1,8 +1,7 @@
-import { Asset, assets } from 'penumbra-constants';
+import { assets } from 'penumbra-constants';
 import { useBalances } from './balances';
 import { useMemo } from 'react';
-import { uint8ArrayToBase64 } from 'penumbra-types';
-import { calculateBalance } from '../utils';
+import { Asset, calculateLoHiExponent, uint8ArrayToBase64 } from 'penumbra-types';
 
 export interface AssetBalance {
   amount: number;
@@ -48,12 +47,14 @@ export const useSortedAssets = (
 
       if (equalAsset) {
         // if find same asset then calculate balance
-        const loHi = {
-          lo: equalAsset.balance?.amount?.lo ?? 0n,
-          hi: equalAsset.balance?.amount?.hi ?? 0n,
-        };
 
-        const assetBalance = calculateBalance(loHi, asset);
+        const assetBalance = Number(
+          calculateLoHiExponent(
+            equalAsset.balance?.amount?.lo ?? 0n,
+            equalAsset.balance?.amount?.hi ?? 0n,
+            asset,
+          ),
+        );
         const price = 0.1;
         amount = assetBalance;
         usdcValue = assetBalance * price;

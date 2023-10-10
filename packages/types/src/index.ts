@@ -9,3 +9,4 @@ export * from './environment';
 export * from './box';
 export * from './wallet';
 export * from './utility';
+export * from './asset';

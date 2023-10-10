@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { useBalances } from './balances';
-import { LoHi, uint8ArrayToBase64 } from 'penumbra-types';
-import { calculateBalance } from '../utils';
-import { Asset } from 'penumbra-constants';
+import { Asset, calculateLoHiExponent, uint8ArrayToBase64 } from 'penumbra-types';
 
 export const useCalculateBalance = (asset: Asset, setAssetBalance: (amount: number) => void) => {
   const { data, end } = useBalances({ account: 0 });
@@ -20,11 +18,14 @@ export const useCalculateBalance = (asset: Asset, setAssetBalance: (amount: numb
       return;
     }
 
-    const loHi: LoHi = {
-      lo: selectedAsset.balance?.amount?.lo ?? 0n,
-      hi: selectedAsset.balance?.amount?.hi ?? 0n,
-    };
-
-    setAssetBalance(calculateBalance(loHi, asset));
+    setAssetBalance(
+      Number(
+        calculateLoHiExponent(
+          selectedAsset.balance?.amount?.lo ?? 0n,
+          selectedAsset.balance?.amount?.hi,
+          asset,
+        ),
+      ),
+    );
   }, [end, data, asset, setAssetBalance]);
 };

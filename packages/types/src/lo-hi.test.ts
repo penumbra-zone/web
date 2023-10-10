@@ -1,7 +1,61 @@
 import { describe, expect, it } from 'vitest';
-import { addLoHi, joinLoHi, splitLoHi } from './lo-hi';
+import { addLoHi, calculateLoHiExponent, findAssetExponent, joinLoHi, splitLoHi } from './lo-hi';
 
 describe('lo-hi', () => {
+  const assetZeroExponent = {
+    base: 'cube',
+    display: 'cube',
+    description: '',
+    name: '',
+    symbol: '',
+    uri: '',
+    uriHash: '',
+    penumbraAssetId: {
+      inner: '6KBVsPINa8gWSHhfH+kAFJC4afEJA3EtuB2HyCqJUws=',
+      altBaseDenom: '',
+      altBech32: '',
+    },
+    denomUnits: [
+      {
+        aliases: [],
+        denom: 'cube',
+        exponent: 0,
+      },
+    ],
+  };
+
+  const assetWithExponent = {
+    base: 'upenumbra',
+    display: 'penumbra',
+    description: '',
+    name: '',
+    symbol: '',
+    uri: '',
+    uriHash: '',
+    penumbraAssetId: {
+      inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
+      altBaseDenom: '',
+      altBech32: '',
+    },
+    denomUnits: [
+      {
+        aliases: [],
+        denom: 'penumbra',
+        exponent: 6,
+      },
+      {
+        aliases: [],
+        denom: 'mpenumbra',
+        exponent: 3,
+      },
+      {
+        aliases: [],
+        denom: 'upenumbra',
+        exponent: 0,
+      },
+    ],
+  };
+
   describe('splitLoHi', () => {
     it('should correctly split a 128-bit number into two 64-bit numbers', () => {
       const value = 18446744073709551615n + (18446744073709551615n << 64n);
@@ -123,6 +177,38 @@ describe('lo-hi', () => {
       const b = { lo: 1n, hi: 1n };
 
       expect(addLoHi(a, b)).toEqual({ lo: 0n, hi: 0x10000000000000001n });
+    });
+  });
+
+  describe('calculateLoHiExponent', () => {
+    it('with zero lo and hi and zero exponent', () => {
+      expect(calculateLoHiExponent(0n, 0n, assetZeroExponent)).equal(0n);
+    });
+
+    it('with zero hi and zero exponent', () => {
+      expect(calculateLoHiExponent(10n, 0n, assetZeroExponent)).equal(10n);
+    });
+
+    it('with zero lo and zero exponent', () => {
+      expect(calculateLoHiExponent(0n, 10n, assetZeroExponent)).equal(184467440737095516160n);
+    });
+
+    it('with zero lo and hi and exponent > 0', () => {
+      expect(calculateLoHiExponent(0n, 0n, assetWithExponent)).equal(0n);
+    });
+
+    it('with zero hi and exponent > 0', () => {
+      expect(calculateLoHiExponent(10000000n, 0n, assetWithExponent)).equal(10n);
+    });
+  });
+
+  describe('findAssetExponent', () => {
+    it('asset with zero exponent return 1', () => {
+      expect(findAssetExponent(assetZeroExponent)).equal(0);
+    });
+
+    it('asset with exponent return value', () => {
+      expect(findAssetExponent(assetWithExponent)).equal(6);
     });
   });
 });
