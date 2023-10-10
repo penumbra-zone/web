@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { InnerBase64Schema } from './base64';
+import { NoteSchema } from './note';
 
 export const Position = z.object({
   epoch: z.number(),
@@ -50,20 +51,6 @@ export const NctUpdatesSchema = z.object({
 
 export type NctUpdates = z.infer<typeof NctUpdatesSchema>;
 
-const NoteValueSchema = z.object({
-  amount: z.object({
-    lo: z.string(),
-    hi: z.string().optional(),
-  }),
-  assetId: InnerBase64Schema,
-});
-
-const NoteSchema = z.object({
-  value: NoteValueSchema,
-  rseed: z.string(),
-  address: InnerBase64Schema,
-});
-
 const AddressIndexSchema = z.object({
   account: z.number().optional(),
   randomizer: z.string(),
@@ -75,10 +62,9 @@ const NoteRecordSchema = z.object({
   addressIndex: AddressIndexSchema,
   nullifier: InnerBase64Schema,
   position: z.string(),
-  source: z.object({
-    inner: z.string(),
-  }),
+  source: InnerBase64Schema,
   heightSpent: z.bigint().optional(),
+  heightCreated: z.string().optional(),
 });
 
 export type NewNoteRecord = z.infer<typeof NoteRecordSchema>;

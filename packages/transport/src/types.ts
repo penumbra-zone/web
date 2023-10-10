@@ -1,4 +1,5 @@
 import { MethodInfo, ServiceType } from '@bufbuild/protobuf';
+import { JsonValue } from '@bufbuild/protobuf/dist/types/json-format';
 
 export const INCOMING_GRPC_MESSAGE = 'PENUMBRA_DAPP_GRPC_REQUEST' as const;
 export const OUTGOING_GRPC_MESSAGE = 'PENUMBRA_DAPP_GRPC_RESPONSE' as const;
@@ -19,17 +20,17 @@ export type GrpcResponse<S extends ServiceType> = {
 }[keyof S['methods']];
 
 // Payload dapp issues to extension
-export interface DappMessageRequest<S extends ServiceType, M extends GrpcRequest<S>> {
+export interface DappMessageRequest<S extends ServiceType> {
   type: typeof INCOMING_GRPC_MESSAGE;
   serviceTypeName: S['typeName'];
   requestTypeName: GrpcRequestTypename<S>;
-  requestMethod: M;
+  jsonReq: JsonValue;
   sequence: number;
 }
 
 export const isDappGrpcRequest = <S extends ServiceType>(
   message: unknown,
-): message is DappMessageRequest<S, GrpcRequest<S>> =>
+): message is DappMessageRequest<S> =>
   typeof message === 'object' &&
   message !== null &&
   'type' in message &&

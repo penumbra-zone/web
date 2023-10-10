@@ -19,6 +19,6 @@
     "eslint-config-custom": "workspace:*",
     "playwright": "^1.38.1",
     "prettier": "^3.0.3",
-    "turbo": "^1.10.14"
+    "turbo": "^1.10.15"
   }
 }

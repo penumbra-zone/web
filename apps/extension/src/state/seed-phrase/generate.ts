@@ -5,7 +5,7 @@ import {
   SeedPhraseLength,
   ValidationField,
   validationFields,
-} from 'penumbra-crypto-ts/src/mnemonic';
+} from 'penumbra-crypto-ts';
 
 export interface GenerateFields {
   phrase: string[];
