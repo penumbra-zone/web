@@ -4,7 +4,7 @@ import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/cry
 
 export interface ViewServerInterface {
   scanBlock(compactBlock: CompactBlock): Promise<ScanResult>;
-  updatesSinceCheckpoint(): Promise<SctUpdates>;
+  flushUpdates(): SctUpdates;
   resetTreeToStored(): Promise<void>;
   getNctRoot(): MerkleRoot;
 }

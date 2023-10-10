@@ -10,7 +10,7 @@
   "dependencies": {
     "bip39": "^3.1.0",
     "crypto-js": "^4.1.1",
-    "eslint": "^8.50.0",
+    "eslint": "^8.51.0",
     "eslint-config-custom": "workspace:*",
     "lodash": "^4.17.21",
     "tsconfig": "workspace:*",
@@ -21,7 +21,7 @@
     "@types/lodash": "^4.14.199",
     "@vitest/browser": "^0.34.6",
     "penumbra-types": "workspace:*",
-    "vite": "^4.4.9",
+    "vite": "^4.4.11",
     "vitest": "^0.34.6"
   }
 }

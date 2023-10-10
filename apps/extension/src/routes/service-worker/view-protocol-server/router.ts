@@ -1,5 +1,5 @@
 import { handleBalancesReq, isBalancesRequest } from './balances';
-import { handleChainParamsReq, isChainParamsRequest } from './chain-params';
+import { handleAppParamsReq, isAppParamsRequest } from './app-params';
 import {
   deserializeReq,
   errorResponse,
@@ -32,8 +32,8 @@ export const viewServerRouter = (req: ViewProtocolReq, sender: chrome.runtime.Me
 };
 
 const unaryHandler = async (msg: ViewReqMessage): Promise<ViewProtocolRes> => {
-  if (isChainParamsRequest(msg)) {
-    return handleChainParamsReq();
+  if (isAppParamsRequest(msg)) {
+    return handleAppParamsReq();
   }
   throw new Error(`Non-supported unary request: ${msg.getType().typeName}`);
 };

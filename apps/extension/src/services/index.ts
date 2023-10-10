@@ -32,9 +32,11 @@ export class Services {
       const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
       this._querier = new RootQuerier({ grpcEndpoint });
 
-      const { chainId } = await this.querier.app.chainParameters();
+      const { chainParams } = await this.querier.app.parameters();
+      if (!chainParams?.chainId) throw new Error('Chain id could not be queried');
+
       this._indexedDb = await IndexedDb.initialize({
-        chainId,
+        chainId: chainParams.chainId,
         dbVersion: testnetConstants.indexedDbVersion,
         updateNotifiers: [syncLastBlockWithLocal()],
       });
@@ -75,11 +77,12 @@ export class Services {
   async initializeWalletServices(): Promise<WalletServices> {
     const wallets = await localExtStorage.get('wallets');
     if (wallets.length) {
-      const { epochDuration } = await this.querier.app.chainParameters();
+      const { chainParams } = await this.querier.app.parameters();
+      if (!chainParams?.epochDuration) throw new Error('epochDuration could not be queried');
 
       const viewServer = await ViewServer.initialize({
         fullViewingKey: wallets[0]!.fullViewingKey,
-        epochDuration,
+        epochDuration: chainParams.epochDuration,
         getStoredTree: () => this.indexedDb.getStateCommitmentTree(),
       });
 

@@ -1,4 +1,4 @@
-import { DBSchema } from 'idb';
+import { DBSchema, StoreNames } from 'idb';
 import {
   SctUpdates,
   StateCommitmentTree,
@@ -7,16 +7,27 @@ import {
   StoreHash,
 } from './state-commitment-tree';
 import { StoredTransaction } from './transaction';
-import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import {
+  SpendableNoteRecord,
+  SwapRecord,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import {
   AssetId,
   DenomMetadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import {
+  ChainParameters,
+  FmdParameters,
+  NoteSource,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
+import { z } from 'zod';
+import { Note } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
 export interface IndexedDbInterface {
+  constants(): IdbConstants;
   getLastBlockSynced(): Promise<bigint | undefined>;
   getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
   saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
@@ -31,37 +42,87 @@ export interface IndexedDbInterface {
 }
 
 export interface PenumbraDb extends DBSchema {
-  last_block_synced: {
+  LAST_BLOCK_SYNCED: {
     key: 'last_block';
     value: bigint;
   };
-  tree_last_position: {
+  TREE_LAST_POSITION: {
     key: 'last_position';
     value: StoredPosition;
   };
-  tree_last_forgotten: {
+  TREE_LAST_FORGOTTEN: {
     key: 'last_forgotten';
     value: number;
   };
-  tree_hashes: {
+  TREE_HASHES: {
     key: number;
     value: StoreHash;
   };
-  tree_commitments: {
+  TREE_COMMITMENTS: {
     key: StoreCommitment['commitment']['inner'];
     value: StoreCommitment;
   };
-  assets: {
+  ASSETS: {
     key: AssetId['inner'];
     value: DenomMetadata;
   };
-  spendable_notes: {
+  SPENDABLE_NOTES: {
     key: StateCommitment['inner'];
     value: SpendableNoteRecord;
     indexes: { nullifier: Nullifier['inner'] };
   };
-  transactions: {
+  TRANSACTIONS: {
     key: NoteSource['inner'];
     value: StoredTransaction;
   };
+  CHAIN_PARAMETERS: {
+    key: ChainParameters['chainId'];
+    value: ChainParameters;
+  };
+  NOTES: {
+    key: Address['inner'];
+    value: Note;
+  };
+  FMD_PARAMETERS: {
+    key: string;
+    value: FmdParameters;
+  };
+  SWAPS: {
+    key: StateCommitment['inner'];
+    value: SwapRecord;
+  };
 }
+
+export const TablesSchema = z.object({
+  assets: z.string(),
+  chain_parameters: z.string(),
+  fmd_parameters: z.string(),
+  notes: z.string(),
+  spendable_notes: z.string(),
+  swaps: z.string(),
+});
+
+export const IdbConstantsSchema = z.object({
+  name: z.string(),
+  version: z.number().int().positive(),
+  tables: TablesSchema,
+});
+
+export type Tables = {
+  [T in keyof z.infer<typeof TablesSchema>]: StoreNames<PenumbraDb>;
+};
+
+export interface IdbConstants {
+  name: string;
+  version: number;
+  tables: Tables;
+}
+
+export const IDB_TABLES: Tables = {
+  assets: 'ASSETS',
+  chain_parameters: 'CHAIN_PARAMETERS',
+  fmd_parameters: 'FMD_PARAMETERS',
+  notes: 'NOTES',
+  spendable_notes: 'SPENDABLE_NOTES',
+  swaps: 'SWAPS',
+};

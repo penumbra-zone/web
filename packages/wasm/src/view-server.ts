@@ -50,7 +50,7 @@ export class ViewServer implements ViewServerInterface {
 
   // Resets the state of the wasmViewServer to the one set in storage
   async resetTreeToStored() {
-    this.wasmViewServer = new WasmViewServer(
+    this.wasmViewServer = await WasmViewServer.new(
       this.fullViewingKey,
       this.epochDuration,
       await this.getStoredTree(),
@@ -65,12 +65,8 @@ export class ViewServer implements ViewServerInterface {
   // As blocks are scanned, the internal wasmViewServer tree is being updated.
   // Passing the locally stored last position/forgotten allows us to see the
   // changes in that tree since that last stored checkpoint.
-  async updatesSinceCheckpoint(): Promise<SctUpdates> {
-    const { last_position, last_forgotten } = await this.getStoredTree();
-    const scanResult = this.wasmViewServer.get_updates(
-      last_position,
-      last_forgotten,
-    ) as RawScanResult;
+  flushUpdates(): SctUpdates {
+    const scanResult = this.wasmViewServer.flush_updates() as RawScanResult;
     return validateSchema(ScanResultSchema, scanResult).nct_updates;
   }
 }

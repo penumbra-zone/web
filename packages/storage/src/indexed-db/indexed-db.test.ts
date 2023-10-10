@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { IndexedDb } from './index';
 
-import { base64ToUint8Array, NewNoteRecord } from 'penumbra-types';
+import { base64ToUint8Array } from 'penumbra-types';
 import {
   AssetId,
   DenomMetadata,

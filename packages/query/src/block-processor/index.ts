@@ -87,7 +87,7 @@ export class BlockProcessor {
   }
 
   async saveSyncProgress(height: bigint) {
-    const updates = await this.viewServer.updatesSinceCheckpoint();
+    const updates = this.viewServer.flushUpdates();
     await this.indexedDb.updateStateCommitmentTree(updates, height);
 
     // In dev mode, you may want to validate local sct against remote

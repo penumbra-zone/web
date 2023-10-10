@@ -1,4 +1,5 @@
 import {
+  IdbConstants,
   TransactionInfo,
   TransactionInfoSchema,
   uint8ArrayToBase64,
@@ -19,8 +20,12 @@ export const decodeTx = (txBytes: Uint8Array): Transaction => {
 export const transactionInfo = async (
   fullViewingKey: string,
   tx: Transaction,
+  idbConstants: IdbConstants,
 ): Promise<TransactionInfo> => {
-  const result = validateSchema(TransactionInfoSchema, await transaction_info(fullViewingKey, tx));
+  const result = validateSchema(
+    TransactionInfoSchema,
+    await transaction_info(fullViewingKey, tx, idbConstants),
+  );
   return {
     txp: TransactionPerspective.fromJsonString(JSON.stringify(result.txp)),
     txv: TransactionView.fromJsonString(JSON.stringify(result.txv)),

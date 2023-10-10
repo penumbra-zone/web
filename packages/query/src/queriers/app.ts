@@ -1,7 +1,7 @@
 import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils';
 import {
-  ChainParametersRequest,
+  AppParametersRequest,
   KeyValueRequest,
   KeyValueResponse_Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1alpha1/app_pb';
@@ -14,10 +14,10 @@ export class AppQuerier {
     this.client = createClient(grpcEndpoint, QueryService);
   }
 
-  async chainParameters() {
-    const req = new ChainParametersRequest();
-    const res = await this.client.chainParameters(req);
-    return res.chainParameters!;
+  async parameters() {
+    const req = new AppParametersRequest();
+    const res = await this.client.appParameters(req);
+    return res.appParameters!;
   }
 
   async keyValue(key: string): Promise<KeyValueResponse_Value['value']> {

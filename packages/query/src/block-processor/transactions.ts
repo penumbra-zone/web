@@ -52,7 +52,7 @@ export class Transactions {
 
       if (noteSourcePresent(this.all, noteSource)) {
         const tx = decodeTx(txBytes);
-        const txInfo = await transactionInfo(this.fullViewingKey, tx);
+        const txInfo = await transactionInfo(this.fullViewingKey, tx, this.indexedDb.constants());
 
         const txToStore = {
           blockHeight: this.blockHeight,
