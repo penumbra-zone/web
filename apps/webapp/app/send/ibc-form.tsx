@@ -36,7 +36,7 @@ export default function IbcForm() {
         label='Amount to send'
         placeholder='Enter an amount'
         className='mb-1'
-        asset={asset}
+        asset={{ ...asset, price: 10 }}
         assetBalance={assetBalance}
         setAsset={setAsset}
         value={amount}
@@ -84,7 +84,7 @@ export default function IbcForm() {
         type='submit'
         variant='gradient'
         className='mt-9'
-        disabled={!amount || !chain || !!Object.values(validationErrors).find(Boolean)}
+        disabled={!Number(amount) || !chain || !!Object.values(validationErrors).find(Boolean)}
       >
         Send
       </Button>

@@ -14,11 +14,9 @@ export default function AssetsTable() {
 
     return sortedAssets.map(asset => ({
       ...asset,
-      percentageOf: (asset.balance.usdcValue / sum) * 100,
+      percentageOf: !asset.balance.usdcValue ? 0 : (asset.balance.usdcValue / sum) * 100,
     }));
   }, [sortedAssets]);
-
-  console.log(assetsWithPercentage);
 
   return (
     <Table>

@@ -55,7 +55,7 @@ export default function SendForm() {
         label='Amount to send'
         placeholder='Enter an amount'
         className='mb-1'
-        asset={asset}
+        asset={{ ...asset, price: 10 }}
         setAsset={setAsset}
         value={amount}
         onChange={e => {
@@ -88,7 +88,7 @@ export default function SendForm() {
         type='submit'
         variant='gradient'
         className='mt-4'
-        disabled={!amount || !recipient || !!Object.values(validationErrors).find(Boolean)}
+        disabled={!Number(amount) || !recipient || !!Object.values(validationErrors).find(Boolean)}
       >
         Send
       </Button>

@@ -34,7 +34,9 @@ export default function SwapForm() {
           onChange={e => {
             if (Number(e.target.value) < 0) return;
             setAmount(SwapInputs.PAY)(e.target.value);
-            setAmount(SwapInputs.RECEIVE)(String(Number(e.target.value) / 10));
+            setAmount(SwapInputs.RECEIVE)(
+              e.target.value ? String(Number(e.target.value) / 10) : '',
+            );
           }}
           validations={[
             {
@@ -79,7 +81,9 @@ export default function SwapForm() {
       <Button
         type='submit'
         variant='gradient'
-        disabled={!pay.amount || !receive.amount || !!Object.values(validationErrors).find(Boolean)}
+        disabled={
+          !Number(pay.amount) || !receive.amount || !!Object.values(validationErrors).find(Boolean)
+        }
       >
         {validationErrors.pay ? `Insufficient ${pay.asset.display} balance` : 'Swap'}
       </Button>
