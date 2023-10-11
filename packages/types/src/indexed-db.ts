@@ -1,6 +1,6 @@
 import { DBSchema, StoreNames } from 'idb';
 import {
-  SctUpdates,
+  ScanResult,
   StateCommitmentTree,
   StoreCommitment,
   StoredPosition,
@@ -37,7 +37,8 @@ export interface IndexedDbInterface {
   getAssetsMetadata(assetId: AssetId): Promise<DenomMetadata | undefined>;
   saveAssetsMetadata(metadata: DenomMetadata): Promise<void>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
-  updateStateCommitmentTree(updates: SctUpdates, height: bigint): Promise<void>;
+
+  saveScanResult(updates: ScanResult): Promise<void>;
   getAllNotes(): Promise<SpendableNoteRecord[]>;
 }
 

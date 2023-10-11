@@ -82,7 +82,7 @@ export const ScanResultSchema = z.object({
 export type RawScanResult = z.infer<typeof ScanResultSchema>;
 
 export interface ScanResult {
-  height: number;
+  height: bigint;
   sctUpdates: z.infer<typeof SctUpdatesSchema>;
   newNotes: SpendableNoteRecord[];
   newSwaps: SwapRecord[];
@@ -90,7 +90,7 @@ export interface ScanResult {
 
 export const parseScanResult = (r: RawScanResult): ScanResult => {
   return {
-    height: r.height,
+    height: BigInt(r.height), // TODO: Should see if wasm crate can pass bigint instead
     sctUpdates: r.nct_updates,
     newNotes: r.new_notes.map(n => SpendableNoteRecord.fromJsonString(JSON.stringify(n))),
     newSwaps: r.new_swaps.map(s => SwapRecord.fromJsonString(JSON.stringify(s))),

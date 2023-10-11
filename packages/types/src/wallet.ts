@@ -8,7 +8,7 @@ export interface WalletCreate {
 // Stored in chrome.local.storage
 export interface WalletJson {
   label: string;
-  accountGroup: string;
+  id: string;
   encryptedSeedPhrase: BoxJson;
   fullViewingKey: string;
 }
@@ -17,24 +17,19 @@ export interface WalletJson {
 export class Wallet {
   constructor(
     readonly label: string,
-    readonly accountGroup: string,
+    readonly id: string,
     readonly fullViewingKey: string,
     readonly encryptedSeedPhrase: Box,
   ) {}
 
   static fromJson(obj: WalletJson): Wallet {
-    return new Wallet(
-      obj.label,
-      obj.accountGroup,
-      obj.fullViewingKey,
-      Box.fromJson(obj.encryptedSeedPhrase),
-    );
+    return new Wallet(obj.label, obj.id, obj.fullViewingKey, Box.fromJson(obj.encryptedSeedPhrase));
   }
 
   toJson(): WalletJson {
     return {
       label: this.label,
-      accountGroup: this.accountGroup,
+      id: this.id,
       fullViewingKey: this.fullViewingKey,
       encryptedSeedPhrase: this.encryptedSeedPhrase.toJson(),
     };

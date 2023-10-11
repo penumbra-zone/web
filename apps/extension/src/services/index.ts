@@ -8,6 +8,7 @@ import { BlockProcessor } from 'penumbra-query';
 interface WalletServices {
   viewServer: ViewServer;
   blockProcessor: BlockProcessor;
+  indexedDb: IndexedDb;
 }
 
 export class Services {
@@ -31,15 +32,6 @@ export class Services {
     try {
       const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
       this._querier = new RootQuerier({ grpcEndpoint });
-
-      const { chainParams } = await this.querier.app.parameters();
-      if (!chainParams?.chainId) throw new Error('Chain id could not be queried');
-
-      this._indexedDb = await IndexedDb.initialize({
-        chainId: chainParams.chainId,
-        dbVersion: testnetConstants.indexedDbVersion,
-        updateNotifiers: [syncLastBlockWithLocal()],
-      });
 
       await this.tryToSync();
 
@@ -77,23 +69,30 @@ export class Services {
   async initializeWalletServices(): Promise<WalletServices> {
     const wallets = await localExtStorage.get('wallets');
     if (wallets.length) {
-      const { chainParams } = await this.querier.app.parameters();
-      if (!chainParams?.epochDuration) throw new Error('epochDuration could not be queried');
+      const { chainId, epochDuration } = await this.querier.app.chainParams();
+
+      const indexedDb = await IndexedDb.initialize({
+        chainId,
+        dbVersion: testnetConstants.indexedDbVersion,
+        updateNotifiers: [syncLastBlockWithLocal()],
+        walletId: wallets[0]!.id,
+      });
 
       const viewServer = await ViewServer.initialize({
         fullViewingKey: wallets[0]!.fullViewingKey,
-        epochDuration: chainParams.epochDuration,
-        getStoredTree: () => this.indexedDb.getStateCommitmentTree(),
+        epochDuration,
+        getStoredTree: () => indexedDb.getStateCommitmentTree(),
+        idbConstants: indexedDb.constants(),
       });
 
       const blockProcessor = new BlockProcessor({
         fullViewingKey: wallets[0]!.fullViewingKey,
         viewServer,
         querier: this.querier,
-        indexedDb: this.indexedDb,
+        indexedDb,
       });
 
-      return { viewServer, blockProcessor };
+      return { viewServer, blockProcessor, indexedDb };
     } else {
       throw new Error('No wallets for view server to initialize for');
     }

@@ -16,8 +16,12 @@ export class CompactBlockQuerier {
     this.client = createClient(grpcEndpoint, QueryService);
   }
 
-  compactBlockRange({ startHeight, keepAlive, abortSignal }: CompactBlockRangeParams) {
+  async *compactBlockRange({ startHeight, keepAlive, abortSignal }: CompactBlockRangeParams) {
     const req = new CompactBlockRangeRequest({ keepAlive, startHeight });
-    return this.client.compactBlockRange(req, { signal: abortSignal });
+    const iterable = this.client.compactBlockRange(req, { signal: abortSignal });
+    for await (const res of iterable) {
+      if (!res.compactBlock) throw new Error('No block in response');
+      yield res.compactBlock;
+    }
   }
 }

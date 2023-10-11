@@ -3,13 +3,13 @@ import { StoreKey, StoreNames, StoreValue } from 'idb/build/entry';
 import { IDBPDatabase } from 'idb';
 
 export type TableUpdateNotifier =
-  | IdbUpdateNotifier<PenumbraDb, 'last_block_synced'>
-  | IdbUpdateNotifier<PenumbraDb, 'tree_last_position'>
-  | IdbUpdateNotifier<PenumbraDb, 'tree_last_forgotten'>
-  | IdbUpdateNotifier<PenumbraDb, 'tree_hashes'>
-  | IdbUpdateNotifier<PenumbraDb, 'tree_commitments'>
-  | IdbUpdateNotifier<PenumbraDb, 'assets'>
-  | IdbUpdateNotifier<PenumbraDb, 'spendable_notes'>;
+  | IdbUpdateNotifier<PenumbraDb, 'LAST_BLOCK_SYNCED'>
+  | IdbUpdateNotifier<PenumbraDb, 'TREE_LAST_POSITION'>
+  | IdbUpdateNotifier<PenumbraDb, 'TREE_LAST_FORGOTTEN'>
+  | IdbUpdateNotifier<PenumbraDb, 'TREE_HASHES'>
+  | IdbUpdateNotifier<PenumbraDb, 'TREE_COMMITMENTS'>
+  | IdbUpdateNotifier<PenumbraDb, 'ASSETS'>
+  | IdbUpdateNotifier<PenumbraDb, 'SPENDABLE_NOTES'>;
 
 export interface IdbUpdateNotifier<
   DBTypes extends PenumbraDb,

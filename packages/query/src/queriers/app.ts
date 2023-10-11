@@ -14,10 +14,15 @@ export class AppQuerier {
     this.client = createClient(grpcEndpoint, QueryService);
   }
 
-  async parameters() {
+  async appParams() {
     const req = new AppParametersRequest();
     const res = await this.client.appParameters(req);
     return res.appParameters!;
+  }
+
+  async chainParams() {
+    const appParams = await this.appParams();
+    return appParams.chainParams!;
   }
 
   async keyValue(key: string): Promise<KeyValueResponse_Value['value']> {

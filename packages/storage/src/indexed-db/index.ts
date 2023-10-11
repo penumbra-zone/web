@@ -4,7 +4,7 @@ import {
   IdbConstants,
   IndexedDbInterface,
   PenumbraDb,
-  SctUpdates,
+  ScanResult,
   StateCommitmentTree,
   StoredTransaction,
 } from 'penumbra-types';
@@ -86,38 +86,15 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   // All updates must be atomic in order to prevent invalid tree state
-  public async updateStateCommitmentTree(updates: SctUpdates, height: bigint) {
+  public async saveScanResult(updates: ScanResult): Promise<void> {
     const txs = new IbdUpdates();
 
-    if (updates.set_position) {
-      txs.add({
-        table: 'TREE_LAST_POSITION',
-        value: updates.set_position,
-        key: 'last_position',
-      });
-    }
-
-    if (updates.set_forgotten) {
-      txs.add({
-        table: 'TREE_LAST_FORGOTTEN',
-        value: updates.set_forgotten,
-        key: 'last_forgotten',
-      });
-    }
-
-    for (const c of updates.store_commitments) {
-      txs.add({ table: 'TREE_COMMITMENTS', value: c });
-    }
-
-    for (const h of updates.store_hashes) {
-      txs.add({ table: 'TREE_HASHES', value: h });
-    }
-
-    txs.add({ table: 'LAST_BLOCK_SYNCED', value: height, key: 'last_block' });
+    this.addSctUpdates(txs, updates.sctUpdates);
+    this.addNewNotes(txs, updates.newNotes);
+    // TODO: this.addNewSwaps(txs, updates.newSwaps);
+    txs.add({ table: 'LAST_BLOCK_SYNCED', value: updates.height, key: 'last_block' });
 
     await this.u.updateAll(txs);
-
-    // TODO: What about updates.delete_ranges?
   }
 
   async getLastBlockSynced() {
@@ -155,5 +132,45 @@ export class IndexedDb implements IndexedDbInterface {
 
   async getTransaction(source: NoteSource): Promise<StoredTransaction | undefined> {
     return this.db.get('TRANSACTIONS', source.inner);
+  }
+
+  private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanResult['sctUpdates']): void {
+    if (sctUpdates.set_position) {
+      txs.add({
+        table: 'TREE_LAST_POSITION',
+        value: sctUpdates.set_position,
+        key: 'last_position',
+      });
+    }
+
+    if (sctUpdates.set_forgotten) {
+      txs.add({
+        table: 'TREE_LAST_FORGOTTEN',
+        value: sctUpdates.set_forgotten,
+        key: 'last_forgotten',
+      });
+    }
+
+    for (const c of sctUpdates.store_commitments) {
+      txs.add({ table: 'TREE_COMMITMENTS', value: c });
+    }
+
+    for (const h of sctUpdates.store_hashes) {
+      txs.add({ table: 'TREE_HASHES', value: h });
+    }
+
+    // TODO: What about updates.delete_ranges?
+  }
+
+  private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {
+    for (const n of notes) {
+      if (!n.noteCommitment?.inner) throw new Error('noteCommitment not present');
+
+      txs.add({
+        table: 'SPENDABLE_NOTES',
+        value: n,
+        key: n.noteCommitment.inner,
+      });
+    }
   }
 }

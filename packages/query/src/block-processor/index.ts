@@ -7,8 +7,8 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { backOff } from 'exponential-backoff';
 import { decodeNctRoot } from 'penumbra-wasm-ts/src/sct';
 import { Transactions } from './transactions';
-import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { generateMetadata } from './metadata';
+import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -58,7 +58,7 @@ export class BlockProcessor {
     }
   }
 
-  async storeNewNotes(blockHeight: bigint, notes: SpendableNoteRecord[]) {
+  async storeNewTransactions(blockHeight: bigint, newNotes: SpendableNoteRecord[]) {
     const transactions = new Transactions(
       blockHeight,
       this.fullViewingKey,
@@ -66,8 +66,7 @@ export class BlockProcessor {
       this.querier.tendermint,
     );
 
-    for (const n of notes) {
-      await this.indexedDb.saveSpendableNote(n);
+    for (const n of newNotes) {
       await this.storeAssetDenoms(n.note?.value?.assetId);
       await transactions.add(n.source);
     }
@@ -86,9 +85,10 @@ export class BlockProcessor {
     }
   }
 
-  async saveSyncProgress(height: bigint) {
-    const updates = this.viewServer.flushUpdates();
-    await this.indexedDb.updateStateCommitmentTree(updates, height);
+  async saveSyncProgress() {
+    const result = this.viewServer.flushUpdates();
+    await this.indexedDb.saveScanResult(result);
+    await this.storeNewTransactions(result.height, result.newNotes);
 
     // In dev mode, you may want to validate local sct against remote
     // await this.assertRootValid(res.compactBlock.height);
@@ -130,24 +130,19 @@ export class BlockProcessor {
     const lastBlockHeight = await this.querier.tendermint.lastBlockHeight();
 
     // Continuously runs as new blocks are committed
-    for await (const res of this.querier.compactBlock.compactBlockRange({
+    for await (const block of this.querier.compactBlock.compactBlockRange({
       startHeight,
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
-      if (!res.compactBlock) throw new Error('No block in response');
-
       // Scanning has a side effect of updating viewServer's internal tree.
-      const scanResult = await this.viewServer.scanBlock(res.compactBlock);
+      const newNotesPresent = await this.viewServer.scanBlock(block);
 
-      // TODO: We should not store new blocks as we find them, but only when sync progress is saved: https://github.com/penumbra-zone/web/issues/34
-      //       However, the current wasm crate discards the new notes on every block scan.
-      await this.storeNewNotes(res.compactBlock.height, scanResult.newNotes);
-      await this.markNotesSpent(res.compactBlock.nullifiers, res.compactBlock.height);
-
-      if (shouldStoreProgress(res.compactBlock, lastBlockHeight)) {
-        await this.saveSyncProgress(res.compactBlock.height);
+      if (shouldStoreProgress(newNotesPresent, block, lastBlockHeight)) {
+        await this.saveSyncProgress();
       }
+
+      await this.markNotesSpent(block.nullifiers, block.height);
     }
   }
 }
@@ -156,9 +151,15 @@ const isAbortSignal = (error: unknown): boolean =>
   error instanceof ConnectError && error.code === Code.Canceled;
 
 // Writing to disc is expensive, so storing progress occurs:
+// - if new notes are present in that block
 // - if syncing is up-to-date, on every block
 // - if not, every 1000th block
-const shouldStoreProgress = (block: CompactBlock, upToDateBlock: bigint): boolean => {
-  if (block.height === 0n) return false;
+const shouldStoreProgress = (
+  newNotesPresent: boolean,
+  block: CompactBlock,
+  upToDateBlock: bigint,
+): boolean => {
+  if (block.height === 0n) return false; // TODO: do we need this? document
+  if (newNotesPresent) return true;
   return block.height >= upToDateBlock || block.height % 1000n === 0n;
 };

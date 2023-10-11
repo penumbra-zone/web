@@ -10,6 +10,6 @@ export const isAppParamsRequest = (req: ViewReqMessage): req is AppParametersReq
 };
 
 export const handleAppParamsReq = async (): Promise<AppParametersResponse> => {
-  const parameters = await services.querier.app.parameters();
+  const parameters = await services.querier.app.appParams();
   return new AppParametersResponse({ parameters });
 };
