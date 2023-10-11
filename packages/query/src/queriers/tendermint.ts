@@ -2,11 +2,10 @@ import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils';
 import {
   GetBlockByHeightRequest,
+  GetBlockByHeightResponse,
   GetStatusRequest,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/util/tendermint_proxy/v1alpha1/tendermint_proxy_pb';
 import { TendermintProxyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/util/tendermint_proxy/v1alpha1/tendermint_proxy_connect';
-import { Block, validateSchema } from 'penumbra-types';
-import { blockSchema } from 'penumbra-types/src/block';
 
 export class TendermintQuerier {
   private readonly client: PromiseClient<typeof TendermintProxyService>;
@@ -21,9 +20,8 @@ export class TendermintQuerier {
     return res.syncInfo!.latestBlockHeight;
   }
 
-  async getBlock(height: bigint): Promise<Block> {
+  async getBlock(height: bigint): Promise<GetBlockByHeightResponse> {
     const req = new GetBlockByHeightRequest({ height });
-    const res = await this.client.getBlockByHeight(req);
-    return validateSchema(blockSchema, res);
+    return this.client.getBlockByHeight(req);
   }
 }

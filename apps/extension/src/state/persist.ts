@@ -1,7 +1,7 @@
 import { StateCreator, StoreMutatorIdentifier } from 'zustand';
 import { AllSlices } from './index';
 import { produce } from 'immer';
-import { walletsFromJson } from '../types/wallet';
+
 import {
   localExtStorage,
   LocalStorageState,
@@ -9,6 +9,7 @@ import {
   SessionStorageState,
   StorageItem,
 } from 'penumbra-storage';
+import { walletsFromJson } from 'penumbra-types';
 
 export type Middleware = <
   T,

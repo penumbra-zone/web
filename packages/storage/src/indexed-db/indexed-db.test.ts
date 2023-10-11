@@ -1,13 +1,14 @@
 import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { IndexedDb } from './index';
-
-import { base64ToUint8Array, NewNoteRecord } from 'penumbra-types';
 import {
   AssetId,
   DenomMetadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { base64ToUint8Array } from 'penumbra-types';
 import { TableUpdateNotifier } from './updater';
+import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 
 const denomMetadataA = new DenomMetadata({
   symbol: 'usdc',
@@ -28,6 +29,7 @@ describe('IndexedDb', () => {
     chainId: 'test',
     accountAddr: 'penumbra123xyz',
     dbVersion: 1,
+    walletId: 'walletid99897',
   };
 
   describe('initializing', () => {
@@ -36,18 +38,17 @@ describe('IndexedDb', () => {
       await expect(db.getLastBlockSynced()).resolves.not.toThrow();
     });
 
-    // TODO: after https://github.com/penumbra-zone/web/issues/30 is resolved, re-enable test
-    it.skip('different chain ids result in different databases', async () => {
+    it('different chain ids result in different databases', async () => {
       const testnetDb = await IndexedDb.initialize(testInitialProps);
       const mainnetDb = await IndexedDb.initialize({ ...testInitialProps, chainId: 'mainnet' });
 
       await testnetDb.saveAssetsMetadata(denomMetadataA);
       await mainnetDb.saveAssetsMetadata(denomMetadataB);
 
-      expect(await testnetDb.getAssetsMetadata(denomMetadataA.penumbraAssetId!.inner)).toBe(
+      expect(await testnetDb.getAssetsMetadata(denomMetadataA.penumbraAssetId!)).toEqual(
         denomMetadataA,
       );
-      expect(await mainnetDb.getAssetsMetadata(denomMetadataB.penumbraAssetId!.inner)).toBe(
+      expect(await mainnetDb.getAssetsMetadata(denomMetadataB.penumbraAssetId!)).toEqual(
         denomMetadataB,
       );
     });
@@ -57,7 +58,7 @@ describe('IndexedDb', () => {
       await dbA.saveAssetsMetadata(denomMetadataA);
 
       const dbB = await IndexedDb.initialize(testInitialProps);
-      expect((await dbB.getAssetsMetadata(denomMetadataA.penumbraAssetId!.inner))?.name).toBe(
+      expect((await dbB.getAssetsMetadata(denomMetadataA.penumbraAssetId!))?.name).toBe(
         denomMetadataA.name,
       );
     });
@@ -71,7 +72,7 @@ describe('IndexedDb', () => {
         ...testInitialProps,
         updateNotifiers: [
           {
-            table: 'spendable_notes',
+            table: 'SPENDABLE_NOTES',
             handler: (value, key) => {
               mockNotifier(value, key);
               return Promise.resolve();
@@ -85,11 +86,11 @@ describe('IndexedDb', () => {
 
       expect(mockNotifier).toHaveBeenCalledOnce();
       const [value, key] = mockNotifier.mock.lastCall as [
-        NewNoteRecord,
-        NewNoteRecord['noteCommitment']['inner'],
+        SpendableNoteRecord,
+        StateCommitment['inner'],
       ];
       expect(value).toBe(newNote);
-      expect(key).toBe(newNote.noteCommitment.inner);
+      expect(key).toBe(newNote.noteCommitment!.inner);
     });
 
     it('does not call function if not subscribed', async () => {
@@ -99,7 +100,7 @@ describe('IndexedDb', () => {
         ...testInitialProps,
         updateNotifiers: [
           {
-            table: 'tree_last_position',
+            table: 'TREE_LAST_POSITION',
             handler: (value, key) => {
               mockNotifier(value, key);
               return Promise.resolve();
@@ -118,25 +119,35 @@ describe('IndexedDb', () => {
   // TODO: Write tests for each asset
 });
 
-const newNote = {
-  addressIndex: { account: 3, randomizer: 'AAAAAAAAAAAAAAAA' },
+const newNote = SpendableNoteRecord.fromJson({
+  noteCommitment: {
+    inner: 'pXS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',
+  },
   note: {
-    address: {
-      inner:
-        'w9zZkLDfn+o/7Q5NOZZCq3hYyKO+KNxYmTKlgatLiMQw3Nq9wi…PEd/M1D80DONRVx+BtM+YsutOpoqnNXpS80b2k07srFp9ZI4=',
-    },
-    rseed: 'UaMbR7oJoc5WnL9cQ6f5AEmIsRvfiKnU/qK8qTnFx88=',
     value: {
-      amount: { hi: '54', lo: '3875820019684212736' },
+      amount: {
+        lo: '12000000',
+      },
       assetId: {
-        inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
+        inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
       },
     },
+    rseed: 'h04XyitXpY1Q77M+vSzPauf4ZPx9NNRBAuUcVqP6pWo=',
+    address: {
+      inner:
+        '874bHlYDfy3mT57v2bXQWm3SJ7g8LI3cZFKob8J8CfrP2aqVGo6ESrpGScI4t/B2/KgkjhzmAasx8GM1ejNz0J153vD8MBVM9FUZFACzSCg=',
+    },
   },
-  noteCommitment: { inner: '/rajT2GvdTtpYzezvZIFOSV+UPsr0MhrIdlO5iDq7QI=' },
-  nullifier: { inner: 'mV03wioP0x1qkGwGP0EMAlNRuPFMisv6MpCL5mAq4QE=' },
-  position: '4305',
+  addressIndex: {
+    account: 12,
+    randomizer: 'AAAAAAAAAAAAAAAA',
+  },
+  nullifier: {
+    inner: 'fv/wPZDA5L96Woc+Ry2s7u9IrwNxTFjSDYInZj3lRA8=',
+  },
+  heightCreated: '7197',
+  position: '42986962944',
   source: {
-    inner: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAA=',
+    inner: '3CBS08dM9eLHH45Z9loZciZ9RaG9x1fc26Qnv0lQlto=',
   },
-};
+});

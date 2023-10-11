@@ -1,7 +1,6 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { WalletCreate } from '../types/wallet';
 import { webcrypto } from 'crypto';
 import {
   ExtensionStorage,
@@ -9,11 +8,13 @@ import {
   mockLocalExtStorage,
   mockSessionExtStorage,
 } from 'penumbra-storage';
+import { WalletCreate } from 'penumbra-types';
 
 vi.stubGlobal('crypto', webcrypto);
 vi.mock('penumbra-wasm-ts', () => ({
   generateSpendKey: () => 'spend_key',
   getFullViewingKey: () => 'full_viewing_key',
+  getWalletId: () => 'wallet_id',
 }));
 
 describe('Accounts Slice', () => {

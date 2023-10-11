@@ -1,6 +1,7 @@
 import { ViewServer as WasmViewServer } from '@penumbra-zone/wasm-bundler';
 import {
-  NctUpdates,
+  IdbConstants,
+  parseScanResult,
   ScanResult,
   ScanResultSchema,
   StateCommitmentTree,
@@ -8,11 +9,14 @@ import {
 } from 'penumbra-types';
 import { validateSchema } from 'penumbra-types/src/validation';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
+import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
+import { z } from 'zod';
 
 interface ViewServerProps {
   fullViewingKey: string;
   epochDuration: bigint;
   getStoredTree: () => Promise<StateCommitmentTree>;
+  idbConstants: IdbConstants;
 }
 
 export class ViewServer implements ViewServerInterface {
@@ -21,50 +25,51 @@ export class ViewServer implements ViewServerInterface {
     private readonly fullViewingKey: string,
     private readonly epochDuration: bigint,
     private readonly getStoredTree: () => Promise<StateCommitmentTree>,
+    private readonly idbConstants: IdbConstants,
   ) {}
 
   static async initialize({
     fullViewingKey,
     epochDuration,
     getStoredTree,
+    idbConstants,
   }: ViewServerProps): Promise<ViewServer> {
-    // The constructor is an async fn. Should consider a `new()` function instead of a constructor.
-    const vsPromise = new WasmViewServer(
+    const wvs = await WasmViewServer.new(
       fullViewingKey,
       epochDuration,
       await getStoredTree(),
-    ) as unknown as Promise<WasmViewServer>;
-    return new this(await vsPromise, fullViewingKey, epochDuration, getStoredTree);
+      idbConstants,
+    );
+    return new this(wvs, fullViewingKey, epochDuration, getStoredTree, idbConstants);
   }
 
   // Decrypts blocks with viewing key for notes, swaps, and updates revealed for user
   // Makes update to internal state-commitment-tree as a side effect.
-  // Should extract updates and save locally.
-  async scanBlock(compactBlock: CompactBlock): Promise<ScanResult> {
-    const result = (await this.wasmViewServer.scan_block(compactBlock.toJson())) as ScanResult;
-    return validateSchema(ScanResultSchema, result);
+  // Should extract updates via this.flushUpdates().
+  async scanBlock(compactBlock: CompactBlock): Promise<boolean> {
+    const res = await this.wasmViewServer.scan_block(compactBlock.toJson());
+    return validateSchema(z.boolean(), res);
   }
 
   // Resets the state of the wasmViewServer to the one set in storage
   async resetTreeToStored() {
-    this.wasmViewServer = new WasmViewServer(
+    this.wasmViewServer = await WasmViewServer.new(
       this.fullViewingKey,
       this.epochDuration,
       await this.getStoredTree(),
+      this.idbConstants,
     );
   }
 
-  getNctRoot(): string {
-    const result = this.wasmViewServer.get_nct_root() as { inner: string };
-    return result.inner;
+  getNctRoot(): MerkleRoot {
+    const rawResult = this.wasmViewServer.get_nct_root() as { inner: string };
+    return MerkleRoot.fromJson(rawResult);
   }
 
   // As blocks are scanned, the internal wasmViewServer tree is being updated.
-  // Passing the locally stored last position/forgotten allows us to see the
-  // changes in that tree since that last stored checkpoint.
-  async updatesSinceCheckpoint(): Promise<NctUpdates> {
-    const { last_position, last_forgotten } = await this.getStoredTree();
-    const scanResult = this.wasmViewServer.get_updates(last_position, last_forgotten) as ScanResult;
-    return validateSchema(ScanResultSchema, scanResult).nct_updates;
+  // Flush updates clears the state and returns all the updates since the last checkpoint.
+  flushUpdates(): ScanResult {
+    const raw = validateSchema(ScanResultSchema, this.wasmViewServer.flush_updates());
+    return parseScanResult(raw);
   }
 }

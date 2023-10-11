@@ -4,7 +4,8 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { ViewReqMessage } from './helpers/generic';
 
-import { IndexedDbInterface, StoredTransaction, storedTransactionToProto } from 'penumbra-types';
+import { StoredTransaction, storedTransactionToProto } from 'penumbra-types';
+import { services } from '../../../service-worker';
 
 export const isTransactionInfoRequest = (msg: ViewReqMessage): msg is TransactionInfoRequest => {
   return msg.getType().typeName === TransactionInfoRequest.typeName;
@@ -12,8 +13,9 @@ export const isTransactionInfoRequest = (msg: ViewReqMessage): msg is Transactio
 
 export const handleTransactionInfoReq = async function* (
   req: TransactionInfoRequest,
-  indexedDb: IndexedDbInterface,
 ): AsyncIterable<TransactionInfoResponse> {
+  const { indexedDb } = await services.getWalletServices();
+
   const allTxs = await indexedDb.getAllTransactions();
   const responses = allTxs
     .filter(tx => tx.blockHeight >= req.startHeight && endHeightInclusive(tx, req))

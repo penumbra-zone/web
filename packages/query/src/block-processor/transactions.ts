@@ -1,18 +1,17 @@
 import {
-  Base64Str,
-  hexToBase64,
   IndexedDbInterface,
-  NoteSource,
-  noteSourceFromBase64Str,
+  noteSourceFromBytes,
+  ParsedNoteSource,
   StoredTransaction,
 } from 'penumbra-types';
 import { TendermintQuerier } from '../queriers/tendermint';
 import { decodeTx, transactionInfo } from 'penumbra-wasm-ts/src/transaction';
 import { sha256Hash } from 'penumbra-crypto-ts';
+import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 
 export class Transactions {
   // These are base64 encoded hex strings
-  private readonly all = new Set<Base64Str>();
+  private readonly all = new Set<NoteSource>();
 
   constructor(
     private blockHeight: bigint,
@@ -21,10 +20,12 @@ export class Transactions {
     private tendermint: TendermintQuerier,
   ) {}
 
-  async add(source: Base64Str) {
+  async add(source?: NoteSource) {
+    if (!source) return;
+
     // If source is not a transaction or it's already in the db, can skip
-    const noteSource = noteSourceFromBase64Str(source);
-    if (noteSource !== NoteSource.Transaction) return;
+    const noteSource = noteSourceFromBytes(source);
+    if (noteSource !== ParsedNoteSource.Transaction) return;
     if (await this.indexedDb.getTransaction(source)) return;
 
     this.all.add(source);
@@ -38,22 +39,24 @@ export class Transactions {
   async storeTransactionInfo() {
     if (this.all.size <= 0) return;
 
-    // TODO: Currently bug with blockHeight 1
+    // TODO: Currently bug querying blockHeight 1
     // Tendermint does not allow querying blockHeight 0
     if (this.blockHeight === 0n || this.blockHeight === 1n) return;
 
     const b = await this.tendermint.getBlock(this.blockHeight);
+    if (!b.block?.data?.txs) throw new Error('Unable to query transactions');
+
     for (const txBytes of b.block.data.txs) {
       const hash = await sha256Hash(txBytes);
-      const txId = hexToBase64(hash);
-      const tx = decodeTx(txBytes);
+      const noteSource = new NoteSource({ inner: hash });
 
-      if (this.all.has(txId)) {
-        const txInfo = await transactionInfo(this.fullViewingKey, tx);
+      if (noteSourcePresent(this.all, noteSource)) {
+        const tx = decodeTx(txBytes);
+        const txInfo = await transactionInfo(this.fullViewingKey, tx, this.indexedDb.constants());
 
         const txToStore = {
           blockHeight: this.blockHeight,
-          id: txId,
+          id: noteSource,
           tx,
           perspective: txInfo.txp,
           view: txInfo.txv,
@@ -64,3 +67,7 @@ export class Transactions {
     }
   }
 }
+
+const noteSourcePresent = (set: Set<NoteSource>, toCheck: NoteSource) => {
+  return Array.from(set).some(ns => ns.equals(toCheck));
+};
