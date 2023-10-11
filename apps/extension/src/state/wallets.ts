@@ -25,7 +25,7 @@ export const createWalletsSlice =
         const key = await Key.fromJson(passwordKey);
         const encryptedSeedPhrase = await key.seal(seedPhraseStr);
         const walletId = getWalletId(fullViewingKey);
-        const newWallet = new Wallet(label, walletId, fullViewingKey, encryptedSeedPhrase);
+        const newWallet = new Wallet(label, walletId, fullViewingKey, { encryptedSeedPhrase });
 
         set(state => {
           state.wallets.all.unshift(newWallet);

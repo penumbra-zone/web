@@ -92,7 +92,7 @@ export class BlockProcessor {
     await this.storeNewTransactions(result.height, result.newNotes);
 
     // In dev mode, you may want to validate local sct against remote
-    // await this.assertRootValid(res.compactBlock.height);
+    // await this.assertRootValid(result.height);
   }
 
   // We need to query separately to convert assetId's into readable denom strings. Persisting those to storage.
@@ -160,7 +160,6 @@ const shouldStoreProgress = (
   block: CompactBlock,
   upToDateBlock: bigint,
 ): boolean => {
-  if (block.height === 0n) return false; // TODO: do we need this? document
   if (newNotesPresent) return true;
   return block.height >= upToDateBlock || block.height % 1000n === 0n;
 };
