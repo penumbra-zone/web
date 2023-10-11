@@ -16,6 +16,7 @@ vi.stubGlobal('crypto', webcrypto);
 vi.mock('penumbra-wasm-ts', () => ({
   generateSpendKey: () => 'spend_key',
   getFullViewingKey: () => 'full_viewing_key',
+  getWalletId: () => 'wallet_id',
 }));
 
 describe('Password Slice', () => {

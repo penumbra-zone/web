@@ -8,35 +8,40 @@ export interface WalletCreate {
 // Stored in chrome.local.storage
 export interface WalletJson {
   label: string;
-  accountGroup: string;
-  encryptedSeedPhrase: BoxJson;
+  id: string;
   fullViewingKey: string;
+  custody: { encryptedSeedPhrase: BoxJson };
 }
+
+export interface HotWallet {
+  encryptedSeedPhrase: Box;
+}
+
+export type Custody = HotWallet; // Later on, could have different types (like ledger)
 
 // Stored in zustand memory
 export class Wallet {
   constructor(
     readonly label: string,
-    readonly accountGroup: string,
+    readonly id: string,
     readonly fullViewingKey: string,
-    readonly encryptedSeedPhrase: Box,
+    readonly custody: Custody,
   ) {}
 
   static fromJson(obj: WalletJson): Wallet {
-    return new Wallet(
-      obj.label,
-      obj.accountGroup,
-      obj.fullViewingKey,
-      Box.fromJson(obj.encryptedSeedPhrase),
-    );
+    return new Wallet(obj.label, obj.id, obj.fullViewingKey, {
+      encryptedSeedPhrase: Box.fromJson(obj.custody.encryptedSeedPhrase),
+    });
   }
 
   toJson(): WalletJson {
     return {
       label: this.label,
-      accountGroup: this.accountGroup,
+      id: this.id,
       fullViewingKey: this.fullViewingKey,
-      encryptedSeedPhrase: this.encryptedSeedPhrase.toJson(),
+      custody: {
+        encryptedSeedPhrase: this.custody.encryptedSeedPhrase.toJson(),
+      },
     };
   }
 }

@@ -4,6 +4,7 @@ import {
   getAddressByIndex,
   getFullViewingKey,
   getShortAddressByIndex,
+  getWalletId,
 } from './keys';
 
 // Replace the wasm-pack import with the nodejs version so tests can run
@@ -50,6 +51,17 @@ describe('keys', () => {
 
       expect(() => {
         getShortAddressByIndex(fullViewingKey, 0);
+      }).not.toThrow();
+    });
+  });
+
+  describe('getWalletId()', () => {
+    it('does not raise zod validation error', () => {
+      const spendKey = generateSpendKey(seedPhrase);
+      const fullViewingKey = getFullViewingKey(spendKey);
+
+      expect(() => {
+        getWalletId(fullViewingKey);
       }).not.toThrow();
     });
   });

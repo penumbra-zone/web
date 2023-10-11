@@ -8,6 +8,7 @@ import { BlockProcessor } from 'penumbra-query';
 interface WalletServices {
   viewServer: ViewServer;
   blockProcessor: BlockProcessor;
+  indexedDb: IndexedDb;
 }
 
 export class Services {
@@ -20,24 +21,10 @@ export class Services {
     return this._querier;
   }
 
-  private _indexedDb: IndexedDb | undefined;
-
-  get indexedDb(): IndexedDb {
-    if (!this._indexedDb) throw new Error('Services have not been initialized');
-    return this._indexedDb;
-  }
-
   async onServiceWorkerInit(): Promise<void> {
     try {
       const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
       this._querier = new RootQuerier({ grpcEndpoint });
-
-      const { chainId } = await this.querier.app.chainParameters();
-      this._indexedDb = await IndexedDb.initialize({
-        chainId,
-        dbVersion: testnetConstants.indexedDbVersion,
-        updateNotifiers: [syncLastBlockWithLocal()],
-      });
 
       await this.tryToSync();
 
@@ -75,22 +62,30 @@ export class Services {
   async initializeWalletServices(): Promise<WalletServices> {
     const wallets = await localExtStorage.get('wallets');
     if (wallets.length) {
-      const { epochDuration } = await this.querier.app.chainParameters();
+      const { chainId, epochDuration } = await this.querier.app.chainParams();
+
+      const indexedDb = await IndexedDb.initialize({
+        chainId,
+        dbVersion: testnetConstants.indexedDbVersion,
+        updateNotifiers: [syncLastBlockWithLocal()],
+        walletId: wallets[0]!.id,
+      });
 
       const viewServer = await ViewServer.initialize({
         fullViewingKey: wallets[0]!.fullViewingKey,
         epochDuration,
-        getStoredTree: () => this.indexedDb.getStateCommitmentTree(),
+        getStoredTree: () => indexedDb.getStateCommitmentTree(),
+        idbConstants: indexedDb.constants(),
       });
 
       const blockProcessor = new BlockProcessor({
         fullViewingKey: wallets[0]!.fullViewingKey,
         viewServer,
         querier: this.querier,
-        indexedDb: this.indexedDb,
+        indexedDb,
       });
 
-      return { viewServer, blockProcessor };
+      return { viewServer, blockProcessor, indexedDb };
     } else {
       throw new Error('No wallets for view server to initialize for');
     }

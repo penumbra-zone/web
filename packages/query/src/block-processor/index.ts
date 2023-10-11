@@ -1,20 +1,14 @@
-import {
-  Base64Str,
-  base64ToUint8Array,
-  IndexedDbInterface,
-  NewNoteRecord,
-  uint8ArrayToBase64,
-  ViewServerInterface,
-} from 'penumbra-types';
+import { IndexedDbInterface, ViewServerInterface } from 'penumbra-types';
 import { RootQuerier } from '../root-querier';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { bech32 } from 'bech32';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { backOff } from 'exponential-backoff';
 import { decodeNctRoot } from 'penumbra-wasm-ts/src/sct';
 import { Transactions } from './transactions';
+import { generateMetadata } from './metadata';
+import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -64,7 +58,7 @@ export class BlockProcessor {
     }
   }
 
-  async storeNewNotes(blockHeight: bigint, notes: NewNoteRecord[]) {
+  async storeNewTransactions(blockHeight: bigint, newNotes: SpendableNoteRecord[]) {
     const transactions = new Transactions(
       blockHeight,
       this.fullViewingKey,
@@ -72,10 +66,9 @@ export class BlockProcessor {
       this.querier.tendermint,
     );
 
-    for (const n of notes) {
-      await this.indexedDb.saveSpendableNote(n);
-      await this.storeAssetDenoms(n.note.value.assetId.inner);
-      await transactions.add(n.source.inner);
+    for (const n of newNotes) {
+      await this.storeAssetDenoms(n.note?.value?.assetId);
+      await transactions.add(n.source);
     }
 
     await transactions.storeTransactionInfo();
@@ -84,8 +77,8 @@ export class BlockProcessor {
   // Each nullifier has a corresponding note stored. This marks them as spent at a specific block height.
   async markNotesSpent(nullifiers: Nullifier[], blockHeight: bigint) {
     for (const nullifier of nullifiers) {
-      const stringId = uint8ArrayToBase64(nullifier.inner);
-      const matchingNote = await this.indexedDb.getNoteByNullifier(stringId);
+      const matchingNote = await this.indexedDb.getNoteByNullifier(nullifier);
+
       if (matchingNote) {
         matchingNote.heightSpent = blockHeight;
         await this.indexedDb.saveSpendableNote(matchingNote);
@@ -93,20 +86,22 @@ export class BlockProcessor {
     }
   }
 
-  async saveSyncProgress(height: bigint) {
-    const updates = await this.viewServer.updatesSinceCheckpoint();
-    await this.indexedDb.updateStateCommitmentTree(updates, height);
+  async saveSyncProgress() {
+    const result = this.viewServer.flushUpdates();
+    await this.indexedDb.saveScanResult(result);
+    await this.storeNewTransactions(result.height, result.newNotes);
 
     // In dev mode, you may want to validate local sct against remote
-    // await this.assertRootValid(res.compactBlock.height);
+    // await this.assertRootValid(result.height);
   }
 
   // We need to query separately to convert assetId's into readable denom strings. Persisting those to storage.
-  private async storeAssetDenoms(assetIdStr: Base64Str) {
-    const assetId = base64ToUint8Array(assetIdStr);
+  private async storeAssetDenoms(assetId?: AssetId) {
+    if (!assetId) return;
+
     const storedDenomData = await this.indexedDb.getAssetsMetadata(assetId);
     if (!storedDenomData) {
-      const metadata = await this.querier.shieldedPool.denomMetadata(assetIdStr);
+      const metadata = await this.querier.shieldedPool.denomMetadata(assetId);
       if (metadata) {
         await this.indexedDb.saveAssetsMetadata(metadata);
       } else {
@@ -123,7 +118,7 @@ export class BlockProcessor {
     const sourceOfTruth = await this.querier.app.keyValue(`sct/anchor/${blockHeight}`);
     const inMemoryRoot = this.viewServer.getNctRoot();
 
-    if (decodeNctRoot(sourceOfTruth) !== inMemoryRoot) {
+    if (!decodeNctRoot(sourceOfTruth).equals(inMemoryRoot)) {
       throw new Error(
         `Block height: ${blockHeight}. Wasm root does not match remote source of truth. Programmer error.`,
       );
@@ -136,24 +131,19 @@ export class BlockProcessor {
     const lastBlockHeight = await this.querier.tendermint.lastBlockHeight();
 
     // Continuously runs as new blocks are committed
-    for await (const res of this.querier.compactBlock.compactBlockRange({
+    for await (const block of this.querier.compactBlock.compactBlockRange({
       startHeight,
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
-      if (!res.compactBlock) throw new Error('No block in response');
-
       // Scanning has a side effect of updating viewServer's internal tree.
-      const scanResult = await this.viewServer.scanBlock(res.compactBlock);
+      const newNotesPresent = await this.viewServer.scanBlock(block);
 
-      // TODO: We should not store new blocks as we find them, but only when sync progress is saved: https://github.com/penumbra-zone/web/issues/34
-      //       However, the current wasm crate discards the new notes on every block scan.
-      await this.storeNewNotes(res.compactBlock.height, scanResult.new_notes);
-      await this.markNotesSpent(res.compactBlock.nullifiers, res.compactBlock.height);
-
-      if (shouldStoreProgress(res.compactBlock, lastBlockHeight)) {
-        await this.saveSyncProgress(res.compactBlock.height);
+      if (shouldStoreProgress(newNotesPresent, block, lastBlockHeight)) {
+        await this.saveSyncProgress();
       }
+
+      await this.markNotesSpent(block.nullifiers, block.height);
     }
   }
 }
@@ -162,22 +152,14 @@ const isAbortSignal = (error: unknown): boolean =>
   error instanceof ConnectError && error.code === Code.Canceled;
 
 // Writing to disc is expensive, so storing progress occurs:
+// - if new notes are present in that block
 // - if syncing is up-to-date, on every block
 // - if not, every 1000th block
-const shouldStoreProgress = (block: CompactBlock, upToDateBlock: bigint): boolean => {
-  if (block.height === 0n) return false;
+const shouldStoreProgress = (
+  newNotesPresent: boolean,
+  block: CompactBlock,
+  upToDateBlock: bigint,
+): boolean => {
+  if (newNotesPresent) return true;
   return block.height >= upToDateBlock || block.height % 1000n === 0n;
-};
-
-export const UNNAMED_ASSET_PREFIX = 'passet';
-
-const generateMetadata = (assetId: Uint8Array): DenomMetadata => {
-  const words = bech32.toWords(assetId);
-  const denom = bech32.encode(UNNAMED_ASSET_PREFIX, words);
-  return new DenomMetadata({
-    base: denom,
-    denomUnits: [{ aliases: [], denom, exponent: 0 }],
-    display: denom,
-    penumbraAssetId: { inner: assetId },
-  });
 };

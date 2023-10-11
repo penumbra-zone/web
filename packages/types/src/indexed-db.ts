@@ -1,62 +1,111 @@
-import { DBSchema } from 'idb';
+import { DBSchema, StoreNames } from 'idb';
 import {
-  NctUpdates,
-  NewNoteRecord,
+  ScanResult,
   StateCommitmentTree,
   StoreCommitment,
   StoredPosition,
   StoreHash,
 } from './state-commitment-tree';
-import { Base64Str } from './base64';
-import { DenomMetadata } from './denom';
 import { StoredTransaction } from './transaction';
+import {
+  SpendableNoteRecord,
+  SwapRecord,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import {
+  AssetId,
+  DenomMetadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import {
+  ChainParameters,
+  FmdParameters,
+  NoteSource,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
+import { Note } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
 export interface IndexedDbInterface {
+  constants(): IdbConstants;
   getLastBlockSynced(): Promise<bigint | undefined>;
-  getNoteByNullifier(nullifier: Base64Str): Promise<NewNoteRecord | undefined>;
-  saveSpendableNote(note: NewNoteRecord): Promise<void>;
+  getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
+  saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
   saveTransactionInfo(tx: StoredTransaction): Promise<void>;
-  getTransaction(id: StoredTransaction['id']): Promise<StoredTransaction | undefined>;
+  getTransaction(source: NoteSource): Promise<StoredTransaction | undefined>;
   getAllTransactions(): Promise<StoredTransaction[]>;
-  getAssetsMetadata(assetId: Uint8Array): Promise<DenomMetadata | undefined>;
+  getAssetsMetadata(assetId: AssetId): Promise<DenomMetadata | undefined>;
   saveAssetsMetadata(metadata: DenomMetadata): Promise<void>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
-  updateStateCommitmentTree(updates: NctUpdates, height: bigint): Promise<void>;
-  getAllNotes(): Promise<NewNoteRecord[]>;
+  saveScanResult(updates: ScanResult): Promise<void>;
+  getAllNotes(): Promise<SpendableNoteRecord[]>;
 }
 
 export interface PenumbraDb extends DBSchema {
-  last_block_synced: {
+  LAST_BLOCK_SYNCED: {
     key: 'last_block';
     value: bigint;
   };
-  tree_last_position: {
+  TREE_LAST_POSITION: {
     key: 'last_position';
     value: StoredPosition;
   };
-  tree_last_forgotten: {
+  TREE_LAST_FORGOTTEN: {
     key: 'last_forgotten';
     value: number;
   };
-  tree_hashes: {
+  TREE_HASHES: {
     key: number;
     value: StoreHash;
   };
-  tree_commitments: {
-    key: Uint8Array;
+  TREE_COMMITMENTS: {
+    key: StoreCommitment['commitment']['inner'];
     value: StoreCommitment;
   };
-  assets: {
-    key: Uint8Array;
+  ASSETS: {
+    key: AssetId['inner'];
     value: DenomMetadata;
   };
-  spendable_notes: {
-    key: Base64Str;
-    value: NewNoteRecord;
-    indexes: { nullifier: Base64Str };
+  SPENDABLE_NOTES: {
+    key: StateCommitment['inner'];
+    value: SpendableNoteRecord;
+    indexes: { nullifier: Nullifier['inner'] };
   };
-  transactions: {
-    key: Base64Str;
+  TRANSACTIONS: {
+    key: NoteSource['inner'];
     value: StoredTransaction;
   };
+  CHAIN_PARAMETERS: {
+    key: ChainParameters['chainId'];
+    value: ChainParameters;
+  };
+  NOTES: {
+    key: Address['inner'];
+    value: Note;
+  };
+  FMD_PARAMETERS: {
+    key: string;
+    value: FmdParameters;
+  };
+  SWAPS: {
+    key: StateCommitment['inner'];
+    value: SwapRecord;
+  };
 }
+
+export type Tables = Record<string, StoreNames<PenumbraDb>>;
+
+// Must be kept in sync with: https://github.com/penumbra-zone/penumbra/blob/02462635d6c825019822cbeeb44d422cf900f25d/crates/wasm/src/storage.rs#L15C1-L30
+export interface IdbConstants {
+  name: string;
+  version: number;
+  tables: Tables;
+}
+
+export const IDB_TABLES: Tables = {
+  assets: 'ASSETS',
+  chain_parameters: 'CHAIN_PARAMETERS',
+  fmd_parameters: 'FMD_PARAMETERS',
+  notes: 'NOTES',
+  spendable_notes: 'SPENDABLE_NOTES',
+  swaps: 'SWAPS',
+};

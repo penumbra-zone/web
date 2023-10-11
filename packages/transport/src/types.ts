@@ -1,5 +1,4 @@
-import { MethodInfo, ServiceType } from '@bufbuild/protobuf';
-import { JsonValue } from '@bufbuild/protobuf/dist/types/json-format';
+import { JsonValue, MethodInfo, ServiceType } from '@bufbuild/protobuf';
 
 export const INCOMING_GRPC_MESSAGE = 'PENUMBRA_DAPP_GRPC_REQUEST' as const;
 export const OUTGOING_GRPC_MESSAGE = 'PENUMBRA_DAPP_GRPC_RESPONSE' as const;

@@ -1,8 +1,8 @@
 import { AllSlices, SliceCreator } from './index';
-import { Wallet, WalletCreate } from '../types/wallet';
-import { generateSpendKey, getFullViewingKey } from 'penumbra-wasm-ts';
+import { generateSpendKey, getFullViewingKey, getWalletId } from 'penumbra-wasm-ts';
 import { Key } from 'penumbra-crypto-ts';
 import { ExtensionStorage, LocalStorageState } from 'penumbra-storage';
+import { Wallet, WalletCreate } from 'penumbra-types';
 
 export interface WalletsSlice {
   all: Wallet[];
@@ -24,8 +24,8 @@ export const createWalletsSlice =
 
         const key = await Key.fromJson(passwordKey);
         const encryptedSeedPhrase = await key.seal(seedPhraseStr);
-        const accountGroup = ''; // TODO: Should derive this from the key when implemented in wasm crate
-        const newWallet = new Wallet(label, accountGroup, fullViewingKey, encryptedSeedPhrase);
+        const walletId = getWalletId(fullViewingKey);
+        const newWallet = new Wallet(label, walletId, fullViewingKey, { encryptedSeedPhrase });
 
         set(state => {
           state.wallets.all.unshift(newWallet);
