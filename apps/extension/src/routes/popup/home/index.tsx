@@ -39,8 +39,21 @@ export const PopupIndex = () => {
     <div className='relative flex h-full flex-col items-stretch justify-start bg-left-bottom px-[30px]'>
       <div className='absolute bottom-[50px] left-[-10px] -z-10 h-[715px] w-[900px] overflow-hidden bg-logo opacity-10' />
       <IndexHeader />
-      <div className='mb-[150px] flex w-full flex-col'>
-        <div className='mt-24 flex justify-between'>
+      <div className='my-16 flex w-full flex-col'>
+        <p className='mb-4 select-none text-center font-headline text-xl font-semibold leading-[30px]'>
+          Wallet id
+        </p>
+        <div className='flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
+          <div className='flex items-center gap-[6px]'>
+            <Identicon name={account?.walletId ?? ''} className='h-5 w-5' />
+            <p className='select-none text-center text-[12px] font-bold leading-[18px] text-muted-foreground'>
+              {account?.walletId.slice(0, 42)}...
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className='mb-16 flex w-full flex-col'>
+        <div className='flex justify-between'>
           {account?.index !== 0 ? (
             <ArrowLeftIcon onClick={previous} className='h-6 w-6 hover:cursor-pointer' />
           ) : (

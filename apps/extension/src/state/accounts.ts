@@ -1,8 +1,9 @@
 import { AllSlices, SliceCreator } from './index';
-import { getAddressByIndex, getShortAddressByIndex } from 'penumbra-wasm-ts';
+import { getAddressByIndex, getShortAddressByIndex, getWalletId } from 'penumbra-wasm-ts';
 import { getActiveWallet } from './wallets';
 
 interface Account {
+  walletId: string;
   address: string;
   preview: string;
   index: number;
@@ -44,5 +45,6 @@ export const activeAccount = (state: AllSlices): Account | undefined => {
     address: getAddressByIndex(active.fullViewingKey, state.accounts.index),
     preview: getShortAddressByIndex(active.fullViewingKey, state.accounts.index),
     index: state.accounts.index,
+    walletId: getWalletId(active.fullViewingKey),
   };
 };
