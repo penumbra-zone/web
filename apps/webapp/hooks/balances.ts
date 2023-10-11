@@ -12,10 +12,8 @@ export const useBalances = ({ account }: { account: number }) => {
         // TODO receive asset balance by id
         // extension receive inner as  {1:12,2:34.....}, need format Uint8Array
       }),
-    [],
+    [account],
   );
 
-  const { data, end, error } = useStreamQuery(balances);
-
-  return { data, end, error };
+  return useStreamQuery(balances);
 };

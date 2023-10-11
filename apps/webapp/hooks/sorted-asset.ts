@@ -8,8 +8,6 @@ export interface AssetBalance {
   usdcValue: number;
 }
 
-// export type AssetWithBalances = Omit<Asset, ''> & AssetBalances;
-
 interface AssetWithBalance {
   denomMetadata: Pick<Asset, 'display' | 'icon' | 'penumbraAssetId'>;
   balance: AssetBalance;
