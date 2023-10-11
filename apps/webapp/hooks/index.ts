@@ -1,1 +1,1 @@
-export * from './useValidationResult';
+export * from './validation-result';

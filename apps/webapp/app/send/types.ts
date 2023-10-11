@@ -11,3 +11,8 @@ export type SendTabMap = Record<
     label: string;
   }
 >;
+
+export interface Chain {
+  name: string;
+  icon: string;
+}

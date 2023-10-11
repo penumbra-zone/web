@@ -90,7 +90,10 @@ module.exports = {
           DEFAULT: 'var(--light-brown)',
         },
         'light-grey': {
-          DEFAULT: 'var(light-grey)',
+          DEFAULT: 'var(--light-grey)',
+        },
+        brown: {
+          DEFAULT: 'var(--brown)',
         },
       },
       borderRadius: {

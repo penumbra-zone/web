@@ -1,7 +1,6 @@
-import { Asset } from '../../types/asset';
-import { SendTabMap } from './types';
+import { Chain, SendTabMap } from './types';
 
-export const tabsHelper: SendTabMap = {
+export const sendTabsHelper: SendTabMap = {
   send: {
     src: '/funds-gradient.svg',
     label: 'Sending funds',
@@ -16,31 +15,21 @@ export const tabsHelper: SendTabMap = {
   },
 };
 
-export const assets: Asset[] = [
+export const chains: Chain[] = [
   {
-    name: 'ETH 1',
-    icon: '/test-asset-icon.svg',
-    balance: 2,
+    name: 'Osmosis 1',
+    icon: '/test-chain-icon.png',
   },
   {
-    name: 'BNB 1',
-    icon: '/test-asset-icon-2.svg',
-    balance: 1,
+    name: 'Osmosis 2',
+    icon: '/test-chain-icon.png',
   },
   {
-    name: 'BNB 2',
-    icon: '/test-asset-icon-2.svg',
-    balance: 0,
-  },
-
-  {
-    name: 'ETH 2',
-    icon: '/test-asset-icon.svg',
-    balance: 9,
+    name: 'Osmosis 3',
+    icon: '/test-chain-icon.png',
   },
   {
-    name: 'BNB 3',
-    icon: '/test-asset-icon.svg',
-    balance: 2001,
+    name: 'Osmosis 4',
+    icon: '/test-chain-icon.png',
   },
 ];

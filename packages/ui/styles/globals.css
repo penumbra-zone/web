@@ -8,7 +8,7 @@
     --foreground: 0, 4%, 73%;
 
     --muted: 0, 0%, 100%; /* white text */
-    --muted-foreground: 0, 4%, 73%; /* light-grey text*/
+    --muted-foreground: 0, 4%, 73%; /* #BDB8B8 text*/
 
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
@@ -54,6 +54,7 @@
     --red: #af4545;
     --light-brown: #363434;
     --light-grey: #e3e3e3;
+    --brown: rgba(29, 29, 29, 0.7);
   }
 
   #popup-root {

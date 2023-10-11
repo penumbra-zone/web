@@ -1,3 +1,5 @@
+import { Asset } from './asset';
+
 /**
  * In protobufs, it's common to split a single u128 into two u64's.
  *
@@ -45,4 +47,26 @@ export const addLoHi = (a: LoHi, b: LoHi): Required<LoHi> => {
   const aBigInt = joinLoHi(a.lo, a.hi);
   const bBigInt = joinLoHi(b.lo, b.hi);
   return splitLoHi(aBigInt + bBigInt);
+};
+
+/**
+ * @param {Asset} asset - The assert for which you need to find exponent.
+ * @returns {LoHi} Asset exponent, if zero return 1.
+ */
+export const findAssetExponent = (asset: Asset): number => {
+  return asset.denomUnits.find(denom => denom.denom === asset.display)?.exponent ?? 0;
+};
+
+/**
+ * Calculate a high order, a low order  and asset exponent bigint into a single bigint.
+ * @param {bigint} lo - The low order 64 bits of the number.
+ * @param {bigint} hi - The high order 64 bits of the number.
+ * @param {Asset} asset - The assert for which you need to find exponent.
+ * @returns {bigint} The combined 128-bit number represented as a single bigint.
+ */
+export const calculateLoHiExponent = (lo: bigint, hi = 0n, asset: Asset): bigint => {
+  const loHi = joinLoHi(lo, hi);
+  const exponent = BigInt(findAssetExponent(asset));
+
+  return loHi / (exponent ? 10n ** exponent : 1n);
 };

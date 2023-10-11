@@ -1,14 +1,17 @@
 'use client';
 
-import { useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { Button, Switch } from 'ui';
-import { FilledImage, InputBlock, InputToken } from '../../shared';
+import { FilledImage, InputBlock } from '../../shared';
 import { useStore } from '../../state';
 import { sendSelector } from '../../state/send';
 import { validateAmount, validateRecipient } from '../../utils';
-import { assets } from './constants';
+import { useCalculateBalance } from '../../hooks/calculate-balance';
+const InputToken = dynamic(() => import('../../shared/input-token'), {
+  ssr: false,
+});
 
-export const SendForm = () => {
+export default function SendForm() {
   const {
     amount,
     asset,
@@ -16,18 +19,16 @@ export const SendForm = () => {
     memo,
     hidden,
     validationErrors,
+    assetBalance,
     setAmount,
     setAsset,
     setRecipient,
     setMemo,
     setHidden,
+    setAssetBalance,
   } = useStore(sendSelector);
 
-  useEffect(() => {
-    // assign an asset when the page loads
-    setAsset(assets[0]!);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useCalculateBalance(asset, setAssetBalance);
 
   return (
     <form
@@ -46,31 +47,30 @@ export const SendForm = () => {
           {
             type: 'error',
             issue: 'invalid address',
-            checkFn: (txt: string) => validateRecipient(txt),
+            checkFn: (addr: string) => validateRecipient(addr),
           },
         ]}
       />
-      {asset && (
-        <InputToken
-          label='Amount to send'
-          placeholder='Enter an amount'
-          className='mb-1'
-          asset={asset}
-          setAsset={setAsset}
-          value={amount}
-          onChange={e => {
-            if (Number(e.target.value) < 0) return;
-            setAmount(e.target.value);
-          }}
-          validations={[
-            {
-              type: 'error',
-              issue: 'insufficient funds',
-              checkFn: (txt: string) => validateAmount(txt, asset.balance),
-            },
-          ]}
-        />
-      )}
+      <InputToken
+        label='Amount to send'
+        placeholder='Enter an amount'
+        className='mb-1'
+        asset={{ ...asset, price: 10 }}
+        setAsset={setAsset}
+        value={amount}
+        onChange={e => {
+          if (Number(e.target.value) < 0) return;
+          setAmount(e.target.value);
+        }}
+        assetBalance={assetBalance}
+        validations={[
+          {
+            type: 'error',
+            issue: 'insufficient funds',
+            checkFn: (amount: string) => validateAmount(amount, assetBalance),
+          },
+        ]}
+      />
       <InputBlock
         label='Memo'
         placeholder='Optional message'
@@ -88,10 +88,10 @@ export const SendForm = () => {
         type='submit'
         variant='gradient'
         className='mt-4'
-        disabled={!amount || !recipient || !!Object.values(validationErrors).find(Boolean)}
+        disabled={!Number(amount) || !recipient || !!Object.values(validationErrors).find(Boolean)}
       >
         Send
       </Button>
     </form>
   );
-};
+}

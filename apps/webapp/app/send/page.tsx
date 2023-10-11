@@ -3,9 +3,15 @@
 import { useState } from 'react';
 import { Card, FadeTransition, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui';
 import { EduInfoCard } from '../../shared';
-import { tabsHelper } from './constants';
-import { SendForm } from './send-form';
+import { sendTabsHelper } from './constants';
 import { SendPageTab } from './types';
+import dynamic from 'next/dynamic';
+const IbcForm = dynamic(() => import('./ibc-form'), {
+  ssr: false,
+});
+const SendForm = dynamic(() => import('./send-form'), {
+  ssr: false,
+});
 
 export default function Page() {
   const [tab, setTab] = useState<SendPageTab>(SendPageTab.SEND);
@@ -31,10 +37,12 @@ export default function Page() {
               <SendForm />
             </TabsContent>
             <TabsContent value={SendPageTab.RECEIVE}></TabsContent>
-            <TabsContent value={SendPageTab.IBC}></TabsContent>
+            <TabsContent value={SendPageTab.IBC}>
+              <IbcForm />
+            </TabsContent>
           </Tabs>
         </Card>
-        <EduInfoCard src={tabsHelper[tab].src} label={tabsHelper[tab].label} />
+        <EduInfoCard src={sendTabsHelper[tab].src} label={sendTabsHelper[tab].label} />
       </div>
     </FadeTransition>
   );
