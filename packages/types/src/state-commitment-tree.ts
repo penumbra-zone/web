@@ -52,26 +52,6 @@ export const SctUpdatesSchema = z.object({
   delete_ranges: z.array(DeleteRange),
 });
 
-export type SctUpdates = z.infer<typeof SctUpdatesSchema>;
-
-// const AddressIndexSchema = z.object({
-//   account: z.number().optional(),
-//   randomizer: z.string(),
-// });
-
-// const NoteRecordJsSchema = z.object({
-//   noteCommitment: InnerBase64Schema,
-//   note: NoteSchema,
-//   addressIndex: AddressIndexSchema,
-//   nullifier: InnerBase64Schema,
-//   position: z.string(),
-//   source: InnerBase64Schema,
-//   heightSpent: z.bigint().optional(),
-//   heightCreated: z.string().optional(),
-// });
-
-// export type NewNoteRecord = z.infer<typeof NoteRecordJsSchema>;
-
 export const ScanResultSchema = z.object({
   height: z.number(),
   nct_updates: SctUpdatesSchema,

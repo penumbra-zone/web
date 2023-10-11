@@ -22,7 +22,6 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
-import { z } from 'zod';
 import { Note } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
@@ -93,25 +92,9 @@ export interface PenumbraDb extends DBSchema {
   };
 }
 
-export const TablesSchema = z.object({
-  assets: z.string(),
-  chain_parameters: z.string(),
-  fmd_parameters: z.string(),
-  notes: z.string(),
-  spendable_notes: z.string(),
-  swaps: z.string(),
-});
+export type Tables = Record<string, StoreNames<PenumbraDb>>;
 
-export const IdbConstantsSchema = z.object({
-  name: z.string(),
-  version: z.number().int().positive(),
-  tables: TablesSchema,
-});
-
-export type Tables = {
-  [T in keyof z.infer<typeof TablesSchema>]: StoreNames<PenumbraDb>;
-};
-
+// Must be kept in sync with: https://github.com/penumbra-zone/penumbra/blob/02462635d6c825019822cbeeb44d422cf900f25d/crates/wasm/src/storage.rs#L15C1-L30
 export interface IdbConstants {
   name: string;
   version: number;
