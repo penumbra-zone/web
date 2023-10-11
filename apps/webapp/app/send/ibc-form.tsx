@@ -6,6 +6,8 @@ import { ibcSelector } from '../../state/ibc';
 import { validateAmount } from '../../utils';
 import { chains } from './constants';
 import { useCalculateBalance } from '../../hooks/calculate-balance';
+import { cn } from 'ui/lib/utils';
+import { useState } from 'react';
 const InputToken = dynamic(() => import('../../shared/input-token'), {
   ssr: false,
 });
@@ -24,6 +26,8 @@ export default function IbcForm() {
   } = useStore(ibcSelector);
 
   useCalculateBalance(asset, setAssetBalance);
+
+  const [openSelect, setOpenSelect] = useState(false);
 
   return (
     <form
@@ -57,8 +61,10 @@ export default function IbcForm() {
         <Select
           value={chain?.name ?? ''}
           onValueChange={e => setChain(chains.find(i => i.name === e))}
+          open={openSelect}
+          onOpenChange={open => setOpenSelect(open)}
         >
-          <SelectTrigger>
+          <SelectTrigger open={openSelect}>
             <SelectValue placeholder='Select chain'>
               {chain && (
                 <div className='flex gap-2'>
@@ -68,9 +74,13 @@ export default function IbcForm() {
               )}
             </SelectValue>
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className='left-[-17px]'>
             {chains.map((i, index) => (
-              <SelectItem key={index} value={i.name}>
+              <SelectItem
+                key={index}
+                value={i.name}
+                className={cn('hover:bg-brown', chain?.name === i.name && 'bg-charcoal-secondary')}
+              >
                 <div className='flex gap-2'>
                   <FilledImage src={i.icon} alt='Chain' className='h-5 w-5' />
                   <p className='mt-[2px]'>{i.name}</p>

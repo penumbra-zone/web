@@ -14,7 +14,7 @@ const SendForm = dynamic(() => import('./send-form'), {
 });
 
 export default function Page() {
-  const [tab, setTab] = useState<SendPageTab>(SendPageTab.SEND);
+  const [tab, setTab] = useState<SendPageTab>(SendPageTab.IBC);
 
   return (
     <FadeTransition className='flex min-h-[calc(100vh-122px)] flex-col items-stretch justify-start'>

@@ -8,6 +8,7 @@ import { useSortedAssets } from '../hooks/sorted-asset';
 import { formatNumber } from '../utils';
 import { FilledImage } from './filled-image';
 import { Asset, AssetId } from 'penumbra-types';
+import { cn } from 'ui/lib/utils';
 
 interface SelectTokenModalProps {
   asset: Asset;
@@ -47,26 +48,24 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
               <p>Balance</p>
             </div>
             <div className='flex flex-col gap-2'>
-              {sortedAssets.map(asset => (
-                <DialogPrimitive.Close key={asset.denomMetadata.display}>
+              {sortedAssets.map(i => (
+                <DialogPrimitive.Close key={i.denomMetadata.display}>
                   <div
-                    className='flex justify-between items-center py-[10px] cursor-pointer'
-                    onClick={() => setAsset(asset.denomMetadata.penumbraAssetId)}
+                    className={cn(
+                      'flex justify-between items-center py-[10px] cursor-pointer hover:bg-light-brown hover:px-2',
+                      asset.penumbraAssetId.inner === i.denomMetadata.penumbraAssetId.inner &&
+                        'bg-light-brown px-2',
+                    )}
+                    onClick={() => setAsset(i.denomMetadata.penumbraAssetId)}
                   >
                     <div className='flex items-start gap-[6px]'>
-                      {asset.denomMetadata.icon && (
-                        <FilledImage
-                          src={asset.denomMetadata.icon}
-                          alt='Asset'
-                          className='w-5 h-5'
-                        />
+                      {i.denomMetadata.icon && (
+                        <FilledImage src={i.denomMetadata.icon} alt='Asset' className='w-5 h-5' />
                       )}
-                      <p className='font-bold text-muted-foreground'>
-                        {asset.denomMetadata.display}
-                      </p>
+                      <p className='font-bold text-muted-foreground'>{i.denomMetadata.display}</p>
                     </div>
                     <p className='font-bold text-muted-foreground'>
-                      {formatNumber(asset.balance.amount)}
+                      {formatNumber(i.balance.amount)}
                     </p>
                   </div>
                 </DialogPrimitive.Close>
