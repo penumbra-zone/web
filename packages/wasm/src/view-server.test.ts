@@ -2,6 +2,7 @@ import 'fake-indexeddb/auto'; // Instanitating ViewServer requires opening up In
 import { describe, expect, it, vi } from 'vitest';
 import { generateSpendKey, getFullViewingKey } from './keys';
 import { ViewServer } from '@penumbra-zone/wasm-nodejs';
+import { IDB_TABLES, IdbConstants } from 'penumbra-types';
 
 // Replace the wasm-pack import with the nodejs version so tests can run
 vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
@@ -13,6 +14,11 @@ describe('wasmViewServer', () => {
 
     const spendKey = generateSpendKey(seedPhrase);
     const fullViewingKey = getFullViewingKey(spendKey);
+    const idbConstants = {
+      name: 'dbName',
+      version: 123,
+      tables: IDB_TABLES,
+    } satisfies IdbConstants;
 
     const storedTree = {
       hashes: [],
@@ -27,12 +33,7 @@ describe('wasmViewServer', () => {
       },
     };
 
-    // The constructor is an async fn. Should consider a `new()` function instead of a constructor.
-    const vsServer = new ViewServer(
-      fullViewingKey,
-      719n,
-      storedTree,
-    ) as unknown as Promise<ViewServer>;
+    const vsServer = ViewServer.new(fullViewingKey, 719n, storedTree, idbConstants);
     await expect(vsServer).resolves.not.toThrow();
   });
 });

@@ -44,7 +44,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('LAST_BLOCK_SYNCED');
         db.createObjectStore('ASSETS', { keyPath: 'penumbraAssetId.inner' });
         db.createObjectStore('SPENDABLE_NOTES').createIndex('nullifier', 'nullifier.inner');
-        db.createObjectStore('TRANSACTIONS', { keyPath: 'id' });
+        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.inner' });
         db.createObjectStore('TREE_LAST_POSITION');
         db.createObjectStore('TREE_LAST_FORGOTTEN');
         db.createObjectStore('TREE_COMMITMENTS', { keyPath: 'commitment.inner' });

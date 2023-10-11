@@ -21,13 +21,6 @@ export class Services {
     return this._querier;
   }
 
-  private _indexedDb: IndexedDb | undefined;
-
-  get indexedDb(): IndexedDb {
-    if (!this._indexedDb) throw new Error('Services have not been initialized');
-    return this._indexedDb;
-  }
-
   async onServiceWorkerInit(): Promise<void> {
     try {
       const grpcEndpoint = await localExtStorage.get('grpcEndpoint');

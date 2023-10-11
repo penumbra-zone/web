@@ -3,11 +3,12 @@ import {
   BalancesResponse,
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { addLoHi, Base64Str, IndexedDbInterface, uint8ArrayToBase64 } from 'penumbra-types';
+import { addLoHi, Base64Str, uint8ArrayToBase64 } from 'penumbra-types';
 import { ViewReqMessage } from './helpers/generic';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
+import { services } from '../../../service-worker';
 
 type AssetIdStr = Base64Str;
 type BalancesMap = Record<AssetIdStr, BalancesResponse>;
@@ -39,8 +40,8 @@ const initializeProto = (
 // Handles aggregating amounts and filtering by account number/asset id
 export const handleBalancesReq = async function* (
   req: BalancesRequest,
-  indexedDb: IndexedDbInterface,
 ): AsyncIterable<BalancesResponse> {
+  const { indexedDb } = await services.getWalletServices();
   const allNotes = await indexedDb.getAllNotes();
 
   const accounts: AccountMap = {};

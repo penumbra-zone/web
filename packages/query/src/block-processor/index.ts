@@ -78,6 +78,7 @@ export class BlockProcessor {
   async markNotesSpent(nullifiers: Nullifier[], blockHeight: bigint) {
     for (const nullifier of nullifiers) {
       const matchingNote = await this.indexedDb.getNoteByNullifier(nullifier);
+
       if (matchingNote) {
         matchingNote.heightSpent = blockHeight;
         await this.indexedDb.saveSpendableNote(matchingNote);

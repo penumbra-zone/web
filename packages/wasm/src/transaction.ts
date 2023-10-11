@@ -14,7 +14,7 @@ import {
 
 export const decodeTx = (txBytes: Uint8Array): Transaction => {
   const base64Bytes = uint8ArrayToBase64(txBytes);
-  return Transaction.fromJson(JSON.stringify(decode_tx(base64Bytes)));
+  return Transaction.fromJsonString(JSON.stringify(decode_tx(base64Bytes)));
 };
 
 export const transactionInfo = async (
@@ -24,7 +24,7 @@ export const transactionInfo = async (
 ): Promise<TransactionInfo> => {
   const result = validateSchema(
     TransactionInfoSchema,
-    await transaction_info(fullViewingKey, tx, idbConstants),
+    await transaction_info(fullViewingKey, tx.toJson(), idbConstants),
   );
   return {
     txp: TransactionPerspective.fromJsonString(JSON.stringify(result.txp)),

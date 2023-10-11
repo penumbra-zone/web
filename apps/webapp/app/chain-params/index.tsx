@@ -7,14 +7,14 @@ import { Button } from 'ui';
 
 export default function ChainParams() {
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['chainParameters'],
+    queryKey: ['appParameters'],
     refetchInterval: 0,
-    queryFn: () => client.chainParameters({}),
+    queryFn: () => client.appParameters({}),
   });
 
   return (
     <div>
-      <div>chainParameters response</div>
+      <div>appParameters response</div>
       {data && 'got result ✅'}
       <div>
         {data && JSON.stringify(data.toJson())}
