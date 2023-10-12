@@ -17,12 +17,11 @@ export const BlockSync = ({ data }: BlockSyncProps) => {
   return (
     <>
       <div className='relative z-10 flex flex-col gap-2'>
-        <div className='flex flex-col items-center justify-between text-base'>
-          {
-            // Is syncing ⏳
-            // latestKnownBlockHeight - syncHeight > 10 ? (
-            latestKnownBlockHeight - syncHeight < 10 ? (
-              <>
+        {
+          // Is syncing ⏳
+          latestKnownBlockHeight - syncHeight > 10 ? (
+            <>
+              <div className='flex items-center justify-between text-base text-sand'>
                 <div className='flex items-center gap-2'>
                   <FilledImage src='/sync-bold.svg' alt='Syncing blocks...' className='h-6 w-6' />
                   <p className='font-headline font-semibold'>Syncing blocks...</p>
@@ -30,26 +29,25 @@ export const BlockSync = ({ data }: BlockSyncProps) => {
                 <p className='font-mono'>
                   {syncHeight}/{latestKnownBlockHeight}
                 </p>
-                <Progress
-                  variant='in-progress'
-                  value={(syncHeight / latestKnownBlockHeight) * 100}
-                />
-              </>
-            ) : (
-              // Is synced ✅
-              <>
-                <div className='flex items-center gap-2 text-teal'>
-                  <CheckIcon className='h-6 w-6' />
+              </div>
+              <Progress variant='in-progress' value={(syncHeight / latestKnownBlockHeight) * 100} />
+            </>
+          ) : (
+            // Is synced ✅
+            <>
+              <div className='flex items-center justify-between text-base text-teal'>
+                <div className='flex items-center gap-2'>
+                  <CheckIcon className='h-6 w-6 text-teal' />
                   <p className='font-headline font-semibold'>Blocks synced</p>
                 </div>
-                <p className='font-mono font-bold'>
+                <p className='font-mono'>
                   {syncHeight}/{latestKnownBlockHeight}
                 </p>
-                <Progress variant='done' value={(syncHeight / latestKnownBlockHeight) * 100} />
-              </>
-            )
-          }
-        </div>
+              </div>
+              <Progress variant='done' value={(syncHeight / latestKnownBlockHeight) * 100} />
+            </>
+          )
+        }
       </div>
     </>
   );
