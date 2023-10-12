@@ -17,7 +17,7 @@ export const useSortedAssets = (
   sortBy: 'amount' | 'usdcValue',
   search?: string,
 ): AssetWithBalance[] => {
-  const { data, end, error } = useBalances({ account: 0 });
+  const { data, end, error } = useBalances();
 
   const sortedAssets: AssetWithBalance[] = useMemo(() => {
     // if stream in progress or error show asset list with zero balance

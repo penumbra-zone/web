@@ -77,9 +77,51 @@ describe('Balances request handler', () => {
       expect(r.account!.account).toBe(12);
     });
   });
+
+  test('spent notes', async () => {
+    req.accountFilter = new AddressIndex({ account: 99 });
+    const responses: BalancesResponse[] = [];
+    for await (const res of handleBalancesReq(req)) {
+      responses.push(res);
+    }
+    expect(responses.length).toBe(0);
+  });
 });
 
 const testData: SpendableNoteRecord[] = [
+  SpendableNoteRecord.fromJson({
+    noteCommitment: {
+      inner: 'pXS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',
+    },
+    heightSpent: '124342342',
+    note: {
+      value: {
+        amount: {
+          lo: '12000000',
+        },
+        assetId: {
+          inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
+        },
+      },
+      rseed: 'h04XyitXpY1Q77M+vSzPauf4ZPx9NNRBAuUcVqP6pWo=',
+      address: {
+        inner:
+          '874bHlYDfy3mT57v2bXQWm3SJ7g8LI3cZFKob8J8CfrP2aqVGo6ESrpGScI4t/B2/KgkjhzmAasx8GM1ejNz0J153vD8MBVM9FUZFACzSCg=',
+      },
+    },
+    addressIndex: {
+      account: 99,
+      randomizer: 'AAAAAAAAAAAAAAAA',
+    },
+    nullifier: {
+      inner: 'fv/wPZDA5L96Woc+Ry2s7u9IrwNxTFjSDYInZj3lRA8=',
+    },
+    heightCreated: '7197',
+    position: '42986962944',
+    source: {
+      inner: '3CBS08dM9eLHH45Z9loZciZ9RaG9x1fc26Qnv0lQlto=',
+    },
+  }),
   SpendableNoteRecord.fromJson({
     noteCommitment: {
       inner: 'pXS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',

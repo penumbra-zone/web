@@ -27,7 +27,7 @@ import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/k
 
 export interface IndexedDbInterface {
   constants(): IdbConstants;
-  getLastBlockSynced(): Promise<bigint>;
+  getLastBlockSynced(): Promise<bigint | undefined>;
   getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
   saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
   saveTransactionInfo(tx: StoredTransaction): Promise<void>;

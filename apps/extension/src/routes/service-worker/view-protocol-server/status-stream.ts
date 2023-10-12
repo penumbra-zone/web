@@ -35,7 +35,7 @@ export const handleStatusReq = async function* (
   // As syncing does not end, nor does this stream.
   // It waits for loop events triggered externally when block sync has progressed.
   while (true) {
-    const syncHeight = await indexedDb.getLastBlockSynced();
+    const syncHeight = (await indexedDb.getLastBlockSynced()) ?? 0n;
 
     yield new StatusStreamResponse({
       latestKnownBlockHeight: syncHeight >= latestBlockHeight ? syncHeight : latestBlockHeight,

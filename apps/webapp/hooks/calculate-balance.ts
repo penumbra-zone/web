@@ -3,7 +3,7 @@ import { useBalances } from './balances';
 import { Asset, calculateLoHiExponent, uint8ArrayToBase64 } from 'penumbra-types';
 
 export const useCalculateBalance = (asset: Asset, setAssetBalance: (amount: number) => void) => {
-  const { data, end } = useBalances({ account: 0 });
+  const { data, end } = useBalances();
 
   useEffect(() => {
     if (!end) return;

@@ -47,6 +47,8 @@ export const handleBalancesReq = async function* (
   const accounts: AccountMap = {};
 
   for (const noteRecord of allNotes) {
+    if (noteRecord.heightSpent !== 0n) continue;
+
     const accountNumber = noteRecord.addressIndex?.account ?? 0;
     if (!accounts[accountNumber]) {
       accounts[accountNumber] = {};

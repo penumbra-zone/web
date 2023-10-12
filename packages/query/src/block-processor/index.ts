@@ -126,7 +126,8 @@ export class BlockProcessor {
   }
 
   private async syncAndStore() {
-    const startHeight = (await this.indexedDb.getLastBlockSynced()) + 1n;
+    const lastBlockSynced = await this.indexedDb.getLastBlockSynced();
+    const startHeight = lastBlockSynced ? lastBlockSynced + 1n : 0n;
     const latestBlockHeight = await this.querier.tendermint.latestBlockHeight();
 
     // Continuously runs as new blocks are committed
