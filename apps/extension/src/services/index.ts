@@ -4,6 +4,7 @@ import { RootQuerier } from 'penumbra-query/src/root-querier';
 import { IndexedDb, localExtStorage, syncLastBlockWithLocal } from 'penumbra-storage';
 import { ViewServer } from 'penumbra-wasm-ts';
 import { BlockProcessor } from 'penumbra-query';
+import { syncLastBlockWithStatusReq } from '../routes/service-worker/view-protocol-server/status-stream';
 
 interface WalletServices {
   viewServer: ViewServer;
@@ -67,7 +68,7 @@ export class Services {
       const indexedDb = await IndexedDb.initialize({
         chainId,
         dbVersion: testnetConstants.indexedDbVersion,
-        updateNotifiers: [syncLastBlockWithLocal()],
+        updateNotifiers: [syncLastBlockWithLocal(), syncLastBlockWithStatusReq()],
         walletId: wallets[0]!.id,
       });
 

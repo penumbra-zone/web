@@ -19,7 +19,7 @@ export interface IdbUpdateNotifier<
   handler: (
     value: StoreValue<DBTypes, StoreName>,
     key?: StoreKey<DBTypes, StoreName> | IDBKeyRange,
-  ) => Promise<void>;
+  ) => void | Promise<void>;
 }
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {

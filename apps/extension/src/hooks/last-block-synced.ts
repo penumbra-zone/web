@@ -28,7 +28,7 @@ export const useSyncProgress = () => {
     queryKey: ['lastBlockHeight'],
     queryFn: async () => {
       const querier = new TendermintQuerier({ grpcEndpoint: grpcEndpoint! });
-      return querier.lastBlockHeight();
+      return querier.latestBlockHeight();
     },
     enabled: Boolean(grpcEndpoint),
   });

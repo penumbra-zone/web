@@ -98,7 +98,8 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async getLastBlockSynced() {
-    return this.db.get('LAST_BLOCK_SYNCED', 'last_block');
+    const res = await this.db.get('LAST_BLOCK_SYNCED', 'last_block');
+    return res ?? 0n;
   }
 
   async getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined> {

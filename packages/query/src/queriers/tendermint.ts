@@ -14,7 +14,7 @@ export class TendermintQuerier {
     this.client = createClient(grpcEndpoint, TendermintProxyService);
   }
 
-  async lastBlockHeight() {
+  async latestBlockHeight() {
     const req = new GetStatusRequest();
     const res = await this.client.getStatus(req);
     return res.syncInfo!.latestBlockHeight;

@@ -126,9 +126,8 @@ export class BlockProcessor {
   }
 
   private async syncAndStore() {
-    const lastBlockSynced = await this.indexedDb.getLastBlockSynced();
-    const startHeight = lastBlockSynced ? lastBlockSynced + 1n : 0n;
-    const lastBlockHeight = await this.querier.tendermint.lastBlockHeight();
+    const startHeight = (await this.indexedDb.getLastBlockSynced()) + 1n;
+    const latestBlockHeight = await this.querier.tendermint.latestBlockHeight();
 
     // Continuously runs as new blocks are committed
     for await (const block of this.querier.compactBlock.compactBlockRange({
@@ -139,7 +138,7 @@ export class BlockProcessor {
       // Scanning has a side effect of updating viewServer's internal tree.
       const newNotesPresent = await this.viewServer.scanBlock(block);
 
-      if (shouldStoreProgress(newNotesPresent, block, lastBlockHeight)) {
+      if (shouldStoreProgress(newNotesPresent, block, latestBlockHeight)) {
         await this.saveSyncProgress();
       }
 
@@ -158,8 +157,8 @@ const isAbortSignal = (error: unknown): boolean =>
 const shouldStoreProgress = (
   newNotesPresent: boolean,
   block: CompactBlock,
-  upToDateBlock: bigint,
+  latestBlockHeight: bigint,
 ): boolean => {
   if (newNotesPresent) return true;
-  return block.height >= upToDateBlock || block.height % 1000n === 0n;
+  return block.height >= latestBlockHeight || block.height % 1000n === 0n;
 };
