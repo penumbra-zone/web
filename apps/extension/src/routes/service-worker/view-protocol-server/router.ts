@@ -11,6 +11,7 @@ import { isStreamingMethod, streamResponse } from './helpers/streaming';
 import { unaryResponse } from './helpers/unary';
 import { handleTransactionInfoReq, isTransactionInfoRequest } from './transaction-info';
 
+// Router for ViewService
 export const viewServerRouter = (req: ViewProtocolReq, sender: chrome.runtime.MessageSender) => {
   const id = sender.tab!.id!; // Guaranteed given request is from dapp
   const msg = deserializeReq(req);

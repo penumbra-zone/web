@@ -5,6 +5,13 @@ export interface ServiceWorkerRequest<T extends SwRequestMessage> {
   penumbraSwReq: IncomingRequest<T>;
 }
 
+// The core message sent via content-script/popup
+export type IncomingRequest<T> = T extends SwMessage<infer Type, infer Req, unknown>
+  ? Req extends undefined
+    ? { type: Type }
+    : { type: Type; arg: Req }
+  : never;
+
 // The Response given back to consumer that matches their request
 export type ServiceWorkerResponse<T extends SwRequestMessage> =
   | {
@@ -21,14 +28,8 @@ export interface SwMessage<Type extends string, Req, Res> {
 
 // Meant as a helper to annotate service worker functions
 // Creates a function: (request) => response out of `SwMessage`
-export type SwMessageHandler<M extends SwMessage<string, unknown, unknown>> = (
-  request: M['request'],
-) => M['response'];
-
-// The core message sent content-script/popup
-export type IncomingRequest<T> = T extends SwMessage<infer Type, infer Req, unknown>
-  ? { type: Type; data: Req }
-  : never;
+export type SwMessageHandler<M extends SwMessage<string, unknown, unknown>> =
+  M['request'] extends undefined ? () => M['response'] : (request: M['request']) => M['response'];
 
 // The awaitable outputs of the handlers
 type Responses<T> = T extends SwMessage<string, unknown, infer Res> ? Res : never;
@@ -38,5 +39,3 @@ export type SwResponse = Responses<SwRequestMessage>;
 export type AwaitedResponse<T> = T extends SwMessage<infer Type, unknown, infer Res>
   ? { type: Type; data: Awaited<Res> }
   : never;
-
-export type NoParams = Record<string, never>;
