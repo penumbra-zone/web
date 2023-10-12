@@ -10,23 +10,7 @@ import {
   PendingRequests,
 } from './types';
 import { ConnectError } from '@connectrpc/connect';
-
-type PromiseResolver<T> = (value: T | PromiseLike<T>) => void;
-
-class Looper {
-  private resolver: PromiseResolver<void> | undefined;
-
-  sleep(resolver: PromiseResolver<void>) {
-    this.resolver = resolver;
-  }
-
-  processRequest() {
-    if (this.resolver) {
-      this.resolver();
-      this.resolver = undefined;
-    }
-  }
-}
+import { Looper } from './looper';
 
 // Adds yield generator requests to `pending` storage and matches them with their responses
 export const serverStreamIO = async function* <S extends ServiceType, M extends GrpcRequest<S>>(
@@ -37,16 +21,16 @@ export const serverStreamIO = async function* <S extends ServiceType, M extends 
   const sequence = ++pending.sequence;
   const queue = new Array<DappMessageResponse<S>>();
 
-  const looper = new Looper();
+  const looper = new Looper<void>();
 
   pending.requests.set(sequence, {
     resolve: m => {
       queue.push(m);
-      looper.processRequest();
+      looper.run();
     },
     reject: m => {
       queue.push(m);
-      looper.processRequest();
+      looper.run();
     },
   });
 
@@ -61,7 +45,7 @@ export const serverStreamIO = async function* <S extends ServiceType, M extends 
   while (true) {
     if (!queue.length) {
       await new Promise(resolve => {
-        looper.sleep(resolve);
+        looper.set(resolve);
       });
     } else {
       const res = queue.shift()!;

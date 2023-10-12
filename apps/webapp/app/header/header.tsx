@@ -2,11 +2,14 @@ import Link from 'next/link';
 import { Identicon } from 'ui';
 import { FilledImage } from '../../shared';
 import { Navbar } from './navbar';
-import { Notifications } from './notifications';
 import { DappPath } from './paths';
 import dynamic from 'next/dynamic';
 
 const Network = dynamic(() => import('./network'), {
+  ssr: false,
+});
+
+const Notifications = dynamic(() => import('./notifications'), {
   ssr: false,
 });
 

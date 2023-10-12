@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { grpcClient } from '../extension-client';
-import { useStreamQuery } from 'penumbra-transport';
+import { useCollectedStream } from 'penumbra-transport';
 
 export const useBalances = ({ account }: { account: number }) => {
   const balances = useMemo(
@@ -15,5 +15,5 @@ export const useBalances = ({ account }: { account: number }) => {
     [account],
   );
 
-  return useStreamQuery(balances);
+  return useCollectedStream(balances);
 };

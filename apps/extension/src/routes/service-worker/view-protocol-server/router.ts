@@ -10,6 +10,7 @@ import {
 import { isStreamingMethod, streamResponse } from './helpers/streaming';
 import { unaryResponse } from './helpers/unary';
 import { handleTransactionInfoReq, isTransactionInfoRequest } from './transaction-info';
+import { handleStatusReq, isStatusStreamRequest } from './status-stream';
 
 // Router for ViewService
 export const viewServerRouter = (req: ViewProtocolReq, sender: chrome.runtime.MessageSender) => {
@@ -44,17 +45,15 @@ const getTransport = (
 };
 
 const unaryHandler = async (msg: ViewReqMessage): Promise<ViewProtocolRes> => {
-  if (isAppParamsRequest(msg)) {
-    return handleAppParamsReq();
-  }
+  if (isAppParamsRequest(msg)) return handleAppParamsReq();
+
   throw new Error(`Non-supported unary request: ${msg.getType().typeName}`);
 };
 
 const streamingHandler = (msg: ViewReqMessage): AsyncIterable<ViewProtocolRes> => {
-  if (isBalancesRequest(msg)) {
-    return handleBalancesReq(msg);
-  } else if (isTransactionInfoRequest(msg)) {
-    return handleTransactionInfoReq(msg);
-  }
+  if (isBalancesRequest(msg)) return handleBalancesReq(msg);
+  else if (isTransactionInfoRequest(msg)) return handleTransactionInfoReq(msg);
+  else if (isStatusStreamRequest(msg)) return handleStatusReq(msg);
+
   throw new Error(`Non-supported streaming request: ${msg.getType().typeName}`);
 };

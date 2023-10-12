@@ -1,11 +1,14 @@
 'use client';
 
 import { ArrowTopRightIcon } from '@radix-ui/react-icons';
-import { useState } from 'react';
-import { Popover, PopoverContent, PopoverTrigger, Progress } from 'ui';
+import { useEffect, useMemo, useState } from 'react';
+import { Popover, PopoverContent, PopoverTrigger } from 'ui';
 import { cn } from 'ui/lib/utils';
 import { BellIcon } from '../../icons';
 import { FilledImage } from '../../shared';
+import { grpcClient } from '../../extension-client';
+import { useStream } from 'penumbra-transport';
+import { BlockSync } from './block-sync';
 
 const txs = [
   {
@@ -38,13 +41,29 @@ const txs = [
   },
 ];
 
-export const Notifications = () => {
-  const [status] = useState<'sync' | 'notification' | 'success'>('sync');
+type NotificationState = 'sync' | 'notification' | 'none';
+
+export default function Notifications() {
+  const [status, setStatus] = useState<NotificationState>('none');
+  const syncStream = useMemo(() => grpcClient.statusStream({}), []);
+  const { data, error } = useStream(syncStream);
+
+  useEffect(() => {
+    if (error) {
+      setStatus('notification');
+    } else if (data) {
+      if (data.latestKnownBlockHeight - data.syncHeight > 10) {
+        setStatus('sync');
+      } else {
+        setStatus('none');
+      }
+    }
+  }, [data, error]);
 
   return (
     <Popover>
       <PopoverTrigger className='relative'>
-        {status !== 'success' && (
+        {status !== 'none' && (
           <>
             {status === 'notification' ? (
               <div className='absolute right-[2px] top-[5px] z-10 h-[11px] w-[11px] rounded-full bg-red'></div>
@@ -62,16 +81,7 @@ export const Notifications = () => {
         </div>
       </PopoverTrigger>
       <PopoverContent className='relative flex w-[400px] flex-col gap-10 bg-charcoal-secondary px-[30px] pb-[46px] pt-5'>
-        <div className='relative z-10 flex flex-col gap-2'>
-          <div className='flex items-center justify-between text-base text-sand'>
-            <div className='flex items-center gap-2'>
-              <FilledImage src='/sync-bold.svg' alt='Syncing blocks...' className='h-6 w-6' />
-              <p className='font-headline font-semibold'>Syncing blocks...</p>
-            </div>
-            <p className='font-bold'>10982/121312</p>
-          </div>
-          <Progress value={73} />
-        </div>
+        <BlockSync data={data} />
         <div className='relative z-10 flex flex-col gap-4'>
           <p className='font-headline text-lg font-semibold leading-6 text-muted'>Transactions</p>
           <div className='flex max-h-[240px] flex-col gap-4 overflow-auto'>
@@ -101,4 +111,4 @@ export const Notifications = () => {
       </PopoverContent>
     </Popover>
   );
-};
+}

@@ -1,13 +1,26 @@
 import { useEffect, useState } from 'react';
 
 interface StreamQueryResult<T> {
+  data: T | undefined;
+  end: boolean;
+  error: string | undefined;
+}
+
+interface CollectedStreamQueryResult<T> {
   data: T[];
   end: boolean;
   error: string | undefined;
 }
 
-export const useStreamQuery = <T>(query: AsyncIterable<T>): StreamQueryResult<T> => {
-  const [data, setData] = useState<T[]>([]);
+type DataHandler<T, U> = (prevData: U, newData: T) => U;
+
+// Common hook for handling streams
+const useStreamCommon = <T, U>(
+  query: AsyncIterable<T>,
+  initialData: U,
+  dataHandler: DataHandler<T, U>,
+): { data: U; end: boolean; error: string | undefined } => {
+  const [data, setData] = useState<U>(initialData);
   const [end, setEnd] = useState(false);
   const [error, setError] = useState<string>();
 
@@ -15,7 +28,7 @@ export const useStreamQuery = <T>(query: AsyncIterable<T>): StreamQueryResult<T>
     const streamData = async () => {
       try {
         for await (const res of query) {
-          setData(prevData => [...prevData, res]);
+          setData(prevData => dataHandler(prevData, res));
         }
         setEnd(true);
       } catch (e) {
@@ -24,7 +37,17 @@ export const useStreamQuery = <T>(query: AsyncIterable<T>): StreamQueryResult<T>
     };
 
     void streamData();
-  }, [query]);
+  }, [query, dataHandler]);
 
   return { data, end, error };
+};
+
+// Every new stream result will replace the old value
+export const useStream = <T>(query: AsyncIterable<T>): StreamQueryResult<T> => {
+  return useStreamCommon(query, undefined as T | undefined, (_, newData) => newData);
+};
+
+// Will take every stream result and append it to an array. Will ever grow until stream finished.
+export const useCollectedStream = <T>(query: AsyncIterable<T>): CollectedStreamQueryResult<T> => {
+  return useStreamCommon(query, [] as T[], (prevData, newData) => [...prevData, newData]);
 };
