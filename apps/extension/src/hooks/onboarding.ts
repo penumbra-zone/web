@@ -3,8 +3,7 @@ import { passwordSelector } from '../state/password';
 import { generateSelector } from '../state/seed-phrase/generate';
 import { importSelector } from '../state/seed-phrase/import';
 import { walletsSelector } from '../state/wallets';
-import { sendSwMessage } from '../routes/service-worker/internal/sender';
-import { SyncBlocksMessage } from '../routes/service-worker/internal/sync';
+import { swClient } from '../routes/service-worker/extension/client/internal';
 
 // Saves hashed password, uses that hash to encrypt the seed phrase
 // and then saves that to session + local storage
@@ -20,6 +19,6 @@ export const useOnboardingSave = () => {
     await setPassword(plaintextPassword);
 
     await addWallet({ label: 'Wallet #1', seedPhrase });
-    void sendSwMessage<SyncBlocksMessage>({ type: 'SYNC_BLOCKS', data: {} });
+    void swClient.syncBlocks();
   };
 };

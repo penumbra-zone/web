@@ -1,5 +1,5 @@
-import { ServiceWorkerResponse } from './internal/types';
-import { internalRouter, isInternalRequest, SwRequestMessage } from './internal/router';
+import { ServiceWorkerResponse } from './extension/types';
+import { extRouter, isExtRequest, SwRequestMessage } from './extension/router';
 import { isViewServerReq } from './view-protocol-server/helpers/generic';
 import { viewServerRouter } from './view-protocol-server/router';
 
@@ -10,8 +10,8 @@ export const swMessageHandler = (
   sender: chrome.runtime.MessageSender,
   sendResponse: (response: ServiceWorkerResponse<SwRequestMessage>) => void,
 ) => {
-  if (isInternalRequest(message)) {
-    return internalRouter(message, sendResponse);
+  if (isExtRequest(message)) {
+    return extRouter(message, sendResponse);
   } else if (isViewServerReq(message)) {
     viewServerRouter(message, sender);
   }

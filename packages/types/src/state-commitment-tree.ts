@@ -37,10 +37,10 @@ export const StoreCommitmentSchema = z.object({
 export type StoreCommitment = z.infer<typeof StoreCommitmentSchema>;
 
 export const DeleteRange = z.object({
-  below_height: z.number(),
+  below_height: z.number(), // exclusive
   positions: z.object({
-    start: Position,
-    end: Position,
+    start: Position, // inclusive
+    end: Position, // exclusive
   }),
 });
 

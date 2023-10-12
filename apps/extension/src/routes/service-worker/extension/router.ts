@@ -9,13 +9,13 @@ import { syncBlocksHandler, SyncBlocksMessage } from './sync';
 import { pingHandler, PingMessage } from './ping';
 
 // Narrows message to ensure it's one intended for service worker
-export const isInternalRequest = (
+export const isExtRequest = (
   message: unknown,
 ): message is ServiceWorkerRequest<SwRequestMessage> => {
   return typeof message === 'object' && message !== null && 'penumbraSwReq' in message;
 };
 
-export const internalRouter = (
+export const extRouter = (
   req: ServiceWorkerRequest<SwRequestMessage>,
   sendResponse: (response: ServiceWorkerResponse<SwRequestMessage>) => void,
 ) => {
@@ -43,11 +43,10 @@ export type SwRequestMessage = SyncBlocksMessage | PingMessage;
 // The router that matches the requests with their handlers
 const typedMessageRouter = async (req: IncomingRequest<SwRequestMessage>): Promise<SwResponse> => {
   switch (req.type) {
-    case 'SYNC_BLOCKS': {
-      return syncBlocksHandler(req.data);
-    }
+    case 'SYNC_BLOCKS':
+      return syncBlocksHandler();
     case 'PING':
-      return pingHandler(req.data);
+      return pingHandler(req.arg);
     default:
       throw new Error(`Unhandled request type: ${JSON.stringify(req)}`);
   }

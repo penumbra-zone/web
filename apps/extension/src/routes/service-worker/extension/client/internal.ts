@@ -1,10 +1,17 @@
-import { SwRequestMessage } from './router';
 import {
   AwaitedResponse,
   IncomingRequest,
   ServiceWorkerRequest,
   ServiceWorkerResponse,
-} from './types';
+} from '../types';
+import { SyncBlocksMessage } from '../sync';
+import { SwRequestMessage } from '../router';
+import { PingMessage } from '../ping';
+
+export const swClient = {
+  syncBlocks: () => sendSwMessage<SyncBlocksMessage>({ type: 'SYNC_BLOCKS' }),
+  ping: (arg: string) => sendSwMessage<PingMessage>({ type: 'PING', arg }),
+};
 
 export const sendSwMessage = async <T extends SwRequestMessage>(
   req: IncomingRequest<T>,
