@@ -1,6 +1,6 @@
 'use client';
 
-import { client } from '../../extension-client';
+import { grpcClient } from '../../extension-client';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { Button } from 'ui';
@@ -9,7 +9,7 @@ export default function ChainParams() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['appParameters'],
     refetchInterval: 0,
-    queryFn: () => client.appParameters({}),
+    queryFn: () => grpcClient.appParameters({}),
   });
 
   return (

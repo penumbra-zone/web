@@ -13,22 +13,34 @@ import { handleTransactionInfoReq, isTransactionInfoRequest } from './transactio
 
 // Router for ViewService
 export const viewServerRouter = (req: ViewProtocolReq, sender: chrome.runtime.MessageSender) => {
-  const id = sender.tab!.id!; // Guaranteed given request is from dapp
+  const send = getTransport(sender);
   const msg = deserializeReq(req);
 
   (async function () {
     if (isStreamingMethod(req)) {
       for await (const result of streamingHandler(msg)) {
-        await chrome.tabs.sendMessage(id, streamResponse(req, { value: result, done: false }));
+        await send(streamResponse(req, { value: result, done: false }));
       }
-      await chrome.tabs.sendMessage(id, streamResponse(req, { done: true }));
+      await send(streamResponse(req, { done: true }));
     } else {
       const result = await unaryHandler(msg);
-      await chrome.tabs.sendMessage(id, unaryResponse(req, result));
+      await send(unaryResponse(req, result));
     }
   })().catch(e => {
-    void chrome.tabs.sendMessage(id, errorResponse(req, e));
+    void send(errorResponse(req, e));
   });
+};
+
+// If from dapp, send to tab
+// If internal message, send via chrome.runtime
+const getTransport = (
+  sender: chrome.runtime.MessageSender,
+): ((res: unknown) => Promise<unknown>) => {
+  if (sender.tab?.id) {
+    return (res: unknown) => chrome.tabs.sendMessage(sender.tab!.id!, res); // Guaranteed given request is from dapp
+  } else {
+    return (res: unknown) => chrome.runtime.sendMessage(sender.id, res);
+  }
 };
 
 const unaryHandler = async (msg: ViewReqMessage): Promise<ViewProtocolRes> => {

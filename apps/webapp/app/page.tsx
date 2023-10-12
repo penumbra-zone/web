@@ -8,6 +8,7 @@ import { NftsTable } from './dashboard/nfts-table';
 import { TransactionTable } from './dashboard/transaction-table';
 import { DashboardPageTab } from './dashboard/types';
 import dynamic from 'next/dynamic';
+
 const AssetsTable = dynamic(() => import('./dashboard/assets-table'), {
   ssr: false,
 });

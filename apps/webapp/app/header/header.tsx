@@ -1,9 +1,14 @@
 import Link from 'next/link';
-import { Identicon, NetworksPopover } from 'ui';
+import { Identicon } from 'ui';
 import { FilledImage } from '../../shared';
 import { Navbar } from './navbar';
 import { Notifications } from './notifications';
 import { DappPath } from './paths';
+import dynamic from 'next/dynamic';
+
+const Network = dynamic(() => import('./network'), {
+  ssr: false,
+});
 
 export const Header = () => {
   return (
@@ -14,7 +19,7 @@ export const Header = () => {
       <Navbar />
       <div className='flex items-center gap-3'>
         <Notifications />
-        <NetworksPopover triggerClassName='px-[9px]' />
+        <Network />
         <div className='ml-1 flex items-center gap-3 rounded-lg border px-5 py-[7px]'>
           {/* TODO: replace hardcoded value  */}
           <Identicon

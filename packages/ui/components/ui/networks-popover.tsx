@@ -1,13 +1,14 @@
 'use client';
-import { CaretDownIcon } from '@radix-ui/react-icons';
+
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
 import { cn } from '../../lib/utils';
 
 export interface NetworksPopoverProps {
   triggerClassName?: string;
+  name: string;
 }
 
-const NetworksPopover = ({ triggerClassName }: NetworksPopoverProps) => {
+const NetworksPopover = ({ triggerClassName, name }: NetworksPopoverProps) => {
   return (
     <Popover open={false}>
       <PopoverTrigger
@@ -16,8 +17,7 @@ const NetworksPopover = ({ triggerClassName }: NetworksPopoverProps) => {
           triggerClassName,
         )}
       >
-        <p>penumbra-testnet</p>
-        <CaretDownIcon className='h-5 w-5' />
+        <p>{name}</p>
       </PopoverTrigger>
       <PopoverContent></PopoverContent>
     </Popover>
