@@ -28,6 +28,7 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
   if (!password) return redirect(PopupPath.LOGIN);
 
   const lastBlockSynced = await localExtStorage.get('lastBlockSynced');
+
   return { lastBlockSynced };
 };
 

@@ -1,12 +1,12 @@
 'use client';
 
-import { client } from '../../extension-client';
+import { grpcClient } from '../../extension-client';
 import { useMemo } from 'react';
 import { useStreamQuery } from 'penumbra-transport';
 import { uint8ArrayToHex } from 'penumbra-types';
 
 export default function AllTransactions() {
-  const transactions = useMemo(() => client.transactionInfo({}), []);
+  const transactions = useMemo(() => grpcClient.transactionInfo({}), []);
   const { data, end, error } = useStreamQuery(transactions);
 
   return (

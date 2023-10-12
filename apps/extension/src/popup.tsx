@@ -2,11 +2,10 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { popupRouter } from './routes/popup/router';
 import { RouterProvider } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './services/clients';
 
 import 'ui/styles/globals.css';
-
-const queryClient = new QueryClient();
 
 const startPopup = () => {
   const rootElement = document.getElementById('popup-root') as HTMLDivElement;
