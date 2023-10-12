@@ -1,19 +1,22 @@
 import { useMemo } from 'react';
 import { grpcClient } from '../extension-client';
 import { useCollectedStream } from 'penumbra-transport';
+import { BalancesRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
-export const useBalances = ({ account }: { account: number }) => {
-  const balances = useMemo(
-    () =>
-      grpcClient.balances({
-        accountFilter: {
-          account,
-        },
-        // TODO receive asset balance by id
-        // extension receive inner as  {1:12,2:34.....}, need format Uint8Array
-      }),
-    [account],
-  );
+interface BalancesProps {
+  accountFilter?: AddressIndex;
+  assetIdFilter?: AssetId;
+}
+
+export const useBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}) => {
+  const balances = useMemo(() => {
+    const req = new BalancesRequest();
+    if (accountFilter) req.accountFilter = accountFilter;
+    if (assetIdFilter) req.assetIdFilter = assetIdFilter;
+    return grpcClient.balances(req);
+  }, [accountFilter, assetIdFilter]);
 
   return useCollectedStream(balances);
 };
