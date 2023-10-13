@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogPrimitive, DialogTrigger, Input } from 'ui';
 import { useBalancesWithMetadata } from '../hooks/sorted-asset';
 import { formatNumber } from '../utils';
-import { FilledImage } from './filled-image';
 import { Asset, AssetId } from 'penumbra-types';
 import { cn } from 'ui/lib/utils';
 
@@ -18,7 +17,7 @@ interface SelectTokenModalProps {
 export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalProps) {
   const [search, setSearch] = useState('');
 
-  const { sortedAssets } = useBalancesWithMetadata('amount', search);
+  const { data: sortedAssets } = useBalancesWithMetadata('amount', search);
 
   return (
     <Dialog>
@@ -52,15 +51,11 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
                   <div
                     className={cn(
                       'flex justify-between items-center py-[10px] cursor-pointer hover:bg-light-brown hover:px-2',
-                      asset.penumbraAssetId.inner === i.denomMetadata.penumbraAssetId.inner &&
-                        'bg-light-brown px-2',
+                      asset.penumbraAssetId.inner === i.assetId && 'bg-light-brown px-2',
                     )}
-                    onClick={() => setAsset(i.denomMetadata.penumbraAssetId)}
+                    onClick={() => setAsset({ inner: i.assetId, altBaseDenom: '', altBech32: '' })}
                   >
                     <div className='flex items-start gap-[6px]'>
-                      {i.denomMetadata.icon && (
-                        <FilledImage src={i.denomMetadata.icon} alt='Asset' className='h-5 w-5' />
-                      )}
                       <p className='font-bold text-muted-foreground'>{i.denomMetadata.display}</p>
                     </div>
                     <p className='font-bold text-muted-foreground'>

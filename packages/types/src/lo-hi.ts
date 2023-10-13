@@ -34,7 +34,7 @@ export const splitLoHi = (value: bigint): Required<LoHi> => {
  * @param {bigint} hi - The high order 64 bits of the number.
  * @returns {bigint} The combined 128-bit number represented as a single bigint.
  */
-export const joinLoHi = (lo: bigint, hi = 0n): bigint => {
+export const joinLoHi = (lo = 0n, hi = 0n): bigint => {
   return (hi << 64n) + lo;
 };
 
@@ -54,7 +54,7 @@ export const addLoHi = (a: LoHi, b: LoHi): Required<LoHi> => {
  * - upenumbra, exponent 0
  * This function allows you to calculate a single BigInt with the exponent applied
  */
-export const calculateLoHiExponent = (lo: bigint, hi = 0n, exponent: bigint): bigint => {
+export const calculateLoHiExponent = (lo = 0n, hi = 0n, exponent: bigint): bigint => {
   const loHi = joinLoHi(lo, hi);
   return loHi / (exponent ? 10n ** exponent : 1n);
 };
