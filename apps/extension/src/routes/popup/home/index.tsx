@@ -46,7 +46,7 @@ export const PopupIndex = () => {
         </p>
         <div className='flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
           <div className='flex items-center gap-[6px]'>
-            <Identicon name={account?.walletId ?? ''} className='h-5 w-5' />
+            <Identicon name={account?.walletId ?? ''} className='h-5 w-5 rounded' />
             <p className='select-none text-center text-[12px] font-bold leading-[18px] text-muted-foreground'>
               {account?.walletId.slice(0, 42)}...
             </p>

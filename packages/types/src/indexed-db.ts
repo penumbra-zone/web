@@ -35,6 +35,7 @@ export interface IndexedDbInterface {
   getAllTransactions(): Promise<StoredTransaction[]>;
   getAssetsMetadata(assetId: AssetId): Promise<DenomMetadata | undefined>;
   saveAssetsMetadata(metadata: DenomMetadata): Promise<void>;
+  getAllAssetsMetadata(): Promise<DenomMetadata[]>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
   saveScanResult(updates: ScanResult): Promise<void>;
   getAllNotes(): Promise<SpendableNoteRecord[]>;

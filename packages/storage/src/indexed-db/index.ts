@@ -114,6 +114,10 @@ export class IndexedDb implements IndexedDbInterface {
     return this.db.get('ASSETS', assetId.inner);
   }
 
+  async getAllAssetsMetadata() {
+    return this.db.getAll('ASSETS');
+  }
+
   async saveAssetsMetadata(metadata: DenomMetadata) {
     await this.u.update({ table: 'ASSETS', value: metadata });
   }

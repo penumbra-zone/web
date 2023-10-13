@@ -1,7 +1,13 @@
-import { assets } from 'penumbra-constants';
 import { useBalances } from './balances';
+import { Base64Str, displayAmount, joinLoHi, uint8ArrayToBase64 } from 'penumbra-types';
+import { useAssets } from './assets';
+import {
+  AssetsResponse,
+  BalancesResponse,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { useMemo } from 'react';
-import { Asset, calculateLoHiExponent, uint8ArrayToBase64 } from 'penumbra-types';
+import { AddrQueryReturn, useAddresses } from './address';
 
 export interface AssetBalance {
   amount: number;
@@ -9,81 +15,109 @@ export interface AssetBalance {
 }
 
 interface AssetWithBalance {
-  denomMetadata: Pick<Asset, 'display' | 'icon' | 'penumbraAssetId'>;
+  assetId: Base64Str;
+  account: { index: number; address: string };
   balance: AssetBalance;
+  denomMetadata: Pick<DenomMetadata, 'display'>;
 }
 
-export const useSortedAssets = (
-  sortBy: 'amount' | 'usdcValue',
+type AssetWithIndexOnly = Omit<AssetWithBalance, 'denomMetadata' | 'account'> & {
+  account: { index: number };
+};
+
+const normalize = (res: BalancesResponse): AssetWithIndexOnly => {
+  const amount = Number(joinLoHi(res.balance?.amount?.lo ?? 0n, res.balance?.amount?.hi ?? 0n));
+  return {
+    assetId: uint8ArrayToBase64(res.balance!.assetId!.inner),
+    account: { index: res.account?.account ?? 0 },
+    balance: {
+      amount,
+      usdcValue: amount * 0.1, // TODO: Get from above
+    },
+  };
+};
+
+const addAddress =
+  (addrRes: AddrQueryReturn[] | undefined) =>
+  (a: AssetWithIndexOnly): Omit<AssetWithBalance, 'denomMetadata'> => {
+    const match = addrRes?.find(res => res.index === a.account.index);
+
+    if (match) {
+      return { ...a, account: { index: a.account.index, address: match.address } };
+    } else {
+      return { ...a, account: { index: a.account.index, address: '' } };
+    }
+  };
+
+const addMetadata =
+  (metadata: AssetsResponse[]) =>
+  (b: Omit<AssetWithBalance, 'denomMetadata'>): AssetWithBalance => {
+    const match = metadata.find(m => {
+      if (!m.denomMetadata?.penumbraAssetId?.inner) return false;
+      return b.assetId === uint8ArrayToBase64(m.denomMetadata.penumbraAssetId.inner);
+    });
+
+    if (!match) return { ...b, denomMetadata: { display: 'unknown' } };
+
+    const fixedDisplayAmount = displayAmount(match, b.balance.amount);
+
+    return {
+      ...b,
+      balance: {
+        amount: fixedDisplayAmount,
+        usdcValue: b.balance.usdcValue,
+      },
+      denomMetadata: match.denomMetadata!,
+    };
+  };
+
+const sortComparator =
+  (sortBy: keyof AssetBalance) =>
+  (a: AssetWithBalance, b: AssetWithBalance): number => {
+    // Sort first by account (lowest first)
+    if (a.account.index !== b.account.index) return a.account.index - b.account.index;
+
+    // Next, sort by asset value/amount in descending order (largest to smallest).
+    if (a.balance[sortBy] !== b.balance[sortBy]) return b.balance[sortBy] - a.balance[sortBy];
+
+    // If balances are equal, sort by asset name in ascending order
+    return a.denomMetadata.display.localeCompare(b.denomMetadata.display);
+  };
+
+interface SortedAssetsReturnVal {
+  data: AssetWithBalance[];
+  error: unknown;
+}
+
+// TODO: Are there react-specific optimizations missing here?
+export const useBalancesWithMetadata = (
+  sortBy: keyof AssetBalance,
   search?: string,
-): AssetWithBalance[] => {
-  const { data, end, error } = useBalances();
+): SortedAssetsReturnVal => {
+  const { data: balances, error: bError } = useBalances();
 
-  const sortedAssets: AssetWithBalance[] = useMemo(() => {
-    // if stream in progress or error show asset list with zero balance
-    if (!end || error)
-      return [...assets].map(asset => ({
-        ...asset,
-        denomMetadata: { ...asset },
-        balance: {
-          amount: 0,
-          usdcValue: 0,
-        },
-      }));
+  const accounts = useMemo(() => {
+    return balances.map(b => ({ account: b.account?.account }));
+  }, [balances]);
 
-    const assetCalculateBalance = [...assets].map(asset => {
-      // find same asset from balances and asset list
-      const equalAsset = data.find(
-        bal =>
-          bal.balance?.assetId?.inner &&
-          uint8ArrayToBase64(bal.balance.assetId.inner) === asset.penumbraAssetId.inner,
-      );
+  const { data: accountAddrs, error: acError } = useAddresses(accounts);
+  const { data: assets, error: asError } = useAssets();
+  // TODO: Enable when CORS server issue on testnet
+  // const { data, error } = useUsdcValues(props);
 
-      //initial balance is 0
-      let amount = 0;
-      let usdcValue = 0;
+  const data = useMemo(
+    () =>
+      balances
+        .map(normalize)
+        .map(addAddress(accountAddrs))
+        .map(addMetadata(assets))
+        .sort(sortComparator(sortBy))
+        .filter(a => {
+          if (!search) return true;
+          return a.denomMetadata.display.includes(search.toLowerCase());
+        }),
+    [accountAddrs, assets, balances, search, sortBy],
+  );
 
-      if (equalAsset) {
-        // if find same asset then calculate balance
-
-        const assetBalance = Number(
-          calculateLoHiExponent(
-            equalAsset.balance?.amount?.lo ?? 0n,
-            equalAsset.balance?.amount?.hi ?? 0n,
-            asset,
-          ),
-        );
-        const price = 0.1;
-        amount = assetBalance;
-        usdcValue = assetBalance * price;
-      }
-
-      return {
-        denomMetadata: { ...asset },
-        balance: {
-          amount,
-          usdcValue,
-        },
-      };
-    });
-
-    const sortedAsset = [...assetCalculateBalance].sort((a, b) => {
-      // Sort by  in descending order (largest to smallest).
-      if (a.balance[sortBy] !== b.balance[sortBy]) return b.balance[sortBy] - a.balance[sortBy];
-
-      // If balances are equal, sort by asset name in ascending order
-      return a.denomMetadata.display.localeCompare(b.denomMetadata.display);
-      // return a.name.localeCompare(b.display);
-    });
-
-    // If no search query is provided, return the sorted assets directly.
-    if (!search) return sortedAsset;
-
-    // Filter the sorted assets based on a case-insensitive search query.
-    return sortedAsset.filter(asset =>
-      asset.denomMetadata.display.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [search, data, end, error, sortBy]);
-
-  return sortedAssets;
+  return { data, error: bError ?? asError ?? acError };
 };

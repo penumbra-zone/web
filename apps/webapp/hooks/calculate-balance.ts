@@ -18,12 +18,14 @@ export const useCalculateBalance = (asset: Asset, setAssetBalance: (amount: numb
       return;
     }
 
+    const exponent = asset.denomUnits.find(d => d.denom === asset.display)!.exponent;
+
     setAssetBalance(
       Number(
         calculateLoHiExponent(
-          selectedAsset.balance?.amount?.lo ?? 0n,
+          selectedAsset.balance?.amount?.lo,
           selectedAsset.balance?.amount?.hi,
-          asset,
+          exponent,
         ),
       ),
     );

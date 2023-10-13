@@ -8,6 +8,7 @@ import { Validation } from '../types/utility';
 import { formatNumber } from '../utils';
 import { FilledImage } from './filled-image';
 import { Asset, AssetId } from 'penumbra-types';
+
 const SelectTokenModal = dynamic(() => import('./select-token-modal'), {
   ssr: false,
 });
@@ -47,7 +48,7 @@ export default function InputToken({
         className,
       )}
     >
-      <div className='flex justify-between items-center mb-2'>
+      <div className='mb-2 flex items-center justify-between'>
         <div className='flex items-center gap-2 self-start'>
           <p className='text-base font-bold'>{label}</p>
           {validationResult ? (
@@ -55,11 +56,11 @@ export default function InputToken({
           ) : null}
         </div>
         <div className='flex items-start gap-1'>
-          <FilledImage src='/wallet.svg' alt='Wallet' className='w-5 h-5' />
+          <FilledImage src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
           <p className='font-bold text-muted-foreground'>{formatNumber(assetBalance)}</p>
         </div>
       </div>
-      <div className='flex justify-between items-center gap-4'>
+      <div className='flex items-center justify-between gap-4'>
         <Input
           variant='transparent'
           placeholder={placeholder}

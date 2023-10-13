@@ -1,18 +1,18 @@
 'use client';
 
-import { grpcClient } from '../../extension-client';
+import { viewClient } from '../../clients/grpc';
 import { useMemo } from 'react';
 import { useCollectedStream } from 'penumbra-transport';
 import { uint8ArrayToHex } from 'penumbra-types';
 
 export default function AllTransactions() {
-  const transactions = useMemo(() => grpcClient.transactionInfo({}), []);
+  const transactions = useMemo(() => viewClient.transactionInfo({}), []);
   const { data, end, error } = useCollectedStream(transactions);
 
   return (
     <div>
       {!end && <div>is loading ⚠️</div>}
-      {error && <div className='text-red-700'>Error ⛔️: {error}</div>}
+      {String(error) && <div className='text-red-700'>{String(error)}</div>}
       {end && <div className='text-green-700'>Finished loading ✅️</div>}
       {data.map((r, i) => {
         return (
