@@ -129,24 +129,24 @@ describe('lo-hi', () => {
   });
 
   describe('calculateLoHiExponent', () => {
-    it('with zero lo and hi and zero exponent', () => {
-      expect(calculateLoHiExponent(0n, 0n, 0n)).equal(0n);
+    it('applies positive exponent', () => {
+      const result = calculateLoHiExponent(1000n, 0n, 3);
+      expect(result).toBe(1n);
     });
 
-    it('with zero hi and zero exponent', () => {
-      expect(calculateLoHiExponent(10n, 0n, 0n)).equal(10n);
+    it('handles high and low bits', () => {
+      const result = calculateLoHiExponent(1000n, 5n, 6);
+      expect(result).toBe(92233720368547n);
     });
 
-    it('with zero lo and zero exponent', () => {
-      expect(calculateLoHiExponent(0n, 10n, 0n)).equal(184467440737095516160n);
+    it('handles exponent of 0', () => {
+      const result = calculateLoHiExponent(1000n, 0n, 0);
+      expect(result).toBe(1000n);
     });
 
-    it('with zero lo and hi and exponent > 0', () => {
-      expect(calculateLoHiExponent(0n, 0n, 6n)).equal(0n);
-    });
-
-    it('with zero hi and exponent > 0', () => {
-      expect(calculateLoHiExponent(10000000n, 0n, 6n)).equal(10n);
+    it('handles big numbers', () => {
+      const result = calculateLoHiExponent(123456789012345n, 987654321098765n, 18);
+      expect(result).toBe(18219006494602273n);
     });
   });
 });

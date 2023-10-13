@@ -25,7 +25,7 @@ export const useCalculateBalance = (asset: Asset, setAssetBalance: (amount: numb
         calculateLoHiExponent(
           selectedAsset.balance?.amount?.lo,
           selectedAsset.balance?.amount?.hi,
-          BigInt(exponent),
+          exponent,
         ),
       ),
     );

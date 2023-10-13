@@ -1,5 +1,5 @@
 import { useBalances } from './balances';
-import { Base64Str, joinLoHi, uint8ArrayToBase64 } from 'penumbra-types';
+import { Base64Str, displayAmount, joinLoHi, uint8ArrayToBase64 } from 'penumbra-types';
 import { useAssets } from './assets';
 import {
   AssetsResponse,
@@ -51,24 +51,31 @@ const addAddress =
 
 const addMetadata =
   (metadata: AssetsResponse[]) =>
-  (balance: Omit<AssetWithBalance, 'denomMetadata'>): AssetWithBalance => {
+  (b: Omit<AssetWithBalance, 'denomMetadata'>): AssetWithBalance => {
     const match = metadata.find(m => {
       if (!m.denomMetadata?.penumbraAssetId?.inner) return false;
-      return balance.assetId === uint8ArrayToBase64(m.denomMetadata.penumbraAssetId.inner);
+      return b.assetId === uint8ArrayToBase64(m.denomMetadata.penumbraAssetId.inner);
     });
 
-    if (!match) {
-      return { ...balance, denomMetadata: { display: 'unknown' } };
-    } else {
-      return { ...balance, denomMetadata: match.denomMetadata! };
-    }
+    if (!match) return { ...b, denomMetadata: { display: 'unknown' } };
+
+    const fixedDisplayAmount = displayAmount(match, b.balance.amount);
+
+    return {
+      ...b,
+      balance: {
+        amount: fixedDisplayAmount,
+        usdcValue: b.balance.usdcValue,
+      },
+      denomMetadata: match.denomMetadata!,
+    };
   };
 
 const sortComparator =
   (sortBy: keyof AssetBalance) =>
   (a: AssetWithBalance, b: AssetWithBalance): number => {
     // Sort first by account (lowest first)
-    if (a.account !== b.account) return a.account.index - b.account.index;
+    if (a.account.index !== b.account.index) return a.account.index - b.account.index;
 
     // Next, sort by asset value/amount in descending order (largest to smallest).
     if (a.balance[sortBy] !== b.balance[sortBy]) return b.balance[sortBy] - a.balance[sortBy];

@@ -25,7 +25,6 @@ export const useAddresses = (props: AddressReqProps[]): UseQueryResult<AddrQuery
       });
 
       const responses = await Promise.all(allTrades);
-      console.log('responses', responses);
       return responses.map((res, i) => {
         return {
           index: props[i]?.account ?? 0,

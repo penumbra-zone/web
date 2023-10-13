@@ -53,8 +53,10 @@ export const addLoHi = (a: LoHi, b: LoHi): Required<LoHi> => {
  * - mpenumbra, exponent 3
  * - upenumbra, exponent 0
  * This function allows you to calculate a single BigInt with the exponent applied
+ * Note: Often passing exponent 0 is the default given protobuf serialization.
+ *       This is treated as 1 instead.
  */
-export const calculateLoHiExponent = (lo = 0n, hi = 0n, exponent: bigint): bigint => {
+export const calculateLoHiExponent = (lo = 0n, hi = 0n, exponent: number): bigint => {
   const loHi = joinLoHi(lo, hi);
-  return loHi / (exponent ? 10n ** exponent : 1n);
+  return loHi / (exponent ? 10n ** BigInt(exponent) : 1n);
 };

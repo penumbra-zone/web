@@ -12,7 +12,7 @@ export default function AssetsTable() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Account</TableHead>
+            <TableHead className='text-center'>Account</TableHead>
             <TableHead className='text-center'>Asset</TableHead>
             <TableHead className='text-center'>Balance</TableHead>
           </TableRow>
@@ -21,17 +21,22 @@ export default function AssetsTable() {
           {data.map((asset, i) => (
             <TableRow key={i}>
               <TableCell>
-                <div className='flex flex-row items-center gap-2'>
-                  <Identicon name={asset.account.address} className='h-4 w-4 rounded-full' />
+                <div className='flex flex-row items-center justify-center gap-2'>
+                  <Identicon name={asset.account.address} className='h-4 w-4 rounded-full' />#
                   {asset.account.index}
                 </div>
               </TableCell>
-              <TableCell className='flex justify-center'>
-                <div className='flex items-center gap-4'>
-                  <p className='text-base'>{asset.denomMetadata.display}</p>
+              {/*<TableCell>*/}
+              {/*  <div className='flex flex-col items-center gap-4 '>*/}
+              {/*    <p className=' text-base'>{asset.denomMetadata.display}</p>*/}
+              {/*  </div>*/}
+              {/*</TableCell>*/}
+              <TableCell>
+                <div className='flex flex-col items-center gap-4 '>
+                  <p className=' text-base'>{asset.denomMetadata.display}</p>
                 </div>
               </TableCell>
-              <TableCell className='text-center'>
+              <TableCell className='text-center font-mono font-light'>
                 <div className='flex flex-col'>
                   <p className='text-[15px] leading-[22px]'>{formatNumber(asset.balance.amount)}</p>
                   {/* Enable when pricing ready */}
