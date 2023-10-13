@@ -2,13 +2,19 @@ import { viewClient } from '../clients/grpc';
 import { AddressByIndexRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { useQuery } from '@tanstack/react-query';
-import { uint8ArrayToBase64 } from 'penumbra-types';
+import { uint8ArrayToString } from 'penumbra-types';
+import { UseQueryResult } from '@tanstack/react-query/src/types';
 
 interface AddressReqProps {
   account: number | undefined;
 }
 
-export const useAddresses = (props: AddressReqProps[]) => {
+export interface AddrQueryReturn {
+  index: number;
+  address: string;
+}
+
+export const useAddresses = (props: AddressReqProps[]): UseQueryResult<AddrQueryReturn[]> => {
   return useQuery({
     queryKey: ['get-addr-index', props],
     queryFn: async () => {
@@ -17,8 +23,15 @@ export const useAddresses = (props: AddressReqProps[]) => {
         if (p.account) req.addressIndex = new AddressIndex({ account: p.account });
         return viewClient.addressByIndex(req);
       });
+
       const responses = await Promise.all(allTrades);
-      return responses.map(res => uint8ArrayToBase64(res.address!.inner));
+      console.log('responses', responses);
+      return responses.map((res, i) => {
+        return {
+          index: props[i]?.account ?? 0,
+          address: uint8ArrayToString(res.address!.inner),
+        };
+      });
     },
   });
 };

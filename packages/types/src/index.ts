@@ -12,3 +12,4 @@ export * from './asset';
 export * from './note-source';
 export * from './transaction';
 export * from './hex';
+export * from './string';

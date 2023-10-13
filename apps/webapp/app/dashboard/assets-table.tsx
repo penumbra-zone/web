@@ -22,8 +22,8 @@ export default function AssetsTable() {
             <TableRow key={i}>
               <TableCell>
                 <div className='flex flex-row items-center gap-2'>
-                  <Identicon name={asset.account.toString()} className='h-4 w-4 rounded-full' />
-                  {asset.account}
+                  <Identicon name={asset.account.address} className='h-4 w-4 rounded-full' />
+                  {asset.account.index}
                 </div>
               </TableCell>
               <TableCell className='flex justify-center'>
@@ -44,7 +44,7 @@ export default function AssetsTable() {
           ))}
         </TableBody>
       </Table>
-      {error && <div className='text-red-700'>{error}</div>}
+      {error && <div className='text-red-700'>{String(error)}</div>}
     </>
   );
 }

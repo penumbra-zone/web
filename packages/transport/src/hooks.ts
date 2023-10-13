@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react';
 interface StreamQueryResult<T> {
   data: T | undefined;
   end: boolean;
-  error: string | undefined;
+  error: unknown;
 }
 
 interface CollectedStreamQueryResult<T> {
   data: T[];
   end: boolean;
-  error: string | undefined;
+  error: unknown;
 }
 
 type DataHandler<T, U> = (prevData: U, newData: T) => U;
@@ -19,10 +19,10 @@ const useStreamCommon = <T, U>(
   query: AsyncIterable<T>,
   initialData: U,
   dataHandler: DataHandler<T, U>,
-): { data: U; end: boolean; error: string | undefined } => {
+): { data: U; end: boolean; error: unknown } => {
   const [data, setData] = useState<U>(initialData);
   const [end, setEnd] = useState(false);
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<unknown>();
 
   useEffect(() => {
     const streamData = async () => {
@@ -32,7 +32,7 @@ const useStreamCommon = <T, U>(
         }
         setEnd(true);
       } catch (e) {
-        setError(String(e));
+        setError(e);
       }
     };
 

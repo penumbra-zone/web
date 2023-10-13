@@ -7,7 +7,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { useMemo } from 'react';
-import { useAddresses } from './address';
+import { AddrQueryReturn, useAddresses } from './address';
 
 export interface AssetBalance {
   amount: number;
@@ -21,55 +21,54 @@ interface AssetWithBalance {
   denomMetadata: Pick<DenomMetadata, 'display'>;
 }
 
-type AssetNoMetadata = Omit<AssetWithBalance, 'denomMetadata'>;
-
-interface UseAddValueReturn {
-  data: AssetNoMetadata[];
-  error: string | undefined;
-}
-
-const normalize = (responses: BalancesResponse[]): UseAddValueReturn => {
-  // TODO: Enable when CORS server issue on testnet
-  // const { data, error } = useUsdcValues(props);
-  // const props = responses.map(b => ({
-  //   inputAsset: uint8ArrayToBase64(b.balance!.assetId!.inner),
-  //   amount: Number(joinLoHi(b.balance?.amount?.lo ?? 0n, b.balance?.amount?.hi ?? 0n)),
-  // }));
-  // return { data: normalized, error: error ? String(error) : undefined };
-
-  const normalized = responses.map(res => {
-    const amount = Number(joinLoHi(res.balance?.amount?.lo ?? 0n, res.balance?.amount?.hi ?? 0n));
-    return {
-      assetId: uint8ArrayToBase64(res.balance!.assetId!.inner),
-      account: res.account?.account ?? 0,
-      balance: {
-        amount,
-        usdcValue: amount * 0.1, // TODO: Get from above
-      },
-    };
-  });
-
-  return { data: normalized, error: undefined };
+type AssetWithIndexOnly = Omit<AssetWithBalance, 'denomMetadata' | 'account'> & {
+  account: { index: number };
 };
 
-const addMetadata = (balance: BalancesResponse, metadata: AssetsResponse[]): AssetWithBalance => {
-  const match = metadata.find(m => {
-    if (!m.denomMetadata?.penumbraAssetId?.inner) return false;
-    return balance.assetId === uint8ArrayToBase64(m.denomMetadata.penumbraAssetId.inner);
-  });
-
-  if (!match) {
-    return { ...balance, denomMetadata: { display: 'unknown' } };
-  } else {
-    return { ...balance, denomMetadata: match.denomMetadata! };
-  }
+const normalize = (res: BalancesResponse): AssetWithIndexOnly => {
+  const amount = Number(joinLoHi(res.balance?.amount?.lo ?? 0n, res.balance?.amount?.hi ?? 0n));
+  return {
+    assetId: uint8ArrayToBase64(res.balance!.assetId!.inner),
+    account: { index: res.account?.account ?? 0 },
+    balance: {
+      amount,
+      usdcValue: amount * 0.1, // TODO: Get from above
+    },
+  };
 };
+
+const addAddress =
+  (addrRes: AddrQueryReturn[] | undefined) =>
+  (a: AssetWithIndexOnly): Omit<AssetWithBalance, 'denomMetadata'> => {
+    const match = addrRes?.find(res => res.index === a.account.index);
+
+    if (match) {
+      return { ...a, account: { index: a.account.index, address: match.address } };
+    } else {
+      return { ...a, account: { index: a.account.index, address: '' } };
+    }
+  };
+
+const addMetadata =
+  (metadata: AssetsResponse[]) =>
+  (balance: Omit<AssetWithBalance, 'denomMetadata'>): AssetWithBalance => {
+    const match = metadata.find(m => {
+      if (!m.denomMetadata?.penumbraAssetId?.inner) return false;
+      return balance.assetId === uint8ArrayToBase64(m.denomMetadata.penumbraAssetId.inner);
+    });
+
+    if (!match) {
+      return { ...balance, denomMetadata: { display: 'unknown' } };
+    } else {
+      return { ...balance, denomMetadata: match.denomMetadata! };
+    }
+  };
 
 const sortComparator =
   (sortBy: keyof AssetBalance) =>
   (a: AssetWithBalance, b: AssetWithBalance): number => {
     // Sort first by account (lowest first)
-    if (a.account !== b.account) return a.account - b.account;
+    if (a.account !== b.account) return a.account.index - b.account.index;
 
     // Next, sort by asset value/amount in descending order (largest to smallest).
     if (a.balance[sortBy] !== b.balance[sortBy]) return b.balance[sortBy] - a.balance[sortBy];
@@ -80,7 +79,7 @@ const sortComparator =
 
 interface SortedAssetsReturnVal {
   data: AssetWithBalance[];
-  error: string | undefined;
+  error: unknown;
 }
 
 // TODO: Are there react-specific optimizations missing here?
@@ -102,14 +101,16 @@ export const useBalancesWithMetadata = (
   const data = useMemo(
     () =>
       balances
-        .map(b => addMetadata(b, assets))
+        .map(normalize)
+        .map(addAddress(accountAddrs))
+        .map(addMetadata(assets))
         .sort(sortComparator(sortBy))
         .filter(a => {
           if (!search) return true;
           return a.denomMetadata.display.includes(search.toLowerCase());
         }),
-    [assets, search, sortBy],
+    [accountAddrs, assets, balances, search, sortBy],
   );
 
-  return { data, error: bError ?? vError ?? asError ?? acError };
+  return { data, error: bError ?? asError ?? acError };
 };

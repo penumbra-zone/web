@@ -12,6 +12,7 @@ import { unaryResponse } from './helpers/unary';
 import { handleTransactionInfoReq, isTransactionInfoRequest } from './transaction-info';
 import { handleStatusReq, isStatusStreamRequest } from './status-stream';
 import { handleAssetsReq, isAssetsRequest } from './assets';
+import { handleAddressReq, isAddressRequest } from './address';
 
 // Router for ViewService
 export const viewServerRouter = (req: ViewProtocolReq, sender: chrome.runtime.MessageSender) => {
@@ -47,6 +48,7 @@ const getTransport = (
 
 const unaryHandler = async (msg: ViewReqMessage): Promise<ViewProtocolRes> => {
   if (isAppParamsRequest(msg)) return handleAppParamsReq();
+  if (isAddressRequest(msg)) return handleAddressReq(msg);
 
   throw new Error(`Non-supported unary request: ${msg.getType().typeName}`);
 };
