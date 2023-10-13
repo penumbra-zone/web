@@ -5,11 +5,14 @@ import { Card, FadeTransition, Tabs, TabsContent, TabsList, TabsTrigger } from '
 import { EduInfoCard } from '../shared';
 import { dashboardTabsHelper } from './dashboard/constants';
 import { NftsTable } from './dashboard/nfts-table';
-import { TransactionTable } from './dashboard/transaction-table';
 import { DashboardPageTab } from './dashboard/types';
 import dynamic from 'next/dynamic';
 
 const AssetsTable = dynamic(() => import('./dashboard/assets-table'), {
+  ssr: false,
+});
+
+const TransactionTable = dynamic(() => import('./dashboard/transaction-table'), {
   ssr: false,
 });
 
@@ -44,7 +47,7 @@ export default function Page() {
             <TabsContent value={DashboardPageTab.ASSETS} className='mt-10'>
               <AssetsTable />
             </TabsContent>
-            <TabsContent value={DashboardPageTab.TRANSACTIONS} className='mt-5 px-5'>
+            <TabsContent value={DashboardPageTab.TRANSACTIONS} className='mt-10'>
               <TransactionTable />
             </TabsContent>
             <TabsContent value={DashboardPageTab.NFTS}>

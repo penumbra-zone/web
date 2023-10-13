@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { stringToUint8Array, uint8ArrayToString } from './string';
+import { shorten, stringToUint8Array, uint8ArrayToString } from './string';
 
 describe('stringToUint8Array', () => {
   it('should return correct Uint8Array for ASCII strings', () => {
@@ -50,5 +50,39 @@ describe('Uint8Array to String conversion', () => {
     const convertedString = uint8ArrayToString(uint8Array);
 
     expect(convertedString).toEqual(originalString);
+  });
+});
+
+describe('shorten()', () => {
+  it('returns the original string when string length is less than or equal to 6', () => {
+    const input = 'abcdef';
+    const output = shorten(input);
+    expect(output).toBe('abcdef');
+  });
+
+  it('returns a shortened string when string length is more than 6', () => {
+    const input = 'abcdefgh';
+    const output = shorten(input);
+    expect(output).toBe('abcdefgh');
+  });
+
+  it('returns a shortened string when string length is exactly 7', () => {
+    const input = 'abcdefgh';
+    const output = shorten(input, 4);
+    expect(output).toBe('abcdefgh');
+  });
+
+  it('returns empty string when input is empty string', () => {
+    const input = '';
+    const output = shorten(input);
+    expect(output).toBe('');
+  });
+
+  it('works with custom ends length', () => {
+    const input = 'abcdefghijklmnop';
+    const outputA = shorten(input, 6);
+    expect(outputA).toBe('abcdef...klmnop');
+    const outputB = shorten(input, 1);
+    expect(outputB).toBe('a...p');
   });
 });
