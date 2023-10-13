@@ -1,13 +1,15 @@
-import { Asset } from 'penumbra-types';
+import { Base64Str } from 'penumbra-types';
 
 export interface Constants {
   grpcEndpoint: string;
   indexedDbVersion: number;
+  usdcAssetId: Base64Str;
 }
 
 export const testnetConstants: Constants = {
   grpcEndpoint: 'https://grpc.testnet.penumbra.zone',
   indexedDbVersion: 12,
+  usdcAssetId: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
 };
 
 export const assets: Asset[] = [

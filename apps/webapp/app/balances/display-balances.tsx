@@ -1,12 +1,12 @@
 'use client';
 
-import { grpcClient } from '../../extension-client';
+import { viewClient } from '../../clients/grpc';
 import { useMemo } from 'react';
 import { uint8ArrayToBase64 } from 'penumbra-types';
 import { useCollectedStream } from 'penumbra-transport';
 
 export default function DisplayBalances() {
-  const balances = useMemo(() => grpcClient.balances({}), []);
+  const balances = useMemo(() => viewClient.balances({}), []);
   const { data, end, error } = useCollectedStream(balances);
 
   return (

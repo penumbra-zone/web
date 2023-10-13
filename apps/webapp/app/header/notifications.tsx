@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from 'ui';
 import { cn } from 'ui/lib/utils';
 import { BellIcon } from '../../icons';
 import { FilledImage } from '../../shared';
-import { grpcClient } from '../../extension-client';
+import { viewClient } from '../../clients/grpc';
 import { useStream } from 'penumbra-transport';
 import { BlockSync } from './block-sync';
 
@@ -45,7 +45,7 @@ type NotificationState = 'sync' | 'notification' | 'none';
 
 export default function Notifications() {
   const [status, setStatus] = useState<NotificationState>('none');
-  const syncStream = useMemo(() => grpcClient.statusStream({}), []);
+  const syncStream = useMemo(() => viewClient.statusStream({}), []);
   const { data, error } = useStream(syncStream);
 
   useEffect(() => {

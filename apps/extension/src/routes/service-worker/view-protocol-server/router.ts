@@ -11,6 +11,7 @@ import { isStreamingMethod, streamResponse } from './helpers/streaming';
 import { unaryResponse } from './helpers/unary';
 import { handleTransactionInfoReq, isTransactionInfoRequest } from './transaction-info';
 import { handleStatusReq, isStatusStreamRequest } from './status-stream';
+import { handleAssetsReq, isAssetsRequest } from './assets';
 
 // Router for ViewService
 export const viewServerRouter = (req: ViewProtocolReq, sender: chrome.runtime.MessageSender) => {
@@ -54,6 +55,7 @@ const streamingHandler = (msg: ViewReqMessage): AsyncIterable<ViewProtocolRes> =
   if (isBalancesRequest(msg)) return handleBalancesReq(msg);
   else if (isTransactionInfoRequest(msg)) return handleTransactionInfoReq(msg);
   else if (isStatusStreamRequest(msg)) return handleStatusReq(msg);
+  else if (isAssetsRequest(msg)) return handleAssetsReq(msg);
 
   throw new Error(`Non-supported streaming request: ${msg.getType().typeName}`);
 };

@@ -4,7 +4,7 @@ import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { assets } from 'penumbra-constants';
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogPrimitive, DialogTrigger, Input } from 'ui';
-import { useSortedAssets } from '../hooks/sorted-asset';
+import { useBalancesWithMetadata } from '../hooks/sorted-asset';
 import { formatNumber } from '../utils';
 import { FilledImage } from './filled-image';
 import { Asset, AssetId } from 'penumbra-types';
@@ -18,18 +18,17 @@ interface SelectTokenModalProps {
 export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalProps) {
   const [search, setSearch] = useState('');
 
-  const sortedAssets = useSortedAssets('amount', search);
+  const { sortedAssets } = useBalancesWithMetadata('amount', search);
 
   return (
     <Dialog>
       <DialogTrigger disabled={!assets.length}>
-        <div className='flex items-center justify-center gap-2 bg-light-brown w-[100px] h-9 rounded-lg'>
-          {asset.icon && <FilledImage src={asset.icon} alt='Asset' className='w-6 h-6' />}
+        <div className='flex h-9 w-[100px] items-center justify-center gap-2 rounded-lg bg-light-brown'>
           <p className='text-base font-bold text-light-grey'>{asset.display}</p>
         </div>
       </DialogTrigger>
       <DialogContent className='max-w-[400px] bg-charcoal-secondary'>
-        <div className='relative z-10 gap-4 flex flex-col pb-5'>
+        <div className='relative z-10 flex flex-col gap-4 pb-5'>
           <DialogHeader className='border-b'>Select asset</DialogHeader>
           <div className='flex flex-col gap-4 px-[30px]'>
             <div className='relative flex w-full items-center justify-center gap-4'>
@@ -43,7 +42,7 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
                 placeholder='Search asset...'
               />
             </div>
-            <div className='flex justify-between items-center font-headline text-base font-semibold mt-2'>
+            <div className='mt-2 flex items-center justify-between font-headline text-base font-semibold'>
               <p>Token name</p>
               <p>Balance</p>
             </div>
@@ -60,7 +59,7 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
                   >
                     <div className='flex items-start gap-[6px]'>
                       {i.denomMetadata.icon && (
-                        <FilledImage src={i.denomMetadata.icon} alt='Asset' className='w-5 h-5' />
+                        <FilledImage src={i.denomMetadata.icon} alt='Asset' className='h-5 w-5' />
                       )}
                       <p className='font-bold text-muted-foreground'>{i.denomMetadata.display}</p>
                     </div>
