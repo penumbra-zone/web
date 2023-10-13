@@ -26,11 +26,6 @@ export default function AssetsTable() {
                   {asset.account.index}
                 </div>
               </TableCell>
-              {/*<TableCell>*/}
-              {/*  <div className='flex flex-col items-center gap-4 '>*/}
-              {/*    <p className=' text-base'>{asset.denomMetadata.display}</p>*/}
-              {/*  </div>*/}
-              {/*</TableCell>*/}
               <TableCell>
                 <div className='flex flex-col items-center gap-4 '>
                   <p className=' text-base'>{asset.denomMetadata.display}</p>

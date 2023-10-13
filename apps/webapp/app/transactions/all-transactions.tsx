@@ -12,7 +12,7 @@ export default function AllTransactions() {
   return (
     <div>
       {!end && <div>is loading ⚠️</div>}
-      {error && <div className='text-red-700'>Error ⛔️: {error}</div>}
+      {String(error) && <div className='text-red-700'>{String(error)}</div>}
       {end && <div className='text-green-700'>Finished loading ✅️</div>}
       {data.map((r, i) => {
         return (
