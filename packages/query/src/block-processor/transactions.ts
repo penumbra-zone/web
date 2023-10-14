@@ -1,13 +1,10 @@
-import {
-  IndexedDbInterface,
-  noteSourceFromBytes,
-  ParsedNoteSource,
-  StoredTransaction,
-} from 'penumbra-types';
+import { IndexedDbInterface, noteSourceFromBytes, ParsedNoteSource } from 'penumbra-types';
 import { TendermintQuerier } from '../queriers/tendermint';
 import { decodeTx, transactionInfo } from 'penumbra-wasm-ts/src/transaction';
 import { sha256Hash } from 'penumbra-crypto-ts';
 import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { Id } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 export class Transactions {
   // These are base64 encoded hex strings
@@ -51,16 +48,20 @@ export class Transactions {
       const noteSource = new NoteSource({ inner: hash });
 
       if (noteSourcePresent(this.all, noteSource)) {
-        const tx = decodeTx(txBytes);
-        const txInfo = await transactionInfo(this.fullViewingKey, tx, this.indexedDb.constants());
+        const transaction = decodeTx(txBytes);
+        const { txp, txv } = await transactionInfo(
+          this.fullViewingKey,
+          transaction,
+          this.indexedDb.constants(),
+        );
 
-        const txToStore = {
-          blockHeight: this.blockHeight,
-          id: noteSource,
-          tx,
-          perspective: txInfo.txp,
-          view: txInfo.txv,
-        } satisfies StoredTransaction;
+        const txToStore = new TransactionInfo({
+          height: this.blockHeight,
+          id: new Id({ hash: noteSource.inner }),
+          transaction,
+          perspective: txp,
+          view: txv,
+        });
 
         await this.indexedDb.saveTransactionInfo(txToStore);
       }

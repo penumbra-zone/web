@@ -6,10 +6,10 @@ import {
   StoredPosition,
   StoreHash,
 } from './state-commitment-tree';
-import { StoredTransaction } from './transaction';
 import {
   SpendableNoteRecord,
   SwapRecord,
+  TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import {
   AssetId,
@@ -30,9 +30,9 @@ export interface IndexedDbInterface {
   getLastBlockSynced(): Promise<bigint | undefined>;
   getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
   saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
-  saveTransactionInfo(tx: StoredTransaction): Promise<void>;
-  getTransaction(source: NoteSource): Promise<StoredTransaction | undefined>;
-  getAllTransactions(): Promise<StoredTransaction[]>;
+  saveTransactionInfo(tx: TransactionInfo): Promise<void>;
+  getTransaction(source: NoteSource): Promise<TransactionInfo | undefined>;
+  getAllTransactions(): Promise<TransactionInfo[]>;
   getAssetsMetadata(assetId: AssetId): Promise<DenomMetadata | undefined>;
   saveAssetsMetadata(metadata: DenomMetadata): Promise<void>;
   getAllAssetsMetadata(): Promise<DenomMetadata[]>;
@@ -73,7 +73,7 @@ export interface PenumbraDb extends DBSchema {
   };
   TRANSACTIONS: {
     key: NoteSource['inner'];
-    value: StoredTransaction;
+    value: TransactionInfo;
   };
   CHAIN_PARAMETERS: {
     key: ChainParameters['chainId'];

@@ -22,6 +22,7 @@
     "penumbra-types": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-json-view": "^1.21.3",
     "ui": "workspace:*",
     "zustand": "^4.4.3"
   },

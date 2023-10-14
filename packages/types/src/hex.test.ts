@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { base64ToHex, hexToBase64, uint8ArrayToHex } from './hex';
+import { base64ToHex, hexToBase64, hexToUint8Array, uint8ArrayToHex } from './hex';
 
 describe('base64ToHex', () => {
   it('should convert base64 string to hexadecimal', () => {
@@ -57,5 +57,26 @@ describe('uint8ArrayToHex()', () => {
     const uint8Array = new Uint8Array([0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9]);
     const expectedOutput = '00010203040506070809';
     expect(uint8ArrayToHex(uint8Array)).toEqual(expectedOutput);
+  });
+});
+
+describe('hexToUint8Array', () => {
+  it('should convert a hexadecimal string to a Uint8Array', () => {
+    const hexString = '48656c6c6f20576f726c64'; // Hexadecimal representation of "Hello World"
+    const expected = new Uint8Array(Buffer.from('Hello World'));
+    const result = hexToUint8Array(hexString);
+    expect(result).toEqual(expected);
+  });
+
+  it('should handle an empty string', () => {
+    const hexString = '';
+    const expected = new Uint8Array();
+    const result = hexToUint8Array(hexString);
+    expect(result).toEqual(expected);
+  });
+
+  it('should throw an error for a non-hexadecimal string', () => {
+    const nonHexString = 'GHIJK';
+    expect(() => hexToUint8Array(nonHexString)).toThrow();
   });
 });
