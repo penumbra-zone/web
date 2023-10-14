@@ -94,15 +94,10 @@ export class Services {
 
   async clearCache() {
     const ws = await this.getWalletServices();
-    ws.blockProcessor.stopSyncProgress();
 
+    ws.blockProcessor.stopSyncProgress();
     ws.indexedDb.clear();
-    ws.viewServer.free();
-    this.walletServicesPromise = this.initializeWalletServices().catch(e => {
-      // If promise rejected, reset promise to `undefined` so next caller can try again
-      this.walletServicesPromise = undefined;
-      throw e;
-    });
+    this.walletServicesPromise = undefined;
     await this.tryToSync();
   }
 }

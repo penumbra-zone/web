@@ -7,5 +7,4 @@ export interface ViewServerInterface {
   flushUpdates(): ScanResult;
   resetTreeToStored(): Promise<void>;
   getNctRoot(): MerkleRoot;
-  free(): void;
 }
