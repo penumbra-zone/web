@@ -95,6 +95,10 @@ export class BlockProcessor {
     // await this.assertRootValid(result.height);
   }
 
+  stopSyncProgress() {
+    this.abortController.abort();
+  }
+
   // We need to query separately to convert assetId's into readable denom strings. Persisting those to storage.
   private async storeAssetDenoms(assetId?: AssetId) {
     if (!assetId) return;
@@ -136,6 +140,8 @@ export class BlockProcessor {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
+      console.log(block);
+
       // Scanning has a side effect of updating viewServer's internal tree.
       const newNotesPresent = await this.viewServer.scanBlock(block);
 

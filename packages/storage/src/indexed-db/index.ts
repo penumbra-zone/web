@@ -138,6 +138,14 @@ export class IndexedDb implements IndexedDbInterface {
     return this.db.get('TRANSACTIONS', source.inner);
   }
 
+  clear() {
+    const objectStoreNames = Object.values(this.db.objectStoreNames);
+
+    objectStoreNames.forEach(storeName => {
+      void (async () => await this.db.clear(storeName))();
+    });
+  }
+
   private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanResult['sctUpdates']): void {
     if (sctUpdates.set_position) {
       txs.add({

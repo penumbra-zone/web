@@ -72,4 +72,8 @@ export class ViewServer implements ViewServerInterface {
     const raw = validateSchema(ScanResultSchema, this.wasmViewServer.flush_updates());
     return parseScanResult(raw);
   }
+
+  free() {
+    this.wasmViewServer.free();
+  }
 }
