@@ -62,7 +62,7 @@ export default function TransactionTable() {
               </div>
             </TableCell>
             <TableCell>
-              <Link href={`/tx/${tx.hash}`}>
+              <Link href={`/tx/?hash=${tx.hash}`}>
                 <FilledImage
                   src='/more.svg'
                   className='h-4 w-4 cursor-pointer hover:opacity-50'
