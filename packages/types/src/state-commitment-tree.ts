@@ -53,7 +53,7 @@ export const SctUpdatesSchema = z.object({
 });
 
 export const ScanResultSchema = z.object({
-  height: z.number(),
+  height: z.bigint(),
   nct_updates: SctUpdatesSchema,
   new_notes: z.array(z.unknown()),
   new_swaps: z.array(z.unknown()),
