@@ -1,10 +1,10 @@
 import {
+  TransactionInfo,
   TransactionInfoRequest,
   TransactionInfoResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { ViewReqMessage } from './helpers/generic';
 
-import { StoredTransaction, storedTransactionToProto } from 'penumbra-types';
 import { services } from '../../../service-worker';
 
 export const isTransactionInfoRequest = (msg: ViewReqMessage): msg is TransactionInfoRequest => {
@@ -18,16 +18,16 @@ export const handleTransactionInfoReq = async function* (
 
   const allTxs = await indexedDb.getAllTransactions();
   const responses = allTxs
-    .filter(tx => tx.blockHeight >= req.startHeight && endHeightInclusive(tx, req))
-    .map(storedTransactionToProto);
+    .filter(tx => tx.height >= req.startHeight && endHeightInclusive(tx, req))
+    .map(txInfo => new TransactionInfoResponse({ txInfo }));
   yield* responses;
 };
 
-const endHeightInclusive = (tx: StoredTransaction, req: TransactionInfoRequest): boolean => {
+const endHeightInclusive = (tx: TransactionInfo, req: TransactionInfoRequest): boolean => {
   // Default when none passed
   if (req.endHeight === 0n) {
     return true;
   } else {
-    return tx.blockHeight <= req.endHeight;
+    return tx.height <= req.endHeight;
   }
 };
