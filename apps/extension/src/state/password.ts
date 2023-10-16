@@ -35,7 +35,9 @@ export const createPasswordSlice =
         if (!keyPrintJson) throw new Error('Password KeyPrint not in storage');
 
         const key = await Key.recreate(password, KeyPrint.fromJson(keyPrintJson));
-        const keyJson = await key!.toJson();
+        if (!key) throw new Error('Password does not match KeyPrint');
+
+        const keyJson = await key.toJson();
 
         set(state => {
           state.password.key = keyJson;

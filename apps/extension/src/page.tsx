@@ -9,7 +9,7 @@ const initializePage = () => {
   const rootElement = document.getElementById('root') as HTMLDivElement;
   createRoot(rootElement).render(
     <StrictMode>
-      <RouterProvider router={pageRouter} />,
+      <RouterProvider router={pageRouter} />
     </StrictMode>,
   );
 };

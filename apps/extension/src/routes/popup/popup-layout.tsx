@@ -14,11 +14,11 @@ export const PopupLayout = () => {
   return (
     <div
       className={cn(
-        'relative flex flex-col h-full',
+        'relative flex flex-col min-h-full',
         isDarkBg ? 'bg-chachoal' : 'bg-charcoal-secondary',
       )}
     >
-      <div className='relative z-10 h-full'>
+      <div className='relative z-10'>
         <Outlet />
       </div>
       <div className='absolute inset-0 z-0 bg-card-radial opacity-20' />

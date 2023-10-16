@@ -42,8 +42,12 @@ export const createWalletsSlice =
         const passwordKey = get().password.key;
         const key = await Key.fromJson(passwordKey!);
 
-        const encryptedSeedPhrase = get().wallets.all[0]?.custody.encryptedSeedPhrase;
-        const unsealeSeedPhrase = await key.unseal(encryptedSeedPhrase!);
+        const activeWallet = getActiveWallet(get());
+
+        if (!activeWallet) return [];
+
+        const encryptedSeedPhrase = activeWallet.custody.encryptedSeedPhrase;
+        const unsealeSeedPhrase = await key.unseal(encryptedSeedPhrase);
 
         return unsealeSeedPhrase?.split(' ') ?? [];
       },
