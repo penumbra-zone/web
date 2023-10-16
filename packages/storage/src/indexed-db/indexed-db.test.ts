@@ -6,7 +6,10 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { base64ToUint8Array } from 'penumbra-types';
 import { TableUpdateNotifier } from './updater';
-import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import {
+  SpendableNoteRecord,
+  TransactionInfo,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 
 const denomMetadataA = new DenomMetadata({
@@ -113,6 +116,55 @@ describe('IndexedDb', () => {
       await db.saveSpendableNote(newNote);
 
       expect(mockNotifier).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Clear', () => {
+    it('object store should be empty after clear', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+      await db.saveSpendableNote(newNote);
+      expect((await db.getAllNotes()).length).toBe(1);
+
+      await db.saveAssetsMetadata(denomMetadataA);
+      expect((await db.getAllAssetsMetadata()).length).toBe(1);
+
+      await db.saveTransactionInfo(
+        TransactionInfo.fromJson({
+          height: '1000',
+          id: {
+            hash: 'tx-hash',
+          },
+        }),
+      );
+      expect((await db.getAllTransactions()).length).toBe(1);
+
+      const scanResult = {
+        height: 1000n,
+        sctUpdates: {
+          delete_ranges: [],
+          set_forgotten: undefined,
+          set_position: {
+            Position: {
+              epoch: 119,
+              block: 179,
+              commitment: 0,
+            },
+          },
+          store_commitments: [],
+          store_hashes: [],
+        },
+        newNotes: [],
+        newSwaps: [],
+      };
+
+      await db.saveScanResult(scanResult);
+      expect(await db.getLastBlockSynced()).toBe(1000n);
+
+      await db.clear();
+      expect((await db.getAllNotes()).length).toBe(0);
+      expect((await db.getAllAssetsMetadata()).length).toBe(0);
+      expect((await db.getAllTransactions()).length).toBe(0);
+      expect(await db.getLastBlockSynced()).toBeUndefined();
     });
   });
 

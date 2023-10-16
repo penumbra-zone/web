@@ -1,3 +1,6 @@
+import { ClearCacheMessage, clearCacheHandler } from './clear-cache';
+import { PingMessage, pingHandler } from './ping';
+import { SyncBlocksMessage, syncBlocksHandler } from './sync';
 import {
   AwaitedResponse,
   IncomingRequest,
@@ -5,8 +8,6 @@ import {
   ServiceWorkerResponse,
   SwResponse,
 } from './types';
-import { syncBlocksHandler, SyncBlocksMessage } from './sync';
-import { pingHandler, PingMessage } from './ping';
 
 // Narrows message to ensure it's one intended for service worker
 export const isExtRequest = (
@@ -38,7 +39,7 @@ export const extRouter = (
 };
 
 // List all service worker messages here
-export type SwRequestMessage = SyncBlocksMessage | PingMessage;
+export type SwRequestMessage = SyncBlocksMessage | PingMessage | ClearCacheMessage;
 
 // The router that matches the requests with their handlers
 const typedMessageRouter = async (req: IncomingRequest<SwRequestMessage>): Promise<SwResponse> => {
@@ -47,6 +48,8 @@ const typedMessageRouter = async (req: IncomingRequest<SwRequestMessage>): Promi
       return syncBlocksHandler();
     case 'PING':
       return pingHandler(req.arg);
+    case 'CLEAR_CACHE':
+      return clearCacheHandler();
     default:
       throw new Error(`Unhandled request type: ${JSON.stringify(req)}`);
   }

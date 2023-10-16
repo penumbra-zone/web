@@ -1,5 +1,5 @@
-import { SwMessage, SwMessageHandler } from './types';
 import { services } from '../../../service-worker';
+import { SwMessage, SwMessageHandler } from './types';
 
 export type SyncBlocksMessage = SwMessage<'SYNC_BLOCKS', undefined, Promise<void>>;
 

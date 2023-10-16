@@ -2,11 +2,8 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { Button, FadeTransition } from 'ui';
 import { SettingsHeader } from '../../../shared';
 import { TrashGradientIcon } from '../../../icons';
+import { swClient } from '../../service-worker/extension/client/internal';
 
-// Clearing cache should:
-//  - Delete indexeddb database
-//  - Restart block sync
-//  - Redirect to popup index
 export const SettingsClearCache = () => {
   return (
     <FadeTransition>
@@ -26,7 +23,12 @@ export const SettingsClearCache = () => {
               won’t be lost!
             </p>
           </div>
-          <Button variant='gradient' size='lg' className='w-full'>
+          <Button
+            variant='gradient'
+            size='lg'
+            className='w-full'
+            onClick={() => void swClient.clearCache()}
+          >
             Confirm
           </Button>
         </div>
