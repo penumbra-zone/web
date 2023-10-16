@@ -9,7 +9,7 @@ export interface PasswordSlice {
   setPassword: (password: string) => Promise<void>;
   isPassword: (password: string) => Promise<boolean>;
   clearSessionPassword: () => void;
-  login: (password: string) => Promise<void>;
+  setSessionPassword: (password: string) => Promise<void>;
 }
 
 export const createPasswordSlice =
@@ -30,7 +30,7 @@ export const createPasswordSlice =
         await session.set('passwordKey', keyJson);
         await local.set('passwordKeyPrint', keyPrint.toJson());
       },
-      login: async password => {
+      setSessionPassword: async password => {
         const keyPrintJson = await local.get('passwordKeyPrint');
         if (!keyPrintJson) throw new Error('Password KeyPrint not in storage');
 
