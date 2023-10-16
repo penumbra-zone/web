@@ -6,14 +6,11 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { base64ToUint8Array } from 'penumbra-types';
 import { TableUpdateNotifier } from './updater';
-import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
-import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import {
-  Transaction,
-  TransactionPerspective,
-  TransactionView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+  SpendableNoteRecord,
+  TransactionInfo,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 
 const denomMetadataA = new DenomMetadata({
   symbol: 'usdc',
@@ -124,22 +121,21 @@ describe('IndexedDb', () => {
 
   describe('Clear', () => {
     it('object store should be empty after clear', async () => {
-      const db = await IndexedDb.initialize(testInitialProps);
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
       await db.saveSpendableNote(newNote);
       expect((await db.getAllNotes()).length).toBe(1);
 
       await db.saveAssetsMetadata(denomMetadataA);
       expect((await db.getAllAssetsMetadata()).length).toBe(1);
 
-      const tx = {
-        blockHeight: 10000n,
-        id: new NoteSource(),
-        tx: new Transaction(),
-        perspective: new TransactionPerspective(),
-        view: new TransactionView(),
-      };
-
-      await db.saveTransactionInfo(tx);
+      await db.saveTransactionInfo(
+        TransactionInfo.fromJson({
+          height: '1000',
+          id: {
+            hash: 'tx-hash'
+          }
+        }),
+      );
       expect((await db.getAllTransactions()).length).toBe(1);
 
       const scanResult = {
