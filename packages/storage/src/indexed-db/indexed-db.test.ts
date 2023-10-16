@@ -132,8 +132,8 @@ describe('IndexedDb', () => {
         TransactionInfo.fromJson({
           height: '1000',
           id: {
-            hash: 'tx-hash'
-          }
+            hash: 'tx-hash',
+          },
         }),
       );
       expect((await db.getAllTransactions()).length).toBe(1);
