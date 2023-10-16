@@ -4,10 +4,6 @@ import { SettingsHeader } from '../../../shared';
 import { TrashGradientIcon } from '../../../icons';
 import { swClient } from '../../service-worker/extension/client/internal';
 
-// Clearing cache should:
-//  - Delete indexeddb database
-//  - Restart block sync
-//  - Redirect to popup index
 export const SettingsClearCache = () => {
   return (
     <FadeTransition>
@@ -31,9 +27,7 @@ export const SettingsClearCache = () => {
             variant='gradient'
             size='lg'
             className='w-full'
-            onClick={() => {
-              void (async () => await swClient.clearCache())();
-            }}
+            onClick={() => void swClient.clearCache()}
           >
             Confirm
           </Button>

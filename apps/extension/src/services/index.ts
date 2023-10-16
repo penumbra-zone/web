@@ -1,9 +1,9 @@
 import { testnetConstants } from 'penumbra-constants';
-import { swMessageHandler } from '../routes/service-worker/root-router';
+import { BlockProcessor } from 'penumbra-query';
 import { RootQuerier } from 'penumbra-query/src/root-querier';
 import { IndexedDb, localExtStorage, syncLastBlockWithLocal } from 'penumbra-storage';
 import { ViewServer } from 'penumbra-wasm-ts';
-import { BlockProcessor } from 'penumbra-query';
+import { swMessageHandler } from '../routes/service-worker/root-router';
 import { syncLastBlockWithStatusReq } from '../routes/service-worker/view-protocol-server/status-stream';
 
 interface WalletServices {
@@ -95,8 +95,9 @@ export class Services {
   async clearCache() {
     const ws = await this.getWalletServices();
 
-    ws.blockProcessor.stopSyncProgress();
+    ws.blockProcessor.stopSync();
     ws.indexedDb.clear();
+    await localExtStorage.set('lastBlockSynced', 0);
     this.walletServicesPromise = undefined;
     await this.tryToSync();
   }

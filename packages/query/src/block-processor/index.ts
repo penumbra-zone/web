@@ -1,14 +1,14 @@
-import { IndexedDbInterface, ViewServerInterface } from 'penumbra-types';
-import { RootQuerier } from '../root-querier';
-import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
-import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
+import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { backOff } from 'exponential-backoff';
+import { IndexedDbInterface, ViewServerInterface } from 'penumbra-types';
 import { decodeNctRoot } from 'penumbra-wasm-ts/src/sct';
-import { Transactions } from './transactions';
+import { RootQuerier } from '../root-querier';
 import { generateMetadata } from './metadata';
-import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { Transactions } from './transactions';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -95,7 +95,7 @@ export class BlockProcessor {
     // await this.assertRootValid(result.height);
   }
 
-  stopSyncProgress() {
+  stopSync() {
     this.abortController.abort();
   }
 

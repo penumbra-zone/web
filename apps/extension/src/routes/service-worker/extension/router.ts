@@ -1,5 +1,6 @@
+import { ClearCacheMessage, clearCacheHandler } from './clear-cache';
 import { PingMessage, pingHandler } from './ping';
-import { SyncBlocksMessage, clearCacheHandler, syncBlocksHandler } from './sync';
+import { SyncBlocksMessage, syncBlocksHandler } from './sync';
 import {
   AwaitedResponse,
   IncomingRequest,
@@ -38,7 +39,7 @@ export const extRouter = (
 };
 
 // List all service worker messages here
-export type SwRequestMessage = SyncBlocksMessage | PingMessage;
+export type SwRequestMessage = SyncBlocksMessage | PingMessage | ClearCacheMessage;
 
 // The router that matches the requests with their handlers
 const typedMessageRouter = async (req: IncomingRequest<SwRequestMessage>): Promise<SwResponse> => {
