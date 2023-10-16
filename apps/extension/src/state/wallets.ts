@@ -8,6 +8,8 @@ export interface WalletsSlice {
   all: Wallet[];
   addWallet: (toAdd: WalletCreate) => Promise<Wallet>;
   getSeedPhrase: () => Promise<string[]>;
+  getSpendKey: () => Promise<string>;
+  getFullViewingKey: () => Promise<string>;
 }
 
 export const createWalletsSlice =
@@ -44,6 +46,17 @@ export const createWalletsSlice =
         const unsealeSeedPhrase = await key.unseal(encryptedSeedPhrase!);
 
         return unsealeSeedPhrase?.split(' ') ?? [];
+      },
+      getSpendKey: async () => {
+        const seedPhrase = (await get().wallets.getSeedPhrase()).join(' ');
+
+        return generateSpendKey(seedPhrase);
+      },
+      getFullViewingKey: async () => {
+        const seedPhrase = (await get().wallets.getSeedPhrase()).join(' ');
+        const spendKey = generateSpendKey(seedPhrase);
+
+        return getFullViewingKey(spendKey);
       },
     };
   };

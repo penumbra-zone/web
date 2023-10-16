@@ -5,21 +5,22 @@ import { PasswordInput, SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
 import { AccountKeyGradientIcon } from '../../../icons';
+import { walletsSelector } from '../../../state/wallets';
 
 export const SettingsSpendKey = () => {
   const { isPassword } = useStore(passwordSelector);
+  const { getSpendKey } = useStore(walletsSelector);
 
-  const [input, setInputValue] = useState('');
+  const [password, setPassword] = useState('');
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
-  const [sk, setSK] = useState('');
+  const [spendKey, setSpendKey] = useState('');
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     void (async function () {
-      if (await isPassword(input)) {
-        // add logic to get sk
-        setSK('penumbraspendkey1cl9w3jkauut4fj42wu5ypc5yzgwd4y3ge6yrn6lfvp625yf0sezsl58vlx');
+      if (await isPassword(password)) {
+        setSpendKey(await getSpendKey());
       } else {
         setEnteredIncorrect(true);
       }
@@ -38,14 +39,14 @@ export const SettingsSpendKey = () => {
           onSubmit={submit}
         >
           <div className='flex flex-col gap-4'>
-            {!sk ? (
+            {!spendKey ? (
               <PasswordInput
-                passwordValue={input}
+                passwordValue={password}
                 label={
                   <p className='font-headline font-semibold text-muted-foreground'>Password</p>
                 }
                 onChange={e => {
-                  setInputValue(e.target.value);
+                  setPassword(e.target.value);
                   setEnteredIncorrect(false);
                 }}
                 validations={[
@@ -58,12 +59,12 @@ export const SettingsSpendKey = () => {
               />
             ) : (
               <div className='break-all rounded-lg border bg-background px-[18px] py-[14px] text-muted-foreground'>
-                {sk}
+                {spendKey}
               </div>
             )}
-            {sk && (
+            {spendKey && (
               <CopyToClipboard
-                text={sk}
+                text={spendKey}
                 label={<span className='font-bold text-muted-foreground'>Copy to clipboard</span>}
                 className='m-auto mb-2'
                 isSuccessCopyText
@@ -77,7 +78,7 @@ export const SettingsSpendKey = () => {
               your account.
             </p>
           </div>
-          {!sk ? (
+          {!spendKey ? (
             <Button variant='gradient' size='lg' className='w-full' type='submit'>
               Confirm
             </Button>
