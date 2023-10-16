@@ -7,6 +7,7 @@ import { Wallet, WalletCreate } from 'penumbra-types';
 export interface WalletsSlice {
   all: Wallet[];
   addWallet: (toAdd: WalletCreate) => Promise<Wallet>;
+  getSeedPhrase: () => Promise<string[]>;
 }
 
 export const createWalletsSlice =
@@ -34,6 +35,15 @@ export const createWalletsSlice =
         const wallets = await local.get('wallets');
         await local.set('wallets', [newWallet.toJson(), ...wallets]);
         return newWallet;
+      },
+      getSeedPhrase: async () => {
+        const passwordKey = get().password.key;
+        const key = await Key.fromJson(passwordKey!);
+
+        const encryptedSeedPhrase = get().wallets.all[0]?.custody.encryptedSeedPhrase;
+        const unsealeSeedPhrase = await key.unseal(encryptedSeedPhrase!);
+
+        return unsealeSeedPhrase?.split(' ') ?? [];
       },
     };
   };

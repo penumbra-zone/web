@@ -5,11 +5,13 @@ import { FileTextGradientIcon } from '../../../icons';
 import { PasswordInput, SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
+import { walletsSelector } from '../../../state/wallets';
 
 export const SettingsPassphrase = () => {
   const { isPassword } = useStore(passwordSelector);
+  const { getSeedPhrase } = useStore(walletsSelector);
 
-  const [input, setInputValue] = useState('');
+  const [password, setPassword] = useState('');
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
   const [phrase, setPhrase] = useState<string[]>([]);
 
@@ -17,34 +19,8 @@ export const SettingsPassphrase = () => {
     e.preventDefault();
 
     void (async function () {
-      if (await isPassword(input)) {
-        // add logic to get seed
-        setPhrase([
-          'aware',
-          'midnight',
-          'urge',
-          'hint',
-          'refuse',
-          'quote',
-          'marriage',
-          'health',
-          'ugly',
-          'coffee',
-          'pretty',
-          'occur',
-          'aware',
-          'midnight',
-          'urge',
-          'hint',
-          'refuse',
-          'quote',
-          'marriage',
-          'health',
-          'ugly',
-          'coffee',
-          'pretty',
-          'occur',
-        ]);
+      if (await isPassword(password)) {
+        setPhrase(await getSeedPhrase());
       } else {
         setEnteredIncorrect(true);
       }
@@ -72,12 +48,12 @@ export const SettingsPassphrase = () => {
             </p>
             {!phrase.length ? (
               <PasswordInput
-                passwordValue={input}
+                passwordValue={password}
                 label={
                   <p className='font-headline font-semibold text-muted-foreground'>Password</p>
                 }
                 onChange={e => {
-                  setInputValue(e.target.value);
+                  setPassword(e.target.value);
                   setEnteredIncorrect(false);
                 }}
                 validations={[
