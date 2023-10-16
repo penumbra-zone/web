@@ -88,7 +88,7 @@ describe('Accounts Slice', () => {
     });
 
     test('seed phrase can be return after relogin', async () => {
-      const password = 'user_password_123'
+      const password = 'user_password_123';
       await useStore.getState().password.setPassword(password);
       const initialSeedPhrase = ['apple', 'banana', 'orange'];
       const accountA: WalletCreate = {

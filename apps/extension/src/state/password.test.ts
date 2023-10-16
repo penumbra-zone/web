@@ -70,7 +70,7 @@ describe('Password Slice', () => {
       seedPhrase,
     });
 
-    useStore.getState().password.clearSessionPassword()
+    useStore.getState().password.clearSessionPassword();
     const sessionKeyAfterLogout = await sessionStorage.get('passwordKey');
     expect(sessionKeyAfterLogout).toBeFalsy();
 
