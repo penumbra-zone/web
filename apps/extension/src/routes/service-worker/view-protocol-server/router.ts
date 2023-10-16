@@ -9,10 +9,12 @@ import {
 } from './helpers/generic';
 import { isStreamingMethod, streamResponse } from './helpers/streaming';
 import { unaryResponse } from './helpers/unary';
-import { handleTransactionInfoReq, isTransactionInfoRequest } from './transaction-info';
+import { handleTransactionInfoReq, isTransactionInfoRequest } from './tx-info';
 import { handleStatusReq, isStatusStreamRequest } from './status-stream';
 import { handleAssetsReq, isAssetsRequest } from './assets';
 import { handleAddressReq, isAddressRequest } from './address';
+import { handleWalletIdReq, isWalletIdRequest } from './wallet-id';
+import { handleTxInfoByHashReq, isTxInfoByHashRequest } from './tx-info-by-hash';
 
 // Router for ViewService
 export const viewServerRouter = (req: ViewProtocolReq, sender: chrome.runtime.MessageSender) => {
@@ -48,9 +50,11 @@ const getTransport = (
 
 const unaryHandler = async (msg: ViewReqMessage): Promise<ViewProtocolRes> => {
   if (isAppParamsRequest(msg)) return handleAppParamsReq();
-  if (isAddressRequest(msg)) return handleAddressReq(msg);
+  else if (isAddressRequest(msg)) return handleAddressReq(msg);
+  else if (isWalletIdRequest(msg)) return handleWalletIdReq();
+  else if (isTxInfoByHashRequest(msg)) return handleTxInfoByHashReq(msg);
 
-  throw new Error(`Non-supported unary request: ${msg.getType().typeName}`);
+  throw new Error(`Non-supported unary request: ${(msg as ViewReqMessage).getType().typeName}`);
 };
 
 const streamingHandler = (msg: ViewReqMessage): AsyncIterable<ViewProtocolRes> => {

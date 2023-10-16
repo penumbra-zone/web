@@ -1,9 +1,9 @@
 import {
   IdbConstants,
-  TransactionInfo,
-  TransactionInfoSchema,
   uint8ArrayToBase64,
   validateSchema,
+  WasmTransactionInfo,
+  WasmTransactionInfoSchema,
 } from 'penumbra-types';
 import { decode_tx, transaction_info } from '@penumbra-zone/wasm-bundler';
 import {
@@ -21,9 +21,9 @@ export const transactionInfo = async (
   fullViewingKey: string,
   tx: Transaction,
   idbConstants: IdbConstants,
-): Promise<TransactionInfo> => {
+): Promise<WasmTransactionInfo> => {
   const result = validateSchema(
-    TransactionInfoSchema,
+    WasmTransactionInfoSchema,
     await transaction_info(fullViewingKey, tx.toJson(), idbConstants),
   );
   return {

@@ -6,12 +6,14 @@ import {
   PenumbraDb,
   ScanResult,
   StateCommitmentTree,
-  StoredTransaction,
 } from 'penumbra-types';
 import { IbdUpdater, IbdUpdates, TableUpdateNotifier } from './updater';
 import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
-import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import {
+  SpendableNoteRecord,
+  TransactionInfo,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import {
   AssetId,
   DenomMetadata,
@@ -44,7 +46,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('LAST_BLOCK_SYNCED');
         db.createObjectStore('ASSETS', { keyPath: 'penumbraAssetId.inner' });
         db.createObjectStore('SPENDABLE_NOTES').createIndex('nullifier', 'nullifier.inner');
-        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.inner' });
+        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.hash' });
         db.createObjectStore('TREE_LAST_POSITION');
         db.createObjectStore('TREE_LAST_FORGOTTEN');
         db.createObjectStore('TREE_COMMITMENTS', { keyPath: 'commitment.inner' });
@@ -130,11 +132,11 @@ export class IndexedDb implements IndexedDbInterface {
     return this.db.getAll('TRANSACTIONS');
   }
 
-  async saveTransactionInfo(tx: StoredTransaction): Promise<void> {
+  async saveTransactionInfo(tx: TransactionInfo): Promise<void> {
     await this.u.update({ table: 'TRANSACTIONS', value: tx });
   }
 
-  async getTransaction(source: NoteSource): Promise<StoredTransaction | undefined> {
+  async getTransaction(source: NoteSource): Promise<TransactionInfo | undefined> {
     return this.db.get('TRANSACTIONS', source.inner);
   }
 
