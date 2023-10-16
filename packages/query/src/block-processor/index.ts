@@ -140,8 +140,6 @@ export class BlockProcessor {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
-      console.log(block);
-
       // Scanning has a side effect of updating viewServer's internal tree.
       const newNotesPresent = await this.viewServer.scanBlock(block);
 

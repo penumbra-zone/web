@@ -9,6 +9,12 @@ import { base64ToUint8Array } from 'penumbra-types';
 import { TableUpdateNotifier } from './updater';
 import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
+import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import {
+  Transaction,
+  TransactionPerspective,
+  TransactionView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 const denomMetadataA = new DenomMetadata({
   symbol: 'usdc',
@@ -113,6 +119,56 @@ describe('IndexedDb', () => {
       await db.saveSpendableNote(newNote);
 
       expect(mockNotifier).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Clear', () => {
+    it('object store should be empty after clear', async () => {
+      const db = await IndexedDb.initialize(testInitialProps);
+      await db.saveSpendableNote(newNote);
+      expect((await db.getAllNotes()).length).toBe(1);
+
+      await db.saveAssetsMetadata(denomMetadataA);
+      expect((await db.getAllAssetsMetadata()).length).toBe(1);
+
+      const tx = {
+        blockHeight: 10000n,
+        id: new NoteSource(),
+        tx: new Transaction(),
+        perspective: new TransactionPerspective(),
+        view: new TransactionView(),
+      };
+
+      await db.saveTransactionInfo(tx);
+      expect((await db.getAllTransactions()).length).toBe(1);
+
+      const scanResult = {
+        height: 1000n,
+        sctUpdates: {
+          delete_ranges: [],
+          set_forgotten: undefined,
+          set_position: {
+            Position: {
+              epoch: 119,
+              block: 179,
+              commitment: 0,
+            },
+          },
+          store_commitments: [],
+          store_hashes: [],
+        },
+        newNotes: [],
+        newSwaps: [],
+      };
+
+      await db.saveScanResult(scanResult);
+      expect(await db.getLastBlockSynced()).toBe(1000n);
+
+      await db.clear();
+      expect((await db.getAllNotes()).length).toBe(0);
+      expect((await db.getAllAssetsMetadata()).length).toBe(0);
+      expect((await db.getAllTransactions()).length).toBe(0);
+      expect(await db.getLastBlockSynced()).toBeUndefined();
     });
   });
 

@@ -96,7 +96,7 @@ export class Services {
     const ws = await this.getWalletServices();
 
     ws.blockProcessor.stopSync();
-    ws.indexedDb.clear();
+    await ws.indexedDb.clear();
     await localExtStorage.set('lastBlockSynced', 0);
     this.walletServicesPromise = undefined;
     await this.tryToSync();

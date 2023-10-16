@@ -21,7 +21,10 @@ export const useSyncProgress = () => {
   // Wake up service worker so block syncing can resume
   useQuery({
     queryKey: ['sync-blocks', grpcEndpoint],
-    queryFn: () => swClient.syncBlocks(),
+    queryFn: async () => {
+      await swClient.syncBlocks();
+      return true; // react-query cannot return undefined
+    },
   });
 
   const { data } = useQuery({
