@@ -1,6 +1,6 @@
 import { AppQuerier } from 'penumbra-query/src/queriers/app';
-import { useState } from 'react';
-import { Button, FadeTransition, Input, InputProps } from 'ui';
+import { FormEvent, useState } from 'react';
+import { Button, FadeTransition, Input } from 'ui';
 import { cn } from 'ui/lib/utils';
 import { useChainId } from '../../../hooks/chain-id';
 import { ShareGradientIcon } from '../../../icons';
@@ -16,20 +16,23 @@ export const SettingsRPC = () => {
   const [rpc, setRpc] = useState(grpcEndpoint ?? '');
   const [rpcError, setRpcError] = useState(false);
 
-  const onChange: InputProps['onChange'] = e => {
-    setRpc(e.target.value);
-
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     void (async () => {
-      const querier = new AppQuerier({ grpcEndpoint: e.target.value });
+      const querier = new AppQuerier({ grpcEndpoint: rpc });
 
       try {
         await querier.chainParams();
+        await setGRPCEndpoint(rpc);
+        await swClient.clearCache();
+        await refetch();
         setRpcError(false);
       } catch {
         setRpcError(true);
       }
     })();
   };
+
   return (
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-6'>
@@ -39,20 +42,9 @@ export const SettingsRPC = () => {
         </div>
         <form
           className='flex flex-1 flex-col items-start justify-between px-[30px] pb-[30px]'
-          onSubmit={e => {
-            e.preventDefault();
-            void (async () => {
-              await setGRPCEndpoint(rpc);
-              await swClient.clearCache();
-              await refetch();
-            })();
-          }}
+          onSubmit={onSubmit}
         >
           <div className='flex w-full flex-col gap-4'>
-            <div className='flex flex-col gap-2'>
-              <p className='font-headline text-base font-semibold'>Chain id</p>
-              <Input readOnly value={chainId} className='text-muted-foreground' />
-            </div>
             <div className='flex flex-col items-center justify-center gap-2'>
               <div className='flex items-center gap-2 self-start'>
                 <div className='text-base font-bold'>RPC URL</div>
@@ -65,9 +57,18 @@ export const SettingsRPC = () => {
               <Input
                 variant={rpcError ? 'error' : 'default'}
                 value={rpc}
-                onChange={onChange}
+                onChange={e => {
+                  setRpc(e.target.value);
+                  setRpcError(false);
+                }}
                 className='text-muted-foreground'
               />
+            </div>
+            <div className='flex flex-col gap-2'>
+              <p className='font-headline text-base font-semibold'>Chain id</p>
+              <div className='flex h-11 w-full items-center rounded-lg border bg-background px-3 py-2 text-muted-foreground'>
+                {chainId}
+              </div>
             </div>
           </div>
           <Button

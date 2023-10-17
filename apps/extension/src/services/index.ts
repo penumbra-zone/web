@@ -3,7 +3,6 @@ import { BlockProcessor } from 'penumbra-query';
 import { RootQuerier } from 'penumbra-query/src/root-querier';
 import { IndexedDb, localExtStorage, syncLastBlockWithLocal } from 'penumbra-storage';
 import { ViewServer } from 'penumbra-wasm-ts';
-import { swMessageHandler } from '../routes/service-worker/root-router';
 import { syncLastBlockWithStatusReq } from '../routes/service-worker/view-protocol-server/status-stream';
 
 interface WalletServices {
@@ -22,16 +21,13 @@ export class Services {
     return this._querier;
   }
 
-  async onServiceWorkerInit(): Promise<void> {
+  async initialize(): Promise<void> {
     try {
       const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 
       this._querier = new RootQuerier({ grpcEndpoint });
 
       await this.tryToSync();
-
-      // Now ready to handle messages
-      chrome.runtime.onMessage.addListener(swMessageHandler);
     } catch (e) {
       // Logging here as service worker does not appear to bubble the errors up
       console.error(e);
@@ -100,6 +96,7 @@ export class Services {
     await ws.indexedDb.clear();
     await localExtStorage.set('lastBlockSynced', 0);
     this.walletServicesPromise = undefined;
-    await this.onServiceWorkerInit();
+
+    await this.initialize();
   }
 }
