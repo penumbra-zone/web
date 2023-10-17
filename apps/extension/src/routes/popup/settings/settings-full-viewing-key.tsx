@@ -5,23 +5,22 @@ import { PasswordInput, SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
 import { KeyGradientIcon } from '../../../icons';
+import { walletsSelector } from '../../../state/wallets';
 
 export const SettingsFullViewingKey = () => {
   const { isPassword } = useStore(passwordSelector);
+  const { getFullViewingKey } = useStore(walletsSelector);
 
-  const [input, setInputValue] = useState('');
+  const [password, setPassword] = useState('');
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
-  const [fvk, setFVK] = useState('');
+  const [fullViewingKey, setFullViewingKey] = useState('');
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     void (async function () {
-      if (await isPassword(input)) {
-        // add logic to get fvk
-        setFVK(
-          'penumbrafullviewingkey1wek2qjnzraq4qqjs9g7t8xu06c7affzntsl37pgcnhrq7dd8fuydgc9k53j64hfyfjrftkwmnjlhyjr6pdm22dkj25a8j49t00gp2qce0cteq',
-        );
+      if (await isPassword(password)) {
+        setFullViewingKey(await getFullViewingKey());
       } else {
         setEnteredIncorrect(true);
       }
@@ -40,14 +39,14 @@ export const SettingsFullViewingKey = () => {
           onSubmit={submit}
         >
           <div className='flex flex-col gap-4'>
-            {!fvk ? (
+            {!fullViewingKey ? (
               <PasswordInput
-                passwordValue={input}
+                passwordValue={password}
                 label={
                   <p className='font-headline font-semibold text-muted-foreground'>Password</p>
                 }
                 onChange={e => {
-                  setInputValue(e.target.value);
+                  setPassword(e.target.value);
                   setEnteredIncorrect(false);
                 }}
                 validations={[
@@ -60,12 +59,12 @@ export const SettingsFullViewingKey = () => {
               />
             ) : (
               <div className='break-all rounded-lg border bg-background px-[18px] py-[14px] text-muted-foreground'>
-                {fvk}
+                {fullViewingKey}
               </div>
             )}
-            {fvk && (
+            {fullViewingKey && (
               <CopyToClipboard
-                text={fvk}
+                text={fullViewingKey}
                 label={<span className='font-bold text-muted-foreground'>Copy to clipboard</span>}
                 className='m-auto mb-2'
                 isSuccessCopyText
@@ -79,7 +78,7 @@ export const SettingsFullViewingKey = () => {
               your account.
             </p>
           </div>
-          {!fvk ? (
+          {!fullViewingKey ? (
             <Button variant='gradient' size='lg' className='w-full' type='submit'>
               Confirm
             </Button>

@@ -24,20 +24,20 @@ export const FileTextGradientIcon = () => (
       strokeLinecap='round'
     />
     <path
-      fill-rule='evenodd'
-      clip-rule='evenodd'
+      fillRule='evenodd'
+      clipRule='evenodd'
       d='M23.3333 26.6667C25.1743 26.6667 26.6667 25.1743 26.6667 23.3333C26.6667 21.4924 25.1743 20 23.3333 20C21.4924 20 20 21.4924 20 23.3333C20 25.1743 21.4924 26.6667 23.3333 26.6667Z'
       fill='url(#paint4_linear_2508_5717)'
     />
     <path
-      fill-rule='evenodd'
-      clip-rule='evenodd'
+      fillRule='evenodd'
+      clipRule='evenodd'
       d='M23.3333 43.3334C25.1743 43.3334 26.6667 41.841 26.6667 40.0001C26.6667 38.1591 25.1743 36.6667 23.3333 36.6667C21.4924 36.6667 20 38.1591 20 40.0001C20 41.841 21.4924 43.3334 23.3333 43.3334Z'
       fill='url(#paint5_linear_2508_5717)'
     />
     <path
-      fill-rule='evenodd'
-      clip-rule='evenodd'
+      fillRule='evenodd'
+      clipRule='evenodd'
       d='M23.3333 59.9999C25.1743 59.9999 26.6667 58.5075 26.6667 56.6666C26.6667 54.8256 25.1743 53.3333 23.3333 53.3333C21.4924 53.3333 20 54.8256 20 56.6666C20 58.5075 21.4924 59.9999 23.3333 59.9999Z'
       fill='url(#paint6_linear_2508_5717)'
     />

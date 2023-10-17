@@ -9,6 +9,7 @@ export interface PasswordSlice {
   setPassword: (password: string) => Promise<void>;
   isPassword: (password: string) => Promise<boolean>;
   clearSessionPassword: () => void;
+  setSessionPassword: (password: string) => Promise<void>;
 }
 
 export const createPasswordSlice =
@@ -28,6 +29,21 @@ export const createPasswordSlice =
         });
         await session.set('passwordKey', keyJson);
         await local.set('passwordKeyPrint', keyPrint.toJson());
+      },
+      setSessionPassword: async password => {
+        const keyPrintJson = await local.get('passwordKeyPrint');
+        if (!keyPrintJson) throw new Error('Password KeyPrint not in storage');
+
+        const key = await Key.recreate(password, KeyPrint.fromJson(keyPrintJson));
+        if (!key) throw new Error('Password does not match KeyPrint');
+
+        const keyJson = await key.toJson();
+
+        set(state => {
+          state.password.key = keyJson;
+        });
+
+        await session.set('passwordKey', keyJson);
       },
       clearSessionPassword: () => {
         set(state => (state.password.key = undefined));

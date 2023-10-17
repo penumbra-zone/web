@@ -7,6 +7,9 @@ import { Wallet, WalletCreate } from 'penumbra-types';
 export interface WalletsSlice {
   all: Wallet[];
   addWallet: (toAdd: WalletCreate) => Promise<Wallet>;
+  getSeedPhrase: () => Promise<string[]>;
+  getSpendKey: () => Promise<string>;
+  getFullViewingKey: () => Promise<string>;
 }
 
 export const createWalletsSlice =
@@ -34,6 +37,41 @@ export const createWalletsSlice =
         const wallets = await local.get('wallets');
         await local.set('wallets', [newWallet.toJson(), ...wallets]);
         return newWallet;
+      },
+      getSeedPhrase: async () => {
+        // const passwordKey = get().password.key;
+        // const key = await Key.fromJson(passwordKey!);
+
+        // const activeWallet = getActiveWallet(get());
+
+        // if (!activeWallet) return [];
+
+        // const encryptedSeedPhrase = activeWallet.custody.encryptedSeedPhrase;
+        // const unsealeSeedPhrase = await key.unseal(encryptedSeedPhrase);
+
+        // return unsealeSeedPhrase?.split(' ') ?? [];
+        const passwordKey = get().password.key;
+        if (!passwordKey) throw new Error('no password set');
+
+        const key = await Key.fromJson(passwordKey);
+        const activeWallet = getActiveWallet(get());
+        if (!activeWallet) throw new Error('no wallet set');
+
+        const decryptedSeedPhrase = await key.unseal(activeWallet.custody.encryptedSeedPhrase);
+        if (!decryptedSeedPhrase) throw new Error('Unable to decrypt seed phrase with password');
+
+        return decryptedSeedPhrase.split(' ');
+      },
+      getSpendKey: async () => {
+        const seedPhrase = (await get().wallets.getSeedPhrase()).join(' ');
+
+        return generateSpendKey(seedPhrase);
+      },
+      getFullViewingKey: async () => {
+        const seedPhrase = (await get().wallets.getSeedPhrase()).join(' ');
+        const spendKey = generateSpendKey(seedPhrase);
+
+        return getFullViewingKey(spendKey);
       },
     };
   };

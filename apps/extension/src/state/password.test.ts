@@ -62,4 +62,22 @@ describe('Password Slice', () => {
   test('password key is initially undefined', () => {
     expect(useStore.getState().password.key).toBeUndefined();
   });
+
+  test('password key can be set to session storage', async () => {
+    await useStore.getState().password.setPassword(password);
+    await useStore.getState().wallets.addWallet({
+      label: 'Account #1',
+      seedPhrase,
+    });
+
+    useStore.getState().password.clearSessionPassword();
+    const sessionKeyAfterLogout = await sessionStorage.get('passwordKey');
+    expect(sessionKeyAfterLogout).toBeFalsy();
+
+    await useStore.getState().password.setSessionPassword(password);
+
+    const sessionKeyAfterLogin = await sessionStorage.get('passwordKey');
+    expect(sessionKeyAfterLogin).toBeTruthy();
+    await expect(Key.fromJson(sessionKeyAfterLogin!)).resolves.not.toThrow();
+  });
 });

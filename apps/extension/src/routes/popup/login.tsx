@@ -10,7 +10,7 @@ import { PopupPath } from './paths';
 export const Login = () => {
   const navigate = usePopupNav();
 
-  const { setPassword, isPassword } = useStore(passwordSelector);
+  const { isPassword, setSessionPassword } = useStore(passwordSelector);
   const [input, setInputValue] = useState('');
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
 
@@ -19,7 +19,7 @@ export const Login = () => {
 
     void (async function () {
       if (await isPassword(input)) {
-        await setPassword(input); // saves to session state
+        await setSessionPassword(input); // saves to session state
         navigate(PopupPath.INDEX);
       } else {
         setEnteredIncorrect(true);
