@@ -6,9 +6,9 @@ import {
   CreateAnyImplMethod,
   GrpcRequest,
   GrpcResponse,
-  isDappGrpcResponse,
   isErrorResponse,
   isResultResponse,
+  isServiceGrpcResponse,
   isStreamResponse,
   PendingRequests,
 } from './types';
@@ -34,9 +34,9 @@ const makeAnyServiceImpl = <S extends ServiceType>(
 
 // Fired on message events coming from extension. Handles rejecting/resolving stored promises.
 const outputEventListener =
-  <S extends ServiceType>(pending: PendingRequests<S>) =>
+  <S extends ServiceType>(pending: PendingRequests<S>, service: S) =>
   (event: MessageEvent<unknown>) => {
-    if (event.source !== window || !isDappGrpcResponse(event.data)) return;
+    if (event.source !== window || !isServiceGrpcResponse(service, event.data)) return;
 
     const { sequence } = event.data;
 
@@ -108,6 +108,6 @@ export const createEventTransport = <S extends ServiceType>(s: S) =>
       sequence: 0,
       requests: new Map(),
     };
-    window.addEventListener('message', outputEventListener(pending));
+    window.addEventListener('message', outputEventListener(pending, s));
     service(s, makeAnyServiceImpl(s, makeEventImplMethod(pending, s)));
   });

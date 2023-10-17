@@ -18,7 +18,7 @@
   "background": {
     "service_worker": "js/service-worker.js"
   },
-  "permissions": ["storage", "unlimitedStorage"],
+  "permissions": ["storage", "unlimitedStorage", "offscreen"],
   "host_permissions": ["<all_urls>"],
   "content_security_policy": {
     "extension_pages": "object-src 'self'; script-src 'self' 'wasm-unsafe-eval'"

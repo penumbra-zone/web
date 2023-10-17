@@ -10,6 +10,7 @@ module.exports = {
     page: path.join(srcDir, 'page.tsx'),
     'service-worker': path.join(srcDir, 'service-worker.ts'),
     'content-scripts': path.join(srcDir, 'content-scripts.ts'),
+    offscreen: path.join(srcDir, 'routes/offscreen/router.ts'),
   },
   output: {
     path: path.join(__dirname, '../dist/js'),

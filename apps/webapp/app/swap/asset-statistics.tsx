@@ -9,7 +9,7 @@ import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
 import { Asset } from 'penumbra-types';
 
-export const AssetStatistics = () => {
+export default function AssetStatistics() {
   const { pay, receive } = useStore(swapSelector);
 
   const [firstAsset, setFirstAsset] = useState<
@@ -89,4 +89,4 @@ export const AssetStatistics = () => {
       )}
     </>
   );
-};
+}

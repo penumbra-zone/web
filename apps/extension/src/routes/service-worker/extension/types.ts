@@ -32,7 +32,7 @@ export type SwMessageHandler<M extends SwMessage<string, unknown, unknown>> =
   M['request'] extends undefined ? () => M['response'] : (request: M['request']) => M['response'];
 
 // The awaitable outputs of the handlers
-type Responses<T> = T extends SwMessage<string, unknown, infer Res> ? Res : never;
+export type Responses<T> = T extends SwMessage<string, unknown, infer Res> ? Res : never;
 export type SwResponse = Responses<SwRequestMessage>;
 
 // The awaited response sent back to requestor

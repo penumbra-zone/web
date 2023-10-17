@@ -71,6 +71,17 @@ export const isDappGrpcResponse = (message: unknown): message is DappMessageResp
   'type' in message &&
   message.type === OUTGOING_GRPC_MESSAGE;
 
+export const isServiceGrpcResponse = <S extends ServiceType>(
+  s: S,
+  message: unknown,
+): message is DappMessageResponse<S> =>
+  typeof message === 'object' &&
+  message !== null &&
+  'type' in message &&
+  message.type === OUTGOING_GRPC_MESSAGE &&
+  'serviceTypeName' in message &&
+  message.serviceTypeName === s.typeName;
+
 export interface RequestRecord<S extends ServiceType> {
   resolve: (m: ResultResponse<S> | StreamResponse<S>) => void;
   reject: (e: ErrorResponse<S>) => void; // To propagate correctly, it must be of type `ConnectError` when thrown

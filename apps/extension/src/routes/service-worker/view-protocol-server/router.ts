@@ -15,6 +15,8 @@ import { handleAssetsReq, isAssetsRequest } from './assets';
 import { handleAddressReq, isAddressRequest } from './address';
 import { handleWalletIdReq, isWalletIdRequest } from './wallet-id';
 import { handleTxInfoByHashReq, isTxInfoByHashRequest } from './tx-info-by-hash';
+import { handleAuthBuildReq, isAuthBuildRequest } from './auth-build';
+import { handleTxPlannerReq, isTxPlannerRequest } from './tx-planner';
 
 // Router for ViewService
 export const viewServerRouter = (req: ViewProtocolReq, sender: chrome.runtime.MessageSender) => {
@@ -53,6 +55,8 @@ const unaryHandler = async (msg: ViewReqMessage): Promise<ViewProtocolRes> => {
   else if (isAddressRequest(msg)) return handleAddressReq(msg);
   else if (isWalletIdRequest(msg)) return handleWalletIdReq();
   else if (isTxInfoByHashRequest(msg)) return handleTxInfoByHashReq(msg);
+  else if (isAuthBuildRequest(msg)) return handleAuthBuildReq(msg);
+  else if (isTxPlannerRequest(msg)) return handleTxPlannerReq(msg);
 
   throw new Error(`Non-supported unary request: ${(msg as ViewReqMessage).getType().typeName}`);
 };
