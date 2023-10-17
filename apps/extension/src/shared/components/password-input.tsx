@@ -1,13 +1,9 @@
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
-import { ReactElement, useMemo, useState } from 'react';
+import { ReactElement, useState } from 'react';
 import { Input, InputProps } from 'ui';
 import { cn } from 'ui/lib/utils';
-
-interface Validation {
-  checkFn: (txt: string) => boolean;
-  type: 'warn' | 'error'; // corresponds to red or yellow
-  issue: string;
-}
+import { Validation } from '../../types/utility';
+import { useValidationResult } from '../../hooks/validation-result';
 
 interface PasswordInputProps {
   passwordValue: string;
@@ -24,11 +20,7 @@ export const PasswordInput = ({
 }: PasswordInputProps) => {
   const [reveal, setReveal] = useState(false);
 
-  const validationResult = useMemo(() => {
-    const results = validations.filter(v => v.checkFn(passwordValue));
-    const error = results.find(v => v.type === 'error');
-    return error ? error : results.find(v => v.type === 'warn');
-  }, [validations, passwordValue]);
+  const validationResult = useValidationResult(passwordValue, validations);
 
   return (
     <div className='flex flex-col items-center justify-center gap-2'>

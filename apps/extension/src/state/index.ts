@@ -38,7 +38,7 @@ export const initializeStore = (
     accounts: createAccountsSlice(setState, getState, store),
     password: createPasswordSlice(session, local)(setState, getState, store),
     seedPhrase: createSeedPhraseSlice(setState, getState, store),
-    network: createNetworkSlice(setState, getState, store),
+    network: createNetworkSlice(local)(setState, getState, store),
   }));
 };
 

@@ -25,6 +25,7 @@ export class Services {
   async onServiceWorkerInit(): Promise<void> {
     try {
       const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+
       this._querier = new RootQuerier({ grpcEndpoint });
 
       await this.tryToSync();
@@ -99,6 +100,6 @@ export class Services {
     await ws.indexedDb.clear();
     await localExtStorage.set('lastBlockSynced', 0);
     this.walletServicesPromise = undefined;
-    await this.tryToSync();
+    await this.onServiceWorkerInit();
   }
 }

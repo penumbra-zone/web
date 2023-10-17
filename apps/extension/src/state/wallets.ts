@@ -39,17 +39,6 @@ export const createWalletsSlice =
         return newWallet;
       },
       getSeedPhrase: async () => {
-        // const passwordKey = get().password.key;
-        // const key = await Key.fromJson(passwordKey!);
-
-        // const activeWallet = getActiveWallet(get());
-
-        // if (!activeWallet) return [];
-
-        // const encryptedSeedPhrase = activeWallet.custody.encryptedSeedPhrase;
-        // const unsealeSeedPhrase = await key.unseal(encryptedSeedPhrase);
-
-        // return unsealeSeedPhrase?.split(' ') ?? [];
         const passwordKey = get().password.key;
         if (!passwordKey) throw new Error('no password set');
 

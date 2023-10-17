@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 
 export const IndexHeader = () => {
   const navigate = usePopupNav();
-  const chainId = useChainId();
+  const { chainId } = useChainId();
 
   return (
     <header className='top-0 z-40 w-full'>

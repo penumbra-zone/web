@@ -9,11 +9,11 @@ export const getChainId = async (): Promise<string> => {
 };
 
 export const useChainId = () => {
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ['chain-id'],
     queryFn: getChainId,
     refetchInterval: false,
   });
 
-  return data;
+  return { chainId: data, refetch };
 };
