@@ -96,7 +96,6 @@ export class Services {
     await ws.indexedDb.clear();
     await localExtStorage.set('lastBlockSynced', 0);
     this.walletServicesPromise = undefined;
-
     await this.initialize();
   }
 }
