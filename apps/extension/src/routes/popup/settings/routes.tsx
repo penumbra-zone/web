@@ -5,10 +5,9 @@ import { SettingsAutoLock } from './settings-auto-lock';
 import { SettingsClearCache } from './settings-clear-cache';
 import { SettingsConnectedSites } from './settings-connected-sites';
 import { SettingsFullViewingKey } from './settings-full-viewing-key';
-import { SettingsNetworkEdit } from './settings-network-edit';
-import { SettingsNetworks } from './settings-networks';
 import { SettingsPassphrase } from './settings-passphrase';
 import { SettingsPermission } from './settings-permission';
+import { SettingsRPC } from './settings-rpc';
 import { SettingsSecurity } from './settings-security';
 import { SettingsSpendKey } from './settings-spend-key';
 
@@ -26,8 +25,8 @@ export const settingsRoutes = [
     element: <SettingsSecurity />,
   },
   {
-    path: PopupPath.SETTINGS_NETWORKS,
-    element: <SettingsNetworks />,
+    path: PopupPath.SETTINGS_RPC,
+    element: <SettingsRPC />,
   },
   {
     path: PopupPath.SETTINGS_PERMISSION,
@@ -56,9 +55,5 @@ export const settingsRoutes = [
   {
     path: PopupPath.SETTINGS_SPEND_KEY,
     element: <SettingsSpendKey />,
-  },
-  {
-    path: PopupPath.SETTINGS_NETWORK_NAME,
-    element: <SettingsNetworkEdit />,
   },
 ];

@@ -1,18 +1,26 @@
+import { ExtensionStorage, LocalStorageState } from 'penumbra-storage';
 import { AllSlices, SliceCreator } from './index';
-import { testnetConstants } from 'penumbra-constants';
 
 export interface NetworkSlice {
   grpcEndpoint: string | undefined;
   lastBlockSynced: number;
+  setGRPCEndpoint: (endpoint: string) => Promise<void>;
 }
 
-// TODO: When network toggle created, should add setters to this.
-//       grpcEndpoint should sync to chrome.storage.local
-export const createNetworkSlice: SliceCreator<NetworkSlice> = () => {
-  return {
-    grpcEndpoint: testnetConstants.grpcEndpoint,
-    lastBlockSynced: 0,
+export const createNetworkSlice =
+  (local: ExtensionStorage<LocalStorageState>): SliceCreator<NetworkSlice> =>
+  set => {
+    return {
+      grpcEndpoint: undefined,
+      lastBlockSynced: 0,
+      setGRPCEndpoint: async (endpoint: string) => {
+        set(state => {
+          state.network.grpcEndpoint = endpoint;
+        });
+
+        await local.set('grpcEndpoint', endpoint);
+      },
+    };
   };
-};
 
 export const networkSelector = (state: AllSlices) => state.network;

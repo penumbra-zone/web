@@ -30,9 +30,9 @@ const links = [
     href: PopupPath.SETTINGS_PERMISSION,
   },
   {
-    title: 'Networks',
+    title: 'RPC',
     icon: <Share1Icon className='h-5 w-5 text-muted-foreground' />,
-    href: PopupPath.SETTINGS_NETWORKS,
+    href: PopupPath.SETTINGS_RPC,
   },
   {
     title: 'Connected sites',
