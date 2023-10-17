@@ -39,17 +39,28 @@ export const createWalletsSlice =
         return newWallet;
       },
       getSeedPhrase: async () => {
+        // const passwordKey = get().password.key;
+        // const key = await Key.fromJson(passwordKey!);
+
+        // const activeWallet = getActiveWallet(get());
+
+        // if (!activeWallet) return [];
+
+        // const encryptedSeedPhrase = activeWallet.custody.encryptedSeedPhrase;
+        // const unsealeSeedPhrase = await key.unseal(encryptedSeedPhrase);
+
+        // return unsealeSeedPhrase?.split(' ') ?? [];
         const passwordKey = get().password.key;
-        const key = await Key.fromJson(passwordKey!);
+        if (!passwordKey) throw new Error('no password set');
 
+        const key = await Key.fromJson(passwordKey);
         const activeWallet = getActiveWallet(get());
+        if (!activeWallet) throw new Error('no wallet set');
 
-        if (!activeWallet) return [];
+        const decryptedSeedPhrase = await key.unseal(activeWallet.custody.encryptedSeedPhrase);
+        if (!decryptedSeedPhrase) throw new Error('Unable to decrypt seed phrase with password');
 
-        const encryptedSeedPhrase = activeWallet.custody.encryptedSeedPhrase;
-        const unsealeSeedPhrase = await key.unseal(encryptedSeedPhrase);
-
-        return unsealeSeedPhrase?.split(' ') ?? [];
+        return decryptedSeedPhrase.split(' ');
       },
       getSpendKey: async () => {
         const seedPhrase = (await get().wallets.getSeedPhrase()).join(' ');
