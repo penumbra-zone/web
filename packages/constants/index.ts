@@ -8,10 +8,11 @@ export interface Constants {
 
 export const testnetConstants: Constants = {
   grpcEndpoint: 'https://grpc.testnet.penumbra.zone',
-  indexedDbVersion: 14,
+  indexedDbVersion: 15,
   usdcAssetId: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
 };
 
+// TODO: This should only have things like icon or other fields not available in assets indexedb
 export const assets: Asset[] = [
   {
     base: 'ugm',
