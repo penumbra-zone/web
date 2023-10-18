@@ -1,7 +1,6 @@
 'use client';
 
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { assets } from 'penumbra-constants';
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogPrimitive, DialogTrigger, Input } from 'ui';
 import { useBalancesWithMetadata } from '../hooks/sorted-asset';
@@ -21,7 +20,7 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
 
   return (
     <Dialog>
-      <DialogTrigger disabled={!assets.length}>
+      <DialogTrigger disabled={!sortedAssets.length}>
         <div className='flex h-9 w-[100px] items-center justify-center gap-2 rounded-lg bg-light-brown'>
           <p className='text-base font-bold text-light-grey'>{asset.display}</p>
         </div>
@@ -46,20 +45,20 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
               <p>Balance</p>
             </div>
             <div className='flex flex-col gap-2'>
-              {sortedAssets.map(i => (
-                <DialogPrimitive.Close key={i.denomMetadata.display}>
+              {sortedAssets.map((a, i) => (
+                <DialogPrimitive.Close key={i}>
                   <div
                     className={cn(
                       'flex justify-between items-center py-[10px] cursor-pointer hover:bg-light-brown hover:px-2',
-                      asset.penumbraAssetId.inner === i.assetId && 'bg-light-brown px-2',
+                      asset.penumbraAssetId.inner === a.assetId && 'bg-light-brown px-2',
                     )}
-                    onClick={() => setAsset({ inner: i.assetId, altBaseDenom: '', altBech32: '' })}
+                    onClick={() => setAsset({ inner: a.assetId, altBaseDenom: '', altBech32: '' })}
                   >
                     <div className='flex items-start gap-[6px]'>
-                      <p className='font-bold text-muted-foreground'>{i.denomMetadata.display}</p>
+                      <p className='font-bold text-muted-foreground'>{a.denomMetadata.display}</p>
                     </div>
                     <p className='font-bold text-muted-foreground'>
-                      {formatNumber(i.balance.amount)}
+                      {formatNumber(a.balance.amount)}
                     </p>
                   </div>
                 </DialogPrimitive.Close>

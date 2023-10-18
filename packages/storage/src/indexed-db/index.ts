@@ -6,6 +6,7 @@ import {
   PenumbraDb,
   ScanResult,
   StateCommitmentTree,
+  uint8ArrayToBase64,
 } from 'penumbra-types';
 import { IbdUpdater, IbdUpdates, TableUpdateNotifier } from './updater';
 import {
@@ -48,7 +49,9 @@ export class IndexedDb implements IndexedDbInterface {
       upgrade(db: IDBPDatabase<PenumbraDb>) {
         db.createObjectStore('LAST_BLOCK_SYNCED');
         db.createObjectStore('ASSETS', { keyPath: 'penumbraAssetId.inner' });
-        db.createObjectStore('SPENDABLE_NOTES').createIndex('nullifier', 'nullifier.inner');
+        db.createObjectStore('SPENDABLE_NOTES', {
+          keyPath: 'noteCommitment.inner',
+        }).createIndex('nullifier', 'nullifier.inner');
         db.createObjectStore('TRANSACTIONS', { keyPath: 'id.hash' });
         db.createObjectStore('TREE_LAST_POSITION');
         db.createObjectStore('TREE_LAST_FORGOTTEN');
@@ -106,28 +109,36 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined> {
-    return this.db.getFromIndex('SPENDABLE_NOTES', 'nullifier', nullifier.inner);
+    const key = uint8ArrayToBase64(nullifier.inner);
+    const json = await this.db.getFromIndex('SPENDABLE_NOTES', 'nullifier', key);
+    if (!json) return undefined;
+    return SpendableNoteRecord.fromJson(json);
   }
 
   async saveSpendableNote(note: SpendableNoteRecord) {
     if (!note.noteCommitment?.inner) throw new Error('noteCommitment not present');
-    await this.u.update({ table: 'SPENDABLE_NOTES', value: note, key: note.noteCommitment.inner });
+    await this.u.update({ table: 'SPENDABLE_NOTES', value: note.toJson() });
   }
 
   async getAssetsMetadata(assetId: AssetId): Promise<DenomMetadata | undefined> {
-    return this.db.get('ASSETS', assetId.inner);
+    const key = uint8ArrayToBase64(assetId.inner);
+    const json = await this.db.get('ASSETS', key);
+    if (!json) return undefined;
+    return DenomMetadata.fromJson(json);
   }
 
   async getAllAssetsMetadata() {
-    return this.db.getAll('ASSETS');
+    const jsonVals = await this.db.getAll('ASSETS');
+    return jsonVals.map(a => DenomMetadata.fromJson(a));
   }
 
   async saveAssetsMetadata(metadata: DenomMetadata) {
-    await this.u.update({ table: 'ASSETS', value: metadata });
+    await this.u.update({ table: 'ASSETS', value: metadata.toJson() });
   }
 
   async getAllNotes() {
-    return this.db.getAll('SPENDABLE_NOTES');
+    const jsonVals = await this.db.getAll('SPENDABLE_NOTES');
+    return jsonVals.map(a => SpendableNoteRecord.fromJson(a));
   }
 
   async getAllTransactions() {
@@ -187,12 +198,7 @@ export class IndexedDb implements IndexedDbInterface {
   private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {
     for (const n of notes) {
       if (!n.noteCommitment?.inner) throw new Error('noteCommitment not present');
-
-      txs.add({
-        table: 'SPENDABLE_NOTES',
-        value: n,
-        key: n.noteCommitment.inner,
-      });
+      txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() });
     }
   }
 }

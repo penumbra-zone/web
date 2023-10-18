@@ -10,8 +10,8 @@ import {
   SpendableNoteRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import { JsonValue } from '@bufbuild/protobuf';
 
 const denomMetadataA = new DenomMetadata({
   symbol: 'usdc',
@@ -89,12 +89,9 @@ describe('IndexedDb', () => {
       await db.saveSpendableNote(newNote);
 
       expect(mockNotifier).toHaveBeenCalledOnce();
-      const [value, key] = mockNotifier.mock.lastCall as [
-        SpendableNoteRecord,
-        StateCommitment['inner'],
-      ];
-      expect(value).toBe(newNote);
-      expect(key).toBe(newNote.noteCommitment!.inner);
+      const [value, key] = mockNotifier.mock.lastCall as [JsonValue, undefined];
+      expect(value).toStrictEqual(newNote.toJson());
+      expect(key).toBeUndefined();
     });
 
     it('does not call function if not subscribed', async () => {
@@ -170,7 +167,7 @@ describe('IndexedDb', () => {
   });
 
   describe('fmd params', () => {
-    it('object store should be empty after clear', async () => {
+    it('should be able to set/get', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       const fmdParams = new FmdParameters({ asOfBlockHeight: 1n, precisionBits: 0 });

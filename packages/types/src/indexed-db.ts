@@ -20,9 +20,9 @@ import {
   NoteSource,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { Note } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { JsonValue } from '@bufbuild/protobuf';
+import { Base64Str } from './base64';
 
 export interface IndexedDbInterface {
   constants(): IdbConstants;
@@ -63,32 +63,41 @@ export interface PenumbraDb extends DBSchema {
     key: StoreCommitment['commitment']['inner'];
     value: StoreCommitment;
   };
-  ASSETS: {
-    key: AssetId['inner'];
-    value: DenomMetadata;
-  };
-  SPENDABLE_NOTES: {
-    key: StateCommitment['inner'];
-    value: SpendableNoteRecord;
-    indexes: { nullifier: Nullifier['inner'] };
+  FMD_PARAMETERS: {
+    key: 'params';
+    value: FmdParameters;
   };
   TRANSACTIONS: {
     key: NoteSource['inner'];
     value: TransactionInfo;
   };
-  NOTES: {
-    key: Address['inner'];
-    value: Note;
+  // ======= Json serialized values =======
+  // Allows wasm crate to directly deserialize
+  ASSETS: {
+    key: Base64Str; // Jsonified<DenomMetadata['penumbraAssetId']['inner']>
+    value: Jsonified<DenomMetadata>;
   };
-  FMD_PARAMETERS: {
-    key: 'params';
-    value: FmdParameters;
+  SPENDABLE_NOTES: {
+    key: Base64Str; // Jsonified<SpendableNoteRecord['noteCommitment']['inner']>
+    value: Jsonified<SpendableNoteRecord>;
+    indexes: {
+      nullifier: Base64Str; // Jsonified<SpendableNoteRecord['nullifier']['inner']>
+    };
+  };
+  NOTES: {
+    key: Base64Str; // Jsonified<Note['address']['inner']>
+    value: Jsonified<Note>;
   };
   SWAPS: {
-    key: StateCommitment['inner'];
-    value: SwapRecord;
+    key: Base64Str; // Jsonified<SwapRecord['swapCommitment']['inner']>
+    value: Jsonified<SwapRecord>;
   };
 }
+
+// @ts-expect-error Meant to be a marker to indicate it's json serialized.
+//                  Protobuf values often need to be as they are json-deserialized in the wasm crate.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type Jsonified<T> = JsonValue;
 
 export type Tables = Record<string, StoreNames<PenumbraDb>>;
 

@@ -89,7 +89,6 @@ interface SortedAssetsReturnVal {
   error: unknown;
 }
 
-// TODO: Are there react-specific optimizations missing here?
 export const useBalancesWithMetadata = (
   sortBy: keyof AssetBalance,
   search?: string,
