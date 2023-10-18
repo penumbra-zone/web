@@ -2,7 +2,7 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { Button, FadeTransition } from 'ui';
 import { SettingsHeader } from '../../../shared';
 import { TrashGradientIcon } from '../../../icons';
-import { swClient } from '../../service-worker/extension/client/internal';
+import { swClient } from '../../service-worker/internal/client/internal';
 
 export const SettingsClearCache = () => {
   return (

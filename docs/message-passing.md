@@ -3,7 +3,7 @@
 ### Page/Popup <--> Service Worker
 
 The extension makes use of the [standard messaging passing api](https://developer.chrome.com/docs/extensions/mv3/messaging/) exposed
-by Chrome. However, this is not typesafe. For that reason, there is an [internal typesafe message router](../apps/extension/src/routes/service-worker/extension/router.ts)
+by Chrome. However, this is not typesafe. For that reason, there is an [internal typesafe message router](../apps/extension/src/routes/service-worker/internal/router.ts)
 that we should be using. Just add a new message type to `SwRequestMessage`, add it to the router, and create a new file to handle the request.
 
 ### Dapp <--> Extension

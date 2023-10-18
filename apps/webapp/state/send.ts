@@ -12,6 +12,7 @@ import {
   Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { custodyClient } from '../clients/grpc';
 
 export interface SendValidationFields {
   recipient: boolean;
@@ -108,14 +109,14 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
       const { plan } = await viewClient.transactionPlanner(req);
       if (!plan) throw new Error('no plan in response');
 
-      console.log(plan);
+      const { data } = await custodyClient.authorize({ plan });
+      if (!data) throw new Error('no authorization data in response');
+
+      console.log(data);
 
       return 'done!';
 
       // TODO: Finish this flow
-      // const { data } = await custodyClient.authorize({ plan });
-      // if (!data) throw new Error('no authorization data in response');
-      //
       // const { transaction } = await viewClient.witnessAndBuild({
       //   transactionPlan: plan,
       //   authorizationData: data,

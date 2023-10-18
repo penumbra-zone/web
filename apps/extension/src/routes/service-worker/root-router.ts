@@ -1,5 +1,5 @@
-import { ServiceWorkerResponse } from './extension/types';
-import { extRouter, isExtRequest, SwRequestMessage } from './extension/router';
+import { ServiceWorkerResponse } from './internal/types';
+import { internalRouter, isInternalRequest, SwRequestMessage } from './internal/router';
 import { isViewServerReq } from './view-protocol-server/helpers/generic';
 import { viewServerRouter } from './view-protocol-server/router';
 
@@ -12,8 +12,8 @@ export const swMessageHandler = (
 ) => {
   if (!allowedRequest(sender)) return;
 
-  if (isExtRequest(message)) {
-    return extRouter(message, sendResponse);
+  if (isInternalRequest(message)) {
+    return internalRouter(message, sendResponse);
   } else if (isViewServerReq(message)) {
     viewServerRouter(message, sender);
   }

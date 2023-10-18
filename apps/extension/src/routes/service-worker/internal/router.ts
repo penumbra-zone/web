@@ -1,6 +1,6 @@
-import { ClearCacheMessage, clearCacheHandler } from './clear-cache';
-import { PingMessage, pingHandler } from './ping';
-import { SyncBlocksMessage, syncBlocksHandler } from './sync';
+import { clearCacheHandler, ClearCacheMessage } from './clear-cache';
+import { pingHandler, PingMessage } from './ping';
+import { syncBlocksHandler, SyncBlocksMessage } from './sync';
 import {
   AwaitedResponse,
   IncomingRequest,
@@ -10,13 +10,13 @@ import {
 } from './types';
 
 // Narrows message to ensure it's one intended for service worker
-export const isExtRequest = (
+export const isInternalRequest = (
   message: unknown,
 ): message is ServiceWorkerRequest<SwRequestMessage> => {
   return typeof message === 'object' && message !== null && 'penumbraSwReq' in message;
 };
 
-export const extRouter = (
+export const internalRouter = (
   req: ServiceWorkerRequest<SwRequestMessage>,
   sendResponse: (response: ServiceWorkerResponse<SwRequestMessage>) => void,
 ) => {

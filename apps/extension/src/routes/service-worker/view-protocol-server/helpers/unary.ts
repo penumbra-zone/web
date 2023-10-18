@@ -1,11 +1,15 @@
-import { OUTGOING_GRPC_MESSAGE, ResultResponse } from 'penumbra-transport';
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
-import { ViewProtocolReq, ViewProtocolRes } from './generic';
+import {
+  DappMessageRequest,
+  GrpcResponse,
+  OUTGOING_GRPC_MESSAGE,
+  ResultResponse,
+} from 'penumbra-transport';
+import { ServiceType } from '@bufbuild/protobuf';
 
-export const unaryResponse = (
-  req: ViewProtocolReq,
-  result: ViewProtocolRes,
-): ResultResponse<typeof ViewProtocolService> => {
+export const unaryResponse = <S extends ServiceType>(
+  req: DappMessageRequest<S>,
+  result: GrpcResponse<S>,
+): ResultResponse<S> => {
   return {
     type: OUTGOING_GRPC_MESSAGE,
     sequence: req.sequence,

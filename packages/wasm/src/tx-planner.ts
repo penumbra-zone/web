@@ -1,5 +1,5 @@
 import { WasmPlanner } from '@penumbra-zone/wasm-bundler';
-import { IdbConstants, validateSchema, WasmTxPlanSchema } from 'penumbra-types';
+import { IdbConstants } from 'penumbra-types';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import {
   MemoPlaintext,
@@ -11,6 +11,7 @@ import {
   ChainParameters,
   FmdParameters,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import { JsonValue } from '@bufbuild/protobuf';
 
 interface PlannerProps {
   idbConstants: IdbConstants;
@@ -47,7 +48,7 @@ export class TxPlanner {
   }
 
   async plan(refundAddr: Address): Promise<TransactionPlan> {
-    const raw = validateSchema(WasmTxPlanSchema, await this.wasmPlanner.plan(refundAddr.toJson()));
-    return TransactionPlan.fromJsonString(JSON.stringify(raw));
+    const json = (await this.wasmPlanner.plan(refundAddr.toJson())) as JsonValue;
+    return TransactionPlan.fromJson(json);
   }
 }

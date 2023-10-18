@@ -1,20 +1,40 @@
-import { OUTGOING_GRPC_MESSAGE, StreamResponse } from 'penumbra-transport';
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
-import { ViewProtocolReq, ViewProtocolRes } from './generic';
-import { MethodKind } from '@bufbuild/protobuf';
+import {
+  DappMessageRequest,
+  GrpcRequestTypename,
+  OUTGOING_GRPC_MESSAGE,
+  StreamResponse,
+} from 'penumbra-transport';
+import { ServiceType } from '@bufbuild/protobuf';
 
-const streamingMethods = Object.values(ViewProtocolService.methods)
-  .filter(m => m.kind === MethodKind.ServerStreaming)
-  .map(m => m.I.typeName);
+// export type StreamingMethods<S extends ServiceType> = {
+//   [K in keyof S['methods']]: S['methods'][K] extends { kind: typeof MethodKind.ServerStreaming }
+//     ? S['methods'][K]['I']
+//     : never;
+// }[keyof S['methods']];
+//
+// export type StreamingMethodTypes<S extends ServiceType> = {
+//   [K in keyof S['methods']]: S['methods'][K] extends { kind: typeof MethodKind.ServerStreaming }
+//     ? S['methods'][K]['I']['typeName']
+//     : never;
+// }[keyof S['methods']][];
+//
+// type ViewStreams = StreamingMethodTypes<typeof ViewProtocolService>;
 
-export const isStreamingMethod = (req: ViewProtocolReq): boolean => {
-  return streamingMethods.includes(req.requestTypeName);
+export type GrpcResponse<S extends ServiceType> = {
+  [K in keyof S['methods']]: InstanceType<S['methods'][K]['O']>;
+}[keyof S['methods']];
+
+export const isStreamingMethod = <S extends ServiceType>(
+  req: DappMessageRequest<S>,
+  streamingMethodNames: GrpcRequestTypename<S>[],
+): boolean => {
+  return streamingMethodNames.includes(req.requestTypeName);
 };
 
-export const streamResponse = (
-  req: ViewProtocolReq,
-  result: { value: ViewProtocolRes; done: false } | { done: true },
-): StreamResponse<typeof ViewProtocolService> => {
+export const streamResponse = <S extends ServiceType>(
+  req: DappMessageRequest<S>,
+  result: { value: GrpcResponse<S>; done: false } | { done: true },
+): StreamResponse<S> => {
   return {
     type: OUTGOING_GRPC_MESSAGE,
     sequence: req.sequence,
