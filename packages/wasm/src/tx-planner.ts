@@ -1,12 +1,5 @@
 import { WasmPlanner } from '@penumbra-zone/wasm-bundler';
-import {
-  IdbConstants,
-  uint8ArrayToBase64,
-  uint8ArrayToHex,
-  uint8ArrayToString,
-  validateSchema,
-  WasmTxPlanSchema,
-} from 'penumbra-types';
+import { IdbConstants, validateSchema, WasmTxPlanSchema } from 'penumbra-types';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import {
   MemoPlaintext,
@@ -38,18 +31,6 @@ export class TxPlanner {
   }
 
   output(value: Value, addr: Address): void {
-    // @ts-expect-error
-    const val = value.toJson();
-    // @ts-expect-error
-    const moo = addr.toJson();
-    // @ts-expect-error
-    const hex = uint8ArrayToHex(addr.inner);
-    // @ts-expect-error
-    const str = uint8ArrayToString(addr.inner);
-    // @ts-expect-error
-    const base = uint8ArrayToBase64(addr.inner);
-    // @ts-expect-error
-    const bytes = addr.toBinary();
     this.wasmPlanner.output(value.toJson(), addr.toJson());
   }
 

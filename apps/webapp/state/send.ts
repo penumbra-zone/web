@@ -1,7 +1,7 @@
 import { assets } from 'penumbra-constants';
 import { validateAmount, validateRecipient } from '../utils';
 import { AllSlices, SliceCreator } from './index';
-import { Asset, AssetId as TempAssetId, base64ToUint8Array } from 'penumbra-types';
+import { Asset, AssetId as TempAssetId, base64ToUint8Array, splitLoHi } from 'penumbra-types';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import {
   TransactionPlannerRequest,
@@ -85,16 +85,38 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
       });
     },
     sendTx: async () => {
+      const amount = splitLoHi(BigInt(get().send.amount));
+      const assetId = get().send.asset.penumbraAssetId;
+      const req = new TransactionPlannerRequest({
+        outputs: [
+          new TransactionPlannerRequest_Output({
+            address: new Address({ altBech32m: get().send.recipient }),
+            value: new Value({
+              amount: new Amount({
+                lo: amount.lo,
+                hi: amount.hi,
+              }),
+              assetId: new AssetId({
+                inner: base64ToUint8Array(assetId.inner),
+              }),
+            }),
+          }),
+        ],
+      });
+
       const { viewClient } = await import('../clients/grpc');
-      const { plan } = await viewClient.transactionPlanner(reqFromForm());
+      const { plan } = await viewClient.transactionPlanner(req);
       if (!plan) throw new Error('no plan in response');
 
-      return 'done';
+      console.log(plan);
 
+      return 'done!';
+
+      // TODO: Finish this flow
       // const { data } = await custodyClient.authorize({ plan });
       // if (!data) throw new Error('no authorization data in response');
       //
-      // const { transaction } = await viewClient.authorizeAndBuild({
+      // const { transaction } = await viewClient.witnessAndBuild({
       //   transactionPlan: plan,
       //   authorizationData: data,
       // });
@@ -106,28 +128,6 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
       // return uint8ArrayToHex(id.hash);
     },
   };
-};
-
-const reqFromForm = (): TransactionPlannerRequest => {
-  return new TransactionPlannerRequest({
-    outputs: [
-      new TransactionPlannerRequest_Output({
-        address: new Address({
-          altBech32m:
-            'penumbrav2t147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahhvhypxd',
-        }),
-        value: new Value({
-          amount: new Amount({
-            lo: 10034234n,
-            hi: 10n,
-          }),
-          assetId: new AssetId({
-            inner: base64ToUint8Array('YZJU/tnH3oPBb56araLN8OP594cPuoLcSalWPk9PfQs='),
-          }),
-        }),
-      }),
-    ],
-  });
 };
 
 export const sendSelector = (state: AllSlices) => state.send;

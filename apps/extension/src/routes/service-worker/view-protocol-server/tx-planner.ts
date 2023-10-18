@@ -53,9 +53,7 @@ export const handleTxPlannerReq = async (
     planner.output(o.value, o.address);
   }
 
-  debugger;
   const refundAddr = await getRefundAddress(req);
   const plan = await planner.plan(refundAddr);
-  console.log(plan);
   return new TransactionPlannerResponse({ plan });
 };
