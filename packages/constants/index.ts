@@ -8,7 +8,7 @@ export interface Constants {
 
 export const testnetConstants: Constants = {
   grpcEndpoint: 'https://grpc.testnet.penumbra.zone',
-  indexedDbVersion: 13,
+  indexedDbVersion: 14,
   usdcAssetId: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
 };
 

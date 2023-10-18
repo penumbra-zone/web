@@ -6,11 +6,10 @@ import {
   GrpcRequest,
   GrpcResponse,
   INCOMING_GRPC_MESSAGE,
-  isErrorResponse,
   isResultResponse,
   PendingRequests,
 } from './types';
-import { Code, ConnectError } from '@connectrpc/connect';
+import { ConnectError } from '@connectrpc/connect';
 
 export const unaryIO = async <S extends ServiceType, M extends GrpcRequest<S>>(
   pending: PendingRequests<S>,
@@ -28,12 +27,14 @@ export const unaryIO = async <S extends ServiceType, M extends GrpcRequest<S>>(
     requestTypeName: requestMethod.getType().typeName,
     serviceTypeName,
   } satisfies DappMessageRequest<S>);
-  const res = await promiseResponse;
-  if (isResultResponse(res)) {
-    return res.result;
-  } else if (isErrorResponse(res)) {
-    throw new ConnectError(res.error);
-  } else {
-    throw new ConnectError('Other response types not handled', Code.Unimplemented);
+  try {
+    const res = await promiseResponse;
+    if (isResultResponse(res)) {
+      return res.result;
+    } else {
+      throw new Error(`Other response types not handled. Response: ${JSON.stringify(res)}`);
+    }
+  } catch (e) {
+    throw ConnectError.from(JSON.stringify(e));
   }
 };

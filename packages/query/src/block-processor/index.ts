@@ -140,6 +140,8 @@ export class BlockProcessor {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
+      if (block.fmdParameters) await this.indexedDb.saveFmdParams(block.fmdParameters);
+
       // Scanning has a side effect of updating viewServer's internal tree.
       const newNotesPresent = await this.viewServer.scanBlock(block);
 

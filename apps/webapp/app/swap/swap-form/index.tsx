@@ -7,9 +7,8 @@ import { validateAmount } from '../../../utils';
 import dynamic from 'next/dynamic';
 import { cn } from 'ui/lib/utils';
 import { useCalculateBalance } from '../../../hooks/calculate-balance';
-const SwapInput = dynamic(() => import('./swap-input'), {
-  ssr: false,
-});
+
+const SwapInput = dynamic(() => import('./swap-input'), { ssr: false });
 
 export default function SwapForm() {
   const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);

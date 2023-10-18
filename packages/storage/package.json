@@ -17,10 +17,10 @@
     "penumbra-types": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "^5.2.2",
-    "vite": "^4.4.11"
+    "vite": "^4.5.0"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.247",
+    "@types/chrome": "0.0.248",
     "vitest": "^0.34.6"
   }
 }

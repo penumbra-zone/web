@@ -6,9 +6,8 @@ import { EduInfoCard } from '../../shared';
 import { SwapPageTab } from './types';
 import { AssetStatistics } from './asset-statistics';
 import dynamic from 'next/dynamic';
-const SwapForm = dynamic(() => import('./swap-form'), {
-  ssr: false,
-});
+
+const SwapForm = dynamic(() => import('./swap-form'), { ssr: false });
 
 export default function Page() {
   const [tab, setTab] = useState<SwapPageTab>(SwapPageTab.MARKET);

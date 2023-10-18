@@ -1,6 +1,7 @@
 import { AssetsResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { calculateLoHiExponent, splitLoHi } from './lo-hi';
 
+// TODO: These types should not exist. Replace with protos later.
 export interface AssetDenom {
   denom: string;
   exponent: number;
