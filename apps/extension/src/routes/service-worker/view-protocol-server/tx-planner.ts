@@ -4,52 +4,58 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { ViewReqMessage } from './helpers/generic';
 import { services } from '../../../service-worker';
+import { getAddressByIndex, TxPlanner } from 'penumbra-wasm-ts';
+import {
+  Address,
+  AddressIndex,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { localExtStorage } from 'penumbra-storage';
 
 export const isTxPlannerRequest = (msg: ViewReqMessage): msg is TransactionPlannerRequest => {
   return msg.getType().typeName === TransactionPlannerRequest.typeName;
 };
 
+// If there are any balances left over, refund back to source. Default to account 0.
+const getRefundAddress = async (req: TransactionPlannerRequest): Promise<Address> => {
+  const refundAddrIndex = req.source ?? new AddressIndex({ account: 0 });
+  const wallets = await localExtStorage.get('wallets');
+  return getAddressByIndex(wallets[0]!.fullViewingKey, refundAddrIndex.account);
+};
+
 export const handleTxPlannerReq = async (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _: TransactionPlannerRequest,
+  req: TransactionPlannerRequest,
 ): Promise<TransactionPlannerResponse> => {
   const { indexedDb } = await services.getWalletServices();
-  // @ts-expect-error adfasdf
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const allNotes = await indexedDb.getAllNotes();
-  // const plan = new TransactionPlan();
+  const chainParams = await services.querier.app.chainParams();
+  const fmdParams = await indexedDb.getFmdParams();
+  if (!fmdParams) throw new Error('Fmd Params not in indexeddb');
 
-  return new TransactionPlannerResponse();
+  const planner = await TxPlanner.initialize({
+    idbConstants: indexedDb.constants(),
+    chainParams,
+    fmdParams,
+  });
 
-  // if (request.outputs.length) {
-  //   let notes = await this.indexedDb.getAllValue(SPENDABLE_NOTES_TABLE_NAME);
-  //
-  //   notes = notes
-  //     .filter(note => note.heightSpent === undefined)
-  //     .filter(
-  //       note =>
-  //         note.note.value.assetId.inner === bytesToBase64(request.outputs[0].value.assetId.inner),
-  //     );
-  //   if (!notes.length) console.error('No notes found to spend');
-  //
-  //   const fmdParameters = await this.indexedDb.getValue(FMD_PARAMETERS_TABLE_NAME, `fmd`);
-  //   if (!fmdParameters) console.error('No found FmdParameters');
-  //
-  //   const chainParamsRecords = await this.indexedDb.getAllValue(CHAIN_PARAMETERS_TABLE_NAME);
-  //   const chainParameters = await chainParamsRecords[0];
-  //   if (!fmdParameters) console.error('No found chain parameters');
-  //
-  //   const viewServiceData = {
-  //     notes,
-  //     chain_parameters: chainParameters,
-  //     fmd_parameters: fmdParameters,
-  //   };
-  //
-  //   transactionPlan = await penumbraWasm.send_plan(
-  //     this.getAccountFullViewingKey(),
-  //     request.outputs[0].value.toJson(),
-  //     request.outputs[0].address.altBech32m,
-  //     viewServiceData,
-  //   );
-  // }
+  if (req.expiryHeight !== 0n) {
+    planner.expiryHeight(req.expiryHeight);
+  }
+
+  if (req.memo) {
+    planner.memo(req.memo);
+  }
+
+  if (req.fee) {
+    planner.fee(req.fee);
+  }
+
+  for (const o of req.outputs) {
+    if (!o.value || !o.address) continue;
+    planner.output(o.value, o.address);
+  }
+
+  debugger;
+  const refundAddr = await getRefundAddress(req);
+  const plan = await planner.plan(refundAddr);
+  console.log(plan);
+  return new TransactionPlannerResponse({ plan });
 };

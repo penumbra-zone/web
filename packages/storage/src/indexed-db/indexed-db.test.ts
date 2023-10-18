@@ -11,6 +11,7 @@ import {
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
+import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 
 const denomMetadataA = new DenomMetadata({
   symbol: 'usdc',
@@ -165,6 +166,18 @@ describe('IndexedDb', () => {
       expect((await db.getAllAssetsMetadata()).length).toBe(0);
       expect((await db.getAllTransactions()).length).toBe(0);
       expect(await db.getLastBlockSynced()).toBeUndefined();
+    });
+  });
+
+  describe('fmd params', () => {
+    it('object store should be empty after clear', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      const fmdParams = new FmdParameters({ asOfBlockHeight: 1n, precisionBits: 0 });
+      await db.saveFmdParams(fmdParams);
+      const savedParmas = await db.getFmdParams();
+
+      expect(fmdParams.equals(savedParmas)).toBeTruthy();
     });
   });
 

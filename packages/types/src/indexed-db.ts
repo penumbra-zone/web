@@ -16,7 +16,6 @@ import {
   DenomMetadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import {
-  ChainParameters,
   FmdParameters,
   NoteSource,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
@@ -30,6 +29,7 @@ export interface IndexedDbInterface {
   getLastBlockSynced(): Promise<bigint | undefined>;
   getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
   saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
+  getAllNotes(): Promise<SpendableNoteRecord[]>;
   saveTransactionInfo(tx: TransactionInfo): Promise<void>;
   getTransaction(source: NoteSource): Promise<TransactionInfo | undefined>;
   getAllTransactions(): Promise<TransactionInfo[]>;
@@ -38,7 +38,8 @@ export interface IndexedDbInterface {
   getAllAssetsMetadata(): Promise<DenomMetadata[]>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
   saveScanResult(updates: ScanResult): Promise<void>;
-  getAllNotes(): Promise<SpendableNoteRecord[]>;
+  getFmdParams(): Promise<FmdParameters | undefined>;
+  saveFmdParams(params: FmdParameters): Promise<void>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -75,16 +76,12 @@ export interface PenumbraDb extends DBSchema {
     key: NoteSource['inner'];
     value: TransactionInfo;
   };
-  CHAIN_PARAMETERS: {
-    key: ChainParameters['chainId'];
-    value: ChainParameters;
-  };
   NOTES: {
     key: Address['inner'];
     value: Note;
   };
   FMD_PARAMETERS: {
-    key: string;
+    key: 'params';
     value: FmdParameters;
   };
   SWAPS: {
@@ -104,8 +101,6 @@ export interface IdbConstants {
 
 export const IDB_TABLES: Tables = {
   assets: 'ASSETS',
-  chain_parameters: 'CHAIN_PARAMETERS',
-  fmd_parameters: 'FMD_PARAMETERS',
   notes: 'NOTES',
   spendable_notes: 'SPENDABLE_NOTES',
   swaps: 'SWAPS',

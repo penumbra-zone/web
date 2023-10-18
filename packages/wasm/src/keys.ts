@@ -7,10 +7,7 @@ import {
 } from '@penumbra-zone/wasm-bundler';
 import { z } from 'zod';
 import { base64ToUint8Array, InnerBase64Schema, validateSchema } from 'penumbra-types';
-import { bech32m } from 'bech32';
-
-// Globally set Bech32 prefix used for addresses
-const BECH32_PREFIX = 'penumbrav2t';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
 export const generateSpendKey = (seedPhrase: string): string =>
   validateSchema(z.string(), generate_spend_key(seedPhrase));
@@ -18,10 +15,10 @@ export const generateSpendKey = (seedPhrase: string): string =>
 export const getFullViewingKey = (spendKey: string): string =>
   validateSchema(z.string(), get_full_viewing_key(spendKey));
 
-export const getAddressByIndex = (fullViewingKey: string, index: number): string => {
+export const getAddressByIndex = (fullViewingKey: string, index: number): Address => {
   const res = validateSchema(InnerBase64Schema, get_address_by_index(fullViewingKey, index));
   const uintArray = base64ToUint8Array(res.inner);
-  return bech32m.encode(BECH32_PREFIX, bech32m.toWords(uintArray), 160);
+  return new Address({ inner: uintArray });
 };
 
 export const getShortAddressByIndex = (fullViewingKey: string, index: number): string =>

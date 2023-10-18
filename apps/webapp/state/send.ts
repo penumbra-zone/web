@@ -1,13 +1,7 @@
 import { assets } from 'penumbra-constants';
 import { validateAmount, validateRecipient } from '../utils';
 import { AllSlices, SliceCreator } from './index';
-import {
-  Asset,
-  AssetId as TempAssetId,
-  base64ToUint8Array,
-  stringToUint8Array,
-} from 'penumbra-types';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { Asset, AssetId as TempAssetId, base64ToUint8Array } from 'penumbra-types';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import {
   TransactionPlannerRequest,
@@ -17,6 +11,7 @@ import {
   AssetId,
   Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
 export interface SendValidationFields {
   recipient: boolean;
@@ -117,7 +112,10 @@ const reqFromForm = (): TransactionPlannerRequest => {
   return new TransactionPlannerRequest({
     outputs: [
       new TransactionPlannerRequest_Output({
-        address: new Address({ inner: stringToUint8Array('penumbra123') }),
+        address: new Address({
+          altBech32m:
+            'penumbrav2t147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahhvhypxd',
+        }),
         value: new Value({
           amount: new Amount({
             lo: 10034234n,
