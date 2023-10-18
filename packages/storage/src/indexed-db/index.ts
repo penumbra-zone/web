@@ -8,7 +8,10 @@ import {
   StateCommitmentTree,
 } from 'penumbra-types';
 import { IbdUpdater, IbdUpdates, TableUpdateNotifier } from './updater';
-import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import {
+  FmdParameters,
+  NoteSource,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import {
   SpendableNoteRecord,
@@ -52,10 +55,9 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('TREE_COMMITMENTS', { keyPath: 'commitment.inner' });
         // No unique id for given tree hash and hash can be the same for different positions. Using `autoIncrement` to make the item key an incremented index.
         db.createObjectStore('TREE_HASHES', { autoIncrement: true });
+        db.createObjectStore('FMD_PARAMETERS');
 
         // TODO: To implement
-        db.createObjectStore('CHAIN_PARAMETERS');
-        db.createObjectStore('FMD_PARAMETERS');
         db.createObjectStore('NOTES');
         db.createObjectStore('SWAPS');
       },
@@ -138,6 +140,14 @@ export class IndexedDb implements IndexedDbInterface {
 
   async getTransaction(source: NoteSource): Promise<TransactionInfo | undefined> {
     return this.db.get('TRANSACTIONS', source.inner);
+  }
+
+  async getFmdParams(): Promise<FmdParameters | undefined> {
+    return this.db.get('FMD_PARAMETERS', 'params');
+  }
+
+  async saveFmdParams(value: FmdParameters): Promise<void> {
+    await this.u.update({ table: 'FMD_PARAMETERS', value, key: 'params' });
   }
 
   async clear() {

@@ -18,10 +18,10 @@
   },
   "devDependencies": {
     "@types/crypto-js": "^4.1.2",
-    "@types/lodash": "^4.14.199",
+    "@types/lodash": "^4.14.200",
     "@vitest/browser": "^0.34.6",
     "penumbra-types": "workspace:*",
-    "vite": "^4.4.11",
+    "vite": "^4.5.0",
     "vitest": "^0.34.6"
   }
 }
