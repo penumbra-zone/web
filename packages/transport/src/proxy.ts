@@ -1,8 +1,7 @@
 import { ServiceType } from '@bufbuild/protobuf';
 import { backOff } from 'exponential-backoff';
-import { createEventTransport, isDappGrpcRequest, isDappGrpcResponse } from 'penumbra-transport';
-import { isStdRequest } from './std/router';
-import { allowedDappMessages } from './std/external-client';
+import { createEventTransport } from './create';
+import { isDappGrpcRequest, isDappGrpcResponse } from './types';
 
 export const createExtInternalEventTransport = <S extends ServiceType>(s: S) => {
   proxyMessages();
@@ -33,8 +32,6 @@ export const proxyMessages = () => {
 // For external std messages, make sure they are in the allow list
 // For internal std messages, they should be called via the internalSwClient
 const allowedRequest = (message: unknown): boolean => {
-  return (
-    isDappGrpcRequest(message) ||
-    (isStdRequest(message) && allowedDappMessages.includes(message.penumbraSwReq.type))
-  );
+  return isDappGrpcRequest(message);
+  // || (isStdRequest(message) && allowedDappMessages.includes(message.penumbraSwReq.type))
 };

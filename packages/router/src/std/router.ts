@@ -26,6 +26,7 @@ export const stdRouter = (
   (async function () {
     const result = await typedMessageRouter(req.penumbraSwReq, services);
     sendResponse({
+      sequence: req.sequence,
       penumbraSwRes: {
         type: req.penumbraSwReq.type,
         data: result,
@@ -33,6 +34,7 @@ export const stdRouter = (
     });
   })().catch(e => {
     sendResponse({
+      sequence: req.sequence,
       penumbraSwError: String(e),
     });
   });

@@ -4,3 +4,4 @@ export * from './unary';
 export * from './stream';
 export * from './hooks';
 export * from './looper';
+export * from './proxy';
