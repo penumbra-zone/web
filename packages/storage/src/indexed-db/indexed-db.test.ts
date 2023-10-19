@@ -1,17 +1,15 @@
-import { describe, expect, it, vi } from 'vitest';
-import { IndexedDb } from './index';
 import {
   AssetId,
   DenomMetadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { base64ToUint8Array } from 'penumbra-types';
-import { TableUpdateNotifier } from './updater';
+import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import {
   SpendableNoteRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
-import { JsonValue } from '@bufbuild/protobuf';
+import { base64ToUint8Array, IdbUpdate, PenumbraDb } from 'penumbra-types';
+import { describe, expect, it } from 'vitest';
+import { IndexedDb } from './index';
 
 const denomMetadataA = new DenomMetadata({
   symbol: 'usdc',
@@ -70,50 +68,20 @@ describe('IndexedDb', () => {
 
   describe('Updater', () => {
     it('emits events on update', async () => {
-      const mockNotifier = vi.fn();
+      const db = await IndexedDb.initialize(generateInitialProps());
+      const subscription = db.subscribe('SPENDABLE_NOTES');
 
-      const props = {
-        ...generateInitialProps(),
-        updateNotifiers: [
-          {
-            table: 'SPENDABLE_NOTES',
-            handler: (value, key) => {
-              mockNotifier(value, key);
-              return Promise.resolve();
-            },
-          } satisfies TableUpdateNotifier,
-        ],
-      };
+      // Save the new note and wait for the next update in parallel
+      const [, resA] = await Promise.all([db.saveSpendableNote(newNote), subscription.next()]);
+      const updateA = resA.value as IdbUpdate<PenumbraDb, 'SPENDABLE_NOTES'>;
+      expect(SpendableNoteRecord.fromJson(updateA.value)).toEqual(newNote);
+      expect(resA.done).toBeFalsy();
 
-      const db = await IndexedDb.initialize(props);
-      await db.saveSpendableNote(newNote);
-
-      expect(mockNotifier).toHaveBeenCalledOnce();
-      const [value, key] = mockNotifier.mock.lastCall as [JsonValue, undefined];
-      expect(value).toStrictEqual(newNote.toJson());
-      expect(key).toBeUndefined();
-    });
-
-    it('does not call function if not subscribed', async () => {
-      const mockNotifier = vi.fn();
-
-      const props = {
-        ...generateInitialProps(),
-        updateNotifiers: [
-          {
-            table: 'TREE_LAST_POSITION',
-            handler: (value, key) => {
-              mockNotifier(value, key);
-              return Promise.resolve();
-            },
-          } satisfies TableUpdateNotifier,
-        ],
-      };
-
-      const db = await IndexedDb.initialize(props);
-      await db.saveSpendableNote(newNote);
-
-      expect(mockNotifier).not.toHaveBeenCalled();
+      // Try a second time
+      const [, resB] = await Promise.all([db.saveSpendableNote(newNote), subscription.next()]);
+      const updateB = resB.value as IdbUpdate<PenumbraDb, 'SPENDABLE_NOTES'>;
+      expect(SpendableNoteRecord.fromJson(updateB.value)).toEqual(newNote);
+      expect(resB.done).toBeFalsy();
     });
   });
 

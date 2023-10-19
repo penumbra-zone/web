@@ -12,7 +12,6 @@ import {
   Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-import { custodyClient } from '../clients/grpc';
 
 export interface SendValidationFields {
   recipient: boolean;
@@ -105,7 +104,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         ],
       });
 
-      const { viewClient } = await import('../clients/grpc');
+      const { viewClient, custodyClient } = await import('../clients/grpc');
       const { plan } = await viewClient.transactionPlanner(req);
       if (!plan) throw new Error('no plan in response');
 
