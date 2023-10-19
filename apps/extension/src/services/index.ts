@@ -108,6 +108,7 @@ export class Services {
       width: 400,
       height: 628,
       top,
+      // press the window to the right side
       left: left !== undefined && width !== undefined ? left + (width - 400) : 0,
     });
   }
