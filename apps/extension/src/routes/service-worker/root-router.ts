@@ -15,7 +15,7 @@ export const swMessageHandler = (
   if (isInternalRequest(message)) {
     return internalRouter(message, sendResponse);
   } else if (isViewServerReq(message)) {
-    viewServerRouter(message, sender);
+    viewServerRouter(message, sender, sendResponse);
   }
   return;
 };

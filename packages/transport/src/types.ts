@@ -42,14 +42,42 @@ interface BaseResponse<S extends ServiceType> {
   sequence: number;
 }
 
-export type ResultResponse<S extends ServiceType> = BaseResponse<S> & { result: GrpcResponse<S> };
-export const isResultResponse = <S extends ServiceType>(
+export type UnaryResponse<S extends ServiceType> = BaseResponse<S> & { result: GrpcResponse<S> };
+
+export const isUnaryResponse = <S extends ServiceType>(
   message: unknown,
-): message is ResultResponse<S> => isDappGrpcResponse(message) && 'result' in message;
+): message is UnaryResponse<S> => isDappGrpcResponse(message) && 'result' in message;
+
+export const unaryResponseMsg = <S extends ServiceType>(
+  req: DappMessageRequest<S>,
+  result: GrpcResponse<S>,
+): UnaryResponse<S> => {
+  return {
+    type: OUTGOING_GRPC_MESSAGE,
+    sequence: req.sequence,
+    requestTypeName: req.requestTypeName,
+    serviceTypeName: req.serviceTypeName,
+    result,
+  };
+};
 
 export type StreamResponse<S extends ServiceType> = BaseResponse<S> & {
   stream: { value: GrpcResponse<S>; done: false } | { done: true };
 };
+
+export const streamResponseMsg = <S extends ServiceType>(
+  req: DappMessageRequest<S>,
+  result: { value: GrpcResponse<S>; done: false } | { done: true },
+): StreamResponse<S> => {
+  return {
+    type: OUTGOING_GRPC_MESSAGE,
+    sequence: req.sequence,
+    requestTypeName: req.requestTypeName,
+    serviceTypeName: req.serviceTypeName,
+    stream: result,
+  };
+};
+
 export const isStreamResponse = <S extends ServiceType>(
   message: unknown,
 ): message is StreamResponse<S> => isDappGrpcResponse(message) && 'stream' in message;
@@ -59,9 +87,22 @@ export const isErrorResponse = <S extends ServiceType>(
   message: unknown,
 ): message is ErrorResponse<S> => isDappGrpcResponse(message) && 'error' in message;
 
+export const errorResponseMsg = <S extends ServiceType>(
+  req: DappMessageRequest<S>,
+  error: unknown,
+): ErrorResponse<S> => {
+  return {
+    type: OUTGOING_GRPC_MESSAGE,
+    sequence: req.sequence,
+    requestTypeName: req.requestTypeName,
+    serviceTypeName: req.serviceTypeName,
+    error: String(error),
+  };
+};
+
 // Response from extension back to dapp. Custom GrpcEventTransport will handle this.
 export type DappMessageResponse<S extends ServiceType> =
-  | ResultResponse<S>
+  | UnaryResponse<S>
   | ErrorResponse<S>
   | StreamResponse<S>;
 
@@ -83,7 +124,7 @@ export const isServiceGrpcResponse = <S extends ServiceType>(
   message.serviceTypeName === s.typeName;
 
 export interface RequestRecord<S extends ServiceType> {
-  resolve: (m: ResultResponse<S> | StreamResponse<S>) => void;
+  resolve: (m: UnaryResponse<S> | StreamResponse<S>) => void;
   reject: (e: ErrorResponse<S>) => void; // To propagate correctly, it must be of type `ConnectError` when thrown
 }
 

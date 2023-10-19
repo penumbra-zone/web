@@ -6,7 +6,7 @@ import {
   GrpcRequest,
   GrpcResponse,
   INCOMING_GRPC_MESSAGE,
-  isResultResponse,
+  isUnaryResponse,
   PendingRequests,
 } from './types';
 import { ConnectError } from '@connectrpc/connect';
@@ -29,7 +29,7 @@ export const unaryIO = async <S extends ServiceType, M extends GrpcRequest<S>>(
   } satisfies DappMessageRequest<S>);
   try {
     const res = await promiseResponse;
-    if (isResultResponse(res)) {
+    if (isUnaryResponse(res)) {
       return res.result;
     } else {
       throw new Error(`Other response types not handled. Response: ${JSON.stringify(res)}`);
