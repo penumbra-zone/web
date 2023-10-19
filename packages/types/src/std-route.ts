@@ -1,5 +1,4 @@
 // The request sent from the content scripts or popup that is handled by the service worker
-import { SwRequestMessage } from './router';
 
 export interface ServiceWorkerRequest<T extends SwRequestMessage> {
   penumbraSwReq: IncomingRequest<T>;
@@ -12,6 +11,12 @@ export type IncomingRequest<T> = T extends SwMessage<infer Type, infer Req, unkn
     ? { type: Type }
     : { type: Type; arg: Req }
   : never;
+
+export const isStdRequest = (
+  message: unknown,
+): message is ServiceWorkerRequest<SwRequestMessage> => {
+  return typeof message === 'object' && message !== null && 'penumbraSwReq' in message;
+};
 
 // The Response given back to consumer that matches their request
 export type ServiceWorkerResponse<T extends SwRequestMessage> = PenumbraResponse<T> | PenumbraError;
@@ -56,3 +61,16 @@ export type SwResponse = Responses<SwRequestMessage>;
 export type AwaitedResponse<T> = T extends SwMessage<infer Type, unknown, infer Res>
   ? { type: Type; data: Awaited<Res> }
   : never;
+
+/* ========= List all service worker messages here ========= */
+export type SwRequestMessage = SyncBlocksMessage | PingMessage | ClearCacheMessage;
+
+// List all service worker messages that are allowed to be called from dapp
+export const allowedDappMessages: SwRequestMessage['type'][] = ['PING'];
+
+export type SyncBlocksMessage = SwMessage<'SYNC_BLOCKS', undefined, Promise<void>>;
+export interface PongResponse {
+  ack: string;
+}
+export type PingMessage = SwMessage<'PING', string, PongResponse>;
+export type ClearCacheMessage = SwMessage<'CLEAR_CACHE', undefined, Promise<void>>;

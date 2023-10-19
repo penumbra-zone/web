@@ -1,4 +1,4 @@
 // Meant to proxy requests between dapp and extension
-import { proxyMessages } from 'penumbra-router';
+import { proxyMessages } from 'penumbra-transport';
 
 proxyMessages();

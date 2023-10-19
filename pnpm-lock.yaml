@@ -201,6 +201,9 @@ importers:
       penumbra-constants:
         specifier: workspace:*
         version: link:../../packages/constants
+      penumbra-router:
+        specifier: workspace:*
+        version: link:../../packages/router
       penumbra-transport:
         specifier: workspace:*
         version: link:../../packages/transport
@@ -425,9 +428,6 @@ importers:
       '@connectrpc/connect':
         specifier: ^1.1.2
         version: 1.1.2(@bufbuild/protobuf@1.3.3)
-      exponential-backoff:
-        specifier: ^3.1.1
-        version: 3.1.1
       penumbra-storage:
         specifier: workspace:*
         version: link:../storage
@@ -560,6 +560,9 @@ importers:
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
+      penumbra-types:
+        specifier: workspace:*
+        version: link:../types
       react:
         specifier: ^18.2.0
         version: 18.2.0

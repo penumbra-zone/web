@@ -1,21 +1,16 @@
-import { clearCacheHandler, ClearCacheMessage } from './routes/clear-cache';
-import { pingHandler, PingMessage } from './routes/ping';
-import { syncBlocksHandler, SyncBlocksMessage } from './routes/sync';
+import { clearCacheHandler } from './routes/clear-cache';
+import { pingHandler } from './routes/ping';
+import { syncBlocksHandler } from './routes/sync';
+
 import {
   AwaitedResponse,
   IncomingRequest,
+  ServicesInterface,
   ServiceWorkerRequest,
   ServiceWorkerResponse,
+  SwRequestMessage,
   SwResponse,
-} from './types';
-import { ServicesInterface } from 'penumbra-types';
-
-// Narrows message to ensure it's one intended for service worker
-export const isStdRequest = (
-  message: unknown,
-): message is ServiceWorkerRequest<SwRequestMessage> => {
-  return typeof message === 'object' && message !== null && 'penumbraSwReq' in message;
-};
+} from 'penumbra-types';
 
 // The standard, non-grpc router
 export const stdRouter = (
@@ -42,9 +37,6 @@ export const stdRouter = (
   // Returning true indicates to chrome that the response will be sent asynchronously
   return true;
 };
-
-// List all service worker messages here
-export type SwRequestMessage = SyncBlocksMessage | PingMessage | ClearCacheMessage;
 
 // The router that matches the requests with their handlers
 const typedMessageRouter = async (

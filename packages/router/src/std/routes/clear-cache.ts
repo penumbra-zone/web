@@ -1,8 +1,4 @@
-import { SwMessage, SwMessageHandler } from '../types';
-import { ServicesInterface } from 'penumbra-types';
-import { SyncBlocksMessage } from './sync';
-
-export type ClearCacheMessage = SwMessage<'CLEAR_CACHE', undefined, Promise<void>>;
+import { ServicesInterface, SwMessageHandler, SyncBlocksMessage } from 'penumbra-types';
 
 export const clearCacheHandler =
   (services: ServicesInterface): SwMessageHandler<SyncBlocksMessage> =>

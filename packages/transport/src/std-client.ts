@@ -1,14 +1,12 @@
-import { SwRequestMessage } from './router';
 import {
   IncomingRequest,
   isServiceWorkerResponse,
   PenumbraError,
+  PingMessage,
   ServiceWorkerRequest,
   ServiceWorkerResponse,
-} from './types';
-
-// List all service worker messages that are allowed to be called from dapp
-export const allowedDappMessages: SwRequestMessage['type'][] = ['PING'];
+  SwRequestMessage,
+} from 'penumbra-types';
 
 interface RequestResolvers {
   resolve: (m: ServiceWorkerResponse<SwRequestMessage>) => void;
@@ -28,7 +26,8 @@ export class PenumbraStdClient {
   }
 
   async ping(arg: string) {
-    await this.sendMessage({ type: 'PING', arg });
+    const res = await this.sendMessage<PingMessage>({ type: 'PING', arg });
+    return res.ack;
   }
 
   private handleResponse(event: MessageEvent<unknown>) {
@@ -49,7 +48,9 @@ export class PenumbraStdClient {
     }
   }
 
-  private async sendMessage<T extends SwRequestMessage>(penumbraSwReq: IncomingRequest<T>) {
+  private async sendMessage<T extends SwRequestMessage>(
+    penumbraSwReq: IncomingRequest<T>,
+  ): Promise<T['response']> {
     const sequence = ++this.pending.sequence;
     const promiseResponse = new Promise<ServiceWorkerResponse<T>>((resolve, reject) => {
       this.pending.requests.set(sequence, { resolve, reject });
@@ -61,7 +62,7 @@ export class PenumbraStdClient {
 
     const res = await promiseResponse;
     if ('penumbraSwRes' in res) {
-      return res.penumbraSwRes.data;
+      return res.penumbraSwRes.data as T['response'];
     } else {
       throw new Error(res.penumbraSwError);
     }

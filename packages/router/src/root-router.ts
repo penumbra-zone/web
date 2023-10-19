@@ -1,7 +1,11 @@
-import { ServiceWorkerResponse } from './std/types';
-import { isStdRequest, stdRouter, SwRequestMessage } from './std/router';
 import { isViewServerReq, viewServerRouter } from './grpc/view-protocol-server/router';
-import { ServicesInterface } from 'penumbra-types';
+import {
+  isStdRequest,
+  ServicesInterface,
+  ServiceWorkerResponse,
+  SwRequestMessage,
+} from 'penumbra-types';
+import { stdRouter } from './std/router';
 
 // Used to filter for service worker messages and narrow their type to pass to the typed handler.
 // Exposed to service worker for listening for internal and external messages

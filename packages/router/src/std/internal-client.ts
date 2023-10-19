@@ -1,13 +1,13 @@
-import { ClearCacheMessage } from './routes/clear-cache';
-import { PingMessage } from './routes/ping';
-import { SwRequestMessage } from './router';
-import { SyncBlocksMessage } from './routes/sync';
 import {
   AwaitedResponse,
+  ClearCacheMessage,
   IncomingRequest,
+  PingMessage,
   ServiceWorkerRequest,
   ServiceWorkerResponse,
-} from './types';
+  SwRequestMessage,
+  SyncBlocksMessage,
+} from 'penumbra-types';
 
 export const internalSwClient = {
   syncBlocks: () => sendSwMessage<SyncBlocksMessage>({ type: 'SYNC_BLOCKS' }),
