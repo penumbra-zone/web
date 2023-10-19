@@ -1,7 +1,8 @@
 import { ServiceType } from '@bufbuild/protobuf';
-import { isDappGrpcRequest, isDappGrpcResponse } from './types';
-import { createEventTransport } from './create';
 import { backOff } from 'exponential-backoff';
+import { createEventTransport, isDappGrpcRequest, isDappGrpcResponse } from 'penumbra-transport';
+import { isStdRequest } from './std/router';
+import { allowedDappMessages } from './std/external-client';
 
 export const createExtInternalEventTransport = <S extends ServiceType>(s: S) => {
   proxyMessages();
@@ -13,9 +14,10 @@ export const createExtInternalEventTransport = <S extends ServiceType>(s: S) => 
 export const proxyMessages = () => {
   // Outgoing window messages converted to chrome runtime messages
   window.addEventListener('message', ({ data }) => {
-    if (isDappGrpcRequest(data)) {
+    if (allowedRequest(data)) {
       // Service worker can take time to boot up
       // This requires us to retry requests on initial requests or after idle periods
+      // TODO: Only retry when there is a connection issue
       void backOff(() => chrome.runtime.sendMessage(data));
     }
   });
@@ -26,4 +28,13 @@ export const proxyMessages = () => {
       window.postMessage(message);
     }
   });
+};
+
+// For external std messages, make sure they are in the allow list
+// For internal std messages, they should be called via the internalSwClient
+const allowedRequest = (message: unknown): boolean => {
+  return (
+    isDappGrpcRequest(message) ||
+    (isStdRequest(message) && allowedDappMessages.includes(message.penumbraSwReq.type))
+  );
 };

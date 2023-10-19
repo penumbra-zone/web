@@ -3,6 +3,7 @@ import { SwRequestMessage } from './router';
 
 export interface ServiceWorkerRequest<T extends SwRequestMessage> {
   penumbraSwReq: IncomingRequest<T>;
+  sequence: number;
 }
 
 // The core message sent via content-script/popup
@@ -13,11 +14,27 @@ export type IncomingRequest<T> = T extends SwMessage<infer Type, infer Req, unkn
   : never;
 
 // The Response given back to consumer that matches their request
-export type ServiceWorkerResponse<T extends SwRequestMessage> =
-  | {
-      penumbraSwRes: AwaitedResponse<T>;
-    }
-  | { penumbraSwError: string };
+export type ServiceWorkerResponse<T extends SwRequestMessage> = PenumbraResponse<T> | PenumbraError;
+
+export interface PenumbraResponse<T extends SwRequestMessage> {
+  penumbraSwRes: AwaitedResponse<T>;
+  sequence: number;
+}
+
+export interface PenumbraError {
+  penumbraSwError: string;
+  sequence: number;
+}
+
+export const isServiceWorkerResponse = <T extends SwRequestMessage>(
+  message: unknown,
+): message is ServiceWorkerResponse<T> => {
+  return (
+    typeof message === 'object' &&
+    message !== null &&
+    ('penumbraSwRes' in message || 'penumbraSwError' in message)
+  );
+};
 
 // The base interface that service worker functions should implement
 export interface SwMessage<Type extends string, Req, Res> {

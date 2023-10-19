@@ -11,13 +11,14 @@ import {
 import { ServicesInterface } from 'penumbra-types';
 
 // Narrows message to ensure it's one intended for service worker
-export const isInternalRequest = (
+export const isStdRequest = (
   message: unknown,
 ): message is ServiceWorkerRequest<SwRequestMessage> => {
   return typeof message === 'object' && message !== null && 'penumbraSwReq' in message;
 };
 
-export const internalRouter = (
+// The standard, non-grpc router
+export const stdRouter = (
   req: ServiceWorkerRequest<SwRequestMessage>,
   sendResponse: (response: ServiceWorkerResponse<SwRequestMessage>) => void,
   services: ServicesInterface,

@@ -1,5 +1,5 @@
-import { ServiceWorkerResponse } from './internal/types';
-import { internalRouter, isInternalRequest, SwRequestMessage } from './internal/router';
+import { ServiceWorkerResponse } from './std/types';
+import { isStdRequest, stdRouter, SwRequestMessage } from './std/router';
 import { isViewServerReq, viewServerRouter } from './grpc/view-protocol-server/router';
 import { ServicesInterface } from 'penumbra-types';
 
@@ -14,8 +14,8 @@ export const penumbraMessageHandler =
   ) => {
     if (!allowedRequest(sender)) return;
 
-    if (isInternalRequest(message)) {
-      return internalRouter(message, sendResponse, services);
+    if (isStdRequest(message)) {
+      return stdRouter(message, sendResponse, services);
     } else if (isViewServerReq(message)) {
       viewServerRouter(message, sender, services);
     }
