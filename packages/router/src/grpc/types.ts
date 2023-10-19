@@ -7,6 +7,7 @@ import {
   unaryResponseMsg,
 } from 'penumbra-transport';
 import { MethodKind, ServiceType } from '@bufbuild/protobuf';
+import { ServicesInterface } from 'penumbra-types';
 
 interface MethodMatch<S extends ServiceType> {
   msg: GrpcRequest<S>;
@@ -39,10 +40,14 @@ export const getTransport = (
   }
 };
 
-export type UnaryHandler<S extends ServiceType> = (msg: GrpcRequest<S>) => Promise<GrpcResponse<S>>;
+export type UnaryHandler<S extends ServiceType> = (
+  msg: GrpcRequest<S>,
+  services: ServicesInterface,
+) => Promise<GrpcResponse<S>>;
 
 export type StreamingHandler<S extends ServiceType> = (
   msg: GrpcRequest<S>,
+  services: ServicesInterface,
 ) => AsyncIterable<GrpcResponse<S>>;
 
 export const createServerRoute =
@@ -51,18 +56,22 @@ export const createServerRoute =
     unaryHandler: UnaryHandler<S>,
     streamingHandler: StreamingHandler<S>,
   ) =>
-  (req: DappMessageRequest<S>, sender: chrome.runtime.MessageSender) => {
+  (
+    req: DappMessageRequest<S>,
+    sender: chrome.runtime.MessageSender,
+    services: ServicesInterface,
+  ) => {
     const send = getTransport(sender);
     const { msg, kind } = deserializeReq(req, service);
 
     (async function () {
       if (kind === MethodKind.ServerStreaming) {
-        for await (const result of streamingHandler(msg)) {
+        for await (const result of streamingHandler(msg, services)) {
           await send(streamResponseMsg(req, { value: result, done: false }));
         }
         await send(streamResponseMsg(req, { done: true }));
       } else if (kind === MethodKind.Unary) {
-        const result = await unaryHandler(msg);
+        const result = await unaryHandler(msg, services);
         await send(unaryResponseMsg(req, result));
       } else {
         throw new Error(`Method kind: ${kind}, not supported`);

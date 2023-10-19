@@ -1,4 +1,4 @@
-import { createServerRoute, UnaryHandler } from '../grpc/types';
+import { createServerRoute, StreamingHandler, UnaryHandler } from '../types';
 import {
   DappMessageRequest,
   GrpcRequest,
@@ -26,22 +26,26 @@ export const isViewServerReq = (
 };
 
 export const viewServerUnaryHandler: UnaryHandler<typeof ViewProtocolService> = async (
-  msg: GrpcRequest<typeof ViewProtocolService>,
+  msg,
+  services,
 ): Promise<GrpcResponse<typeof ViewProtocolService>> => {
-  if (isAppParamsRequest(msg)) return handleAppParamsReq();
+  if (isAppParamsRequest(msg)) return handleAppParamsReq(services);
   else if (isAddressRequest(msg)) return handleAddressReq(msg);
   else if (isWalletIdRequest(msg)) return handleWalletIdReq();
-  else if (isTxInfoByHashRequest(msg)) return handleTxInfoByHashReq(msg);
-  else if (isTxPlannerRequest(msg)) return handleTxPlannerReq(msg);
+  else if (isTxInfoByHashRequest(msg)) return handleTxInfoByHashReq(msg, services);
+  else if (isTxPlannerRequest(msg)) return handleTxPlannerReq(msg, services);
 
   throw new Error(`Non-supported unary request: ${(msg as ViewReqMessage).getType().typeName}`);
 };
 
-export const viewServerStreamingHandler = (msg: ViewReqMessage): AsyncIterable<ViewProtocolRes> => {
-  if (isBalancesRequest(msg)) return handleBalancesReq(msg);
-  else if (isTransactionInfoRequest(msg)) return handleTransactionInfoReq(msg);
-  else if (isStatusStreamRequest(msg)) return handleStatusReq(msg);
-  else if (isAssetsRequest(msg)) return handleAssetsReq(msg);
+export const viewServerStreamingHandler: StreamingHandler<typeof ViewProtocolService> = (
+  msg,
+  services,
+): AsyncIterable<ViewProtocolRes> => {
+  if (isBalancesRequest(msg)) return handleBalancesReq(msg, services);
+  else if (isTransactionInfoRequest(msg)) return handleTransactionInfoReq(msg, services);
+  else if (isStatusStreamRequest(msg)) return handleStatusReq(msg, services);
+  else if (isAssetsRequest(msg)) return handleAssetsReq(msg, services);
 
   throw new Error(`Non-supported streaming request: ${msg.getType().typeName}`);
 };

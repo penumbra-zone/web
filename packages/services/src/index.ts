@@ -1,17 +1,10 @@
 import { testnetConstants } from 'penumbra-constants';
-import { BlockProcessor } from 'penumbra-query';
-import { RootQuerier } from 'penumbra-query/src/root-querier';
+import { BlockProcessor, RootQuerier } from 'penumbra-query';
 import { IndexedDb, localExtStorage, syncLastBlockWithLocal } from 'penumbra-storage';
 import { ViewServer } from 'penumbra-wasm-ts';
-import { syncLastBlockWithStatusReq } from '../routes/service-worker/view-protocol-server/status-stream';
+import { ServicesInterface, WalletServices } from 'penumbra-types/src/services';
 
-interface WalletServices {
-  viewServer: ViewServer;
-  blockProcessor: BlockProcessor;
-  indexedDb: IndexedDb;
-}
-
-export class Services {
+export class Services implements ServicesInterface {
   private walletServicesPromise: Promise<WalletServices> | undefined;
 
   private _querier: RootQuerier | undefined;

@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { base64ToUint8Array, uint8ArrayToBase64 } from 'penumbra-types';
+import { beforeEach, describe, expect, test } from 'vitest';
+import { base64ToUint8Array, ServicesInterface, uint8ArrayToBase64 } from 'penumbra-types';
 import { handleBalancesReq } from './balances';
 import {
   BalancesRequest,
@@ -23,25 +23,23 @@ const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: numb
 
 describe('Balances request handler', () => {
   let req: BalancesRequest;
+  let services: ServicesInterface;
 
   beforeEach(() => {
-    vi.mock('../../../service-worker', () => ({
-      services: {
-        getWalletServices: () =>
-          Promise.resolve({
-            indexedDb: {
-              getAllNotes: (): Promise<SpendableNoteRecord[]> => Promise.resolve(testData),
-            },
-          }),
-      },
-    }));
-
+    services = {
+      getWalletServices: () =>
+        Promise.resolve({
+          indexedDb: {
+            getAllNotes: (): Promise<SpendableNoteRecord[]> => Promise.resolve(testData),
+          },
+        }),
+    } as ServicesInterface;
     req = new BalancesRequest({});
   });
 
   test('aggregation, with no filtering', async () => {
     const responses: BalancesResponse[] = [];
-    for await (const res of handleBalancesReq(req)) {
+    for await (const res of handleBalancesReq(req, services)) {
       responses.push(res);
     }
     expect(responses.length).toBe(4);
@@ -57,7 +55,7 @@ describe('Balances request handler', () => {
       inner: base64ToUint8Array(assetIdStr),
     });
     const responses: BalancesResponse[] = [];
-    for await (const res of handleBalancesReq(req)) {
+    for await (const res of handleBalancesReq(req, services)) {
       responses.push(res);
     }
     expect(responses.length).toBe(3);
@@ -69,7 +67,7 @@ describe('Balances request handler', () => {
   test('filtering account', async () => {
     req.accountFilter = new AddressIndex({ account: 12 });
     const responses: BalancesResponse[] = [];
-    for await (const res of handleBalancesReq(req)) {
+    for await (const res of handleBalancesReq(req, services)) {
       responses.push(res);
     }
     expect(responses.length).toBe(1);
@@ -81,7 +79,7 @@ describe('Balances request handler', () => {
   test('spent notes', async () => {
     req.accountFilter = new AddressIndex({ account: 99 });
     const responses: BalancesResponse[] = [];
-    for await (const res of handleBalancesReq(req)) {
+    for await (const res of handleBalancesReq(req, services)) {
       responses.push(res);
     }
     expect(responses.length).toBe(0);

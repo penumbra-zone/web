@@ -3,9 +3,8 @@ import {
   TransactionInfoRequest,
   TransactionInfoResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-
-import { services } from '../../../service-worker';
 import { ViewReqMessage } from './router';
+import { ServicesInterface } from 'penumbra-types';
 
 export const isTransactionInfoRequest = (msg: ViewReqMessage): msg is TransactionInfoRequest => {
   return msg.getType().typeName === TransactionInfoRequest.typeName;
@@ -13,6 +12,7 @@ export const isTransactionInfoRequest = (msg: ViewReqMessage): msg is Transactio
 
 export const handleTransactionInfoReq = async function* (
   req: TransactionInfoRequest,
+  services: ServicesInterface,
 ): AsyncIterable<TransactionInfoResponse> {
   const { indexedDb } = await services.getWalletServices();
 

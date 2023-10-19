@@ -8,6 +8,7 @@ import {
   ServiceWorkerResponse,
   SwResponse,
 } from './types';
+import { ServicesInterface } from 'penumbra-types';
 
 // Narrows message to ensure it's one intended for service worker
 export const isInternalRequest = (
@@ -19,9 +20,10 @@ export const isInternalRequest = (
 export const internalRouter = (
   req: ServiceWorkerRequest<SwRequestMessage>,
   sendResponse: (response: ServiceWorkerResponse<SwRequestMessage>) => void,
+  services: ServicesInterface,
 ) => {
   (async function () {
-    const result = await typedMessageRouter(req.penumbraSwReq);
+    const result = await typedMessageRouter(req.penumbraSwReq, services);
     sendResponse({
       penumbraSwRes: {
         type: req.penumbraSwReq.type,
@@ -42,14 +44,17 @@ export const internalRouter = (
 export type SwRequestMessage = SyncBlocksMessage | PingMessage | ClearCacheMessage;
 
 // The router that matches the requests with their handlers
-const typedMessageRouter = async (req: IncomingRequest<SwRequestMessage>): Promise<SwResponse> => {
+const typedMessageRouter = async (
+  req: IncomingRequest<SwRequestMessage>,
+  services: ServicesInterface,
+): Promise<SwResponse> => {
   switch (req.type) {
     case 'SYNC_BLOCKS':
-      return syncBlocksHandler();
+      return syncBlocksHandler(services)();
     case 'PING':
       return pingHandler(req.arg);
     case 'CLEAR_CACHE':
-      return clearCacheHandler();
+      return clearCacheHandler(services)();
     default:
       throw new Error(`Unhandled request type: ${JSON.stringify(req)}`);
   }

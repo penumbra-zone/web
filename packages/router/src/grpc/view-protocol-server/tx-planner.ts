@@ -2,7 +2,6 @@ import {
   TransactionPlannerRequest,
   TransactionPlannerResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { services } from '../../../service-worker';
 import { getAddressByIndex, TxPlanner } from 'penumbra-wasm-ts';
 import {
   Address,
@@ -10,6 +9,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { localExtStorage } from 'penumbra-storage';
 import { ViewReqMessage } from './router';
+import { ServicesInterface } from 'penumbra-types';
 
 export const isTxPlannerRequest = (msg: ViewReqMessage): msg is TransactionPlannerRequest => {
   return msg.getType().typeName === TransactionPlannerRequest.typeName;
@@ -24,6 +24,7 @@ const getRefundAddress = async (req: TransactionPlannerRequest): Promise<Address
 
 export const handleTxPlannerReq = async (
   req: TransactionPlannerRequest,
+  services: ServicesInterface,
 ): Promise<TransactionPlannerResponse> => {
   const { indexedDb } = await services.getWalletServices();
   const chainParams = await services.querier.app.chainParams();

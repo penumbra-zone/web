@@ -6,8 +6,9 @@ import {
   AssetId,
   DenomMetadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { ShieldedPoolQuerierInterface } from 'penumbra-types/src/querier';
 
-export class ShieldedPoolQuerier {
+export class ShieldedPoolQuerier implements ShieldedPoolQuerierInterface {
   private readonly client: PromiseClient<typeof QueryService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {

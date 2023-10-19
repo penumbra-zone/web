@@ -26,6 +26,7 @@ import { Base64Str } from './base64';
 
 export interface IndexedDbInterface {
   constants(): IdbConstants;
+  clear(): Promise<void>;
   getLastBlockSynced(): Promise<bigint | undefined>;
   getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
   saveSpendableNote(note: SpendableNoteRecord): Promise<void>;

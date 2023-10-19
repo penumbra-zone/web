@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { grpcClient } from '../services/clients';
+import { grpcClient } from '../clients';
 
 export const getChainId = async (): Promise<string> => {
   const res = await grpcClient.appParameters({});
