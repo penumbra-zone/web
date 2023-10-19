@@ -11,8 +11,8 @@ export const isStatusStreamRequest = (msg: ViewReqMessage): msg is StatusStreamR
   return msg.getType().typeName === StatusStreamRequest.typeName;
 };
 
+// TODO: FIX THIS
 const statusReqLooper = new Looper<bigint>();
-
 export const syncLastBlockWithStatusReq = (): IdbUpdateNotifier<
   PenumbraDb,
   'LAST_BLOCK_SYNCED'

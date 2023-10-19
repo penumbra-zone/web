@@ -2,7 +2,7 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { Button, FadeTransition } from 'ui';
 import { SettingsHeader } from '../../../shared';
 import { TrashGradientIcon } from '../../../icons';
-import { swClient } from '../../service-worker/internal/client';
+import { swClient } from 'penumbra-router';
 
 export const SettingsClearCache = () => {
   return (
