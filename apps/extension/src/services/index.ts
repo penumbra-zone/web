@@ -98,4 +98,17 @@ export class Services {
     this.walletServicesPromise = undefined;
     await this.initialize();
   }
+
+  async openWindow() {
+    const { top, left, width } = await chrome.windows.getLastFocused();
+
+    await chrome.windows.create({
+      url: 'popup.html',
+      type: 'popup',
+      width: 400,
+      height: 628,
+      top,
+      left: left !== undefined && width !== undefined ? left + (width - 400) : 0,
+    });
+  }
 }

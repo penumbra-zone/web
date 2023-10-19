@@ -1,4 +1,5 @@
 import { ClearCacheMessage } from '../clear-cache';
+import { OpenWindowMessage } from '../open-window';
 import { PingMessage } from '../ping';
 import { SwRequestMessage } from '../router';
 import { SyncBlocksMessage } from '../sync';
@@ -13,6 +14,7 @@ export const swClient = {
   syncBlocks: () => sendSwMessage<SyncBlocksMessage>({ type: 'SYNC_BLOCKS' }),
   ping: (arg: string) => sendSwMessage<PingMessage>({ type: 'PING', arg }),
   clearCache: () => sendSwMessage<ClearCacheMessage>({ type: 'CLEAR_CACHE' }),
+  openWindow: () => sendSwMessage<OpenWindowMessage>({ type: 'OPEN_WINDOW' }),
 };
 
 export const sendSwMessage = async <T extends SwRequestMessage>(

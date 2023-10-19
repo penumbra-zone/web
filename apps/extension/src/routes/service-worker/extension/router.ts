@@ -1,4 +1,5 @@
 import { ClearCacheMessage, clearCacheHandler } from './clear-cache';
+import { OpenWindowMessage, openWindowHandler } from './open-window';
 import { PingMessage, pingHandler } from './ping';
 import { SyncBlocksMessage, syncBlocksHandler } from './sync';
 import {
@@ -39,7 +40,11 @@ export const extRouter = (
 };
 
 // List all service worker messages here
-export type SwRequestMessage = SyncBlocksMessage | PingMessage | ClearCacheMessage;
+export type SwRequestMessage =
+  | SyncBlocksMessage
+  | PingMessage
+  | ClearCacheMessage
+  | OpenWindowMessage;
 
 // The router that matches the requests with their handlers
 const typedMessageRouter = async (req: IncomingRequest<SwRequestMessage>): Promise<SwResponse> => {
@@ -50,6 +55,8 @@ const typedMessageRouter = async (req: IncomingRequest<SwRequestMessage>): Promi
       return pingHandler(req.arg);
     case 'CLEAR_CACHE':
       return clearCacheHandler();
+    case 'OPEN_WINDOW':
+      return openWindowHandler();
     default:
       throw new Error(`Unhandled request type: ${JSON.stringify(req)}`);
   }
