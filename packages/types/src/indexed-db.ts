@@ -23,8 +23,18 @@ import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { Note } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import { JsonValue } from '@bufbuild/protobuf';
 import { Base64Str } from './base64';
+import { StoreKey, StoreValue } from 'idb/build/entry';
+
+export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
+  table: StoreName;
+  value: StoreValue<DBTypes, StoreName>;
+  key?: StoreKey<DBTypes, StoreName> | IDBKeyRange;
+}
 
 export interface IndexedDbInterface {
+  subscribe<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
+    table: StoreName,
+  ): AsyncGenerator<IdbUpdate<DBTypes, StoreName>, void>;
   constants(): IdbConstants;
   clear(): Promise<void>;
   getLastBlockSynced(): Promise<bigint | undefined>;

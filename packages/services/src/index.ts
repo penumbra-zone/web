@@ -58,9 +58,10 @@ export class Services implements ServicesInterface {
       const indexedDb = await IndexedDb.initialize({
         chainId,
         dbVersion: testnetConstants.indexedDbVersion,
-        updateNotifiers: [syncLastBlockWithLocal()],
         walletId: wallets[0]!.id,
       });
+
+      void syncLastBlockWithLocal(indexedDb);
 
       const viewServer = await ViewServer.initialize({
         fullViewingKey: wallets[0]!.fullViewingKey,

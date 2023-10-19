@@ -1,15 +1,11 @@
-import { IdbUpdateNotifier } from '../indexed-db/updater';
 import { localExtStorage } from './local';
-import { PenumbraDb } from 'penumbra-types';
+import { IndexedDb } from '../indexed-db';
 
 // Syncs the IndexedDb last block number with chrome.storage.local
 // Later used to synchronize with Zustand store
-export const syncLastBlockWithLocal = (): IdbUpdateNotifier<PenumbraDb, 'LAST_BLOCK_SYNCED'> => {
-  return {
-    table: 'LAST_BLOCK_SYNCED',
-    handler: async val => {
-      // Local storage does not support bigInt's
-      await localExtStorage.set('lastBlockSynced', Number(val));
-    },
-  };
+export const syncLastBlockWithLocal = async (indexedDb: IndexedDb) => {
+  const subscription = indexedDb.subscribe('LAST_BLOCK_SYNCED');
+  for await (const update of subscription) {
+    await localExtStorage.set('lastBlockSynced', Number(update.value));
+  }
 };

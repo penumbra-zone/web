@@ -2,13 +2,14 @@ import { IDBPDatabase, openDB } from 'idb';
 import {
   IDB_TABLES,
   IdbConstants,
+  IdbUpdate,
   IndexedDbInterface,
   PenumbraDb,
   ScanResult,
   StateCommitmentTree,
   uint8ArrayToBase64,
 } from 'penumbra-types';
-import { IbdUpdater, IbdUpdates, TableUpdateNotifier } from './updater';
+import { IbdUpdater, IbdUpdates } from './updater';
 import {
   FmdParameters,
   NoteSource,
@@ -22,11 +23,11 @@ import {
   AssetId,
   DenomMetadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { StoreNames } from 'idb/build/entry';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
   chainId: string;
-  updateNotifiers?: TableUpdateNotifier[]; // Consumers subscribing to updates
   walletId: string;
 }
 
@@ -37,12 +38,7 @@ export class IndexedDb implements IndexedDbInterface {
     private readonly c: IdbConstants,
   ) {}
 
-  static async initialize({
-    dbVersion,
-    updateNotifiers,
-    walletId,
-    chainId,
-  }: IndexedDbProps): Promise<IndexedDb> {
+  static async initialize({ dbVersion, walletId, chainId }: IndexedDbProps): Promise<IndexedDb> {
     const dbName = `viewdata/${chainId}/${walletId}`;
 
     const db = await openDB<PenumbraDb>(dbName, dbVersion, {
@@ -65,17 +61,22 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('SWAPS');
       },
     });
-    const updater = new IbdUpdater(db, updateNotifiers);
     const constants = {
       name: dbName,
       version: dbVersion,
       tables: IDB_TABLES,
     } satisfies IdbConstants;
-    return new this(db, updater, constants);
+    return new this(db, new IbdUpdater(db), constants);
   }
 
   constants(): IdbConstants {
     return this.c;
+  }
+
+  subscribe<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
+    table: StoreName,
+  ): AsyncGenerator<IdbUpdate<DBTypes, StoreName>, void> {
+    return this.u.subscribe(table);
   }
 
   public async getStateCommitmentTree(): Promise<StateCommitmentTree> {
