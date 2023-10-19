@@ -2,8 +2,8 @@ import {
   AssetsRequest,
   AssetsResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { ViewReqMessage } from './helpers/generic';
 import { services } from '../../../service-worker';
+import { ViewReqMessage } from './router';
 
 export const isAssetsRequest = (msg: ViewReqMessage): msg is AssetsRequest => {
   return msg.getType().typeName === AssetsRequest.typeName;

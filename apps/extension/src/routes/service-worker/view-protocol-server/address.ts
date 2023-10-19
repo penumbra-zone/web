@@ -1,10 +1,10 @@
-import { ViewReqMessage } from './helpers/generic';
 import {
   AddressByIndexRequest,
   AddressByIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { getAddressByIndex } from 'penumbra-wasm-ts';
 import { localExtStorage } from 'penumbra-storage';
+import { ViewReqMessage } from './router';
 
 export const isAddressRequest = (req: ViewReqMessage): req is AddressByIndexRequest => {
   return req.getType().typeName === AddressByIndexRequest.typeName;

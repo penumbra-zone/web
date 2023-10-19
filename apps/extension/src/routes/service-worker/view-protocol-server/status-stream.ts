@@ -2,11 +2,11 @@ import {
   StatusStreamRequest,
   StatusStreamResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { ViewReqMessage } from './helpers/generic';
 import { services } from '../../../service-worker';
 import { Looper } from 'penumbra-transport';
 import { IdbUpdateNotifier } from 'penumbra-storage/src/indexed-db/updater';
 import { PenumbraDb } from 'penumbra-types';
+import { ViewReqMessage } from './router';
 
 export const isStatusStreamRequest = (msg: ViewReqMessage): msg is StatusStreamRequest => {
   return msg.getType().typeName === StatusStreamRequest.typeName;

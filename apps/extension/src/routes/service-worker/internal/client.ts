@@ -1,13 +1,13 @@
-import { ClearCacheMessage } from '../clear-cache';
-import { PingMessage } from '../ping';
-import { SwRequestMessage } from '../router';
-import { SyncBlocksMessage } from '../sync';
+import { ClearCacheMessage } from './routes/clear-cache';
+import { PingMessage } from './routes/ping';
+import { SwRequestMessage } from './router';
+import { SyncBlocksMessage } from './routes/sync';
 import {
   AwaitedResponse,
   IncomingRequest,
   ServiceWorkerRequest,
   ServiceWorkerResponse,
-} from '../types';
+} from './types';
 
 export const swClient = {
   syncBlocks: () => sendSwMessage<SyncBlocksMessage>({ type: 'SYNC_BLOCKS' }),

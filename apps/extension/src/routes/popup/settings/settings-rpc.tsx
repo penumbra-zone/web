@@ -7,7 +7,7 @@ import { ShareGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { networkSelector } from '../../../state/network';
-import { swClient } from '../../service-worker/internal/client/internal';
+import { swClient } from '../../service-worker/internal/client';
 
 export const SettingsRPC = () => {
   const { chainId, refetch } = useChainId();

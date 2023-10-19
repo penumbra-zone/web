@@ -1,6 +1,6 @@
-import { clearCacheHandler, ClearCacheMessage } from './clear-cache';
-import { pingHandler, PingMessage } from './ping';
-import { syncBlocksHandler, SyncBlocksMessage } from './sync';
+import { clearCacheHandler, ClearCacheMessage } from './routes/clear-cache';
+import { pingHandler, PingMessage } from './routes/ping';
+import { syncBlocksHandler, SyncBlocksMessage } from './routes/sync';
 import {
   AwaitedResponse,
   IncomingRequest,

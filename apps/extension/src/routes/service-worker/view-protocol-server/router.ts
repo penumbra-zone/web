@@ -1,10 +1,10 @@
+import { createServerRoute, UnaryHandler } from '../grpc/types';
 import {
-  createServerRoute,
-  UnaryHandler,
-  ViewProtocolRes,
-  ViewReqMessage,
-} from './helpers/generic';
-import { GrpcRequest, GrpcResponse } from 'penumbra-transport';
+  DappMessageRequest,
+  GrpcRequest,
+  GrpcResponse,
+  isDappGrpcRequest,
+} from 'penumbra-transport';
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { handleAppParamsReq, isAppParamsRequest } from './app-params';
 import { handleAddressReq, isAddressRequest } from './address';
@@ -15,6 +15,15 @@ import { handleBalancesReq, isBalancesRequest } from './balances';
 import { handleTransactionInfoReq, isTransactionInfoRequest } from './tx-info';
 import { handleStatusReq, isStatusStreamRequest } from './status-stream';
 import { handleAssetsReq, isAssetsRequest } from './assets';
+
+export type ViewReqMessage = GrpcRequest<typeof ViewProtocolService>;
+export type ViewProtocolRes = GrpcResponse<typeof ViewProtocolService>;
+
+export const isViewServerReq = (
+  message: unknown,
+): message is DappMessageRequest<typeof ViewProtocolService> => {
+  return isDappGrpcRequest(message) && message.serviceTypeName === ViewProtocolService.typeName;
+};
 
 export const viewServerUnaryHandler: UnaryHandler<typeof ViewProtocolService> = async (
   msg: GrpcRequest<typeof ViewProtocolService>,

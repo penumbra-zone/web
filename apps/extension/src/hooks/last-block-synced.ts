@@ -4,7 +4,7 @@ import { TendermintQuerier } from 'penumbra-query/src/queriers/tendermint';
 import { PopupLoaderData } from '../routes/popup/home';
 import { useStore } from '../state';
 import { networkSelector } from '../state/network';
-import { swClient } from '../routes/service-worker/internal/client/internal';
+import { swClient } from '../routes/service-worker/internal/client';
 
 // There is a slight delay with Zustand loading up the last block synced.
 // To prevent the screen flicker, we use a loader to read it from chrome.storage.local.

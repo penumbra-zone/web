@@ -1,4 +1,4 @@
-import { SwMessage, SwMessageHandler } from './types';
+import { SwMessage, SwMessageHandler } from '../types';
 
 export interface PongResponse {
   ack: string;

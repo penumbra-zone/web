@@ -3,24 +3,10 @@ import {
   errorResponseMsg,
   GrpcRequest,
   GrpcResponse,
-  isDappGrpcRequest,
   streamResponseMsg,
   unaryResponseMsg,
 } from 'penumbra-transport';
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
-import { ServiceType } from '@bufbuild/protobuf';
-import { MethodKind } from '@bufbuild/protobuf/dist/cjs/service-type';
-import { ServiceWorkerResponse } from '../../internal/types';
-import { SwRequestMessage } from '../../internal/router';
-
-export type ViewReqMessage = GrpcRequest<typeof ViewProtocolService>;
-export type ViewProtocolRes = GrpcResponse<typeof ViewProtocolService>;
-
-export const isViewServerReq = (
-  message: unknown,
-): message is DappMessageRequest<typeof ViewProtocolService> => {
-  return isDappGrpcRequest(message) && message.serviceTypeName === ViewProtocolService.typeName;
-};
+import { MethodKind, ServiceType } from '@bufbuild/protobuf';
 
 interface MethodMatch<S extends ServiceType> {
   msg: GrpcRequest<S>;
@@ -41,17 +27,31 @@ export const deserializeReq = <S extends ServiceType>(
   };
 };
 
+// If from dapp, send to tab
+// If internal message, send via chrome.runtime
+export const getTransport = (
+  sender: chrome.runtime.MessageSender,
+): ((res: unknown) => Promise<unknown>) => {
+  if (sender.tab?.id) {
+    return (res: unknown) => chrome.tabs.sendMessage(sender.tab!.id!, res); // Guaranteed given request is from dapp
+  } else {
+    return (res: unknown) => chrome.runtime.sendMessage(sender.id, res);
+  }
+};
+
+export type UnaryHandler<S extends ServiceType> = (msg: GrpcRequest<S>) => Promise<GrpcResponse<S>>;
+
+export type StreamingHandler<S extends ServiceType> = (
+  msg: GrpcRequest<S>,
+) => AsyncIterable<GrpcResponse<S>>;
+
 export const createServerRoute =
   <S extends ServiceType>(
     service: S,
     unaryHandler: UnaryHandler<S>,
     streamingHandler: StreamingHandler<S>,
   ) =>
-  (
-    req: DappMessageRequest<S>,
-    sender: chrome.runtime.MessageSender,
-    sendResponse: (response: ServiceWorkerResponse<SwRequestMessage>) => void,
-  ) => {
+  (req: DappMessageRequest<S>, sender: chrome.runtime.MessageSender) => {
     const send = getTransport(sender);
     const { msg, kind } = deserializeReq(req, service);
 
@@ -71,21 +71,3 @@ export const createServerRoute =
       void send(errorResponseMsg(req, e));
     });
   };
-
-// If from dapp, send to tab
-// If internal message, send via chrome.runtime
-export const getTransport = (
-  sender: chrome.runtime.MessageSender,
-): ((res: unknown) => Promise<unknown>) => {
-  if (sender.tab?.id) {
-    return (res: unknown) => chrome.tabs.sendMessage(sender.tab!.id!, res); // Guaranteed given request is from dapp
-  } else {
-    return (res: unknown) => chrome.runtime.sendMessage(sender.id, res);
-  }
-};
-
-export type UnaryHandler<S extends ServiceType> = (msg: GrpcRequest<S>) => Promise<GrpcResponse<S>>;
-
-export type StreamingHandler<S extends ServiceType> = (
-  msg: GrpcRequest<S>,
-) => AsyncIterable<GrpcResponse<S>>;
