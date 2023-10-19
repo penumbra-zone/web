@@ -1,23 +1,19 @@
-import { clearCacheHandler, ClearCacheMessage } from './routes/clear-cache';
-import { pingHandler, PingMessage } from './routes/ping';
-import { syncBlocksHandler, SyncBlocksMessage } from './routes/sync';
+import { clearCacheHandler } from './routes/clear-cache';
+import { pingHandler } from './routes/ping';
+import { syncBlocksHandler } from './routes/sync';
+
 import {
   AwaitedResponse,
   IncomingRequest,
+  ServicesInterface,
   ServiceWorkerRequest,
   ServiceWorkerResponse,
+  SwRequestMessage,
   SwResponse,
-} from './types';
-import { ServicesInterface } from 'penumbra-types';
+} from 'penumbra-types';
 
-// Narrows message to ensure it's one intended for service worker
-export const isInternalRequest = (
-  message: unknown,
-): message is ServiceWorkerRequest<SwRequestMessage> => {
-  return typeof message === 'object' && message !== null && 'penumbraSwReq' in message;
-};
-
-export const internalRouter = (
+// The standard, non-grpc router
+export const stdRouter = (
   req: ServiceWorkerRequest<SwRequestMessage>,
   sendResponse: (response: ServiceWorkerResponse<SwRequestMessage>) => void,
   services: ServicesInterface,
@@ -25,6 +21,7 @@ export const internalRouter = (
   (async function () {
     const result = await typedMessageRouter(req.penumbraSwReq, services);
     sendResponse({
+      sequence: req.sequence,
       penumbraSwRes: {
         type: req.penumbraSwReq.type,
         data: result,
@@ -32,6 +29,7 @@ export const internalRouter = (
     });
   })().catch(e => {
     sendResponse({
+      sequence: req.sequence,
       penumbraSwError: String(e),
     });
   });
@@ -39,9 +37,6 @@ export const internalRouter = (
   // Returning true indicates to chrome that the response will be sent asynchronously
   return true;
 };
-
-// List all service worker messages here
-export type SwRequestMessage = SyncBlocksMessage | PingMessage | ClearCacheMessage;
 
 // The router that matches the requests with their handlers
 const typedMessageRouter = async (

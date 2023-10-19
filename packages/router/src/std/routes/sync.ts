@@ -1,7 +1,4 @@
-import { SwMessage, SwMessageHandler } from '../types';
-import { ServicesInterface } from 'penumbra-types';
-
-export type SyncBlocksMessage = SwMessage<'SYNC_BLOCKS', undefined, Promise<void>>;
+import { ServicesInterface, SwMessageHandler, SyncBlocksMessage } from 'penumbra-types';
 
 export const syncBlocksHandler =
   (services: ServicesInterface): SwMessageHandler<SyncBlocksMessage> =>

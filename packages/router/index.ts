@@ -1,2 +1,2 @@
 export * from './src/root-router';
-export * from './src/internal/client';
+export * from './src/std/internal-client';

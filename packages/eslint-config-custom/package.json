@@ -7,14 +7,14 @@
     "@typescript-eslint/eslint-plugin": "^6.8.0",
     "@typescript-eslint/parser": "^6.8.0",
     "eslint": "^8.51.0",
-    "eslint-config-next": "^13.5.5",
+    "eslint-config-next": "^13.5.6",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-config-turbo": "^1.10.15",
+    "eslint-config-turbo": "^1.10.16",
     "eslint-plugin-react": "7.33.2",
     "eslint-plugin-tailwindcss": "^3.13.0",
-    "eslint-plugin-turbo": "^1.10.15",
-    "eslint-plugin-vitest": "^0.3.2",
-    "next": "^13.5.5"
+    "eslint-plugin-turbo": "^1.10.16",
+    "eslint-plugin-vitest": "^0.3.3",
+    "next": "^13.5.6"
   },
   "publishConfig": {
     "access": "public"
