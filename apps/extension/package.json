@@ -21,6 +21,8 @@
     "penumbra-constants": "workspace:*",
     "penumbra-crypto-ts": "workspace:*",
     "penumbra-query": "workspace:*",
+    "penumbra-router": "workspace:*",
+    "penumbra-services": "workspace:*",
     "penumbra-storage": "workspace:*",
     "penumbra-transport": "workspace:*",
     "penumbra-types": "workspace:*",

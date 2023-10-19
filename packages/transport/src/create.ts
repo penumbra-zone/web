@@ -7,9 +7,9 @@ import {
   GrpcRequest,
   GrpcResponse,
   isErrorResponse,
-  isResultResponse,
   isServiceGrpcResponse,
   isStreamResponse,
+  isUnaryResponse,
   PendingRequests,
 } from './types';
 import { unaryIO } from './unary';
@@ -45,7 +45,7 @@ const outputEventListener =
 
       if (isErrorResponse<S>(event.data)) {
         pending.requests.delete(sequence) && reject(event.data);
-      } else if (isResultResponse<S>(event.data)) {
+      } else if (isUnaryResponse<S>(event.data)) {
         pending.requests.delete(sequence) && resolve(event.data);
       } else if (isStreamResponse<S>(event.data)) {
         if (event.data.stream.done) {

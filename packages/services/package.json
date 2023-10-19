@@ -1,0 +1,22 @@
+{
+  "name": "penumbra-services",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "dependencies": {
+    "penumbra-constants": "workspace:*",
+    "penumbra-query": "workspace:*",
+    "penumbra-storage": "workspace:*",
+    "penumbra-types": "workspace:*",
+    "penumbra-wasm-ts": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/chrome": "0.0.246",
+    "eslint": "^8.51.0",
+    "eslint-config-custom": "workspace:*",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.2.2"
+  }
+}

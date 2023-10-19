@@ -1,32 +1,6 @@
-import { PenumbraDb } from 'penumbra-types';
-import { StoreKey, StoreNames, StoreValue } from 'idb/build/entry';
+import { IdbUpdate, PenumbraDb } from 'penumbra-types';
+import { StoreNames } from 'idb/build/entry';
 import { IDBPDatabase } from 'idb';
-
-export type TableUpdateNotifier =
-  | IdbUpdateNotifier<PenumbraDb, 'LAST_BLOCK_SYNCED'>
-  | IdbUpdateNotifier<PenumbraDb, 'TREE_LAST_POSITION'>
-  | IdbUpdateNotifier<PenumbraDb, 'TREE_LAST_FORGOTTEN'>
-  | IdbUpdateNotifier<PenumbraDb, 'TREE_HASHES'>
-  | IdbUpdateNotifier<PenumbraDb, 'TREE_COMMITMENTS'>
-  | IdbUpdateNotifier<PenumbraDb, 'ASSETS'>
-  | IdbUpdateNotifier<PenumbraDb, 'SPENDABLE_NOTES'>;
-
-export interface IdbUpdateNotifier<
-  DBTypes extends PenumbraDb,
-  StoreName extends StoreNames<DBTypes>,
-> {
-  table: StoreName;
-  handler: (
-    value: StoreValue<DBTypes, StoreName>,
-    key?: StoreKey<DBTypes, StoreName> | IDBKeyRange,
-  ) => void | Promise<void>;
-}
-
-export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
-  table: StoreName;
-  value: StoreValue<DBTypes, StoreName>;
-  key?: StoreKey<DBTypes, StoreName> | IDBKeyRange;
-}
 
 export class IbdUpdates {
   constructor(readonly all: IdbUpdate<PenumbraDb, StoreNames<PenumbraDb>>[] = []) {}
@@ -38,11 +12,34 @@ export class IbdUpdates {
   }
 }
 
+type Resolver = (value: IdbUpdate<PenumbraDb, StoreNames<PenumbraDb>>) => void;
+
 export class IbdUpdater {
-  constructor(
-    private readonly db: IDBPDatabase<PenumbraDb>,
-    private readonly updateNotifiers?: TableUpdateNotifier[],
-  ) {}
+  private readonly subscribers: Map<StoreNames<PenumbraDb>, Resolver[]>;
+
+  constructor(private readonly db: IDBPDatabase<PenumbraDb>) {
+    this.subscribers = new Map();
+  }
+
+  subscribe<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
+    table: StoreName,
+  ): AsyncGenerator<IdbUpdate<DBTypes, StoreName>, void> {
+    // Need a local binding
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const bind = this;
+    const subscriber = async function* () {
+      while (true) {
+        const update = await new Promise<IdbUpdate<DBTypes, StoreName>>(resolve => {
+          const resolversForTable = bind.subscribers.get(table) ?? [];
+          resolversForTable.push(resolve as Resolver);
+          bind.subscribers.set(table, resolversForTable);
+        });
+        yield update;
+      }
+    };
+
+    return subscriber();
+  }
 
   async updateAll(updates: IbdUpdates): Promise<void> {
     const tables = updates.all.map(u => u.table);
@@ -50,19 +47,10 @@ export class IbdUpdater {
 
     for (const update of updates.all) {
       await tx.objectStore(update.table).put(update.value, update.key);
+      this.notifySubscribers(update);
     }
 
     await tx.done;
-
-    // Notify subscribers of the particular tables about the updates
-    for (const update of updates.all) {
-      this.updateNotifiers
-        ?.filter(n => n.table === update.table)
-        .forEach(n => {
-          // @ts-expect-error typescript believes `update.value` is a never
-          void n.handler(update.value, update.key);
-        });
-    }
   }
 
   async update<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
@@ -71,5 +59,17 @@ export class IbdUpdater {
     const updates = new IbdUpdates();
     updates.add(update);
     await this.updateAll(updates);
+  }
+
+  private notifySubscribers<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
+    update: IdbUpdate<DBTypes, StoreName>,
+  ) {
+    const resolversForTable = this.subscribers.get(update.table);
+    if (resolversForTable) {
+      for (const resolve of resolversForTable) {
+        resolve(update);
+      }
+      this.subscribers.set(update.table, []); // Clear the resolvers for this table after notifying all of them
+    }
   }
 }

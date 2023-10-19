@@ -104,18 +104,18 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         ],
       });
 
-      const { viewClient } = await import('../clients/grpc');
+      const { viewClient, custodyClient } = await import('../clients/grpc');
       const { plan } = await viewClient.transactionPlanner(req);
       if (!plan) throw new Error('no plan in response');
 
-      console.log(plan);
+      const { data } = await custodyClient.authorize({ plan });
+      if (!data) throw new Error('no authorization data in response');
+
+      console.log(data);
 
       return 'done!';
 
       // TODO: Finish this flow
-      // const { data } = await custodyClient.authorize({ plan });
-      // if (!data) throw new Error('no authorization data in response');
-      //
       // const { transaction } = await viewClient.witnessAndBuild({
       //   transactionPlan: plan,
       //   authorizationData: data,

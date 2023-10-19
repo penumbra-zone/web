@@ -7,7 +7,7 @@ import { ShareGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { networkSelector } from '../../../state/network';
-import { swClient } from '../../service-worker/extension/client/internal';
+import { swClient } from 'penumbra-router';
 
 export const SettingsRPC = () => {
   const { chainId, refetch } = useChainId();

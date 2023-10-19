@@ -4,7 +4,7 @@ import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { backOff } from 'exponential-backoff';
-import { IndexedDbInterface, ViewServerInterface } from 'penumbra-types';
+import { BlockProcessorInterface, IndexedDbInterface, ViewServerInterface } from 'penumbra-types';
 import { decodeNctRoot } from 'penumbra-wasm-ts/src/sct';
 import { RootQuerier } from '../root-querier';
 import { generateMetadata } from './metadata';
@@ -17,7 +17,7 @@ interface QueryClientProps {
   viewServer: ViewServerInterface;
 }
 
-export class BlockProcessor {
+export class BlockProcessor implements BlockProcessorInterface {
   private readonly fullViewingKey: string;
   private readonly querier: RootQuerier;
   private readonly indexedDb: IndexedDbInterface;

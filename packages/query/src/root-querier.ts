@@ -2,10 +2,11 @@ import { CompactBlockQuerier } from './queriers/compact-block';
 import { AppQuerier } from './queriers/app';
 import { TendermintQuerier } from './queriers/tendermint';
 import { ShieldedPoolQuerier } from './queriers/shielded-pool';
+import { RootQuerierInterface } from 'penumbra-types/src/querier';
 
 // Given the amount of query services, this root querier aggregates them all
 // to make it easier for consumers
-export class RootQuerier {
+export class RootQuerier implements RootQuerierInterface {
   readonly app: AppQuerier;
   readonly compactBlock: CompactBlockQuerier;
   readonly tendermint: TendermintQuerier;
