@@ -1,5 +1,5 @@
 {
-  "name": "penumbra-transport",
+  "name": "@penumbra-zone/transport",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {

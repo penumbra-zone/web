@@ -4,7 +4,7 @@ import {
   GrpcRequest,
   GrpcResponse,
   isDappGrpcRequest,
-} from 'penumbra-transport';
+} from '@penumbra-zone/transport';
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { handleAppParamsReq, isAppParamsRequest } from './app-params';
 import { handleAddressReq, isAddressRequest } from './address';

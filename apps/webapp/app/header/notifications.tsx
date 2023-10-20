@@ -7,7 +7,7 @@ import { cn } from '@penumbra-zone/ui/lib/utils';
 import { BellIcon } from '../../icons';
 import { FilledImage } from '../../shared';
 import { viewClient } from '../../clients/grpc';
-import { useStream } from 'penumbra-transport';
+import { useStream } from '@penumbra-zone/transport';
 import { BlockSync } from './block-sync';
 
 const txs = [

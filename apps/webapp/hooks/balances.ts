@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { viewClient } from '../clients/grpc';
-import { useCollectedStream } from 'penumbra-transport';
+import { useCollectedStream } from '@penumbra-zone/transport';
 import { BalancesRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
