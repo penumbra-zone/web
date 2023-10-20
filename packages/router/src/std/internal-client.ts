@@ -2,13 +2,13 @@ import {
   AwaitedResponse,
   ClearCacheMessage,
   IncomingRequest,
+  OpenWindowMessage,
   PingMessage,
   ServiceWorkerRequest,
   ServiceWorkerResponse,
   SwRequestMessage,
   SyncBlocksMessage,
 } from '@penumbra-zone/types';
-import { OpenWindowMessage } from './open-window'
 
 export const internalSwClient = {
   syncBlocks: () => sendSwMessage<SyncBlocksMessage>({ type: 'SYNC_BLOCKS' }),

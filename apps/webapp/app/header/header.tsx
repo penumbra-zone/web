@@ -3,6 +3,7 @@ import { FilledImage } from '../../shared';
 import { Navbar } from './navbar';
 import { DappPath } from './paths';
 import dynamic from 'next/dynamic';
+import { ConnectButton } from './connect-button';
 
 const Network = dynamic(() => import('./network'), {
   ssr: false,
@@ -27,6 +28,7 @@ export const Header = () => {
         <Notifications />
         <Network />
         <WalletId />
+        <ConnectButton />
       </div>
     </header>
   );

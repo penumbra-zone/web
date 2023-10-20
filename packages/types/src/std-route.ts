@@ -63,10 +63,14 @@ export type AwaitedResponse<T> = T extends SwMessage<infer Type, unknown, infer 
   : never;
 
 /* ========= List all service worker messages here ========= */
-export type SwRequestMessage = SyncBlocksMessage | PingMessage | ClearCacheMessage;
+export type SwRequestMessage =
+  | SyncBlocksMessage
+  | PingMessage
+  | ClearCacheMessage
+  | OpenWindowMessage;
 
 // List all service worker messages that are allowed to be called from dapp
-export const allowedDappMessages: SwRequestMessage['type'][] = ['PING'];
+export const allowedDappMessages: SwRequestMessage['type'][] = ['PING', 'OPEN_WINDOW'];
 
 export type SyncBlocksMessage = SwMessage<'SYNC_BLOCKS', undefined, Promise<void>>;
 export interface PongResponse {
@@ -74,3 +78,4 @@ export interface PongResponse {
 }
 export type PingMessage = SwMessage<'PING', string, PongResponse>;
 export type ClearCacheMessage = SwMessage<'CLEAR_CACHE', undefined, Promise<void>>;
+export type OpenWindowMessage = SwMessage<'OPEN_WINDOW', undefined, Promise<void>>;

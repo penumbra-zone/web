@@ -1,6 +1,7 @@
 import {
   IncomingRequest,
   isServiceWorkerResponse,
+  OpenWindowMessage,
   PenumbraError,
   PingMessage,
   ServiceWorkerRequest,
@@ -26,6 +27,12 @@ export class PenumbraStdClient {
   async ping(arg: string) {
     const res = await this.transport.sendMessage<PingMessage>({ type: 'PING', arg });
     return res.ack;
+  }
+
+  async openWindow() {
+    await this.transport.sendMessage<OpenWindowMessage>({
+      type: 'OPEN_WINDOW',
+    });
   }
 }
 

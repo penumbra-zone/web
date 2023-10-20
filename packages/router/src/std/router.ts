@@ -1,4 +1,5 @@
 import { clearCacheHandler } from './routes/clear-cache';
+import { openWindowHandler } from './routes/open-window';
 import { pingHandler } from './routes/ping';
 import { syncBlocksHandler } from './routes/sync';
 
@@ -50,6 +51,8 @@ const typedMessageRouter = async (
       return pingHandler(req.arg);
     case 'CLEAR_CACHE':
       return clearCacheHandler(services)();
+    case 'OPEN_WINDOW':
+      return openWindowHandler(services)();
     default:
       throw new Error(`Unhandled request type: ${JSON.stringify(req)}`);
   }
