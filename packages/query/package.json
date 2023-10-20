@@ -1,5 +1,5 @@
 {
-  "name": "penumbra-query",
+  "name": "@penumbra-zone/query",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
@@ -16,9 +16,9 @@
     "eslint": "^8.51.0",
     "eslint-config-custom": "workspace:*",
     "exponential-backoff": "^3.1.1",
-    "penumbra-crypto-ts": "workspace:^",
-    "penumbra-types": "workspace:*",
-    "penumbra-wasm-ts": "workspace:*",
+    "@penumbra-zone/crypto-web": "workspace:^",
+    "@penumbra-zone/types": "workspace:*",
+    "@penumbra-zone/wasm-ts": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "^5.2.2"
   }

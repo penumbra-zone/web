@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { DappPath } from './paths';
-import { cn } from 'ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 
 const links = [
   {

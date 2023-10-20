@@ -1,1 +1,1 @@
-module.exports = require('ui/postcss.config');
+module.exports = require('@penumbra-zone/ui/postcss.config');

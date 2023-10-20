@@ -1,7 +1,7 @@
-import { assets } from 'penumbra-constants';
+import { assets } from '@penumbra-zone/constants';
 import { validateAmount, validateRecipient } from '../utils';
 import { AllSlices, SliceCreator } from './index';
-import { Asset, AssetId as TempAssetId, base64ToUint8Array, splitLoHi } from 'penumbra-types';
+import { Asset, AssetId as TempAssetId, base64ToUint8Array, splitLoHi } from '@penumbra-zone/types';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import {
   TransactionPlannerRequest,

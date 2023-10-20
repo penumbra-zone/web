@@ -5,7 +5,7 @@ import {
   SeedPhraseLength,
   ValidationField,
   validationFields,
-} from 'penumbra-crypto-ts';
+} from '@penumbra-zone/crypto-web';
 
 export interface GenerateFields {
   phrase: string[];

@@ -6,7 +6,7 @@ import {
   get_wallet_id,
 } from '@penumbra-zone/wasm-bundler';
 import { z } from 'zod';
-import { base64ToUint8Array, InnerBase64Schema, validateSchema } from 'penumbra-types';
+import { base64ToUint8Array, InnerBase64Schema, validateSchema } from '@penumbra-zone/types';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
 export const generateSpendKey = (seedPhrase: string): string =>

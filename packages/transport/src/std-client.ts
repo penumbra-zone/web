@@ -6,7 +6,7 @@ import {
   ServiceWorkerRequest,
   ServiceWorkerResponse,
   SwRequestMessage,
-} from 'penumbra-types';
+} from '@penumbra-zone/types';
 
 interface RequestResolvers {
   resolve: (m: ServiceWorkerResponse<SwRequestMessage>) => void;

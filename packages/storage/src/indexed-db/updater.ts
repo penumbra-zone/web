@@ -1,4 +1,4 @@
-import { IdbUpdate, PenumbraDb } from 'penumbra-types';
+import { IdbUpdate, PenumbraDb } from '@penumbra-zone/types';
 import { StoreNames } from 'idb/build/entry';
 import { IDBPDatabase } from 'idb';
 

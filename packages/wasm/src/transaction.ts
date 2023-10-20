@@ -4,7 +4,7 @@ import {
   validateSchema,
   WasmTransactionInfo,
   WasmTransactionInfoSchema,
-} from 'penumbra-types';
+} from '@penumbra-zone/types';
 import { decode_tx, transaction_info } from '@penumbra-zone/wasm-bundler';
 import {
   Transaction,

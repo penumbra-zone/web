@@ -6,8 +6,8 @@ import {
   CardHeader,
   CardTitle,
   FadeTransition,
-} from 'ui';
-import { cn } from 'ui/lib/utils';
+} from '@penumbra-zone/ui';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useStore } from '../../../state';
 import { importSelector } from '../../../state/seed-phrase/import';
 import { usePageNav } from '../../../utils/navigate';

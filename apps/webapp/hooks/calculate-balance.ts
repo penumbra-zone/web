@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useBalances } from './balances';
-import { Asset, calculateLoHiExponent, uint8ArrayToBase64 } from 'penumbra-types';
+import { Asset, calculateLoHiExponent, uint8ArrayToBase64 } from '@penumbra-zone/types';
 
 export const useCalculateBalance = (asset: Asset, setAssetBalance: (amount: number) => void) => {
   const { data, end } = useBalances();

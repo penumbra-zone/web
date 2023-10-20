@@ -1,8 +1,8 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { Button, FadeTransition } from 'ui';
+import { Button, FadeTransition } from '@penumbra-zone/ui';
 import { SettingsHeader } from '../../../shared';
 import { TrashGradientIcon } from '../../../icons';
-import { internalSwClient } from 'penumbra-router';
+import { internalSwClient } from '@penumbra-zone/router';
 
 export const SettingsClearCache = () => {
   return (

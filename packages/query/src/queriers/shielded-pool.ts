@@ -6,7 +6,7 @@ import {
   AssetId,
   DenomMetadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { ShieldedPoolQuerierInterface } from 'penumbra-types/src/querier';
+import { ShieldedPoolQuerierInterface } from '@penumbra-zone/types';
 
 export class ShieldedPoolQuerier implements ShieldedPoolQuerierInterface {
   private readonly client: PromiseClient<typeof QueryService>;

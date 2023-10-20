@@ -1,4 +1,4 @@
-import { FadeTransition } from 'ui';
+import { FadeTransition } from '@penumbra-zone/ui';
 import { SettingsHeader } from '../../../shared';
 
 export const SettingsPermission = () => {

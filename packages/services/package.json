@@ -1,16 +1,16 @@
 {
-  "name": "penumbra-services",
+  "name": "@penumbra-zone/services",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"**/*.ts*\""
   },
   "dependencies": {
-    "penumbra-constants": "workspace:*",
-    "penumbra-query": "workspace:*",
-    "penumbra-storage": "workspace:*",
-    "penumbra-types": "workspace:*",
-    "penumbra-wasm-ts": "workspace:*"
+    "@penumbra-zone/constants": "workspace:*",
+    "@penumbra-zone/query": "workspace:*",
+    "@penumbra-zone/storage": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
+    "@penumbra-zone/wasm-ts": "workspace:*"
   },
   "devDependencies": {
     "@types/chrome": "0.0.248",

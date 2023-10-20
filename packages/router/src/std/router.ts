@@ -10,7 +10,7 @@ import {
   ServiceWorkerResponse,
   SwRequestMessage,
   SwResponse,
-} from 'penumbra-types';
+} from '@penumbra-zone/types';
 
 // The standard, non-grpc router
 export const stdRouter = (

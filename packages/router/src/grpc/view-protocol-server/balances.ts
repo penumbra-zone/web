@@ -3,7 +3,7 @@ import {
   BalancesResponse,
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { addLoHi, Base64Str, ServicesInterface, uint8ArrayToBase64 } from 'penumbra-types';
+import { addLoHi, Base64Str, ServicesInterface, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';

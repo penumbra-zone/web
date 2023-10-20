@@ -1,5 +1,5 @@
 {
-  "name": "penumbra-transport",
+  "name": "@penumbra-zone/transport",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
@@ -13,7 +13,7 @@
     "@connectrpc/connect-web": "^1.1.2",
     "@types/chrome": "0.0.248",
     "exponential-backoff": "^3.1.1",
-    "penumbra-types": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
     "react": "^18.2.0"
   },
   "devDependencies": {

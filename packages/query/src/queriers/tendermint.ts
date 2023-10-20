@@ -6,7 +6,7 @@ import {
   GetStatusRequest,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/util/tendermint_proxy/v1alpha1/tendermint_proxy_pb';
 import { TendermintProxyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/util/tendermint_proxy/v1alpha1/tendermint_proxy_connect';
-import { TendermintQuerierInterface } from 'penumbra-types/src/querier';
+import { TendermintQuerierInterface } from '@penumbra-zone/types';
 
 export class TendermintQuerier implements TendermintQuerierInterface {
   private readonly client: PromiseClient<typeof TendermintProxyService>;

@@ -1,10 +1,10 @@
 import { useLoaderData } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { TendermintQuerier } from 'penumbra-query/src/queriers/tendermint';
+import { TendermintQuerier } from '@penumbra-zone/query';
 import { PopupLoaderData } from '../routes/popup/home';
 import { useStore } from '../state';
 import { networkSelector } from '../state/network';
-import { internalSwClient } from 'penumbra-router';
+import { internalSwClient } from '@penumbra-zone/router';
 
 // There is a slight delay with Zustand loading up the last block synced.
 // To prevent the screen flicker, we use a loader to read it from chrome.storage.local.

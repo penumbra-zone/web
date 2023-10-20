@@ -1,10 +1,10 @@
 import { simulateClient } from '../clients/grpc';
 import { SimulateTradeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
-import { Base64Str, base64ToUint8Array, splitLoHi } from 'penumbra-types';
+import { Base64Str, base64ToUint8Array, splitLoHi } from '@penumbra-zone/types';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import { useQuery } from '@tanstack/react-query';
-import { testnetConstants } from 'penumbra-constants';
+import { testnetConstants } from '@penumbra-zone/constants';
 
 interface ValueProps {
   inputAsset: Base64Str;

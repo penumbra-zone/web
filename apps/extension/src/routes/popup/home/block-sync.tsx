@@ -1,4 +1,4 @@
-import { Progress } from 'ui';
+import { Progress } from '@penumbra-zone/ui';
 import { motion } from 'framer-motion';
 import { CheckIcon } from '@radix-ui/react-icons';
 import { useSyncProgress } from '../../../hooks/last-block-synced';

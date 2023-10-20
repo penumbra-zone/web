@@ -1,13 +1,13 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Input, InputProps } from 'ui';
-import { cn } from 'ui/lib/utils';
+import { Input, InputProps } from '@penumbra-zone/ui';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useValidationResult } from '../hooks';
 import { Validation } from '../types/utility';
 import { formatNumber } from '../utils';
 import { FilledImage } from './filled-image';
-import { Asset, AssetId } from 'penumbra-types';
+import { Asset, AssetId } from '@penumbra-zone/types';
 
 const SelectTokenModal = dynamic(() => import('./select-token-modal'), {
   ssr: false,

@@ -1,5 +1,5 @@
 import { ExclamationTriangleIcon, LockClosedIcon } from '@radix-ui/react-icons';
-import { SeedPhraseLength } from 'penumbra-crypto-ts/src/mnemonic';
+import { SeedPhraseLength } from '@penumbra-zone/crypto-web/src/mnemonic';
 import { useEffect, useState } from 'react';
 import {
   BackIcon,
@@ -11,8 +11,8 @@ import {
   CopyToClipboard,
   FadeTransition,
   Input,
-} from 'ui';
-import { cn } from 'ui/lib/utils';
+} from '@penumbra-zone/ui';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useCountdown } from 'usehooks-ts';
 import { useStore } from '../../../state';
 import { generateSelector } from '../../../state/seed-phrase/generate';

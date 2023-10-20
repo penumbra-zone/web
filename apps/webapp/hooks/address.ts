@@ -2,7 +2,7 @@ import { viewClient } from '../clients/grpc';
 import { AddressByIndexRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { useQuery } from '@tanstack/react-query';
-import { bech32Address } from 'penumbra-types';
+import { bech32Address } from '@penumbra-zone/types';
 import { UseQueryResult } from '@tanstack/react-query/src/types';
 
 interface AddressReqProps {

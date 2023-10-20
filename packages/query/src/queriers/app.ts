@@ -6,7 +6,7 @@ import {
   KeyValueResponse_Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1alpha1/app_pb';
 import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/app/v1alpha1/app_connect';
-import { AppQuerierInterface } from 'penumbra-types/src/querier';
+import { AppQuerierInterface } from '@penumbra-zone/types/src/querier';
 
 export class AppQuerier implements AppQuerierInterface {
   private readonly client: PromiseClient<typeof QueryService>;

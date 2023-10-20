@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { cn } from 'ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { PopupPath } from './paths';
 import { useMemo } from 'react';
 

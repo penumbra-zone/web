@@ -1,6 +1,14 @@
 'use client';
 
-import { Identicon, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'ui';
+import {
+  Identicon,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@penumbra-zone/ui';
 import { useBalancesWithMetadata } from '../../hooks/sorted-asset';
 import { formatNumber } from '../../utils';
 

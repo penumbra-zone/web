@@ -1,4 +1,4 @@
-import { Asset, Base64Str } from 'penumbra-types';
+import { Asset, Base64Str } from '@penumbra-zone/types';
 
 export interface Constants {
   grpcEndpoint: string;

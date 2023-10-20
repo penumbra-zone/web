@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from 'vitest';
-import { base64ToUint8Array, ServicesInterface, uint8ArrayToBase64 } from 'penumbra-types';
+import { base64ToUint8Array, ServicesInterface, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { handleBalancesReq } from './balances';
 import {
   BalancesRequest,

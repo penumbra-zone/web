@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, FadeTransition, Tabs, TabsContent, TabsList, TabsTrigger } from 'ui';
+import { Card, FadeTransition, Tabs, TabsContent, TabsList, TabsTrigger } from '@penumbra-zone/ui';
 import { EduInfoCard } from '../shared';
 import { dashboardTabsHelper } from './dashboard/constants';
 import { NftsTable } from './dashboard/nfts-table';

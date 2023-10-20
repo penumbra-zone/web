@@ -24,3 +24,4 @@
 - [Custody](custody.md)
 - [Web Workers](web-workers.md)
 - [Protobufs](protobufs.md)
+- [Third-party wallet integration](third-party.md)

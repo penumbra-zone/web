@@ -4,7 +4,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { ViewReqMessage } from './router';
-import { ServicesInterface } from 'penumbra-types';
+import { ServicesInterface } from '@penumbra-zone/types';
 
 export const isTxInfoByHashRequest = (req: ViewReqMessage): req is TransactionInfoByHashRequest => {
   return req.getType().typeName === TransactionInfoByHashRequest.typeName;

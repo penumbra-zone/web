@@ -5,9 +5,9 @@ import {
   GrpcResponse,
   streamResponseMsg,
   unaryResponseMsg,
-} from 'penumbra-transport';
+} from '@penumbra-zone/transport';
 import { MethodKind, ServiceType } from '@bufbuild/protobuf';
-import { ServicesInterface } from 'penumbra-types';
+import { ServicesInterface } from '@penumbra-zone/types';
 
 interface MethodMatch<S extends ServiceType> {
   msg: GrpcRequest<S>;
