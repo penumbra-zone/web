@@ -1,5 +1,5 @@
 {
-  "name": "ui",
+  "name": "@penumbra-zone/ui",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {

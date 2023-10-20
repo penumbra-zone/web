@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Button, Switch } from 'ui';
+import { Button, Switch } from '@penumbra-zone/ui';
 import { FilledImage, InputBlock } from '../../shared';
 import { useStore } from '../../state';
 import { sendSelector } from '../../state/send';

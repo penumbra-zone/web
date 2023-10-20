@@ -7,7 +7,7 @@ import {
   SpendableNoteRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { base64ToUint8Array, IdbUpdate, PenumbraDb } from 'penumbra-types';
+import { base64ToUint8Array, IdbUpdate, PenumbraDb } from '@penumbra-zone/types';
 import { describe, expect, it } from 'vitest';
 import { IndexedDb } from './index';
 

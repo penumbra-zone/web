@@ -1,8 +1,8 @@
 'use client';
 
-import { Identicon } from 'ui';
+import { Identicon } from '@penumbra-zone/ui';
 import { useWalletId } from '../../hooks/wallet-id';
-import { shortenWalletId } from 'penumbra-types';
+import { shortenWalletId } from '@penumbra-zone/types';
 
 export default function WalletId() {
   const walletId = useWalletId();

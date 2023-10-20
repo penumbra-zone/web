@@ -7,7 +7,7 @@ import {
   ServiceWorkerResponse,
   SwRequestMessage,
   SyncBlocksMessage,
-} from 'penumbra-types';
+} from '@penumbra-zone/types';
 
 export const internalSwClient = {
   syncBlocks: () => sendSwMessage<SyncBlocksMessage>({ type: 'SYNC_BLOCKS' }),

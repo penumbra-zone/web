@@ -9,7 +9,7 @@ import {
   CardTitle,
   FadeTransition,
   Input,
-} from 'ui';
+} from '@penumbra-zone/ui';
 import { useStore } from '../../../state';
 import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';

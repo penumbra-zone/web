@@ -2,7 +2,7 @@ import {
   StatusStreamRequest,
   StatusStreamResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { ServicesInterface } from 'penumbra-types';
+import { ServicesInterface } from '@penumbra-zone/types';
 import { ViewReqMessage } from './router';
 
 export const isStatusStreamRequest = (msg: ViewReqMessage): msg is StatusStreamRequest => {

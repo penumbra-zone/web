@@ -8,7 +8,7 @@ import {
   ScanResult,
   StateCommitmentTree,
   uint8ArrayToBase64,
-} from 'penumbra-types';
+} from '@penumbra-zone/types';
 import { IbdUpdater, IbdUpdates } from './updater';
 import {
   FmdParameters,

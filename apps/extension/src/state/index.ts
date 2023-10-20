@@ -12,7 +12,7 @@ import {
   LocalStorageState,
   sessionExtStorage,
   SessionStorageState,
-} from 'penumbra-storage';
+} from '@penumbra-zone/storage';
 
 export interface AllSlices {
   wallets: WalletsSlice;

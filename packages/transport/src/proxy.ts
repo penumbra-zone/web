@@ -8,7 +8,7 @@ import {
   ServiceWorkerRequest,
   ServiceWorkerResponse,
   SwRequestMessage,
-} from 'penumbra-types';
+} from '@penumbra-zone/types';
 import { backOff } from 'exponential-backoff';
 
 export const createExtInternalEventTransport = <S extends ServiceType>(s: S) => {

@@ -2,7 +2,7 @@ import { PromiseClient } from '@connectrpc/connect';
 import { CompactBlockRangeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
 import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/compact_block/v1alpha1/compact_block_connect';
 import { createClient } from './utils';
-import { CompactBlockQuerierInterface, CompactBlockRangeParams } from 'penumbra-types';
+import { CompactBlockQuerierInterface, CompactBlockRangeParams } from '@penumbra-zone/types';
 
 export class CompactBlockQuerier implements CompactBlockQuerierInterface {
   private readonly client: PromiseClient<typeof QueryService>;

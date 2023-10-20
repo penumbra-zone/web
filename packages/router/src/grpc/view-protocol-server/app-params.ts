@@ -4,7 +4,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { GrpcRequest } from 'penumbra-transport';
-import { ServicesInterface } from 'penumbra-types';
+import { ServicesInterface } from '@penumbra-zone/types';
 
 export const isAppParamsRequest = (
   req: GrpcRequest<typeof ViewProtocolService>,

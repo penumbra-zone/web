@@ -1,13 +1,13 @@
 'use client';
 
-import { Card, Table, TableBody, TableCell, TableRow } from 'ui';
+import { Card, Table, TableBody, TableCell, TableRow } from '@penumbra-zone/ui';
 import { Fragment, useEffect, useState } from 'react';
 import { FilledImage } from '../../shared';
 import { formatNumber } from '../../utils';
-import { cn } from 'ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
-import { Asset } from 'penumbra-types';
+import { Asset } from '@penumbra-zone/types';
 
 export const AssetStatistics = () => {
   const { pay, receive } = useStore(swapSelector);

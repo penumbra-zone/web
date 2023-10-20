@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { uint8ArrayToString } from 'penumbra-types';
+import { uint8ArrayToString } from '@penumbra-zone/types';
 import { viewClient } from '../clients/grpc';
 
 export const getWalletId = async (): Promise<string> => {

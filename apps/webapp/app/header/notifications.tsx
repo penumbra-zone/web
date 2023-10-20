@@ -2,8 +2,8 @@
 
 import { ArrowTopRightIcon } from '@radix-ui/react-icons';
 import { useEffect, useMemo, useState } from 'react';
-import { Popover, PopoverContent, PopoverTrigger } from 'ui';
-import { cn } from 'ui/lib/utils';
+import { Popover, PopoverContent, PopoverTrigger } from '@penumbra-zone/ui';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { BellIcon } from '../../icons';
 import { FilledImage } from '../../shared';
 import { viewClient } from '../../clients/grpc';

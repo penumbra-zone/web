@@ -2,14 +2,14 @@ import {
   TransactionPlannerRequest,
   TransactionPlannerResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { getAddressByIndex, TxPlanner } from 'penumbra-wasm-ts';
+import { getAddressByIndex, TxPlanner } from '@penumbra-zone/wasm-ts';
 import {
   Address,
   AddressIndex,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-import { localExtStorage } from 'penumbra-storage';
+import { localExtStorage } from '@penumbra-zone/storage';
 import { ViewReqMessage } from './router';
-import { ServicesInterface } from 'penumbra-types';
+import { ServicesInterface } from '@penumbra-zone/types';
 
 export const isTxPlannerRequest = (msg: ViewReqMessage): msg is TransactionPlannerRequest => {
   return msg.getType().typeName === TransactionPlannerRequest.typeName;

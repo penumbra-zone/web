@@ -1,4 +1,4 @@
-import { BackIcon } from 'ui';
+import { BackIcon } from '@penumbra-zone/ui';
 import { usePopupNav } from '../../utils/navigate';
 
 export const SettingsHeader = ({ title }: { title: string }) => {

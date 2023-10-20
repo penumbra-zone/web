@@ -1,7 +1,7 @@
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
-import { NetworksPopover } from 'ui';
+import { NetworksPopover } from '@penumbra-zone/ui';
 import { useChainId } from '../../../hooks/chain-id';
 import { motion } from 'framer-motion';
 

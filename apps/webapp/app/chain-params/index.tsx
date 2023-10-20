@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { Button } from 'ui';
+import { Button } from '@penumbra-zone/ui';
 import { stdClient } from '../../clients/std';
 import { viewClient } from '../../clients/grpc';
 

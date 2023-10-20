@@ -1,6 +1,6 @@
 'use client';
 
-import { NetworksPopover } from 'ui';
+import { NetworksPopover } from '@penumbra-zone/ui';
 import { useChainId } from '../../hooks/chain-id';
 
 export default function Network() {

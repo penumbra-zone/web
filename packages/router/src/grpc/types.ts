@@ -7,7 +7,7 @@ import {
   unaryResponseMsg,
 } from 'penumbra-transport';
 import { MethodKind, ServiceType } from '@bufbuild/protobuf';
-import { ServicesInterface } from 'penumbra-types';
+import { ServicesInterface } from '@penumbra-zone/types';
 
 interface MethodMatch<S extends ServiceType> {
   msg: GrpcRequest<S>;

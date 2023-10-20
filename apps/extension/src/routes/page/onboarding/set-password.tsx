@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
   FadeTransition,
-} from 'ui';
+} from '@penumbra-zone/ui';
 import { useOnboardingSave } from '../../../hooks/onboarding';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';

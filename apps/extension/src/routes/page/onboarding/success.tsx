@@ -6,7 +6,7 @@ import {
   CardTitle,
   CompressedVideoLogo,
   FadeTransition,
-} from 'ui';
+} from '@penumbra-zone/ui';
 
 export const OnboardingSuccess = () => {
   return (

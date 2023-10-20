@@ -1,5 +1,5 @@
 {
-  "name": "penumbra-storage",
+  "name": "@penumbra-zone/storage",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
@@ -13,9 +13,9 @@
     "eslint": "^8.51.0",
     "eslint-config-custom": "workspace:*",
     "idb": "^7.1.1",
-    "penumbra-constants": "workspace:*",
-    "penumbra-crypto-ts": "workspace:*",
-    "penumbra-types": "workspace:*",
+    "@penumbra-zone/constants": "workspace:*",
+    "@penumbra-zone/crypto-web": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "^5.2.2",
     "vite": "^4.5.0"

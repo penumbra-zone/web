@@ -44,6 +44,36 @@ importers:
       '@connectrpc/connect':
         specifier: ^1.1.2
         version: 1.1.2(@bufbuild/protobuf@1.3.3)
+      '@penumbra-zone/constants':
+        specifier: workspace:*
+        version: link:../../packages/constants
+      '@penumbra-zone/crypto-web':
+        specifier: workspace:*
+        version: link:../../packages/crypto
+      '@penumbra-zone/query':
+        specifier: workspace:*
+        version: link:../../packages/query
+      '@penumbra-zone/router':
+        specifier: workspace:*
+        version: link:../../packages/router
+      '@penumbra-zone/services':
+        specifier: workspace:*
+        version: link:../../packages/services
+      '@penumbra-zone/storage':
+        specifier: workspace:*
+        version: link:../../packages/storage
+      'penumbra-transport':
+        specifier: workspace:*
+        version: link:../../packages/transport
+      '@penumbra-zone/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@penumbra-zone/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@penumbra-zone/wasm-ts':
+        specifier: workspace:*
+        version: link:../../packages/wasm
       '@tanstack/react-query':
         specifier: ^5.0.0
         version: 5.0.0(react-dom@18.2.0)(react@18.2.0)
@@ -59,33 +89,6 @@ importers:
       immer:
         specifier: ^10.0.3
         version: 10.0.3
-      penumbra-constants:
-        specifier: workspace:*
-        version: link:../../packages/constants
-      penumbra-crypto-ts:
-        specifier: workspace:*
-        version: link:../../packages/crypto
-      penumbra-query:
-        specifier: workspace:*
-        version: link:../../packages/query
-      penumbra-router:
-        specifier: workspace:*
-        version: link:../../packages/router
-      penumbra-services:
-        specifier: workspace:*
-        version: link:../../packages/services
-      penumbra-storage:
-        specifier: workspace:*
-        version: link:../../packages/storage
-      penumbra-transport:
-        specifier: workspace:*
-        version: link:../../packages/transport
-      penumbra-types:
-        specifier: workspace:*
-        version: link:../../packages/types
-      penumbra-wasm-ts:
-        specifier: workspace:*
-        version: link:../../packages/wasm
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -98,9 +101,6 @@ importers:
       react-use-measure:
         specifier: ^2.1.1
         version: 2.1.1(react-dom@18.2.0)(react@18.2.0)
-      ui:
-        specifier: workspace:*
-        version: link:../../packages/ui
       usehooks-ts:
         specifier: ^2.9.1
         version: 2.9.1(react-dom@18.2.0)(react@18.2.0)
@@ -192,21 +192,24 @@ importers:
       '@connectrpc/connect-web':
         specifier: ^1.1.2
         version: 1.1.2(@bufbuild/protobuf@1.3.3)(@connectrpc/connect@1.1.2)
+      '@penumbra-zone/constants':
+        specifier: workspace:*
+        version: link:../../packages/constants
+      'penumbra-transport':
+        specifier: workspace:*
+        version: link:../../packages/transport
+      '@penumbra-zone/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@penumbra-zone/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@tanstack/react-query':
         specifier: ^5.0.0
         version: 5.0.0(react-dom@18.2.0)(react@18.2.0)
       next:
         specifier: ^13.5.6
         version: 13.5.6(react-dom@18.2.0)(react@18.2.0)
-      penumbra-constants:
-        specifier: workspace:*
-        version: link:../../packages/constants
-      penumbra-transport:
-        specifier: workspace:*
-        version: link:../../packages/transport
-      penumbra-types:
-        specifier: workspace:*
-        version: link:../../packages/types
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -216,9 +219,6 @@ importers:
       react-json-view:
         specifier: ^1.21.3
         version: 1.21.3(@types/react@18.2.30)(react-dom@18.2.0)(react@18.2.0)
-      ui:
-        specifier: workspace:*
-        version: link:../../packages/ui
       zustand:
         specifier: ^4.4.3
         version: 4.4.3(@types/react@18.2.30)(immer@10.0.3)(react@18.2.0)
@@ -268,15 +268,15 @@ importers:
 
   packages/constants:
     dependencies:
+      '@penumbra-zone/types':
+        specifier: workspace:*
+        version: link:../types
       eslint:
         specifier: ^8.51.0
         version: 8.51.0
       eslint-config-custom:
         specifier: workspace:*
         version: link:../eslint-config-custom
-      penumbra-types:
-        specifier: workspace:*
-        version: link:../types
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -308,6 +308,9 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2
     devDependencies:
+      '@penumbra-zone/types':
+        specifier: workspace:*
+        version: link:../types
       '@types/crypto-js':
         specifier: ^4.1.3
         version: 4.1.3
@@ -317,9 +320,6 @@ importers:
       '@vitest/browser':
         specifier: ^0.34.6
         version: 0.34.6(esbuild@0.18.20)(vitest@0.34.6)
-      penumbra-types:
-        specifier: workspace:*
-        version: link:../types
       vite:
         specifier: ^4.5.0
         version: 4.5.0(@types/node@20.8.7)
@@ -380,6 +380,15 @@ importers:
       '@connectrpc/connect-web':
         specifier: ^1.1.2
         version: 1.1.2(@bufbuild/protobuf@1.3.3)(@connectrpc/connect@1.1.2)
+      '@penumbra-zone/crypto-web':
+        specifier: workspace:^
+        version: link:../crypto
+      '@penumbra-zone/types':
+        specifier: workspace:*
+        version: link:../types
+      '@penumbra-zone/wasm-ts':
+        specifier: workspace:*
+        version: link:../wasm
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -395,15 +404,6 @@ importers:
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
-      penumbra-crypto-ts:
-        specifier: workspace:^
-        version: link:../crypto
-      penumbra-types:
-        specifier: workspace:*
-        version: link:../types
-      penumbra-wasm-ts:
-        specifier: workspace:*
-        version: link:../wasm
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -425,16 +425,16 @@ importers:
       '@connectrpc/connect':
         specifier: ^1.1.2
         version: 1.1.2(@bufbuild/protobuf@1.3.3)
-      penumbra-storage:
+      '@penumbra-zone/storage':
         specifier: workspace:*
         version: link:../storage
-      penumbra-transport:
+      'penumbra-transport':
         specifier: workspace:*
         version: link:../transport
-      penumbra-types:
+      '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
-      penumbra-wasm-ts:
+      '@penumbra-zone/wasm-ts':
         specifier: workspace:*
         version: link:../wasm
     devDependencies:
@@ -459,19 +459,19 @@ importers:
 
   packages/services:
     dependencies:
-      penumbra-constants:
+      '@penumbra-zone/constants':
         specifier: workspace:*
         version: link:../constants
-      penumbra-query:
+      '@penumbra-zone/query':
         specifier: workspace:*
         version: link:../query
-      penumbra-storage:
+      '@penumbra-zone/storage':
         specifier: workspace:*
         version: link:../storage
-      penumbra-types:
+      '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
-      penumbra-wasm-ts:
+      '@penumbra-zone/wasm-ts':
         specifier: workspace:*
         version: link:../wasm
     devDependencies:
@@ -499,6 +499,15 @@ importers:
       '@bufbuild/protobuf':
         specifier: ^1.3.3
         version: 1.3.3
+      '@penumbra-zone/constants':
+        specifier: workspace:*
+        version: link:../constants
+      '@penumbra-zone/crypto-web':
+        specifier: workspace:*
+        version: link:../crypto
+      '@penumbra-zone/types':
+        specifier: workspace:*
+        version: link:../types
       eslint:
         specifier: ^8.51.0
         version: 8.51.0
@@ -508,15 +517,6 @@ importers:
       idb:
         specifier: ^7.1.1
         version: 7.1.1
-      penumbra-constants:
-        specifier: workspace:*
-        version: link:../constants
-      penumbra-crypto-ts:
-        specifier: workspace:*
-        version: link:../crypto
-      penumbra-types:
-        specifier: workspace:*
-        version: link:../types
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig
@@ -551,15 +551,15 @@ importers:
       '@connectrpc/connect-web':
         specifier: ^1.1.2
         version: 1.1.2(@bufbuild/protobuf@1.3.3)(@connectrpc/connect@1.1.2)
+      '@penumbra-zone/types':
+        specifier: workspace:*
+        version: link:../types
       '@types/chrome':
         specifier: 0.0.248
         version: 0.0.248
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
-      penumbra-types:
-        specifier: workspace:*
-        version: link:../types
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -721,6 +721,9 @@ importers:
       '@bufbuild/protobuf':
         specifier: ^1.3.3
         version: 1.3.3
+      '@penumbra-zone/types':
+        specifier: workspace:*
+        version: link:../types
       '@penumbra-zone/wasm-bundler':
         specifier: 0.63.0-preview-3
         version: 0.63.0-preview-3
@@ -736,9 +739,6 @@ importers:
       eslint-config-custom:
         specifier: workspace:*
         version: link:../eslint-config-custom
-      penumbra-types:
-        specifier: workspace:*
-        version: link:../types
       tsconfig:
         specifier: workspace:*
         version: link:../tsconfig

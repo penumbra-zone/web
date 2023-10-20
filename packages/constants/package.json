@@ -1,5 +1,5 @@
 {
-  "name": "penumbra-constants",
+  "name": "@penumbra-zone/constants",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
@@ -10,6 +10,6 @@
     "eslint-config-custom": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "^5.2.2",
-    "penumbra-types": "workspace:*"
+    "@penumbra-zone/types": "workspace:*"
   }
 }

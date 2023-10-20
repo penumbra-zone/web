@@ -3,7 +3,7 @@ import { RouterProvider } from 'react-router-dom';
 import { pageRouter } from './routes/page/router';
 import { StrictMode } from 'react';
 
-import 'ui/styles/globals.css';
+import '@penumbra-zone/ui/styles/globals.css';
 
 const initializePage = () => {
   const rootElement = document.getElementById('root') as HTMLDivElement;

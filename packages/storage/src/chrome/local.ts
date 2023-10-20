@@ -1,7 +1,7 @@
 import { ExtensionStorage } from './base';
-import { testnetConstants } from 'penumbra-constants';
-import { KeyPrintJson } from 'penumbra-crypto-ts';
-import { WalletJson } from 'penumbra-types';
+import { testnetConstants } from '@penumbra-zone/constants';
+import { KeyPrintJson } from '@penumbra-zone/crypto-web';
+import { WalletJson } from '@penumbra-zone/types';
 
 export enum LocalStorageVersion {
   V1 = 'V1',

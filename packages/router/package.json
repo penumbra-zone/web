@@ -1,5 +1,5 @@
 {
-  "name": "penumbra-router",
+  "name": "@penumbra-zone/router",
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
@@ -10,10 +10,10 @@
     "@buf/penumbra-zone_penumbra.connectrpc_es": "1.1.2-20231019170721-d11ca3611bc9.1",
     "@bufbuild/protobuf": "^1.3.3",
     "@connectrpc/connect": "^1.1.2",
-    "penumbra-storage": "workspace:*",
+    "@penumbra-zone/storage": "workspace:*",
     "penumbra-transport": "workspace:*",
-    "penumbra-types": "workspace:*",
-    "penumbra-wasm-ts": "workspace:*"
+    "@penumbra-zone/types": "workspace:*",
+    "@penumbra-zone/wasm-ts": "workspace:*"
   },
   "devDependencies": {
     "@types/chrome": "0.0.248",

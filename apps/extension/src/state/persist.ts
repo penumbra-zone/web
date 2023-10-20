@@ -8,8 +8,8 @@ import {
   sessionExtStorage,
   SessionStorageState,
   StorageItem,
-} from 'penumbra-storage';
-import { walletsFromJson } from 'penumbra-types';
+} from '@penumbra-zone/storage';
+import { walletsFromJson } from '@penumbra-zone/types';
 
 export type Middleware = <
   T,

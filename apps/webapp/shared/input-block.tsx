@@ -1,7 +1,7 @@
 'use client';
 
-import { Input, InputProps } from 'ui';
-import { cn } from 'ui/lib/utils';
+import { Input, InputProps } from '@penumbra-zone/ui';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { Validation } from '../types/utility';
 import { useValidationResult } from '../hooks';
 

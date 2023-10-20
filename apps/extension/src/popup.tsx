@@ -4,7 +4,7 @@ import { popupRouter } from './routes/popup/router';
 import { RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import 'ui/styles/globals.css';
+import '@penumbra-zone/ui/styles/globals.css';
 
 export const queryClient = new QueryClient();
 

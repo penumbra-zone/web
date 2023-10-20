@@ -4,7 +4,7 @@ import {
   ServicesInterface,
   ServiceWorkerResponse,
   SwRequestMessage,
-} from 'penumbra-types';
+} from '@penumbra-zone/types';
 import { stdRouter } from './std/router';
 
 // Used to filter for service worker messages and narrow their type to pass to the typed handler.
