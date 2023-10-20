@@ -9,8 +9,8 @@ import {
   CardTitle,
   CompressedVideoLogo,
   FadeTransition,
-} from 'ui';
-import { localExtStorage } from 'penumbra-storage';
+} from '@penumbra-zone/ui';
+import { localExtStorage } from '@penumbra-zone/storage';
 
 // Because Zustand initializes default empty (prior to persisted storage synced),
 // We need to manually check storage for accounts in the loader.

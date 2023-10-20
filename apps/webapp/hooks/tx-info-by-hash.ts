@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { hexToUint8Array } from 'penumbra-types';
+import { hexToUint8Array } from '@penumbra-zone/types';
 import { viewClient } from '../clients/grpc';
 import { Id } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';

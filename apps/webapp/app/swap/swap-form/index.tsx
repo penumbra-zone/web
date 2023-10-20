@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Button } from 'ui';
+import { Button } from '@penumbra-zone/ui';
 import { FilledImage } from '../../../shared';
 import { useStore } from '../../../state';
 import { SwapInputs, swapSelector } from '../../../state/swap';
 import { validateAmount } from '../../../utils';
 import dynamic from 'next/dynamic';
-import { cn } from 'ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useCalculateBalance } from '../../../hooks/calculate-balance';
 
 const SwapInput = dynamic(() => import('./swap-input'), { ssr: false });

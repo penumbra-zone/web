@@ -1,6 +1,6 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useMemo, useState } from 'react';
-import { FadeTransition, Input } from 'ui';
+import { FadeTransition, Input } from '@penumbra-zone/ui';
 import { LinkGradientIcon } from '../../../../icons';
 import { SettingsHeader } from '../../../../shared';
 import { ConnectedSitesActionPopover } from './connected-sites-action-popover';

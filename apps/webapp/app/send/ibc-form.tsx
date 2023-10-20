@@ -1,13 +1,21 @@
 import dynamic from 'next/dynamic';
-import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'ui';
+import {
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@penumbra-zone/ui';
 import { FilledImage } from '../../shared';
 import { useStore } from '../../state';
 import { ibcSelector } from '../../state/ibc';
 import { validateAmount } from '../../utils';
 import { chains } from './constants';
 import { useCalculateBalance } from '../../hooks/calculate-balance';
-import { cn } from 'ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useState } from 'react';
+
 const InputToken = dynamic(() => import('../../shared/input-token'), {
   ssr: false,
 });

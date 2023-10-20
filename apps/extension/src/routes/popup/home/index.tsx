@@ -1,12 +1,12 @@
 import { redirect } from 'react-router-dom';
-import { CopyToClipboard, Identicon } from 'ui';
+import { CopyToClipboard, Identicon } from '@penumbra-zone/ui';
 import { PopupPath } from '../paths';
 import { IndexHeader } from './index-header';
 import { ArrowLeftIcon, ArrowRightIcon, CopyIcon } from '@radix-ui/react-icons';
 import { useStore } from '../../../state';
 import { accountsSelector, activeAccount } from '../../../state/accounts';
 import { BlockSync } from './block-sync';
-import { localExtStorage, sessionExtStorage } from 'penumbra-storage';
+import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
 
 export interface PopupLoaderData {
   lastBlockSynced: number;

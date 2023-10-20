@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { cn } from 'ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 
 interface FilledImageProps {
   src: string;

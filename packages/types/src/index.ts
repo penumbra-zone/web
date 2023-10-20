@@ -14,3 +14,7 @@ export * from './transaction';
 export * from './hex';
 export * from './string';
 export * from './address';
+export * from './services';
+export * from './block-processor';
+export * from './querier';
+export * from './std-route';

@@ -1,8 +1,8 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { Button, FadeTransition } from 'ui';
+import { Button, FadeTransition } from '@penumbra-zone/ui';
 import { SettingsHeader } from '../../../shared';
 import { TrashGradientIcon } from '../../../icons';
-import { swClient } from '../../service-worker/extension/client/internal';
+import { internalSwClient } from '@penumbra-zone/router';
 
 export const SettingsClearCache = () => {
   return (
@@ -27,7 +27,7 @@ export const SettingsClearCache = () => {
             variant='gradient'
             size='lg'
             className='w-full'
-            onClick={() => void swClient.clearCache()}
+            onClick={() => void internalSwClient.clearCache()}
           >
             Confirm
           </Button>

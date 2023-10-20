@@ -2,11 +2,18 @@
 
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogPrimitive, DialogTrigger, Input } from 'ui';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogPrimitive,
+  DialogTrigger,
+  Input,
+} from '@penumbra-zone/ui';
 import { useBalancesWithMetadata } from '../hooks/sorted-asset';
 import { formatNumber } from '../utils';
-import { Asset, AssetId } from 'penumbra-types';
-import { cn } from 'ui/lib/utils';
+import { Asset, AssetId } from '@penumbra-zone/types';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 
 interface SelectTokenModalProps {
   asset: Asset;

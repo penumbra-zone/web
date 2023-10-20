@@ -1,10 +1,10 @@
 'use client';
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from 'ui';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
 import { useMemo } from 'react';
 import { viewClient } from '../../clients/grpc';
-import { useCollectedStream } from 'penumbra-transport';
-import { shorten, uint8ArrayToHex } from 'penumbra-types';
+import { useCollectedStream } from '@penumbra-zone/transport';
+import { shorten, uint8ArrayToHex } from '@penumbra-zone/types';
 import { FilledImage } from '../../shared';
 import Link from 'next/link';
 

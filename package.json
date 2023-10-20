@@ -13,12 +13,12 @@
     "format-check": "prettier --check ."
   },
   "devDependencies": {
-    "@turbo/gen": "^1.10.15",
+    "@turbo/gen": "^1.10.16",
     "@typescript-eslint/eslint-plugin": "^6.8.0",
     "eslint": "^8.51.0",
     "eslint-config-custom": "workspace:*",
     "playwright": "^1.39.0",
     "prettier": "^3.0.3",
-    "turbo": "^1.10.15"
+    "turbo": "^1.10.16"
   }
 }

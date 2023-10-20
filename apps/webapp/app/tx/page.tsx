@@ -1,4 +1,4 @@
-import { Card, FadeTransition } from 'ui';
+import { Card, FadeTransition } from '@penumbra-zone/ui';
 import React from 'react';
 import { EduInfoCard } from '../../shared';
 import dynamic from 'next/dynamic';

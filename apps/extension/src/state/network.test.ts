@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { StoreApi, UseBoundStore, create } from 'zustand';
+import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index';
 import {
   ExtensionStorage,
   LocalStorageState,
   mockLocalExtStorage,
   mockSessionExtStorage,
-} from 'penumbra-storage';
+} from '@penumbra-zone/storage';
 
-vi.mock('penumbra-wasm-ts', () => ({}));
+vi.mock('@penumbra-zone/wasm-ts', () => ({}));
 
 describe('Network Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;

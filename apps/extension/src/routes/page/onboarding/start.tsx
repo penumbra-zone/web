@@ -7,7 +7,7 @@ import {
   CardTitle,
   CompressedVideoLogo,
   FadeTransition,
-} from 'ui';
+} from '@penumbra-zone/ui';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 

@@ -1,4 +1,4 @@
-import { Button, FadeTransition, InputProps } from 'ui';
+import { Button, FadeTransition, InputProps } from '@penumbra-zone/ui';
 import { PagePath } from '../page/paths';
 import { PasswordInput } from '../../shared';
 import { usePopupNav } from '../../utils/navigate';

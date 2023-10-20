@@ -1,5 +1,5 @@
 import { useBalances } from './balances';
-import { Base64Str, displayAmount, joinLoHi, uint8ArrayToBase64 } from 'penumbra-types';
+import { Base64Str, displayAmount, joinLoHi, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { useAssets } from './assets';
 import {
   AssetsResponse,

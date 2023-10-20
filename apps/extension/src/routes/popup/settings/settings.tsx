@@ -11,7 +11,7 @@ import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
-import { FadeTransition } from 'ui';
+import { FadeTransition } from '@penumbra-zone/ui';
 
 const links = [
   {

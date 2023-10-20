@@ -7,11 +7,11 @@ import {
   LocalStorageState,
   mockLocalExtStorage,
   mockSessionExtStorage,
-} from 'penumbra-storage';
-import { WalletCreate } from 'penumbra-types';
+} from '@penumbra-zone/storage';
+import { WalletCreate } from '@penumbra-zone/types';
 
 vi.stubGlobal('crypto', webcrypto);
-vi.mock('penumbra-wasm-ts', () => ({
+vi.mock('@penumbra-zone/wasm-ts', () => ({
   generateSpendKey: () => 'spend_key',
   getFullViewingKey: () => 'full_viewing_key',
   getWalletId: () => 'wallet_id',

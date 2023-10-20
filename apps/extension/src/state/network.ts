@@ -1,4 +1,4 @@
-import { ExtensionStorage, LocalStorageState } from 'penumbra-storage';
+import { ExtensionStorage, LocalStorageState } from '@penumbra-zone/storage';
 import { AllSlices, SliceCreator } from './index';
 
 export interface NetworkSlice {

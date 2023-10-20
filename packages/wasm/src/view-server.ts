@@ -6,8 +6,8 @@ import {
   ScanResultSchema,
   StateCommitmentTree,
   ViewServerInterface,
-} from 'penumbra-types';
-import { validateSchema } from 'penumbra-types/src/validation';
+} from '@penumbra-zone/types';
+import { validateSchema } from '@penumbra-zone/types/src/validation';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
 import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { z } from 'zod';

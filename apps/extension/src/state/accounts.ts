@@ -1,7 +1,7 @@
 import { AllSlices, SliceCreator } from './index';
-import { getAddressByIndex, getShortAddressByIndex, getWalletId } from 'penumbra-wasm-ts';
+import { getAddressByIndex, getShortAddressByIndex, getWalletId } from '@penumbra-zone/wasm-ts';
 import { getActiveWallet } from './wallets';
-import { bech32Address } from 'penumbra-types';
+import { bech32Address } from '@penumbra-zone/types';
 
 interface Account {
   walletId: string;

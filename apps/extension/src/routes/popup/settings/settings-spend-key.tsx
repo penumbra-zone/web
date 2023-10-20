@@ -1,6 +1,6 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
-import { Button, CopyToClipboard, FadeTransition } from 'ui';
+import { Button, CopyToClipboard, FadeTransition } from '@penumbra-zone/ui';
 import { PasswordInput, SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';

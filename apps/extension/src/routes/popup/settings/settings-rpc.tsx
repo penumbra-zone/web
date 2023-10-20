@@ -1,13 +1,13 @@
-import { AppQuerier } from 'penumbra-query/src/queriers/app';
+import { AppQuerier } from '@penumbra-zone/query';
 import { FormEvent, useState } from 'react';
-import { Button, FadeTransition, Input } from 'ui';
-import { cn } from 'ui/lib/utils';
+import { Button, FadeTransition, Input } from '@penumbra-zone/ui';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useChainId } from '../../../hooks/chain-id';
 import { ShareGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { networkSelector } from '../../../state/network';
-import { swClient } from '../../service-worker/extension/client/internal';
+import { internalSwClient } from '@penumbra-zone/router';
 
 export const SettingsRPC = () => {
   const { chainId, refetch } = useChainId();
@@ -24,7 +24,7 @@ export const SettingsRPC = () => {
       try {
         await querier.chainParams();
         await setGRPCEndpoint(rpc);
-        await swClient.clearCache();
+        await internalSwClient.clearCache();
         await refetch();
         setRpcError(false);
       } catch {
