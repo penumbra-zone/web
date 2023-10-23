@@ -111,7 +111,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
       const { data } = await custodyClient.authorize({ plan });
       if (!data) throw new Error('no authorization data in response');
 
-      console.log(data);
+      console.log(data.toJson());
 
       return 'done!';
 
