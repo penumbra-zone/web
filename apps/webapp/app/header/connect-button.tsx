@@ -5,7 +5,7 @@ import { stdClient } from '../../clients/std';
 
 export default function ConnectButton() {
   return (
-    <Button className='w-[140px]' onClick={() => void stdClient.connect()}>
+    <Button className='w-[140px] h-8' onClick={() => void stdClient.connect()}>
       Connect Wallet
     </Button>
   );

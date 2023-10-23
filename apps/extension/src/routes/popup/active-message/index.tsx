@@ -24,11 +24,8 @@ export const ActiveMessage = () => {
   const { messages } = useStore(messagesSelector);
   const inPendingMessage = messages.find(msg => msg.status === MessageStatus.PENDING);
 
-  console.log(inPendingMessage);
-  
-
   if (!inPendingMessage) return <></>;
-  
+
   return (
     <>{inPendingMessage.type === MessageType.CONNECT && <Connect message={inPendingMessage} />}</>
   );

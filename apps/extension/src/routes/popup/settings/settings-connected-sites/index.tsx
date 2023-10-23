@@ -41,7 +41,9 @@ export const SettingsConnectedSites = () => {
                 key={origin}
                 className='flex items-center justify-between rounded-lg border bg-background px-3 py-[14px]'
               >
-                <p>{origin}</p>
+                <a href={origin} target='_blank' rel='noreferrer noopener'>
+                  {origin}
+                </a>
                 <ConnectedSitesActionPopover origin={origin} />
               </div>
             ))}
