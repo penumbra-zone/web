@@ -425,6 +425,9 @@ importers:
       '@connectrpc/connect':
         specifier: ^1.1.2
         version: 1.1.2(@bufbuild/protobuf@1.3.3)
+      '@penumbra-zone/crypto-web':
+        specifier: workspace:*
+        version: link:../crypto
       '@penumbra-zone/storage':
         specifier: workspace:*
         version: link:../storage
