@@ -81,6 +81,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.validationErrors.amount = validateAmount(amount, balance);
       });
     },
+    // TODO: implement UI to show tx states and have error handling
     sendTx: async () => {
       const amount = splitLoHi(BigInt(get().send.amount));
       const req = new TransactionPlannerRequest({
