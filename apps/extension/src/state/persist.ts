@@ -32,12 +32,16 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
     const passwordKey = await sessionExtStorage.get('passwordKey');
     const wallets = await localExtStorage.get('wallets');
     const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+    const messages = await localExtStorage.get('messages');
+    const connectedSites = await localExtStorage.get('connectedSites');
 
     set(
       produce((state: AllSlices) => {
         state.password.key = passwordKey;
         state.wallets.all = walletsFromJson(wallets);
         state.network.grpcEndpoint = grpcEndpoint;
+        state.messages.messages = messages;
+        state.connectedSites.connectedSites = connectedSites;
       }),
     );
 

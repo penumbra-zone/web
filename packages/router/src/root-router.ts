@@ -19,7 +19,7 @@ export const penumbraMessageHandler =
     if (!allowedRequest(sender)) return;
 
     if (isStdRequest(message)) {
-      return stdRouter(message, sendResponse, services);
+      return stdRouter(message, sendResponse, services, sender);
     } else if (isViewServerReq(message)) {
       viewServerRouter(message, sender, services);
     }

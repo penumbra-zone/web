@@ -5,6 +5,7 @@ import { PopupPath } from './paths';
 import { PopupLayout } from './popup-layout';
 import { Settings } from './settings';
 import { settingsRoutes } from './settings/routes';
+import { ActiveMessage, popupActiveMessageLoader } from './active-message';
 
 export const popupRoutes: RouteObject[] = [
   {
@@ -23,6 +24,11 @@ export const popupRoutes: RouteObject[] = [
         path: PopupPath.SETTINGS,
         element: <Settings />,
         children: settingsRoutes,
+      },
+      {
+        path: PopupPath.ACTIVE_MESSAGE,
+        element: <ActiveMessage />,
+        loader: popupActiveMessageLoader,
       },
     ],
   },

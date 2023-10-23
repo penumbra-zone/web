@@ -7,6 +7,7 @@ import { useStore } from '../../../state';
 import { accountsSelector, activeAccount } from '../../../state/accounts';
 import { BlockSync } from './block-sync';
 import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
+import { MessageStatus } from '@penumbra-zone/types';
 
 export interface PopupLoaderData {
   lastBlockSynced: number;
@@ -27,6 +28,11 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
 
   if (!password) return redirect(PopupPath.LOGIN);
 
+  const messages = await localExtStorage.get('messages');
+
+  if (messages.find(msg => msg.status === MessageStatus.PENDING))
+    return redirect(PopupPath.ACTIVE_MESSAGE);
+
   const lastBlockSynced = await localExtStorage.get('lastBlockSynced');
 
   return { lastBlockSynced };
@@ -37,7 +43,7 @@ export const PopupIndex = () => {
   const { next, previous } = useStore(accountsSelector);
 
   return (
-    <div className='relative flex h-full flex-col items-stretch justify-start bg-left-bottom px-[30px]'>
+    <div className='min-h-screen relative flex h-full flex-col items-stretch justify-start bg-left-bottom px-[30px]'>
       <div className='absolute bottom-[50px] left-[-10px] -z-10 h-[600px] w-[400px] overflow-hidden bg-logo opacity-10' />
       <IndexHeader />
       <div className='my-16 flex w-full flex-col'>

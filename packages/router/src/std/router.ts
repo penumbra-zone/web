@@ -1,5 +1,5 @@
 import { clearCacheHandler } from './routes/clear-cache';
-import { connectHandler } from './routes/open-window';
+import { connectHandler } from './routes/connect';
 import { pingHandler } from './routes/ping';
 import { syncBlocksHandler } from './routes/sync';
 
@@ -18,9 +18,10 @@ export const stdRouter = (
   req: ServiceWorkerRequest<SwRequestMessage>,
   sendResponse: (response: ServiceWorkerResponse<SwRequestMessage>) => void,
   services: ServicesInterface,
+  sender: chrome.runtime.MessageSender,
 ) => {
   (async function () {
-    const result = await typedMessageRouter(req.penumbraSwReq, services);
+    const result = await typedMessageRouter(req.penumbraSwReq, services, sender);
     sendResponse({
       sequence: req.sequence,
       penumbraSwRes: {
@@ -43,6 +44,7 @@ export const stdRouter = (
 const typedMessageRouter = async (
   req: IncomingRequest<SwRequestMessage>,
   services: ServicesInterface,
+  sender: chrome.runtime.MessageSender,
 ): Promise<SwResponse> => {
   switch (req.type) {
     case 'SYNC_BLOCKS':
@@ -52,7 +54,7 @@ const typedMessageRouter = async (
     case 'CLEAR_CACHE':
       return clearCacheHandler(services)();
     case 'CONNECT':
-      return connectHandler(services)();
+      return connectHandler(services, sender)();
     default:
       throw new Error(`Unhandled request type: ${JSON.stringify(req)}`);
   }

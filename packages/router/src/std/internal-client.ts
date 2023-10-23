@@ -1,8 +1,8 @@
 import {
   AwaitedResponse,
   ClearCacheMessage,
+  ConnectMessage,
   IncomingRequest,
-  OpenWindowMessage,
   PingMessage,
   ServiceWorkerRequest,
   ServiceWorkerResponse,
@@ -14,7 +14,7 @@ export const internalSwClient = {
   syncBlocks: () => sendSwMessage<SyncBlocksMessage>({ type: 'SYNC_BLOCKS' }),
   ping: (arg: string) => sendSwMessage<PingMessage>({ type: 'PING', arg }),
   clearCache: () => sendSwMessage<ClearCacheMessage>({ type: 'CLEAR_CACHE' }),
-  connect: () => sendSwMessage<OpenWindowMessage>({ type: 'CONNECT' }),
+  connect: () => sendSwMessage<ConnectMessage>({ type: 'CONNECT' }),
 };
 
 export const sendSwMessage = async <T extends SwRequestMessage>(

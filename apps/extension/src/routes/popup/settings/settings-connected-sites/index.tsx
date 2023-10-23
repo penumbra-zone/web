@@ -4,16 +4,17 @@ import { FadeTransition, Input } from '@penumbra-zone/ui';
 import { LinkGradientIcon } from '../../../../icons';
 import { SettingsHeader } from '../../../../shared';
 import { ConnectedSitesActionPopover } from './connected-sites-action-popover';
-
-const dapps = ['app.testnet.penumbra.zone', 'testnet.penumbra.zone'];
+import { useStore } from '../../../../state';
+import { connectedSitesSelector } from '../../../../state/connected-sites';
 
 export const SettingsConnectedSites = () => {
+  const { connectedSites } = useStore(connectedSitesSelector);
   const [search, setSearch] = useState('');
 
-  const filteredDapps = useMemo(() => {
-    if (!search) return dapps;
-    return dapps.filter(i => i.toLowerCase().includes(search.toLowerCase()));
-  }, [search]);
+  const filteredSites = useMemo(() => {
+    if (!search) return connectedSites;
+    return connectedSites.filter(i => i.toLowerCase().includes(search.toLowerCase()));
+  }, [search, connectedSites]);
 
   return (
     <FadeTransition>
@@ -35,13 +36,13 @@ export const SettingsConnectedSites = () => {
             />
           </div>
           <div className='flex flex-col gap-2'>
-            {filteredDapps.map((i, index) => (
+            {filteredSites.map(origin => (
               <div
-                key={index}
+                key={origin}
                 className='flex items-center justify-between rounded-lg border bg-background px-3 py-[14px]'
               >
-                <p>{i}</p>
-                <ConnectedSitesActionPopover />
+                <p>{origin}</p>
+                <ConnectedSitesActionPopover origin={origin} />
               </div>
             ))}
           </div>

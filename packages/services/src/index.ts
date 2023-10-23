@@ -3,6 +3,7 @@ import { BlockProcessor, RootQuerier } from '@penumbra-zone/query';
 import { IndexedDb, localExtStorage, syncLastBlockWithLocal } from '@penumbra-zone/storage';
 import { ViewServer } from '@penumbra-zone/wasm-ts';
 import { ServicesInterface, WalletServices } from '@penumbra-zone/types/src/services';
+import { MessageStatus } from '@penumbra-zone/types';
 
 export class Services implements ServicesInterface {
   private walletServicesPromise: Promise<WalletServices> | undefined;
@@ -105,5 +106,19 @@ export class Services implements ServicesInterface {
       // press the window to the right side
       left: left !== undefined && width !== undefined ? left + (width - 400) : 0,
     });
+  }
+
+  async removeMessages() {
+    await localExtStorage.set('messages', []);
+  }
+
+  async updateBadge() {
+    const messagesLength = (await localExtStorage.get('messages')).filter(
+      msg => msg.status === MessageStatus.PENDING,
+    ).length;
+
+    await chrome.action.setBadgeText({ text: messagesLength ? String(messagesLength) : '' });
+    await chrome.action.setBadgeBackgroundColor({ color: '#629994' });
+    await chrome.action.setBadgeTextColor({ color: '#fff' });
   }
 }

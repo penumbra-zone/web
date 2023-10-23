@@ -12,4 +12,5 @@ export enum PopupPath {
   SETTINGS_RECOVERY_PASSPHRASE = '/settings/recovery-passphrase',
   SETTINGS_FULL_VIEWING_KEY = '/settings/full-viewing-key',
   SETTINGS_SPEND_KEY = '/settings/spend-key',
+  ACTIVE_MESSAGE = '/active-message',
 }

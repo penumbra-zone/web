@@ -13,6 +13,8 @@ import {
   sessionExtStorage,
   SessionStorageState,
 } from '@penumbra-zone/storage';
+import { createMessagesSlice, MessagesSlice } from './messages';
+import { ConnectedSitesSlice, createConnectedSitesSlice } from './connected-sites';
 
 export interface AllSlices {
   wallets: WalletsSlice;
@@ -20,6 +22,8 @@ export interface AllSlices {
   password: PasswordSlice;
   seedPhrase: SeedPhraseSlice;
   network: NetworkSlice;
+  messages: MessagesSlice;
+  connectedSites: ConnectedSitesSlice;
 }
 
 export type SliceCreator<SliceInterface> = StateCreator<
@@ -39,6 +43,8 @@ export const initializeStore = (
     password: createPasswordSlice(session, local)(setState, getState, store),
     seedPhrase: createSeedPhraseSlice(setState, getState, store),
     network: createNetworkSlice(local)(setState, getState, store),
+    messages: createMessagesSlice(local)(setState, getState, store),
+    connectedSites: createConnectedSitesSlice(local)(setState, getState, store),
   }));
 };
 

@@ -13,7 +13,8 @@
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/transport": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm-ts": "workspace:*"
+    "@penumbra-zone/wasm-ts": "workspace:*",
+    "generate-unique-id": "^2.0.3"
   },
   "devDependencies": {
     "@types/chrome": "0.0.248",
