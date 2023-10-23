@@ -1,5 +1,4 @@
-import { Base64Str, base64ToUint8Array, uint8ArrayToBase64 } from '@penumbra-zone/types';
-import { Box } from '@penumbra-zone/types';
+import { Base64Str, base64ToUint8Array, Box, uint8ArrayToBase64 } from '@penumbra-zone/types';
 
 /**
  * ==== Internal ====
@@ -143,7 +142,6 @@ export class Key {
     try {
       return await decrypt(box.cipherText, box.nonce, this.key);
     } catch (e) {
-      console.log(e);
       if (e instanceof TypeError) {
         return null;
       }

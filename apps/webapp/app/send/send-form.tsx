@@ -90,7 +90,10 @@ export default function SendForm() {
         variant='gradient'
         className='mt-4'
         onClick={() => {
-          void sendTx();
+          void (async function () {
+            const result = await sendTx();
+            console.log('tx result', result);
+          })();
         }}
         // TODO: re-enable later
         // disabled={!Number(amount) || !recipient || !!Object.values(validationErrors).find(Boolean)}

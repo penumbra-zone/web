@@ -15,6 +15,8 @@ import { handleBalancesReq, isBalancesRequest } from './balances';
 import { handleTransactionInfoReq, isTransactionInfoRequest } from './tx-info';
 import { handleStatusReq, isStatusStreamRequest } from './status-stream';
 import { handleAssetsReq, isAssetsRequest } from './assets';
+import { handleWitnessBuildReq, isWitnessBuildRequest } from './witness-build';
+import { handleBroadcastReq, isBroadcastRequest } from './broadcast';
 
 export type ViewReqMessage = GrpcRequest<typeof ViewProtocolService>;
 export type ViewProtocolRes = GrpcResponse<typeof ViewProtocolService>;
@@ -34,6 +36,8 @@ export const viewServerUnaryHandler: UnaryHandler<typeof ViewProtocolService> = 
   else if (isWalletIdRequest(msg)) return handleWalletIdReq();
   else if (isTxInfoByHashRequest(msg)) return handleTxInfoByHashReq(msg, services);
   else if (isTxPlannerRequest(msg)) return handleTxPlannerReq(msg, services);
+  else if (isWitnessBuildRequest(msg)) return handleWitnessBuildReq(msg, services);
+  else if (isBroadcastRequest(msg)) return handleBroadcastReq(msg);
 
   throw new Error(`Non-supported unary request: ${(msg as ViewReqMessage).getType().typeName}`);
 };
