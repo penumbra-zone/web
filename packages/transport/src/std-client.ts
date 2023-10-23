@@ -1,12 +1,12 @@
 import {
+  ConnectMessage,
   IncomingRequest,
-  isServiceWorkerResponse,
-  OpenWindowMessage,
   PenumbraError,
   PingMessage,
   ServiceWorkerRequest,
   ServiceWorkerResponse,
   SwRequestMessage,
+  isServiceWorkerResponse,
 } from '@penumbra-zone/types';
 
 interface RequestResolvers {
@@ -29,9 +29,9 @@ export class PenumbraStdClient {
     return res.ack;
   }
 
-  async openWindow() {
-    await this.transport.sendMessage<OpenWindowMessage>({
-      type: 'OPEN_WINDOW',
+  async connect() {
+    await this.transport.sendMessage<ConnectMessage>({
+      type: 'CONNECT',
     });
   }
 }

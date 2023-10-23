@@ -14,7 +14,7 @@ export const internalSwClient = {
   syncBlocks: () => sendSwMessage<SyncBlocksMessage>({ type: 'SYNC_BLOCKS' }),
   ping: (arg: string) => sendSwMessage<PingMessage>({ type: 'PING', arg }),
   clearCache: () => sendSwMessage<ClearCacheMessage>({ type: 'CLEAR_CACHE' }),
-  openWindow: () => sendSwMessage<OpenWindowMessage>({ type: 'OPEN_WINDOW' }),
+  connect: () => sendSwMessage<OpenWindowMessage>({ type: 'CONNECT' }),
 };
 
 export const sendSwMessage = async <T extends SwRequestMessage>(

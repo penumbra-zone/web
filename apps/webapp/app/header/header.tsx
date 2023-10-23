@@ -3,7 +3,6 @@ import { FilledImage } from '../../shared';
 import { Navbar } from './navbar';
 import { DappPath } from './paths';
 import dynamic from 'next/dynamic';
-import { ConnectButton } from './connect-button';
 
 const Network = dynamic(() => import('./network'), {
   ssr: false,
@@ -14,6 +13,10 @@ const Notifications = dynamic(() => import('./notifications'), {
 });
 
 const WalletId = dynamic(() => import('./wallet-id'), {
+  ssr: false,
+});
+
+const ConnectButton = dynamic(() => import('./connect-button'), {
   ssr: false,
 });
 

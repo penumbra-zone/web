@@ -1,7 +1,7 @@
-import { OpenWindowMessage, ServicesInterface, SwMessageHandler } from '@penumbra-zone/types';
+import { ConnectMessage, ServicesInterface, SwMessageHandler } from '@penumbra-zone/types';
 
-export const openWindowHandler =
-  (services: ServicesInterface): SwMessageHandler<OpenWindowMessage> =>
+export const connectHandler =
+  (services: ServicesInterface): SwMessageHandler<ConnectMessage> =>
   async () => {
     await services.openWindow();
   };
