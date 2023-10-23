@@ -6,6 +6,7 @@ import {
   SwRequestMessage,
 } from '@penumbra-zone/types';
 import { stdRouter } from './std/router';
+import { custodyServerRouter, isCustodyServerReq } from './grpc/custody/router';
 
 // Used to filter for service worker messages and narrow their type to pass to the typed handler.
 // Exposed to service worker for listening for internal and external messages
@@ -18,11 +19,10 @@ export const penumbraMessageHandler =
   ) => {
     if (!allowedRequest(sender)) return;
 
-    if (isStdRequest(message)) {
-      return stdRouter(message, sendResponse, services);
-    } else if (isViewServerReq(message)) {
-      viewServerRouter(message, sender, services);
-    }
+    if (isStdRequest(message)) return stdRouter(message, sendResponse, services);
+    else if (isViewServerReq(message)) viewServerRouter(message, sender, services);
+    else if (isCustodyServerReq(message)) custodyServerRouter(message, sender, services);
+
     return;
   };
 
