@@ -16,9 +16,9 @@ import {
 // The standard, non-grpc router
 export const stdRouter = (
   req: ServiceWorkerRequest<SwRequestMessage>,
+  sender: chrome.runtime.MessageSender,
   sendResponse: (response: ServiceWorkerResponse<SwRequestMessage>) => void,
   services: ServicesInterface,
-  sender: chrome.runtime.MessageSender,
 ) => {
   (async function () {
     const result = await typedMessageRouter(req.penumbraSwReq, services, sender);
