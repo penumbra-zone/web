@@ -21,7 +21,7 @@ export const connectHandler =
     if (messages.find(msg => msg.status === MessageStatus.PENDING && msg.origin === sender.origin))
       return;
 
-    // create message when connectedSites doesn`t include orrigin
+    // create message when connectedSites doesn`t include origin
     if (!connectedSites.length || !connectedSites.find(origin => origin === sender.origin)) {
       // check is origin is not approved early
       await localExtStorage.set('messages', [
