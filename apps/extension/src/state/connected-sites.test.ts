@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { StoreApi, UseBoundStore, create } from 'zustand';
 import { AllSlices, initializeStore } from '.';
 import {
@@ -8,7 +8,9 @@ import {
   mockSessionExtStorage,
 } from '@penumbra-zone/storage';
 
-describe('Network Slice', () => {
+vi.mock('@penumbra-zone/wasm-ts', () => ({}));
+
+describe('Connected Sites Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
   let localStorage: ExtensionStorage<LocalStorageState>;
 
@@ -18,6 +20,33 @@ describe('Network Slice', () => {
   });
 
   test('the default is empty array', () => {
-    expect(useStore.getState().connectedSites.connectedSites).toBe([]);
+    expect(useStore.getState().connectedSites.connectedSites.length).toBe(0);
+  });
+
+  describe('addOrigin()', () => {
+    test('origin can be set', async () => {
+      const testOrigin = 'https://test';
+      await useStore.getState().connectedSites.addOrigin(testOrigin);
+
+      const connectedSitesLocal = await localStorage.get('connectedSites');
+      expect(connectedSitesLocal.length).toBe(1);
+      expect(connectedSitesLocal[0]).toBe(testOrigin);
+      expect(useStore.getState().connectedSites.connectedSites.length).toBe(1);
+      expect(useStore.getState().connectedSites.connectedSites[0]).toBe(testOrigin);
+    });
+  });
+
+  describe('removeOrigin()', () => {
+    test('origin can be remove', async () => {
+      const testOrigin = 'https://test';
+      await useStore.getState().connectedSites.addOrigin(testOrigin);
+
+      await useStore.getState().connectedSites.removeOrigin(testOrigin);
+
+      const connectedSitesLocal = await localStorage.get('connectedSites');
+      expect(connectedSitesLocal.length).toBe(0);
+
+      expect(useStore.getState().connectedSites.connectedSites.length).toBe(0);
+    });
   });
 });

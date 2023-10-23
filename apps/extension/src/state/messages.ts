@@ -1,7 +1,6 @@
 import { Message, MessageStatus } from '@penumbra-zone/types';
 import { AllSlices, SliceCreator } from '.';
 import { ExtensionStorage, LocalStorageState } from '@penumbra-zone/storage';
-import { services } from '../service-worker';
 
 export interface MessagesSlice {
   messages: Message[];
@@ -13,7 +12,6 @@ export const createMessagesSlice =
   (set, get) => {
     return {
       messages: [],
-      connectedSites: [],
       changeStatusMessage: async (id, status) => {
         const messages = [...get().messages.messages];
 
@@ -36,7 +34,6 @@ export const createMessagesSlice =
         });
 
         await local.set('messages', messages);
-        await services.updateBadge();
       },
     };
   };
