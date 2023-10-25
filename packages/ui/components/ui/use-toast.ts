@@ -4,7 +4,7 @@ import * as React from 'react';
 import type { ToastActionElement, ToastProps } from './toast';
 
 const TOAST_LIMIT = 3;
-const TOAST_REMOVE_DELAY = 1500000;
+const TOAST_REMOVE_DELAY = 1500000; // not ui dismissal, but internal state cleanup
 
 type ToasterToast = ToastProps & {
   id: string;
