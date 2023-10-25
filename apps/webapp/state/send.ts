@@ -81,7 +81,6 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.validationErrors.amount = validateAmount(amount, balance);
       });
     },
-    // TODO: implement UI to show tx states and have error handling
     sendTx: async () => {
       const amount = splitLoHi(BigInt(get().send.amount));
       const req = new TransactionPlannerRequest({
@@ -112,7 +111,15 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
       const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
       if (!id) throw new Error('no id in broadcast response');
 
-      return uint8ArrayToHex(id.hash);
+      const txHash = uint8ArrayToHex(id.hash);
+
+      // Reset form
+      set(state => {
+        state.send.recipient = '';
+        state.send.amount = '';
+      });
+
+      return txHash;
     },
   };
 };
