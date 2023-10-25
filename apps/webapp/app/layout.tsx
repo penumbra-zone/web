@@ -4,6 +4,7 @@ import { Header } from './header/header';
 import Image from 'next/image';
 
 import '@penumbra-zone/ui/styles/globals.css';
+import { Toaster } from '@penumbra-zone/ui/components/ui/toaster';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Header />
             <main className='flex-1 pt-10'>{children}</main>
           </div>
+          <Toaster />
         </Providers>
       </body>
     </html>

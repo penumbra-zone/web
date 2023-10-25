@@ -3,13 +3,13 @@ import * as React from 'react';
 
 import type { ToastActionElement, ToastProps } from './toast';
 
-const TOAST_LIMIT = 1;
-const TOAST_REMOVE_DELAY = 1000000;
+const TOAST_LIMIT = 3;
+const TOAST_REMOVE_DELAY = 1500000;
 
 type ToasterToast = ToastProps & {
   id: string;
-  title?: React.ReactNode;
-  description?: React.ReactNode;
+  main?: React.ReactNode;
+  subText?: React.ReactNode;
   action?: ToastActionElement;
 };
 
@@ -133,12 +133,12 @@ function dispatch(action: Action) {
   });
 }
 
-type Toast = Omit<ToasterToast, 'id'>;
+export type ToastFnProps = Omit<ToasterToast, 'id'>;
 
-function toast({ ...props }: Toast) {
+function toast({ ...props }: ToastFnProps) {
   const id = genId();
 
-  const update = (props: ToasterToast) =>
+  const update = (props: ToastFnProps) =>
     dispatch({
       type: 'UPDATE_TOAST',
       toast: { ...props, id },

@@ -7,10 +7,7 @@ import { useStore } from '../../state';
 import { sendSelector } from '../../state/send';
 import { validateAmount, validateRecipient } from '../../utils';
 import { useCalculateBalance } from '../../hooks/calculate-balance';
-import { toast, useToast } from '@penumbra-zone/ui/components/ui/use-toast';
-import { shorten } from '@penumbra-zone/types';
-import Link from 'next/link';
-import { ToastAction } from '@penumbra-zone/ui/components/ui/toast';
+import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 
 const InputToken = dynamic(() => import('../../shared/input-token'), {
   ssr: false,
@@ -31,6 +28,7 @@ export default function SendForm() {
     setHidden,
     setAssetBalance,
     sendTx,
+    txInProgress,
     validationErrors,
   } = useStore(sendSelector);
 
@@ -96,33 +94,16 @@ export default function SendForm() {
         type='submit'
         variant='gradient'
         className='mt-4'
-        onClick={() => void handleTxSend(toast, sendTx)}
-        disabled={!Number(amount) || !recipient || !!Object.values(validationErrors).find(Boolean)}
+        onClick={() => void sendTx(toast)}
+        disabled={
+          !Number(amount) ||
+          !recipient ||
+          !!Object.values(validationErrors).find(Boolean) ||
+          txInProgress
+        }
       >
         Send
       </Button>
     </form>
   );
 }
-
-const handleTxSend = async (toastFn: typeof toast, sendAction: () => Promise<string>) => {
-  try {
-    const txHash = await sendAction();
-
-    toastFn({
-      title: 'Tx success 🎉',
-      description: `Transaction hash: ${shorten(txHash)}`,
-      action: (
-        <Link href={`/tx/?hash=${txHash}`}>
-          <ToastAction altText='See transaction details'>See details</ToastAction>
-        </Link>
-      ),
-    });
-  } catch (e) {
-    toastFn({
-      variant: 'destructive',
-      title: 'Error with transaction',
-      description: String(e),
-    });
-  }
-};

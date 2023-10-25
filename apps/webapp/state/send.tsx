@@ -9,6 +9,8 @@ import {
   uint8ArrayToHex,
 } from '@penumbra-zone/types';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
+import { errorTxToast, loadingTxToast, successTxToast } from '../shared/toast-content';
 
 export interface SendValidationFields {
   recipient: boolean;
@@ -29,7 +31,8 @@ export interface SendSlice {
   setMemo: (txt: string) => void;
   setHidden: (checked: boolean) => void;
   setAssetBalance: (amount: number) => void;
-  sendTx: () => Promise<string>;
+  sendTx: (toastFn: typeof toast) => Promise<void>;
+  txInProgress: boolean;
 }
 
 export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
@@ -40,6 +43,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     memo: '',
     hidden: false,
     assetBalance: 0,
+    txInProgress: false,
     validationErrors: {
       recipient: false,
       amount: false,
@@ -81,47 +85,65 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.validationErrors.amount = validateAmount(amount, balance);
       });
     },
-    sendTx: async () => {
-      const amount = splitLoHi(BigInt(get().send.amount));
-      const req = new TransactionPlannerRequest({
-        outputs: [
-          {
-            address: { altBech32m: get().send.recipient },
-            value: {
-              amount: { lo: amount.lo, hi: amount.hi },
-              assetId: { inner: base64ToUint8Array(get().send.asset.penumbraAssetId.inner) },
-            },
-          },
-        ],
-      });
-
-      const { viewClient, custodyClient } = await import('../clients/grpc');
-      const { plan } = await viewClient.transactionPlanner(req);
-      if (!plan) throw new Error('no plan in response');
-
-      const { data: authorizationData } = await custodyClient.authorize({ plan });
-      if (!authorizationData) throw new Error('no authorization data in response');
-
-      const { transaction } = await viewClient.witnessAndBuild({
-        transactionPlan: plan,
-        authorizationData,
-      });
-      if (!transaction) throw new Error('no transaction in response');
-
-      const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
-      if (!id) throw new Error('no id in broadcast response');
-
-      const txHash = uint8ArrayToHex(id.hash);
-
-      // Reset form
+    sendTx: async toastFn => {
       set(state => {
-        state.send.recipient = '';
-        state.send.amount = '';
+        state.send.txInProgress = true;
       });
 
-      return txHash;
+      const { dismiss } = toastFn(loadingTxToast);
+
+      try {
+        const txHash = await planWitnessBuildBroadcast(get().send);
+        dismiss();
+        toastFn(successTxToast(txHash));
+
+        // Reset form
+        set(state => {
+          state.send.amount = '';
+          state.send.txInProgress = false;
+        });
+      } catch (e) {
+        set(state => {
+          state.send.txInProgress = false;
+        });
+        dismiss();
+        toastFn(errorTxToast(e));
+      }
     },
   };
+};
+
+const planWitnessBuildBroadcast = async ({ amount, recipient, asset }: SendSlice) => {
+  const { hi, lo } = splitLoHi(BigInt(amount));
+  const req = new TransactionPlannerRequest({
+    outputs: [
+      {
+        address: { altBech32m: recipient },
+        value: {
+          amount: { lo, hi },
+          assetId: { inner: base64ToUint8Array(asset.penumbraAssetId.inner) },
+        },
+      },
+    ],
+  });
+
+  const { viewClient, custodyClient } = await import('../clients/grpc');
+  const { plan } = await viewClient.transactionPlanner(req);
+  if (!plan) throw new Error('no plan in response');
+
+  const { data: authorizationData } = await custodyClient.authorize({ plan });
+  if (!authorizationData) throw new Error('no authorization data in response');
+
+  const { transaction } = await viewClient.witnessAndBuild({
+    transactionPlan: plan,
+    authorizationData,
+  });
+  if (!transaction) throw new Error('no transaction in response');
+
+  const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
+  if (!id) throw new Error('no id in broadcast response');
+
+  return uint8ArrayToHex(id.hash);
 };
 
 export const sendSelector = (state: AllSlices) => state.send;
