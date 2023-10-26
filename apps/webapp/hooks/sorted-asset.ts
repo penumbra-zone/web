@@ -7,9 +7,11 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { useMemo } from 'react';
 import { IndexAddrRecord, useAddresses } from './address';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
-interface AssetBalance {
+export interface AssetBalance {
   denom: string;
+  assetId: AssetId;
   amount: number;
   usdcValue: number;
 }
@@ -22,6 +24,7 @@ export interface AccountBalance {
 
 interface NormalizedBalance {
   denom: string;
+  assetId: AssetId;
   amount: number;
   usdcValue: number;
   account: { index: number; address: string };
@@ -52,6 +55,7 @@ const normalize =
 
     return {
       denom,
+      assetId: res.balance!.assetId!,
       amount: amount,
       usdcValue: amount * 0.93245, // TODO: Temporary until pricing implemented
       account: { index, address },
@@ -60,7 +64,12 @@ const normalize =
 
 const groupByAccount = (balances: AccountBalance[], curr: NormalizedBalance): AccountBalance[] => {
   const match = balances.find(b => b.index === curr.account.index);
-  const newBalance = { amount: curr.amount, denom: curr.denom, usdcValue: curr.usdcValue };
+  const newBalance = {
+    amount: curr.amount,
+    denom: curr.denom,
+    usdcValue: curr.usdcValue,
+    assetId: curr.assetId,
+  };
   if (match) {
     match.balances.push(newBalance);
     match.balances.sort(sortByAmount);

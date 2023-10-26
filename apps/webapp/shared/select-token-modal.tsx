@@ -10,10 +10,10 @@ import {
   DialogTrigger,
   Input,
 } from '@penumbra-zone/ui';
-import { useBalancesWithMetadata } from '../hooks/sorted-asset';
-import { formatNumber } from '../utils';
-import { Asset, AssetId } from '@penumbra-zone/types';
+import { AssetBalance, useBalancesWithMetadata } from '../hooks/sorted-asset';
+import { Asset, AssetId, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { cn } from '@penumbra-zone/ui/lib/utils';
+import { formatNumber } from '../utils';
 
 interface SelectTokenModalProps {
   asset: Asset;
@@ -23,7 +23,22 @@ interface SelectTokenModalProps {
 export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalProps) {
   const [search, setSearch] = useState('');
 
-  const { data: sortedAssets } = useBalancesWithMetadata('amount', search);
+  const { data: sortedAssets } = useBalancesWithMetadata();
+
+  // Accumulates totals per denom across accounts
+  const combineAssetTotals = sortedAssets
+    .flatMap(a => a.balances)
+    .filter(a => !search || a.denom.includes(search.toLowerCase()))
+    .reduce<AssetBalance[]>((acc, curr) => {
+      const match = acc.find(a => a.denom === curr.denom);
+      if (match) {
+        match.amount += curr.amount;
+        match.usdcValue += curr.usdcValue;
+      } else {
+        acc.push(curr);
+      }
+      return acc;
+    }, []);
 
   return (
     <Dialog>
@@ -52,21 +67,26 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
               <p>Balance</p>
             </div>
             <div className='flex flex-col gap-2'>
-              {sortedAssets.map((a, i) => (
+              {combineAssetTotals.map((b, i) => (
                 <DialogPrimitive.Close key={i}>
                   <div
                     className={cn(
-                      'flex justify-between items-center py-[10px] cursor-pointer hover:bg-light-brown hover:px-2',
-                      asset.penumbraAssetId.inner === a.assetId && 'bg-light-brown px-2',
+                      'flex justify-between items-center py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4',
+                      asset.penumbraAssetId.inner === uint8ArrayToBase64(b.assetId.inner) &&
+                        'bg-light-brown px-4 -mx-4',
                     )}
-                    onClick={() => setAsset({ inner: a.assetId, altBaseDenom: '', altBech32: '' })}
+                    onClick={() =>
+                      setAsset({
+                        inner: uint8ArrayToBase64(b.assetId.inner),
+                        altBaseDenom: '',
+                        altBech32: '',
+                      })
+                    }
                   >
                     <div className='flex items-start gap-[6px]'>
-                      <p className='font-bold text-muted-foreground'>{a.denomMetadata.display}</p>
+                      <p className='font-bold text-muted-foreground'>{b.denom}</p>
                     </div>
-                    <p className='font-bold text-muted-foreground'>
-                      {formatNumber(a.balance.amount)}
-                    </p>
+                    <p className='font-bold text-muted-foreground'>{formatNumber(b.amount)}</p>
                   </div>
                 </DialogPrimitive.Close>
               ))}

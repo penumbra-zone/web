@@ -114,6 +114,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
 };
 
 const planWitnessBuildBroadcast = async ({ amount, recipient, asset }: SendSlice) => {
+  // TODO: Split should undo exponents
   const { hi, lo } = splitLoHi(BigInt(amount));
   const req = new TransactionPlannerRequest({
     outputs: [
