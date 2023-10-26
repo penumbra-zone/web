@@ -6,7 +6,6 @@ import { SettingsClearCache } from './settings-clear-cache';
 import { SettingsConnectedSites } from './settings-connected-sites';
 import { SettingsFullViewingKey } from './settings-full-viewing-key';
 import { SettingsPassphrase } from './settings-passphrase';
-import { SettingsPermission } from './settings-permission';
 import { SettingsRPC } from './settings-rpc';
 import { SettingsSecurity } from './settings-security';
 import { SettingsSpendKey } from './settings-spend-key';
@@ -27,10 +26,6 @@ export const settingsRoutes = [
   {
     path: PopupPath.SETTINGS_RPC,
     element: <SettingsRPC />,
-  },
-  {
-    path: PopupPath.SETTINGS_PERMISSION,
-    element: <SettingsPermission />,
   },
   {
     path: PopupPath.SETTINGS_CONNECTED_SITES,
