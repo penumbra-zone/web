@@ -44,7 +44,7 @@ export const PopupIndex = () => {
 
   return (
     <div className='relative flex h-full min-h-screen flex-col items-stretch justify-start bg-left-bottom px-[30px]'>
-      <div className='absolute bottom-[50px] left-[-10px] -z-10 h-[600px] w-[400px] overflow-hidden bg-logo opacity-10' />
+      <div className='absolute bottom-[50px] left-[-10px] -z-10 h-[715px] w-[900px] overflow-hidden bg-logo opacity-10' />
       <IndexHeader />
       <div className='my-16 flex w-full flex-col'>
         <p className='mb-4 select-none text-center font-headline text-xl font-semibold leading-[30px]'>
