@@ -3,6 +3,7 @@ import {
   ClearCacheMessage,
   ConnectMessage,
   IncomingRequest,
+  IsConnectedMessage,
   PingMessage,
   ServiceWorkerRequest,
   ServiceWorkerResponse,
@@ -15,6 +16,7 @@ export const internalSwClient = {
   ping: (arg: string) => sendSwMessage<PingMessage>({ type: 'PING', arg }),
   clearCache: () => sendSwMessage<ClearCacheMessage>({ type: 'CLEAR_CACHE' }),
   connect: () => sendSwMessage<ConnectMessage>({ type: 'CONNECT' }),
+  isConnected: () => sendSwMessage<IsConnectedMessage>({ type: 'IS_CONNECTED' }),
 };
 
 export const sendSwMessage = async <T extends SwRequestMessage>(

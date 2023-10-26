@@ -1,6 +1,7 @@
 import {
   ConnectMessage,
   IncomingRequest,
+  IsConnectedMessage,
   PenumbraError,
   PingMessage,
   ServiceWorkerRequest,
@@ -26,12 +27,19 @@ export class PenumbraStdClient {
 
   async ping(arg: string) {
     const res = await this.transport.sendMessage<PingMessage>({ type: 'PING', arg });
+
     return res.ack;
   }
 
   async connect() {
     await this.transport.sendMessage<ConnectMessage>({
       type: 'CONNECT',
+    });
+  }
+
+  async isConnected() {
+    return await this.transport.sendMessage<IsConnectedMessage>({
+      type: 'IS_CONNECTED',
     });
   }
 }

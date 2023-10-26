@@ -1,5 +1,6 @@
 import { clearCacheHandler } from './routes/clear-cache';
 import { connectHandler } from './routes/connect';
+import { isConnectedHandler } from './routes/is-connected';
 import { pingHandler } from './routes/ping';
 import { syncBlocksHandler } from './routes/sync';
 
@@ -22,6 +23,7 @@ export const stdRouter = (
 ) => {
   (async function () {
     const result = await typedMessageRouter(req.penumbraSwReq, services, sender);
+
     sendResponse({
       sequence: req.sequence,
       penumbraSwRes: {
@@ -55,6 +57,8 @@ const typedMessageRouter = async (
       return clearCacheHandler(services)();
     case 'CONNECT':
       return connectHandler(services, sender)();
+    case 'IS_CONNECTED':
+      return isConnectedHandler(sender)();
     default:
       throw new Error(`Unhandled request type: ${JSON.stringify(req)}`);
   }

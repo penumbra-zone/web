@@ -2,8 +2,14 @@
 
 import { Button } from '@penumbra-zone/ui';
 import { stdClient } from '../../clients/std';
+import { useEffect } from 'react';
 
 export default function ConnectButton() {
+  useEffect(() => {
+    void (async () => {
+      console.log(await stdClient.isConnected());
+    })();
+  }, []);
   return (
     <Button
       className='w-[150px]'
