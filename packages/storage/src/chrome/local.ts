@@ -1,7 +1,7 @@
 import { ExtensionStorage } from './base';
 import { testnetConstants } from '@penumbra-zone/constants';
 import { KeyPrintJson } from '@penumbra-zone/crypto-web';
-import { Message, WalletJson } from '@penumbra-zone/types';
+import { WalletJson } from '@penumbra-zone/types';
 
 export enum LocalStorageVersion {
   V1 = 'V1',
@@ -12,7 +12,6 @@ export interface LocalStorageState {
   grpcEndpoint: string;
   passwordKeyPrint: KeyPrintJson | undefined;
   lastBlockSynced: number;
-  messages: Message[];
   connectedSites: string[];
 }
 
@@ -21,7 +20,6 @@ export const localDefaults: LocalStorageState = {
   grpcEndpoint: testnetConstants.grpcEndpoint,
   passwordKeyPrint: undefined,
   lastBlockSynced: 0,
-  messages: [],
   connectedSites: [],
 };
 

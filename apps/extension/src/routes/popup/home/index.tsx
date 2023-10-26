@@ -7,7 +7,6 @@ import { useStore } from '../../../state';
 import { accountsSelector, activeAccount } from '../../../state/accounts';
 import { BlockSync } from './block-sync';
 import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
-import { MessageStatus } from '@penumbra-zone/types';
 
 export interface PopupLoaderData {
   lastBlockSynced: number;
@@ -27,11 +26,6 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
   const password = await sessionExtStorage.get('passwordKey');
 
   if (!password) return redirect(PopupPath.LOGIN);
-
-  const messages = await localExtStorage.get('messages');
-
-  if (messages.find(msg => msg.status === MessageStatus.PENDING))
-    return redirect(PopupPath.ACTIVE_MESSAGE);
 
   const lastBlockSynced = await localExtStorage.get('lastBlockSynced');
 

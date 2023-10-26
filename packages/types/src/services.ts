@@ -17,5 +17,4 @@ export interface ServicesInterface {
   initializeWalletServices(): Promise<WalletServices>;
   clearCache(): Promise<void>;
   openWindow(): Promise<void>;
-  updateBadge(): Promise<void>;
 }

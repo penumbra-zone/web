@@ -440,9 +440,6 @@ importers:
       '@penumbra-zone/wasm-ts':
         specifier: workspace:*
         version: link:../wasm
-      generate-unique-id:
-        specifier: ^2.0.3
-        version: registry.npmmirror.com/generate-unique-id@2.0.3
     devDependencies:
       '@types/chrome':
         specifier: 0.0.248
@@ -7172,12 +7169,6 @@ packages:
       - encoding
       - supports-color
     dev: true
-
-  registry.npmmirror.com/generate-unique-id@2.0.3:
-    resolution: {integrity: sha512-oADhkjv6nsiHNJNa+kCe/h6vqgooEPmASHU40hWGbhDODb/xKp5ej7l+7BNs3bQ/v8DCbaVJ42//kN2umQfr6A==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/generate-unique-id/-/generate-unique-id-2.0.3.tgz}
-    name: generate-unique-id
-    version: 2.0.3
-    dev: false
 
   registry.npmmirror.com/get-caller-file@2.0.5:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/get-caller-file/-/get-caller-file-2.0.5.tgz}
