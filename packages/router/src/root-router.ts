@@ -23,17 +23,17 @@ export const penumbraMessageHandler =
     if (isStdRequest(message)) return stdRouter(message, sender, sendResponse, services);
     else if (isViewServerReq(message)) {
       void (async () => {
-        const iConnectedSite = (await localExtStorage.get('connectedSites')).includes(
+        const isConnectedSite = (await localExtStorage.get('connectedSites')).includes(
           sender.origin ?? '',
         );
-        iConnectedSite && viewServerRouter(message, sender, services);
+        isConnectedSite && viewServerRouter(message, sender, services);
       })();
     } else if (isCustodyServerReq(message)) {
       void (async () => {
-        const iConnectedSite = (await localExtStorage.get('connectedSites')).includes(
+        const isConnectedSite = (await localExtStorage.get('connectedSites')).includes(
           sender.origin ?? '',
         );
-        iConnectedSite && custodyServerRouter(message, sender, services);
+        isConnectedSite && custodyServerRouter(message, sender, services);
       })();
     }
 
