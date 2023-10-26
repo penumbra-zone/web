@@ -5,7 +5,6 @@ import { usePopupNav } from '../../utils/navigate';
 import { useStore } from '../../state';
 import { passwordSelector } from '../../state/password';
 import { FormEvent, useState } from 'react';
-import { PopupPath } from './paths';
 
 export const Login = () => {
   const navigate = usePopupNav();
@@ -20,7 +19,7 @@ export const Login = () => {
     void (async function () {
       if (await isPassword(input)) {
         await setSessionPassword(input); // saves to session state
-        navigate(PopupPath.INDEX);
+        navigate(-1);
       } else {
         setEnteredIncorrect(true);
       }

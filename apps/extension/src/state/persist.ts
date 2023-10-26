@@ -39,7 +39,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
         state.password.key = passwordKey;
         state.wallets.all = walletsFromJson(wallets);
         state.network.grpcEndpoint = grpcEndpoint;
-        state.connectedSites.connectedSites = connectedSites;
+        state.connectedSites.all = connectedSites;
       }),
     );
 

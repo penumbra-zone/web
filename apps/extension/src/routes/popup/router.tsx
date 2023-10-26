@@ -1,4 +1,6 @@
-import { createMemoryRouter, RouteObject } from 'react-router-dom';
+import { NotificationPath } from '@penumbra-zone/types';
+import { createHashRouter, RouteObject } from 'react-router-dom';
+import { ConnectSite, popupConnectSiteLoader } from './connect-site';
 import { PopupIndex, popupIndexLoader } from './home';
 import { Login } from './login';
 import { PopupPath } from './paths';
@@ -24,8 +26,13 @@ export const popupRoutes: RouteObject[] = [
         element: <Settings />,
         children: settingsRoutes,
       },
+      {
+        path: NotificationPath.CONNECT_SITE,
+        element: <ConnectSite />,
+        loader: popupConnectSiteLoader,
+      },
     ],
   },
 ];
 
-export const popupRouter = createMemoryRouter(popupRoutes);
+export const popupRouter = createHashRouter(popupRoutes);

@@ -1,7 +1,8 @@
-import { IndexedDbInterface } from './indexed-db';
-import { ViewServerInterface } from './servers';
 import { BlockProcessorInterface } from './block-processor';
+import { IndexedDbInterface } from './indexed-db';
+import { NotificationPath } from './notifications';
 import { RootQuerierInterface } from './querier';
+import { ViewServerInterface } from './servers';
 
 export interface WalletServices {
   viewServer: ViewServerInterface;
@@ -16,5 +17,5 @@ export interface ServicesInterface {
   getWalletServices(): Promise<WalletServices>;
   initializeWalletServices(): Promise<WalletServices>;
   clearCache(): Promise<void>;
-  openWindow(): Promise<void>;
+  openWindow(path: NotificationPath, search?: string): Promise<void>;
 }

@@ -1,5 +1,10 @@
 import { localExtStorage } from '@penumbra-zone/storage';
-import { ConnectMessage, ServicesInterface, SwMessageHandler } from '@penumbra-zone/types';
+import {
+  ConnectMessage,
+  NotificationPath,
+  ServicesInterface,
+  SwMessageHandler,
+} from '@penumbra-zone/types';
 
 export const connectHandler =
   (
@@ -9,10 +14,8 @@ export const connectHandler =
   async () => {
     const connectedSites = await localExtStorage.get('connectedSites');
 
-    // is sender.origin doesn't exist in connectedSites, notification should open
+    // is sender.origin doesn't exist in connectedSites, notification should be open
     if (!connectedSites.length || !connectedSites.find(origin => origin === sender.origin)) {
-      await services.openWindow();
+      await services.openWindow(NotificationPath.CONNECT_SITE, `?origin=${sender.origin}`);
     }
-
-    await services.openWindow();
   };

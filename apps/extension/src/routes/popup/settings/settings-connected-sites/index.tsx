@@ -6,7 +6,7 @@ import { useStore } from '../../../../state';
 import { connectedSitesSelector } from '../../../../state/connected-sites';
 
 export const SettingsConnectedSites = () => {
-  const { connectedSites } = useStore(connectedSitesSelector);
+  const { all } = useStore(connectedSitesSelector);
 
   return (
     <FadeTransition>
@@ -16,7 +16,7 @@ export const SettingsConnectedSites = () => {
           <LinkGradientIcon />
         </div>
         <div className='flex flex-col gap-2 px-[30px]'>
-          {connectedSites.map(origin => (
+          {all.map(origin => (
             <div
               key={origin}
               className='flex items-center justify-between rounded-lg border bg-background px-3 py-[14px]'

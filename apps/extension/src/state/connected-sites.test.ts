@@ -20,7 +20,7 @@ describe('Connected Sites Slice', () => {
   });
 
   test('the default is empty array', () => {
-    expect(useStore.getState().connectedSites.connectedSites.length).toBe(0);
+    expect(useStore.getState().connectedSites.all.length).toBe(0);
   });
 
   describe('addOrigin()', () => {
@@ -31,8 +31,8 @@ describe('Connected Sites Slice', () => {
       const connectedSitesLocal = await localStorage.get('connectedSites');
       expect(connectedSitesLocal.length).toBe(1);
       expect(connectedSitesLocal[0]).toBe(testOrigin);
-      expect(useStore.getState().connectedSites.connectedSites.length).toBe(1);
-      expect(useStore.getState().connectedSites.connectedSites[0]).toBe(testOrigin);
+      expect(useStore.getState().connectedSites.all.length).toBe(1);
+      expect(useStore.getState().connectedSites.all[0]).toBe(testOrigin);
     });
   });
 
@@ -46,7 +46,7 @@ describe('Connected Sites Slice', () => {
       const connectedSitesLocal = await localStorage.get('connectedSites');
       expect(connectedSitesLocal.length).toBe(0);
 
-      expect(useStore.getState().connectedSites.connectedSites.length).toBe(0);
+      expect(useStore.getState().connectedSites.all.length).toBe(0);
     });
   });
 });
