@@ -7,6 +7,7 @@ import { useStore } from '../../state';
 import { sendSelector } from '../../state/send';
 import { validateAmount, validateRecipient } from '../../utils';
 import { useCalculateBalance } from '../../hooks/calculate-balance';
+import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 
 const InputToken = dynamic(() => import('../../shared/input-token'), {
   ssr: false,
@@ -27,9 +28,13 @@ export default function SendForm() {
     setHidden,
     setAssetBalance,
     sendTx,
+    txInProgress,
+    validationErrors,
   } = useStore(sendSelector);
 
   useCalculateBalance(asset, setAssetBalance);
+
+  const { toast } = useToast();
 
   return (
     <form
@@ -89,11 +94,13 @@ export default function SendForm() {
         type='submit'
         variant='gradient'
         className='mt-4'
-        onClick={() => {
-          void sendTx();
-        }}
-        // TODO: re-enable later
-        // disabled={!Number(amount) || !recipient || !!Object.values(validationErrors).find(Boolean)}
+        onClick={() => void sendTx(toast)}
+        disabled={
+          !Number(amount) ||
+          !recipient ||
+          !!Object.values(validationErrors).find(Boolean) ||
+          txInProgress
+        }
       >
         Send
       </Button>

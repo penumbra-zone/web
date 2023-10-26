@@ -1,17 +1,16 @@
 import { assets } from '@penumbra-zone/constants';
 import { validateAmount, validateRecipient } from '../utils';
 import { AllSlices, SliceCreator } from './index';
-import { Asset, AssetId as TempAssetId, base64ToUint8Array, splitLoHi } from '@penumbra-zone/types';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import {
-  TransactionPlannerRequest,
-  TransactionPlannerRequest_Output,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import {
-  AssetId,
-  Value,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+  Asset,
+  AssetId as TempAssetId,
+  base64ToUint8Array,
+  splitLoHi,
+  uint8ArrayToHex,
+} from '@penumbra-zone/types';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
+import { errorTxToast, loadingTxToast, successTxToast } from '../shared/toast-content';
 
 export interface SendValidationFields {
   recipient: boolean;
@@ -32,7 +31,8 @@ export interface SendSlice {
   setMemo: (txt: string) => void;
   setHidden: (checked: boolean) => void;
   setAssetBalance: (amount: number) => void;
-  sendTx: () => Promise<string>;
+  sendTx: (toastFn: typeof toast) => Promise<void>;
+  txInProgress: boolean;
 }
 
 export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
@@ -43,6 +43,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     memo: '',
     hidden: false,
     assetBalance: 0,
+    txInProgress: false,
     validationErrors: {
       recipient: false,
       amount: false,
@@ -84,50 +85,65 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.validationErrors.amount = validateAmount(amount, balance);
       });
     },
-    sendTx: async () => {
-      const amount = splitLoHi(BigInt(get().send.amount));
-      const assetId = get().send.asset.penumbraAssetId;
-      const req = new TransactionPlannerRequest({
-        outputs: [
-          new TransactionPlannerRequest_Output({
-            address: new Address({ altBech32m: get().send.recipient }),
-            value: new Value({
-              amount: new Amount({
-                lo: amount.lo,
-                hi: amount.hi,
-              }),
-              assetId: new AssetId({
-                inner: base64ToUint8Array(assetId.inner),
-              }),
-            }),
-          }),
-        ],
+    sendTx: async toastFn => {
+      set(state => {
+        state.send.txInProgress = true;
       });
 
-      const { viewClient, custodyClient } = await import('../clients/grpc');
-      const { plan } = await viewClient.transactionPlanner(req);
-      if (!plan) throw new Error('no plan in response');
+      const { dismiss } = toastFn(loadingTxToast);
 
-      const { data } = await custodyClient.authorize({ plan });
-      if (!data) throw new Error('no authorization data in response');
+      try {
+        const txHash = await planWitnessBuildBroadcast(get().send);
+        dismiss();
+        toastFn(successTxToast(txHash));
 
-      console.log(data.toJson());
-
-      return 'done!';
-
-      // TODO: Finish this flow
-      // const { transaction } = await viewClient.witnessAndBuild({
-      //   transactionPlan: plan,
-      //   authorizationData: data,
-      // });
-      // if (!transaction) throw new Error('no transaction in response');
-      //
-      // const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
-      // if (!id) throw new Error('no id in broadcast response');
-      //
-      // return uint8ArrayToHex(id.hash);
+        // Reset form
+        set(state => {
+          state.send.amount = '';
+          state.send.txInProgress = false;
+        });
+      } catch (e) {
+        set(state => {
+          state.send.txInProgress = false;
+        });
+        dismiss();
+        toastFn(errorTxToast(e));
+      }
     },
   };
+};
+
+const planWitnessBuildBroadcast = async ({ amount, recipient, asset }: SendSlice) => {
+  const { hi, lo } = splitLoHi(BigInt(amount));
+  const req = new TransactionPlannerRequest({
+    outputs: [
+      {
+        address: { altBech32m: recipient },
+        value: {
+          amount: { lo, hi },
+          assetId: { inner: base64ToUint8Array(asset.penumbraAssetId.inner) },
+        },
+      },
+    ],
+  });
+
+  const { viewClient, custodyClient } = await import('../clients/grpc');
+  const { plan } = await viewClient.transactionPlanner(req);
+  if (!plan) throw new Error('no plan in response');
+
+  const { data: authorizationData } = await custodyClient.authorize({ plan });
+  if (!authorizationData) throw new Error('no authorization data in response');
+
+  const { transaction } = await viewClient.witnessAndBuild({
+    transactionPlan: plan,
+    authorizationData,
+  });
+  if (!transaction) throw new Error('no transaction in response');
+
+  const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
+  if (!id) throw new Error('no id in broadcast response');
+
+  return uint8ArrayToHex(id.hash);
 };
 
 export const sendSelector = (state: AllSlices) => state.send;

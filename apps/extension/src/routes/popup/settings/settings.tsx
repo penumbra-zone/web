@@ -4,7 +4,6 @@ import {
   Link1Icon,
   LockClosedIcon,
   Share1Icon,
-  TextAlignLeftIcon,
 } from '@radix-ui/react-icons';
 import { CustomLink, SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
@@ -23,11 +22,6 @@ const links = [
     title: 'Security & Privacy',
     icon: <LockClosedIcon className='h-5 w-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_SECURITY,
-  },
-  {
-    title: 'Permission',
-    icon: <TextAlignLeftIcon className='h-5 w-5 text-muted-foreground' />,
-    href: PopupPath.SETTINGS_PERMISSION,
   },
   {
     title: 'RPC',

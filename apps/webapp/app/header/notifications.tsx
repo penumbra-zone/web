@@ -1,45 +1,12 @@
 'use client';
 
-import { ArrowTopRightIcon } from '@radix-ui/react-icons';
 import { useEffect, useMemo, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@penumbra-zone/ui';
-import { cn } from '@penumbra-zone/ui/lib/utils';
 import { BellIcon } from '../../icons';
 import { FilledImage } from '../../shared';
 import { viewClient } from '../../clients/grpc';
 import { useStream } from '@penumbra-zone/transport';
 import { BlockSync } from './block-sync';
-
-const txs = [
-  {
-    type: 'Send',
-    amount: 120,
-    asset: 'penumbra',
-    status: 'pending',
-    date: new Date(),
-  },
-  {
-    type: 'Send',
-    amount: 120,
-    asset: 'penumbra',
-    status: 'confirmed',
-    date: new Date(),
-  },
-  {
-    type: 'Send',
-    amount: 120,
-    asset: 'penumbra',
-    status: 'failed',
-    date: new Date(),
-  },
-  {
-    type: 'Send',
-    amount: 120,
-    asset: 'penumbra',
-    status: 'failed',
-    date: new Date(),
-  },
-];
 
 type NotificationState = 'sync' | 'notification' | 'none';
 
@@ -80,34 +47,8 @@ export default function Notifications() {
           <BellIcon stroke={status === 'sync' ? '#363434' : '#BDB8B8'} />
         </div>
       </PopoverTrigger>
-      <PopoverContent className='relative flex w-[400px] flex-col gap-10 bg-charcoal-secondary px-[30px] pb-[46px] pt-5'>
+      <PopoverContent className='relative flex w-[400px] flex-col gap-10 bg-charcoal-secondary p-6'>
         <BlockSync data={data} />
-        <div className='relative z-10 flex flex-col gap-4'>
-          <p className='font-headline text-lg font-semibold leading-6 text-muted'>Transactions</p>
-          <div className='flex max-h-[240px] flex-col gap-4 overflow-auto'>
-            {txs.map((i, index) => (
-              <div key={index} className='flex items-center justify-between'>
-                <div className='flex gap-2 font-bold'>
-                  <ArrowTopRightIcon className='h-5 w-5' />
-                  <div className='flex flex-col items-start'>
-                    <p>{`${i.type} ${i.amount} ${i.asset}`}</p>
-                    <p className='text-xs leading-[18px]'>Aug.31st 12:32pm</p>
-                  </div>
-                </div>
-                <p
-                  className={cn(
-                    'font-bold capitalize',
-                    i.status === 'failed' && 'text-red',
-                    i.status === 'confirmed' && 'text-green',
-                  )}
-                >
-                  {i.status}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className='absolute inset-0 z-0 bg-card-radial opacity-20' />
       </PopoverContent>
     </Popover>
   );
