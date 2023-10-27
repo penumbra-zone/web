@@ -34,7 +34,6 @@
     "@types/react-dom": "^18.2.14",
     "@typescript-eslint/eslint-plugin": "^6.8.0",
     "autoprefixer": "^10.4.16",
-    "copy-webpack-plugin": "^11.0.0",
     "eslint-config-custom": "workspace:*",
     "firebase-tools": "^12.7.0",
     "postcss": "^8.4.31",
