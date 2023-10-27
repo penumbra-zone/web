@@ -2,11 +2,11 @@ import { assets } from '@penumbra-zone/constants';
 import { validateAmount } from '../utils';
 import { AllSlices, SliceCreator } from './index';
 import {
-  Asset,
+  Asset as TempAsset,
   AssetId as TempAssetId,
   base64ToUint8Array,
   isPenumbraAddr,
-  splitLoHi,
+  toBaseUnit,
   uint8ArrayToHex,
 } from '@penumbra-zone/types';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
@@ -20,7 +20,7 @@ export interface SendValidationFields {
 
 export interface SendSlice {
   amount: string;
-  asset: Asset;
+  asset: TempAsset;
   recipient: string;
   memo: string;
   hidden: boolean;
@@ -114,15 +114,18 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
+const getExponent = (asset: TempAsset): number => {
+  const match = asset.denomUnits.find(u => u.denom === asset.display);
+  return match?.exponent ?? 0;
+};
+
 const planWitnessBuildBroadcast = async ({ amount, recipient, asset }: SendSlice) => {
-  // TODO: Split should undo exponents
-  const { hi, lo } = splitLoHi(BigInt(amount));
   const req = new TransactionPlannerRequest({
     outputs: [
       {
         address: { altBech32m: recipient },
         value: {
-          amount: { lo, hi },
+          amount: toBaseUnit(Number(amount), getExponent(asset)),
           assetId: { inner: base64ToUint8Array(asset.penumbraAssetId.inner) },
         },
       },

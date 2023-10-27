@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useBalances } from './balances';
-import { Asset, calculateLoHiExponent, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import { Asset, fromBaseUnit, uint8ArrayToBase64 } from '@penumbra-zone/types';
 
+// TODO: Kill this hook
 export const useCalculateBalance = (asset: Asset, setAssetBalance: (amount: number) => void) => {
   const { data, end } = useBalances();
 
@@ -21,13 +22,7 @@ export const useCalculateBalance = (asset: Asset, setAssetBalance: (amount: numb
     const exponent = asset.denomUnits.find(d => d.denom === asset.display)!.exponent;
 
     setAssetBalance(
-      Number(
-        calculateLoHiExponent(
-          selectedAsset.balance?.amount?.lo,
-          selectedAsset.balance?.amount?.hi,
-          exponent,
-        ),
-      ),
+      fromBaseUnit(selectedAsset.balance?.amount?.lo, selectedAsset.balance?.amount?.hi, exponent),
     );
   }, [end, data, asset, setAssetBalance]);
 };

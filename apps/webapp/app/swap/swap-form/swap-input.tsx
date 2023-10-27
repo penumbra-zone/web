@@ -5,8 +5,7 @@ import { useValidationResult } from '../../../hooks';
 import { FilledImage } from '../../../shared';
 import { SwapAssetInfo } from '../../../state/swap';
 import { Validation } from '../../../types/utility';
-import { formatNumber } from '../../../utils';
-import { AssetId } from '@penumbra-zone/types';
+import { AssetId, displayAmount, displayUsd } from '@penumbra-zone/types';
 
 const SelectTokenModal = dynamic(() => import('../../../shared/select-token-modal'), {
   ssr: false,
@@ -57,12 +56,12 @@ export default function SwapInput({
             asset.amount && 'text-muted-foreground',
           )}
         >
-          ${formatNumber(Number(asset.amount) * asset.price)}
+          ${displayUsd(Number(asset.amount) * asset.price)}
         </p>
         {(asset.balance === 0 || asset.balance) && (
           <div className='flex items-start gap-1'>
             <FilledImage src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
-            <p className='font-bold text-muted-foreground'>{formatNumber(asset.balance)}</p>
+            <p className='font-bold text-muted-foreground'>{displayAmount(asset.balance)}</p>
           </div>
         )}
       </div>

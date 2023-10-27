@@ -5,9 +5,8 @@ import { Input, InputProps } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useValidationResult } from '../hooks';
 import { Validation } from '../types/utility';
-import { formatNumber } from '../utils';
 import { FilledImage } from './filled-image';
-import { Asset, AssetId } from '@penumbra-zone/types';
+import { Asset, AssetId, displayAmount } from '@penumbra-zone/types';
 
 const SelectTokenModal = dynamic(() => import('./select-token-modal'), {
   ssr: false,
@@ -57,7 +56,7 @@ export default function InputToken({
         </div>
         <div className='flex items-start gap-1'>
           <FilledImage src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
-          <p className='font-bold text-muted-foreground'>{formatNumber(assetBalance)}</p>
+          <p className='font-bold text-muted-foreground'>{displayAmount(assetBalance)}</p>
         </div>
       </div>
       <div className='flex items-center justify-between gap-4'>
@@ -77,7 +76,7 @@ export default function InputToken({
           value && 'text-muted-foreground',
         )}
       >
-        ${formatNumber(Number(value) * asset.price)}
+        ${displayAmount(Number(value) * asset.price)}
       </p>
     </div>
   );

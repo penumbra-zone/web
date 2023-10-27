@@ -10,8 +10,12 @@ import {
   TableHeader,
   TableRow,
 } from '@penumbra-zone/ui';
-import { shortenAddress } from '@penumbra-zone/types';
-import { formatNumber } from '../../utils';
+import {
+  displayAmount,
+  displayUsd,
+  fromBaseUnitAmount,
+  shortenAddress,
+} from '@penumbra-zone/types';
 
 export default function AssetsTable() {
   const { data, error } = useBalancesWithMetadata();
@@ -41,18 +45,20 @@ export default function AssetsTable() {
                   <TableRow key={i}>
                     <TableCell className='w-1/3'>
                       <div className='flex flex-col items-center gap-4 '>
-                        <p className=' text-base'>{asset.denom}</p>
+                        <p className=' text-base'>{asset.denom.display}</p>
                       </div>
                     </TableCell>
                     <TableCell className='w-1/3 text-center font-mono font-light'>
                       <div className='flex flex-col'>
-                        <p className='text-[15px] leading-[22px]'>{formatNumber(asset.amount)}</p>
+                        <p className='text-[15px] leading-[22px]'>
+                          {displayAmount(fromBaseUnitAmount(asset.amount, asset.denom.exponent))}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell className='w-1/3 text-center font-mono font-light'>
                       <div className='flex flex-col'>
                         <p className=''>
-                          {asset.usdcValue == 0 ? '$–' : `$${formatNumber(asset.usdcValue)}`}
+                          {asset.usdcValue == 0 ? '$–' : `$${displayUsd(asset.usdcValue)}`}
                         </p>
                       </div>
                     </TableCell>
