@@ -1,8 +1,11 @@
+'use client';
 import Link from 'next/link';
 import { FilledImage } from '../../shared';
 import { Navbar } from './navbar';
 import { DappPath } from './paths';
 import dynamic from 'next/dynamic';
+import { useStore } from '../../state';
+import { accountSelector } from '../../state/account';
 
 const Network = dynamic(() => import('./network'), {
   ssr: false,
@@ -21,6 +24,7 @@ const ConnectButton = dynamic(() => import('./connect-button'), {
 });
 
 export const Header = () => {
+  const { isConnected } = useStore(accountSelector);
   return (
     <header className='flex h-[82px] w-full items-center justify-between px-12'>
       <Link href={DappPath.INDEX}>
@@ -28,10 +32,15 @@ export const Header = () => {
       </Link>
       <Navbar />
       <div className='flex items-center gap-3'>
-        <Notifications />
-        <Network />
-        <WalletId />
-        <ConnectButton />
+        {isConnected ? (
+          <>
+            <Notifications />
+            <Network />
+            <WalletId />
+          </>
+        ) : (
+          <ConnectButton />
+        )}
       </div>
     </header>
   );

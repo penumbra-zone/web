@@ -3,11 +3,13 @@ import { immer } from 'zustand/middleware/immer';
 import { createIbcSendSlice, IbcSendSlice } from './ibc';
 import { createSendSlice, SendSlice } from './send';
 import { createSwapSlice, SwapSlice } from './swap';
+import { AccountSlice, createAccountSlice } from './account';
 
 export interface AllSlices {
   send: SendSlice;
   ibc: IbcSendSlice;
   swap: SwapSlice;
+  account: AccountSlice;
 }
 
 export type SliceCreator<SliceInterface> = StateCreator<
@@ -22,6 +24,7 @@ export const initializeStore = () => {
     send: createSendSlice()(setState, getState, store),
     ibc: createIbcSendSlice()(setState, getState, store),
     swap: createSwapSlice()(setState, getState, store),
+    account: createAccountSlice()(setState, getState, store),
   }));
 };
 

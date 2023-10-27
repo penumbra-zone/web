@@ -1,22 +1,13 @@
 'use client';
 
 import { Button } from '@penumbra-zone/ui';
-import { stdClient } from '../../clients/std';
-import { useEffect } from 'react';
+import { useConnect } from '../../hooks/connect';
 
 export default function ConnectButton() {
-  useEffect(() => {
-    void (async () => {
-      console.log(await stdClient.isConnected());
-    })();
-  }, []);
+  const { connect } = useConnect();
+
   return (
-    <Button
-      className='w-[150px]'
-      size='sm'
-      variant='gradient'
-      onClick={() => void stdClient.connect()}
-    >
+    <Button className='w-[150px]' size='sm' variant='gradient' onClick={() => void connect()}>
       Connect Wallet
     </Button>
   );
