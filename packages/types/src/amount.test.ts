@@ -1,17 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import {
   addAmounts,
-  convertFromBaseUnitAmount,
   displayAmount,
   displayUsd,
+  fromBaseUnitAmount,
   joinLoHiAmount,
 } from './amount';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 
 describe('lohi helpers', () => {
   it('convertFromBaseUnitAmount works', () => {
-    const result = convertFromBaseUnitAmount(new Amount({ lo: 1000n, hi: 5n }), 6);
-    expect(result).toBe(92233720368547n);
+    const result = fromBaseUnitAmount(new Amount({ lo: 1000n, hi: 5n }), 6);
+    expect(result).toBe(92233720368547.77);
   });
 
   it('joinLoHiAmount works', () => {

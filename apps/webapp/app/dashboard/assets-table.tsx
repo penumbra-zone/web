@@ -11,9 +11,9 @@ import {
   TableRow,
 } from '@penumbra-zone/ui';
 import {
-  convertFromBaseUnitAmount,
   displayAmount,
   displayUsd,
+  fromBaseUnitAmount,
   shortenAddress,
 } from '@penumbra-zone/types';
 
@@ -51,9 +51,7 @@ export default function AssetsTable() {
                     <TableCell className='w-1/3 text-center font-mono font-light'>
                       <div className='flex flex-col'>
                         <p className='text-[15px] leading-[22px]'>
-                          {displayAmount(
-                            convertFromBaseUnitAmount(asset.amount, asset.denom.exponent),
-                          )}
+                          {displayAmount(fromBaseUnitAmount(asset.amount, asset.denom.exponent))}
                         </p>
                       </div>
                     </TableCell>

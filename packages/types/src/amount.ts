@@ -1,12 +1,12 @@
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
-import { convertFromBaseUnit, joinLoHi, splitLoHi } from './lo-hi';
+import { fromBaseUnit, joinLoHi, splitLoHi } from './lo-hi';
 
 export const joinLoHiAmount = (amount: Amount): bigint => {
   return joinLoHi(amount.lo, amount.hi);
 };
 
-export const convertFromBaseUnitAmount = (amount: Amount, exponent: number): number => {
-  return convertFromBaseUnit(amount.lo, amount.hi, exponent);
+export const fromBaseUnitAmount = (amount: Amount, exponent: number): number => {
+  return fromBaseUnit(amount.lo, amount.hi, exponent);
 };
 
 export const addAmounts = (a: Amount, b: Amount): Amount => {

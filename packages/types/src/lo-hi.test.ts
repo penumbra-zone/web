@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addLoHi, convertFromBaseUnit, joinLoHi, splitLoHi } from './lo-hi';
+import { addLoHi, fromBaseUnit, joinLoHi, splitLoHi, toBaseUnit } from './lo-hi';
 
 describe('lo-hi', () => {
   describe('splitLoHi', () => {
@@ -128,31 +128,69 @@ describe('lo-hi', () => {
     });
   });
 
-  describe('convertFromBaseUnit', () => {
+  describe('fromBaseUnit', () => {
     it('applies positive exponent', () => {
-      const result = convertFromBaseUnit(1000n, 0n, 3);
+      const result = fromBaseUnit(1000n, 0n, 3);
       expect(result).toBe(1);
     });
 
     it('handles high and low bits', () => {
-      const result = convertFromBaseUnit(1000n, 5n, 6);
+      const result = fromBaseUnit(1000n, 5n, 6);
       expect(result).toBe(92233720368547.77);
     });
 
     it('handles exponent of 0', () => {
-      const result = convertFromBaseUnit(1000n, 0n, 0);
+      const result = fromBaseUnit(1000n, 0n, 0);
       expect(result).toBe(1000);
     });
 
     it('handles big numbers', () => {
-      const result = convertFromBaseUnit(123456789012345n, 987654321098765n, 30);
+      const result = fromBaseUnit(123456789012345n, 987654321098765n, 30);
       expect(result).toBe(18219.006494602272);
     });
 
     it('should return less than 1', () => {
-      const result = convertFromBaseUnit(7n, 0n, 12);
+      const result = fromBaseUnit(7n, 0n, 12);
 
       expect(result).toBe(0.000000000007);
+    });
+  });
+
+  describe('toBaseUnit', () => {
+    it('returns correct LoHi for integer value and exponent 0', () => {
+      const result = toBaseUnit(12345, 0);
+      expect(result.lo).toBe(12345n);
+      expect(result.hi).toBe(0n);
+    });
+
+    it('should correctly convert to base unit', () => {
+      const result = toBaseUnit(123.456, 3);
+      expect(result.lo).toBe(123456n);
+      expect(result.hi).toBe(0n);
+    });
+
+    it('returns correct LoHi for integer value and positive exponent', () => {
+      const result = toBaseUnit(12345, 2);
+      expect(result.lo).toBe(1234500n);
+      expect(result.hi).toBe(0n);
+    });
+
+    it('returns correct LoHi for large value and positive exponent', () => {
+      const result = toBaseUnit(1234567.13314, 9);
+      expect(joinLoHi(result.lo, result.hi)).toBe(1234567133140000n);
+    });
+
+    it('handles max safe integer', () => {
+      const max = Number.MAX_SAFE_INTEGER;
+      const result = toBaseUnit(max, 0);
+      expect(result.lo).toEqual(BigInt(max));
+      expect(result.hi).toBe(0n);
+    });
+
+    it('returns correct LoHi for large value and zero exponent', () => {
+      const result = toBaseUnit(1234567891234567, 0);
+      const expectedValue = BigInt(1234567891234567);
+      expect(joinLoHi(result.lo, result.hi)).toEqual(expectedValue);
     });
   });
 });

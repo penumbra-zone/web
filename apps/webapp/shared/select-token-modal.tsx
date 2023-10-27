@@ -14,7 +14,8 @@ import { AssetBalance, useBalancesWithMetadata } from '../hooks/sorted-asset';
 import {
   Asset,
   AssetId,
-  convertFromBaseUnitAmount,
+  displayAmount,
+  fromBaseUnitAmount,
   uint8ArrayToBase64,
 } from '@penumbra-zone/types';
 import { cn } from '@penumbra-zone/ui/lib/utils';
@@ -35,7 +36,7 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
     .flatMap(a => a.balances)
     .filter(a => !search || a.denom.display.includes(search.toLowerCase()))
     .reduce<AssetBalance[]>((acc, curr) => {
-      const match = acc.find(a => a.denom === curr.denom);
+      const match = acc.find(a => a.denom.display === curr.denom.display);
       if (match) {
         match.amount = addAmounts(match.amount, curr.amount);
         match.usdcValue += curr.usdcValue;
@@ -92,7 +93,7 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
                       <p className='font-bold text-muted-foreground'>{b.denom.display}</p>
                     </div>
                     <p className='font-bold text-muted-foreground'>
-                      {convertFromBaseUnitAmount(b.amount, b.denom.exponent)}
+                      {displayAmount(fromBaseUnitAmount(b.amount, b.denom.exponent))}
                     </p>
                   </div>
                 </DialogPrimitive.Close>

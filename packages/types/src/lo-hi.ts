@@ -56,7 +56,21 @@ export const addLoHi = (a: LoHi, b: LoHi): Required<LoHi> => {
  * Note: Often passing exponent 0 is the default given protobuf serialization.
  *       This is treated as 1 instead.
  */
-export const convertFromBaseUnit = (lo = 0n, hi = 0n, exponent: number): number => {
+export const fromBaseUnit = (lo = 0n, hi = 0n, exponent: number): number => {
   const loHi = joinLoHi(lo, hi);
   return Number(loHi) / (exponent ? Math.pow(10, exponent) : 1);
+};
+
+/**
+ * Inverse of fromBaseUnit.
+ * Multiplies the given number by 10 to the power of the exponent,
+ * and then splits the result into separate lo and hi values.
+ *
+ * @param {number} value - The value to be multiplied.
+ * @param {number} exponent - The exponent to be applied.
+ * @returns {LoHi} An object with properties `lo` and `hi`, representing the low and high 64 bits of the multiplied value.
+ */
+export const toBaseUnit = (value: number, exponent: number): LoHi => {
+  const multipliedValue = BigInt(Math.floor(value * Math.pow(10, exponent)));
+  return splitLoHi(multipliedValue);
 };
