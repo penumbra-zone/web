@@ -5,14 +5,14 @@ import { useStore } from '../state';
 import { accountSelector } from '../state/account';
 
 const ConnectProvider = ({ children }: { children: ReactNode }) => {
-  const { isConnected, isLoading } = useConnect();
+  const { isConnected } = useConnect();
   const { setConnected } = useStore(accountSelector);
 
   useEffect(() => {
     setConnected(isConnected);
   }, [isConnected, setConnected]);
 
-  return <>{isLoading ? <></> : <>{children}</>}</>;
+  return <>{children}</>;
 };
 
 export default ConnectProvider;

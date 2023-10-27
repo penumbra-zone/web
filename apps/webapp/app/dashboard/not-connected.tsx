@@ -14,14 +14,13 @@ const NotConnected = () => {
           videoSrc='/ray-compressed.mp4'
           noWords
           className='w-[calc(100%-35vw)]'
-          
         />
       </div>
-      <div className='flex flex-col items-center gap-6 relative z-10'>
-        <p className='text-[64px] leading-[64px] font-headline font-bold bg-text-linear bg-clip-text text-transparent'>
+      <div className='relative z-10 flex flex-col items-center gap-6'>
+        <p className='bg-text-linear bg-clip-text font-headline text-[64px] font-bold leading-[64px] text-transparent'>
           Welcome users to Penumbra!
         </p>
-        <p className='text-base font-bold text-muted-foreground w-[50%] text-center'>
+        <p className='w-[50%] text-center text-base font-bold text-muted-foreground'>
           Penumbra is a shielded, cross-chain network allowing anyone to securely transact, stake,
           swap, or marketmake without broadcasting their personal information to the world.
         </p>

@@ -1,4 +1,10 @@
-import { DashboardIcon, ExitIcon, Link1Icon, LockClosedIcon, Share1Icon } from '@radix-ui/react-icons';
+import {
+  DashboardIcon,
+  ExitIcon,
+  Link1Icon,
+  LockClosedIcon,
+  Share1Icon,
+} from '@radix-ui/react-icons';
 import { CustomLink, SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';

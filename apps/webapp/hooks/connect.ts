@@ -4,6 +4,7 @@ import { stdClient } from '../clients/std';
 export const isConnected = async (): Promise<boolean> => {
   return await stdClient.isConnected();
 };
+
 export const useConnect = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['is-connected'],

@@ -8,11 +8,11 @@ export interface VideoLogoProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof logoVariants> {
   noWords?: boolean;
-  videoSrc?: string
+  videoSrc?: string;
 }
 
 const CompressedVideoLogo = React.forwardRef<HTMLDivElement, VideoLogoProps>((props, ref) => {
-  return <VideoLogo {...props}  videoSrc={props.videoSrc ?? RayCompressed} ref={ref} />;
+  return <VideoLogo {...props} videoSrc={props.videoSrc ?? RayCompressed} ref={ref} />;
 });
 
 CompressedVideoLogo.displayName = 'CompressedVideoLogo';

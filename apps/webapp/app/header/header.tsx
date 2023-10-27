@@ -22,7 +22,7 @@ const ConnectButton = dynamic(() => import('../../shared/connect-button'), {
 export const Header = () => {
   const { isConnected } = useStore(accountSelector);
   return (
-    <header className='flex h-[82px] w-full items-center justify-between px-12 z-10'>
+    <header className='z-10 flex h-[82px] w-full items-center justify-between px-12'>
       <Link href={DappPath.INDEX}>
         <FilledImage src='/logo.svg' alt='Penumbra logo' className='h-4 w-[171px]' />
       </Link>
