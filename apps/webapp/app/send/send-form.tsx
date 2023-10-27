@@ -9,6 +9,7 @@ import { validateAmount } from '../../utils';
 import { useCalculateBalance } from '../../hooks/calculate-balance';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { isPenumbraAddr } from '@penumbra-zone/types';
+import { useConnect } from '../../hooks/connect';
 
 const InputToken = dynamic(() => import('../../shared/input-token'), {
   ssr: false,
@@ -36,6 +37,8 @@ export default function SendForm() {
   useCalculateBalance(asset, setAssetBalance);
 
   const { toast } = useToast();
+
+  const { isConnected, connect } = useConnect();
 
   return (
     <form
@@ -95,15 +98,19 @@ export default function SendForm() {
         type='submit'
         variant='gradient'
         className='mt-4'
-        onClick={() => void sendTx(toast)}
+        onClick={() => {
+          if (isConnected) void sendTx(toast);
+          else void connect();
+        }}
         disabled={
-          !Number(amount) ||
-          !recipient ||
-          !!Object.values(validationErrors).find(Boolean) ||
-          txInProgress
+          isConnected &&
+          (!Number(amount) ||
+            !recipient ||
+            !!Object.values(validationErrors).find(Boolean) ||
+            txInProgress)
         }
       >
-        Send
+        {isConnected ? 'Send' : 'Connect wallet'}
       </Button>
     </form>
   );

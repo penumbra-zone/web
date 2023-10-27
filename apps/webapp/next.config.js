@@ -1,3 +1,5 @@
+const CopyPlugin = require('copy-webpack-plugin');
+
 module.exports = () => {
   const isProd = process.env.NODE_ENV === 'production';
 
@@ -19,6 +21,12 @@ module.exports = () => {
           filename: 'videos/[hash][ext][query]',
         },
       });
+      config.plugins.push(
+        new CopyPlugin({
+          patterns: [{ from: '.', to: '../', context: 'public' }],
+          options: {},
+        }),
+      );
 
       return config;
     },

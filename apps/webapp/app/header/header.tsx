@@ -15,7 +15,7 @@ const Notifications = dynamic(() => import('./notifications'), {
   ssr: false,
 });
 
-const ConnectButton = dynamic(() => import('./connect-button'), {
+const ConnectButton = dynamic(() => import('../../shared/connect-button'), {
   ssr: false,
 });
 
