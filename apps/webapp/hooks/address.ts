@@ -3,35 +3,35 @@ import { AddressByIndexRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/p
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { useQuery } from '@tanstack/react-query';
 import { bech32Address } from '@penumbra-zone/types';
-import { UseQueryResult } from '@tanstack/react-query/src/types';
 
-interface AddressReqProps {
-  account: number | undefined;
-}
+type Index = number;
+type Address = string;
 
-export interface AddrQueryReturn {
-  index: number;
-  address: string;
-}
+export type IndexAddrRecord = Record<Index, Address>;
 
-export const useAddresses = (props: AddressReqProps[]): UseQueryResult<AddrQueryReturn[]> => {
+export const useAddresses = (accounts: (number | undefined)[]) => {
   return useQuery({
-    queryKey: ['get-addr-index', props],
+    queryKey: ['get-addr-index', accounts],
     queryFn: async () => {
-      const allTrades = props.map(p => {
+      const allReqs = accounts.map(account => {
         const req = new AddressByIndexRequest();
-        if (p.account) req.addressIndex = new AddressIndex({ account: p.account });
+        if (account) req.addressIndex = new AddressIndex({ account });
         return viewClient.addressByIndex(req);
       });
 
-      const responses = await Promise.all(allTrades);
-      return responses.map((res, i) => {
-        const address = bech32Address(res.address!);
-        return {
-          index: props[i]?.account ?? 0,
-          address,
-        };
-      });
+      const responses = await Promise.all(allReqs);
+      return responses
+        .map((res, i) => {
+          const address = bech32Address(res.address!);
+          return {
+            index: accounts[i] ?? 0,
+            address,
+          };
+        })
+        .reduce<IndexAddrRecord>((acc, curr) => {
+          acc[curr.index] = curr.address;
+          return acc;
+        }, {});
     },
   });
 };

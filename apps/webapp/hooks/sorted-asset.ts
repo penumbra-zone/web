@@ -1,121 +1,125 @@
 import { useBalances } from './balances';
-import { Base64Str, displayAmount, joinLoHi, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import { displayAmount, joinLoHi, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { useAssets } from './assets';
 import {
   AssetsResponse,
   BalancesResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { useMemo } from 'react';
-import { AddrQueryReturn, useAddresses } from './address';
+import { IndexAddrRecord, useAddresses } from './address';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 export interface AssetBalance {
+  denom: string;
+  assetId: AssetId;
   amount: number;
   usdcValue: number;
 }
 
-interface AssetWithBalance {
-  assetId: Base64Str;
-  account: { index: number; address: string };
-  balance: AssetBalance;
-  denomMetadata: Pick<DenomMetadata, 'display'>;
+export interface AccountBalance {
+  index: number;
+  address: string;
+  balances: AssetBalance[];
 }
 
-type AssetWithIndexOnly = Omit<AssetWithBalance, 'denomMetadata' | 'account'> & {
-  account: { index: number };
-};
+interface NormalizedBalance {
+  denom: string;
+  assetId: AssetId;
+  amount: number;
+  usdcValue: number;
+  account: { index: number; address: string };
+}
 
-const normalize = (res: BalancesResponse): AssetWithIndexOnly => {
-  const amount = Number(joinLoHi(res.balance?.amount?.lo ?? 0n, res.balance?.amount?.hi ?? 0n));
-  return {
-    assetId: uint8ArrayToBase64(res.balance!.assetId!.inner),
-    account: { index: res.account?.account ?? 0 },
-    balance: {
-      amount,
-      usdcValue: amount * 0.1, // TODO: Get from above
-    },
-  };
-};
+function getDenomAmount(res: BalancesResponse, metadata: AssetsResponse[]) {
+  const assetId = uint8ArrayToBase64(res.balance!.assetId!.inner);
+  const match = metadata.find(m => {
+    if (!m.denomMetadata?.penumbraAssetId?.inner) return false;
+    return assetId === uint8ArrayToBase64(m.denomMetadata.penumbraAssetId.inner);
+  });
+  const denom = match ? match.denomMetadata!.display : 'unknown';
 
-const addAddress =
-  (addrRes: AddrQueryReturn[] | undefined) =>
-  (a: AssetWithIndexOnly): Omit<AssetWithBalance, 'denomMetadata'> => {
-    const match = addrRes?.find(res => res.index === a.account.index);
+  // May need to adjust the amount depending on the display exponents
+  const baseAmount = Number(joinLoHi(res.balance?.amount?.lo ?? 0n, res.balance?.amount?.hi ?? 0n));
+  const adjustedAmount = match ? displayAmount(match, baseAmount) : baseAmount;
 
-    if (match) {
-      return { ...a, account: { index: a.account.index, address: match.address } };
-    } else {
-      return { ...a, account: { index: a.account.index, address: '' } };
-    }
-  };
+  return { denom, amount: adjustedAmount };
+}
 
-const addMetadata =
-  (metadata: AssetsResponse[]) =>
-  (b: Omit<AssetWithBalance, 'denomMetadata'>): AssetWithBalance => {
-    const match = metadata.find(m => {
-      if (!m.denomMetadata?.penumbraAssetId?.inner) return false;
-      return b.assetId === uint8ArrayToBase64(m.denomMetadata.penumbraAssetId.inner);
-    });
+const normalize =
+  (metadata: AssetsResponse[], indexAddrRecord: IndexAddrRecord | undefined) =>
+  (res: BalancesResponse): NormalizedBalance => {
+    const index = res.account?.account ?? 0;
+    const address = indexAddrRecord?.[index] ?? '';
 
-    if (!match) return { ...b, denomMetadata: { display: 'unknown' } };
-
-    const fixedDisplayAmount = displayAmount(match, b.balance.amount);
+    const { denom, amount } = getDenomAmount(res, metadata);
 
     return {
-      ...b,
-      balance: {
-        amount: fixedDisplayAmount,
-        usdcValue: b.balance.usdcValue,
-      },
-      denomMetadata: match.denomMetadata!,
+      denom,
+      assetId: res.balance!.assetId!,
+      amount: amount,
+      usdcValue: amount * 0.93245, // TODO: Temporary until pricing implemented
+      account: { index, address },
     };
   };
 
-const sortComparator =
-  (sortBy: keyof AssetBalance) =>
-  (a: AssetWithBalance, b: AssetWithBalance): number => {
-    // Sort first by account (lowest first)
-    if (a.account.index !== b.account.index) return a.account.index - b.account.index;
-
-    // Next, sort by asset value/amount in descending order (largest to smallest).
-    if (a.balance[sortBy] !== b.balance[sortBy]) return b.balance[sortBy] - a.balance[sortBy];
-
-    // If balances are equal, sort by asset name in ascending order
-    return a.denomMetadata.display.localeCompare(b.denomMetadata.display);
+const groupByAccount = (balances: AccountBalance[], curr: NormalizedBalance): AccountBalance[] => {
+  const match = balances.find(b => b.index === curr.account.index);
+  const newBalance = {
+    amount: curr.amount,
+    denom: curr.denom,
+    usdcValue: curr.usdcValue,
+    assetId: curr.assetId,
   };
+  if (match) {
+    match.balances.push(newBalance);
+    match.balances.sort(sortByAmount);
+  } else {
+    balances.push({
+      address: curr.account.address,
+      index: curr.account.index,
+      balances: [newBalance],
+    });
+  }
+  return balances;
+};
 
-interface SortedAssetsReturnVal {
-  data: AssetWithBalance[];
+const sortByAmount = (a: AssetBalance, b: AssetBalance): number => {
+  // First, sort by asset value in descending order (largest to smallest).
+  if (a.usdcValue !== b.usdcValue) return b.usdcValue - a.usdcValue;
+
+  // If values are equal, sort by asset name in ascending order
+  return a.denom.localeCompare(b.denom);
+};
+
+// Sort by account (lowest first)
+const sortByAccount = (a: AccountBalance, b: AccountBalance): number => a.index - b.index;
+
+interface UseBalancesReturnVal {
+  data: AccountBalance[];
   error: unknown;
 }
 
-export const useBalancesWithMetadata = (
-  sortBy: keyof AssetBalance,
-  search?: string,
-): SortedAssetsReturnVal => {
+export const useBalancesWithMetadata = (): UseBalancesReturnVal => {
   const { data: balances, error: bError } = useBalances();
 
   const accounts = useMemo(() => {
-    return balances.map(b => ({ account: b.account?.account }));
+    const allAccounts = balances.map(b => b.account?.account);
+    return [...new Set(allAccounts)];
   }, [balances]);
 
   const { data: accountAddrs, error: acError } = useAddresses(accounts);
   const { data: assets, error: asError } = useAssets();
-  // TODO: Enable when CORS server issue on testnet
+
+  // TODO: Use when simulation endpoint supported
   // const { data, error } = useUsdcValues(props);
 
   const data = useMemo(
     () =>
       balances
-        .map(normalize)
-        .map(addAddress(accountAddrs))
-        .map(addMetadata(assets))
-        .sort(sortComparator(sortBy))
-        .filter(a => {
-          if (!search) return true;
-          return a.denomMetadata.display.includes(search.toLowerCase());
-        }),
-    [accountAddrs, assets, balances, search, sortBy],
+        .map(normalize(assets, accountAddrs))
+        .reduce<AccountBalance[]>(groupByAccount, [])
+        .toSorted(sortByAccount),
+    [accountAddrs, assets, balances],
   );
 
   return { data, error: bError ?? asError ?? acError };
