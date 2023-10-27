@@ -18,6 +18,7 @@ type DataHandler<T, U> = (prevData: U, newData: T) => U;
 const useStreamCommon = <T, U>(
   query: AsyncIterable<T>,
   initialData: U,
+  enabled: boolean,
   dataHandler: DataHandler<T, U>,
 ): { data: U; end: boolean; error: unknown } => {
   const [data, setData] = useState<U>(initialData);
@@ -25,6 +26,7 @@ const useStreamCommon = <T, U>(
   const [error, setError] = useState<unknown>();
 
   useEffect(() => {
+    if (!enabled) return;
     const streamData = async () => {
       try {
         for await (const res of query) {
@@ -37,17 +39,20 @@ const useStreamCommon = <T, U>(
     };
 
     void streamData();
-  }, [query, dataHandler]);
+  }, [query, dataHandler, enabled]);
 
   return { data, end, error };
 };
 
 // Every new stream result will replace the old value
-export const useStream = <T>(query: AsyncIterable<T>): StreamQueryResult<T> => {
-  return useStreamCommon(query, undefined as T | undefined, (_, newData) => newData);
+export const useStream = <T>(query: AsyncIterable<T>, enabled: boolean): StreamQueryResult<T> => {
+  return useStreamCommon(query, undefined as T | undefined, enabled, (_, newData) => newData);
 };
 
 // Will take every stream result and append it to an array. Will ever grow until stream finished.
-export const useCollectedStream = <T>(query: AsyncIterable<T>): CollectedStreamQueryResult<T> => {
-  return useStreamCommon(query, [] as T[], (prevData, newData) => [...prevData, newData]);
+export const useCollectedStream = <T>(
+  query: AsyncIterable<T>,
+  enabled: boolean,
+): CollectedStreamQueryResult<T> => {
+  return useStreamCommon(query, [] as T[], enabled, (prevData, newData) => [...prevData, newData]);
 };

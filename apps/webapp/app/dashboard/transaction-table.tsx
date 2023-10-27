@@ -12,7 +12,9 @@ import { useConnect } from '../../hooks/connect';
 
 const useTxs = () => {
   const { isConnected } = useConnect();
-  const transactions = useMemo(() => viewClient.transactionInfo({}), [isConnected]);
+  const transactions = useMemo(() => viewClient.transactionInfo({}), []);
+
+  console.log(transactions);
 
   const { data, error } = useCollectedStream(transactions);
 
