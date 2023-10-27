@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addLoHi, calculateLoHiExponent, joinLoHi, splitLoHi } from './lo-hi';
+import { addLoHi, convertFromBaseUnit, joinLoHi, splitLoHi } from './lo-hi';
 
 describe('lo-hi', () => {
   describe('splitLoHi', () => {
@@ -128,25 +128,31 @@ describe('lo-hi', () => {
     });
   });
 
-  describe('calculateLoHiExponent', () => {
+  describe('convertFromBaseUnit', () => {
     it('applies positive exponent', () => {
-      const result = calculateLoHiExponent(1000n, 0n, 3);
-      expect(result).toBe(1n);
+      const result = convertFromBaseUnit(1000n, 0n, 3);
+      expect(result).toBe(1);
     });
 
     it('handles high and low bits', () => {
-      const result = calculateLoHiExponent(1000n, 5n, 6);
-      expect(result).toBe(92233720368547n);
+      const result = convertFromBaseUnit(1000n, 5n, 6);
+      expect(result).toBe(92233720368547.77);
     });
 
     it('handles exponent of 0', () => {
-      const result = calculateLoHiExponent(1000n, 0n, 0);
-      expect(result).toBe(1000n);
+      const result = convertFromBaseUnit(1000n, 0n, 0);
+      expect(result).toBe(1000);
     });
 
     it('handles big numbers', () => {
-      const result = calculateLoHiExponent(123456789012345n, 987654321098765n, 18);
-      expect(result).toBe(18219006494602273n);
+      const result = convertFromBaseUnit(123456789012345n, 987654321098765n, 30);
+      expect(result).toBe(18219.006494602272);
+    });
+
+    it('should return less than 1', () => {
+      const result = convertFromBaseUnit(7n, 0n, 12);
+
+      expect(result).toBe(0.000000000007);
     });
   });
 });

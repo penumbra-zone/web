@@ -56,7 +56,7 @@ export const addLoHi = (a: LoHi, b: LoHi): Required<LoHi> => {
  * Note: Often passing exponent 0 is the default given protobuf serialization.
  *       This is treated as 1 instead.
  */
-export const calculateLoHiExponent = (lo = 0n, hi = 0n, exponent: number): bigint => {
+export const convertFromBaseUnit = (lo = 0n, hi = 0n, exponent: number): number => {
   const loHi = joinLoHi(lo, hi);
-  return loHi / (exponent ? 10n ** BigInt(exponent) : 1n);
+  return Number(loHi) / (exponent ? Math.pow(10, exponent) : 1);
 };

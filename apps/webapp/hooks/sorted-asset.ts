@@ -1,5 +1,5 @@
 import { useBalances } from './balances';
-import { displayAmount, joinLoHi, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import { joinLoHiAmount, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { useAssets } from './assets';
 import {
   AssetsResponse,
@@ -7,12 +7,19 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { useMemo } from 'react';
 import { IndexAddrRecord, useAddresses } from './address';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import {
+  AssetId,
+  DenomUnit,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 
 export interface AssetBalance {
-  denom: string;
+  denom: {
+    display: DenomUnit['denom'];
+    exponent: DenomUnit['exponent'];
+  };
   assetId: AssetId;
-  amount: number;
+  amount: Amount;
   usdcValue: number;
 }
 
@@ -22,28 +29,34 @@ export interface AccountBalance {
   balances: AssetBalance[];
 }
 
-interface NormalizedBalance {
-  denom: string;
-  assetId: AssetId;
-  amount: number;
-  usdcValue: number;
+type NormalizedBalance = AssetBalance & {
   account: { index: number; address: string };
-}
+};
 
-function getDenomAmount(res: BalancesResponse, metadata: AssetsResponse[]) {
+// Given an asset has many denom units, the amount should be formatted using
+// the exponent of the display denom (e.g. 1,954,000,000 upenumbra = 1,954 penumbra)
+export const displayDenom = (res?: AssetsResponse): { display: string; exponent: number } => {
+  const display = res?.denomMetadata?.display;
+  if (!display) return { display: 'unknown', exponent: 0 };
+
+  const match = res.denomMetadata?.denomUnits.find(d => d.denom === display);
+  if (!match) return { display, exponent: 0 };
+
+  return { display, exponent: match.exponent };
+};
+
+const getDenomAmount = (res: BalancesResponse, metadata: AssetsResponse[]) => {
   const assetId = uint8ArrayToBase64(res.balance!.assetId!.inner);
   const match = metadata.find(m => {
     if (!m.denomMetadata?.penumbraAssetId?.inner) return false;
     return assetId === uint8ArrayToBase64(m.denomMetadata.penumbraAssetId.inner);
   });
-  const denom = match ? match.denomMetadata!.display : 'unknown';
 
-  // May need to adjust the amount depending on the display exponents
-  const baseAmount = Number(joinLoHi(res.balance?.amount?.lo ?? 0n, res.balance?.amount?.hi ?? 0n));
-  const adjustedAmount = match ? displayAmount(match, baseAmount) : baseAmount;
+  const { display, exponent } = displayDenom(match);
+  const amount = res.balance?.amount ?? new Amount();
 
-  return { denom, amount: adjustedAmount };
-}
+  return { display, exponent, amount };
+};
 
 const normalize =
   (metadata: AssetsResponse[], indexAddrRecord: IndexAddrRecord | undefined) =>
@@ -51,12 +64,12 @@ const normalize =
     const index = res.account?.account ?? 0;
     const address = indexAddrRecord?.[index] ?? '';
 
-    const { denom, amount } = getDenomAmount(res, metadata);
+    const { display, exponent, amount } = getDenomAmount(res, metadata);
 
     return {
-      denom,
+      denom: { display, exponent },
       assetId: res.balance!.assetId!,
-      amount: amount,
+      amount,
       //usdcValue: amount * 0.93245, // TODO: Temporary until pricing implemented
       usdcValue: 0, // Important not to imply that testnet balances have any value
       account: { index, address },
@@ -66,11 +79,12 @@ const normalize =
 const groupByAccount = (balances: AccountBalance[], curr: NormalizedBalance): AccountBalance[] => {
   const match = balances.find(b => b.index === curr.account.index);
   const newBalance = {
-    amount: curr.amount,
     denom: curr.denom,
+    amount: curr.amount,
     usdcValue: curr.usdcValue,
     assetId: curr.assetId,
-  };
+  } satisfies AssetBalance;
+
   if (match) {
     match.balances.push(newBalance);
     match.balances.sort(sortByAmount);
@@ -89,10 +103,11 @@ const sortByAmount = (a: AssetBalance, b: AssetBalance): number => {
   if (a.usdcValue !== b.usdcValue) return b.usdcValue - a.usdcValue;
 
   // If values are equal, sort by amount descending
-  if (a.amount !== b.amount) return b.amount - a.amount;
+  if (!a.amount.equals(b.amount))
+    return Number(joinLoHiAmount(b.amount) - joinLoHiAmount(a.amount));
 
   // If both are equal, sort by asset name in ascending order
-  return a.denom.localeCompare(b.denom);
+  return a.denom.display.localeCompare(b.denom.display);
 };
 
 // Sort by account (lowest first)

@@ -3,11 +3,10 @@
 import { Card, Table, TableBody, TableCell, TableRow } from '@penumbra-zone/ui';
 import { Fragment, useEffect, useState } from 'react';
 import { FilledImage } from '../../shared';
-import { formatNumber } from '../../utils';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
-import { Asset } from '@penumbra-zone/types';
+import { Asset, displayUsd } from '@penumbra-zone/types';
 
 export const AssetStatistics = () => {
   const { pay, receive } = useStore(swapSelector);
@@ -54,7 +53,7 @@ export const AssetStatistics = () => {
                     <TableCell className='py-3'>
                       <div className='flex flex-col gap-[2px]'>
                         <p className='font-normal text-muted-foreground'>Price</p>
-                        <p className='text-base font-bold'>${formatNumber(asset.price)}</p>
+                        <p className='text-base font-bold'>${displayUsd(asset.price)}</p>
                       </div>
                     </TableCell>
                     <TableCell className='py-3'>
@@ -67,7 +66,7 @@ export const AssetStatistics = () => {
                             asset['24h'] < 0 && 'text-red',
                           )}
                         >
-                          {`${asset['24h'] > 0 ? '+' : ''}${formatNumber(asset['24h'])}`}%
+                          {`${asset['24h'] > 0 ? '+' : ''}${displayUsd(asset['24h'])}`}%
                         </p>
                       </div>
                     </TableCell>

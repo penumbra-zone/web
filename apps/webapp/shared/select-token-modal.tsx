@@ -11,9 +11,14 @@ import {
   Input,
 } from '@penumbra-zone/ui';
 import { AssetBalance, useBalancesWithMetadata } from '../hooks/sorted-asset';
-import { Asset, AssetId, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import {
+  Asset,
+  AssetId,
+  convertFromBaseUnitAmount,
+  uint8ArrayToBase64,
+} from '@penumbra-zone/types';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { formatNumber } from '../utils';
+import { addAmounts } from '@penumbra-zone/types/src/amount';
 
 interface SelectTokenModalProps {
   asset: Asset;
@@ -28,11 +33,11 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
   // Accumulates totals per denom across accounts
   const combineAssetTotals = sortedAssets
     .flatMap(a => a.balances)
-    .filter(a => !search || a.denom.includes(search.toLowerCase()))
+    .filter(a => !search || a.denom.display.includes(search.toLowerCase()))
     .reduce<AssetBalance[]>((acc, curr) => {
       const match = acc.find(a => a.denom === curr.denom);
       if (match) {
-        match.amount += curr.amount;
+        match.amount = addAmounts(match.amount, curr.amount);
         match.usdcValue += curr.usdcValue;
       } else {
         acc.push(curr);
@@ -84,9 +89,11 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
                     }
                   >
                     <div className='flex items-start gap-[6px]'>
-                      <p className='font-bold text-muted-foreground'>{b.denom}</p>
+                      <p className='font-bold text-muted-foreground'>{b.denom.display}</p>
                     </div>
-                    <p className='font-bold text-muted-foreground'>{formatNumber(b.amount)}</p>
+                    <p className='font-bold text-muted-foreground'>
+                      {convertFromBaseUnitAmount(b.amount, b.denom.exponent)}
+                    </p>
                   </div>
                 </DialogPrimitive.Close>
               ))}
