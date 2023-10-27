@@ -17,8 +17,3 @@ export const shorten = (str: string, endsLength = 4) => {
     return str.slice(0, endsLength) + '...' + str.slice(endsLength * -1);
   }
 };
-
-// Starts with: penumbrawalletid...
-export const shortenWalletId = (str: string, endsLength = 4) => {
-  return shorten(str.slice(16), endsLength);
-};

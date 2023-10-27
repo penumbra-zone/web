@@ -1,10 +1,9 @@
 import { AllSlices, SliceCreator } from './index';
-import { getAddressByIndex, getShortAddressByIndex, getWalletId } from '@penumbra-zone/wasm-ts';
+import { getAddressByIndex, getShortAddressByIndex } from '@penumbra-zone/wasm-ts';
 import { getActiveWallet } from './wallets';
 import { bech32Address } from '@penumbra-zone/types';
 
 interface Account {
-  walletId: string;
   address: string;
   preview: string;
   index: number;
@@ -38,7 +37,7 @@ export const createAccountsSlice: SliceCreator<AccountsSlice> = (set, get) => {
 
 export const accountsSelector = (state: AllSlices) => state.accounts;
 
-export const activeAccount = (state: AllSlices): Account | undefined => {
+export const selectedAccount = (state: AllSlices): Account | undefined => {
   const active = getActiveWallet(state);
   if (!active) return undefined;
 
@@ -49,6 +48,5 @@ export const activeAccount = (state: AllSlices): Account | undefined => {
     address: bech32Addr,
     preview: getShortAddressByIndex(active.fullViewingKey, state.accounts.index),
     index: state.accounts.index,
-    walletId: getWalletId(active.fullViewingKey),
   };
 };

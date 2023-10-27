@@ -1,10 +1,4 @@
-import {
-  DashboardIcon,
-  ExitIcon,
-  Link1Icon,
-  LockClosedIcon,
-  Share1Icon,
-} from '@radix-ui/react-icons';
+import { DashboardIcon, ExitIcon, LockClosedIcon, Share1Icon } from '@radix-ui/react-icons';
 import { CustomLink, SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
@@ -13,11 +7,6 @@ import { PopupPath } from '../paths';
 import { FadeTransition } from '@penumbra-zone/ui';
 
 const links = [
-  {
-    title: 'Advanced',
-    icon: <DashboardIcon className='h-5 w-5 text-muted-foreground' />,
-    href: PopupPath.SETTINGS_ADVANCED,
-  },
   {
     title: 'Security & Privacy',
     icon: <LockClosedIcon className='h-5 w-5 text-muted-foreground' />,
@@ -28,10 +17,16 @@ const links = [
     icon: <Share1Icon className='h-5 w-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_RPC,
   },
+  // TODO: Enable when ready
+  // {
+  //   title: 'Connected sites',
+  //   icon: <Link1Icon className='h-5 w-5 text-muted-foreground' />,
+  //   href: PopupPath.SETTINGS_CONNECTED_SITES,
+  // },
   {
-    title: 'Connected sites',
-    icon: <Link1Icon className='h-5 w-5 text-muted-foreground' />,
-    href: PopupPath.SETTINGS_CONNECTED_SITES,
+    title: 'Advanced',
+    icon: <DashboardIcon className='h-5 w-5 text-muted-foreground' />,
+    href: PopupPath.SETTINGS_ADVANCED,
   },
 ];
 

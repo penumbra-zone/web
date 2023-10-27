@@ -1,4 +1,4 @@
-import { TimerIcon, TrashIcon } from '@radix-ui/react-icons';
+import { TrashIcon } from '@radix-ui/react-icons';
 import { CustomLink, SettingsHeader } from '../../../shared';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
@@ -6,11 +6,12 @@ import { DashboardGradientIcon } from '../../../icons';
 import { FadeTransition } from '@penumbra-zone/ui';
 
 const links = [
-  {
-    title: 'Auto-lock timer',
-    icon: <TimerIcon className='h-5 w-5 text-muted-foreground' />,
-    href: PopupPath.SETTINGS_AUTO_LOCK,
-  },
+  // TODO: Enable when ready
+  // {
+  //   title: 'Auto-lock timer',
+  //   icon: <TimerIcon className='h-5 w-5 text-muted-foreground' />,
+  //   href: PopupPath.SETTINGS_AUTO_LOCK,
+  // },
   {
     title: 'Clear cache',
     icon: <TrashIcon className='h-5 w-5 text-muted-foreground' />,
