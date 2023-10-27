@@ -9,5 +9,6 @@ export type DashboardTabMap = Record<
   {
     src: string;
     label: string;
+    text: string;
   }
 >;
