@@ -1,22 +1,29 @@
 'use client';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { viewClient } from '../../clients/grpc';
 import { useCollectedStream } from '@penumbra-zone/transport';
 import { shorten, uint8ArrayToHex } from '@penumbra-zone/types';
 import { FilledImage } from '../../shared';
 import Link from 'next/link';
 import { Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { useConnect } from '../../hooks/connect';
+import { useStore } from '../../state';
+import { accountSelector } from '../../state/account';
+import { TransactionInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
 const useTxs = () => {
-  const { isConnected } = useConnect();
-  const transactions = useMemo(() => viewClient.transactionInfo({}), []);
+  const { isConnected } = useStore(accountSelector);
+  const [transactions, setTransactions] = useState<
+    AsyncIterable<TransactionInfoResponse> | undefined
+  >();
 
-  console.log(transactions);
+  useEffect(() => {
+    if (!isConnected) return;
+    setTransactions(viewClient.transactionInfo({}));
+  }, [isConnected]);
 
-  const { data, error } = useCollectedStream(transactions);
+  const { data, error } = useCollectedStream(transactions, isConnected);
 
   const formatted = useMemo(
     () =>
@@ -39,7 +46,6 @@ const useTxs = () => {
 
 export default function TransactionTable() {
   const { data, error } = useTxs();
-  console.log({ data, error });
 
   return (
     <Table>

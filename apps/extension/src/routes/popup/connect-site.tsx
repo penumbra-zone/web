@@ -30,7 +30,7 @@ export const ConnectSite = () => {
   return (
     <div className='flex min-h-screen w-full flex-col justify-between p-[30px]'>
       <div className='flex flex-col items-center gap-4'>
-        <div className='h-20 w-[150px] mb-6'>
+        <div className='mb-6 h-20 w-[150px]'>
           <img src='/logo.svg' alt='logo' />
         </div>
         <p className='font-headline text-xl font-semibold leading-[30px]'>Requesting Connection</p>

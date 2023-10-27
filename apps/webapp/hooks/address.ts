@@ -3,7 +3,8 @@ import { AddressByIndexRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/p
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { useQuery } from '@tanstack/react-query';
 import { bech32Address } from '@penumbra-zone/types';
-import { useConnect } from './connect';
+import { useStore } from '../state';
+import { accountSelector } from '../state/account';
 
 type Index = number;
 type Address = string;
@@ -11,7 +12,7 @@ type Address = string;
 export type IndexAddrRecord = Record<Index, Address>;
 
 export const useAddresses = (accounts: (number | undefined)[]) => {
-  const { isConnected } = useConnect();
+  const { isConnected } = useStore(accountSelector);
 
   return useQuery({
     enabled: isConnected,

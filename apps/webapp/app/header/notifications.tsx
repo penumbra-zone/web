@@ -1,21 +1,29 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@penumbra-zone/ui';
 import { BellIcon } from '../../icons';
 import { FilledImage } from '../../shared';
 import { viewClient } from '../../clients/grpc';
 import { useStream } from '@penumbra-zone/transport';
 import { BlockSync } from './block-sync';
-import { useConnect } from '../../hooks/connect';
+import { useStore } from '../../state';
+import { accountSelector } from '../../state/account';
+import { StatusStreamResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
 type NotificationState = 'sync' | 'notification' | 'none';
 
 export default function Notifications() {
+  const { isConnected } = useStore(accountSelector);
   const [status, setStatus] = useState<NotificationState>('none');
-  const { isConnected } = useConnect();
-  const syncStream = useMemo(() => viewClient.statusStream({}), [isConnected]);
-  const { data, error } = useStream(syncStream);
+  const [syncStream, setSyncStream] = useState<AsyncIterable<StatusStreamResponse> | undefined>();
+
+  useEffect(() => {
+    if (!isConnected) return;
+    setSyncStream(viewClient.statusStream({}));
+  }, [isConnected]);
+
+  const { data, error } = useStream(syncStream, isConnected);
 
   useEffect(() => {
     if (error) {

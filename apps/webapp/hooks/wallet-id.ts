@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { uint8ArrayToString } from '@penumbra-zone/types';
 import { viewClient } from '../clients/grpc';
-import { useConnect } from './connect';
+import { useStore } from '../state';
+import { accountSelector } from '../state/account';
 
 export const getWalletId = async (): Promise<string> => {
   const res = await viewClient.walletId({});
@@ -11,7 +12,7 @@ export const getWalletId = async (): Promise<string> => {
 };
 
 export const useWalletId = () => {
-  const { isConnected } = useConnect();
+  const { isConnected } = useStore(accountSelector);
 
   const { data } = useQuery({
     enabled: isConnected,

@@ -10,7 +10,7 @@ export default function WalletId() {
   return (
     <>
       {walletId && (
-        <div className='ml-1 flex items-center gap-3 rounded-lg border px-4  h-9'>
+        <div className='ml-1 flex h-9 items-center gap-3 rounded-lg border  px-4'>
           <Identicon name={walletId} className='h-5 w-5 rounded' />
           <p className='font-bold text-muted-foreground'>{shortenWalletId(walletId)}</p>
         </div>
