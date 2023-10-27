@@ -51,7 +51,9 @@ export default function AssetsTable() {
                     </TableCell>
                     <TableCell className='w-1/3 text-center font-mono font-light'>
                       <div className='flex flex-col'>
-                        <p className=''>${formatNumber(asset.usdcValue)}</p>
+                        <p className=''>
+                          {asset.usdcValue == 0 ? '$–' : `$${formatNumber(asset.usdcValue)}`}
+                        </p>
                       </div>
                     </TableCell>
                   </TableRow>

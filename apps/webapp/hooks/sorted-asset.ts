@@ -57,7 +57,8 @@ const normalize =
       denom,
       assetId: res.balance!.assetId!,
       amount: amount,
-      usdcValue: amount * 0.93245, // TODO: Temporary until pricing implemented
+      //usdcValue: amount * 0.93245, // TODO: Temporary until pricing implemented
+      usdcValue: amount * 0, // Important not to imply that testnet balances have any value
       account: { index, address },
     };
   };
