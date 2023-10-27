@@ -5,8 +5,10 @@ import { usePopupNav } from '../../utils/navigate';
 import { useStore } from '../../state';
 import { passwordSelector } from '../../state/password';
 import { FormEvent, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 export const Login = () => {
+  const [searchParams] = useSearchParams();
   const navigate = usePopupNav();
 
   const { isPassword, setSessionPassword } = useStore(passwordSelector);
@@ -19,7 +21,10 @@ export const Login = () => {
     void (async function () {
       if (await isPassword(input)) {
         await setSessionPassword(input); // saves to session state
-        navigate(-1);
+
+        if (searchParams.get('origin'))
+          window.close(); // close popup if user click connect wallet from dapp
+        else navigate(-1);
       } else {
         setEnteredIncorrect(true);
       }
