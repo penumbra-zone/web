@@ -41,7 +41,7 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
         match.amount = addAmounts(match.amount, curr.amount);
         match.usdcValue += curr.usdcValue;
       } else {
-        acc.push(curr);
+        acc.push({ ...curr });
       }
       return acc;
     }, []);
