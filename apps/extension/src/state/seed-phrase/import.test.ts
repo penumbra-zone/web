@@ -148,8 +148,6 @@ describe('Import Slice', () => {
       expect(useStore.getState().seedPhrase.import.phrase[24]).toBeUndefined();
       expect(useStore.getState().seedPhrase.import.phrase[25]).toBeUndefined();
     });
-
-    // trims end
   });
 
   test('wordIsValid()', () => {
