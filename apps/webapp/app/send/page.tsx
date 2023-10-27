@@ -43,7 +43,11 @@ export default function Page() {
             </TabsContent>
           </Tabs>
         </Card>
-        <EduInfoCard src={sendTabsHelper[tab].src} label={sendTabsHelper[tab].label} />
+        <EduInfoCard
+          src={sendTabsHelper[tab].src}
+          label={sendTabsHelper[tab].label}
+          content={sendTabsHelper[tab].content}
+        />
       </div>
     </FadeTransition>
   );

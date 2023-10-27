@@ -58,7 +58,7 @@ const normalize =
       assetId: res.balance!.assetId!,
       amount: amount,
       //usdcValue: amount * 0.93245, // TODO: Temporary until pricing implemented
-      usdcValue: amount * 0, // Important not to imply that testnet balances have any value
+      usdcValue: 0, // Important not to imply that testnet balances have any value
       account: { index, address },
     };
   };
@@ -88,7 +88,10 @@ const sortByAmount = (a: AssetBalance, b: AssetBalance): number => {
   // First, sort by asset value in descending order (largest to smallest).
   if (a.usdcValue !== b.usdcValue) return b.usdcValue - a.usdcValue;
 
-  // If values are equal, sort by asset name in ascending order
+  // If values are equal, sort by amount descending
+  if (a.amount !== b.amount) return b.amount - a.amount;
+
+  // If both are equal, sort by asset name in ascending order
   return a.denom.localeCompare(b.denom);
 };
 

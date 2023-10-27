@@ -23,7 +23,7 @@ export default function AssetsTable() {
           <div key={a.index} className='flex flex-col gap-4'>
             <div className='flex flex-col items-center justify-center'>
               <div className='flex items-center justify-center gap-2'>
-                <Identicon name={a.address} className='h-8 w-8 rounded-full' />
+                <Identicon name={a.address} size={20} className='rounded-full' />
                 <h2 className='text-xl font-bold'>Account #{a.index}</h2>{' '}
                 <div className='text-sm italic text-foreground'>{shortenAddress(a.address)}</div>
               </div>

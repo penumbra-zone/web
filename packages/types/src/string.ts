@@ -19,8 +19,8 @@ export const shorten = (str: string, endsLength = 4) => {
 };
 
 export const shortenAddress = (str: string) => {
-  // TODO: change this as we update the bech32 prefix before mainnet?
+  // TODO: change this as we update the bech32 prefix before mainnet
   const prefixLen = 12;
   const charsToDisplay = 24;
-  return str.slice(0, prefixLen + charsToDisplay) + '…'
-}
+  return str.slice(0, prefixLen + charsToDisplay) + '…';
+};

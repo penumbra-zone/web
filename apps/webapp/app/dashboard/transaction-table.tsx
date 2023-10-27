@@ -54,9 +54,7 @@ export default function TransactionTable() {
             </TableCell>
             <TableCell>
               <div className='flex items-center justify-center gap-[10px] font-normal'>
-                <Link href={`/tx/?hash=${tx.hash}`}>
-                  {shorten(tx.hash, 8)}
-                </Link>
+                <Link href={`/tx/?hash=${tx.hash}`}>{shorten(tx.hash, 8)}</Link>
               </div>
             </TableCell>
             <TableCell>

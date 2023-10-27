@@ -1,3 +1,5 @@
+import { EduPanel } from '../../shared/edu-panels/content';
+
 export enum DashboardPageTab {
   ASSETS = 'assets',
   TRANSACTIONS = 'transactions',
@@ -9,6 +11,6 @@ export type DashboardTabMap = Record<
   {
     src: string;
     label: string;
-    text: string;
+    content: EduPanel;
   }
 >;

@@ -1,3 +1,5 @@
+import { EduPanel } from '../../shared/edu-panels/content';
+
 export enum SendPageTab {
   SEND = 'send',
   RECEIVE = 'receive',
@@ -9,6 +11,7 @@ export type SendTabMap = Record<
   {
     src: string;
     label: string;
+    content: EduPanel;
   }
 >;
 

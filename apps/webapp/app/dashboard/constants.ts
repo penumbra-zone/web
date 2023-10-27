@@ -1,19 +1,20 @@
 import { DashboardTabMap } from './types';
+import { EduPanel } from '../../shared/edu-panels/content';
 
 export const dashboardTabsHelper: DashboardTabMap = {
   assets: {
     src: '/funds-gradient.svg',
     label: 'Asset Balances',
-    text: 'Your balances are shielded, and are known only to you.  They are not visible on chain.'
+    content: EduPanel.ASSETS,
   },
   transactions: {
     src: '/receive-gradient.svg',
     label: 'Transaction history',
-    text: 'This is a list of all transactions visible to your wallet, both incoming and outgoing.'
+    content: EduPanel.TRANSACTIONS,
   },
   nfts: {
     src: '/ibc-gradient.svg',
     label: 'NFTs history',
-    text: 'NFTs are not yet supported',
+    content: EduPanel.TEMP_FILLER,
   },
 };
