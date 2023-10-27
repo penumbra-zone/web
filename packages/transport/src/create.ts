@@ -38,8 +38,6 @@ const outputEventListener =
   (event: MessageEvent<unknown>) => {
     if (event.source !== window || !isServiceGrpcResponse(service, event.data)) return;
 
-    console.log(event.data);
-
     const { sequence } = event.data;
 
     if (pending.requests.has(sequence)) {
