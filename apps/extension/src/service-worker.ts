@@ -4,4 +4,4 @@ import { asyncMessageResponder } from './utils/async-message-responder';
 
 export const services = new Services();
 await services.initialize();
-chrome.runtime.onMessage.addListener(asyncMessageResponder(penumbraMessageHandler(services)));
+chrome.runtime.onMessage.addListener(penumbraMessageHandler(services));
