@@ -1,3 +1,4 @@
+'use client';
 import { CompressedVideoLogo, FadeTransition } from '@penumbra-zone/ui';
 import dynamic from 'next/dynamic';
 
@@ -9,7 +10,12 @@ const NotConnected = () => {
   return (
     <FadeTransition className='min-h-[calc(100vh-122px)]'>
       <div className='absolute inset-0 flex w-screen items-center justify-center'>
-        <CompressedVideoLogo noWords className='w-[calc(100%)]' />
+        <CompressedVideoLogo
+          videoSrc='/ray-compressed.mp4'
+          noWords
+          className='w-[calc(100%-35vw)]'
+          
+        />
       </div>
       <div className='flex flex-col items-center gap-6 relative z-10'>
         <p className='text-[64px] leading-[64px] font-headline font-bold bg-text-linear bg-clip-text text-transparent'>

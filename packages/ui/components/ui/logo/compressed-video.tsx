@@ -8,10 +8,11 @@ export interface VideoLogoProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof logoVariants> {
   noWords?: boolean;
+  videoSrc?: string
 }
 
 const CompressedVideoLogo = React.forwardRef<HTMLDivElement, VideoLogoProps>((props, ref) => {
-  return <VideoLogo {...props} videoSrc={RayCompressed} ref={ref} />;
+  return <VideoLogo {...props}  videoSrc={props.videoSrc ?? RayCompressed} ref={ref} />;
 });
 
 CompressedVideoLogo.displayName = 'CompressedVideoLogo';
@@ -28,7 +29,7 @@ const VideoLogo = React.forwardRef<HTMLDivElement, InnerVidProps>(
     return (
       <div className={cn(logoVariants({ size, className }), 'relative')} ref={ref} {...props}>
         {noWords ? null : <Logo onlyWords={!noWords} className='absolute z-10' />}
-        <video autoPlay loop playsInline className='absolute z-0 w-[70%]'>
+        <video autoPlay loop playsInline muted className='absolute z-0 w-[70%]'>
           <source src={videoSrc} type='video/mp4' />
         </video>
       </div>
