@@ -6,7 +6,8 @@ module.exports = () => {
    */
   const nextJsConfig = {
     output: isProd ? 'export' : undefined,
-    reactStrictMode: false,
+    // set reactStrictMode only for production
+    reactStrictMode: isProd,
     transpilePackages: ['@penumbra-zone/ui'],
     distDir: 'dist',
 

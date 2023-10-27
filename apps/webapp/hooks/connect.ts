@@ -8,10 +8,10 @@ export const useConnect = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['is-connected'],
     queryFn: isConnected,
-    refetchInterval: 10000,
+    refetchInterval: 500,
   });
 
   const connect = async () => await stdClient.connect();
 
-  return { isConnected: data, isLoading, connect };
+  return { isConnected: Boolean(data), isLoading, connect };
 };

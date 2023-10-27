@@ -8,9 +8,12 @@ import { shorten, uint8ArrayToHex } from '@penumbra-zone/types';
 import { FilledImage } from '../../shared';
 import Link from 'next/link';
 import { Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { useConnect } from '../../hooks/connect';
 
 const useTxs = () => {
-  const transactions = useMemo(() => viewClient.transactionInfo({}), []);
+  const { isConnected } = useConnect();
+  const transactions = useMemo(() => viewClient.transactionInfo({}), [isConnected]);
+
   const { data, error } = useCollectedStream(transactions);
 
   const formatted = useMemo(
@@ -34,6 +37,7 @@ const useTxs = () => {
 
 export default function TransactionTable() {
   const { data, error } = useTxs();
+  console.log({ data, error });
 
   return (
     <Table>

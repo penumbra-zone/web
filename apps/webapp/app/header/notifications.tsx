@@ -7,12 +7,14 @@ import { FilledImage } from '../../shared';
 import { viewClient } from '../../clients/grpc';
 import { useStream } from '@penumbra-zone/transport';
 import { BlockSync } from './block-sync';
+import { useConnect } from '../../hooks/connect';
 
 type NotificationState = 'sync' | 'notification' | 'none';
 
 export default function Notifications() {
   const [status, setStatus] = useState<NotificationState>('none');
-  const syncStream = useMemo(() => viewClient.statusStream({}), []);
+  const { isConnected } = useConnect();
+  const syncStream = useMemo(() => viewClient.statusStream({}), [isConnected]);
   const { data, error } = useStream(syncStream);
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export default function Notifications() {
         setStatus('none');
       }
     }
-  }, [data, error]);
+  }, [data, error, isConnected]);
 
   return (
     <Popover>

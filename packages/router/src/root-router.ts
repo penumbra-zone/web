@@ -23,13 +23,13 @@ export const penumbraMessageHandler =
     if (isStdRequest(message)) return stdRouter(message, sender, sendResponse, services);
     else if (isViewServerReq(message)) {
       void (async () => {
-        if ((await localExtStorage.get('connectedSites')).includes(sender.origin ?? '')) {
+        if (sender.origin && (await connectedSite(sender.origin))) {
           viewServerRouter(message, sender, services);
         }
       })();
     } else if (isCustodyServerReq(message)) {
       void (async () => {
-        if ((await localExtStorage.get('connectedSites')).includes(sender.origin ?? '')) {
+        if (sender.origin && (await connectedSite(sender.origin))) {
           custodyServerRouter(message, sender, services);
         }
       })();
@@ -42,11 +42,9 @@ export const penumbraMessageHandler =
 // - TODO: If message from dapp, should only be from sites that have received permission via `connect`
 // - If message from extension, ensure it comes from our own and not an external extension
 const allowedRequest = (sender: chrome.runtime.MessageSender): boolean => {
-  // check is connected site only for ViewServerReq and CustodyServerReq
-  // const isConnectedSite =
-  //   isViewServerReq(message) || isCustodyServerReq(message)
-  //     ? (await localExtStorage.get('connectedSites')).includes(sender.origin ?? '')
-  //     : true;
-
   return sender.tab?.id !== undefined || sender.id === chrome.runtime.id;
+};
+
+const connectedSite = async (origin: string) => {
+  return (await localExtStorage.get('connectedSites')).includes(origin);
 };

@@ -9,7 +9,6 @@ const ConnectProvider = ({ children }: { children: ReactNode }) => {
   const { setConnected } = useStore(accountSelector);
 
   useEffect(() => {
-    if (isConnected === undefined) return;
     setConnected(isConnected);
   }, [isConnected, setConnected]);
 
