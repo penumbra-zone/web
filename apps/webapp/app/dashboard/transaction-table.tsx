@@ -52,8 +52,8 @@ export default function TransactionTable() {
       <TableHeader>
         <TableRow>
           <TableHead className='text-center'>Block Height</TableHead>
-          <TableHead className='text-center'>Tx Hash</TableHead>
-          <TableHead className='text-center'>Actions</TableHead>
+          <TableHead className='text-center'>Transaction Hash</TableHead>
+          <TableHead className='text-center'>Description</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -66,7 +66,7 @@ export default function TransactionTable() {
             </TableCell>
             <TableCell>
               <div className='flex items-center justify-center gap-[10px] font-normal'>
-                {shorten(tx.hash)}
+                <Link href={`/tx/?hash=${tx.hash}`}>{shorten(tx.hash, 8)}</Link>
               </div>
             </TableCell>
             <TableCell>
@@ -90,6 +90,12 @@ export default function TransactionTable() {
     </Table>
   );
 }
+
+// TODO(hdevalence): replace with a classifier that attempts to describe the
+// transaction (e.g., "send", "receive", "unknown", etc.) based on (1) what
+// actions are there and (2) what actions are visible (e.g., if there are opaque
+// spends but visible outputs, it's receive, if all spends and outputs are
+// visible, it's an internal transfer, etc.)
 
 /**
  * This function takes an array of strings and returns a string that lists

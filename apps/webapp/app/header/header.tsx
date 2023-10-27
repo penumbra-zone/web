@@ -15,10 +15,6 @@ const Notifications = dynamic(() => import('./notifications'), {
   ssr: false,
 });
 
-const WalletId = dynamic(() => import('./wallet-id'), {
-  ssr: false,
-});
-
 const ConnectButton = dynamic(() => import('./connect-button'), {
   ssr: false,
 });
@@ -36,7 +32,6 @@ export const Header = () => {
           <>
             <Notifications />
             <Network />
-            <WalletId />
           </>
         ) : (
           <ConnectButton />

@@ -6,9 +6,14 @@ import { cn } from '../../lib/utils';
 export interface NetworksPopoverProps {
   triggerClassName?: string;
   name: string;
+  connectIndicator?: boolean;
 }
 
-const NetworksPopover = ({ triggerClassName, name }: NetworksPopoverProps) => {
+const NetworksPopover = ({
+  triggerClassName,
+  name,
+  connectIndicator = true,
+}: NetworksPopoverProps) => {
   return (
     <Popover open={false}>
       <PopoverTrigger
@@ -17,6 +22,9 @@ const NetworksPopover = ({ triggerClassName, name }: NetworksPopoverProps) => {
           triggerClassName,
         )}
       >
+        {connectIndicator && (
+          <div className='-mx-1 h-4 w-1 rounded-sm bg-gradient-to-b from-cyan-400 to-emerald-400'></div>
+        )}
         <p>{name}</p>
       </PopoverTrigger>
       <PopoverContent></PopoverContent>

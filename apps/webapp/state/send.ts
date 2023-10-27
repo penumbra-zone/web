@@ -1,10 +1,11 @@
 import { assets } from '@penumbra-zone/constants';
-import { validateAmount, validateRecipient } from '../utils';
+import { validateAmount } from '../utils';
 import { AllSlices, SliceCreator } from './index';
 import {
   Asset,
   AssetId as TempAssetId,
   base64ToUint8Array,
+  isPenumbraAddr,
   splitLoHi,
   uint8ArrayToHex,
 } from '@penumbra-zone/types';
@@ -65,7 +66,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     setRecipient: addr => {
       set(state => {
         state.send.recipient = addr;
-        state.send.validationErrors.recipient = validateRecipient(addr);
+        state.send.validationErrors.recipient = Boolean(addr) && !isPenumbraAddr(addr);
       });
     },
     setMemo: txt => {

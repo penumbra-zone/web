@@ -6,6 +6,7 @@ import { EduInfoCard } from '../../shared';
 import { SwapPageTab } from './types';
 import { AssetStatistics } from './asset-statistics';
 import dynamic from 'next/dynamic';
+import { EduPanel } from '../../shared/edu-panels/content';
 
 const SwapForm = dynamic(() => import('./swap-form'), { ssr: false });
 
@@ -44,7 +45,12 @@ export default function Page() {
             <TabsContent value={SwapPageTab.TWAP}></TabsContent>
           </Tabs>
         </Card>
-        <EduInfoCard src='/incognito.svg' label='Shielded Swaps' className='row-span-2' />
+        <EduInfoCard
+          src='/incognito.svg'
+          label='Shielded Swaps'
+          className='row-span-2'
+          content={EduPanel.TEMP_FILLER}
+        />
       </div>
     </FadeTransition>
   );

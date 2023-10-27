@@ -21,7 +21,7 @@ export const IndexHeader = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }}
           >
-            <NetworksPopover name={chainId} />
+            <NetworksPopover name={chainId} connectIndicator={false} />
           </motion.div>
         ) : (
           <div className='m-[19px]' />

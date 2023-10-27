@@ -5,9 +5,10 @@ import { Button, Switch } from '@penumbra-zone/ui';
 import { FilledImage, InputBlock } from '../../shared';
 import { useStore } from '../../state';
 import { sendSelector } from '../../state/send';
-import { validateAmount, validateRecipient } from '../../utils';
+import { validateAmount } from '../../utils';
 import { useCalculateBalance } from '../../hooks/calculate-balance';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
+import { isPenumbraAddr } from '@penumbra-zone/types';
 
 const InputToken = dynamic(() => import('../../shared/input-token'), {
   ssr: false,
@@ -53,7 +54,7 @@ export default function SendForm() {
           {
             type: 'error',
             issue: 'invalid address',
-            checkFn: (addr: string) => validateRecipient(addr),
+            checkFn: (addr: string) => Boolean(addr) && !isPenumbraAddr(addr),
           },
         ]}
       />
