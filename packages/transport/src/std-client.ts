@@ -1,11 +1,13 @@
 import {
+  ConnectMessage,
   IncomingRequest,
-  isServiceWorkerResponse,
+  IsConnectedMessage,
   PenumbraError,
   PingMessage,
   ServiceWorkerRequest,
   ServiceWorkerResponse,
   SwRequestMessage,
+  isServiceWorkerResponse,
 } from '@penumbra-zone/types';
 
 interface RequestResolvers {
@@ -25,7 +27,20 @@ export class PenumbraStdClient {
 
   async ping(arg: string) {
     const res = await this.transport.sendMessage<PingMessage>({ type: 'PING', arg });
+
     return res.ack;
+  }
+
+  async connect() {
+    await this.transport.sendMessage<ConnectMessage>({
+      type: 'CONNECT',
+    });
+  }
+
+  async isConnected() {
+    return await this.transport.sendMessage<IsConnectedMessage>({
+      type: 'IS_CONNECTED',
+    });
   }
 }
 

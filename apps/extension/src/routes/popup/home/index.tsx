@@ -37,7 +37,7 @@ export const PopupIndex = () => {
   const { next, previous } = useStore(accountsSelector);
 
   return (
-    <div className='relative flex h-full flex-col items-stretch justify-start bg-left-bottom px-[30px]'>
+    <div className='relative flex h-full min-h-screen flex-col items-stretch justify-start bg-left-bottom px-[30px]'>
       <div className='absolute bottom-[50px] left-[-10px] -z-10 h-[715px] w-[900px] overflow-hidden bg-logo opacity-10' />
       <IndexHeader />
       <div className='my-32 flex w-full flex-col'>

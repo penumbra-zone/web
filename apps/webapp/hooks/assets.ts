@@ -1,13 +1,22 @@
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { viewClient } from '../clients/grpc';
 import { useCollectedStream } from '@penumbra-zone/transport';
-import { AssetsRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import {
+  AssetsRequest,
+  AssetsResponse,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { accountSelector } from '../state/account';
+import { useStore } from '../state';
 
 export const useAssets = () => {
-  const assets = useMemo(() => {
-    const req = new AssetsRequest();
-    return viewClient.assets(req);
-  }, []);
+  const { isConnected } = useStore(accountSelector);
+  const [assets, setAssets] = useState<AsyncIterable<AssetsResponse> | undefined>();
 
-  return useCollectedStream(assets);
+  useEffect(() => {
+    if (!isConnected) return;
+    const req = new AssetsRequest();
+    setAssets(viewClient.assets(req));
+  }, [isConnected]);
+
+  return useCollectedStream(assets, isConnected);
 };

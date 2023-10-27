@@ -7,6 +7,7 @@ import {
 } from '@penumbra-zone/types';
 import { stdRouter } from './std/router';
 import { custodyServerRouter, isCustodyServerReq } from './grpc/custody/router';
+import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
 
 // Used to filter for service worker messages and narrow their type to pass to the typed handler.
 // Exposed to service worker for listening for internal and external messages
@@ -19,9 +20,20 @@ export const penumbraMessageHandler =
   ) => {
     if (!allowedRequest(sender)) return;
 
-    if (isStdRequest(message)) return stdRouter(message, sendResponse, services);
-    else if (isViewServerReq(message)) viewServerRouter(message, sender, services);
-    else if (isCustodyServerReq(message)) custodyServerRouter(message, sender, services);
+    if (isStdRequest(message)) return stdRouter(message, sender, sendResponse, services);
+    else if (isViewServerReq(message)) {
+      void (async () => {
+        if (sender.origin && (await connectedSite(sender.origin)) && (await isLogin())) {
+          viewServerRouter(message, sender, services);
+        }
+      })();
+    } else if (isCustodyServerReq(message)) {
+      void (async () => {
+        if (sender.origin && (await connectedSite(sender.origin)) && (await isLogin())) {
+          custodyServerRouter(message, sender, services);
+        }
+      })();
+    }
 
     return;
   };
@@ -32,3 +44,9 @@ export const penumbraMessageHandler =
 const allowedRequest = (sender: chrome.runtime.MessageSender): boolean => {
   return sender.tab?.id !== undefined || sender.id === chrome.runtime.id;
 };
+
+const connectedSite = async (origin: string) => {
+  return (await localExtStorage.get('connectedSites')).includes(origin);
+};
+
+const isLogin = async () => Boolean(await sessionExtStorage.get('passwordKey'));

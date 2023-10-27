@@ -1,4 +1,6 @@
 import { clearCacheHandler } from './routes/clear-cache';
+import { connectHandler } from './routes/connect';
+import { isConnectedHandler } from './routes/is-connected';
 import { pingHandler } from './routes/ping';
 import { syncBlocksHandler } from './routes/sync';
 
@@ -15,11 +17,13 @@ import {
 // The standard, non-grpc router
 export const stdRouter = (
   req: ServiceWorkerRequest<SwRequestMessage>,
+  sender: chrome.runtime.MessageSender,
   sendResponse: (response: ServiceWorkerResponse<SwRequestMessage>) => void,
   services: ServicesInterface,
 ) => {
   (async function () {
-    const result = await typedMessageRouter(req.penumbraSwReq, services);
+    const result = await typedMessageRouter(req.penumbraSwReq, services, sender);
+
     sendResponse({
       sequence: req.sequence,
       penumbraSwRes: {
@@ -42,6 +46,7 @@ export const stdRouter = (
 const typedMessageRouter = async (
   req: IncomingRequest<SwRequestMessage>,
   services: ServicesInterface,
+  sender: chrome.runtime.MessageSender,
 ): Promise<SwResponse> => {
   switch (req.type) {
     case 'SYNC_BLOCKS':
@@ -50,6 +55,10 @@ const typedMessageRouter = async (
       return pingHandler(req.arg);
     case 'CLEAR_CACHE':
       return clearCacheHandler(services)();
+    case 'CONNECT':
+      return connectHandler(services, sender)();
+    case 'IS_CONNECTED':
+      return isConnectedHandler(sender)();
     default:
       throw new Error(`Unhandled request type: ${JSON.stringify(req)}`);
   }

@@ -1,8 +1,9 @@
 import { testnetConstants } from '@penumbra-zone/constants';
 import { BlockProcessor, RootQuerier } from '@penumbra-zone/query';
 import { IndexedDb, localExtStorage, syncLastBlockWithLocal } from '@penumbra-zone/storage';
-import { ViewServer } from '@penumbra-zone/wasm-ts';
+import { NotificationPath } from '@penumbra-zone/types';
 import { ServicesInterface, WalletServices } from '@penumbra-zone/types/src/services';
+import { ViewServer } from '@penumbra-zone/wasm-ts';
 
 export class Services implements ServicesInterface {
   private walletServicesPromise: Promise<WalletServices> | undefined;
@@ -91,5 +92,19 @@ export class Services implements ServicesInterface {
     await localExtStorage.set('lastBlockSynced', 0);
     this.walletServicesPromise = undefined;
     await this.initialize();
+  }
+
+  async openWindow(path: NotificationPath, search?: string) {
+    const { top, left, width } = await chrome.windows.getLastFocused();
+
+    await chrome.windows.create({
+      url: `popup.html#${path}${search}`,
+      type: 'popup',
+      width: 400,
+      height: 628,
+      top,
+      // press the window to the right side of screen
+      left: left !== undefined && width !== undefined ? left + (width - 400) : 0,
+    });
   }
 }

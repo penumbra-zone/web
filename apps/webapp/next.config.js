@@ -6,7 +6,8 @@ module.exports = () => {
    */
   const nextJsConfig = {
     output: isProd ? 'export' : undefined,
-    reactStrictMode: true,
+    // set reactStrictMode only for production
+    reactStrictMode: isProd,
     transpilePackages: ['@penumbra-zone/ui'],
     distDir: 'dist',
 
@@ -18,7 +19,6 @@ module.exports = () => {
           filename: 'videos/[hash][ext][query]',
         },
       });
-
       return config;
     },
   };

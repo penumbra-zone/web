@@ -1,17 +1,29 @@
 'use client';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { viewClient } from '../../clients/grpc';
 import { useCollectedStream } from '@penumbra-zone/transport';
 import { shorten, uint8ArrayToHex } from '@penumbra-zone/types';
 import { FilledImage } from '../../shared';
 import Link from 'next/link';
 import { Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { useStore } from '../../state';
+import { accountSelector } from '../../state/account';
+import { TransactionInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
 const useTxs = () => {
-  const transactions = useMemo(() => viewClient.transactionInfo({}), []);
-  const { data, error } = useCollectedStream(transactions);
+  const { isConnected } = useStore(accountSelector);
+  const [transactions, setTransactions] = useState<
+    AsyncIterable<TransactionInfoResponse> | undefined
+  >();
+
+  useEffect(() => {
+    if (!isConnected) return;
+    setTransactions(viewClient.transactionInfo({}));
+  }, [isConnected]);
+
+  const { data, error } = useCollectedStream(transactions, isConnected);
 
   const formatted = useMemo(
     () =>
