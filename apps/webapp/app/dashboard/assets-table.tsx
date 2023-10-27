@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@penumbra-zone/ui';
-import { shorten } from '@penumbra-zone/types';
+import { shortenAddress } from '@penumbra-zone/types';
 import { formatNumber } from '../../utils';
 
 export default function AssetsTable() {
@@ -23,10 +23,10 @@ export default function AssetsTable() {
           <div key={a.index} className='flex flex-col gap-4'>
             <div className='flex flex-col items-center justify-center'>
               <div className='flex items-center justify-center gap-2'>
-                <h2 className='text-xl font-bold'>Account: #{a.index}</h2>{' '}
-                <Identicon name={a.address} className='h-4 w-4 rounded-full' />
+                <Identicon name={a.address} size={20} className='rounded-full' />
+                <h2 className='text-xl font-bold'>Account #{a.index}</h2>{' '}
+                <div className='text-sm italic text-foreground'>{shortenAddress(a.address)}</div>
               </div>
-              <div className='text-sm italic text-foreground'>{shorten(a.address, 15)}</div>
             </div>
             <Table>
               <TableHeader>
@@ -51,7 +51,9 @@ export default function AssetsTable() {
                     </TableCell>
                     <TableCell className='w-1/3 text-center font-mono font-light'>
                       <div className='flex flex-col'>
-                        <p className=''>${formatNumber(asset.usdcValue)}</p>
+                        <p className=''>
+                          {asset.usdcValue == 0 ? '$–' : `$${formatNumber(asset.usdcValue)}`}
+                        </p>
                       </div>
                     </TableCell>
                   </TableRow>

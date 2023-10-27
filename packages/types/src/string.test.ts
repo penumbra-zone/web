@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shorten, stringToUint8Array, uint8ArrayToString } from './string';
+import { shorten, shortenAddress, stringToUint8Array, uint8ArrayToString } from './string';
 
 describe('stringToUint8Array', () => {
   it('should return correct Uint8Array for ASCII strings', () => {
@@ -81,8 +81,17 @@ describe('shorten()', () => {
   it('works with custom ends length', () => {
     const input = 'abcdefghijklmnop';
     const outputA = shorten(input, 6);
-    expect(outputA).toBe('abcdef...klmnop');
+    expect(outputA).toBe('abcdef…klmnop');
     const outputB = shorten(input, 1);
-    expect(outputB).toBe('a...p');
+    expect(outputB).toBe('a…p');
+  });
+});
+
+describe('shortenAddress()', () => {
+  it('shorts penumbra addresses correctly', () => {
+    const input =
+      'penumbrav2t147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahhvhypxd';
+    const output = shortenAddress(input);
+    expect(output).toBe('penumbrav2t147mfall0zr6am5r45qkwht7x…');
   });
 });
