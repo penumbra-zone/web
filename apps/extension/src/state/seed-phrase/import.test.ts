@@ -116,6 +116,40 @@ describe('Import Slice', () => {
       expect(useStore.getState().seedPhrase.import.phrase[11]).toBe('def');
       expect(useStore.getState().seedPhrase.import.phrase[12]).toBeUndefined();
     });
+
+    test('Extends seed phrase length if pasting longer than twelve', () => {
+      useStore.getState().seedPhrase.import.setLength(SeedPhraseLength.TWELVE_WORDS);
+      useStore
+        .getState()
+        .seedPhrase.import.update(
+          'bronze planet clay differ remove obtain board sniff install web flavor slot stomach settle door spike test isolate butter cinnamon keen lock guide payment',
+          0,
+        );
+      expect(useStore.getState().seedPhrase.import.phrase.length).toBe(
+        SeedPhraseLength.TWENTY_FOUR_WORDS,
+      );
+      expect(useStore.getState().seedPhrase.import.phrase[22]).toBe('guide');
+      expect(useStore.getState().seedPhrase.import.phrase[23]).toBe('payment');
+    });
+
+    test('Extending beyond twenty four trims ending', () => {
+      useStore.getState().seedPhrase.import.setLength(SeedPhraseLength.TWELVE_WORDS);
+      useStore
+        .getState()
+        .seedPhrase.import.update(
+          'bronze planet clay differ remove obtain board sniff install web flavor slot stomach settle door spike test isolate butter cinnamon keen lock guide payment longer words do not show',
+          0,
+        );
+      expect(useStore.getState().seedPhrase.import.phrase.length).toBe(
+        SeedPhraseLength.TWENTY_FOUR_WORDS,
+      );
+      expect(useStore.getState().seedPhrase.import.phrase[22]).toBe('guide');
+      expect(useStore.getState().seedPhrase.import.phrase[23]).toBe('payment');
+      expect(useStore.getState().seedPhrase.import.phrase[24]).toBeUndefined();
+      expect(useStore.getState().seedPhrase.import.phrase[25]).toBeUndefined();
+    });
+
+    // trims end
   });
 
   test('wordIsValid()', () => {
