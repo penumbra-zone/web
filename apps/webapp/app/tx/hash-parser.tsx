@@ -34,9 +34,17 @@ export default function HashParser() {
     </>);
   }
 
+  /*
+  const publicView = viewFromEmptyPerspective(data?.transaction);
+  */
+
   return (
     <>
       <TransactionViewComponent txv={data?.view} hash={hash} />
+      { /*
+      This should be in a tab, toggleable between "your view" and "public view", like the assets/txs dashboard toggle
+      <TransactionViewComponent txv={publicView} hash={hash} />
+      */ }
       <div className='text-xl font-bold'>Raw JSON</div>
       <JsonTree hash={hash} />
     </>
