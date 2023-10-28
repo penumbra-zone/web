@@ -7,7 +7,71 @@ import { useCollectedStream } from '@penumbra-zone/transport';
 import { shorten, uint8ArrayToHex } from '@penumbra-zone/types';
 import { FilledImage } from '../../shared';
 import Link from 'next/link';
-import { Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+
+const classifyTransaction = (txv?: TransactionView): string => {
+  // Check if 'txv' is undefined and return "Unknown" if it is.
+  if (!txv) {
+    return "Unknown";
+  }
+
+  const hasOpaqueSpend = txv.bodyView?.actionViews.some(
+    a => a.actionView?.case === 'spend' && a.actionView?.value?.spendView.case === 'opaque'
+  );
+  const allSpendsVisible = !hasOpaqueSpend;
+
+  const hasOpaqueOutput = txv.bodyView?.actionViews.some(
+    a => a.actionView?.case === 'output' && a.actionView?.value?.outputView.case === 'opaque'
+  );
+  const allOutputsVisible = !hasOpaqueOutput;
+
+  // A visible output whose note is controlled by an opaque address is an output we don't control.
+  const hasVisibleOutputWithOpaqueAddress = txv.bodyView?.actionViews.some(
+    a => a.actionView?.case === 'output'
+      && a.actionView?.value?.outputView.case === 'visible'
+      && a.actionView?.value?.outputView.value?.note?.address?.addressView.case === 'opaque'
+  );
+
+  // A visible output whose note is controlled by an opaque address is an output we do control.
+  const hasVisibleOutputWithVisibleAddress = txv.bodyView?.actionViews.some(
+    a => a.actionView?.case === 'output'
+      && a.actionView?.value?.outputView.case === 'visible'
+      && a.actionView?.value?.outputView.value?.note?.address?.addressView.case === 'visible'
+  );
+
+  // A transaction is internal if all spends and outputs are visible, and there are no outputs we don't control.
+  const isInternal = allSpendsVisible && allOutputsVisible && !hasVisibleOutputWithOpaqueAddress;
+
+  // Call a transaction a "transfer" if it only has spends and outputs.
+  const isTransfer = txv.bodyView?.actionViews.every(
+    a => a.actionView?.case === 'spend' || a.actionView?.case === 'output'
+  );
+
+  // If the tx has only spends and outputs, then it's a transfer. What kind?
+  if (isTransfer) {
+    // If we can't see at least one spend, but we can see an output we control, it's a recieve.
+    if (hasOpaqueSpend && hasVisibleOutputWithVisibleAddress) {
+      return "Receive";
+    }
+    // If we can see all spends and outputs, it's a transaction we created...
+    if (allSpendsVisible && allOutputsVisible) {
+      // ... so it's either a send or an internal transfer, depending on whether there's an output we don't control.
+      if (isInternal) {
+        return "Internal Transfer";
+      } else {
+        return "Send";
+      }
+    }
+  }
+
+  if (isInternal) {
+    // TODO: fill this in with classification of swaps, swapclaims, etc.
+    return "Unknown (Internal)";
+  }
+
+  // Fallthrough
+  return "Unknown";
+}
 
 const useTxs = () => {
   const transactions = useMemo(() => viewClient.transactionInfo({}), []);
@@ -20,7 +84,7 @@ const useTxs = () => {
           return {
             height: Number(tx.txInfo?.height ?? 0n),
             hash: tx.txInfo?.id?.hash ? uint8ArrayToHex(tx.txInfo.id.hash) : 'unknown',
-            actions: summarizeActions(tx.txInfo?.transaction?.body?.actions ?? []),
+            description: classifyTransaction(tx.txInfo?.view),
           };
         })
         .sort((a, b) => {
@@ -40,8 +104,8 @@ export default function TransactionTable() {
       <TableHeader>
         <TableRow>
           <TableHead className='text-center'>Block Height</TableHead>
-          <TableHead className='text-center'>Transaction Hash</TableHead>
           <TableHead className='text-center'>Description</TableHead>
+          <TableHead className='text-center'>Transaction Hash</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -54,12 +118,12 @@ export default function TransactionTable() {
             </TableCell>
             <TableCell>
               <div className='flex items-center justify-center gap-[10px] font-normal'>
-                <Link href={`/tx/?hash=${tx.hash}`}>{shorten(tx.hash, 8)}</Link>
+                {tx.description}
               </div>
             </TableCell>
             <TableCell>
               <div className='flex items-center justify-center gap-[10px] font-normal'>
-                {tx.actions}
+                <Link href={`/tx/?hash=${tx.hash}`}>{shorten(tx.hash, 8)}</Link>
               </div>
             </TableCell>
             <TableCell>
@@ -78,33 +142,3 @@ export default function TransactionTable() {
     </Table>
   );
 }
-
-// TODO(hdevalence): replace with a classifier that attempts to describe the
-// transaction (e.g., "send", "receive", "unknown", etc.) based on (1) what
-// actions are there and (2) what actions are visible (e.g., if there are opaque
-// spends but visible outputs, it's receive, if all spends and outputs are
-// visible, it's an internal transfer, etc.)
-
-/**
- * This function takes an array of strings and returns a string that lists
- * the unique elements along with their counts (if more than one). The order
- * of the unique strings in the output is the same as in the original array.
- *
- * @example
- * let arr: string[] = ['swap', 'claim', 'spend', 'claim'];
- * console.log(summarizeActions(arr));  // Outputs: "swap, 2 claim, spend"
- */
-const summarizeActions = (actions: Action[]): string => {
-  const cases = actions.map(a => a.action.case ?? 'unknown');
-  const counts = new Map<string, number>();
-
-  for (const item of cases) {
-    if (!counts.has(item)) {
-      counts.set(item, 1);
-    } else {
-      counts.set(item, counts.get(item)! + 1);
-    }
-  }
-
-  return Array.from(counts, ([item, count]) => (count > 1 ? `${count} ${item}` : item)).join(', ');
-};
