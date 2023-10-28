@@ -17,12 +17,15 @@ const ViewBox: React.FC<ViewBoxProps> = ({ label, visibleContent }) => {
             )}
         >
             <div className='flex items-center gap-2 self-start'>
+                {/* !visibleContent ? (
+                    <FilledImage src='/incognito.svg' alt='Incognito' className='h-5 w-5' />
+                ) : null */}
                 <span className={cn(
                     'text-base font-bold',
                     (!visibleContent ? 'text-gray-600' : '')
                 )}>
                     {label}
-                    {!visibleContent ? ' (Encrypted)' /* or a lock icon? */ : null}
+                    {!visibleContent ? ' (Encrypted)' /* Delete this and replace with an incognito icon */ : null}
                 </span>
             </div>
             {visibleContent}
