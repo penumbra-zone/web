@@ -122,7 +122,7 @@ export default function TransactionTable() {
               </div>
             </TableCell>
             <TableCell>
-              <div className='flex items-center justify-center gap-[10px] font-normal'>
+              <div className='flex items-center justify-center gap-[10px] font-normal font-mono'>
                 <Link href={`/tx/?hash=${tx.hash}`}>{shorten(tx.hash, 8)}</Link>
               </div>
             </TableCell>

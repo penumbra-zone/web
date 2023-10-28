@@ -55,7 +55,7 @@ export const PopupIndex = () => {
         <div className='flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
           <div className='flex items-center gap-[6px]'>
             <Identicon name={account?.address ?? ''} className='h-6 w-6 rounded-full' />
-            <p className='select-none text-center text-[12px] font-bold leading-[18px] text-muted-foreground'>
+            <p className='select-none text-center text-[12px] font-mono leading-[18px] text-muted-foreground'>
               {account?.preview}
             </p>
           </div>

@@ -20,6 +20,8 @@ module.exports = {
       fontFamily: {
         body: ['Devanagari Sangam', 'sans-serif'],
         headline: ['Faktum', 'sans-serif'],
+        /* Using Iosevka Term rather than Iosevka ensures that all characters are really the same width, even weird unicode ones. */
+        mono: ['Iosevka Term', 'monospace']
       },
       colors: {
         border: {

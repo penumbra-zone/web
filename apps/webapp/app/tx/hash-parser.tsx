@@ -12,8 +12,8 @@ export default function HashParser() {
     <>
       {hash ? (
         <>
-          <div className='text-xl font-bold'>Transaction hash</div>
-          <div className='italic text-muted-foreground'>{hash}</div>
+          <div className='text-xl font-bold'>Transaction</div>
+          <div className='font-mono italic text-muted-foreground'>{hash}</div>
           <JsonTree hash={hash} />
         </>
       ) : (

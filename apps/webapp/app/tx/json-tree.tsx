@@ -21,6 +21,7 @@ export default function JsonTree({ hash }: { hash: string }) {
       {data && (
         <ReactJson
           name={false}
+          style={{ fontFamily: "Iosevka Term" }}
           src={data.toJson() as object}
           theme='bright'
           displayDataTypes={false}
