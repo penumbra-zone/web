@@ -7,10 +7,12 @@ const OutputViewComponent: React.FC<{ value: OutputView }> = ({ value }) => {
     if (value.outputView?.case === 'visible') {
         let note = value.outputView?.value.note!;
         return (<ViewBox label='Output' visibleContent={
-            <div className="flex gap-2 items-baseline">
+            <div className="flex items-baseline justify-between">
                 <ValueViewComponent view={note.value!} />
-                <span className='italic text-sm text-foreground font-mono'>to</span>
-                <AddressViewComponent view={note.address!} />
+                <div className='flex gap-2 items-baseline'>
+                    <span className='italic text-sm text-foreground font-mono'>to</span>
+                    <AddressViewComponent view={note.address!} />
+                </div>
             </div>
         }
         />);
