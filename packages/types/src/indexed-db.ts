@@ -64,7 +64,7 @@ export interface PenumbraDb extends DBSchema {
   };
   TREE_LAST_FORGOTTEN: {
     key: 'last_forgotten';
-    value: number;
+    value: bigint;
   };
   TREE_HASHES: {
     key: number;

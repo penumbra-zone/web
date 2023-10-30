@@ -87,7 +87,7 @@ export class IndexedDb implements IndexedDbInterface {
 
     return {
       last_position: lastPosition ?? { Position: { epoch: 0, block: 0, commitment: 0 } },
-      last_forgotten: lastForgotten ?? 0,
+      last_forgotten: lastForgotten ?? 0n,
       hashes,
       commitments,
     };
