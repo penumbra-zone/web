@@ -34,8 +34,11 @@ export const AddressViewComponent = ({
       {accountIndex !== undefined ? (
         <div className='flex items-baseline gap-2'>
           <Identicon name={encoded} size={14} className='rounded-full' />
-          <span className='font-bold'>Account #{accountIndex}</span>
-          {isRandomized ? <span className='font-bold'> (randomized)</span> : null}
+          {isRandomized ? (
+            <span className='font-bold'>One-time Address for Account #{accountIndex}</span>
+          ) : (
+            <span className='font-bold'>Account #{accountIndex}</span>
+          )}
         </div>
       ) : (
         <div className='font-mono text-sm italic text-foreground'>{display}</div>
