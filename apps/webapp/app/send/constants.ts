@@ -5,12 +5,12 @@ export const sendTabsHelper: SendTabMap = {
   send: {
     src: '/funds-gradient.svg',
     label: 'Sending funds',
-    content: EduPanel.SEND,
+    content: EduPanel.TEMP_FILLER,
   },
   receive: {
     src: '/receive-gradient.svg',
     label: 'Receiving funds',
-    content: EduPanel.RECEIVE,
+    content: EduPanel.TEMP_FILLER,
   },
   ibc: {
     src: '/ibc-gradient.svg',

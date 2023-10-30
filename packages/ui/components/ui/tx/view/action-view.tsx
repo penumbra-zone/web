@@ -1,79 +1,77 @@
-import { ActionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { ViewBox } from './viewbox';
-import { OutputView, SpendView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import { SpendViewComponent } from './spend';
 import { OutputViewComponent } from './output';
+import { ActionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
-const ActionViewComponent: React.FC<{ actionView: ActionView }> = ({ actionView }) => {
-    const av = actionView;
-    // Dispatch to each action type
-    if (av.actionView?.case === 'spend') {
-        return (<SpendViewComponent value={av.actionView?.value as SpendView} />);
-    }
-    if (av.actionView?.case === 'output') {
-        return (<OutputViewComponent value={av.actionView?.value as OutputView} />);
-    }
-    if (av.actionView?.case === 'swap') {
-        return (<ViewBox label='Swap' />);
-    }
-    if (av.actionView?.case === 'swapClaim') {
-        return (<ViewBox label='Swap Claim' />);
-    }
-    if (av.actionView?.case === 'ics20Withdrawal') {
-        return (<ViewBox label='ICS20 Withdrawal' />);
-    }
-    if (av.actionView?.case === 'delegate') {
-        return (<ViewBox label='Delegate' />);
-    }
-    if (av.actionView?.case === 'undelegate') {
-        return (<ViewBox label='Undelegate' />);
-    }
-    if (av.actionView?.case === 'undelegateClaim') {
-        return (<ViewBox label='Undelegate Claim' />);
-    }
-    if (av.actionView?.case === 'validatorDefinition') {
-        return (<ViewBox label='Validator Definition' />);
-    }
-    if (av.actionView?.case === 'ibcAction') {
-        return (<ViewBox label='IBC Action' />);
-    }
-    if (av.actionView?.case === 'proposalSubmit') {
-        return (<ViewBox label='Proposal Submit' />);
-    }
-    if (av.actionView?.case === 'proposalWithdraw') {
-        return (<ViewBox label='Proposal Withdraw' />);
-    }
-    if (av.actionView?.case === 'validatorVote') {
-        return (<ViewBox label='Validator Vote' />);
-    }
-    if (av.actionView?.case === 'delegatorVote') {
-        return (<ViewBox label='Delegator Vote' />);
-    }
-    if (av.actionView?.case === 'proposalDepositClaim') {
-        return (<ViewBox label='Proposal Deposit Claim' />);
-    }
-    if (av.actionView?.case === 'positionOpen') {
-        return (<ViewBox label='Position Open' />);
-    }
-    if (av.actionView?.case === 'positionClose') {
-        return (<ViewBox label='Position Close' />);
-    }
-    if (av.actionView?.case === 'positionWithdraw') {
-        return (<ViewBox label='Position Withdraw' />);
-    }
-    if (av.actionView?.case === 'positionRewardClaim') {
-        return (<ViewBox label='Position Reward Claim' />);
-    }
-    if (av.actionView?.case === 'daoSpend') {
-        return (<ViewBox label='DAO Spend' />);
-    }
-    if (av.actionView?.case === 'daoOutput') {
-        return (<ViewBox label='DAO Output' />);
-    }
-    if (av.actionView?.case === 'daoDeposit') {
-        return (<ViewBox label='DAO Deposit' />);
-    }
-    return (<></>);
-}
+export const ActionViewComponent = ({ av: { actionView } }: { av: ActionView }) => {
+  switch (actionView.case) {
+    case 'spend':
+      return <SpendViewComponent value={actionView.value} />;
 
-export { ActionViewComponent };
+    case 'output':
+      return <OutputViewComponent value={actionView.value} />;
+
+    case 'swap':
+      return <ViewBox label='Swap' />;
+
+    case 'swapClaim':
+      return <ViewBox label='Swap Claim' />;
+
+    case 'ics20Withdrawal':
+      return <ViewBox label='ICS20 Withdrawal' />;
+
+    case 'delegate':
+      return <ViewBox label='Delegate' />;
+
+    case 'undelegate':
+      return <ViewBox label='Undelegate' />;
+
+    case 'undelegateClaim':
+      return <ViewBox label='Undelegate Claim' />;
+
+    case 'validatorDefinition':
+      return <ViewBox label='Validator Definition' />;
+
+    case 'ibcAction':
+      return <ViewBox label='IBC Action' />;
+
+    case 'proposalSubmit':
+      return <ViewBox label='Proposal Submit' />;
+
+    case 'proposalWithdraw':
+      return <ViewBox label='Proposal Withdraw' />;
+
+    case 'validatorVote':
+      return <ViewBox label='Validator Vote' />;
+
+    case 'delegatorVote':
+      return <ViewBox label='Delegator Vote' />;
+
+    case 'proposalDepositClaim':
+      return <ViewBox label='Proposal Deposit Claim' />;
+
+    case 'positionOpen':
+      return <ViewBox label='Position Open' />;
+
+    case 'positionClose':
+      return <ViewBox label='Position Close' />;
+
+    case 'positionWithdraw':
+      return <ViewBox label='Position Withdraw' />;
+
+    case 'positionRewardClaim':
+      return <ViewBox label='Position Reward Claim' />;
+
+    case 'daoSpend':
+      return <ViewBox label='DAO Spend' />;
+
+    case 'daoOutput':
+      return <ViewBox label='DAO Output' />;
+
+    case 'daoDeposit':
+      return <ViewBox label='DAO Deposit' />;
+
+    default:
+      return <ViewBox label={String(actionView.case)} />;
+  }
+};

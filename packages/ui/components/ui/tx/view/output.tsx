@@ -3,25 +3,28 @@ import { ViewBox } from './viewbox';
 import { ValueViewComponent } from './value';
 import { AddressViewComponent } from './address-view';
 
-const OutputViewComponent: React.FC<{ value: OutputView }> = ({ value }) => {
-    if (value.outputView?.case === 'visible') {
-        let note = value.outputView?.value.note!;
-        return (<ViewBox label='Output' visibleContent={
-            <div className="flex items-baseline justify-between">
-                <ValueViewComponent view={note.value!} />
-                <div className='flex gap-2 items-baseline'>
-                    <span className='italic text-sm text-foreground font-mono'>to</span>
-                    <AddressViewComponent view={note.address!} />
-                </div>
+export const OutputViewComponent = ({ value }: { value: OutputView }) => {
+  if (value.outputView.case === 'visible') {
+    const note = value.outputView.value.note!;
+    return (
+      <ViewBox
+        label='Output'
+        visibleContent={
+          <div className='flex items-baseline justify-between'>
+            <ValueViewComponent view={note.value} />
+            <div className='flex items-baseline gap-2'>
+              <span className='font-mono text-sm italic text-foreground'>to</span>
+              <AddressViewComponent view={note.address} />
             </div>
+          </div>
         }
-        />);
-    }
-    if (value.outputView?.case === 'opaque') {
-        return (<ViewBox label='Output' />);
-    }
-    return (<> <span>Invalid SpendView</span> </>);
-}
+      />
+    );
+  }
 
-export { OutputViewComponent };
+  if (value.outputView.case === 'opaque') {
+    return <ViewBox label='Output' />;
+  }
 
+  return <div>Invalid SpendView</div>;
+};
