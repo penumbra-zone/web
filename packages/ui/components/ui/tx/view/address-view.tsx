@@ -1,72 +1,46 @@
-import {
-  Address,
-  AddressView,
-  AddressView_Opaque,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { bech32Address, shortenAddress } from '@penumbra-zone/types';
 import { Identicon } from '../../identicon';
 import { CopyToClipboard } from '../../copy-to-clipboard';
 import { CopyIcon } from '@radix-ui/react-icons';
 
 interface AddressViewProps {
-  view?: AddressView | undefined;
-  address?: Address | undefined;
+  view: AddressView | undefined;
   copyable?: boolean;
   short_form?: boolean;
 }
 
 // Renders an address or an address view.
 // If the view is given and is "visible", the account information will be displayed instead.
-export const AddressViewComponent = ({ view, address, copyable, short_form }: AddressViewProps) => {
-  copyable = copyable ?? true;
-  short_form = short_form ?? true;
+export const AddressViewComponent = ({
+  view,
+  copyable = true,
+  short_form = true,
+}: AddressViewProps) => {
+  if (!view?.addressView.value?.address) return <></>;
 
-  // TODO: is this a good pattern, or should we have a way to promote the address to a view outside
-  // of a component?
-  if (!view) {
-    if (address) {
-      const av = new AddressView({
-        addressView: {
-          case: 'opaque',
-          value: new AddressView_Opaque({
-            address: address,
-          }),
-        },
-      });
-      return <AddressViewComponent view={av} copyable={copyable} short_form={short_form} />;
-    } else {
-      return <></>;
-    }
-  }
-
-  address = view.addressView.value?.address;
-  if (!address) {
-    return <></>;
-  }
-
-  const encoded = bech32Address(address);
+  const encoded = bech32Address(view.addressView.value.address);
   const display = short_form ? shortenAddress(encoded) : encoded;
 
-  let account_index: number | undefined;
-  let randomized: boolean | undefined;
-  if (view.addressView.case === 'visible') {
-    account_index = view.addressView.value.index?.account;
-    // Randomized if the randomizer is not all zeros.
-    randomized = !view.addressView.value.index?.randomizer.every(v => v === 0);
-  }
+  const accountIndex =
+    view.addressView.case === 'visible' ? view.addressView.value.index?.account : undefined;
+  const isRandomized =
+    view.addressView.case === 'visible'
+      ? !view.addressView.value.index?.randomizer.every(v => v === 0) //   Randomized if the randomizer is not all zeros.
+      : undefined;
 
   return (
     <div className='flex'>
-      {account_index !== undefined ? (
+      {accountIndex !== undefined ? (
         <div className='flex items-baseline gap-2'>
           <Identicon name={encoded} size={14} className='rounded-full' />
-          <span className='font-bold'>Account #{account_index}</span>
-          {randomized ? <span className='font-bold'> (randomized)</span> : null}
+          <span className='font-bold'>Account #{accountIndex}</span>
+          {isRandomized ? <span className='font-bold'> (randomized)</span> : null}
         </div>
       ) : (
         <div className='font-mono text-sm italic text-foreground'>{display}</div>
       )}
-      {copyable ? (
+      {copyable && (
         <CopyToClipboard
           text={encoded}
           label={
@@ -76,7 +50,7 @@ export const AddressViewComponent = ({ view, address, copyable, short_form }: Ad
           }
           className='w-4 px-4'
         />
-      ) : null}
+      )}
     </div>
   );
 };
