@@ -46,7 +46,7 @@ export const DeleteRange = z.object({
 
 export const SctUpdatesSchema = z.object({
   set_position: StoredPositionSchema.optional(),
-  set_forgotten: z.number().optional(),
+  set_forgotten: z.bigint().optional(),
   store_commitments: z.array(StoreCommitmentSchema),
   store_hashes: z.array(StoreHashSchema),
   delete_ranges: z.array(DeleteRange),
@@ -79,7 +79,7 @@ export const parseScanResult = (r: RawScanResult): ScanResult => {
 
 export const StateCommitmentTreeSchema = z.object({
   last_position: StoredPositionSchema,
-  last_forgotten: z.number(),
+  last_forgotten: z.bigint(),
   hashes: z.array(StoreHashSchema),
   commitments: z.array(StoreCommitmentSchema),
 });
