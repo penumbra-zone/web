@@ -25,16 +25,15 @@ export const ViewBox = ({ label, visibleContent }: ViewBoxProps) => {
     <div
       className={cn(
         'bg-background px-4 pt-3 pb-4 rounded-lg border flex flex-col gap-1',
-        !visibleContent ? 'cursor-not-allowed' : '',
+        !visibleContent && 'cursor-not-allowed text-gray-600'
       )}
     >
       <div className='flex items-center gap-2 self-start'>
-        <span className={cn('text-base font-bold', !visibleContent ? 'text-gray-600' : '')}>
-          {visibleContent && label}
-          {!visibleContent && <Encrypted />}
+        <span className={'text-base font-bold'}>
+          {label}
         </span>
       </div>
-      {visibleContent}
+      {visibleContent || <Encrypted />}
     </div>
   );
 };
