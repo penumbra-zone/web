@@ -15,6 +15,7 @@
 ### Docs library
 
 - [Spinning up locally](spinning-up-locally.md)
+- [CI/CD](ci-cd.md)
 - [Guiding principles](guiding-principles.md)
 - [Monorepo](monorepo.md)
 - [State management](state-management.md)

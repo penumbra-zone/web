@@ -22,7 +22,7 @@ CI/CD pipeline `/.github/workflows` should actively enforce the best practices:
 - [Turborepo](https://turbo.build/) for builds
 
 It should not be possible to ship code that hasn't gone through the fire. Further, the use of `eslint` with quite high standards ([packages/eslint-config-custom/index.js](../packages/eslint-config-custom/index.js)) is necessary to keep the codebase
-code quality high.
+code quality high. See [CI/CD guide](ci-cd.md) for running commands locally.
 
 ### Modularity from the beginning
 
