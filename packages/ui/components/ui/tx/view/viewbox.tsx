@@ -4,17 +4,6 @@ import * as React from 'react';
 import { cn } from '../../../../lib/utils';
 import { IncognitoIcon } from '../../icons/incognito';
 
-const Encrypted = () => {
-  return (
-    <div className='flex gap-2'>
-      <span>==</span>
-      <span className='italic'>Encrypted</span>
-      <IncognitoIcon fill='#4b5563' />
-      <span>==</span>
-    </div>
-  );
-};
-
 export interface ViewBoxProps {
   label: string;
   visibleContent?: React.ReactElement;
@@ -31,7 +20,12 @@ export const ViewBox = ({ label, visibleContent }: ViewBoxProps) => {
       <div className='flex items-center gap-2 self-start'>
         <span className={cn('text-base font-bold', !visibleContent ? 'text-gray-600' : '')}>
           {visibleContent && label}
-          {!visibleContent && <Encrypted />}
+          {!visibleContent && (
+            <div className='flex gap-2'>
+              <IncognitoIcon fill='#4b5563' />
+              <span>{label}</span>
+            </div>
+          )}
         </span>
       </div>
       {visibleContent}
