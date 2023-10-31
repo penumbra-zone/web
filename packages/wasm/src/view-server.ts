@@ -62,7 +62,7 @@ export class ViewServer implements ViewServerInterface {
   }
 
   getNctRoot(): MerkleRoot {
-    const rawResult = this.wasmViewServer.get_nct_root() as { inner: string };
+    const rawResult = this.wasmViewServer.get_sct_root() as { inner: string };
     return MerkleRoot.fromJson(rawResult);
   }
 

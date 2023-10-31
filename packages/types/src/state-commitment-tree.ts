@@ -54,7 +54,7 @@ export const SctUpdatesSchema = z.object({
 
 export const ScanResultSchema = z.object({
   height: z.bigint(),
-  nct_updates: SctUpdatesSchema,
+  sct_updates: SctUpdatesSchema,
   new_notes: z.array(z.unknown()),
   new_swaps: z.array(z.unknown()),
 });
@@ -71,7 +71,7 @@ export interface ScanResult {
 export const parseScanResult = (r: RawScanResult): ScanResult => {
   return {
     height: BigInt(r.height), // TODO: Should see if wasm crate can pass bigint instead
-    sctUpdates: r.nct_updates,
+    sctUpdates: r.sct_updates,
     newNotes: r.new_notes.map(n => SpendableNoteRecord.fromJsonString(JSON.stringify(n))),
     newSwaps: r.new_swaps.map(s => SwapRecord.fromJsonString(JSON.stringify(s))),
   };
