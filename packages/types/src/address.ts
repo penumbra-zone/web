@@ -2,8 +2,8 @@ import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/k
 import { bech32m } from 'bech32';
 
 // Globally set Bech32 prefix used for addresses
-const BECH32_PREFIX = 'penumbrav2t';
-const ADDRESS_LENGTH = 146;
+const BECH32_PREFIX = 'penumbra';
+const ADDRESS_LENGTH = 143;
 
 // TODO use later - https://github.com/penumbra-zone/web/pull/63#discussion_r1343992139
 // https://github.com/penumbra-zone/penumbra/blob/8d1644620779ddfd961e58f0f4703318b3d08910/crates/core/keys/src/address.rs#L201-L211
