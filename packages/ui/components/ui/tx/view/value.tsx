@@ -1,5 +1,5 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { bech32AssetId, displayAmount, fromBaseUnitAmount } from '@penumbra-zone/types';
+import { bech32AssetId, fromBaseUnitAmount } from '@penumbra-zone/types';
 import { CopyToClipboard } from '../../copy-to-clipboard';
 import { CopyIcon } from '@radix-ui/react-icons';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
@@ -17,7 +17,7 @@ export const ValueViewComponent = ({ view }: ValueViewPrpos) => {
     const encodedAssetId = bech32AssetId(value.assetId!);
     return (
       <div className='flex font-mono'>
-        <p className='text-[15px] leading-[22px]'>{displayAmount(fromBaseUnitAmount(amount, 1))}</p>
+        <p className='text-[15px] leading-[22px]'>{fromBaseUnitAmount(amount, 1).toFormat()}</p>
         <span className='font-mono text-sm italic text-foreground'>{encodedAssetId}</span>
         <CopyToClipboard
           text={encodedAssetId}
@@ -40,7 +40,7 @@ export const ValueViewComponent = ({ view }: ValueViewPrpos) => {
     const exponent = value.denom?.denomUnits[0]?.exponent ?? 1;
     return (
       <div className='flex font-mono'>
-        {displayAmount(fromBaseUnitAmount(amount, exponent))} {display_denom}
+        {fromBaseUnitAmount(amount, exponent).toFormat()} {display_denom}
       </div>
     );
   }

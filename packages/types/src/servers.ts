@@ -6,5 +6,5 @@ export interface ViewServerInterface {
   scanBlock(compactBlock: CompactBlock): Promise<boolean>;
   flushUpdates(): ScanResult;
   resetTreeToStored(): Promise<void>;
-  getNctRoot(): MerkleRoot;
+  getSctRoot(): MerkleRoot;
 }

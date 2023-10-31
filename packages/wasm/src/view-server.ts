@@ -1,6 +1,7 @@
 import { ViewServer as WasmViewServer } from '@penumbra-zone/wasm-bundler';
 import {
   IdbConstants,
+  InnerBase64Schema,
   parseScanResult,
   ScanResult,
   ScanResultSchema,
@@ -61,9 +62,9 @@ export class ViewServer implements ViewServerInterface {
     );
   }
 
-  getNctRoot(): MerkleRoot {
-    const rawResult = this.wasmViewServer.get_sct_root() as { inner: string };
-    return MerkleRoot.fromJson(rawResult);
+  getSctRoot(): MerkleRoot {
+    const raw = validateSchema(InnerBase64Schema, this.wasmViewServer.get_sct_root());
+    return MerkleRoot.fromJson(raw);
   }
 
   // As blocks are scanned, the internal wasmViewServer tree is being updated.
