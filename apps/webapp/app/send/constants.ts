@@ -4,13 +4,13 @@ import { EduPanel } from '../../shared/edu-panels/content';
 export const sendTabsHelper: SendTabMap = {
   send: {
     src: '/funds-gradient.svg',
-    label: 'Sending funds',
-    content: EduPanel.TEMP_FILLER,
+    label: 'Sending Funds',
+    content: EduPanel.SENDING_FUNDS,
   },
   receive: {
     src: '/receive-gradient.svg',
-    label: 'Receiving funds',
-    content: EduPanel.TEMP_FILLER,
+    label: 'Receiving Funds',
+    content: EduPanel.RECEIVING_FUNDS,
   },
   ibc: {
     src: '/ibc-gradient.svg',
