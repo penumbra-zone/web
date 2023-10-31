@@ -1,4 +1,5 @@
 import { Buffer } from 'buffer';
+import { BECH32_PREFIX } from './address';
 
 export const stringToUint8Array = (str: string): Uint8Array => {
   const buffer = Buffer.from(str, 'utf8');
@@ -19,8 +20,6 @@ export const shorten = (str: string, endsLength = 4) => {
 };
 
 export const shortenAddress = (str: string) => {
-  // TODO: change this as we update the bech32 prefix before mainnet
-  const prefixLen = 12;
   const charsToDisplay = 24;
-  return str.slice(0, prefixLen + charsToDisplay) + '…';
+  return str.slice(0, BECH32_PREFIX.length + 1 + charsToDisplay) + '…';
 };
