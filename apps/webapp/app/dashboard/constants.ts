@@ -10,7 +10,7 @@ export const dashboardTabsHelper: DashboardTabMap = {
   transactions: {
     src: '/receive-gradient.svg',
     label: 'Transaction history',
-    content: EduPanel.TRANSACTIONS,
+    content: EduPanel.TRANSACTIONS_LIST,
   },
   nfts: {
     src: '/ibc-gradient.svg',

@@ -17,8 +17,8 @@ export default function Page() {
         </Card>
         <EduInfoCard
           src='/incognito.svg'
-          label='Private Transaction'
-          content={EduPanel.TEMP_FILLER}
+          label='Shielded Transactions'
+          content={EduPanel.SHIELDED_TRANSACTION}
         />
       </div>
     </FadeTransition>
