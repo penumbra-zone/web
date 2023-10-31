@@ -20,7 +20,7 @@ export default function Page() {
 
   return (
     <FadeTransition className='flex min-h-[calc(100vh-122px)] flex-col items-stretch justify-start'>
-      <div className='relative mx-auto grid max-w-[1276px] grid-cols-3 gap-5'>
+      <div className='relative mx-auto grid max-w-[1276px] grid-cols-3 gap-5 px-5'>
         <Card gradient className='col-span-2 row-span-2 flex-1 p-5'>
           <Tabs defaultValue={DashboardPageTab.ASSETS} value={tab}>
             <TabsList className='mx-auto grid w-[372px] grid-cols-2 gap-4'>
