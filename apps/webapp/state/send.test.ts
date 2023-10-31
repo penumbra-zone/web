@@ -88,7 +88,7 @@ describe('Send Slice', () => {
 
   describe('setRecipient and validate', () => {
     const rightAddress =
-      'penumbrav2t1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvxneea442q63sumem7r096p7rd2tywm2v6ppc4';
+      'penumbra1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvxneea442q63sumem7r096p7rd2tywm2v6ppc4';
 
     test('recipient can be set and validate', () => {
       useStore.getState().send.setRecipient(rightAddress);
@@ -98,13 +98,13 @@ describe('Send Slice', () => {
 
     test('recipient will have a validation error after entering an incorrect address length', () => {
       const badAddressLength =
-        'penumbrav2t1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvxneea442q63sumem7r096p7rd';
+        'penumbra1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvxneea442q63sumem7r096p7rd';
 
       useStore.getState().send.setRecipient(badAddressLength);
       expect(useStore.getState().send.validationErrors.recipient).toBeTruthy();
     });
 
-    test('recipient will have a validation error after entering an address without penumbrav2t as prefix', () => {
+    test('recipient will have a validation error after entering an address without penumbra as prefix', () => {
       const badAddressPrefix =
         'wwwwwwwwww1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvxneea442q63sumem7r096p7rd2tywm2v6ppc4d';
 

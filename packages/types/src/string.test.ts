@@ -90,8 +90,8 @@ describe('shorten()', () => {
 describe('shortenAddress()', () => {
   it('shorts penumbra addresses correctly', () => {
     const input =
-      'penumbrav2t147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahhvhypxd';
+      'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahhvhypxd';
     const output = shortenAddress(input);
-    expect(output).toBe('penumbrav2t147mfall0zr6am5r45qkwht7x…');
+    expect(output).toBe('penumbra147mfall0zr6am5r45qkwht7x…');
   });
 });
