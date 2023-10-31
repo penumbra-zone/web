@@ -1,11 +1,12 @@
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import { fromBaseUnit, joinLoHi, splitLoHi } from './lo-hi';
+import BigNumber from 'bignumber.js';
 
 export const joinLoHiAmount = (amount: Amount): bigint => {
   return joinLoHi(amount.lo, amount.hi);
 };
 
-export const fromBaseUnitAmount = (amount: Amount, exponent: number): number => {
+export const fromBaseUnitAmount = (amount: Amount, exponent: number): BigNumber => {
   return fromBaseUnit(amount.lo, amount.hi, exponent);
 };
 
@@ -21,8 +22,8 @@ export const addAmounts = (a: Amount, b: Amount): Amount => {
 //    2001.1      -> 2,000.1
 //    2001.124125 -> 2,001.124
 //    0.000012    -> 0.000012
-export const displayAmount = (number: number): string => {
-  const split = number.toString().split('.');
+export const displayAmount = (num: number): string => {
+  const split = num.toString().split('.');
   const integer = parseInt(split[0]!);
   let decimal = split[1];
 
@@ -30,7 +31,7 @@ export const displayAmount = (number: number): string => {
 
   if (!decimal) return formattedInt;
 
-  if (Math.abs(number) >= 1) {
+  if (Math.abs(num) >= 1) {
     decimal = decimal.slice(0, 3);
   }
 

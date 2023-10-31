@@ -1,3 +1,7 @@
+import BigNumber from 'bignumber.js';
+
+BigNumber.config({ EXPONENTIAL_AT: [-20, 20] });
+
 /**
  * In protobufs, it's common to split a single u128 into two u64's.
  *
@@ -55,10 +59,12 @@ export const addLoHi = (a: LoHi, b: LoHi): Required<LoHi> => {
  * This function allows you to calculate a single BigInt with the exponent applied
  * Note: Often passing exponent 0 is the default given protobuf serialization.
  *       This is treated as 1 instead.
+ *
+ * @returns BigNumber as javascript's `number` does not have the necessary precision
  */
-export const fromBaseUnit = (lo = 0n, hi = 0n, exponent: number): number => {
-  const loHi = joinLoHi(lo, hi);
-  return Number(loHi) / (exponent ? Math.pow(10, exponent) : 1);
+export const fromBaseUnit = (lo = 0n, hi = 0n, exponent: number): BigNumber => {
+  const bigNum = new BigNumber(joinLoHi(lo, hi).toString());
+  return bigNum.dividedBy(exponent ? BigNumber(10).pow(exponent) : 1);
 };
 
 /**
@@ -66,11 +72,12 @@ export const fromBaseUnit = (lo = 0n, hi = 0n, exponent: number): number => {
  * Multiplies the given number by 10 to the power of the exponent,
  * and then splits the result into separate lo and hi values.
  *
- * @param {number} value - The value to be multiplied.
+ * @param {BigNumber} value - The value to be multiplied.
  * @param {number} exponent - The exponent to be applied.
  * @returns {LoHi} An object with properties `lo` and `hi`, representing the low and high 64 bits of the multiplied value.
  */
-export const toBaseUnit = (value: number, exponent: number): LoHi => {
-  const multipliedValue = BigInt(Math.floor(value * Math.pow(10, exponent)));
-  return splitLoHi(multipliedValue);
+export const toBaseUnit = (value: BigNumber, exponent: number): LoHi => {
+  const multipliedValue = value.multipliedBy(new BigNumber(10).pow(exponent));
+  const bigInt = BigInt(multipliedValue.integerValue().toString());
+  return splitLoHi(bigInt);
 };

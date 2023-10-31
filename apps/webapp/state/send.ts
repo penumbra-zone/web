@@ -1,10 +1,10 @@
 import { assets } from '@penumbra-zone/constants';
-import { validateAmount } from '../utils';
 import { AllSlices, SliceCreator } from './index';
 import {
   Asset as TempAsset,
   AssetId as TempAssetId,
   base64ToUint8Array,
+  fromBaseUnitAmount,
   isPenumbraAddr,
   toBaseUnit,
   uint8ArrayToHex,
@@ -12,26 +12,20 @@ import {
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { errorTxToast, loadingTxToast, successTxToast } from '../shared/toast-content';
-
-export interface SendValidationFields {
-  recipient: boolean;
-  amount: boolean;
-}
+import BigNumber from 'bignumber.js';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 
 export interface SendSlice {
-  amount: string;
   asset: TempAsset;
-  recipient: string;
-  memo: string;
-  hidden: boolean;
-  validationErrors: SendValidationFields;
-  assetBalance: number;
-  setAmount: (amount: string) => void;
   setAsset: (asset: TempAssetId) => void;
+  amount: string;
+  setAmount: (amount: string) => void;
+  recipient: string;
   setRecipient: (addr: string) => void;
+  memo: string;
   setMemo: (txt: string) => void;
+  hidden: boolean;
   setHidden: (checked: boolean) => void;
-  setAssetBalance: (amount: number) => void;
   sendTx: (toastFn: typeof toast) => Promise<void>;
   txInProgress: boolean;
 }
@@ -43,18 +37,10 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     recipient: '',
     memo: '',
     hidden: false,
-    assetBalance: 0,
     txInProgress: false,
-    validationErrors: {
-      recipient: false,
-      amount: false,
-    },
     setAmount: amount => {
-      const { assetBalance } = get().send;
-
       set(state => {
         state.send.amount = amount;
-        state.send.validationErrors.amount = validateAmount(amount, assetBalance);
       });
     },
     setAsset: asset => {
@@ -66,7 +52,6 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     setRecipient: addr => {
       set(state => {
         state.send.recipient = addr;
-        state.send.validationErrors.recipient = Boolean(addr) && !isPenumbraAddr(addr);
       });
     },
     setMemo: txt => {
@@ -77,13 +62,6 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     setHidden: (checked: boolean) => {
       set(state => {
         state.send.hidden = checked;
-      });
-    },
-    setAssetBalance: balance => {
-      const { amount } = get().send;
-      set(state => {
-        state.send.assetBalance = balance;
-        state.send.validationErrors.amount = validateAmount(amount, balance);
       });
     },
     sendTx: async toastFn => {
@@ -125,7 +103,7 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, asset }: SendSlice
       {
         address: { altBech32m: recipient },
         value: {
-          amount: toBaseUnit(Number(amount), getExponent(asset)),
+          amount: toBaseUnit(BigNumber(amount), getExponent(asset)),
           assetId: { inner: base64ToUint8Array(asset.penumbraAssetId.inner) },
         },
       },
@@ -149,6 +127,33 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, asset }: SendSlice
   if (!id) throw new Error('no id in broadcast response');
 
   return uint8ArrayToHex(id.hash);
+};
+
+export const amountToBig = (asset: TempAsset, assetBalance: Amount) => {
+  const exponent = asset.denomUnits.find(d => d.denom === asset.display)!.exponent;
+  return fromBaseUnitAmount(assetBalance, exponent);
+};
+
+export const validateAmount = (asset: TempAsset, amount: string, assetBalance: Amount): boolean => {
+  const balanceAmt = amountToBig(asset, assetBalance);
+  return Boolean(amount) && BigNumber(amount).gt(balanceAmt);
+};
+
+export interface SendValidationFields {
+  recipientErr: boolean;
+  amountErr: boolean;
+}
+
+export const sendValidationErrors = (
+  asset: TempAsset,
+  amount: string,
+  recipient: string,
+  assetBalance: Amount,
+): SendValidationFields => {
+  return {
+    recipientErr: Boolean(recipient) && !isPenumbraAddr(recipient),
+    amountErr: validateAmount(asset, amount, assetBalance),
+  };
 };
 
 export const sendSelector = (state: AllSlices) => state.send;

@@ -1,6 +1,5 @@
 'use client';
 
-import { useBalancesWithMetadata } from '../../hooks/sorted-asset';
 import {
   Identicon,
   Table,
@@ -10,15 +9,11 @@ import {
   TableHeader,
   TableRow,
 } from '@penumbra-zone/ui';
-import {
-  displayAmount,
-  displayUsd,
-  fromBaseUnitAmount,
-  shortenAddress,
-} from '@penumbra-zone/types';
+import { displayUsd, fromBaseUnitAmount, shortenAddress } from '@penumbra-zone/types';
+import { useBalancesByAccount } from '../../hooks/balances';
 
 export default function AssetsTable() {
-  const { data, error } = useBalancesWithMetadata();
+  const { data, error } = useBalancesByAccount();
 
   return (
     <div className='flex flex-col gap-6'>
@@ -53,7 +48,7 @@ export default function AssetsTable() {
                     <TableCell className='w-1/3 text-center font-mono'>
                       <div className='flex flex-col'>
                         <p className='text-[15px] leading-[22px]'>
-                          {displayAmount(fromBaseUnitAmount(asset.amount, asset.denom.exponent))}
+                          {fromBaseUnitAmount(asset.amount, asset.denom.exponent).toFormat()}
                         </p>
                       </div>
                     </TableCell>

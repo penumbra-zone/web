@@ -3,20 +3,19 @@ import { Button } from '@penumbra-zone/ui';
 import { FilledImage } from '../../../shared';
 import { useStore } from '../../../state';
 import { SwapInputs, swapSelector } from '../../../state/swap';
-import { validateAmount } from '../../../utils';
 import dynamic from 'next/dynamic';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { useCalculateBalance } from '../../../hooks/calculate-balance';
 
 const SwapInput = dynamic(() => import('./swap-input'), { ssr: false });
 
 export default function SwapForm() {
   const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
 
-  const { pay, receive, validationErrors, setAmount, setAsset, replaceAsset, setAssetBalance } =
+  const { pay, receive, validationErrors, setAmount, setAsset, replaceAsset } =
     useStore(swapSelector);
 
-  useCalculateBalance(pay.asset, setAssetBalance);
+  // TODO: Fix later
+  // useCalculateBalance(pay.asset, setAssetBalance);
 
   return (
     <form
@@ -41,7 +40,8 @@ export default function SwapForm() {
             {
               type: 'error',
               issue: 'insufficient funds',
-              checkFn: (amount: string) => validateAmount(amount, pay.balance!),
+              // TODO: should be derviing validationErrors like send form
+              checkFn: () => false,
             },
           ]}
         />

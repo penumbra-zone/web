@@ -4,38 +4,34 @@ import dynamic from 'next/dynamic';
 import { Button, Switch } from '@penumbra-zone/ui';
 import { FilledImage, InputBlock } from '../../shared';
 import { useStore } from '../../state';
-import { sendSelector } from '../../state/send';
-import { validateAmount } from '../../utils';
-import { useCalculateBalance } from '../../hooks/calculate-balance';
+import { amountToBig, sendSelector, sendValidationErrors } from '../../state/send';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { isPenumbraAddr } from '@penumbra-zone/types';
+import { useSendBalance } from '../../hooks/send-balance';
 
 const InputToken = dynamic(() => import('../../shared/input-token'), {
   ssr: false,
 });
 
 export default function SendForm() {
+  const { toast } = useToast();
   const {
     amount,
     asset,
     recipient,
     memo,
     hidden,
-    assetBalance,
     setAmount,
     setAsset,
     setRecipient,
     setMemo,
     setHidden,
-    setAssetBalance,
     sendTx,
     txInProgress,
-    validationErrors,
   } = useStore(sendSelector);
 
-  useCalculateBalance(asset, setAssetBalance);
-
-  const { toast } = useToast();
+  const assetBalance = useSendBalance();
+  const validationErrors = sendValidationErrors(asset, amount, recipient, assetBalance);
 
   return (
     <form
@@ -69,12 +65,12 @@ export default function SendForm() {
           if (Number(e.target.value) < 0) return;
           setAmount(e.target.value);
         }}
-        assetBalance={assetBalance}
+        assetBalance={amountToBig(asset, assetBalance)}
         validations={[
           {
             type: 'error',
             issue: 'insufficient funds',
-            checkFn: (amount: string) => validateAmount(amount, assetBalance),
+            checkFn: () => validationErrors.amountErr,
           },
         ]}
       />

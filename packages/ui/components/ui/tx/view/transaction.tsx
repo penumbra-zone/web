@@ -2,7 +2,7 @@ import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { MemoViewComponent } from './memo-view';
 import { ActionViewComponent } from './action-view';
 import { ViewBox, ViewSection } from './viewbox';
-import { displayAmount, fromBaseUnitAmount } from '@penumbra-zone/types';
+import { fromBaseUnitAmount } from '@penumbra-zone/types';
 
 export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
   if (!txv.bodyView) throw new Error('transaction view missing body view');
@@ -12,8 +12,8 @@ export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
     <div className='flex flex-col gap-8'>
       <MemoViewComponent memo={txv.bodyView.memoView} />
       <ViewSection heading='Actions'>
-        {txv.bodyView.actionViews.map(av => (
-          <ActionViewComponent av={av} />
+        {txv.bodyView.actionViews.map((av, i) => (
+          <ActionViewComponent av={av} key={i} />
         ))}
       </ViewSection>
       <ViewSection heading='Parameters'>
@@ -22,7 +22,7 @@ export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
           visibleContent={
             <div className='font-mono'>
               {/*TODO: fix. (1) why isn't fee in txparams? (2) why isn't there a ValueView in the txv?*/}
-              {displayAmount(fromBaseUnitAmount(txv.bodyView.fee!.amount!, 1))} upenumbra
+              {fromBaseUnitAmount(txv.bodyView.fee!.amount!, 1).toFormat()} upenumbra
             </div>
           }
         />

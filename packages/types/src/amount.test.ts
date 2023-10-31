@@ -11,7 +11,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 describe('lohi helpers', () => {
   it('convertFromBaseUnitAmount works', () => {
     const result = fromBaseUnitAmount(new Amount({ lo: 1000n, hi: 5n }), 6);
-    expect(result).toBe(92233720368547.77);
+    expect(result.toString()).toBe('92233720368547.75908');
   });
 
   it('joinLoHiAmount works', () => {
