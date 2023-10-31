@@ -749,11 +749,11 @@ importers:
         specifier: workspace:*
         version: link:../types
       '@penumbra-zone/wasm-bundler':
-        specifier: 0.63.0-preview-3
-        version: 0.63.0-preview-3
+        specifier: 0.63.0
+        version: 0.63.0
       '@penumbra-zone/wasm-nodejs':
-        specifier: 0.63.0-preview-3
-        version: 0.63.0-preview-3
+        specifier: 0.63.0
+        version: 0.63.0
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -1885,12 +1885,12 @@ packages:
     engines: {node: '>=8.12.0'}
     dev: true
 
-  /@penumbra-zone/wasm-bundler@0.63.0-preview-3:
-    resolution: {integrity: sha512-wc2k1x8SyKGlDjgBuFuMZ5tn04coKsNZq06U1TWlwyLdOhixj4CSU6n0BvKidYRQQgi0R++K/pkniqXjQ+piXg==}
+  /@penumbra-zone/wasm-bundler@0.63.0:
+    resolution: {integrity: sha512-vMktQMvQtpenqtoOUQRNKr+HhbVBImH1HhIQLGqVFxCF1ALiR+B3klWai/jhIPihjEEL1ncX1ENQxQRF6IwfWQ==}
     dev: false
 
-  /@penumbra-zone/wasm-nodejs@0.63.0-preview-3:
-    resolution: {integrity: sha512-dkw7FggrxnUhITqLkkqKYrf90PSSUjhMg50qhVYlwnQigpHwtsgiqlXfM+mnJ4VR+rlst+SFBqpqoWOpUWOtWg==}
+  /@penumbra-zone/wasm-nodejs@0.63.0:
+    resolution: {integrity: sha512-AFUMzppxNmzvZw5JBHCvMcTTe4jLbMfWSdFtNAc/vQPIRSrOXBDdquMHvj41M+I5WY0JSWnqblDT+UuLHtHOMw==}
     dev: false
 
   /@pkgjs/parseargs@0.11.0:
