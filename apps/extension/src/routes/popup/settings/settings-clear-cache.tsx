@@ -3,8 +3,11 @@ import { Button, FadeTransition } from '@penumbra-zone/ui';
 import { SettingsHeader } from '../../../shared';
 import { TrashGradientIcon } from '../../../icons';
 import { internalSwClient } from '@penumbra-zone/router';
+import { usePopupNav } from '../../../utils/navigate';
+import { PopupPath } from '../paths';
 
 export const SettingsClearCache = () => {
+  const navigate = usePopupNav();
   return (
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-6'>
@@ -27,7 +30,12 @@ export const SettingsClearCache = () => {
             variant='gradient'
             size='lg'
             className='w-full'
-            onClick={() => void internalSwClient.clearCache()}
+            onClick={() => {
+              void (async () => {
+                await internalSwClient.clearCache();
+                navigate(PopupPath.INDEX);
+              })();
+            }}
           >
             Confirm
           </Button>
