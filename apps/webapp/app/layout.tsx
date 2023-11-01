@@ -16,6 +16,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             width={234}
             height={234}
             alt='Penumbra logo'
+            priority
             className='absolute left-[-100px] top-[-140px] rotate-[320deg]'
           />
           <div className='relative flex min-h-screen flex-col'>
