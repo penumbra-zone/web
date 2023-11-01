@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { FilledImage } from '../../../shared';
 import { useStore } from '../../../state';
 import { ibcSelector } from '../../../state/ibc';
-import { chains } from '@penumbra-zone/constants'
+import { chains } from '@penumbra-zone/constants';
 
 const InputToken = dynamic(() => import('../../../shared/input-token'), {
   ssr: false,

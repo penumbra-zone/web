@@ -157,7 +157,6 @@ export const assets: Asset[] = [
   },
 ];
 
-
 export const chains: Chain[] = [
   {
     name: 'Osmosis 1',
