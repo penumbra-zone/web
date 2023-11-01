@@ -1,13 +1,10 @@
 import { EduPanel } from '../../shared/edu-panels/content';
+import { DappPath } from '../header/paths';
 
-export enum DashboardPageTab {
-  DASHBOARD = '/dashboard',
-  TRANSACTIONS = '/dashboard/transactions',
-  NFTS = '/dashboard/nfts',
-}
+export type DashboardTab = DappPath.DASHBOARD | DappPath.TRANSACTIONS | DappPath.NFTS;
 
 export type DashboardTabMap = Record<
-  DashboardPageTab,
+  DashboardTab,
   {
     src: string;
     label: string;

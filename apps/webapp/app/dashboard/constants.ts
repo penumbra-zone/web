@@ -9,17 +9,17 @@ export const dashboardTabs = [
 ];
 
 export const dashboardTabsHelper: DashboardTabMap = {
-  '/dashboard': {
+  [DappPath.DASHBOARD]: {
     src: '/funds-gradient.svg',
     label: 'Asset Balances',
     content: EduPanel.ASSETS,
   },
-  '/dashboard/transactions': {
+  [DappPath.TRANSACTIONS]: {
     src: '/receive-gradient.svg',
     label: 'Transaction history',
     content: EduPanel.TRANSACTIONS_LIST,
   },
-  '/dashboard/nfts': {
+  [DappPath.NFTS]: {
     src: '/ibc-gradient.svg',
     label: 'NFTs history',
     content: EduPanel.TEMP_FILLER,

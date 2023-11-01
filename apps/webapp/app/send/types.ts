@@ -1,13 +1,10 @@
 import { EduPanel } from '../../shared/edu-panels/content';
+import { DappPath } from '../header/paths';
 
-export enum SendPageTab {
-  SEND = '/send',
-  RECEIVE = '/send/receive',
-  IBC = '/send/ibc',
-}
+export type SendTab = DappPath.SEND | DappPath.RECEIVE | DappPath.IBC;
 
 export type SendTabMap = Record<
-  SendPageTab,
+  SendTab,
   {
     src: string;
     label: string;

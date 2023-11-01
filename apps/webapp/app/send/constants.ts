@@ -3,17 +3,17 @@ import { DappPath } from '../header/paths';
 import { SendTabMap } from './types';
 
 export const sendTabsHelper: SendTabMap = {
-  '/send': {
+  [DappPath.SEND]: {
     src: '/funds-gradient.svg',
     label: 'Sending Funds',
     content: EduPanel.SENDING_FUNDS,
   },
-  '/send/receive': {
+  [DappPath.RECEIVE]: {
     src: '/receive-gradient.svg',
     label: 'Receiving Funds',
     content: EduPanel.RECEIVING_FUNDS,
   },
-  '/send/ibc': {
+  [DappPath.IBC]: {
     src: '/ibc-gradient.svg',
     label: 'IBC funds',
     content: EduPanel.TEMP_FILLER,

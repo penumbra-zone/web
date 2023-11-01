@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { DappPath } from './paths';
 import { cn } from '@penumbra-zone/ui/lib/utils';
+import { useTypesafePathname } from '../../hooks/typesafe-pathname';
 
 const links = [
   {
@@ -45,7 +45,7 @@ const links = [
 ];
 
 export const Navbar = () => {
-  const pathname = usePathname();
+  const pathname = useTypesafePathname<DappPath>();
 
   return (
     <nav className='flex gap-4'>
@@ -56,8 +56,7 @@ export const Navbar = () => {
             href={link.href}
             className={cn(
               'font-bold py-[10px] px-[30px] select-none',
-              link.subLinks.includes(pathname as DappPath) &&
-                'bg-button-gradient-secondary rounded-lg',
+              link.subLinks.includes(pathname) && 'bg-button-gradient-secondary rounded-lg',
             )}
           >
             {link.label}
