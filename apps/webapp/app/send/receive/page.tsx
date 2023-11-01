@@ -1,4 +1,6 @@
-export const ReceiveForm = () => {
+'use client';
+
+const Receive = () => {
   return (
     <form
       className='flex flex-col gap-2'
@@ -8,3 +10,5 @@ export const ReceiveForm = () => {
     ></form>
   );
 };
+
+export default Receive;

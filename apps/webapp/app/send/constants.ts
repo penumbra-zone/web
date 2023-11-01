@@ -1,19 +1,19 @@
-import { DappPath } from '../../app/header/paths';
-import { EduPanel } from '../edu-panels/content';
-import { SendTabMap } from '../types/send';
+import { EduPanel } from '../../shared/edu-panels/content';
+import { DappPath } from '../header/paths';
+import { SendTabMap } from './types';
 
 export const sendTabsHelper: SendTabMap = {
-  send: {
+  '/send': {
     src: '/funds-gradient.svg',
     label: 'Sending Funds',
     content: EduPanel.SENDING_FUNDS,
   },
-  receive: {
+  '/send/receive': {
     src: '/receive-gradient.svg',
     label: 'Receiving Funds',
     content: EduPanel.RECEIVING_FUNDS,
   },
-  ibc: {
+  '/send/ibc': {
     src: '/ibc-gradient.svg',
     label: 'IBC funds',
     content: EduPanel.TEMP_FILLER,

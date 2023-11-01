@@ -13,7 +13,7 @@ const InputToken = dynamic(() => import('../../shared/input-token'), {
   ssr: false,
 });
 
-export default function SendForm() {
+const Send = () => {
   const { toast } = useToast();
   const {
     amount,
@@ -103,4 +103,5 @@ export default function SendForm() {
       </Button>
     </form>
   );
-}
+};
+export default Send;

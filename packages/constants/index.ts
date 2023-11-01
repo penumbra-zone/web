@@ -1,4 +1,4 @@
-import { Asset, Base64Str } from '@penumbra-zone/types';
+import { Asset, Base64Str, Chain } from '@penumbra-zone/types';
 
 export interface Constants {
   grpcEndpoint: string;
@@ -154,5 +154,25 @@ export const assets: Asset[] = [
         exponent: 0,
       },
     ],
+  },
+];
+
+
+export const chains: Chain[] = [
+  {
+    name: 'Osmosis 1',
+    icon: '/test-chain-icon.png',
+  },
+  {
+    name: 'Osmosis 2',
+    icon: '/test-chain-icon.png',
+  },
+  {
+    name: 'Osmosis 3',
+    icon: '/test-chain-icon.png',
+  },
+  {
+    name: 'Osmosis 4',
+    icon: '/test-chain-icon.png',
   },
 ];

@@ -5,9 +5,9 @@ export enum DappPath {
   POOLS = '/pools',
   GOVERNANCE = '/governance',
   STAKING = '/staking',
-  RECEIVE = '/receive',
+  RECEIVE = '/send/receive',
   TRANSACTIONS = '/transactions',
   ASSETS = '/assets',
-  IBC = '/ibc',
+  IBC = '/send/ibc',
   NFTS = '/nfts',
 }

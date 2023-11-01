@@ -1,4 +1,3 @@
-import dynamic from 'next/dynamic';
 import {
   Button,
   Select,
@@ -7,15 +6,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@penumbra-zone/ui';
-import { FilledImage } from '../../shared';
-import { useStore } from '../../state';
-import { ibcSelector } from '../../state/ibc';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { useState } from 'react';
 import BigNumber from 'bignumber.js';
-import { chains } from './constants';
+import dynamic from 'next/dynamic';
+import { useState } from 'react';
+import { FilledImage } from '../../../shared';
+import { useStore } from '../../../state';
+import { ibcSelector } from '../../../state/ibc';
+import { chains } from '@penumbra-zone/constants'
 
-const InputToken = dynamic(() => import('../../shared/input-token'), {
+const InputToken = dynamic(() => import('../../../shared/input-token'), {
   ssr: false,
 });
 

@@ -1,7 +1,6 @@
 import { assets } from '@penumbra-zone/constants';
+import { Asset, AssetId, Chain } from '@penumbra-zone/types';
 import { AllSlices, SliceCreator } from '.';
-import { Asset, AssetId } from '@penumbra-zone/types';
-import { Chain } from '../shared/types/send';
 
 export interface IbcSendSlice {
   asset: Asset;
