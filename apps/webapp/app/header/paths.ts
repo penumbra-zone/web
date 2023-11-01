@@ -9,4 +9,5 @@ export enum DappPath {
   TRANSACTIONS = '/transactions',
   ASSETS = '/assets',
   IBC = '/ibc',
+  NFTS = '/nfts'
 }

@@ -7,16 +7,16 @@ import { cn } from '@penumbra-zone/ui/lib/utils';
 
 const links = [
   {
-    href: DappPath.INDEX,
+    href: DappPath.ASSETS,
     label: 'Dashboard',
     active: true,
-    subLinks: [DappPath.ASSETS, DappPath.TRANSACTIONS],
+    subLinks: [DappPath.ASSETS, DappPath.TRANSACTIONS, DappPath.NFTS],
   },
   {
     href: DappPath.SEND,
     label: 'Send',
     active: true,
-    subLinks: [DappPath.SEND, DappPath.RECEIVE],
+    subLinks: [DappPath.SEND, DappPath.RECEIVE, DappPath.IBC],
   },
   {
     href: DappPath.SWAP,

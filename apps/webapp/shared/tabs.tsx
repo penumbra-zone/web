@@ -8,13 +8,19 @@ import { useRouter } from 'next/navigation';
 interface TabsProps {
   tabs: { title: string; active: boolean; href: DappPath }[];
   activeTab: DappPath;
+  className?: string;
 }
 
-export const Tabs = ({ tabs, activeTab }: TabsProps) => {
+export const Tabs = ({ tabs, activeTab, className }: TabsProps) => {
   const { push } = useRouter();
 
   return (
-    <div className='inline-flex h-[52px] items-center justify-center rounded-lg bg-background px-2 mb-6'>
+    <div
+      className={cn(
+        'inline-flex h-[52px] items-center justify-center rounded-lg bg-background px-2 mb-6',
+        className,
+      )}
+    >
       {tabs.map(
         tab =>
           tab.active && (
