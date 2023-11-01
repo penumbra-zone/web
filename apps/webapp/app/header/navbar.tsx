@@ -10,31 +10,37 @@ const links = [
     href: DappPath.INDEX,
     label: 'Dashboard',
     active: true,
+    subLinks: [DappPath.ASSETS, DappPath.TRANSACTIONS],
   },
   {
     href: DappPath.SEND,
     label: 'Send',
     active: true,
+    subLinks: [DappPath.SEND, DappPath.RECEIVE],
   },
   {
     href: DappPath.SWAP,
     label: 'Swap',
     active: false,
+    subLinks: [],
   },
   {
     href: DappPath.POOLS,
     label: 'Pools',
     active: false,
+    subLinks: [],
   },
   {
     href: DappPath.GOVERNANCE,
     label: 'Governance',
     active: false,
+    subLinks: [],
   },
   {
     href: DappPath.STAKING,
     label: 'Staking',
     active: false,
+    subLinks: [],
   },
 ];
 
@@ -50,7 +56,8 @@ export const Navbar = () => {
             href={link.href}
             className={cn(
               'font-bold py-[10px] px-[30px] select-none',
-              (pathname as DappPath) === link.href && 'bg-button-gradient-secondary rounded-lg',
+              link.subLinks.includes(pathname as DappPath) &&
+                'bg-button-gradient-secondary rounded-lg',
             )}
           >
             {link.label}
