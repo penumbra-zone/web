@@ -1,10 +1,10 @@
 'use client';
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
 import { shorten } from '@penumbra-zone/types';
-import { FilledImage } from '../../shared';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
 import Link from 'next/link';
-import { useTxs } from '../../hooks/transactions';
+import { useTxs } from '../../../hooks/transactions';
+import { FilledImage } from '../../../shared';
 
 export default function TransactionTable() {
   const { data, error } = useTxs();

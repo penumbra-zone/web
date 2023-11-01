@@ -1,9 +1,9 @@
-import { EduPanel } from '../edu-panels/content';
+import { EduPanel } from '../../shared/edu-panels/content';
 
 export enum DashboardPageTab {
-  ASSETS = 'assets',
-  TRANSACTIONS = 'transactions',
-  NFTS = 'nfts',
+  DASHBOARD = '/dashboard',
+  TRANSACTIONS = '/dashboard/transactions',
+  NFTS = '/dashboard/nfts',
 }
 
 export type DashboardTabMap = Record<

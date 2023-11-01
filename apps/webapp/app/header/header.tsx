@@ -15,7 +15,7 @@ const Notifications = dynamic(() => import('./notifications'), {
 export const Header = () => {
   return (
     <header className='flex h-[82px] w-full items-center justify-between px-12'>
-      <Link href={DappPath.ASSETS}>
+      <Link href={DappPath.DASHBOARD}>
         <FilledImage src='/logo.svg' alt='Penumbra logo' className='h-4 w-[171px]' />
       </Link>
       <Navbar />

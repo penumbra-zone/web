@@ -17,7 +17,7 @@ export const Tabs = ({ tabs, activeTab, className }: TabsProps) => {
   return (
     <div
       className={cn(
-        'inline-flex h-[52px] items-center justify-center rounded-lg bg-background px-2 mb-6',
+        'inline-flex h-[52px] items-center justify-center rounded-lg bg-background px-2 mb-6 gap-3',
         className,
       )}
     >
@@ -26,7 +26,7 @@ export const Tabs = ({ tabs, activeTab, className }: TabsProps) => {
           tab.active && (
             <Button
               className={cn(
-                'w-full',
+                'w-full transition-all',
                 activeTab !== tab.href && ' bg-transparent text-muted-foreground',
               )}
               size='md'
