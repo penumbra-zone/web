@@ -22,8 +22,8 @@ export interface SendSlice {
   setAmount: (amount: string) => void;
   recipient: string;
   setRecipient: (addr: string) => void;
-  memo: string;
-  setMemo: (txt: string) => void;
+  memoText: string;
+  setMemoText: (txt: string) => void;
   hidden: boolean;
   setHidden: (checked: boolean) => void;
   sendTx: (toastFn: typeof toast) => Promise<void>;
@@ -35,7 +35,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     amount: '',
     asset: assets[0]!,
     recipient: '',
-    memo: '',
+    memoText: '',
     hidden: false,
     txInProgress: false,
     setAmount: amount => {
@@ -54,9 +54,9 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.recipient = addr;
       });
     },
-    setMemo: txt => {
+    setMemoText: txt => {
       set(state => {
-        state.send.memo = txt;
+        state.send.memoText = txt;
       });
     },
     setHidden: (checked: boolean) => {
@@ -97,8 +97,9 @@ const getExponent = (asset: TempAsset): number => {
   return match?.exponent ?? 0;
 };
 
-const planWitnessBuildBroadcast = async ({ amount, recipient, asset }: SendSlice) => {
+const planWitnessBuildBroadcast = async ({ amount, memoText, recipient, asset }: SendSlice) => {
   const req = new TransactionPlannerRequest({
+    memo: { text: memoText },
     outputs: [
       {
         address: { altBech32m: recipient },

@@ -26,6 +26,7 @@ export const handleTxPlannerReq = async (
   req: TransactionPlannerRequest,
   services: ServicesInterface,
 ): Promise<TransactionPlannerResponse> => {
+  const refundAddr = await getRefundAddress(req);
   const { indexedDb } = await services.getWalletServices();
   const chainParams = await services.querier.app.chainParams();
   const fmdParams = await indexedDb.getFmdParams();
@@ -42,6 +43,7 @@ export const handleTxPlannerReq = async (
   }
 
   if (req.memo) {
+    req.memo.sender ??= refundAddr;
     planner.memo(req.memo);
   }
 
@@ -54,7 +56,6 @@ export const handleTxPlannerReq = async (
     planner.output(o.value, o.address);
   }
 
-  const refundAddr = await getRefundAddress(req);
   const plan = await planner.plan(refundAddr);
   return new TransactionPlannerResponse({ plan });
 };

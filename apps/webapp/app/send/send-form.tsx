@@ -15,12 +15,12 @@ const Send = () => {
     amount,
     asset,
     recipient,
-    memo,
+    memoText,
     hidden,
     setAmount,
     setAsset,
     setRecipient,
-    setMemo,
+    setMemoText,
     setHidden,
     sendTx,
     txInProgress,
@@ -73,8 +73,8 @@ const Send = () => {
       <InputBlock
         label='Memo'
         placeholder='Optional message'
-        value={memo}
-        onChange={e => setMemo(e.target.value)}
+        value={memoText}
+        onChange={e => setMemoText(e.target.value)}
       />
       <div className='flex items-center justify-between'>
         <div className='flex items-start gap-2'>

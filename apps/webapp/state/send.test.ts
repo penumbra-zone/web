@@ -18,9 +18,9 @@ describe('Send Slice', () => {
   });
 
   test('the default is empty, false or undefined', () => {
-    const { amount, memo, recipient, hidden, asset, txInProgress } = useStore.getState().send;
+    const { amount, memoText, recipient, hidden, asset, txInProgress } = useStore.getState().send;
     expect(amount).toBe('');
-    expect(memo).toBe('');
+    expect(memoText).toBe('');
     expect(recipient).toBe('');
     expect(hidden).toBeFalsy();
     expect(asset).toBeTruthy();
@@ -63,8 +63,8 @@ describe('Send Slice', () => {
 
   describe('setMemo', () => {
     test('memo can be set', () => {
-      useStore.getState().send.setMemo('memo-test');
-      expect(useStore.getState().send.memo).toBe('memo-test');
+      useStore.getState().send.setMemoText('memo-test');
+      expect(useStore.getState().send.memoText).toBe('memo-test');
     });
   });
 
