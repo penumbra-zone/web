@@ -4,9 +4,9 @@ import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
-  DialogPrimitive,
   DialogTrigger,
   Input,
 } from '@penumbra-zone/ui';
@@ -52,7 +52,7 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
             </div>
             <div className='flex flex-col gap-2'>
               {data.map((b, i) => (
-                <DialogPrimitive.Close key={i}>
+                <DialogClose key={i}>
                   <div
                     className={cn(
                       'flex justify-between items-center py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4',
@@ -74,7 +74,7 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
                       {fromBaseUnitAmount(b.amount, b.denom.exponent).toFormat()}
                     </p>
                   </div>
-                </DialogPrimitive.Close>
+                </DialogClose>
               ))}
             </div>
           </div>
