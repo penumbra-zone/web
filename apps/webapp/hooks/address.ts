@@ -35,3 +35,24 @@ export const useAddresses = (accounts: (number | undefined)[]) => {
     },
   });
 };
+
+export const useAddress = (account = 0) =>
+  useQuery({
+    queryKey: ['get-addr-index', account],
+    queryFn: async () => {
+      const res = await viewClient.addressByIndex({ addressIndex: new AddressIndex({ account }) });
+      return res.address!;
+    },
+  });
+
+export const useEphemeralAddress = (account = 0, options?: { enabled: boolean }) =>
+  useQuery({
+    queryKey: ['get-addr-ephem', account],
+    queryFn: async () => {
+      const res = await viewClient.ephemeralAddress({
+        addressIndex: new AddressIndex({ account }),
+      });
+      return res.address!;
+    },
+    enabled: Boolean(options?.enabled),
+  });

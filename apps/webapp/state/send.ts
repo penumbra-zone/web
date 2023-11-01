@@ -24,8 +24,6 @@ export interface SendSlice {
   setRecipient: (addr: string) => void;
   memoText: string;
   setMemoText: (txt: string) => void;
-  hidden: boolean;
-  setHidden: (checked: boolean) => void;
   sendTx: (toastFn: typeof toast) => Promise<void>;
   txInProgress: boolean;
 }

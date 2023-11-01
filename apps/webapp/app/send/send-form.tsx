@@ -7,6 +7,10 @@ import { amountToBig, sendSelector, sendValidationErrors } from '../../state/sen
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { isPenumbraAddr } from '@penumbra-zone/types';
 import { useSendBalance } from '../../hooks/send-balance';
+import { useAddress, useEphemeralAddress, } from '../../hooks/address';
+import { bech32Address } from '@penumbra-zone/types';
+import { useMemo, useState } from 'react';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import InputToken from '../../shared/input-token';
 
 const Send = () => {
@@ -16,18 +20,27 @@ const Send = () => {
     asset,
     recipient,
     memoText,
-    hidden,
     setAmount,
     setAsset,
     setRecipient,
     setMemoText,
-    setHidden,
     sendTx,
     txInProgress,
   } = useStore(sendSelector);
 
+  const [hidden, setHidden] = useState(false);
   const assetBalance = useSendBalance();
   const validationErrors = sendValidationErrors(asset, amount, recipient, assetBalance);
+
+  // TODO: enable address selection
+  const defaultSender = useAddress(0);
+  const ephemeralSender = useEphemeralAddress(0, { enabled: hidden })
+
+  const sender = useMemo(() => {
+    if (!hidden && defaultSender.data) return bech32Address(defaultSender.data);
+    if (hidden && ephemeralSender.data) return bech32Address(ephemeralSender.data);
+    return '';
+  }, [hidden, defaultSender, ephemeralSender]);
 
   return (
     <form
@@ -36,6 +49,13 @@ const Send = () => {
         e.preventDefault();
       }}
     >
+      <InputBlock
+        label={hidden ? 'Ephemeral Sender' : 'Sender'}
+        placeholder='Loading address...'
+        className={cn('mb-1', hidden && 'text-orange-500')}
+        value={sender}
+        readOnly={true}
+      />
       <InputBlock
         label='Recipient'
         placeholder='Enter the address'
