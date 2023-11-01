@@ -97,9 +97,15 @@ const getExponent = (asset: TempAsset): number => {
   return match?.exponent ?? 0;
 };
 
-const planWitnessBuildBroadcast = async ({ amount, memoText, recipient, asset }: SendSlice) => {
+const planWitnessBuildBroadcast = async ({
+  amount,
+  memoSender,
+  memoText,
+  recipient,
+  asset,
+}: SendSlice) => {
   const req = new TransactionPlannerRequest({
-    memo: { text: memoText },
+    memo: { sender: { altBech32m: memoSender }, text: memoText },
     outputs: [
       {
         address: { altBech32m: recipient },
