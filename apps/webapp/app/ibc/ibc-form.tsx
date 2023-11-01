@@ -13,7 +13,7 @@ import { ibcSelector } from '../../state/ibc';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useState } from 'react';
 import BigNumber from 'bignumber.js';
-import { chains } from './constants';
+import { chains } from './constants'
 
 const InputToken = dynamic(() => import('../../shared/input-token'), {
   ssr: false,
