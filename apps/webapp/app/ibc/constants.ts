@@ -1,5 +1,4 @@
-import { Chain } from '../../shared/types/send'
-
+import { Chain } from '../../shared/types/send';
 
 export const chains: Chain[] = [
   {
