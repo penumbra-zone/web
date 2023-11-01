@@ -1,5 +1,12 @@
-import { DashboardTabMap } from './types';
-import { EduPanel } from '../../shared/edu-panels/content';
+import { DappPath } from '../../app/header/paths';
+import { EduPanel } from '../edu-panels/content';
+import { DashboardTabMap } from '../types/dashboard';
+
+export const dashboardTabs = [
+  { title: 'Assets', href: DappPath.ASSETS, active: true },
+  { title: 'Transactions', href: DappPath.TRANSACTIONS, active: true },
+  { title: 'NFTs', href: DappPath.NFTS, active: false },
+];
 
 export const dashboardTabsHelper: DashboardTabMap = {
   assets: {

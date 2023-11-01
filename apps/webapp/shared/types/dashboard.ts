@@ -1,4 +1,4 @@
-import { EduPanel } from '../../shared/edu-panels/content';
+import { EduPanel } from '../edu-panels/content';
 
 export enum DashboardPageTab {
   ASSETS = 'assets',
