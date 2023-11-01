@@ -9,7 +9,7 @@ import { isPenumbraAddr } from '@penumbra-zone/types';
 import { useSendBalance } from '../../hooks/send-balance';
 import { useAddress, useEphemeralAddress, } from '../../hooks/address';
 import { bech32Address } from '@penumbra-zone/types';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import InputToken from '../../shared/input-token';
 
@@ -20,10 +20,12 @@ const Send = () => {
     asset,
     recipient,
     memoText,
+    memoSender,
     setAmount,
     setAsset,
     setRecipient,
     setMemoText,
+    setMemoSender,
     sendTx,
     txInProgress,
   } = useStore(sendSelector);
@@ -41,6 +43,10 @@ const Send = () => {
     if (hidden && ephemeralSender.data) return bech32Address(ephemeralSender.data);
     return '';
   }, [hidden, defaultSender, ephemeralSender]);
+
+  useEffect(() => {
+    setMemoSender(sender);
+  }, [sender, setMemoSender]);
 
   return (
     <form

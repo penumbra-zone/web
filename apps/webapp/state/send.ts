@@ -24,6 +24,8 @@ export interface SendSlice {
   setRecipient: (addr: string) => void;
   memoText: string;
   setMemoText: (txt: string) => void;
+  memoSender: string;
+  setMemoSender: (addr: string) => void;
   sendTx: (toastFn: typeof toast) => Promise<void>;
   txInProgress: boolean;
 }
@@ -57,9 +59,9 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.memoText = txt;
       });
     },
-    setHidden: (checked: boolean) => {
+    setMemoSender: addr => {
       set(state => {
-        state.send.hidden = checked;
+        state.send.memoSender = addr;
       });
     },
     sendTx: async toastFn => {

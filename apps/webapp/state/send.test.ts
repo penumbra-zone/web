@@ -18,11 +18,12 @@ describe('Send Slice', () => {
   });
 
   test('the default is empty, false or undefined', () => {
-    const { amount, memoText, recipient, hidden, asset, txInProgress } = useStore.getState().send;
+    const { amount, memoText, memoSender, recipient, asset, txInProgress } =
+      useStore.getState().send;
     expect(amount).toBe('');
     expect(memoText).toBe('');
+    expect(memoSender).toBe('');
     expect(recipient).toBe('');
-    expect(hidden).toBeFalsy();
     expect(asset).toBeTruthy();
     expect(txInProgress).toBeFalsy();
 
@@ -65,20 +66,6 @@ describe('Send Slice', () => {
     test('memo can be set', () => {
       useStore.getState().send.setMemoText('memo-test');
       expect(useStore.getState().send.memoText).toBe('memo-test');
-    });
-  });
-
-  describe('setHidden', () => {
-    test('hidden after click has true value', () => {
-      useStore.getState().send.setHidden(true);
-      expect(useStore.getState().send.hidden).toBeTruthy();
-    });
-
-    test('false value after 2 click', () => {
-      useStore.getState().send.setHidden(true);
-      expect(useStore.getState().send.hidden).toBeTruthy();
-      useStore.getState().send.setHidden(false);
-      expect(useStore.getState().send.hidden).toBeFalsy();
     });
   });
 
