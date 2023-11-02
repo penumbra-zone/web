@@ -1,6 +1,6 @@
 import { EduPanel } from '../../shared/edu-panels/content';
 import { DappPath } from '../../shared/header/types';
-import { SendTabMap } from './types';
+import { SendMetadataMap, SendTabMap } from './types';
 
 export const sendTabsHelper: SendTabMap = {
   [DappPath.SEND]: {
@@ -25,3 +25,18 @@ export const sendTabs = [
   { title: 'Receive', href: DappPath.RECEIVE, active: true },
   { title: 'IBC', href: DappPath.IBC, active: false },
 ];
+
+export const sendMetadata: SendMetadataMap = {
+  [DappPath.SEND]: {
+    title: 'Penumbra | Send',
+    descriptions: EduPanel.SENDING_FUNDS,
+  },
+  [DappPath.RECEIVE]: {
+    title: 'Penumbra | Receive',
+    descriptions: EduPanel.SENDING_FUNDS,
+  },
+  [DappPath.IBC]: {
+    title: 'Penumbra | IBC',
+    descriptions: EduPanel.TEMP_FILLER,
+  },
+};

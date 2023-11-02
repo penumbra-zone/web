@@ -11,3 +11,11 @@ export type DashboardTabMap = Record<
     content: EduPanel;
   }
 >;
+
+export type DashboardMetadataMap = Record<
+  DashboardTab,
+  {
+    title: string;
+    descriptions: EduPanel.ASSETS | EduPanel.TRANSACTIONS_LIST | EduPanel.TEMP_FILLER;
+  }
+>;
