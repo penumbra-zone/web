@@ -1,6 +1,6 @@
-import React from 'react';
+'use client';
 
-export const ReceiveForm = () => {
+const Receive = () => {
   return (
     <form
       className='flex flex-col gap-2'
@@ -10,3 +10,5 @@ export const ReceiveForm = () => {
     ></form>
   );
 };
+
+export default Receive;

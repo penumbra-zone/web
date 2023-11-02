@@ -1,4 +1,3 @@
-import dynamic from 'next/dynamic';
 import {
   Button,
   Select,
@@ -7,17 +6,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@penumbra-zone/ui';
-import { FilledImage } from '../../shared';
-import { useStore } from '../../state';
-import { ibcSelector } from '../../state/ibc';
-import { chains } from './constants';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { useState } from 'react';
 import BigNumber from 'bignumber.js';
-
-const InputToken = dynamic(() => import('../../shared/input-token'), {
-  ssr: false,
-});
+import { useState } from 'react';
+import { FilledImage } from '../../../shared';
+import { useStore } from '../../../state';
+import { ibcSelector } from '../../../state/ibc';
+import { chains } from '@penumbra-zone/constants';
+import InputToken from '../../../shared/input-token';
 
 export default function IbcForm() {
   const { amount, asset, chain, setAmount, setAsset, setChain } = useStore(ibcSelector);

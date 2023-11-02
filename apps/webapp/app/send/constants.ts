@@ -1,39 +1,27 @@
-import { Chain, SendTabMap } from './types';
 import { EduPanel } from '../../shared/edu-panels/content';
+import { DappPath } from '../../shared/header/types';
+import { SendTabMap } from './types';
 
 export const sendTabsHelper: SendTabMap = {
-  send: {
+  [DappPath.SEND]: {
     src: '/funds-gradient.svg',
     label: 'Sending Funds',
     content: EduPanel.SENDING_FUNDS,
   },
-  receive: {
+  [DappPath.RECEIVE]: {
     src: '/receive-gradient.svg',
     label: 'Receiving Funds',
     content: EduPanel.RECEIVING_FUNDS,
   },
-  ibc: {
+  [DappPath.IBC]: {
     src: '/ibc-gradient.svg',
     label: 'IBC funds',
     content: EduPanel.TEMP_FILLER,
   },
 };
 
-export const chains: Chain[] = [
-  {
-    name: 'Osmosis 1',
-    icon: '/test-chain-icon.png',
-  },
-  {
-    name: 'Osmosis 2',
-    icon: '/test-chain-icon.png',
-  },
-  {
-    name: 'Osmosis 3',
-    icon: '/test-chain-icon.png',
-  },
-  {
-    name: 'Osmosis 4',
-    icon: '/test-chain-icon.png',
-  },
+export const sendTabs = [
+  { title: 'Send', href: DappPath.SEND, active: true },
+  { title: 'Receive', href: DappPath.RECEIVE, active: true },
+  { title: 'IBC', href: DappPath.IBC, active: false },
 ];
