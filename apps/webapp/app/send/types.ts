@@ -1,5 +1,5 @@
 import { EduPanel } from '../../shared/edu-panels/content';
-import { DappPath } from '../header/paths';
+import { DappPath } from '../../shared/header/types';
 
 export type SendTab = DappPath.SEND | DappPath.RECEIVE | DappPath.IBC;
 

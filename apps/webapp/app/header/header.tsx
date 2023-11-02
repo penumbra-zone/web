@@ -1,8 +1,8 @@
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { FilledImage } from '../../shared';
 import { Navbar } from './navbar';
-import { DappPath } from './paths';
-import dynamic from 'next/dynamic';
+import { DappPath } from '../../shared/header/types';
 
 const Network = dynamic(() => import('./network'), {
   ssr: false,

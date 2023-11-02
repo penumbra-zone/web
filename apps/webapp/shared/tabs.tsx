@@ -1,9 +1,8 @@
 'use client';
 import { Button } from '@penumbra-zone/ui';
-import React from 'react';
-import { DappPath } from '../app/header/paths';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useRouter } from 'next/navigation';
+import { DappPath } from './header/types';
 
 interface TabsProps {
   tabs: { title: string; active: boolean; href: DappPath }[];

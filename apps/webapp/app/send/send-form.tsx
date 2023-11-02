@@ -1,6 +1,5 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { Button, Switch } from '@penumbra-zone/ui';
 import { FilledImage, InputBlock } from '../../shared';
 import { useStore } from '../../state';
@@ -8,10 +7,7 @@ import { amountToBig, sendSelector, sendValidationErrors } from '../../state/sen
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { isPenumbraAddr } from '@penumbra-zone/types';
 import { useSendBalance } from '../../hooks/send-balance';
-
-const InputToken = dynamic(() => import('../../shared/input-token'), {
-  ssr: false,
-});
+import InputToken from '../../shared/input-token';
 
 const Send = () => {
   const { toast } = useToast();

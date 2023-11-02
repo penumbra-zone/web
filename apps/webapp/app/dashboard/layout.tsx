@@ -1,14 +1,14 @@
 'use client';
 import { Card } from '@penumbra-zone/ui';
 import { ReactNode } from 'react';
-import { useTypesafePathname } from '../../hooks/typesafe-pathname';
+import { useTypedPathname } from '../../hooks/typed-pathname';
 import { EduInfoCard } from '../../shared';
 import { Tabs } from '../../shared/tabs';
 import { dashboardTabs, dashboardTabsHelper } from './constants';
 import { DashboardTab } from './types';
 
 export default function Layout({ children }: { children: ReactNode }) {
-  const pathname = useTypesafePathname<DashboardTab>();
+  const pathname = useTypedPathname<DashboardTab>();
 
   return (
     <div className='relative mx-auto grid max-w-[1276px] grid-cols-3 gap-5 px-5'>

@@ -8,16 +8,12 @@ import {
 } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import BigNumber from 'bignumber.js';
-import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { FilledImage } from '../../../shared';
 import { useStore } from '../../../state';
 import { ibcSelector } from '../../../state/ibc';
 import { chains } from '@penumbra-zone/constants';
-
-const InputToken = dynamic(() => import('../../../shared/input-token'), {
-  ssr: false,
-});
+import InputToken from '../../../shared/input-token';
 
 export default function IbcForm() {
   const { amount, asset, chain, setAmount, setAsset, setChain } = useStore(ibcSelector);

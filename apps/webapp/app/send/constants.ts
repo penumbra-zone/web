@@ -1,5 +1,5 @@
 import { EduPanel } from '../../shared/edu-panels/content';
-import { DappPath } from '../header/paths';
+import { DappPath } from '../../shared/header/types';
 import { SendTabMap } from './types';
 
 export const sendTabsHelper: SendTabMap = {

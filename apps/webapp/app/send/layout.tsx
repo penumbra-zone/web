@@ -1,14 +1,14 @@
 'use client';
 import { Card } from '@penumbra-zone/ui';
 import { ReactNode } from 'react';
+import { useTypedPathname } from '../../hooks/typed-pathname';
 import { EduInfoCard } from '../../shared';
 import { Tabs } from '../../shared/tabs';
 import { sendTabs, sendTabsHelper } from './constants';
-import { useTypesafePathname } from '../../hooks/typesafe-pathname';
 import { SendTab } from './types';
 
 export default function Layout({ children }: { children: ReactNode }) {
-  const pathname = useTypesafePathname<SendTab>();
+  const pathname = useTypedPathname<SendTab>();
 
   return (
     <div className='relative mx-auto grid max-w-[1276px] grid-cols-3 gap-5'>
