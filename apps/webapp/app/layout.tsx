@@ -2,13 +2,14 @@ import React, { ReactNode } from 'react';
 import Providers from './providers';
 import { Header } from './header/header';
 import Image from 'next/image';
-
 import '@penumbra-zone/ui/styles/globals.css';
 import { Toaster } from '@penumbra-zone/ui/components/ui/toaster';
+import { HeadMetadata } from './head-metadata';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang='en'>
+      <HeadMetadata />
       <body className='bg-background text-muted'>
         <Providers>
           <Image
