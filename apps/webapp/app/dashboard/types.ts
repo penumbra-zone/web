@@ -16,6 +16,6 @@ export type DashboardMetadataMap = Record<
   DashboardTab,
   {
     title: string;
-    descriptions: EduPanel.ASSETS | EduPanel.TRANSACTIONS_LIST | EduPanel.TEMP_FILLER;
+    description: EduPanel.ASSETS | EduPanel.TRANSACTIONS_LIST | EduPanel.TEMP_FILLER;
   }
 >;

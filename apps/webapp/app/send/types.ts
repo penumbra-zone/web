@@ -16,6 +16,6 @@ export type SendMetadataMap = Record<
   SendTab,
   {
     title: string;
-    descriptions: EduPanel.SENDING_FUNDS | EduPanel.RECEIVING_FUNDS | EduPanel.TEMP_FILLER;
+    description: EduPanel.SENDING_FUNDS | EduPanel.RECEIVING_FUNDS | EduPanel.TEMP_FILLER;
   }
 >;

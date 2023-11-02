@@ -29,14 +29,14 @@ export const dashboardTabsHelper: DashboardTabMap = {
 export const dashboardMetadata: DashboardMetadataMap = {
   [DappPath.DASHBOARD]: {
     title: 'Penumbra | Assets',
-    descriptions: EduPanel.ASSETS,
+    description: EduPanel.ASSETS,
   },
   [DappPath.TRANSACTIONS]: {
     title: 'Penumbra | Transactions',
-    descriptions: EduPanel.TRANSACTIONS_LIST,
+    description: EduPanel.TRANSACTIONS_LIST,
   },
   [DappPath.NFTS]: {
     title: 'Penumbra | NFTs',
-    descriptions: EduPanel.TEMP_FILLER,
+    description: EduPanel.TEMP_FILLER,
   },
 };

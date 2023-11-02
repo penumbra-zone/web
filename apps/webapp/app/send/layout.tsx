@@ -13,7 +13,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <>
       <title>{sendMetadata[pathname].title}</title>
-      <meta name='description' content={sendMetadata[pathname].descriptions as unknown as string} />
+      <meta name='description' content={sendMetadata[pathname].description as unknown as string} />
       <div className='relative mx-auto grid max-w-[1276px] grid-cols-3 gap-5'>
         <div />
         <Card gradient className='row-span-2 flex-1 p-5'>

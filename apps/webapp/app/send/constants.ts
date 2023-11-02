@@ -29,14 +29,14 @@ export const sendTabs = [
 export const sendMetadata: SendMetadataMap = {
   [DappPath.SEND]: {
     title: 'Penumbra | Send',
-    descriptions: EduPanel.SENDING_FUNDS,
+    description: EduPanel.SENDING_FUNDS,
   },
   [DappPath.RECEIVE]: {
     title: 'Penumbra | Receive',
-    descriptions: EduPanel.SENDING_FUNDS,
+    description: EduPanel.SENDING_FUNDS,
   },
   [DappPath.IBC]: {
     title: 'Penumbra | IBC',
-    descriptions: EduPanel.TEMP_FILLER,
+    description: EduPanel.TEMP_FILLER,
   },
 };
