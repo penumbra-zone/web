@@ -1,6 +1,6 @@
-import { EduPanel, eduPanelContent } from '../../shared/edu-panels/content';
+import { EduPanel } from '../../shared/edu-panels/content';
 import { DappPath } from '../../shared/header/types';
-import { DashboardMetadataMap, DashboardTabMap } from './types';
+import { DashboardTabMap } from './types';
 
 export const dashboardTabs = [
   { title: 'Assets', href: DappPath.DASHBOARD, active: true },
@@ -23,20 +23,5 @@ export const dashboardTabsHelper: DashboardTabMap = {
     src: '/ibc-gradient.svg',
     label: 'NFTs history',
     content: EduPanel.TEMP_FILLER,
-  },
-};
-
-export const dashboardMetadata: DashboardMetadataMap = {
-  [DappPath.DASHBOARD]: {
-    title: 'Penumbra | Assets',
-    description: eduPanelContent[EduPanel.ASSETS],
-  },
-  [DappPath.TRANSACTIONS]: {
-    title: 'Penumbra | Transactions',
-    description: eduPanelContent[EduPanel.TRANSACTIONS_LIST],
-  },
-  [DappPath.NFTS]: {
-    title: 'Penumbra | NFTs',
-    description: eduPanelContent[EduPanel.TEMP_FILLER],
   },
 };

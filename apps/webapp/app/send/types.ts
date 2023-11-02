@@ -11,11 +11,3 @@ export type SendTabMap = Record<
     content: EduPanel;
   }
 >;
-
-export type SendMetadataMap = Record<
-  SendTab,
-  {
-    title: string;
-    description: string;
-  }
->;

@@ -11,11 +11,3 @@ export type DashboardTabMap = Record<
     content: EduPanel;
   }
 >;
-
-export type DashboardMetadataMap = Record<
-  DashboardTab,
-  {
-    title: string;
-    description: string;
-  }
->;
