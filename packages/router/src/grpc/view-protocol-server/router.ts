@@ -17,6 +17,7 @@ import { handleStatusReq, isStatusStreamRequest } from './status-stream';
 import { handleAssetsReq, isAssetsRequest } from './assets';
 import { handleWitnessBuildReq, isWitnessBuildRequest } from './witness-build';
 import { handleBroadcastReq, isBroadcastRequest } from './broadcast';
+import { handleEphemeralAddrReq, isEphemeralAddrRequest } from './ephemeral-addr';
 
 export type ViewReqMessage = GrpcRequest<typeof ViewProtocolService>;
 export type ViewProtocolRes = GrpcResponse<typeof ViewProtocolService>;
@@ -38,6 +39,7 @@ export const viewServerUnaryHandler: UnaryHandler<typeof ViewProtocolService> = 
   else if (isTxPlannerRequest(msg)) return handleTxPlannerReq(msg, services);
   else if (isWitnessBuildRequest(msg)) return handleWitnessBuildReq(msg, services);
   else if (isBroadcastRequest(msg)) return handleBroadcastReq(msg);
+  else if (isEphemeralAddrRequest(msg)) return handleEphemeralAddrReq(msg);
 
   throw new Error(`Non-supported unary request: ${(msg as ViewReqMessage).getType().typeName}`);
 };

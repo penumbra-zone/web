@@ -1,6 +1,7 @@
 import {
   generate_spend_key,
   get_address_by_index,
+  get_ephemeral_address,
   get_full_viewing_key,
   get_short_address_by_index,
   get_wallet_id,
@@ -17,6 +18,12 @@ export const getFullViewingKey = (spendKey: string): string =>
 
 export const getAddressByIndex = (fullViewingKey: string, index: number): Address => {
   const res = validateSchema(InnerBase64Schema, get_address_by_index(fullViewingKey, index));
+  const uintArray = base64ToUint8Array(res.inner);
+  return new Address({ inner: uintArray });
+};
+
+export const getEphemeralByIndex = (fullViewingKey: string, index: number): Address => {
+  const res = validateSchema(InnerBase64Schema, get_ephemeral_address(fullViewingKey, index));
   const uintArray = base64ToUint8Array(res.inner);
   return new Address({ inner: uintArray });
 };
