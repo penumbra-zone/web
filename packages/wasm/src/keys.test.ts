@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   generateSpendKey,
   getAddressByIndex,
+  getEphemeralByIndex,
   getFullViewingKey,
   getShortAddressByIndex,
   getWalletId,
@@ -40,6 +41,17 @@ describe('keys', () => {
 
       expect(() => {
         getAddressByIndex(fullViewingKey, 0);
+      }).not.toThrow();
+    });
+  });
+
+  describe('getEphemeralByIndex()', () => {
+    it('does not raise zod validation error', () => {
+      const spendKey = generateSpendKey(seedPhrase);
+      const fullViewingKey = getFullViewingKey(spendKey);
+
+      expect(() => {
+        getEphemeralByIndex(fullViewingKey, 0);
       }).not.toThrow();
     });
   });
