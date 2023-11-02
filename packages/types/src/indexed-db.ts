@@ -95,8 +95,15 @@ export interface PenumbraDb extends DBSchema {
       nullifier: Base64Str; // Jsonified<SpendableNoteRecord['nullifier']['inner']>
     };
   };
+  // Note is part of a SpendableNote
+  // The rust view service uses relation DB, so there for each SpendableNote
+  // there is a corresponding Note record (linked by noteCommitment)
+  // IndexedDb is not a relation DB, so we can just store a SpendableNote with a nested Note in one SPENDABLE_NOTES table,
+  // so we don't use the NOTES table to store each Note,
+  // but only when we don't have a SpendableNote generated yet but already have a Note
+  // NOTES is only used in wasm crate when scanning blocks
   NOTES: {
-    key: Base64Str; // Jsonified<Note['address']['inner']>
+    key: Base64Str; // Jsonified<Note['noteCommitment']['inner']>
     value: Jsonified<Note>;
   };
   SWAPS: {
