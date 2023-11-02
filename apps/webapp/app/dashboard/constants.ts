@@ -1,4 +1,4 @@
-import { EduPanel } from '../../shared/edu-panels/content';
+import { EduPanel, eduPanelContent } from '../../shared/edu-panels/content';
 import { DappPath } from '../../shared/header/types';
 import { DashboardMetadataMap, DashboardTabMap } from './types';
 
@@ -29,14 +29,14 @@ export const dashboardTabsHelper: DashboardTabMap = {
 export const dashboardMetadata: DashboardMetadataMap = {
   [DappPath.DASHBOARD]: {
     title: 'Penumbra | Assets',
-    description: EduPanel.ASSETS,
+    description: eduPanelContent[EduPanel.ASSETS],
   },
   [DappPath.TRANSACTIONS]: {
     title: 'Penumbra | Transactions',
-    description: EduPanel.TRANSACTIONS_LIST,
+    description: eduPanelContent[EduPanel.TRANSACTIONS_LIST],
   },
   [DappPath.NFTS]: {
     title: 'Penumbra | NFTs',
-    description: EduPanel.TEMP_FILLER,
+    description: eduPanelContent[EduPanel.TEMP_FILLER],
   },
 };
