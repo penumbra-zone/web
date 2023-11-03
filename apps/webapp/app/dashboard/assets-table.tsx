@@ -15,6 +15,20 @@ import { useBalancesByAccount } from '../../hooks/balances';
 export default function AssetsTable() {
   const { data, error } = useBalancesByAccount();
 
+  if (data.length === 0) {
+    return (
+      <div className='flex flex-col gap-6'>
+        <p>
+          No balances found. Try requesting tokens by pasting your address in{' '}
+          <a style={{ color: '#aaaaff' }} href='https://discord.gg/CDNEnzX6YC'>
+            the faucet channel
+          </a>{' '}
+          on Discord!
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className='flex flex-col gap-6'>
       {data.map(a => {
