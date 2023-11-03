@@ -36,6 +36,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     asset: assets[0]!,
     recipient: '',
     memoText: '',
+    memoSender: '',
     hidden: false,
     txInProgress: false,
     setAmount: amount => {

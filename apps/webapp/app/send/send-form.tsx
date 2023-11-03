@@ -7,7 +7,7 @@ import { amountToBig, sendSelector, sendValidationErrors } from '../../state/sen
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { isPenumbraAddr } from '@penumbra-zone/types';
 import { useSendBalance } from '../../hooks/send-balance';
-import { useAddress, useEphemeralAddress, } from '../../hooks/address';
+import { useAddress, useEphemeralAddress } from '../../hooks/address';
 import { bech32Address } from '@penumbra-zone/types';
 import { useEffect, useMemo, useState } from 'react';
 import { cn } from '@penumbra-zone/ui/lib/utils';
@@ -20,7 +20,7 @@ const Send = () => {
     asset,
     recipient,
     memoText,
-    memoSender,
+    //memoSender,
     setAmount,
     setAsset,
     setRecipient,
@@ -36,7 +36,7 @@ const Send = () => {
 
   // TODO: enable address selection
   const defaultSender = useAddress(0);
-  const ephemeralSender = useEphemeralAddress(0, { enabled: hidden })
+  const ephemeralSender = useEphemeralAddress(0, { enabled: hidden });
 
   const sender = useMemo(() => {
     if (!hidden && defaultSender.data) return bech32Address(defaultSender.data);
