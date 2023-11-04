@@ -78,6 +78,7 @@ export const fromBaseUnit = (lo = 0n, hi = 0n, exponent: number): BigNumber => {
  */
 export const toBaseUnit = (value: BigNumber, exponent: number): LoHi => {
   const multipliedValue = value.multipliedBy(new BigNumber(10).pow(exponent));
-  const bigInt = BigInt(multipliedValue.integerValue().toString());
+  const bigInt = BigInt(multipliedValue.toFixed());
+
   return splitLoHi(bigInt);
 };
