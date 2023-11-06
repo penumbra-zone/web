@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           />
           <div className='relative flex min-h-screen flex-col'>
             <Header />
-            <main className='flex-1 pt-10'>{children}</main>
+            <main className='flex-1 pt-10 md:px-[88px] xl:px-12'>{children}</main>
           </div>
           <Toaster />
         </Providers>
