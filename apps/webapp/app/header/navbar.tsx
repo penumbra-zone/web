@@ -10,7 +10,7 @@ export const Navbar = () => {
   const pathname = useTypedPathname<DappPath>();
 
   return (
-    <nav className='flex gap-4'>
+    <nav className='hidden xl:flex gap-4'>
       {headerLinks.map(link =>
         link.active ? (
           <Link
