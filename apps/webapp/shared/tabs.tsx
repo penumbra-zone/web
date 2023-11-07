@@ -16,7 +16,7 @@ export const Tabs = ({ tabs, activeTab, className }: TabsProps) => {
   return (
     <div
       className={cn(
-        'inline-flex h-[52px] items-center justify-center rounded-lg bg-background md:px-4 xl:px-2 mb-6 gap-3',
+        'inline-flex h-[52px] items-center justify-center rounded-lg bg-background px-2 mb-6 gap-3',
         className,
       )}
     >

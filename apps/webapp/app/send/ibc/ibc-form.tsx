@@ -24,7 +24,7 @@ export default function IbcForm() {
 
   return (
     <form
-      className='flex flex-col gap-2'
+      className='flex flex-col gap-4'
       onSubmit={e => {
         e.preventDefault();
       }}
@@ -83,7 +83,7 @@ export default function IbcForm() {
           </SelectContent>
         </Select>
       </div>
-      <Button type='submit' variant='gradient' className='mt-9' disabled={true}>
+      <Button type='submit' variant='gradient' className='md:mt-6 xl:mt-2' disabled={true}>
         Send
       </Button>
     </form>

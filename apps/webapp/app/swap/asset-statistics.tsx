@@ -31,7 +31,7 @@ export const AssetStatistics = () => {
       {!secondAsset && !firstAsset ? (
         <div />
       ) : (
-        <Card gradient className='row-span-1 p-5'>
+        <Card gradient className='row-span-1 md:p-4 xl:p-5'>
           <Table>
             <TableBody>
               {[firstAsset, secondAsset].map((asset, index) => {
@@ -47,21 +47,29 @@ export const AssetStatistics = () => {
                             className='h-[30px] w-[30px]'
                           />
                         )}
-                        <p className='text-base font-bold text-light-grey'>{asset.display}</p>
+                        <p className='text-base font-bold text-light-grey lg:text-[10px] lg:leading-4 xl:text-base'>
+                          {asset.display}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell className='py-3'>
                       <div className='flex flex-col gap-[2px]'>
-                        <p className='font-normal text-muted-foreground'>Price</p>
-                        <p className='text-base font-bold'>${displayUsd(asset.price)}</p>
+                        <p className='text-base font-normal text-muted-foreground lg:text-[15px] xl:text-base'>
+                          Price
+                        </p>
+                        <p className='text-base font-bold lg:text-[10px] lg:leading-4  xl:text-base'>
+                          ${displayUsd(asset.price)}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell className='py-3'>
                       <div className='flex flex-col gap-[2px]'>
-                        <p className='font-normal text-muted-foreground'>24h</p>
+                        <p className='text-base font-normal text-muted-foreground lg:text-[15px] xl:text-base'>
+                          24h
+                        </p>
                         <p
                           className={cn(
-                            'text-base font-bold',
+                            'text-base lg:text-[10px] lg:leading-4 xl:text-base font-bold',
                             asset['24h'] >= 0 && 'text-green',
                             asset['24h'] < 0 && 'text-red',
                           )}
@@ -75,7 +83,7 @@ export const AssetStatistics = () => {
                         <FilledImage
                           src={asset['24h'] >= 0 ? '/positive-charts.svg' : '/negative-charts.svg'}
                           alt='Charts'
-                          className='h-[42px] w-[92px]'
+                          className='h-[42px] w-[92px] lg:h-7 lg:w-[66px] xl:h-[42px] xl:w-[92px]'
                         />
                       </div>
                     </TableCell>

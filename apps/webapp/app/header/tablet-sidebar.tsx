@@ -21,7 +21,7 @@ export const TabletSidebar = () => {
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <NavigationMenuTrigger className='w-[188px] border rounded-lg border-light-brown text-muted'>
+            <NavigationMenuTrigger className='w-[188px] rounded-lg border border-light-brown text-muted'>
               {headerLinks.find(link => link.subLinks?.includes(pathname))?.label}
             </NavigationMenuTrigger>
             <NavigationMenuContent className='w-[188px]'>
