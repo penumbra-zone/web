@@ -197,5 +197,11 @@ describe('lo-hi', () => {
       const expectedValue = BigInt(1234567891234567);
       expect(joinLoHi(result.lo, result.hi)).toEqual(expectedValue);
     });
+
+    it('returns correct LoHi for large value and 18 exponent', () => {
+      const result = toBaseUnit(BigNumber(1234567891234567), 18);
+      const expectedValue = BigInt('1234567891234567000000000000000000');
+      expect(joinLoHi(result.lo, result.hi)).toEqual(expectedValue);
+    });
   });
 });
