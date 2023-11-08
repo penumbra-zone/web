@@ -22,14 +22,10 @@ export default function TransactionTable() {
         {data.map((tx, i) => (
           <TableRow key={i}>
             <TableCell>
-              <p className='text-center font-bold text-base'>
-                {tx.height}
-              </p>
+              <p className='text-center text-base font-bold'>{tx.height}</p>
             </TableCell>
             <TableCell>
-              <p className='text-center font-bold text-base'>
-                {tx.description}
-              </p>
+              <p className='text-center text-base font-bold'>{tx.description}</p>
             </TableCell>
             <TableCell>
               <p className='text-center font-mono text-base'>
