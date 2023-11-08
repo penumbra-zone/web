@@ -52,7 +52,9 @@ export default function InputToken({
         <div className='flex flex-col lg:flex-row items-center gap-2 self-start'>
           <p className='text-base font-bold'>{label}</p>
           {validationResult ? (
-            <div className={cn('italic', 'text-red-400')}>{validationResult.issue}</div>
+            <div className={cn('italic hidden lg:block', 'text-red-400')}>
+              {validationResult.issue}
+            </div>
           ) : null}
         </div>
         <div className='flex items-start gap-1'>
