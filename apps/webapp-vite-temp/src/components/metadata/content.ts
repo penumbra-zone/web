@@ -51,7 +51,7 @@ export const metadata: Record<PagePath, PageMetadata> = {
     title: 'Penumbra | Staking',
     description: eduPanelContent[EduPanel.TEMP_FILLER],
   },
-  [PagePath.TRANSACTION]: {
+  [PagePath.TRANSACTION_DETAILS]: {
     title: 'Penumbra | Transaction',
     description: 'More details about transaction',
   },

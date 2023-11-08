@@ -1,5 +1,3 @@
-'use client';
-
 import { NetworksPopover } from '@penumbra-zone/ui';
 import { useChainId } from '../../hooks/chain-id.ts';
 
