@@ -272,7 +272,7 @@ importers:
         specifier: ^0.34.6
         version: 0.34.6(@vitest/browser@0.34.6)(playwright@1.39.0)
 
-  apps/webappv2:
+  apps/webapp-vite-temp:
     dependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es':
         specifier: 1.4.1-20231019170721-d11ca3611bc9.1
