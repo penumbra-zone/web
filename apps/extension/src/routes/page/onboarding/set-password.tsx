@@ -27,7 +27,8 @@ export const SetPassword = () => {
         <CardHeader className='items-center'>
           <CardTitle>Create a password</CardTitle>
           <CardDescription className='text-center'>
-            We will use this password to encrypt your data and you'll need it to unlock your wallet.
+            We will use this password to encrypt your data and you&apos;ll need it to unlock your
+            wallet.
           </CardDescription>
         </CardHeader>
         <CardContent className='mt-6 grid gap-4'>

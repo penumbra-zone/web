@@ -32,7 +32,7 @@ export const GenerateSeedPhrase = () => {
       generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
     }
     startCountdown();
-  }, []);
+  }, [generateRandomSeedPhrase, phrase.length, startCountdown]);
 
   return (
     <FadeTransition>
