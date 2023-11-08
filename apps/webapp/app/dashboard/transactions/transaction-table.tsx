@@ -22,19 +22,15 @@ export default function TransactionTable() {
         {data.map((tx, i) => (
           <TableRow key={i}>
             <TableCell>
-              <div className='flex items-center justify-center gap-3 text-[15px] font-normal'>
-                {tx.height}
-              </div>
+              <p className='text-center text-base font-bold'>{tx.height}</p>
             </TableCell>
             <TableCell>
-              <div className='flex items-center justify-center gap-[10px] font-normal'>
-                {tx.description}
-              </div>
+              <p className='text-center text-base font-bold'>{tx.description}</p>
             </TableCell>
             <TableCell>
-              <div className='flex items-center justify-center gap-[10px] font-mono font-normal'>
+              <p className='text-center font-mono text-base'>
                 <Link href={`/tx/?hash=${tx.hash}`}>{shorten(tx.hash, 8)}</Link>
-              </div>
+              </p>
             </TableCell>
             <TableCell>
               <Link href={`/tx/?hash=${tx.hash}`}>

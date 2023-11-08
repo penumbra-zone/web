@@ -24,7 +24,7 @@ export default function SwapForm() {
         e.preventDefault();
       }}
     >
-      <div className='relative flex flex-col gap-2'>
+      <div className='relative flex flex-col md:gap-4 xl:gap-2'>
         <SwapInput
           placeholder='Enter an amount'
           asset={{ ...pay, price: 10 }}

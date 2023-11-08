@@ -37,7 +37,7 @@ export default function AssetsTable() {
             <div className='flex flex-col items-center justify-center'>
               <div className='flex items-center justify-center gap-2'>
                 <Identicon name={a.address} size={20} className='rounded-full' />
-                <h2 className='text-xl font-bold'>Account #{a.index}</h2>{' '}
+                <h2 className='font-bold md:text-base xl:text-xl'>Account #{a.index}</h2>{' '}
                 <div className='font-mono text-sm italic text-foreground'>
                   {shortenAddress(a.address)}
                 </div>
@@ -56,19 +56,19 @@ export default function AssetsTable() {
                   <TableRow key={i}>
                     <TableCell className='w-1/3'>
                       <div className='flex flex-col items-center gap-4 '>
-                        <p className=' font-mono text-base'>{asset.denom.display}</p>
+                        <p className='font-mono text-base font-bold'>{asset.denom.display}</p>
                       </div>
                     </TableCell>
                     <TableCell className='w-1/3 text-center font-mono'>
                       <div className='flex flex-col'>
-                        <p className='text-[15px] leading-[22px]'>
+                        <p className='text-base font-bold'>
                           {fromBaseUnitAmount(asset.amount, asset.denom.exponent).toFormat()}
                         </p>
                       </div>
                     </TableCell>
                     <TableCell className='w-1/3 text-center font-mono'>
                       <div className='flex flex-col'>
-                        <p className=''>
+                        <p className='text-base font-bold'>
                           {asset.usdcValue == 0 ? '$–' : `$${displayUsd(asset.usdcValue)}`}
                         </p>
                       </div>

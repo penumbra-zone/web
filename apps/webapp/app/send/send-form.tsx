@@ -31,7 +31,7 @@ const Send = () => {
 
   return (
     <form
-      className='flex flex-col gap-2'
+      className='flex flex-col md:gap-4 xl:gap-3'
       onSubmit={e => {
         e.preventDefault();
       }}
@@ -76,7 +76,7 @@ const Send = () => {
         value={memo}
         onChange={e => setMemo(e.target.value)}
       />
-      <div className='flex items-center justify-between'>
+      <div className='flex items-center justify-between md:-mt-2 xl:mt-1'>
         <div className='flex items-start gap-2'>
           <FilledImage src='/incognito.svg' alt='Incognito' className='h-5 w-5' />
           <p className='font-bold'>Hide Sender from Recipient</p>
@@ -86,7 +86,7 @@ const Send = () => {
       <Button
         type='submit'
         variant='gradient'
-        className='mt-4'
+        className='mt-3'
         onClick={() => void sendTx(toast)}
         disabled={
           !Number(amount) ||

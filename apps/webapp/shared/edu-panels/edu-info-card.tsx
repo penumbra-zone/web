@@ -12,14 +12,14 @@ interface HelperCardProps {
 
 export const EduInfoCard = ({ src, label, className, content }: HelperCardProps) => {
   return (
-    <Card gradient className={cn('p-5 row-span-1', className)}>
+    <Card gradient className={cn('md:p-4 xl:p-5 row-span-1', className)}>
       <div className='flex gap-2'>
-        <FilledImage src={src} alt='icons' className='h-8 w-8' />
-        <p className='bg-text-linear bg-clip-text font-headline text-2xl font-bold leading-9 text-transparent'>
+        <FilledImage src={src} alt='icons' className='md:h-[30px] md:w-[30px] xl:h-10 xl:w-10' />
+        <p className='bg-text-linear bg-clip-text font-headline md:text-xl  xl:text-2xl md:font-semibold xl:font-bold md:leading-[30px] xl:leading-9 text-transparent'>
           {label}
         </p>
       </div>
-      <p className='mt-2 text-muted-foreground'>{eduPanelContent[content]}</p>
+      <p className='mt-2 font-normal text-muted-foreground'>{eduPanelContent[content]}</p>
     </Card>
   );
 };

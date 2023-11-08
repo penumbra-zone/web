@@ -15,9 +15,11 @@ export default function Page() {
 
   return (
     <FadeTransition className='flex min-h-[calc(100vh-122px)] flex-col items-stretch justify-start'>
-      <div className='relative mx-auto grid max-w-[1276px] grid-cols-3 gap-5'>
-        <AssetStatistics />
-        <Card gradient className='row-span-3 flex-1 p-5'>
+      <div className='relative mx-auto grid md:gap-4 lg:grid-cols-3  xl:max-w-[1276px] xl:gap-5'>
+        <div className='order-2 lg:order-1'>
+          <AssetStatistics />
+        </div>
+        <Card gradient className='order-1 row-span-3 flex-1 md:p-4 lg:order-2 xl:p-5'>
           <Tabs defaultValue={SwapPageTab.MARKET} className='w-full' value={tab}>
             <TabsList className='grid w-full grid-cols-3 gap-4'>
               <TabsTrigger value={SwapPageTab.MARKET} onClick={() => setTab(SwapPageTab.MARKET)}>
@@ -45,12 +47,14 @@ export default function Page() {
             <TabsContent value={SwapPageTab.TWAP}></TabsContent>
           </Tabs>
         </Card>
-        <EduInfoCard
-          src='/incognito.svg'
-          label='Shielded Swaps'
-          className='row-span-2'
-          content={EduPanel.TEMP_FILLER}
-        />
+        <div className='order-3'>
+          <EduInfoCard
+            src='/incognito.svg'
+            label='Shielded Swaps'
+            className='row-span-2'
+            content={EduPanel.TEMP_FILLER}
+          />
+        </div>
       </div>
     </FadeTransition>
   );

@@ -11,9 +11,9 @@ export default function Layout({ children }: { children: ReactNode }) {
   const pathname = useTypedPathname<SendTab>();
 
   return (
-    <div className='relative mx-auto grid max-w-[1276px] grid-cols-3 gap-5'>
-      <div />
-      <Card gradient className='row-span-2 flex-1 p-5'>
+    <div className='relative mx-auto grid md:grid-cols-2 md:gap-4 xl:max-w-[1276px] xl:grid-cols-3 xl:gap-5'>
+      <div className='hidden xl:block' />
+      <Card gradient className='row-span-2 flex-1 md:p-4 xl:p-5'>
         <Tabs tabs={sendTabs} activeTab={pathname} />
         {children}
       </Card>

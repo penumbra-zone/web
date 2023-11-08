@@ -49,10 +49,12 @@ export default function InputToken({
       )}
     >
       <div className='mb-2 flex items-center justify-between'>
-        <div className='flex items-center gap-2 self-start'>
+        <div className='flex flex-col lg:flex-row items-center gap-2 self-start'>
           <p className='text-base font-bold'>{label}</p>
           {validationResult ? (
-            <div className={cn('italic', 'text-red-400')}>{validationResult.issue}</div>
+            <div className={cn('italic hidden lg:block', 'text-red-400')}>
+              {validationResult.issue}
+            </div>
           ) : null}
         </div>
         <div className='flex items-start gap-1'>
@@ -65,7 +67,10 @@ export default function InputToken({
           variant='transparent'
           placeholder={placeholder}
           type='number'
-          className={cn('h-10 w-[calc(100%-160px)] text-3xl font-bold leading-10', inputClassName)}
+          className={cn(
+            'md:h-8 xl:h-10 md:w-[calc(100%-80px)] xl:w-[calc(100%-160px)] md:text-xl  xl:text-3xl font-bold leading-10',
+            inputClassName,
+          )}
           value={value}
           {...props}
         />
@@ -73,7 +78,7 @@ export default function InputToken({
       </div>
       <p
         className={cn(
-          'break-all text-base font-bold text-light-brown',
+          'break-all md:test-[12px] xl:text-base font-bold text-light-brown',
           value && 'text-muted-foreground',
         )}
       >
