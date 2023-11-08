@@ -7,8 +7,7 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx",
     "preview": "vite preview",
-    "host": "turbo run build && firebase deploy --only hosting",
-    "test": "vitest run"
+    "host": "turbo run build && firebase deploy --only hosting"
   },
   "dependencies": {
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.4.1-20231019170721-d11ca3611bc9.1",

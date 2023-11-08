@@ -326,6 +326,9 @@ importers:
         specifier: ^4.4.5
         version: registry.npmmirror.com/zustand@4.4.5(@types/react@18.2.33)(react@18.2.0)
     devDependencies:
+      '@remix-run/router':
+        specifier: ^1.11.0
+        version: 1.11.0
       '@types/node':
         specifier: ^20.8.10
         version: registry.npmmirror.com/@types/node@20.8.10
@@ -2421,7 +2424,6 @@ packages:
   /@remix-run/router@1.11.0:
     resolution: {integrity: sha512-BHdhcWgeiudl91HvVa2wxqZjSHbheSgIiDvxrF1VjFzBzpTtuDPkOdOi3Iqvc08kXtFkLjhbS+ML9aM8mJS+wQ==}
     engines: {node: '>=14.0.0'}
-    dev: false
 
   /@rollup/pluginutils@5.0.5:
     resolution: {integrity: sha512-6aEYR910NyP73oHiJglti74iRyOwgFU4x3meH/H8OJx6Ry0j6cOVZ5X/wTvub7G7Ao6qaHBEaNsV3GLJkSsF+Q==}

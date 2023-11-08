@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import { HeadTag } from './metadata/head-tag.tsx';
 import { Header } from './header/header.tsx';
+import { Toaster } from '@penumbra-zone/ui/components/ui/toaster.tsx';
 
 import '@penumbra-zone/ui/styles/globals.css';
 
@@ -14,7 +15,7 @@ export const Layout = () => {
           <Outlet />
         </main>
       </div>
+      <Toaster />
     </>
-    // {/*<Toaster />*/}
   );
 };

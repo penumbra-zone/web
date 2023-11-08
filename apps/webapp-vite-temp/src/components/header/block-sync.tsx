@@ -1,6 +1,3 @@
-'use client';
-
-import { FilledImage } from '../../shared';
 import { Progress } from '@penumbra-zone/ui';
 import { StatusStreamResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { CheckIcon } from '@radix-ui/react-icons';
@@ -23,7 +20,7 @@ export const BlockSync = ({ data }: BlockSyncProps) => {
             <>
               <div className='flex items-center justify-between text-base text-sand'>
                 <div className='flex items-center gap-2'>
-                  <FilledImage src='/sync-bold.svg' alt='Syncing blocks...' className='h-6 w-6' />
+                  <img src='/sync-bold.svg' alt='Syncing blocks...' className='h-6 w-6' />
                   <p className='font-headline font-semibold'>Syncing blocks...</p>
                 </div>
                 <p className='font-mono'>
