@@ -18,6 +18,7 @@ module.exports = {
     '@typescript-eslint/switch-exhaustiveness-check': 'error',
     '@typescript-eslint/no-unnecessary-condition': ['error', { allowConstantLoopConditions: true }],
     'react/react-in-jsx-scope': 'off',
+    'react/prop-types': 'off',
   },
   parserOptions: {
     babelOptions: {
