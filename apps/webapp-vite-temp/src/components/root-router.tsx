@@ -5,6 +5,10 @@ import AssetsTable from './dashboard/assets-table.tsx';
 import TransactionTable from './dashboard/transaction-table.tsx';
 import { DashboardLayout } from './dashboard/layout.tsx';
 import { TxDetails } from './tx-details';
+import { SendLayout } from './send/layout.tsx';
+import { SendForm } from './send/send-form.tsx';
+import IbcForm from './send/ibc-form.tsx';
+import Receive from './send/receive.tsx';
 
 export const rootRouter = createBrowserRouter([
   {
@@ -23,6 +27,24 @@ export const rootRouter = createBrowserRouter([
           {
             path: PagePath.TRANSACTIONS,
             element: <TransactionTable />,
+          },
+        ],
+      },
+      {
+        path: PagePath.SEND,
+        element: <SendLayout />,
+        children: [
+          {
+            index: true,
+            element: <SendForm />,
+          },
+          {
+            path: PagePath.RECEIVE,
+            element: <Receive />,
+          },
+          {
+            path: PagePath.IBC,
+            element: <IbcForm />,
           },
         ],
       },
