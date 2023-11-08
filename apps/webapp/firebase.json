@@ -5,8 +5,8 @@
     "cleanUrls": true,
     "rewrites": [
       {
-        "source": "/**",
-        "dynamicLinks": true
+        "source": "**",
+        "destination": "/index.html"
       }
     ]
   },
