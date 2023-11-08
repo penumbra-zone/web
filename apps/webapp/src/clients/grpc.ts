@@ -3,7 +3,6 @@ import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/p
 import { createEventTransport } from '@penumbra-zone/transport';
 import { SimulationService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/dex/v1alpha1/dex_connect';
 import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
-
 export const viewClient = createPromiseClient(
   ViewProtocolService,
   createEventTransport(ViewProtocolService),
