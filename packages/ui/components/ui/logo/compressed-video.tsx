@@ -36,4 +36,6 @@ const VideoLogo = React.forwardRef<HTMLDivElement, InnerVidProps>(
   },
 );
 
+VideoLogo.displayName = 'VideoLogo';
+
 export { VideoLogo, CompressedVideoLogo };
