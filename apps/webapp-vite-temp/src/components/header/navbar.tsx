@@ -1,11 +1,10 @@
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { headerLinks } from './constants';
-import { Link, useLocation } from 'react-router-dom';
-import { PagePath } from '../metadata/paths.ts';
+import { Link } from 'react-router-dom';
+import { usePagePath } from '../../hooks/usePagePath.ts';
 
 export const Navbar = () => {
-  const location = useLocation();
-  const pathname = location.pathname as PagePath;
+  const pathname = usePagePath();
 
   return (
     <nav className='hidden gap-4 xl:flex'>

@@ -1,11 +1,9 @@
 import { metadata } from './content.ts';
-import { useLocation } from 'react-router-dom';
-import { PagePath } from './paths.ts';
 import { Helmet } from 'react-helmet';
+import { usePagePath } from '../../hooks/usePagePath.ts';
 
 export const HeadTag = () => {
-  const location = useLocation();
-  const pathname = location.pathname as PagePath;
+  const pathname = usePagePath();
 
   return (
     <Helmet>

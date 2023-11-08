@@ -1,13 +1,13 @@
 import { Card } from '@penumbra-zone/ui';
 import { dashboardTabs, dashboardTabsHelper } from './constants';
-import { DashboardTab } from './types';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card.tsx';
 import { Tabs } from '../shared/tabs.tsx';
+import { usePagePath } from '../../hooks/usePagePath.ts';
+import { DashboardTab } from './types.ts';
 
 export const DashboardLayout = () => {
-  const location = useLocation();
-  const pathname = location.pathname as DashboardTab;
+  const pathname = usePagePath<DashboardTab>();
 
   return (
     <div className='relative mx-auto grid md:gap-4 lg:grid-cols-3  xl:max-w-[1276px] xl:gap-5'>
