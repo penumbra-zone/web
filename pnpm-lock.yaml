@@ -274,21 +274,69 @@ importers:
 
   apps/webappv2:
     dependencies:
+      '@buf/penumbra-zone_penumbra.bufbuild_es':
+        specifier: 1.4.1-20231019170721-d11ca3611bc9.1
+        version: 1.4.1-20231019170721-d11ca3611bc9.1(@bufbuild/protobuf@1.4.1)
+      '@buf/penumbra-zone_penumbra.connectrpc_es':
+        specifier: 1.1.3-20231019170721-d11ca3611bc9.1
+        version: 1.1.3-20231019170721-d11ca3611bc9.1(@bufbuild/protobuf@1.4.1)(@connectrpc/connect@1.1.3)
+      '@connectrpc/connect':
+        specifier: ^1.1.3
+        version: 1.1.3(@bufbuild/protobuf@1.4.1)
+      '@connectrpc/connect-web':
+        specifier: ^1.1.3
+        version: 1.1.3(@bufbuild/protobuf@1.4.1)(@connectrpc/connect@1.1.3)
+      '@penumbra-zone/constants':
+        specifier: workspace:*
+        version: link:../../packages/constants
+      '@penumbra-zone/transport':
+        specifier: workspace:*
+        version: link:../../packages/transport
+      '@penumbra-zone/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@penumbra-zone/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@radix-ui/react-icons':
+        specifier: ^1.3.0
+        version: 1.3.0(react@18.2.0)
+      '@tanstack/react-query':
+        specifier: ^5.4.3
+        version: 5.4.3(react-dom@18.2.0)(react@18.2.0)
+      bignumber.js:
+        specifier: ^9.1.2
+        version: 9.1.2
       react:
         specifier: ^18.2.0
         version: 18.2.0
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
+      react-json-view:
+        specifier: ^1.21.3
+        version: 1.21.3(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)
+      react-loader-spinner:
+        specifier: ^5.4.5
+        version: 5.4.5(@babel/core@7.23.2)(react-dom@18.2.0)(react@18.2.0)
+      tailwindcss:
+        specifier: ^3.3.5
+        version: 3.3.5
+      zustand:
+        specifier: ^4.4.5
+        version: 4.4.5(@types/react@18.2.33)(immer@10.0.3)(react@18.2.0)
     devDependencies:
+      '@types/node':
+        specifier: ^20.8.10
+        version: 20.8.10
       '@types/react':
-        specifier: ^18.2.15
+        specifier: ^18.2.33
         version: 18.2.33
       '@types/react-dom':
-        specifier: ^18.2.7
+        specifier: ^18.2.14
         version: 18.2.14
       '@typescript-eslint/eslint-plugin':
-        specifier: ^6.0.0
+        specifier: ^6.9.1
         version: 6.9.1(@typescript-eslint/parser@6.9.1)(eslint@8.52.0)(typescript@5.2.2)
       '@typescript-eslint/parser':
         specifier: ^6.0.0
@@ -296,21 +344,39 @@ importers:
       '@vitejs/plugin-react-swc':
         specifier: ^3.3.2
         version: 3.4.1(vite@4.5.0)
+      autoprefixer:
+        specifier: ^10.4.16
+        version: 10.4.16(postcss@8.4.31)
       eslint:
         specifier: ^8.45.0
         version: 8.52.0
+      eslint-config-custom:
+        specifier: workspace:*
+        version: link:../../packages/eslint-config-custom
       eslint-plugin-react-hooks:
         specifier: ^4.6.0
         version: 4.6.0(eslint@8.52.0)
       eslint-plugin-react-refresh:
         specifier: ^0.4.3
         version: 0.4.4(eslint@8.52.0)
+      firebase-tools:
+        specifier: ^12.8.0
+        version: 12.8.0
+      postcss:
+        specifier: ^8.4.31
+        version: 8.4.31
+      tsconfig:
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
       typescript:
-        specifier: ^5.0.2
+        specifier: ^5.2.2
         version: 5.2.2
       vite:
-        specifier: ^4.4.5
+        specifier: ^4.5.0
         version: 4.5.0(@types/node@20.8.10)
+      vitest:
+        specifier: ^0.34.6
+        version: 0.34.6(@vitest/browser@0.34.6)(playwright@1.39.0)
 
   packages/constants:
     dependencies:
@@ -396,6 +462,12 @@ importers:
       eslint-plugin-react:
         specifier: 7.33.2
         version: 7.33.2(eslint@8.52.0)
+      eslint-plugin-react-hooks:
+        specifier: ^4.6.0
+        version: 4.6.0(eslint@8.52.0)
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.3
+        version: 0.4.4(eslint@8.52.0)
       eslint-plugin-tailwindcss:
         specifier: ^3.13.0
         version: 3.13.0(tailwindcss@3.3.5)
@@ -1288,7 +1360,7 @@ packages:
     dev: false
 
   /@buf/penumbra-zone_penumbra.bufbuild_es@1.4.1-20231019170721-d11ca3611bc9.1(@bufbuild/protobuf@1.4.1):
-    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.4.1-20231019170721-d11ca3611bc9.1.tgz}
+    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.4.1-20231019170721-d11ca3611bc9.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.4.1
     dependencies:
@@ -1302,7 +1374,7 @@ packages:
     dev: false
 
   /@buf/penumbra-zone_penumbra.connectrpc_es@1.1.3-20231019170721-d11ca3611bc9.1(@bufbuild/protobuf@1.4.1)(@connectrpc/connect@1.1.3):
-    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.connectrpc_es/-/penumbra-zone_penumbra.connectrpc_es-1.1.3-20231019170721-d11ca3611bc9.1.tgz}
+    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.connectrpc_es/-/penumbra-zone_penumbra.connectrpc_es-1.1.3-20231019170721-d11ca3611bc9.1.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.1.3
     dependencies:
@@ -5372,7 +5444,6 @@ packages:
       eslint: '>=7'
     dependencies:
       eslint: 8.52.0
-    dev: true
 
   /eslint-plugin-react@7.33.2(eslint@8.52.0):
     resolution: {integrity: sha512-73QQMKALArI8/7xGLNI/3LylrEYrlKZSb5C9+q3OtOewTnMQi5cT+aE9E41sLCmli3I9PGGmD1yiZydyo4FEPw==}
