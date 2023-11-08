@@ -229,7 +229,7 @@ describe('IndexedDb', () => {
       const savedTransactions = await db.getAllTransactions();
 
       expect(savedTransactions.length === 1).toBeTruthy();
-      expect(transactionInfo.equals(savedTransactions[0])).toBeTruthy()
+      expect(transactionInfo.equals(savedTransactions[0])).toBeTruthy();
     });
   });
 });
