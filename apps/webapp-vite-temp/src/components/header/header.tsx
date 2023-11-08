@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { PagePath } from '../metadata/paths.ts';
 import Notifications from './notifications.tsx';
 import Network from './network.tsx';
+import { TabletNavMenu } from './tablet-nav-menu.tsx';
 
 export const Header = () => {
   return (
@@ -18,7 +19,8 @@ export const Header = () => {
         <img src='/logo.svg' alt='Penumbra logo' className='relative z-10 h-4 w-[171px]' />
       </Link>
       <Navbar />
-      <div className='flex items-center gap-3'>
+      <div className='flex items-center md:gap-6 xl:gap-4'>
+        <TabletNavMenu />
         <Notifications />
         <Network />
       </div>

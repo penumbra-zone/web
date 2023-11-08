@@ -41,3 +41,9 @@ export const headerLinks: HeaderLink[] = [
     active: false,
   },
 ];
+
+export const transactionLink = {
+  href: PagePath.TRANSACTION,
+  label: 'Transaction',
+  subLinks: [PagePath.TRANSACTION],
+};
