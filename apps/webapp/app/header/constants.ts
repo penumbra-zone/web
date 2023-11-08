@@ -18,20 +18,30 @@ export const headerLinks: HeaderLink[] = [
     href: DappPath.SWAP,
     label: 'Swap',
     active: false,
+    subLinks: [DappPath.SWAP],
   },
   {
     href: DappPath.POOLS,
     label: 'Pools',
     active: false,
+    subLinks: [DappPath.POOLS],
   },
   {
     href: DappPath.GOVERNANCE,
     label: 'Governance',
     active: false,
+    subLinks: [DappPath.GOVERNANCE],
   },
   {
     href: DappPath.STAKING,
     label: 'Staking',
     active: false,
+    subLinks: [DappPath.STAKING],
   },
 ];
+
+export const transactionLink = {
+  href: DappPath.TRANSACTION,
+  label: 'Transaction',
+  subLinks: [DappPath.TRANSACTION],
+};

@@ -19,5 +19,5 @@ export const eduPanelContent: Record<EduPanel, string> = {
   [EduPanel.RECEIVING_FUNDS]:
     'Every Penumbra account has a stable default address and many one-time addresses.  All addresses for the same account deposit to the same pool of funds.  Use a freshly generated one-time address in situations where you need to reveal an address publicly, like an IBC transfer from a transparent chain into Penumbra.',
   [EduPanel.TEMP_FILLER]:
-    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
 };

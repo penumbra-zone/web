@@ -49,7 +49,7 @@ const NavigationMenuTrigger = React.forwardRef<
   >
     {children}{' '}
     <ChevronDown
-      className='relative top-[1px] ml-1 h-5 w-5 transition duration-200 group-data-[state=open]:rotate-180 '
+      className='relative top-[1px] ml-1 h-5 w-5 transition duration-200 group-data-[state=open]:rotate-180'
       aria-hidden='true'
     />
   </NavigationMenuPrimitive.Trigger>
@@ -62,7 +62,7 @@ const NavigationMenuContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <NavigationMenuPrimitive.Content
     ref={ref}
-    className={cn('left-0 top-0 w-full md:absolute', className)}
+    className={cn('left-0 top-0 w-full', className)}
     {...props}
   />
 ));

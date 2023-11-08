@@ -13,7 +13,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className='relative mx-auto grid grid-cols-3 md:gap-4 xl:max-w-[1276px] xl:gap-5'>
       <Card gradient className='col-span-2 row-span-2 flex-1 md:p-4 xl:p-5'>
-        <Tabs tabs={dashboardTabs} activeTab={pathname} className='mx-auto w-full xl:w-[372px]' />
+        <Tabs tabs={dashboardTabs} activeTab={pathname} className='mx-auto w-full lg:w-[372px]' />
         {children}
       </Card>
       <EduInfoCard

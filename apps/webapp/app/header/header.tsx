@@ -1,9 +1,9 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { FilledImage } from '../../shared';
-import { Navbar } from './navbar';
 import { DappPath } from '../../shared/header/types';
-import { TabletSidebar } from './tablet-sidebar';
+import { Navbar } from './navbar';
+import { TabletNavMenu } from './tablet-nav-menu';
 
 const Network = dynamic(() => import('./network'), {
   ssr: false,
@@ -21,7 +21,7 @@ export const Header = () => {
       </Link>
       <Navbar />
       <div className='flex items-center md:gap-6 xl:gap-4'>
-        <TabletSidebar />
+        <TabletNavMenu />
         <Notifications />
         <Network />
       </div>

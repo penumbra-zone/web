@@ -56,21 +56,21 @@ export default function AssetsTable() {
                   <TableRow key={i}>
                     <TableCell className='w-1/3'>
                       <div className='flex flex-col items-center gap-4 '>
-                        <p className='font-mono font-bold md:text-[12px] md:leading-[18px] xl:text-base'>
+                        <p className='font-mono font-bold text-base'>
                           {asset.denom.display}
                         </p>
                       </div>
                     </TableCell>
                     <TableCell className='w-1/3 text-center font-mono'>
                       <div className='flex flex-col'>
-                        <p className='font-bold md:text-[12px] md:leading-[18px] xl:text-base'>
+                        <p className='font-bold text-base'>
                           {fromBaseUnitAmount(asset.amount, asset.denom.exponent).toFormat()}
                         </p>
                       </div>
                     </TableCell>
                     <TableCell className='w-1/3 text-center font-mono'>
                       <div className='flex flex-col'>
-                        <p className='font-bold md:text-[12px] md:leading-[18px] xl:text-base'>
+                        <p className='font-bold text-base'>
                           {asset.usdcValue == 0 ? '$–' : `$${displayUsd(asset.usdcValue)}`}
                         </p>
                       </div>

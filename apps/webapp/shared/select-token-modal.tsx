@@ -27,8 +27,8 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
   return (
     <Dialog>
       <DialogTrigger disabled={!data.length}>
-        <div className='flex md:h-[26px] xl:h-9 md:w-16 xl:w-[100px] items-center justify-center gap-2 rounded-lg bg-light-brown'>
-          <p className='md:text-[10px] md:leading-4 xl:text-base font-bold text-light-grey'>
+        <div className='flex md:h-[26px] xl:h-9 md:w-20 xl:w-[100px] items-center justify-center gap-2 rounded-lg bg-light-brown'>
+          <p className='md:text-sm xl:text-base font-bold text-light-grey'>
             {asset.display}
           </p>
         </div>

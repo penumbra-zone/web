@@ -8,21 +8,25 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@penumbra-zone/ui';
-import Link from 'next/link';
-import { headerLinks } from './constants';
 import { cn } from '@penumbra-zone/ui/lib/utils';
+import Link from 'next/link';
 import { useTypedPathname } from '../../hooks/typed-pathname';
 import { DappPath } from '../../shared/header/types';
+import { headerLinks, transactionLink } from './constants';
 
-export const TabletSidebar = () => {
+export const TabletNavMenu = () => {
   const pathname = useTypedPathname<DappPath>();
+
   return (
     <div className='hidden md:block xl:hidden'>
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuTrigger className='w-[188px] rounded-lg border border-light-brown text-muted'>
-              {headerLinks.find(link => link.subLinks?.includes(pathname))?.label}
+              {
+                [...headerLinks, transactionLink].find(link => link.subLinks?.includes(pathname))
+                  ?.label
+              }
             </NavigationMenuTrigger>
             <NavigationMenuContent className='w-[188px]'>
               {headerLinks

@@ -49,7 +49,7 @@ export default function InputToken({
       )}
     >
       <div className='mb-2 flex items-center justify-between'>
-        <div className='flex items-center gap-2 self-start'>
+        <div className='flex flex-col lg:flex-row items-center gap-2 self-start'>
           <p className='text-base font-bold'>{label}</p>
           {validationResult ? (
             <div className={cn('italic', 'text-red-400')}>{validationResult.issue}</div>

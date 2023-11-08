@@ -86,7 +86,7 @@ const Send = () => {
       <Button
         type='submit'
         variant='gradient'
-        className='md:mt-[30px] xl:mt-3'
+        className='mt-3'
         onClick={() => void sendTx(toast)}
         disabled={
           !Number(amount) ||
