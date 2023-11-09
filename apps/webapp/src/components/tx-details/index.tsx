@@ -2,7 +2,7 @@ import { Card, FadeTransition } from '@penumbra-zone/ui';
 import { TxViewer } from './hash-parser.tsx';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card.tsx';
 import { EduPanel } from '../shared/edu-panels/content.ts';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { LoaderFunction, useLoaderData, useRouteError } from 'react-router-dom';
 import { getTxInfoByHash } from '../../fetchers/tx-info-by-hash.ts';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
@@ -20,6 +20,21 @@ export const TxDetailsLoader: LoaderFunction = async ({
   const hash = params['hash']!;
   const txInfo = await getTxInfoByHash(hash);
   return { txInfo, hash };
+};
+
+export const TxDetailsErrorBoundary = () => {
+  const error = useRouteError();
+
+  return (
+    <div className='text-red'>
+      <div>{String(error)}</div>
+      <div>=========================</div>
+      <div>
+        You may need to sync your blocks for this to be found. Or are you trying to view a
+        transaction that you can&apos;t see? 🕵️
+      </div>
+    </div>
+  );
 };
 
 export const TxDetails = () => {

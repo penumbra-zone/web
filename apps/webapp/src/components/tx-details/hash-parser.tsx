@@ -15,15 +15,6 @@ export enum TxDetailsTab {
 }
 
 export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
-  if (!txInfo.transaction || !txInfo.view) {
-    return (
-      <div className='text-red'>
-        You may need to sync your blocks for this to be found. Or are you trying to view a
-        transaction that you can&apos;t see? 🕵️
-      </div>
-    );
-  }
-
   return (
     <div>
       <div className='text-xl font-bold'>Transaction View</div>
@@ -34,14 +25,14 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
           <TabsTrigger value={TxDetailsTab.PUBLIC}>Public View</TabsTrigger>
         </TabsList>
         <TabsContent value={TxDetailsTab.PRIVATE}>
-          <TransactionViewComponent txv={txInfo.view} />
+          <TransactionViewComponent txv={txInfo.view!} />
           <div className='mt-8'>
             <div className='text-xl font-bold'>Raw JSON</div>
             <JsonTree jsonObj={txInfo.toJson() as object} />
           </div>
         </TabsContent>
         <TabsContent value={TxDetailsTab.PUBLIC} className='mt-10'>
-          <TransactionViewComponent txv={viewFromEmptyPerspective(txInfo.transaction)} />
+          <TransactionViewComponent txv={viewFromEmptyPerspective(txInfo.transaction!)} />
         </TabsContent>
       </Tabs>
     </div>

@@ -4,7 +4,7 @@ import { Layout } from './layout.tsx';
 import AssetsTable from './dashboard/assets-table.tsx';
 import TransactionTable from './dashboard/transaction-table.tsx';
 import { DashboardLayout } from './dashboard/layout.tsx';
-import { TxDetails, TxDetailsLoader } from './tx-details';
+import { TxDetails, TxDetailsErrorBoundary, TxDetailsLoader } from './tx-details';
 import { SendLayout } from './send/layout.tsx';
 import { SendForm } from './send/send-form.tsx';
 import IbcForm from './send/ibc-form.tsx';
@@ -54,7 +54,7 @@ export const rootRouter = createBrowserRouter([
         path: PagePath.TRANSACTION_DETAILS,
         loader: TxDetailsLoader,
         element: <TxDetails />,
-        errorElement: <ErrorBoundary />,
+        errorElement: <TxDetailsErrorBoundary />,
       },
     ],
   },

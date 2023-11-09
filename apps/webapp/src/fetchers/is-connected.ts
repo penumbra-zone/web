@@ -18,9 +18,15 @@ const isExtensionInstalled = async (): Promise<boolean> => {
   });
 };
 
+const INSTALLATION_ERROR = 'Penumbra extension is not installed';
+
+export const isExtInstallError = (e: unknown): boolean => {
+  return String(e).includes(INSTALLATION_ERROR);
+};
+
 export const throwIfExtNotInstalled = async (): Promise<void> => {
   const installed = await isExtensionInstalled();
   if (!installed) {
-    throw new Error('Penumbra extension is not installed');
+    throw new Error(INSTALLATION_ERROR);
   }
 };
