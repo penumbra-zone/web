@@ -1,6 +1,10 @@
-import { Validation } from '../types/validation.ts';
+export interface Validation {
+  checkFn: (txt: string) => boolean;
+  type: 'warn' | 'error'; // corresponds to red or yellow
+  issue: string;
+}
 
-export const useValidationResult = (
+export const validationResult = (
   value: string,
   validations?: Validation[],
 ): undefined | Validation => {

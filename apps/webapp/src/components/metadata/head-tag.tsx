@@ -1,6 +1,6 @@
 import { metadata } from './content.ts';
 import { Helmet } from 'react-helmet';
-import { usePagePath } from '../../hooks/usePagePath.ts';
+import { usePagePath } from '../../fetchers/page-path.ts';
 
 export const HeadTag = () => {
   const pathname = usePagePath();
