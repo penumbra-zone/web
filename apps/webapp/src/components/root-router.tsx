@@ -1,12 +1,12 @@
 import { createBrowserRouter, redirect } from 'react-router-dom';
 import { PagePath } from './metadata/paths.ts';
-import { Layout } from './layout.tsx';
-import AssetsTable from './dashboard/assets-table.tsx';
-import TransactionTable from './dashboard/transaction-table.tsx';
+import { Layout, LayoutLoader } from './layout.tsx';
+import AssetsTable, { AssetsLoader } from './dashboard/assets-table.tsx';
+import TransactionTable, { TxsLoader } from './dashboard/transaction-table.tsx';
 import { DashboardLayout } from './dashboard/layout.tsx';
 import { TxDetails, TxDetailsErrorBoundary, TxDetailsLoader } from './tx-details';
 import { SendLayout } from './send/layout.tsx';
-import { SendForm } from './send/send-form.tsx';
+import { AssetBalanceLoader, SendForm } from './send/send-form.tsx';
 import IbcForm from './send/ibc-form.tsx';
 import Receive from './send/receive.tsx';
 import { ErrorBoundary } from './shared/error-boundary.tsx';
@@ -14,6 +14,7 @@ import { ErrorBoundary } from './shared/error-boundary.tsx';
 export const rootRouter = createBrowserRouter([
   {
     path: '/',
+    loader: LayoutLoader,
     element: <Layout />,
     errorElement: <ErrorBoundary />,
     children: [
@@ -24,11 +25,15 @@ export const rootRouter = createBrowserRouter([
         children: [
           {
             index: true,
+            loader: AssetsLoader,
             element: <AssetsTable />,
+            errorElement: <ErrorBoundary />,
           },
           {
             path: PagePath.TRANSACTIONS,
+            loader: TxsLoader,
             element: <TransactionTable />,
+            errorElement: <ErrorBoundary />,
           },
         ],
       },
@@ -38,6 +43,7 @@ export const rootRouter = createBrowserRouter([
         children: [
           {
             index: true,
+            loader: AssetBalanceLoader,
             element: <SendForm />,
           },
           {
@@ -46,6 +52,7 @@ export const rootRouter = createBrowserRouter([
           },
           {
             path: PagePath.IBC,
+            loader: AssetBalanceLoader,
             element: <IbcForm />,
           },
         ],

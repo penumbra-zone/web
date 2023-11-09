@@ -2,12 +2,21 @@ import { Button, Switch } from '@penumbra-zone/ui';
 import { useStore } from '../../state';
 import { amountToBig, sendSelector, sendValidationErrors } from '../../state/send';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
-import { isPenumbraAddr } from '@penumbra-zone/types';
-import { useSendBalance } from '../../fetchers/send-balance';
+import { isPenumbraAddr, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { InputBlock } from '../shared/input-block.tsx';
 import InputToken from '../shared/input-token.tsx';
+import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { AssetBalance, getBalancesByAccountIndex } from '../../fetchers/balances.ts';
+import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
+
+export const AssetBalanceLoader: LoaderFunction = async (): Promise<AssetBalance[]> => {
+  await throwIfExtNotInstalled();
+  return await getBalancesByAccountIndex();
+};
 
 export const SendForm = () => {
+  const assetBalances = useLoaderData() as AssetBalance[];
   const { toast } = useToast();
   const {
     amount,
@@ -24,8 +33,11 @@ export const SendForm = () => {
     txInProgress,
   } = useStore(sendSelector);
 
-  const assetBalance = useSendBalance();
-  const validationErrors = sendValidationErrors(asset, amount, recipient, assetBalance);
+  const selectedAssetBalance =
+    assetBalances.find(i => uint8ArrayToBase64(i.assetId.inner) === asset.penumbraAssetId.inner)
+      ?.amount ?? new Amount();
+
+  const validationErrors = sendValidationErrors(asset, amount, recipient, selectedAssetBalance);
 
   return (
     <form
@@ -59,7 +71,7 @@ export const SendForm = () => {
           if (Number(e.target.value) < 0) return;
           setAmount(e.target.value);
         }}
-        assetBalance={amountToBig(asset, assetBalance)}
+        assetBalance={amountToBig(asset, selectedAssetBalance)}
         validations={[
           {
             type: 'error',
@@ -67,6 +79,7 @@ export const SendForm = () => {
             checkFn: () => validationErrors.amountErr,
           },
         ]}
+        balances={assetBalances}
       />
       <InputBlock
         label='Memo'

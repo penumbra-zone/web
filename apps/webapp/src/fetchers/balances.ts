@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import {
   AssetsResponse,
   BalancesRequest,
@@ -8,13 +7,13 @@ import {
   AssetId,
   DenomUnit,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { IndexAddrRecord, useAddresses } from './address';
-import { useAssets } from './assets';
+import { getAddresses, IndexAddrRecord } from './address';
+import { getAllAssets } from './assets';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import { addAmounts, joinLoHiAmount, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { viewClient } from '../clients/grpc';
-import { useCollectedStream } from '@penumbra-zone/transport';
+import { streamToPromise } from '@penumbra-zone/transport';
 
 export interface AssetBalance {
   denom: {
@@ -116,30 +115,6 @@ const sortByAmount = (a: AssetBalance, b: AssetBalance): number => {
 // Sort by account (lowest first)
 const sortByAccount = (a: AccountBalance, b: AccountBalance): number => a.index - b.index;
 
-interface UseBalancesReturnVal {
-  data: AccountBalance[];
-  error: unknown;
-}
-
-export const useBalancesWithMetadata = (): { data: NormalizedBalance[]; error: unknown } => {
-  const { data: balances, error: bError } = useBalances();
-
-  const accounts = useMemo(() => {
-    const allAccounts = balances.map(b => b.account?.account);
-    return [...new Set(allAccounts)];
-  }, [balances]);
-
-  const { data: accountAddrs, error: acError } = useAddresses(accounts);
-  const { data: assets, error: asError } = useAssets();
-
-  const data = useMemo(
-    () => balances.map(normalize(assets, accountAddrs)),
-    [accountAddrs, assets, balances],
-  );
-
-  return { data, error: bError ?? asError ?? acError };
-};
-
 // Accumulates totals per denom across accounts
 const groupByAsset = (balances: AssetBalance[], curr: AssetBalance): AssetBalance[] => {
   const match = balances.find(b => b.assetId.equals(curr.assetId));
@@ -151,46 +126,40 @@ const groupByAsset = (balances: AssetBalance[], curr: AssetBalance): AssetBalanc
   return balances;
 };
 
-export const useBalancesByAccountIndex = (
-  accountIndex?: number,
-): { data: AssetBalance[]; error: unknown } => {
-  const { data: balances, error } = useBalancesByAccount();
-
-  const data = balances
-    .filter(a => !accountIndex || a.index === accountIndex)
-    .flatMap(a => a.balances)
-    .reduce<AssetBalance[]>(groupByAsset, []);
-
-  return { data, error };
-};
-
-export const useBalancesByAccount = (): UseBalancesReturnVal => {
-  const { data: balances, error } = useBalancesWithMetadata();
-
-  // TODO: Use when simulation endpoint supported
-  // const { data, error } = useUsdcValues(props);
-
-  const data = useMemo(() => {
-    const grouped = balances.reduce<AccountBalance[]>(groupByAccount, []);
-    grouped.sort(sortByAccount);
-    return grouped;
-  }, [balances]);
-
-  return { data, error };
-};
-
 interface BalancesProps {
   accountFilter?: AddressIndex;
   assetIdFilter?: AssetId;
 }
 
-export const useBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}) => {
-  const balances = useMemo(() => {
-    const req = new BalancesRequest();
-    if (accountFilter) req.accountFilter = accountFilter;
-    if (assetIdFilter) req.assetIdFilter = assetIdFilter;
-    return viewClient.balances(req);
-  }, [accountFilter, assetIdFilter]);
+export const getBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}) => {
+  const req = new BalancesRequest();
+  if (accountFilter) req.accountFilter = accountFilter;
+  if (assetIdFilter) req.assetIdFilter = assetIdFilter;
 
-  return useCollectedStream(balances);
+  const iterable = viewClient.balances(req);
+  return streamToPromise(iterable);
+};
+
+export const getBalancesWithMetadata = async (): Promise<NormalizedBalance[]> => {
+  const balances = await getBalances();
+  const accounts = [...new Set(balances.map(b => b.account?.account))];
+  const accountAddrs = await getAddresses(accounts);
+  const assets = await getAllAssets();
+  return balances.map(normalize(assets, accountAddrs));
+};
+
+// TODO: When simulation endpoint is supported, add pricing data here
+export const getBalancesByAccount = async (): Promise<AccountBalance[]> => {
+  const balances = await getBalancesWithMetadata();
+  const grouped = balances.reduce<AccountBalance[]>(groupByAccount, []);
+  grouped.sort(sortByAccount);
+  return grouped;
+};
+
+export const getBalancesByAccountIndex = async (accountIndex?: number): Promise<AssetBalance[]> => {
+  const balances = await getBalancesByAccount();
+  return balances
+    .filter(a => !accountIndex || a.index === accountIndex)
+    .flatMap(a => a.balances)
+    .reduce<AssetBalance[]>(groupByAsset, []);
 };

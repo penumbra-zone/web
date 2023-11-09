@@ -1,25 +1,24 @@
 import {
-  AssetId,
-  DenomMetadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+  FmdParameters,
+  NoteSource,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import {
   SpendableNoteRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { base64ToUint8Array, IdbUpdate, PenumbraDb } from '@penumbra-zone/types';
+import { IdbUpdate, PenumbraDb } from '@penumbra-zone/types';
 import { describe, expect, it } from 'vitest';
 import { IndexedDb } from './index';
-
-const denomMetadataA = new DenomMetadata({
-  symbol: 'usdc',
-  penumbraAssetId: new AssetId({ altBaseDenom: 'usdc', inner: base64ToUint8Array('dXNkYw==') }),
-});
-
-const denomMetadataB = new DenomMetadata({
-  symbol: 'dai',
-  penumbraAssetId: new AssetId({ altBaseDenom: 'dai', inner: base64ToUint8Array('ZGFp') }),
-});
+import './indexed-db.test-data';
+import {
+  denomMetadataA,
+  denomMetadataB,
+  denomMetadataC,
+  emptyScanResult,
+  newNote,
+  scanResultWithSctUpdates,
+  transactionInfo,
+} from './indexed-db.test-data';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place
@@ -146,38 +145,97 @@ describe('IndexedDb', () => {
     });
   });
 
-  // TODO: Write tests for each asset
-});
+  describe('last block', () => {
+    it('should be able to set/get', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-const newNote = SpendableNoteRecord.fromJson({
-  noteCommitment: {
-    inner: 'pXS1k2kvlph+vuk9uhqeoP1mZRc+f526a06/bg3EBwQ=',
-  },
-  note: {
-    value: {
-      amount: {
-        lo: '12000000',
-      },
-      assetId: {
-        inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
-      },
-    },
-    rseed: 'h04XyitXpY1Q77M+vSzPauf4ZPx9NNRBAuUcVqP6pWo=',
-    address: {
-      inner:
-        '874bHlYDfy3mT57v2bXQWm3SJ7g8LI3cZFKob8J8CfrP2aqVGo6ESrpGScI4t/B2/KgkjhzmAasx8GM1ejNz0J153vD8MBVM9FUZFACzSCg=',
-    },
-  },
-  addressIndex: {
-    account: 12,
-    randomizer: 'AAAAAAAAAAAAAAAA',
-  },
-  nullifier: {
-    inner: 'fv/wPZDA5L96Woc+Ry2s7u9IrwNxTFjSDYInZj3lRA8=',
-  },
-  heightCreated: '7197',
-  position: '42986962944',
-  source: {
-    inner: '3CBS08dM9eLHH45Z9loZciZ9RaG9x1fc26Qnv0lQlto=',
-  },
+      await db.saveScanResult(emptyScanResult);
+      const savedLastBlock = await db.getLastBlockSynced();
+
+      expect(emptyScanResult.height === savedLastBlock).toBeTruthy();
+    });
+  });
+
+  describe('spendable notes', () => {
+    it('should be able to set/get note by nullifier', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.saveSpendableNote(newNote);
+      const savedSpendableNote = await db.getNoteByNullifier(newNote.nullifier!);
+
+      expect(newNote.equals(savedSpendableNote)).toBeTruthy();
+    });
+
+    it('should be able to set/get all', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.saveSpendableNote(newNote);
+      const savedSpendableNotes = await db.getAllNotes();
+
+      expect(savedSpendableNotes.length === 1).toBeTruthy();
+      expect(newNote.equals(savedSpendableNotes[0])).toBeTruthy();
+    });
+  });
+
+  describe('state commitment tree', () => {
+    it('should be able to set/get', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.saveScanResult(scanResultWithSctUpdates);
+
+      const stateCommitmentTree = await db.getStateCommitmentTree();
+
+      expect(stateCommitmentTree.hashes.length == 1).toBeTruthy();
+      expect(stateCommitmentTree.commitments.length == 1).toBeTruthy();
+      expect(stateCommitmentTree.last_forgotten === 12n).toBeTruthy();
+      expect(stateCommitmentTree.last_position).toBeTruthy();
+    });
+  });
+
+  describe('assets', () => {
+    it('should be able to set/get by id', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.saveAssetsMetadata(denomMetadataC);
+      const savedDenomMetadata = await db.getAssetsMetadata(denomMetadataC.penumbraAssetId!);
+
+      expect(denomMetadataC.equals(savedDenomMetadata)).toBeTruthy();
+    });
+
+    it('should be able to set/get all', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.saveAssetsMetadata(denomMetadataA);
+      await db.saveAssetsMetadata(denomMetadataB);
+      await db.saveAssetsMetadata(denomMetadataC);
+
+      const savedAssets = await db.getAllAssetsMetadata();
+
+      expect(savedAssets.length === 3).toBeTruthy();
+    });
+  });
+
+  describe('transactions', () => {
+    it('should be able to set/get by note source', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.saveTransactionInfo(transactionInfo);
+
+      const savedTransaction = await db.getTransaction(
+        new NoteSource({ inner: transactionInfo.id!.hash }),
+      );
+
+      expect(transactionInfo.equals(savedTransaction)).toBeTruthy();
+    });
+
+    it('should be able to set/get all', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.saveTransactionInfo(transactionInfo);
+      const savedTransactions = await db.getAllTransactions();
+
+      expect(savedTransactions.length === 1).toBeTruthy();
+      expect(transactionInfo.equals(savedTransactions[0])).toBeTruthy();
+    });
+  });
 });
