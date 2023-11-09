@@ -3,7 +3,7 @@ import { dashboardTabs, dashboardTabsHelper } from './constants';
 import { Outlet } from 'react-router-dom';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card.tsx';
 import { Tabs } from '../shared/tabs.tsx';
-import { usePagePath } from '../../hooks/usePagePath.ts';
+import { usePagePath } from '../../fetchers/page-path.ts';
 import { DashboardTab } from './types.ts';
 
 export const DashboardLayout = () => {

@@ -19,7 +19,7 @@ export const successTxToast = (txHash: string): ToastFnProps => ({
   variant: 'success',
   subText: shorten(txHash, 8),
   action: (
-    <Link to={`/tx/?hash=${txHash}`}>
+    <Link to={`/tx/${txHash}`}>
       <ToastAction className='border-transparent bg-teal-800' altText='See transaction details'>
         See details
       </ToastAction>

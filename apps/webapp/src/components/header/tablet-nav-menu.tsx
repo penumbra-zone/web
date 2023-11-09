@@ -10,7 +10,7 @@ import {
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { Link } from 'react-router-dom';
 import { headerLinks, transactionLink } from './constants.ts';
-import { usePagePath } from '../../hooks/usePagePath.ts';
+import { usePagePath } from '../../fetchers/page-path.ts';
 
 export const TabletNavMenu = () => {
   const pathname = usePagePath();

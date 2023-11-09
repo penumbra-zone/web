@@ -1,6 +1,6 @@
 import { shorten } from '@penumbra-zone/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
-import { useTxs } from '../../hooks/transactions.ts';
+import { useTxs } from '../../fetchers/transactions.ts';
 import { Link } from 'react-router-dom';
 
 export default function TransactionTable() {
@@ -26,11 +26,11 @@ export default function TransactionTable() {
             </TableCell>
             <TableCell>
               <p className='text-center font-mono text-base'>
-                <Link to={`/tx/?hash=${tx.hash}`}>{shorten(tx.hash, 8)}</Link>
+                <Link to={`/tx/${tx.hash}`}>{shorten(tx.hash, 8)}</Link>
               </p>
             </TableCell>
             <TableCell>
-              <Link to={`/tx/?hash=${tx.hash}`}>
+              <Link to={`/tx/${tx.hash}`}>
                 <img
                   src='/more.svg'
                   className='h-4 w-4 cursor-pointer hover:opacity-50'

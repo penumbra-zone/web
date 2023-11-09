@@ -2,7 +2,7 @@
 import { Card } from '@penumbra-zone/ui';
 import { sendTabs, sendTabsHelper } from './constants';
 import { SendTab } from './types';
-import { usePagePath } from '../../hooks/usePagePath.ts';
+import { usePagePath } from '../../fetchers/page-path.ts';
 import { Tabs } from '../shared/tabs.tsx';
 import { Outlet } from 'react-router-dom';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card.tsx';

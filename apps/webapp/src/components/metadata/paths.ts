@@ -10,5 +10,5 @@ export enum PagePath {
   DASHBOARD = '/dashboard',
   IBC = '/send/ibc',
   NFTS = '/dashboard/nfts',
-  TRANSACTION_DETAILS = '/tx',
+  TRANSACTION_DETAILS = '/tx/:hash',
 }
