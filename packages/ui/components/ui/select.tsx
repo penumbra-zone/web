@@ -13,7 +13,7 @@ const SelectValue = SelectPrimitive.Value;
 
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & { open: boolean }
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & { open?: boolean }
 >(({ className, children, open, ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}

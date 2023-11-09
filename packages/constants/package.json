@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@penumbra-zone/types": "workspace:*",
-    "eslint": "^8.52.0",
+    "eslint": "^8.53.0",
     "eslint-config-custom": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "^5.2.2"
