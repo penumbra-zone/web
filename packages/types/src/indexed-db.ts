@@ -94,8 +94,10 @@ export interface PenumbraDb extends DBSchema {
       nullifier: Base64Str; // Jsonified<SpendableNoteRecord['nullifier']['inner']>
     };
   };
+  // Store for Notes that have been detected but cannot yet be spent
+  // Used in wasm crate to process swap and swap claim
   NOTES: {
-    key: Base64Str; // Jsonified<Note['address']['inner']>
+    key: Base64Str; // Jsonified<StateCommitment>  key is not part of the stored object
     value: Jsonified<Note>;
   };
   SWAPS: {
