@@ -4,6 +4,7 @@ import { Asset, AssetId, displayAmount } from '@penumbra-zone/types';
 import BigNumber from 'bignumber.js';
 import SelectTokenModal from './select-token-modal.tsx';
 import { Validation, validationResult } from './validation-result.ts';
+import { AssetBalance } from '../../fetchers/balances.ts';
 
 interface InputTokenProps extends InputProps {
   label: string;
@@ -15,6 +16,7 @@ interface InputTokenProps extends InputProps {
   value: string;
   setAsset: (asset: AssetId) => void;
   validations?: Validation[];
+  balances: AssetBalance[];
 }
 
 export default function InputToken({
@@ -27,6 +29,7 @@ export default function InputToken({
   value,
   inputClassName,
   setAsset,
+  balances,
   ...props
 }: InputTokenProps) {
   const vResult = validationResult(value, validations);
@@ -64,7 +67,7 @@ export default function InputToken({
           value={value}
           {...props}
         />
-        <SelectTokenModal asset={asset} setAsset={setAsset} />
+        <SelectTokenModal asset={asset} setAsset={setAsset} balances={balances} />
       </div>
       <p
         className={cn(

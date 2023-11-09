@@ -13,8 +13,11 @@ import { useStore } from '../../state';
 import { ibcSelector } from '../../state/ibc.ts';
 import { chains } from '@penumbra-zone/constants';
 import InputToken from '../shared/input-token.tsx';
+import { useLoaderData } from 'react-router-dom';
+import { AssetBalance } from '../../fetchers/balances.ts';
 
 export default function IbcForm() {
+  const assetBalances = useLoaderData() as AssetBalance[];
   const { amount, asset, chain, setAmount, setAsset, setChain } = useStore(ibcSelector);
 
   // TODO: Implement assetBalances & validations like send form
@@ -47,6 +50,7 @@ export default function IbcForm() {
             checkFn: () => false,
           },
         ]}
+        balances={assetBalances}
       />
       <div className='flex flex-col gap-3 rounded-lg border bg-background px-4 pb-5 pt-3'>
         <p className='text-base font-bold'>Chain</p>

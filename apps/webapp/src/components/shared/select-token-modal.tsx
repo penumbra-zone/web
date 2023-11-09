@@ -10,21 +10,20 @@ import {
 } from '@penumbra-zone/ui';
 import { Asset, AssetId, fromBaseUnitAmount, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { useBalancesByAccountIndex } from '../../fetchers/balances.ts';
+import { AssetBalance } from '../../fetchers/balances.ts';
 
 interface SelectTokenModalProps {
   asset: Asset;
   setAsset: (asset: AssetId) => void;
+  balances: AssetBalance[];
 }
 
-export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalProps) {
+export default function SelectTokenModal({ asset, setAsset, balances }: SelectTokenModalProps) {
   const [search, setSearch] = useState('');
-
-  const { data } = useBalancesByAccountIndex();
 
   return (
     <Dialog>
-      <DialogTrigger disabled={!data.length}>
+      <DialogTrigger disabled={!balances.length}>
         <div className='flex items-center justify-center gap-2 rounded-lg bg-light-brown md:h-[26px] md:w-20 xl:h-9 xl:w-[100px]'>
           <p className='font-bold text-light-grey md:text-sm xl:text-base'>{asset.display}</p>
         </div>
@@ -49,7 +48,7 @@ export default function SelectTokenModal({ asset, setAsset }: SelectTokenModalPr
               <p>Balance</p>
             </div>
             <div className='flex flex-col gap-2'>
-              {data.map((b, i) => (
+              {balances.map((b, i) => (
                 <DialogClose key={i}>
                   <div
                     className={cn(

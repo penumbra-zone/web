@@ -23,19 +23,20 @@ const isExtensionInstalled = async (): Promise<boolean> => {
   });
 };
 
-const INSTALLATION_ERROR = 'Penumbra extension is not installed';
+const INSTALLATION_ERROR =
+  'Penumbra extension is not installed. Please visit: https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe.';
 
 export const isExtInstallError = (e: unknown): boolean => {
   return String(e).includes(INSTALLATION_ERROR);
 };
 
 // Can be deleted when new extension version is deployed and detection file is exposes via new manifest
-const tempIsExtensionInstalled = async () => {
+export const tempIsExtensionInstalled = async () => {
   const timeout = new Promise<boolean>(resolve => {
     const id = setTimeout(() => {
       clearTimeout(id);
       resolve(false);
-    }, 3000);
+    }, 1500);
   });
 
   const ping = new Promise<boolean>(resolve => {

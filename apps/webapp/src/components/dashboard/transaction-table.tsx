@@ -1,10 +1,16 @@
 import { shorten } from '@penumbra-zone/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
-import { useTxs } from '../../fetchers/transactions.ts';
-import { Link } from 'react-router-dom';
+import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
+import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
+import { getAllTransactions, TransactionSummary } from '../../fetchers/transactions.ts';
+
+export const TxsLoader: LoaderFunction = async (): Promise<TransactionSummary[]> => {
+  await throwIfExtNotInstalled();
+  return await getAllTransactions();
+};
 
 export default function TransactionTable() {
-  const { data, error } = useTxs();
+  const data = useLoaderData() as TransactionSummary[];
 
   return (
     <Table>
@@ -41,7 +47,6 @@ export default function TransactionTable() {
           </TableRow>
         ))}
       </TableBody>
-      {error}
     </Table>
   );
 }
