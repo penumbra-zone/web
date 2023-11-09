@@ -1,14 +1,12 @@
 import { stdClient } from '../clients/std.ts';
 
-const TEST_EXTENSION_ID = 'mmdkjobdffegdlbcjgmhlhbmogaicmid';
-const PROD_EXTENSION_ID = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe';
+const CHROME_EXTENSION_ID = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe';
 
 // Attempts to load a file the extension exposes for detection purposes
 // @ts-expect-error temporarily ignored
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isExtensionInstalled = async (): Promise<boolean> => {
-  const extId = import.meta.env.DEV ? TEST_EXTENSION_ID : PROD_EXTENSION_ID;
-  const url = `chrome-extension://${extId}/install-detector.txt`;
+  const url = `chrome-extension://${CHROME_EXTENSION_ID}/install-detector.txt`;
 
   return new Promise<boolean>(resolve => {
     fetch(url)
