@@ -8,7 +8,7 @@ import {
   TableRow,
 } from '@penumbra-zone/ui';
 import { displayUsd, fromBaseUnitAmount, shortenAddress } from '@penumbra-zone/types';
-import { useBalancesByAccount } from '../../hooks/balances';
+import { useBalancesByAccount } from '../../fetchers/balances';
 
 export default function AssetsTable() {
   const { data, error } = useBalancesByAccount();

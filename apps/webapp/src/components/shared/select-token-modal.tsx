@@ -10,7 +10,7 @@ import {
 } from '@penumbra-zone/ui';
 import { Asset, AssetId, fromBaseUnitAmount, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { useBalancesByAccountIndex } from '../../hooks/balances.ts';
+import { useBalancesByAccountIndex } from '../../fetchers/balances.ts';
 
 interface SelectTokenModalProps {
   asset: Asset;

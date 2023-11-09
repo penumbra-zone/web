@@ -1,5 +1,5 @@
 import { NetworksPopover } from '@penumbra-zone/ui';
-import { useChainId } from '../../hooks/chain-id.ts';
+import { useChainId } from '../../fetchers/chain-id.ts';
 
 export default function Network() {
   const chainId = useChainId();

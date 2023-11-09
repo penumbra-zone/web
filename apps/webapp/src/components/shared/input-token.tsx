@@ -2,9 +2,8 @@ import { Input, InputProps } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { Asset, AssetId, displayAmount } from '@penumbra-zone/types';
 import BigNumber from 'bignumber.js';
-import { Validation } from '../../types/validation.ts';
-import { useValidationResult } from '../../hooks/validation-result.ts';
 import SelectTokenModal from './select-token-modal.tsx';
+import { Validation, validationResult } from './validation-result.ts';
 
 interface InputTokenProps extends InputProps {
   label: string;
@@ -30,24 +29,22 @@ export default function InputToken({
   setAsset,
   ...props
 }: InputTokenProps) {
-  const validationResult = useValidationResult(value, validations);
+  const vResult = validationResult(value, validations);
 
   return (
     <div
       className={cn(
         'bg-background px-4 pt-3 pb-5 rounded-lg border flex flex-col',
-        validationResult?.type === 'error' && 'border-red-400',
-        validationResult?.type === 'warn' && 'border-yellow-300',
+        vResult?.type === 'error' && 'border-red-400',
+        vResult?.type === 'warn' && 'border-yellow-300',
         className,
       )}
     >
       <div className='mb-2 flex items-center justify-between'>
         <div className='flex flex-col items-center gap-2 self-start lg:flex-row'>
           <p className='text-base font-bold'>{label}</p>
-          {validationResult ? (
-            <div className={cn('italic hidden lg:block', 'text-red-400')}>
-              {validationResult.issue}
-            </div>
+          {vResult ? (
+            <div className={cn('italic hidden lg:block', 'text-red-400')}>{vResult.issue}</div>
           ) : null}
         </div>
         <div className='flex items-start gap-1'>

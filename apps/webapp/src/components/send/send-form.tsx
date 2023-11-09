@@ -3,7 +3,7 @@ import { useStore } from '../../state';
 import { amountToBig, sendSelector, sendValidationErrors } from '../../state/send';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { isPenumbraAddr } from '@penumbra-zone/types';
-import { useSendBalance } from '../../hooks/send-balance';
+import { useSendBalance } from '../../fetchers/send-balance';
 import { InputBlock } from '../shared/input-block.tsx';
 import InputToken from '../shared/input-token.tsx';
 
