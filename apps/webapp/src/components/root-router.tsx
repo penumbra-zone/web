@@ -6,7 +6,7 @@ import TransactionTable, { TxsLoader } from './dashboard/transaction-table.tsx';
 import { DashboardLayout } from './dashboard/layout.tsx';
 import { TxDetails, TxDetailsErrorBoundary, TxDetailsLoader } from './tx-details';
 import { SendLayout } from './send/layout.tsx';
-import { SendForm } from './send/send-form.tsx';
+import { AssetBalanceLoader, SendForm } from './send/send-form.tsx';
 import IbcForm from './send/ibc-form.tsx';
 import Receive from './send/receive.tsx';
 import { ErrorBoundary } from './shared/error-boundary.tsx';
@@ -43,6 +43,7 @@ export const rootRouter = createBrowserRouter([
         children: [
           {
             index: true,
+            loader: AssetBalanceLoader,
             element: <SendForm />,
           },
           {
@@ -51,6 +52,7 @@ export const rootRouter = createBrowserRouter([
           },
           {
             path: PagePath.IBC,
+            loader: AssetBalanceLoader,
             element: <IbcForm />,
           },
         ],

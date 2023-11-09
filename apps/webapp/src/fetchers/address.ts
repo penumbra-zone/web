@@ -1,20 +1,12 @@
 import { viewClient } from '../clients/grpc';
 import { AddressByIndexRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-import { useQuery } from '@tanstack/react-query';
 import { bech32Address } from '@penumbra-zone/types';
 
 type Index = number;
 type Address = string;
 
 export type IndexAddrRecord = Record<Index, Address>;
-
-export const useAddresses = (accounts: (number | undefined)[]) => {
-  return useQuery({
-    queryKey: ['get-addr-index', accounts],
-    queryFn: async () => {},
-  });
-};
 
 export const getAddresses = async (accounts: (number | undefined)[]): Promise<IndexAddrRecord> => {
   const allReqs = accounts.map(account => {
