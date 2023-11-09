@@ -1,11 +1,14 @@
 import { Navbar } from './navbar';
-import { Link } from 'react-router-dom';
+import { Link, useLoaderData } from 'react-router-dom';
 import { PagePath } from '../metadata/paths.ts';
 import Notifications from './notifications.tsx';
-import Network from './network.tsx';
 import { TabletNavMenu } from './tablet-nav-menu.tsx';
+import { LayoutLoaderResult } from '../layout.tsx';
+import { NetworksPopover } from '@penumbra-zone/ui';
 
 export const Header = () => {
+  const result = useLoaderData() as LayoutLoaderResult;
+
   return (
     <header className='flex h-[82px] w-full items-center justify-between px-12'>
       <img
@@ -21,8 +24,12 @@ export const Header = () => {
       <Navbar />
       <div className='flex items-center md:gap-6 xl:gap-4'>
         <TabletNavMenu />
-        <Notifications />
-        <Network />
+        {result.isInstalled ? (
+          <>
+            <Notifications />
+            <NetworksPopover name={result.chainId} />
+          </>
+        ) : null}
       </div>
     </header>
   );

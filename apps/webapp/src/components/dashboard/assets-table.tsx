@@ -8,10 +8,17 @@ import {
   TableRow,
 } from '@penumbra-zone/ui';
 import { displayUsd, fromBaseUnitAmount, shortenAddress } from '@penumbra-zone/types';
-import { useBalancesByAccount } from '../../fetchers/balances';
+import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
+import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances.ts';
+
+export const AssetsLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
+  await throwIfExtNotInstalled();
+  return await getBalancesByAccount();
+};
 
 export default function AssetsTable() {
-  const { data, error } = useBalancesByAccount();
+  const data = useLoaderData() as AccountBalance[];
 
   if (data.length === 0) {
     return (
@@ -78,7 +85,6 @@ export default function AssetsTable() {
           </div>
         );
       })}
-      {error ? <div className='text-red-700'>{String(error)}</div> : null}
     </div>
   );
 }

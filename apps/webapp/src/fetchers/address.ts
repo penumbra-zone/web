@@ -12,26 +12,28 @@ export type IndexAddrRecord = Record<Index, Address>;
 export const useAddresses = (accounts: (number | undefined)[]) => {
   return useQuery({
     queryKey: ['get-addr-index', accounts],
-    queryFn: async () => {
-      const allReqs = accounts.map(account => {
-        const req = new AddressByIndexRequest();
-        if (account) req.addressIndex = new AddressIndex({ account });
-        return viewClient.addressByIndex(req);
-      });
-
-      const responses = await Promise.all(allReqs);
-      return responses
-        .map((res, i) => {
-          const address = bech32Address(res.address!);
-          return {
-            index: accounts[i] ?? 0,
-            address,
-          };
-        })
-        .reduce<IndexAddrRecord>((acc, curr) => {
-          acc[curr.index] = curr.address;
-          return acc;
-        }, {});
-    },
+    queryFn: async () => {},
   });
+};
+
+export const getAddresses = async (accounts: (number | undefined)[]): Promise<IndexAddrRecord> => {
+  const allReqs = accounts.map(account => {
+    const req = new AddressByIndexRequest();
+    if (account) req.addressIndex = new AddressIndex({ account });
+    return viewClient.addressByIndex(req);
+  });
+
+  const responses = await Promise.all(allReqs);
+  return responses
+    .map((res, i) => {
+      const address = bech32Address(res.address!);
+      return {
+        index: accounts[i] ?? 0,
+        address,
+      };
+    })
+    .reduce<IndexAddrRecord>((acc, curr) => {
+      acc[curr.index] = curr.address;
+      return acc;
+    }, {});
 };
