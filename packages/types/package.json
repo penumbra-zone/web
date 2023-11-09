@@ -7,13 +7,13 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.4.1-20231019170721-d11ca3611bc9.1",
-    "@bufbuild/protobuf": "^1.4.1",
-    "@types/chrome": "0.0.248",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.4.2-20231103014351-723c6aa746dd.1",
+    "@bufbuild/protobuf": "^1.4.2",
+    "@types/chrome": "0.0.250",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",
     "buffer": "^6.0.3",
-    "eslint": "^8.52.0",
+    "eslint": "^8.53.0",
     "eslint-config-custom": "workspace:*",
     "idb": "^7.1.1",
     "tsconfig": "workspace:*",

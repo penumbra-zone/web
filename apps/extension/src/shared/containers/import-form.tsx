@@ -16,7 +16,7 @@ export const ImportForm = () => {
       setLength(SeedPhraseLength.TWELVE_WORDS);
     }
     cleanup(); // Ensures no competing state from generate path
-  }, []);
+  }, [cleanup, phrase.length, setLength]);
 
   return (
     <>

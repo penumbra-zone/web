@@ -1,4 +1,4 @@
-import { DBSchema, StoreNames } from 'idb';
+import { DBSchema, StoreKey, StoreNames, StoreValue } from 'idb';
 import {
   ScanResult,
   StateCommitmentTree,
@@ -23,7 +23,6 @@ import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { Note } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import { JsonValue } from '@bufbuild/protobuf';
 import { Base64Str } from './base64';
-import { StoreKey, StoreValue } from 'idb/build/entry';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;

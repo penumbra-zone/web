@@ -1,6 +1,5 @@
 import { IdbUpdate, PenumbraDb } from '@penumbra-zone/types';
-import { StoreNames } from 'idb/build/entry';
-import { IDBPDatabase } from 'idb';
+import { IDBPDatabase, StoreNames } from 'idb';
 
 export class IbdUpdates {
   constructor(readonly all: IdbUpdate<PenumbraDb, StoreNames<PenumbraDb>>[] = []) {}

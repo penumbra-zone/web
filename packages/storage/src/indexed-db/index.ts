@@ -1,4 +1,4 @@
-import { IDBPDatabase, openDB } from 'idb';
+import { IDBPDatabase, openDB, StoreNames } from 'idb';
 import {
   IDB_TABLES,
   IdbConstants,
@@ -23,7 +23,6 @@ import {
   AssetId,
   DenomMetadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { StoreNames } from 'idb/build/entry';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
