@@ -14,7 +14,7 @@ export const SendLayout = () => {
     <div className='relative mx-auto grid gap-6 md:grid-cols-2 md:gap-4 xl:max-w-[1276px] xl:grid-cols-3 xl:gap-5'>
       <div className='hidden xl:block' />
       <Card gradient className='row-span-2 flex-1 p-5 md:p-4 xl:p-5'>
-        <Tabs tabs={sendTabs} activeTab={pathname} />
+        <Tabs tabs={sendTabs} activeTab={pathname} className='mx-auto w-[75%] lg:w-[372px]' />
         <Outlet />
       </Card>
       <EduInfoCard

@@ -40,15 +40,39 @@ export default function AssetsTable() {
         return (
           <div key={a.index} className='flex flex-col gap-4'>
             <div className='flex flex-col items-center justify-center'>
-              <div className='flex items-center justify-center gap-2'>
-                <Identicon name={a.address} size={20} className='rounded-full' />
-                <h2 className='font-bold md:text-base xl:text-xl'>Account #{a.index}</h2>{' '}
+              <div className='flex flex-col items-center justify-center gap-2 md:flex-row'>
+                <div className='flex items-center gap-2'>
+                  <Identicon name={a.address} size={20} className='rounded-full' />
+                  <h2 className='font-bold md:text-base xl:text-xl'>Account #{a.index}</h2>{' '}
+                </div>
                 <div className='font-mono text-sm italic text-foreground'>
                   {shortenAddress(a.address)}
                 </div>
               </div>
             </div>
-            <Table>
+            <div className='flex flex-col gap-[34px] md:hidden'>
+              {a.balances.map((asset, i) => (
+                <div key={i} className='flex flex-col gap-4 border-b pb-3'>
+                  <div className='flex items-center justify-between'>
+                    <p className='font-headline text-base font-semibold'>Asset</p>
+                    <p className='font-mono text-base font-bold'>{asset.denom.display}</p>
+                  </div>
+                  <div className='flex items-center justify-between'>
+                    <p className='font-headline text-base font-semibold'>Balance</p>
+                    <p className='text-base font-bold'>
+                      {fromBaseUnitAmount(asset.amount, asset.denom.exponent).toFormat()}
+                    </p>
+                  </div>
+                  <div className='flex items-center justify-between'>
+                    <p className='font-headline text-base font-semibold'>Value</p>
+                    <p className='text-base font-bold'>
+                      {asset.usdcValue == 0 ? '$–' : `$${displayUsd(asset.usdcValue)}`}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Table className='hidden md:table'>
               <TableHeader>
                 <TableRow>
                   <TableHead className='w-1/3 text-center'>Asset</TableHead>

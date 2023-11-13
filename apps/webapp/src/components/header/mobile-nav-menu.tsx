@@ -7,21 +7,21 @@ export const MobileNavMenu = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <HamburgerMenuIcon className='w-6 h-6 text-muted cursor-pointer hover:opacity-50' />
+        <HamburgerMenuIcon className='z-10 h-6 w-6 cursor-pointer text-muted hover:opacity-50' />
       </SheetTrigger>
       <SheetContent side='left' className='w-[311px] bg-charcoal-secondary p-5 '>
         <SheetHeader className='z-10' />
-        <div className='flex flex-col gap-5 relative z-10'>
+        <div className='relative z-10 flex flex-col gap-5'>
           {headerLinks
             .filter(link => link.active)
             .map(link => (
               <SheetTrigger key={link.href} asChild>
                 <Link
                   to={link.href}
-                  className='font-bold p-[10px] select-none flex items-center text-muted-foreground gap-2'
+                  className='flex select-none items-center gap-2 p-[10px] font-bold text-muted-foreground'
                 >
                   {link.icon}
-                  <p  className='pt-[2px]'>{link.label}</p>
+                  <p className='pt-[2px]'>{link.label}</p>
                 </Link>
               </SheetTrigger>
             ))}

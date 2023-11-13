@@ -25,7 +25,7 @@ export const headerLinks: HeaderLink[] = [
     label: 'Send',
     active: true,
     subLinks: [PagePath.SEND, PagePath.RECEIVE, PagePath.IBC],
-    icon: <ArrowTopRightIcon className='w-5 h-5 text-muted-foreground' />,
+    icon: <ArrowTopRightIcon className='h-5 w-5 text-muted-foreground' />,
   },
   {
     href: PagePath.SWAP,
@@ -43,13 +43,13 @@ export const headerLinks: HeaderLink[] = [
     href: PagePath.GOVERNANCE,
     label: 'Governance',
     active: false,
-    icon: <MixerHorizontalIcon className='w-5 h-5 text-muted-foreground' />,
+    icon: <MixerHorizontalIcon className='h-5 w-5 text-muted-foreground' />,
   },
   {
     href: PagePath.STAKING,
     label: 'Staking',
     active: false,
-    icon: <TextAlignLeftIcon className='w-5 h-5 text-muted-foreground' />,
+    icon: <TextAlignLeftIcon className='h-5 w-5 text-muted-foreground' />,
   },
 ];
 

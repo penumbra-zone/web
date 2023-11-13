@@ -1,3 +1,3 @@
 export * from './bell.tsx';
 export * from './box';
-export * from './swap'
+export * from './swap';
