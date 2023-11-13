@@ -41,7 +41,7 @@ export const SendForm = () => {
 
   return (
     <form
-      className='flex flex-col md:gap-4 xl:gap-3'
+      className='flex flex-col gap-4 xl:gap-3'
       onSubmit={e => {
         e.preventDefault();
       }}
@@ -98,6 +98,7 @@ export const SendForm = () => {
         type='submit'
         variant='gradient'
         className='mt-3'
+        size='lg'
         onClick={() => void sendTx(toast)}
         disabled={
           !Number(amount) ||

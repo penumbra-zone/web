@@ -9,8 +9,8 @@ import {
 } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { Link } from 'react-router-dom';
-import { headerLinks, transactionLink } from './constants.ts';
-import { usePagePath } from '../../fetchers/page-path.ts';
+import { headerLinks, transactionLink } from './constants';
+import { usePagePath } from '../../fetchers/page-path';
 
 export const TabletNavMenu = () => {
   const pathname = usePagePath();

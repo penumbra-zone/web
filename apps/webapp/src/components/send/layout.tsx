@@ -11,9 +11,9 @@ export const SendLayout = () => {
   const pathname = usePagePath<SendTab>();
 
   return (
-    <div className='relative mx-auto grid md:grid-cols-2 md:gap-4 xl:max-w-[1276px] xl:grid-cols-3 xl:gap-5'>
+    <div className='relative mx-auto grid gap-6 md:grid-cols-2 md:gap-4 xl:max-w-[1276px] xl:grid-cols-3 xl:gap-5'>
       <div className='hidden xl:block' />
-      <Card gradient className='row-span-2 flex-1 md:p-4 xl:p-5'>
+      <Card gradient className='row-span-2 flex-1 p-5 md:p-4 xl:p-5'>
         <Tabs tabs={sendTabs} activeTab={pathname} />
         <Outlet />
       </Card>
