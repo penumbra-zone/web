@@ -16,3 +16,8 @@ directory will recursively run them in each app/package. The essential commands:
 
 All checks above will be run on opening a pull request and merging to main.
 Main merges will also deploy dapp on Firebase. Workflows can be [seen here](../.github/workflows).
+
+### On release
+
+If a release is made in the repo, the extension code will be submitted for publishing
+to the Chrome Web Store. See more in [publishing](./publishing.md).

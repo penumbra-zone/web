@@ -16,6 +16,7 @@
 
 - [Spinning up locally](spinning-up-locally.md)
 - [CI/CD](ci-cd.md)
+- [Publishing](publishing.md)
 - [Guiding principles](guiding-principles.md)
 - [Monorepo](monorepo.md)
 - [State management](state-management.md)
