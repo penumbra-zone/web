@@ -35,7 +35,7 @@ jobs:
         uses: penumbra-zone/chrome-extension-upload@v1
         with:
           file-path: dist.zip
-          extension-id: lkpmkhpnhknhmibgnmmhdhgdilepfghe
+          extension-id: "lkpmkhpnhknhmibgnmmhdhgdilepfghe"
           client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
           client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           refresh-token: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
