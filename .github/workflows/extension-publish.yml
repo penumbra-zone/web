@@ -1,6 +1,7 @@
+# Publishes extension when a release is made in github.
+# `maniftest.json` should already be updated to the desired version before release.
 name: Publish extension
 
-# Publish extension when a release is made in github
 on:
   push:
     tags:
@@ -11,7 +12,7 @@ on:
 jobs:
   publish:
     name: Publish chrome extension
-    #    environment: ext-publish re-enable after testing
+    environment: ext-publish
     runs-on: ubuntu-latest
 
     steps:
@@ -35,7 +36,7 @@ jobs:
         uses: penumbra-zone/chrome-extension-upload@v1
         with:
           file-path: dist.zip
-          extension-id: "lkpmkhpnhknhmibgnmmhdhgdilepfghe"
+          extension-id: lkpmkhpnhknhmibgnmmhdhgdilepfghe
           client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
           client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           refresh-token: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
