@@ -74,7 +74,7 @@ SheetContent.displayName = SheetPrimitive.Content.displayName;
 
 const SheetHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn('flex flex-col justify-center text-center border-b h-9 pb-1', className)}
+    className={cn('flex flex-col justify-center text-center h-[60px] pb-1', className)}
     {...props}
   />
 );
