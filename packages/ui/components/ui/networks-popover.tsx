@@ -18,14 +18,15 @@ const NetworksPopover = ({
     <Popover open={false}>
       <PopoverTrigger
         className={cn(
-          'flex items-center justify-between gap-4 rounded-lg border bg-background sm:px-[25px] xl:px-[18px] py-[7px] font-bold text-muted-foreground',
+          'flex items-center justify-between gap-4 rounded-lg border bg-background px-5 md:px-[25px] xl:px-[18px] py-[7px] font-bold text-muted-foreground',
           triggerClassName,
         )}
       >
         {connectIndicator && (
           <div className='-mx-1 h-4 w-1 rounded-sm bg-gradient-to-b from-cyan-400 to-emerald-400'></div>
         )}
-        <p>{name}</p>
+        <p className='hidden md:block'>{name}</p>
+        <p className='block md:hidden'>{name.slice(0,14)}...</p>
       </PopoverTrigger>
       <PopoverContent></PopoverContent>
     </Popover>
