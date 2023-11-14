@@ -1,6 +1,8 @@
+# Publishes extension to chrome web store when a release is made in github.
+# `maniftest.json` should already be updated to the desired version before release.
+# https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe
 name: Publish extension
 
-# Publish extension when a release is made in github
 on:
   push:
     tags:
@@ -11,7 +13,7 @@ on:
 jobs:
   publish:
     name: Publish chrome extension
-    #    environment: ext-publish re-enable after testing
+    environment: ext-publish
     runs-on: ubuntu-latest
 
     steps:
