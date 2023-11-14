@@ -9,8 +9,12 @@ If the publishing pipeline was compromised, a bad actor could upload malicious c
 #1 - Penumbra Labs [google group](https://groups.google.com/a/penumbralabs.xyz/g/chrome-extension-publishers).
 This entity is a [group publisher](https://developer.chrome.com/docs/webstore/group-publishers/). Members of the
 group have publish permissions. Note: For a group member to publish updates, that member must register as a Chrome Web Store developer and pay the one-time registration fee.
+Package uploads are done through the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole/).
 
 #2 - Github CI/CD
-Upon a github release, the pipeline will trigger packaging and publishing the extension code for the main branch.
-The credentials for the have been generated in the [penumbra-web google cloud project](https://console.cloud.google.com/apis/credentials?project=penumbra-web&supportedpurview=project).
+Upon a github release, the `penumbra-zone/penumbra-labs` github team will be pinged for a review of the release.
+Any one of the members can approve it. Upon doing so, the pipeline will trigger packaging and publishing the extension code for the main branch.
 See github action [here](../.github/workflows/extension-publish.yml).
+The credentials for this have been generated in the [penumbra-web google cloud project](https://console.cloud.google.com/apis/credentials?project=penumbra-web&supportedpurview=project).
+
+Note: there is a Chrome review process that typically takes 1-2 days.
