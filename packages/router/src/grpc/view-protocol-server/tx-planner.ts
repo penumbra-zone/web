@@ -54,6 +54,10 @@ export const handleTxPlannerReq = async (
     planner.output(o.value, o.address);
   }
 
+  for (const w of req.ics20Withdrawals) {
+    planner.ics20Withdrawal(w);
+  }
+
   const refundAddr = await getRefundAddress(req);
   const plan = await planner.plan(refundAddr);
   return new TransactionPlannerResponse({ plan });

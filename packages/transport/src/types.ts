@@ -1,4 +1,4 @@
-import { JsonValue, MethodInfo, ServiceType } from '@bufbuild/protobuf';
+import { IMessageTypeRegistry, JsonValue, MethodInfo, ServiceType } from '@bufbuild/protobuf';
 
 export const INCOMING_GRPC_MESSAGE = 'PENUMBRA_DAPP_GRPC_REQUEST' as const;
 export const OUTGOING_GRPC_MESSAGE = 'PENUMBRA_DAPP_GRPC_RESPONSE' as const;
@@ -6,6 +6,10 @@ export const OUTGOING_GRPC_MESSAGE = 'PENUMBRA_DAPP_GRPC_RESPONSE' as const;
 // Gets all request type-names for service (e.g. penumbra.view.v1alpha1.StatusRequest)
 export type GrpcRequestTypename<S extends ServiceType> = {
   [K in keyof S['methods']]: S['methods'][K]['I']['typeName'];
+}[keyof S['methods']];
+
+export type GrpcResponseTypename<S extends ServiceType> = {
+  [K in keyof S['methods']]: S['methods'][K]['O']['typeName'];
 }[keyof S['methods']];
 
 // Gets all response types for service (e.g. StatusRequest)
@@ -38,11 +42,14 @@ export const isDappGrpcRequest = <S extends ServiceType>(
 interface BaseResponse<S extends ServiceType> {
   type: typeof OUTGOING_GRPC_MESSAGE;
   serviceTypeName: S['typeName'];
-  requestTypeName: GrpcRequestTypename<S>; // TODO: Should change to response name? Do we need this?
+  requestTypeName: GrpcRequestTypename<S>;
   sequence: number;
 }
 
-export type UnaryResponse<S extends ServiceType> = BaseResponse<S> & { result: GrpcResponse<S> };
+export type UnaryResponse<S extends ServiceType> = BaseResponse<S> & {
+  result: JsonValue;
+  responseTypeName: GrpcResponseTypename<S>;
+};
 
 export const isUnaryResponse = <S extends ServiceType>(
   message: unknown,
@@ -51,30 +58,48 @@ export const isUnaryResponse = <S extends ServiceType>(
 export const unaryResponseMsg = <S extends ServiceType>(
   req: DappMessageRequest<S>,
   result: GrpcResponse<S>,
+  typeRegistry: IMessageTypeRegistry,
 ): UnaryResponse<S> => {
   return {
     type: OUTGOING_GRPC_MESSAGE,
     sequence: req.sequence,
-    requestTypeName: req.requestTypeName,
     serviceTypeName: req.serviceTypeName,
-    result,
+    requestTypeName: req.requestTypeName,
+    responseTypeName: result.getType().typeName,
+    result: result.toJson({ typeRegistry }),
   };
 };
 
+interface StreamResponseValue<S extends ServiceType> {
+  value: JsonValue;
+  responseTypeName: GrpcResponseTypename<S>;
+  done: false;
+}
+
 export type StreamResponse<S extends ServiceType> = BaseResponse<S> & {
-  stream: { value: GrpcResponse<S>; done: false } | { done: true };
+  stream: StreamResponseValue<S> | { done: true };
 };
 
 export const streamResponseMsg = <S extends ServiceType>(
   req: DappMessageRequest<S>,
   result: { value: GrpcResponse<S>; done: false } | { done: true },
+  typeRegistry: IMessageTypeRegistry,
 ): StreamResponse<S> => {
+  const streamResponse =
+    'value' in result
+      ? {
+          value: result.value.toJson({ typeRegistry }),
+          responseTypeName: result.value.getType().typeName,
+          done: result.done,
+        }
+      : result;
+
   return {
     type: OUTGOING_GRPC_MESSAGE,
     sequence: req.sequence,
     requestTypeName: req.requestTypeName,
     serviceTypeName: req.serviceTypeName,
-    stream: result,
+    stream: streamResponse,
   };
 };
 

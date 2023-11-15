@@ -14,6 +14,7 @@ import {
 } from './types';
 import { unaryIO } from './unary';
 import { serverStreamIO } from './stream';
+import { typeRegistry } from '@penumbra-zone/types/src/registry';
 
 // Creates a new service implementation by wrapping the original with the special event transport methods
 const makeAnyServiceImpl = <S extends ServiceType>(
@@ -83,14 +84,22 @@ const makeEventImplMethod =
     switch (method.kind) {
       case MethodKind.Unary:
         return async (request: GrpcRequest<S>) => {
-          const result = await unaryIO(pending, request, service.typeName);
-          return getResFromReq(service, request).fromJson(result);
+          try {
+            const result = await unaryIO(pending, request, service.typeName);
+            return getResFromReq(service, request).fromJson(result, { typeRegistry });
+          } catch (e) {
+            throw new ConnectError(String(e), Code.Internal);
+          }
         };
       case MethodKind.ServerStreaming:
         return async function* (request: GrpcRequest<S>) {
-          const stream = serverStreamIO(pending, request, service.typeName);
-          for await (const res of stream) {
-            yield getResFromReq(service, request).fromJson(res);
+          try {
+            const stream = serverStreamIO(pending, request, service.typeName);
+            for await (const res of stream) {
+              yield getResFromReq(service, request).fromJson(res, { typeRegistry });
+            }
+          } catch (e) {
+            throw new ConnectError(String(e), Code.Internal);
           }
         };
       default:

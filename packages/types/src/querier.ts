@@ -9,12 +9,17 @@ import {
   AssetId,
   DenomMetadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import {
+  QueryClientStatesRequest,
+  QueryClientStatesResponse,
+} from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/query_pb';
 
 export interface RootQuerierInterface {
   app: AppQuerierInterface;
   compactBlock: CompactBlockQuerierInterface;
   tendermint: TendermintQuerierInterface;
   shieldedPool: ShieldedPoolQuerierInterface;
+  ibcClient: IbcClientQuerierInterface;
 }
 
 export interface AppQuerierInterface {
@@ -40,4 +45,8 @@ export interface TendermintQuerierInterface {
 
 export interface ShieldedPoolQuerierInterface {
   denomMetadata(assetId: AssetId): Promise<DenomMetadata | undefined>;
+}
+
+export interface IbcClientQuerierInterface {
+  ibcClientStates(req: QueryClientStatesRequest): Promise<QueryClientStatesResponse>;
 }

@@ -12,6 +12,7 @@ import {
   FmdParameters,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { JsonValue } from '@bufbuild/protobuf';
+import { Ics20Withdrawal } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/ibc/v1alpha1/ibc_pb';
 
 interface PlannerProps {
   idbConstants: IdbConstants;
@@ -33,6 +34,10 @@ export class TxPlanner {
 
   output(value: Value, addr: Address): void {
     this.wasmPlanner.output(value.toJson(), addr.toJson());
+  }
+
+  ics20Withdrawal(withdrawal: Ics20Withdrawal): void {
+    this.wasmPlanner.ics20_withdrawal(withdrawal.toJson());
   }
 
   expiryHeight(value: bigint): void {
