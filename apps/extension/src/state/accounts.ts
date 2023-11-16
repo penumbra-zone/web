@@ -13,6 +13,7 @@ export interface AccountsSlice {
   index: number;
   previous: () => void;
   next: () => void;
+  setIndex: (index: number) => void;
 }
 
 export const createAccountsSlice: SliceCreator<AccountsSlice> = (set, get) => {
@@ -30,6 +31,11 @@ export const createAccountsSlice: SliceCreator<AccountsSlice> = (set, get) => {
       const current = get().accounts.index;
       set(state => {
         state.accounts.index = current + 1;
+      });
+    },
+    setIndex: index => {
+      set(state => {
+        state.accounts.index = index;
       });
     },
   };
