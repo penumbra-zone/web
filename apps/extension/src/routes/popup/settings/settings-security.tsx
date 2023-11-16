@@ -1,5 +1,5 @@
 import { FadeTransition } from '@penumbra-zone/ui';
-import { AccountKeyIcon, EyeGradientIcon, FileTextIcon, KeyIcon } from '../../../icons';
+import { EyeGradientIcon, FileTextIcon } from '../../../icons';
 import { CustomLink, SettingsHeader } from '../../../shared';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
@@ -10,16 +10,17 @@ const links = [
     icon: <FileTextIcon />,
     href: PopupPath.SETTINGS_RECOVERY_PASSPHRASE,
   },
-  {
-    title: 'Full viewing key',
-    icon: <KeyIcon />,
-    href: PopupPath.SETTINGS_FULL_VIEWING_KEY,
-  },
-  {
-    title: 'Spending key',
-    icon: <AccountKeyIcon />,
-    href: PopupPath.SETTINGS_SPEND_KEY,
-  },
+  //TODO bring it back if we`ll have reason
+  // {
+  //   title: 'Full viewing key',
+  //   icon: <KeyIcon />,
+  //   href: PopupPath.SETTINGS_FULL_VIEWING_KEY,
+  // },
+  // {
+  //   title: 'Spending key',
+  //   icon: <AccountKeyIcon />,
+  //   href: PopupPath.SETTINGS_SPEND_KEY,
+  // },
 ];
 
 export const SettingsSecurity = () => {

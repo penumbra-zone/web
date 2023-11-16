@@ -1,0 +1,43 @@
+# Publishes extension to chrome web store when a release is made in github.
+# `maniftest.json` should already be updated to the desired version before release.
+# https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe
+name: Publish extension
+
+on:
+  push:
+    tags:
+      - '*-?v[0-9]+*'
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    name: Publish chrome extension
+    environment: ext-publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build monorepo
+        run: pnpm build
+
+      - name: Package up extension
+        run: zip -r dist.zip apps/extension/dist
+
+      - name: Upload & release
+        uses: penumbra-zone/chrome-extension-upload@v1
+        with:
+          file-path: dist.zip
+          extension-id: lkpmkhpnhknhmibgnmmhdhgdilepfghe
+          client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
+          client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
