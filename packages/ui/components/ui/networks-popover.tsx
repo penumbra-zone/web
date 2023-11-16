@@ -25,8 +25,7 @@ const NetworksPopover = ({
         {connectIndicator && (
           <div className='-mx-1 h-4 w-1 rounded-sm bg-gradient-to-b from-cyan-400 to-emerald-400'></div>
         )}
-        <p className='hidden md:block'>{name}</p>
-        <p className='block md:hidden'>{name.slice(0, 14)}...</p>
+        <p>{name}</p>
       </PopoverTrigger>
       <PopoverContent></PopoverContent>
     </Popover>

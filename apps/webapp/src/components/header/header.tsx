@@ -22,7 +22,7 @@ export const Header = () => {
           <img
             src='/logo.svg'
             alt='Penumbra logo'
-            className='relative z-10 mt-[30px] h-[10px] w-[110px] md:mt-0 md:h-4 md:w-[171px]'
+            className='relative z-10 mt-[20px] h-4 w-[171px] md:mt-0'
           />
         </Link>
       </div>
