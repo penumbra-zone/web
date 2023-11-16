@@ -49,6 +49,23 @@ describe('Accounts Slice', () => {
     expect(useStore.getState().accounts.index).toBe(3);
   });
 
+  test('can be set index', () => {
+    useStore.getState().accounts.setIndex(100000);
+    expect(useStore.getState().accounts.index).toBe(100000);
+  });
+
+  test('check index after set and decrement', () => {
+    useStore.getState().accounts.setIndex(100);
+    useStore.getState().accounts.previous();
+    expect(useStore.getState().accounts.index).toBe(99);
+  });
+
+  test('check index after set and incremetn', () => {
+    useStore.getState().accounts.setIndex(100);
+    useStore.getState().accounts.next();
+    expect(useStore.getState().accounts.index).toBe(101);
+  });
+
   test('cannot go below zero', () => {
     useStore.getState().accounts.previous();
     useStore.getState().accounts.previous();

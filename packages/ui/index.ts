@@ -20,3 +20,4 @@ export * from './components/ui/table';
 export * from './components/ui/identicon';
 export * from './components/ui/tx/view/transaction';
 export * from './components/ui/navigation-menu';
+export * from './components/ui/select-account';
