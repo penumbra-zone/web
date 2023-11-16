@@ -20,7 +20,7 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
       <div className='text-xl font-bold'>Transaction View</div>
       <div className='mb-8 break-all font-mono italic text-muted-foreground'>{hash}</div>
       <Tabs defaultValue={TxDetailsTab.PRIVATE}>
-        <TabsList className='mx-auto grid grid-cols-2 gap-4 md:w-full xl:w-[372px]'>
+        <TabsList className='mx-auto grid w-[75%] grid-cols-2 gap-4 xl:w-[372px]'>
           <TabsTrigger value={TxDetailsTab.PRIVATE}>Your View</TabsTrigger>
           <TabsTrigger value={TxDetailsTab.PUBLIC}>Public View</TabsTrigger>
         </TabsList>

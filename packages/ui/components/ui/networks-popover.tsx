@@ -18,7 +18,7 @@ const NetworksPopover = ({
     <Popover open={false}>
       <PopoverTrigger
         className={cn(
-          'flex items-center justify-between gap-4 rounded-lg border bg-background sm:px-[25px] xl:px-[18px] py-[7px] font-bold text-muted-foreground',
+          'flex items-center justify-between gap-4 rounded-lg border bg-background px-5 md:px-[25px] xl:px-[18px] py-[7px] font-bold text-muted-foreground',
           triggerClassName,
         )}
       >
