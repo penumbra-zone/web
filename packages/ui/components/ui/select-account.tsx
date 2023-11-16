@@ -14,7 +14,7 @@ export const SelectAccount = ({ index, previous, next, setIndex }: SelectAccount
   const [width, setWidth] = useState(index?.toString().length ?? 1);
 
   return (
-    <div className='flex justify-between items-center'>
+    <div className='flex items-center justify-between'>
       {index !== 0 ? (
         <ArrowLeftIcon
           onClick={() => {
@@ -37,7 +37,7 @@ export const SelectAccount = ({ index, previous, next, setIndex }: SelectAccount
                 <Input
                   variant='transparent'
                   type='number'
-                  className='h-6 py-[2px] font-headline text-xl font-semibold leading-[30px] mb-[3px]'
+                  className='mb-[3px] h-6 py-[2px] font-headline text-xl font-semibold leading-[30px]'
                   onChange={e => {
                     const value = Number(e.target.value);
                     const valueLength = e.target.value.replace(/^0+/, '').length;

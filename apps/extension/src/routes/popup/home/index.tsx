@@ -42,7 +42,7 @@ export const PopupIndex = () => {
       <IndexHeader />
       <div className='my-32 flex w-full flex-col'>
         <SelectAccount previous={previous} next={next} setIndex={setIndex} index={account?.index} />
-        <div className='flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4 mt-4'>
+        <div className='mt-4 flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
           <div className='flex items-center gap-[6px]'>
             <Identicon name={account?.address ?? ''} className='h-6 w-6 rounded-full' />
             <p className='select-none text-center font-mono text-[12px] leading-[18px] text-muted-foreground'>
