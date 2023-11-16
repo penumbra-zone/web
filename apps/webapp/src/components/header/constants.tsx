@@ -9,7 +9,7 @@ export interface HeaderLink {
   label: string;
   active: boolean;
   subLinks?: PagePath[];
-  icon: ReactElement;
+  mobileIcon: ReactElement;
 }
 
 export const headerLinks: HeaderLink[] = [
@@ -18,38 +18,38 @@ export const headerLinks: HeaderLink[] = [
     label: 'Dashboard',
     active: true,
     subLinks: [PagePath.DASHBOARD, PagePath.TRANSACTIONS, PagePath.NFTS],
-    icon: <BoxIcon />,
+    mobileIcon: <BoxIcon />,
   },
   {
     href: PagePath.SEND,
     label: 'Send',
     active: true,
     subLinks: [PagePath.SEND, PagePath.RECEIVE, PagePath.IBC],
-    icon: <ArrowTopRightIcon className='h-5 w-5 text-muted-foreground' />,
+    mobileIcon: <ArrowTopRightIcon className='h-5 w-5 text-muted-foreground' />,
   },
   {
     href: PagePath.SWAP,
     label: 'Swap',
     active: false,
-    icon: <SwapIcon />,
+    mobileIcon: <SwapIcon />,
   },
   {
     href: PagePath.POOLS,
     label: 'Pools',
     active: false,
-    icon: <DragHandleDotsIcon />,
+    mobileIcon: <DragHandleDotsIcon />,
   },
   {
     href: PagePath.GOVERNANCE,
     label: 'Governance',
     active: false,
-    icon: <MixerHorizontalIcon className='h-5 w-5 text-muted-foreground' />,
+    mobileIcon: <MixerHorizontalIcon className='h-5 w-5 text-muted-foreground' />,
   },
   {
     href: PagePath.STAKING,
     label: 'Staking',
     active: false,
-    icon: <TextAlignLeftIcon className='h-5 w-5 text-muted-foreground' />,
+    mobileIcon: <TextAlignLeftIcon className='h-5 w-5 text-muted-foreground' />,
   },
 ];
 

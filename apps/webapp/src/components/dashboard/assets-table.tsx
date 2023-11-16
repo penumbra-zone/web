@@ -52,23 +52,14 @@ export default function AssetsTable() {
             </div>
             <div className='flex flex-col gap-[34px] md:hidden'>
               {a.balances.map((asset, i) => (
-                <div key={i} className='flex flex-col gap-4 border-b pb-3'>
-                  <div className='flex items-center justify-between'>
-                    <p className='font-headline text-base font-semibold'>Asset</p>
-                    <p className='font-mono text-base font-bold'>{asset.denom.display}</p>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <p className='font-headline text-base font-semibold'>Balance</p>
-                    <p className='text-base font-bold'>
-                      {fromBaseUnitAmount(asset.amount, asset.denom.exponent).toFormat()}
-                    </p>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <p className='font-headline text-base font-semibold'>Value</p>
-                    <p className='text-base font-bold'>
-                      {asset.usdcValue == 0 ? '$–' : `$${displayUsd(asset.usdcValue)}`}
-                    </p>
-                  </div>
+                <div key={i} className='flex items-center justify-between border-b pb-3'>
+                  <p className='font-mono text-base font-bold'>{asset.denom.display}</p>
+                  <p className='text-base font-bold font-mono'>
+                    {fromBaseUnitAmount(asset.amount, asset.denom.exponent).toFormat()}
+                  </p>
+                  <p className='text-base font-bold font-mono'>
+                    {asset.usdcValue == 0 ? '$–' : `$${displayUsd(asset.usdcValue)}`}
+                  </p>
                 </div>
               ))}
             </div>

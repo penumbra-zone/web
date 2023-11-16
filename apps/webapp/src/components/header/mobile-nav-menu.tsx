@@ -20,8 +20,8 @@ export const MobileNavMenu = () => {
                   to={link.href}
                   className='flex select-none items-center gap-2 p-[10px] font-bold text-muted-foreground'
                 >
-                  {link.icon}
-                  <p className='pt-[2px]'>{link.label}</p>
+                  {link.mobileIcon}
+                  <p className='pt-[2px] text-lg'>{link.label}</p>
                 </Link>
               </SheetTrigger>
             ))}

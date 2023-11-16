@@ -11,20 +11,18 @@ export const Header = () => {
   const result = useLoaderData() as LayoutLoaderResult;
 
   return (
-    <header className='z-10 flex h-[82px] w-full flex-col items-center justify-between px-6 md:flex-row md:px-12'>
-      <div className='mb-[46px] md:mb-0'>
+    <header className='z-10 flex md:h-[82px] w-full flex-col items-center justify-between px-6 md:flex-row md:px-12'>
+      <div className='mb-[30px] md:mb-0'>
         <img
           src='/penumbra-logo.svg'
-          width={234}
-          height={234}
           alt='Penumbra logo'
-          className='absolute inset-x-0 top-[-85px] mx-auto h-[126px] w-[126px] rotate-[320deg] md:left-[-100px] md:top-[-140px] md:mx-0 md:h-[234px] md:w-[234px]'
+          className='absolute inset-x-0 top-[-75px] mx-auto h-[141px] w-[136px] rotate-[320deg] md:left-[-100px] md:top-[-140px] md:mx-0 md:h-[234px] md:w-[234px]'
         />
         <Link to={PagePath.INDEX}>
           <img
             src='/logo.svg'
             alt='Penumbra logo'
-            className='relative z-10 mt-3 h-[10px] w-[84px] md:mt-0 md:h-4 md:w-[171px]'
+            className='relative z-10 mt-[30px] h-[10px] w-[110px] md:mt-0 md:h-4 md:w-[171px]'
           />
         </Link>
       </div>
@@ -40,8 +38,15 @@ export const Header = () => {
             <div className='order-3 flex items-center justify-center md:order-none'>
               <Notifications />
             </div>
-            <div className='order-2 md:order-none'>
+            <div className='order-2 md:order-none hidden md:block'>
               <NetworksPopover name={result.chainId} />
+            </div>
+            <div className='order-2 md:order-none md:hidden'>
+              <NetworksPopover
+                name={
+                  result.chainId.length > 15 ? `${result.chainId.slice(0, 14)}...` : result.chainId
+                }
+              />
             </div>
           </>
         ) : null}
