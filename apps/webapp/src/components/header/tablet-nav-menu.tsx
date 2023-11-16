@@ -8,12 +8,13 @@ import {
   navigationMenuTriggerStyle,
 } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { Link } from 'react-router-dom';
-import { headerLinks, transactionLink } from './constants.ts';
-import { usePagePath } from '../../fetchers/page-path.ts';
+import { useNavigate } from 'react-router-dom';
+import { headerLinks, transactionLink } from './constants';
+import { usePagePath } from '../../fetchers/page-path';
 
 export const TabletNavMenu = () => {
   const pathname = usePagePath();
+  const navigate = useNavigate();
 
   return (
     <div className='hidden md:block xl:hidden'>
@@ -30,13 +31,16 @@ export const TabletNavMenu = () => {
               {headerLinks
                 .filter(link => link.active)
                 .map(link => (
-                  <Link key={link.href} to={link.href} className='border-b'>
-                    <NavigationMenuLink
-                      className={cn(navigationMenuTriggerStyle(), 'border-b border-brown')}
-                    >
-                      {link.label}
-                    </NavigationMenuLink>
-                  </Link>
+                  <NavigationMenuLink
+                    key={link.href}
+                    className={cn(
+                      navigationMenuTriggerStyle(),
+                      'border-b border-brown cursor-pointer',
+                    )}
+                    onClick={() => navigate(link.href)}
+                  >
+                    {link.label}
+                  </NavigationMenuLink>
                 ))}
             </NavigationMenuContent>
           </NavigationMenuItem>

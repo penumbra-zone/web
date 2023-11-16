@@ -42,11 +42,12 @@ export const TxDetails = () => {
 
   return (
     <FadeTransition className='flex min-h-[calc(100vh-122px)] flex-col items-stretch justify-start'>
-      <div className='relative mx-auto grid max-w-[1276px] grid-cols-3 gap-5'>
-        <Card gradient className='col-span-2 row-span-2 flex-1 md:p-4 xl:p-5'>
+      <div className='relative mx-auto grid gap-6 md:gap-4 lg:grid-cols-3  xl:max-w-[1276px] xl:gap-5'>
+        <Card gradient className='flex-1 p-5 md:p-4 lg:col-span-2 lg:row-span-2 xl:p-5'>
           <TxViewer txInfo={txInfo} hash={hash} />
         </Card>
         <EduInfoCard
+          className='row-span-1'
           src='/incognito.svg'
           label='Shielded Transactions'
           content={EduPanel.SHIELDED_TRANSACTION}

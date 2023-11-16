@@ -44,7 +44,7 @@ export default function Notifications() {
           <BellIcon stroke={status === 'sync' ? '#363434' : '#BDB8B8'} />
         </div>
       </PopoverTrigger>
-      <PopoverContent className='relative flex w-[400px] flex-col gap-10 bg-charcoal-secondary p-6'>
+      <PopoverContent className='relative flex w-[300px] flex-col gap-4 bg-charcoal-secondary p-6 md:w-[400px] md:gap-10'>
         <BlockSync data={data} />
       </PopoverContent>
     </Popover>

@@ -43,17 +43,13 @@ export default function InputToken({
         className,
       )}
     >
-      <div className='mb-2 flex items-center justify-between'>
-        <div className='flex flex-col items-center gap-2 self-start lg:flex-row'>
-          <p className='text-base font-bold'>{label}</p>
-          {vResult ? (
-            <div className={cn('italic hidden lg:block', 'text-red-400')}>{vResult.issue}</div>
-          ) : null}
-        </div>
-        <div className='flex items-start gap-1'>
-          <img src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
-          <p className='font-bold text-muted-foreground'>{assetBalance.toFormat()}</p>
-        </div>
+      <div className='mb-2 flex items-center justify-between gap-1 md:gap-2'>
+        <p className='text-sm font-bold md:text-base'>{label}</p>
+        {vResult ? (
+          <div className={cn('italic text-[12px] md:text-[15px]', 'text-red-400')}>
+            {vResult.issue}
+          </div>
+        ) : null}
       </div>
       <div className='flex items-center justify-between gap-4'>
         <Input
@@ -69,14 +65,21 @@ export default function InputToken({
         />
         <SelectTokenModal asset={asset} setAsset={setAsset} balances={balances} />
       </div>
-      <p
-        className={cn(
-          'break-all md:test-[12px] xl:text-base font-bold text-light-brown',
-          value && 'text-muted-foreground',
-        )}
-      >
-        ${displayAmount(Number(value) * asset.price)}
-      </p>
+
+      <div className='mt-[6px] flex items-center justify-between gap-2'>
+        <p
+          className={cn(
+            'break-all md:test-[12px] xl:text-base font-bold text-light-brown',
+            value && 'text-muted-foreground',
+          )}
+        >
+          ${displayAmount(Number(value) * asset.price)}
+        </p>
+        <div className='flex items-start gap-1'>
+          <img src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
+          <p className='font-bold text-muted-foreground'>{assetBalance.toFormat()}</p>
+        </div>
+      </div>
     </div>
   );
 }
