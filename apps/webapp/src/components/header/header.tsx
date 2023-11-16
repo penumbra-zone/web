@@ -38,15 +38,8 @@ export const Header = () => {
             <div className='order-3 flex items-center justify-center md:order-none'>
               <Notifications />
             </div>
-            <div className='order-2 hidden md:order-none md:block'>
+            <div className='order-2 md:order-none'>
               <NetworksPopover name={result.chainId} />
-            </div>
-            <div className='order-2 md:order-none md:hidden'>
-              <NetworksPopover
-                name={
-                  result.chainId.length > 15 ? `${result.chainId.slice(0, 14)}...` : result.chainId
-                }
-              />
             </div>
           </>
         ) : null}
