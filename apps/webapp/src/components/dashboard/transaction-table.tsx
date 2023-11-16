@@ -16,21 +16,12 @@ export default function TransactionTable() {
     <>
       <div className='flex flex-col gap-[34px] md:hidden'>
         {data.map((tx, i) => (
-          <div key={i} className='flex flex-col gap-4 border-b pb-3'>
-            <div className='flex items-center justify-between'>
-              <p className='font-headline text-base font-semibold'>Block Height</p>
-              <p className='text-center text-base font-bold'>{tx.height}</p>
-            </div>
-            <div className='flex items-center justify-between'>
-              <p className='font-headline text-base font-semibold'>Description</p>
-              <p className='text-center text-base font-bold'>{tx.description}</p>
-            </div>
-            <div className='flex items-center justify-between'>
-              <p className='font-headline text-base font-semibold'>Transaction Hash</p>
-              <p className='text-center font-mono text-base'>
-                <Link to={`/tx/${tx.hash}`}>{shorten(tx.hash, 8)}</Link>
-              </p>
-            </div>
+          <div key={i} className='flex justify-between gap-4 border-b pb-3'>
+            <p className='text-center text-base font-bold'>{tx.height}</p>
+            <p className='text-center text-base font-bold'>{tx.description}</p>
+            <p className='text-center font-mono text-base'>
+              <Link to={`/tx/${tx.hash}`}>{shorten(tx.hash, 8)}</Link>
+            </p>
           </div>
         ))}
       </div>

@@ -44,8 +44,12 @@ export default function InputToken({
       )}
     >
       <div className='mb-2 flex items-center justify-between gap-1 md:gap-2'>
-        <p className='text-sm md:text-base font-bold'>{label}</p>
-        {vResult ? <div className={cn('italic text-[12px] md:text-[15px]', 'text-red-400')}>{vResult.issue}</div> : null}
+        <p className='text-sm font-bold md:text-base'>{label}</p>
+        {vResult ? (
+          <div className={cn('italic text-[12px] md:text-[15px]', 'text-red-400')}>
+            {vResult.issue}
+          </div>
+        ) : null}
       </div>
       <div className='flex items-center justify-between gap-4'>
         <Input
@@ -62,7 +66,7 @@ export default function InputToken({
         <SelectTokenModal asset={asset} setAsset={setAsset} balances={balances} />
       </div>
 
-      <div className='flex justify-between items-center mt-[6px] gap-2'>
+      <div className='mt-[6px] flex items-center justify-between gap-2'>
         <p
           className={cn(
             'break-all md:test-[12px] xl:text-base font-bold text-light-brown',

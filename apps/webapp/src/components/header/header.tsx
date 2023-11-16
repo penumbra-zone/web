@@ -11,7 +11,7 @@ export const Header = () => {
   const result = useLoaderData() as LayoutLoaderResult;
 
   return (
-    <header className='z-10 flex md:h-[82px] w-full flex-col items-center justify-between px-6 md:flex-row md:px-12'>
+    <header className='z-10 flex w-full flex-col items-center justify-between px-6 md:h-[82px] md:flex-row md:px-12'>
       <div className='mb-[30px] md:mb-0'>
         <img
           src='/penumbra-logo.svg'
@@ -38,7 +38,7 @@ export const Header = () => {
             <div className='order-3 flex items-center justify-center md:order-none'>
               <Notifications />
             </div>
-            <div className='order-2 md:order-none hidden md:block'>
+            <div className='order-2 hidden md:order-none md:block'>
               <NetworksPopover name={result.chainId} />
             </div>
             <div className='order-2 md:order-none md:hidden'>

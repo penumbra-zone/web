@@ -54,10 +54,10 @@ export default function AssetsTable() {
               {a.balances.map((asset, i) => (
                 <div key={i} className='flex items-center justify-between border-b pb-3'>
                   <p className='font-mono text-base font-bold'>{asset.denom.display}</p>
-                  <p className='text-base font-bold font-mono'>
+                  <p className='font-mono text-base font-bold'>
                     {fromBaseUnitAmount(asset.amount, asset.denom.exponent).toFormat()}
                   </p>
-                  <p className='text-base font-bold font-mono'>
+                  <p className='font-mono text-base font-bold'>
                     {asset.usdcValue == 0 ? '$–' : `$${displayUsd(asset.usdcValue)}`}
                   </p>
                 </div>

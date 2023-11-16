@@ -24,8 +24,10 @@ export default function SelectTokenModal({ asset, setAsset, balances }: SelectTo
   return (
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
-        <div className='flex h-[26px] w-[100px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2 xl:h-9 xl:w-[100px]'>
-          <div className='w-4 h-4 md:w-6 md:h-6'></div>
+        <div className='flex h-9 items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
+          <div className='flex h-6 w-6 items-center justify-center rounded-full bg-[#B6B9C6] pt-1 uppercase'>
+            {asset.display[0]}
+          </div>
           <p className='font-bold text-light-grey md:text-sm xl:text-base'>{asset.display}</p>
         </div>
       </DialogTrigger>
