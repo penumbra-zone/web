@@ -1,4 +1,6 @@
 export interface Chain {
-  name: string;
-  icon: string;
+  displayName: string;
+  chainId: string;
+  ibcChannel: string;
+  iconUrl: string;
 }

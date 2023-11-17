@@ -1,10 +1,9 @@
 // A single request/response handler
-import { ServiceType } from '@bufbuild/protobuf';
+import { JsonValue, ServiceType } from '@bufbuild/protobuf';
 import {
   DappMessageRequest,
   DappMessageResponse,
   GrpcRequest,
-  GrpcResponse,
   INCOMING_GRPC_MESSAGE,
   isUnaryResponse,
   PendingRequests,
@@ -15,7 +14,7 @@ export const unaryIO = async <S extends ServiceType, M extends GrpcRequest<S>>(
   pending: PendingRequests<S>,
   requestMethod: M,
   serviceTypeName: S['typeName'],
-): Promise<GrpcResponse<S>> => {
+): Promise<JsonValue> => {
   const sequence = ++pending.sequence;
   const promiseResponse = new Promise<DappMessageResponse<S>>((resolve, reject) => {
     pending.requests.set(sequence, { resolve, reject });

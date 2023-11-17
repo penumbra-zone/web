@@ -7,9 +7,10 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@buf/cosmos_ibc.bufbuild_es": "1.4.2-20231018090243-cc1d31ac98a0.1",
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.4.2-20231103014351-723c6aa746dd.1",
     "@bufbuild/protobuf": "^1.4.2",
-    "@types/chrome": "0.0.250",
+    "@types/chrome": "0.0.251",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",
     "buffer": "^6.0.3",

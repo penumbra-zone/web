@@ -1,9 +1,8 @@
-import { ServiceType } from '@bufbuild/protobuf';
+import { JsonValue, ServiceType } from '@bufbuild/protobuf';
 import {
   DappMessageRequest,
   DappMessageResponse,
   GrpcRequest,
-  GrpcResponse,
   INCOMING_GRPC_MESSAGE,
   isErrorResponse,
   isStreamResponse,
@@ -17,7 +16,7 @@ export const serverStreamIO = async function* <S extends ServiceType, M extends 
   pending: PendingRequests<S>,
   requestMethod: M,
   serviceTypeName: S['typeName'],
-): AsyncGenerator<GrpcResponse<S>> {
+): AsyncGenerator<JsonValue> {
   const sequence = ++pending.sequence;
   const queue = new Array<DappMessageResponse<S>>();
 

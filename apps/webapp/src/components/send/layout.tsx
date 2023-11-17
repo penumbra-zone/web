@@ -1,4 +1,3 @@
-'use client';
 import { Card } from '@penumbra-zone/ui';
 import { sendTabs, sendTabsHelper } from './constants';
 import { SendTab } from './types';

@@ -15,8 +15,8 @@ export const sendTabsHelper: SendTabMap = {
   },
   [PagePath.IBC]: {
     src: '/ibc-gradient.svg',
-    label: 'IBC funds',
-    content: EduPanel.TEMP_FILLER,
+    label: 'IBC withdraw',
+    content: EduPanel.IBC_WITHDRAW,
   },
 };
 

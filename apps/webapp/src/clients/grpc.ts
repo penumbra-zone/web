@@ -3,6 +3,7 @@ import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/p
 import { createEventTransport } from '@penumbra-zone/transport';
 import { SimulationService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/dex/v1alpha1/dex_connect';
 import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
+import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
 
 export const viewClient = createPromiseClient(
   ViewProtocolService,
@@ -17,4 +18,9 @@ export const custodyClient = createPromiseClient(
 export const simulateClient = createPromiseClient(
   SimulationService,
   createEventTransport(SimulationService),
+);
+
+export const ibcClient = createPromiseClient(
+  IbcClientService,
+  createEventTransport(IbcClientService),
 );
