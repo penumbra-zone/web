@@ -7,6 +7,7 @@ import {
 } from '@penumbra-zone/types';
 import { stdRouter } from './std/router';
 import { custodyServerRouter, isCustodyServerReq } from './grpc/custody/router';
+import { ibcClientServerRouter, isIbcClientServerReq } from './grpc/ibc-client/router';
 
 // Used to filter for service worker messages and narrow their type to pass to the typed handler.
 // Exposed to service worker for listening for internal and external messages
@@ -22,6 +23,7 @@ export const penumbraMessageHandler =
     if (isStdRequest(message)) return stdRouter(message, sendResponse, services);
     else if (isViewServerReq(message)) viewServerRouter(message, sender, services);
     else if (isCustodyServerReq(message)) custodyServerRouter(message, sender, services);
+    else if (isIbcClientServerReq(message)) ibcClientServerRouter(message, sender, services);
 
     return;
   };

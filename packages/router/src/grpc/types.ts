@@ -8,6 +8,7 @@ import {
 } from '@penumbra-zone/transport';
 import { MethodKind, ServiceType } from '@bufbuild/protobuf';
 import { ServicesInterface } from '@penumbra-zone/types';
+import { typeRegistry } from '@penumbra-zone/types/src/registry';
 
 interface MethodMatch<S extends ServiceType> {
   msg: GrpcRequest<S>;
@@ -67,12 +68,12 @@ export const createServerRoute =
     (async function () {
       if (kind === MethodKind.ServerStreaming) {
         for await (const result of streamingHandler(msg, services)) {
-          await send(streamResponseMsg(req, { value: result, done: false }));
+          await send(streamResponseMsg(req, { value: result, done: false }, typeRegistry));
         }
-        await send(streamResponseMsg(req, { done: true }));
+        await send(streamResponseMsg(req, { done: true }, typeRegistry));
       } else if (kind === MethodKind.Unary) {
         const result = await unaryHandler(msg, services);
-        await send(unaryResponseMsg(req, result));
+        await send(unaryResponseMsg(req, result, typeRegistry));
       } else {
         throw new Error(`Method kind: ${kind}, not supported`);
       }

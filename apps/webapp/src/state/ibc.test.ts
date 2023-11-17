@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index.ts';
+import { Chain } from '@penumbra-zone/types';
 
 // TODO: Revisit tests when re-implementing ibc form
 
@@ -73,9 +74,11 @@ describe.skip('IBC Slice', () => {
   describe('setChain', () => {
     test('chain can be set', () => {
       const chain = {
-        name: 'Osmosis 1',
-        icon: '/test-chain-icon.png',
-      };
+        displayName: 'Osmosis',
+        chainId: 'osmosis-test-5',
+        ibcChannel: '0',
+        iconUrl: '/test.svg',
+      } satisfies Chain;
 
       useStore.getState().ibc.setChain(chain);
       expect(useStore.getState().ibc.chain).toBe(chain);

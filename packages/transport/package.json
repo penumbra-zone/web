@@ -12,7 +12,7 @@
     "@connectrpc/connect": "^1.1.3",
     "@connectrpc/connect-web": "^1.1.3",
     "@penumbra-zone/types": "workspace:*",
-    "@types/chrome": "0.0.250",
+    "@types/chrome": "0.0.251",
     "exponential-backoff": "^3.1.1",
     "react": "^18.2.0"
   },
