@@ -1,6 +1,8 @@
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import { Input } from './input';
 import { useState } from 'react';
+import { Button } from './button';
+import { cn } from '../../lib/utils';
 
 interface SelectAccountProps {
   index: number | undefined;
@@ -15,18 +17,20 @@ export const SelectAccount = ({ index, previous, next, setIndex }: SelectAccount
 
   return (
     <div className='flex items-center justify-between'>
-      {index !== 0 ? (
-        <ArrowLeftIcon
-          onClick={() => {
-            previous();
+      <Button variant='ghost' className={cn('hover:bg-inherit', index === 0 && 'cursor-default')}>
+        {index !== 0 ? (
+          <ArrowLeftIcon
+            onClick={() => {
+              previous();
 
-            setWidth(Number(String(index! - 1).length));
-          }}
-          className='h-6 w-6 hover:cursor-pointer'
-        />
-      ) : (
-        <div className='h-6 w-6' />
-      )}
+              setWidth(Number(String(index! - 1).length));
+            }}
+            className='h-6 w-6 hover:cursor-pointer'
+          />
+        ) : (
+          <span className='h-6 w-6' />
+        )}
+      </Button>
       <div className='select-none text-center font-headline text-xl font-semibold leading-[30px]'>
         {index !== undefined && (
           <div className='flex items-end gap-[6px]'>
@@ -54,17 +58,22 @@ export const SelectAccount = ({ index, previous, next, setIndex }: SelectAccount
           </div>
         )}
       </div>
-      {index! < MAX_INDEX ? (
-        <ArrowRightIcon
-          onClick={() => {
-            next();
-            setWidth(Number(String(index! + 1).length));
-          }}
-          className='h-6 w-6 hover:cursor-pointer'
-        />
-      ) : (
-        <div className='h-6 w-6' />
-      )}
+      <Button
+        variant='ghost'
+        className={cn('hover:bg-inherit', index === MAX_INDEX && 'cursor-default')}
+      >
+        {index! < MAX_INDEX ? (
+          <ArrowRightIcon
+            onClick={() => {
+              next();
+              setWidth(Number(String(index! + 1).length));
+            }}
+            className='h-6 w-6 hover:cursor-pointer'
+          />
+        ) : (
+          <span className='h-6 w-6' />
+        )}
+      </Button>
     </div>
   );
 };
