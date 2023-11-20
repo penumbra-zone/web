@@ -1,39 +1,57 @@
-import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
+import { ArrowLeftIcon, ArrowRightIcon, CopyIcon, InfoIcon } from 'lucide-react';
 import { Input } from './input';
 import { useState } from 'react';
 import { Button } from './button';
 import { cn } from '../../lib/utils';
+import { Identicon } from './identicon';
+import { CopyToClipboard } from './copy-to-clipboard';
+import { Switch } from './switch';
+import { IncognitoIcon } from './icons/incognito';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
+import { Account } from '@penumbra-zone/types';
 
 interface SelectAccountProps {
-  index: number | undefined;
+  ephemeral: boolean;
+  account: Account;
   previous: () => void;
   next: () => void;
   setIndex: (index: number) => void;
+  setEphemeral: (ephemeral: boolean) => void;
 }
 const MAX_INDEX = 2 ** 32;
 
-export const SelectAccount = ({ index, previous, next, setIndex }: SelectAccountProps) => {
-  const [width, setWidth] = useState(index?.toString().length ?? 1);
+export const SelectAccount = ({
+  account,
+  ephemeral,
+  previous,
+  next,
+  setIndex,
+  setEphemeral,
+}: SelectAccountProps) => {
+  const [width, setWidth] = useState(account.index.toString().length);
 
   return (
-    <div className='flex items-center justify-between'>
-      <Button variant='ghost' className={cn('hover:bg-inherit', index === 0 && 'cursor-default')}>
-        {index !== 0 ? (
-          <ArrowLeftIcon
-            onClick={() => {
-              previous();
+    <div className='flex w-full flex-col'>
+      <div className='flex items-center justify-between'>
+        <Button
+          variant='ghost'
+          className={cn('hover:bg-inherit', account.index === 0 && 'cursor-default')}
+        >
+          {account.index !== 0 ? (
+            <ArrowLeftIcon
+              onClick={() => {
+                previous();
 
-              setWidth(Number(String(index! - 1).length));
-            }}
-            className='h-6 w-6 hover:cursor-pointer'
-          />
-        ) : (
-          <span className='h-6 w-6' />
-        )}
-      </Button>
-      <div className='select-none text-center font-headline text-xl font-semibold leading-[30px]'>
-        {index !== undefined && (
-          <div className='flex items-end gap-[6px]'>
+                setWidth(Number(String(account.index - 1).length));
+              }}
+              className='h-6 w-6 hover:cursor-pointer'
+            />
+          ) : (
+            <span className='h-6 w-6' />
+          )}
+        </Button>
+        <div className='select-none text-center font-headline text-xl font-semibold leading-[30px]'>
+          <div className='flex flex-row flex-wrap items-end gap-[6px]'>
             <span>Account</span>
             <div className='flex items-end gap-0'>
               <p>#</p>
@@ -51,29 +69,77 @@ export const SelectAccount = ({ index, previous, next, setIndex }: SelectAccount
                     setIndex(value);
                   }}
                   style={{ width: width + 'ch' }}
-                  value={index ? index.toString().replace(/^0+/, '') : '0'}
+                  value={account.index ? account.index.toString().replace(/^0+/, '') : '0'}
                 />
               </div>
             </div>
           </div>
-        )}
+        </div>
+        <Button
+          variant='ghost'
+          className={cn('hover:bg-inherit', account.index === MAX_INDEX && 'cursor-default')}
+        >
+          {account.index < MAX_INDEX ? (
+            <ArrowRightIcon
+              onClick={() => {
+                next();
+                setWidth(Number(String(account.index + 1).length));
+              }}
+              className='h-6 w-6 hover:cursor-pointer'
+            />
+          ) : (
+            <span className='h-6 w-6' />
+          )}
+        </Button>
       </div>
-      <Button
-        variant='ghost'
-        className={cn('hover:bg-inherit', index === MAX_INDEX && 'cursor-default')}
-      >
-        {index! < MAX_INDEX ? (
-          <ArrowRightIcon
-            onClick={() => {
-              next();
-              setWidth(Number(String(index! + 1).length));
-            }}
-            className='h-6 w-6 hover:cursor-pointer'
-          />
-        ) : (
-          <span className='h-6 w-6' />
-        )}
-      </Button>
+      <div className='mt-4 flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
+        <div className='flex items-center gap-[6px]'>
+          <Identicon name={account.address} className='h-6 w-6 rounded-full' />
+          <p
+            className={cn(
+              'select-none text-center font-mono text-[12px] leading-[18px] text-muted-foreground',
+              ephemeral && 'text-[#8D5728]',
+            )}
+          >
+            {account.preview}
+          </p>
+        </div>
+        <CopyToClipboard
+          text={account.address}
+          label={
+            <div>
+              <CopyIcon className='h-4 w-4 text-muted-foreground hover:opacity-50' />
+            </div>
+          }
+          className='w-4'
+        />
+      </div>
+      <div className='mt-2 flex items-center justify-between'>
+        <div className='flex items-center gap-2'>
+          <IncognitoIcon fill='#BDB8B8' />
+          <p className='mt-1 font-bold'>Use ephemeral address</p>
+          {ephemeral && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <InfoIcon className='h-4 w-4 cursor-pointer text-muted-foreground hover:text-[#8D5728]' />
+                </TooltipTrigger>
+                <TooltipContent className='w-[250px]'>
+                  <p>
+                    Depositing into this ephemeral addresses will privately deposit into Account #
+                    {account.index}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
+        <Switch
+          id='address-mode'
+          checked={ephemeral}
+          onCheckedChange={checked => setEphemeral(checked)}
+        />
+      </div>
     </div>
   );
 };

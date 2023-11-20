@@ -12,7 +12,6 @@ export interface ReceiveSlice {
 export const createReceiveSlice = (): SliceCreator<ReceiveSlice> => (set, get) => {
   return {
     index: 0,
-    address: '',
     ephemeral: false,
     previous: () => {
       const current = get().receive.index;

@@ -29,6 +29,7 @@ describe('Accounts Slice', () => {
 
   test('index starts at 0', () => {
     expect(useStore.getState().accounts.index).toBe(0);
+    expect(useStore.getState().accounts.ephemeral).toBeFalsy();
   });
 
   test('can increment correctly', () => {
@@ -72,5 +73,13 @@ describe('Accounts Slice', () => {
     useStore.getState().accounts.previous();
     useStore.getState().accounts.previous();
     expect(useStore.getState().accounts.index).toBe(0);
+  });
+
+  test('ephemeral can be set', () => {
+    const previous = useStore.getState().accounts.ephemeral;
+    expect(previous).toBeFalsy();
+    useStore.getState().accounts.setEphemeral(true);
+
+    expect(useStore.getState().accounts.ephemeral).toBeTruthy();
   });
 });

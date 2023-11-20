@@ -1,24 +1,25 @@
 import { AllSlices, SliceCreator } from './index';
-import { getAddressByIndex, getShortAddressByIndex } from '@penumbra-zone/wasm-ts';
+import {
+  getAddressByIndex,
+  getEphemeralByIndex,
+  getShortAddressByIndex,
+} from '@penumbra-zone/wasm-ts';
 import { getActiveWallet } from './wallets';
-import { bech32Address } from '@penumbra-zone/types';
-
-interface Account {
-  address: string;
-  preview: string;
-  index: number;
-}
+import { Account, bech32Address } from '@penumbra-zone/types';
 
 export interface AccountsSlice {
   index: number;
+  ephemeral: boolean;
   previous: () => void;
   next: () => void;
   setIndex: (index: number) => void;
+  setEphemeral: (ephemeral: boolean) => void;
 }
 
 export const createAccountsSlice: SliceCreator<AccountsSlice> = (set, get) => {
   return {
     index: 0, // Start with index 0
+    ephemeral: false,
     previous: () => {
       const current = get().accounts.index;
       set(state => {
@@ -38,6 +39,11 @@ export const createAccountsSlice: SliceCreator<AccountsSlice> = (set, get) => {
         state.accounts.index = index;
       });
     },
+    setEphemeral: ephemeral => {
+      set(state => {
+        state.accounts.ephemeral = ephemeral;
+      });
+    },
   };
 };
 
@@ -47,12 +53,19 @@ export const selectedAccount = (state: AllSlices): Account | undefined => {
   const active = getActiveWallet(state);
   if (!active) return undefined;
 
-  const addr = getAddressByIndex(active.fullViewingKey, state.accounts.index);
+  const ephemeral = state.accounts.ephemeral;
+  const index = state.accounts.index;
+
+  const addr = ephemeral
+    ? getEphemeralByIndex(active.fullViewingKey, index)
+    : getAddressByIndex(active.fullViewingKey, index);
   const bech32Addr = bech32Address(addr);
 
   return {
     address: bech32Addr,
-    preview: getShortAddressByIndex(active.fullViewingKey, state.accounts.index),
-    index: state.accounts.index,
+    preview: ephemeral
+      ? bech32Addr.slice(0, 33) + '…'
+      : getShortAddressByIndex(active.fullViewingKey, index),
+    index,
   };
 };
