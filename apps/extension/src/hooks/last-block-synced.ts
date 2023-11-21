@@ -40,8 +40,8 @@ export const useSyncProgress = () => {
   const lastBlockHeight = !data
     ? undefined
     : lastBlockSynced > Number(data)
-    ? lastBlockSynced
-    : Number(data);
+      ? lastBlockSynced
+      : Number(data);
 
   return { lastBlockHeight, lastBlockSynced };
 };
