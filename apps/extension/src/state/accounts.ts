@@ -24,11 +24,11 @@ export const createAccountsSlice: SliceCreator<AccountsSlice> = (set, get) => {
     selectedAccount: undefined,
     previous: () => {
       const current = get().accounts.index;
-      set(state => {
-        if (current > 0) {
+      if (current > 0) {
+        set(state => {
           state.accounts.index = current - 1;
-        }
-      });
+        });
+      }
     },
     next: () => {
       const current = get().accounts.index;

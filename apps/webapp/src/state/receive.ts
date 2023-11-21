@@ -20,11 +20,11 @@ export const createReceiveSlice = (): SliceCreator<ReceiveSlice> => (set, get) =
     selectedAccount: undefined,
     previous: () => {
       const current = get().receive.index;
-      set(state => {
-        if (current > 0) {
+      if (current > 0) {
+        set(state => {
           state.receive.index = current - 1;
-        }
-      });
+        });
+      }
     },
     next: () => {
       const current = get().receive.index;

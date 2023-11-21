@@ -47,6 +47,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
     "firebase-tools": "^12.8.1",
+    "jsdom": "^22.1.0",
     "postcss": "^8.4.31",
     "tsconfig": "workspace:*",
     "typescript": "^5.2.2",
