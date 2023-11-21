@@ -12,16 +12,11 @@ type Address = string;
 export type IndexAddrRecord = Record<Index, Address>;
 
 export const getAddresses = async (accounts: (number | undefined)[]): Promise<IndexAddrRecord> => {
-  const allReqs = accounts.map(account => {
-    const req = new AddressByIndexRequest();
-    if (account) req.addressIndex = new AddressIndex({ account });
-    return viewClient.addressByIndex(req);
-  });
+  const allReqs = accounts.map(getAddressByIndex);
 
   const responses = await Promise.all(allReqs);
   return responses
-    .map((res, i) => {
-      const address = bech32Address(res.address!);
+    .map((address, i) => {
       return {
         index: accounts[i] ?? 0,
         address,
@@ -33,18 +28,15 @@ export const getAddresses = async (accounts: (number | undefined)[]): Promise<In
     }, {});
 };
 
-export const getAddressByIndex = async (account: number): Promise<string> => {
+export const getAddressByIndex = async (account: number | undefined): Promise<string> => {
   const req = new AddressByIndexRequest();
-  req.addressIndex = new AddressIndex({ account });
+  if (account) req.addressIndex = new AddressIndex({ account });
   const res = await viewClient.addressByIndex(req);
-
   return bech32Address(res.address!);
 };
 
 export const getEphemeralAddress = async (account: number): Promise<string> => {
-  const req = new EphemeralAddressRequest();
-  req.addressIndex = new AddressIndex({ account });
+  const req = new EphemeralAddressRequest({ addressIndex: { account } });
   const res = await viewClient.ephemeralAddress(req);
-
   return bech32Address(res.address!);
 };

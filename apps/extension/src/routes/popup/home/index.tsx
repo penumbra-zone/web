@@ -3,9 +3,10 @@ import { SelectAccount } from '@penumbra-zone/ui';
 import { PopupPath } from '../paths';
 import { IndexHeader } from './index-header';
 import { useStore } from '../../../state';
-import { accountsSelector, selectedAccount } from '../../../state/accounts';
+import { accountsSelector } from '../../../state/accounts';
 import { BlockSync } from './block-sync';
 import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
+import { useEffect } from 'react';
 
 export interface PopupLoaderData {
   lastBlockSynced: number;
@@ -32,20 +33,32 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
 };
 
 export const PopupIndex = () => {
-  const account = useStore(selectedAccount);
-  const { ephemeral, next, previous, setIndex, setEphemeral } = useStore(accountsSelector);
+  const {
+    ephemeral,
+    selectedAccount,
+    index,
+    next,
+    previous,
+    setIndex,
+    setEphemeral,
+    setSelectedAccount,
+  } = useStore(accountsSelector);
+
+  useEffect(() => {
+    setSelectedAccount();
+  }, [ephemeral, index, setSelectedAccount]);
 
   return (
     <div className='relative flex h-full flex-col items-stretch justify-start bg-left-bottom px-[30px]'>
       <div className='absolute bottom-[50px] left-[-10px] -z-10 h-[715px] w-[900px] overflow-hidden bg-logo opacity-10' />
       <IndexHeader />
       <div className='my-32'>
-        {account && (
+        {selectedAccount && (
           <SelectAccount
             previous={previous}
             next={next}
             setIndex={setIndex}
-            account={account}
+            account={selectedAccount}
             ephemeral={ephemeral}
             setEphemeral={setEphemeral}
           />
