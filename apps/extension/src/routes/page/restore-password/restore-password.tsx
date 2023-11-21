@@ -38,8 +38,8 @@ export const RestorePassword = () => {
             {!phrase.length || !phrase.every(w => w.length > 0)
               ? 'Fill in passphrase'
               : !phraseIsValid()
-              ? 'Phrase is invalid'
-              : 'Import'}
+                ? 'Phrase is invalid'
+                : 'Import'}
           </Button>
         </CardContent>
       </Card>

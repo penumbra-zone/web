@@ -9,7 +9,6 @@ import {
 import { IdbUpdate, PenumbraDb } from '@penumbra-zone/types';
 import { describe, expect, it } from 'vitest';
 import { IndexedDb } from './index';
-import './indexed-db.test-data';
 import {
   denomMetadataA,
   denomMetadataB,
