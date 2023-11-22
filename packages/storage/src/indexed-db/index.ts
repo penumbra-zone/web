@@ -23,6 +23,7 @@ import {
   AssetId,
   DenomMetadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import {localExtStorage} from "../chrome";
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -48,6 +49,9 @@ export class IndexedDb implements IndexedDbInterface {
         for (const objectStoreName of db.objectStoreNames) {
           db.deleteObjectStore(objectStoreName)
         }
+
+        void localExtStorage.set('lastBlockSynced', 0);
+
 
         db.createObjectStore('LAST_BLOCK_SYNCED');
         db.createObjectStore('ASSETS', { keyPath: 'penumbraAssetId.inner' });
