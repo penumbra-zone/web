@@ -17,6 +17,7 @@ import {
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import {
   SpendableNoteRecord,
+  SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import {
@@ -61,9 +62,10 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('TREE_HASHES', { autoIncrement: true });
         db.createObjectStore('FMD_PARAMETERS');
 
-        // TODO: To implement
         db.createObjectStore('NOTES');
-        db.createObjectStore('SWAPS');
+        db.createObjectStore('SWAPS', {
+          keyPath: 'swapCommitment.inner',
+        }).createIndex('nullifier', 'nullifier.inner');
       },
     });
     const constants = {
@@ -104,7 +106,7 @@ export class IndexedDb implements IndexedDbInterface {
 
     this.addSctUpdates(txs, updates.sctUpdates);
     this.addNewNotes(txs, updates.newNotes);
-    // TODO: this.addNewSwaps(txs, updates.newSwaps);
+    this.addNewSwaps(txs, updates.newSwaps);
     txs.add({ table: 'LAST_BLOCK_SYNCED', value: updates.height, key: 'last_block' });
 
     await this.u.updateAll(txs);
@@ -122,7 +124,6 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveSpendableNote(note: SpendableNoteRecord) {
-    if (!note.noteCommitment?.inner) throw new Error('noteCommitment not present');
     await this.u.update({ table: 'SPENDABLE_NOTES', value: note.toJson() });
   }
 
@@ -167,6 +168,11 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({ table: 'FMD_PARAMETERS', value, key: 'params' });
   }
 
+  async getAllSwaps(): Promise<SwapRecord[]> {
+    const jsonVals = await this.db.getAll('SWAPS');
+    return jsonVals.map(a => SwapRecord.fromJson(a));
+  }
+
   async clear() {
     for (const storeName of Object.values(this.db.objectStoreNames)) {
       await this.db.clear(storeName);
@@ -203,8 +209,24 @@ export class IndexedDb implements IndexedDbInterface {
 
   private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {
     for (const n of notes) {
-      if (!n.noteCommitment?.inner) throw new Error('noteCommitment not present');
       txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() });
     }
+  }
+
+  private addNewSwaps(txs: IbdUpdates, swaps: SwapRecord[]): void {
+    for (const n of swaps) {
+      txs.add({ table: 'SWAPS', value: n.toJson() });
+    }
+  }
+
+  async getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined> {
+    const key = uint8ArrayToBase64(nullifier.inner);
+    const json = await this.db.getFromIndex('SWAPS', 'nullifier', key);
+    if (!json) return undefined;
+    return SwapRecord.fromJson(json);
+  }
+
+  async saveSwap(swap: SwapRecord) {
+    await this.u.update({ table: 'SWAPS', value: swap.toJson() });
   }
 }

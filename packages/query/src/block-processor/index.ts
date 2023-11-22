@@ -78,14 +78,20 @@ export class BlockProcessor implements BlockProcessorInterface {
     await transactions.storeTransactionInfo();
   }
 
-  // Each nullifier has a corresponding note stored. This marks them as spent at a specific block height.
-  async markNotesSpent(nullifiers: Nullifier[], blockHeight: bigint) {
+  // Nullifier is published in network when a note is spent or swap is claimed
+  // It is necessary to mark the height of spend note and the height of swap claim
+  async handleNullifiers(nullifiers: Nullifier[], blockHeight: bigint) {
     for (const nullifier of nullifiers) {
       const matchingNote = await this.indexedDb.getNoteByNullifier(nullifier);
-
       if (matchingNote) {
         matchingNote.heightSpent = blockHeight;
         await this.indexedDb.saveSpendableNote(matchingNote);
+        continue;
+      }
+      const matchingSwap = await this.indexedDb.getSwapByNullifier(nullifier);
+      if (matchingSwap) {
+        matchingSwap.heightClaimed = blockHeight;
+        await this.indexedDb.saveSwap(matchingSwap);
       }
     }
   }
@@ -153,7 +159,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.saveSyncProgress();
       }
 
-      await this.markNotesSpent(block.nullifiers, block.height);
+      await this.handleNullifiers(block.nullifiers, block.height);
     }
   }
 }
