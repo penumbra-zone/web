@@ -237,4 +237,15 @@ describe('IndexedDb', () => {
       expect(transactionInfo.equals(savedTransactions[0])).toBeTruthy();
     });
   });
+
+  describe('swaps', () => {
+    it('should be able to set/get all', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.saveScanResult(scanResultWithSctUpdates);
+      const savedSwaps = await db.getAllSwaps();
+
+      expect(savedSwaps.length === 1).toBeTruthy();
+    });
+  });
 });

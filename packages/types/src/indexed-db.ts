@@ -50,6 +50,7 @@ export interface IndexedDbInterface {
   saveScanResult(updates: ScanResult): Promise<void>;
   getFmdParams(): Promise<FmdParameters | undefined>;
   saveFmdParams(params: FmdParameters): Promise<void>;
+  getAllSwaps(): Promise<SwapRecord[]>;
 }
 
 export interface PenumbraDb extends DBSchema {

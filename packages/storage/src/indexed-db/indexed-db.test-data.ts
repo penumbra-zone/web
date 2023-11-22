@@ -48,6 +48,35 @@ export const scanResultWithSctUpdates: ScanResult = {
   },
 };
 
+export const scanResultWithNewSwaps: ScanResult = {
+  height: 1092n,
+  newNotes: [],
+  newSwaps: [],
+  sctUpdates: {
+    delete_ranges: [],
+    store_commitments: [
+      {
+        commitment: { inner: 'qs3wdffdg34sfv' },
+        position: { block: 2, commitment: 11, epoch: 1 },
+      },
+    ],
+    store_hashes: [
+      {
+        essential: false,
+        hash: new Uint8Array([33, 12, 33, 22, 98]),
+        height: 1090,
+        position: {
+          block: 3,
+          commitment: 12,
+          epoch: 1,
+        },
+      },
+    ],
+    set_forgotten: 12n,
+    set_position: { Position: { block: 2, commitment: 10, epoch: 1 } },
+  },
+};
+
 export const denomMetadataA = new DenomMetadata({
   symbol: 'usdc',
   penumbraAssetId: new AssetId({ altBaseDenom: 'usdc', inner: base64ToUint8Array('dXNkYw==') }),

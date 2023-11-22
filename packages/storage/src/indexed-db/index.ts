@@ -16,7 +16,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import {
-  SpendableNoteRecord,
+  SpendableNoteRecord, SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import {
@@ -31,6 +31,7 @@ interface IndexedDbProps {
 }
 
 export class IndexedDb implements IndexedDbInterface {
+
   private constructor(
     private readonly db: IDBPDatabase<PenumbraDb>,
     private readonly u: IbdUpdater,
@@ -57,7 +58,7 @@ export class IndexedDb implements IndexedDbInterface {
 
         // TODO: To implement
         db.createObjectStore('NOTES');
-        db.createObjectStore('SWAPS');
+        db.createObjectStore('SWAPS', {keyPath: 'swapCommitment.inner'});
       },
     });
     const constants = {
@@ -98,7 +99,7 @@ export class IndexedDb implements IndexedDbInterface {
 
     this.addSctUpdates(txs, updates.sctUpdates);
     this.addNewNotes(txs, updates.newNotes);
-    // TODO: this.addNewSwaps(txs, updates.newSwaps);
+    this.addNewSwaps(txs, updates.newSwaps);
     txs.add({ table: 'LAST_BLOCK_SYNCED', value: updates.height, key: 'last_block' });
 
     await this.u.updateAll(txs);
@@ -161,6 +162,11 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({ table: 'FMD_PARAMETERS', value, key: 'params' });
   }
 
+  async getAllSwaps(): Promise<SwapRecord[]> {
+    const jsonVals = await this.db.getAll('SWAPS');
+    return jsonVals.map(a => SwapRecord.fromJson(a));
+  }
+
   async clear() {
     for (const storeName of Object.values(this.db.objectStoreNames)) {
       await this.db.clear(storeName);
@@ -199,6 +205,13 @@ export class IndexedDb implements IndexedDbInterface {
     for (const n of notes) {
       if (!n.noteCommitment?.inner) throw new Error('noteCommitment not present');
       txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() });
+    }
+  }
+
+  private addNewSwaps(txs: IbdUpdates, swaps: SwapRecord[]): void {
+    for (const n of swaps) {
+      if (!n.swapCommitment?.inner) throw new Error('noteCommitment not present');
+      txs.add({ table: 'SWAPS', value: n.toJson() });
     }
   }
 }
