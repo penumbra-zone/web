@@ -42,6 +42,13 @@ export class IndexedDb implements IndexedDbInterface {
 
     const db = await openDB<PenumbraDb>(dbName, dbVersion, {
       upgrade(db: IDBPDatabase<PenumbraDb>) {
+
+        // delete existing ObjectStores before re-creating them
+        // all existing indexed-db data will be deleted when version is increased
+        for (const objectStoreName of db.objectStoreNames) {
+          db.deleteObjectStore(objectStoreName)
+        }
+
         db.createObjectStore('LAST_BLOCK_SYNCED');
         db.createObjectStore('ASSETS', { keyPath: 'penumbraAssetId.inner' });
         db.createObjectStore('SPENDABLE_NOTES', {
