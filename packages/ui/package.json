@@ -25,13 +25,11 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "djb2a": "^2.0.0",
-    "immer": "^10.0.3",
     "framer-motion": "^10.16.5",
     "lucide-react": "^0.292.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
-    "tinycolor2": "^1.6.0",
-    "zustand": "^4.4.6"
+    "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
     "@types/node": "^20.9.3",

@@ -40,3 +40,13 @@ export const getEphemeralAddress = async (account: number): Promise<string> => {
   const res = await viewClient.ephemeralAddress(req);
   return bech32Address(res.address!);
 };
+
+export const getAccountAddr = async (index: number, ephemeral: boolean) => {
+  const address = ephemeral ? await getEphemeralAddress(index) : await getAddressByIndex(index);
+
+  return {
+    address,
+    preview: address.slice(0, 33) + '…',
+    index,
+  };
+};

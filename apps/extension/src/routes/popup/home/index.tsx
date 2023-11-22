@@ -5,13 +5,7 @@ import { IndexHeader } from './index-header';
 import { useStore } from '../../../state';
 import { BlockSync } from './block-sync';
 import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
-import {
-  getAddressByIndex,
-  getEphemeralByIndex,
-  getShortAddressByIndex,
-} from '@penumbra-zone/wasm-ts';
-import { bech32Address } from '@penumbra-zone/types';
-import { getActiveWallet } from '../../../state/wallets';
+import { accountAddrSelector } from '../../../state/wallets';
 
 export interface PopupLoaderData {
   lastBlockSynced: number;
@@ -38,24 +32,7 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
 };
 
 export const PopupIndex = () => {
-  const active = useStore(getActiveWallet);
-
-  const getAccount = (index: number, ephemeral: boolean) => {
-    if (!active) return;
-
-    const addr = ephemeral
-      ? getEphemeralByIndex(active.fullViewingKey, index)
-      : getAddressByIndex(active.fullViewingKey, index);
-    const bech32Addr = bech32Address(addr);
-
-    return {
-      address: bech32Addr,
-      preview: ephemeral
-        ? bech32Addr.slice(0, 33) + '…'
-        : getShortAddressByIndex(active.fullViewingKey, index),
-      index,
-    };
-  };
+  const getAccount = useStore(accountAddrSelector);
 
   return (
     <div className='relative flex h-full flex-col items-stretch justify-start bg-left-bottom px-[30px]'>

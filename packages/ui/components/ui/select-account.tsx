@@ -9,7 +9,6 @@ import { Switch } from './switch';
 import { IncognitoIcon } from './icons/incognito';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
 import { Account } from '@penumbra-zone/types';
-import { useAccountStore } from '../../state/account';
 
 interface SelectAccountProps {
   getAccount: (index: number, ephemeral: boolean) => Promise<Account> | Account | undefined;
@@ -17,7 +16,8 @@ interface SelectAccountProps {
 const MAX_INDEX = 2 ** 32;
 
 export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
-  const { index, ephemeral, previous, next, setEphemeral, setIndex } = useAccountStore();
+  const [index, setIndex] = useState<number>(0);
+  const [ephemeral, setEphemeral] = useState<boolean>(false);
 
   const [width, setWidth] = useState(index.toString().length);
   const [account, setAccount] = useState<Account | undefined>();
@@ -27,7 +27,8 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
       const account = await getAccount(index, ephemeral);
       setAccount(account);
     })();
-  }, [index, ephemeral, getAccount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, ephemeral]);
 
   return (
     <>
@@ -43,9 +44,10 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
               {account.index !== 0 ? (
                 <ArrowLeftIcon
                   onClick={() => {
-                    previous();
-
-                    setWidth(Number(String(account.index - 1).length));
+                    if (index > 0) {
+                      setIndex(state => state - 1);
+                      setWidth(Number(String(account.index - 1).length));
+                    }
                   }}
                   className='h-6 w-6 hover:cursor-pointer'
                 />
@@ -85,7 +87,7 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
               {account.index < MAX_INDEX ? (
                 <ArrowRightIcon
                   onClick={() => {
-                    next();
+                    setIndex(state => state + 1);
                     setWidth(Number(String(account.index + 1).length));
                   }}
                   className='h-6 w-6 hover:cursor-pointer'
