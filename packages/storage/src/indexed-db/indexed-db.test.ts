@@ -9,7 +9,6 @@ import {
 import { IdbUpdate, PenumbraDb } from '@penumbra-zone/types';
 import { describe, expect, it } from 'vitest';
 import { IndexedDb } from './index';
-import './indexed-db.test-data';
 import {
   denomMetadataA,
   denomMetadataB,
@@ -62,6 +61,22 @@ describe('IndexedDb', () => {
       expect((await dbB.getAssetsMetadata(denomMetadataA.penumbraAssetId!))?.name).toBe(
         denomMetadataA.name,
       );
+    });
+
+    it('increasing version should re-create object stores', async () => {
+      const version1Props = generateInitialProps();
+      const dbA = await IndexedDb.initialize(version1Props);
+      await dbA.saveAssetsMetadata(denomMetadataA);
+
+      const version2Props = {
+        chainId: 'test',
+        accountAddr: 'penumbra123xyz',
+        dbVersion: 2,
+        walletId: `walletid${Math.random()}`,
+      };
+
+      const dbB = await IndexedDb.initialize(version2Props);
+      expect((await dbB.getAssetsMetadata(denomMetadataA.penumbraAssetId!))?.name).toBeUndefined();
     });
   });
 

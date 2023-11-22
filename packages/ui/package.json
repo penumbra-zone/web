@@ -7,7 +7,7 @@
     "ui:add": "pnpm dlx shadcn-ui@latest add"
   },
   "dependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.4.2-20231103014351-723c6aa746dd.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.4.2-20231116213357-9a38d96f2792.1",
     "@penumbra-zone/types": "workspace:*",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dialog": "1.0.5",
@@ -25,8 +25,8 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "djb2a": "^2.0.0",
-    "framer-motion": "^10.16.4",
     "immer": "^10.0.3",
+    "framer-motion": "^10.16.5",
     "lucide-react": "^0.292.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
@@ -34,17 +34,17 @@
     "zustand": "^4.4.6"
   },
   "devDependencies": {
-    "@types/node": "^20.9.0",
-    "@types/react": "^18.2.37",
-    "@types/react-dom": "^18.2.15",
+    "@types/node": "^20.9.3",
+    "@types/react": "^18.2.38",
+    "@types/react-dom": "^18.2.16",
     "@types/tinycolor2": "^1.4.6",
     "autoprefixer": "^10.4.16",
-    "eslint": "^8.53.0",
+    "eslint": "^8.54.0",
     "eslint-config-custom": "workspace:*",
     "postcss": "^8.4.31",
     "react": "^18.2.0",
     "tailwindcss": "^3.3.5",
     "tsconfig": "workspace:*",
-    "typescript": "^5.2.2"
+    "typescript": "^5.3.2"
   }
 }
