@@ -27,6 +27,7 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
       const account = await getAccount(index, ephemeral);
       setAccount(account);
     })();
+    // getAccount updates the address every block
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, ephemeral]);
 
