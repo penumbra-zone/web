@@ -152,8 +152,6 @@ export class BlockProcessor implements BlockProcessorInterface {
     })) {
       if (block.fmdParameters) await this.indexedDb.saveFmdParams(block.fmdParameters);
 
-      console.log(block.toJson());
-
       // Scanning has a side effect of updating viewServer's internal tree.
       const newNotesPresent = await this.viewServer.scanBlock(block);
 
