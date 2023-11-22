@@ -26,7 +26,8 @@ export const handleStatusReq = async function* (
     const syncHeight = update.value;
     yield new StatusStreamResponse({
       latestKnownBlockHeight: syncHeight >= latestBlockHeight ? syncHeight : latestBlockHeight,
-      syncHeight,
+      partialSyncHeight: syncHeight,
+      fullSyncHeight: syncHeight,
     });
   }
 };

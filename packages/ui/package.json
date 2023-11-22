@@ -7,7 +7,7 @@
     "ui:add": "pnpm dlx shadcn-ui@latest add"
   },
   "dependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.4.2-20231116213357-9a38d96f2792.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.4.2-20231120132728-bc443669626d.1",
     "@penumbra-zone/types": "workspace:*",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dialog": "1.0.5",

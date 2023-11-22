@@ -11,7 +11,7 @@ export const MemoViewComponent = ({ memo }: { memo: MemoView }) => {
     const av = new AddressView({
       addressView: {
         case: 'opaque',
-        value: { address: mv.plaintext!.sender! },
+        value: { address: mv.plaintext!.returnAddress!.addressView.value!.address! },
       },
     });
 

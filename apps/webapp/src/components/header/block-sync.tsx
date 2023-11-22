@@ -8,7 +8,7 @@ interface BlockSyncProps {
 
 export const BlockSync = ({ data }: BlockSyncProps) => {
   if (!data) return;
-  const syncHeight = Number(data.syncHeight);
+  const syncHeight = Number(data.fullSyncHeight);
   const latestKnownBlockHeight = Number(data.latestKnownBlockHeight);
 
   return (
