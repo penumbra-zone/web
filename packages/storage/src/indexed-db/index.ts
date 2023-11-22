@@ -62,7 +62,6 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('TREE_HASHES', { autoIncrement: true });
         db.createObjectStore('FMD_PARAMETERS');
 
-        // TODO: To implement
         db.createObjectStore('NOTES');
         db.createObjectStore('SWAPS', {
           keyPath: 'swapCommitment.inner',
@@ -125,7 +124,6 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveSpendableNote(note: SpendableNoteRecord) {
-    if (!note.noteCommitment?.inner) throw new Error('noteCommitment not present');
     await this.u.update({ table: 'SPENDABLE_NOTES', value: note.toJson() });
   }
 
@@ -211,14 +209,12 @@ export class IndexedDb implements IndexedDbInterface {
 
   private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {
     for (const n of notes) {
-      if (!n.noteCommitment?.inner) throw new Error('noteCommitment not present');
       txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() });
     }
   }
 
   private addNewSwaps(txs: IbdUpdates, swaps: SwapRecord[]): void {
     for (const n of swaps) {
-      if (!n.swapCommitment?.inner) throw new Error('swapCommitment not present');
       txs.add({ table: 'SWAPS', value: n.toJson() });
     }
   }
@@ -231,7 +227,6 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveSwap(swap: SwapRecord) {
-    if (!swap.swapCommitment?.inner) throw new Error('swapCommitment not present');
     await this.u.update({ table: 'SWAPS', value: swap.toJson() });
   }
 }
