@@ -5,7 +5,7 @@ export interface BlockProcessorInterface {
   syncBlocks(): Promise<void>;
   autoRetrySync(): Promise<void>;
   storeNewTransactions(blockHeight: bigint, newNotes: SpendableNoteRecord[]): Promise<void>;
-  markNotesSpent(nullifiers: Nullifier[], blockHeight: bigint): Promise<void>;
+  handleNullifiers(nullifiers: Nullifier[], blockHeight: bigint): Promise<void>;
   saveSyncProgress(): Promise<void>;
   stopSync(): void;
 }

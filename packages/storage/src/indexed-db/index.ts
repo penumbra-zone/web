@@ -16,7 +16,8 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import {
-  SpendableNoteRecord, SwapRecord,
+  SpendableNoteRecord,
+  SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import {
@@ -31,7 +32,6 @@ interface IndexedDbProps {
 }
 
 export class IndexedDb implements IndexedDbInterface {
-
   private constructor(
     private readonly db: IDBPDatabase<PenumbraDb>,
     private readonly u: IbdUpdater,
@@ -64,7 +64,9 @@ export class IndexedDb implements IndexedDbInterface {
 
         // TODO: To implement
         db.createObjectStore('NOTES');
-        db.createObjectStore('SWAPS', {keyPath: 'swapCommitment.inner'});
+        db.createObjectStore('SWAPS', {
+          keyPath: 'swapCommitment.inner',
+        }).createIndex('nullifier', 'nullifier.inner');
       },
     });
     const constants = {
@@ -216,8 +218,20 @@ export class IndexedDb implements IndexedDbInterface {
 
   private addNewSwaps(txs: IbdUpdates, swaps: SwapRecord[]): void {
     for (const n of swaps) {
-      if (!n.swapCommitment?.inner) throw new Error('noteCommitment not present');
+      if (!n.swapCommitment?.inner) throw new Error('swapCommitment not present');
       txs.add({ table: 'SWAPS', value: n.toJson() });
     }
+  }
+
+  async getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined> {
+    const key = uint8ArrayToBase64(nullifier.inner);
+    const json = await this.db.getFromIndex('SWAPS', 'nullifier', key);
+    if (!json) return undefined;
+    return SwapRecord.fromJson(json);
+  }
+
+  async saveSwap(swap: SwapRecord) {
+    if (!swap.swapCommitment?.inner) throw new Error('swapCommitment not present');
+    await this.u.update({ table: 'SWAPS', value: swap.toJson() });
   }
 }

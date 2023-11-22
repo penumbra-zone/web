@@ -51,6 +51,8 @@ export interface IndexedDbInterface {
   getFmdParams(): Promise<FmdParameters | undefined>;
   saveFmdParams(params: FmdParameters): Promise<void>;
   getAllSwaps(): Promise<SwapRecord[]>;
+  getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined>;
+  saveSwap(note: SwapRecord): Promise<void>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -104,6 +106,9 @@ export interface PenumbraDb extends DBSchema {
   SWAPS: {
     key: Base64Str; // Jsonified<SwapRecord['swapCommitment']['inner']>
     value: Jsonified<SwapRecord>;
+    indexes: {
+      nullifier: Base64Str; // Jsonified<SwapRecord['nullifier']['inner']>
+    };
   };
 }
 

@@ -15,6 +15,7 @@ import {
   denomMetadataC,
   emptyScanResult,
   newNote,
+  scanResultWithNewSwaps,
   scanResultWithSctUpdates,
   transactionInfo,
 } from './indexed-db.test-data';
@@ -258,10 +259,22 @@ describe('IndexedDb', () => {
     it('should be able to set/get all', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveScanResult(scanResultWithSctUpdates);
+      await db.saveScanResult(scanResultWithNewSwaps);
       const savedSwaps = await db.getAllSwaps();
 
       expect(savedSwaps.length === 1).toBeTruthy();
+      expect(savedSwaps[0]!.equals(scanResultWithNewSwaps.newSwaps[0])).toBeTruthy();
+    });
+
+    it('should be able to set/get by nullifier', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.saveScanResult(scanResultWithNewSwaps);
+      const swapByNullifier = await db.getSwapByNullifier(
+        scanResultWithNewSwaps.newSwaps[0]!.nullifier!,
+      );
+
+      expect(swapByNullifier!.equals(scanResultWithNewSwaps.newSwaps[0])).toBeTruthy();
     });
   });
 });

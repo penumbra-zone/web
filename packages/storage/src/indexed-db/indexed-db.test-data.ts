@@ -5,6 +5,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import {
   SpendableNoteRecord,
+  SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
@@ -51,7 +52,42 @@ export const scanResultWithSctUpdates: ScanResult = {
 export const scanResultWithNewSwaps: ScanResult = {
   height: 1092n,
   newNotes: [],
-  newSwaps: [],
+  newSwaps: [
+    SwapRecord.fromJson({
+      swapCommitment: { inner: 'A6VBVkrk+s18q+Sjhl8uEGfS3i0dwF1FrkNm8Db6VAA=' },
+      swap: {
+        tradingPair: {
+          asset1: { inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=' },
+          asset2: { inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=' },
+        },
+        delta1I: {},
+        delta2I: { lo: '1000000' },
+        claimFee: { amount: {} },
+        claimAddress: {
+          inner:
+            '2VQ9nQKqga8RylgOq+wAY3/Hmxg96mGnI+Te/BRnXWpr5bSxpLShbpOmzO4pPULf+tGjaBum6InyEpipJ+8wk+HufrvSBa43H9o2ir5WPbk=',
+        },
+        rseed: 'RPuhZ9q2F3XHbTcDPRTHnJjJaMxv8hes4TzJuMbsA/k=',
+      },
+      position: '2383742304257',
+      nullifier: { inner: 'dE7LbhBDgDXHiRvreFyCllcKOOQeuIVsbn2aw8uKhww=' },
+      outputData: {
+        delta1: {},
+        delta2: { lo: '1000000' },
+        lambda1: { lo: '2665239' },
+        lambda2: {},
+        unfilled1: {},
+        unfilled2: {},
+        height: '356591',
+        tradingPair: {
+          asset1: { inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=' },
+          asset2: { inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=' },
+        },
+        epochStartingHeight: '356050',
+      },
+      source: { inner: '9e1OaxysQAzHUUKsroXMNRCzlPxd6hBWLrqURgNBrmE=' },
+    }),
+  ],
   sctUpdates: {
     delete_ranges: [],
     store_commitments: [
