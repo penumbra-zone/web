@@ -38,10 +38,9 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
 };
 
 export const PopupIndex = () => {
-  const state = useStore();
+  const active = useStore(getActiveWallet);
 
   const getAccount = (index: number, ephemeral: boolean) => {
-    const active = getActiveWallet(state);
     if (!active) return;
 
     const addr = ephemeral
