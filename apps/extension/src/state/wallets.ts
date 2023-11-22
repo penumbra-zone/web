@@ -1,8 +1,15 @@
 import { AllSlices, SliceCreator } from './index';
-import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm-ts';
+import {
+  generateSpendKey,
+  getAddressByIndex,
+  getEphemeralByIndex,
+  getFullViewingKey,
+  getShortAddressByIndex,
+  getWalletId,
+} from '@penumbra-zone/wasm-ts';
 import { Key } from '@penumbra-zone/crypto-web';
 import { ExtensionStorage, LocalStorageState } from '@penumbra-zone/storage';
-import { Wallet, WalletCreate } from '@penumbra-zone/types';
+import { Wallet, WalletCreate, bech32Address } from '@penumbra-zone/types';
 
 export interface WalletsSlice {
   all: Wallet[];
@@ -67,3 +74,21 @@ export const createWalletsSlice =
 
 export const walletsSelector = (state: AllSlices) => state.wallets;
 export const getActiveWallet = (state: AllSlices) => state.wallets.all[0];
+
+export const accountAddrSelector = (state: AllSlices) => (index: number, ephemeral: boolean) => {
+  const active = getActiveWallet(state);
+  if (!active) return;
+
+  const addr = ephemeral
+    ? getEphemeralByIndex(active.fullViewingKey, index)
+    : getAddressByIndex(active.fullViewingKey, index);
+  const bech32Addr = bech32Address(addr);
+
+  return {
+    address: bech32Addr,
+    preview: ephemeral
+      ? bech32Addr.slice(0, 33) + '…'
+      : getShortAddressByIndex(active.fullViewingKey, index),
+    index,
+  };
+};
