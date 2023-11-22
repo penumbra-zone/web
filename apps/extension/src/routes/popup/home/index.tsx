@@ -3,10 +3,15 @@ import { SelectAccount } from '@penumbra-zone/ui';
 import { PopupPath } from '../paths';
 import { IndexHeader } from './index-header';
 import { useStore } from '../../../state';
-import { accountsSelector } from '../../../state/accounts';
 import { BlockSync } from './block-sync';
 import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
-import { useEffect } from 'react';
+import {
+  getAddressByIndex,
+  getEphemeralByIndex,
+  getShortAddressByIndex,
+} from '@penumbra-zone/wasm-ts';
+import { bech32Address } from '@penumbra-zone/types';
+import { getActiveWallet } from '../../../state/wallets';
 
 export interface PopupLoaderData {
   lastBlockSynced: number;
@@ -33,36 +38,32 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
 };
 
 export const PopupIndex = () => {
-  const {
-    ephemeral,
-    selectedAccount,
-    index,
-    next,
-    previous,
-    setIndex,
-    setEphemeral,
-    setSelectedAccount,
-  } = useStore(accountsSelector);
+  const state = useStore();
 
-  useEffect(() => {
-    setSelectedAccount();
-  }, [ephemeral, index, setSelectedAccount]);
+  const getAccount = (index: number, ephemeral: boolean) => {
+    const active = getActiveWallet(state);
+    if (!active) return;
+
+    const addr = ephemeral
+      ? getEphemeralByIndex(active.fullViewingKey, index)
+      : getAddressByIndex(active.fullViewingKey, index);
+    const bech32Addr = bech32Address(addr);
+
+    return {
+      address: bech32Addr,
+      preview: ephemeral
+        ? bech32Addr.slice(0, 33) + '…'
+        : getShortAddressByIndex(active.fullViewingKey, index),
+      index,
+    };
+  };
 
   return (
     <div className='relative flex h-full flex-col items-stretch justify-start bg-left-bottom px-[30px]'>
       <div className='absolute bottom-[50px] left-[-10px] -z-10 h-[715px] w-[900px] overflow-hidden bg-logo opacity-10' />
       <IndexHeader />
       <div className='my-32'>
-        {selectedAccount && (
-          <SelectAccount
-            previous={previous}
-            next={next}
-            setIndex={setIndex}
-            account={selectedAccount}
-            ephemeral={ephemeral}
-            setEphemeral={setEphemeral}
-          />
-        )}
+        <SelectAccount getAccount={getAccount} />
       </div>
       <BlockSync />
     </div>

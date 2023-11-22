@@ -1,36 +1,20 @@
 import { SelectAccount } from '@penumbra-zone/ui';
-import { useEffect } from 'react';
-import { useStore } from '../../state';
-import { receiveSelector } from '../../state/receive';
+import { getAddressByIndex, getEphemeralAddress } from '../../fetchers/address';
 
 export const Receive = () => {
-  const {
-    index,
-    ephemeral,
-    selectedAccount,
-    setIndex,
-    previous,
-    next,
-    setEphemeral,
-    setSelectedAccount,
-  } = useStore(receiveSelector);
+  const getAccount = async (index: number, ephemeral: boolean) => {
+    const address = ephemeral ? await getEphemeralAddress(index) : await getAddressByIndex(index);
 
-  useEffect(() => {
-    void setSelectedAccount();
-  }, [index, ephemeral, setSelectedAccount]);
+    return {
+      address,
+      preview: address.slice(0, 33) + '…',
+      index,
+    };
+  };
 
   return (
     <div className='pb-3 md:pb-5'>
-      {selectedAccount && (
-        <SelectAccount
-          previous={previous}
-          next={next}
-          setIndex={setIndex}
-          account={selectedAccount}
-          ephemeral={ephemeral}
-          setEphemeral={setEphemeral}
-        />
-      )}
+      <SelectAccount getAccount={getAccount} />
     </div>
   );
 };

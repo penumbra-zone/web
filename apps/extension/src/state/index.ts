@@ -5,7 +5,6 @@ import { customPersist } from './persist';
 import { createPasswordSlice, PasswordSlice } from './password';
 import { createSeedPhraseSlice, SeedPhraseSlice } from './seed-phrase';
 import { createNetworkSlice, NetworkSlice } from './network';
-import { AccountsSlice, createAccountsSlice } from './accounts';
 import {
   ExtensionStorage,
   localExtStorage,
@@ -16,7 +15,6 @@ import {
 
 export interface AllSlices {
   wallets: WalletsSlice;
-  accounts: AccountsSlice;
   password: PasswordSlice;
   seedPhrase: SeedPhraseSlice;
   network: NetworkSlice;
@@ -35,7 +33,6 @@ export const initializeStore = (
 ) => {
   return immer((setState, getState: () => AllSlices, store) => ({
     wallets: createWalletsSlice(local)(setState, getState, store),
-    accounts: createAccountsSlice(setState, getState, store),
     password: createPasswordSlice(session, local)(setState, getState, store),
     seedPhrase: createSeedPhraseSlice(setState, getState, store),
     network: createNetworkSlice(local)(setState, getState, store),
