@@ -1,8 +1,8 @@
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { bech32Address, shortenAddress } from '@penumbra-zone/types';
-import { Identicon } from '../../identicon';
-import { CopyToClipboard } from '../../copy-to-clipboard';
 import { CopyIcon } from '@radix-ui/react-icons';
+import { CopyToClipboard } from '../../copy-to-clipboard';
+import { Identicon } from '../../identicon';
 
 interface AddressViewProps {
   view: AddressView | undefined;
@@ -33,7 +33,7 @@ export const AddressViewComponent = ({
     <div className='flex'>
       {accountIndex !== undefined ? (
         <div className='flex items-baseline gap-2'>
-          <Identicon name={encoded} size={14} className='rounded-full' />
+          <Identicon name={encoded} size={14} className='rounded-full' type='gradient' />
           {isRandomized ? (
             <span className='font-bold'>One-time Address for Account #{accountIndex}</span>
           ) : (
