@@ -1,7 +1,7 @@
 // Inspired by: https://github.com/vercel/avatar
 
-import color from 'tinycolor2';
 import djb2a from 'djb2a';
+import color from 'tinycolor2';
 
 // Deterministically getting a gradient from a string for use as an identicon
 export const generateGradient = (str: string) => {
@@ -20,7 +20,7 @@ export const generateGradient = (str: string) => {
   };
 };
 
-export const generateColor = (str: string) => {
+export const generateSolidColor = (str: string) => {
   // Get color
   const hash = djb2a(str);
   const c = color({ h: hash % 360, s: 0.95, l: 0.5 })

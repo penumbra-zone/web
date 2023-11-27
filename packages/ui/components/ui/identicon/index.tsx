@@ -1,6 +1,6 @@
-import { IdenticonProps } from './types';
 import { useMemo } from 'react';
-import { generateColor, generateGradient } from './generate';
+import { generateGradient, generateSolidColor } from './generate';
+import { IdenticonProps } from './types';
 
 export const Identicon = ({ type, ...props }: IdenticonProps & { type: 'gradient' | 'solid' }) => {
   if (type === 'gradient') return <IdenticonGradient {...props} />;
@@ -34,7 +34,7 @@ const IdenticonGradient = ({ name, size = 120, className }: IdenticonProps) => {
 };
 
 const IdenticonSolid = ({ name, size = 120, className }: IdenticonProps) => {
-  const color = useMemo(() => generateColor(name), [name]);
+  const color = useMemo(() => generateSolidColor(name), [name]);
 
   return (
     <svg
