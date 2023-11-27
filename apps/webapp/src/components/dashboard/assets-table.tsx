@@ -1,5 +1,5 @@
 import {
-  IdenticonGradient,
+  Identicon,
   Table,
   TableBody,
   TableCell,
@@ -44,7 +44,7 @@ export default function AssetsTable() {
             <div className='flex flex-col items-center justify-center'>
               <div className='flex flex-col items-center justify-center gap-2 md:flex-row'>
                 <div className='flex items-center gap-2'>
-                  <IdenticonGradient name={a.address} size={20} className='rounded-full' />
+                  <Identicon name={a.address} size={20} className='rounded-full' type='gradient' />
                   <h2 className='font-bold md:text-base xl:text-xl'>Account #{a.index}</h2>{' '}
                 </div>
                 <div className='font-mono text-sm italic text-foreground'>
