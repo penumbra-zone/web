@@ -21,7 +21,7 @@
     "vite": "^5.0.2"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.252",
+    "@types/chrome": "0.0.253",
     "vitest": "^0.34.6"
   }
 }
