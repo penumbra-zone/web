@@ -2,7 +2,7 @@ import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/co
 import { bech32Address, shortenAddress } from '@penumbra-zone/types';
 import { CopyIcon } from '@radix-ui/react-icons';
 import { CopyToClipboard } from '../../copy-to-clipboard';
-import { IdenticonGradient } from '../../identicon/identicon-gradient'
+import { IdenticonGradient } from '../../identicon/identicon-gradient';
 
 interface AddressViewProps {
   view: AddressView | undefined;
