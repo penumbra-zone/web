@@ -1,14 +1,14 @@
-import { ArrowLeftIcon, ArrowRightIcon, CopyIcon, InfoIcon } from 'lucide-react';
-import { Input } from './input';
-import { useEffect, useState } from 'react';
-import { Button } from './button';
-import { cn } from '../../lib/utils';
-import { Identicon } from './identicon';
-import { CopyToClipboard } from './copy-to-clipboard';
-import { Switch } from './switch';
-import { IncognitoIcon } from './icons/incognito';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
 import { Account } from '@penumbra-zone/types';
+import { ArrowLeftIcon, ArrowRightIcon, CopyIcon, InfoIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { cn } from '../../lib/utils';
+import { Button } from './button';
+import { CopyToClipboard } from './copy-to-clipboard';
+import { IncognitoIcon } from './icons/incognito';
+import { IdenticonGradient } from './identicon/identicon-gradient';
+import { Input } from './input';
+import { Switch } from './switch';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
 
 interface SelectAccountProps {
   getAccount: (index: number, ephemeral: boolean) => Promise<Account> | Account | undefined;
@@ -100,7 +100,7 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
           </div>
           <div className='mt-4 flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
             <div className='flex items-center gap-[6px]'>
-              <Identicon name={account.address} className='h-6 w-6 rounded-full' />
+              <IdenticonGradient name={account.address} className='h-6 w-6 rounded-full' />
               <p
                 className={cn(
                   'select-none text-center font-mono text-[12px] leading-[18px] text-muted-foreground',

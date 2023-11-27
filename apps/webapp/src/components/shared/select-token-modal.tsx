@@ -11,6 +11,8 @@ import {
 import { Asset, AssetId, fromBaseUnitAmount, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { AssetBalance } from '../../fetchers/balances.ts';
+import { AssetIcon } from './asset-icon.tsx';
+import { assets } from '@penumbra-zone/constants';
 
 interface SelectTokenModalProps {
   asset: Asset;
@@ -25,9 +27,7 @@ export default function SelectTokenModal({ asset, setAsset, balances }: SelectTo
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
         <div className='flex h-9 items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
-          <div className='flex h-6 w-6 items-center justify-center rounded-full bg-[#B6B9C6] pt-1 uppercase'>
-            {asset.display[0]}
-          </div>
+          <AssetIcon asset={asset} />
           <p className='font-bold text-light-grey md:text-sm xl:text-base'>{asset.display}</p>
         </div>
       </DialogTrigger>
@@ -67,7 +67,14 @@ export default function SelectTokenModal({ asset, setAsset, balances }: SelectTo
                       })
                     }
                   >
-                    <div className='flex items-start gap-[6px]'>
+                    <div className='flex items-center gap-[6px]'>
+                      <AssetIcon
+                        asset={
+                          assets.find(i => i.display === b.denom.display) ?? {
+                            display: '',
+                          }
+                        }
+                      />
                       <p className='font-bold text-muted-foreground'>{b.denom.display}</p>
                     </div>
                     <p className='font-bold text-muted-foreground'>

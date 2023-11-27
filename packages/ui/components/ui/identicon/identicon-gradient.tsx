@@ -1,13 +1,8 @@
 import { useMemo } from 'react';
-import { generateGradient } from './gradient';
+import { generateGradient } from './generate';
+import { IdenticonProps } from './types';
 
-export interface IdenticonProps {
-  name: string;
-  size?: number;
-  className?: string;
-}
-
-export const Identicon = ({ name, size = 120, className }: IdenticonProps) => {
+export const IdenticonGradient = ({ name, size = 120, className }: IdenticonProps) => {
   const gradient = useMemo(() => generateGradient(name), [name]);
   const gradientId = useMemo(() => `gradient-${name}`, [name]);
 
@@ -33,4 +28,4 @@ export const Identicon = ({ name, size = 120, className }: IdenticonProps) => {
   );
 };
 
-Identicon.displayName = 'Identicon';
+IdenticonGradient.displayName = 'IdenticonGradient';

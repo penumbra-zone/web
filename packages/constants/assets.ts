@@ -41,6 +41,7 @@ export const assets: Asset[] = [
     symbol: '',
     uri: '',
     uriHash: '',
+    icon: '/favicon.png',
     penumbraAssetId: {
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
       altBaseDenom: '',
@@ -104,6 +105,7 @@ export const assets: Asset[] = [
     symbol: '',
     uri: '',
     uriHash: '',
+    icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/axelar/images/usdc.svg',
     penumbraAssetId: {
       inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
       altBaseDenom: '',

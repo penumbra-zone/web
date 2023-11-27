@@ -19,3 +19,25 @@ export const generateGradient = (str: string) => {
     toColor,
   };
 };
+
+export const generateColor = (str: string) => {
+  // Get color
+  const hash = djb2a(str);
+  const c = color({ h: hash % 360, s: 0.95, l: 0.5 })
+    .saturate(0)
+    .darken(20);
+
+  return {
+    bg: c.toHexString(),
+    // get readable text color
+    text: color
+      .mostReadable(c, ['white', 'black'], {
+        includeFallbackColors: true,
+        level: 'AAA',
+        size: 'small',
+      })
+      .saturate()
+      .darken(20)
+      .toHexString(),
+  };
+};
