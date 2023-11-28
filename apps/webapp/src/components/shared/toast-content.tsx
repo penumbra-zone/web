@@ -30,5 +30,5 @@ export const successTxToast = (txHash: string): ToastFnProps => ({
 export const errorTxToast = (error: unknown): ToastFnProps => ({
   variant: 'error',
   main: 'Error with transaction',
-  subText: String(error),
+  subText: <p className='break-all'>{String(error)}</p>,
 });
