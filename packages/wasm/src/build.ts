@@ -42,13 +42,15 @@ const provingKeys = [
 ];
 
 const loadProvingKeys = async () => {
-  for (const { file, keyType } of provingKeys) {
+  const promises = provingKeys.map(async ({ file, keyType }) => {
     const response = await fetch(`${githubSourceDir}${file}`);
     if (!response.ok) throw new Error(`Failed to fetch ${file}`);
 
     const buffer = await response.arrayBuffer();
     wasmLoadProvingKey(buffer, keyType);
-  }
+  });
+
+  await Promise.all(promises);
 };
 
 export const build = async (
