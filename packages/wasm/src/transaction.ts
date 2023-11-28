@@ -5,7 +5,7 @@ import {
   WasmTransactionInfo,
   WasmTransactionInfoSchema,
 } from '@penumbra-zone/types';
-import { decode_tx, encode_tx, transaction_info } from '@penumbra-zone-test/wasm-bundler';
+import { decode_tx, encode_tx, transaction_info } from '@penumbra-zone/wasm-bundler';
 import {
   Transaction,
   TransactionPerspective,

@@ -1,4 +1,4 @@
-import { WasmPlanner } from '@penumbra-zone-test/wasm-bundler';
+import { WasmPlanner } from '@penumbra-zone/wasm-bundler';
 import { IdbConstants } from '@penumbra-zone/types';
 import {
   Address,

@@ -5,7 +5,7 @@ import {
   get_full_viewing_key,
   get_short_address_by_index,
   get_wallet_id,
-} from '@penumbra-zone-test/wasm-bundler';
+} from '@penumbra-zone/wasm-bundler';
 import { z } from 'zod';
 import { base64ToUint8Array, InnerBase64Schema, validateSchema } from '@penumbra-zone/types';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';

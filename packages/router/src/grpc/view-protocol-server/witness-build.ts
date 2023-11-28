@@ -4,7 +4,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { ViewReqMessage } from './router';
 import { ServicesInterface } from '@penumbra-zone/types';
-import { build, loadProvingKey, witness } from '@penumbra-zone/wasm-ts';
+import { build, witness } from '@penumbra-zone/wasm-ts';
 import { localExtStorage } from '@penumbra-zone/storage';
 
 export const isWitnessBuildRequest = (msg: ViewReqMessage): msg is WitnessAndBuildRequest => {
@@ -26,9 +26,7 @@ export const handleWitnessBuildReq = async (
   const wallets = await localExtStorage.get('wallets');
   const { fullViewingKey } = wallets[0]!;
 
-  loadProvingKey();
-
-  const transaction = build(
+  const transaction = await build(
     fullViewingKey,
     req.transactionPlan,
     witnessData,

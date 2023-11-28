@@ -1,4 +1,4 @@
-import { ViewServer as WasmViewServer } from '@penumbra-zone-test/wasm-bundler';
+import { ViewServer as WasmViewServer } from '@penumbra-zone/wasm-bundler';
 import {
   IdbConstants,
   InnerBase64Schema,
