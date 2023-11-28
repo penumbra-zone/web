@@ -7,7 +7,7 @@
     "ui:add": "pnpm dlx shadcn-ui@latest add"
   },
   "dependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.4.2-20231116213357-9a38d96f2792.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.4.2-20231120132728-bc443669626d.1",
     "@penumbra-zone/types": "workspace:*",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dialog": "1.0.5",
@@ -26,15 +26,15 @@
     "clsx": "^2.0.0",
     "djb2a": "^2.0.0",
     "framer-motion": "^10.16.5",
-    "lucide-react": "^0.292.0",
+    "lucide-react": "^0.294.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
-    "@types/node": "^20.9.3",
-    "@types/react": "^18.2.38",
-    "@types/react-dom": "^18.2.16",
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.39",
+    "@types/react-dom": "^18.2.17",
     "@types/tinycolor2": "^1.4.6",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.54.0",

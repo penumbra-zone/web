@@ -16,8 +16,11 @@ export const handleStatusRequest = async (
   const { indexedDb } = await services.getWalletServices();
   const latestBlockHeight = await services.querier.tendermint.latestBlockHeight();
   const lastBlockSynced = await indexedDb.getLastBlockSynced();
+  if (!lastBlockSynced) throw new Error('Last block synced not in db');
+
   return new StatusResponse({
     catchingUp: lastBlockSynced === latestBlockHeight,
-    syncHeight: lastBlockSynced!,
+    partialSyncHeight: lastBlockSynced,
+    fullSyncHeight: lastBlockSynced,
   });
 };

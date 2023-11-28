@@ -16,10 +16,9 @@ export const isTxPlannerRequest = (msg: ViewReqMessage): msg is TransactionPlann
 };
 
 // If there are any balances left over, refund back to source. Default to account 0.
-const getRefundAddress = async (req: TransactionPlannerRequest): Promise<Address> => {
-  const refundAddrIndex = req.source ?? new AddressIndex({ account: 0 });
+const getRefundAddress = async (source: AddressIndex): Promise<Address> => {
   const wallets = await localExtStorage.get('wallets');
-  return getAddressByIndex(wallets[0]!.fullViewingKey, refundAddrIndex.account);
+  return getAddressByIndex(wallets[0]!.fullViewingKey, source.account);
 };
 
 export const handleTxPlannerReq = async (
@@ -58,7 +57,8 @@ export const handleTxPlannerReq = async (
     planner.ics20Withdrawal(w);
   }
 
-  const refundAddr = await getRefundAddress(req);
-  const plan = await planner.plan(refundAddr);
+  const source = req.source ?? new AddressIndex({ account: 0 });
+  const refundAddr = await getRefundAddress(source);
+  const plan = await planner.plan(refundAddr, source);
   return new TransactionPlannerResponse({ plan });
 };

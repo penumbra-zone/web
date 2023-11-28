@@ -1,6 +1,9 @@
 import { WasmPlanner } from '@penumbra-zone/wasm-bundler';
 import { IdbConstants } from '@penumbra-zone/types';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import {
+  Address,
+  AddressIndex,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import {
   MemoPlaintext,
   TransactionPlan,
@@ -52,8 +55,8 @@ export class TxPlanner {
     this.wasmPlanner.fee(fee.toJson());
   }
 
-  async plan(refundAddr: Address): Promise<TransactionPlan> {
-    const json = (await this.wasmPlanner.plan(refundAddr.toJson())) as JsonValue;
+  async plan(refundAddr: Address, source: AddressIndex): Promise<TransactionPlan> {
+    const json = (await this.wasmPlanner.plan(refundAddr.toJson(), source.toJson())) as JsonValue;
     return TransactionPlan.fromJson(json);
   }
 }

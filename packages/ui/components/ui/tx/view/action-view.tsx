@@ -32,8 +32,8 @@ export const ActionViewComponent = ({ av: { actionView } }: { av: ActionView }) 
     case 'validatorDefinition':
       return <ViewBox label='Validator Definition' />;
 
-    case 'ibcAction':
-      return <ViewBox label='IBC Action' />;
+    case 'ibcRelayAction':
+      return <ViewBox label='IBC Relay Action' />;
 
     case 'proposalSubmit':
       return <ViewBox label='Proposal Submit' />;

@@ -16,7 +16,7 @@ export default function Notifications() {
     if (error) {
       setStatus('notification');
     } else if (data) {
-      if (data.latestKnownBlockHeight - data.syncHeight > 10) {
+      if (data.latestKnownBlockHeight - data.fullSyncHeight > 10) {
         setStatus('sync');
       } else {
         setStatus('none');

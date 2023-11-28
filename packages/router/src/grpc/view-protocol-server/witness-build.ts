@@ -26,7 +26,7 @@ export const handleWitnessBuildReq = async (
   const wallets = await localExtStorage.get('wallets');
   const { fullViewingKey } = wallets[0]!;
 
-  const transaction = build(
+  const transaction = await build(
     fullViewingKey,
     req.transactionPlan,
     witnessData,
