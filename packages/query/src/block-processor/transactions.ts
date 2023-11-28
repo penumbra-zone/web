@@ -17,7 +17,6 @@ import {
   PositionState,
   PositionState_PositionStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 export class Transactions {
   // These are base64 encoded hex strings
@@ -90,25 +89,26 @@ export class Transactions {
   // registry based on transaction contents.
   // Necessary to save LPNFT denoms for 'closed' 'withdrawn' and 'claimed' as soon as we detect a positionOpen action
   async storeLpNft(tx: Transaction) {
-    const processPosition = async (positionState: PositionState_PositionStateEnum) => {
-      if (tx.body?.actions) {
-        for (const action of tx.body.actions) {
-          if (action.action.case === 'positionOpen' && action.action.value.position !== undefined) {
-            const position = action.action.value.position;
-            const state = new PositionState({ state: positionState });
+    if (!tx.body?.actions) {
+      return;
+    }
+    for (const action of tx.body.actions) {
+      if (action.action.case === 'positionOpen' && action.action.value.position !== undefined) {
+        const position = action.action.value.position;
 
-            const denomMetadata: DenomMetadata = this.viewServer.getLpNftDenom(position, state);
+        const opened = new PositionState({ state: PositionState_PositionStateEnum.OPENED });
+        await this.indexedDb.saveAssetsMetadata(this.viewServer.getLpNftDenom(position, opened));
 
-            await this.indexedDb.saveAssetsMetadata(denomMetadata);
-          }
-        }
+        const closed = new PositionState({ state: PositionState_PositionStateEnum.CLOSED });
+        await this.indexedDb.saveAssetsMetadata(this.viewServer.getLpNftDenom(position, closed));
+
+        const withdrawn = new PositionState({ state: PositionState_PositionStateEnum.WITHDRAWN });
+        await this.indexedDb.saveAssetsMetadata(this.viewServer.getLpNftDenom(position, withdrawn));
+
+        const claimed = new PositionState({ state: PositionState_PositionStateEnum.CLAIMED });
+        await this.indexedDb.saveAssetsMetadata(this.viewServer.getLpNftDenom(position, claimed));
       }
-    };
-
-    await processPosition(PositionState_PositionStateEnum.OPENED);
-    await processPosition(PositionState_PositionStateEnum.CLOSED);
-    await processPosition(PositionState_PositionStateEnum.WITHDRAWN);
-    await processPosition(PositionState_PositionStateEnum.CLAIMED);
+    }
   }
 }
 
