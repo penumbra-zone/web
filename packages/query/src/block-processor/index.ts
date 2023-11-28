@@ -192,7 +192,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
-      console.log(block);
       if (block.fmdParameters) await this.indexedDb.saveFmdParams(block.fmdParameters);
 
       // Scanning has a side effect of updating viewServer's internal tree.
