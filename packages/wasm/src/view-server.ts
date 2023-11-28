@@ -7,11 +7,17 @@ import {
   ScanResultSchema,
   StateCommitmentTree,
   ViewServerInterface,
+  WasmDenomMetadataSchema,
 } from '@penumbra-zone/types';
 import { validateSchema } from '@penumbra-zone/types/src/validation';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
 import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { z } from 'zod';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import {
+  Position,
+  PositionState,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 
 interface ViewServerProps {
   fullViewingKey: string;
@@ -72,5 +78,13 @@ export class ViewServer implements ViewServerInterface {
   flushUpdates(): ScanResult {
     const raw = validateSchema(ScanResultSchema, this.wasmViewServer.flush_updates());
     return parseScanResult(raw);
+  }
+
+  getLpNftDenom(position: Position, positionState: PositionState): DenomMetadata {
+    const result = validateSchema(
+      WasmDenomMetadataSchema,
+      this.wasmViewServer.get_lpnft_asset(position.toJson(), positionState.toJson()),
+    );
+    return DenomMetadata.fromJsonString(JSON.stringify(result));
   }
 }

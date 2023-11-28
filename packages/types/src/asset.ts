@@ -1,5 +1,7 @@
 import { AssetId as ProtoAssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { bech32m } from 'bech32';
+import { z } from 'zod';
+import { InnerBase64Schema } from './base64';
 
 // TODO: These types should not exist. Replace with protos later.
 export interface AssetDenom {
@@ -26,6 +28,13 @@ export interface Asset {
   penumbraAssetId: AssetId;
   icon?: string;
 }
+
+export const WasmDenomMetadataSchema = z.object({
+  base: z.string(),
+  denomUnits: z.unknown(),
+  penumbraAssetId: InnerBase64Schema,
+  display: z.string(),
+});
 
 // Globally set Bech32 prefix used for asset IDs
 const BECH32_PREFIX = 'passet';

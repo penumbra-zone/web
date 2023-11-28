@@ -1,7 +1,13 @@
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import {
+  AssetId,
+  DenomMetadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
-import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import {
+  SpendableNoteRecord,
+  TransactionInfo,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { backOff } from 'exponential-backoff';
 import {
@@ -13,6 +19,10 @@ import { decodeSctRoot } from '@penumbra-zone/wasm-ts/src/sct';
 import { RootQuerier } from '../root-querier';
 import { generateMetadata } from './metadata';
 import { Transactions } from './transactions';
+import {
+  PositionState,
+  PositionState_PositionStateEnum,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -75,7 +85,39 @@ export class BlockProcessor implements BlockProcessorInterface {
       await transactions.add(n.source);
     }
 
-    await transactions.storeTransactionInfo();
+    const newTransactions = await transactions.storeTransactionInfo();
+
+    await this.storeLpNft(newTransactions);
+  }
+
+  // LPNFT asset IDs won't be known to the chain, so we need to pre-populate them in local
+  // registry based on transaction contents.
+  // Necessary to save LPNFT denoms for 'closed' 'withdrawn' and 'claimed' as soon as we detect a positionOpen action
+  async storeLpNft(newTransactions: Set<TransactionInfo>) {
+    const processPositionState = async (positionState: PositionState_PositionStateEnum) => {
+      for (const tx of newTransactions) {
+        const txv = tx.view!;
+        for (const actionView of txv.bodyView!.actionViews) {
+          if (
+            actionView.actionView.case === 'positionOpen' &&
+            actionView.actionView.value.position !== undefined
+          ) {
+            const denomMetadata: DenomMetadata = this.viewServer.getLpNftDenom(
+              actionView.actionView.value.position,
+              new PositionState({
+                state: positionState,
+              }),
+            );
+            await this.indexedDb.saveAssetsMetadata(denomMetadata);
+          }
+        }
+      }
+    };
+
+    await processPositionState(PositionState_PositionStateEnum.OPENED);
+    await processPositionState(PositionState_PositionStateEnum.CLOSED);
+    await processPositionState(PositionState_PositionStateEnum.WITHDRAWN);
+    await processPositionState(PositionState_PositionStateEnum.CLAIMED);
   }
 
   // Nullifier is published in network when a note is spent or swap is claimed
@@ -150,6 +192,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
+      console.log(block);
       if (block.fmdParameters) await this.indexedDb.saveFmdParams(block.fmdParameters);
 
       // Scanning has a side effect of updating viewServer's internal tree.

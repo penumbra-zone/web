@@ -33,12 +33,14 @@ export class Transactions {
   // it belongs to the user. For that reason, we query the entire block, go through each
   // transaction, and filter to the transaction(s) that belong to the user.
   // We then decode and acquire more info on that transaction to store in the database.
-  async storeTransactionInfo() {
-    if (this.all.size <= 0) return;
+  async storeTransactionInfo(): Promise<Set<TransactionInfo>> {
+    const newTransactions = new Set<TransactionInfo>();
+
+    if (this.all.size <= 0) return newTransactions;
 
     // TODO: Currently bug querying blockHeight 1
     // Tendermint does not allow querying blockHeight 0
-    if (this.blockHeight === 0n || this.blockHeight === 1n) return;
+    if (this.blockHeight === 0n || this.blockHeight === 1n) return newTransactions;
 
     const b = await this.tendermint.getBlock(this.blockHeight);
     if (!b.block?.data?.txs) throw new Error('Unable to query transactions');
@@ -64,8 +66,10 @@ export class Transactions {
         });
 
         await this.indexedDb.saveTransactionInfo(txToStore);
+        newTransactions.add(txToStore);
       }
     }
+    return newTransactions;
   }
 }
 
