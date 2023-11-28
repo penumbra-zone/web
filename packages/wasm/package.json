@@ -10,6 +10,7 @@
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.4.2-20231120132728-bc443669626d.1",
     "@bufbuild/protobuf": "^1.4.2",
     "@penumbra-zone/types": "workspace:*",
+    "@penumbra-zone-test/wasm-bundler": "0.63.3-preview-4",
     "@penumbra-zone/wasm-bundler": "0.63.2-preview-2",
     "@penumbra-zone/wasm-nodejs": "0.63.2-preview-2",
     "bech32": "^2.0.0",

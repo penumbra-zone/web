@@ -11,7 +11,13 @@ import {
   WasmBuildSchema,
   WasmWitnessDataSchema,
 } from '@penumbra-zone/types';
-import { authorize, build as wasmBuild, witness as wasmWitness } from '@penumbra-zone/wasm-bundler';
+import {
+  authorize,
+  build as wasmBuild,
+  witness as wasmWitness,
+} from '@penumbra-zone-test/wasm-bundler';
+
+import * as Test from '@penumbra-zone-test/wasm-bundler/bin';
 
 export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): AuthorizationData => {
   const result = validateSchema(WasmAuthorizeSchema, authorize(spendKey, txPlan.toJson()));
@@ -34,4 +40,9 @@ export const build = (
     wasmBuild(fullViewingKey, txPlan.toJson(), witnessData.toJson(), authData.toJson()),
   );
   return Transaction.fromJsonString(JSON.stringify(result));
+};
+
+export const loadProvingKey = () => {
+  console.log(Test);
+  // export function load_proving_key(parameters: any, key_type: string): void;
 };

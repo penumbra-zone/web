@@ -1,4 +1,4 @@
-import { decode_sct_root } from '@penumbra-zone/wasm-bundler';
+import { decode_sct_root } from '@penumbra-zone-test/wasm-bundler';
 import { InnerBase64Schema, uint8ArrayToHex, validateSchema } from '@penumbra-zone/types';
 import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 

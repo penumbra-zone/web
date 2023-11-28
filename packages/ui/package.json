@@ -26,14 +26,14 @@
     "clsx": "^2.0.0",
     "djb2a": "^2.0.0",
     "framer-motion": "^10.16.5",
-    "lucide-react": "^0.292.0",
+    "lucide-react": "^0.293.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
-    "@types/node": "^20.9.4",
-    "@types/react": "^18.2.38",
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.39",
     "@types/react-dom": "^18.2.17",
     "@types/tinycolor2": "^1.4.6",
     "autoprefixer": "^10.4.16",
