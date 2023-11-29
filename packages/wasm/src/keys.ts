@@ -3,7 +3,6 @@ import {
   get_address_by_index,
   get_ephemeral_address,
   get_full_viewing_key,
-  get_short_address_by_index,
   get_wallet_id,
 } from '@penumbra-zone/wasm-bundler';
 import { z } from 'zod';
@@ -27,9 +26,6 @@ export const getEphemeralByIndex = (fullViewingKey: string, index: number): Addr
   const uintArray = base64ToUint8Array(res.inner);
   return new Address({ inner: uintArray });
 };
-
-export const getShortAddressByIndex = (fullViewingKey: string, index: number): string =>
-  validateSchema(z.string(), get_short_address_by_index(fullViewingKey, index));
 
 export const getWalletId = (fullViewingKey: string): string =>
   validateSchema(z.string(), get_wallet_id(fullViewingKey));
