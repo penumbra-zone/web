@@ -90,5 +90,16 @@ describe('keys', () => {
         getIndexByAddress(fullViewingKey, bech32Address(address));
       }).not.toThrow();
     });
+
+    it('throw error the other full viewing key is the owner of address', () => {
+      const spendKey = generateSpendKey(seedPhrase);
+      const fullViewingKey = getFullViewingKey(spendKey);
+      const address =
+        'penumbra122mfall0zr6am5r45qkwht7aqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8rcaw2fn5c838rfackazmgf3ahh09cxmz';
+
+      expect(() => {
+        getIndexByAddress(fullViewingKey, address);
+      }).toThrowError();
+    });
   });
 });

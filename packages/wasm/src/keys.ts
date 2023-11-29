@@ -34,18 +34,19 @@ export const getEphemeralByIndex = (fullViewingKey: string, index: number): Addr
 
 export const getIndexByAddress = (fullViewingKey: string, address: string): AddressIndex => {
   const res = validateSchema(
-    z.object({
-      account: z.number().optional(),
-      randomizer: z.string(),
-    }),
+    z
+      .object({
+        account: z.number().optional(),
+        randomizer: z.string(),
+      })
+      .optional(),
     is_controlled_address(fullViewingKey, address),
   );
+  if (!res) throw new Error('address does not exist');
 
-  const uintArray = base64ToUint8Array(res.randomizer);
-
-  return new AddressIndex({
+  return new AddressIndex().fromJson({
     account: res.account ?? 0,
-    randomizer: uintArray,
+    randomizer: res.randomizer,
   });
 };
 
