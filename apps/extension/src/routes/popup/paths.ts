@@ -1,6 +1,7 @@
 export enum PopupPath {
   INDEX = '/',
   LOGIN = '/login',
+  APPROVAL = '/approval',
   SETTINGS = '/settings',
   SETTINGS_ADVANCED = '/settings/advanced',
   SETTINGS_SECURITY = '/settings/security',

@@ -7,6 +7,15 @@ import { BlockSync } from './block-sync';
 import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
 import { accountAddrSelector } from '../../../state/wallets';
 
+import { usePopupNav } from '../../../utils/navigate';
+import { useEffect } from 'react';
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  console.log('master popup message handler got', { request, sender, sendResponse });
+  return true;
+});
+
 export interface PopupLoaderData {
   lastBlockSynced: number;
 }
@@ -33,6 +42,13 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
 
 export const PopupIndex = () => {
   const getAccount = useStore(accountAddrSelector);
+
+  const navigate = usePopupNav();
+
+  useEffect(() => {
+    const navParameter = new URL(String(window.location)).searchParams.get('nav');
+    if (navParameter) navigate(PopupPath.APPROVAL);
+  }, [navigate]);
 
   return (
     <div className='relative flex h-full flex-col items-stretch justify-start bg-left-bottom px-[30px]'>

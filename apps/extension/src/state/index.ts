@@ -5,6 +5,7 @@ import { customPersist } from './persist';
 import { createPasswordSlice, PasswordSlice } from './password';
 import { createSeedPhraseSlice, SeedPhraseSlice } from './seed-phrase';
 import { createNetworkSlice, NetworkSlice } from './network';
+import { ApprovalSlice, createApprovalSlice } from './approval';
 import {
   ExtensionStorage,
   localExtStorage,
@@ -18,6 +19,7 @@ export interface AllSlices {
   password: PasswordSlice;
   seedPhrase: SeedPhraseSlice;
   network: NetworkSlice;
+  approval: ApprovalSlice;
 }
 
 export type SliceCreator<SliceInterface> = StateCreator<
@@ -36,6 +38,7 @@ export const initializeStore = (
     password: createPasswordSlice(session, local)(setState, getState, store),
     seedPhrase: createSeedPhraseSlice(setState, getState, store),
     network: createNetworkSlice(local)(setState, getState, store),
+    approval: createApprovalSlice(setState, getState, store),
   }));
 };
 
