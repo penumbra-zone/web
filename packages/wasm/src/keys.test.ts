@@ -4,9 +4,11 @@ import {
   getAddressByIndex,
   getEphemeralByIndex,
   getFullViewingKey,
+  getIndexByAddress,
   getShortAddressByIndex,
   getWalletId,
 } from './keys';
+import { bech32Address } from '@penumbra-zone/types';
 
 // Replace the wasm-pack import with the nodejs version so tests can run
 vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
@@ -74,6 +76,18 @@ describe('keys', () => {
 
       expect(() => {
         getWalletId(fullViewingKey);
+      }).not.toThrow();
+    });
+  });
+
+  describe('getIndexByAddress()', () => {
+    it('does not raise zod validation error', () => {
+      const spendKey = generateSpendKey(seedPhrase);
+      const fullViewingKey = getFullViewingKey(spendKey);
+      const address = getAddressByIndex(fullViewingKey, 1);
+
+      expect(() => {
+        getIndexByAddress(fullViewingKey, bech32Address(address));
       }).not.toThrow();
     });
   });

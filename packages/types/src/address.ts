@@ -13,3 +13,9 @@ export const bech32Address = (addr: Address): string =>
 
 export const isPenumbraAddr = (addr: string): boolean =>
   addr.length === BECH32_ADDRESS_LENGTH && addr.startsWith(`${BECH32_PREFIX}1`);
+
+// need to decode address penumbra147mfall.. to Uint8Array (used for IndexByAddressRequest)
+export const bech32ToUint8Array = (addr: string): Uint8Array => {
+  const decodeAddress = bech32m.decode(addr, BECH32_ADDRESS_LENGTH);
+  return new Uint8Array(bech32m.fromWords(decodeAddress.words));
+};
