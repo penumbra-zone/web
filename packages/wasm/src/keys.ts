@@ -5,10 +5,14 @@ import {
   get_full_viewing_key,
   get_short_address_by_index,
   get_wallet_id,
+  is_controlled_address,
 } from '@penumbra-zone/wasm-bundler';
 import { z } from 'zod';
 import { base64ToUint8Array, InnerBase64Schema, validateSchema } from '@penumbra-zone/types';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import {
+  Address,
+  AddressIndex,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
 export const generateSpendKey = (seedPhrase: string): string =>
   validateSchema(z.string(), generate_spend_key(seedPhrase));
@@ -26,6 +30,23 @@ export const getEphemeralByIndex = (fullViewingKey: string, index: number): Addr
   const res = validateSchema(InnerBase64Schema, get_ephemeral_address(fullViewingKey, index));
   const uintArray = base64ToUint8Array(res.inner);
   return new Address({ inner: uintArray });
+};
+
+export const getIndexByAddress = (fullViewingKey: string, address: string): AddressIndex => {
+  const res = validateSchema(
+    z.object({
+      account: z.number().optional(),
+      randomizer: z.string(),
+    }),
+    is_controlled_address(fullViewingKey, address),
+  );
+
+  const uintArray = base64ToUint8Array(res.randomizer);
+
+  return new AddressIndex({
+    account: res.account ?? 0,
+    randomizer: uintArray,
+  });
 };
 
 export const getShortAddressByIndex = (fullViewingKey: string, index: number): string =>
