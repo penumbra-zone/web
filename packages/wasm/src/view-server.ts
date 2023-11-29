@@ -80,7 +80,7 @@ export class ViewServer implements ViewServerInterface {
     return parseScanResult(raw);
   }
 
-  getLpNftDenom(position: Position, positionState: PositionState): DenomMetadata {
+  getLpNftMetadata(position: Position, positionState: PositionState): DenomMetadata {
     const result = validateSchema(
       WasmDenomMetadataSchema,
       this.wasmViewServer.get_lpnft_asset(position.toJson(), positionState.toJson()),

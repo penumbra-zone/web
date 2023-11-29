@@ -63,7 +63,8 @@ export class Transactions {
       if (noteSourcePresent(this.all, noteSource)) {
         const transaction = decodeTx(txBytes);
 
-        // We must store LPNFT denoms before calling transactionInfo()
+        // We must store LpNft metadata before calling transactionInfo() because to generate TxV and TxP
+        // wasm needs LpNft metadata, which it will read from the indexed-db
         await this.storeLpNft(transaction);
 
         const { txp, txv } = await transactionInfo(
@@ -85,28 +86,30 @@ export class Transactions {
     }
   }
 
-  // LPNFT asset IDs won't be known to the chain, so we need to pre-populate them in local
+  // LpNft asset IDs won't be known to the chain, so we need to pre-populate them in local
   // registry based on transaction contents.
-  // Necessary to save LPNFT denoms for 'closed' 'withdrawn' and 'claimed' as soon as we detect a positionOpen action
+  // Necessary to save LpNft metadata for 'closed' 'withdrawn' and 'claimed' as soon as we detect a 'positionOpen' action
+  // because only the 'positionOpen' action contains a 'Position' structure from which we can generate metadata
   async storeLpNft(tx: Transaction) {
     if (!tx.body?.actions) {
       return;
     }
-    for (const action of tx.body.actions) {
-      if (action.action.case === 'positionOpen' && action.action.value.position !== undefined) {
-        const position = action.action.value.position;
+    for (const a of tx.body.actions) {
+      if (a.action.case !== 'positionOpen' || a.action.value.position === undefined) {
+        continue;
+      }
 
-        const opened = new PositionState({ state: PositionState_PositionStateEnum.OPENED });
-        await this.indexedDb.saveAssetsMetadata(this.viewServer.getLpNftDenom(position, opened));
+      const positionStates = [
+        PositionState_PositionStateEnum.OPENED,
+        PositionState_PositionStateEnum.CLOSED,
+        PositionState_PositionStateEnum.WITHDRAWN,
+        PositionState_PositionStateEnum.CLAIMED,
+      ];
 
-        const closed = new PositionState({ state: PositionState_PositionStateEnum.CLOSED });
-        await this.indexedDb.saveAssetsMetadata(this.viewServer.getLpNftDenom(position, closed));
-
-        const withdrawn = new PositionState({ state: PositionState_PositionStateEnum.WITHDRAWN });
-        await this.indexedDb.saveAssetsMetadata(this.viewServer.getLpNftDenom(position, withdrawn));
-
-        const claimed = new PositionState({ state: PositionState_PositionStateEnum.CLAIMED });
-        await this.indexedDb.saveAssetsMetadata(this.viewServer.getLpNftDenom(position, claimed));
+      for (const state of positionStates) {
+        const positionState = new PositionState({ state });
+        const metadata = this.viewServer.getLpNftMetadata(a.action.value.position, positionState);
+        await this.indexedDb.saveAssetsMetadata(metadata);
       }
     }
   }

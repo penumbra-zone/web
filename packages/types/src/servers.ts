@@ -12,5 +12,5 @@ export interface ViewServerInterface {
   flushUpdates(): ScanResult;
   resetTreeToStored(): Promise<void>;
   getSctRoot(): MerkleRoot;
-  getLpNftDenom(position: Position, positionState: PositionState): DenomMetadata;
+  getLpNftMetadata(position: Position, positionState: PositionState): DenomMetadata;
 }
