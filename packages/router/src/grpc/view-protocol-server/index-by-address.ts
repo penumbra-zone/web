@@ -15,7 +15,8 @@ export const handleIndexByAddressReq = async (
   req: IndexByAddressRequest,
 ): Promise<IndexByAddressResponse> => {
   const wallets = await localExtStorage.get('wallets');
-  const address = bech32Address(req.address!);
+  if (!req.address) throw new Error('no address given in request');
+  const address = bech32Address(req.address);
   const addressIndex = getIndexByAddress(wallets[0]!.fullViewingKey, address);
 
   return new IndexByAddressResponse({ addressIndex });
