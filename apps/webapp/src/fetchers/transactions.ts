@@ -1,4 +1,3 @@
-import { NotesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { viewClient } from '../clients/grpc';
 import { streamToPromise } from '@penumbra-zone/transport';
 import { classifyTransaction, uint8ArrayToHex } from '@penumbra-zone/types';
@@ -20,11 +19,4 @@ export const getAllTransactions = async (): Promise<TransactionSummary[]> => {
       };
     })
     .sort((a, b) => b.height - a.height);
-};
-
-export const getAllNotes = async (): Promise<NotesResponse[]> => {
-  const responses = await streamToPromise(viewClient.notes({
-    includeSpent: true
-  }));
-  return responses;
 };
