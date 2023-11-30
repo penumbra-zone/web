@@ -2,10 +2,13 @@ import { shorten } from '@penumbra-zone/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
 import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
 import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
-import { getAllTransactions, TransactionSummary } from '../../fetchers/transactions.ts';
+import { getAllNotes, getAllTransactions, TransactionSummary } from '../../fetchers/transactions.ts';
 
 export const TxsLoader: LoaderFunction = async (): Promise<TransactionSummary[]> => {
   await throwIfExtNotInstalled();
+
+  console.log(await getAllNotes());
+
   return await getAllTransactions();
 };
 
