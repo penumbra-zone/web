@@ -1,10 +1,22 @@
-import { IndexedDbInterface, noteSourceFromBytes, ParsedNoteSource } from '@penumbra-zone/types';
+import {
+  IndexedDbInterface,
+  noteSourceFromBytes,
+  ParsedNoteSource,
+  ViewServerInterface,
+} from '@penumbra-zone/types';
 import { TendermintQuerier } from '../queriers/tendermint';
 import { decodeTx, transactionInfo } from '@penumbra-zone/wasm-ts/src/transaction';
 import { sha256Hash } from '@penumbra-zone/crypto-web';
 import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { Id } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import {
+  Id,
+  Transaction,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import {
+  PositionState,
+  PositionState_PositionStateEnum,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 
 export class Transactions {
   // These are base64 encoded hex strings
@@ -15,6 +27,7 @@ export class Transactions {
     private fullViewingKey: string,
     private indexedDb: IndexedDbInterface,
     private tendermint: TendermintQuerier,
+    private viewServer: ViewServerInterface,
   ) {}
 
   async add(source?: NoteSource) {
@@ -49,6 +62,11 @@ export class Transactions {
 
       if (noteSourcePresent(this.all, noteSource)) {
         const transaction = decodeTx(txBytes);
+
+        // We must store LpNft metadata before calling transactionInfo() because to generate TxV and TxP
+        // wasm needs LpNft metadata, which it will read from the indexed-db
+        await this.storeLpNft(transaction);
+
         const { txp, txv } = await transactionInfo(
           this.fullViewingKey,
           transaction,
@@ -64,6 +82,34 @@ export class Transactions {
         });
 
         await this.indexedDb.saveTransactionInfo(txToStore);
+      }
+    }
+  }
+
+  // LpNft asset IDs won't be known to the chain, so we need to pre-populate them in local
+  // registry based on transaction contents.
+  // Necessary to save LpNft metadata for 'closed' 'withdrawn' and 'claimed' as soon as we detect a 'positionOpen' action
+  // because only the 'positionOpen' action contains a 'Position' structure from which we can generate metadata
+  async storeLpNft(tx: Transaction) {
+    if (!tx.body?.actions) {
+      return;
+    }
+    for (const a of tx.body.actions) {
+      if (a.action.case !== 'positionOpen' || a.action.value.position === undefined) {
+        continue;
+      }
+
+      const positionStates = [
+        PositionState_PositionStateEnum.OPENED,
+        PositionState_PositionStateEnum.CLOSED,
+        PositionState_PositionStateEnum.WITHDRAWN,
+        PositionState_PositionStateEnum.CLAIMED,
+      ];
+
+      for (const state of positionStates) {
+        const positionState = new PositionState({ state });
+        const metadata = this.viewServer.getLpNftMetadata(a.action.value.position, positionState);
+        await this.indexedDb.saveAssetsMetadata(metadata);
       }
     }
   }

@@ -68,6 +68,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       this.fullViewingKey,
       this.indexedDb,
       this.querier.tendermint,
+      this.viewServer,
     );
 
     for (const n of newNotes) {
