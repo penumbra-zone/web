@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "lint": "eslint \"**/*.ts*\""
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
   },
   "dependencies": {
     "@buf/cosmos_ibc.bufbuild_es": "1.4.2-20231120130822-4c7d6d9ba523.1",
@@ -26,6 +27,7 @@
     "eslint-config-custom": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "^5.3.2",
+    "vite": "^5.0.3",
     "vitest": "^0.34.6"
   }
 }

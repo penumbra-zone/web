@@ -19,6 +19,7 @@ import { handleWitnessBuildReq, isWitnessBuildRequest } from './witness-build';
 import { handleBroadcastReq, isBroadcastRequest } from './broadcast';
 import { handleEphemeralAddrReq, isEphemeralAddrRequest } from './ephemeral-addr';
 import { handleStatusRequest, isStatusRequest } from './status';
+import { handleNotesReq, isNotesRequest } from './notes';
 import { handleIndexByAddressReq, isIndexByAddressRequest } from './index-by-address';
 import { handleFmdParamsReq, isFmdParamsRequest } from './fmd-params';
 
@@ -58,6 +59,7 @@ export const viewServerStreamingHandler: StreamingHandler<typeof ViewProtocolSer
   else if (isTransactionInfoRequest(msg)) return handleTransactionInfoReq(msg, services);
   else if (isStatusStreamRequest(msg)) return handleStatusReq(msg, services);
   else if (isAssetsRequest(msg)) return handleAssetsReq(msg, services);
+  else if (isNotesRequest(msg)) return handleNotesReq(msg, services);
 
   throw new Error(`Non-supported streaming request: ${msg.getType().typeName}`);
 };
