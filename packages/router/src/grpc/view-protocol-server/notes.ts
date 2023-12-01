@@ -23,7 +23,7 @@ async function assertWalletIdMatches(req: NotesRequest) {
     req.walletId?.inner &&
     !wallets.find(wallet => wallet.id === uint8ArrayToString(req.walletId!.inner))
   ) {
-    throw new Error('Invalid account ID');
+    throw new Error('walletId does not match walletIds in storage');
   }
 }
 
