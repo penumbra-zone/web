@@ -4,7 +4,6 @@ import {
   getAddressByIndex,
   getEphemeralByIndex,
   getFullViewingKey,
-  getShortAddressByIndex,
   getWalletId,
 } from './keys';
 
@@ -12,7 +11,6 @@ import {
 vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
 
 describe('keys', () => {
-  // don't use this seed phrase for personal use
   const seedPhrase =
     'benefit cherry cannon tooth exhibit law avocado spare tooth that amount pumpkin scene foil tape mobile shine apology add crouch situate sun business explain';
 
@@ -52,17 +50,6 @@ describe('keys', () => {
 
       expect(() => {
         getEphemeralByIndex(fullViewingKey, 0);
-      }).not.toThrow();
-    });
-  });
-
-  describe('generateShortAddressByIndex()', () => {
-    it('does not raise zod validation error', () => {
-      const spendKey = generateSpendKey(seedPhrase);
-      const fullViewingKey = getFullViewingKey(spendKey);
-
-      expect(() => {
-        getShortAddressByIndex(fullViewingKey, 0);
       }).not.toThrow();
     });
   });
