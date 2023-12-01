@@ -21,9 +21,6 @@ describe('Send Slice', () => {
     accountIndex: 0,
   };
 
-  const accountExample =
-    'penumbra1e8k5c3ds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uurrgkvtjpny3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd1';
-
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
   beforeEach(() => {
