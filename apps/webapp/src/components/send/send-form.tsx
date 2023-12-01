@@ -15,15 +15,14 @@ export const AssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalan
 
   const balancesByAccount = await getBalancesByAccount();
 
-  if (balancesByAccount.length) {
+  if (balancesByAccount[0]) {
+    // set initial account if accounts exist and asset if account has asset list
     useStore.setState(state => {
-      state.send.account = balancesByAccount[0]?.address ?? '';
-    });
-  }
-
-  if (balancesByAccount[0]?.balances.length) {
-    useStore.setState(state => {
-      state.send.asset = balancesByAccount[0]?.balances[0];
+      state.send.selection = {
+        address: balancesByAccount[0]?.address,
+        accountIndex: balancesByAccount[0]?.index,
+        asset: balancesByAccount[0]?.balances[0],
+      };
     });
   }
 
@@ -34,14 +33,13 @@ export const SendForm = () => {
   const accountBalances = useLoaderData() as AccountBalance[];
   const { toast } = useToast();
   const {
-    account,
+    selection,
     amount,
-    asset,
     recipient,
     memo,
     hidden,
     setAmount,
-    setAccountAsset,
+    setSelection,
     setRecipient,
     setMemo,
     setHidden,
@@ -50,8 +48,8 @@ export const SendForm = () => {
   } = useStore(sendSelector);
 
   const validationErrors = useMemo(() => {
-    return sendValidationErrors(asset, amount, recipient);
-  }, [asset, amount, recipient]);
+    return sendValidationErrors(selection?.asset, amount, recipient);
+  }, [selection?.asset, amount, recipient]);
 
   return (
     <form
@@ -79,8 +77,8 @@ export const SendForm = () => {
         label='Amount to send'
         placeholder='Enter an amount'
         className='mb-1'
-        asset={asset}
-        setAccountAsset={setAccountAsset}
+        selection={selection}
+        setSelection={setSelection}
         value={amount}
         onChange={e => {
           if (Number(e.target.value) < 0) return;
@@ -94,7 +92,7 @@ export const SendForm = () => {
           },
         ]}
         balances={accountBalances}
-        account={account}
+        tempPrice={1}
       />
       <InputBlock
         label='Memo'
@@ -119,7 +117,7 @@ export const SendForm = () => {
           !recipient ||
           !!Object.values(validationErrors).find(Boolean) ||
           txInProgress ||
-          !asset
+          !selection?.asset
         }
       >
         Send

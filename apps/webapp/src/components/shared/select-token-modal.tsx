@@ -10,21 +10,20 @@ import {
 } from '@penumbra-zone/ui';
 import { fromBaseUnitAmount } from '@penumbra-zone/types';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { AccountBalance, AssetBalance } from '../../fetchers/balances';
+import { AccountBalance } from '../../fetchers/balances';
 import { AssetIcon } from './asset-icon.tsx';
+import { Selection } from '../../state/send.ts';
 
 interface SelectTokenModalProps {
-  account: string | undefined;
-  asset: AssetBalance | undefined;
-  setAccountAsset: (account: string, asset: AssetBalance) => void;
+  selection: Selection | undefined;
+  setSelection: (selection: Selection) => void;
   balances: AccountBalance[];
 }
 
 export default function SelectTokenModal({
-  account,
-  asset,
-  setAccountAsset,
+  selection,
   balances,
+  setSelection,
 }: SelectTokenModalProps) {
   const [search, setSearch] = useState('');
 
@@ -32,9 +31,9 @@ export default function SelectTokenModal({
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
         <div className='flex h-9 min-w-[100px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
-          {asset?.denom.display && <AssetIcon name={asset.denom.display} />}
+          {selection?.asset?.denom.display && <AssetIcon name={selection.asset.denom.display} />}
           <p className='font-bold text-light-grey md:text-sm xl:text-base'>
-            {asset?.denom.display}
+            {selection?.asset?.denom.display}
           </p>
         </div>
       </DialogTrigger>
@@ -53,10 +52,10 @@ export default function SelectTokenModal({
                 placeholder='Search asset...'
               />
             </div>
-            <div className='mt-2 flex items-center justify-between font-headline text-base font-semibold'>
-              <p>Account</p>
-              <p>Token name</p>
-              <p>Balance</p>
+            <div className='mt-2 grid grid-cols-3 font-headline text-base font-semibold'>
+              <p className='flex justify-start'>Account</p>
+              <p className='flex justify-start'>Token name</p>
+              <p className='flex justify-end'>Balance</p>
             </div>
             <div className='flex flex-col gap-2'>
               {balances.map(b => (
@@ -66,18 +65,22 @@ export default function SelectTokenModal({
                       <div
                         className={cn(
                           'grid grid-cols-3 py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4 font-bold text-muted-foreground',
-                          asset?.assetId.equals(k.assetId) &&
-                            account === b.address &&
+                          selection?.asset?.assetId.equals(k.assetId) &&
+                            selection.address === b.address &&
                             'bg-light-brown px-4 -mx-4',
                         )}
-                        onClick={() => setAccountAsset(b.address, k)}
+                        onClick={() =>
+                          setSelection({ accountIndex: b.index, address: b.address, asset: k })
+                        }
                       >
                         <p className='flex justify-start'>{b.index}</p>
                         <div className='flex justify-start gap-[6px]'>
                           <AssetIcon name={k.denom.display} />
                           <p>{k.denom.display}</p>
                         </div>
-                        <p>{fromBaseUnitAmount(k.amount, k.denom.exponent).toFormat()}</p>
+                        <p className='flex justify-end'>
+                          {fromBaseUnitAmount(k.amount, k.denom.exponent).toFormat()}
+                        </p>
                       </div>
                     </DialogClose>
                   ))}

@@ -10,12 +10,17 @@ import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import BigNumber from 'bignumber.js';
 import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
 import { AssetBalance } from '../fetchers/balances';
-import { getIndexByAddress } from '../fetchers/index-by-address';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+
+export interface Selection {
+  address: string | undefined;
+  accountIndex: number | undefined;
+  asset: AssetBalance | undefined;
+}
 
 export interface SendSlice {
-  account: string;
-  asset: AssetBalance | undefined;
-  setAccountAsset: (account: string, asset: AssetBalance) => void;
+  selection: Selection | undefined;
+  setSelection: (selection: Selection) => void;
   amount: string;
   setAmount: (amount: string) => void;
   recipient: string;
@@ -30,9 +35,8 @@ export interface SendSlice {
 
 export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   return {
-    account: '',
+    selection: undefined,
     amount: '',
-    asset: undefined,
     recipient: '',
     memo: '',
     hidden: false,
@@ -42,10 +46,9 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.amount = amount;
       });
     },
-    setAccountAsset: (account, asset) => {
+    setSelection: selection => {
       set(state => {
-        state.send.asset = asset;
-        state.send.account = account;
+        state.send.selection = selection;
       });
     },
     setRecipient: addr => {
@@ -91,25 +94,21 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
-const getExponent = (asset: AssetBalance): number => asset.denom.exponent;
-
-const planWitnessBuildBroadcast = async ({ amount, recipient, asset, account }: SendSlice) => {
-  if (typeof account === 'undefined') throw new Error('no selected account');
-  if (!asset) throw new Error('no selected asset');
-
-  const source = await getIndexByAddress(account);
+const planWitnessBuildBroadcast = async ({ amount, recipient, selection }: SendSlice) => {
+  if (typeof selection?.accountIndex === 'undefined') throw new Error('no selected account');
+  if (!selection.asset) throw new Error('no selected asset');
 
   const req = new TransactionPlannerRequest({
     outputs: [
       {
         address: { altBech32m: recipient },
         value: {
-          amount: toBaseUnit(BigNumber(amount), getExponent(asset)),
-          assetId: { inner: asset.assetId.inner },
+          amount: toBaseUnit(BigNumber(amount), selection.asset.denom.exponent),
+          assetId: { inner: selection.asset.assetId.inner },
         },
       },
     ],
-    source,
+    source: AddressIndex.fromJson({ account: selection.accountIndex }),
   });
 
   const { viewClient, custodyClient } = await import('../clients/grpc');
@@ -133,11 +132,8 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, asset, account }: 
   return uint8ArrayToHex(id.hash);
 };
 
-export const amountToBig = (asset: AssetBalance) =>
-  fromBaseUnitAmount(asset.amount, asset.denom.exponent);
-
 export const validateAmount = (asset: AssetBalance, amount: string): boolean => {
-  const balanceAmt = amountToBig(asset);
+  const balanceAmt = fromBaseUnitAmount(asset.amount, asset.denom.exponent);
   return Boolean(amount) && BigNumber(amount).gt(balanceAmt);
 };
 
