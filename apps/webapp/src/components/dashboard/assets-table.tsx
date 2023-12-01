@@ -12,7 +12,6 @@ import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
 import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances.ts';
 import { AssetIcon } from '../shared/asset-icon.tsx';
-import { assets } from '@penumbra-zone/constants';
 
 export const AssetsLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
   await throwIfExtNotInstalled();
@@ -56,13 +55,7 @@ export default function AssetsTable() {
               {a.balances.map((asset, i) => (
                 <div key={i} className='flex items-center justify-between border-b pb-3'>
                   <div className='flex items-center gap-2'>
-                    <AssetIcon
-                      asset={
-                        assets.find(i => i.display === asset.denom.display) ?? {
-                          display: '',
-                        }
-                      }
-                    />
+                    <AssetIcon name={asset.denom.display} />
                     <p className='font-mono text-base font-bold'>{asset.denom.display}</p>
                   </div>
                   <p className='font-mono text-base font-bold'>
@@ -87,13 +80,7 @@ export default function AssetsTable() {
                   <TableRow key={i}>
                     <TableCell className='w-1/3'>
                       <div className='flex items-center gap-2'>
-                        <AssetIcon
-                          asset={
-                            assets.find(i => i.display === asset.denom.display) ?? {
-                              display: '',
-                            }
-                          }
-                        />
+                        <AssetIcon name={asset.denom.display} />
                         <p className='font-mono text-base font-bold'>{asset.denom.display}</p>
                       </div>
                     </TableCell>

@@ -8,27 +8,34 @@ import {
   DialogTrigger,
   Input,
 } from '@penumbra-zone/ui';
-import { Asset, AssetId, fromBaseUnitAmount, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import { fromBaseUnitAmount } from '@penumbra-zone/types';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { AccountBalance } from '../../fetchers/balances.ts';
+import { AccountBalance, AssetBalance } from '../../fetchers/balances';
 import { AssetIcon } from './asset-icon.tsx';
-import { assets } from '@penumbra-zone/constants';
 
 interface SelectTokenModalProps {
-  asset: Asset;
-  setAsset: (asset: AssetId) => void;
+  account: string | undefined;
+  asset: AssetBalance | undefined;
+  setAccountAsset: (account: string, asset: AssetBalance) => void;
   balances: AccountBalance[];
 }
 
-export default function SelectTokenModal({ asset, setAsset, balances }: SelectTokenModalProps) {
+export default function SelectTokenModal({
+  account,
+  asset,
+  setAccountAsset,
+  balances,
+}: SelectTokenModalProps) {
   const [search, setSearch] = useState('');
 
   return (
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
-        <div className='flex h-9 items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
-          <AssetIcon asset={asset} />
-          <p className='font-bold text-light-grey md:text-sm xl:text-base'>{asset.display}</p>
+        <div className='flex h-9 min-w-[100px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
+          {asset?.denom.display && <AssetIcon name={asset.denom.display} />}
+          <p className='font-bold text-light-grey md:text-sm xl:text-base'>
+            {asset?.denom.display}
+          </p>
         </div>
       </DialogTrigger>
       <DialogContent className='max-w-[312px] bg-charcoal-secondary md:max-w-[400px]'>
@@ -59,26 +66,15 @@ export default function SelectTokenModal({ asset, setAsset, balances }: SelectTo
                       <div
                         className={cn(
                           'grid grid-cols-3 py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4 font-bold text-muted-foreground',
-                          asset.penumbraAssetId.inner === uint8ArrayToBase64(k.assetId.inner) &&
+                          asset?.assetId.equals(k.assetId) &&
+                            account === b.address &&
                             'bg-light-brown px-4 -mx-4',
                         )}
-                        onClick={() =>
-                          setAsset({
-                            inner: uint8ArrayToBase64(k.assetId.inner),
-                            altBaseDenom: '',
-                            altBech32: '',
-                          })
-                        }
+                        onClick={() => setAccountAsset(b.address, k)}
                       >
                         <p className='flex justify-start'>{b.index}</p>
                         <div className='flex justify-start gap-[6px]'>
-                          <AssetIcon
-                            asset={
-                              assets.find(i => i.display === k.denom.display) ?? {
-                                display: '',
-                              }
-                            }
-                          />
+                          <AssetIcon name={k.denom.display} />
                           <p>{k.denom.display}</p>
                         </div>
                         <p>{fromBaseUnitAmount(k.amount, k.denom.exponent).toFormat()}</p>

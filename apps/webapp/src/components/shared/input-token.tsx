@@ -1,34 +1,34 @@
 import { Input, InputProps } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { Asset, AssetId, displayAmount } from '@penumbra-zone/types';
-import BigNumber from 'bignumber.js';
+import { displayAmount } from '@penumbra-zone/types';
 import SelectTokenModal from './select-token-modal.tsx';
 import { Validation, validationResult } from './validation-result.ts';
-import { AccountBalance } from '../../fetchers/balances.ts';
+import { AccountBalance, AssetBalance } from '../../fetchers/balances';
+import { amountToBig } from '../../state/send.ts';
 
 interface InputTokenProps extends InputProps {
+  account: string;
   label: string;
-  asset: Asset & { price: number };
-  assetBalance: BigNumber; // Includes exponent formatting
+  asset: AssetBalance | undefined;
   placeholder: string;
   className?: string;
   inputClassName?: string;
   value: string;
-  setAsset: (asset: AssetId) => void;
+  setAccountAsset: (account: string, asset: AssetBalance) => void;
   validations?: Validation[];
   balances: AccountBalance[];
 }
 
 export default function InputToken({
+  account,
   label,
   placeholder,
   asset,
-  assetBalance,
   className,
   validations,
   value,
   inputClassName,
-  setAsset,
+  setAccountAsset,
   balances,
   ...props
 }: InputTokenProps) {
@@ -63,7 +63,12 @@ export default function InputToken({
           value={value}
           {...props}
         />
-        <SelectTokenModal asset={asset} setAsset={setAsset} balances={balances} />
+        <SelectTokenModal
+          asset={asset}
+          setAccountAsset={setAccountAsset}
+          balances={balances}
+          account={account}
+        />
       </div>
 
       <div className='mt-[6px] flex items-center justify-between gap-2'>
@@ -73,11 +78,13 @@ export default function InputToken({
             value && 'text-muted-foreground',
           )}
         >
-          ${displayAmount(Number(value) * asset.price)}
+          ${displayAmount(Number(value) * (asset?.usdcValue ?? 0))}
         </p>
         <div className='flex items-start gap-1'>
           <img src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
-          <p className='font-bold text-muted-foreground'>{assetBalance.toFormat()}</p>
+          <p className='font-bold text-muted-foreground'>
+            {asset ? amountToBig(asset).toFormat() : '0'}
+          </p>
         </div>
       </div>
     </div>
