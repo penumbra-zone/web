@@ -20,6 +20,8 @@ import {
 } from '../components/shared/toast-content.tsx';
 
 export interface SendSlice {
+  account: number;
+  setAccount: (account: number) => void;
   asset: TempAsset;
   setAsset: (asset: TempAssetId) => void;
   amount: string;
@@ -36,12 +38,18 @@ export interface SendSlice {
 
 export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   return {
+    account: 0,
     amount: '',
     asset: assets[0]!,
     recipient: '',
     memo: '',
     hidden: false,
     txInProgress: false,
+    setAccount: account => {
+      set(state => {
+        state.send.account = account;
+      });
+    },
     setAmount: amount => {
       set(state => {
         state.send.amount = amount;

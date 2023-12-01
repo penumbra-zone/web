@@ -6,19 +6,21 @@ import { isPenumbraAddr, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { InputBlock } from '../shared/input-block.tsx';
 import InputToken from '../shared/input-token.tsx';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { AssetBalance, getBalancesByAccountIndex } from '../../fetchers/balances.ts';
+import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances.ts';
 import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
+import { useMemo } from 'react';
 
-export const AssetBalanceLoader: LoaderFunction = async (): Promise<AssetBalance[]> => {
+export const AssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
   await throwIfExtNotInstalled();
-  return await getBalancesByAccountIndex();
+  return await getBalancesByAccount();
 };
 
 export const SendForm = () => {
-  const assetBalances = useLoaderData() as AssetBalance[];
+  const accountBalances = useLoaderData() as AccountBalance[];
   const { toast } = useToast();
   const {
+    account,
     amount,
     asset,
     recipient,
@@ -33,9 +35,14 @@ export const SendForm = () => {
     txInProgress,
   } = useStore(sendSelector);
 
-  const selectedAssetBalance =
-    assetBalances.find(i => uint8ArrayToBase64(i.assetId.inner) === asset.penumbraAssetId.inner)
-      ?.amount ?? new Amount();
+  const selectedAssetBalance = useMemo(() => {
+    return (
+      accountBalances
+        .find(i => i.index === account)
+        ?.balances.find(i => uint8ArrayToBase64(i.assetId.inner) === asset.penumbraAssetId.inner)
+        ?.amount ?? new Amount()
+    );
+  }, [accountBalances, asset, account]);
 
   const validationErrors = sendValidationErrors(asset, amount, recipient, selectedAssetBalance);
 
@@ -79,7 +86,7 @@ export const SendForm = () => {
             checkFn: () => validationErrors.amountErr,
           },
         ]}
-        balances={assetBalances}
+        balances={accountBalances}
       />
       <InputBlock
         label='Memo'

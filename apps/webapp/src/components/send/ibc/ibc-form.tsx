@@ -36,7 +36,7 @@ export default function IbcForm() {
         e.preventDefault();
       }}
     >
-      <InputToken
+      {/* <InputToken
         label='Amount to send'
         placeholder='Enter an amount'
         className='mb-1'
@@ -56,7 +56,7 @@ export default function IbcForm() {
           },
         ]}
         balances={assetBalances}
-      />
+      /> */}
       <ChainSelector />
       <InputBlock
         label='Recipient on destination chain'
