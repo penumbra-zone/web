@@ -20,6 +20,7 @@ import { handleBroadcastReq, isBroadcastRequest } from './broadcast';
 import { handleEphemeralAddrReq, isEphemeralAddrRequest } from './ephemeral-addr';
 import { handleStatusRequest, isStatusRequest } from './status';
 import { handleIndexByAddressReq, isIndexByAddressRequest } from './index-by-address';
+import { handleFmdParamsReq, isFmdParamsRequest } from './fmd-params';
 
 export type ViewReqMessage = GrpcRequest<typeof ViewProtocolService>;
 export type ViewProtocolRes = GrpcResponse<typeof ViewProtocolService>;
@@ -44,6 +45,7 @@ export const viewServerUnaryHandler: UnaryHandler<typeof ViewProtocolService> = 
   else if (isEphemeralAddrRequest(msg)) return handleEphemeralAddrReq(msg);
   else if (isStatusRequest(msg)) return handleStatusRequest(msg, services);
   else if (isIndexByAddressRequest(msg)) return handleIndexByAddressReq(msg);
+  else if (isFmdParamsRequest(msg)) return handleFmdParamsReq(services);
 
   throw new Error(`Non-supported unary request: ${(msg as ViewReqMessage).getType().typeName}`);
 };

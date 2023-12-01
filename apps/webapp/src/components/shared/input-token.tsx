@@ -7,6 +7,7 @@ import { AccountBalance } from '../../fetchers/balances';
 import { Selection } from '../../state/send';
 
 interface InputTokenProps extends InputProps {
+  account: string;
   label: string;
   selection: Selection | undefined;
   placeholder: string;
