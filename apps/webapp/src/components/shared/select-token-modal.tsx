@@ -10,14 +10,14 @@ import {
 } from '@penumbra-zone/ui';
 import { Asset, AssetId, fromBaseUnitAmount, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { AssetBalance } from '../../fetchers/balances.ts';
+import { AccountBalance } from '../../fetchers/balances.ts';
 import { AssetIcon } from './asset-icon.tsx';
 import { assets } from '@penumbra-zone/constants';
 
 interface SelectTokenModalProps {
   asset: Asset;
   setAsset: (asset: AssetId) => void;
-  balances: AssetBalance[];
+  balances: AccountBalance[];
 }
 
 export default function SelectTokenModal({ asset, setAsset, balances }: SelectTokenModalProps) {
@@ -47,41 +47,45 @@ export default function SelectTokenModal({ asset, setAsset, balances }: SelectTo
               />
             </div>
             <div className='mt-2 flex items-center justify-between font-headline text-base font-semibold'>
+              <p>Account</p>
               <p>Token name</p>
               <p>Balance</p>
             </div>
             <div className='flex flex-col gap-2'>
-              {balances.map((b, i) => (
-                <DialogClose key={i}>
-                  <div
-                    className={cn(
-                      'flex justify-between items-center py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4',
-                      asset.penumbraAssetId.inner === uint8ArrayToBase64(b.assetId.inner) &&
-                        'bg-light-brown px-4 -mx-4',
-                    )}
-                    onClick={() =>
-                      setAsset({
-                        inner: uint8ArrayToBase64(b.assetId.inner),
-                        altBaseDenom: '',
-                        altBech32: '',
-                      })
-                    }
-                  >
-                    <div className='flex items-center gap-[6px]'>
-                      <AssetIcon
-                        asset={
-                          assets.find(i => i.display === b.denom.display) ?? {
-                            display: '',
-                          }
+              {balances.map(b => (
+                <div key={b.index} className='flex flex-col'>
+                  {b.balances.map((k, j) => (
+                    <DialogClose key={j}>
+                      <div
+                        className={cn(
+                          'grid grid-cols-3 py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4 font-bold text-muted-foreground',
+                          asset.penumbraAssetId.inner === uint8ArrayToBase64(k.assetId.inner) &&
+                            'bg-light-brown px-4 -mx-4',
+                        )}
+                        onClick={() =>
+                          setAsset({
+                            inner: uint8ArrayToBase64(k.assetId.inner),
+                            altBaseDenom: '',
+                            altBech32: '',
+                          })
                         }
-                      />
-                      <p className='font-bold text-muted-foreground'>{b.denom.display}</p>
-                    </div>
-                    <p className='font-bold text-muted-foreground'>
-                      {fromBaseUnitAmount(b.amount, b.denom.exponent).toFormat()}
-                    </p>
-                  </div>
-                </DialogClose>
+                      >
+                        <p className='flex justify-start'>{b.index}</p>
+                        <div className='flex justify-start gap-[6px]'>
+                          <AssetIcon
+                            asset={
+                              assets.find(i => i.display === k.denom.display) ?? {
+                                display: '',
+                              }
+                            }
+                          />
+                          <p>{k.denom.display}</p>
+                        </div>
+                        <p>{fromBaseUnitAmount(k.amount, k.denom.exponent).toFormat()}</p>
+                      </div>
+                    </DialogClose>
+                  ))}
+                </div>
               ))}
             </div>
           </div>
