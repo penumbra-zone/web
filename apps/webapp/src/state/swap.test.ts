@@ -21,7 +21,7 @@ describe('Swap Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
   beforeEach(() => {
-    useStore = create<AllSlices>()(initializeStore());
+    useStore = create<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
   });
 
   test('the default is empty, false or undefined', () => {
