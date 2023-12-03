@@ -37,7 +37,10 @@ export class ChromeRuntimeStreamSink implements UnderlyingSink<JsonValue> {
   constructor(private outgoing: chrome.runtime.Port) {}
 
   start(cont: WritableStreamDefaultController) {
-    this.outgoing.onDisconnect.addListener(() => cont.error('Port disconnected'));
+    this.outgoing.onDisconnect.addListener(() => {
+      this.abort('Port disconnected');
+      cont.error('Port disconnected');
+    });
   }
 
   write(chunk: JsonValue) {
@@ -53,5 +56,12 @@ export class ChromeRuntimeStreamSink implements UnderlyingSink<JsonValue> {
       done: true,
     } as StreamChannelEnd);
     this.outgoing.disconnect();
+  }
+
+  abort(reason: string) {
+    if (reason != 'Port disconnected') {
+      this.outgoing.disconnect();
+      throw Error(reason);
+    }
   }
 }

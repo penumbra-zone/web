@@ -37,22 +37,11 @@ export const createServerRoute =
     unaryHandler: UnaryHandler<S>,
     streamingHandler: StreamingHandler<S>,
   ) =>
-  (
-    req: DappMessageRequest<S>,
-    send: (res: unknown) => Promise<unknown>,
-    services: ServicesInterface,
-  ) => {
+  (req: DappMessageRequest<S>, send: (res: unknown) => void, services: ServicesInterface) => {
     const { msg, kind } = deserializeReq(req, service);
-
     void (async function () {
-      if (kind === MethodKind.ServerStreaming) {
-        const iterableResult = streamingHandler(msg, services);
-        await send({ iterableResult });
-      } else if (kind === MethodKind.Unary) {
-        const result = await unaryHandler(msg, services);
-        await send({ result });
-      } else {
-        throw new Error(`Method kind: ${kind}, not supported`);
-      }
+      if (kind === MethodKind.Unary) send(await unaryHandler(msg, services));
+      else if (kind === MethodKind.ServerStreaming) send(streamingHandler(msg, services));
+      else throw new Error(`Method kind: ${kind}, not supported`);
     })();
   };
