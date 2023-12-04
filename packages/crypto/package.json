@@ -10,7 +10,7 @@
   "dependencies": {
     "bip39": "^3.1.0",
     "crypto-js": "^4.2.0",
-    "eslint": "^8.54.0",
+    "eslint": "^8.55.0",
     "eslint-config-custom": "workspace:*",
     "lodash": "^4.17.21",
     "tsconfig": "workspace:*",

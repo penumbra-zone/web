@@ -8,14 +8,14 @@
     "test": "vitest run && npm run run-browser-tests"
   },
   "dependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.4.2-20231120132728-bc443669626d.1",
-    "@bufbuild/protobuf": "^1.4.2",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.5.0-20231130000754-0e6d4f8485b6.1",
+    "@bufbuild/protobuf": "^1.5.0",
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
-    "eslint": "^8.54.0",
+    "eslint": "^8.55.0",
     "eslint-config-custom": "workspace:*",
-    "idb": "^7.1.1",
+    "idb": "^8.0.0",
     "tsconfig": "workspace:*",
     "typescript": "^5.3.2",
     "vite": "^5.0.3"
