@@ -4,7 +4,7 @@ import { displayAmount, fromBaseUnitAmount } from '@penumbra-zone/types';
 import SelectTokenModal from './select-token-modal';
 import { Validation, validationResult } from './validation-result';
 import { AccountBalance } from '../../fetchers/balances';
-import { Selection } from '../../state/send';
+import { Selection } from '../../state/types';
 
 interface InputTokenProps extends InputProps {
   label: string;

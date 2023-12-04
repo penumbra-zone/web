@@ -11,12 +11,7 @@ import BigNumber from 'bignumber.js';
 import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
 import { AssetBalance } from '../fetchers/balances';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-
-export interface Selection {
-  address: string | undefined;
-  accountIndex: number | undefined;
-  asset: AssetBalance | undefined;
-}
+import { Selection } from './types';
 
 export interface SendSlice {
   selection: Selection | undefined;

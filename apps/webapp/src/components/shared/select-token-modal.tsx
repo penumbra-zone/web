@@ -11,8 +11,8 @@ import {
 import { fromBaseUnitAmount } from '@penumbra-zone/types';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { AccountBalance } from '../../fetchers/balances';
-import { AssetIcon } from './asset-icon.tsx';
-import { Selection } from '../../state/send.ts';
+import { AssetIcon } from './asset-icon';
+import { Selection } from '../../state/types';
 
 interface SelectTokenModalProps {
   selection: Selection | undefined;
