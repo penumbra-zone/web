@@ -12,12 +12,10 @@
     "@connectrpc/connect": "^1.1.4",
     "@connectrpc/connect-web": "^1.1.4",
     "@penumbra-zone/types": "workspace:*",
-    "@types/chrome": "0.0.253",
-    "exponential-backoff": "^3.1.1",
-    "react": "^18.2.0"
+    "exponential-backoff": "^3.1.1"
   },
   "devDependencies": {
-    "@types/react": "^18.2.41",
+    "@types/chrome": "0.0.253",
     "eslint": "^8.55.0",
     "eslint-config-custom": "workspace:*",
     "tsconfig": "workspace:*",
