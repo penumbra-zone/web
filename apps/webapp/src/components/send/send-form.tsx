@@ -4,10 +4,27 @@ import { sendSelector, sendValidationErrors } from '../../state/send';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { InputBlock } from '../shared/input-block.tsx';
 import InputToken from '../shared/input-token.tsx';
-import { useLoaderData } from 'react-router-dom';
-import { AccountBalance } from '../../fetchers/balances.ts';
+import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances.ts';
 import { useMemo } from 'react';
 import { penumbraAddrValidation } from './helpers.ts';
+
+export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
+  const balancesByAccount = await getBalancesByAccount();
+
+  if (balancesByAccount[0]) {
+    // set initial account if accounts exist and asset if account has asset list
+    useStore.setState(state => {
+      state.send.selection = {
+        address: balancesByAccount[0]?.address,
+        accountIndex: balancesByAccount[0]?.index,
+        asset: balancesByAccount[0]?.balances[0],
+      };
+    });
+  }
+
+  return balancesByAccount;
+};
 
 export const SendForm = () => {
   const accountBalances = useLoaderData() as AccountBalance[];

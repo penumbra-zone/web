@@ -7,9 +7,26 @@ import { InputBlock } from '../../shared/input-block';
 import InputToken from '../../shared/input-token';
 import { sendValidationErrors } from '../../../state/send';
 import { useMemo } from 'react';
-import { useLoaderData } from 'react-router-dom';
-import { AccountBalance } from '../../../fetchers/balances';
+import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { AccountBalance, getBalancesByAccount } from '../../../fetchers/balances';
 import { penumbraAddrValidation } from '../helpers';
+
+export const IbcAssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
+  const balancesByAccount = await getBalancesByAccount();
+
+  if (balancesByAccount[0]) {
+    // set initial account if accounts exist and asset if account has asset list
+    useStore.setState(state => {
+      state.ibc.selection = {
+        address: balancesByAccount[0]?.address,
+        accountIndex: balancesByAccount[0]?.index,
+        asset: balancesByAccount[0]?.balances[0],
+      };
+    });
+  }
+
+  return balancesByAccount;
+};
 
 export default function IbcForm() {
   const accountBalances = useLoaderData() as AccountBalance[];
