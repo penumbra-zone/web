@@ -15,14 +15,13 @@ describe.skip('IBC Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
   beforeEach(() => {
-    useStore = create<AllSlices>()(initializeStore());
+    useStore = create<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
   });
 
   test('the default is empty, false or undefined', () => {
     expect(useStore.getState().ibc.amount).toBe('');
     expect(useStore.getState().ibc.asset).toBeTruthy();
     expect(useStore.getState().ibc.chain).toBeUndefined();
-    // expect(useStore.getState().ibc.validationErrors.amount).toBeFalsy();
   });
 
   describe('setAmount', () => {
@@ -82,13 +81,6 @@ describe.skip('IBC Slice', () => {
 
       useStore.getState().ibc.setChain(chain);
       expect(useStore.getState().ibc.chain).toBe(chain);
-    });
-  });
-
-  describe('setAssetBalance', () => {
-    test.skip('asset balance can be set', () => {
-      // useStore.getState().ibc.setAssetBalance(10);
-      // expect(useStore.getState().ibc.assetBalance).toBe(10);
     });
   });
 });
