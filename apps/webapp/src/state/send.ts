@@ -108,7 +108,7 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, selection }: SendS
         },
       },
     ],
-    source: AddressIndex.fromJson({ account: selection.accountIndex }),
+    source: new AddressIndex({ account: selection.accountIndex }),
   });
 
   const { viewClient, custodyClient } = await import('../clients/grpc');
