@@ -4,9 +4,9 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { getAddressByIndex } from '@penumbra-zone/wasm-ts';
 import { localExtStorage } from '@penumbra-zone/storage';
-import { ViewReqMessage } from './router';
+import { AnyMessage } from '@bufbuild/protobuf';
 
-export const isAddressRequest = (req: ViewReqMessage): req is AddressByIndexRequest => {
+export const isAddressRequest = (req: AnyMessage): req is AddressByIndexRequest => {
   return req.getType().typeName === AddressByIndexRequest.typeName;
 };
 

@@ -1,62 +1,109 @@
-import { JsonValue, ServiceType } from '@bufbuild/protobuf';
+/**
+ * These classes are used to create stream sources, sinks, and transformers; for
+ * composable manipulation of streaming requests and responses.
+ *
+ * See [Streams API](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API)
+ *
+ * Streams are transferrable objects, simply transported by the standard browser
+ * messaging API.
+ */
+
 import {
-  DappMessageRequest,
-  DappMessageResponse,
-  GrpcRequest,
-  INCOMING_GRPC_MESSAGE,
-  isErrorResponse,
-  isStreamResponse,
-  PendingRequests,
-} from './types';
-import { ConnectError } from '@connectrpc/connect';
-import { Looper } from './looper';
+  Any,
+  AnyMessage,
+  IMessageTypeRegistry,
+  JsonValue,
+  MessageType,
+  createRegistry,
+} from '@bufbuild/protobuf';
 
-// Adds yield generator requests to `pending` storage and matches them with their responses
-export const serverStreamIO = async function* <S extends ServiceType, M extends GrpcRequest<S>>(
-  pending: PendingRequests<S>,
-  requestMethod: M,
-  serviceTypeName: S['typeName'],
-): AsyncGenerator<JsonValue> {
-  const sequence = ++pending.sequence;
-  const queue = new Array<DappMessageResponse<S>>();
+import { typeRegistry } from '@penumbra-zone/types/src/registry';
 
-  const looper = new Looper<void>();
+/**
+ * Packs all messaes to Any and jsonifies with "@type" annotation.
+ */
+class AnyMessageToJsonTransformer implements Transformer<AnyMessage, JsonValue> {
+  transform(chunk: AnyMessage, cont: TransformStreamDefaultController<JsonValue>) {
+    const chunkJson = Any.pack(chunk).toJson({ typeRegistry });
+    if (!chunkJson) throw Error('Failed to serialize chunk');
+    cont.enqueue(chunkJson);
+  }
+}
 
-  pending.requests.set(sequence, {
-    resolve: m => {
-      queue.push(m);
-      looper.run();
-    },
-    reject: m => {
-      queue.push(m);
-      looper.run();
+export class AnyMessageToJson extends TransformStream<AnyMessage, JsonValue> {
+  constructor() {
+    super(new AnyMessageToJsonTransformer());
+  }
+}
+
+class JsonToAnyMessageTransformer implements Transformer<JsonValue, AnyMessage> {
+  constructor(private registry: IMessageTypeRegistry) {}
+  transform(chunk: JsonValue, controller: TransformStreamDefaultController<AnyMessage>) {
+    const message = Any.fromJson(chunk, { typeRegistry: this.registry }).unpack(this.registry);
+    if (!message) throw Error('Failed to deserialize chunk');
+    controller.enqueue(message);
+  }
+}
+
+export class JsonToAnyMessage extends TransformStream<JsonValue, AnyMessage> {
+  constructor(registry: IMessageTypeRegistry) {
+    super(new JsonToAnyMessageTransformer(registry));
+  }
+}
+
+class JsonToMessageTransformer<M extends AnyMessage> implements Transformer<JsonValue, M> {
+  private registry: ReturnType<typeof createRegistry>;
+  constructor(private messageType: MessageType) {
+    this.registry = createRegistry(messageType);
+  }
+  transform(chunk: JsonValue, controller: TransformStreamDefaultController) {
+    const message = new this.messageType();
+    Any.fromJson(chunk, { typeRegistry: this.registry }).unpackTo(message);
+    controller.enqueue(message);
+  }
+}
+
+export class JsonToMessage extends TransformStream<JsonValue, AnyMessage> {
+  constructor(messageType: MessageType) {
+    super(new JsonToMessageTransformer(messageType));
+  }
+}
+
+/**
+ * These functions are used to transform between streams and iterables.
+ *
+ * This shouldn't be necessary for very long, as the Streams API now specifies
+ * that readable streams should provide Symbol.asyncIterator
+ */
+
+export const streamToGenerator = async function* <T>(s: ReadableStream<T>) {
+  const r = s.getReader();
+  try {
+    for (;;) {
+      const result = await r.read();
+      if (result.done) break;
+      else yield result.value;
+    }
+  } finally {
+    r.releaseLock();
+  }
+};
+
+const isAsyncIterable = <T>(i: unknown): i is AsyncIterable<T> =>
+  i != null && typeof i === 'object' && Symbol.asyncIterator in i;
+const isIterable = <T>(i: unknown): i is Iterable<T> =>
+  i != null && typeof i === 'object' && Symbol.iterator in i;
+
+export const iterableToStream = <T>(iterable: Iterable<T> | AsyncIterable<T>) => {
+  let iterator: AsyncIterator<T> | Iterator<T>;
+  if (isAsyncIterable(iterable)) iterator = iterable[Symbol.asyncIterator]();
+  else if (isIterable(iterable)) iterator = iterable[Symbol.iterator]();
+  else throw TypeError('Not iterable');
+  return new ReadableStream({
+    async pull(cont: ReadableStreamDefaultController<T>) {
+      const result = await Promise.resolve(iterator.next());
+      if (result.done) cont.close();
+      else cont.enqueue(result.value);
     },
   });
-
-  window.postMessage({
-    type: INCOMING_GRPC_MESSAGE,
-    sequence,
-    requestTypeName: requestMethod.getType().typeName,
-    jsonReq: requestMethod.toJson(),
-    serviceTypeName,
-  } satisfies DappMessageRequest<S>);
-
-  while (true) {
-    if (!queue.length) {
-      await new Promise(resolve => {
-        looper.set(resolve);
-      });
-    } else {
-      const res = queue.shift()!;
-      if (isStreamResponse(res)) {
-        if (res.stream.done) {
-          break;
-        } else {
-          yield res.stream.value;
-        }
-      } else if (isErrorResponse(res)) {
-        throw new ConnectError(res.error);
-      }
-    }
-  }
 };

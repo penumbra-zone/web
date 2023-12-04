@@ -11,20 +11,21 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["js/content-scripts.js"],
+      "js": ["js/isolated-content-script.js"],
       "run_at": "document_start",
       "all_frames": true
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/mainworld-content-script.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
     }
   ],
   "background": {
     "service_worker": "js/service-worker.js"
   },
-  "web_accessible_resources": [
-    {
-      "resources": ["install-detector.txt"],
-      "matches": ["<all_urls>"]
-    }
-  ],
   "permissions": ["storage", "unlimitedStorage"],
   "host_permissions": ["<all_urls>"],
   "content_security_policy": {

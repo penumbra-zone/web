@@ -1,14 +1,6 @@
-import {
-  DappMessageRequest,
-  errorResponseMsg,
-  GrpcRequest,
-  GrpcResponse,
-  streamResponseMsg,
-  unaryResponseMsg,
-} from '@penumbra-zone/transport';
+import { DappMessageRequest, GrpcRequest, GrpcResponse } from '../transport-old';
 import { MethodKind, ServiceType } from '@bufbuild/protobuf';
 import { ServicesInterface } from '@penumbra-zone/types';
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
 
 interface MethodMatch<S extends ServiceType> {
   msg: GrpcRequest<S>;
@@ -29,18 +21,6 @@ export const deserializeReq = <S extends ServiceType>(
   };
 };
 
-// If from dapp, send to tab
-// If internal message, send via chrome.runtime
-export const getTransport = (
-  sender: chrome.runtime.MessageSender,
-): ((res: unknown) => Promise<unknown>) => {
-  if (sender.tab?.id) {
-    return (res: unknown) => chrome.tabs.sendMessage(sender.tab!.id!, res); // Guaranteed given request is from dapp
-  } else {
-    return (res: unknown) => chrome.runtime.sendMessage(sender.id, res);
-  }
-};
-
 export type UnaryHandler<S extends ServiceType> = (
   msg: GrpcRequest<S>,
   services: ServicesInterface,
@@ -59,25 +39,20 @@ export const createServerRoute =
   ) =>
   (
     req: DappMessageRequest<S>,
-    sender: chrome.runtime.MessageSender,
+    send: (res: unknown) => Promise<unknown>,
     services: ServicesInterface,
   ) => {
-    const send = getTransport(sender);
     const { msg, kind } = deserializeReq(req, service);
 
-    (async function () {
+    void (async function () {
       if (kind === MethodKind.ServerStreaming) {
-        for await (const result of streamingHandler(msg, services)) {
-          await send(streamResponseMsg(req, { value: result, done: false }, typeRegistry));
-        }
-        await send(streamResponseMsg(req, { done: true }, typeRegistry));
+        const iterableResult = streamingHandler(msg, services);
+        await send({ iterableResult });
       } else if (kind === MethodKind.Unary) {
         const result = await unaryHandler(msg, services);
-        await send(unaryResponseMsg(req, result, typeRegistry));
+        await send({ result });
       } else {
         throw new Error(`Method kind: ${kind}, not supported`);
       }
-    })().catch(e => {
-      void send(errorResponseMsg(req, e));
-    });
+    })();
   };

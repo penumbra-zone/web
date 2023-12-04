@@ -9,7 +9,8 @@ module.exports = {
     popup: path.join(srcDir, 'popup.tsx'),
     page: path.join(srcDir, 'page.tsx'),
     'service-worker': path.join(srcDir, 'service-worker.ts'),
-    'content-scripts': path.join(srcDir, 'content-scripts.ts'),
+    'isolated-content-script': path.join(srcDir, 'isolated-content-script.ts'),
+    'mainworld-content-script': path.join(srcDir, 'mainworld-content-script.ts'),
   },
   output: {
     path: path.join(__dirname, '../dist/js'),
@@ -20,7 +21,11 @@ module.exports = {
       name: 'vendor',
       chunks(chunk) {
         // These files cannot be chunked due to their runtime env
-        return chunk.name !== 'service-worker' && chunk.name !== 'content-scripts';
+        return (
+          chunk.name !== 'service-worker' &&
+          chunk.name !== 'isolated-content-script' &&
+          chunk.name !== 'mainworld-content-script'
+        );
       },
     },
   },
