@@ -6,10 +6,11 @@ import TransactionTable, { TxsLoader } from './dashboard/transaction-table.tsx';
 import { DashboardLayout } from './dashboard/layout.tsx';
 import { TxDetails, TxDetailsErrorBoundary, TxDetailsLoader } from './tx-details';
 import { SendLayout } from './send/layout.tsx';
-import { AssetBalanceLoader, SendForm } from './send/send-form.tsx';
+import { SendForm } from './send/send-form.tsx';
 import IbcForm from './send/ibc/ibc-form.tsx';
 import { Receive } from './send/receive.tsx';
 import { ErrorBoundary } from './shared/error-boundary.tsx';
+import { AssetBalanceLoader } from './send/helpers.ts';
 
 export const rootRouter = createBrowserRouter([
   {

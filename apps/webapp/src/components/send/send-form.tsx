@@ -2,32 +2,12 @@ import { Button, Switch } from '@penumbra-zone/ui';
 import { useStore } from '../../state';
 import { sendSelector, sendValidationErrors } from '../../state/send';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
-import { isPenumbraAddr } from '@penumbra-zone/types';
 import { InputBlock } from '../shared/input-block.tsx';
 import InputToken from '../shared/input-token.tsx';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances.ts';
-import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
+import { useLoaderData } from 'react-router-dom';
+import { AccountBalance } from '../../fetchers/balances.ts';
 import { useMemo } from 'react';
-
-export const AssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
-  await throwIfExtNotInstalled();
-
-  const balancesByAccount = await getBalancesByAccount();
-
-  if (balancesByAccount[0]) {
-    // set initial account if accounts exist and asset if account has asset list
-    useStore.setState(state => {
-      state.send.selection = {
-        address: balancesByAccount[0]?.address,
-        accountIndex: balancesByAccount[0]?.index,
-        asset: balancesByAccount[0]?.balances[0],
-      };
-    });
-  }
-
-  return balancesByAccount;
-};
+import { penumbraAddrValidation } from './helpers.ts';
 
 export const SendForm = () => {
   const accountBalances = useLoaderData() as AccountBalance[];
@@ -65,13 +45,7 @@ export const SendForm = () => {
         className='mb-1'
         value={recipient}
         onChange={e => setRecipient(e.target.value)}
-        validations={[
-          {
-            type: 'error',
-            issue: 'invalid address',
-            checkFn: (addr: string) => Boolean(addr) && !isPenumbraAddr(addr),
-          },
-        ]}
+        validations={[penumbraAddrValidation()]}
       />
       <InputToken
         label='Amount to send'

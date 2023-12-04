@@ -1,38 +1,81 @@
 import { Button } from '@penumbra-zone/ui';
-import { useToast } from '@penumbra-zone/ui/components/ui/use-toast.ts';
+import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { useStore } from '../../../state';
-import { ibcSelector } from '../../../state/ibc.ts';
-import { ChainSelector } from './chain-selector.tsx';
-import { InputBlock } from '../../shared/input-block.tsx';
+import { ibcSelector } from '../../../state/ibc';
+import { ChainSelector } from './chain-selector';
+import { InputBlock } from '../../shared/input-block';
+import InputToken from '../../shared/input-token';
+import { sendValidationErrors } from '../../../state/send';
+import { useMemo } from 'react';
+import { useLoaderData } from 'react-router-dom';
+import { AccountBalance } from '../../../fetchers/balances';
+import { penumbraAddrValidation } from '../helpers';
 
-// TODO: Re-implementing ibc form, see send form
 export default function IbcForm() {
+  const accountBalances = useLoaderData() as AccountBalance[];
   const { toast } = useToast();
-  const { sendIbcWithdraw, destinationChainAddress, setDestinationChainAddress } =
-    useStore(ibcSelector);
+  const {
+    sendIbcWithdraw,
+    destinationChainAddress,
+    setDestinationChainAddress,
+    amount,
+    setAmount,
+    selection,
+    setSelection,
+  } = useStore(ibcSelector);
+
+  const validationErrors = useMemo(() => {
+    return sendValidationErrors(selection?.asset, amount, destinationChainAddress);
+  }, [selection?.asset, amount, destinationChainAddress]);
 
   return (
     <form
       className='flex flex-col gap-4'
       onSubmit={e => {
         e.preventDefault();
+        void sendIbcWithdraw(toast);
       }}
     >
+      <InputToken
+        label='Amount to send'
+        placeholder='Enter an amount'
+        className='mb-1'
+        selection={selection}
+        setSelection={setSelection}
+        value={amount}
+        onChange={e => {
+          if (Number(e.target.value) < 0) return;
+          setAmount(e.target.value);
+        }}
+        validations={[
+          {
+            type: 'error',
+            issue: 'insufficient funds',
+            checkFn: () => validationErrors.amountErr,
+          },
+        ]}
+        balances={accountBalances}
+        tempPrice={1}
+      />
       <ChainSelector />
       <InputBlock
         label='Recipient on destination chain'
         placeholder='Enter the address'
         className='mb-1'
-        value={destinationChainAddress ?? ''}
+        value={destinationChainAddress}
         onChange={e => setDestinationChainAddress(e.target.value)}
-        validations={[]}
+        validations={[penumbraAddrValidation()]}
       />
       <Button
         type='submit'
         variant='gradient'
         className='mt-9'
-        disabled={false}
-        onClick={() => void sendIbcWithdraw(toast)}
+        disabled={
+          !Number(amount) ||
+          !destinationChainAddress ||
+          !!Object.values(validationErrors).find(Boolean) ||
+          !selection?.asset
+        }
       >
         Send
       </Button>

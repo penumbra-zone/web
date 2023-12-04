@@ -1,25 +1,22 @@
-import { assets } from '@penumbra-zone/constants';
-import { Asset, AssetId, Chain, LoHi, toBaseUnit, uint8ArrayToHex } from '@penumbra-zone/types';
+import { Chain, toBaseUnit, uint8ArrayToHex } from '@penumbra-zone/types';
 import { AllSlices, SliceCreator } from '.';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import {
-  errorTxToast,
-  loadingTxToast,
-  successTxToast,
-} from '../components/shared/toast-content.tsx';
+import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
 import BigNumber from 'bignumber.js';
-import { typeRegistry } from '@penumbra-zone/types/src/registry.ts';
+import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { Selection } from './types';
 
 export interface IbcSendSlice {
-  asset: Asset;
-  setAsset: (asset: AssetId) => void;
+  selection: Selection | undefined;
+  setSelection: (selection: Selection) => void;
   amount: string;
   setAmount: (amount: string) => void;
   chain: Chain | undefined;
-  destinationChainAddress: string | undefined;
+  destinationChainAddress: string;
   setDestinationChainAddress: (addr: string) => void;
   setChain: (chain: Chain | undefined) => void;
   sendIbcWithdraw: (toastFn: typeof toast) => Promise<void>;
@@ -29,19 +26,18 @@ export interface IbcSendSlice {
 export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) => {
   return {
     amount: '',
-    asset: assets[0]!,
+    selection: undefined,
     chain: undefined,
-    destinationChainAddress: undefined,
+    destinationChainAddress: '',
     txInProgress: false,
+    setSelection: selection => {
+      set(state => {
+        state.ibc.selection = selection;
+      });
+    },
     setAmount: amount => {
       set(state => {
         state.ibc.amount = amount;
-      });
-    },
-    setAsset: asset => {
-      const selectedAsset = assets.find(i => i.penumbraAssetId.inner === asset.inner)!;
-      set(state => {
-        state.ibc.asset = selectedAsset;
       });
     },
     setChain: chain => {
@@ -83,11 +79,6 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
   };
 };
 
-const getWithdrawAmount = (asset: Asset, amount: string): LoHi => {
-  const matchingExponent = asset.denomUnits.find(u => u.denom === asset.display)?.exponent ?? 0;
-  return toBaseUnit(BigNumber(amount), matchingExponent);
-};
-
 const getTimeout = async (
   chain: Chain,
 ): Promise<{ timeoutTime: bigint; timeoutHeight: Height }> => {
@@ -118,12 +109,15 @@ const getTimeout = async (
 
 const getPlanRequest = async ({
   amount,
-  asset,
+  selection,
   chain,
   destinationChainAddress,
 }: IbcSendSlice): Promise<TransactionPlannerRequest> => {
   if (!destinationChainAddress) throw new Error('no destination chain address set');
   if (!chain?.ibcChannel) throw new Error('Chain ibc channel not available');
+
+  if (typeof selection?.accountIndex === 'undefined') throw new Error('no selected account');
+  if (!selection.asset) throw new Error('no selected asset');
 
   const { viewClient } = await import('../clients/grpc');
 
@@ -136,8 +130,8 @@ const getPlanRequest = async ({
   return new TransactionPlannerRequest({
     ics20Withdrawals: [
       {
-        amount: getWithdrawAmount(asset, amount),
-        denom: { denom: asset.base },
+        amount: toBaseUnit(BigNumber(amount), selection.asset.denom.exponent),
+        denom: { denom: selection.asset.denom.display },
         destinationChainAddress,
         returnAddress,
         timeoutHeight,
@@ -145,6 +139,7 @@ const getPlanRequest = async ({
         sourceChannel: chain.ibcChannel,
       },
     ],
+    source: new AddressIndex({ account: selection.accountIndex }),
   });
 };
 
