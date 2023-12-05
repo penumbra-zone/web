@@ -1,6 +1,6 @@
 {
   "extends": "tsconfig/extension.json",
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.mts"],
   "compilerOptions": {
     "outDir": "./dist",
     "declaration": false,

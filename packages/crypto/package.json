@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "run-browser-tests": "vitest run --config browser.config.ts",
+    "run-browser-tests": "vitest run --config browser.config.mts",
     "test": "vitest run && npm run run-browser-tests"
   },
   "dependencies": {
