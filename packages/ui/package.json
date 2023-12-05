@@ -27,6 +27,7 @@
     "djb2a": "^2.0.0",
     "framer-motion": "^10.16.12",
     "lucide-react": "^0.294.0",
+    "react-json-view": "^1.21.3",
     "tailwind-merge": "^2.1.0",
     "tailwindcss-animate": "^1.0.7",
     "tinycolor2": "^1.6.0"
