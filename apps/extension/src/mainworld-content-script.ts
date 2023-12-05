@@ -1,4 +1,4 @@
-import { isInitServiceMessage } from '@penumbra-zone/transport';
+import { isInitServiceMessage } from '@penumbra-zone/transport/src/types';
 
 const penumbra = Symbol.for('penumbra');
 declare global {
@@ -10,8 +10,10 @@ declare global {
 const serviceInit = (ev: MessageEvent<unknown>) => {
   if (isInitServiceMessage(ev)) {
     const { services, port } = ev.data;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-    window[penumbra] = Object.fromEntries(services.map((s: string) => [s, port]));
+    window[penumbra] = Object.assign(
+      window[penumbra] ?? {},
+      Object.fromEntries(services.map((s: string) => [s, port])),
+    );
   }
   window.removeEventListener('message', serviceInit);
 };

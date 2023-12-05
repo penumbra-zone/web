@@ -1,4 +1,4 @@
-import { JsonValue } from '@bufbuild/protobuf';
+import type { JsonValue } from '@bufbuild/protobuf';
 import { StreamChannelChunk, StreamChannelEnd, isStreamControl } from '../types';
 
 /**

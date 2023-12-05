@@ -27,10 +27,10 @@ export const typeRegistry = createRegistry(
   ViewProtocolService,
 );
 
-export const serviceTypeNames: string[] = [
+export const serviceTypeNames = [
   IbcQueryService.typeName,
   CustodyProtocolService.typeName,
   SimulationService.typeName,
   TendermintProxyService.typeName,
   ViewProtocolService.typeName,
-];
+] as const;
