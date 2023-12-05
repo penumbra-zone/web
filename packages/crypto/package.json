@@ -22,6 +22,7 @@
     "@types/lodash": "^4.14.202",
     "@vitest/browser": "^1.0.1",
     "vite": "^5.0.5",
+    "vite-plugin-node-polyfills": "^0.17.0",
     "vitest": "^1.0.1"
   }
 }

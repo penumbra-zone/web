@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { Buffer } from 'buffer';
 import { validateSchema } from './validation';
 
 export const Base64StringSchema = z.string().refine(

@@ -13,12 +13,14 @@
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
+    "@vitest/browser": "^1.0.1",
     "eslint": "^8.55.0",
     "eslint-config-custom": "workspace:*",
     "idb": "^8.0.0",
     "tsconfig": "workspace:*",
     "typescript": "^5.3.2",
-    "vite": "^5.0.5"
+    "vite": "^5.0.5",
+    "vite-plugin-node-polyfills": "^0.17.0"
   },
   "devDependencies": {
     "@types/chrome": "0.0.253",
