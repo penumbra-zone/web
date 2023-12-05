@@ -219,6 +219,9 @@ importers:
       bignumber.js:
         specifier: ^9.1.2
         version: registry.npmmirror.com/bignumber.js@9.1.2
+      buffer:
+        specifier: ^6.0.3
+        version: registry.npmmirror.com/buffer@6.0.3
       react:
         specifier: ^18.2.0
         version: registry.npmmirror.com/react@18.2.0

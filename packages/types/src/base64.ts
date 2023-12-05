@@ -1,4 +1,3 @@
-import { Buffer } from 'buffer';
 import { z } from 'zod';
 import { validateSchema } from './validation';
 

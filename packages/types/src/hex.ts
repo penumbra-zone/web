@@ -1,4 +1,3 @@
-import { Buffer } from 'buffer';
 import { validateSchema } from './validation';
 import { Base64StringSchema } from './base64';
 
