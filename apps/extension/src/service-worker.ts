@@ -27,15 +27,12 @@ import { AnyMessage, JsonValue, Any, ServiceType } from '@bufbuild/protobuf';
 import { viewServerRouter } from '@penumbra-zone/router/src/grpc/view-protocol-server/router';
 import { custodyServerRouter } from '@penumbra-zone/router/src/grpc/custody/router';
 import { ibcClientServerRouter } from '@penumbra-zone/router/src/grpc/ibc-client/router';
-import { AnyMessageToJson, iterableToStream } from '@penumbra-zone/transport';
+import { MessageToJson, iterableToStream } from '@penumbra-zone/transport';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { isStdRequest } from '@penumbra-zone/types';
 
 const adaptOldRouter = (service: ServiceType) => {
-  console.log('adapting for router...', service.typeName);
-
   return async (req: JsonValue): Promise<JsonValue | ReadableStream<JsonValue>> => {
-    console.log('Entering adapted router', service.typeName, req);
     const packed = Any.fromJson(req, { typeRegistry });
     const unpacked = packed.unpack(typeRegistry)!;
     const sequence = performance.now();
@@ -79,15 +76,15 @@ const adaptOldRouter = (service: ServiceType) => {
     );
 
     if (Symbol.asyncIterator in routerResponse)
-      return iterableToStream(routerResponse).pipeThrough(new AnyMessageToJson());
+      return iterableToStream(routerResponse).pipeThrough(new MessageToJson(typeRegistry));
     else return Any.pack(routerResponse).toJson({ typeRegistry })!;
   };
 };
 
 const adapterEntry = {
   [ViewProtocolService.typeName]: adaptOldRouter(ViewProtocolService),
-  [IbcClientService.typeName]: adaptOldRouter(IbcClientService),
   [CustodyProtocolService.typeName]: adaptOldRouter(CustodyProtocolService),
+  [IbcClientService.typeName]: adaptOldRouter(IbcClientService),
 } as Record<string, (x: JsonValue) => Promise<JsonValue>>;
 
 /*

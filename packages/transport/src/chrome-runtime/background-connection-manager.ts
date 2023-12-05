@@ -4,7 +4,7 @@ import {
   nameSubConnection,
   parseConnectionName,
   ChannelSubLabel,
-  TransportMessage,
+  isTransportMessage,
 } from '../types';
 
 import { JsonValue } from '@bufbuild/protobuf';
@@ -19,13 +19,10 @@ interface OriginRegistry {
 
 interface BackgroundConnection {
   type: ChannelClientLabel;
-  service: string;
   port: chrome.runtime.Port;
   sender: chrome.runtime.MessageSender;
-  //transportListener: Parameters<chrome.runtime.PortMessageEvent['addListener']>[0];
-  transportListener: (m: unknown, p: chrome.runtime.Port) => void;
   tab: undefined | chrome.tabs.Tab;
-  streams: chrome.runtime.Port[];
+  streams: Map<string, AbortController>;
   documentId: string;
   tlsChannelId: string;
 }
@@ -77,7 +74,7 @@ export class BackgroundConnectionManager {
   private connectionListener = async (port: chrome.runtime.Port) => {
     const { name, sender } = port;
     if (!sender) return;
-    const { origin: portOrigin, documentId, frameId, tlsChannelId, tab } = sender;
+    const { origin: portOrigin, documentId, frameId } = sender;
     if (
       // TODO: revisit these conditions
       documentId &&
@@ -104,57 +101,54 @@ export class BackgroundConnectionManager {
       if (originConnections?.has(clientId)) throw Error('Client id collision');
 
       const provision = await this.origins.services(portOrigin);
-
-      if (!(serviceName in provision)) {
+      const serviceEntry = provision[serviceName];
+      if (!serviceEntry) {
         port.disconnect();
         return;
       }
 
-      const subHandler = // call to generate handler
-        (rs: ReadableStream<JsonValue>, n: string) => {
-          // TODO: remove handler after stream finishes
-          return (sub: chrome.runtime.Port) => {
-            if (sub.name !== n) return;
-            const chromeSink = new ChromeRuntimeStreamSink(sub);
-            void rs.pipeTo(new WritableStream(chromeSink));
-            // TODO: sub.disconnect()?
-          };
-        };
-
-      /* temporary entry for old router */
-      const serviceEntry = (serviceName in provision && provision[serviceName])! as (
-        x: JsonValue,
-      ) => Promise<JsonValue | ReadableStream<JsonValue>>;
-
-      const transportListener = (m: unknown, p: chrome.runtime.Port) => {
-        const { requestId, message: request } = m as TransportMessage;
-        void serviceEntry(request).then(response => {
-          if (response instanceof ReadableStream) {
-            const responseChannel = nameSubConnection(ChannelSubLabel.ServerStream);
-            chrome.runtime.onConnect.addListener(subHandler(response, String(responseChannel)));
-            p.postMessage({ requestId, channel: responseChannel });
-          } else p.postMessage({ requestId, message: response });
-        });
-      };
-      /* end temporary entry for old router */
-
-      const connection: BackgroundConnection = {
+      const connection = {
         type: clientType as ChannelClientLabel,
-        service: serviceName,
         port,
         sender,
-        transportListener,
-        documentId,
-        tlsChannelId: tlsChannelId ?? '',
-        tab,
-        streams: new Array<chrome.runtime.Port>(),
+        streams: new Map<string, AbortController>(),
+      } as BackgroundConnection;
+
+      const subHandler = (subStream: ReadableStream<JsonValue>, subName: string) => {
+        return (sub: chrome.runtime.Port) => {
+          if (sub.name !== subName) return;
+          const acont = new AbortController();
+          connection.streams.set(subName, acont);
+          port.onDisconnect.addListener(() => acont.abort(subName));
+          void subStream
+            .pipeTo(new WritableStream(new ChromeRuntimeStreamSink(sub)), { signal: acont.signal })
+            .catch(e => {
+              if (e !== subName) throw e;
+            })
+            .finally(() => {
+              connection.streams.delete(subName);
+              sub.disconnect();
+              void subStream.cancel();
+            });
+        };
       };
 
-      console.log('Connection established', claimedOrigin, clientId, connection);
+      const transportListener = async (transported: unknown, transPort: chrome.runtime.Port) => {
+        // TODO: unary, serverstream only for now
+        if (!isTransportMessage(transported)) return;
+        const { requestId, message: request } = transported;
+        const response = await serviceEntry(request);
+        if (response instanceof ReadableStream) {
+          const responseChannel = nameSubConnection(ChannelSubLabel.ServerStream);
+          chrome.runtime.onConnect.addListener(subHandler(response, String(responseChannel)));
+          transPort.postMessage({ requestId, channel: responseChannel });
+        } else transPort.postMessage({ requestId, message: response });
+      };
+
       originConnections?.set(clientId, connection);
 
       port.onDisconnect.addListener(() => this.disconnectClient(portOrigin, clientId));
-      port.onMessage.addListener(transportListener);
+      port.onMessage.addListener((m, p) => void transportListener(m, p));
     }
   };
 
@@ -176,7 +170,7 @@ export class BackgroundConnectionManager {
     originConnections.delete(clientId);
     if (!originConnections.size) this.connections.delete(portOrigin);
 
-    connection.streams.map(s => s.disconnect()); // kill any active streams
+    connection.streams.forEach((acont, subName) => acont.abort(subName));
     connection.port.disconnect();
   };
 }

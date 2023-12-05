@@ -5,75 +5,47 @@
  * See [Streams API](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API)
  *
  * Streams are transferrable objects, simply transported by the standard browser
- * messaging API.
+ * messaging API. Streams cannot transport through the chrome runtime, so
+ * adapters are available in `./chrome-runtime/stream.ts`
  */
 
-import {
-  Any,
-  AnyMessage,
-  IMessageTypeRegistry,
-  JsonValue,
-  MessageType,
-  createRegistry,
-} from '@bufbuild/protobuf';
-
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
+import { Any, AnyMessage, JsonValue, IMessageTypeRegistry } from '@bufbuild/protobuf';
 
 /**
- * Packs all messaes to Any and jsonifies with "@type" annotation.
+ * Packs any registered message to json with "@type" annotation.
  */
-class AnyMessageToJsonTransformer implements Transformer<AnyMessage, JsonValue> {
-  transform(chunk: AnyMessage, cont: TransformStreamDefaultController<JsonValue>) {
-    const chunkJson = Any.pack(chunk).toJson({ typeRegistry });
-    if (!chunkJson) throw Error('Failed to serialize chunk');
-    cont.enqueue(chunkJson);
+
+export class MessageToJson extends TransformStream<AnyMessage, JsonValue> {
+  constructor(typeRegistry: IMessageTypeRegistry) {
+    super({
+      transform(chunk: AnyMessage, cont: TransformStreamDefaultController<JsonValue>) {
+        const chunkJson = Any.pack(chunk).toJson({ typeRegistry });
+        cont.enqueue(chunkJson);
+      },
+    });
   }
 }
 
-export class AnyMessageToJson extends TransformStream<AnyMessage, JsonValue> {
-  constructor() {
-    super(new AnyMessageToJsonTransformer());
-  }
-}
-
-class JsonToAnyMessageTransformer implements Transformer<JsonValue, AnyMessage> {
-  constructor(private registry: IMessageTypeRegistry) {}
-  transform(chunk: JsonValue, controller: TransformStreamDefaultController<AnyMessage>) {
-    const message = Any.fromJson(chunk, { typeRegistry: this.registry }).unpack(this.registry);
-    if (!message) throw Error('Failed to deserialize chunk');
-    controller.enqueue(message);
-  }
-}
-
-export class JsonToAnyMessage extends TransformStream<JsonValue, AnyMessage> {
-  constructor(registry: IMessageTypeRegistry) {
-    super(new JsonToAnyMessageTransformer(registry));
-  }
-}
-
-class JsonToMessageTransformer<M extends AnyMessage> implements Transformer<JsonValue, M> {
-  private registry: ReturnType<typeof createRegistry>;
-  constructor(private messageType: MessageType) {
-    this.registry = createRegistry(messageType);
-  }
-  transform(chunk: JsonValue, controller: TransformStreamDefaultController) {
-    const message = new this.messageType();
-    Any.fromJson(chunk, { typeRegistry: this.registry }).unpackTo(message);
-    controller.enqueue(message);
-  }
-}
+/**
+ * Unpacks json with "@type" annotation to any registered message.
+ */
 
 export class JsonToMessage extends TransformStream<JsonValue, AnyMessage> {
-  constructor(messageType: MessageType) {
-    super(new JsonToMessageTransformer(messageType));
+  constructor(typeRegistry: IMessageTypeRegistry) {
+    super({
+      transform(chunk: JsonValue, cont: TransformStreamDefaultController<AnyMessage>) {
+        const message = Any.fromJson(chunk, { typeRegistry }).unpack(typeRegistry);
+        cont.enqueue(message);
+      },
+    });
   }
 }
 
 /**
  * These functions are used to transform between streams and iterables.
  *
- * This shouldn't be necessary for very long, as the Streams API now specifies
- * that readable streams should provide Symbol.asyncIterator
+ * This shouldn't be necessary for very long, as the Streams API specifies
+ * readable streams should provide Symbol.asyncIterator
  */
 
 export const streamToGenerator = async function* <T>(s: ReadableStream<T>) {
@@ -89,6 +61,7 @@ export const streamToGenerator = async function* <T>(s: ReadableStream<T>) {
   }
 };
 
+// local iterable type guards for iterableToStream
 const isAsyncIterable = <T>(i: unknown): i is AsyncIterable<T> =>
   i != null && typeof i === 'object' && Symbol.asyncIterator in i;
 const isIterable = <T>(i: unknown): i is Iterable<T> =>

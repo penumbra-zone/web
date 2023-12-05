@@ -61,7 +61,6 @@ declare global {
 }
 
 export const defaultGetPort = (serviceTypeName: string) => {
-  console.log('defaultGetPort', serviceTypeName);
   const { port1: port, port2: transferPort } = new MessageChannel();
   if (!(penumbra in window))
     throw new ConnectError(
@@ -133,16 +132,16 @@ export const createChannelTransport = (s: ServiceType, getPort = defaultGetPort)
     switch (method.kind) {
       case MethodKind.Unary: {
         return async function (message: AnyMessage) {
-          const response = new method.O();
-          Any.fromJson((await request(message)) as JsonValue, { typeRegistry }).unpackTo(response);
+          const responseJson = (await request(message)) as JsonValue;
+          const response = Any.fromJson(responseJson, { typeRegistry }).unpack(typeRegistry);
           return response;
         };
       }
       case MethodKind.ServerStreaming: {
         return async function* (message: AnyMessage) {
           const responseStream = (await request(message)) as ReadableStream<JsonValue>;
-          const stream = responseStream.pipeThrough(new JsonToMessage(method.O));
-          yield* streamToGenerator(stream);
+          const response = responseStream.pipeThrough(new JsonToMessage(typeRegistry));
+          yield* streamToGenerator(response);
         };
       }
       case MethodKind.ClientStreaming:
