@@ -9,8 +9,8 @@ module.exports = {
     popup: path.join(srcDir, 'popup.tsx'),
     page: path.join(srcDir, 'page.tsx'),
     'service-worker': path.join(srcDir, 'service-worker.ts'),
-    'isolated-content-script': path.join(srcDir, 'isolated-content-script.ts'),
-    'mainworld-content-script': path.join(srcDir, 'mainworld-content-script.ts'),
+    'injected-connection-manager': path.join(srcDir, 'injected-connection-manager.ts'),
+    'injected-penumbra-global': path.join(srcDir, 'injected-penumbra-global.ts'),
   },
   output: {
     path: path.join(__dirname, '../dist/js'),
@@ -23,8 +23,8 @@ module.exports = {
         // These files cannot be chunked due to their runtime env
         return (
           chunk.name !== 'service-worker' &&
-          chunk.name !== 'isolated-content-script' &&
-          chunk.name !== 'mainworld-content-script'
+          chunk.name !== 'injected-connection-manager' &&
+          chunk.name !== 'injected-penumbra-global'
         );
       },
     },

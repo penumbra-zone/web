@@ -11,13 +11,13 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["js/isolated-content-script.js"],
+      "js": ["js/injected-connection-manager.js"],
       "run_at": "document_start",
       "all_frames": true
     },
     {
       "matches": ["<all_urls>"],
-      "js": ["js/mainworld-content-script.js"],
+      "js": ["js/expose-penumbra-global.js"],
       "run_at": "document_start",
       "all_frames": true,
       "world": "MAIN"
