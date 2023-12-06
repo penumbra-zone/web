@@ -49,9 +49,9 @@ export class ClientConnectionManager {
    * @param label ChannelClientLabel to be applied to every connection
    * @param initPort MessagePort to use. Only for content scripts.
    */
-  static init(label?: ChannelClientLabel.Extension): MessagePort;
+  static init(label: ChannelClientLabel.Extension): MessagePort;
   static init(label: ChannelClientLabel.ContentScript, initPort: MessagePort): undefined;
-  static init(label = ChannelClientLabel.Extension, initPort?: MessagePort) {
+  static init(label: ChannelClientLabel, initPort?: MessagePort) {
     if (label === ChannelClientLabel.Extension && !initPort) {
       const { port1, port2 } = new MessageChannel();
       ClientConnectionManager.singleton ??= new ClientConnectionManager(label, port1);
