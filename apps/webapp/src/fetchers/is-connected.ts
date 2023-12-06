@@ -5,5 +5,4 @@ export const isExtensionInstalled = (): boolean => Symbol.for('penumbra') in win
 
 export const throwIfExtNotInstalled = () => {
   if (!isExtensionInstalled()) throw Error(INSTALLATION_ERROR);
-  return Promise.resolve();
 };

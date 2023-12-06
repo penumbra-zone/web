@@ -14,7 +14,7 @@ import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances.ts
 import { AssetIcon } from '../shared/asset-icon.tsx';
 
 export const AssetsLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
-  await throwIfExtNotInstalled();
+  throwIfExtNotInstalled();
   return await getBalancesByAccount();
 };
 
