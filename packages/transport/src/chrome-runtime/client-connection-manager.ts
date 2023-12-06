@@ -10,6 +10,7 @@ import {
   nameClientConnection,
   ChannelClientLabel,
   isClientInitMessage,
+  isTransportStream,
 } from '../types';
 
 interface ClientConnection {
@@ -112,8 +113,10 @@ export class ClientConnectionManager {
       if (isTransportMessage(request)) {
         const { requestId, message } = request;
         servicePort.postMessage({ requestId, message });
-      } // TODO: isTransportStream(request)
-      else throw Error('Unimplemented request kind');
+      } else if (isTransportStream(request)) {
+        // TODO: MethodKind.ClientStreaming, MethodKind.BiDiStreaming
+        throw Error('Unimplemented request kind');
+      }
     };
 
     /**
