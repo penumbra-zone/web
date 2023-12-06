@@ -42,7 +42,6 @@ interface BackgroundConnection {
  */
 export class BackgroundConnectionManager {
   private static singleton: BackgroundConnectionManager | undefined;
-  private static attached = false;
   private connections = new Map<
     string, // origin URI
     Map<ReturnType<typeof crypto.randomUUID>, BackgroundConnection>
@@ -54,9 +53,7 @@ export class BackgroundConnectionManager {
 
   private constructor(private origins: OriginRegistry) {
     if (BackgroundConnectionManager.singleton) throw Error('Already constructed');
-    if (BackgroundConnectionManager.attached) throw Error('Already attached');
     chrome.runtime.onConnect.addListener(port => void this.connectionListener(port));
-    BackgroundConnectionManager.attached = true;
   }
 
   /**
