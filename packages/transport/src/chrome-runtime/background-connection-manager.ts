@@ -63,12 +63,12 @@ export class BackgroundConnectionManager {
    * service to the origin, a service-specific handler is connected to the
    * port.
    *
-   * TODO: this only supports connections from browser tabs. is this
-   * appropriate, or should we support apps, external processes, or other
-   * extensions?
+   * TODO: this only supports connections from browser tabs, or other scripts
+   * inside this extension. is this appropriate, or should we support apps,
+   * external processes, or other extensions?
    *
    * @param port opened by any connecting document, preferably an injected
-   * content script
+   * content script or other extension script
    */
   private connectionListener = async (port: chrome.runtime.Port) => {
     const { name, sender } = port;
@@ -78,9 +78,8 @@ export class BackgroundConnectionManager {
       // TODO: revisit these conditions
       documentId &&
       portOrigin && // known origin
-      //tlsChannelId && // require TLS
+      //tlsChannelId && // TODO: require TLS
       frameId === 0 && // no iframes
-      //tab?.id && // document in tab
       (name.startsWith('Extension') || name.startsWith('ContentScript')) &&
       (await this.origins.known(portOrigin))
     ) {
