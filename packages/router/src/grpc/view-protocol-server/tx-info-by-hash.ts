@@ -15,7 +15,7 @@ export const handleTxInfoByHashReq = async (
   services: ServicesInterface,
 ): Promise<TransactionInfoByHashResponse> => {
   const { indexedDb } = await services.getWalletServices();
-  if (!req.id) return new TransactionInfoByHashResponse();
+  if (!req.id) throw new Error('Missing transaction ID in request');
 
   const txInfo = await indexedDb.getTransaction(new NoteSource({ inner: req.id.hash }));
   if (!txInfo) return new TransactionInfoByHashResponse();
