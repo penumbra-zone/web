@@ -10,15 +10,6 @@ import {
 import { JsonValue } from '@bufbuild/protobuf';
 import { ChromeRuntimeStreamSink } from './stream';
 
-interface OriginRegistry {
-  known(origin: string): Promise<boolean>;
-  // TODO
-  //services(origin: string): Promise<Record<string, false | ChromeRuntimeAdapterOptions>>;
-  services(
-    origin: string,
-  ): Promise<Record<string, (x: JsonValue) => Promise<JsonValue> | ReadableStream<JsonValue>>>;
-}
-
 interface BackgroundConnection {
   type: ChannelClientLabel;
   port: chrome.runtime.Port;
@@ -47,11 +38,20 @@ export class BackgroundConnectionManager {
     Map<ReturnType<typeof crypto.randomUUID>, BackgroundConnection>
   >();
 
-  static init = (origins: OriginRegistry) => {
-    BackgroundConnectionManager.singleton ??= new BackgroundConnectionManager(origins);
+  static init = (
+    unconditionalAccessToAllTheServices: Record<string, (x: JsonValue) => Promise<JsonValue>>,
+  ) => {
+    BackgroundConnectionManager.singleton ??= new BackgroundConnectionManager(
+      unconditionalAccessToAllTheServices,
+    );
   };
 
-  private constructor(private origins: OriginRegistry) {
+  private constructor(
+    private unconditionalAccessToAllTheServices: Record<
+      string,
+      (x: JsonValue) => Promise<JsonValue>
+    >,
+  ) {
     if (BackgroundConnectionManager.singleton) throw Error('Already constructed');
     chrome.runtime.onConnect.addListener(port => void this.connectionListener(port));
   }
@@ -77,11 +77,10 @@ export class BackgroundConnectionManager {
     if (
       // TODO: revisit these conditions
       documentId &&
-      portOrigin && // known origin
       //tlsChannelId && // TODO: require TLS
       frameId === 0 && // no iframes
-      (name.startsWith('Extension') || name.startsWith('ContentScript')) &&
-      (await this.origins.known(portOrigin))
+      (name.startsWith('Extension') || name.startsWith('ContentScript'))
+      // no origin check happens at all
     ) {
       const channelConfig = parseConnectionName<typeof name, ChannelConfig>(name);
       if (!channelConfig) throw Error(`Invalid channel ${name}`);
@@ -98,8 +97,7 @@ export class BackgroundConnectionManager {
         this.connections.set(portOrigin, new Map()).get(portOrigin);
       if (originConnections?.has(clientId)) throw Error('Client id collision');
 
-      const provision = await this.origins.services(portOrigin);
-      const serviceEntry = provision[serviceName];
+      const serviceEntry = this.unconditionalAccessToAllTheServices[serviceName];
       if (!serviceEntry) {
         clientPort.disconnect();
         throw new Error('Unknown service requested by client');

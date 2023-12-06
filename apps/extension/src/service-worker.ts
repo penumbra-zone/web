@@ -93,7 +93,4 @@ const adapterEntry = {
  */
 
 import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/background-connection-manager';
-BackgroundConnectionManager.init({
-  known: () => Promise.resolve(true),
-  services: () => Promise.resolve(adapterEntry),
-});
+BackgroundConnectionManager.init(adapterEntry);
