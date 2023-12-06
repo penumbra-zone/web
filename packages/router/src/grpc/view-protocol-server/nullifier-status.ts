@@ -24,11 +24,10 @@ export const handleNullifierStatusReq = async (
   const noteByNullifier = await indexedDb.getNoteByNullifier(req.nullifier);
   const swapByNullifier = await indexedDb.getSwapByNullifier(req.nullifier);
 
-  if (noteByNullifier) {
-    if (noteByNullifier.heightSpent) return new NullifierStatusResponse({ spent: true });
-    else return new NullifierStatusResponse({ spent: false });
-  } else if (swapByNullifier) {
-    if (swapByNullifier.heightClaimed) return new NullifierStatusResponse({ spent: true });
-    else return new NullifierStatusResponse({ spent: false });
-  } else return new NullifierStatusResponse();
+  // The 'heightSpent' and 'heightClaimed' fields will never be undefined,
+  // so we compare to 0n assuming it is impossible to spend nullifier in block 0
+  const noteSpent = noteByNullifier ? noteByNullifier.heightSpent !== 0n : false;
+  const swapSpent = swapByNullifier ? swapByNullifier.heightClaimed !== 0n : false;
+
+  return new NullifierStatusResponse({ spent: noteSpent || swapSpent });
 };
