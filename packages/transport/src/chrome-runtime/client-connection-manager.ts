@@ -160,7 +160,6 @@ export class ClientConnectionManager {
     servicePort.onDisconnect.addListener(() => this.endConnection(clientId));
 
     clientPort.addEventListener('message', clientListener);
-    clientPort.addEventListener('messageerror', () => this.endConnection(clientId));
     clientPort.start();
   }
 
