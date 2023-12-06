@@ -32,7 +32,7 @@ interface ClientConnection {
  * scripts are ultimately untrusted, so services are responsible for confirming
  * legitimacy.
  *
- * A ReadableStream or AsyncIterable cannot transfer accross the chrome runtime
+ * A ReadableStream or AsyncIterable cannot transfer across the chrome runtime
  * boundary, so streams are encapsulated into dedicated channels at this
  * location, with some basic sequencing.
  *
