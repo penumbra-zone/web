@@ -19,8 +19,7 @@ declare global {
 const initPenumbra = (ev: MessageEvent<unknown>) => {
   if (ev.origin === window.origin && isInitPenumbra(ev)) {
     const { services, port } = ev.data;
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    window[penumbra] ??= {} as Exposed;
+    if (!window[penumbra]) window[penumbra] = {} as Exposed;
     window[penumbra].services = {
       ...(window[penumbra].services ?? {}),
       ...Object.fromEntries(services.map((s: string) => [s, port])),
