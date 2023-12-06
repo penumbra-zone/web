@@ -200,6 +200,14 @@ describe('IndexedDb', () => {
 
       expect(newNote.equals(noteByCommitment)).toBeTruthy();
     });
+
+    it('should return undefined by commitment', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      const noteByCommitment = await db.getNoteByCommitment(newNote.noteCommitment!);
+
+      expect(noteByCommitment).toBeUndefined();
+    });
   });
 
   describe('state commitment tree', () => {
