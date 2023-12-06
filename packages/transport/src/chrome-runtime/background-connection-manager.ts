@@ -14,7 +14,9 @@ interface OriginRegistry {
   known(origin: string): Promise<boolean>;
   // TODO
   //services(origin: string): Promise<Record<string, false | ChromeRuntimeAdapterOptions>>;
-  services(origin: string): Promise<Record<string, (x: JsonValue) => Promise<JsonValue>>>;
+  services(
+    origin: string,
+  ): Promise<Record<string, (x: JsonValue) => Promise<JsonValue> | ReadableStream<JsonValue>>>;
 }
 
 interface BackgroundConnection {
