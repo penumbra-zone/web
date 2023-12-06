@@ -82,10 +82,10 @@ export type ChannelConfigString<CF> = CF extends ChannelConfig
  * @param typeName if necessary, type name of the requested service
  * @returns a formatted string with attached fields
  */
-const nameChannel = (
+export const nameChannel = (
   label: ChannelLabel,
   typeName?: string,
-): ChannelConfigString<typeof completeConf> & typeof completeConf => {
+): [ChannelConfigString<typeof completeConf>, typeof completeConf] => {
   const completeConf = {
     label,
     uuid: crypto.randomUUID(),
@@ -94,7 +94,7 @@ const nameChannel = (
   } as ChannelConfig;
   const confString: ChannelConfigString<typeof completeConf> =
     `${completeConf.label} ${completeConf.uuid} ${completeConf.origin} ${completeConf.typeName}`;
-  return Object.assign(confString, completeConf);
+  return [confString, completeConf];
 };
 
 /**
@@ -111,15 +111,10 @@ export const parseConnectionName = <N extends string, CC>(
 ): CC | undefined => {
   const [label, uuid, channelOrigin, typeName] = name.split(' ');
   if (!isUUID(uuid!) || !isChannelLabel(label!) || !isOriginUrl(channelOrigin!)) return undefined;
-  const parsedConfig = {
+  return {
     label,
     uuid,
     origin: channelOrigin,
     typeName,
   } as CC;
-  return parsedConfig;
 };
-
-// TODO: differentiate
-export const nameClientConnection = nameChannel;
-export const nameSubConnection = nameChannel;

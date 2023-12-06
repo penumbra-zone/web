@@ -1,7 +1,7 @@
 import {
   ChannelConfig,
   ChannelClientLabel,
-  nameSubConnection,
+  nameChannel,
   parseConnectionName,
   ChannelSubLabel,
   isTransportMessage,
@@ -166,9 +166,9 @@ export class BackgroundConnectionManager {
 
         if (response instanceof ReadableStream) {
           // if the response is a stream, handle it in a sub-channel
-          const responseChannel = nameSubConnection(ChannelSubLabel.ServerStream);
-          chrome.runtime.onConnect.addListener(subHandler(response, String(responseChannel)));
-          transPort.postMessage({ requestId, channel: responseChannel });
+          const [subName] = nameChannel(ChannelSubLabel.ServerStream);
+          chrome.runtime.onConnect.addListener(subHandler(response, subName));
+          transPort.postMessage({ requestId, channel: subName });
         } else {
           // an individual response can be emitted directly
           transPort.postMessage({ requestId, message: response });

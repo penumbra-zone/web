@@ -7,7 +7,7 @@ import {
   isTransportData,
   isTransportMessage,
   isTransportInitChannel,
-  nameClientConnection,
+  nameChannel,
   ChannelClientLabel,
   isClientInitMessage,
   isTransportStream,
@@ -88,12 +88,8 @@ export class ClientConnectionManager {
    * @param serviceTypeName requested fully-qualified service typename
    */
   private initConnection({ port: clientPort, service: serviceTypeName }: InitChannelClientData) {
-    const clientName = nameClientConnection(this.label, serviceTypeName);
-    const clientId = clientName.uuid;
-    const servicePort = chrome.runtime.connect({
-      includeTlsChannelId: true,
-      name: String(clientName),
-    });
+    const [clientName, { uuid: clientId }] = nameChannel(this.label, serviceTypeName);
+    const servicePort = chrome.runtime.connect({ includeTlsChannelId: true, name: clientName });
 
     /**
      * Client-specific message handler. Listens for messages on the
