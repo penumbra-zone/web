@@ -67,11 +67,11 @@ export class BackgroundConnectionManager {
    * inside this extension. is this appropriate, or should we support apps,
    * external processes, or other extensions?
    *
-   * @param port opened by any connecting document, preferably an injected
+   * @param clientPort opened by any connecting document, preferably an injected
    * content script or other extension script
    */
-  private connectionListener = async (port: chrome.runtime.Port) => {
-    const { name, sender } = port;
+  private connectionListener = async (clientPort: chrome.runtime.Port) => {
+    const { name, sender } = clientPort;
     if (!sender) return;
     const { origin: portOrigin, documentId, frameId } = sender;
     if (
@@ -101,38 +101,63 @@ export class BackgroundConnectionManager {
       const provision = await this.origins.services(portOrigin);
       const serviceEntry = provision[serviceName];
       if (!serviceEntry) {
-        port.disconnect();
-        throw new Error('Unknown service');
+        clientPort.disconnect();
+        throw new Error('Unknown service requested by client');
       }
 
       const connection = {
         type: clientType as ChannelClientLabel,
-        port,
+        port: clientPort,
         sender,
         streams: new Map<string, AbortController>(),
       } as BackgroundConnection;
 
+      /**
+       * This method is used to generate a handler for a connection request from
+       * the client to open a sub-channel, as instructed by this connection
+       * manager. The sub-channel encapsulates a response stream.
+       *
+       * @param subStream ReadableStream to be transmitted in a sub-channel
+       * @param subName Name of a chrome.runtime.port representing a sub-channel
+       */
       const subHandler = (subStream: ReadableStream<JsonValue>, subName: string) => {
-        return (sub: chrome.runtime.Port) => {
-          if (sub.name !== subName) return;
+        /**
+         * This is the generated connection listener. It checks for a specified
+         * name, which is transmitted to the client by the caller. Any
+         * connecting port not identifying that name is ignored.
+         *
+         * @param subPort chrome.runtime.Port, initiated by any new runtime connection
+         */
+        const subConnectionListener = (subPort: chrome.runtime.Port) => {
+          if (subPort.name !== subName) return;
+          chrome.runtime.onConnect.removeListener(subConnectionListener);
           const acont = new AbortController();
           connection.streams.set(subName, acont);
-          port.onDisconnect.addListener(() => acont.abort(subName));
+          subPort.onDisconnect.addListener(() => acont.abort(subName));
           void subStream
-            .pipeTo(new WritableStream(new ChromeRuntimeStreamSink(sub)), { signal: acont.signal })
+            .pipeTo(new WritableStream(new ChromeRuntimeStreamSink(subPort)), {
+              signal: acont.signal,
+            })
             .catch(e => {
               if (e !== subName) throw e;
             })
             .finally(() => {
               connection.streams.delete(subName);
-              sub.disconnect();
+              subPort.disconnect();
               void subStream.cancel();
             });
         };
+        return subConnectionListener;
       };
 
+      /**
+       * This method is attached as a listener to the clientPort, and handles
+       * incoming transport events.
+       *
+       * @param transported anything received on the transport
+       * @param transPort the clientPort as available in this handler
+       */
       const transportListener = async (transported: unknown, transPort: chrome.runtime.Port) => {
-        // TODO: unary, serverstream only for now
         if (!isTransportMessage(transported)) return;
         const { requestId, message: request } = transported;
         const response = await serviceEntry(request);
@@ -145,8 +170,8 @@ export class BackgroundConnectionManager {
 
       originConnections?.set(clientId, connection);
 
-      port.onDisconnect.addListener(() => this.disconnectClient(portOrigin, clientId));
-      port.onMessage.addListener((m, p) => void transportListener(m, p));
+      clientPort.onDisconnect.addListener(() => this.disconnectClient(portOrigin, clientId));
+      clientPort.onMessage.addListener((m, p) => void transportListener(m, p));
     }
   };
 
