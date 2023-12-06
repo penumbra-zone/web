@@ -3,10 +3,6 @@ const INSTALLATION_ERROR = `Penumbra extension is not installed. Please visit: h
 
 export const isExtensionInstalled = (): boolean => Symbol.for('penumbra') in window;
 
-export const isExtInstallError = (e: unknown): boolean => {
-  return String(e).includes(INSTALLATION_ERROR);
-};
-
 export const throwIfExtNotInstalled = () => {
   if (!isExtensionInstalled()) throw Error(INSTALLATION_ERROR);
   return Promise.resolve();
