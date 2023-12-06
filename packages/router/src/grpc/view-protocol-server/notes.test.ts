@@ -103,6 +103,7 @@ describe('Notes request handler', () => {
     for await (const res of handleNotesReq(req, services)) {
       responses.push(res);
     }
+    console.log(responses.length)
     expect(responses.length).toBe(1);
   });
 
