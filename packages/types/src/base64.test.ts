@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'Buffer';
 import {
   Base64StringSchema,
   base64ToUint8Array,
