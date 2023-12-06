@@ -53,7 +53,7 @@ export class BackgroundConnectionManager {
     >,
   ) {
     if (BackgroundConnectionManager.singleton) throw Error('Already constructed');
-    chrome.runtime.onConnect.addListener(port => void this.connectionListener(port));
+    chrome.runtime.onConnect.addListener(port => this.connectionListener(port));
   }
 
   /**
@@ -70,7 +70,7 @@ export class BackgroundConnectionManager {
    * @param clientPort opened by any connecting document, preferably an injected
    * content script or other extension script
    */
-  private connectionListener = async (clientPort: chrome.runtime.Port) => {
+  private connectionListener = (clientPort: chrome.runtime.Port) => {
     const { name, sender } = clientPort;
     if (!sender) return;
     const { origin: portOrigin, documentId, frameId } = sender;
