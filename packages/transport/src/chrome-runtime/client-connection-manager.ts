@@ -89,9 +89,12 @@ export class ClientConnectionManager {
   private initConnection({ port: clientPort, service: serviceTypeName }: InitChannelClientData) {
     const connection = {} as Partial<ClientConnection>;
 
-    const name = nameClientConnection(this.label, serviceTypeName);
-    const clientId = name.uuid;
-    const servicePort = chrome.runtime.connect({ includeTlsChannelId: true, name: String(name) });
+    const clientName = nameClientConnection(this.label, serviceTypeName);
+    const clientId = clientName.uuid;
+    const servicePort = chrome.runtime.connect({
+      includeTlsChannelId: true,
+      name: String(clientName),
+    });
 
     /**
      * Client-specific message handler. Listens for messages on the
@@ -138,8 +141,8 @@ export class ClientConnectionManager {
         const { requestId, message } = response;
         clientPort.postMessage({ requestId, message } satisfies TransportMessage);
       } else if (isTransportInitChannel(response)) {
-        const { requestId, channel: name } = response;
-        const sourcePort = chrome.runtime.connect({ includeTlsChannelId: true, name });
+        const { requestId, channel: subName } = response;
+        const sourcePort = chrome.runtime.connect({ includeTlsChannelId: true, name: subName });
         const stream = new ReadableStream(new ChromeRuntimeStreamSource(sourcePort));
         clientPort.postMessage({ requestId, stream } satisfies TransportStream, [stream]);
       } else throw Error('Unimplemented response kind');
