@@ -4,7 +4,7 @@ import {
   GrpcRequest,
   GrpcResponse,
   isDappGrpcRequest,
-} from '@penumbra-zone/transport';
+} from '../../transport-old';
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { handleAppParamsReq, isAppParamsRequest } from './app-params';
 import { handleAddressReq, isAddressRequest } from './address';
@@ -22,6 +22,7 @@ import { handleStatusRequest, isStatusRequest } from './status';
 import { handleNotesReq, isNotesRequest } from './notes';
 import { handleIndexByAddressReq, isIndexByAddressRequest } from './index-by-address';
 import { handleFmdParamsReq, isFmdParamsRequest } from './fmd-params';
+import { handleNoteByCommitmentReq, isNoteByCommitmentRequest } from './note-by-commitment';
 import { handleNullifierStatusReq, isNullifierStatusRequest } from './nullifier-status';
 
 export type ViewReqMessage = GrpcRequest<typeof ViewProtocolService>;
@@ -48,6 +49,7 @@ export const viewServerUnaryHandler: UnaryHandler<typeof ViewProtocolService> = 
   else if (isStatusRequest(msg)) return handleStatusRequest(msg, services);
   else if (isIndexByAddressRequest(msg)) return handleIndexByAddressReq(msg);
   else if (isFmdParamsRequest(msg)) return handleFmdParamsReq(services);
+  else if (isNoteByCommitmentRequest(msg)) return handleNoteByCommitmentReq(msg, services);
   else if (isNullifierStatusRequest(msg)) return handleNullifierStatusReq(msg, services);
 
   throw new Error(`Non-supported unary request: ${(msg as ViewReqMessage).getType().typeName}`);

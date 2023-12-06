@@ -1,6 +1,4 @@
-import { GrpcRequest } from '@penumbra-zone/transport';
 import { Box } from '@penumbra-zone/types';
-import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
 import {
   AuthorizeRequest,
   AuthorizeResponse,
@@ -8,10 +6,9 @@ import {
 import { authorizePlan, generateSpendKey } from '@penumbra-zone/wasm-ts';
 import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
 import { Key } from '@penumbra-zone/crypto-web';
+import { AnyMessage } from '@bufbuild/protobuf';
 
-export const isAuthorizeRequest = (
-  req: GrpcRequest<typeof CustodyProtocolService>,
-): req is AuthorizeRequest => {
+export const isAuthorizeRequest = (req: AnyMessage): req is AuthorizeRequest => {
   return req.getType().typeName === AuthorizeRequest.typeName;
 };
 

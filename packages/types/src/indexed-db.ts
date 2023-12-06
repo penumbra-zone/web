@@ -23,6 +23,7 @@ import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { Note } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import { JsonValue } from '@bufbuild/protobuf';
 import { Base64Str } from './base64';
+import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -38,6 +39,7 @@ export interface IndexedDbInterface {
   clear(): Promise<void>;
   getLastBlockSynced(): Promise<bigint | undefined>;
   getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
+  getNoteByCommitment(commitment: StateCommitment): Promise<SpendableNoteRecord | undefined>;
   saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
   getAllNotes(): Promise<SpendableNoteRecord[]>;
   saveTransactionInfo(tx: TransactionInfo): Promise<void>;

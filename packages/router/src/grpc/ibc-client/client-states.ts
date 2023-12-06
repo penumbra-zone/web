@@ -3,12 +3,9 @@ import {
   QueryClientStatesResponse,
 } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/query_pb';
 import { ServicesInterface } from '@penumbra-zone/types';
-import { GrpcRequest } from '@penumbra-zone/transport';
-import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
+import { AnyMessage } from '@bufbuild/protobuf';
 
-export const isClientStatesRequest = (
-  req: GrpcRequest<typeof IbcClientService>,
-): req is QueryClientStatesRequest => {
+export const isClientStatesRequest = (req: AnyMessage): req is QueryClientStatesRequest => {
   return req.getType().typeName === QueryClientStatesRequest.typeName;
 };
 

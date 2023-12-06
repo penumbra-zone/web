@@ -15,7 +15,7 @@ export interface TxDetailsLoaderResult {
 export const TxDetailsLoader: LoaderFunction = async ({
   params,
 }): Promise<TxDetailsLoaderResult> => {
-  await throwIfExtNotInstalled();
+  throwIfExtNotInstalled();
 
   const hash = params['hash']!;
   const txInfo = await getTxInfoByHash(hash);

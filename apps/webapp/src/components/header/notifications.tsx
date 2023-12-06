@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@penumbra-zone/ui';
 import { BellIcon } from '../../icons';
-import { useStream } from '@penumbra-zone/transport';
+import { useStream } from '../../fetchers/stream';
 import { BlockSync } from './block-sync';
 import { viewClient } from '../../clients/grpc.ts';
 
