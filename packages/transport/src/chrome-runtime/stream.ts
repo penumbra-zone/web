@@ -2,7 +2,7 @@ import type { JsonValue } from '@bufbuild/protobuf';
 import { StreamChannelChunk, StreamChannelEnd, isStreamControl } from '../types';
 
 /**
- * Adapts a chrome.runtime.Port to a ReadableStreamSource
+ * Adapts a chrome.runtime.Port to a ReadableStream UnderlyingSource
  *
  * @param incoming port to read from
  */
@@ -35,7 +35,7 @@ export class ChromeRuntimeStreamSource implements UnderlyingDefaultSource<JsonVa
 }
 
 /**
- * Adapts a chrome.runtime.Port to a WritableStreamSink
+ * Adapts a chrome.runtime.Port to a WritableStream UnderlyingSink
  *
  * @param outgoing port to write to
  */

@@ -102,7 +102,7 @@ export class BackgroundConnectionManager {
       const serviceEntry = provision[serviceName];
       if (!serviceEntry) {
         port.disconnect();
-        return;
+        throw new Error('Unknown service');
       }
 
       const connection = {
