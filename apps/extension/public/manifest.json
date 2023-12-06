@@ -26,6 +26,12 @@
   "background": {
     "service_worker": "js/service-worker.js"
   },
+  "web_accessible_resources": [
+    {
+      "resources": ["install-detector.txt"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "permissions": ["storage", "unlimitedStorage"],
   "host_permissions": ["<all_urls>"],
   "content_security_policy": {
