@@ -34,7 +34,8 @@ import { isStdRequest } from '@penumbra-zone/types';
 const adaptOldRouter = (service: ServiceType) => {
   return async (req: JsonValue): Promise<JsonValue | ReadableStream<JsonValue>> => {
     const packed = Any.fromJson(req, { typeRegistry });
-    const unpacked = packed.unpack(typeRegistry)!;
+    const unpacked = packed.unpack(typeRegistry);
+    if (!unpacked) throw Error('Recieved message of unknown type');
     const sequence = performance.now();
 
     const messageForRouter = {
