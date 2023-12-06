@@ -191,6 +191,15 @@ describe('IndexedDb', () => {
       expect(savedSpendableNotes.length === 1).toBeTruthy();
       expect(newNote.equals(savedSpendableNotes[0])).toBeTruthy();
     });
+
+    it('should be able to set/get by commitment', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.saveSpendableNote(newNote);
+      const noteByCommitment = await db.getNoteByCommitment(newNote.noteCommitment!);
+
+      expect(newNote.equals(noteByCommitment)).toBeTruthy();
+    });
   });
 
   describe('state commitment tree', () => {
