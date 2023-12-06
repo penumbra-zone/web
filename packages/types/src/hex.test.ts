@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { base64ToHex, hexToBase64, hexToUint8Array, uint8ArrayToHex } from './hex';
-import { Buffer } from 'Buffer';
+import { Buffer } from 'buffer';
 
 describe('base64ToHex', () => {
   it('should convert base64 string to hexadecimal', () => {
