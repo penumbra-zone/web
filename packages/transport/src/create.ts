@@ -16,12 +16,7 @@ import {
   Any,
 } from '@bufbuild/protobuf';
 
-import {
-  TransportMessage,
-  isTransportData,
-  InitChannelClientDataType,
-  InitChannelClientMessage,
-} from './types';
+import { TransportMessage, isTransportData } from './types';
 
 import { JsonToMessage, streamToGenerator } from './stream';
 
@@ -50,47 +45,13 @@ const makeAnyServiceImpl: CreateAnyServiceImpl = <S extends ServiceType>(
   return impl;
 };
 
-type Promised<T> = Parameters<ConstructorParameters<typeof Promise<T>>[0]>;
+type ResolveReject<T> = Parameters<ConstructorParameters<typeof Promise<T>>[0]>;
 
-const penumbra = Symbol.for('penumbra');
-
-declare global {
-  interface Window {
-    [penumbra]?: Record<string, MessagePort>;
-  }
-}
-
-export const defaultGetPort = (serviceTypeName: string) => {
-  const { port1: port, port2: transferPort } = new MessageChannel();
-  if (!(penumbra in window))
-    throw new ConnectError(
-      'No Penumbra global (extension not installed)',
-      ConnectErrorCode.InvalidArgument,
-    );
-  const initPort = window[penumbra][serviceTypeName];
-  if (!initPort)
-    throw new ConnectError(
-      `No init port for service ${serviceTypeName}`,
-      ConnectErrorCode.FailedPrecondition,
-    );
-  initPort.postMessage(
-    {
-      type: InitChannelClientDataType,
-      port: transferPort,
-      service: serviceTypeName,
-    } as InitChannelClientMessage,
-    [transferPort],
-  );
-  return port;
-};
-
-export const createChannelTransport = (s: ServiceType, getPort = defaultGetPort) => {
+export const createChannelTransport = (s: ServiceType, port: MessagePort) => {
   const pending = new Map<
     ReturnType<typeof crypto.randomUUID>,
-    Promised<JsonValue | ReadableStream<JsonValue>>
+    ResolveReject<JsonValue | ReadableStream<JsonValue>>
   >();
-
-  const port = getPort(s.typeName);
 
   port.addEventListener('message', ev => {
     if (isTransportData(ev.data)) {
@@ -106,15 +67,6 @@ export const createChannelTransport = (s: ServiceType, getPort = defaultGetPort)
       else reject(new ConnectError('Unknown response', ConnectErrorCode.Unknown));
     }
   });
-
-  port.addEventListener(
-    'messageerror',
-    ev => {
-      port.close();
-      console.error('Transport messageerror', ev);
-    },
-    { once: true },
-  );
 
   const request = (msg: AnyMessage) => {
     const rpc: TransportMessage = {
