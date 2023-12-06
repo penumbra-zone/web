@@ -14,7 +14,7 @@ export const handleNoteByCommitmentReq = async (
   services: ServicesInterface,
 ): Promise<NoteByCommitmentResponse> => {
   const { indexedDb } = await services.getWalletServices();
-  if (!req.noteCommitment) return new NoteByCommitmentResponse();
+  if (!req.noteCommitment) throw new Error('Missing note commitment in request');
 
   // TODO  req.await_detection processing
 
