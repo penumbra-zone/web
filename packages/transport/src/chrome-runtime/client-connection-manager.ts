@@ -88,8 +88,6 @@ export class ClientConnectionManager {
    * @param serviceTypeName requested fully-qualified service typename
    */
   private initConnection({ port: clientPort, service: serviceTypeName }: InitChannelClientData) {
-    const connection = {} as Partial<ClientConnection>;
-
     const clientName = nameClientConnection(this.label, serviceTypeName);
     const clientId = clientName.uuid;
     const servicePort = chrome.runtime.connect({
@@ -151,15 +149,12 @@ export class ClientConnectionManager {
       } else throw Error('Unimplemented response kind');
     };
 
-    this.connections.set(
-      clientId,
-      Object.assign(connection, {
-        clientPort,
-        servicePort,
-        clientListener,
-        serviceListener,
-      } satisfies ClientConnection),
-    );
+    this.connections.set(clientId, {
+      clientPort,
+      servicePort,
+      clientListener,
+      serviceListener,
+    });
 
     servicePort.onMessage.addListener(serviceListener);
     servicePort.onDisconnect.addListener(() => this.endConnection(clientId));
