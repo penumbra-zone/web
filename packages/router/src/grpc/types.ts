@@ -1,14 +1,6 @@
-import {
-  DappMessageRequest,
-  errorResponseMsg,
-  GrpcRequest,
-  GrpcResponse,
-  streamResponseMsg,
-  unaryResponseMsg,
-} from '@penumbra-zone/transport';
+import { DappMessageRequest, GrpcRequest, GrpcResponse } from '../transport-old';
 import { MethodKind, ServiceType } from '@bufbuild/protobuf';
 import { ServicesInterface } from '@penumbra-zone/types';
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
 
 interface MethodMatch<S extends ServiceType> {
   msg: GrpcRequest<S>;
@@ -29,18 +21,6 @@ export const deserializeReq = <S extends ServiceType>(
   };
 };
 
-// If from dapp, send to tab
-// If internal message, send via chrome.runtime
-export const getTransport = (
-  sender: chrome.runtime.MessageSender,
-): ((res: unknown) => Promise<unknown>) => {
-  if (sender.tab?.id) {
-    return (res: unknown) => chrome.tabs.sendMessage(sender.tab!.id!, res); // Guaranteed given request is from dapp
-  } else {
-    return (res: unknown) => chrome.runtime.sendMessage(sender.id, res);
-  }
-};
-
 export type UnaryHandler<S extends ServiceType> = (
   msg: GrpcRequest<S>,
   services: ServicesInterface,
@@ -57,27 +37,11 @@ export const createServerRoute =
     unaryHandler: UnaryHandler<S>,
     streamingHandler: StreamingHandler<S>,
   ) =>
-  (
-    req: DappMessageRequest<S>,
-    sender: chrome.runtime.MessageSender,
-    services: ServicesInterface,
-  ) => {
-    const send = getTransport(sender);
+  (req: DappMessageRequest<S>, send: (res: unknown) => void, services: ServicesInterface) => {
     const { msg, kind } = deserializeReq(req, service);
-
-    (async function () {
-      if (kind === MethodKind.ServerStreaming) {
-        for await (const result of streamingHandler(msg, services)) {
-          await send(streamResponseMsg(req, { value: result, done: false }, typeRegistry));
-        }
-        await send(streamResponseMsg(req, { done: true }, typeRegistry));
-      } else if (kind === MethodKind.Unary) {
-        const result = await unaryHandler(msg, services);
-        await send(unaryResponseMsg(req, result, typeRegistry));
-      } else {
-        throw new Error(`Method kind: ${kind}, not supported`);
-      }
-    })().catch(e => {
-      void send(errorResponseMsg(req, e));
-    });
+    void (async function () {
+      if (kind === MethodKind.Unary) send(await unaryHandler(msg, services));
+      else if (kind === MethodKind.ServerStreaming) send(streamingHandler(msg, services));
+      else throw new Error(`Method kind: ${kind}, not supported`);
+    })();
   };

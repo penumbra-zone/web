@@ -9,6 +9,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@buf/cosmos_ibc.connectrpc_es": "1.1.4-20231120130822-4c7d6d9ba523.1",
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.5.0-20231130000754-0e6d4f8485b6.1",
     "@buf/penumbra-zone_penumbra.connectrpc_es": "1.1.4-20231130000754-0e6d4f8485b6.1",
     "@bufbuild/protobuf": "^1.5.0",
@@ -24,7 +25,6 @@
     "@penumbra-zone/ui": "workspace:*",
     "@penumbra-zone/wasm-ts": "workspace:*",
     "@tanstack/react-query": "^5.12.2",
-    "@types/chrome": "0.0.253",
     "exponential-backoff": "^3.1.1",
     "framer-motion": "^10.16.12",
     "immer": "^10.0.3",
@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@radix-ui/react-icons": "^1.3.0",
-    "@types/chrome": "0.0.246",
+    "@types/chrome": "0.0.253",
     "@types/firefox-webext-browser": "^120.0.0",
     "@types/node": "^20.10.3",
     "@types/react": "^18.2.41",

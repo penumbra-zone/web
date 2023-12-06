@@ -6,18 +6,13 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "dependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.5.0-20231130000754-0e6d4f8485b6.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.1.4-20231130000754-0e6d4f8485b6.1",
     "@bufbuild/protobuf": "^1.5.0",
     "@connectrpc/connect": "^1.1.4",
     "@connectrpc/connect-web": "^1.1.4",
-    "@penumbra-zone/types": "workspace:*",
-    "@types/chrome": "0.0.253",
-    "exponential-backoff": "^3.1.1",
-    "react": "^18.2.0"
+    "@penumbra-zone/types": "workspace:*"
   },
   "devDependencies": {
-    "@types/react": "^18.2.41",
+    "@types/chrome": "0.0.253",
     "eslint": "^8.55.0",
     "eslint-config-custom": "workspace:*",
     "tsconfig": "workspace:*",

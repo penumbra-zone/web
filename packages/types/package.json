@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "@buf/cosmos_ibc.bufbuild_es": "1.5.0-20231120130822-4c7d6d9ba523.1",
+    "@buf/cosmos_ibc.connectrpc_es": "1.1.4-20231120130822-4c7d6d9ba523.1",
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.5.0-20231130000754-0e6d4f8485b6.1",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.1.4-20231130000754-0e6d4f8485b6.1",
     "@bufbuild/protobuf": "^1.5.0",
     "@types/chrome": "0.0.253",
     "bech32": "^2.0.0",

@@ -5,7 +5,7 @@ import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
 import { getAllTransactions, TransactionSummary } from '../../fetchers/transactions.ts';
 
 export const TxsLoader: LoaderFunction = async (): Promise<TransactionSummary[]> => {
-  await throwIfExtNotInstalled();
+  throwIfExtNotInstalled();
   return await getAllTransactions();
 };
 

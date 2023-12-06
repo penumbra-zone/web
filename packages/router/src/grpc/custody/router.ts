@@ -4,7 +4,7 @@ import {
   GrpcRequest,
   GrpcResponse,
   isDappGrpcRequest,
-} from '@penumbra-zone/transport';
+} from '../../transport-old';
 
 import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
 import { handleAuthorizeReq, isAuthorizeRequest } from './authorize';
