@@ -1,13 +1,18 @@
-import { Asset } from '@penumbra-zone/types';
+import { assets } from '@penumbra-zone/constants';
 import { Identicon } from '@penumbra-zone/ui';
+import { useMemo } from 'react';
 
-export const AssetIcon = ({ asset }: { asset: Pick<Asset, 'display' | 'icon'> }) => {
+export const AssetIcon = ({ name }: { name: string }) => {
+  const icon = useMemo(() => {
+    return assets.find(i => i.display === name)?.icon;
+  }, [name]);
+
   return (
     <>
-      {asset.icon ? (
-        <img className='h-6 w-6 rounded-full' src={asset.icon} alt='Asset icon' />
+      {icon ? (
+        <img className='h-6 w-6 rounded-full' src={icon} alt='Asset icon' />
       ) : (
-        <Identicon name={asset.display} size={24} className='rounded-full' type='solid' />
+        <Identicon name={name} size={24} className='rounded-full' type='solid' />
       )}
     </>
   );

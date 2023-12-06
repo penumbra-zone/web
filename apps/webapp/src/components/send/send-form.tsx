@@ -1,31 +1,42 @@
 import { Button, Switch } from '@penumbra-zone/ui';
 import { useStore } from '../../state';
-import { amountToBig, sendSelector, sendValidationErrors } from '../../state/send';
+import { sendSelector, sendValidationErrors } from '../../state/send';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
-import { isPenumbraAddr, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { InputBlock } from '../shared/input-block.tsx';
 import InputToken from '../shared/input-token.tsx';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { AssetBalance, getBalancesByAccountIndex } from '../../fetchers/balances.ts';
-import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
+import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances.ts';
+import { useMemo } from 'react';
+import { penumbraAddrValidation } from './helpers.ts';
 
-export const AssetBalanceLoader: LoaderFunction = async (): Promise<AssetBalance[]> => {
-  await throwIfExtNotInstalled();
-  return await getBalancesByAccountIndex();
+export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
+  const balancesByAccount = await getBalancesByAccount();
+
+  if (balancesByAccount[0]) {
+    // set initial account if accounts exist and asset if account has asset list
+    useStore.setState(state => {
+      state.send.selection = {
+        address: balancesByAccount[0]?.address,
+        accountIndex: balancesByAccount[0]?.index,
+        asset: balancesByAccount[0]?.balances[0],
+      };
+    });
+  }
+
+  return balancesByAccount;
 };
 
 export const SendForm = () => {
-  const assetBalances = useLoaderData() as AssetBalance[];
+  const accountBalances = useLoaderData() as AccountBalance[];
   const { toast } = useToast();
   const {
+    selection,
     amount,
-    asset,
     recipient,
     memo,
     hidden,
     setAmount,
-    setAsset,
+    setSelection,
     setRecipient,
     setMemo,
     setHidden,
@@ -33,17 +44,16 @@ export const SendForm = () => {
     txInProgress,
   } = useStore(sendSelector);
 
-  const selectedAssetBalance =
-    assetBalances.find(i => uint8ArrayToBase64(i.assetId.inner) === asset.penumbraAssetId.inner)
-      ?.amount ?? new Amount();
-
-  const validationErrors = sendValidationErrors(asset, amount, recipient, selectedAssetBalance);
+  const validationErrors = useMemo(() => {
+    return sendValidationErrors(selection?.asset, amount, recipient);
+  }, [selection?.asset, amount, recipient]);
 
   return (
     <form
       className='flex flex-col gap-4 xl:gap-3'
       onSubmit={e => {
         e.preventDefault();
+        void sendTx(toast);
       }}
     >
       <InputBlock
@@ -52,26 +62,19 @@ export const SendForm = () => {
         className='mb-1'
         value={recipient}
         onChange={e => setRecipient(e.target.value)}
-        validations={[
-          {
-            type: 'error',
-            issue: 'invalid address',
-            checkFn: (addr: string) => Boolean(addr) && !isPenumbraAddr(addr),
-          },
-        ]}
+        validations={[penumbraAddrValidation()]}
       />
       <InputToken
         label='Amount to send'
         placeholder='Enter an amount'
         className='mb-1'
-        asset={{ ...asset, price: 10 }}
-        setAsset={setAsset}
+        selection={selection}
+        setSelection={setSelection}
         value={amount}
         onChange={e => {
           if (Number(e.target.value) < 0) return;
           setAmount(e.target.value);
         }}
-        assetBalance={amountToBig(asset, selectedAssetBalance)}
         validations={[
           {
             type: 'error',
@@ -79,7 +82,8 @@ export const SendForm = () => {
             checkFn: () => validationErrors.amountErr,
           },
         ]}
-        balances={assetBalances}
+        balances={accountBalances}
+        tempPrice={1}
       />
       <InputBlock
         label='Memo'
@@ -99,12 +103,12 @@ export const SendForm = () => {
         variant='gradient'
         className='mt-3'
         size='lg'
-        onClick={() => void sendTx(toast)}
         disabled={
           !Number(amount) ||
           !recipient ||
           !!Object.values(validationErrors).find(Boolean) ||
-          txInProgress
+          txInProgress ||
+          !selection?.asset
         }
       >
         Send

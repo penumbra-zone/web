@@ -8,27 +8,33 @@ import {
   DialogTrigger,
   Input,
 } from '@penumbra-zone/ui';
-import { Asset, AssetId, fromBaseUnitAmount, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import { fromBaseUnitAmount } from '@penumbra-zone/types';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { AssetBalance } from '../../fetchers/balances.ts';
-import { AssetIcon } from './asset-icon.tsx';
-import { assets } from '@penumbra-zone/constants';
+import { AccountBalance } from '../../fetchers/balances';
+import { AssetIcon } from './asset-icon';
+import { Selection } from '../../state/types';
 
 interface SelectTokenModalProps {
-  asset: Asset;
-  setAsset: (asset: AssetId) => void;
-  balances: AssetBalance[];
+  selection: Selection | undefined;
+  setSelection: (selection: Selection) => void;
+  balances: AccountBalance[];
 }
 
-export default function SelectTokenModal({ asset, setAsset, balances }: SelectTokenModalProps) {
+export default function SelectTokenModal({
+  selection,
+  balances,
+  setSelection,
+}: SelectTokenModalProps) {
   const [search, setSearch] = useState('');
 
   return (
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
-        <div className='flex h-9 items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
-          <AssetIcon asset={asset} />
-          <p className='font-bold text-light-grey md:text-sm xl:text-base'>{asset.display}</p>
+        <div className='flex h-9 min-w-[100px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
+          {selection?.asset?.denom.display && <AssetIcon name={selection.asset.denom.display} />}
+          <p className='font-bold text-light-grey md:text-sm xl:text-base'>
+            {selection?.asset?.denom.display}
+          </p>
         </div>
       </DialogTrigger>
       <DialogContent className='max-w-[312px] bg-charcoal-secondary md:max-w-[400px]'>
@@ -46,42 +52,39 @@ export default function SelectTokenModal({ asset, setAsset, balances }: SelectTo
                 placeholder='Search asset...'
               />
             </div>
-            <div className='mt-2 flex items-center justify-between font-headline text-base font-semibold'>
-              <p>Token name</p>
-              <p>Balance</p>
+            <div className='mt-2 grid grid-cols-3 font-headline text-base font-semibold'>
+              <p className='flex justify-start'>Account</p>
+              <p className='flex justify-start'>Token name</p>
+              <p className='flex justify-end'>Balance</p>
             </div>
             <div className='flex flex-col gap-2'>
-              {balances.map((b, i) => (
-                <DialogClose key={i}>
-                  <div
-                    className={cn(
-                      'flex justify-between items-center py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4',
-                      asset.penumbraAssetId.inner === uint8ArrayToBase64(b.assetId.inner) &&
-                        'bg-light-brown px-4 -mx-4',
-                    )}
-                    onClick={() =>
-                      setAsset({
-                        inner: uint8ArrayToBase64(b.assetId.inner),
-                        altBaseDenom: '',
-                        altBech32: '',
-                      })
-                    }
-                  >
-                    <div className='flex items-center gap-[6px]'>
-                      <AssetIcon
-                        asset={
-                          assets.find(i => i.display === b.denom.display) ?? {
-                            display: '',
-                          }
+              {balances.map(b => (
+                <div key={b.index} className='flex flex-col'>
+                  {b.balances.map((k, j) => (
+                    <DialogClose key={j}>
+                      <div
+                        className={cn(
+                          'grid grid-cols-3 py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4 font-bold text-muted-foreground',
+                          selection?.asset?.assetId.equals(k.assetId) &&
+                            selection.address === b.address &&
+                            'bg-light-brown px-4 -mx-4',
+                        )}
+                        onClick={() =>
+                          setSelection({ accountIndex: b.index, address: b.address, asset: k })
                         }
-                      />
-                      <p className='font-bold text-muted-foreground'>{b.denom.display}</p>
-                    </div>
-                    <p className='font-bold text-muted-foreground'>
-                      {fromBaseUnitAmount(b.amount, b.denom.exponent).toFormat()}
-                    </p>
-                  </div>
-                </DialogClose>
+                      >
+                        <p className='flex justify-start'>{b.index}</p>
+                        <div className='flex justify-start gap-[6px]'>
+                          <AssetIcon name={k.denom.display} />
+                          <p>{k.denom.display}</p>
+                        </div>
+                        <p className='flex justify-end'>
+                          {fromBaseUnitAmount(k.amount, k.denom.exponent).toFormat()}
+                        </p>
+                      </div>
+                    </DialogClose>
+                  ))}
+                </div>
               ))}
             </div>
           </div>

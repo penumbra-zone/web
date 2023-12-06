@@ -1,35 +1,35 @@
 import { Input, InputProps } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { Asset, AssetId, displayAmount } from '@penumbra-zone/types';
-import BigNumber from 'bignumber.js';
-import SelectTokenModal from './select-token-modal.tsx';
-import { Validation, validationResult } from './validation-result.ts';
-import { AssetBalance } from '../../fetchers/balances.ts';
+import { displayAmount, fromBaseUnitAmount } from '@penumbra-zone/types';
+import SelectTokenModal from './select-token-modal';
+import { Validation, validationResult } from './validation-result';
+import { AccountBalance } from '../../fetchers/balances';
+import { Selection } from '../../state/types';
 
 interface InputTokenProps extends InputProps {
   label: string;
-  asset: Asset & { price: number };
-  assetBalance: BigNumber; // Includes exponent formatting
+  selection: Selection | undefined;
   placeholder: string;
   className?: string;
   inputClassName?: string;
   value: string;
-  setAsset: (asset: AssetId) => void;
+  setSelection: (selection: Selection) => void;
   validations?: Validation[];
-  balances: AssetBalance[];
+  balances: AccountBalance[];
+  tempPrice: number;
 }
 
 export default function InputToken({
   label,
   placeholder,
-  asset,
-  assetBalance,
+  selection,
   className,
   validations,
   value,
   inputClassName,
-  setAsset,
+  setSelection,
   balances,
+  tempPrice,
   ...props
 }: InputTokenProps) {
   const vResult = validationResult(value, validations);
@@ -63,7 +63,7 @@ export default function InputToken({
           value={value}
           {...props}
         />
-        <SelectTokenModal asset={asset} setAsset={setAsset} balances={balances} />
+        <SelectTokenModal selection={selection} setSelection={setSelection} balances={balances} />
       </div>
 
       <div className='mt-[6px] flex items-center justify-between gap-2'>
@@ -73,11 +73,18 @@ export default function InputToken({
             value && 'text-muted-foreground',
           )}
         >
-          ${displayAmount(Number(value) * asset.price)}
+          ${displayAmount(Number(value) * tempPrice)}
         </p>
         <div className='flex items-start gap-1'>
           <img src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
-          <p className='font-bold text-muted-foreground'>{assetBalance.toFormat()}</p>
+          <p className='font-bold text-muted-foreground'>
+            {selection?.asset
+              ? fromBaseUnitAmount(
+                  selection.asset.amount,
+                  selection.asset.denom.exponent,
+                ).toFormat()
+              : '0'}
+          </p>
         </div>
       </div>
     </div>

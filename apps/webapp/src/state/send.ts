@@ -1,27 +1,21 @@
-import { assets } from '@penumbra-zone/constants';
-import { AllSlices, SliceCreator } from './index.ts';
+import { AllSlices, SliceCreator } from './index';
 import {
-  Asset as TempAsset,
-  AssetId as TempAssetId,
-  base64ToUint8Array,
   fromBaseUnitAmount,
   isPenumbraAddr,
   toBaseUnit,
   uint8ArrayToHex,
 } from '@penumbra-zone/types';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { toast } from '@penumbra-zone/ui/components/ui/use-toast.ts';
+import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import BigNumber from 'bignumber.js';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
-import {
-  errorTxToast,
-  loadingTxToast,
-  successTxToast,
-} from '../components/shared/toast-content.tsx';
+import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
+import { AssetBalance } from '../fetchers/balances';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { Selection } from './types';
 
 export interface SendSlice {
-  asset: TempAsset;
-  setAsset: (asset: TempAssetId) => void;
+  selection: Selection | undefined;
+  setSelection: (selection: Selection) => void;
   amount: string;
   setAmount: (amount: string) => void;
   recipient: string;
@@ -36,8 +30,8 @@ export interface SendSlice {
 
 export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   return {
+    selection: undefined,
     amount: '',
-    asset: assets[0]!,
     recipient: '',
     memo: '',
     hidden: false,
@@ -47,10 +41,9 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.amount = amount;
       });
     },
-    setAsset: asset => {
-      const selectedAsset = assets.find(i => i.penumbraAssetId.inner === asset.inner)!;
+    setSelection: selection => {
       set(state => {
-        state.send.asset = selectedAsset;
+        state.send.selection = selection;
       });
     },
     setRecipient: addr => {
@@ -96,26 +89,27 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
-const getExponent = (asset: TempAsset): number => {
-  const match = asset.denomUnits.find(u => u.denom === asset.display);
-  return match?.exponent ?? 0;
-};
+const planWitnessBuildBroadcast = async ({ amount, recipient, selection }: SendSlice) => {
+  if (typeof selection?.accountIndex === 'undefined') throw new Error('no selected account');
+  if (!selection.asset) throw new Error('no selected asset');
 
-const planWitnessBuildBroadcast = async ({ amount, recipient, asset }: SendSlice) => {
   const req = new TransactionPlannerRequest({
     outputs: [
       {
         address: { altBech32m: recipient },
         value: {
-          amount: toBaseUnit(BigNumber(amount), getExponent(asset)),
-          assetId: { inner: base64ToUint8Array(asset.penumbraAssetId.inner) },
+          amount: toBaseUnit(BigNumber(amount), selection.asset.denom.exponent),
+          assetId: { inner: selection.asset.assetId.inner },
         },
       },
     ],
+    source: new AddressIndex({ account: selection.accountIndex }),
   });
 
   const { viewClient, custodyClient } = await import('../clients/grpc');
+
   const { plan } = await viewClient.transactionPlanner(req);
+
   if (!plan) throw new Error('no plan in response');
 
   const { data: authorizationData } = await custodyClient.authorize({ plan });
@@ -133,13 +127,8 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, asset }: SendSlice
   return uint8ArrayToHex(id.hash);
 };
 
-export const amountToBig = (asset: TempAsset, assetBalance: Amount) => {
-  const exponent = asset.denomUnits.find(d => d.denom === asset.display)!.exponent;
-  return fromBaseUnitAmount(assetBalance, exponent);
-};
-
-export const validateAmount = (asset: TempAsset, amount: string, assetBalance: Amount): boolean => {
-  const balanceAmt = amountToBig(asset, assetBalance);
+export const validateAmount = (asset: AssetBalance, amount: string): boolean => {
+  const balanceAmt = fromBaseUnitAmount(asset.amount, asset.denom.exponent);
   return Boolean(amount) && BigNumber(amount).gt(balanceAmt);
 };
 
@@ -149,14 +138,13 @@ export interface SendValidationFields {
 }
 
 export const sendValidationErrors = (
-  asset: TempAsset,
+  asset: AssetBalance | undefined,
   amount: string,
   recipient: string,
-  assetBalance: Amount,
 ): SendValidationFields => {
   return {
     recipientErr: Boolean(recipient) && !isPenumbraAddr(recipient),
-    amountErr: validateAmount(asset, amount, assetBalance),
+    amountErr: !asset ? false : validateAmount(asset, amount),
   };
 };
 
