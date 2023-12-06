@@ -160,12 +160,19 @@ export class BackgroundConnectionManager {
       const transportListener = async (transported: unknown, transPort: chrome.runtime.Port) => {
         if (!isTransportMessage(transported)) return;
         const { requestId, message: request } = transported;
+
+        // make the request.
         const response = await serviceEntry(request);
+
         if (response instanceof ReadableStream) {
+          // if the response is a stream, handle it in a sub-channel
           const responseChannel = nameSubConnection(ChannelSubLabel.ServerStream);
           chrome.runtime.onConnect.addListener(subHandler(response, String(responseChannel)));
           transPort.postMessage({ requestId, channel: responseChannel });
-        } else transPort.postMessage({ requestId, message: response });
+        } else {
+          // an individual response can be emitted directly
+          transPort.postMessage({ requestId, message: response });
+        }
       };
 
       originConnections?.set(clientId, connection);
