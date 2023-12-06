@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer/';
+import { Buffer } from 'Buffer';
 import { validateSchema } from './validation';
 import { Base64StringSchema } from './base64';
 
