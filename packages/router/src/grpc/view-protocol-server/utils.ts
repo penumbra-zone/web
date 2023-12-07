@@ -7,7 +7,7 @@ export async function assertWalletIdMatches(walletId: WalletId | undefined) {
   const wallets = await localExtStorage.get('wallets');
   if (
     walletId?.inner &&
-    !wallets.find(wallet => wallet.id === uint8ArrayToString(walletId!.inner))
+    !wallets.find(wallet => wallet.id === uint8ArrayToString(walletId.inner))
   ) {
     throw new Error('walletId does not match walletIds in storage');
   }
