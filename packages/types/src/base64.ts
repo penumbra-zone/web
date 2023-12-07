@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'Buffer/';
 import { validateSchema } from './validation';
 
 export const Base64StringSchema = z.string().refine(
@@ -18,6 +18,8 @@ export type Base64Str = z.infer<typeof Base64StringSchema>;
 export const InnerBase64Schema = z.object({ inner: Base64StringSchema });
 
 export const base64ToUint8Array = (base64: string): Uint8Array => {
+  console.log(typeof Buffer);
+
   const validated = validateSchema(Base64StringSchema, base64);
   const buffer = Buffer.from(validated, 'base64');
   return new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
