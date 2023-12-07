@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "chrome-extension",
   "scripts": {
-    "dev": "webpack --config webpack/webpack.dev.js --watch",
-    "build": "webpack --config webpack/webpack.prod.js",
+    "dev": "node src/utils/download-proving-keys.mjs && webpack --config webpack/webpack.dev.js --watch",
+    "build": "node src/utils/download-proving-keys.mjs && webpack --config webpack/webpack.prod.js",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
