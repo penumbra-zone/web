@@ -1,122 +1,110 @@
-// NOTE: Code taken and modified from original: https://github.com/turbocrime/transport-demo
-
-import { Code, ConnectError, createRouterTransport, ServiceImpl } from '@connectrpc/connect';
-import { MethodKind, ServiceType } from '@bufbuild/protobuf';
 import {
-  CreateAnyImplMethod,
-  GrpcRequest,
-  GrpcResponse,
-  isErrorResponse,
-  isServiceGrpcResponse,
-  isStreamResponse,
-  isUnaryResponse,
-  PendingRequests,
-} from './types';
-import { unaryIO } from './unary';
-import { serverStreamIO } from './stream';
+  createRouterTransport,
+  ServiceImpl,
+  MethodImpl,
+  ConnectRouter,
+  ConnectError,
+  Code as ConnectErrorCode,
+} from '@connectrpc/connect';
+
+import {
+  MethodKind,
+  MethodInfo,
+  ServiceType,
+  AnyMessage,
+  JsonValue,
+  Any,
+} from '@bufbuild/protobuf';
+
+import { TransportMessage, isTransportData } from './types';
+
+import { JsonToMessage, streamToGenerator } from './stream';
+
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 
-// Creates a new service implementation by wrapping the original with the special event transport methods
-const makeAnyServiceImpl = <S extends ServiceType>(
-  service: ServiceType,
-  createMethod: CreateAnyImplMethod,
-): ServiceImpl<S> => {
-  const impl: ServiceImpl<typeof service> = {};
-  for (const [localName, methodInfo] of Object.entries(service.methods)) {
-    const method = createMethod({
-      ...methodInfo,
-      localName,
-      service,
-    });
-    if (method) impl[localName] = method;
-  }
-  return impl as ServiceImpl<S>;
+type CreateAnyMethodImpl<S extends ServiceType> = (
+  methodInfo: MethodInfo & { kind: MethodKind },
+) => typeof methodInfo extends S['methods'][keyof S['methods']]
+  ? MethodImpl<typeof methodInfo>
+  : never;
+
+type CreateAnyServiceImpl = <S extends ServiceType>(
+  service: S,
+  createMethod: CreateAnyMethodImpl<S>,
+) => Partial<ServiceImpl<S>>;
+
+const makeAnyServiceImpl: CreateAnyServiceImpl = <S extends ServiceType>(
+  service: S,
+  createMethod: CreateAnyMethodImpl<S>,
+): Partial<ServiceImpl<S>> => {
+  const impl = {} as { [P in keyof S['methods']]: MethodImpl<S['methods'][P]> };
+  let localName: keyof S['methods'];
+  let methodInfo: MethodInfo;
+  for ([localName, methodInfo] of Object.entries(service.methods))
+    impl[localName] = createMethod(methodInfo);
+  return impl;
 };
 
-// Fired on message events coming from extension. Handles rejecting/resolving stored promises.
-const outputEventListener =
-  <S extends ServiceType>(pending: PendingRequests<S>, service: S) =>
-  (event: MessageEvent<unknown>) => {
-    if (event.source !== window || !isServiceGrpcResponse(service, event.data)) return;
+type ResolveReject<T> = Parameters<ConstructorParameters<typeof Promise<T>>[0]>;
 
-    const { sequence } = event.data;
+export const createChannelTransport = (s: ServiceType, port: MessagePort) => {
+  const pending = new Map<
+    ReturnType<typeof crypto.randomUUID>,
+    ResolveReject<JsonValue | ReadableStream<JsonValue>>
+  >();
 
-    if (pending.requests.has(sequence)) {
-      const { resolve, reject } = pending.requests.get(sequence)!;
-
-      if (isErrorResponse<S>(event.data)) {
-        pending.requests.delete(sequence) && reject(event.data);
-      } else if (isUnaryResponse<S>(event.data)) {
-        pending.requests.delete(sequence) && resolve(event.data);
-      } else if (isStreamResponse<S>(event.data)) {
-        if (event.data.stream.done) {
-          pending.requests.delete(sequence) && resolve(event.data);
-        } else {
-          resolve(event.data);
-        }
-      } else {
+  port.addEventListener('message', ev => {
+    if (isTransportData(ev.data)) {
+      const response = ev.data;
+      const [resolve, reject] = pending.get(response.requestId)!;
+      if (!pending.delete(response.requestId))
         throw new ConnectError(
-          `Type of response not handled ${JSON.stringify(event.data)}`,
-          Code.Unimplemented,
+          `Request ${response.requestId} not pending`,
+          ConnectErrorCode.Internal,
         );
-      }
-    } else {
-      throw new ConnectError(`No pending requests for sequence: ${sequence}`, Code.NotFound);
+      else if ('message' in response) resolve(response.message);
+      else if ('stream' in response) resolve(response.stream);
+      else reject(new ConnectError('Unknown response', ConnectErrorCode.Unknown));
     }
-  };
-
-// Gets the matching Response object for the Request object.
-// Needed as JSON serialized objects are sent back from the extension.
-const getResFromReq = <S extends ServiceType>(service: S, req: GrpcRequest<S>): GrpcResponse<S> => {
-  const match = Object.values(service.methods).find(m => m.I.typeName === req.getType().typeName);
-  if (!match)
-    throw new ConnectError(
-      `Cannot find corresponding response method for ${req.getType().typeName}`,
-      Code.Unimplemented,
-    );
-  return match.O as GrpcResponse<S>;
-};
-
-// Routes to specific method kind
-const makeEventImplMethod =
-  <S extends ServiceType>(pending: PendingRequests<S>, service: S): CreateAnyImplMethod =>
-  method => {
-    switch (method.kind) {
-      case MethodKind.Unary:
-        return async (request: GrpcRequest<S>) => {
-          try {
-            const result = await unaryIO(pending, request, service.typeName);
-            return getResFromReq(service, request).fromJson(result, { typeRegistry });
-          } catch (e) {
-            throw new ConnectError(String(e), Code.Internal);
-          }
-        };
-      case MethodKind.ServerStreaming:
-        return async function* (request: GrpcRequest<S>) {
-          try {
-            const stream = serverStreamIO(pending, request, service.typeName);
-            for await (const res of stream) {
-              yield getResFromReq(service, request).fromJson(res, { typeRegistry });
-            }
-          } catch (e) {
-            throw new ConnectError(String(e), Code.Internal);
-          }
-        };
-      default:
-        return null;
-    }
-  };
-
-// Helper exposed to consumers to communicate with extension as a grpc view service.
-// Usage:
-//    const client = createPromiseClient(ViewProtocolService, createEventTransport(ViewProtocolService));
-//    const response = await this.client.chainParameters(req);
-export const createEventTransport = <S extends ServiceType>(s: S) =>
-  createRouterTransport(({ service }) => {
-    const pending: PendingRequests<S> = {
-      sequence: 0,
-      requests: new Map(),
-    };
-    window.addEventListener('message', outputEventListener(pending, s));
-    service(s, makeAnyServiceImpl(s, makeEventImplMethod(pending, s)));
   });
+
+  const request = (msg: AnyMessage) => {
+    const rpc: TransportMessage = {
+      requestId: crypto.randomUUID(),
+      message: Any.pack(msg).toJson({ typeRegistry }),
+    } as TransportMessage;
+    const prom = new Promise<JsonValue | ReadableStream<JsonValue>>((resolve, reject) =>
+      pending.set(rpc.requestId, [resolve, reject]),
+    );
+    port.postMessage(rpc);
+    return prom;
+  };
+
+  const makeChannelMethodImpl: CreateAnyMethodImpl<typeof s> = method => {
+    switch (method.kind) {
+      case MethodKind.Unary: {
+        return async function (message: AnyMessage) {
+          const responseJson = (await request(message)) as JsonValue;
+          const response = Any.fromJson(responseJson, { typeRegistry }).unpack(typeRegistry);
+          return response;
+        };
+      }
+      case MethodKind.ServerStreaming: {
+        return async function* (message: AnyMessage) {
+          const responseStream = (await request(message)) as ReadableStream<JsonValue>;
+          const response = responseStream.pipeThrough(new JsonToMessage(typeRegistry));
+          yield* streamToGenerator(response);
+        };
+      }
+      case MethodKind.ClientStreaming:
+      case MethodKind.BiDiStreaming:
+        throw new ConnectError('Client streaming unimplemented', ConnectErrorCode.Unimplemented);
+    }
+  };
+
+  port.start();
+
+  return createRouterTransport(({ service }: ConnectRouter): void => {
+    service(s, makeAnyServiceImpl(s, makeChannelMethodImpl));
+  });
+};

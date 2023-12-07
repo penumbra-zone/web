@@ -5,9 +5,9 @@ import {
 import { localExtStorage } from '@penumbra-zone/storage';
 import { WalletId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { stringToUint8Array } from '@penumbra-zone/types';
-import { ViewReqMessage } from './router';
+import { AnyMessage } from '@bufbuild/protobuf';
 
-export const isWalletIdRequest = (req: ViewReqMessage): req is WalletIdRequest => {
+export const isWalletIdRequest = (req: AnyMessage): req is WalletIdRequest => {
   return req.getType().typeName === WalletIdRequest.typeName;
 };
 

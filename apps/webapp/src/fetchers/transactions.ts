@@ -1,5 +1,5 @@
 import { viewClient } from '../clients/grpc';
-import { streamToPromise } from '@penumbra-zone/transport';
+import { streamToPromise } from './stream';
 import { classifyTransaction, uint8ArrayToHex } from '@penumbra-zone/types';
 
 export interface TransactionSummary {

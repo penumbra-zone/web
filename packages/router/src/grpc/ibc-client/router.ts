@@ -4,7 +4,7 @@ import {
   GrpcRequest,
   GrpcResponse,
   isDappGrpcRequest,
-} from '@penumbra-zone/transport';
+} from '../../transport-old';
 import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
 import { handleClientStatesReq, isClientStatesRequest } from './client-states';
 

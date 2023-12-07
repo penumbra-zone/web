@@ -13,7 +13,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { addAmounts, joinLoHiAmount, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { viewClient } from '../clients/grpc';
-import { streamToPromise } from '@penumbra-zone/transport';
+import { streamToPromise } from './stream';
 
 export interface AssetBalance {
   denom: {

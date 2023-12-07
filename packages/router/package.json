@@ -18,7 +18,6 @@
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
-    "@penumbra-zone/transport": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm-ts": "workspace:*"
   },
