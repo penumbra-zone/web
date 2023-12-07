@@ -18,9 +18,13 @@ export const isPopupRequest = (req: unknown): req is PopupRequest => {
 };
 
 export const sendPopupRequest = async <M extends PopupSupportedMsg>(
-  req: M['request'],
+  req: InternalRequest<M>,
 ): Promise<InternalResponse<M>> => {
-  return chrome.runtime.sendMessage(req);
+  try {
+    return await chrome.runtime.sendMessage(req);
+  } catch (e) {
+    return { type: req.type, error: e };
+  }
 };
 
 export const spawnDetachedPopup = async (url: string) => {
