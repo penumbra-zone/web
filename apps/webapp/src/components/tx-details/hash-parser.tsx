@@ -6,8 +6,8 @@ import {
   TransactionViewComponent,
 } from '@penumbra-zone/ui';
 import { viewFromEmptyPerspective } from '@penumbra-zone/types';
-import JsonTree from './json-tree';
 import { TxDetailsLoaderResult } from './index.tsx';
+import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
@@ -28,7 +28,7 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
           <TransactionViewComponent txv={txInfo.view!} />
           <div className='mt-8'>
             <div className='text-xl font-bold'>Raw JSON</div>
-            <JsonTree jsonObj={txInfo.toJson() as object} />
+            <JsonViewer jsonObj={txInfo.toJson() as object} />
           </div>
         </TabsContent>
         <TabsContent value={TxDetailsTab.PUBLIC} className='mt-10'>
