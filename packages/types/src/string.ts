@@ -1,4 +1,4 @@
-import { Buffer } from 'Buffer/';
+import { Buffer } from 'buffer/';
 import { BECH32_PREFIX } from './address';
 
 export const stringToUint8Array = (str: string): Uint8Array => {
