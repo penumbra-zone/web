@@ -18,6 +18,15 @@ import {
   witness as wasmWitness,
 } from '@penumbra-zone/wasm-bundler';
 
+export async function fetchBinaryFile(filename: string) {
+  const response = await fetch(`bin/${filename}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${filename}`);
+  }
+
+  return await response.arrayBuffer();
+}
+
 export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): AuthorizationData => {
   const result = validateSchema(WasmAuthorizeSchema, authorize(spendKey, txPlan.toJson()));
   return AuthorizationData.fromJsonString(JSON.stringify(result));
@@ -28,38 +37,29 @@ export const witness = (txPlan: TransactionPlan, sct: StateCommitmentTree): Witn
   return WitnessData.fromJsonString(JSON.stringify(result));
 };
 
-const githubSourceDir =
-  'https://github.com/penumbra-zone/penumbra/raw/main/crates/crypto/proof-params/src/gen/';
-
-const provingKeys = [
-  { keyType: 'spend', file: 'spend_pk.bin' },
-  { keyType: 'output', file: 'output_pk.bin' },
-  { keyType: 'swap', file: 'swap_pk.bin' },
-  { keyType: 'swap_claim', file: 'swapclaim_pk.bin' },
-  { keyType: 'nullifier_derivation', file: 'nullifier_derivation_pk.bin' },
-  { keyType: 'delegator_vote', file: 'delegator_vote_pk.bin' },
-  { keyType: 'undelegate_claim', file: 'undelegateclaim_pk.bin' },
-];
-
-const loadProvingKeys = async () => {
-  const promises = provingKeys.map(async ({ file, keyType }) => {
-    const response = await fetch(`${githubSourceDir}${file}`);
-    if (!response.ok) throw new Error(`Failed to fetch ${file}`);
-
-    const buffer = await response.arrayBuffer();
-    wasmLoadProvingKey(buffer, keyType);
-  });
-
-  await Promise.all(promises);
-};
-
 export const build = async (
   fullViewingKey: string,
   txPlan: TransactionPlan,
   witnessData: WitnessData,
   authData: AuthorizationData,
 ): Promise<Transaction> => {
-  await loadProvingKeys();
+  // Read proving keys from disk
+  const delegatorKey = await fetchBinaryFile('delegator_vote_pk.bin');
+  const nullifierKey = await fetchBinaryFile('nullifier_derivation_pk.bin');
+  const outputKey = await fetchBinaryFile('output_pk.bin');
+  const spendKey = await fetchBinaryFile('spend_pk.bin');
+  const swapKey = await fetchBinaryFile('swap_pk.bin');
+  const swapClaimKey = await fetchBinaryFile('swapclaim_pk.bin');
+  const undelegateClaimKey = await fetchBinaryFile('undelegateclaim_pk.bin');
+
+  // Load and set keys into WASM binary
+  wasmLoadProvingKey(spendKey, "spend");
+  wasmLoadProvingKey(outputKey, "output");
+  wasmLoadProvingKey(delegatorKey, "delegator_vote");
+  wasmLoadProvingKey(nullifierKey, "nullifier_derivation");
+  wasmLoadProvingKey(swapKey, "swap");
+  wasmLoadProvingKey(swapClaimKey, "swap_claim");
+  wasmLoadProvingKey(undelegateClaimKey, "undelegate_claim");
 
   const result = validateSchema(
     WasmBuildSchema,
