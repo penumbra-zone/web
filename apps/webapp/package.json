@@ -11,10 +11,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@buf/cosmos_ibc.bufbuild_es": "1.5.0-20231120130822-4c7d6d9ba523.1",
-    "@buf/cosmos_ibc.connectrpc_es": "1.1.4-20231120130822-4c7d6d9ba523.1",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.5.0-20231130000754-0e6d4f8485b6.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.1.4-20231130000754-0e6d4f8485b6.1",
     "@connectrpc/connect": "^1.1.4",
     "@connectrpc/connect-web": "^1.1.4",
     "@penumbra-zone/constants": "workspace:*",
@@ -27,16 +23,16 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
-    "react-loader-spinner": "^5.4.5",
+    "react-loader-spinner": "5.4.5",
     "react-router-dom": "^6.20.1",
     "tailwindcss": "^3.3.6",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
-    "@types/node": "^20.10.3",
-    "@types/react": "^18.2.41",
+    "@types/node": "^20.10.4",
+    "@types/react": "^18.2.42",
     "@types/react-dom": "^18.2.17",
-    "@types/react-helmet": "^6.1.9",
+    "@types/react-helmet": "^6.1.11",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
     "@vitejs/plugin-react-swc": "^3.5.0",
@@ -45,10 +41,10 @@
     "eslint-config-custom": "workspace:*",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
-    "firebase-tools": "^12.9.1",
+    "firebase-tools": "^13.0.1",
     "postcss": "^8.4.32",
     "tsconfig": "workspace:*",
-    "typescript": "^5.3.2",
+    "typescript": "^5.3.3",
     "vite": "^5.0.3",
     "vitest": "^0.34.6"
   }
