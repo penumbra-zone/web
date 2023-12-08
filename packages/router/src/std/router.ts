@@ -1,9 +1,7 @@
 import { clearCacheHandler } from './routes/clear-cache';
-import { pingHandler } from './routes/ping';
 import { syncBlocksHandler } from './routes/sync';
 
 import {
-  AwaitedResponse,
   IncomingRequest,
   ServicesInterface,
   ServiceWorkerRequest,
@@ -11,6 +9,7 @@ import {
   SwRequestMessage,
   SwResponse,
 } from '@penumbra-zone/types';
+import { AwaitedInternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
 
 // The standard, non-grpc router
 export const stdRouter = (
@@ -25,7 +24,7 @@ export const stdRouter = (
       penumbraSwRes: {
         type: req.penumbraSwReq.type,
         data: result,
-      } as AwaitedResponse<SwRequestMessage>,
+      } as AwaitedInternalResponse<SwRequestMessage>,
     });
   })().catch(e => {
     sendResponse({
@@ -46,8 +45,6 @@ const typedMessageRouter = async (
   switch (req.type) {
     case 'SYNC_BLOCKS':
       return syncBlocksHandler(services)();
-    case 'PING':
-      return pingHandler(req.arg);
     case 'CLEAR_CACHE':
       return clearCacheHandler(services)();
     default:

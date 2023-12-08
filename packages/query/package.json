@@ -6,11 +6,7 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "dependencies": {
-    "@buf/cosmos_ibc.bufbuild_es": "1.5.0-20231120130822-4c7d6d9ba523.1",
-    "@buf/cosmos_ibc.connectrpc_es": "1.1.4-20231120130822-4c7d6d9ba523.1",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.5.0-20231130000754-0e6d4f8485b6.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.1.4-20231130000754-0e6d4f8485b6.1",
-    "@bufbuild/protobuf": "^1.5.0",
+    "@bufbuild/protobuf": "^1.5.1",
     "@connectrpc/connect": "^1.1.4",
     "@connectrpc/connect-web": "^1.1.4",
     "@penumbra-zone/crypto-web": "workspace:^",
@@ -22,6 +18,6 @@
     "eslint-config-custom": "workspace:*",
     "exponential-backoff": "^3.1.1",
     "tsconfig": "workspace:*",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.3"
   }
 }

@@ -4,8 +4,7 @@ import {
   ParsedNoteSource,
   ViewServerInterface,
 } from '@penumbra-zone/types';
-import { TendermintQuerier } from '../queriers/tendermint';
-import { decodeTx, transactionInfo } from '@penumbra-zone/wasm-ts/src/transaction';
+import { encodeTx, transactionInfo } from '@penumbra-zone/wasm-ts/src/transaction';
 import { sha256Hash } from '@penumbra-zone/crypto-web';
 import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
@@ -17,6 +16,7 @@ import {
   PositionState,
   PositionState_PositionStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
+import { AppQuerier } from '../queriers/app';
 
 export class Transactions {
   // These are base64 encoded hex strings
@@ -26,7 +26,7 @@ export class Transactions {
     private blockHeight: bigint,
     private fullViewingKey: string,
     private indexedDb: IndexedDbInterface,
-    private tendermint: TendermintQuerier,
+    private querier: AppQuerier,
     private viewServer: ViewServerInterface,
   ) {}
 
@@ -49,34 +49,27 @@ export class Transactions {
   async storeTransactionInfo() {
     if (this.all.size <= 0) return;
 
-    // TODO: Currently bug querying blockHeight 1
-    // Tendermint does not allow querying blockHeight 0
-    if (this.blockHeight === 0n || this.blockHeight === 1n) return;
+    const { transactions } = await this.querier.txsByHeight(this.blockHeight);
 
-    const b = await this.tendermint.getBlock(this.blockHeight);
-    if (!b.block?.data?.txs) throw new Error('Unable to query transactions');
-
-    for (const txBytes of b.block.data.txs) {
-      const hash = await sha256Hash(txBytes);
+    for (const tx of transactions) {
+      const hash = await sha256Hash(encodeTx(tx));
       const noteSource = new NoteSource({ inner: hash });
 
       if (noteSourcePresent(this.all, noteSource)) {
-        const transaction = decodeTx(txBytes);
-
         // We must store LpNft metadata before calling transactionInfo() because to generate TxV and TxP
         // wasm needs LpNft metadata, which it will read from the indexed-db
-        await this.storeLpNft(transaction);
+        await this.storeLpNft(tx);
 
         const { txp, txv } = await transactionInfo(
           this.fullViewingKey,
-          transaction,
+          tx,
           this.indexedDb.constants(),
         );
 
         const txToStore = new TransactionInfo({
           height: this.blockHeight,
           id: new Id({ hash: noteSource.inner }),
-          transaction,
+          transaction: tx,
           perspective: txp,
           view: txv,
         });

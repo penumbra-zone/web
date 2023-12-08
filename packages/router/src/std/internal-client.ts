@@ -1,5 +1,4 @@
 import {
-  AwaitedResponse,
   ClearCacheMessage,
   IncomingRequest,
   PingMessage,
@@ -8,6 +7,7 @@ import {
   SwRequestMessage,
   SyncBlocksMessage,
 } from '@penumbra-zone/types';
+import { AwaitedInternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
 
 export const internalSwClient = {
   syncBlocks: () => sendSwMessage<SyncBlocksMessage>({ type: 'SYNC_BLOCKS' }),
@@ -17,7 +17,7 @@ export const internalSwClient = {
 
 export const sendSwMessage = async <T extends SwRequestMessage>(
   req: IncomingRequest<T>,
-): Promise<AwaitedResponse<T>['data']> => {
+): Promise<AwaitedInternalResponse<T>['data']> => {
   const res = await chrome.runtime.sendMessage<ServiceWorkerRequest<T>, ServiceWorkerResponse<T>>({
     penumbraSwReq: req,
     sequence: 10000000000000, // Not used internally

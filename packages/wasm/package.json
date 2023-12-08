@@ -7,16 +7,15 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.5.0-20231130000754-0e6d4f8485b6.1",
-    "@bufbuild/protobuf": "^1.5.0",
+    "@bufbuild/protobuf": "^1.5.1",
     "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm-bundler": "0.63.2-preview-6",
-    "@penumbra-zone/wasm-nodejs": "0.63.2-preview-6",
+    "@penumbra-zone/wasm-bundler": "0.63.3-preview-1",
+    "@penumbra-zone/wasm-nodejs": "0.63.3-preview-1",
     "bech32": "^2.0.0",
     "eslint": "^8.55.0",
     "eslint-config-custom": "workspace:*",
     "tsconfig": "workspace:*",
-    "typescript": "^5.3.2",
+    "typescript": "^5.3.3",
     "zod": "^3.22.4"
   },
   "devDependencies": {
