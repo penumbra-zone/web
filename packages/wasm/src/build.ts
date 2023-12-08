@@ -53,13 +53,13 @@ export const build = async (
   const undelegateClaimKey = await fetchBinaryFile('undelegateclaim_pk.bin');
 
   // Load and set keys into WASM binary
-  wasmLoadProvingKey(spendKey, "spend");
-  wasmLoadProvingKey(outputKey, "output");
-  wasmLoadProvingKey(delegatorKey, "delegator_vote");
-  wasmLoadProvingKey(nullifierKey, "nullifier_derivation");
-  wasmLoadProvingKey(swapKey, "swap");
-  wasmLoadProvingKey(swapClaimKey, "swap_claim");
-  wasmLoadProvingKey(undelegateClaimKey, "undelegate_claim");
+  wasmLoadProvingKey(spendKey, 'spend');
+  wasmLoadProvingKey(outputKey, 'output');
+  wasmLoadProvingKey(delegatorKey, 'delegator_vote');
+  wasmLoadProvingKey(nullifierKey, 'nullifier_derivation');
+  wasmLoadProvingKey(swapKey, 'swap');
+  wasmLoadProvingKey(swapClaimKey, 'swap_claim');
+  wasmLoadProvingKey(undelegateClaimKey, 'undelegate_claim');
 
   const result = validateSchema(
     WasmBuildSchema,

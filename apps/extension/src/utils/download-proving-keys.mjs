@@ -1,4 +1,4 @@
-import fetch from 'node-fetch'
+import fetch from 'node-fetch';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -18,28 +18,27 @@ const provingKeyFiles = [
 const binaryFilesDir = path.join('dist/bin');
 
 const downloadProvingKeys = async () => {
-    // Check if the bin directory already exists
-    if (!fs.existsSync(binaryFilesDir)) {
-      fs.mkdirSync(binaryFilesDir, { recursive: true });
-  
-      const promises = provingKeyFiles.map(async ({ file }) => {
-        const response = await fetch(`${githubSourceDir}${file}`);
-        if (!response.ok) throw new Error(`Failed to fetch ${file}`);
-    
-        const buffer = await response.arrayBuffer();
+  // Check if the bin directory already exists
+  if (!fs.existsSync(binaryFilesDir)) {
+    fs.mkdirSync(binaryFilesDir, { recursive: true });
 
-        const outputPath = path.join(binaryFilesDir, file);
-        if (!fs.existsSync(outputPath)) {
-          const fileStream = fs.createWriteStream(outputPath, { flags: 'a' });
-          fileStream.write(Buffer.from(buffer));
-          fileStream.end();
-          console.log(`${file}`, "downloaded to:", outputPath)
-        }
-      });
+    const promises = provingKeyFiles.map(async ({ file }) => {
+      const response = await fetch(`${githubSourceDir}${file}`);
+      if (!response.ok) throw new Error(`Failed to fetch ${file}`);
 
-      await Promise.all(promises);
-    }
+      const buffer = await response.arrayBuffer();
+
+      const outputPath = path.join(binaryFilesDir, file);
+      if (!fs.existsSync(outputPath)) {
+        const fileStream = fs.createWriteStream(outputPath, { flags: 'a' });
+        fileStream.write(Buffer.from(buffer));
+        fileStream.end();
+        console.log(`${file}`, 'downloaded to:', outputPath);
+      }
+    });
+
+    await Promise.all(promises);
+  }
 };
 
 downloadProvingKeys();
-
