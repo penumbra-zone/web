@@ -2,8 +2,7 @@ import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils';
 import {
   AppParametersRequest,
-  KeyValueRequest,
-  KeyValueResponse_Value,
+  TransactionsByHeightRequest,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1alpha1/app_pb';
 import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/app/v1alpha1/app_connect';
 import { AppQuerierInterface } from '@penumbra-zone/types/src/querier';
@@ -26,9 +25,8 @@ export class AppQuerier implements AppQuerierInterface {
     return appParams.chainParams!;
   }
 
-  async keyValue(key: string): Promise<KeyValueResponse_Value['value']> {
-    const keyValueRequest = new KeyValueRequest({ key });
-    const keyValue = await this.client.keyValue(keyValueRequest);
-    return keyValue.value!.value;
+  async txsByHeight(height: bigint) {
+    const req = new TransactionsByHeightRequest({ blockHeight: height });
+    return await this.client.transactionsByHeight(req);
   }
 }
