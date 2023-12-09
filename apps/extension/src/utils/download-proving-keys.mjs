@@ -18,27 +18,26 @@ const provingKeyFiles = [
 const binaryFilesDir = path.join('dist/bin');
 
 const downloadProvingKeys = async () => {
-  // Check if the bin directory already exists
-  if (!fs.existsSync(binaryFilesDir)) {
-    fs.mkdirSync(binaryFilesDir, { recursive: true });
+  // Check if the bin directory already exists. Subsequent builds will not
+  // re-download the keys. To do so, remove the dist directory and rebuild.
+  if (fs.existsSync(binaryFilesDir)) return;
 
-    const promises = provingKeyFiles.map(async ({ file }) => {
-      const response = await fetch(`${githubSourceDir}${file}`);
-      if (!response.ok) throw new Error(`Failed to fetch ${file}`);
+  fs.mkdirSync(binaryFilesDir, { recursive: true });
 
-      const buffer = await response.arrayBuffer();
+  const promises = provingKeyFiles.map(async ({ file }) => {
+    const response = await fetch(`${githubSourceDir}${file}`);
+    if (!response.ok) throw new Error(`Failed to fetch ${file}`);
 
-      const outputPath = path.join(binaryFilesDir, file);
-      if (!fs.existsSync(outputPath)) {
-        const fileStream = fs.createWriteStream(outputPath, { flags: 'a' });
-        fileStream.write(Buffer.from(buffer));
-        fileStream.end();
-        console.log(`${file}`, 'downloaded to:', outputPath);
-      }
-    });
+    const buffer = await response.arrayBuffer();
 
-    await Promise.all(promises);
-  }
+    const outputPath = path.join(binaryFilesDir, file);
+    const fileStream = fs.createWriteStream(outputPath, { flags: 'a' });
+    fileStream.write(Buffer.from(buffer));
+    fileStream.end();
+    console.log(`Proving key ${file} downloaded to ${outputPath}`);
+  });
+
+  await Promise.all(promises);
 };
 
 downloadProvingKeys();
