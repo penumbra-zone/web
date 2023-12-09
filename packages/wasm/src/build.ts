@@ -11,12 +11,8 @@ import {
   WasmBuildSchema,
   WasmWitnessDataSchema,
 } from '@penumbra-zone/types';
-import {
-  authorize,
-  build as wasmBuild,
-  load_proving_key as wasmLoadProvingKey,
-  witness as wasmWitness,
-} from '@penumbra-zone/wasm-bundler';
+import { authorize, build as wasmBuild, witness as wasmWitness } from '@penumbra-zone/wasm-bundler';
+import { loadProvingKeys } from '../src/utils';
 
 export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): AuthorizationData => {
   const result = validateSchema(WasmAuthorizeSchema, authorize(spendKey, txPlan.toJson()));
@@ -26,31 +22,6 @@ export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): Author
 export const witness = (txPlan: TransactionPlan, sct: StateCommitmentTree): WitnessData => {
   const result = validateSchema(WasmWitnessDataSchema, wasmWitness(txPlan.toJson(), sct));
   return WitnessData.fromJsonString(JSON.stringify(result));
-};
-
-const githubSourceDir =
-  'https://github.com/penumbra-zone/penumbra/raw/main/crates/crypto/proof-params/src/gen/';
-
-const provingKeys = [
-  { keyType: 'spend', file: 'spend_pk.bin' },
-  { keyType: 'output', file: 'output_pk.bin' },
-  { keyType: 'swap', file: 'swap_pk.bin' },
-  { keyType: 'swap_claim', file: 'swapclaim_pk.bin' },
-  { keyType: 'nullifier_derivation', file: 'nullifier_derivation_pk.bin' },
-  { keyType: 'delegator_vote', file: 'delegator_vote_pk.bin' },
-  { keyType: 'undelegate_claim', file: 'undelegateclaim_pk.bin' },
-];
-
-const loadProvingKeys = async () => {
-  const promises = provingKeys.map(async ({ file, keyType }) => {
-    const response = await fetch(`${githubSourceDir}${file}`);
-    if (!response.ok) throw new Error(`Failed to fetch ${file}`);
-
-    const buffer = await response.arrayBuffer();
-    wasmLoadProvingKey(buffer, keyType);
-  });
-
-  await Promise.all(promises);
 };
 
 export const build = async (

@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "chrome-extension",
   "scripts": {
-    "dev": "webpack --config webpack/webpack.dev.js --watch",
-    "build": "webpack --config webpack/webpack.prod.js",
+    "pull-keys": "tsx src/utils/download-proving-keys.ts",
+    "dev": "pnpm pull-keys && webpack --config webpack/webpack.dev.js --watch",
+    "build": "pnpm pull-keys && webpack --config webpack/webpack.prod.js",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
@@ -25,6 +26,7 @@
     "exponential-backoff": "^3.1.1",
     "framer-motion": "^10.16.15",
     "immer": "^10.0.3",
+    "node-fetch": "^3.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.1",
@@ -51,6 +53,7 @@
     "tailwindcss": "^3.3.6",
     "ts-loader": "^9.5.1",
     "tsconfig": "workspace:*",
+    "tsx": "^4.6.2",
     "typescript": "^5.3.3",
     "vite": "^5.0.3",
     "vitest": "^0.34.6",
