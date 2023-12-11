@@ -91,16 +91,17 @@ export class BackgroundConnectionManager {
         typeName: serviceName,
       } = channelConfig;
       if (!serviceName) throw Error(`Missing service name`);
-      if (portOrigin !== claimedOrigin) throw Error('Origin mismatch');
+      if (portOrigin !== claimedOrigin)
+        throw Error(`Origin mismatch ${portOrigin} claimed ${claimedOrigin}`);
       const originConnections =
         this.connections.get(portOrigin) ??
         this.connections.set(portOrigin, new Map()).get(portOrigin);
-      if (originConnections?.has(clientId)) throw Error('Client id collision');
+      if (originConnections?.has(clientId)) throw Error(`Client id collisioni ${clientId}`);
 
       const serviceEntry = this.unconditionalAccessToAllTheServices[serviceName];
       if (!serviceEntry) {
         clientPort.disconnect();
-        throw new Error('Unknown service requested by client');
+        throw new Error(`Unknown service ${serviceName} requested by client`);
       }
 
       const connection = {
