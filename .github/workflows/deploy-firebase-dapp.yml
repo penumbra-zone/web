@@ -5,15 +5,10 @@ name: Deploy static site
 on:
   # Support ad-hoc runs via dispatch, so we can deploy from
   # unmerged feature branches if necessary.
-
-  # TODO: Temporarily disabled until next testnet release
-  #  workflow_dispatch:
-  #  push:
-  #    branches:
-  #      - main
-
-  # Uncomment to run on PRs; useful while debugging.
-  # pull_request:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 jobs:
   build:
     name: Deploy

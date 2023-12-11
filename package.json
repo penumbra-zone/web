@@ -13,18 +13,18 @@
     "format-check": "prettier --check ."
   },
   "dependencies": {
-    "@buf/cosmos_ibc.bufbuild_es": "1.5.1-20231206160537-223dab845cae.1",
-    "@buf/cosmos_ibc.connectrpc_es": "1.1.4-20231206160537-223dab845cae.1",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.5.1-20231207232356-d7a39d603dd5.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.1.4-20231207232356-d7a39d603dd5.1"
+    "@buf/cosmos_ibc.bufbuild_es": "1.5.1-20231211183134-b93a64f9fb08.1",
+    "@buf/cosmos_ibc.connectrpc_es": "1.1.4-20231211183134-b93a64f9fb08.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.5.1-20231211173138-9acabec31a72.1",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.1.4-20231211173138-9acabec31a72.1"
   },
   "devDependencies": {
     "@turbo/gen": "^1.11.1",
-    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
     "eslint": "^8.55.0",
     "eslint-config-custom": "workspace:*",
     "playwright": "^1.40.1",
-    "prettier": "^3.1.0",
+    "prettier": "^3.1.1",
     "turbo": "^1.11.1"
   }
 }
