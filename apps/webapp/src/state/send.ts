@@ -100,7 +100,7 @@ const planWitnessBuildBroadcast = async ({
   if (typeof selection?.accountIndex === 'undefined') throw new Error('no selected account');
   if (!selection.asset) throw new Error('no selected asset');
 
-  const  { getAddressByIndex, getEphemeralAddress } = await import('../fetchers/address.ts');
+  const { getAddressByIndex, getEphemeralAddress } = await import('../fetchers/address.ts');
 
   const req = new TransactionPlannerRequest({
     outputs: [
