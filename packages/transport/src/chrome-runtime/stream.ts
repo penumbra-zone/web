@@ -17,7 +17,7 @@ export class ChromeRuntimeStreamSource implements UnderlyingDefaultSource<JsonVa
   start(cont: ReadableStreamDefaultController<JsonValue>) {
     this.incoming.onDisconnect.addListener(() => cont.error('Source port disconnected'));
     this.incoming.onMessage.addListener(msg => {
-      if (!isStreamControl(msg)) cont.error('Unknown message in stream channel');
+      if (!isStreamControl(msg)) cont.error(msg);
       else {
         if (msg.sequence < this.sequence) cont.error('Stream disordered');
         else this.sequence = msg.sequence;
@@ -58,7 +58,11 @@ export class ChromeRuntimeStreamSink implements UnderlyingSink<JsonValue> {
     this.outgoing.disconnect();
   }
 
-  abort() {
+  abort(reason: unknown) {
+    this.outgoing.postMessage({
+      sequence: ++this.sequence,
+      abort: reason,
+    });
     this.outgoing.disconnect();
   }
 }

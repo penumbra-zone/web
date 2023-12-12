@@ -53,6 +53,7 @@ const adaptOldRouter = (service: ServiceType) => {
             viewServerRouter(
               messageForRouter as DappMessageRequest<typeof ViewProtocolService>,
               resolve as (r: unknown) => void,
+              reject as (r: unknown) => void,
               existingServices,
             );
             break;
@@ -60,6 +61,7 @@ const adaptOldRouter = (service: ServiceType) => {
             ibcClientServerRouter(
               messageForRouter as DappMessageRequest<typeof IbcClientService>,
               resolve as (r: unknown) => void,
+              reject as (r: unknown) => void,
               existingServices,
             );
             break;
@@ -67,6 +69,7 @@ const adaptOldRouter = (service: ServiceType) => {
             custodyServerRouter(
               messageForRouter as DappMessageRequest<typeof CustodyProtocolService>,
               resolve as (r: unknown) => void,
+              reject as (r: unknown) => void,
               existingServices,
             );
             break;

@@ -1,78 +1,77 @@
 import type { JsonValue } from '@bufbuild/protobuf';
 
-/**
- * Transport, request or response. These appear in the top-level channel.
- */
-
-export interface TransportEvent {
-  responseOrigin?: string;
-}
+// transport meta
 
 export interface TransportState {
   connected: boolean;
+  reason?: JsonValue;
+}
+
+export interface TransportError extends Partial<TransportEvent> {
+  error: JsonValue;
+}
+
+// transport actual
+
+export type TransportData = TransportMessage | TransportStream | TransportInitChannel;
+
+export interface TransportEvent {
+  requestId: ReturnType<typeof crypto.randomUUID>;
+  responseOrigin?: string; // currently unused
 }
 
 export interface TransportMessage extends TransportEvent {
-  requestId: ReturnType<typeof crypto.randomUUID>;
   message: JsonValue;
 }
 
-// in-channel stream transport
+// in-channel stream
 export interface TransportStream extends TransportEvent {
-  requestId: ReturnType<typeof crypto.randomUUID>;
   stream: ReadableStream<JsonValue>;
 }
 
-// init sub-channel transport
+// sub-channel stream
 export interface TransportInitChannel extends TransportEvent {
-  requestId: ReturnType<typeof crypto.randomUUID>;
-  channel: string; // extends ChannelConfigString<infer CC> ? ChannelConfigString<CC> : never;
+  channel: string;
 }
 
-export const isTransportMessage = (x: unknown): x is TransportMessage =>
-  isTransportData(x) && 'message' in x;
-
-export const isTransportStream = (x: unknown): x is TransportStream =>
-  isTransportData(x) && 'stream' in x;
-
-export const isTransportInitChannel = (x: unknown): x is TransportInitChannel =>
-  isTransportData(x) && 'channel' in x;
-
-export const isTransportData = (
-  transported: unknown,
-): transported is TransportMessage | TransportStream | TransportInitChannel =>
-  isTransportEvent(transported) &&
-  'requestId' in transported &&
-  typeof transported.requestId === 'string' &&
-  ('message' in transported || 'stream' in transported || 'channel' in transported);
-
-export const isTransportState = (transported: unknown): transported is TransportState =>
-  isTransportEvent(transported) &&
-  'connected' in transported &&
-  typeof transported.connected === 'boolean';
-
-export const isTransportEvent = (transported: unknown): transported is TransportEvent =>
-  typeof transported === 'object' && transported !== null;
-
-/**
- * Control for sub-channel transport in restricted contexts that
- * won't transfer a ReadableStream, such as the browser runtime.
- */
+// sub-channel control
 
 export interface StreamChannelChunk {
   sequence: number;
   value: JsonValue;
 }
+
 export interface StreamChannelEnd {
   sequence: number;
   done: true;
 }
 
-export const isStreamControl = (
-  channed: unknown,
-): channed is StreamChannelChunk | StreamChannelEnd =>
-  typeof channed === 'object' &&
-  channed !== null &&
-  'sequence' in channed &&
-  typeof channed.sequence === 'number' &&
-  ('value' in channed || 'done' in channed);
+// guards
+
+const obj = (o: unknown): o is object => typeof o === 'object' && o !== null;
+
+export const isTransportError = (e: unknown): e is TransportError => obj(e) && 'error' in e;
+
+export const isTransportData = (t: unknown): t is TransportData =>
+  isTransportMessage(t) || isTransportStream(t) || isTransportInitChannel(t);
+
+export const isTransportEvent = (t: unknown): t is TransportEvent =>
+  obj(t) && 'requestId' in t && typeof t.requestId === 'string';
+
+export const isTransportState = (t: unknown): t is TransportState =>
+  obj(t) && 'connected' in t && typeof t.connected === 'boolean';
+
+export const isTransportMessage = (m: unknown): m is TransportMessage =>
+  isTransportEvent(m) && 'message' in m;
+
+export const isTransportStream = (s: unknown): s is TransportStream =>
+  isTransportEvent(s) && 'stream' in s && s.stream instanceof ReadableStream;
+
+export const isTransportInitChannel = (c: unknown): c is TransportInitChannel =>
+  isTransportEvent(c) && 'channel' in c && typeof c.channel === 'string';
+
+export const isStreamControl = (s: unknown): s is StreamChannelChunk | StreamChannelEnd =>
+  obj(s) &&
+  'sequence' in s &&
+  typeof s.sequence === 'number' &&
+  ('value' in s || ('done' in s && s.done === true));
