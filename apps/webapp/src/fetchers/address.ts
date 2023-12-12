@@ -1,15 +1,18 @@
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import {
+  Address,
+  AddressIndex,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import {
   AddressByIndexRequest,
   EphemeralAddressRequest,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { bech32Address } from '@penumbra-zone/types';
+import { bech32Address, shortenAddress } from '@penumbra-zone/types';
 import { viewClient } from '../clients/grpc';
 
 type Index = number;
-type Address = string;
+type Bech32Address = string;
 
-export type IndexAddrRecord = Record<Index, Address>;
+export type IndexAddrRecord = Record<Index, Bech32Address>;
 
 export const getAddresses = async (accounts: (number | undefined)[]): Promise<IndexAddrRecord> => {
   const allReqs = accounts.map(getAddressByIndex);
@@ -19,7 +22,7 @@ export const getAddresses = async (accounts: (number | undefined)[]): Promise<In
     .map((address, i) => {
       return {
         index: accounts[i] ?? 0,
-        address,
+        address: bech32Address(address),
       };
     })
     .reduce<IndexAddrRecord>((acc, curr) => {
@@ -28,25 +31,26 @@ export const getAddresses = async (accounts: (number | undefined)[]): Promise<In
     }, {});
 };
 
-export const getAddressByIndex = async (account: number | undefined): Promise<string> => {
+export const getAddressByIndex = async (account: number | undefined): Promise<Address> => {
   const req = new AddressByIndexRequest();
   if (account) req.addressIndex = new AddressIndex({ account });
   const res = await viewClient.addressByIndex(req);
-  return bech32Address(res.address!);
+  return res.address!;
 };
 
-export const getEphemeralAddress = async (account: number): Promise<string> => {
+export const getEphemeralAddress = async (account: number): Promise<Address> => {
   const req = new EphemeralAddressRequest({ addressIndex: { account } });
   const res = await viewClient.ephemeralAddress(req);
-  return bech32Address(res.address!);
+  return res.address!;
 };
 
 export const getAccountAddr = async (index: number, ephemeral: boolean) => {
   const address = ephemeral ? await getEphemeralAddress(index) : await getAddressByIndex(index);
+  const bech32 = bech32Address(address);
 
   return {
-    address,
-    preview: address.slice(0, 33) + '…',
+    address: bech32,
+    preview: shortenAddress(bech32),
     index,
   };
 };
