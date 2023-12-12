@@ -12,6 +12,8 @@ import { errorTxToast, loadingTxToast, successTxToast } from '../components/shar
 import { AssetBalance } from '../fetchers/balances';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Selection } from './types';
+import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { getAddressByIndex, getEphemeralAddress } from '../fetchers/address.ts';
 
 export interface SendSlice {
   selection: Selection | undefined;
@@ -89,7 +91,13 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
-const planWitnessBuildBroadcast = async ({ amount, recipient, selection }: SendSlice) => {
+const planWitnessBuildBroadcast = async ({
+  amount,
+  recipient,
+  selection,
+  hidden,
+  memo,
+}: SendSlice) => {
   if (typeof selection?.accountIndex === 'undefined') throw new Error('no selected account');
   if (!selection.asset) throw new Error('no selected asset');
 
@@ -104,6 +112,12 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, selection }: SendS
       },
     ],
     source: new AddressIndex({ account: selection.accountIndex }),
+    memo: new MemoPlaintext({
+      returnAddress: hidden
+        ? await getEphemeralAddress(selection.accountIndex)
+        : await getAddressByIndex(selection.accountIndex),
+      text: memo,
+    }),
   });
 
   const { viewClient, custodyClient } = await import('../clients/grpc');
