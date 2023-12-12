@@ -73,15 +73,9 @@ export class BackgroundConnectionManager {
   private connectionListener = (clientPort: chrome.runtime.Port) => {
     const { name, sender } = clientPort;
     if (!sender) return;
-    const { origin: portOrigin, documentId, frameId } = sender;
-    if (
-      // TODO: revisit these conditions
-      documentId &&
-      //tlsChannelId && // TODO: require TLS
-      frameId === 0 && // no iframes
-      (name.startsWith('Extension') || name.startsWith('ContentScript'))
-      // no origin check happens at all
-    ) {
+    const { origin: portOrigin } = sender;
+
+    if (name.startsWith('Extension') || name.startsWith('ContentScript')) {
       const channelConfig = parseConnectionName<typeof name, ChannelConfig>(name);
       if (!channelConfig) throw Error(`Invalid channel ${name}`);
       const {
