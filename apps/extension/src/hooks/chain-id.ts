@@ -1,11 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
-import { grpcClient } from '../clients';
+import { AppQuerier } from '@penumbra-zone/query';
+import { useStore } from '../state';
 
 export const getChainId = async (): Promise<string> => {
-  const res = await grpcClient.appParameters({});
-  if (!res.parameters?.chainParams) throw new Error('No chain params in response');
+  const grpcEndpoint = useStore.getState().network.grpcEndpoint;
 
-  return res.parameters.chainParams.chainId;
+  if (!grpcEndpoint) throw new Error('GRPC endpoint is not set');
+
+  const querier = new AppQuerier({ grpcEndpoint });
+  const res = await querier.chainParams();
+  if (!res.chainId) throw new Error('No chain params in response');
+
+  return res.chainId;
 };
 
 export const useChainId = () => {
