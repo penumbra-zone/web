@@ -1,6 +1,7 @@
 import {
   NullifierStatusRequest,
   NullifierStatusResponse,
+  SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { ViewReqMessage } from './router';
 import { ServicesInterface } from '@penumbra-zone/types';
@@ -19,8 +20,6 @@ export const handleNullifierStatusReq = async (
   const { indexedDb } = await services.getWalletServices();
   if (!req.nullifier) return new NullifierStatusResponse();
 
-  // TODO req.awaitDetection processing
-
   const noteByNullifier = await indexedDb.getNoteByNullifier(req.nullifier);
   const swapByNullifier = await indexedDb.getSwapByNullifier(req.nullifier);
 
@@ -29,5 +28,18 @@ export const handleNullifierStatusReq = async (
   const noteSpent = noteByNullifier ? noteByNullifier.heightSpent !== 0n : false;
   const swapSpent = swapByNullifier ? swapByNullifier.heightClaimed !== 0n : false;
 
-  return new NullifierStatusResponse({ spent: noteSpent || swapSpent });
+  if (noteSpent || swapSpent) {
+    return new NullifierStatusResponse({ spent: true });
+  } else if (!req.awaitDetection) {
+    return new NullifierStatusResponse({ spent: false });
+  }
+
+  // Wait until our DB encounters a new note with this nullifier
+  const subscription = indexedDb.subscribe('SPENDABLE_NOTES');
+  for await (const update of subscription) {
+    const note = SpendableNoteRecord.fromJson(update.value);
+    if (note.nullifier?.equals(req.nullifier)) break;
+  }
+
+  return new NullifierStatusResponse({ spent: true });
 };

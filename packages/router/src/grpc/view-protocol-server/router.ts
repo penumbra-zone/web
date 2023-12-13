@@ -44,7 +44,7 @@ export const viewServerUnaryHandler: UnaryHandler<typeof ViewProtocolService> = 
   else if (isTxInfoByHashRequest(msg)) return handleTxInfoByHashReq(msg, services);
   else if (isTxPlannerRequest(msg)) return handleTxPlannerReq(msg, services);
   else if (isWitnessBuildRequest(msg)) return handleWitnessBuildReq(msg, services);
-  else if (isBroadcastRequest(msg)) return handleBroadcastReq(msg);
+  else if (isBroadcastRequest(msg)) return handleBroadcastReq(msg, services);
   else if (isEphemeralAddrRequest(msg)) return handleEphemeralAddrReq(msg);
   else if (isStatusRequest(msg)) return handleStatusRequest(msg, services);
   else if (isIndexByAddressRequest(msg)) return handleIndexByAddressReq(msg);
