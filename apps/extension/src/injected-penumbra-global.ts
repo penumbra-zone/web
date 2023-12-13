@@ -25,7 +25,6 @@ const initPenumbra = (ev: MessageEvent<unknown>) => {
       ...Object.fromEntries(services.map((s: string) => [s, port])),
     };
   }
-  window.removeEventListener('message', initPenumbra);
 };
 
 window.addEventListener('message', initPenumbra);
