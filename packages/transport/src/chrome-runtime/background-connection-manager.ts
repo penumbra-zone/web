@@ -10,11 +10,11 @@ import {
   TransportError,
   TransportStream,
   TransportState,
+  TransportEvent,
 } from '../types';
 
 import { JsonValue } from '@bufbuild/protobuf';
 import { ChromeRuntimeStreamSink } from './stream';
-import { isDisconnectedPortError } from './errors';
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 
@@ -32,6 +32,7 @@ type UnconditionalServiceAccessFn = (
   x: JsonValue,
 ) => Promise<JsonValue | ReadableStream<JsonValue>>;
 
+// TODO: conditional service access
 type UnconditionalServiceAccess = Record<string, UnconditionalServiceAccessFn>;
 
 /**
@@ -106,6 +107,7 @@ export class BackgroundConnectionManager {
         return;
       }
 
+      // create connection record
       const connection: BackgroundConnection = {
         tab,
         type: clientType as ChannelClientLabel,
@@ -115,16 +117,17 @@ export class BackgroundConnectionManager {
         tlsChannelId,
         documentId,
       };
+      originConnections?.set(clientId, connection);
 
       /**
-       * This method is used to manage a sub-channel, encapsulating a response
-       * stream. A TransportInitChannel representing the channel is returned for
-       * transport to the client. The client should respond by opening a
-       * connection bearing this name.
+       * This method is used to manage a response sub-channel, encapsulating a
+       * response stream. A TransportInitChannel representing the channel is
+       * returned for transport to the client. The client should respond by
+       * opening a connection bearing this name.
        *
        * @param subStream ReadableStream to be transmitted via sub-channel
        */
-      const initSubChannel = ({ requestId, stream }: TransportStream): TransportInitChannel => {
+      const responseSubChannel = ({ requestId, stream }: TransportStream): TransportInitChannel => {
         const [channel] = nameChannel(ChannelSubLabel.ServerStream);
         const acont = new AbortController();
 
@@ -145,17 +148,7 @@ export class BackgroundConnectionManager {
               signal: acont.signal,
             })
             .catch((error: unknown) => {
-              if (error !== channel) {
-                // TODO: handling errors in this promise chain is problematic.
-                // we're in a callback, and can't reliably answer the requester.
-                console.error('Error in subchannel', error);
-                clientPort.postMessage({
-                  error: Object.assign(errorToJson(ConnectError.from(error), undefined), {
-                    requestId,
-                    channel,
-                  }),
-                });
-              }
+              if (error !== channel) throw error;
             })
             .finally(() => {
               connection.streams.delete(channel);
@@ -164,75 +157,51 @@ export class BackgroundConnectionManager {
         };
         chrome.runtime.onConnect.addListener(subListener);
 
-        // TODO: revisit this
-        /*
-        setTimeout(() => {
-          if (chrome.runtime.onConnect.hasListener(subListener)) {
-            // handler still hasn't activated, or it would be gone
-            chrome.runtime.onConnect.removeListener(subListener);
-            acont.abort('Timed out subchannel activation');
-          }
-        }, 1000);
-        */
-
         return { requestId, channel };
       };
 
       /**
-       * This method handles incoming transport requests.
-       *
-       * @param extensionRequest anything received on the transport
-       * @param transPort the clientPort as available in this handler
+       * Called by the listener to handle a single incoming transport message.
+       * This should always *successfully* return a TransportEvent representing
+       * a response or error from the service.
        */
-      const transportListener = (transportRequest: unknown, transPort: chrome.runtime.Port) => {
-        if (!isTransportMessage(transportRequest)) throw Error('Unknown item in transport');
-
-        const { requestId, message: request } = transportRequest;
-
-        /*
-        const serviceTimeout = new Promise<void>((_, reject) =>
-          setTimeout(reject, 1000, 'Timed out service request'),
-        );
-
-        const transportResponse = Promise.race([serviceEntry(request), serviceTimeout])
-        */
-
-        const transportResponse = serviceEntry(request)
+      const clientMessageHandler = ({
+        requestId,
+        message,
+      }: TransportMessage): Promise<TransportEvent> =>
+        serviceEntry(message)
           .then(response =>
             response instanceof ReadableStream
-              ? initSubChannel({ requestId, stream: response })
-              : ({ requestId, message: response } as TransportMessage),
+              ? responseSubChannel({ requestId, stream: response })
+              : { requestId, message: response },
           )
-          .catch(
-            (error: unknown) =>
-              ({
-                requestId,
-                error: errorToJson(ConnectError.from(error), undefined),
-              }) as TransportError,
-          );
+          .catch(error => ({
+            requestId,
+            error: errorToJson(ConnectError.from(error), undefined),
+          }));
 
-        transportResponse
-          .then(extResponse => transPort.postMessage(extResponse))
-          .catch(e => {
-            // TODO: abort requests
-            if (!isDisconnectedPortError(e)) throw e;
-          });
-      };
-
-      // create connection record
-      originConnections?.set(clientId, connection);
-
+      // attach listeners
       clientPort.onDisconnect.addListener(() => this.disconnectClient(senderOrigin, clientId));
-      clientPort.onMessage.addListener((i: unknown, p) => {
-        try {
-          transportListener(i, p);
-        } catch (error) {
-          console.error('Failed to respond', i, error);
-          clientPort.postMessage({ error: errorToJson(ConnectError.from(error), undefined) });
-        }
+      clientPort.onMessage.addListener((i: unknown, p: chrome.runtime.Port) => {
+        void (async () => {
+          let handlerResponse: TransportEvent | TransportError | undefined;
+          try {
+            if (isTransportMessage(i)) handlerResponse = await clientMessageHandler(i);
+            else throw Error('Unknown item in transport');
+          } catch (e) {
+            // handlers should catch service failures before this point.
+            // otherwise, this creates an unspecific TransportError.
+            console.error('Handler failed', i, e);
+            handlerResponse = {
+              error: errorToJson(ConnectError.from(e), undefined),
+            };
+          } finally {
+            p.postMessage(handlerResponse);
+          }
+        })();
       });
 
-      // finally acknowledge connection
+      // setup finished, acknowledge connection
       clientPort.postMessage({ connected: true } as TransportState);
     }
   };

@@ -11,13 +11,12 @@ export interface TransportError extends Partial<TransportEvent> {
   error: JsonValue;
 }
 
-// transport actual
+// transport content
 
 export type TransportData = TransportMessage | TransportStream | TransportInitChannel;
 
 export interface TransportEvent {
   requestId: ReturnType<typeof crypto.randomUUID>;
-  responseOrigin?: string; // currently unused
 }
 
 export interface TransportMessage extends TransportEvent {

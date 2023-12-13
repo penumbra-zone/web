@@ -64,20 +64,23 @@ export const createChannelTransport = (s: ServiceType, port: MessagePort) => {
   let connected: boolean | undefined;
 
   let connectionState: (a: boolean, r?: JsonValue) => void;
-  const providerAck = new Promise<void>(
-    (ack, reject) =>
-      (connectionState = (state: boolean, reason?: JsonValue) => {
-        connected = state;
-        if (connected) ack();
-        else {
-          port.close();
-          const err = errorFromJson(reason!, {}, new ConnectError('Connection rejected'));
-          callbackError ??= err;
-          reject(err);
-          throw err;
-        }
-      }),
-  );
+  const providerAck = Promise.race([
+    new Promise<void>((_, reject) => setTimeout(reject, 1000, 'Connection timed out')),
+    new Promise<void>(
+      (ack, reject) =>
+        (connectionState = (state: boolean, reason?: JsonValue) => {
+          connected = state;
+          if (connected) ack();
+          else {
+            port.close();
+            const err = errorFromJson(reason!, {}, new ConnectError('Connection rejected'));
+            callbackError ??= err;
+            reject(err);
+            throw err;
+          }
+        }),
+    ),
+  ]);
 
   port.addEventListener('message', ev => {
     try {
@@ -98,7 +101,6 @@ export const createChannelTransport = (s: ServiceType, port: MessagePort) => {
   const request = async (msg: AnyMessage) => {
     if (callbackError) throw callbackError;
     await providerAck;
-    // TODO: timeout ack? webapp needs to handle error states
 
     const rpc: TransportMessage = {
       requestId: crypto.randomUUID(),

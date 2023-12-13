@@ -13,6 +13,7 @@ import {
   isTransportState,
   TransportState,
   isTransportError,
+  TransportInitChannel,
 } from '../types';
 
 interface ClientConnection {
@@ -112,6 +113,13 @@ export class ClientConnectionManager {
       }
     };
 
+    const acceptChannelStream = (ev: TransportInitChannel): TransportStream => {
+      const { requestId, channel: subName } = ev;
+      const sourcePort = chrome.runtime.connect({ includeTlsChannelId: true, name: subName });
+      const stream = new ReadableStream(new ChromeRuntimeStreamSource(sourcePort));
+      return { requestId, stream };
+    };
+
     /**
      * Client-specific message handler, listening for return messages from the
      * extension.  Messages do not necessarily represent a response to a
@@ -133,16 +141,12 @@ export class ClientConnectionManager {
         if (isTransportState(ev)) {
           clientPort.postMessage(ev);
           if (!ev.connected) this.endConnection(clientId);
-        } else if (isTransportData(ev)) {
-          if (isTransportMessage(ev)) clientPort.postMessage(ev);
-          else if (isTransportInitChannel(ev)) {
-            const { requestId, channel: subName } = ev;
-            const sourcePort = chrome.runtime.connect({ includeTlsChannelId: true, name: subName });
-            const stream = new ReadableStream(new ChromeRuntimeStreamSource(sourcePort));
-            clientPort.postMessage({ requestId, stream }, [stream]);
-          } else throw Error('Unimplemented response kind');
         } else if (isTransportError(ev)) clientPort.postMessage(ev);
-        else throw Error('Unknown transport from service');
+        else if (isTransportMessage(ev)) clientPort.postMessage(ev);
+        else if (isTransportInitChannel(ev)) {
+          const sub = acceptChannelStream(ev);
+          clientPort.postMessage(sub, [sub.stream]);
+        } else throw Error('Unexpected transport from service');
       } catch (error) {
         console.error('Error in service listener', error, ev);
         clientPort.postMessage({ error: String(error) });
