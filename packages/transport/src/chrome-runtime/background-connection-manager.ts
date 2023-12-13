@@ -15,7 +15,7 @@ import {
 
 import { JsonValue } from '@bufbuild/protobuf';
 import { ChromeRuntimeStreamSink } from './stream';
-import { ConnectError } from '@connectrpc/connect';
+import { ConnectError, Code as ConnectErrorCode } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 
 interface BackgroundConnection {
@@ -93,16 +93,29 @@ export class BackgroundConnectionManager {
       const serviceEntry = this.unconditionalServiceAccess[serviceName!];
 
       try {
-        if (!channelConfig) throw Error(`Invalid channel ${name}`);
-        if (!(clientType in ChannelClientLabel)) throw Error(`Invalid client type ${clientType}`);
-        if (!serviceName) throw Error(`Missing service name`);
+        if (!channelConfig || !(clientType in ChannelClientLabel))
+          throw new ConnectError(`Invalid connection: ${name}`, ConnectErrorCode.OutOfRange);
         if (senderOrigin !== claimedOrigin)
-          throw Error(`Origin mismatch ${senderOrigin} claimed ${claimedOrigin}`);
-        if (originConnections?.has(clientId)) throw Error(`Client id collision ${clientId}`);
-        if (!serviceEntry) throw Error(`Unknown ${serviceName} requested by client`);
+          throw new ConnectError(
+            `Origin mismatch: ${senderOrigin} claimed ${claimedOrigin}`,
+            ConnectErrorCode.Unauthenticated,
+          );
+        if (originConnections?.has(clientId))
+          throw new ConnectError(
+            `Client id collision: ${clientId}`,
+            ConnectErrorCode.AlreadyExists,
+          );
+        if (!serviceEntry)
+          throw new ConnectError(
+            `Unsupported service: ${serviceName}`,
+            ConnectErrorCode.Unimplemented,
+          );
       } catch (error) {
         console.error('Connection rejected', error);
-        clientPort.postMessage({ connected: false, reason: String(error) });
+        clientPort.postMessage({
+          connected: false,
+          reason: errorToJson(ConnectError.from(error), undefined),
+        });
         clientPort.disconnect();
         return;
       }

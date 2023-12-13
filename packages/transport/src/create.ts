@@ -4,6 +4,7 @@ import {
   MethodImpl,
   ConnectRouter,
   ConnectError,
+  Code as ConnectErrorCode,
 } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 
@@ -65,7 +66,13 @@ export const createChannelTransport = (s: ServiceType, port: MessagePort) => {
 
   let connectionState: (a: boolean, r?: JsonValue) => void;
   const providerAck = Promise.race([
-    new Promise<void>((_, reject) => setTimeout(reject, 1000, 'Connection timed out')),
+    new Promise<void>((_, reject) =>
+      setTimeout(
+        reject,
+        1000,
+        new ConnectError('Channel connection timed out', ConnectErrorCode.Unavailable),
+      ),
+    ),
     new Promise<void>(
       (ack, reject) =>
         (connectionState = (state: boolean, reason?: JsonValue) => {
@@ -74,8 +81,8 @@ export const createChannelTransport = (s: ServiceType, port: MessagePort) => {
           else {
             port.close();
             const err = errorFromJson(reason!, {}, new ConnectError('Connection rejected'));
-            callbackError ??= err;
             reject(err);
+            callbackError ??= err;
             throw err;
           }
         }),
@@ -93,8 +100,9 @@ export const createChannelTransport = (s: ServiceType, port: MessagePort) => {
         throw errorFromJson(ev.data.error, {}, new ConnectError('Transport error'));
       else throw Error('Unknown transport item');
     } catch (error) {
-      callbackError ??= ConnectError.from(error);
-      throw callbackError;
+      const err = ConnectError.from(error);
+      callbackError ??= err;
+      throw err;
     }
   });
 
@@ -130,18 +138,18 @@ export const createChannelTransport = (s: ServiceType, port: MessagePort) => {
     switch (method.kind) {
       case MethodKind.Unary: {
         return async function (message: AnyMessage) {
-          const res = await request(message).catch(e => ConnectError.from(e));
-          if (res instanceof ConnectError) throw res;
-          const responseJson = res as JsonValue;
+          const responseJson = (await request(message).catch(e => {
+            throw ConnectError.from(e);
+          })) as JsonValue;
           const response = Any.fromJson(responseJson, { typeRegistry }).unpack(typeRegistry);
           return response;
         };
       }
       case MethodKind.ServerStreaming: {
         return async function* (message: AnyMessage) {
-          const res = await request(message).catch(e => ConnectError.from(e));
-          if (res instanceof ConnectError) throw res;
-          const responseStream = res as ReadableStream<JsonValue>;
+          const responseStream = (await request(message).catch(e => {
+            throw ConnectError.from(e);
+          })) as ReadableStream<JsonValue>;
           const response = responseStream.pipeThrough(new JsonToMessage(typeRegistry));
           yield* streamToGenerator(response);
         };
