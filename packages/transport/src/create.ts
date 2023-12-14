@@ -1,3 +1,5 @@
+const DEFAULT_INIT_TIMEOUT = 1000;
+
 import {
   createRouterTransport,
   ServiceImpl,
@@ -54,7 +56,11 @@ const makeAnyServiceImpl: CreateAnyServiceImpl = <S extends ServiceType>(
   return impl;
 };
 
-export const createChannelTransport = (s: ServiceType, port: MessagePort) => {
+export const createChannelTransport = (
+  s: ServiceType,
+  port: MessagePort,
+  initTimeout = DEFAULT_INIT_TIMEOUT,
+) => {
   const pending = new Map<
     ReturnType<typeof crypto.randomUUID>,
     (response: TransportEvent) => void
@@ -69,7 +75,7 @@ export const createChannelTransport = (s: ServiceType, port: MessagePort) => {
     new Promise<void>((_, reject) =>
       setTimeout(
         reject,
-        1000,
+        initTimeout,
         new ConnectError('Channel connection timed out', ConnectErrorCode.Unavailable),
       ),
     ),

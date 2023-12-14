@@ -47,18 +47,18 @@ export interface StreamChannelEnd {
 
 // guards
 
-const obj = (o: unknown): o is object => typeof o === 'object' && o !== null;
+const isObj = (o: unknown): o is object => typeof o === 'object' && o !== null;
 
-export const isTransportError = (e: unknown): e is TransportError => obj(e) && 'error' in e;
+export const isTransportError = (e: unknown): e is TransportError => isObj(e) && 'error' in e;
 
 export const isTransportData = (t: unknown): t is TransportData =>
   isTransportMessage(t) || isTransportStream(t) || isTransportInitChannel(t);
 
 export const isTransportEvent = (t: unknown): t is TransportEvent =>
-  obj(t) && 'requestId' in t && typeof t.requestId === 'string';
+  isObj(t) && 'requestId' in t && typeof t.requestId === 'string';
 
 export const isTransportState = (t: unknown): t is TransportState =>
-  obj(t) && 'connected' in t && typeof t.connected === 'boolean';
+  isObj(t) && 'connected' in t && typeof t.connected === 'boolean';
 
 export const isTransportMessage = (m: unknown): m is TransportMessage =>
   isTransportEvent(m) && 'message' in m;
@@ -70,7 +70,7 @@ export const isTransportInitChannel = (c: unknown): c is TransportInitChannel =>
   isTransportEvent(c) && 'channel' in c && typeof c.channel === 'string';
 
 export const isStreamControl = (s: unknown): s is StreamChannelChunk | StreamChannelEnd =>
-  obj(s) &&
+  isObj(s) &&
   'sequence' in s &&
   typeof s.sequence === 'number' &&
   ('value' in s || ('done' in s && s.done === true));
