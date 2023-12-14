@@ -14,6 +14,7 @@ import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/c
 import { Selection } from './types';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { viewClient, custodyClient } from '../clients/grpc';
+import { getAddressByIndex, getEphemeralAddress } from '../fetchers/address.ts';
 
 export interface SendSlice {
   selection: Selection | undefined;
@@ -100,8 +101,6 @@ const planWitnessBuildBroadcast = async ({
 }: SendSlice) => {
   if (typeof selection?.accountIndex === 'undefined') throw new Error('no selected account');
   if (!selection.asset) throw new Error('no selected asset');
-
-  const { getAddressByIndex, getEphemeralAddress } = await import('../fetchers/address.ts');
 
   const req = new TransactionPlannerRequest({
     outputs: [
