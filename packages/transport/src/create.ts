@@ -1,3 +1,5 @@
+const DEFAULT_INIT_TIMEOUT = 1000;
+
 import {
   createRouterTransport,
   ServiceImpl,
@@ -6,6 +8,7 @@ import {
   ConnectError,
   Code as ConnectErrorCode,
 } from '@connectrpc/connect';
+import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 
 import {
   MethodKind,
@@ -16,7 +19,15 @@ import {
   Any,
 } from '@bufbuild/protobuf';
 
-import { TransportMessage, isTransportData } from './types';
+import {
+  TransportEvent,
+  TransportMessage,
+  isTransportError,
+  isTransportEvent,
+  isTransportMessage,
+  isTransportState,
+  isTransportStream,
+} from './types';
 
 import { JsonToMessage, streamToGenerator } from './stream';
 
@@ -31,12 +42,12 @@ type CreateAnyMethodImpl<S extends ServiceType> = (
 type CreateAnyServiceImpl = <S extends ServiceType>(
   service: S,
   createMethod: CreateAnyMethodImpl<S>,
-) => Partial<ServiceImpl<S>>;
+) => ServiceImpl<S>;
 
 const makeAnyServiceImpl: CreateAnyServiceImpl = <S extends ServiceType>(
   service: S,
   createMethod: CreateAnyMethodImpl<S>,
-): Partial<ServiceImpl<S>> => {
+): ServiceImpl<S> => {
   const impl = {} as { [P in keyof S['methods']]: MethodImpl<S['methods'][P]> };
   let localName: keyof S['methods'];
   let methodInfo: MethodInfo;
@@ -45,60 +56,112 @@ const makeAnyServiceImpl: CreateAnyServiceImpl = <S extends ServiceType>(
   return impl;
 };
 
-type ResolveReject<T> = Parameters<ConstructorParameters<typeof Promise<T>>[0]>;
-
-export const createChannelTransport = (s: ServiceType, port: MessagePort) => {
+export const createChannelTransport = (
+  s: ServiceType,
+  port: MessagePort,
+  initTimeout = DEFAULT_INIT_TIMEOUT,
+) => {
   const pending = new Map<
     ReturnType<typeof crypto.randomUUID>,
-    ResolveReject<JsonValue | ReadableStream<JsonValue>>
+    (response: TransportEvent) => void
   >();
 
+  let callbackError: Error | undefined;
+
+  let connected: boolean | undefined;
+
+  let connectionState: (a: boolean, r?: JsonValue) => void;
+  const providerAck = Promise.race([
+    new Promise<void>((_, reject) =>
+      setTimeout(
+        reject,
+        initTimeout,
+        new ConnectError('Channel connection timed out', ConnectErrorCode.Unavailable),
+      ),
+    ),
+    new Promise<void>(
+      (ack, reject) =>
+        (connectionState = (state: boolean, reason?: JsonValue) => {
+          connected = state;
+          if (connected) ack();
+          else {
+            port.close();
+            const err = errorFromJson(reason!, {}, new ConnectError('Connection rejected'));
+            reject(err);
+            callbackError ??= err;
+            throw err;
+          }
+        }),
+    ),
+  ]);
+
   port.addEventListener('message', ev => {
-    if (isTransportData(ev.data)) {
-      const response = ev.data;
-      const [resolve, reject] = pending.get(response.requestId)!;
-      if (!pending.delete(response.requestId))
-        throw new ConnectError(
-          `Request ${response.requestId} not pending`,
-          ConnectErrorCode.Internal,
-        );
-      else if ('message' in response) resolve(response.message);
-      else if ('stream' in response) resolve(response.stream);
-      else reject(new ConnectError('Unknown response', ConnectErrorCode.Unknown));
+    try {
+      if (isTransportState(ev.data)) connectionState(ev.data.connected, ev.data.reason);
+      else if (isTransportEvent(ev.data)) {
+        const respond = pending.get(ev.data.requestId);
+        if (!respond) throw Error(`Request ${ev.data.requestId} not pending`);
+        respond(ev.data);
+      } else if (isTransportError(ev.data))
+        throw errorFromJson(ev.data.error, {}, new ConnectError('Transport error'));
+      else throw Error('Unknown transport item');
+    } catch (error) {
+      const err = ConnectError.from(error);
+      callbackError ??= err;
+      throw err;
     }
   });
 
-  const request = (msg: AnyMessage) => {
+  const request = async (msg: AnyMessage) => {
+    if (callbackError) throw callbackError;
+    await providerAck;
+
     const rpc: TransportMessage = {
       requestId: crypto.randomUUID(),
       message: Any.pack(msg).toJson({ typeRegistry }),
-    } as TransportMessage;
-    const prom = new Promise<JsonValue | ReadableStream<JsonValue>>((resolve, reject) =>
-      pending.set(rpc.requestId, [resolve, reject]),
+    };
+
+    const futureResponse = new Promise<JsonValue | ReadableStream<JsonValue>>((resolve, reject) =>
+      pending.set(rpc.requestId, (response: TransportEvent) => {
+        if (!pending.delete(rpc.requestId))
+          throw Error(`Responding to ${rpc.requestId} but it's already resolved`);
+        else if (rpc.requestId !== response.requestId)
+          throw Error(`Responding to ${rpc.requestId} but ${response.requestId} doesn't match`);
+        else if (callbackError) reject(callbackError);
+        else if (isTransportError(response))
+          reject(errorFromJson(response.error, {}, new ConnectError('Transport error')));
+        else if (isTransportMessage(response)) resolve(response.message);
+        else if (isTransportStream(response)) resolve(response.stream);
+        else reject('Response kind unimplemented');
+      }),
     );
+
     port.postMessage(rpc);
-    return prom;
+    return futureResponse;
   };
 
   const makeChannelMethodImpl: CreateAnyMethodImpl<typeof s> = method => {
     switch (method.kind) {
       case MethodKind.Unary: {
         return async function (message: AnyMessage) {
-          const responseJson = (await request(message)) as JsonValue;
+          const responseJson = (await request(message).catch(e => {
+            throw ConnectError.from(e);
+          })) as JsonValue;
           const response = Any.fromJson(responseJson, { typeRegistry }).unpack(typeRegistry);
           return response;
         };
       }
       case MethodKind.ServerStreaming: {
         return async function* (message: AnyMessage) {
-          const responseStream = (await request(message)) as ReadableStream<JsonValue>;
+          const responseStream = (await request(message).catch(e => {
+            throw ConnectError.from(e);
+          })) as ReadableStream<JsonValue>;
           const response = responseStream.pipeThrough(new JsonToMessage(typeRegistry));
           yield* streamToGenerator(response);
         };
       }
-      case MethodKind.ClientStreaming:
-      case MethodKind.BiDiStreaming:
-        throw new ConnectError('Client streaming unimplemented', ConnectErrorCode.Unimplemented);
+      default:
+        return () => Promise.reject(`${MethodKind[method.kind]} unimplemented`);
     }
   };
 

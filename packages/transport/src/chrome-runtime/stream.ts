@@ -1,5 +1,5 @@
 import type { JsonValue } from '@bufbuild/protobuf';
-import { StreamChannelChunk, StreamChannelEnd, isStreamControl } from '../types';
+import { StreamChannelChunk, StreamChannelEnd, isStreamAbort, isStreamControl } from '../types';
 
 /**
  * Adapts a chrome.runtime.Port to a ReadableStream UnderlyingSource
@@ -15,17 +15,19 @@ export class ChromeRuntimeStreamSource implements UnderlyingDefaultSource<JsonVa
    * Handlers set up here fill the queue as messages arrive.
    */
   start(cont: ReadableStreamDefaultController<JsonValue>) {
-    this.incoming.onDisconnect.addListener(() => cont.error('Source port disconnected'));
+    this.incoming.onDisconnect.addListener(() =>
+      cont.error(new DOMException('Source port disconnected', 'AbortError')),
+    );
     this.incoming.onMessage.addListener(msg => {
-      if (!isStreamControl(msg)) cont.error('Unknown message in stream channel');
-      else {
+      if (isStreamAbort(msg)) cont.error(new DOMException(String(msg.reason), 'AbortError'));
+      else if (isStreamControl(msg)) {
         if (msg.sequence < this.sequence) cont.error('Stream disordered');
         else this.sequence = msg.sequence;
         if ('done' in msg) {
           this.incoming.disconnect();
           cont.close();
         } else cont.enqueue(msg.value);
-      }
+      } else cont.error('Unexpected subchannel transport');
     });
   }
 
@@ -58,7 +60,12 @@ export class ChromeRuntimeStreamSink implements UnderlyingSink<JsonValue> {
     this.outgoing.disconnect();
   }
 
-  abort() {
+  abort(reason: unknown) {
+    this.outgoing.postMessage({
+      sequence: ++this.sequence,
+      abort: true,
+      reason: String(reason),
+    });
     this.outgoing.disconnect();
   }
 }
