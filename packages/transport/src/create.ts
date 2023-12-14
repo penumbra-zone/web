@@ -1,5 +1,3 @@
-const DEFAULT_INIT_TIMEOUT = 1000;
-
 import {
   createRouterTransport,
   ServiceImpl,
@@ -17,6 +15,9 @@ import {
   AnyMessage,
   JsonValue,
   Any,
+  JsonReadOptions,
+  JsonWriteOptions,
+  IMessageTypeRegistry,
 } from '@bufbuild/protobuf';
 
 import {
@@ -31,8 +32,6 @@ import {
 } from './types';
 
 import { JsonToMessage, streamToGenerator } from './stream';
-
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
 
 type CreateAnyMethodImpl<S extends ServiceType> = (
   methodInfo: MethodInfo & { kind: MethodKind },
@@ -57,11 +56,21 @@ const makeAnyServiceImpl: CreateAnyServiceImpl = <S extends ServiceType>(
   return impl;
 };
 
-export const createChannelTransport = (
-  s: ServiceType,
-  getPort: (serviceType: string) => MessagePort | Promise<MessagePort>,
-  initTimeout = DEFAULT_INIT_TIMEOUT,
-) => {
+export interface ChannelTransportOptions {
+  defaultTimeoutMs?: number;
+  jsonOptions: Partial<JsonReadOptions & JsonWriteOptions> & {
+    typeRegistry: IMessageTypeRegistry;
+  };
+  serviceType: ServiceType;
+  getPort: (serviceType: string) => MessagePort | Promise<MessagePort>;
+}
+
+export const createChannelTransport = ({
+  serviceType,
+  getPort,
+  defaultTimeoutMs,
+  jsonOptions: { typeRegistry },
+}: ChannelTransportOptions) => {
   const pending = new Map<
     ReturnType<typeof crypto.randomUUID>,
     (response: TransportEvent) => void
@@ -72,15 +81,17 @@ export const createChannelTransport = (
   let port: MessagePort | undefined;
 
   const connect = () =>
-    Promise.resolve(getPort(s.typeName)).then((port: MessagePort) => {
+    Promise.resolve(getPort(serviceType.typeName)).then((port: MessagePort) => {
       let applyState: (s: TransportState) => void;
 
-      const timeout = new Promise<never>((_, reject) =>
-        setTimeout(
-          reject,
-          initTimeout,
-          new ConnectError('Channel connection timed out', ConnectErrorCode.Unavailable),
-        ),
+      const timeout = new Promise<never>(
+        (_, reject) =>
+          defaultTimeoutMs &&
+          setTimeout(
+            reject,
+            defaultTimeoutMs,
+            new ConnectError('Channel connection timed out', ConnectErrorCode.Unavailable),
+          ),
       );
 
       const ack = new Promise<MessagePort>(
@@ -147,7 +158,7 @@ export const createChannelTransport = (
     return futureResponse;
   };
 
-  const makeChannelMethodImpl: CreateAnyMethodImpl<typeof s> = method => {
+  const makeChannelMethodImpl: CreateAnyMethodImpl<typeof serviceType> = method => {
     switch (method.kind) {
       case MethodKind.Unary: {
         return async function (message: AnyMessage) {
@@ -173,6 +184,6 @@ export const createChannelTransport = (
   };
 
   return createRouterTransport(({ service }: ConnectRouter): void => {
-    service(s, makeAnyServiceImpl(s, makeChannelMethodImpl));
+    service(serviceType, makeAnyServiceImpl(serviceType, makeChannelMethodImpl));
   });
 };
