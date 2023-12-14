@@ -13,6 +13,7 @@ import { AssetBalance } from '../fetchers/balances';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Selection } from './types';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { viewClient, custodyClient } from '../clients/grpc';
 
 export interface SendSlice {
   selection: Selection | undefined;
@@ -120,8 +121,6 @@ const planWitnessBuildBroadcast = async ({
       text: memo,
     }),
   });
-
-  const { viewClient, custodyClient } = await import('../clients/grpc');
 
   const { plan } = await viewClient.transactionPlanner(req);
 
