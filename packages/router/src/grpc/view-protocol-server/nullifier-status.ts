@@ -4,41 +4,50 @@ import {
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { ViewReqMessage } from './router';
-import { ServicesInterface } from '@penumbra-zone/types';
+import { IndexedDbInterface, ServicesInterface } from '@penumbra-zone/types';
 import { assertWalletIdMatches } from './utils';
+import type { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 
 export const isNullifierStatusRequest = (req: ViewReqMessage): req is NullifierStatusRequest => {
   return req.getType().typeName === NullifierStatusRequest.typeName;
 };
+
+async function noteOrSwapSpent(
+  indexedDb: IndexedDbInterface,
+  nullifier: Nullifier,
+): Promise<boolean> {
+  const noteByNullifier = await indexedDb.getNoteByNullifier(nullifier);
+  const swapByNullifier = await indexedDb.getSwapByNullifier(nullifier);
+
+  // The 'heightSpent' and 'heightClaimed' fields will never be undefined,
+  // so we compare to 0n assuming it is impossible to spend nullifier in block 0
+  const noteSpent = noteByNullifier ? noteByNullifier.heightSpent !== 0n : false;
+  const swapSpent = swapByNullifier ? swapByNullifier.heightClaimed !== 0n : false;
+  return noteSpent || swapSpent;
+}
 
 export const handleNullifierStatusReq = async (
   req: NullifierStatusRequest,
   services: ServicesInterface,
 ): Promise<NullifierStatusResponse> => {
   await assertWalletIdMatches(req.walletId);
-
-  const { indexedDb } = await services.getWalletServices();
   if (!req.nullifier) return new NullifierStatusResponse();
 
-  const noteByNullifier = await indexedDb.getNoteByNullifier(req.nullifier);
-  const swapByNullifier = await indexedDb.getSwapByNullifier(req.nullifier);
+  const { indexedDb } = await services.getWalletServices();
+  const spent = await noteOrSwapSpent(indexedDb, req.nullifier);
 
-  // The 'heightSpent' and 'heightClaimed' fields will never be undefined,
-  // so we compare to 0n assuming it is impossible to spend nullifier in block 0
-  const noteSpent = noteByNullifier ? noteByNullifier.heightSpent !== 0n : false;
-  const swapSpent = swapByNullifier ? swapByNullifier.heightClaimed !== 0n : false;
-
-  if (noteSpent || swapSpent) {
+  if (spent) {
     return new NullifierStatusResponse({ spent: true });
   } else if (!req.awaitDetection) {
     return new NullifierStatusResponse({ spent: false });
   }
 
-  // Wait until our DB encounters a new note with this nullifier
+  // Wait until our DB encounters corresponding spent note
   const subscription = indexedDb.subscribe('SPENDABLE_NOTES');
   for await (const update of subscription) {
     const note = SpendableNoteRecord.fromJson(update.value);
-    if (note.nullifier?.equals(req.nullifier)) break;
+    if (note.nullifier?.equals(req.nullifier) && (await noteOrSwapSpent(indexedDb, note.nullifier)))
+      break;
   }
 
   return new NullifierStatusResponse({ spent: true });
