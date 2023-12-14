@@ -13,7 +13,7 @@ declare global {
   }
 }
 
-export const getPenumbraPort = async (serviceTypeName: string) => {
+export const getPenumbraPort = (serviceTypeName: string) => {
   const { port1: port, port2: transferPort } = new MessageChannel();
   if (!(penumbra in window)) throw Error('No Penumbra global (extension not installed)');
   const initPort = window[penumbra].services?.[serviceTypeName];
@@ -26,5 +26,5 @@ export const getPenumbraPort = async (serviceTypeName: string) => {
     } as InitChannelClientMessage,
     [transferPort],
   );
-  return Promise.resolve(port);
+  return port;
 };
