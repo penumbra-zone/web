@@ -1,7 +1,7 @@
 import {InternalMessageHandler } from '@penumbra-zone/types/src/internal-msg/shared';
-import { AuthBuildMessage } from './types';
+import { ActionBuildMessage } from './types';
 
-export const authAndBuildHandler: InternalMessageHandler<AuthBuildMessage> = (jsonReq, responder) => {
+export const buildActionHandler: InternalMessageHandler<ActionBuildMessage> = (jsonReq, responder) => {
     const worker = new Worker(new URL('../web-worker/router.ts', import.meta.url));
 
     // Set up event listener to recieve messages from web worker

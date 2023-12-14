@@ -1,4 +1,4 @@
-import { AuthorizeAndBuildRequest } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb";
+import { AuthorizeAndBuildRequest, WitnessAndBuildRequest } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb";
 import { offscreenClient } from "./types";
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
@@ -6,7 +6,7 @@ const sw = self as unknown as ServiceWorkerGlobalScope;
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
 export const handleOffscreen = async (
-  req: AuthorizeAndBuildRequest, 
+  req: WitnessAndBuildRequest, 
 ): Promise<void> => {
   if (!(await hasDocument())) {
     await chrome.offscreen.createDocument({
@@ -16,7 +16,7 @@ export const handleOffscreen = async (
     });
   }
 
-  const result = await offscreenClient.authAndBuild(req)
+  const result = await offscreenClient.buildAction(req)
   if ('error' in result) throw result.error;
   if (!result.data) throw new Error('Transaction was not approved');
   closeOffscreenDocument()

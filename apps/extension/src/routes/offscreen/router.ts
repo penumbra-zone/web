@@ -1,4 +1,4 @@
-import { authAndBuildHandler } from './auth-build';
+import { buildActionHandler } from './build';
 import { OffscreenMessage, OffscreenRequest, OffscreenResponse, isOffscreenRequest } from './types';
 
 export const offscreenMessageHandler = (
@@ -23,11 +23,11 @@ export const offscreenMessageHandler = (
 };
 
 export const isOffscreenApprovalReq = (req: OffscreenRequest): req is OffscreenMessage => {
-  return req.type === 'AUTH_AND_BUILD';
+  return req.type === 'ACTION_AND_BUILD';
 };
 
 const typedMessageRouter = (req: OffscreenRequest, sendResponse: (x: unknown) => void): void => {
-  if (isOffscreenApprovalReq(req)) authAndBuildHandler(req.request, sendResponse);;
+  if (isOffscreenApprovalReq(req)) buildActionHandler(req.request, sendResponse);;
 };
 
 chrome.runtime.onMessage.addListener(offscreenMessageHandler);
