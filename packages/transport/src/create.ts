@@ -71,60 +71,59 @@ export const createChannelTransport = (
 
   let callbackError: Error | undefined;
 
-  const connection = getPort(s.typeName).then((port: MessagePort) => {
-    let applyState: (s: TransportState) => void;
+  let port: MessagePort | undefined;
 
-    const timeout = new Promise<never>((_, reject) =>
-      setTimeout(
-        reject,
-        initTimeout,
-        new ConnectError('Channel connection timed out', ConnectErrorCode.Unavailable),
-      ),
-    );
+  const connect = async () =>
+    getPort(s.typeName).then((port: MessagePort) => {
+      let applyState: (s: TransportState) => void;
 
-    const ack = new Promise<MessagePort>(
-      (resolve, reject) =>
-        (applyState = ({ connected, reason }: TransportState) => {
-          if (connected) resolve(port);
-          else {
-            port.close();
-            const err = errorFromJson(
-              reason ?? 'No Reason',
-              {},
-              new ConnectError('Connection rejected'),
-            );
-            reject(err);
-            callbackError ??= err;
-            throw err;
-          }
-        }),
-    );
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(
+          reject,
+          initTimeout,
+          new ConnectError('Channel connection timed out', ConnectErrorCode.Unavailable),
+        ),
+      );
 
-    port.addEventListener('message', ev => {
-      try {
-        if (isTransportState(ev.data)) applyState(ev.data);
-        else if (isTransportEvent(ev.data)) {
-          const respond = pending.get(ev.data.requestId);
-          if (!respond) throw Error(`Request ${ev.data.requestId} not pending`);
-          respond(ev.data);
-        } else if (isTransportError(ev.data))
-          throw errorFromJson(ev.data.error, {}, new ConnectError('Transport error'));
-        else throw Error('Unknown transport item');
-      } catch (error) {
-        const err = ConnectError.from(error);
-        callbackError ??= err;
-        throw err;
-      }
+      const ack = new Promise<MessagePort>(
+        (resolve, reject) =>
+          (applyState = ({ connected, reason }: TransportState) => {
+            if (connected) resolve(port);
+            else {
+              port.close();
+              const err = errorFromJson(reason!, {}, new ConnectError('Connection rejected'));
+              reject(err);
+              callbackError ??= err;
+              throw err;
+            }
+          }),
+      );
+
+      port.addEventListener('message', ev => {
+        try {
+          if (isTransportState(ev.data)) applyState(ev.data);
+          else if (isTransportEvent(ev.data)) {
+            const respond = pending.get(ev.data.requestId);
+            if (!respond) throw Error(`Request ${ev.data.requestId} not pending`);
+            respond(ev.data);
+          } else if (isTransportError(ev.data))
+            throw errorFromJson(ev.data.error, {}, new ConnectError('Transport error'));
+          else throw Error('Unknown transport item');
+        } catch (error) {
+          const err = ConnectError.from(error);
+          callbackError ??= err;
+          throw err;
+        }
+      });
+
+      port.start();
+
+      return Promise.race([timeout, ack]);
     });
-
-    port.start();
-
-    return Promise.race([timeout, ack]);
-  });
 
   const request = async (msg: AnyMessage) => {
     if (callbackError) throw callbackError;
-    const port = await connection;
+    port ??= await connect();
 
     const rpc: TransportMessage = {
       requestId: crypto.randomUUID(),
