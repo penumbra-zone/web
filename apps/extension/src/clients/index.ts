@@ -8,7 +8,7 @@ import {
 } from '@penumbra-zone/transport';
 import { ClientConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/client-connection-manager';
 
-export const getPenumbraPort = (serviceTypeName: string) => {
+export const getPenumbraPort = async (serviceTypeName: string) => {
   const { port1: port, port2: transferPort } = new MessageChannel();
   const initPort = ClientConnectionManager.init(ChannelClientLabel.Extension);
   initPort.postMessage(
@@ -19,10 +19,10 @@ export const getPenumbraPort = (serviceTypeName: string) => {
     } as InitChannelClientMessage,
     [transferPort],
   );
-  return port;
+  return Promise.resolve(port);
 };
 
 export const grpcClient = createPromiseClient(
   ViewProtocolService,
-  createChannelTransport(ViewProtocolService, getPenumbraPort(ViewProtocolService.typeName)),
+  createChannelTransport(ViewProtocolService, getPenumbraPort),
 );

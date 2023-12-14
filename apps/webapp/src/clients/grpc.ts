@@ -8,20 +8,20 @@ import { getPenumbraPort } from './penumbra-port';
 
 export const viewClient = createPromiseClient(
   ViewProtocolService,
-  createChannelTransport(ViewProtocolService, getPenumbraPort(ViewProtocolService.typeName)),
+  createChannelTransport(ViewProtocolService, getPenumbraPort),
 );
 
 export const custodyClient = createPromiseClient(
   CustodyProtocolService,
-  createChannelTransport(CustodyProtocolService, getPenumbraPort(CustodyProtocolService.typeName)),
+  createChannelTransport(CustodyProtocolService, getPenumbraPort),
 );
 
 export const simulateClient = createPromiseClient(
   SimulationService,
-  createChannelTransport(SimulationService, getPenumbraPort(SimulationService.typeName)),
+  createChannelTransport(SimulationService, getPenumbraPort),
 );
 
 export const ibcClient = createPromiseClient(
   IbcClientService,
-  createChannelTransport(IbcClientService, getPenumbraPort(IbcClientService.typeName)),
+  createChannelTransport(IbcClientService, getPenumbraPort),
 );

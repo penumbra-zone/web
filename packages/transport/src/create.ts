@@ -22,6 +22,7 @@ import {
 import {
   TransportEvent,
   TransportMessage,
+  TransportState,
   isTransportError,
   isTransportEvent,
   isTransportMessage,
@@ -32,6 +33,8 @@ import {
 import { JsonToMessage, streamToGenerator } from './stream';
 
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
+
+export type GetPortFn = (serviceType: string) => Promise<MessagePort>;
 
 type CreateAnyMethodImpl<S extends ServiceType> = (
   methodInfo: MethodInfo & { kind: MethodKind },
@@ -58,7 +61,7 @@ const makeAnyServiceImpl: CreateAnyServiceImpl = <S extends ServiceType>(
 
 export const createChannelTransport = (
   s: ServiceType,
-  port: MessagePort,
+  getPort: GetPortFn,
   initTimeout = DEFAULT_INIT_TIMEOUT,
 ) => {
   const pending = new Map<
@@ -68,53 +71,60 @@ export const createChannelTransport = (
 
   let callbackError: Error | undefined;
 
-  let connected: boolean | undefined;
+  const connection = getPort(s.typeName).then((port: MessagePort) => {
+    let applyState: (s: TransportState) => void;
 
-  let connectionState: (a: boolean, r?: JsonValue) => void;
-  const providerAck = Promise.race([
-    new Promise<void>((_, reject) =>
+    const timeout = new Promise<never>((_, reject) =>
       setTimeout(
         reject,
         initTimeout,
         new ConnectError('Channel connection timed out', ConnectErrorCode.Unavailable),
       ),
-    ),
-    new Promise<void>(
-      (ack, reject) =>
-        (connectionState = (state: boolean, reason?: JsonValue) => {
-          connected = state;
-          if (connected) ack();
+    );
+
+    const ack = new Promise<MessagePort>(
+      (resolve, reject) =>
+        (applyState = ({ connected, reason }: TransportState) => {
+          if (connected) resolve(port);
           else {
             port.close();
-            const err = errorFromJson(reason!, {}, new ConnectError('Connection rejected'));
+            const err = errorFromJson(
+              reason ?? 'No Reason',
+              {},
+              new ConnectError('Connection rejected'),
+            );
             reject(err);
             callbackError ??= err;
             throw err;
           }
         }),
-    ),
-  ]);
+    );
 
-  port.addEventListener('message', ev => {
-    try {
-      if (isTransportState(ev.data)) connectionState(ev.data.connected, ev.data.reason);
-      else if (isTransportEvent(ev.data)) {
-        const respond = pending.get(ev.data.requestId);
-        if (!respond) throw Error(`Request ${ev.data.requestId} not pending`);
-        respond(ev.data);
-      } else if (isTransportError(ev.data))
-        throw errorFromJson(ev.data.error, {}, new ConnectError('Transport error'));
-      else throw Error('Unknown transport item');
-    } catch (error) {
-      const err = ConnectError.from(error);
-      callbackError ??= err;
-      throw err;
-    }
+    port.addEventListener('message', ev => {
+      try {
+        if (isTransportState(ev.data)) applyState(ev.data);
+        else if (isTransportEvent(ev.data)) {
+          const respond = pending.get(ev.data.requestId);
+          if (!respond) throw Error(`Request ${ev.data.requestId} not pending`);
+          respond(ev.data);
+        } else if (isTransportError(ev.data))
+          throw errorFromJson(ev.data.error, {}, new ConnectError('Transport error'));
+        else throw Error('Unknown transport item');
+      } catch (error) {
+        const err = ConnectError.from(error);
+        callbackError ??= err;
+        throw err;
+      }
+    });
+
+    port.start();
+
+    return Promise.race([timeout, ack]);
   });
 
   const request = async (msg: AnyMessage) => {
     if (callbackError) throw callbackError;
-    await providerAck;
+    const port = await connection;
 
     const rpc: TransportMessage = {
       requestId: crypto.randomUUID(),
@@ -164,8 +174,6 @@ export const createChannelTransport = (
         return () => Promise.reject(`${MethodKind[method.kind]} unimplemented`);
     }
   };
-
-  port.start();
 
   return createRouterTransport(({ service }: ConnectRouter): void => {
     service(s, makeAnyServiceImpl(s, makeChannelMethodImpl));
