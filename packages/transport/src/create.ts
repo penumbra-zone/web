@@ -34,8 +34,6 @@ import { JsonToMessage, streamToGenerator } from './stream';
 
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 
-export type GetPortFn = (serviceType: string) => Promise<MessagePort>;
-
 type CreateAnyMethodImpl<S extends ServiceType> = (
   methodInfo: MethodInfo & { kind: MethodKind },
 ) => typeof methodInfo extends S['methods'][keyof S['methods']]
@@ -61,7 +59,7 @@ const makeAnyServiceImpl: CreateAnyServiceImpl = <S extends ServiceType>(
 
 export const createChannelTransport = (
   s: ServiceType,
-  getPort: GetPortFn,
+  getPort: (serviceType: string) => MessagePort | Promise<MessagePort>,
   initTimeout = DEFAULT_INIT_TIMEOUT,
 ) => {
   const pending = new Map<
@@ -73,8 +71,8 @@ export const createChannelTransport = (
 
   let port: MessagePort | undefined;
 
-  const connect = async () =>
-    getPort(s.typeName).then((port: MessagePort) => {
+  const connect = () =>
+    Promise.resolve(getPort(s.typeName)).then((port: MessagePort) => {
       let applyState: (s: TransportState) => void;
 
       const timeout = new Promise<never>((_, reject) =>
