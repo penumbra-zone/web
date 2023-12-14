@@ -17,6 +17,7 @@ import { JsonValue } from '@bufbuild/protobuf';
 import { ChromeRuntimeStreamSink } from './stream';
 import { ConnectError, Code as ConnectErrorCode } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
+import { isDisconnectedPortError } from './errors';
 
 interface BackgroundConnection {
   type: ChannelClientLabel;
@@ -155,13 +156,16 @@ export class BackgroundConnectionManager {
           if (subPort.name !== channel) return;
           chrome.runtime.onConnect.removeListener(subListener);
           connection.streams.set(channel, acont);
-          subPort.onDisconnect.addListener(() => acont.abort(channel));
+          subPort.onDisconnect.addListener(() => acont.abort(`Disconnected: ${channel}`));
           void stream
             .pipeTo(new WritableStream(new ChromeRuntimeStreamSink(subPort)), {
               signal: acont.signal,
             })
             .catch((error: unknown) => {
-              if (error !== channel) throw error;
+              // This throw won't reach the client.  The failure has already
+              // been transmitted in-channel by the stream sink if possible, and
+              // the client source will fail in a meaningful way.
+              if (!isDisconnectedPortError(error)) throw error;
             })
             .finally(() => {
               connection.streams.delete(channel);
