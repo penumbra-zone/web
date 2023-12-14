@@ -45,6 +45,12 @@ export interface StreamChannelEnd {
   done: true;
 }
 
+export interface StreamChannelAbort {
+  sequence: number;
+  abort: true;
+  reason: JsonValue;
+}
+
 // guards
 
 const isObj = (o: unknown): o is object => typeof o === 'object' && o !== null;
@@ -74,3 +80,6 @@ export const isStreamControl = (s: unknown): s is StreamChannelChunk | StreamCha
   'sequence' in s &&
   typeof s.sequence === 'number' &&
   ('value' in s || ('done' in s && s.done === true));
+
+export const isStreamAbort = (s: unknown): s is StreamChannelAbort =>
+  isObj(s) && 'abort' in s && s.abort === true;

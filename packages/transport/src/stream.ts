@@ -10,6 +10,7 @@
  */
 
 import { Any, AnyMessage, JsonValue, IMessageTypeRegistry } from '@bufbuild/protobuf';
+import { ConnectError } from '@connectrpc/connect';
 
 /**
  * Packs any registered message to json with "@type" annotation.
@@ -56,6 +57,8 @@ export const streamToGenerator = async function* <T>(s: ReadableStream<T>) {
       if (result.done) break;
       else yield result.value;
     }
+  } catch (e) {
+    throw ConnectError.from(e);
   } finally {
     r.releaseLock();
   }
