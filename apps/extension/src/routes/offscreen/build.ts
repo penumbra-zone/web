@@ -1,6 +1,6 @@
-import {InternalMessageHandler } from '@penumbra-zone/types/src/internal-msg/shared';
+import {InternalMessageHandler, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
 import { ActionBuildMessage } from './types';
-import { ActionPlan, TransactionPlan, WitnessData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { Action, ActionPlan, TransactionPlan, WitnessData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 const spawnWorker = (
     transactionPlan: TransactionPlan, 
@@ -14,7 +14,7 @@ const spawnWorker = (
 
         // Set up event listener to recieve messages from the web worker
         worker.addEventListener('message', function(e) {
-            console.log('result recieved from worker: ', e.data);
+            console.log('Result recieved from worker: ', e.data);
             resolve(e.data);
         }, false);
 
@@ -54,6 +54,13 @@ export const buildActionHandler: InternalMessageHandler<ActionBuildMessage> = as
     const results = await Promise.all(workerPromises);
 
     console.log("results are: ", results)
+
+    // Construct response format
+    const response: InternalResponse<ActionBuildMessage> = {
+        type: 'ACTION_AND_BUILD', 
+        data: results,
+    };
+    responder(response)
 
     return results
 };
