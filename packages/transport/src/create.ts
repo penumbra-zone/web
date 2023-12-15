@@ -1,5 +1,3 @@
-const DEFAULT_INIT_TIMEOUT = 1000;
-
 import {
   createRouterTransport,
   ServiceImpl,
@@ -17,11 +15,15 @@ import {
   AnyMessage,
   JsonValue,
   Any,
+  JsonReadOptions,
+  JsonWriteOptions,
+  createRegistry,
 } from '@bufbuild/protobuf';
 
 import {
   TransportEvent,
   TransportMessage,
+  TransportState,
   isTransportError,
   isTransportEvent,
   isTransportMessage,
@@ -30,8 +32,6 @@ import {
 } from './types';
 
 import { JsonToMessage, streamToGenerator } from './stream';
-
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
 
 type CreateAnyMethodImpl<S extends ServiceType> = (
   methodInfo: MethodInfo & { kind: MethodKind },
@@ -56,78 +56,121 @@ const makeAnyServiceImpl: CreateAnyServiceImpl = <S extends ServiceType>(
   return impl;
 };
 
-export const createChannelTransport = (
-  s: ServiceType,
-  port: MessagePort,
-  initTimeout = DEFAULT_INIT_TIMEOUT,
-) => {
+export interface ChannelTransportOptions {
+  defaultTimeoutMs?: number;
+  jsonOptions?: Partial<JsonReadOptions & JsonWriteOptions>;
+  serviceType: ServiceType;
+  getPort: (serviceType: string) => MessagePort | Promise<MessagePort>;
+}
+
+export const createChannelTransport = ({
+  serviceType,
+  getPort,
+  defaultTimeoutMs,
+  jsonOptions,
+}: ChannelTransportOptions) => {
+  // if you supply your own registry in jsonOptions, it should at minimum
+  // contain message types for this service, or serialization will fail.
+  const typeRegistry = jsonOptions?.typeRegistry ?? createRegistry(serviceType);
+
   const pending = new Map<
     ReturnType<typeof crypto.randomUUID>,
     (response: TransportEvent) => void
   >();
 
-  let callbackError: Error | undefined;
+  // this is used to recover errors from transportListener, which can't throw
+  // unfortunately, a nonspecific listener throw may be dislocated in time.
+  let listenerError: ConnectError | undefined;
 
-  let connected: boolean | undefined;
+  // private, top-level port for this transport
+  let port: MessagePort | undefined;
 
-  let connectionState: (a: boolean, r?: JsonValue) => void;
-  const providerAck = Promise.race([
-    new Promise<void>((_, reject) =>
-      setTimeout(
-        reject,
-        initTimeout,
-        new ConnectError('Channel connection timed out', ConnectErrorCode.Unavailable),
-      ),
-    ),
-    new Promise<void>(
-      (ack, reject) =>
-        (connectionState = (state: boolean, reason?: JsonValue) => {
-          connected = state;
-          if (connected) ack();
+  /**
+   * This function is called on the first request.  It begins channel init at
+   * that moment, using the `getPort` function from options.  Message listeners
+   * are attached during this process.  Failure will reject the first request.
+   *
+   * Any createChannelTransport caller should supply  `defaultTimeoutMs` or init
+   * may stall forever.
+   *
+   * @returns A promise that resolves when the channel is connected.
+   */
+  const connect = () =>
+    Promise.resolve(getPort(serviceType.typeName)).then((port: MessagePort) => {
+      const initTimeout = new Promise<never>(
+        (_, reject) =>
+          defaultTimeoutMs &&
+          setTimeout(
+            reject,
+            defaultTimeoutMs,
+            new ConnectError('Channel connection timed out', ConnectErrorCode.Unavailable),
+          ),
+      );
+
+      // init promises a useable MessagePort for top-level transport, resolved
+      // on the first connectionState call.  connectionState is declared outside
+      // the promise so it's accessible to the transport message listener.
+      let connectionState: (s: TransportState) => void;
+      const init = new Promise<MessagePort>((resolve, reject) => {
+        connectionState = ({ connected, reason }: TransportState) => {
+          if (connected) resolve(port);
           else {
             port.close();
-            const err = errorFromJson(reason!, {}, new ConnectError('Connection rejected'));
+            const err = errorFromJson(reason!, {}, new ConnectError('Channel connection rejected'));
+            // this rejects the init promise
             reject(err);
-            callbackError ??= err;
+            // this throws to transportListener, not the init promise
             throw err;
           }
-        }),
-    ),
-  ]);
+        };
+      });
 
-  port.addEventListener('message', ev => {
-    try {
-      if (isTransportState(ev.data)) connectionState(ev.data.connected, ev.data.reason);
-      else if (isTransportEvent(ev.data)) {
-        const respond = pending.get(ev.data.requestId);
-        if (!respond) throw Error(`Request ${ev.data.requestId} not pending`);
-        respond(ev.data);
-      } else if (isTransportError(ev.data))
-        throw errorFromJson(ev.data.error, {}, new ConnectError('Transport error'));
-      else throw Error('Unknown transport item');
-    } catch (error) {
-      const err = ConnectError.from(error);
-      callbackError ??= err;
-      throw err;
-    }
-  });
+      // message listener to be immediately attached to the port.  closes over
+      // connectionState from this scope.  resolves init, handles events,
+      // handles errors.
+      const transportListener = (ev: MessageEvent<unknown>) => {
+        try {
+          // the first connectionState call resolves init. subsequent calls are
+          // a no-op for the promise, but can throw back here.
+          if (isTransportState(ev.data)) connectionState(ev.data);
+          else if (isTransportEvent(ev.data)) {
+            const respond = pending.get(ev.data.requestId);
+            if (!respond) throw Error(`Request ${ev.data.requestId} not pending`);
+            respond(ev.data);
+          } else if (isTransportError(ev.data))
+            throw errorFromJson(ev.data.error, {}, new ConnectError('Transport error'));
+          else throw Error('Unknown transport item');
+        } catch (error) {
+          const err = ConnectError.from(error);
+          // throwing from a listener is pointless. store the first error, log
+          listenerError ??= err;
+          console.error('Error in transport listener', err);
+        }
+      };
 
-  const request = async (msg: AnyMessage) => {
-    if (callbackError) throw callbackError;
-    await providerAck;
+      port.addEventListener('message', transportListener);
+      port.start();
 
-    const rpc: TransportMessage = {
-      requestId: crypto.randomUUID(),
-      message: Any.pack(msg).toJson({ typeRegistry }),
-    };
+      return Promise.race([initTimeout, init]);
+    });
 
+  const request = async (request: AnyMessage) => {
+    if (listenerError) throw listenerError;
+
+    // if we don't already have a port, go get one
+    port ??= await connect();
+
+    const requestId = crypto.randomUUID();
+    const message = Any.pack(request).toJson({ typeRegistry });
+
+    // this promise is resolved by transportListener
     const futureResponse = new Promise<JsonValue | ReadableStream<JsonValue>>((resolve, reject) =>
-      pending.set(rpc.requestId, (response: TransportEvent) => {
-        if (!pending.delete(rpc.requestId))
-          throw Error(`Responding to ${rpc.requestId} but it's already resolved`);
-        else if (rpc.requestId !== response.requestId)
-          throw Error(`Responding to ${rpc.requestId} but ${response.requestId} doesn't match`);
-        else if (callbackError) reject(callbackError);
+      pending.set(requestId, (response: TransportEvent) => {
+        if (listenerError) reject(listenerError);
+        else if (!pending.delete(requestId))
+          throw Error(`Responding to ${requestId} but it's already resolved`);
+        else if (requestId !== response.requestId)
+          throw Error(`Responding to ${requestId} but ${response.requestId} doesn't match`);
         else if (isTransportError(response))
           reject(errorFromJson(response.error, {}, new ConnectError('Transport error')));
         else if (isTransportMessage(response)) resolve(response.message);
@@ -136,11 +179,11 @@ export const createChannelTransport = (
       }),
     );
 
-    port.postMessage(rpc);
+    port.postMessage({ requestId, message } satisfies TransportMessage);
     return futureResponse;
   };
 
-  const makeChannelMethodImpl: CreateAnyMethodImpl<typeof s> = method => {
+  const makeChannelMethodImpl: CreateAnyMethodImpl<typeof serviceType> = method => {
     switch (method.kind) {
       case MethodKind.Unary: {
         return async function (message: AnyMessage) {
@@ -165,9 +208,7 @@ export const createChannelTransport = (
     }
   };
 
-  port.start();
-
   return createRouterTransport(({ service }: ConnectRouter): void => {
-    service(s, makeAnyServiceImpl(s, makeChannelMethodImpl));
+    service(serviceType, makeAnyServiceImpl(serviceType, makeChannelMethodImpl));
   });
 };

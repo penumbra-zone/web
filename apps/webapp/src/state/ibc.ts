@@ -9,6 +9,7 @@ import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tender
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Selection } from './types';
+import { viewClient, custodyClient, ibcClient } from '../clients/grpc';
 
 export interface IbcSendSlice {
   selection: Selection | undefined;
@@ -85,8 +86,6 @@ const getTimeout = async (
   const twoDaysInMilliseconds = 2 * 24 * 60 * 60 * 1000; // 2 days * 24 hours/day * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds/second
   const timeoutTime = BigInt(Date.now() + twoDaysInMilliseconds);
 
-  const { ibcClient } = await import('../clients/grpc');
-
   const { clientStates } = await ibcClient.clientStates({});
   const unpacked = clientStates
     .map(cs => cs.clientState!.unpack(typeRegistry))
@@ -119,8 +118,6 @@ const getPlanRequest = async ({
   if (typeof selection?.accountIndex === 'undefined') throw new Error('no selected account');
   if (!selection.asset) throw new Error('no selected asset');
 
-  const { viewClient } = await import('../clients/grpc');
-
   // TODO: implement source address in future, should correspond with asset selector?
   const { address: returnAddress } = await viewClient.ephemeralAddress({});
   if (!returnAddress) throw new Error('Error with generating ephemeral return address');
@@ -144,8 +141,6 @@ const getPlanRequest = async ({
 };
 
 const planWitnessBuildBroadcast = async (plannerReq: TransactionPlannerRequest) => {
-  const { viewClient, custodyClient } = await import('../clients/grpc');
-
   const { plan } = await viewClient.transactionPlanner(plannerReq);
   if (!plan) throw new Error('no plan in response');
 
