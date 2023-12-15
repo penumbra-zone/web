@@ -27,7 +27,7 @@ export const isOffscreenApprovalReq = (req: OffscreenRequest): req is OffscreenM
 };
 
 const typedMessageRouter = (req: OffscreenRequest, sendResponse: (x: unknown) => void): void => {
-  if (isOffscreenApprovalReq(req)) buildActionHandler(req.request, sendResponse);;
+  if (isOffscreenApprovalReq(req)) buildActionHandler(req.request, sendResponse);
 };
 
 chrome.runtime.onMessage.addListener(offscreenMessageHandler);

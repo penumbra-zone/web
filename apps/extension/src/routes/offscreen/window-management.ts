@@ -21,25 +21,26 @@ export const handleOffscreen = async (
   }
   
   const result = await offscreenClient.buildAction(req, witness, fullViewingKey, action_types)
+  
   if ('error' in result) throw result.error;
   if (!result.data) throw new Error('Transaction was not approved');
   closeOffscreenDocument()
 };
 
 async function closeOffscreenDocument() {
-    if (!(await hasDocument())) {
-      return;
-    }
-    await chrome.offscreen.closeDocument();
+  if (!(await hasDocument())) {
+    return;
   }
+  await chrome.offscreen.closeDocument();
+}
 
 async function hasDocument() {
-    // Check all windows controlled by the service worker if one of them is the offscreen document
-    const matchedClients = await sw.clients.matchAll();
-    for (const client of matchedClients) {
-      if (client.url.endsWith(OFFSCREEN_DOCUMENT_PATH)) {
-        return true;
-      }
+  // Check all windows controlled by the service worker if one of them is the offscreen document
+  const matchedClients = await sw.clients.matchAll();
+  for (const client of matchedClients) {
+    if (client.url.endsWith(OFFSCREEN_DOCUMENT_PATH)) {
+      return true;
     }
-    return false;
   }
+  return false;
+}
