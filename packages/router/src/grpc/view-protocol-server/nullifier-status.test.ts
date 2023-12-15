@@ -9,6 +9,7 @@ import { ServicesInterface, stringToUint8Array } from '@penumbra-zone/types';
 import { WalletId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { assertWalletIdMatches } from './utils';
+import { JsonValue } from '@bufbuild/protobuf';
 
 const mockAssertWalletId = assertWalletIdMatches as Mock;
 
@@ -228,8 +229,68 @@ describe('handleNullifierStatusReq', () => {
         value: { value: matchingSwapSpent.toJson(), table: 'SWAPS' },
       });
 
+    const nonMatchingNote = new SpendableNoteRecord({
+      nullifier: new Nullifier({ inner: stringToUint8Array('nope') }),
+    });
+
     // Incoming notes with no matches
-    noteSubNext.mockImplementation(() => new Promise(() => undefined));
+    noteSubNext
+      .mockResolvedValueOnce({
+        value: { value: nonMatchingNote.toJson(), table: 'SPENDABLE_NOTES' },
+      })
+      .mockResolvedValueOnce({
+        value: { value: nonMatchingNote.toJson(), table: 'SPENDABLE_NOTES' },
+      })
+      .mockResolvedValueOnce({
+        value: { value: nonMatchingNote.toJson(), table: 'SPENDABLE_NOTES' },
+      })
+      .mockResolvedValueOnce({
+        value: { value: nonMatchingNote.toJson(), table: 'SPENDABLE_NOTES' },
+      })
+      .mockResolvedValueOnce({
+        value: { value: nonMatchingNote.toJson(), table: 'SPENDABLE_NOTES' },
+      });
+
+    const req = new NullifierStatusRequest({
+      nullifier: matchingNullifier,
+      awaitDetection: true,
+    });
+
+    const res = await handleNullifierStatusReq(req, mockServices as unknown as ServicesInterface);
+    expect(res.spent).toBe(true);
+  });
+
+  test('await losing the race does gets picked up next loop', async () => {
+    mockIndexedDb.getNoteByNullifier.mockResolvedValue(undefined);
+    mockIndexedDb.getSwapByNullifier.mockResolvedValue(undefined);
+
+    const matchingNullifier = new Nullifier({ inner: stringToUint8Array('nullifier_abc') });
+
+    const matchingSwap = new SwapRecord({
+      nullifier: matchingNullifier,
+      heightClaimed: 10314n,
+    });
+
+    const swapIteratorVal = {
+      value: { value: matchingSwap.toJson(), table: 'SWAPS' },
+    };
+
+    // Incoming swaps with the last one being the match
+    swapSubNext.mockImplementation(delay(swapIteratorVal, 1));
+
+    const nonMatchingNote = new SpendableNoteRecord({
+      nullifier: new Nullifier({ inner: stringToUint8Array('nope') }),
+    });
+
+    const noteIteratorVal = {
+      value: { value: nonMatchingNote.toJson(), table: 'SPENDABLE_NOTES' },
+    };
+
+    // Incoming notes with no matches
+    noteSubNext
+      .mockImplementation(delay(noteIteratorVal, 0))
+      .mockImplementation(delay(noteIteratorVal, 1))
+      .mockImplementation(delay(noteIteratorVal, 2));
 
     const req = new NullifierStatusRequest({
       nullifier: matchingNullifier,
@@ -240,3 +301,10 @@ describe('handleNullifierStatusReq', () => {
     expect(res.spent).toBe(true);
   });
 });
+
+const delay = (toReturn: { value: { value: JsonValue; table: string } }, delay: number) => () =>
+  new Promise(resolve => {
+    setTimeout(() => {
+      resolve(toReturn);
+    }, delay);
+  });
