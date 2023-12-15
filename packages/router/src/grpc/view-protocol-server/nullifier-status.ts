@@ -62,13 +62,30 @@ export const handleNullifierStatusReq = async (
   return new NullifierStatusResponse({ spent: true });
 };
 
+// Meant to add identifier to async generator result
+const labelResult =
+  <T>(label: string) =>
+  (result: IteratorResult<T>) => {
+    return { label, result };
+  };
+
 // Yield's first available value on two async generators. Also assumes they run forever.
 async function* mergeAsyncGenerators<T, U>(
-  gen1: AsyncGenerator<T>,
-  gen2: AsyncGenerator<U>,
+  genA: AsyncGenerator<T>,
+  genB: AsyncGenerator<U>,
 ): AsyncGenerator<T | U> {
+  let nextA = genA.next().then(labelResult('A'));
+  let nextB = genB.next().then(labelResult('B'));
+
   while (true) {
-    const result = await Promise.race([gen1.next(), gen2.next()]);
+    const { label, result } = await Promise.race([nextA, nextB]);
     yield result.value;
+
+    // Update the promise for the generator that resolved
+    if (label === 'A') {
+      nextA = genA.next().then(labelResult('A'));
+    } else {
+      nextB = genB.next().then(labelResult('B'));
+    }
   }
 }
