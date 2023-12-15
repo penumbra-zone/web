@@ -2,6 +2,7 @@ import {
   NullifierStatusRequest,
   NullifierStatusResponse,
   SpendableNoteRecord,
+  SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { ViewReqMessage } from './router';
 import { IndexedDbInterface, ServicesInterface } from '@penumbra-zone/types';
@@ -31,7 +32,7 @@ export const handleNullifierStatusReq = async (
   services: ServicesInterface,
 ): Promise<NullifierStatusResponse> => {
   await assertWalletIdMatches(req.walletId);
-  if (!req.nullifier) return new NullifierStatusResponse();
+  if (!req.nullifier) throw new Error('No nullifier passed');
 
   const { indexedDb } = await services.getWalletServices();
   const spent = await noteOrSwapSpent(indexedDb, req.nullifier);
@@ -42,13 +43,32 @@ export const handleNullifierStatusReq = async (
     return new NullifierStatusResponse({ spent: false });
   }
 
-  // Wait until our DB encounters corresponding spent note
-  const subscription = indexedDb.subscribe('SPENDABLE_NOTES');
-  for await (const update of subscription) {
-    const note = SpendableNoteRecord.fromJson(update.value);
-    if (note.nullifier?.equals(req.nullifier) && (await noteOrSwapSpent(indexedDb, note.nullifier)))
-      break;
+  // Wait until our DB encounters a new note or swap. If it corresponds to the nullifier, break loop.
+  const mergedSubscription = mergeAsyncGenerators(
+    indexedDb.subscribe('SPENDABLE_NOTES'),
+    indexedDb.subscribe('SWAPS'),
+  );
+
+  for await (const update of mergedSubscription) {
+    if (update.table === 'SPENDABLE_NOTES') {
+      const note = SpendableNoteRecord.fromJson(update.value);
+      if (note.nullifier?.equals(req.nullifier) && note.heightSpent !== 0n) break;
+    } else {
+      const swap = SwapRecord.fromJson(update.value);
+      if (swap.nullifier?.equals(req.nullifier) && swap.heightClaimed !== 0n) break;
+    }
   }
 
   return new NullifierStatusResponse({ spent: true });
 };
+
+// Yield's first available value on two async generators. Also assumes they run forever.
+async function* mergeAsyncGenerators<T, U>(
+  gen1: AsyncGenerator<T>,
+  gen2: AsyncGenerator<U>,
+): AsyncGenerator<T | U> {
+  while (true) {
+    const result = await Promise.race([gen1.next(), gen2.next()]);
+    yield result.value;
+  }
+}
