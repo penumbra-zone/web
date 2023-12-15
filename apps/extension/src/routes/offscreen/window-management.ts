@@ -9,7 +9,8 @@ const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 export const handleOffscreen = async (
   req: WitnessAndBuildRequest, 
   witness: WitnessData, 
-  fullViewingKey: string
+  fullViewingKey: string, 
+  action_types: string[]
 ): Promise<void> => {
   if (!(await hasDocument())) {
     await chrome.offscreen.createDocument({
@@ -18,8 +19,8 @@ export const handleOffscreen = async (
       justification: 'Spawn web workers',
     });
   }
-
-  const result = await offscreenClient.buildAction(req, witness, fullViewingKey)
+  
+  const result = await offscreenClient.buildAction(req, witness, fullViewingKey, action_types)
   if ('error' in result) throw result.error;
   if (!result.data) throw new Error('Transaction was not approved');
   closeOffscreenDocument()
