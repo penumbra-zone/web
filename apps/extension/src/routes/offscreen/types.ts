@@ -1,5 +1,5 @@
 import { InternalMessage, InternalRequest, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
-import { AuthorizeAndBuildRequest, AuthorizeAndBuildResponse, WitnessAndBuildRequest, WitnessAndBuildResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { WitnessAndBuildRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { TransactionPlan, WitnessData, AuthorizationData, ActionPlan, Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 export type OffscreenMessage = ActionBuildMessage;
@@ -8,7 +8,13 @@ export type OffscreenResponse = InternalResponse<ActionBuildMessage>;
 
 export type ActionBuildMessage = InternalMessage<
   'ACTION_AND_BUILD',
-  { transactionPlan: TransactionPlan, actionPlan: ActionPlan[], witness: WitnessData, fullViewingKey: string, action_types: string[]},
+  { 
+    transactionPlan: TransactionPlan, 
+    actionPlan: ActionPlan[], 
+    witness: WitnessData, 
+    fullViewingKey: string, 
+    key_type: string[]
+  },
   Action[]
 >;
 
@@ -28,7 +34,7 @@ export const offscreenClient = { buildAction: (
   arg: WitnessAndBuildRequest, 
   witness: WitnessData, 
   fullViewingKey: string,
-  action_types: string[]
+  key_type: string[]
 ) =>
     sendOffscreenMessage<ActionBuildMessage>({ 
       type: 'ACTION_AND_BUILD', 
@@ -37,7 +43,7 @@ export const offscreenClient = { buildAction: (
         actionPlan: arg.transactionPlan!.actions!, 
         witness, 
         fullViewingKey, 
-        action_types
+        key_type
       }, 
       target: 'target' }),
 };

@@ -1,4 +1,4 @@
-import { AuthorizeAndBuildRequest, WitnessAndBuildRequest } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb";
+import { WitnessAndBuildRequest } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb";
 import { offscreenClient } from "./types";
 import { Action, WitnessData } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb";
 
@@ -10,7 +10,7 @@ export const handleOffscreen = async (
   req: WitnessAndBuildRequest, 
   witness: WitnessData, 
   fullViewingKey: string, 
-  action_types: string[]
+  key_type: string[]
 ): Promise<Action[]> => {
   if (!(await hasDocument())) {
     await chrome.offscreen.createDocument({
@@ -20,7 +20,7 @@ export const handleOffscreen = async (
     });
   }
   
-  const result = await offscreenClient.buildAction(req, witness, fullViewingKey, action_types)
+  const result = await offscreenClient.buildAction(req, witness, fullViewingKey, key_type)
 
   if ('error' in result) throw result.error;
   if (!result.data) throw new Error('Transaction was not approved');

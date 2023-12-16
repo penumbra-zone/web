@@ -1,5 +1,6 @@
 import { JsonValue } from "@bufbuild/protobuf";
 import { loadLocalBinary } from "./utils";
+import { Action } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb";
 
 self.addEventListener('message', async function(e) {
     const { type, data } = e.data;
@@ -8,7 +9,7 @@ self.addEventListener('message', async function(e) {
         const action = await execute_worker(data.transactionPlan, data.actionPlan, data.witness, data.fullViewingKey, data.key_type);
 
         // Post message back to offscreen document
-        self.postMessage(JSON.stringify(action));
+        self.postMessage(action);
     }
 }, false);
 
@@ -53,7 +54,7 @@ async function execute_worker(
     }
 
     // Build specific action according to specificaton in transaction plan
-    const action = penumbraWasmModule.build_action(transactionPlan, actionPlan, fullViewingKey, witness)
+    const action: Action = penumbraWasmModule.build_action(transactionPlan, actionPlan, fullViewingKey, witness)
 
     return action;
 }

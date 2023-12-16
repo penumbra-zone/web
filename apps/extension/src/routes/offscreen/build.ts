@@ -14,7 +14,7 @@ const spawnWorker = (
 
         // Set up event listener to recieve messages from the web worker
         worker.addEventListener('message', function(e) {
-            console.log('Result recieved from worker: ', e.data);
+            console.log('Result recieved from worker: ', e.data as Action);
             resolve(e.data);
         }, false);
 
@@ -40,27 +40,23 @@ const spawnWorker = (
 
 export const buildActionHandler: InternalMessageHandler<ActionBuildMessage> = async (jsonReq, responder) => {
     // Destructure the data object to get individual fields
-    const { transactionPlan, actionPlan, witness, fullViewingKey, action_types } = jsonReq
+    const { transactionPlan, actionPlan, witness, fullViewingKey, key_type } = jsonReq
 
     // Array to store promises for each worker
     const workerPromises: Promise<any>[] = [];
 
     // Spawn web workers
     for (let i = 0; i < actionPlan.length; i++) {
-        workerPromises.push(spawnWorker(transactionPlan, actionPlan[i]!, witness, fullViewingKey, action_types[i]!))
+        workerPromises.push(spawnWorker(transactionPlan, actionPlan[i]!, witness, fullViewingKey, key_type[i]!))
     }
 
     // Wait for promises to resolve
-    const results = await Promise.all(workerPromises);
-
-    console.log("results are: ", results)
+    const batchActions = await Promise.all(workerPromises);
 
     // Construct response format
     const response: InternalResponse<ActionBuildMessage> = {
         type: 'ACTION_AND_BUILD', 
-        data: results,
+        data: batchActions,
     };
     responder(response)
-
-    return results
 };
