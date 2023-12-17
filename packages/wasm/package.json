@@ -9,8 +9,8 @@
   "dependencies": {
     "@bufbuild/protobuf": "^1.5.1",
     "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm-bundler": "0.63.3-preview-1",
-    "@penumbra-zone/wasm-nodejs": "0.63.3-preview-1",
+    "@penumbra-zone/wasm-bundler": "0.64.0",
+    "@penumbra-zone/wasm-nodejs": "0.64.0",
     "bech32": "^2.0.0",
     "eslint": "^8.55.0",
     "eslint-config-custom": "workspace:*",
