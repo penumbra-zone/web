@@ -12,7 +12,12 @@ import {
   WasmBuildSchema,
   WasmWitnessDataSchema,
 } from '@penumbra-zone/types';
-import { authorize, build as wasmBuild, build_parallel as wasmBuildParallel, witness as wasmWitness } from '@penumbra-zone/wasm-bundler';
+import {
+  authorize,
+  build as wasmBuild,
+  build_parallel as wasmBuildParallel,
+  witness as wasmWitness,
+} from '@penumbra-zone/wasm-bundler';
 import { loadProvingKeys } from '../src/utils';
 
 export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): AuthorizationData => {

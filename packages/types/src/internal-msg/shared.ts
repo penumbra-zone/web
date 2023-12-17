@@ -2,7 +2,7 @@ export interface InternalMessage<Type extends string, Req, Res> {
   type: Type;
   request: Req;
   response: Res;
-  target: String
+  target: String;
 }
 
 export type Ping = InternalMessage<'PING', string, string>;

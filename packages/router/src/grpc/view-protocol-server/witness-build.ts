@@ -4,7 +4,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { ViewReqMessage } from './router';
 import { ServicesInterface } from '@penumbra-zone/types';
-import { build, build_parallel, witness } from '@penumbra-zone/wasm-ts';
+import { build_parallel, witness } from '@penumbra-zone/wasm-ts';
 import { localExtStorage } from '@penumbra-zone/storage';
 import { handleOffscreenAPI } from '../../../../../apps/extension/src/routes/offscreen/window-management';
 
@@ -15,7 +15,7 @@ export const isWitnessBuildRequest = (msg: ViewReqMessage): msg is WitnessAndBui
 export const handleWitnessBuildReq = async (
   req: WitnessAndBuildRequest,
   services: ServicesInterface,
-): Promise<WitnessAndBuildResponse> => { 
+): Promise<WitnessAndBuildResponse> => {
   if (!req.authorizationData) throw new Error('No authorization data in request');
   if (!req.transactionPlan) throw new Error('No tx plan in request');
 
@@ -30,22 +30,17 @@ export const handleWitnessBuildReq = async (
 
   let action_types = [];
   for (let i = 0; i < req.transactionPlan?.actions.length!; i++) {
-    action_types.push(req.transactionPlan?.actions[i]!.action.case!)
+    action_types.push(req.transactionPlan?.actions[i]!.action.case!);
   }
 
-  const batchActions = await handleOffscreenAPI(
-    req, 
-    witnessData, 
-    fullViewingKey, 
-    action_types
-  );
+  const batchActions = await handleOffscreenAPI(req, witnessData, fullViewingKey, action_types);
 
   const transaction = await build_parallel(
     batchActions,
-    req.transactionPlan, 
-    witnessData, 
-    req.authorizationData
+    req.transactionPlan,
+    witnessData,
+    req.authorizationData,
   );
 
   return new WitnessAndBuildResponse({ transaction });
-}
+};
