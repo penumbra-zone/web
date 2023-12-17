@@ -10,7 +10,10 @@ import {
   nameChannel,
   ChannelClientLabel,
   isClientInitMessage,
-  isTransportStream,
+  isTransportState,
+  TransportState,
+  isTransportError,
+  TransportInitChannel,
 } from '../types';
 
 interface ClientConnection {
@@ -96,21 +99,25 @@ export class ClientConnectionManager {
      * page-provided client channel.  Messages are forwarded to the service port
      * without much validation.
      *
-     * A reference is kept in case we want to quietly remove the listener later.
-     *
      * @param ev may be any message transmitted by any untrusted page or other
      * untrusted script with access to the page-provided message channel
      */
     const clientListener = (ev: MessageEvent<TransportMessage | TransportStream>) => {
-      if (!isTransportData(ev.data)) throw Error('Unknown data in transport');
-      const request = ev.data;
-      if (isTransportMessage(request)) {
-        const { requestId, message } = request;
-        servicePort.postMessage({ requestId, message });
-      } else if (isTransportStream(request)) {
-        // TODO: MethodKind.ClientStreaming, MethodKind.BiDiStreaming
-        throw Error('Unimplemented request kind');
+      try {
+        if (!isTransportData(ev.data)) throw Error('Unknown transport from client');
+        else if (isTransportMessage(ev.data)) servicePort.postMessage(ev.data);
+        else throw Error('Unimplemented request kind');
+      } catch (error) {
+        console.error('Error in client listener', error);
+        clientPort.postMessage({ error });
       }
+    };
+
+    const acceptChannelStream = (ev: TransportInitChannel): TransportStream => {
+      const { requestId, channel: subName } = ev;
+      const sourcePort = chrome.runtime.connect({ includeTlsChannelId: true, name: subName });
+      const stream = new ReadableStream(new ChromeRuntimeStreamSource(sourcePort));
+      return { requestId, stream };
     };
 
     /**
@@ -129,20 +136,21 @@ export class ClientConnectionManager {
      */
     const serviceListener: Parameters<chrome.runtime.PortMessageEvent['addListener']>[0] = (
       ev: unknown,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      _: chrome.runtime.Port,
     ) => {
-      if (!isTransportData(ev)) throw Error('Unknown data in transport');
-      const response = ev;
-      if (isTransportMessage(response)) {
-        const { requestId, message } = response;
-        clientPort.postMessage({ requestId, message } satisfies TransportMessage);
-      } else if (isTransportInitChannel(response)) {
-        const { requestId, channel: subName } = response;
-        const sourcePort = chrome.runtime.connect({ includeTlsChannelId: true, name: subName });
-        const stream = new ReadableStream(new ChromeRuntimeStreamSource(sourcePort));
-        clientPort.postMessage({ requestId, stream } satisfies TransportStream, [stream]);
-      } else throw Error('Unimplemented response kind');
+      try {
+        if (isTransportState(ev)) {
+          clientPort.postMessage(ev);
+          if (!ev.connected) this.endConnection(clientId);
+        } else if (isTransportError(ev)) clientPort.postMessage(ev);
+        else if (isTransportMessage(ev)) clientPort.postMessage(ev);
+        else if (isTransportInitChannel(ev)) {
+          const sub = acceptChannelStream(ev);
+          clientPort.postMessage(sub, [sub.stream]);
+        } else throw Error('Unexpected transport from service');
+      } catch (error) {
+        console.error('Error in service listener', error, ev);
+        clientPort.postMessage({ error: String(error) });
+      }
     };
 
     this.connections.set(clientId, {
@@ -171,6 +179,7 @@ export class ClientConnectionManager {
     const { clientPort, servicePort } = this.connections.get(clientId)!;
     this.connections.delete(clientId);
     try {
+      clientPort.postMessage({ connected: false } satisfies TransportState);
       clientPort.close();
     } finally {
       servicePort.disconnect();

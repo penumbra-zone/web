@@ -8,6 +8,8 @@ import {
 } from '@penumbra-zone/transport';
 import { ClientConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/client-connection-manager';
 
+import { typeRegistry } from '@penumbra-zone/types/src/registry';
+
 export const getPenumbraPort = (serviceTypeName: string) => {
   const { port1: port, port2: transferPort } = new MessageChannel();
   const initPort = ClientConnectionManager.init(ChannelClientLabel.Extension);
@@ -24,5 +26,10 @@ export const getPenumbraPort = (serviceTypeName: string) => {
 
 export const grpcClient = createPromiseClient(
   ViewProtocolService,
-  createChannelTransport(ViewProtocolService, getPenumbraPort(ViewProtocolService.typeName)),
+  createChannelTransport({
+    defaultTimeoutMs: 10000,
+    serviceType: ViewProtocolService,
+    getPort: getPenumbraPort,
+    jsonOptions: { typeRegistry },
+  }),
 );
