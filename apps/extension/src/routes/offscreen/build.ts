@@ -1,6 +1,6 @@
 import {InternalMessageHandler, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
 import { ActionBuildMessage } from './types';
-import { Action, ActionPlan, TransactionPlan, WitnessData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { ActionPlan, TransactionPlan, WitnessData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 const spawnWorker = (
     transactionPlan: TransactionPlan, 
@@ -14,7 +14,6 @@ const spawnWorker = (
 
         // Set up event listener to recieve messages from the web worker
         worker.addEventListener('message', function(e) {
-            console.log('Result recieved from worker: ', e.data as Action);
             resolve(e.data);
         }, false);
 

@@ -1,6 +1,6 @@
 import { InternalMessage, InternalRequest, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
 import { WitnessAndBuildRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { TransactionPlan, WitnessData, AuthorizationData, ActionPlan, Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { TransactionPlan, WitnessData, ActionPlan, Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 export type OffscreenMessage = ActionBuildMessage;
 export type OffscreenRequest = InternalRequest<OffscreenMessage>;

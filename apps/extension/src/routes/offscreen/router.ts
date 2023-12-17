@@ -1,8 +1,9 @@
+import { InternalRequest } from '@penumbra-zone/types/src/internal-msg/shared';
 import { buildActionHandler } from './build';
-import { OffscreenMessage, OffscreenRequest, OffscreenResponse, isOffscreenRequest } from './types';
+import { ActionBuildMessage, OffscreenMessage, OffscreenRequest, OffscreenResponse, isOffscreenRequest } from './types';
 
 export const offscreenMessageHandler = (
-    req: unknown,
+    req: InternalRequest<ActionBuildMessage>,
     _: chrome.runtime.MessageSender,
     sendResponse: (x: unknown) => void,
   ) => {

@@ -1,4 +1,5 @@
 import {
+  Action,
   AuthorizationData,
   Transaction,
   TransactionPlan,
@@ -11,7 +12,7 @@ import {
   WasmBuildSchema,
   WasmWitnessDataSchema,
 } from '@penumbra-zone/types';
-import { authorize, build as wasmBuild, witness as wasmWitness } from '@penumbra-zone/wasm-bundler';
+import { authorize, build as wasmBuild, build_parallel as wasmBuildParallel, witness as wasmWitness } from '@penumbra-zone/wasm-bundler';
 import { loadProvingKeys } from '../src/utils';
 
 export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): AuthorizationData => {
@@ -36,5 +37,19 @@ export const build = async (
     WasmBuildSchema,
     wasmBuild(fullViewingKey, txPlan.toJson(), witnessData.toJson(), authData.toJson()),
   );
+  return Transaction.fromJsonString(JSON.stringify(result));
+};
+
+export const build_parallel = async (
+  batchActions: Action[],
+  txPlan: TransactionPlan,
+  witnessData: WitnessData,
+  authData: AuthorizationData,
+): Promise<Transaction> => {
+  const result = validateSchema(
+    WasmBuildSchema,
+    wasmBuildParallel(batchActions, txPlan.toJson(), witnessData.toJson(), authData.toJson()),
+  );
+
   return Transaction.fromJsonString(JSON.stringify(result));
 };

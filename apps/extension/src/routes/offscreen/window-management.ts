@@ -6,7 +6,7 @@ const sw = self as unknown as ServiceWorkerGlobalScope;
 
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
-export const handleOffscreen = async (
+export const handleOffscreenAPI = async (
   req: WitnessAndBuildRequest, 
   witness: WitnessData, 
   fullViewingKey: string, 
