@@ -12,6 +12,7 @@
   "dependencies": {
     "@bufbuild/protobuf": "^1.5.1",
     "@connectrpc/connect": "^1.1.4",
+    "@penumbra-zone/wasm-bundler": "0.64.0",
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/query": "workspace:*",

@@ -26,10 +26,9 @@ export const handleOffscreenAPI = async (
   const result = await offscreenClient.buildAction(req, witness, fullViewingKey, key_type);
 
   if ('error' in result) throw result.error;
-  if (!result.data) throw new Error('Transaction was not approved');
 
   // Close offscreen document
-  closeOffscreenDocument();
+  await closeOffscreenDocument();
 
   return result.data;
 };

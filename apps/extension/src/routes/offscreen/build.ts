@@ -4,6 +4,7 @@ import {
 } from '@penumbra-zone/types/src/internal-msg/shared';
 import { ActionBuildMessage } from './types';
 import {
+  Action,
   ActionPlan,
   TransactionPlan,
   WitnessData,
@@ -15,7 +16,7 @@ const spawnWorker = (
   witness: WitnessData,
   fullViewingKey: string,
   key_type: string,
-): Promise<any> => {
+): Promise<Action> => {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('../web-worker/router.ts', import.meta.url));
 
@@ -23,7 +24,7 @@ const spawnWorker = (
     worker.addEventListener(
       'message',
       function (e) {
-        resolve(e.data);
+        resolve(e.data as Action);
       },
       false,
     );
@@ -51,12 +52,12 @@ const spawnWorker = (
 export const buildActionHandler: InternalMessageHandler<ActionBuildMessage> = async (
   jsonReq,
   responder,
-) => {
+): Promise<InternalResponse<ActionBuildMessage>> => {
   // Destructure the data object to get individual fields
   const { transactionPlan, actionPlan, witness, fullViewingKey, key_type } = jsonReq;
 
   // Array to store promises for each worker
-  const workerPromises: Promise<any>[] = [];
+  const workerPromises: Promise<Action>[] = [];
 
   // Spawn web workers
   for (let i = 0; i < actionPlan.length; i++) {
@@ -74,4 +75,6 @@ export const buildActionHandler: InternalMessageHandler<ActionBuildMessage> = as
     data: batchActions,
   };
   responder(response);
+
+  return response;
 };

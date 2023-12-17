@@ -50,7 +50,7 @@ export const offscreenClient = {
       type: 'ACTION_AND_BUILD',
       request: {
         transactionPlan: arg.transactionPlan!,
-        actionPlan: arg.transactionPlan!.actions!,
+        actionPlan: arg.transactionPlan!.actions,
         witness,
         fullViewingKey,
         key_type,

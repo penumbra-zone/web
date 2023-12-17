@@ -28,9 +28,9 @@ export const handleWitnessBuildReq = async (
 
   const { fullViewingKey } = wallets[0]!;
 
-  let action_types = [];
-  for (let i = 0; i < req.transactionPlan?.actions.length!; i++) {
-    action_types.push(req.transactionPlan?.actions[i]!.action.case!);
+  const action_types = [];
+  for (const action of req.transactionPlan.actions) {
+    action_types.push(action.action.case!);
   }
 
   const batchActions = await handleOffscreenAPI(req, witnessData, fullViewingKey, action_types);
