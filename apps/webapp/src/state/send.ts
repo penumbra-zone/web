@@ -128,19 +128,11 @@ const planWitnessBuildBroadcast = async ({
   const { data: authorizationData } = await custodyClient.authorize({ plan });
   if (!authorizationData) throw new Error('no authorization data in response');
 
-  // Start timer
-  const startTime = performance.now(); // Record start time
-
   const { transaction } = await viewClient.witnessAndBuild({
     transactionPlan: plan,
     authorizationData,
   });
   if (!transaction) throw new Error('no transaction in response');
-
-  // End timer
-  const endTime = performance.now();
-  const executionTime = endTime - startTime;
-  console.log(`Parallel transaction execution time: ${executionTime} milliseconds`);
 
   const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
   if (!id) throw new Error('no id in broadcast response');

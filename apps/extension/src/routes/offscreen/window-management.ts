@@ -19,26 +19,18 @@ export const handleOffscreenAPI = async (
     await chrome.offscreen.createDocument({
       url: OFFSCREEN_DOCUMENT_PATH,
       reasons: [chrome.offscreen.Reason.WORKERS],
-      justification: 'Spawn web workers',
+      justification: 'spawn web workers from offscreen document',
     });
   }
 
   const result = await offscreenClient.buildAction(req, witness, fullViewingKey, key_type);
-
-  if ('error' in result) throw result.error;
+  if ('error' in result) throw new Error('failed to build action action');
 
   // Close offscreen document
-  await closeOffscreenDocument();
+  await chrome.offscreen.closeDocument();
 
   return result.data;
 };
-
-async function closeOffscreenDocument() {
-  if (!(await hasDocument())) {
-    return;
-  }
-  await chrome.offscreen.closeDocument();
-}
 
 async function hasDocument() {
   // Check all windows controlled by the service worker if one of them is the offscreen document

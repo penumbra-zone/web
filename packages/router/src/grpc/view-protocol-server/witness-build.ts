@@ -35,7 +35,7 @@ export const handleWitnessBuildReq = async (
 
   const batchActions = await handleOffscreenAPI(req, witnessData, fullViewingKey, action_types);
 
-  const transaction = await build_parallel(
+  const transaction = build_parallel(
     batchActions,
     req.transactionPlan,
     witnessData,

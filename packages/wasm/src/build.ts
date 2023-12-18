@@ -45,15 +45,15 @@ export const build = async (
   return Transaction.fromJsonString(JSON.stringify(result));
 };
 
-export const build_parallel = async (
+export const build_parallel = (
   batchActions: Action[],
   txPlan: TransactionPlan,
   witnessData: WitnessData,
   authData: AuthorizationData,
-): Promise<Transaction> => {
+): Transaction => {
   const result = validateSchema(
     WasmBuildSchema,
-    await wasmBuildParallel(batchActions, txPlan.toJson(), witnessData.toJson(), authData.toJson()),
+    wasmBuildParallel(batchActions, txPlan.toJson(), witnessData.toJson(), authData.toJson()),
   );
 
   return Transaction.fromJsonString(JSON.stringify(result));

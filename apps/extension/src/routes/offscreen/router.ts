@@ -2,7 +2,6 @@ import { InternalRequest } from '@penumbra-zone/types/src/internal-msg/shared';
 import { buildActionHandler } from './build';
 import {
   ActionBuildMessage,
-  OffscreenMessage,
   OffscreenRequest,
   OffscreenResponse,
   isOffscreenRequest,
@@ -11,9 +10,9 @@ import {
 export const offscreenMessageHandler = (
   req: InternalRequest<ActionBuildMessage>,
   _: chrome.runtime.MessageSender,
-  sendResponse: (x: unknown) => void,
+  sendResponse: (x: OffscreenResponse) => void,
 ) => {
-  if (!isOffscreenRequest(req)) return;
+  if (!isOffscreenRequest(req)) return false;
 
   try {
     typedMessageRouter(req, sendResponse);
@@ -29,12 +28,11 @@ export const offscreenMessageHandler = (
   return true;
 };
 
-export const isOffscreenApprovalReq = (req: OffscreenRequest): req is OffscreenMessage => {
-  return req.type === 'ACTION_AND_BUILD';
-};
-
-const typedMessageRouter = (req: OffscreenRequest, sendResponse: (x: unknown) => void): void => {
-  if (isOffscreenApprovalReq(req)) buildActionHandler(req.request, sendResponse);
+const typedMessageRouter = (
+  req: OffscreenRequest,
+  sendResponse: (x: OffscreenResponse) => void,
+) => {
+  buildActionHandler(req.request, sendResponse);
 };
 
 chrome.runtime.onMessage.addListener(offscreenMessageHandler);

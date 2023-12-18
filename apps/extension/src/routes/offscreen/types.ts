@@ -10,24 +10,35 @@ import {
   ActionPlan,
   Action,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { JsonValue } from '@bufbuild/protobuf';
 
 export type OffscreenMessage = ActionBuildMessage;
 export type OffscreenRequest = InternalRequest<OffscreenMessage>;
 export type OffscreenResponse = InternalResponse<ActionBuildMessage>;
 
+export interface ActionBuildMessagePayload {
+  transactionPlan: TransactionPlan;
+  actionPlan: ActionPlan[];
+  witness: WitnessData;
+  fullViewingKey: string;
+  key_type: string[];
+}
+
+export interface WebWorkerMessagePayload {
+  transactionPlan: JsonValue;
+  actionPlan: JsonValue;
+  witness: JsonValue;
+  fullViewingKey: string;
+  key_type: string;
+}
+
 export type ActionBuildMessage = InternalMessage<
-  'ACTION_AND_BUILD',
-  {
-    transactionPlan: TransactionPlan;
-    actionPlan: ActionPlan[];
-    witness: WitnessData;
-    fullViewingKey: string;
-    key_type: string[];
-  },
+  'BUILD_ACTION',
+  ActionBuildMessagePayload,
   Action[]
 >;
 
-const request: OffscreenRequest['type'][] = ['ACTION_AND_BUILD'];
+const request: OffscreenRequest['type'][] = ['BUILD_ACTION'];
 
 export const isOffscreenRequest = (req: unknown): req is OffscreenRequest => {
   return (
@@ -45,9 +56,9 @@ export const offscreenClient = {
     witness: WitnessData,
     fullViewingKey: string,
     key_type: string[],
-  ) =>
+  ): Promise<InternalResponse<ActionBuildMessage>> =>
     sendOffscreenMessage<ActionBuildMessage>({
-      type: 'ACTION_AND_BUILD',
+      type: 'BUILD_ACTION',
       request: {
         transactionPlan: arg.transactionPlan!,
         actionPlan: arg.transactionPlan!.actions,
@@ -55,7 +66,6 @@ export const offscreenClient = {
         fullViewingKey,
         key_type,
       },
-      target: 'target',
     }),
 };
 

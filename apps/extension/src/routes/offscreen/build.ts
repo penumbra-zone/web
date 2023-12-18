@@ -5,6 +5,7 @@ import {
 import { ActionBuildMessage } from './types';
 import {
   Action,
+  // Action,
   ActionPlan,
   TransactionPlan,
   WitnessData,
@@ -18,16 +19,12 @@ const spawnWorker = (
   key_type: string,
 ): Promise<Action> => {
   return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL('../web-worker/router.ts', import.meta.url));
+    const worker = new Worker(new URL('./web-worker.ts', import.meta.url));
 
     // Set up event listener to recieve messages from the web worker
-    worker.addEventListener(
-      'message',
-      function (e) {
-        resolve(e.data as Action);
-      },
-      false,
-    );
+    worker.addEventListener('message', function (e) {
+      resolve(e.data as Action);
+    });
 
     // Set up error handling
     worker.addEventListener('error', function (error) {
@@ -49,10 +46,10 @@ const spawnWorker = (
   });
 };
 
-export const buildActionHandler: InternalMessageHandler<ActionBuildMessage> = async (
+export const buildActionHandler: InternalMessageHandler<ActionBuildMessage> = (
   jsonReq,
   responder,
-): Promise<InternalResponse<ActionBuildMessage>> => {
+): void => {
   // Destructure the data object to get individual fields
   const { transactionPlan, actionPlan, witness, fullViewingKey, key_type } = jsonReq;
 
@@ -67,14 +64,22 @@ export const buildActionHandler: InternalMessageHandler<ActionBuildMessage> = as
   }
 
   // Wait for promises to resolve
-  const batchActions = await Promise.all(workerPromises);
+  Promise.all(workerPromises)
+    .then(batchActions => {
+      // Construct response format
+      const response: InternalResponse<ActionBuildMessage> = {
+        type: 'BUILD_ACTION',
+        data: batchActions,
+      };
 
-  // Construct response format
-  const response: InternalResponse<ActionBuildMessage> = {
-    type: 'ACTION_AND_BUILD',
-    data: batchActions,
-  };
-  responder(response);
-
-  return response;
+      responder(response);
+    })
+    .catch(error => {
+      // Handle errors here
+      console.error('Error building action:', error);
+    });
 };
+
+// function handleMessage(this: Worker, ev: MessageEvent<any>) {
+//   throw new Error('Function not implemented.');
+// }

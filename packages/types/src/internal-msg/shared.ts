@@ -2,7 +2,6 @@ export interface InternalMessage<Type extends string, Req, Res> {
   type: Type;
   request: Req;
   response: Res;
-  target: string;
 }
 
 export type Ping = InternalMessage<'PING', string, string>;
@@ -29,7 +28,6 @@ export type ResponseOf<T> = T extends InternalMessage<string, unknown, infer Res
 export interface InternalRequest<M extends InternalMessage<string, unknown, unknown>> {
   type: M['type'];
   request: M['request'];
-  target?: M['target'];
 }
 
 export type InternalResponse<M extends InternalMessage<string, unknown, unknown>> =
