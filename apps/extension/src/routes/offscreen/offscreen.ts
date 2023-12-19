@@ -19,8 +19,7 @@ export const offscreenClient = {
     sendOffscreenMessage<ActionBuildMessage>({
       type: 'BUILD_ACTION',
       request: {
-        transactionPlan: arg.transactionPlan!,
-        actionPlan: arg.transactionPlan!.actions,
+        transactionPlan: arg.transactionPlan!.toJson(),
         witness,
         fullViewingKey,
         keyType,

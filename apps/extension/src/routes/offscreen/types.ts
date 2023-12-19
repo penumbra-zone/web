@@ -4,11 +4,12 @@ import {
   InternalResponse,
 } from '@penumbra-zone/types/src/internal-msg/shared';
 import {
+  ActionPlan,
   TransactionPlan,
   WitnessData,
-  ActionPlan,
-  Action,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { JsonValue } from '@bufbuild/protobuf';
+import { Jsonified } from '@penumbra-zone/types';
 
 export type OffscreenMessage = ActionBuildMessage;
 export type OffscreenRequest = InternalRequest<OffscreenMessage>;
@@ -23,9 +24,9 @@ export interface ActionBuildMessagePayload {
 }
 
 export interface WebWorkerMessagePayload {
-  transactionPlan: TransactionPlan;
-  actionPlan: ActionPlan;
-  witness: WitnessData;
+  transactionPlan: Jsonified<TransactionPlan>;
+  actionPlan: Jsonified<ActionPlan>;
+  witness: Jsonified<WitnessData>;
   fullViewingKey: string;
   keyType: string;
 }
@@ -33,5 +34,5 @@ export interface WebWorkerMessagePayload {
 export type ActionBuildMessage = InternalMessage<
   'BUILD_ACTION',
   ActionBuildMessagePayload,
-  Action[]
+  JsonValue[] // Action[]
 >;

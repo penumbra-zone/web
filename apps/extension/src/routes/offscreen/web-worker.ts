@@ -10,9 +10,13 @@ self.addEventListener(
   'message',
   function (e: MessageEvent<{ type: string; data: WebWorkerMessagePayload }>) {
     const { type, data } = e.data;
+
+    const transactionPlan = TransactionPlan.fromJson(data.transactionPlan);
+    // do the rest here.
+
     if (type === 'worker') {
-      execute_worker(
-        data.transactionPlan,
+      executeWorker(
+        transactionPlan,
         data.actionPlan,
         data.witness,
         data.fullViewingKey,
@@ -29,7 +33,7 @@ self.addEventListener(
   },
 );
 
-async function execute_worker(
+async function executeWorker(
   transactionPlan: TransactionPlan,
   actionPlan: ActionPlan,
   witness: WitnessData,

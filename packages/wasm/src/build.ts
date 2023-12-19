@@ -15,10 +15,11 @@ import {
 } from '@penumbra-zone/types';
 import {
   authorize,
-  build_parallel,
   build_action,
+  build_parallel,
   witness as wasmWitness,
 } from '@penumbra-zone/wasm-bundler';
+import { JsonValue } from '@bufbuild/protobuf';
 
 export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): AuthorizationData => {
   const result = validateSchema(WasmAuthorizeSchema, authorize(spendKey, txPlan.toJson()));
@@ -41,7 +42,7 @@ export const buildParallel = (
     build_parallel(batchActions, txPlan.toJson(), witnessData.toJson(), authData.toJson()),
   );
 
-  return Transaction.fromJsonString(JSON.stringify(result));
+  return Transaction.fromJson(result as JsonValue);
 };
 
 export const buildActionParallel = (
@@ -50,6 +51,7 @@ export const buildActionParallel = (
   witnessData: WitnessData,
   fullViewingKey: string,
 ): Action => {
+  // Do the same thing here too
   const result = build_action(txPlan, actionPlan, fullViewingKey, witnessData) as Action;
 
   return result;

@@ -20,16 +20,16 @@ const spawnWorker = (
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./web-worker.ts', import.meta.url));
 
-    // Triggered on recieveing message from worker
+    // Triggered on receiving message from worker
     const onMessage = (e: MessageEvent) => {
-      resolve(e.data as Action);
+      resolve(e.data as Action); // incorrectly assuming this is an Action
 
       // Clean up event listener and terminate worker to prevent memory leaks
       worker.removeEventListener('message', onMessage);
       worker.terminate();
     };
 
-    // Initiate event listener to recieve messages from the web worker
+    // Initiate event listener to receive messages from the web worker
     worker.addEventListener('message', onMessage);
 
     // Set up error handling
@@ -39,13 +39,18 @@ const spawnWorker = (
       worker.terminate();
     });
 
+    // web app (toJson()) --> (fromJson())
+    //            Service worker (toJson)
+    //              --> (fromJson) Offscreen (toJson)
+    //                --> (fromJson) web worker (toJson)
+
     // Send data to web worker
     worker.postMessage({
       type: 'worker',
       data: {
-        transactionPlan,
-        actionPlan,
-        witness,
+        transactionPlan, // is not
+        actionPlan, // is not
+        witness, // is not
         fullViewingKey,
         keyType,
       },
@@ -58,7 +63,11 @@ export const buildActionHandler: InternalMessageHandler<ActionBuildMessage> = (
   responder,
 ): void => {
   // Destructure the data object to get individual fields
-  const { transactionPlan, actionPlan, witness, fullViewingKey, keyType } = jsonReq;
+  const { transactionPlan, witness, fullViewingKey } = jsonReq;
+
+  const transactionPlan = TransactionPlan.fromJson(transactionPlan);
+
+  const res = transactionPlan.toJson();
 
   // Array to store promises for each worker
   const workerPromises: Promise<Action>[] = [];

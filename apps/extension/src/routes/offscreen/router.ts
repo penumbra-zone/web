@@ -30,5 +30,3 @@ const typedMessageRouter = (
 ) => {
   buildActionHandler(req.request, sendResponse);
 };
-
-chrome.runtime.onMessage.addListener(offscreenMessageHandler);
