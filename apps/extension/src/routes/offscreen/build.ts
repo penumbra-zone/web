@@ -5,7 +5,6 @@ import {
 import { ActionBuildMessage } from './types';
 import {
   Action,
-  // Action,
   ActionPlan,
   TransactionPlan,
   WitnessData,
@@ -16,13 +15,13 @@ const spawnWorker = (
   actionPlan: ActionPlan,
   witness: WitnessData,
   fullViewingKey: string,
-  key_type: string,
+  keyType: string,
 ): Promise<Action> => {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./web-worker.ts', import.meta.url));
 
     // Set up event listener to recieve messages from the web worker
-    worker.addEventListener('message', function (e) {
+    worker.addEventListener('message', e => {
       resolve(e.data as Action);
     });
 
@@ -40,7 +39,7 @@ const spawnWorker = (
         actionPlan,
         witness,
         fullViewingKey,
-        key_type,
+        keyType,
       },
     });
   });
@@ -51,22 +50,19 @@ export const buildActionHandler: InternalMessageHandler<ActionBuildMessage> = (
   responder,
 ): void => {
   // Destructure the data object to get individual fields
-  const { transactionPlan, actionPlan, witness, fullViewingKey, key_type } = jsonReq;
+  const { transactionPlan, actionPlan, witness, fullViewingKey, keyType } = jsonReq;
 
   // Array to store promises for each worker
   const workerPromises: Promise<Action>[] = [];
 
   // Spawn web workers
-  for (let i = 0; i < actionPlan.length; i++) {
-    workerPromises.push(
-      spawnWorker(transactionPlan, actionPlan[i]!, witness, fullViewingKey, key_type[i]!),
-    );
+  for (const [i, action] of actionPlan.entries()) {
+    workerPromises.push(spawnWorker(transactionPlan, action, witness, fullViewingKey, keyType[i]!));
   }
 
-  // Wait for promises to resolve
+  // Wait for promises to resolve and construct response format
   Promise.all(workerPromises)
     .then(batchActions => {
-      // Construct response format
       const response: InternalResponse<ActionBuildMessage> = {
         type: 'BUILD_ACTION',
         data: batchActions,
@@ -79,7 +75,3 @@ export const buildActionHandler: InternalMessageHandler<ActionBuildMessage> = (
       console.error('Error building action:', error);
     });
 };
-
-// function handleMessage(this: Worker, ev: MessageEvent<any>) {
-//   throw new Error('Function not implemented.');
-// }

@@ -48,3 +48,18 @@ export const WasmBuildSchema = z.object({
     transactionParameters: z.unknown(),
   }),
 });
+
+// todo: fix format
+// export const WasmBuildActionSchema = z.object({
+//     body: z.object({
+//       balanceCommitment: InnerBase64Schema,
+//       notePayload: z.object({
+//         encryptedNote: InnerBase64Schema,
+//         ephemeralKey: Base64StringSchema,
+//         noteCommitment: InnerBase64Schema
+//       }),
+//       ovkWrappedKey: Base64StringSchema,
+//       wrappedMemoKey: Base64StringSchema
+//     }),
+//     proof: InnerBase64Schema
+// });

@@ -1,5 +1,6 @@
 import {
   Action,
+  ActionPlan,
   AuthorizationData,
   Transaction,
   TransactionPlan,
@@ -14,7 +15,8 @@ import {
 } from '@penumbra-zone/types';
 import {
   authorize,
-  build_parallel as wasmBuildParallel,
+  build_parallel,
+  build_action,
   witness as wasmWitness,
 } from '@penumbra-zone/wasm-bundler';
 
@@ -28,7 +30,7 @@ export const witness = (txPlan: TransactionPlan, sct: StateCommitmentTree): Witn
   return WitnessData.fromJsonString(JSON.stringify(result));
 };
 
-export const build_parallel = (
+export const buildParallel = (
   batchActions: Action[],
   txPlan: TransactionPlan,
   witnessData: WitnessData,
@@ -36,8 +38,19 @@ export const build_parallel = (
 ): Transaction => {
   const result = validateSchema(
     WasmBuildSchema,
-    wasmBuildParallel(batchActions, txPlan.toJson(), witnessData.toJson(), authData.toJson()),
+    build_parallel(batchActions, txPlan.toJson(), witnessData.toJson(), authData.toJson()),
   );
 
   return Transaction.fromJsonString(JSON.stringify(result));
+};
+
+export const buildActionParallel = (
+  txPlan: TransactionPlan,
+  actionPlan: ActionPlan,
+  witnessData: WitnessData,
+  fullViewingKey: string,
+): Action => {
+  const result = build_action(txPlan, actionPlan, fullViewingKey, witnessData) as Action;
+
+  return result;
 };

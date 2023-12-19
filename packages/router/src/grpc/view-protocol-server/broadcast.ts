@@ -23,7 +23,6 @@ export const handleBroadcastReq = async (
 
   // "Sync" method waits for the tx to pass/fail CheckTx
   const { hash } = await tendermintClient.broadcastTxSync({ params: encodedTx });
-  await sleep(6000); // TODO: implement sync detection. Should see if the tx has been synced and stored. Can check via nullifiers.
 
   // Wait until our DB encounters a new note with this hash
   if (req.awaitDetection) {
@@ -36,9 +35,4 @@ export const handleBroadcastReq = async (
   }
 
   return new BroadcastTransactionResponse({ id: { hash } });
-};
-
-// Temp function
-const sleep = (ms: number) => {
-  return new Promise(resolve => setTimeout(resolve, ms));
 };

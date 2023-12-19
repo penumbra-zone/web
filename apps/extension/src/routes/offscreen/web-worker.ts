@@ -1,5 +1,9 @@
-import { JsonValue } from '@bufbuild/protobuf';
-import { Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import {
+  Action,
+  ActionPlan,
+  TransactionPlan,
+  WitnessData,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { WebWorkerMessagePayload } from './types';
 
 self.addEventListener(
@@ -7,13 +11,12 @@ self.addEventListener(
   function (e: MessageEvent<{ type: string; data: WebWorkerMessagePayload }>) {
     const { type, data } = e.data;
     if (type === 'worker') {
-      // Execute worker function using the fields
       execute_worker(
         data.transactionPlan,
         data.actionPlan,
         data.witness,
         data.fullViewingKey,
-        data.key_type,
+        data.keyType,
       )
         .then(action => {
           // Post message back to offscreen document
@@ -30,65 +33,51 @@ self.addEventListener(
 );
 
 async function execute_worker(
-  transactionPlan: JsonValue,
-  actionPlan: JsonValue,
-  witness: JsonValue,
+  transactionPlan: TransactionPlan,
+  actionPlan: ActionPlan,
+  witness: WitnessData,
   fullViewingKey: string,
-  key_type: string,
+  keyType: string,
 ): Promise<Action> {
   console.log('web worker running...');
 
   // Dynamically load wasm module
-  const penumbraWasmModule = await import('@penumbra-zone/wasm-bundler');
+  const penumbraWasmModule = await import('@penumbra-zone/wasm-ts');
 
   // Conditionally read proving keys from disk and load keys into WASM binary
-  switch (key_type) {
+  switch (keyType) {
     case 'spend': {
-      const spendKey = await loadLocalBinary('spend_pk.bin');
-      penumbraWasmModule.load_proving_key(spendKey, 'spend');
+      await penumbraWasmModule.loadProvingKey('spend_pk.bin', 'spend');
       break;
     }
     case 'output': {
-      const outputKey = await loadLocalBinary('output_pk.bin');
-      penumbraWasmModule.load_proving_key(outputKey, 'output');
+      await penumbraWasmModule.loadProvingKey('output_pk.bin', 'output');
       break;
     }
     case 'delegatorVote': {
-      const delegatorKey = await loadLocalBinary('delegator_vote_pk.bin');
-      penumbraWasmModule.load_proving_key(delegatorKey, 'delegator_vote');
+      await penumbraWasmModule.loadProvingKey('delegator_vote_pk.bin', 'delegator_vote');
       break;
     }
     case 'swap': {
-      const swapKey = await loadLocalBinary('swap_pk.bin');
-      penumbraWasmModule.load_proving_key(swapKey, 'swap');
+      await penumbraWasmModule.loadProvingKey('swap_pk.bin', 'swap');
       break;
     }
     case 'swapClaim': {
-      const swapClaimKey = await loadLocalBinary('swapclaim_pk.bin');
-      penumbraWasmModule.load_proving_key(swapClaimKey, 'swap_claim');
+      await penumbraWasmModule.loadProvingKey('swapclaim_pk.bin', 'swap_claim');
       break;
     }
     case 'UndelegateClaim': {
-      const undelegateClaimKey = await loadLocalBinary('undelegateclaim_pk.bin');
-      penumbraWasmModule.load_proving_key(undelegateClaimKey, 'undelegate_claim');
+      await penumbraWasmModule.loadProvingKey('undelegateclaim_pk.bin', 'undelegate_claim');
       break;
     }
   }
 
-  // Build specific action according to specificaton in transaction plan
-  const action: Action = penumbraWasmModule.build_action(
+  const action = penumbraWasmModule.buildActionParallel(
     transactionPlan,
     actionPlan,
-    fullViewingKey,
     witness,
-  ) as Action;
+    fullViewingKey,
+  );
 
   return action;
 }
-
-const loadLocalBinary = async (filename: string) => {
-  const response = await fetch(`bin/${filename}`);
-  if (!response.ok) throw new Error(`Failed to load ${filename}`);
-
-  return await response.arrayBuffer();
-};

@@ -1,11 +1,7 @@
 import { InternalRequest } from '@penumbra-zone/types/src/internal-msg/shared';
 import { buildActionHandler } from './build';
-import {
-  ActionBuildMessage,
-  OffscreenRequest,
-  OffscreenResponse,
-  isOffscreenRequest,
-} from './types';
+import { ActionBuildMessage, OffscreenRequest, OffscreenResponse } from './types';
+import { isOffscreenRequest } from './offscreen';
 
 export const offscreenMessageHandler = (
   req: InternalRequest<ActionBuildMessage>,
