@@ -34,7 +34,6 @@ const spawnWorker = (
 
     // Set up error handling
     worker.addEventListener('error', function (error) {
-      console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
       reject(error);
       worker.removeEventListener('message', onMessage);
       worker.terminate();
