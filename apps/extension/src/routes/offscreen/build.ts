@@ -20,15 +20,24 @@ const spawnWorker = (
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./web-worker.ts', import.meta.url));
 
-    // Set up event listener to recieve messages from the web worker
-    worker.addEventListener('message', e => {
+    // Triggered on recieveing message from worker
+    const onMessage = (e: MessageEvent) => {
       resolve(e.data as Action);
-    });
+
+      // Clean up event listener and terminate worker to prevent memory leaks
+      worker.removeEventListener('message', onMessage);
+      worker.terminate();
+    };
+
+    // Initiate event listener to recieve messages from the web worker
+    worker.addEventListener('message', onMessage);
 
     // Set up error handling
     worker.addEventListener('error', function (error) {
-      console.error('Error in worker:', error);
+      console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
       reject(error);
+      worker.removeEventListener('message', onMessage);
+      worker.terminate();
     });
 
     // Send data to web worker
@@ -70,8 +79,7 @@ export const buildActionHandler: InternalMessageHandler<ActionBuildMessage> = (
 
       responder(response);
     })
-    .catch(error => {
-      // Handle errors here
-      console.error('Error building action:', error);
+    .catch(() => {
+      throw new Error('Error resolving promise in worker');
     });
 };

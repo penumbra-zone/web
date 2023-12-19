@@ -21,9 +21,6 @@ self.addEventListener(
         .then(action => {
           // Post message back to offscreen document
           self.postMessage(action);
-
-          // Terminate worker
-          close();
         })
         .catch(() => {
           throw new Error('Error in worker');
