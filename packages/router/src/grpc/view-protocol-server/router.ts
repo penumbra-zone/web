@@ -24,6 +24,7 @@ import { handleIndexByAddressReq, isIndexByAddressRequest } from './index-by-add
 import { handleFmdParamsReq, isFmdParamsRequest } from './fmd-params';
 import { handleNoteByCommitmentReq, isNoteByCommitmentRequest } from './note-by-commitment';
 import { handleNullifierStatusReq, isNullifierStatusRequest } from './nullifier-status';
+import { handleSwapByCommitmentReq, isSwapByCommitmentRequest } from './swap-by-commitment';
 
 export type ViewReqMessage = GrpcRequest<typeof ViewProtocolService>;
 export type ViewProtocolRes = GrpcResponse<typeof ViewProtocolService>;
@@ -51,6 +52,7 @@ export const viewServerUnaryHandler: UnaryHandler<typeof ViewProtocolService> = 
   else if (isFmdParamsRequest(msg)) return handleFmdParamsReq(services);
   else if (isNoteByCommitmentRequest(msg)) return handleNoteByCommitmentReq(msg, services);
   else if (isNullifierStatusRequest(msg)) return handleNullifierStatusReq(msg, services);
+  else if (isSwapByCommitmentRequest(msg)) return handleSwapByCommitmentReq(msg, services);
 
   throw new Error(`Non-supported unary request: ${(msg as ViewReqMessage).getType().typeName}`);
 };

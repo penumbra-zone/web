@@ -237,4 +237,11 @@ export class IndexedDb implements IndexedDbInterface {
   async saveSwap(swap: SwapRecord) {
     await this.u.update({ table: 'SWAPS', value: swap.toJson() });
   }
+
+  async getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined> {
+    const key = uint8ArrayToBase64(commitment.inner);
+    const json = await this.db.get('SWAPS', key);
+    if (!json) return undefined;
+    return SwapRecord.fromJson(json);
+  }
 }
