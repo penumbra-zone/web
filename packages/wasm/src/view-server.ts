@@ -29,7 +29,7 @@ interface ViewServerProps {
 export class ViewServer implements ViewServerInterface {
   private constructor(
     private wasmViewServer: WasmViewServer,
-    private readonly fullViewingKey: string,
+    public readonly fullViewingKey: string,
     private readonly epochDuration: bigint,
     private readonly getStoredTree: () => Promise<StateCommitmentTree>,
     private readonly idbConstants: IdbConstants,

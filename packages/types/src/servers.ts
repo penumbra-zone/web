@@ -8,6 +8,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 
 export interface ViewServerInterface {
+  fullViewingKey: string;
   scanBlock(compactBlock: CompactBlock): Promise<boolean>;
   flushUpdates(): ScanResult;
   resetTreeToStored(): Promise<void>;
