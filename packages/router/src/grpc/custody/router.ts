@@ -8,6 +8,10 @@ import {
 
 import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
 import { handleAuthorizeReq, isAuthorizeRequest } from './authorize';
+import {
+  handleExportFullViewingKeyReq,
+  isExportFullViewingKeyRequest,
+} from './export-full-viewing-key';
 
 export type CustodyReqMessage = GrpcRequest<typeof CustodyProtocolService>;
 export type CustodyProtocolRes = GrpcResponse<typeof CustodyProtocolService>;
@@ -22,6 +26,7 @@ export const custodyServerUnaryHandler: UnaryHandler<typeof CustodyProtocolServi
   msg,
 ): Promise<GrpcResponse<typeof CustodyProtocolService>> => {
   if (isAuthorizeRequest(msg)) return handleAuthorizeReq(msg);
+  else if (isExportFullViewingKeyRequest(msg)) return handleExportFullViewingKeyReq();
 
   throw new Error(`Non-supported unary request: ${(msg as CustodyReqMessage).getType().typeName}`);
 };
