@@ -10,13 +10,13 @@ self.addEventListener(
   'message',
   function (e: MessageEvent<{ type: string; data: WebWorkerMessagePayload }>) {
     const { type, data } = e.data;
+
     if (type === 'worker') {
-      execute_worker(
+      executeWorker(
         data.transactionPlan,
-        data.actionPlan,
         data.witness,
         data.fullViewingKey,
-        data.keyType,
+        data.actionId,
       )
         .then(action => {
           // Post message back to offscreen document
@@ -29,12 +29,11 @@ self.addEventListener(
   },
 );
 
-async function execute_worker(
+async function executeWorker(
   transactionPlan: TransactionPlan,
-  actionPlan: ActionPlan,
   witness: WitnessData,
   fullViewingKey: string,
-  keyType: string,
+  actionId: number,
 ): Promise<Action> {
   console.log('web worker running...');
 
@@ -42,7 +41,7 @@ async function execute_worker(
   const penumbraWasmModule = await import('@penumbra-zone/wasm-ts');
 
   // Conditionally read proving keys from disk and load keys into WASM binary
-  switch (keyType) {
+  switch (transactionPlan.actions[actionId]?.action.case) {
     case 'spend': {
       await penumbraWasmModule.loadProvingKey('spend_pk.bin', 'spend');
       break;
@@ -63,18 +62,20 @@ async function execute_worker(
       await penumbraWasmModule.loadProvingKey('swapclaim_pk.bin', 'swap_claim');
       break;
     }
-    case 'UndelegateClaim': {
-      await penumbraWasmModule.loadProvingKey('undelegateclaim_pk.bin', 'undelegate_claim');
-      break;
-    }
+    // case 'UndelegateClaim': {
+    //   await penumbraWasmModule.loadProvingKey('undelegateclaim_pk.bin', 'undelegate_claim');
+    //   break;
+    // }
   }
 
   const action = penumbraWasmModule.buildActionParallel(
     transactionPlan,
-    actionPlan,
     witness,
     fullViewingKey,
+    actionId
   );
+
+  console.log("Action is: ", action)
 
   return action;
 }

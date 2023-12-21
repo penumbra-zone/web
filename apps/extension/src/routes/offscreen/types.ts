@@ -9,26 +9,33 @@ import {
   ActionPlan,
   Action,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { JsonValue } from '@bufbuild/protobuf';
+import { Jsonified } from '@penumbra-zone/types';
 
 export type OffscreenMessage = ActionBuildMessage;
 export type OffscreenRequest = InternalRequest<OffscreenMessage>;
 export type OffscreenResponse = InternalResponse<ActionBuildMessage>;
 
 export interface ActionBuildMessagePayload {
-  transactionPlan: TransactionPlan;
-  actionPlan: ActionPlan[];
-  witness: WitnessData;
+  transactionPlan: JsonValue;
+  witness: JsonValue;
   fullViewingKey: string;
-  keyType: string[];
+  length: number;
 }
 
 export interface WebWorkerMessagePayload {
   transactionPlan: TransactionPlan;
-  actionPlan: ActionPlan;
   witness: WitnessData;
   fullViewingKey: string;
-  keyType: string;
+  actionId: number;
 }
+
+// export interface WebWorkerMessagePayload {
+//   transactionPlan: Jsonified<TransactionPlan>;
+//   witness: Jsonified<WitnessData>;
+//   fullViewingKey: string;
+//   actionId: number;
+// }
 
 export type ActionBuildMessage = InternalMessage<
   'BUILD_ACTION',

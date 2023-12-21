@@ -9,18 +9,18 @@ import {
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { JsonValue } from '@bufbuild/protobuf';
 
 const spawnWorker = (
-  transactionPlan: TransactionPlan,
-  actionPlan: ActionPlan,
-  witness: WitnessData,
+  transactionPlan: JsonValue,
+  witness: JsonValue,
   fullViewingKey: string,
-  keyType: string,
+  actionId: number,
 ): Promise<Action> => {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./web-worker.ts', import.meta.url));
 
-    // Triggered on recieveing message from worker
+    // Triggered on receiving message from worker
     const onMessage = (e: MessageEvent) => {
       resolve(e.data as Action);
 
@@ -29,7 +29,7 @@ const spawnWorker = (
       worker.terminate();
     };
 
-    // Initiate event listener to recieve messages from the web worker
+    // Initiate event listener to receive messages from the web worker
     worker.addEventListener('message', onMessage);
 
     // Set up error handling
@@ -44,10 +44,9 @@ const spawnWorker = (
       type: 'worker',
       data: {
         transactionPlan,
-        actionPlan,
         witness,
         fullViewingKey,
-        keyType,
+        actionId,
       },
     });
   });
@@ -58,14 +57,14 @@ export const buildActionHandler: InternalMessageHandler<ActionBuildMessage> = (
   responder,
 ): void => {
   // Destructure the data object to get individual fields
-  const { transactionPlan, actionPlan, witness, fullViewingKey, keyType } = jsonReq;
+  const { transactionPlan, witness, fullViewingKey, length } = jsonReq;
 
   // Array to store promises for each worker
   const workerPromises: Promise<Action>[] = [];
 
   // Spawn web workers
-  for (const [i, action] of actionPlan.entries()) {
-    workerPromises.push(spawnWorker(transactionPlan, action, witness, fullViewingKey, keyType[i]!));
+  for (let i = 0; i < 1; i++) {
+    workerPromises.push(spawnWorker(transactionPlan, witness, fullViewingKey, i));
   }
 
   // Wait for promises to resolve and construct response format

@@ -11,7 +11,7 @@ module.exports = {
     'service-worker': path.join(srcDir, 'service-worker.ts'),
     'injected-connection-manager': path.join(srcDir, 'injected-connection-manager.ts'),
     'injected-penumbra-global': path.join(srcDir, 'injected-penumbra-global.ts'),
-    offscreen: path.join(srcDir, 'routes/offscreen/router.ts'),
+    offscreen: path.join(srcDir, 'offscreen.ts'),
   },
   output: {
     path: path.join(__dirname, '../dist/js'),

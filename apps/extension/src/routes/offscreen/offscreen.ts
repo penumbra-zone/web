@@ -1,7 +1,8 @@
 import { InternalRequest, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
 import { WitnessAndBuildRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { WitnessData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { TransactionPlan, WitnessData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { ActionBuildMessage, OffscreenMessage, OffscreenRequest } from './types';
+import { Jsonified } from '@penumbra-zone/types';
 
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
@@ -14,23 +15,23 @@ export const offscreenClient = {
     arg: WitnessAndBuildRequest,
     witness: WitnessData,
     fullViewingKey: string,
-    keyType: string[],
+    length: number,
   ): Promise<InternalResponse<ActionBuildMessage>> =>
     sendOffscreenMessage<ActionBuildMessage>({
       type: 'BUILD_ACTION',
       request: {
-        transactionPlan: arg.transactionPlan!,
-        actionPlan: arg.transactionPlan!.actions,
-        witness,
+        transactionPlan: arg.transactionPlan!.toJson(),
+        witness: witness.toJson(),
         fullViewingKey,
-        keyType,
+        length,
       },
     }),
 };
 
 export const sendOffscreenMessage = async <T extends OffscreenMessage>(
   req: InternalRequest<T>,
-): Promise<InternalResponse<ActionBuildMessage>> => {
+) => {
+  console.log("Entered sendOffscreenMessage!")
   try {
     if (!(await hasDocument())) {
       await chrome.offscreen.createDocument({
@@ -40,12 +41,16 @@ export const sendOffscreenMessage = async <T extends OffscreenMessage>(
       });
     }
 
+    console.log("req before: ", req.request.transactionPlan)
+
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const result = (await chrome.runtime.sendMessage(req)) as InternalResponse<ActionBuildMessage>;
+    const result = (await chrome.runtime.sendMessage(req));
     if ('error' in result) throw new Error('failed to build action');
 
     // Close offscreen document
-    await chrome.offscreen.closeDocument();
+    // await chrome.offscreen.closeDocument();
 
     return result;
   } catch (e) {
