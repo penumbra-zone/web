@@ -15,8 +15,7 @@ export const isExportFullViewingKeyRequest = (
 
 export const handleExportFullViewingKeyReq = async (): Promise<ExportFullViewingKeyResponse> => {
   const wallets = await localExtStorage.get('wallets');
-
-  if (!wallets.length) return new ExportFullViewingKeyResponse();
+  if (!wallets.length) throw new Error('No wallets in storage');
 
   return new ExportFullViewingKeyResponse({
     fullViewingKey: new FullViewingKey({
