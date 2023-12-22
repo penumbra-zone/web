@@ -12,4 +12,5 @@ interface OffscreenRequestPayload {
   transactionPlan: JsonValue;
   witness: JsonValue;
   fullViewingKey: string;
+  length: number;
 }

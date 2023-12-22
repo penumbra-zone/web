@@ -20,6 +20,7 @@ export const offscreenClient = {
         transactionPlan: arg.transactionPlan!.toJson(),
         witness: witness.toJson(),
         fullViewingKey,
+        length: arg.transactionPlan!.actions.length,
       },
     }),
 };
