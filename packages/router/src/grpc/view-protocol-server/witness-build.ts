@@ -7,7 +7,6 @@ import { ServicesInterface } from '@penumbra-zone/types';
 import { buildParallel, witness } from '@penumbra-zone/wasm-ts';
 import { localExtStorage } from '@penumbra-zone/storage';
 import { offscreenClient } from '../offscreen-client';
-import { TransactionPlan } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 export const isWitnessBuildRequest = (msg: ViewReqMessage): msg is WitnessAndBuildRequest => {
   return msg.getType().typeName === WitnessAndBuildRequest.typeName;
@@ -29,25 +28,25 @@ export const handleWitnessBuildReq = async (
 
   const { fullViewingKey } = wallets[0]!;
 
-  console.log('req.transactionPlan is: ', req.transactionPlan);
-
-  const ts = req.transactionPlan?.toJson();
-  console.log('req.transactionPlan json is: ', ts);
-  console.log('req.transactionPlan from json is: ', TransactionPlan.fromJson(ts));
-  console.log('??????????????????????????????????????????????');
-
-  const baReq = offscreenClient.buildAction(req, witnessData, fullViewingKey);
-  console.log('baReq', baReq);
-  const batchActions = await baReq;
-  console.log('batchActions', batchActions);
+  // Start timer
+  const startTime = performance.now(); // Record start time
+  
+  const batchActions = await offscreenClient.buildAction(req, witnessData, fullViewingKey);
   if ('error' in batchActions) throw new Error('failed to build action');
 
   const transaction = buildParallel(
-    batchActions,
+    batchActions.data,
     req.transactionPlan,
     witnessData,
     req.authorizationData,
   );
+
+  console.log("tx is: ", transaction)
+
+  // End timer
+  const endTime = performance.now()
+  const executionTime = endTime - startTime;
+  console.log(`Parallel transaction execution time: ${executionTime} milliseconds`);
 
   return new WitnessAndBuildResponse({ transaction });
 };

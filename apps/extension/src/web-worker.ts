@@ -3,16 +3,16 @@ import {
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import type { JsonObject } from '@bufbuild/protobuf';
+import { JsonValue } from '@bufbuild/protobuf/dist/esm';
 
-interface WorkerInput {
-  transactionPlan: JsonObject;
-  witness: JsonObject;
+interface WorkerMessagePayload {
+  transactionPlan: JsonValue;
+  witness: JsonValue;
   fullViewingKey: string;
   actionId: number;
 }
 
-const workerListener = ({ data }: { data: WorkerInput }) => {
+const workerListener = ({ data }: { data: WorkerMessagePayload }) => {
   const {
     transactionPlan: transactionPlanJson,
     witness: witnessJson,
@@ -24,7 +24,7 @@ const workerListener = ({ data }: { data: WorkerInput }) => {
   const witness = WitnessData.fromJson(witnessJson);
 
   void executeWorker(transactionPlan, witness, fullViewingKey, actionId).then(action => {
-    self.postMessage(action.toJson());
+    self.postMessage(action);
   });
 };
 
@@ -68,10 +68,6 @@ async function executeWorker(
     default: {
       throw new Error('Unimplemented action type');
     }
-    // case 'UndelegateClaim': {
-    //   await penumbraWasmModule.loadProvingKey('undelegateclaim_pk.bin', 'undelegate_claim');
-    //   break;
-    // }
   }
 
   const action = penumbraWasmModule.buildActionParallel(
@@ -80,8 +76,6 @@ async function executeWorker(
     fullViewingKey,
     actionId,
   );
-
-  console.log('Action is: ', action);
 
   return action;
 }
