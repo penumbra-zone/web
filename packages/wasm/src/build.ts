@@ -15,8 +15,8 @@ import {
 } from '@penumbra-zone/types';
 import {
   authorize,
-  build_parallel,
-  build_action,
+  build_parallel as buildTxParallel,
+  build_action as buildAction,
   witness as wasmWitness,
 } from '@penumbra-zone/wasm-bundler';
 
@@ -38,7 +38,7 @@ export const buildParallel = (
 ): Transaction => {
   const result = validateSchema(
     WasmBuildSchema,
-    build_parallel(batchActions, txPlan.toJson(), witnessData.toJson(), authData.toJson()),
+    buildTxParallel(batchActions, txPlan.toJson(), witnessData.toJson(), authData.toJson()),
   );
 
   return Transaction.fromJson(result as JsonValue);
@@ -50,7 +50,7 @@ export const buildActionParallel = (
   fullViewingKey: string,
   actionId: number,
 ): Action => {
-  const result = build_action(
+  const result = buildAction(
     txPlan.toJson(),
     txPlan.actions[actionId]?.toJson(),
     fullViewingKey,

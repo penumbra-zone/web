@@ -31,7 +31,7 @@ export const sendOffscreenMessage = async <T extends OffscreenMessage>(
   await chrome.offscreen.createDocument({
     url: OFFSCREEN_DOCUMENT_PATH,
     reasons: [chrome.offscreen.Reason.WORKERS],
-    justification: 'spawn web workers from offscreen document',
+    justification: 'Manages Penumbra transaction WASM workers',
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion

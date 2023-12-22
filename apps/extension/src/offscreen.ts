@@ -50,7 +50,7 @@ const spawnWorker = (
   actionId: number,
 ): Promise<JsonValue> => {
   return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL('./web-worker.ts', import.meta.url));
+    const worker = new Worker(new URL('./wasm-task.ts', import.meta.url));
 
     const onWorkerMessage = (e: MessageEvent) => {
       resolve(e.data as JsonValue);
