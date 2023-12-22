@@ -1,11 +1,11 @@
 import {
   Action,
-  ActionPlan,
   AuthorizationData,
   Transaction,
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { JsonValue } from '@bufbuild/protobuf';
 import {
   StateCommitmentTree,
   validateSchema,
@@ -41,16 +41,21 @@ export const buildParallel = (
     build_parallel(batchActions, txPlan.toJson(), witnessData.toJson(), authData.toJson()),
   );
 
-  return Transaction.fromJsonString(JSON.stringify(result));
+  return Transaction.fromJson(result as JsonValue);
 };
 
 export const buildActionParallel = (
   txPlan: TransactionPlan,
-  actionPlan: ActionPlan,
   witnessData: WitnessData,
   fullViewingKey: string,
+  actionId: number,
 ): Action => {
-  const result = build_action(txPlan, actionPlan, fullViewingKey, witnessData) as Action;
+  const result = build_action(
+    txPlan.toJson(),
+    txPlan.actions[actionId]?.toJson(),
+    fullViewingKey,
+    witnessData.toJson(),
+  ) as Action;
 
   return result;
 };
