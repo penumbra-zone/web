@@ -14,7 +14,6 @@ const penumbraMessageHandler = (
   sendResponse: (response: unknown) => void,
 ) => {
   if (!isStdRequest(message)) return;
-  console.log('std router grabbing', { message, _sender });
   stdRouter(message, sendResponse, existingServices);
   return true;
 };

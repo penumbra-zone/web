@@ -1,7 +1,10 @@
 import { WitnessAndBuildRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { WitnessData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { InternalRequest, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
-import { ActionBuildMessage, OffscreenMessage } from '@penumbra-zone/types/src/internal-msg/offscreen-types';
+import {
+  ActionBuildMessage,
+  OffscreenMessage,
+} from '@penumbra-zone/types/src/internal-msg/offscreen-types';
 
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
@@ -31,7 +34,9 @@ export const sendOffscreenMessage = async <T extends OffscreenMessage>(
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-  const result = (await chrome.runtime.sendMessage({ ...req })) as InternalResponse<ActionBuildMessage> 
+  const result = (await chrome.runtime.sendMessage({
+    ...req,
+  })) as InternalResponse<ActionBuildMessage>;
   if ('error' in result) throw new Error('failed to build action');
 
   // Close offscreen document

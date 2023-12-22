@@ -1,12 +1,8 @@
-import { Action } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb";
-import { InternalMessage, InternalRequest, InternalResponse } from "./shared";
-import { JsonValue } from "@bufbuild/protobuf";
+import { Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { InternalMessage, InternalRequest, InternalResponse } from './shared';
+import { JsonValue } from '@bufbuild/protobuf';
 
-export type ActionBuildMessage = InternalMessage<
-  'BUILD_ACTION',
-  OffscreenRequestPayload,
-  Action[]
->;
+export type ActionBuildMessage = InternalMessage<'BUILD_ACTION', OffscreenRequestPayload, Action[]>;
 
 export type OffscreenMessage = ActionBuildMessage;
 export type OffscreenRequest = InternalRequest<OffscreenMessage>;

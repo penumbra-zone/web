@@ -2,7 +2,11 @@ import type { JsonValue } from '@bufbuild/protobuf';
 import { OffscreenRequest } from '@penumbra-zone/types/src/internal-msg/offscreen-types';
 
 export const isOffscreenRequest = (req: unknown): req is OffscreenRequest =>
-  req != null && typeof req === 'object' && 'type' in req && typeof req.type === 'string' && req.type === 'BUILD_ACTION'
+  req != null &&
+  typeof req === 'object' &&
+  'type' in req &&
+  typeof req.type === 'string' &&
+  req.type === 'BUILD_ACTION';
 
 export const offscreenMessageHandler = (
   req: unknown,
@@ -26,7 +30,7 @@ export const buildActionHandler = (
 
   // const actionCount = Object.entries(transactionPlan.actions).length;
   const workerPromises: Promise<JsonValue>[] = [];
-  
+
   // Spawn web workers
   for (let i = 0; i < 4; i++) {
     workerPromises.push(spawnWorker(transactionPlan, witness, fullViewingKey, i));
