@@ -28,9 +28,6 @@ export const handleWitnessBuildReq = async (
 
   const { fullViewingKey } = wallets[0]!;
 
-  // Start timer
-  const startTime = performance.now(); // Record start time
-
   const batchActions = await offscreenClient.buildAction(req, witnessData, fullViewingKey);
   if ('error' in batchActions) throw new Error('failed to build action');
 
@@ -40,13 +37,6 @@ export const handleWitnessBuildReq = async (
     witnessData,
     req.authorizationData,
   );
-
-  console.log('tx is: ', transaction);
-
-  // End timer
-  const endTime = performance.now();
-  const executionTime = endTime - startTime;
-  console.log(`Parallel transaction execution time: ${executionTime} milliseconds`);
 
   return new WitnessAndBuildResponse({ transaction });
 };
