@@ -1,6 +1,5 @@
 import {
   Action,
-  ActionPlan,
   AuthorizationData,
   Transaction,
   TransactionPlan,
@@ -51,10 +50,15 @@ export const buildActionParallel = (
   fullViewingKey: string,
   actionId: number,
 ): Action => {
-  console.log("Entered buildActionParallel!")
+  console.log('Entered buildActionParallel!');
 
-  const result = build_action(txPlan, txPlan.actions[actionId], fullViewingKey, witnessData) as Action;
-  console.log("result is; ", result)
+  const result = build_action(
+    txPlan,
+    txPlan.actions[actionId],
+    fullViewingKey,
+    witnessData,
+  ) as Action;
+  console.log('result is; ', result);
 
   return result;
 };

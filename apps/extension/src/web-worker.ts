@@ -1,33 +1,34 @@
 import {
   Action,
-  ActionPlan,
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { WebWorkerMessagePayload } from './types';
+import type { JsonObject } from '@bufbuild/protobuf';
 
-self.addEventListener(
-  'message',
-  function (e: MessageEvent<{ type: string; data: WebWorkerMessagePayload }>) {
-    const { type, data } = e.data;
+interface WorkerInput {
+  transactionPlan: JsonObject;
+  witness: JsonObject;
+  fullViewingKey: string;
+  actionId: number;
+}
 
-    if (type === 'worker') {
-      executeWorker(
-        data.transactionPlan,
-        data.witness,
-        data.fullViewingKey,
-        data.actionId,
-      )
-        .then(action => {
-          // Post message back to offscreen document
-          self.postMessage(action);
-        })
-        .catch(() => {
-          throw new Error('Error in worker');
-        });
-    }
-  },
-);
+const workerListener = ({ data }: { data: WorkerInput }) => {
+  const {
+    transactionPlan: transactionPlanJson,
+    witness: witnessJson,
+    fullViewingKey,
+    actionId,
+  } = data;
+
+  const transactionPlan = TransactionPlan.fromJson(transactionPlanJson);
+  const witness = WitnessData.fromJson(witnessJson);
+
+  void executeWorker(transactionPlan, witness, fullViewingKey, actionId).then(action => {
+    self.postMessage(action.toJson());
+  });
+};
+
+self.addEventListener('message', workerListener);
 
 async function executeWorker(
   transactionPlan: TransactionPlan,
@@ -41,7 +42,9 @@ async function executeWorker(
   const penumbraWasmModule = await import('@penumbra-zone/wasm-ts');
 
   // Conditionally read proving keys from disk and load keys into WASM binary
-  switch (transactionPlan.actions[actionId]?.action.case) {
+  const actionKey = transactionPlan.actions[actionId]?.action.case; //?? Object.keys(transactionPlan.actions[actionId])[0];
+
+  switch (actionKey) {
     case 'spend': {
       await penumbraWasmModule.loadProvingKey('spend_pk.bin', 'spend');
       break;
@@ -62,6 +65,9 @@ async function executeWorker(
       await penumbraWasmModule.loadProvingKey('swapclaim_pk.bin', 'swap_claim');
       break;
     }
+    default: {
+      throw new Error('Unimplemented action type');
+    }
     // case 'UndelegateClaim': {
     //   await penumbraWasmModule.loadProvingKey('undelegateclaim_pk.bin', 'undelegate_claim');
     //   break;
@@ -72,10 +78,10 @@ async function executeWorker(
     transactionPlan,
     witness,
     fullViewingKey,
-    actionId
+    actionId,
   );
 
-  console.log("Action is: ", action)
+  console.log('Action is: ', action);
 
   return action;
 }

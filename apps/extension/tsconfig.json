@@ -1,6 +1,6 @@
 {
   "extends": "tsconfig/extension.json",
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "../../packages/router/src/grpc/offscreen-client.ts"],
   "compilerOptions": {
     "outDir": "./dist",
     "declaration": false,

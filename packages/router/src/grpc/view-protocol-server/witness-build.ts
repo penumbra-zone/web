@@ -6,9 +6,8 @@ import { ViewReqMessage } from './router';
 import { ServicesInterface } from '@penumbra-zone/types';
 import { buildParallel, witness } from '@penumbra-zone/wasm-ts';
 import { localExtStorage } from '@penumbra-zone/storage';
-// import { handleOffscreenAPI } from '../../../../../apps/extension/src/routes/offscreen/window-management';
-import { offscreenClient } from '../../../../../apps/extension/src/routes/offscreen/offscreen';
-import { ActionPlan, Transaction, TransactionPlan } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { offscreenClient } from '../offscreen-client';
+import { TransactionPlan } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 export const isWitnessBuildRequest = (msg: ViewReqMessage): msg is WitnessAndBuildRequest => {
   return msg.getType().typeName === WitnessAndBuildRequest.typeName;
@@ -30,23 +29,21 @@ export const handleWitnessBuildReq = async (
 
   const { fullViewingKey } = wallets[0]!;
 
-  console.log('req.transactionPlan is: ', req.transactionPlan)
+  console.log('req.transactionPlan is: ', req.transactionPlan);
 
-  const ts = req.transactionPlan?.toJson()
-  console.log('req.transactionPlan json is: ', ts)
-  console.log('req.transactionPlan from json is: ', TransactionPlan.fromJson(ts))
-  console.log("??????????????????????????????????????????????")
+  const ts = req.transactionPlan?.toJson();
+  console.log('req.transactionPlan json is: ', ts);
+  console.log('req.transactionPlan from json is: ', TransactionPlan.fromJson(ts));
+  console.log('??????????????????????????????????????????????');
 
-  const batchActions = await offscreenClient.buildAction(
-    req,
-    witnessData,
-    fullViewingKey,
-    req.transactionPlan.actions.length,
-  );
+  const baReq = offscreenClient.buildAction(req, witnessData, fullViewingKey);
+  console.log('baReq', baReq);
+  const batchActions = await baReq;
+  console.log('batchActions', batchActions);
   if ('error' in batchActions) throw new Error('failed to build action');
 
   const transaction = buildParallel(
-    batchActions.data,
+    batchActions,
     req.transactionPlan,
     witnessData,
     req.authorizationData,
