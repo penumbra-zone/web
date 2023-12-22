@@ -28,10 +28,8 @@ export const buildActionHandler = (
   // Destructure the data object to get individual fields
   const { transactionPlan, witness, fullViewingKey, length } = jsonReq.request;
 
-  // const actionCount = Object.entries(transactionPlan.actions).length;
-  const workerPromises: Promise<JsonValue>[] = [];
-
   // Spawn web workers
+  const workerPromises: Promise<JsonValue>[] = [];
   for (let i = 0; i < length; i++) {
     workerPromises.push(spawnWorker(transactionPlan, witness, fullViewingKey, i));
   }

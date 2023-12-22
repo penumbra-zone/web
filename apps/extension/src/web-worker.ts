@@ -20,6 +20,7 @@ const workerListener = ({ data }: { data: WorkerMessagePayload }) => {
     actionId,
   } = data;
 
+  // Deserialize payload
   const transactionPlan = TransactionPlan.fromJson(transactionPlanJson);
   const witness = WitnessData.fromJson(witnessJson);
 
