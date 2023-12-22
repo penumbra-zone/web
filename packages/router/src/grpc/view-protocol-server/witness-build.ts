@@ -5,7 +5,6 @@ import {
 import { ViewReqMessage } from './router';
 import { ServicesInterface } from '@penumbra-zone/types';
 import { buildParallel, witness } from '@penumbra-zone/wasm-ts';
-import { localExtStorage } from '@penumbra-zone/storage';
 import { offscreenClient } from '../offscreen-client';
 
 export const isWitnessBuildRequest = (msg: ViewReqMessage): msg is WitnessAndBuildRequest => {
@@ -26,10 +25,6 @@ export const handleWitnessBuildReq = async (
   const sct = await indexedDb.getStateCommitmentTree();
 
   const witnessData = witness(req.transactionPlan, sct);
-
-  const wallets = await localExtStorage.get('wallets');
-
-  const { fullViewingKey } = wallets[0]!;
 
   const batchActions = await offscreenClient.buildAction(req, witnessData, fullViewingKey);
   if ('error' in batchActions) throw new Error('failed to build action');
