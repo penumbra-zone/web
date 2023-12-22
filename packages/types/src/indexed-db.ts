@@ -55,6 +55,7 @@ export interface IndexedDbInterface {
   getAllSwaps(): Promise<SwapRecord[]>;
   getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined>;
   saveSwap(note: SwapRecord): Promise<void>;
+  getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined>;
 }
 
 export interface PenumbraDb extends DBSchema {

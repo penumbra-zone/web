@@ -1,10 +1,5 @@
 import { createServerRoute, StreamingHandler, UnaryHandler } from '../types';
-import {
-  DappMessageRequest,
-  GrpcRequest,
-  GrpcResponse,
-  isDappGrpcRequest,
-} from '../../transport-old';
+import { GrpcRequest, GrpcResponse } from '../../transport-old';
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { handleAppParamsReq, isAppParamsRequest } from './app-params';
 import { handleAddressReq, isAddressRequest } from './address';
@@ -24,33 +19,29 @@ import { handleIndexByAddressReq, isIndexByAddressRequest } from './index-by-add
 import { handleFmdParamsReq, isFmdParamsRequest } from './fmd-params';
 import { handleNoteByCommitmentReq, isNoteByCommitmentRequest } from './note-by-commitment';
 import { handleNullifierStatusReq, isNullifierStatusRequest } from './nullifier-status';
+import { handleSwapByCommitmentReq, isSwapByCommitmentRequest } from './swap-by-commitment';
 
 export type ViewReqMessage = GrpcRequest<typeof ViewProtocolService>;
 export type ViewProtocolRes = GrpcResponse<typeof ViewProtocolService>;
-
-export const isViewServerReq = (
-  message: unknown,
-): message is DappMessageRequest<typeof ViewProtocolService> => {
-  return isDappGrpcRequest(message) && message.serviceTypeName === ViewProtocolService.typeName;
-};
 
 export const viewServerUnaryHandler: UnaryHandler<typeof ViewProtocolService> = async (
   msg,
   services,
 ): Promise<GrpcResponse<typeof ViewProtocolService>> => {
   if (isAppParamsRequest(msg)) return handleAppParamsReq(services);
-  else if (isAddressRequest(msg)) return handleAddressReq(msg);
+  else if (isAddressRequest(msg)) return handleAddressReq(msg, services);
   else if (isWalletIdRequest(msg)) return handleWalletIdReq();
   else if (isTxInfoByHashRequest(msg)) return handleTxInfoByHashReq(msg, services);
   else if (isTxPlannerRequest(msg)) return handleTxPlannerReq(msg, services);
   else if (isWitnessBuildRequest(msg)) return handleWitnessBuildReq(msg, services);
   else if (isBroadcastRequest(msg)) return handleBroadcastReq(msg, services);
-  else if (isEphemeralAddrRequest(msg)) return handleEphemeralAddrReq(msg);
+  else if (isEphemeralAddrRequest(msg)) return handleEphemeralAddrReq(msg, services);
   else if (isStatusRequest(msg)) return handleStatusRequest(msg, services);
-  else if (isIndexByAddressRequest(msg)) return handleIndexByAddressReq(msg);
+  else if (isIndexByAddressRequest(msg)) return handleIndexByAddressReq(msg, services);
   else if (isFmdParamsRequest(msg)) return handleFmdParamsReq(services);
   else if (isNoteByCommitmentRequest(msg)) return handleNoteByCommitmentReq(msg, services);
   else if (isNullifierStatusRequest(msg)) return handleNullifierStatusReq(msg, services);
+  else if (isSwapByCommitmentRequest(msg)) return handleSwapByCommitmentReq(msg, services);
 
   throw new Error(`Non-supported unary request: ${(msg as ViewReqMessage).getType().typeName}`);
 };

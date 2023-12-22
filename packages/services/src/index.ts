@@ -1,11 +1,18 @@
 import { testnetConstants } from '@penumbra-zone/constants';
 import { BlockProcessor, RootQuerier } from '@penumbra-zone/query';
-import { IndexedDb, localExtStorage, syncLastBlockWithLocal } from '@penumbra-zone/storage';
+import { IndexedDb, syncLastBlockWithLocal } from '@penumbra-zone/storage';
 import { ViewServer } from '@penumbra-zone/wasm-ts';
 import { ServicesInterface, WalletServices } from '@penumbra-zone/types/src/services';
 
+export interface ServicesConfig {
+  grpcEndpoint: string;
+  getWallet(): Promise<{ walletId: string; fullViewingKey: string }>;
+}
+
 export class Services implements ServicesInterface {
   private walletServicesPromise: Promise<WalletServices> | undefined;
+
+  constructor(private readonly config: ServicesConfig) {}
 
   private _querier: RootQuerier | undefined;
 
@@ -16,9 +23,7 @@ export class Services implements ServicesInterface {
 
   async initialize(): Promise<void> {
     try {
-      const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
-
-      this._querier = new RootQuerier({ grpcEndpoint });
+      this._querier = new RootQuerier({ grpcEndpoint: this.config.grpcEndpoint });
 
       await this.tryToSync();
     } catch (e) {
@@ -51,36 +56,32 @@ export class Services implements ServicesInterface {
   }
 
   async initializeWalletServices(): Promise<WalletServices> {
-    const wallets = await localExtStorage.get('wallets');
-    if (wallets.length) {
-      const { chainId, epochDuration } = await this.querier.app.chainParams();
+    const { walletId, fullViewingKey } = await this.config.getWallet();
+    const { chainId, epochDuration } = await this.querier.app.chainParams();
 
-      const indexedDb = await IndexedDb.initialize({
-        chainId,
-        dbVersion: testnetConstants.indexedDbVersion,
-        walletId: wallets[0]!.id,
-      });
+    const indexedDb = await IndexedDb.initialize({
+      chainId,
+      dbVersion: testnetConstants.indexedDbVersion,
+      walletId,
+    });
 
-      void syncLastBlockWithLocal(indexedDb);
+    void syncLastBlockWithLocal(indexedDb);
 
-      const viewServer = await ViewServer.initialize({
-        fullViewingKey: wallets[0]!.fullViewingKey,
-        epochDuration,
-        getStoredTree: () => indexedDb.getStateCommitmentTree(),
-        idbConstants: indexedDb.constants(),
-      });
+    const viewServer = await ViewServer.initialize({
+      fullViewingKey,
+      epochDuration,
+      getStoredTree: () => indexedDb.getStateCommitmentTree(),
+      idbConstants: indexedDb.constants(),
+    });
 
-      const blockProcessor = new BlockProcessor({
-        fullViewingKey: wallets[0]!.fullViewingKey,
-        viewServer,
-        querier: this.querier,
-        indexedDb,
-      });
+    const blockProcessor = new BlockProcessor({
+      fullViewingKey,
+      viewServer,
+      querier: this.querier,
+      indexedDb,
+    });
 
-      return { viewServer, blockProcessor, indexedDb };
-    } else {
-      throw new Error('No wallets for view server to initialize for');
-    }
+    return { viewServer, blockProcessor, indexedDb };
   }
 
   async clearCache() {
@@ -88,7 +89,6 @@ export class Services implements ServicesInterface {
 
     ws.blockProcessor.stopSync();
     await ws.indexedDb.clear();
-    await localExtStorage.set('lastBlockSynced', 0);
     this.walletServicesPromise = undefined;
     await this.initialize();
   }

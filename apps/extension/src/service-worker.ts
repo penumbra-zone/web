@@ -1,13 +1,35 @@
-import { Services } from '@penumbra-zone/services';
+import { Services, ServicesConfig } from '@penumbra-zone/services';
+import { stdRouter } from '@penumbra-zone/router/src/std/router';
+import { DappMessageRequest } from '@penumbra-zone/router/src/transport-old';
+import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
+import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
+import { Any, AnyMessage, JsonValue, ServiceType } from '@bufbuild/protobuf';
+import { viewServerRouter } from '@penumbra-zone/router/src/grpc/view-protocol-server/router';
+import { custodyServerRouter } from '@penumbra-zone/router/src/grpc/custody/router';
+import { ibcClientServerRouter } from '@penumbra-zone/router/src/grpc/ibc-client/router';
+import { iterableToStream, MessageToJson } from '@penumbra-zone/transport';
+import { typeRegistry } from '@penumbra-zone/types/src/registry';
+import { isStdRequest } from '@penumbra-zone/types';
+import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/background-connection-manager';
+import { localExtStorage } from '@penumbra-zone/storage';
 
-export const existingServices = new Services();
+const config = {
+  grpcEndpoint: await localExtStorage.get('grpcEndpoint'),
+  getWallet: async () => {
+    const wallets = await localExtStorage.get('wallets');
+    if (!wallets.length) throw new Error('No wallets connected');
+    const { fullViewingKey, id } = wallets[0]!;
+    return { walletId: id, fullViewingKey };
+  },
+} satisfies ServicesConfig;
+
+export const existingServices = new Services(config);
 await existingServices.initialize();
 
 /*
  * std router
  */
-
-import { stdRouter } from '@penumbra-zone/router/src/std/router';
 const penumbraMessageHandler = (
   message: unknown,
   _sender: chrome.runtime.MessageSender,
@@ -23,19 +45,6 @@ chrome.runtime.onMessage.addListener(penumbraMessageHandler);
 /*
  * adapter to existing router
  */
-
-import { DappMessageRequest } from '@penumbra-zone/router/src/transport-old';
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
-import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
-import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
-import { AnyMessage, JsonValue, Any, ServiceType } from '@bufbuild/protobuf';
-import { viewServerRouter } from '@penumbra-zone/router/src/grpc/view-protocol-server/router';
-import { custodyServerRouter } from '@penumbra-zone/router/src/grpc/custody/router';
-import { ibcClientServerRouter } from '@penumbra-zone/router/src/grpc/ibc-client/router';
-import { MessageToJson, iterableToStream } from '@penumbra-zone/transport';
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
-import { isStdRequest } from '@penumbra-zone/types';
-
 const adaptOldRouter = (service: ServiceType) => {
   return async (req: JsonValue): Promise<JsonValue | ReadableStream<JsonValue>> => {
     const packed = Any.fromJson(req, { typeRegistry });
@@ -99,6 +108,4 @@ const adapterEntry = {
 /*
  * background connection manager
  */
-
-import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/background-connection-manager';
 BackgroundConnectionManager.init(adapterEntry);

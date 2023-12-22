@@ -19,7 +19,10 @@ export const handleWitnessBuildReq = async (
   if (!req.authorizationData) throw new Error('No authorization data in request');
   if (!req.transactionPlan) throw new Error('No tx plan in request');
 
-  const { indexedDb } = await services.getWalletServices();
+  const {
+    indexedDb,
+    viewServer: { fullViewingKey },
+  } = await services.getWalletServices();
   const sct = await indexedDb.getStateCommitmentTree();
 
   const witnessData = witness(req.transactionPlan, sct);

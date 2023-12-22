@@ -17,7 +17,11 @@ import { JsonValue } from '@bufbuild/protobuf';
 import { ChromeRuntimeStreamSink } from './stream';
 import { ConnectError, Code as ConnectErrorCode } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import { isDisconnectedPortError } from './errors';
+import {
+  isAbortSubParentDisconnect,
+  isAbortSubOnDisconnect,
+  isChromePortDisconnected,
+} from './errors';
 
 interface BackgroundConnection {
   type: ChannelClientLabel;
@@ -78,10 +82,15 @@ export class BackgroundConnectionManager {
    * content script or other extension script
    */
   private connectionListener = (clientPort: chrome.runtime.Port) => {
-    const { name, sender } = clientPort;
-    if (sender?.origin && (name.startsWith('Extension') || name.startsWith('ContentScript'))) {
-      const { origin: senderOrigin, tlsChannelId, documentId, tab } = sender;
-      const channelConfig = parseConnectionName<typeof name, ChannelConfig>(name);
+    const sender = clientPort.sender;
+    if (
+      sender?.origin &&
+      (clientPort.name.startsWith('Extension') || clientPort.name.startsWith('ContentScript'))
+    ) {
+      const { tlsChannelId, documentId, tab } = sender;
+      const channelConfig = parseConnectionName<typeof clientPort.name, ChannelConfig>(
+        clientPort.name,
+      );
       const {
         label: clientType,
         uuid: clientId,
@@ -89,16 +98,19 @@ export class BackgroundConnectionManager {
         typeName: serviceName,
       } = channelConfig ?? ({} as ChannelConfig);
       const originConnections =
-        this.connections.get(senderOrigin) ??
-        this.connections.set(senderOrigin, new Map()).get(senderOrigin);
+        this.connections.get(sender.origin) ??
+        this.connections.set(sender.origin, new Map()).get(sender.origin);
       const serviceEntry = this.unconditionalServiceAccess[serviceName!];
 
       try {
         if (!channelConfig || !(clientType in ChannelClientLabel))
-          throw new ConnectError(`Invalid connection: ${name}`, ConnectErrorCode.OutOfRange);
-        if (senderOrigin !== claimedOrigin)
           throw new ConnectError(
-            `Origin mismatch: ${senderOrigin} claimed ${claimedOrigin}`,
+            `Invalid connection: ${clientPort.name}`,
+            ConnectErrorCode.OutOfRange,
+          );
+        if (sender.origin !== claimedOrigin)
+          throw new ConnectError(
+            `Origin mismatch: ${sender.origin} claimed ${claimedOrigin}`,
             ConnectErrorCode.Unauthenticated,
           );
         if (originConnections?.has(clientId))
@@ -156,7 +168,9 @@ export class BackgroundConnectionManager {
           if (subPort.name !== channel) return;
           chrome.runtime.onConnect.removeListener(subListener);
           connection.streams.set(channel, acont);
-          subPort.onDisconnect.addListener(() => acont.abort(`Disconnected: ${channel}`));
+          subPort.onDisconnect.addListener(() =>
+            acont.abort(new DOMException(`Disconnecting sub ${channel}`, 'AbortError')),
+          );
           void stream
             .pipeTo(new WritableStream(new ChromeRuntimeStreamSink(subPort)), {
               signal: acont.signal,
@@ -165,7 +179,12 @@ export class BackgroundConnectionManager {
               // This throw won't reach the client.  The failure has already
               // been transmitted in-channel by the stream sink if possible, and
               // the client source will fail in a meaningful way.
-              if (!isDisconnectedPortError(error)) throw error;
+              if (
+                !isChromePortDisconnected(error) &&
+                !isAbortSubOnDisconnect(error, channel) &&
+                !isAbortSubParentDisconnect(error, clientPort.name)
+              )
+                throw error;
             })
             .finally(() => {
               connection.streams.delete(channel);
@@ -198,22 +217,16 @@ export class BackgroundConnectionManager {
           }));
 
       // attach listeners
-      clientPort.onDisconnect.addListener(() => this.disconnectClient(senderOrigin, clientId));
+      clientPort.onDisconnect.addListener(() => this.disconnectClient(sender.origin!, clientId));
       clientPort.onMessage.addListener((i: unknown, p: chrome.runtime.Port) => {
         void (async () => {
-          let handlerResponse: TransportEvent | TransportError | undefined;
           try {
+            let handlerResponse: TransportEvent | TransportError;
             if (isTransportMessage(i)) handlerResponse = await clientMessageHandler(i);
             else throw Error('Unknown item in transport');
-          } catch (e) {
-            // handlers should catch service failures before this point.
-            // otherwise, this creates an unspecific TransportError.
-            console.error('Handler failed', i, e);
-            handlerResponse = {
-              error: errorToJson(ConnectError.from(e), undefined),
-            };
-          } finally {
             p.postMessage(handlerResponse);
+          } catch (e) {
+            if (!isChromePortDisconnected(e)) throw e;
           }
         })();
       });
@@ -241,7 +254,9 @@ export class BackgroundConnectionManager {
     originConnections.delete(clientId);
     if (!originConnections.size) this.connections.delete(portOrigin);
 
-    connection.streams.forEach((acont, subName) => acont.abort(subName));
+    connection.streams.forEach(acont =>
+      acont.abort(new DOMException(`Disconnecting client ${connection.port.name}`, 'AbortError')),
+    );
     connection.port.disconnect();
   };
 }
