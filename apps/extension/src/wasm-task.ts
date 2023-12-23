@@ -18,7 +18,9 @@ const workerListener = ({ data }: { data: WasmTaskInput }) => {
   const transactionPlan = TransactionPlan.fromJson(transactionPlanJson);
   const witness = WitnessData.fromJson(witnessJson);
 
-  void executeWorker(transactionPlan, witness, fullViewingKey, actionPlanIndex).then(self.postMessage);
+  void executeWorker(transactionPlan, witness, fullViewingKey, actionPlanIndex).then(
+    self.postMessage,
+  );
 };
 
 self.addEventListener('message', workerListener);
@@ -34,13 +36,12 @@ async function executeWorker(
 
   // Conditionally read proving keys from disk and load keys into WASM binary
   const actionPlanType = transactionPlan.actions[actionPlanIndex]?.action.case;
-  await penumbraWasmModule.loadProvingKey(actionPlanType!);
+  if (!actionPlanType) throw new Error('No action key provided');
+
+  await penumbraWasmModule.loadProvingKey(actionPlanType);
 
   // Build action according to specification in `TransactionPlan`
-  return penumbraWasmModule.buildActionParallel(
-    transactionPlan,
-    witness,
-    fullViewingKey,
-    actionPlanIndex,
-  ).toJson();
+  return penumbraWasmModule
+    .buildActionParallel(transactionPlan, witness, fullViewingKey, actionPlanIndex)
+    .toJson();
 }

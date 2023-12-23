@@ -1,3 +1,4 @@
+import { Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import type { JsonValue } from '@bufbuild/protobuf';
 import { JsonObject } from '@bufbuild/protobuf/dist/esm';
 import {
@@ -6,6 +7,7 @@ import {
   WasmTaskInput,
   isActionBuildRequest,
 } from '@penumbra-zone/types/src/internal-msg/offscreen';
+import { Jsonified } from '@penumbra-zone/types/src/internal-msg/shared';
 
 export const isOffscreenRequest = (req: unknown): req is OffscreenRequest =>
   req != null &&
@@ -45,16 +47,16 @@ export const buildActionHandler = (request: ActionBuildRequest) => {
 };
 
 const spawnWorker = (
-  transactionPlan: JsonObject & { actions: JsonValue[] },
+  transactionPlan: JsonObject & { actions: Jsonified<Action>[] },
   witness: JsonObject,
   fullViewingKey: string,
   actionPlanIndex: number,
-): Promise<JsonValue> => {
+): Promise<Jsonified<Action>> => {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./wasm-task.ts', import.meta.url));
 
     const onWorkerMessage = (e: MessageEvent) => {
-      resolve(e.data as JsonValue);
+      resolve(e.data as Jsonified<Action>);
       worker.removeEventListener('message', onWorkerMessage);
       worker.removeEventListener('message', onWorkerError);
       worker.terminate();

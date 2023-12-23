@@ -5,7 +5,6 @@ import {
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { JsonValue } from '@bufbuild/protobuf';
 import {
   StateCommitmentTree,
   validateSchema,
@@ -14,6 +13,7 @@ import {
   WasmBuildSchema,
   WasmWitnessDataSchema,
 } from '@penumbra-zone/types';
+import { Jsonified } from '@penumbra-zone/types/src/internal-msg/shared';
 import {
   authorize,
   build_parallel as buildTxParallel,
@@ -39,10 +39,15 @@ export const buildParallel = (
 ): Transaction => {
   const result = validateSchema(
     WasmBuildSchema,
-    buildTxParallel(batchActions.map(action => action.toJson()), txPlan.toJson(), witnessData.toJson(), authData.toJson()),
+    buildTxParallel(
+      batchActions.map(action => action.toJson()),
+      txPlan.toJson(),
+      witnessData.toJson(),
+      authData.toJson(),
+    ),
   );
 
-  return Transaction.fromJson(result as JsonValue);
+  return Transaction.fromJson(result as Jsonified<Transaction>);
 };
 
 export const buildActionParallel = (
@@ -61,5 +66,5 @@ export const buildActionParallel = (
     ),
   );
 
-  return Action.fromJson(result as JsonValue);
+  return Action.fromJson(result as Jsonified<Action>);
 };
