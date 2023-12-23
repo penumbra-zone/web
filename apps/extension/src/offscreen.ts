@@ -4,7 +4,7 @@ import { JsonObject } from '@bufbuild/protobuf/dist/esm';
 import {
   OffscreenRequest,
   ActionBuildRequest,
-  WasmTaskInput,
+  WasmBuildActionInput,
   isActionBuildRequest,
 } from '@penumbra-zone/types/src/internal-msg/offscreen';
 import { Jsonified } from '@penumbra-zone/types/src/internal-msg/shared';
@@ -78,6 +78,6 @@ const spawnWorker = (
       witness,
       fullViewingKey,
       actionPlanIndex,
-    } satisfies WasmTaskInput);
+    } satisfies WasmBuildActionInput);
   });
 };

@@ -46,5 +46,7 @@ export const sendOffscreenMessage = async <T extends OffscreenMessage>(
     ...req,
   })) satisfies InternalResponse<ActionBuildMessage>;
 
+  await chrome.offscreen.closeDocument();
+
   return result;
 };

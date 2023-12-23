@@ -19,7 +19,7 @@ export interface ActionBuildRequest {
 }
 export type ActionBuildResponse = ActionJsonValue<ActionCase>[];
 
-export type WasmTaskInput = ActionBuildRequest & { actionPlanIndex: number };
+export type WasmBuildActionInput = ActionBuildRequest & { actionPlanIndex: number };
 
 type ActionCase = NonNullable<Action['action']['case']>;
 type ActionJsonValue<C extends ActionCase> = Record<C, JsonValue>;
