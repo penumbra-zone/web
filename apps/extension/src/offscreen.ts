@@ -1,5 +1,11 @@
 import type { JsonValue } from '@bufbuild/protobuf';
-import { OffscreenRequest } from '@penumbra-zone/types/src/internal-msg/offscreen-types';
+import { JsonObject } from '@bufbuild/protobuf/dist/esm';
+import {
+  OffscreenRequest,
+  ActionBuildRequest,
+  WasmTaskInput,
+  isActionBuildRequest,
+} from '@penumbra-zone/types/src/internal-msg/offscreen-types';
 
 export const isOffscreenRequest = (req: unknown): req is OffscreenRequest =>
   req != null &&
@@ -13,41 +19,36 @@ export const offscreenMessageHandler = (
   _: chrome.runtime.MessageSender,
   sendResponse: (x: JsonValue) => void,
 ) => {
-  if (!isOffscreenRequest(req)) return false;
-
-  buildActionHandler(req, sendResponse);
+  if (!isOffscreenRequest(req)) return;
+  if (isActionBuildRequest(req.request)) {
+    const { type, request } = req;
+    void (async () => {
+      const response = Promise.all(buildActionHandler(request));
+      const res = await response
+        .then(data => ({ type, data }))
+        .catch(e => ({ type, error: String(e) }));
+      sendResponse(res);
+    })();
+  }
   return true;
 };
 
 chrome.runtime.onMessage.addListener(offscreenMessageHandler);
 
-export const buildActionHandler = (
-  jsonReq: OffscreenRequest,
-  responder: (r: JsonValue) => void,
-) => {
+export const buildActionHandler = (request: ActionBuildRequest) => {
   // Destructure the data object to get individual fields
-  const { transactionPlan, witness, fullViewingKey, length } = jsonReq.request;
+  const { transactionPlan, witness, fullViewingKey } = request;
 
-  // Spawn web workers
-  const workerPromises: Promise<JsonValue>[] = [];
-  for (let i = 0; i < length; i++) {
-    workerPromises.push(spawnWorker(transactionPlan, witness, fullViewingKey, i));
-  }
-
-  // Wait for promises to resolve and construct response format
-  void Promise.all(workerPromises).then(batchActions => {
-    responder({
-      type: 'BUILD_ACTION',
-      data: batchActions,
-    });
-  });
+  return transactionPlan.actions.map((_, i) =>
+    spawnWorker(transactionPlan, witness, fullViewingKey, i),
+  );
 };
 
 const spawnWorker = (
-  transactionPlan: JsonValue,
-  witness: JsonValue,
+  transactionPlan: JsonObject & { actions: JsonValue[] },
+  witness: JsonObject,
   fullViewingKey: string,
-  actionId: number,
+  actionPlanIndex: number,
 ): Promise<JsonValue> => {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./wasm-task.ts', import.meta.url));
@@ -74,7 +75,7 @@ const spawnWorker = (
       transactionPlan,
       witness,
       fullViewingKey,
-      actionId,
-    });
+      actionPlanIndex,
+    } satisfies WasmTaskInput);
   });
 };

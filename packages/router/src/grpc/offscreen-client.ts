@@ -1,28 +1,35 @@
 import { WitnessAndBuildRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { WitnessData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import {
+  WitnessData,
+  Action,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { InternalRequest, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
 import {
   ActionBuildMessage,
+  ActionBuildRequest,
   OffscreenMessage,
 } from '@penumbra-zone/types/src/internal-msg/offscreen-types';
 
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
 export const offscreenClient = {
-  buildAction: (
+  buildAction: async (
     arg: WitnessAndBuildRequest,
     witness: WitnessData,
     fullViewingKey: string,
-  ): Promise<InternalResponse<ActionBuildMessage>> =>
-    sendOffscreenMessage<ActionBuildMessage>({
+  ): Promise<Action[]> => {
+    const buildRes = await sendOffscreenMessage<ActionBuildMessage>({
       type: 'BUILD_ACTION',
       request: {
-        transactionPlan: arg.transactionPlan!.toJson(),
-        witness: witness.toJson(),
+        transactionPlan: arg.transactionPlan!.toJson() as ActionBuildRequest['transactionPlan'],
+        witness: witness.toJson() as ActionBuildRequest['witness'],
         fullViewingKey,
-        length: arg.transactionPlan!.actions.length,
       },
-    }),
+    });
+    if ('error' in buildRes) throw new Error(String(buildRes.error));
+    const actions = buildRes.data.map(a => Action.fromJson(a));
+    return actions;
+  },
 };
 
 export const sendOffscreenMessage = async <T extends OffscreenMessage>(
@@ -37,11 +44,7 @@ export const sendOffscreenMessage = async <T extends OffscreenMessage>(
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const result = (await chrome.runtime.sendMessage({
     ...req,
-  })) as InternalResponse<ActionBuildMessage>;
-  if ('error' in result) throw new Error('failed to build action');
-
-  // Close offscreen document
-  await chrome.offscreen.closeDocument();
+  })) satisfies InternalResponse<ActionBuildMessage>;
 
   return result;
 };

@@ -27,10 +27,9 @@ export const handleWitnessBuildReq = async (
   const witnessData = witness(req.transactionPlan, sct);
 
   const batchActions = await offscreenClient.buildAction(req, witnessData, fullViewingKey);
-  if ('error' in batchActions) throw new Error('failed to build action');
 
   const transaction = buildParallel(
-    batchActions.data,
+    batchActions,
     req.transactionPlan,
     witnessData,
     req.authorizationData,
