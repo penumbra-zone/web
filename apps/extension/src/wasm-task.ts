@@ -3,7 +3,8 @@ import {
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import type { WasmTaskInput } from '@penumbra-zone/types/src/internal-msg/offscreen-types';
+import type { WasmTaskInput } from '@penumbra-zone/types/src/internal-msg/offscreen';
+import { Jsonified } from '@penumbra-zone/types/src/internal-msg/shared';
 
 const workerListener = ({ data }: { data: WasmTaskInput }) => {
   const {
@@ -17,9 +18,7 @@ const workerListener = ({ data }: { data: WasmTaskInput }) => {
   const transactionPlan = TransactionPlan.fromJson(transactionPlanJson);
   const witness = WitnessData.fromJson(witnessJson);
 
-  void executeWorker(transactionPlan, witness, fullViewingKey, actionPlanIndex).then(action =>
-    self.postMessage(action.toJson()),
-  );
+  void executeWorker(transactionPlan, witness, fullViewingKey, actionPlanIndex).then(self.postMessage);
 };
 
 self.addEventListener('message', workerListener);
@@ -29,7 +28,7 @@ async function executeWorker(
   witness: WitnessData,
   fullViewingKey: string,
   actionPlanIndex: number,
-): Promise<Action> {
+): Promise<Jsonified<Action>> {
   // Dynamically load wasm module
   const penumbraWasmModule = await import('@penumbra-zone/wasm-ts');
 
@@ -43,5 +42,5 @@ async function executeWorker(
     witness,
     fullViewingKey,
     actionPlanIndex,
-  );
+  ).toJson();
 }

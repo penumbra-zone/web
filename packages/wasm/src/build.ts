@@ -39,7 +39,7 @@ export const buildParallel = (
 ): Transaction => {
   const result = validateSchema(
     WasmBuildSchema,
-    buildTxParallel(batchActions, txPlan.toJson(), witnessData.toJson(), authData.toJson()),
+    buildTxParallel(batchActions.map(action => action.toJson()), txPlan.toJson(), witnessData.toJson(), authData.toJson()),
   );
 
   return Transaction.fromJson(result as JsonValue);

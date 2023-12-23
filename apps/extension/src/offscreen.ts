@@ -5,7 +5,7 @@ import {
   ActionBuildRequest,
   WasmTaskInput,
   isActionBuildRequest,
-} from '@penumbra-zone/types/src/internal-msg/offscreen-types';
+} from '@penumbra-zone/types/src/internal-msg/offscreen';
 
 export const isOffscreenRequest = (req: unknown): req is OffscreenRequest =>
   req != null &&

@@ -8,7 +8,7 @@ import {
   ActionBuildMessage,
   ActionBuildRequest,
   OffscreenMessage,
-} from '@penumbra-zone/types/src/internal-msg/offscreen-types';
+} from '@penumbra-zone/types/src/internal-msg/offscreen';
 
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
