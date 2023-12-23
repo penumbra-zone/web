@@ -9,6 +9,7 @@ import { JsonValue } from '@bufbuild/protobuf';
 import {
   StateCommitmentTree,
   validateSchema,
+  WasmActionSchema,
   WasmAuthorizeSchema,
   WasmBuildSchema,
   WasmWitnessDataSchema,
@@ -50,12 +51,15 @@ export const buildActionParallel = (
   fullViewingKey: string,
   actionId: number,
 ): Action => {
-  const result = buildAction(
-    txPlan.toJson(),
-    txPlan.actions[actionId]?.toJson(),
-    fullViewingKey,
-    witnessData.toJson(),
-  ) as Action;
+  const result = validateSchema(
+    WasmActionSchema,
+    buildAction(
+      txPlan.toJson(),
+      txPlan.actions[actionId]?.toJson(),
+      fullViewingKey,
+      witnessData.toJson(),
+    ),
+  );
 
-  return result;
+  return Action.fromJson(result as JsonValue);
 };

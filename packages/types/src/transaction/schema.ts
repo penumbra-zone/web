@@ -49,18 +49,4 @@ export const WasmBuildSchema = z.object({
   }),
 });
 
-export const WasmBuildActionSchema = z.object({
-  action: z.object({
-    body: z.object({
-      balanceCommitment: InnerBase64Schema,
-      notePayload: z.object({
-        encryptedNote: InnerBase64Schema,
-        ephemeralKey: Base64StringSchema,
-        noteCommitment: InnerBase64Schema,
-      }),
-      ovkWrappedKey: Base64StringSchema,
-      wrappedMemoKey: Base64StringSchema,
-    }),
-    proof: InnerBase64Schema,
-  }),
-});
+export const WasmActionSchema = z.record(z.unknown());
