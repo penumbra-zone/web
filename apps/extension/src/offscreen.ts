@@ -53,7 +53,7 @@ const spawnWorker = (
   actionPlanIndex: number,
 ): Promise<Jsonified<Action>> => {
   return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL('./wasm-task.ts', import.meta.url));
+    const worker = new Worker(new URL('./wasm-build-action.ts', import.meta.url));
 
     const onWorkerMessage = (e: MessageEvent) => {
       resolve(e.data as Jsonified<Action>);
