@@ -1,4 +1,5 @@
 import {
+  Action,
   AuthorizationData,
   Transaction,
   TransactionPlan,
@@ -7,12 +8,18 @@ import {
 import {
   StateCommitmentTree,
   validateSchema,
+  WasmActionSchema,
   WasmAuthorizeSchema,
   WasmBuildSchema,
   WasmWitnessDataSchema,
 } from '@penumbra-zone/types';
-import { authorize, build as wasmBuild, witness as wasmWitness } from '@penumbra-zone/wasm-bundler';
-import { loadProvingKeys } from '../src/utils';
+import { Jsonified } from '@penumbra-zone/types/src/internal-msg/shared';
+import {
+  authorize,
+  build_parallel as buildTxParallel,
+  build_action as buildAction,
+  witness as wasmWitness,
+} from '@penumbra-zone/wasm-bundler';
 
 export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): AuthorizationData => {
   const result = validateSchema(WasmAuthorizeSchema, authorize(spendKey, txPlan.toJson()));
@@ -24,17 +31,40 @@ export const witness = (txPlan: TransactionPlan, sct: StateCommitmentTree): Witn
   return WitnessData.fromJsonString(JSON.stringify(result));
 };
 
-export const build = async (
-  fullViewingKey: string,
+export const buildParallel = (
+  batchActions: Action[],
   txPlan: TransactionPlan,
   witnessData: WitnessData,
   authData: AuthorizationData,
-): Promise<Transaction> => {
-  await loadProvingKeys();
-
+): Transaction => {
   const result = validateSchema(
     WasmBuildSchema,
-    wasmBuild(fullViewingKey, txPlan.toJson(), witnessData.toJson(), authData.toJson()),
+    buildTxParallel(
+      batchActions.map(action => action.toJson()),
+      txPlan.toJson(),
+      witnessData.toJson(),
+      authData.toJson(),
+    ),
   );
-  return Transaction.fromJsonString(JSON.stringify(result));
+
+  return Transaction.fromJson(result as Jsonified<Transaction>);
+};
+
+export const buildActionParallel = (
+  txPlan: TransactionPlan,
+  witnessData: WitnessData,
+  fullViewingKey: string,
+  actionId: number,
+): Action => {
+  const result = validateSchema(
+    WasmActionSchema,
+    buildAction(
+      txPlan.toJson(),
+      txPlan.actions[actionId]?.toJson(),
+      fullViewingKey,
+      witnessData.toJson(),
+    ),
+  );
+
+  return Action.fromJson(result as Jsonified<Action>);
 };

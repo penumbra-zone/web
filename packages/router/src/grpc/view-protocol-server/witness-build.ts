@@ -4,7 +4,8 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { ViewReqMessage } from './router';
 import { ServicesInterface } from '@penumbra-zone/types';
-import { build, witness } from '@penumbra-zone/wasm-ts';
+import { buildParallel, witness } from '@penumbra-zone/wasm-ts';
+import { offscreenClient } from '../offscreen-client';
 
 export const isWitnessBuildRequest = (msg: ViewReqMessage): msg is WitnessAndBuildRequest => {
   return msg.getType().typeName === WitnessAndBuildRequest.typeName;
@@ -25,8 +26,10 @@ export const handleWitnessBuildReq = async (
 
   const witnessData = witness(req.transactionPlan, sct);
 
-  const transaction = await build(
-    fullViewingKey,
+  const batchActions = await offscreenClient.buildAction(req, witnessData, fullViewingKey);
+
+  const transaction = buildParallel(
+    batchActions,
     req.transactionPlan,
     witnessData,
     req.authorizationData,

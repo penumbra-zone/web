@@ -1,5 +1,5 @@
 import { load_proving_key as wasmLoadProvingKey } from '@penumbra-zone/wasm-bundler';
-import { provingKeys } from '../src/../../types/src/proving-keys';
+import { provingKeys } from '@penumbra-zone/types/src/proving-keys';
 
 export const loadLocalBinary = async (filename: string) => {
   const response = await fetch(`bin/${filename}`);
@@ -10,10 +10,13 @@ export const loadLocalBinary = async (filename: string) => {
   return await response.arrayBuffer();
 };
 
-export const loadProvingKeys = async () => {
-  const promises = provingKeys.map(async ({ file, keyType }) => {
-    const response = await loadLocalBinary(file);
+export const loadProvingKey = async (keyType: string) => {
+  const keyEntry = provingKeys.find(entry => entry.keyType === keyType);
+
+  if (keyEntry) {
+    const response = await loadLocalBinary(keyEntry.file);
     wasmLoadProvingKey(response, keyType);
-  });
-  await Promise.all(promises);
+  } else {
+    throw new Error(`Proving key not found for key type: ${keyType}`);
+  }
 };

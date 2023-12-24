@@ -34,7 +34,12 @@ const penumbraMessageHandler = (
   message: unknown,
   _sender: chrome.runtime.MessageSender,
   sendResponse: (response: unknown) => void,
-) => (isStdRequest(message) ? stdRouter(message, sendResponse, existingServices) : null);
+) => {
+  if (!isStdRequest(message)) return;
+  stdRouter(message, sendResponse, existingServices);
+  return true;
+};
+
 chrome.runtime.onMessage.addListener(penumbraMessageHandler);
 
 /*
