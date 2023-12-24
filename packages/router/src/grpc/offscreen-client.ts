@@ -12,41 +12,52 @@ import {
 
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
+interface ContextsRequest {
+  contextTypes: string[];
+  documentUrls: string[];
+}
+
 let active = 0;
 
 const activateOffscreen = async () => {
   // @ts-expect-error: no types available yet
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  const getContexts = chrome.runtime.getContexts as (x: unknown) => Promise<unknown[]>;
-  const offscreenExists = getContexts({
+  const getContexts = chrome.runtime.getContexts as (
+    request: ContextsRequest,
+  ) => Promise<unknown[]>;
+
+  const offscreenExists = await getContexts({
     contextTypes: ['OFFSCREEN_DOCUMENT'],
     documentUrls: [OFFSCREEN_DOCUMENT_PATH],
   }).then(contexts => contexts.length > 0);
 
-  if (active && (await offscreenExists)) active++;
-  else {
-    active++;
+  if (!active || !offscreenExists) {
     await chrome.offscreen.createDocument({
       url: OFFSCREEN_DOCUMENT_PATH,
       reasons: [chrome.offscreen.Reason.WORKERS],
       justification: 'Manages Penumbra transaction WASM workers',
     });
   }
+
+  active++;
 };
 
-const releaseOffscreen = () => {
+const releaseOffscreen = async () => {
   active--;
-  if (!active) void chrome.offscreen.closeDocument();
+  if (!active) await chrome.offscreen.closeDocument();
 };
 
 const sendOffscreenMessage = async <T extends OffscreenMessage>(
   req: InternalRequest<T>,
 ): Promise<InternalResponse<ActionBuildMessage>> => {
   try {
+    // Activate the offscreen window by checking if the window already exists,
+    // and if doesn't exist or there aren't any active requests, create it.
     await activateOffscreen();
     return await chrome.runtime.sendMessage<InternalRequest<T>, InternalResponse<T>>(req);
   } finally {
-    releaseOffscreen();
+    // Release the offscreen window resources by closing the offscreen window
+    // after the message is sent, only if there are no active requests.
+    await releaseOffscreen();
   }
 };
 
@@ -64,8 +75,8 @@ const buildAction = async (
     },
   });
   if ('error' in buildRes) throw new Error(String(buildRes.error));
-  const actions = buildRes.data.map(a => Action.fromJson(a));
-  return actions;
+
+  return buildRes.data.map(a => Action.fromJson(a));
 };
 
 export const offscreenClient = { buildAction };
