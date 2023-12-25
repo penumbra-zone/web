@@ -1,34 +1,55 @@
+import { notes } from './notes';
+
+import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { hasWalletCtx, servicesCtx } from '../../ctx';
+
+import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
+import type { Services } from '@penumbra-zone/services';
+
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import {
   NotesRequest,
   NotesResponse,
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { ServicesInterface } from '@penumbra-zone/types';
 
-import { beforeEach, describe, expect, test } from 'vitest';
-import { handleNotesReq } from './notes';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+const mockHasWalletId = vi.fn(() => Promise.resolve(true));
 
 describe('Notes request handler', () => {
-  let services: ServicesInterface;
+  let mockServices: Services;
+  let mockCtx: HandlerContext;
 
   beforeEach(() => {
-    services = {
+    vi.resetAllMocks();
+
+    mockServices = {
       getWalletServices: () =>
         Promise.resolve({
           indexedDb: {
             getAllNotes: (): Promise<SpendableNoteRecord[]> => Promise.resolve(testData),
           },
         }),
-    } as ServicesInterface;
+    } as Services;
+
+    mockCtx = createHandlerContext({
+      service: ViewProtocolService,
+      method: ViewProtocolService.methods.balances,
+      protocolName: 'mock',
+      requestMethod: 'MOCK',
+      contextValues: createContextValues()
+        .set(servicesCtx, mockServices)
+        .set(hasWalletCtx, mockHasWalletId),
+    });
   });
 
   test('empty request return no spend notes', async () => {
     const responses: NotesResponse[] = [];
     const req = new NotesRequest({});
-    for await (const res of handleNotesReq(req, services)) {
-      responses.push(res);
+    for await (const res of notes(req, mockCtx)) {
+      responses.push(new NotesResponse(res));
     }
     expect(responses.length).toBe(5);
   });
@@ -38,8 +59,8 @@ describe('Notes request handler', () => {
     const req = new NotesRequest({
       includeSpent: false,
     });
-    for await (const res of handleNotesReq(req, services)) {
-      responses.push(res);
+    for await (const res of notes(req, mockCtx)) {
+      responses.push(new NotesResponse(res));
     }
     expect(responses.length).toBe(5);
   });
@@ -49,8 +70,8 @@ describe('Notes request handler', () => {
     const req = new NotesRequest({
       includeSpent: true,
     });
-    for await (const res of handleNotesReq(req, services)) {
-      responses.push(res);
+    for await (const res of notes(req, mockCtx)) {
+      responses.push(new NotesResponse(res));
     }
     expect(responses.length).toBe(6);
   });
@@ -65,8 +86,8 @@ describe('Notes request handler', () => {
     const req = new NotesRequest({
       assetId,
     });
-    for await (const res of handleNotesReq(req, services)) {
-      responses.push(res);
+    for await (const res of notes(req, mockCtx)) {
+      responses.push(new NotesResponse(res));
     }
     expect(responses.length).toBe(4);
   });
@@ -82,8 +103,8 @@ describe('Notes request handler', () => {
       includeSpent: true,
       assetId,
     });
-    for await (const res of handleNotesReq(req, services)) {
-      responses.push(res);
+    for await (const res of notes(req, mockCtx)) {
+      responses.push(new NotesResponse(res));
     }
     expect(responses.length).toBe(5);
   });
@@ -100,8 +121,8 @@ describe('Notes request handler', () => {
       includeSpent: true,
       addressIndex,
     });
-    for await (const res of handleNotesReq(req, services)) {
-      responses.push(res);
+    for await (const res of notes(req, mockCtx)) {
+      responses.push(new NotesResponse(res));
     }
     expect(responses.length).toBe(1);
   });
@@ -117,8 +138,8 @@ describe('Notes request handler', () => {
     const req = new NotesRequest({
       addressIndex,
     });
-    for await (const res of handleNotesReq(req, services)) {
-      responses.push(res);
+    for await (const res of notes(req, mockCtx)) {
+      responses.push(new NotesResponse(res));
     }
     expect(responses.length).toBe(0);
   });
@@ -139,8 +160,8 @@ describe('Notes request handler', () => {
       addressIndex,
       assetId,
     });
-    for await (const res of handleNotesReq(req, services)) {
-      responses.push(res);
+    for await (const res of notes(req, mockCtx)) {
+      responses.push(new NotesResponse(res));
     }
     expect(responses.length).toBe(1);
   });
@@ -160,8 +181,8 @@ describe('Notes request handler', () => {
       addressIndex,
       assetId,
     });
-    for await (const res of handleNotesReq(req, services)) {
-      responses.push(res);
+    for await (const res of notes(req, mockCtx)) {
+      responses.push(new NotesResponse(res));
     }
     expect(responses.length).toBe(0);
   });
@@ -182,8 +203,8 @@ describe('Notes request handler', () => {
       assetId,
       amountToSpend,
     });
-    for await (const res of handleNotesReq(req, services)) {
-      responses.push(res);
+    for await (const res of notes(req, mockCtx)) {
+      responses.push(new NotesResponse(res));
     }
     expect(responses.length).toBe(2);
   });
@@ -204,8 +225,8 @@ describe('Notes request handler', () => {
       assetId,
       amountToSpend,
     });
-    for await (const res of handleNotesReq(req, services)) {
-      responses.push(res);
+    for await (const res of notes(req, mockCtx)) {
+      responses.push(new NotesResponse(res));
     }
     expect(responses.length).toBe(0);
   });
@@ -221,8 +242,8 @@ describe('Notes request handler', () => {
     const req = new NotesRequest({
       amountToSpend,
     });
-    for await (const res of handleNotesReq(req, services)) {
-      responses.push(res);
+    for await (const res of notes(req, mockCtx)) {
+      responses.push(new NotesResponse(res));
     }
     expect(responses.length).toBe(5);
   });
@@ -245,8 +266,8 @@ describe('Notes request handler', () => {
       includeSpent: true,
     });
 
-    for await (const res of handleNotesReq(req, services)) {
-      responses.push(res);
+    for await (const res of notes(req, mockCtx)) {
+      responses.push(new NotesResponse(res));
     }
 
     expect(responses.length).toBe(5);

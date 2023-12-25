@@ -1,36 +1,23 @@
-import {
-  SwapByCommitmentRequest,
-  SwapByCommitmentResponse,
-  SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { ViewReqMessage } from './router';
-import { ServicesInterface } from '@penumbra-zone/types';
+import type { Impl } from '.';
+import { servicesCtx } from '../../ctx';
 
-export const isSwapByCommitmentRequest = (req: ViewReqMessage): req is SwapByCommitmentRequest => {
-  return req.getType().typeName === SwapByCommitmentRequest.typeName;
-};
+import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
-export const handleSwapByCommitmentReq = async (
-  req: SwapByCommitmentRequest,
-  services: ServicesInterface,
-): Promise<SwapByCommitmentResponse> => {
+export const swapByCommitment: Impl['swapByCommitment'] = async (req, ctx) => {
+  const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
-  if (!req.swapCommitment) throw new Error('Missing swap commitment in request');
+  const { swapCommitment } = req;
+  if (!swapCommitment) throw new Error('Missing swap commitment in request');
 
-  const swapByCommitment = await indexedDb.getSwapByCommitment(req.swapCommitment);
-  if (swapByCommitment) return new SwapByCommitmentResponse({ swap: swapByCommitment });
-  if (!req.awaitDetection) throw new Error('Swap not found');
+  const swap = await indexedDb.getSwapByCommitment(swapCommitment);
+  if (swap) return { swap };
 
-  // Wait until our DB encounters a new swap with this commitment
-  const response = new SwapByCommitmentResponse();
-  const subscription = indexedDb.subscribe('SWAPS');
-
-  for await (const update of subscription) {
-    const swapRecord = SwapRecord.fromJson(update.value);
-    if (swapRecord.swapCommitment?.equals(req.swapCommitment)) {
-      response.swap = swapRecord;
-      break;
+  if (req.awaitDetection) {
+    for await (const { value: swapJson } of indexedDb.subscribe('SWAPS')) {
+      const swap = SwapRecord.fromJson(swapJson);
+      if (swap.swapCommitment?.equals(swapCommitment)) return { swap };
     }
   }
-  return response;
+
+  throw new Error('Swap not found');
 };

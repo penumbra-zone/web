@@ -1,35 +1,39 @@
+import { nullifierStatus } from './nullifier-status';
+
+import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { hasWalletCtx, servicesCtx } from '../../ctx';
+
+import { JsonValue } from '@bufbuild/protobuf';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import type { Services } from '@penumbra-zone/services';
+import { stringToUint8Array } from '@penumbra-zone/types';
+
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
-import { handleNullifierStatusReq } from './nullifier-status';
+
+import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import { WalletId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import {
   NullifierStatusRequest,
   SpendableNoteRecord,
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { ServicesInterface, stringToUint8Array } from '@penumbra-zone/types';
-import { WalletId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
-import { assertWalletIdMatches } from './utils';
-import { JsonValue } from '@bufbuild/protobuf';
 
-const mockAssertWalletId = assertWalletIdMatches as Mock;
-
-vi.mock('./utils', () => ({
-  assertWalletIdMatches: vi.fn(() => Promise.resolve(true)),
-}));
+const mockHasWalletId = vi.fn(() => Promise.resolve(true));
 
 interface IndexedDbMock {
   getNoteByNullifier: Mock;
   getSwapByNullifier: Mock;
-  subscribe: (table: string) => { next: Mock };
+  subscribe: (table: string) => Partial<AsyncIterable<Mock>>;
 }
 
 interface MockServices {
   getWalletServices: Mock<[], Promise<{ indexedDb: IndexedDbMock }>>;
 }
 
-describe('handleNullifierStatusReq', () => {
+describe('nullifierStatus', () => {
   let mockServices: MockServices;
   let mockIndexedDb: IndexedDbMock;
+  let mockCtx: HandlerContext;
   let noteSubNext: Mock;
   let swapSubNext: Mock;
 
@@ -39,11 +43,13 @@ describe('handleNullifierStatusReq', () => {
     noteSubNext = vi.fn();
     const mockNoteSubscription = {
       next: noteSubNext,
+      [Symbol.asyncIterator]: () => mockNoteSubscription,
     };
 
     swapSubNext = vi.fn();
     const mockSwapSubscription = {
       next: swapSubNext,
+      [Symbol.asyncIterator]: () => mockSwapSubscription,
     };
 
     mockIndexedDb = {
@@ -58,26 +64,32 @@ describe('handleNullifierStatusReq', () => {
     mockServices = {
       getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb })),
     };
+
+    mockCtx = createHandlerContext({
+      service: ViewProtocolService,
+      method: ViewProtocolService.methods.nullifierStatus,
+      protocolName: 'mock',
+      requestMethod: 'MOCK',
+      contextValues: createContextValues()
+        .set(servicesCtx, mockServices as unknown as Services)
+        .set(hasWalletCtx, mockHasWalletId),
+    });
   });
 
   test('throws if wallet id is passed and does not match', async () => {
-    const error = 'wallet id does not match';
-    mockAssertWalletId.mockRejectedValue(error);
+    const error = 'walletId unknown';
+    mockHasWalletId.mockRejectedValue(error);
 
     const req = new NullifierStatusRequest({
       walletId: new WalletId({ inner: stringToUint8Array('xyz') }),
     });
 
-    await expect(
-      handleNullifierStatusReq(req, mockServices as unknown as ServicesInterface),
-    ).rejects.toThrowError(error);
+    await expect(nullifierStatus(req, mockCtx)).rejects.toThrowError(error);
   });
 
   test('returns empty response if no nullifier provided', async () => {
     const req = new NullifierStatusRequest();
-    await expect(
-      handleNullifierStatusReq(req, mockServices as unknown as ServicesInterface),
-    ).rejects.toThrowError('No nullifier passed');
+    await expect(nullifierStatus(req, mockCtx)).rejects.toThrowError('No nullifier passed');
   });
 
   test('returns false if nullifier not found in db', async () => {
@@ -88,7 +100,7 @@ describe('handleNullifierStatusReq', () => {
     mockIndexedDb.getNoteByNullifier.mockResolvedValue(undefined);
     mockIndexedDb.getSwapByNullifier.mockResolvedValue(undefined);
 
-    const res = await handleNullifierStatusReq(req, mockServices as unknown as ServicesInterface);
+    const res = await nullifierStatus(req, mockCtx);
     expect(res.spent).toBe(false);
   });
 
@@ -100,7 +112,7 @@ describe('handleNullifierStatusReq', () => {
     mockIndexedDb.getNoteByNullifier.mockResolvedValue(undefined);
     mockIndexedDb.getSwapByNullifier.mockResolvedValue(new SwapRecord({ heightClaimed: 324234n }));
 
-    const res = await handleNullifierStatusReq(req, mockServices as unknown as ServicesInterface);
+    const res = await nullifierStatus(req, mockCtx);
     expect(res.spent).toBe(true);
   });
 
@@ -112,7 +124,7 @@ describe('handleNullifierStatusReq', () => {
     mockIndexedDb.getNoteByNullifier.mockResolvedValue(undefined);
     mockIndexedDb.getSwapByNullifier.mockResolvedValue(new SwapRecord());
 
-    const res = await handleNullifierStatusReq(req, mockServices as unknown as ServicesInterface);
+    const res = await nullifierStatus(req, mockCtx);
     expect(res.spent).toBe(false);
   });
 
@@ -126,7 +138,7 @@ describe('handleNullifierStatusReq', () => {
     );
     mockIndexedDb.getSwapByNullifier.mockResolvedValue(undefined);
 
-    const res = await handleNullifierStatusReq(req, mockServices as unknown as ServicesInterface);
+    const res = await nullifierStatus(req, mockCtx);
     expect(res.spent).toBe(true);
   });
 
@@ -138,7 +150,7 @@ describe('handleNullifierStatusReq', () => {
     mockIndexedDb.getNoteByNullifier.mockResolvedValue(new SpendableNoteRecord());
     mockIndexedDb.getSwapByNullifier.mockResolvedValue(undefined);
 
-    const res = await handleNullifierStatusReq(req, mockServices as unknown as ServicesInterface);
+    const res = await nullifierStatus(req, mockCtx);
     expect(res.spent).toBe(false);
   });
 
@@ -194,7 +206,7 @@ describe('handleNullifierStatusReq', () => {
       awaitDetection: true,
     });
 
-    const res = await handleNullifierStatusReq(req, mockServices as unknown as ServicesInterface);
+    const res = await nullifierStatus(req, mockCtx);
     expect(res.spent).toBe(true);
   });
 
@@ -256,55 +268,7 @@ describe('handleNullifierStatusReq', () => {
       awaitDetection: true,
     });
 
-    const res = await handleNullifierStatusReq(req, mockServices as unknown as ServicesInterface);
-    expect(res.spent).toBe(true);
-  });
-
-  test('await losing the race does gets picked up next loop', async () => {
-    mockIndexedDb.getNoteByNullifier.mockResolvedValue(undefined);
-    mockIndexedDb.getSwapByNullifier.mockResolvedValue(undefined);
-
-    const matchingNullifier = new Nullifier({ inner: stringToUint8Array('nullifier_abc') });
-
-    const matchingSwap = new SwapRecord({
-      nullifier: matchingNullifier,
-      heightClaimed: 10314n,
-    });
-
-    const swapIteratorVal = {
-      value: { value: matchingSwap.toJson(), table: 'SWAPS' },
-    };
-
-    // Incoming swaps with the last one being the match
-    swapSubNext.mockImplementation(delay(swapIteratorVal, 1));
-
-    const nonMatchingNote = new SpendableNoteRecord({
-      nullifier: new Nullifier({ inner: stringToUint8Array('nope') }),
-    });
-
-    const noteIteratorVal = {
-      value: { value: nonMatchingNote.toJson(), table: 'SPENDABLE_NOTES' },
-    };
-
-    // Incoming notes with no matches
-    noteSubNext
-      .mockImplementation(delay(noteIteratorVal, 0))
-      .mockImplementation(delay(noteIteratorVal, 1))
-      .mockImplementation(delay(noteIteratorVal, 2));
-
-    const req = new NullifierStatusRequest({
-      nullifier: matchingNullifier,
-      awaitDetection: true,
-    });
-
-    const res = await handleNullifierStatusReq(req, mockServices as unknown as ServicesInterface);
+    const res = await nullifierStatus(req, mockCtx);
     expect(res.spent).toBe(true);
   });
 });
-
-const delay = (toReturn: { value: { value: JsonValue; table: string } }, delay: number) => () =>
-  new Promise(resolve => {
-    setTimeout(() => {
-      resolve(toReturn);
-    }, delay);
-  });

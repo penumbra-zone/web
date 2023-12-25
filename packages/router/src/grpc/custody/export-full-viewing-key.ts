@@ -1,25 +1,16 @@
-import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-import {
-  ExportFullViewingKeyRequest,
-  ExportFullViewingKeyResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
-import { AnyMessage } from '@bufbuild/protobuf';
-import { localExtStorage } from '@penumbra-zone/storage';
+import type { Impl } from '.';
+import { extLocalCtx } from '../../ctx';
+
 import { stringToUint8Array } from '@penumbra-zone/types';
 
-export const isExportFullViewingKeyRequest = (
-  req: AnyMessage,
-): req is ExportFullViewingKeyRequest => {
-  return req.getType().typeName === ExportFullViewingKeyRequest.typeName;
-};
+import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
-export const handleExportFullViewingKeyReq = async (): Promise<ExportFullViewingKeyResponse> => {
+export const exportFullViewingKey: Impl['exportFullViewingKey'] = async (_, ctx) => {
+  const localExtStorage = ctx.values.get(extLocalCtx);
   const wallets = await localExtStorage.get('wallets');
   if (!wallets.length) throw new Error('No wallets in storage');
-
-  return new ExportFullViewingKeyResponse({
-    fullViewingKey: new FullViewingKey({
-      inner: stringToUint8Array(wallets[0]!.fullViewingKey),
-    }),
+  const fullViewingKey = new FullViewingKey({
+    inner: stringToUint8Array(wallets[0]!.fullViewingKey),
   });
+  return { fullViewingKey };
 };

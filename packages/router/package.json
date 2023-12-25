@@ -14,7 +14,9 @@
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm-ts": "workspace:*"
+    "@penumbra-zone/wasm-ts": "workspace:*",
+    "@penumbra-zone/query": "workspace:*",
+    "@penumbra-zone/services": "workspace:*"
   },
   "devDependencies": {
     "@types/chrome": "0.0.254",

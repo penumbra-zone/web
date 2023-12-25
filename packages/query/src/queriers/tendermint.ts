@@ -1,6 +1,7 @@
 import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils';
 import {
+  BroadcastTxAsyncRequest,
   GetStatusRequest,
   GetTxRequest,
   GetTxResponse,
@@ -19,6 +20,12 @@ export class TendermintQuerier implements TendermintQuerierInterface {
     const req = new GetStatusRequest();
     const res = await this.client.getStatus(req);
     return res.syncInfo!.latestBlockHeight;
+  }
+
+  async broadcastTx(params: Uint8Array) {
+    const req = new BroadcastTxAsyncRequest({ params });
+    const res = await this.client.broadcastTxAsync(req);
+    return res.hash;
   }
 
   async txByHash(hash: Uint8Array): Promise<GetTxResponse | undefined> {

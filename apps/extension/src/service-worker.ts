@@ -1,111 +1,67 @@
-import { Services, ServicesConfig } from '@penumbra-zone/services';
-import { stdRouter } from '@penumbra-zone/router/src/std/router';
-import { DappMessageRequest } from '@penumbra-zone/router/src/transport-old';
+import { Services } from '@penumbra-zone/services';
+
+import type { JsonValue } from '@bufbuild/protobuf';
+import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/background-connection-manager';
+
+import { createContextValues } from '@connectrpc/connect';
+import { servicesCtx, extLocalCtx } from '@penumbra-zone/router/src/ctx';
+import { adaptServiceImpl } from '@penumbra-zone/transport/src/chrome-runtime/adapter';
+import { createPromiseClient } from '@connectrpc/connect';
+import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
 import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
-import { Any, AnyMessage, JsonValue, ServiceType } from '@bufbuild/protobuf';
-import { viewServerRouter } from '@penumbra-zone/router/src/grpc/view-protocol-server/router';
-import { custodyServerRouter } from '@penumbra-zone/router/src/grpc/custody/router';
-import { ibcClientServerRouter } from '@penumbra-zone/router/src/grpc/ibc-client/router';
-import { iterableToStream, MessageToJson } from '@penumbra-zone/transport';
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
-import { isStdRequest } from '@penumbra-zone/types';
-import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/background-connection-manager';
-import { localExtStorage } from '@penumbra-zone/storage';
+import custodyImpl from '@penumbra-zone/router/src/grpc/custody';
+import viewImpl from '@penumbra-zone/router/src/grpc/view-protocol-server';
 
-const config = {
-  grpcEndpoint: await localExtStorage.get('grpcEndpoint'),
+import { isStdRequest } from '@penumbra-zone/types';
+import { stdRouter } from '@penumbra-zone/router/src/std/router';
+
+// this context provides all non-request information to handlers
+const contextValues = createContextValues();
+const extLocal = contextValues.get(extLocalCtx);
+const grpcEndpoint = await extLocal.get('grpcEndpoint');
+
+const servicesConfig = {
+  grpcEndpoint,
   getWallet: async () => {
-    const wallets = await localExtStorage.get('wallets');
+    const wallets = await extLocal.get('wallets');
     if (!wallets.length) throw new Error('No wallets connected');
     const { fullViewingKey, id } = wallets[0]!;
     return { walletId: id, fullViewingKey };
   },
-} satisfies ServicesConfig;
+};
 
-export const existingServices = new Services(config);
-await existingServices.initialize();
+const services = contextValues.set(servicesCtx, new Services(servicesConfig)).get(servicesCtx);
+await services.initialize();
 
-/*
- * std router
- */
 const penumbraMessageHandler = (
   message: unknown,
   _sender: chrome.runtime.MessageSender,
   sendResponse: (response: unknown) => void,
 ) => {
   if (!isStdRequest(message)) return;
-  stdRouter(message, sendResponse, existingServices);
+  stdRouter(message, sendResponse, services);
   return true;
 };
 
 chrome.runtime.onMessage.addListener(penumbraMessageHandler);
 
-/*
- * adapter to existing router
- */
-const adaptOldRouter = (service: ServiceType) => {
-  return async (req: JsonValue): Promise<JsonValue | ReadableStream<JsonValue>> => {
-    const packed = Any.fromJson(req, { typeRegistry });
-    const unpacked = packed.unpack(typeRegistry);
-    if (!unpacked) throw Error('Recieved message of unknown type');
-    const sequence = performance.now();
-
-    const messageForRouter = {
-      type: 'PENUMBRA_DAPP_GRPC_REQUEST',
-      serviceTypeName: service.typeName,
-      requestTypeName: unpacked.getType().typeName,
-      jsonReq: unpacked.toJson({ typeRegistry }),
-      sequence,
-    };
-
-    const routerResponse = await new Promise<AnyMessage | AsyncIterable<AnyMessage>>(
-      (resolve, reject) => {
-        switch (service) {
-          case ViewProtocolService:
-            viewServerRouter(
-              messageForRouter as DappMessageRequest<typeof ViewProtocolService>,
-              resolve as (r: unknown) => void,
-              reject as (r: unknown) => void,
-              existingServices,
-            );
-            break;
-          case IbcClientService:
-            ibcClientServerRouter(
-              messageForRouter as DappMessageRequest<typeof IbcClientService>,
-              resolve as (r: unknown) => void,
-              reject as (r: unknown) => void,
-              existingServices,
-            );
-            break;
-          case CustodyProtocolService:
-            custodyServerRouter(
-              messageForRouter as DappMessageRequest<typeof CustodyProtocolService>,
-              resolve as (r: unknown) => void,
-              reject as (r: unknown) => void,
-              existingServices,
-            );
-            break;
-          default:
-            reject('unknown service');
-        }
-      },
-    );
-
-    if (Symbol.asyncIterator in routerResponse)
-      return iterableToStream(routerResponse).pipeThrough(new MessageToJson(typeRegistry));
-    else return Any.pack(routerResponse).toJson({ typeRegistry })!;
-  };
-};
+const adaptView = adaptServiceImpl(ViewProtocolService, viewImpl);
+const adaptCustody = adaptServiceImpl(CustodyProtocolService, custodyImpl);
+const adaptIbc = adaptServiceImpl(
+  IbcClientService,
+  {},
+  createPromiseClient(IbcClientService, createGrpcWebTransport({ baseUrl: grpcEndpoint })),
+);
 
 const adapterEntry = {
-  [ViewProtocolService.typeName]: adaptOldRouter(ViewProtocolService),
-  [CustodyProtocolService.typeName]: adaptOldRouter(CustodyProtocolService),
-  [IbcClientService.typeName]: adaptOldRouter(IbcClientService),
-} as Record<string, (x: JsonValue) => Promise<JsonValue>>;
+  [ViewProtocolService.typeName]: (req: JsonValue) => adaptView(req, { contextValues }),
+  [CustodyProtocolService.typeName]: (req: JsonValue) => adaptCustody(req, { contextValues }),
+  [IbcClientService.typeName]: (req: JsonValue) => adaptIbc(req, { contextValues }),
+} as Record<string, (x: JsonValue) => Promise<JsonValue | ReadableStream<JsonValue>>>;
 
 /*
- * background connection manager
+ * init background connection manager, with above entry functions
  */
 BackgroundConnectionManager.init(adapterEntry);

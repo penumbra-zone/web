@@ -51,6 +51,9 @@ importers:
       '@connectrpc/connect':
         specifier: ^1.1.4
         version: 1.1.4(@bufbuild/protobuf@1.5.1)
+      '@connectrpc/connect-web':
+        specifier: ^1.1.4
+        version: 1.1.4(@bufbuild/protobuf@1.5.1)(@connectrpc/connect@1.1.4)
       '@penumbra-zone/constants':
         specifier: workspace:*
         version: link:../../packages/constants
@@ -459,6 +462,12 @@ importers:
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../crypto
+      '@penumbra-zone/query':
+        specifier: workspace:*
+        version: link:../query
+      '@penumbra-zone/services':
+        specifier: workspace:*
+        version: link:../services
       '@penumbra-zone/storage':
         specifier: workspace:*
         version: link:../storage

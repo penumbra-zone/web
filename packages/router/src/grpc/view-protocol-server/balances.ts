@@ -1,21 +1,18 @@
+import type { Impl } from '.';
+import { servicesCtx } from '../../ctx';
+
+import { Base64Str, addLoHi, uint8ArrayToBase64 } from '@penumbra-zone/types';
+
+import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import {
-  BalancesRequest,
   BalancesResponse,
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { addLoHi, Base64Str, ServicesInterface, uint8ArrayToBase64 } from '@penumbra-zone/types';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
-import { ViewReqMessage } from './router';
 
-type AssetIdStr = Base64Str;
-type BalancesMap = Record<AssetIdStr, BalancesResponse>;
+type BalancesMap = Record<Base64Str, BalancesResponse>;
 type AccountMap = Record<AddressIndex['account'], BalancesMap>;
-
-export const isBalancesRequest = (msg: ViewReqMessage): msg is BalancesRequest => {
-  return msg.getType().typeName === BalancesRequest.typeName;
-};
 
 const initializeProto = (
   noteRecord: SpendableNoteRecord,
@@ -37,10 +34,8 @@ const initializeProto = (
 };
 
 // Handles aggregating amounts and filtering by account number/asset id
-export const handleBalancesReq = async function* (
-  req: BalancesRequest,
-  services: ServicesInterface,
-): AsyncIterable<BalancesResponse> {
+export const balances: Impl['balances'] = async function* (req, ctx) {
+  const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
   const allNotes = await indexedDb.getAllNotes();
 

@@ -1,22 +1,16 @@
-import {
-  WalletIdRequest,
-  WalletIdResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { localExtStorage } from '@penumbra-zone/storage';
-import { WalletId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import type { Impl } from '.';
+import { extLocalCtx } from '../../ctx';
+
 import { stringToUint8Array } from '@penumbra-zone/types';
-import { AnyMessage } from '@bufbuild/protobuf';
 
-export const isWalletIdRequest = (req: AnyMessage): req is WalletIdRequest => {
-  return req.getType().typeName === WalletIdRequest.typeName;
-};
+import { WalletId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
-export const handleWalletIdReq = async (): Promise<WalletIdResponse> => {
-  const wallets = await localExtStorage.get('wallets');
+// TODO: there is no index or other data in this request. should a wallet index be available in context?
 
-  if (!wallets.length) return new WalletIdResponse();
-
-  return new WalletIdResponse({
-    walletId: new WalletId({ inner: stringToUint8Array(wallets[0]!.id) }),
-  });
+export const walletId: Impl['walletId'] = async (_, ctx) => {
+  const local = ctx.values.get(extLocalCtx);
+  const [wallet] = await local.get('wallets');
+  if (!wallet) throw new Error('No wallet');
+  const walletId = new WalletId({ inner: stringToUint8Array(wallet.id) });
+  return { walletId };
 };
