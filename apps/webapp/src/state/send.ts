@@ -14,7 +14,7 @@ import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/c
 import { Selection } from './types';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { viewClient, custodyClient } from '../clients/grpc';
-import { getAddressByIndex, getEphemeralAddress } from '../fetchers/address.ts';
+import { getAddressByIndex } from '../fetchers/address.ts';
 
 export interface SendSlice {
   selection: Selection | undefined;
@@ -25,8 +25,6 @@ export interface SendSlice {
   setRecipient: (addr: string) => void;
   memo: string;
   setMemo: (txt: string) => void;
-  hidden: boolean;
-  setHidden: (checked: boolean) => void;
   sendTx: (toastFn: typeof toast) => Promise<void>;
   txInProgress: boolean;
 }
@@ -37,7 +35,6 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     amount: '',
     recipient: '',
     memo: '',
-    hidden: false,
     txInProgress: false,
     setAmount: amount => {
       set(state => {
@@ -57,11 +54,6 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     setMemo: txt => {
       set(state => {
         state.send.memo = txt;
-      });
-    },
-    setHidden: (checked: boolean) => {
-      set(state => {
-        state.send.hidden = checked;
       });
     },
     sendTx: async toastFn => {
@@ -92,13 +84,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
-const planWitnessBuildBroadcast = async ({
-  amount,
-  recipient,
-  selection,
-  hidden,
-  memo,
-}: SendSlice) => {
+const planWitnessBuildBroadcast = async ({ amount, recipient, selection, memo }: SendSlice) => {
   if (typeof selection?.accountIndex === 'undefined') throw new Error('no selected account');
   if (!selection.asset) throw new Error('no selected asset');
 
@@ -114,9 +100,7 @@ const planWitnessBuildBroadcast = async ({
     ],
     source: new AddressIndex({ account: selection.accountIndex }),
     memo: new MemoPlaintext({
-      returnAddress: hidden
-        ? await getEphemeralAddress(selection.accountIndex)
-        : await getAddressByIndex(selection.accountIndex),
+      returnAddress: await getAddressByIndex(selection.accountIndex),
       text: memo,
     }),
   });
