@@ -57,7 +57,8 @@ export const SendForm = () => {
       <InputBlock
         label='Recipient'
         placeholder='penumbra1…'
-        className='mb-1 font-mono'
+        className='mb-1'
+        inputClassName='font-mono'
         value={recipient}
         onChange={e => setRecipient(e.target.value)}
         validations={[penumbraAddrValidation()]}
