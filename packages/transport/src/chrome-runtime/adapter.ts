@@ -1,3 +1,4 @@
+import { ConnectError, Code as ConnectErrorCode } from '@connectrpc/connect';
 import {
   Any,
   IMessageTypeRegistry,
@@ -21,21 +22,15 @@ import {
   createUniversalHandlerClient,
 } from '@connectrpc/connect/protocol';
 import { createTransport } from '@connectrpc/connect/protocol-connect';
+
 import { MessageToJson, iterableToStream } from '../stream';
 
 // see https://github.com/connectrpc/connect-es/pull/925
 // hopefully also simplifies transport call soon
 type MethodType = MethodInfo & { service: { typeName: string } };
 
-// like types not exported from @connectrpc/connect/promise-client
-//type AnyUnaryFn = (r: AnyMessage, o?: CallOptions) => Promise<AnyMessage>;
-//type AnyServerStreamingFn = (r: AnyMessage, o?: CallOptions) => AsyncIterable<AnyMessage>;
-//type AnyClientStreamingFn = (r: AsyncIterable<AnyMessage>, o?: CallOptions) => Promise<AnyMessage>;
-//type AnyBiDiStreamingFn = (r: AsyncIterable<AnyMessage>, o?: CallOptions) => AsyncIterable<AnyMessage>;
-
 type ChromeRuntimeRequest = JsonValue;
 type ChromeRuntimeResponse = JsonValue | ReadableStream<JsonValue>;
-
 export type ChromeRuntimeHandlerFn = (r: ChromeRuntimeRequest) => Promise<ChromeRuntimeResponse>;
 
 export interface ChromeRuntimeAdapterOptions {
@@ -50,13 +45,14 @@ export interface ChromeRuntimeAdapterOptions {
   fallback?: ChromeRuntimeHandlerFn;
 }
 
+// from createRouterTransport
 const forceRouterOptions = {
   connect: true,
   grpc: false,
   grpcWeb: false,
 };
 
-// Omit<CommonTransportOptions, 'interceptors'>
+// from createRouterTransport
 const forceTransportOptions = {
   httpClient: null as never,
   baseUrl: 'https://in-memory',
@@ -80,7 +76,9 @@ const forceTransportOptions = {
  *
  * The entry function will respond with a single message or a ReadableStream.
  */
-export const adaptChromeRuntime = (opt: ChromeRuntimeAdapterOptions): ChromeRuntimeHandlerFn => {
+export const connectChromeRuntimeAdapter = (
+  opt: ChromeRuntimeAdapterOptions,
+): ChromeRuntimeHandlerFn => {
   // TODO: could we generate a typeRegistry? should we forward to router, transport?
   const typeRegistry = opt.typeRegistry;
 
@@ -140,6 +138,7 @@ export const adaptChromeRuntime = (opt: ChromeRuntimeAdapterOptions): ChromeRunt
     }),
   );
 
+  // TODO: alternatively, we could have the channelClient provide a requestPath
   const I_MethodType = new Map<string, MethodType>(
     router.handlers.map(({ method, service }) => [
       method.I.typeName,
@@ -147,6 +146,7 @@ export const adaptChromeRuntime = (opt: ChromeRuntimeAdapterOptions): ChromeRunt
     ]),
   );
 
+  // TODO: interceptors?
   const transport = createTransport({
     // order matters :)
     interceptors: [],
@@ -155,12 +155,14 @@ export const adaptChromeRuntime = (opt: ChromeRuntimeAdapterOptions): ChromeRunt
     httpClient: injectRequestContext,
   });
 
+  // TODO: sender, origin?
   return async function chromeRuntimeHandler(message: ChromeRuntimeRequest) {
     const request = Any.fromJson(message, { typeRegistry }).unpack(typeRegistry)!;
     const requestType = request.getType();
 
     const methodType = I_MethodType.get(requestType.typeName);
-    if (!methodType) throw Error(`Unknown method type for request ${requestType.typeName}`);
+    if (!methodType)
+      throw new ConnectError(`Method ${requestType.typeName} not found`, ConnectErrorCode.NotFound);
 
     let response;
     switch (methodType.kind) {
@@ -169,9 +171,9 @@ export const adaptChromeRuntime = (opt: ChromeRuntimeAdapterOptions): ChromeRunt
           // only uses service.typeName, so this cast is ok
           methodType.service as ServiceType,
           methodType satisfies MethodInfo,
-          undefined, // TODO
-          undefined, // TODO
-          undefined, // TODO
+          undefined, // TODO abort
+          undefined, // TODO timeout
+          undefined, // TODO headers
           request,
         );
         break;
@@ -180,14 +182,17 @@ export const adaptChromeRuntime = (opt: ChromeRuntimeAdapterOptions): ChromeRunt
           // only uses service.typeName, so this cast is ok
           methodType.service as ServiceType,
           methodType satisfies MethodInfo,
-          undefined, // TODO
-          undefined, // TODO
-          undefined, // TODO
+          undefined, // TODO abort
+          undefined, // TODO timeout
+          undefined, // TODO headers
           createAsyncIterable([request]),
         );
         break;
       default:
-        throw Error(`Unimplemented kind ${MethodKind[methodType.kind]}`);
+        throw new ConnectError(
+          `Unimplemented method kind ${methodType.kind}`,
+          ConnectErrorCode.Unimplemented,
+        );
     }
 
     if (response.stream)

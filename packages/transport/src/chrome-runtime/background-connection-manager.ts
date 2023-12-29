@@ -1,26 +1,25 @@
-import {
-  ChannelConfig,
-  ChannelClientLabel,
-  nameChannel,
-  parseConnectionName,
-  ChannelSubLabel,
-  isTransportMessage,
-  TransportMessage,
-  TransportError,
-  TransportStream,
-  TransportState,
-  TransportEvent,
-  TransportInitChannel,
-} from '../types';
-
-import { ChromeRuntimeStreamSink } from './stream';
 import { ConnectError, Code as ConnectErrorCode } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import {
-  isAbortSubParentDisconnect,
+  ChannelClientLabel,
+  ChannelConfig,
+  ChannelSubLabel,
+  TransportError,
+  TransportEvent,
+  TransportInitChannel,
+  TransportMessage,
+  TransportState,
+  TransportStream,
+  isTransportMessage,
+  nameChannel,
+  parseConnectionName,
+} from '../types';
+import {
   isAbortSubOnDisconnect,
+  isAbortSubParentDisconnect,
   isChromePortDisconnected,
 } from './errors';
+import { ChromeRuntimeStreamSink } from './stream';
 
 interface BackgroundConnection {
   type: ChannelClientLabel;
