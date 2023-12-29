@@ -34,7 +34,13 @@ export const InputBlock = ({
         <p className='text-base font-bold'>{label}</p>
         {vResult ? <div className={cn('italic', 'text-red-400')}>{vResult.issue}</div> : null}
       </div>
-      <Input variant='transparent' className={inputClassName} placeholder={placeholder} value={value} {...props} />
+      <Input
+        variant='transparent'
+        className={inputClassName}
+        placeholder={placeholder}
+        value={value}
+        {...props}
+      />
     </div>
   );
 };
