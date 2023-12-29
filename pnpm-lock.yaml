@@ -471,6 +471,9 @@ importers:
       '@penumbra-zone/storage':
         specifier: workspace:*
         version: link:../storage
+      '@penumbra-zone/transport':
+        specifier: workspace:^
+        version: link:../transport
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types

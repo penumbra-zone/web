@@ -25,7 +25,7 @@ export const createProxyImpl = <S extends ServiceType>(
   contextHandler = noContextHandler,
 ) => {
   const makeAnyProxyMethod: CreateAnyMethodImpl<S> = (method, localName) => {
-    const clientMethod = client[localName]; //as (cI: unknown, cOpt: CallOptions) => unknown;
+    const clientMethod = client[localName] as (cI: unknown, cOpt: CallOptions) => unknown;
     const impl = (hI: unknown, hCtx: HandlerContext) => {
       const [pI, pOpt] = contextHandler(hI, hCtx);
       return clientMethod(pI, pOpt);

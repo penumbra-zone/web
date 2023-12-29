@@ -3,7 +3,6 @@ import { nullifierStatus } from './nullifier-status';
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { hasWalletCtx, servicesCtx } from '../../ctx';
 
-import { JsonValue } from '@bufbuild/protobuf';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import type { Services } from '@penumbra-zone/services';
 import { stringToUint8Array } from '@penumbra-zone/types';

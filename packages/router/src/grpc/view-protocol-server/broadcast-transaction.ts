@@ -14,11 +14,13 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async (req, ct
 
   const encodedTx = encodeTx(req.transaction);
 
+  // start subscription early to prevent race condition
+  const subscription = indexedDb.subscribe('SPENDABLE_NOTES');
+
   const hash = await tendermint.broadcastTx(encodedTx);
 
   // Wait until our DB encounters a new note with this hash
   if (req.awaitDetection) {
-    const subscription = indexedDb.subscribe('SPENDABLE_NOTES');
     for await (const update of subscription) {
       const note = SpendableNoteRecord.fromJson(update.value);
       if (note.source?.equals(new NoteSource({ inner: hash }))) break;

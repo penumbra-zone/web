@@ -90,8 +90,8 @@ export class ClientConnectionManager {
    * @param clientPort MessagePort provided by the page-controlled client
    * @param serviceTypeName requested fully-qualified service typename
    */
-  private initConnection({ port: clientPort, service: serviceTypeName }: InitChannelClientData) {
-    const [clientName, { uuid: clientId }] = nameChannel(this.label, serviceTypeName);
+  private initConnection({ port: clientPort }: InitChannelClientData) {
+    const [clientName, { uuid: clientId }] = nameChannel(this.label);
     const servicePort = chrome.runtime.connect({ includeTlsChannelId: true, name: clientName });
 
     /**
