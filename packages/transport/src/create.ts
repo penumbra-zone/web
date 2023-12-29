@@ -1,25 +1,24 @@
 import {
-  createRouterTransport,
-  ServiceImpl,
-  MethodImpl,
-  ConnectRouter,
-  ConnectError,
-  Code as ConnectErrorCode,
-} from '@connectrpc/connect';
-import { errorFromJson } from '@connectrpc/connect/protocol-connect';
-
-import {
-  MethodKind,
-  MethodInfo,
-  ServiceType,
-  AnyMessage,
-  JsonValue,
   Any,
+  AnyMessage,
   JsonReadOptions,
+  JsonValue,
   JsonWriteOptions,
+  MethodKind,
+  ServiceType,
   createRegistry,
 } from '@bufbuild/protobuf';
-
+import {
+  ConnectError,
+  Code as ConnectErrorCode,
+  ConnectRouter,
+  HandlerContext,
+  MethodImpl,
+  createRouterTransport,
+} from '@connectrpc/connect';
+import { errorFromJson } from '@connectrpc/connect/protocol-connect';
+import { CreateAnyMethodImpl, makeAnyServiceImpl } from './any-impl';
+import { JsonToMessage, streamToGenerator } from './stream';
 import {
   TransportEvent,
   TransportMessage,
@@ -31,30 +30,8 @@ import {
   isTransportStream,
 } from './types';
 
-import { JsonToMessage, streamToGenerator } from './stream';
-
-type CreateAnyMethodImpl<S extends ServiceType> = (
-  methodInfo: MethodInfo & { kind: MethodKind },
-) => typeof methodInfo extends S['methods'][keyof S['methods']]
-  ? MethodImpl<typeof methodInfo>
-  : never;
-
-type CreateAnyServiceImpl = <S extends ServiceType>(
-  service: S,
-  createMethod: CreateAnyMethodImpl<S>,
-) => ServiceImpl<S>;
-
-const makeAnyServiceImpl: CreateAnyServiceImpl = <S extends ServiceType>(
-  service: S,
-  createMethod: CreateAnyMethodImpl<S>,
-): ServiceImpl<S> => {
-  const impl = {} as { [P in keyof S['methods']]: MethodImpl<S['methods'][P]> };
-  let localName: keyof S['methods'];
-  let methodInfo: MethodInfo;
-  for ([localName, methodInfo] of Object.entries(service.methods))
-    impl[localName] = createMethod(methodInfo);
-  return impl;
-};
+type AnyServerStreamingImpl = (i: AnyMessage, ctx: HandlerContext) => AsyncIterable<AnyMessage>;
+type AnyUnaryImpl = (i: AnyMessage, ctx: HandlerContext) => Promise<AnyMessage>;
 
 export interface ChannelTransportOptions {
   defaultTimeoutMs?: number;
@@ -186,25 +163,29 @@ export const createChannelTransport = ({
   const makeChannelMethodImpl: CreateAnyMethodImpl<typeof serviceType> = method => {
     switch (method.kind) {
       case MethodKind.Unary: {
-        return async function (message: AnyMessage) {
+        const unaryImpl: AnyUnaryImpl = async function (message) {
           const responseJson = (await request(message).catch(e => {
             throw ConnectError.from(e);
           })) as JsonValue;
-          const response = Any.fromJson(responseJson, { typeRegistry }).unpack(typeRegistry);
+          const response = Any.fromJson(responseJson, { typeRegistry }).unpack(typeRegistry)!;
           return response;
         };
+        return unaryImpl as MethodImpl<typeof method>;
       }
       case MethodKind.ServerStreaming: {
-        return async function* (message: AnyMessage) {
+        const streamImpl: AnyServerStreamingImpl = async function* (message) {
           const responseStream = (await request(message).catch(e => {
             throw ConnectError.from(e);
           })) as ReadableStream<JsonValue>;
           const response = responseStream.pipeThrough(new JsonToMessage(typeRegistry));
           yield* streamToGenerator(response);
         };
+        return streamImpl as MethodImpl<typeof method>;
       }
-      default:
-        return () => Promise.reject(`${MethodKind[method.kind]} unimplemented`);
+      default: {
+        const noImpl: unknown = () => Promise.reject(`${MethodKind[method.kind]} unimplemented`);
+        return noImpl as MethodImpl<typeof method>;
+      }
     }
   };
 

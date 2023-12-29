@@ -1,7 +1,7 @@
 import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils';
 import {
-  BroadcastTxAsyncRequest,
+  BroadcastTxSyncRequest,
   GetStatusRequest,
   GetTxRequest,
   GetTxResponse,
@@ -23,8 +23,10 @@ export class TendermintQuerier implements TendermintQuerierInterface {
   }
 
   async broadcastTx(params: Uint8Array) {
-    const req = new BroadcastTxAsyncRequest({ params });
-    const res = await this.client.broadcastTxAsync(req);
+    // Note that "synchronous" here means "wait for the tx to be accepted by
+    // the fullnode", not "wait for the tx to be included on chain.
+    const req = new BroadcastTxSyncRequest({ params });
+    const res = await this.client.broadcastTxSync(req);
     return res.hash;
   }
 
