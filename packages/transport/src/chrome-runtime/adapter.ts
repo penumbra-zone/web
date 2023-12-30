@@ -42,7 +42,6 @@ export interface ChromeRuntimeAdapterOptions {
   createRequestContext: (
     h: UniversalServerRequest,
   ) => Promise<UniversalServerRequest & { contextValues: ContextValues }>;
-  fallback?: ChromeRuntimeHandlerFn;
 }
 
 // from createRouterTransport
