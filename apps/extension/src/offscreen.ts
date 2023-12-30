@@ -1,6 +1,5 @@
 import { Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import type { JsonValue } from '@bufbuild/protobuf';
-import { JsonObject } from '@bufbuild/protobuf/dist/esm';
+import type { JsonObject, JsonValue } from '@bufbuild/protobuf';
 import {
   OffscreenRequest,
   ActionBuildRequest,
