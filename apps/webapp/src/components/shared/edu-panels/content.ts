@@ -16,9 +16,9 @@ export const eduPanelContent: Record<EduPanel, string> = {
   [EduPanel.SHIELDED_TRANSACTION]:
     'Penumbra transactions are shielded and don’t reveal any information about the sender, receiver, or amount.  Use the toggle to see what information is revealed on-chain.',
   [EduPanel.SENDING_FUNDS]:
-    'Penumbra transactions include a shielded memo only visible to the sender and receiver.  The sender’s address is included in the memo by default so the receiver can identify the payment.',
+    'Penumbra transactions include a shielded memo only visible to the sender and receiver.  The sender’s address is included in the memo so the receiver can identify the payment.',
   [EduPanel.RECEIVING_FUNDS]:
-    'Every Penumbra account has a stable default address and many one-time addresses.  All addresses for the same account deposit to the same pool of funds.  Use a freshly generated one-time address in situations where you need to reveal an address publicly, like an IBC transfer from a transparent chain into Penumbra.',
+    'Every Penumbra account has a stable default address and many one-time IBC deposit addresses.  All addresses for the same account deposit to the same pool of funds.  Use a freshly generated IBC deposit address to preserve privacy when sending funds from a transparent chain to Penumbra.',
   [EduPanel.IBC_WITHDRAW]:
     'IBC to a connected chain. Note that if the chain is a transparent chain, the transaction will be visible to others.',
   [EduPanel.TEMP_FILLER]:
