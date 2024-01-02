@@ -89,6 +89,13 @@ export const SendForm = () => {
         placeholder='Optional message'
         value={memo}
         onChange={e => setMemo(e.target.value)}
+        validations={[
+          {
+            type: 'error',
+            issue: 'memo too long (>369 bytes)',
+            checkFn: () => validationErrors.memoErr,
+          },
+        ]}
       />
       <Button
         type='submit'
