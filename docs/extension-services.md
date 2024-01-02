@@ -20,7 +20,7 @@ is generic for any `ServiceType`, and not Penumbra-specific. Each transport shou
 be used only for one client at a time.
 
 For successful init of a channel transport, you must provide a function to
-aquire a private `MessagePort`. The Penumbra extension creates a global at
+acquire a private `MessagePort`. The Penumbra extension creates a global at
 `window.penumbra` containing access to our service connection manager. You could
 provide something like this to the transport:
 
