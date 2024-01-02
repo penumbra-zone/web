@@ -150,7 +150,10 @@ export const connectChromeRuntimeAdapter = (
     ]),
   );
 
-  // TODO: interceptors?
+  // TODO: connectrpc interceptors, typically a client feature, likely work here
+  // with no further effort, but haven't been tested. we could investigate using
+  // them as service middleware.
+  // https://connectrpc.com/docs/web/interceptors/
   const transport = createTransport({
     // order matters :)
     interceptors: [],
