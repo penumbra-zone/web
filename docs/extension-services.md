@@ -19,6 +19,10 @@ The custom transport is available in `@penumbra-zone/transport`. The transport
 is generic for any `ServiceType`, and not Penumbra-specific. Each transport should
 be used only for one client at a time.
 
+<!--
+TODO: transport could imminently support multiple clients
+-->
+
 For successful init of a channel transport, you must provide a function to
 acquire a private `MessagePort`. The Penumbra extension creates a global at
 `window.penumbra` containing access to our service connection manager. You could
