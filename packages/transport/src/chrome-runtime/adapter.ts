@@ -133,9 +133,9 @@ export const connectChromeRuntimeAdapter = (
       // wrap the handler function to generate and apply context
       const wrappedFn: UniversalHandlerFn = req =>
         opt.createRequestContext(req).then(handlerFn, error => {
-          // it's convenient to log and rethrow here
+          // it's convenient to log and rethrow as ConnectError here
           console.warn('Handler Error', handler.name, error);
-          throw error;
+          throw ConnectError.from(error);
         });
       // replace attributes onto the wrapped handler
       return Object.assign(wrappedFn, handlerMeta);
