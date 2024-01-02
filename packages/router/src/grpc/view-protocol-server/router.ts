@@ -20,6 +20,7 @@ import { handleFmdParamsReq, isFmdParamsRequest } from './fmd-params';
 import { handleNoteByCommitmentReq, isNoteByCommitmentRequest } from './note-by-commitment';
 import { handleNullifierStatusReq, isNullifierStatusRequest } from './nullifier-status';
 import { handleSwapByCommitmentReq, isSwapByCommitmentRequest } from './swap-by-commitment';
+import { handleUnclaimedSwapsReq, isUnclaimedSwapsRequest } from './unclaimed-swaps';
 
 export type ViewReqMessage = GrpcRequest<typeof ViewProtocolService>;
 export type ViewProtocolRes = GrpcResponse<typeof ViewProtocolService>;
@@ -55,6 +56,7 @@ export const viewServerStreamingHandler: StreamingHandler<typeof ViewProtocolSer
   else if (isStatusStreamRequest(msg)) return handleStatusReq(msg, services);
   else if (isAssetsRequest(msg)) return handleAssetsReq(msg, services);
   else if (isNotesRequest(msg)) return handleNotesReq(msg, services);
+  else if (isUnclaimedSwapsRequest(msg)) return handleUnclaimedSwapsReq(msg, services);
 
   throw new Error(`Non-supported streaming request: ${msg.getType().typeName}`);
 };
