@@ -5,6 +5,8 @@ import {
 import type { Impl } from '.';
 import { servicesCtx, hasWalletCtx } from '../../ctx';
 
+import { ConnectError, Code } from '@connectrpc/connect';
+
 const watchStream = async <U>(
   subscription: AsyncGenerator<U>,
   test: (x: U) => boolean,
@@ -18,7 +20,7 @@ export const nullifierStatus: Impl['nullifierStatus'] = async (req, ctx) => {
   await hasWallet(req.walletId);
 
   const { nullifier } = req;
-  if (!nullifier) throw new Error('No nullifier passed');
+  if (!nullifier) throw new ConnectError('No nullifier passed', Code.InvalidArgument);
 
   const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();

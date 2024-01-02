@@ -147,7 +147,6 @@ export class ClientConnectionManager {
           clientPort.postMessage(sub, [sub.stream]);
         } else throw Error('Unexpected transport from service');
       } catch (error) {
-        console.error('Error in service listener', error, ev);
         clientPort.postMessage({ error: String(error) });
       }
     };

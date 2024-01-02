@@ -3,12 +3,15 @@ import { servicesCtx } from '../../ctx';
 
 import { offscreenClient } from '../offscreen-client';
 
-import { buildParallel, witness } from '@penumbra-zone/wasm-ts';
+import * as wasm from '@penumbra-zone/wasm-ts';
+
+import { ConnectError, Code } from '@connectrpc/connect';
 
 export const witnessAndBuild: Impl['witnessAndBuild'] = async (req, ctx) => {
   const services = ctx.values.get(servicesCtx);
-  if (!req.authorizationData) throw new Error('No authorization data in request');
-  if (!req.transactionPlan) throw new Error('No tx plan in request');
+  if (!req.authorizationData)
+    throw new ConnectError('No authorization data in request', Code.InvalidArgument);
+  if (!req.transactionPlan) throw new ConnectError('No tx plan in request', Code.InvalidArgument);
 
   const {
     indexedDb,
@@ -16,16 +19,26 @@ export const witnessAndBuild: Impl['witnessAndBuild'] = async (req, ctx) => {
   } = await services.getWalletServices();
   const sct = await indexedDb.getStateCommitmentTree();
 
-  const witnessData = witness(req.transactionPlan, sct);
+  let witnessData;
+  try {
+    witnessData = wasm.witness(req.transactionPlan, sct);
+  } catch (wasmErr) {
+    throw new ConnectError('WASM failed to witness transaction plan', Code.Internal);
+  }
 
   const batchActions = await offscreenClient.buildAction(req, witnessData, fullViewingKey);
 
-  const transaction = buildParallel(
-    batchActions,
-    req.transactionPlan,
-    witnessData,
-    req.authorizationData,
-  );
+  let transaction;
+  try {
+    transaction = wasm.buildParallel(
+      batchActions,
+      req.transactionPlan,
+      witnessData,
+      req.authorizationData,
+    );
+  } catch (wasmErr) {
+    throw new ConnectError('WASM failed to build transaction', Code.Internal);
+  }
 
   return { transaction };
 };

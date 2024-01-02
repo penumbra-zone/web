@@ -131,7 +131,12 @@ export const connectChromeRuntimeAdapter = (
         Object.entries(handler) as [keyof UniversalHandler, unknown][],
       ) as { [k in keyof UniversalHandler]: UniversalHandler[k] };
       // wrap the handler function to generate and apply context
-      const wrappedFn: UniversalHandlerFn = req => opt.createRequestContext(req).then(handlerFn);
+      const wrappedFn: UniversalHandlerFn = req =>
+        opt.createRequestContext(req).then(handlerFn, error => {
+          // it's convenient to log and rethrow here
+          console.warn('Handler Error', handler.name, error);
+          throw error;
+        });
       // replace attributes onto the wrapped handler
       return Object.assign(wrappedFn, handlerMeta);
     }),

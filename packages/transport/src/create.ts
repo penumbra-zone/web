@@ -73,7 +73,7 @@ export const createChannelTransport = ({
    * @returns A promise that resolves when the channel is connected.
    */
   const connect = () =>
-    Promise.resolve(getPort(serviceType.typeName)).then((port: MessagePort) => {
+    Promise.resolve(getPort(serviceType.typeName)).then((gotPort: MessagePort) => {
       const initTimeout = new Promise<never>(
         (_, reject) =>
           defaultTimeoutMs &&
@@ -90,10 +90,10 @@ export const createChannelTransport = ({
       let connectionState: (s: TransportState) => void;
       const init = new Promise<MessagePort>((resolve, reject) => {
         connectionState = ({ connected, reason }: TransportState) => {
-          if (connected) resolve(port);
+          if (connected) resolve(gotPort);
           else {
-            port.close();
-            const err = errorFromJson(reason!, {}, new ConnectError('Channel connection rejected'));
+            gotPort.close();
+            const err = errorFromJson(reason!, {}, new ConnectError('Channel connection closed'));
             // this rejects the init promise
             reject(err);
             // this throws to transportListener, not the init promise
@@ -119,14 +119,17 @@ export const createChannelTransport = ({
           else throw Error('Unknown transport item');
         } catch (error) {
           const err = ConnectError.from(error);
-          // throwing from a listener is pointless. store the first error, log
+          // some fundamental disaster has occurred, and now the transport is
+          // broken forever. we have no specific request to reject, but throwing
+          // from a listener is a dead end. so we store it to throw at every
+          // subsequent interaction.
           listenerError ??= err;
-          console.error('Error in transport listener', err);
+          console.warn('Transport failed', err);
         }
       };
 
-      port.addEventListener('message', transportListener);
-      port.start();
+      gotPort.addEventListener('message', transportListener);
+      gotPort.start();
 
       return Promise.race([initTimeout, init]);
     });
@@ -152,9 +155,12 @@ export const createChannelTransport = ({
           reject(errorFromJson(response.error, {}, new ConnectError('Transport error')));
         else if (isTransportMessage(response)) resolve(response.message);
         else if (isTransportStream(response)) resolve(response.stream);
-        else reject('Response kind unimplemented');
+        else reject(new ConnectError('Attempted to resolve with unknown response'));
       }),
-    );
+    ).catch(errorResponse => {
+      console.error('Request failed', requestId, message, errorResponse);
+      throw errorResponse;
+    });
 
     port.postMessage({ requestId, message } satisfies TransportMessage);
     return futureResponse;
@@ -164,9 +170,7 @@ export const createChannelTransport = ({
     switch (method.kind) {
       case MethodKind.Unary: {
         const unaryImpl: AnyUnaryImpl = async function (message) {
-          const responseJson = (await request(message).catch(e => {
-            throw ConnectError.from(e);
-          })) as JsonValue;
+          const responseJson = (await request(message)) as JsonValue;
           const response = Any.fromJson(responseJson, { typeRegistry }).unpack(typeRegistry)!;
           return response;
         };
@@ -174,9 +178,7 @@ export const createChannelTransport = ({
       }
       case MethodKind.ServerStreaming: {
         const streamImpl: AnyServerStreamingImpl = async function* (message) {
-          const responseStream = (await request(message).catch(e => {
-            throw ConnectError.from(e);
-          })) as ReadableStream<JsonValue>;
+          const responseStream = (await request(message)) as ReadableStream<JsonValue>;
           const response = responseStream.pipeThrough(new JsonToMessage(typeRegistry));
           yield* streamToGenerator(response);
         };
