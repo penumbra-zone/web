@@ -1,7 +1,7 @@
 import { nullifierStatus } from './nullifier-status';
 
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
-import { hasWalletCtx, servicesCtx } from '../../ctx';
+import { assertWalletIdCtx, servicesCtx } from '../../ctx';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import type { Services } from '@penumbra-zone/services';
@@ -17,7 +17,7 @@ import {
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
-const mockHasWalletId = vi.fn(() => Promise.resolve(true));
+const mockAssertWalletId = vi.fn(() => Promise.resolve(true));
 
 interface IndexedDbMock {
   getNoteByNullifier: Mock;
@@ -71,13 +71,13 @@ describe('nullifierStatus', () => {
       requestMethod: 'MOCK',
       contextValues: createContextValues()
         .set(servicesCtx, mockServices as unknown as Services)
-        .set(hasWalletCtx, mockHasWalletId),
+        .set(assertWalletIdCtx, mockAssertWalletId),
     });
   });
 
   test('throws if wallet id is passed and does not match', async () => {
     const error = 'walletId unknown';
-    mockHasWalletId.mockRejectedValue(error);
+    mockAssertWalletId.mockRejectedValue(error);
 
     const req = new NullifierStatusRequest({
       walletId: new WalletId({ inner: stringToUint8Array('xyz') }),

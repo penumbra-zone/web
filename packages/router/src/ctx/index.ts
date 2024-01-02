@@ -4,10 +4,10 @@ import type { Services } from '@penumbra-zone/services';
 import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
 
 import { getTxApproval } from './approver';
-import { hasWalletId } from './wallet-id';
+import { assertWalletId } from './wallet-id';
 
 export const servicesCtx = createContextKey<Services>({} as Services);
 export const extLocalCtx = createContextKey(localExtStorage);
 export const extSessionCtx = createContextKey(sessionExtStorage);
 export const approverCtx = createContextKey(getTxApproval);
-export const hasWalletCtx = createContextKey(hasWalletId);
+export const assertWalletIdCtx = createContextKey(assertWalletId);
