@@ -1,7 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-import * as wasm from '@penumbra-zone/wasm-ts';
+import { TxPlanner, getAddressByIndex } from '@penumbra-zone/wasm-ts';
 
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
@@ -18,16 +18,11 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   if (!fmdParams) throw new ConnectError('Fmd Params not in indexeddb', Code.FailedPrecondition);
   const idbConstants = indexedDb.constants();
 
-  let planner;
-  try {
-    planner = await wasm.TxPlanner.initialize({
-      idbConstants,
-      chainParams,
-      fmdParams,
-    });
-  } catch (wasmErr) {
-    throw new ConnectError('WASM failed to initialize transaction planner', Code.Internal);
-  }
+  const planner = await TxPlanner.initialize({
+    idbConstants,
+    chainParams,
+    fmdParams,
+  });
 
   if (req.expiryHeight) planner.expiryHeight(req.expiryHeight);
   if (req.memo) planner.memo(req.memo);
@@ -41,12 +36,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   const source = req.source ?? new AddressIndex({ account: 0 });
 
   // If there are any balances left over, refund back to source. Default to account 0.
-  let refundAddr;
-  try {
-    refundAddr = wasm.getAddressByIndex(fullViewingKey, source.account);
-  } catch (wasmErr) {
-    throw new ConnectError('WASM failed to get address by index', Code.Internal);
-  }
+  const refundAddr = getAddressByIndex(fullViewingKey, source.account);
 
   const plan = await planner.plan(refundAddr, source);
   return { plan };

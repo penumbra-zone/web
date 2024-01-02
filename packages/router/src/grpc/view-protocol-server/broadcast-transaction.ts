@@ -1,7 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-import * as wasm from '@penumbra-zone/wasm-ts';
+import { encodeTx } from '@penumbra-zone/wasm-ts';
 
 import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
@@ -15,12 +15,7 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async (req, ct
   if (!req.transaction)
     throw new ConnectError('No transaction provided in request', Code.InvalidArgument);
 
-  let encodedTx;
-  try {
-    encodedTx = wasm.encodeTx(req.transaction);
-  } catch (wasmErr) {
-    throw new ConnectError('WASM failed to encode transaction', Code.Internal);
-  }
+  const encodedTx = encodeTx(req.transaction);
 
   // start subscription early to prevent race condition
   const subscription = indexedDb.subscribe('SPENDABLE_NOTES');

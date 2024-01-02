@@ -1,7 +1,7 @@
 import type { Impl } from '.';
 import { approverCtx, extLocalCtx, extSessionCtx } from '../../ctx';
 
-import * as wasm from '@penumbra-zone/wasm-ts';
+import { generateSpendKey, authorizePlan } from '@penumbra-zone/wasm-ts';
 
 import { Key } from '@penumbra-zone/crypto-web';
 import { Box } from '@penumbra-zone/types';
@@ -28,19 +28,8 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!decryptedSeedPhrase)
     throw new ConnectError('Unable to decrypt seed phrase with password', Code.Unauthenticated);
 
-  let spendKey;
-  try {
-    spendKey = wasm.generateSpendKey(decryptedSeedPhrase);
-  } catch (wasmErr) {
-    throw new ConnectError('WASM failed to generate spend key', Code.Internal);
-  }
-
-  let data;
-  try {
-    data = wasm.authorizePlan(spendKey, req.plan);
-  } catch (wasmErr) {
-    throw new ConnectError('WASM failed to authorize plan', Code.Internal);
-  }
+  const spendKey = generateSpendKey(decryptedSeedPhrase);
+  const data = authorizePlan(spendKey, req.plan);
 
   return { data };
 };

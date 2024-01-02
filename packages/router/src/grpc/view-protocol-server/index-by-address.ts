@@ -2,7 +2,7 @@ import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
 import { bech32Address } from '@penumbra-zone/types';
-import * as wasm from '@penumbra-zone/wasm-ts';
+import { isControlledAddress } from '@penumbra-zone/wasm-ts';
 
 import { ConnectError, Code } from '@connectrpc/connect';
 
@@ -15,12 +15,7 @@ export const indexByAddress: Impl['indexByAddress'] = async (req, ctx) => {
 
   const address = bech32Address(req.address);
 
-  let addressIndex;
-  try {
-    addressIndex = wasm.isControlledAddress(fullViewingKey, address);
-  } catch (wasmErr) {
-    throw new ConnectError('WASM failed to get address index', Code.Internal);
-  }
+  const addressIndex = isControlledAddress(fullViewingKey, address);
 
   if (!addressIndex)
     throw new ConnectError(
