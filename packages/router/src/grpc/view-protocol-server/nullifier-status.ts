@@ -25,7 +25,10 @@ export const nullifierStatus: Impl['nullifierStatus'] = async (req, ctx) => {
   const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
 
-  // grab subscription before local check. this avoids race condition
+  // grab subscription to table updates before checking the tables.  this avoids
+  // a race condition: if instead we checked the tables, and *then* subscribed,
+  // it would be possible to miss updates that arrived in the short time between
+  // the two calls.
   const swapStream = indexedDb.subscribe('SWAPS');
   const noteStream = indexedDb.subscribe('SPENDABLE_NOTES');
 
@@ -39,9 +42,8 @@ export const nullifierStatus: Impl['nullifierStatus'] = async (req, ctx) => {
   const spent = Boolean(swap?.heightClaimed) || Boolean(note?.heightSpent);
 
   if (!spent && req.awaitDetection) {
-    // use of the nullifier was not present in local data, so watch new data.
-    // we might check a few very recent items twice, if they were included in
-    // local check, but we won't miss anything.
+    // use of the nullifier was not present in db, so watch that subscription.
+    // we might double-check very recent items, but we won't miss any.
     const eventuallySpent = Promise.race([
       watchStream(swapStream, ({ value: swapJson }) => {
         const swap = SwapRecord.fromJson(swapJson);
@@ -52,7 +54,6 @@ export const nullifierStatus: Impl['nullifierStatus'] = async (req, ctx) => {
         return Boolean(note.heightSpent) && nullifier.equals(note.nullifier);
       }),
     ]);
-
     return eventuallySpent.then(() => ({ spent: true }));
   }
 
