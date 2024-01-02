@@ -31,8 +31,8 @@ import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/cor
 // these are local services we implement
 import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
-import custodyImpl from '@penumbra-zone/router/src/grpc/custody';
-import viewImpl from '@penumbra-zone/router/src/grpc/view-protocol-server';
+import { custodyImpl } from '@penumbra-zone/router/src/grpc/custody';
+import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
 
 // legacy stdRouter
 import { stdRouter } from '@penumbra-zone/router/src/std/router';

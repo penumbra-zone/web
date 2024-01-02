@@ -23,7 +23,7 @@ import { unclaimedSwaps } from './unclaimed-swaps';
 import { walletId } from './wallet-id';
 import { witnessAndBuild } from './witness-and-build';
 
-const impl: Omit<
+export const viewImpl: Omit<
   Impl,
   'authorizeAndBuild' | 'gasPrices' | 'notesForVoting' | 'ownedPositionIds' | 'witness'
 > = {
@@ -48,5 +48,3 @@ const impl: Omit<
   walletId,
   witnessAndBuild,
 };
-
-export default impl;

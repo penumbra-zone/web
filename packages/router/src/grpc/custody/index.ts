@@ -5,9 +5,7 @@ export type Impl = ServiceImpl<typeof CustodyProtocolService>;
 import { authorize } from './authorize';
 import { exportFullViewingKey } from './export-full-viewing-key';
 
-const impl: Omit<Impl, 'confirmAddress'> = {
+export const custodyImpl: Omit<Impl, 'confirmAddress'> = {
   authorize,
   exportFullViewingKey,
 };
-
-export default impl;
