@@ -119,8 +119,9 @@ const getPlanRequest = async ({
   if (!selection.asset) throw new Error('no selected asset');
 
   // TODO: implement source address in future, should correspond with asset selector?
+  // TODO: change planner to fill this in automatically ?
   const { address: returnAddress } = await viewClient.ephemeralAddress({});
-  if (!returnAddress) throw new Error('Error with generating ephemeral return address');
+  if (!returnAddress) throw new Error('Error with generating IBC deposit address');
 
   const { timeoutHeight, timeoutTime } = await getTimeout(chain);
 

@@ -10,7 +10,8 @@
     "test": "turbo run test",
     "clean": "turbo clean",
     "format": "prettier --write .",
-    "format-check": "prettier --check ."
+    "format-check": "prettier --check .",
+    "all-check": "pnpm install && pnpm format && pnpm format-check && pnpm lint && pnpm test && pnpm build"
   },
   "dependencies": {
     "@buf/cosmos_ibc.bufbuild_es": "1.5.1-20231211183134-b93a64f9fb08.1",

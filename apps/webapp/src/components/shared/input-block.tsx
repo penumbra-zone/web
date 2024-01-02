@@ -5,6 +5,7 @@ import { Validation, validationResult } from './validation-result.ts';
 interface InputBlockProps extends InputProps {
   label: string;
   className?: string;
+  inputClassName?: string;
   validations?: Validation[];
   value: string;
 }
@@ -13,6 +14,7 @@ export const InputBlock = ({
   label,
   placeholder,
   className,
+  inputClassName,
   validations,
   value,
   ...props
@@ -32,7 +34,13 @@ export const InputBlock = ({
         <p className='text-base font-bold'>{label}</p>
         {vResult ? <div className={cn('italic', 'text-red-400')}>{vResult.issue}</div> : null}
       </div>
-      <Input variant='transparent' placeholder={placeholder} value={value} {...props} />
+      <Input
+        variant='transparent'
+        className={inputClassName}
+        placeholder={placeholder}
+        value={value}
+        {...props}
+      />
     </div>
   );
 };

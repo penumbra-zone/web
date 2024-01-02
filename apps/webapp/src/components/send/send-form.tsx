@@ -1,4 +1,4 @@
-import { Button, Switch } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui';
 import { useStore } from '../../state';
 import { sendSelector, sendValidationErrors } from '../../state/send';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
@@ -34,12 +34,10 @@ export const SendForm = () => {
     amount,
     recipient,
     memo,
-    hidden,
     setAmount,
     setSelection,
     setRecipient,
     setMemo,
-    setHidden,
     sendTx,
     txInProgress,
   } = useStore(sendSelector);
@@ -58,8 +56,9 @@ export const SendForm = () => {
     >
       <InputBlock
         label='Recipient'
-        placeholder='Enter the address'
+        placeholder='penumbra1…'
         className='mb-1'
+        inputClassName='font-mono'
         value={recipient}
         onChange={e => setRecipient(e.target.value)}
         validations={[penumbraAddrValidation()]}
@@ -90,14 +89,14 @@ export const SendForm = () => {
         placeholder='Optional message'
         value={memo}
         onChange={e => setMemo(e.target.value)}
+        validations={[
+          {
+            type: 'error',
+            issue: 'memo too long (>369 bytes)',
+            checkFn: () => validationErrors.memoErr,
+          },
+        ]}
       />
-      <div className='flex items-center justify-between md:-mt-2 xl:mt-1'>
-        <div className='flex items-start gap-2'>
-          <img src='/incognito.svg' alt='Incognito' className='h-5 w-5' />
-          <p className='font-bold'>Hide Sender from Recipient</p>
-        </div>
-        <Switch id='sender-mode' checked={hidden} onCheckedChange={checked => setHidden(checked)} />
-      </div>
       <Button
         type='submit'
         variant='gradient'

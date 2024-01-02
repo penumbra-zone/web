@@ -48,3 +48,5 @@ export const WasmBuildSchema = z.object({
     transactionParameters: z.unknown(),
   }),
 });
+
+export const WasmActionSchema = z.record(z.unknown());

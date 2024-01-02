@@ -28,13 +28,12 @@ describe('Send Slice', () => {
   });
 
   test('the default is empty, false or undefined', () => {
-    const { amount, memo, recipient, hidden, selection, txInProgress } = useStore.getState().send;
+    const { amount, memo, recipient, selection, txInProgress } = useStore.getState().send;
 
     expect(amount).toBe('');
     expect(selection).toBeUndefined();
     expect(memo).toBe('');
     expect(recipient).toBe('');
-    expect(hidden).toBeFalsy();
 
     expect(txInProgress).toBeFalsy();
 
@@ -42,6 +41,7 @@ describe('Send Slice', () => {
       selectionExample.asset,
       amount,
       recipient,
+      memo,
     );
     expect(amountErr).toBeFalsy();
     expect(recipientErr).toBeFalsy();
@@ -62,7 +62,7 @@ describe('Send Slice', () => {
       useStore.getState().send.setAmount('1');
       const { selection, amount } = useStore.getState().send;
 
-      const { amountErr } = sendValidationErrors(selection?.asset, amount, 'xyz');
+      const { amountErr } = sendValidationErrors(selection?.asset, amount, 'xyz', 'a memo');
       expect(amountErr).toBeFalsy();
     });
 
@@ -74,7 +74,7 @@ describe('Send Slice', () => {
       });
       useStore.getState().send.setAmount('6');
       const { selection, amount } = useStore.getState().send;
-      const { amountErr } = sendValidationErrors(selection?.asset, amount, 'xyz');
+      const { amountErr } = sendValidationErrors(selection?.asset, amount, 'xyz', 'a memo');
       expect(amountErr).toBeTruthy();
     });
   });
@@ -86,20 +86,6 @@ describe('Send Slice', () => {
     });
   });
 
-  describe('setHidden', () => {
-    test('hidden after click has true value', () => {
-      useStore.getState().send.setHidden(true);
-      expect(useStore.getState().send.hidden).toBeTruthy();
-    });
-
-    test('false value after 2 click', () => {
-      useStore.getState().send.setHidden(true);
-      expect(useStore.getState().send.hidden).toBeTruthy();
-      useStore.getState().send.setHidden(false);
-      expect(useStore.getState().send.hidden).toBeFalsy();
-    });
-  });
-
   describe('setRecipient and validate', () => {
     const rightAddress =
       'penumbra1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvxneea442q63sumem7r096p7rd2tywm2v6ppc4';
@@ -108,8 +94,8 @@ describe('Send Slice', () => {
       useStore.getState().send.setSelection(selectionExample);
       useStore.getState().send.setRecipient(rightAddress);
       expect(useStore.getState().send.recipient).toBe(rightAddress);
-      const { selection, amount, recipient } = useStore.getState().send;
-      const { recipientErr } = sendValidationErrors(selection?.asset, amount, recipient);
+      const { selection, amount, recipient, memo } = useStore.getState().send;
+      const { recipientErr } = sendValidationErrors(selection?.asset, amount, recipient, memo);
       expect(recipientErr).toBeFalsy();
     });
 
@@ -119,8 +105,8 @@ describe('Send Slice', () => {
 
       useStore.getState().send.setSelection(selectionExample);
       useStore.getState().send.setRecipient(badAddressLength);
-      const { selection, amount, recipient } = useStore.getState().send;
-      const { recipientErr } = sendValidationErrors(selection?.asset, amount, recipient);
+      const { selection, amount, recipient, memo } = useStore.getState().send;
+      const { recipientErr } = sendValidationErrors(selection?.asset, amount, recipient, memo);
       expect(recipientErr).toBeTruthy();
     });
 
@@ -130,9 +116,16 @@ describe('Send Slice', () => {
 
       useStore.getState().send.setSelection(selectionExample);
       useStore.getState().send.setRecipient(badAddressPrefix);
-      const { selection, amount, recipient } = useStore.getState().send;
-      const { recipientErr } = sendValidationErrors(selection?.asset, amount, recipient);
+      const { selection, amount, recipient, memo } = useStore.getState().send;
+      const { recipientErr } = sendValidationErrors(selection?.asset, amount, recipient, memo);
       expect(recipientErr).toBeTruthy();
+    });
+
+    test('recipient will have a validation error after entering a very long memo', () => {
+      useStore.getState().send.setMemo('b'.repeat(512));
+      const { selection, amount, recipient, memo } = useStore.getState().send;
+      const { memoErr } = sendValidationErrors(selection?.asset, amount, recipient, memo);
+      expect(memoErr).toBeTruthy();
     });
   });
 

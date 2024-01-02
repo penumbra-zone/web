@@ -123,7 +123,7 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
           <div className='mt-2 flex items-center justify-between'>
             <div className='flex items-center gap-2'>
               <IncognitoIcon fill='#BDB8B8' />
-              <p className='mt-1 font-bold'>Use ephemeral address</p>
+              <p className='mt-1 font-bold'>IBC Deposit Address</p>
               {ephemeral && (
                 <TooltipProvider>
                   <Tooltip>
@@ -132,8 +132,9 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
                     </TooltipTrigger>
                     <TooltipContent className='w-[250px]'>
                       <p>
-                        Depositing into this ephemeral addresses will privately deposit into Account
-                        #{account.index}
+                        IBC transfers into Penumbra post the destination address in public on the
+                        source chain. Use this randomized IBC deposit address to preserve privacy
+                        when transferring funds into Penumbra.
                       </p>
                     </TooltipContent>
                   </Tooltip>

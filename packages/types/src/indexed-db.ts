@@ -21,9 +21,9 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { Note } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
-import { JsonValue } from '@bufbuild/protobuf';
 import { Base64Str } from './base64';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
+import { Jsonified } from './internal-msg/shared';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -55,6 +55,7 @@ export interface IndexedDbInterface {
   getAllSwaps(): Promise<SwapRecord[]>;
   getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined>;
   saveSwap(note: SwapRecord): Promise<void>;
+  getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -113,11 +114,6 @@ export interface PenumbraDb extends DBSchema {
     };
   };
 }
-
-// @ts-expect-error Meant to be a marker to indicate it's json serialized.
-//                  Protobuf values often need to be as they are json-deserialized in the wasm crate.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type Jsonified<T> = JsonValue;
 
 export type Tables = Record<string, StoreNames<PenumbraDb>>;
 

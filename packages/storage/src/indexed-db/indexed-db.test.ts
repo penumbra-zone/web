@@ -293,5 +293,16 @@ describe('IndexedDb', () => {
 
       expect(swapByNullifier!.equals(scanResultWithNewSwaps.newSwaps[0])).toBeTruthy();
     });
+
+    it('should be able to set/get by commitment', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.saveScanResult(scanResultWithNewSwaps);
+      const swapByCommitment = await db.getSwapByCommitment(
+        scanResultWithNewSwaps.newSwaps[0]!.swapCommitment!,
+      );
+
+      expect(swapByCommitment!.equals(scanResultWithNewSwaps.newSwaps[0])).toBeTruthy();
+    });
   });
 });
