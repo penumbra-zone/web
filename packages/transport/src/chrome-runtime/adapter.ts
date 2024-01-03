@@ -44,14 +44,17 @@ export interface ChromeRuntimeAdapterOptions {
   ) => Promise<UniversalServerRequest & { contextValues: ContextValues }>;
 }
 
-// from createRouterTransport
+// these 'force' options objects are used to negatively define the options
+// available in ChromeRuntimeAdapter options, and to provide defaults. in
+// particular the transportOption httpClient is generated internally, and should
+// never be passed as an option.
+
 const forceRouterOptions = {
   connect: true,
   grpc: false,
   grpcWeb: false,
 };
 
-// from createRouterTransport
 const forceTransportOptions = {
   httpClient: null as never,
   baseUrl: 'https://in-memory',
