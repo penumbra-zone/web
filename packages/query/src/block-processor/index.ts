@@ -1,7 +1,10 @@
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
-import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import {
+  SpendableNoteRecord,
+  TransactionInfo,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { backOff } from 'exponential-backoff';
 import {
@@ -12,7 +15,8 @@ import {
 import { RootQuerier } from '../root-querier';
 import { generateMetadata } from './metadata';
 import { Transactions } from './transactions';
-import { decodeSctRoot } from '@penumbra-zone/wasm-ts';
+import { decodeSctRoot, decodeTx, transactionInfo } from '@penumbra-zone/wasm-ts';
+import { Id } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -162,6 +166,22 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       await this.handleNullifiers(block.nullifiers, block.height);
     }
+  }
+
+  async getTxInfoByHash(hash: Uint8Array): Promise<TransactionInfo | undefined> {
+    const txResponse = await this.querier.tendermint.txByHash(hash);
+
+    const tx = decodeTx(txResponse!.tx);
+
+    const { txp, txv } = await transactionInfo(this.fullViewingKey, tx, this.indexedDb.constants());
+
+    return new TransactionInfo({
+      height: txResponse?.height!,
+      id: new Id({ hash: hash }),
+      transaction: tx,
+      perspective: txp,
+      view: txv,
+    });
   }
 }
 

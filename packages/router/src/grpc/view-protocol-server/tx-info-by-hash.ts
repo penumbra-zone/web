@@ -14,11 +14,14 @@ export const handleTxInfoByHashReq = async (
   req: TransactionInfoByHashRequest,
   services: ServicesInterface,
 ): Promise<TransactionInfoByHashResponse> => {
-  const { indexedDb } = await services.getWalletServices();
+  const { indexedDb, blockProcessor } = await services.getWalletServices();
   if (!req.id) throw new Error('Missing transaction ID in request');
 
   const txInfo = await indexedDb.getTransaction(new NoteSource({ inner: req.id.hash }));
-  if (!txInfo) return new TransactionInfoByHashResponse();
-
-  return new TransactionInfoByHashResponse({ txInfo });
+  if (txInfo) return new TransactionInfoByHashResponse({ txInfo });
+  else {
+    const txInfo = await blockProcessor.getTxInfoByHash(req.id.hash);
+    if (!txInfo) return new TransactionInfoByHashResponse();
+    return new TransactionInfoByHashResponse({ txInfo });
+  }
 };
