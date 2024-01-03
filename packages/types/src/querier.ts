@@ -13,6 +13,7 @@ import {
   QueryClientStatesResponse,
 } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/query_pb';
 import { KeyValueResponse_Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/storage/v1alpha1/storage_pb';
+import { GetTxResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/util/tendermint_proxy/v1alpha1/tendermint_proxy_pb';
 
 export interface RootQuerierInterface {
   app: AppQuerierInterface;
@@ -41,6 +42,7 @@ export interface CompactBlockQuerierInterface {
 
 export interface TendermintQuerierInterface {
   latestBlockHeight(): Promise<bigint>;
+  txByHash(hash: Uint8Array): Promise<GetTxResponse | undefined>;
 }
 
 export interface ShieldedPoolQuerierInterface {
