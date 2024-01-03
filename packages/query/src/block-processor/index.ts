@@ -171,12 +171,13 @@ export class BlockProcessor implements BlockProcessorInterface {
   async getTxInfoByHash(hash: Uint8Array): Promise<TransactionInfo | undefined> {
     const txResponse = await this.querier.tendermint.txByHash(hash);
 
-    const tx = decodeTx(txResponse!.tx);
+    if (!txResponse) return undefined;
 
+    const tx = decodeTx(txResponse.tx);
     const { txp, txv } = await transactionInfo(this.fullViewingKey, tx, this.indexedDb.constants());
 
     return new TransactionInfo({
-      height: txResponse?.height!,
+      height: txResponse.height,
       id: new Id({ hash: hash }),
       transaction: tx,
       perspective: txp,
