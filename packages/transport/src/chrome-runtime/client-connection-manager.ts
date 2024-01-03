@@ -1,20 +1,19 @@
-import { ChromeRuntimeStreamSource } from './stream';
-
 import {
-  TransportMessage,
-  TransportStream,
-  InitChannelClientData,
-  isTransportData,
-  isTransportMessage,
-  isTransportInitChannel,
-  nameChannel,
   ChannelClientLabel,
-  isClientInitMessage,
-  isTransportState,
-  TransportState,
-  isTransportError,
+  InitChannelClientData,
   TransportInitChannel,
+  TransportMessage,
+  TransportState,
+  TransportStream,
+  isClientInitMessage,
+  isTransportData,
+  isTransportError,
+  isTransportInitChannel,
+  isTransportMessage,
+  isTransportState,
+  nameChannel,
 } from '../types';
+import { ChromeRuntimeStreamSource } from './stream';
 
 interface ClientConnection {
   clientPort: MessagePort;
@@ -90,8 +89,8 @@ export class ClientConnectionManager {
    * @param clientPort MessagePort provided by the page-controlled client
    * @param serviceTypeName requested fully-qualified service typename
    */
-  private initConnection({ port: clientPort, service: serviceTypeName }: InitChannelClientData) {
-    const [clientName, { uuid: clientId }] = nameChannel(this.label, serviceTypeName);
+  private initConnection({ port: clientPort }: InitChannelClientData) {
+    const [clientName, { uuid: clientId }] = nameChannel(this.label);
     const servicePort = chrome.runtime.connect({ includeTlsChannelId: true, name: clientName });
 
     /**
@@ -148,7 +147,6 @@ export class ClientConnectionManager {
           clientPort.postMessage(sub, [sub.stream]);
         } else throw Error('Unexpected transport from service');
       } catch (error) {
-        console.error('Error in service listener', error, ev);
         clientPort.postMessage({ error: String(error) });
       }
     };

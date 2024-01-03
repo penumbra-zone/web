@@ -1,91 +1,61 @@
 import {
-  NullifierStatusRequest,
-  NullifierStatusResponse,
   SpendableNoteRecord,
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { ViewReqMessage } from './router';
-import { IndexedDbInterface, ServicesInterface } from '@penumbra-zone/types';
-import { assertWalletIdMatches } from './utils';
-import type { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import type { Impl } from '.';
+import { servicesCtx, assertWalletIdCtx } from '../../ctx';
 
-export const isNullifierStatusRequest = (req: ViewReqMessage): req is NullifierStatusRequest => {
-  return req.getType().typeName === NullifierStatusRequest.typeName;
+import { ConnectError, Code } from '@connectrpc/connect';
+
+const watchStream = async <U>(
+  subscription: AsyncGenerator<U>,
+  test: (x: U) => boolean,
+): Promise<U> => {
+  for await (const update of subscription) if (test(update)) return update;
+  throw new Error('Subscription ended');
 };
 
-async function noteOrSwapSpent(
-  indexedDb: IndexedDbInterface,
-  nullifier: Nullifier,
-): Promise<boolean> {
-  const noteByNullifier = await indexedDb.getNoteByNullifier(nullifier);
-  const swapByNullifier = await indexedDb.getSwapByNullifier(nullifier);
+export const nullifierStatus: Impl['nullifierStatus'] = async (req, ctx) => {
+  const assertWalletId = ctx.values.get(assertWalletIdCtx);
+  await assertWalletId(req.walletId);
 
-  // The 'heightSpent' and 'heightClaimed' fields will never be undefined,
-  // so we compare to 0n assuming it is impossible to spend nullifier in block 0
-  const noteSpent = noteByNullifier ? noteByNullifier.heightSpent !== 0n : false;
-  const swapSpent = swapByNullifier ? swapByNullifier.heightClaimed !== 0n : false;
-  return noteSpent || swapSpent;
-}
+  const { nullifier } = req;
+  if (!nullifier) throw new ConnectError('No nullifier passed', Code.InvalidArgument);
 
-export const handleNullifierStatusReq = async (
-  req: NullifierStatusRequest,
-  services: ServicesInterface,
-): Promise<NullifierStatusResponse> => {
-  await assertWalletIdMatches(req.walletId);
-  if (!req.nullifier) throw new Error('No nullifier passed');
-
+  const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
-  const spent = await noteOrSwapSpent(indexedDb, req.nullifier);
 
-  if (spent) {
-    return new NullifierStatusResponse({ spent: true });
-  } else if (!req.awaitDetection) {
-    return new NullifierStatusResponse({ spent: false });
+  // grab subscription to table updates before checking the tables.  this avoids
+  // a race condition: if instead we checked the tables, and *then* subscribed,
+  // it would be possible to miss updates that arrived in the short time between
+  // the two calls.
+  const swapStream = indexedDb.subscribe('SWAPS');
+  const noteStream = indexedDb.subscribe('SPENDABLE_NOTES');
+
+  // If present, a swap or note should never have an undefined height, and a
+  // zero-height spend should never appear. So if one of these is truthy, the
+  // nullifier is spent.
+  const [swap, note] = await Promise.all([
+    indexedDb.getSwapByNullifier(nullifier),
+    indexedDb.getNoteByNullifier(nullifier),
+  ]);
+  const spent = Boolean(swap?.heightClaimed) || Boolean(note?.heightSpent);
+
+  if (!spent && req.awaitDetection) {
+    // use of the nullifier was not present in db, so watch that subscription.
+    // we might double-check very recent items, but we won't miss any.
+    const eventuallySpent = Promise.race([
+      watchStream(swapStream, ({ value: swapJson }) => {
+        const swap = SwapRecord.fromJson(swapJson);
+        return Boolean(swap.heightClaimed) && nullifier.equals(swap.nullifier);
+      }),
+      watchStream(noteStream, ({ value: noteJson }) => {
+        const note = SpendableNoteRecord.fromJson(noteJson);
+        return Boolean(note.heightSpent) && nullifier.equals(note.nullifier);
+      }),
+    ]);
+    return eventuallySpent.then(() => ({ spent: true }));
   }
 
-  // Wait until our DB encounters a new note or swap. If it corresponds to the nullifier, break loop.
-  const mergedSubscription = mergeAsyncGenerators(
-    indexedDb.subscribe('SPENDABLE_NOTES'),
-    indexedDb.subscribe('SWAPS'),
-  );
-
-  for await (const update of mergedSubscription) {
-    if (update.table === 'SPENDABLE_NOTES') {
-      const note = SpendableNoteRecord.fromJson(update.value);
-      if (note.nullifier?.equals(req.nullifier) && note.heightSpent !== 0n) break;
-    } else {
-      const swap = SwapRecord.fromJson(update.value);
-      if (swap.nullifier?.equals(req.nullifier) && swap.heightClaimed !== 0n) break;
-    }
-  }
-
-  return new NullifierStatusResponse({ spent: true });
+  return { spent };
 };
-
-// Meant to add identifier to async generator result
-const labelResult =
-  <T>(label: string) =>
-  (result: IteratorResult<T>) => {
-    return { label, result };
-  };
-
-// Yield's first available value on two async generators. Also assumes they run forever.
-async function* mergeAsyncGenerators<T, U>(
-  genA: AsyncGenerator<T>,
-  genB: AsyncGenerator<U>,
-): AsyncGenerator<T | U> {
-  let nextA = genA.next().then(labelResult('A'));
-  let nextB = genB.next().then(labelResult('B'));
-
-  while (true) {
-    const { label, result } = await Promise.race([nextA, nextB]);
-    yield result.value;
-
-    // Update the promise for the generator that resolved
-    if (label === 'A') {
-      nextA = genA.next().then(labelResult('A'));
-    } else {
-      nextB = genB.next().then(labelResult('B'));
-    }
-  }
-}

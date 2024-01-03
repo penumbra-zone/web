@@ -12,7 +12,10 @@
     "@connectrpc/connect-web": "^1.1.4",
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
+    "@penumbra-zone/query": "workspace:*",
+    "@penumbra-zone/services": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
+    "@penumbra-zone/transport": "workspace:^",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm-ts": "workspace:*"
   },

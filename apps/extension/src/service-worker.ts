@@ -1,111 +1,97 @@
-import { Services, ServicesConfig } from '@penumbra-zone/services';
-import { stdRouter } from '@penumbra-zone/router/src/std/router';
-import { DappMessageRequest } from '@penumbra-zone/router/src/transport-old';
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
-import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
-import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
-import { Any, AnyMessage, JsonValue, ServiceType } from '@bufbuild/protobuf';
-import { viewServerRouter } from '@penumbra-zone/router/src/grpc/view-protocol-server/router';
-import { custodyServerRouter } from '@penumbra-zone/router/src/grpc/custody/router';
-import { ibcClientServerRouter } from '@penumbra-zone/router/src/grpc/ibc-client/router';
-import { iterableToStream, MessageToJson } from '@penumbra-zone/transport';
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
-import { isStdRequest } from '@penumbra-zone/types';
-import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/background-connection-manager';
+/**
+ * This file is the entrypoint for the main and only background service worker.
+ *
+ * It is responsible for initializing:
+ * - Services, with endpoint config and a wallet
+ * - the stdRouter for legacy requests
+ * - the chromeRuntimeAdapter for routing rpc
+ * - the background connection manager for rpc entry
+ *
+ * Popup is controlled by stdClient by spawnDetachedPopup from
+ * @penumbra-zone/types.  Offscreen is controlled by offscreenClient available
+ * to rpc implementations in @penumbra-zone/router.
+ */
+
+import { Services } from '@penumbra-zone/services';
 import { localExtStorage } from '@penumbra-zone/storage';
 
-const config = {
-  grpcEndpoint: await localExtStorage.get('grpcEndpoint'),
+import { typeRegistry } from '@penumbra-zone/types/src/registry';
+import { servicesCtx } from '@penumbra-zone/router/src/ctx';
+
+import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/background-connection-manager';
+import { createProxyImpl } from '@penumbra-zone/transport/src/proxy';
+import { connectChromeRuntimeAdapter } from '@penumbra-zone/transport/src/chrome-runtime/adapter';
+
+import { ConnectRouter, createContextValues, createPromiseClient } from '@connectrpc/connect';
+import { createGrpcWebTransport } from '@connectrpc/connect-web';
+
+// this is a remote service we proxy
+import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
+
+// these are local services we implement
+import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
+import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { custodyImpl } from '@penumbra-zone/router/src/grpc/custody';
+import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
+
+// legacy stdRouter
+import { stdRouter } from '@penumbra-zone/router/src/std/router';
+import { isStdRequest } from '@penumbra-zone/types';
+
+// configure and initialize extension services. services are passed directly to stdRouter, and to rpc handlers as context
+const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+const servicesConfig = {
+  grpcEndpoint,
   getWallet: async () => {
     const wallets = await localExtStorage.get('wallets');
     if (!wallets.length) throw new Error('No wallets connected');
     const { fullViewingKey, id } = wallets[0]!;
     return { walletId: id, fullViewingKey };
   },
-} satisfies ServicesConfig;
-
-export const existingServices = new Services(config);
-await existingServices.initialize();
-
-/*
- * std router
- */
-const penumbraMessageHandler = (
-  message: unknown,
-  _sender: chrome.runtime.MessageSender,
-  sendResponse: (response: unknown) => void,
-) => {
-  if (!isStdRequest(message)) return;
-  stdRouter(message, sendResponse, existingServices);
-  return true;
 };
+const services = new Services(servicesConfig);
+await services.initialize();
 
-chrome.runtime.onMessage.addListener(penumbraMessageHandler);
+// this only handles stdClient requests
+chrome.runtime.onMessage.addListener(
+  (
+    message: unknown,
+    _: chrome.runtime.MessageSender,
+    sendResponse: (response: unknown) => void,
+  ) => {
+    if (!isStdRequest(message)) return;
+    stdRouter(message, sendResponse, services);
+    return true;
+  },
+);
 
-/*
- * adapter to existing router
- */
-const adaptOldRouter = (service: ServiceType) => {
-  return async (req: JsonValue): Promise<JsonValue | ReadableStream<JsonValue>> => {
-    const packed = Any.fromJson(req, { typeRegistry });
-    const unpacked = packed.unpack(typeRegistry);
-    if (!unpacked) throw Error('Recieved message of unknown type');
-    const sequence = performance.now();
+// this is a service proxy
+const ibcImpl = createProxyImpl(
+  IbcClientService,
+  createPromiseClient(IbcClientService, createGrpcWebTransport({ baseUrl: grpcEndpoint })),
+);
 
-    const messageForRouter = {
-      type: 'PENUMBRA_DAPP_GRPC_REQUEST',
-      serviceTypeName: service.typeName,
-      requestTypeName: unpacked.getType().typeName,
-      jsonReq: unpacked.toJson({ typeRegistry }),
-      sequence,
-    };
+// rpc we provide
+const rpcImpls = [
+  [CustodyProtocolService, custodyImpl],
+  [ViewProtocolService, viewImpl],
+  [IbcClientService, ibcImpl],
+] as const;
 
-    const routerResponse = await new Promise<AnyMessage | AsyncIterable<AnyMessage>>(
-      (resolve, reject) => {
-        switch (service) {
-          case ViewProtocolService:
-            viewServerRouter(
-              messageForRouter as DappMessageRequest<typeof ViewProtocolService>,
-              resolve as (r: unknown) => void,
-              reject as (r: unknown) => void,
-              existingServices,
-            );
-            break;
-          case IbcClientService:
-            ibcClientServerRouter(
-              messageForRouter as DappMessageRequest<typeof IbcClientService>,
-              resolve as (r: unknown) => void,
-              reject as (r: unknown) => void,
-              existingServices,
-            );
-            break;
-          case CustodyProtocolService:
-            custodyServerRouter(
-              messageForRouter as DappMessageRequest<typeof CustodyProtocolService>,
-              resolve as (r: unknown) => void,
-              reject as (r: unknown) => void,
-              existingServices,
-            );
-            break;
-          default:
-            reject('unknown service');
-        }
-      },
-    );
+// connectrpc adapter
+const chromeRuntimeHandler = connectChromeRuntimeAdapter({
+  // typeRegistry provides Any-based serialization for the adapter
+  typeRegistry,
+  // this function is used by the adapter to create routes
+  routes: (router: ConnectRouter) =>
+    rpcImpls.map(([serviceType, serviceImpl]) => router.service(serviceType, serviceImpl)),
+  // this function is used by the adapter to inject contextValues (currently, just a handle to services)
+  createRequestContext: req => {
+    const contextValues = req.contextValues ?? createContextValues();
+    contextValues.set(servicesCtx, services);
+    return Promise.resolve({ ...req, contextValues });
+  },
+});
 
-    if (Symbol.asyncIterator in routerResponse)
-      return iterableToStream(routerResponse).pipeThrough(new MessageToJson(typeRegistry));
-    else return Any.pack(routerResponse).toJson({ typeRegistry })!;
-  };
-};
-
-const adapterEntry = {
-  [ViewProtocolService.typeName]: adaptOldRouter(ViewProtocolService),
-  [CustodyProtocolService.typeName]: adaptOldRouter(CustodyProtocolService),
-  [IbcClientService.typeName]: adaptOldRouter(IbcClientService),
-} as Record<string, (x: JsonValue) => Promise<JsonValue>>;
-
-/*
- * background connection manager
- */
-BackgroundConnectionManager.init(adapterEntry);
+// background connection manager handles page connections, streams
+BackgroundConnectionManager.init(chromeRuntimeHandler);

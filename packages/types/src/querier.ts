@@ -42,6 +42,7 @@ export interface CompactBlockQuerierInterface {
 
 export interface TendermintQuerierInterface {
   latestBlockHeight(): Promise<bigint>;
+  broadcastTx(params: Uint8Array): Promise<Uint8Array>;
   txByHash(hash: Uint8Array): Promise<GetTxResponse | undefined>;
 }
 

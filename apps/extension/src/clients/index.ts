@@ -10,14 +10,13 @@ import { ClientConnectionManager } from '@penumbra-zone/transport/src/chrome-run
 
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 
-export const getPenumbraPort = (serviceTypeName: string) => {
+export const getPenumbraPort = () => {
   const { port1: port, port2: transferPort } = new MessageChannel();
   const initPort = ClientConnectionManager.init(ChannelClientLabel.Extension);
   initPort.postMessage(
     {
       type: 'INIT_CHANNEL_CLIENT' as typeof InitChannelClientDataType,
       port: transferPort,
-      service: serviceTypeName,
     } as InitChannelClientMessage,
     [transferPort],
   );

@@ -1,25 +1,24 @@
 import {
-  createRouterTransport,
-  ServiceImpl,
-  MethodImpl,
-  ConnectRouter,
-  ConnectError,
-  Code as ConnectErrorCode,
-} from '@connectrpc/connect';
-import { errorFromJson } from '@connectrpc/connect/protocol-connect';
-
-import {
-  MethodKind,
-  MethodInfo,
-  ServiceType,
-  AnyMessage,
-  JsonValue,
   Any,
+  AnyMessage,
   JsonReadOptions,
+  JsonValue,
   JsonWriteOptions,
+  MethodKind,
+  ServiceType,
   createRegistry,
 } from '@bufbuild/protobuf';
-
+import {
+  ConnectError,
+  Code as ConnectErrorCode,
+  ConnectRouter,
+  HandlerContext,
+  MethodImpl,
+  createRouterTransport,
+} from '@connectrpc/connect';
+import { errorFromJson } from '@connectrpc/connect/protocol-connect';
+import { CreateAnyMethodImpl, makeAnyServiceImpl } from './any-impl';
+import { JsonToMessage, streamToGenerator } from './stream';
 import {
   TransportEvent,
   TransportMessage,
@@ -31,30 +30,8 @@ import {
   isTransportStream,
 } from './types';
 
-import { JsonToMessage, streamToGenerator } from './stream';
-
-type CreateAnyMethodImpl<S extends ServiceType> = (
-  methodInfo: MethodInfo & { kind: MethodKind },
-) => typeof methodInfo extends S['methods'][keyof S['methods']]
-  ? MethodImpl<typeof methodInfo>
-  : never;
-
-type CreateAnyServiceImpl = <S extends ServiceType>(
-  service: S,
-  createMethod: CreateAnyMethodImpl<S>,
-) => ServiceImpl<S>;
-
-const makeAnyServiceImpl: CreateAnyServiceImpl = <S extends ServiceType>(
-  service: S,
-  createMethod: CreateAnyMethodImpl<S>,
-): ServiceImpl<S> => {
-  const impl = {} as { [P in keyof S['methods']]: MethodImpl<S['methods'][P]> };
-  let localName: keyof S['methods'];
-  let methodInfo: MethodInfo;
-  for ([localName, methodInfo] of Object.entries(service.methods))
-    impl[localName] = createMethod(methodInfo);
-  return impl;
-};
+type AnyServerStreamingImpl = (i: AnyMessage, ctx: HandlerContext) => AsyncIterable<AnyMessage>;
+type AnyUnaryImpl = (i: AnyMessage, ctx: HandlerContext) => Promise<AnyMessage>;
 
 export interface ChannelTransportOptions {
   defaultTimeoutMs?: number;
@@ -96,7 +73,7 @@ export const createChannelTransport = ({
    * @returns A promise that resolves when the channel is connected.
    */
   const connect = () =>
-    Promise.resolve(getPort(serviceType.typeName)).then((port: MessagePort) => {
+    Promise.resolve(getPort(serviceType.typeName)).then((gotPort: MessagePort) => {
       const initTimeout = new Promise<never>(
         (_, reject) =>
           defaultTimeoutMs &&
@@ -113,10 +90,10 @@ export const createChannelTransport = ({
       let connectionState: (s: TransportState) => void;
       const init = new Promise<MessagePort>((resolve, reject) => {
         connectionState = ({ connected, reason }: TransportState) => {
-          if (connected) resolve(port);
+          if (connected) resolve(gotPort);
           else {
-            port.close();
-            const err = errorFromJson(reason!, {}, new ConnectError('Channel connection rejected'));
+            gotPort.close();
+            const err = errorFromJson(reason!, {}, new ConnectError('Channel connection closed'));
             // this rejects the init promise
             reject(err);
             // this throws to transportListener, not the init promise
@@ -142,14 +119,17 @@ export const createChannelTransport = ({
           else throw Error('Unknown transport item');
         } catch (error) {
           const err = ConnectError.from(error);
-          // throwing from a listener is pointless. store the first error, log
+          // some fundamental disaster has occurred, and now the transport is
+          // broken forever. we have no specific request to reject, but throwing
+          // from a listener is a dead end. so we store it to throw at every
+          // subsequent interaction.
           listenerError ??= err;
-          console.error('Error in transport listener', err);
+          console.warn('Transport failed', err);
         }
       };
 
-      port.addEventListener('message', transportListener);
-      port.start();
+      gotPort.addEventListener('message', transportListener);
+      gotPort.start();
 
       return Promise.race([initTimeout, init]);
     });
@@ -175,9 +155,12 @@ export const createChannelTransport = ({
           reject(errorFromJson(response.error, {}, new ConnectError('Transport error')));
         else if (isTransportMessage(response)) resolve(response.message);
         else if (isTransportStream(response)) resolve(response.stream);
-        else reject('Response kind unimplemented');
+        else reject(new ConnectError('Attempted to resolve with unknown response'));
       }),
-    );
+    ).catch(errorResponse => {
+      console.error('Request failed', requestId, message, errorResponse);
+      throw errorResponse;
+    });
 
     port.postMessage({ requestId, message } satisfies TransportMessage);
     return futureResponse;
@@ -186,25 +169,25 @@ export const createChannelTransport = ({
   const makeChannelMethodImpl: CreateAnyMethodImpl<typeof serviceType> = method => {
     switch (method.kind) {
       case MethodKind.Unary: {
-        return async function (message: AnyMessage) {
-          const responseJson = (await request(message).catch(e => {
-            throw ConnectError.from(e);
-          })) as JsonValue;
-          const response = Any.fromJson(responseJson, { typeRegistry }).unpack(typeRegistry);
+        const unaryImpl: AnyUnaryImpl = async function (message) {
+          const responseJson = (await request(message)) as JsonValue;
+          const response = Any.fromJson(responseJson, { typeRegistry }).unpack(typeRegistry)!;
           return response;
         };
+        return unaryImpl as MethodImpl<typeof method>;
       }
       case MethodKind.ServerStreaming: {
-        return async function* (message: AnyMessage) {
-          const responseStream = (await request(message).catch(e => {
-            throw ConnectError.from(e);
-          })) as ReadableStream<JsonValue>;
+        const streamImpl: AnyServerStreamingImpl = async function* (message) {
+          const responseStream = (await request(message)) as ReadableStream<JsonValue>;
           const response = responseStream.pipeThrough(new JsonToMessage(typeRegistry));
           yield* streamToGenerator(response);
         };
+        return streamImpl as MethodImpl<typeof method>;
       }
-      default:
-        return () => Promise.reject(`${MethodKind[method.kind]} unimplemented`);
+      default: {
+        const noImpl: unknown = () => Promise.reject(`${MethodKind[method.kind]} unimplemented`);
+        return noImpl as MethodImpl<typeof method>;
+      }
     }
   };
 

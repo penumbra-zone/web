@@ -1,25 +1,22 @@
+import type { Impl } from '.';
+import { servicesCtx } from '../../ctx';
+
 import {
-  NoteByCommitmentRequest,
   NoteByCommitmentResponse,
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { ViewReqMessage } from './router';
-import { ServicesInterface } from '@penumbra-zone/types';
 
-export const isNoteByCommitmentRequest = (req: ViewReqMessage): req is NoteByCommitmentRequest => {
-  return req.getType().typeName === NoteByCommitmentRequest.typeName;
-};
+import { ConnectError, Code } from '@connectrpc/connect';
 
-export const handleNoteByCommitmentReq = async (
-  req: NoteByCommitmentRequest,
-  services: ServicesInterface,
-): Promise<NoteByCommitmentResponse> => {
+export const noteByCommitment: Impl['noteByCommitment'] = async (req, ctx) => {
+  const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
-  if (!req.noteCommitment) throw new Error('Missing note commitment in request');
+  if (!req.noteCommitment)
+    throw new ConnectError('Missing note commitment in request', Code.InvalidArgument);
 
   const noteByCommitment = await indexedDb.getNoteByCommitment(req.noteCommitment);
-  if (noteByCommitment) return new NoteByCommitmentResponse({ spendableNote: noteByCommitment });
-  if (!req.awaitDetection) throw new Error('Note not found');
+  if (noteByCommitment) return { spendableNote: noteByCommitment };
+  if (!req.awaitDetection) throw new ConnectError('Note not found', Code.NotFound);
 
   // Wait until our DB encounters a new note with this commitment
   const response = new NoteByCommitmentResponse();

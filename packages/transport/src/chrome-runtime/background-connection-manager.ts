@@ -1,27 +1,25 @@
-import {
-  ChannelConfig,
-  ChannelClientLabel,
-  nameChannel,
-  parseConnectionName,
-  ChannelSubLabel,
-  isTransportMessage,
-  TransportInitChannel,
-  TransportMessage,
-  TransportError,
-  TransportStream,
-  TransportState,
-  TransportEvent,
-} from '../types';
-
-import { JsonValue } from '@bufbuild/protobuf';
-import { ChromeRuntimeStreamSink } from './stream';
 import { ConnectError, Code as ConnectErrorCode } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import {
-  isAbortSubParentDisconnect,
+  ChannelClientLabel,
+  ChannelConfig,
+  ChannelSubLabel,
+  TransportError,
+  TransportEvent,
+  TransportInitChannel,
+  TransportMessage,
+  TransportState,
+  TransportStream,
+  isTransportMessage,
+  nameChannel,
+  parseConnectionName,
+} from '../types';
+import {
   isAbortSubOnDisconnect,
+  isAbortSubParentDisconnect,
   isChromePortDisconnected,
 } from './errors';
+import { ChromeRuntimeStreamSink } from './stream';
 
 interface BackgroundConnection {
   type: ChannelClientLabel;
@@ -33,12 +31,7 @@ interface BackgroundConnection {
   tlsChannelId: string | undefined;
 }
 
-type UnconditionalServiceAccessFn = (
-  x: JsonValue,
-) => Promise<JsonValue | ReadableStream<JsonValue>>;
-
-// TODO: conditional service access
-type UnconditionalServiceAccess = Record<string, UnconditionalServiceAccessFn>;
+import { ChromeRuntimeHandlerFn } from './adapter';
 
 /**
  * Only for use as an extension-level singleton in the extension's main
@@ -58,11 +51,11 @@ export class BackgroundConnectionManager {
     Map<ReturnType<typeof crypto.randomUUID>, BackgroundConnection>
   >();
 
-  static init = (usa: UnconditionalServiceAccess) => {
-    BackgroundConnectionManager.singleton ??= new BackgroundConnectionManager(usa);
+  static init = (handler: ChromeRuntimeHandlerFn) => {
+    BackgroundConnectionManager.singleton ??= new BackgroundConnectionManager(handler);
   };
 
-  private constructor(private unconditionalServiceAccess: UnconditionalServiceAccess) {
+  private constructor(private handler: ChromeRuntimeHandlerFn) {
     if (BackgroundConnectionManager.singleton) throw Error('Already constructed');
     chrome.runtime.onConnect.addListener(port => this.connectionListener(port));
   }
@@ -95,12 +88,10 @@ export class BackgroundConnectionManager {
         label: clientType,
         uuid: clientId,
         origin: claimedOrigin,
-        typeName: serviceName,
       } = channelConfig ?? ({} as ChannelConfig);
       const originConnections =
         this.connections.get(sender.origin) ??
         this.connections.set(sender.origin, new Map()).get(sender.origin);
-      const serviceEntry = this.unconditionalServiceAccess[serviceName!];
 
       try {
         if (!channelConfig || !(clientType in ChannelClientLabel))
@@ -117,11 +108,6 @@ export class BackgroundConnectionManager {
           throw new ConnectError(
             `Client id collision: ${clientId}`,
             ConnectErrorCode.AlreadyExists,
-          );
-        if (!serviceEntry)
-          throw new ConnectError(
-            `Unsupported service: ${serviceName}`,
-            ConnectErrorCode.Unimplemented,
           );
       } catch (error) {
         console.error('Connection rejected', error);
@@ -205,16 +191,13 @@ export class BackgroundConnectionManager {
         requestId,
         message,
       }: TransportMessage): Promise<TransportEvent> =>
-        serviceEntry(message)
+        this.handler(message)
           .then(response =>
             response instanceof ReadableStream
               ? responseSubChannel({ requestId, stream: response })
               : { requestId, message: response },
           )
-          .catch(error => ({
-            requestId,
-            error: errorToJson(ConnectError.from(error), undefined),
-          }));
+          .catch(error => ({ requestId, error: errorToJson(ConnectError.from(error), undefined) }));
 
       // attach listeners
       clientPort.onDisconnect.addListener(() => this.disconnectClient(sender.origin!, clientId));
