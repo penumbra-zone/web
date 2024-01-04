@@ -21,7 +21,8 @@ export const useSyncProgress = () => {
   useQuery({
     queryKey: ['sync-blocks', grpcEndpoint],
     queryFn: async () => {
-      await chrome.runtime.sendMessage('PENUMBRA_SYNC_BLOCKS');
+      const syncing: boolean = await chrome.runtime.sendMessage('PENUMBRA_SYNC_BLOCKS');
+      if (!syncing) throw new Error('Failed to sync blocks');
       return true; // react-query cannot return undefined
     },
   });

@@ -59,15 +59,20 @@ const servicesConfig = {
 const services = new Services(servicesConfig);
 await services.initialize();
 
-// TODO: ensure rejections respond properly
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (sender.id !== chrome.runtime.id) return; // unhandled
   switch (message) {
     case 'PENUMBRA_CLEAR_CACHE':
-      void services.clearCache().then(sendResponse);
+      void services.clearCache().then(
+        () => sendResponse(true),
+        () => sendResponse(false),
+      );
       return true; // async handler
     case 'PENUMBRA_SYNC_BLOCKS':
-      void services.tryToSync().then(sendResponse);
+      void services.tryToSync().then(
+        () => sendResponse(true),
+        () => sendResponse(false),
+      );
       return true; // async handler
     default:
       return; // unhandled

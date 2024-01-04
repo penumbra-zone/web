@@ -31,7 +31,8 @@ export const SettingsClearCache = () => {
             className='w-full'
             onClick={() => {
               void (async () => {
-                await chrome.runtime.sendMessage('PENUMBRA_CLEAR_CACHE');
+                const cleared: boolean = await chrome.runtime.sendMessage('PENUMBRA_CLEAR_CACHE');
+                if (!cleared) throw new Error('Failed to clear cache');
                 navigate(PopupPath.INDEX);
               })();
             }}

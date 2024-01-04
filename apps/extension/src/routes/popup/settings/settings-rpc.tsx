@@ -23,7 +23,8 @@ export const SettingsRPC = () => {
       try {
         await querier.chainParams();
         await setGRPCEndpoint(rpc);
-        await chrome.runtime.sendMessage('PENUMBRA_CLEAR_CACHE');
+        const cleared: boolean = await chrome.runtime.sendMessage('PENUMBRA_CLEAR_CACHE');
+        if (!cleared) throw new Error('Failed to clear cache');
         await refetch();
         setRpcError(false);
       } catch {
