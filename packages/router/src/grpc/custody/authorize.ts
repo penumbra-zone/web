@@ -26,7 +26,9 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!decryptedSeedPhrase)
     throw new ConnectError('Unable to decrypt seed phrase with password', Code.Unauthenticated);
 
-  await getTxApproval(req);
+  await getTxApproval(req).catch(no => {
+    throw ConnectError.from(no, Code.PermissionDenied);
+  });
 
   const spendKey = generateSpendKey(decryptedSeedPhrase);
   const data = authorizePlan(spendKey, req.plan);
