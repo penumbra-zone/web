@@ -12,8 +12,6 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) throw new ConnectError('No plan included in request', Code.InvalidArgument);
 
   const approveReq = ctx.values.get(approverCtx);
-  await approveReq(req);
-
   const sess = ctx.values.get(extSessionCtx);
   const local = ctx.values.get(extLocalCtx);
 
@@ -27,6 +25,8 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   const decryptedSeedPhrase = await key.unseal(Box.fromJson(encryptedSeedPhrase));
   if (!decryptedSeedPhrase)
     throw new ConnectError('Unable to decrypt seed phrase with password', Code.Unauthenticated);
+
+  await approveReq(req);
 
   const spendKey = generateSpendKey(decryptedSeedPhrase);
   const data = authorizePlan(spendKey, req.plan);
