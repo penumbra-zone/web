@@ -1,8 +1,9 @@
 import { sendPopupRequest, spawnDetachedPopup } from '@penumbra-zone/types/src/internal-msg/popup';
 import { TxApproval } from '@penumbra-zone/types/src/internal-msg/tx-approval';
-import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
 
-export const getTxApproval = async (req: AuthorizeRequest): Promise<void> => {
+import type { GetTxApprovalFn } from '@penumbra-zone/router';
+
+export const getTxApproval: GetTxApprovalFn = async req => {
   await spawnDetachedPopup('popup.html#/approval/tx');
 
   const res = await sendPopupRequest<TxApproval>({

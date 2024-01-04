@@ -1,5 +1,5 @@
 import type { Impl } from '.';
-import { approverCtx, extLocalCtx, extSessionCtx } from '../../ctx';
+import { getTxApprovalCtx, extLocalCtx, extSessionCtx } from '../../ctx';
 
 import { generateSpendKey, authorizePlan } from '@penumbra-zone/wasm-ts';
 
@@ -11,7 +11,7 @@ import { ConnectError, Code } from '@connectrpc/connect';
 export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) throw new ConnectError('No plan included in request', Code.InvalidArgument);
 
-  const approveReq = ctx.values.get(approverCtx);
+  const getTxApproval = ctx.values.get(getTxApprovalCtx);
   const sess = ctx.values.get(extSessionCtx);
   const local = ctx.values.get(extLocalCtx);
 
@@ -26,7 +26,7 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!decryptedSeedPhrase)
     throw new ConnectError('Unable to decrypt seed phrase with password', Code.Unauthenticated);
 
-  await approveReq(req);
+  await getTxApproval(req);
 
   const spendKey = generateSpendKey(decryptedSeedPhrase);
   const data = authorizePlan(spendKey, req.plan);

@@ -7,7 +7,6 @@ import { ShareGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { networkSelector } from '../../../state/network';
-import { internalSwClient } from '@penumbra-zone/router';
 
 export const SettingsRPC = () => {
   const { chainId, refetch } = useChainId();
@@ -24,7 +23,7 @@ export const SettingsRPC = () => {
       try {
         await querier.chainParams();
         await setGRPCEndpoint(rpc);
-        await internalSwClient.clearCache();
+        await chrome.runtime.sendMessage('PENUMBRA_CLEAR_CACHE');
         await refetch();
         setRpcError(false);
       } catch {

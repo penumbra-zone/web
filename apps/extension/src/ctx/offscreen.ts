@@ -9,6 +9,7 @@ import {
   ActionBuildRequest,
   OffscreenMessage,
 } from '@penumbra-zone/types/src/internal-msg/offscreen';
+import { OffscreenCtx } from '@penumbra-zone/router';
 
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
@@ -79,4 +80,4 @@ const buildAction = async (
   return buildRes.data.map(a => Action.fromJson(a));
 };
 
-export const offscreenClient = { buildAction };
+export const offscreen: OffscreenCtx = { buildAction };

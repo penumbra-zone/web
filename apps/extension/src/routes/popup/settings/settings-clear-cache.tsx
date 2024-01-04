@@ -2,7 +2,6 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { Button, FadeTransition } from '@penumbra-zone/ui';
 import { SettingsHeader } from '../../../shared';
 import { TrashGradientIcon } from '../../../icons';
-import { internalSwClient } from '@penumbra-zone/router';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
 
@@ -32,7 +31,7 @@ export const SettingsClearCache = () => {
             className='w-full'
             onClick={() => {
               void (async () => {
-                await internalSwClient.clearCache();
+                await chrome.runtime.sendMessage('PENUMBRA_CLEAR_CACHE');
                 navigate(PopupPath.INDEX);
               })();
             }}
