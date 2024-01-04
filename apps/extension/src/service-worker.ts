@@ -16,7 +16,8 @@ import { Services } from '@penumbra-zone/services';
 import { localExtStorage } from '@penumbra-zone/storage';
 
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
-import { servicesCtx } from '@penumbra-zone/router/src/ctx';
+import { custodyCtx, servicesCtx } from '@penumbra-zone/router/src/ctx';
+import { custodyClient } from './clients';
 
 import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/background-connection-manager';
 import { createProxyImpl } from '@penumbra-zone/transport/src/proxy';
@@ -89,6 +90,7 @@ const chromeRuntimeHandler = connectChromeRuntimeAdapter({
   createRequestContext: req => {
     const contextValues = req.contextValues ?? createContextValues();
     contextValues.set(servicesCtx, services);
+    contextValues.set(custodyCtx, custodyClient);
     return Promise.resolve({ ...req, contextValues });
   },
 });

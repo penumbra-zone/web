@@ -6,8 +6,15 @@ import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
 import { getTxApproval } from './approver';
 import { assertWalletId } from './wallet-id';
 
+import type { PromiseClient } from '@connectrpc/connect';
+import type { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
+
 export const servicesCtx = createContextKey<Services>({} as Services);
 export const extLocalCtx = createContextKey(localExtStorage);
 export const extSessionCtx = createContextKey(sessionExtStorage);
 export const approverCtx = createContextKey(getTxApproval);
 export const assertWalletIdCtx = createContextKey(assertWalletId);
+
+export const custodyCtx = createContextKey<
+  PromiseClient<typeof CustodyProtocolService> | undefined
+>(undefined);
