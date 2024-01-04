@@ -23,4 +23,4 @@ It appears some fields that are required are listed as optional (e.g. noteCommit
 
 In short, you cannot trust the presence or absence of ANY fields in protobufs. Protos don't acknowledge how the application intends to use them and consumers are responsible for field validation.
 
-We do this via `Zod`. It's not everywhere, but hopefully it can be in most places! At runtime, we validate schemas using this library, forming the new, corrected type. [EXAMPLE](packages/wasm/src/keys.ts)
+We do this via `Zod`. It's not everywhere, but hopefully it can be in most places! At runtime, we validate schemas using this library, forming the new, corrected type. [EXAMPLE](../packages/wasm/src/keys.ts)
