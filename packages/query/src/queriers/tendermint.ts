@@ -27,6 +27,7 @@ export class TendermintQuerier implements TendermintQuerierInterface {
     // the fullnode", not "wait for the tx to be included on chain.
     const req = new BroadcastTxSyncRequest({ params });
     const res = await this.client.broadcastTxSync(req);
+    console.log(res.log);
     return res.hash;
   }
 

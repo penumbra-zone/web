@@ -12,8 +12,8 @@ import {
   QueryClientStatesRequest,
   QueryClientStatesResponse,
 } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/query_pb';
-import { KeyValueResponse_Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/storage/v1alpha1/storage_pb';
 import { GetTxResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/util/tendermint_proxy/v1alpha1/tendermint_proxy_pb';
+import { KeyValueResponse_Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/cnidarium/v1alpha1/cnidarium_pb';
 
 export interface RootQuerierInterface {
   app: AppQuerierInterface;

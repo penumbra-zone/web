@@ -1,11 +1,12 @@
 import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils';
-import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/storage/v1alpha1/storage_connect';
+import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/cnidarium/v1alpha1/cnidarium_connect';
+
+import { StorageQuerierInterface } from '@penumbra-zone/types';
 import {
   KeyValueRequest,
   KeyValueResponse_Value,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/storage/v1alpha1/storage_pb';
-import { StorageQuerierInterface } from '@penumbra-zone/types';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/cnidarium/v1alpha1/cnidarium_pb';
 
 export class StorageQuerier implements StorageQuerierInterface {
   private readonly client: PromiseClient<typeof QueryService>;

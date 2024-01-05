@@ -16,7 +16,7 @@ import { RootQuerier } from '../root-querier';
 import { generateMetadata } from './metadata';
 import { Transactions } from './transactions';
 import { decodeSctRoot, decodeTx, transactionInfo } from '@penumbra-zone/wasm-ts';
-import { Id } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -114,6 +114,23 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.abortController.abort();
   }
 
+  async getTxInfoByHash(hash: Uint8Array): Promise<TransactionInfo | undefined> {
+    const txResponse = await this.querier.tendermint.txByHash(hash);
+
+    if (!txResponse) return undefined;
+
+    const tx = decodeTx(txResponse.tx);
+    const { txp, txv } = await transactionInfo(this.fullViewingKey, tx, this.indexedDb.constants());
+
+    return new TransactionInfo({
+      height: txResponse.height,
+      id: new TransactionId({ inner: hash }),
+      transaction: tx,
+      perspective: txp,
+      view: txv,
+    });
+  }
+
   // We need to query separately to convert assetId's into readable denom strings. Persisting those to storage.
   private async storeAssetDenoms(assetId?: AssetId) {
     if (!assetId) return;
@@ -166,23 +183,6 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       await this.handleNullifiers(block.nullifiers, block.height);
     }
-  }
-
-  async getTxInfoByHash(hash: Uint8Array): Promise<TransactionInfo | undefined> {
-    const txResponse = await this.querier.tendermint.txByHash(hash);
-
-    if (!txResponse) return undefined;
-
-    const tx = decodeTx(txResponse.tx);
-    const { txp, txv } = await transactionInfo(this.fullViewingKey, tx, this.indexedDb.constants());
-
-    return new TransactionInfo({
-      height: txResponse.height,
-      id: new Id({ hash: hash }),
-      transaction: tx,
-      perspective: txp,
-      view: txv,
-    });
   }
 }
 

@@ -58,15 +58,13 @@ export const viewFromEmptyPerspective = (tx: Transaction): TransactionView => {
   return new TransactionView({
     bodyView: new TransactionBodyView({
       transactionParameters: tx.body.transactionParameters!,
-      fee: tx.body.fee!,
       detectionData: tx.body.detectionData!,
       memoView: new MemoView({
         memoView: {
           case: 'opaque',
           value: new MemoView_Opaque({
             ciphertext: new MemoCiphertext({
-              /* Why is there MemoCiphertext and MemoData? these are the same thing */
-              inner: tx.body.memoData!.encryptedMemo,
+              inner: tx.body.memo!.inner,
             }),
           }),
         },
@@ -75,7 +73,7 @@ export const viewFromEmptyPerspective = (tx: Transaction): TransactionView => {
         return viewActionFromEmptyPerspective(action)!;
       })!,
     }),
-    bindingSig: tx.bindingSig,
+    bindingSig: tx.bindingSig!,
     anchor: tx.anchor!,
   });
 };
