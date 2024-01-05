@@ -21,7 +21,7 @@ export const Header = () => {
   const result = useLoaderData() as LayoutLoaderResult;
 
   return (
-    <header className='z-10 flex w-full flex-col items-center justify-between px-6 md:h-[82px] md:flex-row md:px-12'>
+    <header className='z-10 flex w-full flex-col items-center justify-between px-6 md:h-[82px] md:flex-row md:gap-12 md:px-12'>
       <div className='mb-[30px] md:mb-0'>
         <img
           src='/penumbra-logo.svg'
