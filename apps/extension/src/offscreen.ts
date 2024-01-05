@@ -1,11 +1,7 @@
 import { Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import type { JsonObject, JsonValue } from '@bufbuild/protobuf';
-import {
-  OffscreenRequest,
-  ActionBuildRequest,
-  WasmBuildActionInput,
-  isActionBuildRequest,
-} from './control/offscreen';
+import { OffscreenRequest, ActionBuildRequest, isActionBuildRequest } from './control/offscreen';
+import type { WasmBuildActionInput } from './control/worker';
 import type { Jsonified } from '@penumbra-zone/types';
 
 export const isOffscreenRequest = (req: unknown): req is OffscreenRequest =>
