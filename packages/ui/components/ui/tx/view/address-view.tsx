@@ -24,17 +24,19 @@ export const AddressViewComponent = ({
 
   const accountIndex =
     view.addressView.case === 'visible' ? view.addressView.value.index?.account : undefined;
-  const isRandomized =
+  const isOneTimeAddress =
     view.addressView.case === 'visible'
-      ? !view.addressView.value.index?.randomizer.every(v => v === 0) //   Randomized if the randomizer is not all zeros.
+      ? !view.addressView.value.index?.randomizer.every(v => v === 0) // Randomized (and thus, a one-time address) if the randomizer is not all zeros.
       : undefined;
+
+  copyable = isOneTimeAddress ? false : copyable;
 
   return (
     <div className='flex'>
       {accountIndex !== undefined ? (
         <div className='flex items-baseline gap-2'>
           <Identicon name={encoded} size={14} className='rounded-full' type='gradient' />
-          {isRandomized ? (
+          {isOneTimeAddress ? (
             <span className='font-bold'>One-time Address for Account #{accountIndex}</span>
           ) : (
             <span className='font-bold'>Account #{accountIndex}</span>
@@ -47,7 +49,7 @@ export const AddressViewComponent = ({
         <CopyToClipboard
           text={encoded}
           label={
-            <div>
+            <div data-testid='AddressView__CopyIcon'>
               <CopyIcon className='h-4 w-4 text-muted-foreground hover:opacity-50' />
             </div>
           }
