@@ -7,7 +7,7 @@ export const Navbar = () => {
   const pathname = usePagePath();
 
   return (
-    <nav className='hidden gap-4 xl:flex xl:grow xl:justify-between max-w-2xl'>
+    <nav className='hidden max-w-2xl gap-4 xl:flex xl:grow xl:justify-between'>
       {headerLinks.map(link =>
         link.active ? (
           <Link
