@@ -74,7 +74,7 @@ describe('<AddressViewComponent />', () => {
 
     describe('when the address is not a one-time address', () => {
       test('does not show the copy icon', () => {
-        const { debug, queryByTestId } = render(
+        const { queryByTestId } = render(
           <AddressViewComponent view={addressViewWithNormalAddress()} copyable={false} />,
         );
 
