@@ -22,7 +22,12 @@ import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome
 import { createProxyImpl } from '@penumbra-zone/transport/src/proxy';
 import { connectChromeRuntimeAdapter } from '@penumbra-zone/transport/src/chrome-runtime/adapter';
 
-import { ConnectRouter, createContextValues, createPromiseClient } from '@connectrpc/connect';
+import {
+  ConnectError,
+  ConnectRouter,
+  createContextValues,
+  createPromiseClient,
+} from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 
 // this is a remote service we proxy
@@ -71,10 +76,39 @@ const ibcImpl = createProxyImpl(
   createPromiseClient(IbcClientService, createGrpcWebTransport({ baseUrl: grpcEndpoint })),
 );
 
-// rpc we provide
+/**
+ * unfortunately, the handler factory in connectrpc suppresses internal errors,
+ * unless they are thrown as `ConnectError`.  this is a workaround that wraps
+ * impls to rethrow everything as ConnectError before return to the router.
+ *
+ * would prefer to use `SI extends Partial<ServiceImpl<ServiceType>>` here, but
+ * typescript `exactOptionalPropertTypes` and `Partial` interaction is buggy.
+ * see: https://github.com/microsoft/TypeScript/issues/46969
+ */
+const rethrowImplErrors = <SI extends object>(sImpl: SI) =>
+  Object.fromEntries(
+    Object.entries(sImpl).map(([k, v]) => [
+      k,
+      (...args: unknown[]) => {
+        try {
+          const x = (v as (...args: unknown[]) => unknown)(...args);
+          if (x instanceof Promise)
+            return (x as Promise<unknown>).catch(e => {
+              throw ConnectError.from(e);
+            });
+          return x;
+        } catch (e) {
+          throw ConnectError.from(e);
+        }
+      },
+    ]),
+  ) as typeof sImpl;
+
 const rpcImpls = [
-  [CustodyProtocolService, custodyImpl],
-  [ViewProtocolService, viewImpl],
+  // rpc we provide
+  [CustodyProtocolService, rethrowImplErrors(custodyImpl)],
+  [ViewProtocolService, rethrowImplErrors(viewImpl)],
+  // rpc proxy
   [IbcClientService, ibcImpl],
 ] as const;
 
