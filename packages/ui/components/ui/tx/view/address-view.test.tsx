@@ -8,44 +8,42 @@ import { AddressViewComponent } from './address-view';
 import { describe, expect, test } from 'vitest';
 import { render } from '@testing-library/react';
 
-const addressViewWithOneTimeAddress = () =>
-  new AddressView({
-    addressView: {
-      case: 'visible',
+const addressViewWithOneTimeAddress = new AddressView({
+  addressView: {
+    case: 'visible',
 
-      value: new AddressView_Visible({
-        address: new Address(),
-        index: new AddressIndex({
-          account: 0,
-          // A one-time address is defined by a randomizer with at least one
-          // non-zero byte.
-          randomizer: new Uint8Array([1, 2, 3]),
-        }),
+    value: new AddressView_Visible({
+      address: new Address(),
+      index: new AddressIndex({
+        account: 0,
+        // A one-time address is defined by a randomizer with at least one
+        // non-zero byte.
+        randomizer: new Uint8Array([1, 2, 3]),
       }),
-    },
-  });
+    }),
+  },
+});
 
-const addressViewWithNormalAddress = () =>
-  new AddressView({
-    addressView: {
-      case: 'visible',
+const addressViewWithNormalAddress = new AddressView({
+  addressView: {
+    case: 'visible',
 
-      value: new AddressView_Visible({
-        address: new Address(),
-        index: new AddressIndex({
-          account: 0,
-          randomizer: new Uint8Array([0, 0, 0]),
-        }),
+    value: new AddressView_Visible({
+      address: new Address(),
+      index: new AddressIndex({
+        account: 0,
+        randomizer: new Uint8Array([0, 0, 0]),
       }),
-    },
-  });
+    }),
+  },
+});
 
 describe('<AddressViewComponent />', () => {
   describe('when `copyable` is `true`', () => {
     describe('when the address is a one-time address', () => {
       test('does not show the copy icon', () => {
         const { queryByTestId } = render(
-          <AddressViewComponent view={addressViewWithOneTimeAddress()} copyable />,
+          <AddressViewComponent view={addressViewWithOneTimeAddress} copyable />,
         );
 
         expect(queryByTestId('AddressView__CopyIcon')).toBeNull();
@@ -55,7 +53,7 @@ describe('<AddressViewComponent />', () => {
     describe('when the address is not a one-time address', () => {
       test('shows the copy icon', () => {
         const { queryByTestId } = render(
-          <AddressViewComponent view={addressViewWithNormalAddress()} copyable />,
+          <AddressViewComponent view={addressViewWithNormalAddress} copyable />,
         );
 
         expect(queryByTestId('AddressView__CopyIcon')).not.toBeNull();
@@ -67,7 +65,7 @@ describe('<AddressViewComponent />', () => {
     describe('when the address is a one-time address', () => {
       test('does not show the copy icon', () => {
         const { queryByTestId } = render(
-          <AddressViewComponent view={addressViewWithOneTimeAddress()} copyable={false} />,
+          <AddressViewComponent view={addressViewWithOneTimeAddress} copyable={false} />,
         );
 
         expect(queryByTestId('AddressView__CopyIcon')).toBeNull();
@@ -77,7 +75,7 @@ describe('<AddressViewComponent />', () => {
     describe('when the address is not a one-time address', () => {
       test('does not show the copy icon', () => {
         const { queryByTestId } = render(
-          <AddressViewComponent view={addressViewWithNormalAddress()} copyable={false} />,
+          <AddressViewComponent view={addressViewWithNormalAddress} copyable={false} />,
         );
 
         expect(queryByTestId('AddressView__CopyIcon')).toBeNull();
