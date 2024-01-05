@@ -17,6 +17,8 @@ const addressViewWithOneTimeAddress = () =>
         address: new Address(),
         index: new AddressIndex({
           account: 0,
+          // A one-time address is defined by a randomizer with at least one
+          // non-zero byte.
           randomizer: new Uint8Array([1, 2, 3]),
         }),
       }),
