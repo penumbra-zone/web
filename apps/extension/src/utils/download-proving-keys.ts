@@ -4,7 +4,7 @@ import * as path from 'path';
 import { provingKeys } from '@penumbra-zone/types/src/proving-keys';
 
 const githubSourceDir =
-  'https://github.com/penumbra-zone/penumbra/raw/main/crates/crypto/proof-params/src/gen/';
+  'https://github.com/penumbra-zone/penumbra/raw/v0.64.1/crates/crypto/proof-params/src/gen/';
 
 const binaryFilesDir = path.join('dist/js/bin');
 
