@@ -1,26 +1,22 @@
-import {
-  IndexedDbInterface,
-  noteSourceFromBytes,
-  ParsedNoteSource,
-  ViewServerInterface,
-} from '@penumbra-zone/types';
+import { IndexedDbInterface, ViewServerInterface } from '@penumbra-zone/types';
 import { transactionInfo } from '@penumbra-zone/wasm-ts/src/transaction';
 import { sha256Hash } from '@penumbra-zone/crypto-web';
-import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import {
-  Id,
-  Transaction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import {
   PositionState,
   PositionState_PositionStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 import { AppQuerier } from '../queriers/app';
+import {
+  CommitmentSource,
+  CommitmentSource_Transaction,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 
+// A class that stores transaction ids which are used to later augment with transaction info to store
 export class Transactions {
-  // These are base64 encoded hex strings
-  private readonly all = new Set<NoteSource>();
+  private readonly all = new Set<CommitmentSource_Transaction>();
 
   constructor(
     private blockHeight: bigint,
@@ -30,15 +26,14 @@ export class Transactions {
     private viewServer: ViewServerInterface,
   ) {}
 
-  async add(source?: NoteSource) {
-    if (!source) return;
+  async add(cs?: CommitmentSource) {
+    if (!cs) return;
 
     // If source is not a transaction or it's already in the db, can skip
-    const noteSource = noteSourceFromBytes(source);
-    if (noteSource !== ParsedNoteSource.Transaction) return;
-    if (await this.indexedDb.getTransaction(source)) return;
+    if (cs.source.case !== 'transaction') return;
+    if (await this.indexedDb.getTransaction(cs.source.value)) return;
 
-    this.all.add(source);
+    this.all.add(cs.source.value);
   }
 
   // Even though we already know the transaction id, we are not directly querying the node
@@ -52,10 +47,10 @@ export class Transactions {
     const { transactions } = await this.querier.txsByHeight(this.blockHeight);
 
     for (const tx of transactions) {
-      const hash = await sha256Hash(tx.toBinary());
-      const noteSource = new NoteSource({ inner: hash });
+      const hash = await sha256Hash(encodeTx(tx));
+      const commitmentSource = new CommitmentSource_Transaction({ id: hash });
 
-      if (noteSourcePresent(this.all, noteSource)) {
+      if (commitmentSourcePresent(this.all, commitmentSource)) {
         // We must store LpNft metadata before calling transactionInfo() because to generate TxV and TxP
         // wasm needs LpNft metadata, which it will read from the indexed-db
         await this.storeLpNft(tx);
@@ -68,7 +63,7 @@ export class Transactions {
 
         const txToStore = new TransactionInfo({
           height: this.blockHeight,
-          id: new Id({ hash: noteSource.inner }),
+          id: new TransactionId({ inner: commitmentSource.id }),
           transaction: tx,
           perspective: txp,
           view: txv,
@@ -108,6 +103,9 @@ export class Transactions {
   }
 }
 
-const noteSourcePresent = (set: Set<NoteSource>, toCheck: NoteSource) => {
-  return Array.from(set).some(ns => ns.equals(toCheck));
+const commitmentSourcePresent = (
+  set: Set<CommitmentSource_Transaction>,
+  toCheck: CommitmentSource_Transaction,
+) => {
+  return Array.from(set).some(cs => cs.equals(toCheck));
 };

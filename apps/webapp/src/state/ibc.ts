@@ -9,7 +9,7 @@ import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tender
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Selection } from './types';
-import { viewClient, custodyClient, ibcClient } from '../clients/grpc';
+import { custodyClient, ibcClient, viewClient } from '../clients/grpc';
 
 export interface IbcSendSlice {
   selection: Selection | undefined;
@@ -157,7 +157,7 @@ const planWitnessBuildBroadcast = async (plannerReq: TransactionPlannerRequest) 
   const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
   if (!id) throw new Error('no id in broadcast response');
 
-  return uint8ArrayToHex(id.hash);
+  return uint8ArrayToHex(id.inner);
 };
 
 export const ibcSelector = (state: AllSlices) => state.ibc;

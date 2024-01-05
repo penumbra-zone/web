@@ -15,11 +15,11 @@ import {
   AssetId,
   DenomMetadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import {
-  FmdParameters,
-  NoteSource,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
-import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+  CommitmentSource_Transaction,
+  Nullifier,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { Base64Str } from './base64';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
@@ -43,7 +43,7 @@ export interface IndexedDbInterface {
   saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
   getAllNotes(): Promise<SpendableNoteRecord[]>;
   saveTransactionInfo(tx: TransactionInfo): Promise<void>;
-  getTransaction(source: NoteSource): Promise<TransactionInfo | undefined>;
+  getTransaction(source: CommitmentSource_Transaction): Promise<TransactionInfo | undefined>;
   getAllTransactions(): Promise<TransactionInfo[]>;
   getAssetsMetadata(assetId: AssetId): Promise<DenomMetadata | undefined>;
   saveAssetsMetadata(metadata: DenomMetadata): Promise<void>;
@@ -86,7 +86,7 @@ export interface PenumbraDb extends DBSchema {
     value: FmdParameters;
   };
   TRANSACTIONS: {
-    key: NoteSource['inner'];
+    key: CommitmentSource_Transaction['id'];
     value: TransactionInfo;
   };
   // ======= Json serialized values =======

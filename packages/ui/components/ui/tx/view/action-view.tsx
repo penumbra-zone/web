@@ -43,6 +43,66 @@ export const ActionViewComponent = ({ av: { actionView } }: { av: ActionView }) 
     case 'output':
       return <OutputViewComponent value={actionView.value} />;
 
+    case 'swap':
+      return <ViewBox label='Swap' />;
+
+    case 'swapClaim':
+      return <ViewBox label='Swap Claim' />;
+
+    case 'ics20Withdrawal':
+      return <ViewBox label='ICS20 Withdrawal' />;
+
+    case 'delegate':
+      return <ViewBox label='Delegate' />;
+
+    case 'undelegate':
+      return <ViewBox label='Undelegate' />;
+
+    case 'undelegateClaim':
+      return <ViewBox label='Undelegate Claim' />;
+
+    case 'validatorDefinition':
+      return <ViewBox label='Validator Definition' />;
+
+    case 'ibcRelayAction':
+      return <ViewBox label='IBC Relay Action' />;
+
+    case 'proposalSubmit':
+      return <ViewBox label='Proposal Submit' />;
+
+    case 'proposalWithdraw':
+      return <ViewBox label='Proposal Withdraw' />;
+
+    case 'validatorVote':
+      return <ViewBox label='Validator Vote' />;
+
+    case 'delegatorVote':
+      return <ViewBox label='Delegator Vote' />;
+
+    case 'proposalDepositClaim':
+      return <ViewBox label='Proposal Deposit Claim' />;
+
+    case 'positionOpen':
+      return <ViewBox label='Position Open' />;
+
+    case 'positionClose':
+      return <ViewBox label='Position Close' />;
+
+    case 'positionWithdraw':
+      return <ViewBox label='Position Withdraw' />;
+
+    case 'positionRewardClaim':
+      return <ViewBox label='Position Reward Claim' />;
+
+    case 'communityPoolSpend':
+      return <ViewBox label='Community Spend' />;
+
+    case 'communityPoolOutput':
+      return <ViewBox label='Community Output' />;
+
+    case 'communityPoolDeposit':
+      return <ViewBox label='Community Deposit' />;
+
     default:
       return <ViewBox label={getLabelForActionCase(actionView.case)} />;
   }

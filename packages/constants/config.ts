@@ -7,7 +7,7 @@ export interface Config {
 }
 
 export const testnetConstants: Config = {
-  grpcEndpoint: 'https://grpc.testnet.penumbra.zone',
+  grpcEndpoint: 'https://grpc.testnet-preview.penumbra.zone', // TODO: Change back to https://grpc.testnet-preview.penumbra.zone after v0.65.0 is live
   indexedDbVersion: 18,
   usdcAssetId: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
 };

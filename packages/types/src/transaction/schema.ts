@@ -39,7 +39,7 @@ export const WasmWitnessDataSchema = z.object({
 
 export const WasmBuildSchema = z.object({
   anchor: InnerBase64Schema,
-  bindingSig: Base64StringSchema,
+  bindingSig: InnerBase64Schema,
   body: z.object({
     actions: z.array(z.unknown()),
     detectionData: z.unknown(),

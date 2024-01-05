@@ -1,9 +1,9 @@
 import { notes } from './notes';
 
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
-import { assertWalletIdCtx, servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx';
 
-import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import type { Services } from '@penumbra-zone/services';
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
@@ -15,8 +15,6 @@ import {
   NotesResponse,
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-
-const mockAssertWalletId = vi.fn(() => Promise.resolve(true));
 
 describe('Notes request handler', () => {
   let mockServices: Services;
@@ -39,9 +37,7 @@ describe('Notes request handler', () => {
       method: ViewProtocolService.methods.balances,
       protocolName: 'mock',
       requestMethod: 'MOCK',
-      contextValues: createContextValues()
-        .set(servicesCtx, mockServices)
-        .set(assertWalletIdCtx, mockAssertWalletId),
+      contextValues: createContextValues().set(servicesCtx, mockServices),
     });
   });
 
@@ -274,6 +270,7 @@ describe('Notes request handler', () => {
   });
 });
 
+// TODO: Regenerate new test data, these are not the right types
 const testData: SpendableNoteRecord[] = [
   SpendableNoteRecord.fromJson({
     noteCommitment: {

@@ -16,8 +16,8 @@ import {
 } from '@penumbra-zone/types';
 import {
   authorize,
-  build_parallel as buildTxParallel,
   build_action as buildAction,
+  build_parallel as buildTxParallel,
   witness as wasmWitness,
 } from '@penumbra-zone/wasm-bundler';
 

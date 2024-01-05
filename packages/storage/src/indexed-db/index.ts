@@ -10,11 +10,11 @@ import {
   uint8ArrayToBase64,
 } from '@penumbra-zone/types';
 import { IbdUpdater, IbdUpdates } from './updater';
+import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import {
-  FmdParameters,
-  NoteSource,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
-import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+  CommitmentSource_Transaction,
+  Nullifier,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import {
   SpendableNoteRecord,
   SwapRecord,
@@ -166,8 +166,8 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({ table: 'TRANSACTIONS', value: tx });
   }
 
-  async getTransaction(source: NoteSource): Promise<TransactionInfo | undefined> {
-    return this.db.get('TRANSACTIONS', source.inner);
+  async getTransaction(cs: CommitmentSource_Transaction): Promise<TransactionInfo | undefined> {
+    return this.db.get('TRANSACTIONS', cs.id);
   }
 
   async getFmdParams(): Promise<FmdParameters | undefined> {
@@ -187,6 +187,24 @@ export class IndexedDb implements IndexedDbInterface {
     for (const storeName of Object.values(this.db.objectStoreNames)) {
       await this.db.clear(storeName);
     }
+  }
+
+  async getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined> {
+    const key = uint8ArrayToBase64(nullifier.inner);
+    const json = await this.db.getFromIndex('SWAPS', 'nullifier', key);
+    if (!json) return undefined;
+    return SwapRecord.fromJson(json);
+  }
+
+  async saveSwap(swap: SwapRecord) {
+    await this.u.update({ table: 'SWAPS', value: swap.toJson() });
+  }
+
+  async getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined> {
+    const key = uint8ArrayToBase64(commitment.inner);
+    const json = await this.db.get('SWAPS', key);
+    if (!json) return undefined;
+    return SwapRecord.fromJson(json);
   }
 
   private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanResult['sctUpdates']): void {
@@ -227,24 +245,6 @@ export class IndexedDb implements IndexedDbInterface {
     for (const n of swaps) {
       txs.add({ table: 'SWAPS', value: n.toJson() });
     }
-  }
-
-  async getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined> {
-    const key = uint8ArrayToBase64(nullifier.inner);
-    const json = await this.db.getFromIndex('SWAPS', 'nullifier', key);
-    if (!json) return undefined;
-    return SwapRecord.fromJson(json);
-  }
-
-  async saveSwap(swap: SwapRecord) {
-    await this.u.update({ table: 'SWAPS', value: swap.toJson() });
-  }
-
-  async getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined> {
-    const key = uint8ArrayToBase64(commitment.inner);
-    const json = await this.db.get('SWAPS', key);
-    if (!json) return undefined;
-    return SwapRecord.fromJson(json);
   }
 
   async getGasPrices(): Promise<GasPrices | undefined> {

@@ -21,8 +21,8 @@ export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
           label='Fee'
           visibleContent={
             <div className='font-mono'>
-              {/*TODO: fix. (1) why isn't fee in txparams? (2) why isn't there a ValueView in the txv?*/}
-              {fromBaseUnitAmount(txv.bodyView.fee!.amount!, 1).toFormat()} upenumbra
+              {fromBaseUnitAmount(txv.bodyView.transactionParameters!.fee!.amount!, 1).toFormat()}{' '}
+              upenumbra
             </div>
           }
         />
