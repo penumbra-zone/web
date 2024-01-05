@@ -49,7 +49,7 @@ export const AddressViewComponent = ({
         <CopyToClipboard
           text={encoded}
           label={
-            <div>
+            <div data-testid='AddressView__CopyIcon'>
               <CopyIcon className='h-4 w-4 text-muted-foreground hover:opacity-50' />
             </div>
           }
