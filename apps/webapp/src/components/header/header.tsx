@@ -1,12 +1,18 @@
-import { Navbar } from './navbar';
-import { Link, useLoaderData } from 'react-router-dom';
-import { PagePath } from '../metadata/paths.ts';
-import Notifications from './notifications.tsx';
-import { TabletNavMenu } from './tablet-nav-menu.tsx';
 import { LayoutLoaderResult } from '../layout.tsx';
-import { NetworksPopover } from '@penumbra-zone/ui';
+import { Link, useLoaderData } from 'react-router-dom';
 import { MessageWarningIcon } from '../../icons/message-warning.tsx';
 import { MobileNavMenu } from './mobile-nav-menu.tsx';
+import { Navbar } from './navbar';
+import {
+  NetworksPopover,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@penumbra-zone/ui';
+import Notifications from './notifications.tsx';
+import { PagePath } from '../metadata/paths.ts';
+import { TabletNavMenu } from './tablet-nav-menu.tsx';
 
 const WEB_EXT_FEEDBACK_DISCORD_CHANNEL =
   'https://discord.com/channels/824484045370818580/1077672871251415141';
@@ -38,14 +44,21 @@ export const Header = () => {
         <TabletNavMenu />
 
         <div className='order-3 flex items-center justify-center md:order-none'>
-          <a
-            href={WEB_EXT_FEEDBACK_DISCORD_CHANNEL}
-            target='_blank'
-            rel='noreferrer'
-            aria-label='Send feedback via our Discord channel'
-          >
-            <MessageWarningIcon />
-          </a>
+          <TooltipProvider>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger>
+                <a
+                  href={WEB_EXT_FEEDBACK_DISCORD_CHANNEL}
+                  target='_blank'
+                  rel='noreferrer'
+                  aria-label='Send feedback via our Discord channel'
+                >
+                  <MessageWarningIcon />
+                </a>
+              </TooltipTrigger>
+              <TooltipContent>Send feedback via our Discord channel</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         {result.isInstalled ? (
