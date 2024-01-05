@@ -11,16 +11,6 @@ import {
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
 import { WitnessAndBuildRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
-// this interface requires awareness of extension internals, and should be refactored
-export interface OffscreenCtx {
-  buildAction: (
-    arg: WitnessAndBuildRequest,
-    witness: WitnessData,
-    fullViewingKey: string,
-  ) => Promise<Action[]>;
-}
-export const offscreenCtx = createContextKey({} as OffscreenCtx);
-
 // these context values provide broad access to storage, to maintain existing
 // impl. they are too tightly coupled to our extension and should be refactored
 export const servicesCtx = createContextKey({} as ServicesInterface);
@@ -31,6 +21,13 @@ export const extSessionCtx = createContextKey({} as ExtensionStorage<SessionStor
 export type AssertWalletIdFn = (walletId?: WalletId) => Promise<void>;
 export type GetTxApprovalFn = (authReq: AuthorizeRequest) => Promise<void>;
 
+export type BuildActionFn = (
+  arg: WitnessAndBuildRequest,
+  witness: WitnessData,
+  fullViewingKey: string,
+) => Promise<Action[]>;
+
 // init ctx with safe defaults, and require adapter to provide a working value
+export const buildActionCtx = createContextKey<BuildActionFn>(() => Promise.reject());
 export const assertWalletIdCtx = createContextKey<AssertWalletIdFn>(() => Promise.reject());
 export const getTxApprovalCtx = createContextKey<GetTxApprovalFn>(() => Promise.reject());

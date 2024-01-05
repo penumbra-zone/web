@@ -12,8 +12,8 @@ import {
   WasmAuthorizeSchema,
   WasmBuildSchema,
   WasmWitnessDataSchema,
+  Jsonified,
 } from '@penumbra-zone/types';
-import { Jsonified } from '@penumbra-zone/types/src/internal-msg/shared';
 import {
   authorize,
   build_parallel as buildTxParallel,

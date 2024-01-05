@@ -5,8 +5,8 @@ import {
   ActionBuildRequest,
   WasmBuildActionInput,
   isActionBuildRequest,
-} from '@penumbra-zone/types/src/internal-msg/offscreen';
-import { Jsonified } from '@penumbra-zone/types/src/internal-msg/shared';
+} from './control/offscreen';
+import type { Jsonified } from '@penumbra-zone/types';
 
 export const isOffscreenRequest = (req: unknown): req is OffscreenRequest =>
   req != null &&

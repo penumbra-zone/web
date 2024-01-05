@@ -20,3 +20,4 @@ export * from './querier';
 export * from './amount';
 export * from './chain';
 export * from './account';
+export * from './jsonified';

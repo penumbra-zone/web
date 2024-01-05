@@ -4,6 +4,7 @@ import { TendermintQuerier } from '@penumbra-zone/query';
 import { PopupLoaderData } from '../routes/popup/home';
 import { useStore } from '../state';
 import { networkSelector } from '../state/network';
+import { blockCacheControl } from '../control/services';
 
 // There is a slight delay with Zustand loading up the last block synced.
 // To prevent the screen flicker, we use a loader to read it from chrome.storage.local.
@@ -21,8 +22,7 @@ export const useSyncProgress = () => {
   useQuery({
     queryKey: ['sync-blocks', grpcEndpoint],
     queryFn: async () => {
-      const syncing: boolean = await chrome.runtime.sendMessage('PENUMBRA_SYNC_BLOCKS');
-      if (!syncing) throw new Error('Failed to sync blocks');
+      await blockCacheControl.syncBlocks();
       return true; // react-query cannot return undefined
     },
   });

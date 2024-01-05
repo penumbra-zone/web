@@ -7,6 +7,7 @@ import { ShareGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { networkSelector } from '../../../state/network';
+import { blockCacheControl } from '../../../control/services';
 
 export const SettingsRPC = () => {
   const { chainId, refetch } = useChainId();
@@ -23,8 +24,7 @@ export const SettingsRPC = () => {
       try {
         await querier.chainParams();
         await setGRPCEndpoint(rpc);
-        const cleared: boolean = await chrome.runtime.sendMessage('PENUMBRA_CLEAR_CACHE');
-        if (!cleared) throw new Error('Failed to clear cache');
+        await blockCacheControl.clearCache();
         await refetch();
         setRpcError(false);
       } catch {

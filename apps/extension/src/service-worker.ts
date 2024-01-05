@@ -11,6 +11,7 @@
 import { Services } from '@penumbra-zone/services';
 import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
 
+import { servicesControlHandler } from './control/services';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 
 import {
@@ -21,10 +22,10 @@ import {
   extSessionCtx,
   assertWalletIdCtx,
   getTxApprovalCtx,
-  offscreenCtx,
+  buildActionCtx,
 } from '@penumbra-zone/router';
 
-import { getTxApproval, assertWalletId, offscreen } from './ctx';
+import { getTxApproval, assertWalletId, buildAction } from './ctx';
 
 import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/background-connection-manager';
 import { createProxyImpl } from '@penumbra-zone/transport/src/proxy';
@@ -56,28 +57,10 @@ const servicesConfig = {
     return { walletId: id, fullViewingKey };
   },
 };
+
 const services = new Services(servicesConfig);
 await services.initialize();
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (sender.id !== chrome.runtime.id) return; // unhandled
-  switch (message) {
-    case 'PENUMBRA_CLEAR_CACHE':
-      void services.clearCache().then(
-        () => sendResponse(true),
-        () => sendResponse(false),
-      );
-      return true; // async handler
-    case 'PENUMBRA_SYNC_BLOCKS':
-      void services.tryToSync().then(
-        () => sendResponse(true),
-        () => sendResponse(false),
-      );
-      return true; // async handler
-    default:
-      return; // unhandled
-  }
-});
+chrome.runtime.onMessage.addListener(servicesControlHandler(services));
 
 // this is a service proxy
 const ibcImpl = createProxyImpl(
@@ -135,8 +118,9 @@ const chromeRuntimeHandler = connectChromeRuntimeAdapter({
     contextValues.set(assertWalletIdCtx, assertWalletId);
     contextValues.set(getTxApprovalCtx, getTxApproval);
 
+    contextValues.set(buildActionCtx, buildAction);
+
     // these are tightly coupled to our extension impl, and should be refactored
-    contextValues.set(offscreenCtx, offscreen);
     contextValues.set(servicesCtx, services);
     contextValues.set(extLocalCtx, localExtStorage);
     contextValues.set(extSessionCtx, sessionExtStorage);

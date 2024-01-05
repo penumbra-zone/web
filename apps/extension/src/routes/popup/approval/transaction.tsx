@@ -22,7 +22,7 @@ export const TransactionApproval = () => {
           size='lg'
           variant='default'
           onClick={() => {
-            responder({ type: 'TX-APPROVAL', data: true });
+            responder({ type: 'TX_APPROVAL', data: true });
             window.close();
           }}
         >
@@ -32,7 +32,7 @@ export const TransactionApproval = () => {
           size='lg'
           variant='destructive'
           onClick={() => {
-            responder({ type: 'TX-APPROVAL', data: false });
+            responder({ type: 'TX_APPROVAL', data: false });
             window.close();
           }}
         >

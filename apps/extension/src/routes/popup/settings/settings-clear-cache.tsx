@@ -4,6 +4,7 @@ import { SettingsHeader } from '../../../shared';
 import { TrashGradientIcon } from '../../../icons';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
+import { blockCacheControl } from '../../../control/services';
 
 export const SettingsClearCache = () => {
   const navigate = usePopupNav();
@@ -31,8 +32,7 @@ export const SettingsClearCache = () => {
             className='w-full'
             onClick={() => {
               void (async () => {
-                const cleared: boolean = await chrome.runtime.sendMessage('PENUMBRA_CLEAR_CACHE');
-                if (!cleared) throw new Error('Failed to clear cache');
+                await blockCacheControl.clearCache();
                 navigate(PopupPath.INDEX);
               })();
             }}

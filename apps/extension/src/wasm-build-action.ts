@@ -3,8 +3,8 @@ import {
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import type { WasmBuildActionInput } from '@penumbra-zone/types/src/internal-msg/offscreen';
-import { Jsonified } from '@penumbra-zone/types/src/internal-msg/shared';
+import type { WasmBuildActionInput } from './control/offscreen';
+import { Jsonified } from '@penumbra-zone/types';
 
 const workerListener = ({ data }: { data: WasmBuildActionInput }) => {
   const {
