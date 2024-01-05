@@ -1,17 +1,29 @@
-import { Navbar } from './navbar';
-import { Link, useLoaderData } from 'react-router-dom';
-import { PagePath } from '../metadata/paths.ts';
-import Notifications from './notifications.tsx';
-import { TabletNavMenu } from './tablet-nav-menu.tsx';
 import { LayoutLoaderResult } from '../layout.tsx';
-import { NetworksPopover } from '@penumbra-zone/ui';
+import { Link, useLoaderData } from 'react-router-dom';
+import { MessageWarningIcon } from '../../icons/message-warning.tsx';
 import { MobileNavMenu } from './mobile-nav-menu.tsx';
+import { Navbar } from './navbar';
+import {
+  NetworksPopover,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@penumbra-zone/ui';
+import Notifications from './notifications.tsx';
+import { PagePath } from '../metadata/paths.ts';
+import { TabletNavMenu } from './tablet-nav-menu.tsx';
+
+// Infinite-expiry invite link to the #web-ext-feedback channel. Provided by
+// Henry (@hdevalence) and thus tied to his Discord account, so reach out to him
+// if there are any problems with this link.
+const WEB_EXT_FEEDBACK_DISCORD_CHANNEL = 'https://discord.gg/XDNcrhKVwV';
 
 export const Header = () => {
   const result = useLoaderData() as LayoutLoaderResult;
 
   return (
-    <header className='z-10 flex w-full flex-col items-center justify-between px-6 md:h-[82px] md:flex-row md:px-12'>
+    <header className='z-10 flex w-full flex-col items-center justify-between px-6 md:h-[82px] md:flex-row md:gap-12 md:px-12'>
       <div className='mb-[30px] md:mb-0'>
         <img
           src='/penumbra-logo.svg'
@@ -27,18 +39,36 @@ export const Header = () => {
         </Link>
       </div>
       <Navbar />
-      <div className='flex w-full items-center justify-between md:w-auto md:gap-6 xl:gap-4'>
+      <div className='flex w-full items-center justify-between gap-4 md:w-auto md:gap-6 xl:gap-4'>
         <div className='order-1 block md:hidden'>
           <MobileNavMenu />
         </div>
         <TabletNavMenu />
+
+        <div className='order-3 flex items-center justify-center md:order-none'>
+          <TooltipProvider>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger>
+                <a
+                  href={WEB_EXT_FEEDBACK_DISCORD_CHANNEL}
+                  target='_blank'
+                  rel='noreferrer'
+                  aria-label='Send feedback via our Discord channel'
+                >
+                  <MessageWarningIcon />
+                </a>
+              </TooltipTrigger>
+              <TooltipContent>Send feedback via our Discord channel</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
 
         {result.isInstalled ? (
           <>
             <div className='order-3 flex items-center justify-center md:order-none'>
               <Notifications />
             </div>
-            <div className='order-2 md:order-none'>
+            <div className='order-2 flex grow justify-center md:order-none'>
               <NetworksPopover name={result.chainId} />
             </div>
           </>
