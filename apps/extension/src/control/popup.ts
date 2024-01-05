@@ -1,5 +1,5 @@
 import { JsonValue } from '@bufbuild/protobuf';
-import { InternalMessage, InternalRequest, InternalResponse } from './internal-message';
+import { InternalMessage, InternalRequest, InternalResponse, PopupMsg } from './internal-message';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
 
 import { useStore } from '../state';
@@ -7,10 +7,14 @@ import { useStore } from '../state';
 export type TxApprovalResponder = (res: InternalResponse<PopupTxApproval>) => void;
 
 type PopupMessage = PopupTxApproval;
-type PopupTxApproval = InternalMessage<'TX_APPROVAL', JsonValue, boolean>;
+type PopupTxApproval = InternalMessage<PopupMsg.TransactionApproval, JsonValue, boolean>;
 
 export const isPopupRequest = (req: unknown): req is InternalRequest<PopupMessage> =>
-  typeof req === 'object' && req != null && 'type' in req && req.type === 'TX_APPROVAL';
+  typeof req === 'object' &&
+  req != null &&
+  'type' in req &&
+  typeof req.type === 'string' &&
+  req.type in PopupMsg;
 
 const sendPopupRequest = async <M extends PopupMessage>(req: InternalRequest<M>): Promise<void> => {
   const res = await chrome.runtime.sendMessage<InternalRequest<M>, InternalResponse<M>>(req);
@@ -45,7 +49,7 @@ export const popupControlHandler: Parameters<typeof chrome.runtime.onMessage.add
   if (sender.id !== chrome.runtime.id) return; // unhandled
   if (!isPopupRequest(message)) return; // unhandled
   switch (message.type) {
-    case 'TX_APPROVAL':
+    case PopupMsg.TransactionApproval:
       useStore.setState(state => {
         // @ts-expect-error Typescript doesn't like JsonValue could possibly be very deep
         state.txApproval.tx = message.request;
@@ -60,7 +64,7 @@ export const popupControl = {
   txApproval: async (req: AuthorizeRequest) =>
     spawnDetachedPopup('popup.html#/approval/tx').then(() =>
       sendPopupRequest<PopupTxApproval>({
-        type: 'TX_APPROVAL',
+        type: PopupMsg.TransactionApproval,
         request: req.toJson(),
       }),
     ),

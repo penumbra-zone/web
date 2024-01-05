@@ -1,17 +1,21 @@
 import { ServicesInterface } from '@penumbra-zone/types/src/services';
-import { InternalMessage, InternalRequest, InternalResponse } from './internal-message';
+import {
+  InternalMessage,
+  InternalRequest,
+  InternalResponse,
+  ServicesMsg,
+} from './internal-message';
 
 type ServicesControlMessage = SyncBlocksMessage | ClearCacheMessage;
-type SyncBlocksMessage = InternalMessage<'SYNC_BLOCKS', undefined, true>;
-type ClearCacheMessage = InternalMessage<'CLEAR_CACHE', undefined, true>;
+type SyncBlocksMessage = InternalMessage<ServicesMsg.SyncBlocks, undefined, true>;
+type ClearCacheMessage = InternalMessage<ServicesMsg.ClearCache, undefined, true>;
 
-const isServicesControlRequest = (
-  message: unknown,
-): message is InternalRequest<ServicesControlMessage> =>
-  typeof message === 'object' &&
-  message !== null &&
-  'type' in message &&
-  (message.type === 'SYNC_BLOCKS' || message.type === 'CLEAR_CACHE');
+const isServicesControlRequest = (req: unknown): req is InternalRequest<ServicesControlMessage> =>
+  typeof req === 'object' &&
+  req !== null &&
+  'type' in req &&
+  typeof req.type === 'string' &&
+  req.type in ServicesMsg;
 
 const sendServicesControlRequest = async <M extends ServicesControlMessage>(
   message: InternalRequest<M>,
@@ -34,10 +38,10 @@ export const servicesControlHandler =
     const { type } = message;
     let action;
     switch (type) {
-      case 'CLEAR_CACHE':
+      case ServicesMsg.ClearCache:
         action = services.clearCache();
         break;
-      case 'SYNC_BLOCKS':
+      case ServicesMsg.SyncBlocks:
         action = services.tryToSync();
         break;
     }
@@ -49,6 +53,8 @@ export const servicesControlHandler =
   };
 
 export const blockCacheControl = {
-  syncBlocks: () => sendServicesControlRequest({ type: 'SYNC_BLOCKS', request: undefined }),
-  clearCache: () => sendServicesControlRequest({ type: 'CLEAR_CACHE', request: undefined }),
+  syncBlocks: () =>
+    sendServicesControlRequest({ type: ServicesMsg.SyncBlocks, request: undefined }),
+  clearCache: () =>
+    sendServicesControlRequest({ type: ServicesMsg.ClearCache, request: undefined }),
 };

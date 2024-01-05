@@ -3,13 +3,14 @@ import type { JsonObject, JsonValue } from '@bufbuild/protobuf';
 import { OffscreenRequest, ActionBuildRequest, isActionBuildRequest } from './control/offscreen';
 import type { WasmBuildActionInput } from './control/worker';
 import type { Jsonified } from '@penumbra-zone/types';
+import { OffscreenMsg } from './control/internal-message';
 
 export const isOffscreenRequest = (req: unknown): req is OffscreenRequest =>
   req != null &&
   typeof req === 'object' &&
   'type' in req &&
   typeof req.type === 'string' &&
-  req.type === 'BUILD_ACTION';
+  req.type in OffscreenMsg;
 
 export const offscreenMessageHandler = (
   req: unknown,

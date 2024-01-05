@@ -2,6 +2,7 @@ import { Button } from '@penumbra-zone/ui';
 import { useStore } from '../../../state';
 import { TxApprovalSelector } from '../../../state/tx-approval';
 import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
+import { PopupMsg } from '../../../control/internal-message';
 
 export const TransactionApproval = () => {
   const { tx, responder } = useStore(TxApprovalSelector);
@@ -22,7 +23,7 @@ export const TransactionApproval = () => {
           size='lg'
           variant='default'
           onClick={() => {
-            responder({ type: 'TX_APPROVAL', data: true });
+            responder({ type: PopupMsg.TransactionApproval, data: true });
             window.close();
           }}
         >
@@ -32,7 +33,7 @@ export const TransactionApproval = () => {
           size='lg'
           variant='destructive'
           onClick={() => {
-            responder({ type: 'TX_APPROVAL', data: false });
+            responder({ type: PopupMsg.TransactionApproval, data: false });
             window.close();
           }}
         >
