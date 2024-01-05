@@ -8,6 +8,9 @@ import { NetworksPopover } from '@penumbra-zone/ui';
 import { MessageWarningIcon } from '../../icons/message-warning.tsx';
 import { MobileNavMenu } from './mobile-nav-menu.tsx';
 
+const WEB_EXT_FEEDBACK_DISCORD_CHANNEL =
+  'https://discord.com/channels/824484045370818580/1077672871251415141';
+
 export const Header = () => {
   const result = useLoaderData() as LayoutLoaderResult;
 
@@ -35,7 +38,14 @@ export const Header = () => {
         <TabletNavMenu />
 
         <div className='order-3 flex items-center justify-center md:order-none'>
-          <MessageWarningIcon />
+          <a
+            href={WEB_EXT_FEEDBACK_DISCORD_CHANNEL}
+            target='_blank'
+            rel='noreferrer'
+            aria-label='Send feedback via our Discord channel'
+          >
+            <MessageWarningIcon />
+          </a>
         </div>
 
         {result.isInstalled ? (
