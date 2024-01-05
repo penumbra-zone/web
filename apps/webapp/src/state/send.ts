@@ -145,9 +145,10 @@ export const sendValidationErrors = (
   return {
     recipientErr: Boolean(recipient) && !isPenumbraAddr(recipient),
     amountErr: !asset ? false : validateAmount(asset, amount),
-    // The memo plus 'from' address cannot exceed 512 bytes
-    // 369 bytes for the address, 143 bytes for the memo
-    memoErr: new TextEncoder().encode(memo).length > 512 - BECH32_ADDRESS_LENGTH,
+    // The memo cannot exceed 512 bytes
+    // return address uses 80 bytes
+    // so 512-80=432 bytes for memo text
+    memoErr: new TextEncoder().encode(memo).length > 432,
   };
 };
 
