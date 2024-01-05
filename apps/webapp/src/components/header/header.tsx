@@ -14,8 +14,9 @@ import Notifications from './notifications.tsx';
 import { PagePath } from '../metadata/paths.ts';
 import { TabletNavMenu } from './tablet-nav-menu.tsx';
 
-// Infinite-expiry invite link, provided by Henry, to the #web-ext-feedback
-// channel.
+// Infinite-expiry invite link to the #web-ext-feedback channel. Provided by
+// Henry (@hdevalence) and thus tied to his Discord account, so reach out to him
+// if there are any problems with this link.
 const WEB_EXT_FEEDBACK_DISCORD_CHANNEL = 'https://discord.gg/XDNcrhKVwV';
 
 export const Header = () => {
