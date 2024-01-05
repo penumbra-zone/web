@@ -5,6 +5,7 @@ import Notifications from './notifications.tsx';
 import { TabletNavMenu } from './tablet-nav-menu.tsx';
 import { LayoutLoaderResult } from '../layout.tsx';
 import { NetworksPopover } from '@penumbra-zone/ui';
+import { MessageWarningIcon } from '../../icons/message-warning.tsx';
 import { MobileNavMenu } from './mobile-nav-menu.tsx';
 
 export const Header = () => {
@@ -27,18 +28,22 @@ export const Header = () => {
         </Link>
       </div>
       <Navbar />
-      <div className='flex w-full items-center justify-between md:w-auto md:gap-6 xl:gap-4'>
+      <div className='flex w-full items-center justify-between gap-4 md:w-auto md:gap-6 xl:gap-4'>
         <div className='order-1 block md:hidden'>
           <MobileNavMenu />
         </div>
         <TabletNavMenu />
+
+        <div className='order-3 flex items-center justify-center md:order-none'>
+          <MessageWarningIcon />
+        </div>
 
         {result.isInstalled ? (
           <>
             <div className='order-3 flex items-center justify-center md:order-none'>
               <Notifications />
             </div>
-            <div className='order-2 md:order-none'>
+            <div className='order-2 flex grow justify-center md:order-none'>
               <NetworksPopover name={result.chainId} />
             </div>
           </>
