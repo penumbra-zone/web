@@ -14,8 +14,9 @@ import Notifications from './notifications.tsx';
 import { PagePath } from '../metadata/paths.ts';
 import { TabletNavMenu } from './tablet-nav-menu.tsx';
 
-const WEB_EXT_FEEDBACK_DISCORD_CHANNEL =
-  'https://discord.com/channels/824484045370818580/1077672871251415141';
+// Infinite-expiry invite link, provided by Henry, to the #web-ext-feedback
+// channel.
+const WEB_EXT_FEEDBACK_DISCORD_CHANNEL = 'https://discord.gg/XDNcrhKVwV';
 
 export const Header = () => {
   const result = useLoaderData() as LayoutLoaderResult;
