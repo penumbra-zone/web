@@ -157,7 +157,7 @@ const planWitnessBuildBroadcast = async (plannerReq: TransactionPlannerRequest) 
   const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
   if (!id) throw new Error('no id in broadcast response');
 
-  return uint8ArrayToHex(id.hash);
+  return uint8ArrayToHex(id.inner);
 };
 
 export const ibcSelector = (state: AllSlices) => state.ibc;

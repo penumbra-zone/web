@@ -7,9 +7,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^1.5.1",
-    "@connectrpc/connect": "^1.1.4",
-    "@connectrpc/connect-web": "^1.1.4",
+    "@bufbuild/protobuf": "^1.6.0",
+    "@connectrpc/connect": "^1.2.1",
+    "@connectrpc/connect-web": "^1.2.1",
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/query": "workspace:*",
@@ -20,12 +20,12 @@
     "@penumbra-zone/wasm-ts": "workspace:*"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.254",
-    "eslint": "^8.55.0",
+    "@types/chrome": "0.0.256",
+    "eslint": "^8.56.0",
     "eslint-config-custom": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "^5.3.3",
-    "vite": "^5.0.3",
+    "vite": "^5.0.11",
     "vitest": "^0.34.6"
   }
 }

@@ -62,14 +62,14 @@ export const ActionViewComponent = ({ av: { actionView } }: { av: ActionView }) 
     case 'positionRewardClaim':
       return <ViewBox label='Position Reward Claim' />;
 
-    case 'daoSpend':
-      return <ViewBox label='DAO Spend' />;
+    case 'communityPoolSpend':
+      return <ViewBox label='Community Spend' />;
 
-    case 'daoOutput':
-      return <ViewBox label='DAO Output' />;
+    case 'communityPoolOutput':
+      return <ViewBox label='Community Output' />;
 
-    case 'daoDeposit':
-      return <ViewBox label='DAO Deposit' />;
+    case 'communityPoolDeposit':
+      return <ViewBox label='Community Deposit' />;
 
     default:
       return <ViewBox label={String(actionView.case)} />;
