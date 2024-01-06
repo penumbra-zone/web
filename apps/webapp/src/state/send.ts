@@ -15,7 +15,6 @@ import { Selection } from './types';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { viewClient, custodyClient } from '../clients/grpc';
 import { getAddressByIndex } from '../fetchers/address.ts';
-import { BECH32_ADDRESS_LENGTH } from '@penumbra-zone/types';
 
 export interface SendSlice {
   selection: Selection | undefined;
@@ -145,9 +144,10 @@ export const sendValidationErrors = (
   return {
     recipientErr: Boolean(recipient) && !isPenumbraAddr(recipient),
     amountErr: !asset ? false : validateAmount(asset, amount),
-    // The memo plus 'from' address cannot exceed 512 bytes
-    // 369 bytes for the address, 143 bytes for the memo
-    memoErr: new TextEncoder().encode(memo).length > 512 - BECH32_ADDRESS_LENGTH,
+    // The memo cannot exceed 512 bytes
+    // return address uses 80 bytes
+    // so 512-80=432 bytes for memo text
+    memoErr: new TextEncoder().encode(memo).length > 432,
   };
 };
 
