@@ -2,7 +2,12 @@ import { Chain, toBaseUnit, uint8ArrayToHex } from '@penumbra-zone/types';
 import { AllSlices, SliceCreator } from '.';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
+import {
+  errorTxToast,
+  buildingTxToast,
+  successTxToast,
+  broadcastingTxToast,
+} from '../components/shared/toast-content';
 import BigNumber from 'bignumber.js';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
@@ -10,6 +15,7 @@ import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Selection } from './types';
 import { viewClient, custodyClient, ibcClient } from '../clients/grpc';
+import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 export interface IbcSendSlice {
   selection: Selection | undefined;
@@ -56,11 +62,13 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
         state.send.txInProgress = true;
       });
 
-      const { dismiss } = toastFn(loadingTxToast);
+      const { dismiss, update } = toastFn(buildingTxToast);
 
       try {
         const plannerReq = await getPlanRequest(get().ibc);
-        const txHash = await planWitnessBuildBroadcast(plannerReq);
+        const transaction = await planWitnessBuild(plannerReq);
+        update(broadcastingTxToast());
+        const txHash = await broadcast(transaction);
         dismiss();
         toastFn(successTxToast(txHash));
 
@@ -141,7 +149,7 @@ const getPlanRequest = async ({
   });
 };
 
-const planWitnessBuildBroadcast = async (plannerReq: TransactionPlannerRequest) => {
+const planWitnessBuild = async (plannerReq: TransactionPlannerRequest) => {
   const { plan } = await viewClient.transactionPlanner(plannerReq);
   if (!plan) throw new Error('no plan in response');
 
@@ -153,7 +161,10 @@ const planWitnessBuildBroadcast = async (plannerReq: TransactionPlannerRequest) 
     authorizationData,
   });
   if (!transaction) throw new Error('no transaction in response');
+  return transaction;
+};
 
+const broadcast = async (transaction: Transaction): Promise<string> => {
   const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
   if (!id) throw new Error('no id in broadcast response');
 

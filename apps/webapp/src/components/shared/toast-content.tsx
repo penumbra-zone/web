@@ -4,7 +4,7 @@ import { ToastFnProps } from '@penumbra-zone/ui/components/ui/use-toast';
 import { Grid } from 'react-loader-spinner';
 import { Link } from 'react-router-dom';
 
-export const loadingTxToast: ToastFnProps = {
+export const buildingTxToast: ToastFnProps = {
   main: (
     <div className='flex items-center justify-center gap-4'>
       <span>Transaction build in progress</span>
@@ -13,6 +13,20 @@ export const loadingTxToast: ToastFnProps = {
   ),
   duration: Infinity, // Building could potentially take a long time. Expected to be dismissed manually.
 };
+
+export const broadcastingTxToast = (): ToastFnProps => ({
+  main: 'Broadcasting transaction',
+  variant: 'default',
+  //subText: shorten(txHash, 8),
+  action: (
+    <Link to='/dashboard/transactions'>
+      <ToastAction className='border-transparent bg-teal-800' altText='See confirmed transactions'>
+        Pending confirmation...
+      </ToastAction>
+    </Link>
+  ),
+  duration: Infinity, // Broadcasting could potentially take a long time. Expected to be dismissed manually.
+});
 
 export const successTxToast = (txHash: string): ToastFnProps => ({
   main: 'Transaction success 🎉',

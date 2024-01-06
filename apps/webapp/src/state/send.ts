@@ -8,11 +8,19 @@ import {
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import BigNumber from 'bignumber.js';
-import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
+import {
+  errorTxToast,
+  buildingTxToast,
+  successTxToast,
+  broadcastingTxToast,
+} from '../components/shared/toast-content';
 import { AssetBalance } from '../fetchers/balances';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Selection } from './types';
-import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import {
+  Transaction,
+  MemoPlaintext,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { viewClient, custodyClient } from '../clients/grpc';
 import { getAddressByIndex } from '../fetchers/address.ts';
 
@@ -61,10 +69,12 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.txInProgress = true;
       });
 
-      const { dismiss } = toastFn(loadingTxToast);
+      const { dismiss, update } = toastFn(buildingTxToast);
 
       try {
-        const txHash = await planWitnessBuildBroadcast(get().send);
+        const transaction = await planWitnessBuild(get().send);
+        update(broadcastingTxToast());
+        const txHash = await broadcast(transaction);
         dismiss();
         toastFn(successTxToast(txHash));
 
@@ -84,7 +94,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
-const planWitnessBuildBroadcast = async ({ amount, recipient, selection, memo }: SendSlice) => {
+const planWitnessBuild = async ({ amount, recipient, selection, memo }: SendSlice) => {
   if (typeof selection?.accountIndex === 'undefined') throw new Error('no selected account');
   if (!selection.asset) throw new Error('no selected asset');
 
@@ -118,6 +128,10 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, selection, memo }:
   });
   if (!transaction) throw new Error('no transaction in response');
 
+  return transaction;
+};
+
+export const broadcast = async (transaction: Transaction): Promise<string> => {
   const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
   if (!id) throw new Error('no id in broadcast response');
 
