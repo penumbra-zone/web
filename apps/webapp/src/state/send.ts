@@ -15,7 +15,6 @@ import { Selection } from './types';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { viewClient, custodyClient } from '../clients/grpc';
 import { getAddressByIndex } from '../fetchers/address.ts';
-import { BECH32_ADDRESS_LENGTH } from '@penumbra-zone/types';
 
 export interface SendSlice {
   selection: Selection | undefined;
