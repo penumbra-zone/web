@@ -6,6 +6,19 @@ import {
 import type { WasmBuildActionInput } from '@penumbra-zone/types/src/internal-msg/offscreen';
 import { Jsonified } from '@penumbra-zone/types/src/internal-msg/shared';
 
+// necessary to propagate errors that occur in promises
+// see: https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
+self.addEventListener(
+  'unhandledrejection',
+  event => {
+    // the event object has two special properties:
+    // event.promise - the promise that generated the error
+    // event.reason  - the unhandled error object
+    throw event.reason;
+  },
+  { once: true },
+);
+
 const workerListener = ({ data }: { data: WasmBuildActionInput }) => {
   const {
     transactionPlan: transactionPlanJson,
@@ -23,7 +36,7 @@ const workerListener = ({ data }: { data: WasmBuildActionInput }) => {
   );
 };
 
-self.addEventListener('message', workerListener);
+self.addEventListener('message', workerListener, { once: true });
 
 async function executeWorker(
   transactionPlan: TransactionPlan,

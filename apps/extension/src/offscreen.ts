@@ -27,7 +27,10 @@ export const offscreenMessageHandler = (
       const response = Promise.all(buildActionHandler(request));
       const res = await response
         .then(data => ({ type, data }))
-        .catch(e => ({ type, error: String(e) }));
+        .catch((e: Error) => ({
+          type,
+          error: `Offscreen: ${e.message}`,
+        }));
       sendResponse(res);
     })();
   }
@@ -56,20 +59,18 @@ const spawnWorker = (
 
     const onWorkerMessage = (e: MessageEvent) => {
       resolve(e.data as Jsonified<Action>);
-      worker.removeEventListener('message', onWorkerMessage);
-      worker.removeEventListener('message', onWorkerError);
+      worker.removeEventListener('error', onWorkerError);
       worker.terminate();
     };
 
-    const onWorkerError = (error: unknown) => {
-      reject(error);
+    const onWorkerError = (error: ErrorEvent) => {
+      reject(new Error(`${error.filename}:${error.lineno} ${error.message}`));
       worker.removeEventListener('message', onWorkerMessage);
-      worker.removeEventListener('message', onWorkerError);
       worker.terminate();
     };
 
-    worker.addEventListener('message', onWorkerMessage);
-    worker.addEventListener('error', onWorkerError);
+    worker.addEventListener('message', onWorkerMessage, { once: true });
+    worker.addEventListener('error', onWorkerError, { once: true });
 
     // Send data to web worker
     worker.postMessage({
