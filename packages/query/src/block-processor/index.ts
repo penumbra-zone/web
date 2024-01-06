@@ -15,8 +15,11 @@ import {
 import { RootQuerier } from '../root-querier';
 import { generateMetadata } from './metadata';
 import { Transactions } from './transactions';
-import { decodeSctRoot, decodeTx, transactionInfo } from '@penumbra-zone/wasm-ts';
-import { Id } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { decodeSctRoot, transactionInfo } from '@penumbra-zone/wasm-ts';
+import {
+  Id,
+  Transaction,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -173,7 +176,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     if (!txResponse) return undefined;
 
-    const tx = decodeTx(txResponse.tx);
+    const tx = Transaction.fromBinary(txResponse.tx);
     const { txp, txv } = await transactionInfo(this.fullViewingKey, tx, this.indexedDb.constants());
 
     return new TransactionInfo({
