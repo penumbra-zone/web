@@ -17,7 +17,7 @@ export * from './address';
 export * from './services';
 export * from './block-processor';
 export * from './querier';
-export * from './std-route';
 export * from './amount';
 export * from './chain';
 export * from './account';
+export * from './jsonified';

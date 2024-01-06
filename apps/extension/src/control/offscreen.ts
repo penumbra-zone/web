@@ -1,16 +1,48 @@
+import { Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import {
+  InternalMessage,
+  InternalRequest,
+  InternalResponse,
+  OffscreenMsg,
+} from './internal-message';
+import { JsonObject, JsonValue } from '@bufbuild/protobuf';
 import { WitnessAndBuildRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import {
-  WitnessData,
-  Action,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { InternalRequest, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
-import {
-  ActionBuildMessage,
-  ActionBuildRequest,
-  OffscreenMessage,
-} from '@penumbra-zone/types/src/internal-msg/offscreen';
+import { WitnessData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
+
+export type ActionBuildMessage = InternalMessage<
+  OffscreenMsg.BuildAction,
+  ActionBuildRequest,
+  ActionBuildResponse
+>;
+
+export type OffscreenMessage = ActionBuildMessage;
+export type OffscreenRequest = InternalRequest<OffscreenMessage>;
+
+export interface ActionBuildRequest {
+  transactionPlan: JsonObject & { actions: JsonValue[] };
+  witness: JsonObject;
+  fullViewingKey: string;
+}
+export type ActionBuildResponse = ActionJsonValue<ActionCase>[];
+
+type ActionCase = NonNullable<Action['action']['case']>;
+type ActionJsonValue<C extends ActionCase> = Record<C, JsonValue>;
+
+const hasActionPlanJsonArray = (x: JsonValue): x is JsonObject & { actions: JsonValue[] } =>
+  x != null && typeof x === 'object' && 'actions' in x && Array.isArray(x['actions']);
+
+export const isActionBuildRequest = (req: unknown): req is ActionBuildRequest =>
+  req != null &&
+  typeof req === 'object' &&
+  'transactionPlan' in req &&
+  hasActionPlanJsonArray(req.transactionPlan as JsonObject) &&
+  'witness' in req &&
+  typeof req.witness === 'object' &&
+  req.witness != null &&
+  'fullViewingKey' in req &&
+  typeof req.fullViewingKey === 'string';
 
 interface ContextsRequest {
   contextTypes: string[];
@@ -67,7 +99,7 @@ const buildAction = async (
   fullViewingKey: string,
 ): Promise<Action[]> => {
   const buildRes = await sendOffscreenMessage<ActionBuildMessage>({
-    type: 'BUILD_ACTION',
+    type: OffscreenMsg.BuildAction,
     request: {
       transactionPlan: arg.transactionPlan!.toJson() as ActionBuildRequest['transactionPlan'],
       witness: witness.toJson() as ActionBuildRequest['witness'],
@@ -79,4 +111,4 @@ const buildAction = async (
   return buildRes.data.map(a => Action.fromJson(a));
 };
 
-export const offscreenClient = { buildAction };
+export const offscreenControl = { buildAction };

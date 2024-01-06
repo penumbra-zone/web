@@ -2,9 +2,9 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { Button, FadeTransition } from '@penumbra-zone/ui';
 import { SettingsHeader } from '../../../shared';
 import { TrashGradientIcon } from '../../../icons';
-import { internalSwClient } from '@penumbra-zone/router';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
+import { blockCacheControl } from '../../../control/services';
 
 export const SettingsClearCache = () => {
   const navigate = usePopupNav();
@@ -32,7 +32,7 @@ export const SettingsClearCache = () => {
             className='w-full'
             onClick={() => {
               void (async () => {
-                await internalSwClient.clearCache();
+                await blockCacheControl.clearCache();
                 navigate(PopupPath.INDEX);
               })();
             }}

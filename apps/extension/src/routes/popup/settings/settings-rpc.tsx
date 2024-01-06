@@ -7,7 +7,7 @@ import { ShareGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { networkSelector } from '../../../state/network';
-import { internalSwClient } from '@penumbra-zone/router';
+import { blockCacheControl } from '../../../control/services';
 
 export const SettingsRPC = () => {
   const { chainId, refetch } = useChainId();
@@ -24,7 +24,7 @@ export const SettingsRPC = () => {
       try {
         await querier.chainParams();
         await setGRPCEndpoint(rpc);
-        await internalSwClient.clearCache();
+        await blockCacheControl.clearCache();
         await refetch();
         setRpcError(false);
       } catch {

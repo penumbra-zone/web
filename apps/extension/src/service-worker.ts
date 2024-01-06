@@ -3,20 +3,29 @@
  *
  * It is responsible for initializing:
  * - Services, with endpoint config and a wallet
- * - the stdRouter for legacy requests
  * - the chromeRuntimeAdapter for routing rpc
  * - the background connection manager for rpc entry
  *
- * Popup is controlled by stdClient by spawnDetachedPopup from
- * @penumbra-zone/types.  Offscreen is controlled by offscreenClient available
- * to rpc implementations in @penumbra-zone/router.
  */
 
 import { Services } from '@penumbra-zone/services';
-import { localExtStorage } from '@penumbra-zone/storage';
+import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
 
+import { servicesControlHandler } from './control/services';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
-import { servicesCtx } from '@penumbra-zone/router/src/ctx';
+
+import {
+  custodyImpl,
+  viewImpl,
+  servicesCtx,
+  extLocalCtx,
+  extSessionCtx,
+  assertWalletIdCtx,
+  getTxApprovalCtx,
+  buildActionCtx,
+} from '@penumbra-zone/router';
+
+import { getTxApproval, assertWalletId, buildAction } from './ctx';
 
 import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/background-connection-manager';
 import { createProxyImpl } from '@penumbra-zone/transport/src/proxy';
@@ -36,14 +45,8 @@ import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/cor
 // these are local services we implement
 import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
-import { custodyImpl } from '@penumbra-zone/router/src/grpc/custody';
-import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
 
-// legacy stdRouter
-import { stdRouter } from '@penumbra-zone/router/src/std/router';
-import { isStdRequest } from '@penumbra-zone/types';
-
-// configure and initialize extension services. services are passed directly to stdRouter, and to rpc handlers as context
+// configure and initialize extension services, passed to rpc impls as context
 const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 const servicesConfig = {
   grpcEndpoint,
@@ -54,21 +57,10 @@ const servicesConfig = {
     return { walletId: id, fullViewingKey };
   },
 };
+
 const services = new Services(servicesConfig);
 await services.initialize();
-
-// this only handles stdClient requests
-chrome.runtime.onMessage.addListener(
-  (
-    message: unknown,
-    _: chrome.runtime.MessageSender,
-    sendResponse: (response: unknown) => void,
-  ) => {
-    if (!isStdRequest(message)) return;
-    stdRouter(message, sendResponse, services);
-    return true;
-  },
-);
+chrome.runtime.onMessage.addListener(servicesControlHandler(services));
 
 // this is a service proxy
 const ibcImpl = createProxyImpl(
@@ -122,7 +114,17 @@ const chromeRuntimeHandler = connectChromeRuntimeAdapter({
   // this function is used by the adapter to inject contextValues (currently, just a handle to services)
   createRequestContext: req => {
     const contextValues = req.contextValues ?? createContextValues();
+
+    contextValues.set(assertWalletIdCtx, assertWalletId);
+    contextValues.set(getTxApprovalCtx, getTxApproval);
+
+    contextValues.set(buildActionCtx, buildAction);
+
+    // these are tightly coupled to our extension impl, and should be refactored
     contextValues.set(servicesCtx, services);
+    contextValues.set(extLocalCtx, localExtStorage);
+    contextValues.set(extSessionCtx, sessionExtStorage);
+
     return Promise.resolve({ ...req, contextValues });
   },
 });

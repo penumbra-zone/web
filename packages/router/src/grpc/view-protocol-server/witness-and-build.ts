@@ -1,7 +1,5 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../../ctx';
-
-import { offscreenClient } from '../offscreen-client';
+import { servicesCtx, buildActionCtx } from '../../ctx';
 
 import { buildParallel, witness } from '@penumbra-zone/wasm-ts';
 
@@ -9,6 +7,7 @@ import { ConnectError, Code } from '@connectrpc/connect';
 
 export const witnessAndBuild: Impl['witnessAndBuild'] = async (req, ctx) => {
   const services = ctx.values.get(servicesCtx);
+  const buildAction = ctx.values.get(buildActionCtx);
   if (!req.authorizationData)
     throw new ConnectError('No authorization data in request', Code.InvalidArgument);
   if (!req.transactionPlan) throw new ConnectError('No tx plan in request', Code.InvalidArgument);
@@ -21,7 +20,7 @@ export const witnessAndBuild: Impl['witnessAndBuild'] = async (req, ctx) => {
 
   const witnessData = witness(req.transactionPlan, sct);
 
-  const batchActions = await offscreenClient.buildAction(req, witnessData, fullViewingKey);
+  const batchActions = await buildAction(req, witnessData, fullViewingKey);
 
   const transaction = buildParallel(
     batchActions,
