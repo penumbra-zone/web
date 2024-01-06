@@ -4,7 +4,7 @@ import {
   ParsedNoteSource,
   ViewServerInterface,
 } from '@penumbra-zone/types';
-import { encodeTx, transactionInfo } from '@penumbra-zone/wasm-ts/src/transaction';
+import { transactionInfo } from '@penumbra-zone/wasm-ts/src/transaction';
 import { sha256Hash } from '@penumbra-zone/crypto-web';
 import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
@@ -52,7 +52,7 @@ export class Transactions {
     const { transactions } = await this.querier.txsByHeight(this.blockHeight);
 
     for (const tx of transactions) {
-      const hash = await sha256Hash(encodeTx(tx));
+      const hash = await sha256Hash(tx.toBinary());
       const noteSource = new NoteSource({ inner: hash });
 
       if (noteSourcePresent(this.all, noteSource)) {
