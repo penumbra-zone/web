@@ -1,7 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import { CommitmentSource_Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 
 import { ConnectError, Code } from '@connectrpc/connect';
 
@@ -11,8 +11,8 @@ export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, 
   if (!req.id) throw new ConnectError('Missing transaction ID in request', Code.InvalidArgument);
 
   const txInfo =
-    (await indexedDb.getTransaction(new NoteSource({ inner: req.id.hash }))) ??
-    (await blockProcessor.getTxInfoByHash(req.id.hash));
+    (await indexedDb.getTransaction(new CommitmentSource_Transaction({ id: req.id.inner }))) ??
+    (await blockProcessor.getTxInfoByHash(req.id.inner));
 
   return txInfo ? { txInfo } : {};
 };

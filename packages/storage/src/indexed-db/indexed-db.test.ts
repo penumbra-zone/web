@@ -1,7 +1,5 @@
-import {
-  FmdParameters,
-  NoteSource,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import { CommitmentSource_Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import {
   SpendableNoteRecord,
   TransactionInfo,
@@ -255,7 +253,7 @@ describe('IndexedDb', () => {
       await db.saveTransactionInfo(transactionInfo);
 
       const savedTransaction = await db.getTransaction(
-        new NoteSource({ inner: transactionInfo.id!.hash }),
+        new CommitmentSource_Transaction({ id: transactionInfo.id!.inner }),
       );
 
       expect(transactionInfo.equals(savedTransaction)).toBeTruthy();

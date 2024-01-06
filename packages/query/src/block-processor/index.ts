@@ -16,10 +16,8 @@ import { RootQuerier } from '../root-querier';
 import { generateMetadata } from './metadata';
 import { Transactions } from './transactions';
 import { decodeSctRoot, transactionInfo } from '@penumbra-zone/wasm-ts';
-import {
-  Id,
-  Transaction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -181,7 +179,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     return new TransactionInfo({
       height: txResponse.height,
-      id: new Id({ hash: hash }),
+      id: new TransactionId({ inner: hash }),
       transaction: tx,
       perspective: txp,
       view: txv,

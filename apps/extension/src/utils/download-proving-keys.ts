@@ -3,8 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { provingKeys } from '@penumbra-zone/types/src/proving-keys';
 
+// TODO: When v0.65.0 launches, change this back to a git tag path
 const githubSourceDir =
-  'https://github.com/penumbra-zone/penumbra/raw/v0.64.1/crates/crypto/proof-params/src/gen/';
+  'https://github.com/penumbra-zone/penumbra/raw/main/crates/crypto/proof-params/src/gen/';
 
 const binaryFilesDir = path.join('dist/js/bin');
 
@@ -17,15 +18,16 @@ const downloadProvingKeys = async () => {
 
   const promises = provingKeys.map(async ({ file }) => {
     const response = await fetch(`${githubSourceDir}${file}`);
-    if (!response.ok) throw new Error(`Failed to fetch ${file}`);
+    if (!response.ok) console.warn(`Failed to fetch ${file}`);
+    else {
+      const buffer = await response.arrayBuffer();
 
-    const buffer = await response.arrayBuffer();
-
-    const outputPath = path.join(binaryFilesDir, file);
-    const fileStream = fs.createWriteStream(outputPath, { flags: 'a' });
-    fileStream.write(Buffer.from(buffer));
-    fileStream.end();
-    console.log(`Proving key ${file} downloaded to ${outputPath}`);
+      const outputPath = path.join(binaryFilesDir, file);
+      const fileStream = fs.createWriteStream(outputPath, { flags: 'a' });
+      fileStream.write(Buffer.from(buffer));
+      fileStream.end();
+      console.log(`Proving key ${file} downloaded to ${outputPath}`);
+    }
   });
 
   await Promise.all(promises);

@@ -121,7 +121,7 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, selection, memo }:
   const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
   if (!id) throw new Error('no id in broadcast response');
 
-  return uint8ArrayToHex(id.hash);
+  return uint8ArrayToHex(id.inner);
 };
 
 export const validateAmount = (asset: AssetBalance, amount: string): boolean => {
