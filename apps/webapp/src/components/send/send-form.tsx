@@ -13,9 +13,7 @@ import { getGasPrices } from '../../fetchers/gas-prices.ts';
 export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
   const [accountBalances, gasPrices] = await Promise.all([getBalancesByAccount(), getGasPrices()]);
 
-  useStore.setState(state => {
-    state.send.gasPrices = gasPrices;
-  });
+  useStore.getState().send.setGasPrices(gasPrices);
 
   if (accountBalances[0]) {
     // set initial account if accounts exist and asset if account has asset list

@@ -28,6 +28,7 @@ export interface SendSlice {
   memo: string;
   setMemo: (txt: string) => void;
   gasPrices: GasPrices | undefined;
+  setGasPrices: (gasPrices: GasPrices | undefined) => void;
   sendTx: (toastFn: typeof toast) => Promise<void>;
   txInProgress: boolean;
 }
@@ -58,6 +59,11 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     setMemo: txt => {
       set(state => {
         state.send.memo = txt;
+      });
+    },
+    setGasPrices: gasPrices => {
+      set(state => {
+        state.send.gasPrices = gasPrices;
       });
     },
     sendTx: async toastFn => {
