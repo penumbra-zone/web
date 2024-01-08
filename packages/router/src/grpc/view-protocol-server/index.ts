@@ -22,10 +22,11 @@ import { transactionPlanner } from './transaction-planner';
 import { unclaimedSwaps } from './unclaimed-swaps';
 import { walletId } from './wallet-id';
 import { witnessAndBuild } from './witness-and-build';
+import { witness } from './witness';
 
 export const viewImpl: Omit<
   Impl,
-  'authorizeAndBuild' | 'gasPrices' | 'notesForVoting' | 'ownedPositionIds' | 'witness'
+  'authorizeAndBuild' | 'gasPrices' | 'notesForVoting' | 'ownedPositionIds'
 > = {
   addressByIndex,
   appParameters,
@@ -47,4 +48,5 @@ export const viewImpl: Omit<
   unclaimedSwaps,
   walletId,
   witnessAndBuild,
+  witness,
 };

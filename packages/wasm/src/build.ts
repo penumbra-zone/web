@@ -26,7 +26,7 @@ export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): Author
   return AuthorizationData.fromJsonString(JSON.stringify(result));
 };
 
-export const witness = (txPlan: TransactionPlan, sct: StateCommitmentTree): WitnessData => {
+export const getWitness = (txPlan: TransactionPlan, sct: StateCommitmentTree): WitnessData => {
   const result = validateSchema(WasmWitnessDataSchema, wasmWitness(txPlan.toJson(), sct));
   return WitnessData.fromJsonString(JSON.stringify(result));
 };
