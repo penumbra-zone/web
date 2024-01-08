@@ -12,9 +12,12 @@ import {
   DenomMetadata,
   Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import { ChainParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
+import {
+  Fee,
+  GasPrices,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import { JsonValue } from '@bufbuild/protobuf';
 import { Ics20Withdrawal } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/ibc/v1alpha1/ibc_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
@@ -64,6 +67,10 @@ export class TxPlanner {
 
   memo(memo: MemoPlaintext): void {
     this.wasmPlanner.memo(memo.toJson());
+  }
+
+  setGasPrices(gasPrices: GasPrices): void {
+    this.wasmPlanner.set_gas_prices(gasPrices.toJson());
   }
 
   fee(fee: Fee): void {

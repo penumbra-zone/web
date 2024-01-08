@@ -1,9 +1,15 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index.ts';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import { sendValidationErrors } from './send.ts';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import { viewClient } from '../clients/grpc.ts';
+import {
+  AddressByIndexResponse,
+  TransactionPlannerResponse,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
 describe('Send Slice', () => {
   const selectionExample = {
@@ -133,6 +139,220 @@ describe('Send Slice', () => {
     test('asset and account can be set', () => {
       useStore.getState().send.setSelection(selectionExample);
       expect(useStore.getState().send.selection).toStrictEqual(selectionExample);
+    });
+  });
+
+  describe('refreshFee', () => {
+    const amount = '1';
+    const recipient =
+      'penumbra1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvxneea442q63sumem7r096p7rd2tywm2v6ppc4';
+    const memo = 'hello'!;
+    const mockFee = new Fee({ amount: { hi: 1n, lo: 2n } });
+
+    beforeEach(() => {
+      vi.spyOn(viewClient, 'addressByIndex').mockResolvedValue(new AddressByIndexResponse());
+
+      vi.spyOn(viewClient, 'transactionPlanner').mockResolvedValue(
+        new TransactionPlannerResponse({ plan: { fee: mockFee } }),
+      );
+    });
+
+    afterEach(() => {
+      vi.spyOn(viewClient, 'transactionPlanner').mockReset();
+    });
+
+    describe('when `fee` is not yet present in the state`', () => {
+      test('sets `fee` to the one found in the transaction planner response', async () => {
+        const prev = useStore.getState();
+        useStore.setState({
+          ...prev,
+          send: {
+            ...prev.send,
+            amount,
+            recipient,
+            selection: selectionExample,
+            memo,
+            fee: undefined,
+          },
+        });
+
+        await useStore.getState().send.refreshFee();
+
+        expect(useStore.getState().send.fee).toBe(mockFee);
+      });
+
+      test('sets `fee` to the one found in the transaction planner response even if `memo` is falsey', async () => {
+        const prev = useStore.getState();
+        useStore.setState({
+          ...prev,
+          send: {
+            ...prev.send,
+            amount,
+            recipient,
+            selection: selectionExample,
+            memo: '',
+            fee: undefined,
+          },
+        });
+
+        await useStore.getState().send.refreshFee();
+
+        expect(useStore.getState().send.fee).toBe(mockFee);
+      });
+
+      test('sets `fee` to `undefined` if `amount` is falsey', async () => {
+        const prev = useStore.getState();
+        useStore.setState({
+          ...prev,
+          send: {
+            ...prev.send,
+            amount: '',
+            recipient,
+            selection: selectionExample,
+            memo,
+            fee: undefined,
+          },
+        });
+
+        await useStore.getState().send.refreshFee();
+
+        expect(useStore.getState().send.fee).toBeUndefined();
+      });
+
+      test('sets `fee` to `undefined` if `recipient` is falsey', async () => {
+        const prev = useStore.getState();
+        useStore.setState({
+          ...prev,
+          send: {
+            ...prev.send,
+            amount,
+            recipient: '',
+            selection: selectionExample,
+            memo,
+            fee: undefined,
+          },
+        });
+
+        await useStore.getState().send.refreshFee();
+
+        expect(useStore.getState().send.fee).toBeUndefined();
+      });
+
+      test('sets `fee` to `undefined` if `selection` is falsey', async () => {
+        const prev = useStore.getState();
+        useStore.setState({
+          ...prev,
+          send: {
+            ...prev.send,
+            amount,
+            recipient,
+            selection: undefined,
+            memo,
+            fee: undefined,
+          },
+        });
+
+        await useStore.getState().send.refreshFee();
+
+        expect(useStore.getState().send.fee).toBeUndefined();
+      });
+    });
+
+    describe('when `fee` is already present in the state`', () => {
+      test('sets `fee` to the one found in the transaction planner response', async () => {
+        const prev = useStore.getState();
+        useStore.setState({
+          ...prev,
+          send: {
+            ...prev.send,
+            amount,
+            recipient,
+            selection: selectionExample,
+            memo,
+            fee: new Fee({ amount: { hi: 0n, lo: 0n } }),
+          },
+        });
+
+        await useStore.getState().send.refreshFee();
+
+        expect(useStore.getState().send.fee).toBe(mockFee);
+      });
+
+      test('sets `fee` to the one found in the transaction planner response even if `memo` is falsey', async () => {
+        const prev = useStore.getState();
+        useStore.setState({
+          ...prev,
+          send: {
+            ...prev.send,
+            amount,
+            recipient,
+            selection: selectionExample,
+            memo: '',
+            fee: new Fee({ amount: { hi: 0n, lo: 0n } }),
+          },
+        });
+
+        await useStore.getState().send.refreshFee();
+
+        expect(useStore.getState().send.fee).toBe(mockFee);
+      });
+
+      test('sets `fee` to `undefined` if `amount` is falsey', async () => {
+        const prev = useStore.getState();
+        useStore.setState({
+          ...prev,
+          send: {
+            ...prev.send,
+            amount: '',
+            recipient,
+            selection: selectionExample,
+            memo,
+            fee: new Fee({ amount: { hi: 0n, lo: 0n } }),
+          },
+        });
+
+        await useStore.getState().send.refreshFee();
+
+        expect(useStore.getState().send.fee).toBeUndefined();
+      });
+
+      test('sets `fee` to `undefined` if `recipient` is falsey', async () => {
+        const prev = useStore.getState();
+        useStore.setState({
+          ...prev,
+          send: {
+            ...prev.send,
+            amount,
+            recipient: '',
+            selection: selectionExample,
+            memo,
+            fee: new Fee({ amount: { hi: 0n, lo: 0n } }),
+          },
+        });
+
+        await useStore.getState().send.refreshFee();
+
+        expect(useStore.getState().send.fee).toBeUndefined();
+      });
+
+      test('sets `fee` to `undefined` if `selection` is falsey', async () => {
+        const prev = useStore.getState();
+        useStore.setState({
+          ...prev,
+          send: {
+            ...prev.send,
+            amount,
+            recipient,
+            selection: undefined,
+            memo,
+            fee: new Fee({ amount: { hi: 0n, lo: 0n } }),
+          },
+        });
+
+        await useStore.getState().send.refreshFee();
+
+        expect(useStore.getState().send.fee).toBeUndefined();
+      });
     });
   });
 });
