@@ -2,8 +2,9 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index.ts';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
-import { sendValidationErrors } from './send.ts';
+import { combinedGasPriceSelector, sendValidationErrors } from './send.ts';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
 describe('Send Slice', () => {
   const selectionExample = {
@@ -133,6 +134,36 @@ describe('Send Slice', () => {
     test('asset and account can be set', () => {
       useStore.getState().send.setSelection(selectionExample);
       expect(useStore.getState().send.selection).toStrictEqual(selectionExample);
+    });
+  });
+
+  describe('combinedGasPriceSelector()', () => {
+    test('returns `undefined` if `gasPrices` is `undefined`', () => {
+      const baseSendState = useStore.getState().send;
+      useStore.setState({ send: { ...baseSendState, gasPrices: undefined } });
+
+      expect(combinedGasPriceSelector(useStore.getState())).toBeUndefined();
+    });
+
+    test("returns the sum of each dimension's price", () => {
+      const baseSendState = useStore.getState().send;
+
+      const gasPrices = new GasPrices({
+        blockSpacePrice: 1n,
+        compactBlockSpacePrice: 2n,
+        executionPrice: 3n,
+        verificationPrice: 4n,
+      });
+
+      const sum =
+        gasPrices.blockSpacePrice +
+        gasPrices.compactBlockSpacePrice +
+        gasPrices.executionPrice +
+        gasPrices.verificationPrice;
+
+      useStore.setState({ send: { ...baseSendState, gasPrices } });
+
+      expect(combinedGasPriceSelector(useStore.getState())).toBe(sum);
     });
   });
 });

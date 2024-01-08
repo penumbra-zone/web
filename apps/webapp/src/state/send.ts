@@ -161,3 +161,14 @@ export const sendValidationErrors = (
 };
 
 export const sendSelector = (state: AllSlices) => state.send;
+
+export const combinedGasPriceSelector = (state: AllSlices) => {
+  if (!state.send.gasPrices) return undefined;
+
+  return (
+    state.send.gasPrices.blockSpacePrice +
+    state.send.gasPrices.compactBlockSpacePrice +
+    state.send.gasPrices.verificationPrice +
+    state.send.gasPrices.executionPrice
+  );
+};
