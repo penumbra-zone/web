@@ -16,6 +16,7 @@ import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { viewClient, custodyClient } from '../clients/grpc';
 import { getAddressByIndex } from '../fetchers/address.ts';
 import { BECH32_ADDRESS_LENGTH } from '@penumbra-zone/types';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
 export interface SendSlice {
   selection: Selection | undefined;
@@ -26,6 +27,7 @@ export interface SendSlice {
   setRecipient: (addr: string) => void;
   memo: string;
   setMemo: (txt: string) => void;
+  gasPrices: GasPrices | undefined;
   sendTx: (toastFn: typeof toast) => Promise<void>;
   txInProgress: boolean;
 }
@@ -36,6 +38,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     amount: '',
     recipient: '',
     memo: '',
+    gasPrices: undefined,
     txInProgress: false,
     setAmount: amount => {
       set(state => {

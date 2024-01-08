@@ -8,22 +8,27 @@ import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances.ts';
 import { useMemo } from 'react';
 import { penumbraAddrValidation } from './helpers.ts';
+import { getGasPrices } from '../../fetchers/gas-prices.ts';
 
 export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
-  const balancesByAccount = await getBalancesByAccount();
+  const [accountBalances, gasPrices] = await Promise.all([getBalancesByAccount(), getGasPrices()]);
 
-  if (balancesByAccount[0]) {
+  useStore.setState(state => {
+    state.send.gasPrices = gasPrices;
+  });
+
+  if (accountBalances[0]) {
     // set initial account if accounts exist and asset if account has asset list
     useStore.setState(state => {
       state.send.selection = {
-        address: balancesByAccount[0]?.address,
-        accountIndex: balancesByAccount[0]?.index,
-        asset: balancesByAccount[0]?.balances[0],
+        address: accountBalances[0]?.address,
+        accountIndex: accountBalances[0]?.index,
+        asset: accountBalances[0]?.balances[0],
       };
     });
   }
 
-  return balancesByAccount;
+  return accountBalances;
 };
 
 export const SendForm = () => {
