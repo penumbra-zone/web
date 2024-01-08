@@ -26,7 +26,7 @@ interface InputTokenProps extends InputProps {
   validations?: Validation[];
   balances: AccountBalance[];
   tempPrice: number;
-  combinedGasPrice: bigint | undefined;
+  totalGasPrice: bigint | undefined;
 }
 
 export default function InputToken({
@@ -40,7 +40,7 @@ export default function InputToken({
   setSelection,
   balances,
   tempPrice,
-  combinedGasPrice,
+  totalGasPrice,
   ...props
 }: InputTokenProps) {
   const vResult = validationResult(value, validations);
@@ -93,8 +93,8 @@ export default function InputToken({
           <div className='flex items-start gap-2'>
             <img src='/fuel.svg' alt='Gas price' className='h-5 w-5' />
             <p className='font-bold text-muted-foreground'>
-              {typeof combinedGasPrice !== 'undefined'
-                ? (Number(combinedGasPrice) / GAS_PRICE_DENOMINATOR).toString()
+              {typeof totalGasPrice !== 'undefined'
+                ? (Number(totalGasPrice) / GAS_PRICE_DENOMINATOR).toString()
                 : ''}
             </p>
           </div>

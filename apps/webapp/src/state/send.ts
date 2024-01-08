@@ -162,7 +162,7 @@ export const sendValidationErrors = (
 
 export const sendSelector = (state: AllSlices) => state.send;
 
-export const combinedGasPriceSelector = (state: AllSlices) => {
+export const totalGasPriceSelector = (state: AllSlices) => {
   if (!state.send.gasPrices) return undefined;
 
   return (
