@@ -44,6 +44,9 @@ export default function InputToken({
   ...props
 }: InputTokenProps) {
   const vResult = validationResult(value, validations);
+  const currentBalance = selection?.asset
+    ? fromBaseUnitAmount(selection.asset.amount, selection.asset.denom.exponent).toFormat()
+    : '0';
 
   return (
     <div
@@ -98,14 +101,7 @@ export default function InputToken({
         </div>
         <div className='flex items-start gap-1'>
           <img src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
-          <p className='font-bold text-muted-foreground'>
-            {selection?.asset
-              ? fromBaseUnitAmount(
-                  selection.asset.amount,
-                  selection.asset.denom.exponent,
-                ).toFormat()
-              : '0'}
-          </p>
+          <p className='font-bold text-muted-foreground'>{currentBalance}</p>
         </div>
       </div>
     </div>
