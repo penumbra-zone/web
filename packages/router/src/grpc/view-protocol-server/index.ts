@@ -9,6 +9,7 @@ import { balances } from './balances';
 import { broadcastTransaction } from './broadcast-transaction';
 import { ephemeralAddress } from './ephemeral-address';
 import { fMDParameters } from './fmd-parameters';
+import { gasPrices } from './gas-prices';
 import { indexByAddress } from './index-by-address';
 import { noteByCommitment } from './note-by-commitment';
 import { notes } from './notes';
@@ -25,7 +26,7 @@ import { witnessAndBuild } from './witness-and-build';
 
 export const viewImpl: Omit<
   Impl,
-  'authorizeAndBuild' | 'gasPrices' | 'notesForVoting' | 'ownedPositionIds' | 'witness'
+  'authorizeAndBuild' | 'notesForVoting' | 'ownedPositionIds' | 'witness'
 > = {
   addressByIndex,
   appParameters,
@@ -34,6 +35,7 @@ export const viewImpl: Omit<
   broadcastTransaction,
   ephemeralAddress,
   fMDParameters,
+  gasPrices,
   indexByAddress,
   noteByCommitment,
   notes,
