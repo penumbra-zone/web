@@ -6,6 +6,15 @@ import { Validation, validationResult } from './validation-result';
 import { AccountBalance } from '../../fetchers/balances';
 import { Selection } from '../../state/types';
 
+/**
+ * Each property of the `GasPrices` class has an implicit 1,000 denominator, per
+ * its docs.
+ *
+ * @see `proto/penumbra/penumbra/core/component/fee/v1alpha1/fee.proto` in the
+ * core repo.
+ */
+const GAS_PRICE_DENOMINATOR = 1000;
+
 interface InputTokenProps extends InputProps {
   label: string;
   selection: Selection | undefined;
@@ -17,6 +26,7 @@ interface InputTokenProps extends InputProps {
   validations?: Validation[];
   balances: AccountBalance[];
   tempPrice: number;
+  combinedGasPrice: bigint | undefined;
 }
 
 export default function InputToken({
@@ -30,6 +40,7 @@ export default function InputToken({
   setSelection,
   balances,
   tempPrice,
+  combinedGasPrice,
   ...props
 }: InputTokenProps) {
   const vResult = validationResult(value, validations);
@@ -67,14 +78,24 @@ export default function InputToken({
       </div>
 
       <div className='mt-[6px] flex items-center justify-between gap-2'>
-        <p
-          className={cn(
-            'break-all md:test-[12px] xl:text-base font-bold text-light-brown',
-            value && 'text-muted-foreground',
-          )}
-        >
-          ${displayAmount(Number(value) * tempPrice)}
-        </p>
+        <div className='flex-col gap-1'>
+          <p
+            className={cn(
+              'break-all md:test-[12px] xl:text-base font-bold text-light-brown',
+              value && 'text-muted-foreground',
+            )}
+          >
+            ${displayAmount(Number(value) * tempPrice)}
+          </p>
+          <div className='flex items-start gap-2'>
+            <img src='/fuel.svg' alt='Gas price' className='h-5 w-5' />
+            <p className='font-bold text-muted-foreground'>
+              {typeof combinedGasPrice !== 'undefined'
+                ? (Number(combinedGasPrice) / GAS_PRICE_DENOMINATOR).toString()
+                : ''}
+            </p>
+          </div>
+        </div>
         <div className='flex items-start gap-1'>
           <img src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
           <p className='font-bold text-muted-foreground'>

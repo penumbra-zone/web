@@ -1,6 +1,6 @@
 import { Button } from '@penumbra-zone/ui';
 import { useStore } from '../../state';
-import { sendSelector, sendValidationErrors } from '../../state/send';
+import { combinedGasPriceSelector, sendSelector, sendValidationErrors } from '../../state/send';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { InputBlock } from '../shared/input-block.tsx';
 import InputToken from '../shared/input-token.tsx';
@@ -44,6 +44,7 @@ export const SendForm = () => {
     sendTx,
     txInProgress,
   } = useStore(sendSelector);
+  const combinedGasPrice = useStore(combinedGasPriceSelector);
 
   const validationErrors = useMemo(() => {
     return sendValidationErrors(selection?.asset, amount, recipient);
@@ -85,6 +86,7 @@ export const SendForm = () => {
           },
         ]}
         balances={accountBalances}
+        combinedGasPrice={combinedGasPrice}
         tempPrice={1}
       />
       <InputBlock
