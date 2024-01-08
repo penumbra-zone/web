@@ -3,7 +3,7 @@ import { servicesCtx } from '../../ctx';
 
 import { offscreenClient } from '../offscreen-client';
 
-import { buildParallel, witness } from '@penumbra-zone/wasm-ts';
+import { buildParallel, getWitness } from '@penumbra-zone/wasm-ts';
 
 import { ConnectError, Code } from '@connectrpc/connect';
 
@@ -19,7 +19,7 @@ export const witnessAndBuild: Impl['witnessAndBuild'] = async (req, ctx) => {
   } = await services.getWalletServices();
   const sct = await indexedDb.getStateCommitmentTree();
 
-  const witnessData = witness(req.transactionPlan, sct);
+  const witnessData = getWitness(req.transactionPlan, sct);
 
   const batchActions = await offscreenClient.buildAction(req, witnessData, fullViewingKey);
 
