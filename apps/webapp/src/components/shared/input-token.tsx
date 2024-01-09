@@ -44,9 +44,16 @@ export default function InputToken({
   ...props
 }: InputTokenProps) {
   const vResult = validationResult(value, validations);
+
   const currentBalance = selection?.asset
     ? fromBaseUnitAmount(selection.asset.amount, selection.asset.denom.exponent).toFormat()
     : '0';
+
+  const denomination = selection?.asset?.denom.display;
+  const totalGasPriceAsString =
+    typeof totalGasPrice !== 'undefined'
+      ? `${(Number(totalGasPrice) / GAS_PRICE_DENOMINATOR).toString()} ${denomination}`
+      : '';
 
   return (
     <div
@@ -90,14 +97,13 @@ export default function InputToken({
           >
             ${displayAmount(Number(value) * tempPrice)}
           </p>
-          <div className='flex items-start gap-2'>
-            <img src='/fuel.svg' alt='Gas price' className='h-5 w-5' />
-            <p className='font-bold text-muted-foreground'>
-              {typeof totalGasPrice !== 'undefined'
-                ? (Number(totalGasPrice) / GAS_PRICE_DENOMINATOR).toString()
-                : ''}
-            </p>
-          </div>
+
+          {totalGasPriceAsString && (
+            <div className='flex items-start gap-2'>
+              <img src='/fuel.svg' alt='Gas price' className='h-5 w-5' />
+              <p className='font-bold text-muted-foreground'>{totalGasPriceAsString}</p>
+            </div>
+          )}
         </div>
         <div className='flex items-start gap-1'>
           <img src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
