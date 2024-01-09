@@ -9,7 +9,10 @@ import {
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import {
+  Fee,
+  GasPrices,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import {
   ChainParameters,
   FmdParameters,
@@ -49,6 +52,10 @@ export class TxPlanner {
 
   memo(memo: MemoPlaintext): void {
     this.wasmPlanner.memo(memo.toJson());
+  }
+
+  setGasPrices(gasPrices: GasPrices): void {
+    this.wasmPlanner.set_gas_prices(gasPrices.toJson());
   }
 
   fee(fee: Fee): void {

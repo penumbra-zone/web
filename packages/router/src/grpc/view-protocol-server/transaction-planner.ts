@@ -6,6 +6,8 @@ import { TxPlanner, getAddressByIndex } from '@penumbra-zone/wasm-ts';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
 import { ConnectError, Code } from '@connectrpc/connect';
+import { gasPrices } from './gas-prices';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   const services = ctx.values.get(servicesCtx);
@@ -23,6 +25,11 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
     chainParams,
     fmdParams,
   });
+
+  const fetchedGasPrices = await gasPrices(req, ctx);
+  if (fetchedGasPrices.gasPrices) {
+    planner.setGasPrices(new GasPrices(fetchedGasPrices.gasPrices));
+  }
 
   if (req.expiryHeight) planner.expiryHeight(req.expiryHeight);
   if (req.memo) planner.memo(req.memo);
