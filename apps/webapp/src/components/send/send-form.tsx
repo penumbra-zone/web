@@ -11,22 +11,25 @@ import { penumbraAddrValidation } from './helpers.ts';
 import { getGasPrices } from '../../fetchers/gas-prices.ts';
 
 export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
-  const [accountBalances, gasPrices] = await Promise.all([getBalancesByAccount(), getGasPrices()]);
+  const [balancesByAccount, gasPrices] = await Promise.all([
+    getBalancesByAccount(),
+    getGasPrices(),
+  ]);
 
   useStore.getState().send.setGasPrices(gasPrices);
 
-  if (accountBalances[0]) {
+  if (balancesByAccount[0]) {
     // set initial account if accounts exist and asset if account has asset list
     useStore.setState(state => {
       state.send.selection = {
-        address: accountBalances[0]?.address,
-        accountIndex: accountBalances[0]?.index,
-        asset: accountBalances[0]?.balances[0],
+        address: balancesByAccount[0]?.address,
+        accountIndex: balancesByAccount[0]?.index,
+        asset: balancesByAccount[0]?.balances[0],
       };
     });
   }
 
-  return accountBalances;
+  return balancesByAccount;
 };
 
 export const SendForm = () => {
