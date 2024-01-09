@@ -19,6 +19,7 @@ import {
   scanResultWithSctUpdates,
   transactionInfo,
 } from './indexed-db.test-data';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place
@@ -303,6 +304,23 @@ describe('IndexedDb', () => {
       );
 
       expect(swapByCommitment!.equals(scanResultWithNewSwaps.newSwaps[0])).toBeTruthy();
+    });
+  });
+
+  describe('gas prices', () => {
+    it('should be able to set/get', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      const gasPrices = new GasPrices({
+        blockSpacePrice: 0n,
+        compactBlockSpacePrice: 0n,
+        verificationPrice: 0n,
+        executionPrice: 0n,
+      });
+      await db.saveGasPrices(gasPrices);
+      const savedPrices = await db.getGasPrices();
+
+      expect(gasPrices.equals(savedPrices)).toBeTruthy();
     });
   });
 });

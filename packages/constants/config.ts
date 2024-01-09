@@ -8,6 +8,6 @@ export interface Config {
 
 export const testnetConstants: Config = {
   grpcEndpoint: 'https://grpc.testnet.penumbra.zone',
-  indexedDbVersion: 17,
+  indexedDbVersion: 18,
   usdcAssetId: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
 };
