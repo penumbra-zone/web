@@ -1,6 +1,6 @@
 import { Input, InputProps } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { displayAmount, fromBaseUnitAmount } from '@penumbra-zone/types';
+import { fromBaseUnitAmount } from '@penumbra-zone/types';
 import SelectTokenModal from './select-token-modal';
 import { Validation, validationResult } from './validation-result';
 import { AccountBalance } from '../../fetchers/balances';
@@ -25,7 +25,6 @@ interface InputTokenProps extends InputProps {
   setSelection: (selection: Selection) => void;
   validations?: Validation[];
   balances: AccountBalance[];
-  tempPrice: number;
   totalGasPrice: bigint | undefined;
 }
 
@@ -39,7 +38,6 @@ export default function InputToken({
   inputClassName,
   setSelection,
   balances,
-  tempPrice,
   totalGasPrice,
   ...props
 }: InputTokenProps) {
@@ -88,23 +86,12 @@ export default function InputToken({
       </div>
 
       <div className='mt-[6px] flex items-center justify-between gap-2'>
-        <div className='flex-col gap-1'>
-          <p
-            className={cn(
-              'break-all md:test-[12px] xl:text-base font-bold text-light-brown',
-              value && 'text-muted-foreground',
-            )}
-          >
-            ${displayAmount(Number(value) * tempPrice)}
-          </p>
-
-          {totalGasPriceAsString && (
-            <div className='flex items-start gap-2'>
-              <img src='/fuel.svg' alt='Gas price' className='h-5 w-5' />
-              <p className='font-bold text-muted-foreground'>{totalGasPriceAsString}</p>
-            </div>
-          )}
-        </div>
+        {totalGasPriceAsString && (
+          <div className='flex items-start gap-2'>
+            <img src='/fuel.svg' alt='Gas price' className='h-5 w-5' />
+            <p className='font-bold text-muted-foreground'>{totalGasPriceAsString}</p>
+          </div>
+        )}
         <div className='flex items-start gap-1'>
           <img src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
           <p className='font-bold text-muted-foreground'>{currentBalance}</p>

@@ -87,7 +87,6 @@ export const SendForm = () => {
         ]}
         balances={accountBalances}
         totalGasPrice={totalGasPrice}
-        tempPrice={1}
       />
       <InputBlock
         label='Memo'
