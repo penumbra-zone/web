@@ -49,7 +49,7 @@ export const assets: Impl['assets'] = async function* (req, ctx) {
       pattern: d.denom,
       strictEqual: true,
     })),
-  ].filter(i => i.includeReq && i.pattern);
+  ].filter(i => i.includeReq);
 
   yield* !filtered
     ? responses
