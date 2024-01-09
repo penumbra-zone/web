@@ -3,7 +3,7 @@ import { cn } from '@penumbra-zone/ui/lib/utils';
 import { fromBaseUnitAmount } from '@penumbra-zone/types';
 import SelectTokenModal from './select-token-modal';
 import { Validation, validationResult } from './validation-result';
-import { AccountBalance } from '../../fetchers/balances';
+import { AccountBalance, AssetBalance } from '../../fetchers/balances';
 import { Selection } from '../../state/types';
 
 /**
@@ -14,6 +14,19 @@ import { Selection } from '../../state/types';
  * core repo.
  */
 const GAS_PRICE_DENOMINATOR = 1000;
+
+const getTotalGasPriceAsString = (
+  totalGasPrice: bigint | undefined,
+  denomination: string | undefined,
+) =>
+  typeof totalGasPrice !== 'undefined'
+    ? `${(Number(totalGasPrice) / GAS_PRICE_DENOMINATOR).toString()} ${denomination}`
+    : '';
+
+const getCurrentBalance = (assetBalance: AssetBalance | undefined) =>
+  assetBalance
+    ? fromBaseUnitAmount(assetBalance.amount, assetBalance.denom.exponent).toFormat()
+    : '0';
 
 interface InputTokenProps extends InputProps {
   label: string;
@@ -43,15 +56,9 @@ export default function InputToken({
 }: InputTokenProps) {
   const vResult = validationResult(value, validations);
 
-  const currentBalance = selection?.asset
-    ? fromBaseUnitAmount(selection.asset.amount, selection.asset.denom.exponent).toFormat()
-    : '0';
-
+  const currentBalance = getCurrentBalance(selection?.asset);
   const denomination = selection?.asset?.denom.display;
-  const totalGasPriceAsString =
-    typeof totalGasPrice !== 'undefined'
-      ? `${(Number(totalGasPrice) / GAS_PRICE_DENOMINATOR).toString()} ${denomination}`
-      : '';
+  const totalGasPriceAsString = getTotalGasPriceAsString(totalGasPrice, denomination);
 
   return (
     <div
