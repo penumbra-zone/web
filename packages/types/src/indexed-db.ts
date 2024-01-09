@@ -24,6 +24,7 @@ import { Note } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/comp
 import { Base64Str } from './base64';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { Jsonified } from './internal-msg/shared';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -56,6 +57,8 @@ export interface IndexedDbInterface {
   getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined>;
   saveSwap(note: SwapRecord): Promise<void>;
   getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined>;
+  getGasPrices(): Promise<GasPrices | undefined>;
+  saveGasPrices(value: GasPrices): Promise<void>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -112,6 +115,10 @@ export interface PenumbraDb extends DBSchema {
     indexes: {
       nullifier: Base64Str; // Jsonified<SwapRecord['nullifier']['inner']>
     };
+  };
+  GAS_PRICES: {
+    key: 'gas_prices';
+    value: GasPrices;
   };
 }
 

@@ -159,6 +159,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       abortSignal: this.abortController.signal,
     })) {
       if (block.fmdParameters) await this.indexedDb.saveFmdParams(block.fmdParameters);
+      if (block.gasPrices) await this.indexedDb.saveGasPrices(block.gasPrices);
 
       // Scanning has a side effect of updating viewServer's internal tree.
       const newNotesPresent = await this.viewServer.scanBlock(block);

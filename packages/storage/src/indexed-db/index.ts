@@ -25,6 +25,7 @@ import {
   DenomMetadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -67,6 +68,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('SWAPS', {
           keyPath: 'swapCommitment.inner',
         }).createIndex('nullifier', 'nullifier.inner');
+        db.createObjectStore('GAS_PRICES');
       },
     });
     const constants = {
@@ -243,5 +245,13 @@ export class IndexedDb implements IndexedDbInterface {
     const json = await this.db.get('SWAPS', key);
     if (!json) return undefined;
     return SwapRecord.fromJson(json);
+  }
+
+  async getGasPrices(): Promise<GasPrices | undefined> {
+    return this.db.get('GAS_PRICES', 'gas_prices');
+  }
+
+  async saveGasPrices(value: GasPrices): Promise<void> {
+    await this.u.update({ table: 'GAS_PRICES', value, key: 'gas_prices' });
   }
 }

@@ -23,11 +23,9 @@ import { unclaimedSwaps } from './unclaimed-swaps';
 import { walletId } from './wallet-id';
 import { witnessAndBuild } from './witness-and-build';
 import { witness } from './witness';
+import { gasPrices } from './gas-prices';
 
-export const viewImpl: Omit<
-  Impl,
-  'authorizeAndBuild' | 'gasPrices' | 'notesForVoting' | 'ownedPositionIds'
-> = {
+export const viewImpl: Omit<Impl, 'authorizeAndBuild' | 'notesForVoting' | 'ownedPositionIds'> = {
   addressByIndex,
   appParameters,
   assets,
@@ -49,4 +47,5 @@ export const viewImpl: Omit<
   walletId,
   witnessAndBuild,
   witness,
+  gasPrices,
 };
