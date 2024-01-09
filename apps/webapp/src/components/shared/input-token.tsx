@@ -86,12 +86,14 @@ export default function InputToken({
       </div>
 
       <div className='mt-[6px] flex items-center justify-between gap-2'>
-        {totalGasPriceAsString && (
-          <div className='flex items-start gap-2'>
-            <img src='/fuel.svg' alt='Gas price' className='h-5 w-5' />
-            <p className='font-bold text-muted-foreground'>{totalGasPriceAsString}</p>
-          </div>
-        )}
+        <div className='flex items-start gap-2'>
+          {totalGasPriceAsString && (
+            <>
+              <img src='/fuel.svg' alt='Gas price' className='h-5 w-5' />
+              <p className='font-bold text-muted-foreground'>{totalGasPriceAsString}</p>
+            </>
+          )}
+        </div>
         <div className='flex items-start gap-1'>
           <img src='/wallet.svg' alt='Wallet' className='h-5 w-5' />
           <p className='font-bold text-muted-foreground'>{currentBalance}</p>
