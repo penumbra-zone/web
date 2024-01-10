@@ -7,20 +7,15 @@ import { Identicon } from '../../identicon';
 interface AddressViewProps {
   view: AddressView | undefined;
   copyable?: boolean;
-  short_form?: boolean;
 }
 
 // Renders an address or an address view.
 // If the view is given and is "visible", the account information will be displayed instead.
-export const AddressViewComponent = ({
-  view,
-  copyable = true,
-  short_form = true,
-}: AddressViewProps) => {
+export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps) => {
   if (!view?.addressView.value?.address) return <></>;
 
   const encoded = bech32Address(view.addressView.value.address);
-  const display = short_form ? shortenAddress(encoded) : encoded;
+  const display = shortenAddress(encoded);
 
   const accountIndex =
     view.addressView.case === 'visible' ? view.addressView.value.index?.account : undefined;
