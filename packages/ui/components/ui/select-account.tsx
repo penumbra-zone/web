@@ -1,14 +1,14 @@
 import { Account } from '@penumbra-zone/types';
-import { ArrowLeftIcon, ArrowRightIcon, CopyIcon, InfoIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ArrowLeftIcon, ArrowRightIcon, InfoIcon } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { CopyAddressButton } from './copy-address-button';
 import { Button } from './button';
-import { CopyToClipboard } from './copy-to-clipboard';
 import { IncognitoIcon } from './icons/incognito';
 import { Input } from './input';
 import { Switch } from './switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
 import { Identicon } from './identicon';
+import { useEffect, useState } from 'react';
 
 interface SelectAccountProps {
   getAccount: (index: number, ephemeral: boolean) => Promise<Account> | Account | undefined;
@@ -110,15 +110,7 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
                 {account.preview}
               </p>
             </div>
-            <CopyToClipboard
-              text={account.address}
-              label={
-                <div>
-                  <CopyIcon className='h-4 w-4 text-muted-foreground hover:opacity-50' />
-                </div>
-              }
-              className='w-4'
-            />
+            <CopyAddressButton address={account.address} />
           </div>
           <div className='mt-2 flex items-center justify-between'>
             <div className='flex items-center gap-2'>
