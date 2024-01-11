@@ -10,11 +10,10 @@ export interface CopyToClipboardProps extends React.ButtonHTMLAttributes<HTMLBut
   text: string;
   labelType?: 'text' | 'icon';
   label: React.ReactElement;
-  isSuccessCopyText?: boolean;
 }
 
 const CopyToClipboard = React.forwardRef<HTMLButtonElement, CopyToClipboardProps>(
-  ({ text, className, label, isSuccessCopyText, ...props }, ref) => {
+  ({ text, className, label, ...props }, ref) => {
     const [copied, setCopied] = useState(false);
 
     return (
@@ -32,14 +31,7 @@ const CopyToClipboard = React.forwardRef<HTMLButtonElement, CopyToClipboardProps
         }}
         {...props}
       >
-        {copied ? (
-          <span className={cn(isSuccessCopyText && 'flex items-center gap-2')}>
-            {isSuccessCopyText && <span>Copied</span>}
-            <CheckCircledIcon />
-          </span>
-        ) : (
-          label
-        )}
+        {copied ? <CheckCircledIcon /> : label}
       </Button>
     );
   },
