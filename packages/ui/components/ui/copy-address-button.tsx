@@ -5,12 +5,8 @@ export const CopyAddressButton = ({ address }: { address: string }) => {
   return (
     <CopyToClipboard
       text={address}
-      label={
-        <div>
-          <CopyIcon className='text-muted-foreground h-4 w-4 hover:opacity-50' />
-        </div>
-      }
-      className='w-4'
+      label={<CopyIcon className='text-muted-foreground h-4 w-4 hover:opacity-50' />}
+      className='h-4 w-4'
     />
   );
 };
