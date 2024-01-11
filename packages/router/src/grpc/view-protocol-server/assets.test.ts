@@ -56,15 +56,16 @@ describe('Assets request handler', () => {
     expect(responses.length).toBe(8);
   });
 
-  test('req with filtered as true return empty list', async () => {
+  test('returns only matching denominations when `filtered` is `true`', async () => {
     const responses: AssetsResponse[] = [];
     const req = new AssetsRequest({
       filtered: true,
+      includeLpNfts: true,
     });
     for await (const res of assets(req, mockCtx)) {
       responses.push(new AssetsResponse(res));
     }
-    expect(responses.length).toBe(0);
+    expect(responses.length).toBe(4);
   });
 
   test('req with filtered as false and includeLpNfts as true returns all assets', async () => {
