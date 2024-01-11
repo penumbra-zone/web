@@ -10,9 +10,9 @@ export const OutputViewComponent = ({ value }: { value: OutputView }) => {
       <ViewBox
         label='Output'
         visibleContent={
-          <div className='flex items-baseline justify-between md:flex-col lg:flex-row'>
+          <div className='flex justify-between md:flex-col lg:flex-row'>
             <ValueViewComponent view={note.value} />
-            <div className='flex items-baseline gap-2'>
+            <div className='flex gap-2'>
               <span className='font-mono text-sm italic text-foreground'>to</span>
               <AddressViewComponent view={note.address} />
             </div>

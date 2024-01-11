@@ -26,25 +26,21 @@ export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps
   copyable = isOneTimeAddress ? false : copyable;
 
   return (
-    <div className='flex'>
+    <div className='flex items-center gap-2'>
       {accountIndex !== undefined ? (
-        <div className='flex items-baseline gap-2'>
+        <>
           <Identicon name={encoded} size={14} className='rounded-full' type='gradient' />
           {isOneTimeAddress ? (
             <span className='font-bold'>One-time Address for Account #{accountIndex}</span>
           ) : (
             <span className='font-bold'>Account #{accountIndex}</span>
           )}
-        </div>
+        </>
       ) : (
         <div className='font-mono text-sm italic text-foreground'>{display}</div>
       )}
 
-      {copyable && (
-        <div className='pl-2'>
-          <CopyToClipboardIconButton text={encoded} />
-        </div>
-      )}
+      {copyable && <CopyToClipboardIconButton text={encoded} />}
     </div>
   );
 };
