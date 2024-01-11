@@ -23,6 +23,8 @@ export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps
       ? !view.addressView.value.index?.randomizer.every(v => v === 0) // Randomized (and thus, a one-time address) if the randomizer is not all zeros.
       : undefined;
 
+  const addressIndexLabel = isOneTimeAddress ? 'One-time Address for Account #' : 'Account #';
+
   copyable = isOneTimeAddress ? false : copyable;
 
   return (
@@ -31,11 +33,10 @@ export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps
         <>
           <AddressIcon address={encoded} size={14} />
 
-          {isOneTimeAddress ? (
-            <span className='font-bold'>One-time Address for Account #{accountIndex}</span>
-          ) : (
-            <span className='font-bold'>Account #{accountIndex}</span>
-          )}
+          <span className='font-bold'>
+            {addressIndexLabel}
+            {accountIndex}
+          </span>
         </>
       ) : (
         <div className='font-mono text-sm italic text-foreground'>{display}</div>
