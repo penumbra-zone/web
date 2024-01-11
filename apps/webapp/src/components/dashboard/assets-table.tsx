@@ -1,17 +1,10 @@
-import {
-  Identicon,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@penumbra-zone/ui';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
 import { displayUsd, fromBaseUnitAmount, shortenAddress } from '@penumbra-zone/types';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
 import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances.ts';
 import { AssetIcon } from '../shared/asset-icon.tsx';
+import { AddressIcon } from '@penumbra-zone/ui/components/ui/address-icon';
 
 export const AssetsLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
   throwIfExtNotInstalled();
@@ -43,7 +36,7 @@ export default function AssetsTable() {
             <div className='flex flex-col items-center justify-center'>
               <div className='flex flex-col items-center justify-center gap-2 md:flex-row'>
                 <div className='flex items-center gap-2'>
-                  <Identicon name={a.address} size={20} className='rounded-full' type='gradient' />
+                  <AddressIcon address={a.address} size={20} />
                   <h2 className='font-bold md:text-base xl:text-xl'>Account #{a.index}</h2>{' '}
                 </div>
                 <div className='font-mono text-sm italic text-foreground'>

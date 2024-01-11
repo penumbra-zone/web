@@ -1,4 +1,5 @@
 import { Account } from '@penumbra-zone/types';
+import { AddressIcon } from './address-icon';
 import { ArrowLeftIcon, ArrowRightIcon, InfoIcon } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { CopyToClipboardIconButton } from './copy-to-clipboard-icon-button';
@@ -7,7 +8,6 @@ import { IncognitoIcon } from './icons/incognito';
 import { Input } from './input';
 import { Switch } from './switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
-import { Identicon } from './identicon';
 import { useEffect, useState } from 'react';
 
 interface SelectAccountProps {
@@ -100,7 +100,8 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
           </div>
           <div className='mt-4 flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
             <div className='flex items-center gap-[6px]'>
-              <Identicon name={account.address} className='h-6 w-6 rounded-full' type='gradient' />
+              <AddressIcon address={account.address} size={24} />
+
               <p
                 className={cn(
                   'select-none text-center font-mono text-[12px] leading-[18px] text-muted-foreground',
