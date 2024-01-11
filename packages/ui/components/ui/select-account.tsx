@@ -1,7 +1,7 @@
 import { Account } from '@penumbra-zone/types';
 import { ArrowLeftIcon, ArrowRightIcon, InfoIcon } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { CopyAddressButton } from './copy-address-button';
+import { CopyToClipboardIconButton } from './copy-to-clipboard-icon-button';
 import { Button } from './button';
 import { IncognitoIcon } from './icons/incognito';
 import { Input } from './input';
@@ -110,7 +110,7 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
                 {account.preview}
               </p>
             </div>
-            <CopyAddressButton address={account.address} />
+            <CopyToClipboardIconButton text={account.address} />
           </div>
           <div className='mt-2 flex items-center justify-between'>
             <div className='flex items-center gap-2'>
