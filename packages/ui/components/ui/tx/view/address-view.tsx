@@ -1,7 +1,6 @@
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { bech32Address, shortenAddress } from '@penumbra-zone/types';
-import { CopyIcon } from '@radix-ui/react-icons';
-import { CopyToClipboard } from '../../copy-to-clipboard';
+import { CopyToClipboardIconButton } from '../../copy-to-clipboard-icon-button';
 import { Identicon } from '../../identicon';
 
 interface AddressViewProps {
@@ -40,16 +39,11 @@ export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps
       ) : (
         <div className='font-mono text-sm italic text-foreground'>{display}</div>
       )}
+
       {copyable && (
-        <CopyToClipboard
-          text={encoded}
-          label={
-            <div data-testid='AddressView__CopyIcon'>
-              <CopyIcon className='h-4 w-4 text-muted-foreground hover:opacity-50' />
-            </div>
-          }
-          className='w-4 px-4'
-        />
+        <div className='pl-2'>
+          <CopyToClipboardIconButton text={encoded} />
+        </div>
       )}
     </div>
   );
