@@ -1,6 +1,9 @@
 import { CopyIcon } from 'lucide-react';
 import { CopyToClipboard } from './copy-to-clipboard';
 
+/**
+ * A little copy icon button for copying an address to the clipboard.
+ */
 export const CopyAddressButton = ({ address }: { address: string }) => {
   return (
     <CopyToClipboard
