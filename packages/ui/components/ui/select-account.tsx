@@ -1,4 +1,5 @@
 import { Account } from '@penumbra-zone/types';
+import { Address } from './address';
 import { AddressIcon } from './address-icon';
 import { ArrowLeftIcon, ArrowRightIcon, InfoIcon } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -102,13 +103,8 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
             <div className='flex items-center gap-[6px]'>
               <AddressIcon address={account.address} size={24} />
 
-              <p
-                className={cn(
-                  'select-none text-center font-mono text-[12px] leading-[18px] text-muted-foreground',
-                  ephemeral && 'text-[#8D5728]',
-                )}
-              >
-                {account.preview}
+              <p>
+                <Address address={account.address} ephemeral={ephemeral} />
               </p>
             </div>
             <CopyToClipboardIconButton text={account.address} />
