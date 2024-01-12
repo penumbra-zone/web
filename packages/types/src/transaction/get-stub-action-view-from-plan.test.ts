@@ -14,7 +14,7 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan(actionPlan)).toThrow('No address in action plan');
+      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No address in action plan');
     });
   });
 });
