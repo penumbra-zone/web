@@ -6,7 +6,7 @@ import {
 export const getStubActionViewFromPlan = (actionPlan: ActionPlan): ActionView => {
   switch (actionPlan.action.case) {
     case 'spend':
-      if (actionPlan.action.value.note?.address) throw new Error('Invalid address in action plan');
+      if (!actionPlan.action.value.note?.address) throw new Error('No address in action plan');
 
       return new ActionView({
         actionView: {
