@@ -17,7 +17,9 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No address in spend plan');
+      expect(() => getStubActionViewFromPlan(new Map())(actionPlan)).toThrow(
+        'No address in spend plan',
+      );
     });
 
     test('throws if the amount is missing', () => {
@@ -32,7 +34,9 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No amount in spend plan');
+      expect(() => getStubActionViewFromPlan(new Map())(actionPlan)).toThrow(
+        'No amount in spend plan',
+      );
     });
 
     test('throws if the asset ID is missing', () => {
@@ -48,7 +52,27 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No asset ID in spend plan');
+      expect(() => getStubActionViewFromPlan(new Map())(actionPlan)).toThrow(
+        'No asset ID in spend plan',
+      );
+    });
+
+    test('throws if the asset ID refers to an unknown asset type', () => {
+      const actionPlan = new ActionPlan({
+        action: {
+          case: 'spend',
+          value: {
+            note: {
+              address: { altBech32m: address },
+              value: { amount: { hi: 1n, lo: 0n }, assetId: { altBech32m: 'invalid' } },
+            },
+          },
+        },
+      });
+
+      expect(() => getStubActionViewFromPlan(new Map())(actionPlan)).toThrow(
+        'Asset ID in spend plan refers to an unknown asset type',
+      );
     });
   });
 });

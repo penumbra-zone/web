@@ -2,7 +2,10 @@ import {
   ActionPlan,
   ActionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import {
+  AssetId,
+  DenomMetadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import {
   SpendPlan,
   SpendView,
@@ -10,11 +13,14 @@ import {
 
 const getSpendView = (
   spendPlan: SpendPlan,
-  metadataByAssetId: Record<string, DenomMetadata>,
+  metadataByAssetId: Map<AssetId, DenomMetadata>,
 ): SpendView => {
   if (!spendPlan.note?.address) throw new Error('No address in spend plan');
   if (!spendPlan.note.value?.amount) throw new Error('No amount in spend plan');
   if (!spendPlan.note.value.assetId) throw new Error('No asset ID in spend plan');
+
+  const denomMetadata = metadataByAssetId.get(spendPlan.note.value.assetId);
+  if (!denomMetadata) throw new Error('Asset ID in spend plan refers to an unknown asset type');
 
   return new SpendView({
     spendView: {
@@ -32,9 +38,7 @@ const getSpendView = (
               case: 'knownDenom',
               value: {
                 amount: { hi: 1n, lo: 0n },
-                denom: {
-                  penumbraAssetId: {},
-                },
+                denom: denomMetadata,
               },
             },
           },
@@ -45,7 +49,7 @@ const getSpendView = (
 };
 
 export const getStubActionViewFromPlan =
-  (metadataByAssetId: Record<string, DenomMetadata>) =>
+  (metadataByAssetId: Map<AssetId, DenomMetadata>) =>
   (actionPlan: ActionPlan): ActionView => {
     switch (actionPlan.action.case) {
       case 'spend':
