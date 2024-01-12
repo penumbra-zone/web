@@ -1,3 +1,4 @@
+import { getStubActionViewFromPlan } from './get-stub-action-view-from-plan';
 import {
   TransactionPlan,
   TransactionView,
@@ -12,7 +13,7 @@ export const getStubTransactionViewFromPlan = (txPlan: TransactionPlan): Transac
 
   return new TransactionView({
     bodyView: {
-      actionViews: [],
+      actionViews: txPlan.actions.map(getStubActionViewFromPlan),
       fee,
       memoView: {
         memoView: {
