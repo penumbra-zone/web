@@ -8,6 +8,7 @@ import {
 import {
   AssetId,
   DenomMetadata,
+  ValueView_KnownDenom,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 describe('getStubActionViewFromPlan()', () => {
@@ -74,6 +75,15 @@ describe('getStubActionViewFromPlan()', () => {
       expect(() => getStubActionViewFromPlan(new Map())(actionPlan)).toThrow(
         'No amount in spend plan',
       );
+    });
+
+    test('includes the denom metadata', () => {
+      const actionView = getStubActionViewFromPlan(metadataByAssetId)(validSpendActionPlan);
+      const spendView = actionView.actionView.value as SpendView;
+      const spendViewVisible = spendView.spendView.value as SpendView_Visible;
+      const valueView = spendViewVisible.note!.value?.valueView.value as ValueView_KnownDenom;
+
+      expect(valueView.denom).toBe(denomMetadata);
     });
 
     test('throws if the asset ID is missing', () => {
