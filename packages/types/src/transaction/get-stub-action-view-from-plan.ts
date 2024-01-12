@@ -19,7 +19,7 @@ export const getStubActionViewFromPlan = (actionPlan: ActionPlan): ActionView =>
                   address: {
                     addressView: {
                       case: 'opaque',
-                      value: { address: actionPlan.action.value.note!.address! },
+                      value: { address: actionPlan.action.value.note.address },
                     },
                   },
                   value: {
