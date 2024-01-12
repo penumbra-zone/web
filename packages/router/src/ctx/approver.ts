@@ -5,6 +5,10 @@ import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumb
 export const getTxApproval = async (req: AuthorizeRequest): Promise<void> => {
   await spawnDetachedPopup('popup.html#/approval/tx');
 
+  /**
+   * @todo: Should this include a request ID so as not to cross wires with other
+   * requests?
+   */
   const res = await sendPopupRequest<TxApproval>({
     type: 'TX-APPROVAL',
     request: req.toJson(),
