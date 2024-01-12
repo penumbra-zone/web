@@ -22,11 +22,7 @@ export const getStubActionViewFromPlan = (actionPlan: ActionPlan): ActionView =>
                       value: { address: actionPlan.action.value.note.address },
                     },
                   },
-                  value: {
-                    // valueView: {
-                    //   // case: '
-                    // },
-                  },
+                  value: {},
                 },
               },
             },
