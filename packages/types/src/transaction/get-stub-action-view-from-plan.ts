@@ -37,7 +37,7 @@ const getSpendView = (
             valueView: {
               case: 'knownDenom',
               value: {
-                amount: { hi: 1n, lo: 0n },
+                amount: spendPlan.note.value.amount,
                 denom: denomMetadata,
               },
             },
