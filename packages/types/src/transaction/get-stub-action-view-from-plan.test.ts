@@ -72,7 +72,7 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No amount in spend plan');
+      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No value in note');
     });
 
     test('includes the denom metadata', () => {
@@ -81,7 +81,7 @@ describe('getStubActionViewFromPlan()', () => {
       const spendViewVisible = spendView.spendView.value as SpendView_Visible;
       const valueView = spendViewVisible.note!.value?.valueView.value as ValueView_KnownDenom;
 
-      expect(valueView.denom).toBe(denomMetadata);
+      expect(valueView.denom?.toJson()).toEqual(denomMetadata.toJson());
     });
 
     test('throws if the asset ID is missing', () => {
@@ -97,7 +97,7 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No asset ID in spend plan');
+      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No asset ID in value');
     });
 
     test('throws if the asset ID refers to an unknown asset type', () => {

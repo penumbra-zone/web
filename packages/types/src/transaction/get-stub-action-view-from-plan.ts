@@ -15,6 +15,7 @@ import {
   SpendView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import { JsonValue } from '@bufbuild/protobuf';
+import { uint8ArrayToBase64 } from '../base64';
 
 const getValueView = (
   value: Value,
@@ -23,7 +24,7 @@ const getValueView = (
   if (!value.assetId) throw new Error('No asset ID in value');
   if (!value.amount) throw new Error('No amount in value');
 
-  const denomMetadata = denomMetadataByAssetId[value.assetId];
+  const denomMetadata = denomMetadataByAssetId[uint8ArrayToBase64(value.assetId.inner)];
   if (!denomMetadata) throw new Error('Asset ID in spend plan refers to an unknown asset type');
 
   return new ValueView({
