@@ -7,7 +7,7 @@ import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumb
 import { JsonValue } from '@bufbuild/protobuf';
 
 export const TransactionApproval = () => {
-  const { authorizeRequest, responder } = useStore(TxApprovalSelector);
+  const { authorizeRequest, denomMetadataByAssetId, responder } = useStore(TxApprovalSelector);
   if (!authorizeRequest || !responder) return;
   const plan = AuthorizeRequest.fromJson(authorizeRequest as JsonValue).plan;
   if (!plan) return null;
@@ -18,7 +18,12 @@ export const TransactionApproval = () => {
         <p className='bg-text-linear bg-clip-text font-headline text-2xl font-bold text-transparent'>
           Confirm transaction
         </p>
-        <TransactionViewComponent txv={getStubTransactionViewFromPlan(plan, {})} />
+        <TransactionViewComponent
+          txv={getStubTransactionViewFromPlan(
+            plan,
+            denomMetadataByAssetId as Record<string, JsonValue>,
+          )}
+        />
         <div className='mt-8'>
           <JsonViewer jsonObj={authorizeRequest} />
         </div>

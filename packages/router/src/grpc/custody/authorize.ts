@@ -1,12 +1,15 @@
 import type { Impl } from '.';
-import { approverCtx, extLocalCtx, extSessionCtx } from '../../ctx';
+import { approverCtx, extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx';
 
 import { generateSpendKey, authorizePlan } from '@penumbra-zone/wasm-ts';
 
 import { Key } from '@penumbra-zone/crypto-web';
-import { Box } from '@penumbra-zone/types';
+import { Box, uint8ArrayToBase64 } from '@penumbra-zone/types';
 
 import { ConnectError, Code } from '@connectrpc/connect';
+import { JsonValue } from '@bufbuild/protobuf';
+
+type DenomMetadataAsJson = JsonValue;
 
 export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) throw new ConnectError('No plan included in request', Code.InvalidArgument);
@@ -14,6 +17,19 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   const approveReq = ctx.values.get(approverCtx);
   const sess = ctx.values.get(extSessionCtx);
   const local = ctx.values.get(extLocalCtx);
+
+  const services = ctx.values.get(servicesCtx);
+  const walletServices = await services.getWalletServices();
+  const assetsMetadata = await walletServices.indexedDb.getAllAssetsMetadata();
+  const denomMetadataByAssetId = assetsMetadata.reduce<Record<string, DenomMetadataAsJson>>(
+    (prev, curr) => {
+      if (curr.penumbraAssetId) {
+        prev[uint8ArrayToBase64(curr.penumbraAssetId.inner)] = curr.toJson();
+      }
+      return prev;
+    },
+    {},
+  );
 
   const passwordKey = await sess.get('passwordKey');
   if (!passwordKey) throw new ConnectError('User must login to extension', Code.Unavailable);
@@ -26,7 +42,7 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!decryptedSeedPhrase)
     throw new ConnectError('Unable to decrypt seed phrase with password', Code.Unauthenticated);
 
-  await approveReq(req);
+  await approveReq(req, denomMetadataByAssetId);
 
   const spendKey = generateSpendKey(decryptedSeedPhrase);
   const data = authorizePlan(spendKey, req.plan);
