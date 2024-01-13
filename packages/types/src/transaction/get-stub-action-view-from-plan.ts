@@ -116,7 +116,20 @@ export const getStubActionViewFromPlan =
             value: getOutputView(actionPlan.action.value, denomMetadataByAssetId),
           },
         });
+      case undefined:
+        throw new Error('No action case in action plan');
+      case 'withdrawal':
+        throw new Error('Withdrawal not yet supported');
+      default:
+        /**
+         * `<ActionViewComponent />` only renders data about the `spend` and
+         * `output` cases. For all other cases, it just renders the action name.
+         */
+        return new ActionView({
+          actionView: {
+            case: actionPlan.action.case,
+            value: {},
+          },
+        });
     }
-
-    return new ActionView({});
   };

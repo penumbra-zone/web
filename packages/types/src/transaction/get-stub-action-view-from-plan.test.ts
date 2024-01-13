@@ -1,6 +1,9 @@
 import { describe, expect, test } from 'vitest';
 import { getStubActionViewFromPlan } from './get-stub-action-view-from-plan';
-import { ActionPlan } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import {
+  ActionPlan,
+  ActionView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import {
   OutputView,
   OutputView_Visible,
@@ -229,6 +232,30 @@ describe('getStubActionViewFromPlan()', () => {
       expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow(
         'Asset ID in spend plan refers to an unknown asset type',
       );
+    });
+  });
+
+  describe('all other action cases', () => {
+    test('returns an action view with the case but no value', () => {
+      const actionPlan = new ActionPlan({
+        action: {
+          case: 'swap',
+          value: { feeBlinding: new Uint8Array() },
+        },
+      });
+
+      const actionView = getStubActionViewFromPlan({})(actionPlan);
+
+      expect(
+        actionView.equals(
+          new ActionView({
+            actionView: {
+              case: 'swap',
+              value: {},
+            },
+          }),
+        ),
+      ).toBe(true);
     });
   });
 });
