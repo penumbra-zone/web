@@ -235,6 +235,30 @@ describe('getStubActionViewFromPlan()', () => {
     });
   });
 
+  describe('`withdrawal` action', () => {
+    test('returns an action view with the `ics20Withdrawal` case and no value', () => {
+      const actionPlan = new ActionPlan({
+        action: {
+          case: 'withdrawal',
+          value: { amount: { hi: 1n, lo: 0n } },
+        },
+      });
+
+      const actionView = getStubActionViewFromPlan({})(actionPlan);
+
+      expect(
+        actionView.equals(
+          new ActionView({
+            actionView: {
+              case: 'ics20Withdrawal',
+              value: {},
+            },
+          }),
+        ),
+      ).toBe(true);
+    });
+  });
+
   describe('all other action cases', () => {
     test('returns an action view with the case but no value', () => {
       const actionPlan = new ActionPlan({
