@@ -84,7 +84,14 @@ const getOutputView = (
       value: {
         note: {
           value: getValueView(outputPlan.value, denomMetadataByAssetId),
-          address: { addressView: { case: 'opaque', value: { address: outputPlan.destAddress } } },
+          address: {
+            addressView: {
+              case: 'opaque',
+              value: {
+                address: outputPlan.destAddress,
+              },
+            },
+          },
         },
       },
     },
