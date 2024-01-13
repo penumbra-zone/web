@@ -1,16 +1,13 @@
-import {
-  AssetId,
-  DenomMetadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { getStubActionViewFromPlan } from './get-stub-action-view-from-plan';
 import {
   TransactionPlan,
   TransactionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { JsonValue } from '@bufbuild/protobuf';
 
 export const getStubTransactionViewFromPlan = (
   txPlan: TransactionPlan,
-  metadataByAssetId: Map<AssetId, DenomMetadata>,
+  denomMetadataByAssetId: Record<string, JsonValue>,
 ): TransactionView => {
   const returnAddress = txPlan.memoPlan?.plaintext?.returnAddress;
   if (!returnAddress) throw new Error('No return address found in transaction plan');
@@ -20,7 +17,7 @@ export const getStubTransactionViewFromPlan = (
 
   return new TransactionView({
     bodyView: {
-      actionViews: txPlan.actions.map(getStubActionViewFromPlan(metadataByAssetId)),
+      actionViews: txPlan.actions.map(getStubActionViewFromPlan(denomMetadataByAssetId)),
       fee,
       memoView: {
         memoView: {

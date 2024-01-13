@@ -18,7 +18,7 @@ export const TransactionApproval = () => {
         <p className='bg-text-linear bg-clip-text font-headline text-2xl font-bold text-transparent'>
           Confirm transaction
         </p>
-        <TransactionViewComponent txv={getStubTransactionViewFromPlan(plan, new Map())} />
+        <TransactionViewComponent txv={getStubTransactionViewFromPlan(plan, {})} />
         <div className='mt-8'>
           <JsonViewer jsonObj={authorizeRequest} />
         </div>

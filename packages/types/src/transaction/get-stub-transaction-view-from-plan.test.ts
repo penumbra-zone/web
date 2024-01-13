@@ -26,7 +26,7 @@ describe('getStubTransactionViewFromPlan()', () => {
   });
 
   test('includes the return address', () => {
-    const txnView = getStubTransactionViewFromPlan(validTxnPlan, new Map());
+    const txnView = getStubTransactionViewFromPlan(validTxnPlan, {});
     const memoViewValue = txnView.bodyView!.memoView!.memoView.value! as MemoView_Visible;
 
     expect(memoViewValue.plaintext!.returnAddress?.addressView.value?.address?.altBech32m).toBe(
@@ -35,15 +35,13 @@ describe('getStubTransactionViewFromPlan()', () => {
   });
 
   test('throws when there is no return address', () => {
-    expect(() => getStubTransactionViewFromPlan(new TransactionPlan(), new Map())).toThrow(
+    expect(() => getStubTransactionViewFromPlan(new TransactionPlan(), {})).toThrow(
       'No return address found in transaction plan',
     );
   });
 
   test('includes the fee', () => {
-    expect(getStubTransactionViewFromPlan(validTxnPlan, new Map()).bodyView!.fee).toBe(
-      validTxnPlan.fee,
-    );
+    expect(getStubTransactionViewFromPlan(validTxnPlan, {}).bodyView!.fee).toBe(validTxnPlan.fee);
   });
 
   test('throws when there is no fee', () => {
@@ -56,13 +54,13 @@ describe('getStubTransactionViewFromPlan()', () => {
             },
           },
         }),
-        new Map(),
+        {},
       ),
     ).toThrow('No fee found in transaction plan');
   });
 
   test('includes the memo', () => {
-    const txnView = getStubTransactionViewFromPlan(validTxnPlan, new Map());
+    const txnView = getStubTransactionViewFromPlan(validTxnPlan, {});
     const memoViewValue = txnView.bodyView!.memoView!.memoView.value! as MemoView_Visible;
 
     expect(memoViewValue.plaintext!.text).toBe('Memo text here');
@@ -70,7 +68,7 @@ describe('getStubTransactionViewFromPlan()', () => {
 
   test('includes the transaction parameters', () => {
     expect(
-      getStubTransactionViewFromPlan(validTxnPlan, new Map()).bodyView!.transactionParameters,
+      getStubTransactionViewFromPlan(validTxnPlan, {}).bodyView!.transactionParameters,
     ).toEqual({
       chainId,
       expiryHeight,

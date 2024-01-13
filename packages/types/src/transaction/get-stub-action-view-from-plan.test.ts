@@ -10,13 +10,15 @@ import {
   DenomMetadata,
   ValueView_KnownDenom,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { uint8ArrayToBase64 } from '../base64';
 
 describe('getStubActionViewFromPlan()', () => {
   const address =
     'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
-  const assetId = new AssetId({ altBech32m: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=' });
+  const assetId = new AssetId({ inner: new Uint8Array() });
+  const base64AssetId = uint8ArrayToBase64(assetId.inner);
   const denomMetadata = new DenomMetadata({ penumbraAssetId: assetId });
-  const metadataByAssetId = new Map([[assetId, denomMetadata]]);
+  const metadataByAssetId = { [base64AssetId]: denomMetadata.toJson() };
 
   describe('`spend` action', () => {
     const validSpendActionPlan = new ActionPlan({
@@ -44,9 +46,7 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan(new Map())(actionPlan)).toThrow(
-        'No address in spend plan',
-      );
+      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No address in spend plan');
     });
 
     test('includes the amount', () => {
@@ -72,9 +72,7 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan(new Map())(actionPlan)).toThrow(
-        'No amount in spend plan',
-      );
+      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No amount in spend plan');
     });
 
     test('includes the denom metadata', () => {
@@ -99,9 +97,7 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan(new Map())(actionPlan)).toThrow(
-        'No asset ID in spend plan',
-      );
+      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No asset ID in spend plan');
     });
 
     test('throws if the asset ID refers to an unknown asset type', () => {
@@ -117,7 +113,7 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan(new Map())(actionPlan)).toThrow(
+      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow(
         'Asset ID in spend plan refers to an unknown asset type',
       );
     });
