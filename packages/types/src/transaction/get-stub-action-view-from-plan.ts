@@ -18,9 +18,10 @@ import { JsonValue } from '@bufbuild/protobuf';
 import { uint8ArrayToBase64 } from '../base64';
 
 const getValueView = (
-  value: Value,
+  value: Value | undefined,
   denomMetadataByAssetId: Record<string, JsonValue>,
 ): ValueView => {
+  if (!value) throw new Error('No value to view');
   if (!value.assetId) throw new Error('No asset ID in value');
   if (!value.amount) throw new Error('No amount in value');
 
@@ -74,7 +75,6 @@ const getOutputView = (
   outputPlan: OutputPlan,
   denomMetadataByAssetId: Record<string, JsonValue>,
 ): OutputView => {
-  if (!outputPlan.value) throw new Error('No value in output plan');
   if (!outputPlan.destAddress) throw new Error('No destAddress in output plan');
 
   return new OutputView({
