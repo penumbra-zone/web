@@ -17,4 +17,4 @@ export const createTxApprovalSlice: SliceCreator<TxApprovalSlice> = () => ({
   responder: undefined,
 });
 
-export const TxApprovalSelector = (state: AllSlices) => state.txApproval;
+export const txApprovalSelector = (state: AllSlices) => state.txApproval;
