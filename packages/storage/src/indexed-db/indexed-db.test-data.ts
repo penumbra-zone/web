@@ -1,4 +1,4 @@
-import { base64ToUint8Array, ScanResult } from '@penumbra-zone/types';
+import { base64ToUint8Array, ScanBlockResult } from '@penumbra-zone/types';
 import {
   AssetId,
   DenomMetadata,
@@ -9,7 +9,7 @@ import {
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
-export const emptyScanResult: ScanResult = {
+export const emptyScanResult: ScanBlockResult = {
   height: 1092n,
   newNotes: [],
   newSwaps: [],
@@ -20,7 +20,7 @@ export const emptyScanResult: ScanResult = {
   },
 };
 
-export const scanResultWithSctUpdates: ScanResult = {
+export const scanResultWithSctUpdates: ScanBlockResult = {
   height: 1092n,
   newNotes: [],
   newSwaps: [],
@@ -49,7 +49,7 @@ export const scanResultWithSctUpdates: ScanResult = {
   },
 };
 
-export const scanResultWithNewSwaps: ScanResult = {
+export const scanResultWithNewSwaps: ScanBlockResult = {
   height: 1092n,
   newNotes: [],
   newSwaps: [
@@ -85,7 +85,11 @@ export const scanResultWithNewSwaps: ScanResult = {
         },
         epochStartingHeight: '356050',
       },
-      source: { inner: '9e1OaxysQAzHUUKsroXMNRCzlPxd6hBWLrqURgNBrmE=' },
+      source: {
+        transaction: {
+          id: '9e1OaxysQAzHUUKsroXMNRCzlPxd6hBWLrqURgNBrmE=',
+        },
+      },
     }),
   ],
   sctUpdates: {
@@ -184,14 +188,16 @@ export const newNote = SpendableNoteRecord.fromJson({
   heightCreated: '7197',
   position: '42986962944',
   source: {
-    inner: '3CBS08dM9eLHH45Z9loZciZ9RaG9x1fc26Qnv0lQlto=',
+    transaction: {
+      id: '3CBS08dM9eLHH45Z9loZciZ9RaG9x1fc26Qnv0lQlto=',
+    },
   },
 });
 
 export const transactionInfo = TransactionInfo.fromJson({
   height: '137540',
   id: {
-    hash: '9MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',
+    inner: '9MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',
   },
   transaction: {
     body: {
@@ -202,8 +208,12 @@ export const transactionInfo = TransactionInfo.fromJson({
               balanceCommitment: {
                 inner: 'mLSHGBzim3wSsFOn431tR9fsD+RcPXK1hn7FtxYOlws=',
               },
-              nullifier: 'knpvZH3soGxnNVQZcvlA+VMuvCZWVCgknts1mowDSgg=',
-              rk: 'cmAa4EqbtHC5lhoVU6PGJfJl06QpBga4eO3cuF/8MAU=',
+              nullifier: {
+                inner: 'knpvZH3soGxnNVQZcvlA+VMuvCZWVCgknts1mowDSgg=',
+              },
+              rk: {
+                inner: 'cmAa4EqbtHC5lhoVU6PGJfJl06QpBga4eO3cuF/8MAU=',
+              },
             },
             authSig: {
               inner:
@@ -221,8 +231,10 @@ export const transactionInfo = TransactionInfo.fromJson({
               balanceCommitment: {
                 inner: 'LnUs6kKZ+9MO+J+bHiDFm+WRnHEWgIjkw7ieivpQ7xE=',
               },
-              nullifier: 'iKtEKV32USvsFJINbWs8WlpGrf4ISt+D61LkVzAyPwY=',
-              rk: 'oIpHfSwEialuU436KIw9tXR3wWpgk0NHIcc17dRnYQM=',
+              nullifier: { inner: 'iKtEKV32USvsFJINbWs8WlpGrf4ISt+D61LkVzAyPwY=' },
+              rk: {
+                inner: 'oIpHfSwEialuU436KIw9tXR3wWpgk0NHIcc17dRnYQM=',
+              },
             },
             authSig: {
               inner:
@@ -240,8 +252,8 @@ export const transactionInfo = TransactionInfo.fromJson({
               balanceCommitment: {
                 inner: 'yI14CUmNVu+N5+0/rgQdAMU5RBikcCQQzWaWHStfSAs=',
               },
-              nullifier: 'B3XzzNvAuT3hMVqTfAAN6m9UlODZ9fldv3OyA55ABAs=',
-              rk: 'vhkNUmggYaQRaIb1f0tT1RWapAcvF+i4NmuJPNi/iwo=',
+              nullifier: { inner: 'B3XzzNvAuT3hMVqTfAAN6m9UlODZ9fldv3OyA55ABAs=' },
+              rk: { inner: 'vhkNUmggYaQRaIb1f0tT1RWapAcvF+i4NmuJPNi/iwo=' },
             },
             authSig: {
               inner:
@@ -259,8 +271,12 @@ export const transactionInfo = TransactionInfo.fromJson({
               balanceCommitment: {
                 inner: 'drR8MmEnfMs0CkY9QRaxiAGSZmM9lpU4+metaRt3UxA=',
               },
-              nullifier: 'x40Dz0PFP84vJ3cswSdiKFJJCWuLtYxapRXSey/+wgQ=',
-              rk: 'pujbFovCIVxlF5hCJ/+PlvBeCG0jHelV7im2Li+uTQI=',
+              nullifier: {
+                inner: 'x40Dz0PFP84vJ3cswSdiKFJJCWuLtYxapRXSey/+wgQ=',
+              },
+              rk: {
+                inner: 'pujbFovCIVxlF5hCJ/+PlvBeCG0jHelV7im2Li+uTQI=',
+              },
             },
             authSig: {
               inner:
@@ -476,9 +492,6 @@ export const transactionInfo = TransactionInfo.fromJson({
       transactionParameters: {
         chainId: 'penumbra-testnet-rhea',
       },
-      fee: {
-        amount: {},
-      },
       detectionData: {
         fmdClues: [
           {
@@ -515,13 +528,15 @@ export const transactionInfo = TransactionInfo.fromJson({
           },
         ],
       },
-      memoData: {
-        encryptedMemo:
+      memo: {
+        inner:
           'NGJ0T7iaorVP2ApR/78bejqFVn87DO+2vcaogbZYf5VvL6HvazSfYGiLq52c24n4ZfYGtN1z8dTyVknbJ9JawwComzYZ7kkWlQyUbXuKIGCowgxuv0dZ+5QXPuL7acycgnVXlzkfPH6CJylHKhWPb1Wskdk5KJaM+I2ofKi69LPtkIQhYcy3Prc7/nAwytxdjcWjsvS3bjRfry+F4ch8n+2EcUklygz2wnAr21crV6Hd855q+/OZKyEpWkODTB4wuYetm4b8laFklWKWDhFzezdmIUXgf/RSVIgk51H5hThVauH8m1dg4kW/5wklVCrzJjrem2/T/KnIIJEcxzuQ85Smk86fWycgnraQ80Sy9G1nU8rqwBE4KUFLQ6OVu5z0pfYH3DaYKTpVmOsvwCz2l2+me9U6JIB5jiQRvdcjjmPquDIhPbOSNlKRmLa6tmvEqM0Y7rxT1MnbR3Cdzp+30gwruLg0oiTm80N1Ltdkwv2+0uR8iSAfSVmW9o05/Lnqt548hGS/bW3LDX7BHV/Jq464prPUOejEqiFPHjohHlC3hs4T3k8if9euY5DIBwk5evwQ+rNE2E/x8g/wjJyWLp+Nslms8E66ecHWUNgQb5i6NiLwZ8f15/kdrG+ioZj1d/S0hTC9JgZCTEmcvfNBKxOw7ge93cxRmv7Sj688QA5acUDAejinEZmvXXyRV2AD',
       },
     },
-    bindingSig:
-      'VDwfYSlhod90QLBvTdIM+T+WdscTjqecFp4PSeRhhwQX2Al3CHo0Bikx3hix0iO4zF/EnRIuz4J70clixI9VAg==',
+    bindingSig: {
+      inner:
+        'VDwfYSlhod90QLBvTdIM+T+WdscTjqecFp4PSeRhhwQX2Al3CHo0Bikx3hix0iO4zF/EnRIuz4J70clixI9VAg==',
+    },
     anchor: {
       inner: 'mrchwun83TOMYsdXtkBSdUYXXMzlg6N2NYfEcqWmfwE=',
     },
@@ -688,7 +703,7 @@ export const transactionInfo = TransactionInfo.fromJson({
       },
     ],
     transactionId: {
-      hash: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
+      inner: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
     },
   },
   view: {
@@ -702,8 +717,12 @@ export const transactionInfo = TransactionInfo.fromJson({
                   balanceCommitment: {
                     inner: 'mLSHGBzim3wSsFOn431tR9fsD+RcPXK1hn7FtxYOlws=',
                   },
-                  nullifier: 'knpvZH3soGxnNVQZcvlA+VMuvCZWVCgknts1mowDSgg=',
-                  rk: 'cmAa4EqbtHC5lhoVU6PGJfJl06QpBga4eO3cuF/8MAU=',
+                  nullifier: {
+                    inner: 'knpvZH3soGxnNVQZcvlA+VMuvCZWVCgknts1mowDSgg=',
+                  },
+                  rk: {
+                    inner: 'cmAa4EqbtHC5lhoVU6PGJfJl06QpBga4eO3cuF/8MAU=',
+                  },
                 },
                 authSig: {
                   inner:
@@ -725,8 +744,12 @@ export const transactionInfo = TransactionInfo.fromJson({
                   balanceCommitment: {
                     inner: 'LnUs6kKZ+9MO+J+bHiDFm+WRnHEWgIjkw7ieivpQ7xE=',
                   },
-                  nullifier: 'iKtEKV32USvsFJINbWs8WlpGrf4ISt+D61LkVzAyPwY=',
-                  rk: 'oIpHfSwEialuU436KIw9tXR3wWpgk0NHIcc17dRnYQM=',
+                  nullifier: {
+                    inner: 'iKtEKV32USvsFJINbWs8WlpGrf4ISt+D61LkVzAyPwY=',
+                  },
+                  rk: {
+                    inner: 'oIpHfSwEialuU436KIw9tXR3wWpgk0NHIcc17dRnYQM=',
+                  },
                 },
                 authSig: {
                   inner:
@@ -748,8 +771,13 @@ export const transactionInfo = TransactionInfo.fromJson({
                   balanceCommitment: {
                     inner: 'yI14CUmNVu+N5+0/rgQdAMU5RBikcCQQzWaWHStfSAs=',
                   },
-                  nullifier: 'B3XzzNvAuT3hMVqTfAAN6m9UlODZ9fldv3OyA55ABAs=',
-                  rk: 'vhkNUmggYaQRaIb1f0tT1RWapAcvF+i4NmuJPNi/iwo=',
+                  nullifier: {
+                    inner: 'B3XzzNvAuT3hMVqTfAAN6m9UlODZ9fldv3OyA55ABAs=',
+                  },
+
+                  rk: {
+                    inner: 'vhkNUmggYaQRaIb1f0tT1RWapAcvF+i4NmuJPNi/iwo=',
+                  },
                 },
                 authSig: {
                   inner:
@@ -771,8 +799,12 @@ export const transactionInfo = TransactionInfo.fromJson({
                   balanceCommitment: {
                     inner: 'drR8MmEnfMs0CkY9QRaxiAGSZmM9lpU4+metaRt3UxA=',
                   },
-                  nullifier: 'x40Dz0PFP84vJ3cswSdiKFJJCWuLtYxapRXSey/+wgQ=',
-                  rk: 'pujbFovCIVxlF5hCJ/+PlvBeCG0jHelV7im2Li+uTQI=',
+                  nullifier: {
+                    inner: 'x40Dz0PFP84vJ3cswSdiKFJJCWuLtYxapRXSey/+wgQ=',
+                  },
+                  rk: {
+                    inner: 'pujbFovCIVxlF5hCJ/+PlvBeCG0jHelV7im2Li+uTQI=',
+                  },
                 },
                 authSig: {
                   inner:
@@ -1215,9 +1247,6 @@ export const transactionInfo = TransactionInfo.fromJson({
       transactionParameters: {
         chainId: 'penumbra-testnet-rhea',
       },
-      fee: {
-        amount: {},
-      },
       detectionData: {
         fmdClues: [
           {
@@ -1266,8 +1295,10 @@ export const transactionInfo = TransactionInfo.fromJson({
         },
       },
     },
-    bindingSig:
-      'VDwfYSlhod90QLBvTdIM+T+WdscTjqecFp4PSeRhhwQX2Al3CHo0Bikx3hix0iO4zF/EnRIuz4J70clixI9VAg==',
+    bindingSig: {
+      inner:
+        'VDwfYSlhod90QLBvTdIM+T+WdscTjqecFp4PSeRhhwQX2Al3CHo0Bikx3hix0iO4zF/EnRIuz4J70clixI9VAg==',
+    },
     anchor: {
       inner: 'mrchwun83TOMYsdXtkBSdUYXXMzlg6N2NYfEcqWmfwE=',
     },

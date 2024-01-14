@@ -5,5 +5,5 @@ export const provingKeys = [
   { keyType: 'swap_claim', file: 'swapclaim_pk.bin' },
   { keyType: 'nullifier_derivation', file: 'nullifier_derivation_pk.bin' },
   { keyType: 'delegator_vote', file: 'delegator_vote_pk.bin' },
-  { keyType: 'undelegate_claim', file: 'convert_pk.bin' },
+  { keyType: 'convert', file: 'convert_pk.bin' },
 ];

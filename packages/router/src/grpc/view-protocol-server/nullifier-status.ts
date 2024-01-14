@@ -5,7 +5,7 @@ import {
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-import { Code, ConnectError } from '@connectrpc/connect';
+import { ConnectError, Code } from '@connectrpc/connect';
 
 const watchStream = async <U>(
   subscription: AsyncGenerator<U>,

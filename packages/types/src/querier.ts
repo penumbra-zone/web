@@ -12,8 +12,9 @@ import {
   QueryClientStatesRequest,
   QueryClientStatesResponse,
 } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/query_pb';
-import { GetTxResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/util/tendermint_proxy/v1alpha1/tendermint_proxy_pb';
 import { KeyValueResponse_Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/cnidarium/v1alpha1/cnidarium_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
+import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 export interface RootQuerierInterface {
   app: AppQuerierInterface;
@@ -21,7 +22,7 @@ export interface RootQuerierInterface {
   tendermint: TendermintQuerierInterface;
   shieldedPool: ShieldedPoolQuerierInterface;
   ibcClient: IbcClientQuerierInterface;
-  storage: StorageQuerierInterface;
+  cnidarium: CnidariumQuerierInterface;
 }
 
 export interface AppQuerierInterface {
@@ -42,8 +43,8 @@ export interface CompactBlockQuerierInterface {
 
 export interface TendermintQuerierInterface {
   latestBlockHeight(): Promise<bigint>;
-  broadcastTx(params: Uint8Array): Promise<Uint8Array>;
-  txByHash(hash: Uint8Array): Promise<GetTxResponse | undefined>;
+  broadcastTx(tx: Transaction): Promise<TransactionId>;
+  getTransaction(txId: TransactionId): Promise<{ height: bigint; transaction: Transaction }>;
 }
 
 export interface ShieldedPoolQuerierInterface {
@@ -54,6 +55,6 @@ export interface IbcClientQuerierInterface {
   ibcClientStates(req: QueryClientStatesRequest): Promise<QueryClientStatesResponse>;
 }
 
-export interface StorageQuerierInterface {
+export interface CnidariumQuerierInterface {
   keyValue(key: string): Promise<KeyValueResponse_Value['value']>;
 }

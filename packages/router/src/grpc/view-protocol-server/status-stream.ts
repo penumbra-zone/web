@@ -1,11 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-export const statusStream: Impl['statusStream'] = async function* (
-  // TODO: Support req.wallet filter
-  _,
-  ctx,
-) {
+export const statusStream: Impl['statusStream'] = async function* (_, ctx) {
   const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
   const latestBlockHeight = await services.querier.tendermint.latestBlockHeight();

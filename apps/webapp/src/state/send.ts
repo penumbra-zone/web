@@ -1,6 +1,5 @@
 import { AllSlices, SliceCreator } from './index';
 import {
-  BECH32_ADDRESS_LENGTH,
   fromBaseUnitAmount,
   isPenumbraAddr,
   toBaseUnit,
@@ -14,7 +13,7 @@ import { AssetBalance } from '../fetchers/balances';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Selection } from './types';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { custodyClient, viewClient } from '../clients/grpc';
+import { viewClient, custodyClient } from '../clients/grpc';
 import { getAddressByIndex } from '../fetchers/address.ts';
 
 export interface SendSlice {
@@ -65,9 +64,9 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
       const { dismiss } = toastFn(loadingTxToast);
 
       try {
-        const txHash = await planWitnessBuildBroadcast(get().send);
+        const txId = await planWitnessBuildBroadcast(get().send);
         dismiss();
-        toastFn(successTxToast(txHash));
+        toastFn(successTxToast(uint8ArrayToHex(txId.inner)));
 
         // Reset form
         set(state => {
@@ -80,6 +79,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         });
         dismiss();
         toastFn(errorTxToast(e));
+        throw e;
       }
     },
   };
@@ -122,7 +122,7 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, selection, memo }:
   const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
   if (!id) throw new Error('no id in broadcast response');
 
-  return uint8ArrayToHex(id.inner);
+  return id;
 };
 
 export const validateAmount = (asset: AssetBalance, amount: string): boolean => {

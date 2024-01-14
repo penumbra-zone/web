@@ -9,7 +9,7 @@ import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tender
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Selection } from './types';
-import { custodyClient, ibcClient, viewClient } from '../clients/grpc';
+import { viewClient, custodyClient, ibcClient } from '../clients/grpc';
 
 export interface IbcSendSlice {
   selection: Selection | undefined;
@@ -75,6 +75,7 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
         });
         dismiss();
         toastFn(errorTxToast(e));
+        throw e;
       }
     },
   };

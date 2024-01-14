@@ -1,8 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-import { Code, ConnectError } from '@connectrpc/connect';
-import { CommitmentSource_Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import { ConnectError, Code } from '@connectrpc/connect';
 
 export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, ctx) => {
   const services = ctx.values.get(servicesCtx);
@@ -10,8 +9,8 @@ export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, 
   if (!req.id) throw new ConnectError('Missing transaction ID in request', Code.InvalidArgument);
 
   const txInfo =
-    (await indexedDb.getTransaction(new CommitmentSource_Transaction({ id: req.id.inner }))) ??
-    (await blockProcessor.getTxInfoByHash(req.id.inner));
+    (await indexedDb.getTransactionInfo(req.id)) ??
+    (await blockProcessor.getTransactionInfo(req.id));
 
-  return txInfo ? { txInfo } : {};
+  return { txInfo };
 };

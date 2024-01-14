@@ -16,8 +16,8 @@ import {
   scanResultWithSctUpdates,
   transactionInfo,
 } from './indexed-db.test-data';
-import { CommitmentSource_Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place
@@ -112,11 +112,11 @@ describe('IndexedDb', () => {
         TransactionInfo.fromJson({
           height: '1000',
           id: {
-            hash: 'tx-hash',
+            inner: 'tx-hash',
           },
         }),
       );
-      expect((await db.getAllTransactions()).length).toBe(1);
+      expect((await db.getAllTransactionInfo()).length).toBe(1);
 
       const scanResult = {
         height: 1000n,
@@ -143,7 +143,7 @@ describe('IndexedDb', () => {
       await db.clear();
       expect((await db.getAllNotes()).length).toBe(0);
       expect((await db.getAllAssetsMetadata()).length).toBe(0);
-      expect((await db.getAllTransactions()).length).toBe(0);
+      expect((await db.getAllTransactionInfo()).length).toBe(0);
       expect(await db.getLastBlockSynced()).toBeUndefined();
     });
   });
@@ -253,8 +253,8 @@ describe('IndexedDb', () => {
 
       await db.saveTransactionInfo(transactionInfo);
 
-      const savedTransaction = await db.getTransaction(
-        new CommitmentSource_Transaction({ id: transactionInfo.id!.inner }),
+      const savedTransaction = await db.getTransactionInfo(
+        new TransactionId({ inner: transactionInfo.id!.inner }),
       );
 
       expect(transactionInfo.equals(savedTransaction)).toBeTruthy();
@@ -264,7 +264,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveTransactionInfo(transactionInfo);
-      const savedTransactions = await db.getAllTransactions();
+      const savedTransactions = await db.getAllTransactionInfo();
 
       expect(savedTransactions.length === 1).toBeTruthy();
       expect(transactionInfo.equals(savedTransactions[0])).toBeTruthy();

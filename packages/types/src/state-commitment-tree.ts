@@ -52,30 +52,14 @@ export const SctUpdatesSchema = z.object({
   delete_ranges: z.array(DeleteRange),
 });
 
-export const ScanResultSchema = z.object({
-  height: z.bigint(),
-  sct_updates: SctUpdatesSchema,
-  new_notes: z.array(z.unknown()),
-  new_swaps: z.array(z.unknown()),
-});
+export type SctUpdates = z.infer<typeof SctUpdatesSchema>;
 
-export type RawScanResult = z.infer<typeof ScanResultSchema>;
-
-export interface ScanResult {
+export interface ScanBlockResult {
   height: bigint;
-  sctUpdates: z.infer<typeof SctUpdatesSchema>;
+  sctUpdates: SctUpdates;
   newNotes: SpendableNoteRecord[];
   newSwaps: SwapRecord[];
 }
-
-export const parseScanResult = (r: RawScanResult): ScanResult => {
-  return {
-    height: BigInt(r.height), // TODO: Should see if wasm crate can pass bigint instead
-    sctUpdates: r.sct_updates,
-    newNotes: r.new_notes.map(n => SpendableNoteRecord.fromJsonString(JSON.stringify(n))),
-    newSwaps: r.new_swaps.map(s => SwapRecord.fromJsonString(JSON.stringify(s))),
-  };
-};
 
 export const StateCommitmentTreeSchema = z.object({
   last_position: StoredPositionSchema,

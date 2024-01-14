@@ -1,11 +1,15 @@
 import { DBSchema, StoreKey, StoreNames, StoreValue } from 'idb';
+
 import {
-  ScanResult,
+  ScanBlockResult,
   StateCommitmentTree,
   StoreCommitment,
   StoredPosition,
   StoreHash,
 } from './state-commitment-tree';
+
+import { JsonValue } from '@bufbuild/protobuf';
+
 import {
   SpendableNoteRecord,
   SwapRecord,
@@ -16,14 +20,11 @@ import {
   DenomMetadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
-import {
-  CommitmentSource_Transaction,
-  Nullifier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { Base64Str } from './base64';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
-import { JsonValue } from '@bufbuild/protobuf';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -43,13 +44,13 @@ export interface IndexedDbInterface {
   saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
   getAllNotes(): Promise<SpendableNoteRecord[]>;
   saveTransactionInfo(tx: TransactionInfo): Promise<void>;
-  getTransaction(source: CommitmentSource_Transaction): Promise<TransactionInfo | undefined>;
-  getAllTransactions(): Promise<TransactionInfo[]>;
+  getTransactionInfo(txId: TransactionId): Promise<TransactionInfo | undefined>;
+  getAllTransactionInfo(): Promise<TransactionInfo[]>;
   getAssetsMetadata(assetId: AssetId): Promise<DenomMetadata | undefined>;
   saveAssetsMetadata(metadata: DenomMetadata): Promise<void>;
   getAllAssetsMetadata(): Promise<DenomMetadata[]>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
-  saveScanResult(updates: ScanResult): Promise<void>;
+  saveScanResult(updates: ScanBlockResult): Promise<void>;
   getFmdParams(): Promise<FmdParameters | undefined>;
   saveFmdParams(params: FmdParameters): Promise<void>;
   getAllSwaps(): Promise<SwapRecord[]>;
@@ -74,45 +75,45 @@ export interface PenumbraDb extends DBSchema {
     value: bigint;
   };
   TREE_HASHES: {
-    key: number;
+    key: number; // autoincrement
     value: StoreHash;
   };
   TREE_COMMITMENTS: {
-    key: StoreCommitment['commitment']['inner'];
+    key: string; // string base64 StoreCommitment['commitment']['inner']
     value: StoreCommitment;
   };
   FMD_PARAMETERS: {
     key: 'params';
-    value: FmdParameters;
+    value: JsonValue; // FmdParameters
   };
-  TRANSACTIONS: {
-    key: CommitmentSource_Transaction['id'];
-    value: TransactionInfo;
+  TRANSACTION_INFO: {
+    key: string; // string base64 TransactionInfo['id']['inner']
+    value: JsonValue; // TransactionInfo
   };
   // ======= Json serialized values =======
   // Allows wasm crate to directly deserialize
   ASSETS: {
-    key: Base64Str; // DenomMetadata['penumbraAssetId']['inner']
-    value: JsonValue;
+    key: string; // string base64 DenomMetadata['penumbraAssetId']['inner']
+    value: JsonValue; // DenomMetadata
   };
   SPENDABLE_NOTES: {
-    key: Base64Str; // SpendableNoteRecord['noteCommitment']['inner']
-    value: JsonValue;
+    key: string; // string base64 SpendableNoteRecord['noteCommitment']['inner']
+    value: JsonValue; // SpendableNoteRecord
     indexes: {
-      nullifier: Base64Str; // SpendableNoteRecord['nullifier']['inner']
+      nullifier: string; // string base64 Jsonified<SpendableNoteRecord['nullifier']['inner']>
     };
   };
   // Store for Notes that have been detected but cannot yet be spent
   // Used in wasm crate to process swap and swap claim
   NOTES: {
-    key: Base64Str; // StateCommitment  key is not part of the stored object
-    value: JsonValue;
+    key: string; // string base64 StateCommitment['inner']  key is not part of the stored object
+    value: JsonValue; // Note>;
   };
   SWAPS: {
-    key: Base64Str; // SwapRecord['swapCommitment']['inner']
-    value: JsonValue;
+    key: string; // string base64 SwapRecord['swapCommitment']['inner']
+    value: JsonValue; // SwapRecord
     indexes: {
-      nullifier: Base64Str; // SwapRecord['nullifier']['inner']
+      nullifier: string; // base64 SwapRecord['nullifier']['inner']
     };
   };
   GAS_PRICES: {
