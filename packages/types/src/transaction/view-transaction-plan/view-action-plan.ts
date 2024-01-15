@@ -120,6 +120,9 @@ export const viewActionPlan =
         /**
          * Special case -- the `withdrawal` case in the action plan maps to the
          * `ics20Withdrawal` case in the action view.
+         *
+         * This should probably be renamed for consistency. See
+         * https://github.com/penumbra-zone/penumbra/issues/3614.
          */
         return new ActionView({
           actionView: {
