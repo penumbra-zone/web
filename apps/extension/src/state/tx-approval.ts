@@ -18,7 +18,7 @@ export const createTxApprovalSlice: SliceCreator<TxApprovalSlice> = () => ({});
 
 export const txApprovalSelector = (state: AllSlices) => state.txApproval;
 
-export const stubTransactionViewSelector = (state: AllSlices) => {
+export const transactionViewSelector = (state: AllSlices) => {
   const authorizeRequest = state.txApproval.authorizeRequest;
   if (!authorizeRequest?.plan || !state.txApproval.denomMetadataByAssetId) return undefined;
 

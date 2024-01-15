@@ -1,13 +1,13 @@
 import { Button, TransactionViewComponent } from '@penumbra-zone/ui';
 import { useStore } from '../../../state';
-import { stubTransactionViewSelector, txApprovalSelector } from '../../../state/tx-approval';
+import { transactionViewSelector, txApprovalSelector } from '../../../state/tx-approval';
 import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
 import { JsonValue } from '@bufbuild/protobuf';
 
 export const TransactionApproval = () => {
   const { authorizeRequest, responder } = useStore(txApprovalSelector);
-  const transactionView = useStore(stubTransactionViewSelector);
+  const transactionView = useStore(transactionViewSelector);
 
   if (!authorizeRequest || !responder) return;
   const plan = AuthorizeRequest.fromJson(authorizeRequest as JsonValue).plan;
