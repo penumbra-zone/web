@@ -1,13 +1,14 @@
-import { viewActionPlan } from './view-action-plan';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Jsonified } from '../../jsonified';
 import {
   TransactionPlan,
   TransactionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { JsonValue } from '@bufbuild/protobuf';
+import { viewActionPlan } from './view-action-plan';
 
 export const viewTransactionPlan = (
   txPlan: TransactionPlan,
-  denomMetadataByAssetId: Record<string, JsonValue>,
+  denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
 ): TransactionView => {
   const returnAddress = txPlan.memoPlan?.plaintext?.returnAddress;
   if (!returnAddress) throw new Error('No return address found in transaction plan');

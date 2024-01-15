@@ -9,7 +9,6 @@ export const isTxApprovalReq = (req: PopupRequest): req is TxApproval => {
 
 export const handleTxApproval: InternalMessageHandler<TxApproval> = (jsonReq, responder) => {
   useStore.setState(state => {
-    // @ts-expect-error Typescript doesn't like JsonValue could possibly be very deep
     state.txApproval.authorizeRequest = jsonReq.authorizeRequest;
     state.txApproval.denomMetadataByAssetId = jsonReq.denomMetadataByAssetId;
     state.txApproval.responder = responder;

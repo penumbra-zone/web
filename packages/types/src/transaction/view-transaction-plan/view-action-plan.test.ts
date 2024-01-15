@@ -17,6 +17,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { uint8ArrayToBase64 } from '../../base64';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { Jsonified } from '../../jsonified';
 
 describe('viewActionPlan()', () => {
   const address =
@@ -24,7 +25,7 @@ describe('viewActionPlan()', () => {
   const assetId = new AssetId({ inner: new Uint8Array() });
   const base64AssetId = uint8ArrayToBase64(assetId.inner);
   const denomMetadata = new DenomMetadata({ penumbraAssetId: assetId });
-  const metadataByAssetId = { [base64AssetId]: denomMetadata.toJson() };
+  const metadataByAssetId = { [base64AssetId]: denomMetadata.toJson() as Jsonified<DenomMetadata> };
 
   describe('`spend` action', () => {
     const validSpendActionPlan = new ActionPlan({

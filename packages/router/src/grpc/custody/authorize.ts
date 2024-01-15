@@ -4,12 +4,10 @@ import { approverCtx, extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx'
 import { generateSpendKey, authorizePlan } from '@penumbra-zone/wasm-ts';
 
 import { Key } from '@penumbra-zone/crypto-web';
-import { Box, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import { Box, Jsonified, uint8ArrayToBase64 } from '@penumbra-zone/types';
 
 import { ConnectError, Code } from '@connectrpc/connect';
-import { JsonValue } from '@bufbuild/protobuf';
-
-type DenomMetadataAsJson = JsonValue;
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) throw new ConnectError('No plan included in request', Code.InvalidArgument);
@@ -21,10 +19,11 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   const services = ctx.values.get(servicesCtx);
   const walletServices = await services.getWalletServices();
   const assetsMetadata = await walletServices.indexedDb.getAllAssetsMetadata();
-  const denomMetadataByAssetId = assetsMetadata.reduce<Record<string, DenomMetadataAsJson>>(
+  const denomMetadataByAssetId = assetsMetadata.reduce<Record<string, Jsonified<DenomMetadata>>>(
     (prev, curr) => {
       if (curr.penumbraAssetId) {
-        prev[uint8ArrayToBase64(curr.penumbraAssetId.inner)] = curr.toJson();
+        prev[uint8ArrayToBase64(curr.penumbraAssetId.inner)] =
+          curr.toJson() as Jsonified<DenomMetadata>;
       }
       return prev;
     },

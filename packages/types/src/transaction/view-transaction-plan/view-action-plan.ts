@@ -3,6 +3,7 @@ import {
   ActionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import {
+  DenomMetadata,
   Value,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
@@ -14,12 +15,12 @@ import {
   SpendPlan,
   SpendView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
-import { JsonValue } from '@bufbuild/protobuf';
 import { uint8ArrayToBase64 } from '../../base64';
+import { Jsonified } from '../../jsonified';
 
 const getValueView = (
   value: Value | undefined,
-  denomMetadataByAssetId: Record<string, JsonValue>,
+  denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
 ): ValueView => {
   if (!value) throw new Error('No value to view');
   if (!value.assetId) throw new Error('No asset ID in value');
@@ -33,13 +34,16 @@ const getValueView = (
       case: 'knownDenom',
       value: {
         amount: value.amount,
-        denom: denomMetadata,
+        denom: DenomMetadata.fromJson(denomMetadata),
       },
     },
   });
 };
 
-const getNoteView = (note: Note | undefined, denomMetadataByAssetId: Record<string, JsonValue>) => {
+const getNoteView = (
+  note: Note | undefined,
+  denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
+) => {
   if (!note) throw new Error('No note to view');
   if (!note.address) throw new Error('No address in note');
   if (!note.value) throw new Error('No value in note');
@@ -57,7 +61,7 @@ const getNoteView = (note: Note | undefined, denomMetadataByAssetId: Record<stri
 
 const getSpendView = (
   spendPlan: SpendPlan,
-  denomMetadataByAssetId: Record<string, JsonValue>,
+  denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
 ): SpendView => {
   if (!spendPlan.note?.address) throw new Error('No address in spend plan');
 
@@ -73,7 +77,7 @@ const getSpendView = (
 
 const getOutputView = (
   outputPlan: OutputPlan,
-  denomMetadataByAssetId: Record<string, JsonValue>,
+  denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
 ): OutputView => {
   if (!outputPlan.destAddress) throw new Error('No destAddress in output plan');
 
@@ -99,7 +103,7 @@ const getOutputView = (
 };
 
 export const viewActionPlan =
-  (denomMetadataByAssetId: Record<string, JsonValue>) =>
+  (denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>) =>
   (actionPlan: ActionPlan): ActionView => {
     switch (actionPlan.action.case) {
       case 'spend':
