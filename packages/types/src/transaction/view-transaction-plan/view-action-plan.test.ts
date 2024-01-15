@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { getStubActionViewFromPlan } from './get-stub-action-view-from-plan';
+import { viewActionPlan } from './view-action-plan';
 import {
   ActionPlan,
   ActionView,
@@ -15,10 +15,10 @@ import {
   DenomMetadata,
   ValueView_KnownDenom,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { uint8ArrayToBase64 } from '../base64';
+import { uint8ArrayToBase64 } from '../../base64';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
-describe('getStubActionViewFromPlan()', () => {
+describe('viewActionPlan()', () => {
   const address =
     'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
   const assetId = new AssetId({ inner: new Uint8Array() });
@@ -52,11 +52,11 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No address in spend plan');
+      expect(() => viewActionPlan({})(actionPlan)).toThrow('No address in spend plan');
     });
 
     test('includes the amount', () => {
-      const actionView = getStubActionViewFromPlan(metadataByAssetId)(validSpendActionPlan);
+      const actionView = viewActionPlan(metadataByAssetId)(validSpendActionPlan);
       const spendView = actionView.actionView.value as SpendView;
       const spendViewVisible = spendView.spendView.value as SpendView_Visible;
 
@@ -78,11 +78,11 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No value in note');
+      expect(() => viewActionPlan({})(actionPlan)).toThrow('No value in note');
     });
 
     test('includes the denom metadata', () => {
-      const actionView = getStubActionViewFromPlan(metadataByAssetId)(validSpendActionPlan);
+      const actionView = viewActionPlan(metadataByAssetId)(validSpendActionPlan);
       const spendView = actionView.actionView.value as SpendView;
       const spendViewVisible = spendView.spendView.value as SpendView_Visible;
       const valueView = spendViewVisible.note!.value?.valueView.value as ValueView_KnownDenom;
@@ -103,7 +103,7 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No asset ID in value');
+      expect(() => viewActionPlan({})(actionPlan)).toThrow('No asset ID in value');
     });
 
     test('throws if the asset ID refers to an unknown asset type', () => {
@@ -119,7 +119,7 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow(
+      expect(() => viewActionPlan({})(actionPlan)).toThrow(
         'Asset ID in spend plan refers to an unknown asset type',
       );
     });
@@ -141,7 +141,7 @@ describe('getStubActionViewFromPlan()', () => {
     });
 
     test('includes the destAddress', () => {
-      const actionView = getStubActionViewFromPlan(metadataByAssetId)(validOutputActionPlan);
+      const actionView = viewActionPlan(metadataByAssetId)(validOutputActionPlan);
       const outputView = actionView.actionView.value as OutputView;
       const outputViewVisible = outputView.outputView.value as OutputView_Visible;
 
@@ -161,13 +161,11 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow(
-        'No destAddress in output plan',
-      );
+      expect(() => viewActionPlan({})(actionPlan)).toThrow('No destAddress in output plan');
     });
 
     test('includes the amount', () => {
-      const actionView = getStubActionViewFromPlan(metadataByAssetId)(validOutputActionPlan);
+      const actionView = viewActionPlan(metadataByAssetId)(validOutputActionPlan);
       const outputView = actionView.actionView.value as OutputView;
       const outputViewVisible = outputView.outputView.value as OutputView_Visible;
 
@@ -187,11 +185,11 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No value to view');
+      expect(() => viewActionPlan({})(actionPlan)).toThrow('No value to view');
     });
 
     test('includes the denom metadata', () => {
-      const actionView = getStubActionViewFromPlan(metadataByAssetId)(validOutputActionPlan);
+      const actionView = viewActionPlan(metadataByAssetId)(validOutputActionPlan);
       const outputView = actionView.actionView.value as OutputView;
       const outputViewVisible = outputView.outputView.value as OutputView_Visible;
       const valueView = outputViewVisible.note!.value?.valueView.value as ValueView_KnownDenom;
@@ -212,7 +210,7 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow('No asset ID in value');
+      expect(() => viewActionPlan({})(actionPlan)).toThrow('No asset ID in value');
     });
 
     test('throws if the asset ID refers to an unknown asset type', () => {
@@ -229,7 +227,7 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      expect(() => getStubActionViewFromPlan({})(actionPlan)).toThrow(
+      expect(() => viewActionPlan({})(actionPlan)).toThrow(
         'Asset ID in spend plan refers to an unknown asset type',
       );
     });
@@ -244,7 +242,7 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      const actionView = getStubActionViewFromPlan({})(actionPlan);
+      const actionView = viewActionPlan({})(actionPlan);
 
       expect(
         actionView.equals(
@@ -268,7 +266,7 @@ describe('getStubActionViewFromPlan()', () => {
         },
       });
 
-      const actionView = getStubActionViewFromPlan({})(actionPlan);
+      const actionView = viewActionPlan({})(actionPlan);
 
       expect(
         actionView.equals(

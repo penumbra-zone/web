@@ -1,11 +1,11 @@
-import { getStubActionViewFromPlan } from './get-stub-action-view-from-plan';
+import { viewActionPlan } from './view-action-plan';
 import {
   TransactionPlan,
   TransactionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { JsonValue } from '@bufbuild/protobuf';
 
-export const getStubTransactionViewFromPlan = (
+export const viewTransactionPlan = (
   txPlan: TransactionPlan,
   denomMetadataByAssetId: Record<string, JsonValue>,
 ): TransactionView => {
@@ -17,7 +17,7 @@ export const getStubTransactionViewFromPlan = (
 
   return new TransactionView({
     bodyView: {
-      actionViews: txPlan.actions.map(getStubActionViewFromPlan(denomMetadataByAssetId)),
+      actionViews: txPlan.actions.map(viewActionPlan(denomMetadataByAssetId)),
       fee,
       memoView: {
         memoView: {

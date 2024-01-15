@@ -1,11 +1,11 @@
 import { describe, expect, test } from 'vitest';
-import { getStubTransactionViewFromPlan } from './get-stub-transaction-view-from-plan';
+import { viewTransactionPlan } from '.';
 import {
   MemoView_Visible,
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
-describe('getStubTransactionViewFromPlan()', () => {
+describe('viewTransactionPlan()', () => {
   const returnAddress =
     'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
   const chainId = 'testnet';
@@ -26,7 +26,7 @@ describe('getStubTransactionViewFromPlan()', () => {
   });
 
   test('includes the return address', () => {
-    const txnView = getStubTransactionViewFromPlan(validTxnPlan, {});
+    const txnView = viewTransactionPlan(validTxnPlan, {});
     const memoViewValue = txnView.bodyView!.memoView!.memoView.value! as MemoView_Visible;
 
     expect(memoViewValue.plaintext!.returnAddress?.addressView.value?.address?.altBech32m).toBe(
@@ -35,18 +35,18 @@ describe('getStubTransactionViewFromPlan()', () => {
   });
 
   test('throws when there is no return address', () => {
-    expect(() => getStubTransactionViewFromPlan(new TransactionPlan(), {})).toThrow(
+    expect(() => viewTransactionPlan(new TransactionPlan(), {})).toThrow(
       'No return address found in transaction plan',
     );
   });
 
   test('includes the fee', () => {
-    expect(getStubTransactionViewFromPlan(validTxnPlan, {}).bodyView!.fee).toBe(validTxnPlan.fee);
+    expect(viewTransactionPlan(validTxnPlan, {}).bodyView!.fee).toBe(validTxnPlan.fee);
   });
 
   test('throws when there is no fee', () => {
     expect(() =>
-      getStubTransactionViewFromPlan(
+      viewTransactionPlan(
         new TransactionPlan({
           memoPlan: {
             plaintext: {
@@ -60,16 +60,14 @@ describe('getStubTransactionViewFromPlan()', () => {
   });
 
   test('includes the memo', () => {
-    const txnView = getStubTransactionViewFromPlan(validTxnPlan, {});
+    const txnView = viewTransactionPlan(validTxnPlan, {});
     const memoViewValue = txnView.bodyView!.memoView!.memoView.value! as MemoView_Visible;
 
     expect(memoViewValue.plaintext!.text).toBe('Memo text here');
   });
 
   test('includes the transaction parameters', () => {
-    expect(
-      getStubTransactionViewFromPlan(validTxnPlan, {}).bodyView!.transactionParameters,
-    ).toEqual({
+    expect(viewTransactionPlan(validTxnPlan, {}).bodyView!.transactionParameters).toEqual({
       chainId,
       expiryHeight,
     });

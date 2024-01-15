@@ -15,7 +15,7 @@ import {
   SpendView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import { JsonValue } from '@bufbuild/protobuf';
-import { uint8ArrayToBase64 } from '../base64';
+import { uint8ArrayToBase64 } from '../../base64';
 
 const getValueView = (
   value: Value | undefined,
@@ -98,7 +98,7 @@ const getOutputView = (
   });
 };
 
-export const getStubActionViewFromPlan =
+export const viewActionPlan =
   (denomMetadataByAssetId: Record<string, JsonValue>) =>
   (actionPlan: ActionPlan): ActionView => {
     switch (actionPlan.action.case) {
