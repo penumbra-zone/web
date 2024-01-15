@@ -23,10 +23,11 @@ import { transactionPlanner } from './transaction-planner';
 import { unclaimedSwaps } from './unclaimed-swaps';
 import { walletId } from './wallet-id';
 import { witnessAndBuild } from './witness-and-build';
+import { authorizeAndBuild } from './authorize-and-build';
 import { witness } from './witness';
 import { notesForVoting } from './notes-for-voting';
 
-export const viewImpl: Omit<Impl, 'authorizeAndBuild' | 'ownedPositionIds'> = {
+export const viewImpl: Omit<Impl, 'ownedPositionIds'> = {
   addressByIndex,
   appParameters,
   assets,
@@ -50,4 +51,5 @@ export const viewImpl: Omit<Impl, 'authorizeAndBuild' | 'ownedPositionIds'> = {
   walletId,
   witnessAndBuild,
   witness,
+  authorizeAndBuild
 };
