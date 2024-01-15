@@ -1,5 +1,6 @@
 import { createPromiseClient } from '@connectrpc/connect';
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
 import {
   createChannelTransport,
   ChannelClientLabel,
@@ -23,12 +24,21 @@ export const getPenumbraPort = () => {
   return port;
 };
 
-export const grpcClient = createPromiseClient(
+export const viewClient = createPromiseClient(
   ViewProtocolService,
   createChannelTransport({
     defaultTimeoutMs: 10000,
     serviceType: ViewProtocolService,
     getPort: getPenumbraPort,
     jsonOptions: { typeRegistry },
+  }),
+);
+
+export const custodyClient = createPromiseClient(
+  CustodyProtocolService,
+  createChannelTransport({
+    defaultTimeoutMs: 10000,
+    serviceType: CustodyProtocolService,
+    getPort: getPenumbraPort,
   }),
 );
