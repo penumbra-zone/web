@@ -136,6 +136,9 @@ export const viewActionPlan =
         /**
          * `<ActionViewComponent />` only renders data about the `spend` and
          * `output` cases. For all other cases, it just renders the action name.
+         *
+         * @todo As we render more data about other action types, add them as
+         * cases above.
          */
         return new ActionView({
           actionView: {
