@@ -20,11 +20,10 @@ import {
   NoteSource,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
-import { Note } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import { Base64Str } from './base64';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
-import { Jsonified } from './internal-msg/shared';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import { JsonValue } from '@bufbuild/protobuf';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -93,27 +92,27 @@ export interface PenumbraDb extends DBSchema {
   // ======= Json serialized values =======
   // Allows wasm crate to directly deserialize
   ASSETS: {
-    key: Base64Str; // Jsonified<DenomMetadata['penumbraAssetId']['inner']>
-    value: Jsonified<DenomMetadata>;
+    key: Base64Str; // DenomMetadata['penumbraAssetId']['inner']
+    value: JsonValue;
   };
   SPENDABLE_NOTES: {
-    key: Base64Str; // Jsonified<SpendableNoteRecord['noteCommitment']['inner']>
-    value: Jsonified<SpendableNoteRecord>;
+    key: Base64Str; // SpendableNoteRecord['noteCommitment']['inner']
+    value: JsonValue;
     indexes: {
-      nullifier: Base64Str; // Jsonified<SpendableNoteRecord['nullifier']['inner']>
+      nullifier: Base64Str; // SpendableNoteRecord['nullifier']['inner']
     };
   };
   // Store for Notes that have been detected but cannot yet be spent
   // Used in wasm crate to process swap and swap claim
   NOTES: {
-    key: Base64Str; // Jsonified<StateCommitment>  key is not part of the stored object
-    value: Jsonified<Note>;
+    key: Base64Str; // StateCommitment  key is not part of the stored object
+    value: JsonValue;
   };
   SWAPS: {
-    key: Base64Str; // Jsonified<SwapRecord['swapCommitment']['inner']>
-    value: Jsonified<SwapRecord>;
+    key: Base64Str; // SwapRecord['swapCommitment']['inner']
+    value: JsonValue;
     indexes: {
-      nullifier: Base64Str; // Jsonified<SwapRecord['nullifier']['inner']>
+      nullifier: Base64Str; // SwapRecord['nullifier']['inner']
     };
   };
   GAS_PRICES: {
