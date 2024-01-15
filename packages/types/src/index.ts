@@ -21,3 +21,4 @@ export * from './std-route';
 export * from './amount';
 export * from './chain';
 export * from './account';
+export * from './jsonified';
