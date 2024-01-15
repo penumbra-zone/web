@@ -25,6 +25,11 @@ import { Base64Str } from './base64';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { Jsonified } from './internal-msg/shared';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import {
+  PositionId,
+  PositionState,
+  TradingPair,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -36,29 +41,57 @@ export interface IndexedDbInterface {
   subscribe<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
     table: StoreName,
   ): AsyncGenerator<IdbUpdate<DBTypes, StoreName>, void>;
+
   constants(): IdbConstants;
+
   clear(): Promise<void>;
+
   getLastBlockSynced(): Promise<bigint | undefined>;
+
   getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
+
   getNoteByCommitment(commitment: StateCommitment): Promise<SpendableNoteRecord | undefined>;
+
   saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
+
   getAllNotes(): Promise<SpendableNoteRecord[]>;
+
   saveTransactionInfo(tx: TransactionInfo): Promise<void>;
+
   getTransaction(source: NoteSource): Promise<TransactionInfo | undefined>;
+
   getAllTransactions(): Promise<TransactionInfo[]>;
+
   getAssetsMetadata(assetId: AssetId): Promise<DenomMetadata | undefined>;
+
   saveAssetsMetadata(metadata: DenomMetadata): Promise<void>;
+
   getAllAssetsMetadata(): Promise<DenomMetadata[]>;
+
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
+
   saveScanResult(updates: ScanResult): Promise<void>;
+
   getFmdParams(): Promise<FmdParameters | undefined>;
+
   saveFmdParams(params: FmdParameters): Promise<void>;
+
   getAllSwaps(): Promise<SwapRecord[]>;
+
   getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined>;
+
   saveSwap(note: SwapRecord): Promise<void>;
+
   getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined>;
+
   getGasPrices(): Promise<GasPrices | undefined>;
+
   saveGasPrices(value: GasPrices): Promise<void>;
+
+  getOwnedPositionIds(
+    positionState: PositionState | undefined,
+    tradingPair: TradingPair | undefined,
+  ): Promise<PositionId[]>;
 }
 
 export interface PenumbraDb extends DBSchema {

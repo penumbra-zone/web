@@ -26,6 +26,11 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import {
+  PositionId,
+  PositionState,
+  TradingPair,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -253,5 +258,12 @@ export class IndexedDb implements IndexedDbInterface {
 
   async saveGasPrices(value: GasPrices): Promise<void> {
     await this.u.update({ table: 'GAS_PRICES', value, key: 'gas_prices' });
+  }
+
+  async getOwnedPositionIds(
+    positionState: PositionState | undefined,
+    tradingPair: TradingPair | undefined,
+  ): Promise<PositionId[]> {
+    return Promise.resolve([]);
   }
 }
