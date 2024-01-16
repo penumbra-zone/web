@@ -15,17 +15,19 @@ import {
   DenomMetadata,
   ValueView_KnownDenom,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { uint8ArrayToBase64 } from '../../base64';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Jsonified } from '../../jsonified';
+import { bech32AssetId } from '../../asset';
 
 describe('viewActionPlan()', () => {
   const address =
     'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
   const assetId = new AssetId({ inner: new Uint8Array() });
-  const base64AssetId = uint8ArrayToBase64(assetId.inner);
+  const assetIdAsString = bech32AssetId(assetId);
   const denomMetadata = new DenomMetadata({ penumbraAssetId: assetId });
-  const metadataByAssetId = { [base64AssetId]: denomMetadata.toJson() as Jsonified<DenomMetadata> };
+  const metadataByAssetId = {
+    [assetIdAsString]: denomMetadata.toJson() as Jsonified<DenomMetadata>,
+  };
 
   describe('`spend` action', () => {
     const validSpendActionPlan = new ActionPlan({

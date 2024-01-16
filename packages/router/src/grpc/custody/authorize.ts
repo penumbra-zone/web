@@ -4,7 +4,7 @@ import { approverCtx, extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx'
 import { generateSpendKey, authorizePlan } from '@penumbra-zone/wasm-ts';
 
 import { Key } from '@penumbra-zone/crypto-web';
-import { Box, Jsonified, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import { Box, Jsonified, bech32AssetId } from '@penumbra-zone/types';
 
 import { ConnectError, Code, HandlerContext } from '@connectrpc/connect';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
@@ -15,8 +15,7 @@ const getDenomMetadataByAssetId = async (ctx: HandlerContext) => {
   const assetsMetadata = await walletServices.indexedDb.getAllAssetsMetadata();
   return assetsMetadata.reduce<Record<string, Jsonified<DenomMetadata>>>((prev, curr) => {
     if (curr.penumbraAssetId) {
-      prev[uint8ArrayToBase64(curr.penumbraAssetId.inner)] =
-        curr.toJson() as Jsonified<DenomMetadata>;
+      prev[bech32AssetId(curr.penumbraAssetId)] = curr.toJson() as Jsonified<DenomMetadata>;
     }
     return prev;
   }, {});
