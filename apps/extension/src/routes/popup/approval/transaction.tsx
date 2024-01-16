@@ -7,7 +7,7 @@ export const TransactionApproval = () => {
   const { authorizeRequest, responder } = useStore(txApprovalSelector);
   const transactionView = useStore(transactionViewSelector);
 
-  if (!authorizeRequest?.plan || !responder) return null;
+  if (!authorizeRequest?.plan || !responder || !transactionView) return null;
 
   return (
     <div className='flex h-screen flex-col justify-between p-[30px] pt-10 '>
@@ -16,7 +16,7 @@ export const TransactionApproval = () => {
           Confirm transaction
         </p>
 
-        {transactionView && <TransactionViewComponent txv={transactionView} />}
+        <TransactionViewComponent txv={transactionView} />
 
         <div className='mt-8'>
           <JsonViewer jsonObj={authorizeRequest} />
