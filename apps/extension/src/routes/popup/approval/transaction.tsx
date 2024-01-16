@@ -7,7 +7,7 @@ export const TransactionApproval = () => {
   const { authorizeRequest, responder } = useStore(txApprovalSelector);
   const transactionView = useStore(transactionViewSelector);
 
-  if (!authorizeRequest?.plan || !responder) return;
+  if (!authorizeRequest?.plan || !responder) return null;
 
   return (
     <div className='flex h-screen flex-col justify-between p-[30px] pt-10 '>
