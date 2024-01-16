@@ -123,7 +123,7 @@ describe('viewActionPlan()', () => {
       });
 
       expect(() => viewActionPlan({})(actionPlan)).toThrow(
-        'Asset ID in spend plan refers to an unknown asset type',
+        'Asset ID refers to an unknown asset type',
       );
     });
   });
@@ -231,7 +231,7 @@ describe('viewActionPlan()', () => {
       });
 
       expect(() => viewActionPlan({})(actionPlan)).toThrow(
-        'Asset ID in spend plan refers to an unknown asset type',
+        'Asset ID refers to an unknown asset type',
       );
     });
   });

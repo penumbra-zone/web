@@ -27,7 +27,7 @@ const getValueView = (
   if (!value.amount) throw new Error('No amount in value');
 
   const denomMetadata = denomMetadataByAssetId[bech32AssetId(value.assetId)];
-  if (!denomMetadata) throw new Error('Asset ID in spend plan refers to an unknown asset type');
+  if (!denomMetadata) throw new Error('Asset ID refers to an unknown asset type');
 
   return new ValueView({
     valueView: {
