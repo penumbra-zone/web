@@ -2,16 +2,12 @@ import { Button, TransactionViewComponent } from '@penumbra-zone/ui';
 import { useStore } from '../../../state';
 import { transactionViewSelector, txApprovalSelector } from '../../../state/tx-approval';
 import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
-import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
-import { JsonValue } from '@bufbuild/protobuf';
 
 export const TransactionApproval = () => {
   const { authorizeRequest, responder } = useStore(txApprovalSelector);
   const transactionView = useStore(transactionViewSelector);
 
-  if (!authorizeRequest || !responder) return;
-  const plan = AuthorizeRequest.fromJson(authorizeRequest as JsonValue).plan;
-  if (!plan) return null;
+  if (!authorizeRequest?.plan || !responder) return;
 
   return (
     <div className='flex h-screen flex-col justify-between p-[30px] pt-10 '>
