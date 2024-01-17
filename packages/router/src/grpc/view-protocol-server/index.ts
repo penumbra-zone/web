@@ -49,5 +49,5 @@ export const viewImpl: Omit<Impl, 'ownedPositionIds' | 'witnessAndBuild'> = {
   unclaimedSwaps,
   walletId,
   witness,
-  authorizeAndBuild
+  authorizeAndBuild,
 };

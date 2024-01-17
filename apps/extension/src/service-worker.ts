@@ -25,7 +25,7 @@ import { connectChromeRuntimeAdapter } from '@penumbra-zone/transport/src/chrome
 import {
   ConnectError,
   ConnectRouter,
-    createContextValues,
+  createContextValues,
   createPromiseClient,
 } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
