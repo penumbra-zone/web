@@ -11,7 +11,7 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async (req, ctx) => 
     if (!req.transactionPlan) throw new ConnectError('No tx plan in request', Code.InvalidArgument);
 
     // Request authorization data without awaiting
-    const authorizationDataPromise = authorize(new AuthorizeRequest ({ plan: req.transactionPlan! }), ctx)!;
+    const authorizationDataPromise = authorize(new AuthorizeRequest ({ plan: req.transactionPlan }), ctx)!;
 
     const services = ctx.values.get(servicesCtx);
     const {
