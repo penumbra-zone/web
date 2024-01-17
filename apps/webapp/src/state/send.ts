@@ -87,7 +87,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
 
 // rename to PlanAuthorizeWitnessBuildBroadcast or AuthorizeWitnessBuild?
 const planWitnessBuildBroadcast = async ({ amount, recipient, selection, memo }: SendSlice) => {
-  console.log("Entered planWitnessBuildBroadcast!")
+  console.log('Entered planWitnessBuildBroadcast!');
   if (typeof selection?.accountIndex === 'undefined') throw new Error('no selected account');
   if (!selection.asset) throw new Error('no selected asset');
 
