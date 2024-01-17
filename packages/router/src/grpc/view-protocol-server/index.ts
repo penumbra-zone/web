@@ -47,5 +47,5 @@ export const viewImpl: Omit<Impl, 'notesForVoting' | 'ownedPositionIds' | 'witne
   unclaimedSwaps,
   walletId,
   witness,
-  authorizeAndBuild
+  authorizeAndBuild,
 };
