@@ -69,7 +69,7 @@ const buildAction = async (
   const buildRes = await sendOffscreenMessage<ActionBuildMessage>({
     type: 'BUILD_ACTION',
     request: {
-      transactionPlan: transactionPlan!.toJson() as ActionBuildRequest['transactionPlan'],
+      transactionPlan: transactionPlan.toJson() as ActionBuildRequest['transactionPlan'],
       witness: witness.toJson() as ActionBuildRequest['witness'],
       fullViewingKey,
     },
