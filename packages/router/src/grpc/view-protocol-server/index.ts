@@ -25,8 +25,9 @@ import { walletId } from './wallet-id';
 import { authorizeAndBuild } from './authorize-and-build';
 import { witness } from './witness';
 import { notesForVoting } from './notes-for-voting';
+import { witnessAndBuild } from './witness-and-build';
 
-export const viewImpl: Omit<Impl, 'ownedPositionIds' | 'witnessAndBuild'> = {
+export const viewImpl: Omit<Impl, 'ownedPositionIds'> = {
   addressByIndex,
   appParameters,
   assets,
@@ -50,4 +51,5 @@ export const viewImpl: Omit<Impl, 'ownedPositionIds' | 'witnessAndBuild'> = {
   walletId,
   witness,
   authorizeAndBuild,
+  witnessAndBuild,
 };
