@@ -112,17 +112,8 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, selection, memo }:
 
   if (!plan) throw new Error('no plan in response');
 
-  // RPC methods `custodyClient.authorize` and `viewClient.witnessAndBuild` can't run 
-  // simultaneously in our current construction. Instead, replace these calls with 
-  // a single view service RPC method (`viewClient.authorizeAndBuild`) that handles 
-  // the asynchronous tx approval. This necessitates message handling between the 
-  // view server and custody server since (1) view server handles the build request, 
-  // and (2) custody server handles getting the authorization. The new routing refactor
-  // supports this server-to-server message passing functionality. 
-
-  // Remove `authorizationData` and refactor `authorizeAndBuild` protobuf to not require that field.
-  let tx = plan!;
-  const { data: authorizationData } = await custodyClient.authorize({ plan: tx });
+  // Remove `authorizationData` after modifying protobuf definition
+  const { data: authorizationData } = await custodyClient.authorize({ plan });
   if (!authorizationData) throw new Error('no authorization data in response');
 
   const { transaction } = await viewClient.authorizeAndBuild({
@@ -130,20 +121,6 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, selection, memo }:
     authorizationData,
   });
   if (!transaction) throw new Error('no transaction in response');
-
-  // // Start timer
-  // const startTime = performance.now(); // Record start time
-
-  // const { transaction } = await viewClient.witnessAndBuild({
-  //   transactionPlan: plan,
-  //   authorizationData,
-  // });
-  // if (!transaction) throw new Error('no transaction in response');
-
-  // End timer
-  // const endTime = performance.now()
-  // const executionTime = endTime - startTime;
-  // console.log(`Parallel transaction execution time: ${executionTime} milliseconds`);
 
   const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
   if (!id) throw new Error('no id in broadcast response');
