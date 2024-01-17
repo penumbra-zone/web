@@ -148,7 +148,7 @@ const planWitnessBuildBroadcast = async (plannerReq: TransactionPlannerRequest) 
   const { data: authorizationData } = await custodyClient.authorize({ plan });
   if (!authorizationData) throw new Error('no authorization data in response');
 
-  const { transaction } = await viewClient.witnessAndBuild({
+  const { transaction } = await viewClient.authorizeAndBuild({
     transactionPlan: plan,
     authorizationData,
   });
