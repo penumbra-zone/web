@@ -75,6 +75,7 @@ export class BackgroundConnectionManager {
    * content script or other extension script
    */
   private connectionListener = (clientPort: chrome.runtime.Port) => {
+    // console.log("sender and name: ", clientPort.sender, clientPort.name)
     const sender = clientPort.sender;
     if (
       sender?.origin &&

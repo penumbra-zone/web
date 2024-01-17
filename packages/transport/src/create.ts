@@ -74,6 +74,7 @@ export const createChannelTransport = ({
    */
   const connect = () =>
     Promise.resolve(getPort(serviceType.typeName)).then((gotPort: MessagePort) => {
+      // debugger;
       const initTimeout = new Promise<never>(
         (_, reject) =>
           defaultTimeoutMs &&
