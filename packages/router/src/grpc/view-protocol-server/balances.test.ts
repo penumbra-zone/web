@@ -38,7 +38,7 @@ describe('Balances request handler', () => {
       getWalletServices: () =>
         Promise.resolve({
           indexedDb: {
-            getAllNotes: (): Promise<SpendableNoteRecord[]> => Promise.resolve(testData),
+            getAllSpendableNotes: (): Promise<SpendableNoteRecord[]> => Promise.resolve(testData),
           },
         }),
     } as ServicesInterface;

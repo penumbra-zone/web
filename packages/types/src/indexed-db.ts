@@ -39,10 +39,12 @@ export interface IndexedDbInterface {
   constants(): IdbConstants;
   clear(): Promise<void>;
   getLastBlockSynced(): Promise<bigint | undefined>;
-  getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
-  getNoteByCommitment(commitment: StateCommitment): Promise<SpendableNoteRecord | undefined>;
+  getSpendableNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
+  getSpendableNoteByCommitment(
+    commitment: StateCommitment,
+  ): Promise<SpendableNoteRecord | undefined>;
   saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
-  getAllNotes(): Promise<SpendableNoteRecord[]>;
+  getAllSpendableNotes(): Promise<SpendableNoteRecord[]>;
   saveTransactionInfo(tx: TransactionInfo): Promise<void>;
   getTransactionInfo(txId: TransactionId): Promise<TransactionInfo | undefined>;
   getAllTransactionInfo(): Promise<TransactionInfo[]>;
@@ -89,6 +91,7 @@ export interface PenumbraDb extends DBSchema {
   TRANSACTION_INFO: {
     key: string; // string base64 TransactionInfo['id']['inner']
     value: JsonValue; // TransactionInfo
+    //indexes: { nullifier: string; }; // string base64 TransactionInfo['nullifier']['inner']
   };
   // ======= Json serialized values =======
   // Allows wasm crate to directly deserialize
@@ -100,14 +103,15 @@ export interface PenumbraDb extends DBSchema {
     key: string; // string base64 SpendableNoteRecord['noteCommitment']['inner']
     value: JsonValue; // SpendableNoteRecord
     indexes: {
-      nullifier: string; // string base64 Jsonified<SpendableNoteRecord['nullifier']['inner']>
+      nullifier: string; // string base64 SpendableNoteRecord['nullifier']['inner']
     };
   };
   // Store for Notes that have been detected but cannot yet be spent
   // Used in wasm crate to process swap and swap claim
+  // This table is never written or queried by typescript
   NOTES: {
     key: string; // string base64 StateCommitment['inner']  key is not part of the stored object
-    value: JsonValue; // Note>;
+    value: JsonValue; // Note;
   };
   SWAPS: {
     key: string; // string base64 SwapRecord['swapCommitment']['inner']

@@ -8,9 +8,8 @@ import { sha256Hash } from '@penumbra-zone/crypto-web';
 import {
   BlockProcessorInterface,
   IndexedDbInterface,
+  StoreCommitment,
   ViewServerInterface,
-  hexToUint8Array,
-  uint8ArrayToHex,
 } from '@penumbra-zone/types';
 import { decodeSctRoot, transactionInfo } from '@penumbra-zone/wasm-ts';
 
@@ -19,10 +18,7 @@ import {
   PositionState,
   PositionState_PositionStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
-import {
-  CommitmentSource,
-  Nullifier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 import {
@@ -30,6 +26,7 @@ import {
   SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -90,6 +87,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     // this is an indefinite stream of the (compact) chain from the network
     // intended to run continuously
+    const start = performance.mark('start');
     for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
       startHeight,
       keepAlive: true,
@@ -111,14 +109,18 @@ export class BlockProcessor implements BlockProcessorInterface {
       // - wasm says
       // - every 1000th block
       // - every block at tip
-      const flushReasons =
-        wasmWantsFlush ||
-        compactBlock.height % 1000n === 0n ||
-        compactBlock.height > latestBlockHeight;
+      const flushReasons = {
+        wasmWantsFlush,
+        interval: compactBlock.height % 1000n === 0n,
+        new: compactBlock.height > latestBlockHeight,
+      };
+
+      if (flushReasons.new) console.log('finished sync', performance.measure('start'));
 
       let compactScan;
-      if (flushReasons) {
+      if (Object.values(flushReasons).some(Boolean)) {
         compactScan = this.viewServer.flushUpdates();
+        console.log('flush', compactBlock, flushReasons, compactScan);
 
         // in an atomic query, this
         // - saves 'sctUpdates'
@@ -135,36 +137,37 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.identifyNewAssets(compactScan.newNotes);
       }
 
-      // - nullifiers on this block may match stored notes or swaps
-      // - queries idb for note/swap records
-      // - updates resolved height of record
-      // - returns any touched records with unknown source
-      // identified records may be old, or they may have just landed. wasm
-      // should flush every time we encounter new records, so they are ready in
-      // idb for this resolution.
-      const sourcelessRecords = await this.resolveNullifiers(
+      // nullifiers on this block may match notes or swaps from db
+      // mark them as spent/claimed, return what was used
+      const spentNullifiers = await this.resolveNullifiers(
         compactBlock.nullifiers,
         compactBlock.height,
       );
-
-      console.log(
-        'sourcelessRecords',
-        Array.from(sourcelessRecords.values()).map(x => x.toJsonString()),
+      // commitments on this block?? idk man
+      const commitmentRecords = await this.resolveCommitments(
+        compactScan?.sctUpdates.store_commitments,
       );
 
-      // probably scanning too often?
-      // are some of these equivalent?
-      const fullScanReasons =
-        Boolean(compactBlock.nullifiers.length) ||
-        Boolean(compactScan?.newNotes.length) ||
-        Boolean(compactScan?.newSwaps.length) ||
-        Boolean(sourcelessRecords.size);
+      const fullScanReasons = {
+        'spent nullifiers': spentNullifiers.size,
+        'updated commitments': commitmentRecords.size,
+        'new notes': compactScan?.newNotes.length,
+        'new swaps': compactScan?.newSwaps.length,
+      };
 
-      if (fullScanReasons) {
+      if (Object.values(fullScanReasons).some(Boolean)) {
+        console.log('full scan', compactBlock.height, fullScanReasons);
+
         // this is a network query
         const fullBlock = await this.querier.app.txsByHeight(compactBlock.height);
 
-        const relevantTx = await this.resolveSources(sourcelessRecords, fullBlock.transactions);
+        const relevantTx = await this.identifyRelevantTransactions(
+          Array.from(spentNullifiers.keys()),
+          Array.from(commitmentRecords.keys()),
+          fullBlock.transactions,
+        );
+
+        console.warn('relevantTx', relevantTx.length);
 
         // during wasm tx info generation later, wasm independently queries
         // database for asset metadata, so we have to pre-populate. LpNft
@@ -172,7 +175,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         // identifyNewAssets
         // - detect LpNft position opens, and generate all possible position state metadata
         // - update idb
-        await this.identifyLpNftPositions(Array.from(relevantTx.values()));
+        await this.identifyLpNftPositions(fullBlock.transactions);
 
         // at this point txinfo can be generated and saved. this will resolve
         // pending broadcasts, and populate the transaction list.
@@ -207,24 +210,43 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  // Nullifier is published in network when a note is spent or swap is claimed.
-  // - if we possess a matching note or swap record, mark it as spent/claimed
-  // - if we resolve a record sourced from a transaction, and its id is not
-  // recorded, collect and return.
-  private async resolveNullifiers(nullifiers: Nullifier[], height: bigint) {
-    const recordNeedsSourceTxId = new Map<string, SpendableNoteRecord | SwapRecord>();
+  private async resolveCommitments(commitments?: StoreCommitment[]) {
+    const records = new Map<StateCommitment, SwapRecord | SpendableNoteRecord>();
 
-    // - match nullifiers to idb notes/swaps
-    // - collect any record missing its source
-    // - write to idb.
-    for (const nullifier of nullifiers) {
+    // - match commitments to idb notes/swaps
+    for (const storeCommitment of commitments ?? []) {
+      const stateCommitment = StateCommitment.fromJson(storeCommitment.commitment);
       const record =
-        (await this.indexedDb.getNoteByNullifier(nullifier)) ??
-        (await this.indexedDb.getSwapByNullifier(nullifier));
+        (await this.indexedDb.getSpendableNoteByCommitment(stateCommitment)) ??
+        (await this.indexedDb.getSwapByCommitment(stateCommitment));
 
       if (!record) continue;
 
-      // resolve nullifiers for any records of any source type
+      records.set(stateCommitment, record);
+    }
+
+    if (commitments?.length) console.log('resolveCommitments', commitments.length, records.size);
+
+    return records;
+  }
+
+  // Nullifier is published in network when a note is spent or swap is claimed.
+  // - if we possess a matching note or swap record, mark it as spent/claimed
+  // - return all records matched
+  private async resolveNullifiers(nullifiers: Nullifier[], height: bigint) {
+    const spentNullifiers = new Map<Nullifier, SpendableNoteRecord | SwapRecord>();
+
+    for (const nf of nullifiers) {
+      const record =
+        (await this.indexedDb.getSpendableNoteByNullifier(nf)) ??
+        (await this.indexedDb.getSwapByNullifier(nf));
+
+      if (!record) continue;
+      console.log('matched record', record);
+
+      spentNullifiers.set(nf, record);
+
+      // record spend/claim
       if ('heightSpent' in record) {
         // spendable note
         record.heightSpent = height;
@@ -234,29 +256,33 @@ export class BlockProcessor implements BlockProcessorInterface {
         record.heightClaimed = height;
         await this.indexedDb.saveSwap(record);
       }
-
-      // we want to recover ids for transaction sources that don't have an id,
-      // represented by an empty Uint8Array
-      if (
-        record.source?.equals({ source: { case: 'transaction', value: { id: new Uint8Array() } } })
-      )
-        recordNeedsSourceTxId.set(uint8ArrayToHex(nullifier.inner), record);
     }
 
-    return recordNeedsSourceTxId;
+    if (nullifiers.length)
+      console.log('resolveNullifiers', nullifiers.length, spentNullifiers.size);
+
+    return spentNullifiers;
   }
 
-  // TODO: can we use compactBlock.nullifiers?
-  async resolveSources(
-    sourcelessRecords: Map<string, SwapRecord | SpendableNoteRecord>,
-    blockTransactions: Transaction[],
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async identifyRelevantTransactions(
+    blockSpent: Nullifier[],
+    blockCommitted: StateCommitment[],
+    blockTxs: Transaction[],
   ) {
-    // map all of this block's tx action nullifiers to ids of the containing tx.
-    // nullifier inner as matchable string -> transaction
-    const blockTxByNullifier = new Map<string, Transaction>();
+    console.log('identifyRelevantTransactions', blockTxs.length, {
+      nullifiers: blockSpent.length,
+      commitments: blockCommitted.length,
+    });
 
-    for (const tx of blockTransactions) {
-      const actionsNullifiers = tx.body?.actions.map(({ action }) => {
+    const relevantTx = new Array<Transaction>();
+
+    for (const tx of blockTxs) {
+      const acts = tx.body?.actions;
+      if (!acts) continue;
+
+      // match on nullifiers
+      const txNullifiers = acts.map(({ action }) => {
         switch (action.case) {
           case 'spend':
           case 'swapClaim':
@@ -265,35 +291,32 @@ export class BlockProcessor implements BlockProcessorInterface {
             return;
         }
       });
-      actionsNullifiers?.map(
-        nullifier =>
-          nullifier?.inner.length && blockTxByNullifier.set(uint8ArrayToHex(nullifier.inner), tx),
-      );
-    }
 
-    // match record nullifiers to those tx nullifiers
-    // if we have a tx, we can hash it for id, and assign source
-    // collect txs we use this way, to generate transactioninfos later
-    const relevantTx = new Map<string, Transaction>();
-    for (const [nullifierString, record] of sourcelessRecords.entries()) {
-      const sourceTx = blockTxByNullifier.get(nullifierString);
-      if (!sourceTx) {
-        console.error("no tx on block for nullifier on block, can't generate transactioninfo");
-        continue;
-      }
+      console.log('tx actionsNullifiers', acts.length, txNullifiers.length, txNullifiers);
 
-      const id = await sha256Hash(sourceTx.toBinary());
-      // TODO: is there a race condition here? should we query the record again?
-      record.source = new CommitmentSource({
-        source: { case: 'transaction', value: { id } },
+      // match on commitments
+      const txCommitments = acts.flatMap(({ action }) => {
+        switch (action.case) {
+          case 'output':
+            return action.value.body?.notePayload?.noteCommitment;
+          case 'swap':
+            return action.value.body?.payload?.commitment;
+          case 'swapClaim':
+            return [action.value.body?.output1Commitment, action.value.body?.output2Commitment];
+          default:
+            return;
+        }
       });
-      const idString = uint8ArrayToHex(id);
-      relevantTx.set(idString, sourceTx);
 
-      if (record instanceof SpendableNoteRecord) await this.indexedDb.saveSpendableNote(record);
-      else if (record instanceof SwapRecord) await this.indexedDb.saveSwap(record);
+      console.log('tx actionsCommitments', acts.length, txCommitments.length, txCommitments);
+
+      const txMatchNullifier = txNullifiers.some(an => blockSpent.find(n => n.equals(an)));
+      const txMatchCommitment = txCommitments.some(ac => blockCommitted.find(c => c.equals(ac)));
+      if (txMatchNullifier || txMatchCommitment) {
+        console.log('relevant tx', txMatchNullifier, txMatchCommitment, tx);
+        relevantTx.push(tx);
+      }
     }
-
     return relevantTx;
   }
 
@@ -317,17 +340,20 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  private async saveTransactionInfo(height: bigint, relevantTx: Map<string, Transaction>) {
-    for (const [idString, transaction] of relevantTx) {
+  //private async saveTransactionInfo(height: bigint, relevantTx: Map<string, Transaction>) {
+  private async saveTransactionInfo(height: bigint, allTx: Transaction[]) {
+    for (const transaction of allTx) {
+      console.log('generating info', transaction);
       const { txp: perspective, txv: view } = await transactionInfo(
         this.fullViewingKey,
         transaction,
         this.indexedDb.constants(),
       );
+      const txId = await sha256Hash(transaction.toBinary());
       await this.indexedDb.saveTransactionInfo(
         new TransactionInfo({
           height,
-          id: { inner: hexToUint8Array(idString) },
+          id: { inner: txId },
           transaction,
           perspective,
           view,

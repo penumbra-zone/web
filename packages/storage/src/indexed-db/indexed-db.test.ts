@@ -103,7 +103,7 @@ describe('IndexedDb', () => {
     it('object store should be empty after clear', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
       await db.saveSpendableNote(newNote);
-      expect((await db.getAllNotes()).length).toBe(1);
+      expect((await db.getAllSpendableNotes()).length).toBe(1);
 
       await db.saveAssetsMetadata(denomMetadataA);
       expect((await db.getAllAssetsMetadata()).length).toBe(1);
@@ -141,7 +141,7 @@ describe('IndexedDb', () => {
       expect(await db.getLastBlockSynced()).toBe(1000n);
 
       await db.clear();
-      expect((await db.getAllNotes()).length).toBe(0);
+      expect((await db.getAllSpendableNotes()).length).toBe(0);
       expect((await db.getAllAssetsMetadata()).length).toBe(0);
       expect((await db.getAllTransactionInfo()).length).toBe(0);
       expect(await db.getLastBlockSynced()).toBeUndefined();
@@ -176,7 +176,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveSpendableNote(newNote);
-      const savedSpendableNote = await db.getNoteByNullifier(newNote.nullifier!);
+      const savedSpendableNote = await db.getSpendableNoteByNullifier(newNote.nullifier!);
 
       expect(newNote.equals(savedSpendableNote)).toBeTruthy();
     });
@@ -185,7 +185,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveSpendableNote(newNote);
-      const savedSpendableNotes = await db.getAllNotes();
+      const savedSpendableNotes = await db.getAllSpendableNotes();
 
       expect(savedSpendableNotes.length === 1).toBeTruthy();
       expect(newNote.equals(savedSpendableNotes[0])).toBeTruthy();
@@ -195,7 +195,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveSpendableNote(newNote);
-      const noteByCommitment = await db.getNoteByCommitment(newNote.noteCommitment!);
+      const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment!);
 
       expect(newNote.equals(noteByCommitment)).toBeTruthy();
     });
@@ -203,7 +203,7 @@ describe('IndexedDb', () => {
     it('should return undefined by commitment', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      const noteByCommitment = await db.getNoteByCommitment(newNote.noteCommitment!);
+      const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment!);
 
       expect(noteByCommitment).toBeUndefined();
     });

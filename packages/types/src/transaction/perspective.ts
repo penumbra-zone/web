@@ -1,9 +1,7 @@
 import {
   Action,
   ActionView,
-  MemoCiphertext,
   MemoView,
-  MemoView_Opaque,
   Transaction,
   TransactionBodyView,
   TransactionView,
@@ -54,20 +52,21 @@ export const viewActionFromEmptyPerspective = (action: Action): ActionView | und
 // TODO: make this less bad and add round trip tests (should always be able to recover tx exactly from txv)
 export const viewFromEmptyPerspective = (tx: Transaction): TransactionView => {
   if (!tx.body) throw new Error('no body in transaction');
+  console.warn('viewFromEmptyPerspective', tx);
 
   return new TransactionView({
     bodyView: new TransactionBodyView({
       transactionParameters: tx.body.transactionParameters!,
       detectionData: tx.body.detectionData!,
       memoView: new MemoView({
-        memoView: {
-          case: 'opaque',
-          value: new MemoView_Opaque({
-            ciphertext: new MemoCiphertext({
-              inner: tx.body.memo!.inner,
-            }),
-          }),
-        },
+        memoView: tx.body.memo
+          ? {
+              case: 'opaque',
+              value: {
+                ciphertext: tx.body.memo,
+              },
+            }
+          : { case: undefined },
       }),
       actionViews: tx.body.actions.map(action => {
         return viewActionFromEmptyPerspective(action)!;

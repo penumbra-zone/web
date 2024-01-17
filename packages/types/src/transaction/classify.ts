@@ -6,6 +6,9 @@ export const classifyTransaction = (txv?: TransactionView): string => {
     return 'Unknown';
   }
 
+  const actionTypes = txv.bodyView?.actionViews.map(a => a.actionView.case);
+  const actionTypesString = actionTypes?.join(', ') ?? '';
+
   const hasOpaqueSpend = txv.bodyView?.actionViews.some(
     a => a.actionView.case === 'spend' && a.actionView.value.spendView.case === 'opaque',
   );
@@ -59,9 +62,9 @@ export const classifyTransaction = (txv?: TransactionView): string => {
 
   if (isInternal) {
     // TODO: fill this in with classification of swaps, swapclaims, etc.
-    return 'Unknown (Internal)';
+    return `Unknown ${actionTypesString} (Internal)`;
   }
 
   // Fallthrough
-  return 'Unknown';
+  return `Unknown ${actionTypesString}`;
 };

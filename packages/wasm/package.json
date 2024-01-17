@@ -9,7 +9,7 @@
   "dependencies": {
     "@bufbuild/protobuf": "^1.6.0",
     "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm-bundler": "0.64.1-preview-3",
+    "@penumbra-zone/wasm-bundler": "file:../../../penumbra/crates/wasm/publish/bundler/penumbra-zone-wasm-bundler-0.64.1.tgz",
     "@penumbra-zone/wasm-nodejs": "0.64.1-preview-3",
     "bech32": "^2.0.0",
     "eslint": "^8.56.0",

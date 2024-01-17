@@ -34,7 +34,7 @@ export const nullifierStatus: Impl['nullifierStatus'] = async (req, ctx) => {
   // nullifier is spent.
   const [swap, note] = await Promise.all([
     indexedDb.getSwapByNullifier(nullifier),
-    indexedDb.getNoteByNullifier(nullifier),
+    indexedDb.getSpendableNoteByNullifier(nullifier),
   ]);
   const spent = Boolean(swap?.heightClaimed) || Boolean(note?.heightSpent);
 

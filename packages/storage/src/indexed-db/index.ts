@@ -126,14 +126,18 @@ export class IndexedDb implements IndexedDbInterface {
     return this.db.get('LAST_BLOCK_SYNCED', 'last_block');
   }
 
-  async getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined> {
+  async getSpendableNoteByNullifier(
+    nullifier: Nullifier,
+  ): Promise<SpendableNoteRecord | undefined> {
     const key = uint8ArrayToBase64(nullifier.inner);
     const json = await this.db.getFromIndex('SPENDABLE_NOTES', 'nullifier', key);
     if (!json) return undefined;
     return SpendableNoteRecord.fromJson(json);
   }
 
-  async getNoteByCommitment(commitment: StateCommitment): Promise<SpendableNoteRecord | undefined> {
+  async getSpendableNoteByCommitment(
+    commitment: StateCommitment,
+  ): Promise<SpendableNoteRecord | undefined> {
     const key = uint8ArrayToBase64(commitment.inner);
     const json = await this.db.get('SPENDABLE_NOTES', key);
     if (!json) return undefined;
@@ -160,7 +164,7 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({ table: 'ASSETS', value: metadata.toJson() });
   }
 
-  async getAllNotes() {
+  async getAllSpendableNotes() {
     const jsonVals = await this.db.getAll('SPENDABLE_NOTES');
     return jsonVals.map(a => SpendableNoteRecord.fromJson(a));
   }
