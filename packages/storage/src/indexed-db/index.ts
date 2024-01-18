@@ -256,7 +256,10 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({ table: 'GAS_PRICES', value, key: 'gas_prices' });
   }
 
-  async getNotesForVoting(addressIndex: AddressIndex | undefined, votable_at_height: bigint): Promise<[]> {
+  async getNotesForVoting(
+    addressIndex: AddressIndex | undefined,
+    votable_at_height: bigint,
+  ): Promise<[]> {
     const relevantAssets = [];
 
     // Fetch all assets and filter out the relevant asset IDs
