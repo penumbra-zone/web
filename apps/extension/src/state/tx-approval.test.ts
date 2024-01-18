@@ -1,11 +1,14 @@
 import { AllSlices, initializeStore } from '.';
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { mockLocalExtStorage, mockSessionExtStorage } from '@penumbra-zone/storage';
 import { transactionViewSelector } from './tx-approval';
 import { TransactionPlan } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { Jsonified } from '@penumbra-zone/types';
 import { viewTransactionPlan } from '@penumbra-zone/types/src/transaction/view-transaction-plan';
+
+// Replace the wasm-pack import with the nodejs version so tests can run
+vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
 
 describe('TX Approval Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;

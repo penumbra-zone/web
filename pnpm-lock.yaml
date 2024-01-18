@@ -21,6 +21,12 @@ importers:
         specifier: 1.1.4-20231211173138-9acabec31a72.1
         version: 1.1.4-20231211173138-9acabec31a72.1(@bufbuild/protobuf@1.5.1)(@connectrpc/connect@1.1.4)
     devDependencies:
+      '@penumbra-zone/wasm-bundler':
+        specifier: 0.64.0
+        version: 0.64.0
+      '@penumbra-zone/wasm-nodejs':
+        specifier: 0.64.0
+        version: 0.64.0
       '@turbo/gen':
         specifier: ^1.11.1
         version: 1.11.1(@types/node@20.10.4)(typescript@5.3.3)
@@ -2268,11 +2274,9 @@ packages:
 
   /@penumbra-zone/wasm-bundler@0.64.0:
     resolution: {integrity: sha512-1yj4tCcl9GoLy+EqG+IuoJ/NP9XocpaNRD6zsJLcsdrvNpoBiczqIDhblvZ7hiDwGsB3UB8kg+foAbpvKal2pw==}
-    dev: false
 
   /@penumbra-zone/wasm-nodejs@0.64.0:
     resolution: {integrity: sha512-55MTYysSpKoqb8l1DkiJEbSGai9Rj4kgn3/h5wqfYRqRePaRRzQgW/plkNU2zRAzT2pNeJTOrRUG4dBnEAKgdA==}
-    dev: false
 
   /@pkgjs/parseargs@0.11.0:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
