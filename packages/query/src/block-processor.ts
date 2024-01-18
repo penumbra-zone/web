@@ -8,6 +8,7 @@ import { sha256Hash } from '@penumbra-zone/crypto-web';
 import {
   BlockProcessorInterface,
   IndexedDbInterface,
+  ScanBlockResult,
   ViewServerInterface,
   hexToUint8Array,
   uint8ArrayToHex,
@@ -71,8 +72,24 @@ export class BlockProcessor implements BlockProcessorInterface {
     return this.blockSyncPromise;
   }
 
+  stopSync() {
+    this.abortController.abort();
+  }
+
+  // TODO: should this be here? it's only ever used as a fallback by view protocol server
+  // identify failures?
+  async getTransactionInfo(id: TransactionId): Promise<TransactionInfo> {
+    const { transaction, height } = await this.querier.tendermint.getTransaction(id);
+    const { txp: perspective, txv: view } = await transactionInfo(
+      this.fullViewingKey,
+      transaction,
+      this.indexedDb.constants(),
+    );
+    return new TransactionInfo({ height, id, transaction, perspective, view });
+  }
+
   // After a failure, retrying the sync is critical. An exponential-backoff is used.
-  async autoRetrySync() {
+  private async autoRetrySync() {
     try {
       await backOff(() => this.syncAndStore(), {
         maxDelay: 30_000, // 30 seconds
@@ -88,10 +105,10 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  stopSync() {
-    this.abortController.abort();
-  }
-
+  /**
+   * Populates IndexedDB with data from the blockchain. Most of what's in
+   * IndexedDB comes from this method.
+   */
   private async syncAndStore() {
     const lastBlockSynced = await this.indexedDb.getLastBlockSynced();
     const startHeight = lastBlockSynced ? lastBlockSynced + 1n : 0n;
@@ -132,7 +149,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       // state commitments identifying new records in this compact block, with a
       // boolean to indicate if we should recover their source id
       const blockCommitments = new Map<CommitmentHexString, NeedsSourceId>();
-      let flush;
+      let flush: ScanBlockResult | undefined;
       if (Object.values(flushReasons).some(Boolean)) {
         flush = this.viewServer.flushUpdates();
         console.log('flush', flushReasons, flush, compactBlock);
@@ -232,6 +249,10 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
+  /**
+   * Save any as-yet-unknown asset metadata found in a block's notes to our
+   * database.
+   */
   private async identifyNewAssets(newNotes: SpendableNoteRecord[]) {
     for (const n of newNotes) {
       const assetId = n.note?.value?.assetId;
@@ -384,18 +405,6 @@ export class BlockProcessor implements BlockProcessorInterface {
         }),
       );
     }
-  }
-
-  // TODO: should this be here? it's only ever used as a fallback by view protocol server
-  // identify failures?
-  async getTransactionInfo(id: TransactionId): Promise<TransactionInfo> {
-    const { transaction, height } = await this.querier.tendermint.getTransaction(id);
-    const { txp: perspective, txv: view } = await transactionInfo(
-      this.fullViewingKey,
-      transaction,
-      this.indexedDb.constants(),
-    );
-    return new TransactionInfo({ height, id, transaction, perspective, view });
   }
 
   // Compares the locally stored, filtered SCT root with the actual one on chain. They should match.

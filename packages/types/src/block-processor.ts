@@ -3,7 +3,6 @@ import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 
 export interface BlockProcessorInterface {
   syncBlocks(): Promise<void>;
-  autoRetrySync(): Promise<void>;
   stopSync(): void;
   getTransactionInfo(hash: TransactionId): Promise<TransactionInfo>;
 }
