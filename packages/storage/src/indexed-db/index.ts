@@ -26,6 +26,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -255,7 +256,7 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({ table: 'GAS_PRICES', value, key: 'gas_prices' });
   }
 
-  async getNotesForVoting(addressIndex: undefined, votable_at_height: bigint): Promise<[]> {
+  async getNotesForVoting(addressIndex: AddressIndex | undefined, votable_at_height: bigint): Promise<[]> {
     const relevantAssets = [];
 
     // Fetch all assets and filter out the relevant asset IDs
@@ -265,7 +266,7 @@ export class IndexedDb implements IndexedDbInterface {
       // Test denom with a regular expression
       const regex = new RegExp('_delegation_.*');
 
-      let denomMetadata = DenomMetadata.fromJson(assetCursor.value);
+      const denomMetadata = DenomMetadata.fromJson(assetCursor.value);
       if (regex.test(denomMetadata.base)) {
         relevantAssets.push(denomMetadata.penumbraAssetId);
       }
