@@ -254,4 +254,51 @@ export class IndexedDb implements IndexedDbInterface {
   async saveGasPrices(value: GasPrices): Promise<void> {
     await this.u.update({ table: 'GAS_PRICES', value, key: 'gas_prices' });
   }
+
+  async getNotesForVoting(addressIndex: undefined, votable_at_height: bigint): Promise<[]> {
+    const relevantAssets = [];
+
+    // Fetch all assets and filter out the relevant asset IDs
+    let assetCursor = await this.db.transaction('ASSETS').store.openCursor();
+
+    while (assetCursor) {
+      // Test denom with a regular expression
+      const regex = new RegExp('_delegation_.*');
+
+      let denomMetadata = DenomMetadata.fromJson(assetCursor.value);
+      if (regex.test(denomMetadata.base)) {
+        relevantAssets.push(denomMetadata.penumbraAssetId);
+      }
+
+      assetCursor = await assetCursor.continue();
+    }
+
+    const result = [];
+
+    // Fetch all notes and filter out the relevant ones
+    let noteCursor = await this.db.transaction('NOTES').store.openCursor();
+
+    while (noteCursor) {
+      const note = SpendableNoteRecord.fromJson(noteCursor.value);
+
+      if (addressIndex) {
+        if (!note.addressIndex?.equals(addressIndex)) {
+          noteCursor = await noteCursor.continue();
+          continue;
+        }
+      }
+      // Check if asset_id exists in relevantAssets, and if height is < votable_at_height
+      if (
+        relevantAssets.includes(note.note?.value?.assetId) &&
+        (note.heightSpent === 0n || note.heightSpent > votable_at_height) &&
+        note.heightCreated < votable_at_height
+      ) {
+        result.push(note);
+      }
+
+      noteCursor = await noteCursor.continue();
+    }
+
+    return Promise.resolve([]);
+  }
 }

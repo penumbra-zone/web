@@ -7,11 +7,7 @@ export const notesForVoting: Impl['notesForVoting'] = async function* (req, ctx)
 
   const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
-  const allNotes = await indexedDb.getAllNotes();
-
-  let responses = allNotes.map(notes => ({
-    noteRecord: notes,
-  }));
+  const responses = await indexedDb.getNotesForVoting(req.addressIndex, req.votableAtHeight);
 
   yield* responses;
 };
