@@ -20,6 +20,8 @@
     "@buf/penumbra-zone_penumbra.connectrpc_es": "1.1.4-20231211173138-9acabec31a72.1"
   },
   "devDependencies": {
+    "@penumbra-zone/wasm-bundler": "0.64.0",
+    "@penumbra-zone/wasm-nodejs": "0.64.0",
     "@turbo/gen": "^1.11.1",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "eslint": "^8.55.0",

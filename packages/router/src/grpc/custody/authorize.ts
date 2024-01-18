@@ -1,12 +1,25 @@
 import type { Impl } from '.';
-import { approverCtx, extLocalCtx, extSessionCtx } from '../../ctx';
+import { approverCtx, extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx';
 
 import { generateSpendKey, authorizePlan } from '@penumbra-zone/wasm-ts';
 
 import { Key } from '@penumbra-zone/crypto-web';
-import { Box } from '@penumbra-zone/types';
+import { Box, Jsonified, bech32AssetId } from '@penumbra-zone/types';
 
-import { ConnectError, Code } from '@connectrpc/connect';
+import { ConnectError, Code, HandlerContext } from '@connectrpc/connect';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+
+const getDenomMetadataByAssetId = async (ctx: HandlerContext) => {
+  const services = ctx.values.get(servicesCtx);
+  const walletServices = await services.getWalletServices();
+  const assetsMetadata = await walletServices.indexedDb.getAllAssetsMetadata();
+  return assetsMetadata.reduce<Record<string, Jsonified<DenomMetadata>>>((prev, curr) => {
+    if (curr.penumbraAssetId) {
+      prev[bech32AssetId(curr.penumbraAssetId)] = curr.toJson() as Jsonified<DenomMetadata>;
+    }
+    return prev;
+  }, {});
+};
 
 export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) throw new ConnectError('No plan included in request', Code.InvalidArgument);
@@ -26,7 +39,7 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!decryptedSeedPhrase)
     throw new ConnectError('Unable to decrypt seed phrase with password', Code.Unauthenticated);
 
-  await approveReq(req);
+  await approveReq(req, await getDenomMetadataByAssetId(ctx));
 
   const spendKey = generateSpendKey(decryptedSeedPhrase);
   const data = authorizePlan(spendKey, req.plan);
