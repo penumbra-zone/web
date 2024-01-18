@@ -48,7 +48,7 @@ export const TxDetails = () => {
         </Card>
         <EduInfoCard
           className='row-span-1'
-          src='/incognito.svg'
+          src='./incognito.svg'
           label='Shielded Transactions'
           content={EduPanel.SHIELDED_TRANSACTION}
         />
