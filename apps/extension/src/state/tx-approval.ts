@@ -10,6 +10,7 @@ import { viewTransactionPlan } from '@penumbra-zone/types/src/transaction/view-t
 export interface TxApprovalSlice {
   authorizeRequest?: Jsonified<AuthorizeRequest>;
   denomMetadataByAssetId?: Record<string, Jsonified<DenomMetadata>>;
+  fullViewingKey?: string;
   // Holding the message responder function. Service worker will be "awaiting" the call of this.
   responder?: MessageResponder<TxApproval>;
 }
@@ -20,10 +21,16 @@ export const txApprovalSelector = (state: AllSlices) => state.txApproval;
 
 export const transactionViewSelector = (state: AllSlices) => {
   const authorizeRequest = state.txApproval.authorizeRequest;
-  if (!authorizeRequest?.plan || !state.txApproval.denomMetadataByAssetId) return undefined;
+  if (
+    !authorizeRequest?.plan ||
+    !state.txApproval.denomMetadataByAssetId ||
+    !state.txApproval.fullViewingKey
+  )
+    return undefined;
 
   return viewTransactionPlan(
     TransactionPlan.fromJson(authorizeRequest.plan),
     state.txApproval.denomMetadataByAssetId,
+    state.txApproval.fullViewingKey,
   );
 };

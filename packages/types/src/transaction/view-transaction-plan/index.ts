@@ -19,6 +19,7 @@ import { viewActionPlan } from './view-action-plan';
 export const viewTransactionPlan = (
   txPlan: TransactionPlan,
   denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
+  fullViewingKey: string,
 ): TransactionView => {
   const returnAddress = txPlan.memoPlan?.plaintext?.returnAddress;
   if (!returnAddress) throw new Error('No return address found in transaction plan');

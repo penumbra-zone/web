@@ -8,6 +8,7 @@ export type TxApproval = InternalMessage<
   {
     authorizeRequest: Jsonified<AuthorizeRequest>;
     denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>;
+    fullViewingKey: string;
   },
   boolean
 >;

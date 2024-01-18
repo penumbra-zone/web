@@ -7,6 +7,7 @@ import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 export const getTxApproval = async (
   req: AuthorizeRequest,
   denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
+  fullViewingKey: string,
 ): Promise<void> => {
   await spawnDetachedPopup('popup.html#/approval/tx');
 
@@ -19,6 +20,7 @@ export const getTxApproval = async (
     request: {
       authorizeRequest: req.toJson() as Jsonified<AuthorizeRequest>,
       denomMetadataByAssetId,
+      fullViewingKey,
     },
   });
   if ('error' in res) throw res.error;

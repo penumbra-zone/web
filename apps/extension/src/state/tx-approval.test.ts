@@ -23,6 +23,7 @@ describe('TX Approval Slice', () => {
         'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
       const chainId = 'testnet';
       const expiryHeight = 100n;
+      const fullViewingKey = 'fvk';
 
       const validTxnPlan = new TransactionPlan({
         fee: { amount: { hi: 1n, lo: 0n } },
@@ -45,12 +46,13 @@ describe('TX Approval Slice', () => {
             plan: validTxnPlan.toJson() as Jsonified<TransactionPlan>,
           },
           denomMetadataByAssetId: {},
+          fullViewingKey,
         },
       });
 
       const state = useStore.getState();
       const result = transactionViewSelector(state);
-      const expected = viewTransactionPlan(validTxnPlan, {});
+      const expected = viewTransactionPlan(validTxnPlan, {}, fullViewingKey);
 
       expect(result!.equals(expected)).toBe(true);
     });
@@ -93,6 +95,27 @@ describe('TX Approval Slice', () => {
               preAuthorizations: [],
               plan: new TransactionPlan().toJson() as Jsonified<TransactionPlan>,
             },
+          },
+        });
+      });
+
+      test('returns undefined', () => {
+        const state = useStore.getState();
+        const result = transactionViewSelector(state);
+
+        expect(result).toBeUndefined();
+      });
+    });
+
+    describe('when `fullViewingKey` is undefined', () => {
+      beforeEach(() => {
+        useStore.setState({
+          txApproval: {
+            authorizeRequest: {
+              preAuthorizations: [],
+              plan: new TransactionPlan().toJson() as Jsonified<TransactionPlan>,
+            },
+            denomMetadataByAssetId: {},
           },
         });
       });

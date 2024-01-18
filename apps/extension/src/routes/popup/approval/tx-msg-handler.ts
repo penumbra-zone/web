@@ -11,6 +11,7 @@ export const handleTxApproval: InternalMessageHandler<TxApproval> = (jsonReq, re
   useStore.setState(state => {
     state.txApproval.authorizeRequest = jsonReq.authorizeRequest;
     state.txApproval.denomMetadataByAssetId = jsonReq.denomMetadataByAssetId;
+    state.txApproval.fullViewingKey = jsonReq.fullViewingKey;
     state.txApproval.responder = responder;
   });
 };
