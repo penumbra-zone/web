@@ -1,3 +1,5 @@
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { bech32ToUint8Array } from '@penumbra-zone/types';
 import { describe, expect, test, vi } from 'vitest';
 import { viewTransactionPlan } from '.';
 import {
@@ -9,8 +11,9 @@ import {
 vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
 
 describe('viewTransactionPlan()', () => {
-  const returnAddress =
+  const returnAddressAsBech32 =
     'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
+  const returnAddress = new Address({ inner: bech32ToUint8Array(returnAddressAsBech32) });
   const chainId = 'testnet';
   const expiryHeight = 100n;
   const mockFvk =
@@ -20,9 +23,7 @@ describe('viewTransactionPlan()', () => {
     fee: { amount: { hi: 1n, lo: 0n } },
     memoPlan: {
       plaintext: {
-        returnAddress: {
-          altBech32m: returnAddress,
-        },
+        returnAddress,
         text: 'Memo text here',
       },
     },
@@ -34,9 +35,9 @@ describe('viewTransactionPlan()', () => {
     const txnView = viewTransactionPlan(validTxnPlan, {}, mockFvk);
     const memoViewValue = txnView.bodyView!.memoView!.memoView.value! as MemoView_Visible;
 
-    expect(memoViewValue.plaintext!.returnAddress?.addressView.value?.address?.altBech32m).toBe(
-      returnAddress,
-    );
+    expect(
+      memoViewValue.plaintext!.returnAddress?.addressView.value?.address!.equals(returnAddress),
+    ).toBe(true);
   });
 
   test('throws when there is no return address', () => {
@@ -55,7 +56,7 @@ describe('viewTransactionPlan()', () => {
         new TransactionPlan({
           memoPlan: {
             plaintext: {
-              returnAddress: {},
+              returnAddress,
             },
           },
         }),

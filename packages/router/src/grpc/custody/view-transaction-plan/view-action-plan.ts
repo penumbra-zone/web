@@ -2,18 +2,13 @@ import {
   ActionPlan,
   ActionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import {
-  Address,
-  AddressView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-import { bech32Address } from '@penumbra-zone/types/src/address';
 import { bech32AssetId } from '@penumbra-zone/types/src/asset';
 import {
   DenomMetadata,
   Value,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { isControlledAddress } from '@penumbra-zone/wasm-ts';
+import { getAddressView } from './get-address-view';
 import {
   Note,
   NoteView,
@@ -23,31 +18,6 @@ import {
   SpendView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import { Jsonified } from '@penumbra-zone/types/src/jsonified';
-
-const getAddressView = (address: Address, fullViewingKey: string): AddressView => {
-  const index = isControlledAddress(fullViewingKey, bech32Address(address));
-
-  if (index) {
-    return new AddressView({
-      addressView: {
-        case: 'visible',
-        value: {
-          address,
-          index,
-        },
-      },
-    });
-  } else {
-    return new AddressView({
-      addressView: {
-        case: 'opaque',
-        value: {
-          address,
-        },
-      },
-    });
-  }
-};
 
 const getValueView = (
   value: Value | undefined,

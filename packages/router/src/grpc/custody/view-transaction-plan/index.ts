@@ -1,4 +1,5 @@
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { getAddressView } from './get-address-view';
 import { Jsonified } from '@penumbra-zone/types/src/jsonified';
 import {
   TransactionPlan,
@@ -36,12 +37,7 @@ export const viewTransactionPlan = (
           case: 'visible',
           value: {
             plaintext: {
-              returnAddress: {
-                addressView: {
-                  case: 'opaque',
-                  value: { address: returnAddress },
-                },
-              },
+              returnAddress: getAddressView(returnAddress, fullViewingKey),
               text: txPlan.memoPlan?.plaintext?.text ?? '',
             },
           },
