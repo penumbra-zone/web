@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { viewActionPlan } from './view-action-plan';
 import {
   ActionPlan,
@@ -18,16 +18,23 @@ import {
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Jsonified } from '../../jsonified';
 import { bech32AssetId } from '../../asset';
+import { bech32ToUint8Array } from '../../address';
+
+// Replace the wasm-pack import with the nodejs version so tests can run
+vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
 
 describe('viewActionPlan()', () => {
-  const address =
+  const addressAsBech32 =
     'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
+  const address = { inner: bech32ToUint8Array(addressAsBech32) };
   const assetId = new AssetId({ inner: new Uint8Array() });
   const assetIdAsString = bech32AssetId(assetId);
   const denomMetadata = new DenomMetadata({ penumbraAssetId: assetId });
   const metadataByAssetId = {
     [assetIdAsString]: denomMetadata.toJson() as Jsonified<DenomMetadata>,
   };
+  const mockFvk =
+    'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09';
 
   describe('`spend` action', () => {
     const validSpendActionPlan = new ActionPlan({
@@ -35,7 +42,7 @@ describe('viewActionPlan()', () => {
         case: 'spend',
         value: {
           note: {
-            address: { altBech32m: address },
+            address,
             value: {
               amount: { hi: 1n, lo: 0n },
               assetId,
@@ -55,11 +62,11 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      expect(() => viewActionPlan({})(actionPlan)).toThrow('No address in spend plan');
+      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow('No address in spend plan');
     });
 
     test('includes the amount', () => {
-      const actionView = viewActionPlan(metadataByAssetId)(validSpendActionPlan);
+      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(validSpendActionPlan);
       const spendView = actionView.actionView.value as SpendView;
       const spendViewVisible = spendView.spendView.value as SpendView_Visible;
 
@@ -75,17 +82,17 @@ describe('viewActionPlan()', () => {
           case: 'spend',
           value: {
             note: {
-              address: { altBech32m: address },
+              address,
             },
           },
         },
       });
 
-      expect(() => viewActionPlan({})(actionPlan)).toThrow('No value in note');
+      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow('No value in note');
     });
 
     test('includes the denom metadata', () => {
-      const actionView = viewActionPlan(metadataByAssetId)(validSpendActionPlan);
+      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(validSpendActionPlan);
       const spendView = actionView.actionView.value as SpendView;
       const spendViewVisible = spendView.spendView.value as SpendView_Visible;
       const valueView = spendViewVisible.note!.value?.valueView.value as ValueView_KnownDenom;
@@ -99,14 +106,14 @@ describe('viewActionPlan()', () => {
           case: 'spend',
           value: {
             note: {
-              address: { altBech32m: address },
+              address,
               value: { amount: { hi: 1n, lo: 0n } },
             },
           },
         },
       });
 
-      expect(() => viewActionPlan({})(actionPlan)).toThrow('No asset ID in value');
+      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow('No asset ID in value');
     });
 
     test('throws if the asset ID refers to an unknown asset type', () => {
@@ -115,21 +122,23 @@ describe('viewActionPlan()', () => {
           case: 'spend',
           value: {
             note: {
-              address: { altBech32m: address },
+              address,
               value: { amount: { hi: 1n, lo: 0n }, assetId: { altBech32m: 'invalid' } },
             },
           },
         },
       });
 
-      expect(() => viewActionPlan({})(actionPlan)).toThrow(
+      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow(
         'Asset ID refers to an unknown asset type',
       );
     });
   });
 
   describe('`output` action', () => {
-    const destAddress = new Address({ altBech32m: address });
+    const addressAsBech32 =
+      'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
+    const destAddress = new Address({ inner: bech32ToUint8Array(addressAsBech32) });
     const validOutputActionPlan = new ActionPlan({
       action: {
         case: 'output',
@@ -144,7 +153,7 @@ describe('viewActionPlan()', () => {
     });
 
     test('includes the destAddress', () => {
-      const actionView = viewActionPlan(metadataByAssetId)(validOutputActionPlan);
+      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(validOutputActionPlan);
       const outputView = actionView.actionView.value as OutputView;
       const outputViewVisible = outputView.outputView.value as OutputView_Visible;
 
@@ -164,11 +173,13 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      expect(() => viewActionPlan({})(actionPlan)).toThrow('No destAddress in output plan');
+      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow(
+        'No destAddress in output plan',
+      );
     });
 
     test('includes the amount', () => {
-      const actionView = viewActionPlan(metadataByAssetId)(validOutputActionPlan);
+      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(validOutputActionPlan);
       const outputView = actionView.actionView.value as OutputView;
       const outputViewVisible = outputView.outputView.value as OutputView_Visible;
 
@@ -188,11 +199,11 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      expect(() => viewActionPlan({})(actionPlan)).toThrow('No value to view');
+      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow('No value to view');
     });
 
     test('includes the denom metadata', () => {
-      const actionView = viewActionPlan(metadataByAssetId)(validOutputActionPlan);
+      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(validOutputActionPlan);
       const outputView = actionView.actionView.value as OutputView;
       const outputViewVisible = outputView.outputView.value as OutputView_Visible;
       const valueView = outputViewVisible.note!.value?.valueView.value as ValueView_KnownDenom;
@@ -213,7 +224,7 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      expect(() => viewActionPlan({})(actionPlan)).toThrow('No asset ID in value');
+      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow('No asset ID in value');
     });
 
     test('throws if the asset ID refers to an unknown asset type', () => {
@@ -230,7 +241,7 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      expect(() => viewActionPlan({})(actionPlan)).toThrow(
+      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow(
         'Asset ID refers to an unknown asset type',
       );
     });
@@ -245,7 +256,7 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      const actionView = viewActionPlan({})(actionPlan);
+      const actionView = viewActionPlan({}, mockFvk)(actionPlan);
 
       expect(
         actionView.equals(
@@ -269,7 +280,7 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      const actionView = viewActionPlan({})(actionPlan);
+      const actionView = viewActionPlan({}, mockFvk)(actionPlan);
 
       expect(
         actionView.equals(
