@@ -111,13 +111,8 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, selection, memo }:
 
   if (!plan) throw new Error('no plan in response');
 
-  // Remove `authorizationData` after modifying protobuf definition
-  const { data: authorizationData } = await custodyClient.authorize({ plan });
-  if (!authorizationData) throw new Error('no authorization data in response');
-
   const { transaction } = await viewClient.authorizeAndBuild({
     transactionPlan: plan,
-    authorizationData,
   });
   if (!transaction) throw new Error('no transaction in response');
 
