@@ -8,10 +8,7 @@ import { sha256Hash } from '@penumbra-zone/crypto-web';
 import {
   BlockProcessorInterface,
   IndexedDbInterface,
-  ScanBlockResult,
   ViewServerInterface,
-  hexToUint8Array,
-  uint8ArrayToHex,
 } from '@penumbra-zone/types';
 import { decodeSctRoot, transactionInfo } from '@penumbra-zone/wasm-ts';
 
@@ -40,10 +37,6 @@ interface QueryClientProps {
   viewServer: ViewServerInterface;
 }
 
-type NeedsSourceId = boolean;
-type CommitmentHexString = string;
-
-// empty uint8array represents an unset source tx id
 const blankTxSource = new CommitmentSource({
   source: { case: 'transaction', value: { id: new Uint8Array() } },
 });
@@ -116,7 +109,6 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     // this is an indefinite stream of the (compact) chain from the network
     // intended to run continuously
-    performance.mark('start');
     for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
       startHeight,
       keepAlive: true,
@@ -144,15 +136,9 @@ export class BlockProcessor implements BlockProcessorInterface {
         new: compactBlock.height > latestBlockHeight,
       };
 
-      if (flushReasons.new) console.log('finished sync', performance.measure('start'));
-
-      // state commitments identifying new records in this compact block, with a
-      // boolean to indicate if we should recover their source id
-      const blockCommitments = new Map<CommitmentHexString, NeedsSourceId>();
-      let flush: ScanBlockResult | undefined;
+      const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
       if (Object.values(flushReasons).some(Boolean)) {
-        flush = this.viewServer.flushUpdates();
-        console.log('flush', flushReasons, flush, compactBlock);
+        const flush = this.viewServer.flushUpdates();
 
         // in an atomic query, this
         // - saves 'sctUpdates'
@@ -161,65 +147,42 @@ export class BlockProcessor implements BlockProcessorInterface {
         // - updates last block synced
         await this.indexedDb.saveScanResult(flush);
 
-        // - detect unknown asset types, query the chain for asset metadata
+        // - detect unknown asset types
+        // - shielded pool for asset metadata
         // - or, generate default fallback metadata
         // - update idb
-        // this makes a network query.
-        // TODO: should this be scanning swaps as well?
         await this.identifyNewAssets(flush.newNotes);
 
-        // boolean indicates if we should recover source id
-        for (const { noteCommitment, source } of flush.newNotes)
-          blockCommitments.set(
-            uint8ArrayToHex(noteCommitment!.inner),
-            source!.equals(blankTxSource),
-          );
-        for (const { swapCommitment, source } of flush.newSwaps)
-          blockCommitments.set(
-            uint8ArrayToHex(swapCommitment!.inner),
-            source!.equals(blankTxSource),
-          );
+        for (const nr of flush.newNotes) recordsByCommitment.set(nr.noteCommitment!, nr);
+        for (const sr of flush.newSwaps) recordsByCommitment.set(sr.swapCommitment!, sr);
       }
 
       // nullifiers on this block may match notes or swaps from db
       // - update idb, mark as spent/claimed
-      // - return records' commitments
-      // - with a boolean to indicate if we should recover source id
-      const nullifierCommitments = await this.resolveNullifiers(
-        compactBlock.nullifiers,
-        compactBlock.height,
-      );
+      await this.resolveNullifiers(compactBlock.nullifiers, compactBlock.height);
 
-      // if anything happend involving a commitment, scan all block tx
-      if (nullifierCommitments.size || blockCommitments.size) {
-        const allCommitments = new Map([...nullifierCommitments, ...blockCommitments]);
-        console.warn(
-          'full block fetch',
-          'flushed commitments',
-          flush?.sctUpdates.store_commitments.length,
-          'nullifierCommitments',
-          nullifierCommitments.size,
-          'blockCommitments',
-          blockCommitments.size,
-          'allCommitments',
-          allCommitments.size,
-        );
+      // if a new record involves a state commitment, scan all block tx
+      if (recordsByCommitment.size) {
         // this is a network query
-        const { blockHeight, transactions: blockTx } = await this.querier.app.txsByHeight(
-          compactBlock.height,
+        const { transactions: blockTx } = await this.querier.app.txsByHeight(compactBlock.height);
+
+        // identify tx that involve a new record, by comparing state commitment
+        // - collect relevant tx for info generation later
+        // - return record including the recovered source
+        const { relevantTx, recordsWithSources } = await this.identifyTransactions(
+          recordsByCommitment,
+          blockTx,
         );
 
-        const { relevantTx, sourceTx } = await this.identifyTransactions(allCommitments, blockTx);
+        // this simply stores the new records with 'rehydrated' sources to idb
+        // TODO: this is the second time we save these records, after "saveScanResult"
+        await this.saveRecoveredCommitmentSources(recordsWithSources);
 
-        console.warn('relevantTx', relevantTx.size, 'sourceTx', sourceTx.size);
-
-        await this.saveSourceIds(sourceTx);
-
-        // during wasm tx info generation later, wasm independently queries
-        // database for asset metadata, so we have to pre-populate. LpNft
-        // position states aren't known by the chain so aren't poulated by
-        // identifyNewAssets
-        // - detect LpNft position opens, and generate all possible position state metadata
+        // during wasm tx info generation later, wasm independently queries idb
+        // for asset metadata, so we have to pre-populate. LpNft position states
+        // aren't known by the chain so aren't populated by identifyNewAssets
+        // - detect LpNft position opens
+        // - generate all possible position state metadata
         // - update idb
         await this.identifyLpNftPositions(blockTx);
 
@@ -227,32 +190,18 @@ export class BlockProcessor implements BlockProcessorInterface {
         // pending broadcasts, and populate the transaction list.
         // - calls wasm for each relevant tx
         // - saves to idb
-        await this.saveTransactionInfos(blockHeight, relevantTx);
+        await this.saveTransactionInfos(compactBlock.height, relevantTx);
       }
     }
   }
 
-  private async saveSourceIds(recovered: Map<StateCommitment, Uint8Array>) {
-    for (const [commitment, sourceId] of recovered) {
-      const record =
-        (await this.indexedDb.getSpendableNoteByCommitment(commitment)) ??
-        (await this.indexedDb.getSwapByCommitment(commitment));
-      if (!record) continue;
-      if (blankTxSource.equals(record.source))
-        record.source = new CommitmentSource({
-          source: { case: 'transaction', value: { id: sourceId } },
-        });
-      else console.warn('already have source id!!', record.source);
+  private async saveRecoveredCommitmentSources(recovered: (SpendableNoteRecord | SwapRecord)[]) {
+    for (const record of recovered)
       if (record instanceof SpendableNoteRecord) await this.indexedDb.saveSpendableNote(record);
       else if (record instanceof SwapRecord) await this.indexedDb.saveSwap(record);
-      else throw new Error('Unknown record type');
-    }
+      else throw new Error('Unexpected record type');
   }
 
-  /**
-   * Save any as-yet-unknown asset metadata found in a block's notes to our
-   * database.
-   */
   private async identifyNewAssets(newNotes: SpendableNoteRecord[]) {
     for (const n of newNotes) {
       const assetId = n.note?.value?.assetId;
@@ -278,47 +227,30 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   // Nullifier is published in network when a note is spent or swap is claimed.
-  // - if we possess a matching note or swap record, mark it as spent/claimed
-  // - collect and return all commitments involved
   private async resolveNullifiers(nullifiers: Nullifier[], height: bigint) {
-    const relevantCommitments = new Map<CommitmentHexString, NeedsSourceId>();
-
     for (const nf of nullifiers) {
       const record =
         (await this.indexedDb.getSpendableNoteByNullifier(nf)) ??
         (await this.indexedDb.getSwapByNullifier(nf));
-      if (!record) continue;
-      console.log('matched record', record);
 
       if (record instanceof SpendableNoteRecord) {
         record.heightSpent = height;
-        relevantCommitments.set(
-          uint8ArrayToHex(record.noteCommitment!.inner),
-          record.source!.equals(blankTxSource),
-        );
         await this.indexedDb.saveSpendableNote(record);
       } else if (record instanceof SwapRecord) {
         record.heightClaimed = height;
-        relevantCommitments.set(
-          uint8ArrayToHex(record.swapCommitment!.inner),
-          record.source!.equals(blankTxSource),
-        );
         await this.indexedDb.saveSwap(record);
-      } else throw new Error('Unknown record type');
+      } else throw new Error('Unexpected record type');
     }
-
-    return relevantCommitments;
   }
 
-  async identifyTransactions(relevantCommitments: Map<string, boolean>, blockTx: Transaction[]) {
-    console.log('identifyRelevantTransactions', blockTx.length, relevantCommitments);
-    const blockTxByCommitment = new Map<CommitmentHexString, Transaction>();
-
+  async identifyTransactions(
+    commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
+    blockTx: Transaction[],
+  ) {
+    const relevantTx = new Map<TransactionId, Transaction>();
+    const recordsWithSources = new Array<SpendableNoteRecord | SwapRecord>();
     for (const tx of blockTx) {
-      const acts = tx.body?.actions;
-      if (!acts) continue;
-
-      const txCommitments = acts.flatMap(({ action }) => {
+      const txCommitments = (tx.body?.actions ?? []).flatMap(({ action }) => {
         switch (action.case) {
           case 'output':
             return action.value.body?.notePayload?.noteCommitment;
@@ -331,39 +263,21 @@ export class BlockProcessor implements BlockProcessorInterface {
         }
       });
 
-      for (const sc of txCommitments)
-        if (sc) blockTxByCommitment.set(uint8ArrayToHex(sc.inner), tx);
-    }
-
-    // this map will be used to retrieve records and assign source tx id
-    const sourceTx = new Map<StateCommitment, Uint8Array>();
-    // this map will be used to deduplicate relevant tx
-    const relevantTxByHash = new Map<string, [TransactionId, Transaction]>();
-
-    for (const [commitStr, needsSourceId] of relevantCommitments) {
-      const tx = blockTxByCommitment.get(commitStr);
-      if (!tx) {
-        console.warn('no tx for commitment', commitStr, 'needsSourceId?', needsSourceId);
-        continue;
-      } else {
-        console.warn(
-          'found tx',
-          uint8ArrayToHex(await sha256Hash(tx.toBinary())),
-          'for commitment',
-          commitStr,
-          'needsSourceId?',
-          needsSourceId,
-        );
+      for (const [recCom, record] of commitmentRecords) {
+        if (txCommitments.some(txCom => recCom.equals(txCom))) {
+          const txId = new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
+          relevantTx.set(txId, tx);
+          if (blankTxSource.equals(record.source)) {
+            record.source = new CommitmentSource({
+              source: { case: 'transaction', value: { id: txId.inner } },
+            });
+            recordsWithSources.push(record);
+          }
+          commitmentRecords.delete(recCom);
+        }
       }
-      const txHash = await sha256Hash(tx.toBinary());
-      relevantTxByHash.set(uint8ArrayToHex(txHash), [new TransactionId({ inner: txHash }), tx]);
-      if (needsSourceId)
-        sourceTx.set(new StateCommitment({ inner: hexToUint8Array(commitStr) }), txHash);
     }
-
-    const relevantTx = new Map(relevantTxByHash.values());
-
-    return { relevantTx, sourceTx };
+    return { relevantTx, recordsWithSources };
   }
 
   private async identifyLpNftPositions(txs: Transaction[]) {
@@ -386,10 +300,8 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  //private async saveTransactionInfo(height: bigint, relevantTx: Map<string, Transaction>) {
   private async saveTransactionInfos(height: bigint, relevantTx: Map<TransactionId, Transaction>) {
     for (const [id, transaction] of relevantTx) {
-      console.log('generating info', transaction);
       const { txp: perspective, txv: view } = await transactionInfo(
         this.fullViewingKey,
         transaction,
