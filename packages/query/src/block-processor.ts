@@ -159,17 +159,24 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       // nullifiers on this block may match notes or swaps from db
       // - update idb, mark as spent/claimed
-      await this.resolveNullifiers(compactBlock.nullifiers, compactBlock.height);
+      // - return nullifiers used in this way
+      const spentNullifiers = await this.resolveNullifiers(
+        compactBlock.nullifiers,
+        compactBlock.height,
+      );
 
       // if a new record involves a state commitment, scan all block tx
-      if (recordsByCommitment.size) {
+      if (spentNullifiers.size || recordsByCommitment.size) {
         // this is a network query
         const { transactions: blockTx } = await this.querier.app.txsByHeight(compactBlock.height);
 
-        // identify tx that involve a new record, by comparing state commitment
+        // identify tx that involve a new record
+        // - compare nullifiers
+        // - compare state commitments
         // - collect relevant tx for info generation later
-        // - return record including the recovered source
+        // - if matched by commitment, collect record with recovered source
         const { relevantTx, recordsWithSources } = await this.identifyTransactions(
+          spentNullifiers,
           recordsByCommitment,
           blockTx,
         );
@@ -228,10 +235,14 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   // Nullifier is published in network when a note is spent or swap is claimed.
   private async resolveNullifiers(nullifiers: Nullifier[], height: bigint) {
+    const spentNullifiers = new Set<Nullifier>();
+
     for (const nf of nullifiers) {
       const record =
         (await this.indexedDb.getSpendableNoteByNullifier(nf)) ??
         (await this.indexedDb.getSwapByNullifier(nf));
+
+      if (record) spentNullifiers.add(nf);
 
       if (record instanceof SpendableNoteRecord) {
         record.heightSpent = height;
@@ -241,15 +252,20 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.indexedDb.saveSwap(record);
       } else throw new Error('Unexpected record type');
     }
+
+    return spentNullifiers;
   }
 
   async identifyTransactions(
+    spentNullifiers: Set<Nullifier>,
     commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
     blockTx: Transaction[],
   ) {
     const relevantTx = new Map<TransactionId, Transaction>();
     const recordsWithSources = new Array<SpendableNoteRecord | SwapRecord>();
     for (const tx of blockTx) {
+      let txId;
+
       const txCommitments = (tx.body?.actions ?? []).flatMap(({ action }) => {
         switch (action.case) {
           case 'output':
@@ -263,9 +279,27 @@ export class BlockProcessor implements BlockProcessorInterface {
         }
       });
 
+      const txNullifiers = (tx.body?.actions ?? []).map(({ action }) => {
+        switch (action.case) {
+          case 'spend':
+          case 'swapClaim':
+            return action.value.body?.nullifier;
+          default: // TODO: what other actions have nullifiers?
+            return;
+        }
+      });
+
+      for (const spentNf of spentNullifiers) {
+        if (txNullifiers.some(txNf => spentNf.equals(txNf))) {
+          txId = new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
+          relevantTx.set(txId, tx);
+          spentNullifiers.delete(spentNf);
+        }
+      }
+
       for (const [recCom, record] of commitmentRecords) {
         if (txCommitments.some(txCom => recCom.equals(txCom))) {
-          const txId = new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
+          txId ??= new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
           relevantTx.set(txId, tx);
           if (blankTxSource.equals(record.source)) {
             record.source = new CommitmentSource({
