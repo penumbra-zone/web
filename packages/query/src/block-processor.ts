@@ -241,8 +241,9 @@ export class BlockProcessor implements BlockProcessorInterface {
       const record =
         (await this.indexedDb.getSpendableNoteByNullifier(nf)) ??
         (await this.indexedDb.getSwapByNullifier(nf));
+      if (!record) continue;
 
-      if (record) spentNullifiers.add(nf);
+      spentNullifiers.add(nf);
 
       if (record instanceof SpendableNoteRecord) {
         record.heightSpent = height;
@@ -250,7 +251,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       } else if (record instanceof SwapRecord) {
         record.heightClaimed = height;
         await this.indexedDb.saveSwap(record);
-      } else throw new Error('Unexpected record type');
+      }
     }
 
     return spentNullifiers;
