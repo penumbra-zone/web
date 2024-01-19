@@ -621,6 +621,9 @@ importers:
       '@bufbuild/protobuf':
         specifier: ^1.5.1
         version: 1.5.1
+      '@penumbra-zone/wasm-ts':
+        specifier: workspace:^
+        version: link:../wasm
       '@types/chrome':
         specifier: 0.0.254
         version: 0.0.254

@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.5.1",
+    "@penumbra-zone/wasm-ts": "workspace:^",
     "@types/chrome": "0.0.254",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",

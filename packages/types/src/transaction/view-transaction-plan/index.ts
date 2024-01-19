@@ -29,7 +29,7 @@ export const viewTransactionPlan = (
 
   return new TransactionView({
     bodyView: {
-      actionViews: txPlan.actions.map(viewActionPlan(denomMetadataByAssetId)),
+      actionViews: txPlan.actions.map(viewActionPlan(denomMetadataByAssetId, fullViewingKey)),
       fee,
       memoView: {
         memoView: {
