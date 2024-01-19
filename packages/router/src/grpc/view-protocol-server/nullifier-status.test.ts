@@ -17,7 +17,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
 interface IndexedDbMock {
-  getNoteByNullifier: Mock;
+  getSpendableNoteByNullifier: Mock;
   getSwapByNullifier: Mock;
   subscribe: (table: string) => Partial<AsyncIterable<Mock>>;
 }
@@ -49,7 +49,7 @@ describe('nullifierStatus', () => {
     };
 
     mockIndexedDb = {
-      getNoteByNullifier: vi.fn(),
+      getSpendableNoteByNullifier: vi.fn(),
       getSwapByNullifier: vi.fn(),
       subscribe: (table: string) => {
         if (table === 'SPENDABLE_NOTES') return mockNoteSubscription;
@@ -80,7 +80,7 @@ describe('nullifierStatus', () => {
       nullifier: new Nullifier({ inner: stringToUint8Array('nullifier_abc') }),
     });
 
-    mockIndexedDb.getNoteByNullifier.mockResolvedValue(undefined);
+    mockIndexedDb.getSpendableNoteByNullifier.mockResolvedValue(undefined);
     mockIndexedDb.getSwapByNullifier.mockResolvedValue(undefined);
 
     const res = await nullifierStatus(req, mockCtx);
@@ -92,7 +92,7 @@ describe('nullifierStatus', () => {
       nullifier: new Nullifier({ inner: stringToUint8Array('nullifier_abc') }),
     });
 
-    mockIndexedDb.getNoteByNullifier.mockResolvedValue(undefined);
+    mockIndexedDb.getSpendableNoteByNullifier.mockResolvedValue(undefined);
     mockIndexedDb.getSwapByNullifier.mockResolvedValue(new SwapRecord({ heightClaimed: 324234n }));
 
     const res = await nullifierStatus(req, mockCtx);
@@ -104,7 +104,7 @@ describe('nullifierStatus', () => {
       nullifier: new Nullifier({ inner: stringToUint8Array('nullifier_abc') }),
     });
 
-    mockIndexedDb.getNoteByNullifier.mockResolvedValue(undefined);
+    mockIndexedDb.getSpendableNoteByNullifier.mockResolvedValue(undefined);
     mockIndexedDb.getSwapByNullifier.mockResolvedValue(new SwapRecord());
 
     const res = await nullifierStatus(req, mockCtx);
@@ -116,7 +116,7 @@ describe('nullifierStatus', () => {
       nullifier: new Nullifier({ inner: stringToUint8Array('nullifier_abc') }),
     });
 
-    mockIndexedDb.getNoteByNullifier.mockResolvedValue(
+    mockIndexedDb.getSpendableNoteByNullifier.mockResolvedValue(
       new SpendableNoteRecord({ heightSpent: 324234n }),
     );
     mockIndexedDb.getSwapByNullifier.mockResolvedValue(undefined);
@@ -130,7 +130,7 @@ describe('nullifierStatus', () => {
       nullifier: new Nullifier({ inner: stringToUint8Array('nullifier_abc') }),
     });
 
-    mockIndexedDb.getNoteByNullifier.mockResolvedValue(new SpendableNoteRecord());
+    mockIndexedDb.getSpendableNoteByNullifier.mockResolvedValue(new SpendableNoteRecord());
     mockIndexedDb.getSwapByNullifier.mockResolvedValue(undefined);
 
     const res = await nullifierStatus(req, mockCtx);
@@ -138,7 +138,7 @@ describe('nullifierStatus', () => {
   });
 
   test('await detect corresponding note', async () => {
-    mockIndexedDb.getNoteByNullifier.mockResolvedValue(undefined);
+    mockIndexedDb.getSpendableNoteByNullifier.mockResolvedValue(undefined);
     mockIndexedDb.getSwapByNullifier.mockResolvedValue(undefined);
 
     const matchingNullifier = new Nullifier({ inner: stringToUint8Array('nullifier_abc') });
@@ -194,7 +194,7 @@ describe('nullifierStatus', () => {
   });
 
   test('await detect corresponding swap', async () => {
-    mockIndexedDb.getNoteByNullifier.mockResolvedValue(undefined);
+    mockIndexedDb.getSpendableNoteByNullifier.mockResolvedValue(undefined);
     mockIndexedDb.getSwapByNullifier.mockResolvedValue(undefined);
 
     const matchingNullifier = new Nullifier({ inner: stringToUint8Array('nullifier_abc') });
