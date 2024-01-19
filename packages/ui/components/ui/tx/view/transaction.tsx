@@ -6,7 +6,6 @@ import { fromBaseUnitAmount } from '@penumbra-zone/types';
 
 export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
   if (!txv.bodyView) throw new Error('transaction view missing body view');
-  if (!txv.bodyView.memoView) throw new Error('body view missing memo view');
 
   return (
     <div className='flex flex-col gap-8'>

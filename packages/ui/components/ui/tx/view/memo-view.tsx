@@ -3,7 +3,8 @@ import { AddressViewComponent } from './address-view';
 import { ViewBox, ViewSection } from './viewbox';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
-export const MemoViewComponent = ({ memo }: { memo: MemoView }) => {
+export const MemoViewComponent = ({ memo }: { memo: MemoView | undefined }) => {
+  if (!memo?.memoView) return null;
   if (memo.memoView.case === 'visible') {
     const mv = memo.memoView.value;
     const text = mv.plaintext?.text;
