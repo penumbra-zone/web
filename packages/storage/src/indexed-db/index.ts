@@ -25,8 +25,6 @@ import {
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
-import { deleteDB } from 'idb'; // TODO: remove before merge!!
-
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
   chainId: string;
@@ -42,13 +40,6 @@ export class IndexedDb implements IndexedDbInterface {
 
   static async initialize({ dbVersion, walletId, chainId }: IndexedDbProps): Promise<IndexedDb> {
     const dbName = `viewdata/${chainId}/${walletId}`;
-
-    // TODO: remove before merge!!
-    await deleteDB(dbName, {
-      blocked() {
-        throw new Error('Cannot delete indexed-db');
-      },
-    });
 
     const db = await openDB<PenumbraDb>(dbName, dbVersion, {
       upgrade(db: IDBPDatabase<PenumbraDb>) {
