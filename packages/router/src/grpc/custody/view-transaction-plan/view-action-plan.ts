@@ -2,7 +2,10 @@ import {
   ActionPlan,
   ActionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import {
+  Address,
+  AddressView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { bech32Address } from '@penumbra-zone/types/src/address';
 import { bech32AssetId } from '@penumbra-zone/types/src/asset';
 import {
@@ -20,6 +23,31 @@ import {
   SpendView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import { Jsonified } from '@penumbra-zone/types/src/jsonified';
+
+const getAddressView = (address: Address, fullViewingKey: string): AddressView => {
+  const index = isControlledAddress(fullViewingKey, bech32Address(address));
+
+  if (index) {
+    return new AddressView({
+      addressView: {
+        case: 'visible',
+        value: {
+          address,
+          index,
+        },
+      },
+    });
+  } else {
+    return new AddressView({
+      addressView: {
+        case: 'opaque',
+        value: {
+          address,
+        },
+      },
+    });
+  }
+};
 
 const getValueView = (
   value: Value | undefined,
@@ -52,33 +80,8 @@ const getNoteView = (
   if (!note.address) throw new Error('No address in note');
   if (!note.value) throw new Error('No value in note');
 
-  let addressView: AddressView;
-
-  const addressIndex = isControlledAddress(fullViewingKey, bech32Address(note.address));
-
-  if (addressIndex) {
-    addressView = new AddressView({
-      addressView: {
-        case: 'visible',
-        value: {
-          address: note.address,
-          index: addressIndex,
-        },
-      },
-    });
-  } else {
-    addressView = new AddressView({
-      addressView: {
-        case: 'opaque',
-        value: {
-          address: note.address,
-        },
-      },
-    });
-  }
-
   return new NoteView({
-    address: addressView,
+    address: getAddressView(note.address, fullViewingKey),
     value: getValueView(note.value, denomMetadataByAssetId),
   });
 };
@@ -107,31 +110,6 @@ const getOutputView = (
 ): OutputView => {
   if (!outputPlan.destAddress) throw new Error('No destAddress in output plan');
 
-  let addressView: AddressView;
-
-  const addressIndex = isControlledAddress(fullViewingKey, bech32Address(outputPlan.destAddress));
-
-  if (addressIndex) {
-    addressView = new AddressView({
-      addressView: {
-        case: 'visible',
-        value: {
-          address: outputPlan.destAddress,
-          index: addressIndex,
-        },
-      },
-    });
-  } else {
-    addressView = new AddressView({
-      addressView: {
-        case: 'opaque',
-        value: {
-          address: outputPlan.destAddress,
-        },
-      },
-    });
-  }
-
   return new OutputView({
     outputView: {
       case: 'visible',
@@ -139,7 +117,7 @@ const getOutputView = (
       value: {
         note: {
           value: getValueView(outputPlan.value, denomMetadataByAssetId),
-          address: addressView,
+          address: getAddressView(outputPlan.destAddress, fullViewingKey),
         },
       },
     },
