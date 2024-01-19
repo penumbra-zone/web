@@ -8,10 +8,6 @@ export type TxApproval = InternalMessage<
   'TX-APPROVAL',
   {
     authorizeRequest: Jsonified<AuthorizeRequest>;
-    /**
-     * A transaction view generated from the transaction plan via
-     * `viewTransactionPlan()`.
-     */
     transactionViewFromPlan: Jsonified<TransactionView>;
     denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>;
   },
