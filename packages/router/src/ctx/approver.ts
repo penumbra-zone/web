@@ -1,5 +1,4 @@
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Jsonified } from '@penumbra-zone/types';
 import { sendPopupRequest, spawnDetachedPopup } from '@penumbra-zone/types/src/internal-msg/popup';
 import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
@@ -8,7 +7,6 @@ import { TxApproval } from '@penumbra-zone/types/src/internal-msg/tx-approval';
 export const getTxApproval = async (
   req: AuthorizeRequest,
   transactionViewFromPlan: TransactionView,
-  denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
 ): Promise<void> => {
   await spawnDetachedPopup('popup.html#/approval/tx');
 
@@ -21,7 +19,6 @@ export const getTxApproval = async (
     request: {
       authorizeRequest: req.toJson() as Jsonified<AuthorizeRequest>,
       transactionViewFromPlan: transactionViewFromPlan.toJson() as Jsonified<TransactionView>,
-      denomMetadataByAssetId,
     },
   });
   if ('error' in res) throw res.error;

@@ -53,7 +53,7 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
     denomMetadataByAssetId,
     fullViewingKey,
   );
-  await approveReq(req, transactionViewFromPlan, await getDenomMetadataByAssetId(ctx));
+  await approveReq(req, transactionViewFromPlan);
 
   const spendKey = generateSpendKey(decryptedSeedPhrase);
   const data = authorizePlan(spendKey, req.plan);
