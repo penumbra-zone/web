@@ -1,23 +1,21 @@
 import { Button, TransactionViewComponent } from '@penumbra-zone/ui';
-import { useStore } from '../../../state';
-import { txApprovalSelector } from '../../../state/tx-approval';
+import { useStore } from '../../../../state';
+import { txApprovalSelector } from '../../../../state/tx-approval';
 import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
 import { Jsonified } from '@penumbra-zone/types';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
-import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { useTransactionViews } from './use-transaction-views';
+import { ViewTabs } from './view-tabs';
 
 export const TransactionApproval = () => {
-  const {
-    authorizeRequest: authReqString,
-    transactionViewFromPlan: txPlanString,
-    responder,
-  } = useStore(txApprovalSelector);
-  if (!authReqString || !txPlanString || !responder) return null;
+  const { authorizeRequest: authReqString, responder } = useStore(txApprovalSelector);
 
-  const authorizeRequest = AuthorizeRequest.fromJsonString(authReqString);
-  const transactionViewFromPlan = TransactionView.fromJsonString(txPlanString);
+  const authorizeRequest = AuthorizeRequest.fromJsonString(authReqString ?? '');
 
-  if (!authorizeRequest.plan) return null;
+  const { selectedTransactionView, selectedTransactionViewName, setSelectedTransactionViewName } =
+    useTransactionViews();
+
+  if (!authorizeRequest.plan || !responder || !selectedTransactionView) return null;
 
   return (
     <div className='flex h-screen flex-col justify-between p-[30px] pt-10 '>
@@ -26,7 +24,12 @@ export const TransactionApproval = () => {
           Confirm transaction
         </p>
 
-        <TransactionViewComponent txv={transactionViewFromPlan} />
+        <ViewTabs
+          defaultValue={selectedTransactionViewName}
+          onValueChange={setSelectedTransactionViewName}
+        />
+
+        <TransactionViewComponent txv={selectedTransactionView} />
 
         <div className='mt-8'>
           <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />

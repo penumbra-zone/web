@@ -1,6 +1,6 @@
 import { viewClient } from '../clients/grpc';
 import { streamToPromise } from './stream';
-import { classifyTransaction, uint8ArrayToHex } from '@penumbra-zone/types';
+import { getTransactionClassificationLabel, uint8ArrayToHex } from '@penumbra-zone/types';
 
 export interface TransactionSummary {
   height: number;
@@ -15,7 +15,7 @@ export const getAllTransactions = async (): Promise<TransactionSummary[]> => {
       return {
         height: Number(tx.txInfo?.height ?? 0n),
         hash: tx.txInfo?.id?.inner ? uint8ArrayToHex(tx.txInfo.id.inner) : 'unknown',
-        description: classifyTransaction(tx.txInfo?.view),
+        description: getTransactionClassificationLabel(tx.txInfo?.view),
       };
     })
     .sort((a, b) => b.height - a.height);

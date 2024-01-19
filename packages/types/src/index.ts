@@ -10,6 +10,7 @@ export * from './wallet';
 export * from './utility';
 export * from './asset';
 export * from './transaction';
+export * from './translators';
 export * from './hex';
 export * from './string';
 export * from './address';

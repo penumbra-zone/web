@@ -14,7 +14,7 @@ export const handleTxApproval: InternalMessageHandler<TxApproval> = (jsonReq, re
     state.txApproval.authorizeRequest = AuthorizeRequest.fromJson(
       jsonReq.authorizeRequest,
     ).toJsonString();
-    state.txApproval.transactionViewFromPlan = TransactionView.fromJson(
+    state.txApproval.transactionView = TransactionView.fromJson(
       jsonReq.transactionViewFromPlan,
     ).toJsonString();
     state.txApproval.responder = responder;

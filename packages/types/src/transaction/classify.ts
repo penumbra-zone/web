@@ -1,9 +1,10 @@
 import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { TransactionClassification as TransactionClassification } from './classification';
 
-export const classifyTransaction = (txv?: TransactionView): string => {
+export const classifyTransaction = (txv?: TransactionView): TransactionClassification => {
   // Check if 'txv' is undefined and return "Unknown" if it is.
   if (!txv) {
-    return 'Unknown';
+    return 'unknown';
   }
 
   const hasOpaqueSpend = txv.bodyView?.actionViews.some(
@@ -44,24 +45,35 @@ export const classifyTransaction = (txv?: TransactionView): string => {
   if (isTransfer) {
     // If we can't see at least one spend, but we can see an output we control, it's a receive.
     if (hasOpaqueSpend && hasVisibleOutputWithVisibleAddress) {
-      return 'Receive';
+      return 'receive';
     }
     // If we can see all spends and outputs, it's a transaction we created...
     if (allSpendsVisible && allOutputsVisible) {
       // ... so it's either a send or an internal transfer, depending on whether there's an output we don't control.
       if (isInternal) {
-        return 'Internal Transfer';
+        return 'internalTransfer';
       } else {
-        return 'Send';
+        return 'send';
       }
     }
   }
 
   if (isInternal) {
     // TODO: fill this in with classification of swaps, swapclaims, etc.
-    return 'Unknown (Internal)';
+    return 'unknownInternal';
   }
 
   // Fallthrough
-  return 'Unknown';
+  return 'unknown';
 };
+
+const TRANSACTION_LABEL_BY_CLASSIFICATION: Record<TransactionClassification, string> = {
+  unknown: 'Unknown',
+  unknownInternal: 'Unknown (Internal)',
+  receive: 'Receive',
+  send: 'Send',
+  internalTransfer: 'Internal Transfer',
+};
+
+export const getTransactionClassificationLabel = (txv?: TransactionView): string =>
+  TRANSACTION_LABEL_BY_CLASSIFICATION[classifyTransaction(txv)];
