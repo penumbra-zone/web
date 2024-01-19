@@ -52,7 +52,6 @@ export const viewActionFromEmptyPerspective = (action: Action): ActionView | und
 // TODO: make this less bad and add round trip tests (should always be able to recover tx exactly from txv)
 export const viewFromEmptyPerspective = (tx: Transaction): TransactionView => {
   if (!tx.body) throw new Error('no body in transaction');
-  console.warn('viewFromEmptyPerspective', tx);
 
   return new TransactionView({
     bodyView: new TransactionBodyView({
