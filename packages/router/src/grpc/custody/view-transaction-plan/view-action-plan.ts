@@ -3,8 +3,8 @@ import {
   ActionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-import { bech32Address } from '../../address';
-import { bech32AssetId } from '../../asset';
+import { bech32Address } from '@penumbra-zone/types/src/address';
+import { bech32AssetId } from '@penumbra-zone/types/src/asset';
 import {
   DenomMetadata,
   Value,
@@ -19,7 +19,7 @@ import {
   SpendPlan,
   SpendView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
-import { Jsonified } from '../../jsonified';
+import { Jsonified } from '@penumbra-zone/types/src/jsonified';
 
 const getValueView = (
   value: Value | undefined,

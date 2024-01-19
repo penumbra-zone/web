@@ -16,9 +16,9 @@ import {
   ValueView_KnownDenom,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-import { Jsonified } from '../../jsonified';
-import { bech32AssetId } from '../../asset';
-import { bech32ToUint8Array } from '../../address';
+import { Jsonified } from '@penumbra-zone/types/src/jsonified';
+import { bech32AssetId } from '@penumbra-zone/types/src/asset';
+import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
 
 // Replace the wasm-pack import with the nodejs version so tests can run
 vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));

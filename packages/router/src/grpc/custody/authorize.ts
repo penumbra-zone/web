@@ -8,6 +8,7 @@ import { Box, Jsonified, bech32AssetId } from '@penumbra-zone/types';
 
 import { ConnectError, Code, HandlerContext } from '@connectrpc/connect';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { viewTransactionPlan } from './view-transaction-plan';
 
 const getDenomMetadataByAssetId = async (ctx: HandlerContext) => {
   const services = ctx.values.get(servicesCtx);
@@ -46,7 +47,13 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!decryptedSeedPhrase)
     throw new ConnectError('Unable to decrypt seed phrase with password', Code.Unauthenticated);
 
-  await approveReq(req, await getDenomMetadataByAssetId(ctx), fullViewingKey);
+  const denomMetadataByAssetId = await getDenomMetadataByAssetId(ctx);
+  const transactionViewFromPlan = viewTransactionPlan(
+    req.plan,
+    denomMetadataByAssetId,
+    fullViewingKey,
+  );
+  await approveReq(req, transactionViewFromPlan, await getDenomMetadataByAssetId(ctx));
 
   const spendKey = generateSpendKey(decryptedSeedPhrase);
   const data = authorizePlan(spendKey, req.plan);
