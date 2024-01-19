@@ -10,6 +10,14 @@ import { ConnectError, Code, HandlerContext } from '@connectrpc/connect';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { viewTransactionPlan } from './view-transaction-plan';
 
+/**
+ * @todo As more asset types get used, the amount of asset metadata we store
+ * will grow. Loading all the asset metadata into memory for the purpose of
+ * compiling a transaction view may not be sustainable in the long term.
+ * Eventually, we may want to scan through the transaction plan, extract all the
+ * asset IDs in it, and then query just those from IndexedDB instead of grabbing
+ * all of them.
+ */
 const getDenomMetadataByAssetId = async (ctx: HandlerContext) => {
   const services = ctx.values.get(servicesCtx);
   const walletServices = await services.getWalletServices();
