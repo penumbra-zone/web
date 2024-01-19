@@ -23,20 +23,14 @@ export class TendermintQuerier implements TendermintQuerierInterface {
     // the fullnode", not "wait for the tx to be included on chain.
     const res = await this.client.broadcastTxSync({ params });
     // TODO: check res.code? other failure states?
-    if (res.log.length) {
-      console.error('Tendermint', res);
-      throw new Error(res.log);
-    }
+    if (res.log.length) throw new Error(`Tendermint: ${res.log}`);
     return new TransactionId({ inner: res.hash });
   }
 
   async getTransaction(txId: TransactionId): Promise<{ height: bigint; transaction: Transaction }> {
     const res = await this.client.getTx({ hash: txId.inner });
     // TODO: check res.code? other failure states?
-    if (res.txResult?.log.length) {
-      console.error('Tendermint', res);
-      throw new Error(res.txResult.log);
-    }
+    if (res.txResult?.log.length) throw new Error(`Tendermint: ${res.txResult.log}`);
     const transaction = Transaction.fromBinary(res.tx);
     return { height: res.height, transaction };
   }
