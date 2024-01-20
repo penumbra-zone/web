@@ -22,28 +22,26 @@ export const viewTransactionPlan = (
   denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
   fullViewingKey: string,
 ): TransactionView => {
-  const returnAddress = txPlan.memoPlan?.plaintext?.returnAddress;
+  const returnAddress = txPlan.memo?.plaintext?.returnAddress;
   if (!returnAddress) throw new Error('No return address found in transaction plan');
-
-  const fee = txPlan.fee;
-  if (!fee) throw new Error('No fee found in transaction plan');
+  const transactionParameters = txPlan.transactionParameters;
+  if (!transactionParameters?.fee) throw new Error('No fee found in transaction plan');
 
   return new TransactionView({
     bodyView: {
       actionViews: txPlan.actions.map(viewActionPlan(denomMetadataByAssetId, fullViewingKey)),
-      fee,
       memoView: {
         memoView: {
           case: 'visible',
           value: {
             plaintext: {
               returnAddress: getAddressView(returnAddress, fullViewingKey),
-              text: txPlan.memoPlan?.plaintext?.text ?? '',
+              text: txPlan.memo?.plaintext?.text ?? '',
             },
           },
         },
       },
-      transactionParameters: { chainId: txPlan.chainId, expiryHeight: txPlan.expiryHeight },
+      transactionParameters,
     },
   });
 };

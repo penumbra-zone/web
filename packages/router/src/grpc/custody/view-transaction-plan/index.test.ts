@@ -20,15 +20,17 @@ describe('viewTransactionPlan()', () => {
     'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09';
 
   const validTxnPlan = new TransactionPlan({
-    fee: { amount: { hi: 1n, lo: 0n } },
-    memoPlan: {
+    memo: {
       plaintext: {
         returnAddress,
         text: 'Memo text here',
       },
     },
-    chainId,
-    expiryHeight,
+    transactionParameters: {
+      fee: { amount: { hi: 1n, lo: 0n } },
+      chainId,
+      expiryHeight,
+    },
   });
 
   test('includes the return address', () => {
@@ -47,17 +49,24 @@ describe('viewTransactionPlan()', () => {
   });
 
   test('includes the fee', () => {
-    expect(viewTransactionPlan(validTxnPlan, {}, mockFvk).bodyView!.fee).toBe(validTxnPlan.fee);
+    expect(
+      viewTransactionPlan(validTxnPlan, {}, mockFvk).bodyView!.transactionParameters!.fee,
+    ).toBe(validTxnPlan.transactionParameters!.fee);
   });
 
   test('throws when there is no fee', () => {
     expect(() =>
       viewTransactionPlan(
         new TransactionPlan({
-          memoPlan: {
+          memo: {
             plaintext: {
               returnAddress,
             },
+          },
+          transactionParameters: {
+            //fee,
+            chainId,
+            expiryHeight,
           },
         }),
         {},
@@ -75,6 +84,7 @@ describe('viewTransactionPlan()', () => {
 
   test('includes the transaction parameters', () => {
     expect(viewTransactionPlan(validTxnPlan, {}, mockFvk).bodyView!.transactionParameters).toEqual({
+      fee: validTxnPlan.transactionParameters!.fee,
       chainId,
       expiryHeight,
     });

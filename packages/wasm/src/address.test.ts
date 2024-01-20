@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { generateSpendKey, getAddressByIndex, getFullViewingKey } from './keys';
-import { getShortAddressByIndex, isControlledAddress } from './address';
+import { isControlledAddress } from './address';
 import { bech32Address } from '@penumbra-zone/types';
 
 // Replace the wasm-pack import with the nodejs version so tests can run
@@ -9,17 +9,6 @@ vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/was
 describe('address', () => {
   const seedPhrase =
     'benefit cherry cannon tooth exhibit law avocado spare tooth that amount pumpkin scene foil tape mobile shine apology add crouch situate sun business explain';
-
-  describe('generateShortAddressByIndex()', () => {
-    it('does not raise zod validation error', () => {
-      const spendKey = generateSpendKey(seedPhrase);
-      const fullViewingKey = getFullViewingKey(spendKey);
-
-      expect(() => {
-        getShortAddressByIndex(fullViewingKey, 0);
-      }).not.toThrow();
-    });
-  });
 
   describe('isControlledAddress()', () => {
     it('works with controlled addr', () => {

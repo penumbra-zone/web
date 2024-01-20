@@ -1,7 +1,4 @@
-import {
-  FmdParameters,
-  NoteSource,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import {
   SpendableNoteRecord,
   TransactionInfo,
@@ -20,6 +17,7 @@ import {
   transactionInfo,
 } from './indexed-db.test-data';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place
@@ -105,7 +103,7 @@ describe('IndexedDb', () => {
     it('object store should be empty after clear', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
       await db.saveSpendableNote(newNote);
-      expect((await db.getAllNotes()).length).toBe(1);
+      expect((await db.getAllSpendableNotes()).length).toBe(1);
 
       await db.saveAssetsMetadata(denomMetadataA);
       expect((await db.getAllAssetsMetadata()).length).toBe(1);
@@ -114,11 +112,11 @@ describe('IndexedDb', () => {
         TransactionInfo.fromJson({
           height: '1000',
           id: {
-            hash: 'tx-hash',
+            inner: 'tx-hash',
           },
         }),
       );
-      expect((await db.getAllTransactions()).length).toBe(1);
+      expect((await db.getAllTransactionInfo()).length).toBe(1);
 
       const scanResult = {
         height: 1000n,
@@ -143,9 +141,9 @@ describe('IndexedDb', () => {
       expect(await db.getLastBlockSynced()).toBe(1000n);
 
       await db.clear();
-      expect((await db.getAllNotes()).length).toBe(0);
+      expect((await db.getAllSpendableNotes()).length).toBe(0);
       expect((await db.getAllAssetsMetadata()).length).toBe(0);
-      expect((await db.getAllTransactions()).length).toBe(0);
+      expect((await db.getAllTransactionInfo()).length).toBe(0);
       expect(await db.getLastBlockSynced()).toBeUndefined();
     });
   });
@@ -178,7 +176,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveSpendableNote(newNote);
-      const savedSpendableNote = await db.getNoteByNullifier(newNote.nullifier!);
+      const savedSpendableNote = await db.getSpendableNoteByNullifier(newNote.nullifier!);
 
       expect(newNote.equals(savedSpendableNote)).toBeTruthy();
     });
@@ -187,7 +185,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveSpendableNote(newNote);
-      const savedSpendableNotes = await db.getAllNotes();
+      const savedSpendableNotes = await db.getAllSpendableNotes();
 
       expect(savedSpendableNotes.length === 1).toBeTruthy();
       expect(newNote.equals(savedSpendableNotes[0])).toBeTruthy();
@@ -197,7 +195,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveSpendableNote(newNote);
-      const noteByCommitment = await db.getNoteByCommitment(newNote.noteCommitment!);
+      const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment!);
 
       expect(newNote.equals(noteByCommitment)).toBeTruthy();
     });
@@ -205,7 +203,7 @@ describe('IndexedDb', () => {
     it('should return undefined by commitment', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      const noteByCommitment = await db.getNoteByCommitment(newNote.noteCommitment!);
+      const noteByCommitment = await db.getSpendableNoteByCommitment(newNote.noteCommitment!);
 
       expect(noteByCommitment).toBeUndefined();
     });
@@ -255,8 +253,8 @@ describe('IndexedDb', () => {
 
       await db.saveTransactionInfo(transactionInfo);
 
-      const savedTransaction = await db.getTransaction(
-        new NoteSource({ inner: transactionInfo.id!.hash }),
+      const savedTransaction = await db.getTransactionInfo(
+        new TransactionId({ inner: transactionInfo.id!.inner }),
       );
 
       expect(transactionInfo.equals(savedTransaction)).toBeTruthy();
@@ -266,7 +264,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveTransactionInfo(transactionInfo);
-      const savedTransactions = await db.getAllTransactions();
+      const savedTransactions = await db.getAllTransactionInfo();
 
       expect(savedTransactions.length === 1).toBeTruthy();
       expect(transactionInfo.equals(savedTransactions[0])).toBeTruthy();

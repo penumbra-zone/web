@@ -1,23 +1,24 @@
 import { ViewServer as WasmViewServer } from '@penumbra-zone/wasm-bundler';
 import {
   IdbConstants,
-  InnerBase64Schema,
-  parseScanResult,
-  ScanResult,
-  ScanResultSchema,
   StateCommitmentTree,
   ViewServerInterface,
-  WasmDenomMetadataSchema,
+  ScanBlockResult,
+  SctUpdatesSchema,
+  validateSchema,
 } from '@penumbra-zone/types';
-import { validateSchema } from '@penumbra-zone/types/src/validation';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
 import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
-import { z } from 'zod';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import {
   Position,
   PositionState,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
+import { JsonObject, JsonValue } from '@bufbuild/protobuf';
+import {
+  SpendableNoteRecord,
+  SwapRecord,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
 interface ViewServerProps {
   fullViewingKey: string;
@@ -54,8 +55,8 @@ export class ViewServer implements ViewServerInterface {
   // Makes update to internal state-commitment-tree as a side effect.
   // Should extract updates via this.flushUpdates().
   async scanBlock(compactBlock: CompactBlock): Promise<boolean> {
-    const res = await this.wasmViewServer.scan_block(compactBlock.toJson());
-    return validateSchema(z.boolean(), res);
+    const res = compactBlock.toJson();
+    return this.wasmViewServer.scan_block(res);
   }
 
   // Resets the state of the wasmViewServer to the one set in storage
@@ -69,22 +70,38 @@ export class ViewServer implements ViewServerInterface {
   }
 
   getSctRoot(): MerkleRoot {
-    const raw = validateSchema(InnerBase64Schema, this.wasmViewServer.get_sct_root());
-    return MerkleRoot.fromJson(raw);
+    const raw = this.wasmViewServer.get_sct_root() as JsonValue;
+    const res = MerkleRoot.fromJson(raw);
+    return res;
   }
 
   // As blocks are scanned, the internal wasmViewServer tree is being updated.
   // Flush updates clears the state and returns all the updates since the last checkpoint.
-  flushUpdates(): ScanResult {
-    const raw = validateSchema(ScanResultSchema, this.wasmViewServer.flush_updates());
-    return parseScanResult(raw);
+  flushUpdates(): ScanBlockResult {
+    const raw = this.wasmViewServer.flush_updates() as JsonValue;
+    const { height, sct_updates, new_notes, new_swaps } = raw as {
+      height?: string | number | bigint | undefined;
+      sct_updates?: JsonObject | undefined;
+      new_notes?: JsonValue[] | undefined;
+      new_swaps?: JsonValue[] | undefined;
+    };
+    const wasmJson = {
+      new_notes: (new_notes ?? []).map(n => JSON.stringify(n)),
+      new_swaps: (new_swaps ?? []).map(s => JSON.stringify(s)),
+    };
+    return {
+      height: BigInt(height ?? false),
+      sctUpdates: validateSchema(SctUpdatesSchema, sct_updates),
+      newNotes: wasmJson.new_notes.map(n => SpendableNoteRecord.fromJsonString(n)),
+      newSwaps: wasmJson.new_swaps.map(s => SwapRecord.fromJsonString(s)),
+    };
   }
 
   getLpNftMetadata(position: Position, positionState: PositionState): DenomMetadata {
-    const result = validateSchema(
-      WasmDenomMetadataSchema,
-      this.wasmViewServer.get_lpnft_asset(position.toJson(), positionState.toJson()),
-    );
+    const result = this.wasmViewServer.get_lpnft_asset(
+      position.toJson(),
+      positionState.toJson(),
+    ) as JsonValue;
     return DenomMetadata.fromJsonString(JSON.stringify(result));
   }
 }

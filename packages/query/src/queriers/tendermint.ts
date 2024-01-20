@@ -1,13 +1,9 @@
 import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils';
-import {
-  BroadcastTxSyncRequest,
-  GetStatusRequest,
-  GetTxRequest,
-  GetTxResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/util/tendermint_proxy/v1alpha1/tendermint_proxy_pb';
 import { TendermintProxyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/util/tendermint_proxy/v1alpha1/tendermint_proxy_connect';
 import { TendermintQuerierInterface } from '@penumbra-zone/types';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
+import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 export class TendermintQuerier implements TendermintQuerierInterface {
   private readonly client: PromiseClient<typeof TendermintProxyService>;
@@ -17,21 +13,25 @@ export class TendermintQuerier implements TendermintQuerierInterface {
   }
 
   async latestBlockHeight() {
-    const req = new GetStatusRequest();
-    const res = await this.client.getStatus(req);
+    const res = await this.client.getStatus({});
     return res.syncInfo!.latestBlockHeight;
   }
 
-  async broadcastTx(params: Uint8Array) {
+  async broadcastTx(tx: Transaction) {
+    const params = tx.toBinary();
     // Note that "synchronous" here means "wait for the tx to be accepted by
     // the fullnode", not "wait for the tx to be included on chain.
-    const req = new BroadcastTxSyncRequest({ params });
-    const res = await this.client.broadcastTxSync(req);
-    return res.hash;
+    const res = await this.client.broadcastTxSync({ params });
+    // TODO: check res.code? other failure states?
+    if (res.log.length) throw new Error(`Tendermint: ${res.log}`);
+    return new TransactionId({ inner: res.hash });
   }
 
-  async txByHash(hash: Uint8Array): Promise<GetTxResponse | undefined> {
-    const req = new GetTxRequest({ hash });
-    return await this.client.getTx(req);
+  async getTransaction(txId: TransactionId): Promise<{ height: bigint; transaction: Transaction }> {
+    const res = await this.client.getTx({ hash: txId.inner });
+    // TODO: check res.code? other failure states?
+    if (res.txResult?.log.length) throw new Error(`Tendermint: ${res.txResult.log}`);
+    const transaction = Transaction.fromBinary(res.tx);
+    return { height: res.height, transaction };
   }
 }

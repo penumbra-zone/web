@@ -1,15 +1,8 @@
-import {
-  SpendableNoteRecord,
-  TransactionInfo,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 
 export interface BlockProcessorInterface {
   syncBlocks(): Promise<void>;
-  autoRetrySync(): Promise<void>;
-  storeNewTransactions(blockHeight: bigint, newNotes: SpendableNoteRecord[]): Promise<void>;
-  handleNullifiers(nullifiers: Nullifier[], blockHeight: bigint): Promise<void>;
-  saveSyncProgress(): Promise<void>;
   stopSync(): void;
-  getTxInfoByHash(hash: Uint8Array): Promise<TransactionInfo | undefined>;
+  getTransactionInfo(hash: TransactionId): Promise<TransactionInfo>;
 }
