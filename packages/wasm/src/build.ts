@@ -5,14 +5,9 @@ import {
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { StateCommitmentTree, validateSchema, WasmWitnessDataSchema } from '@penumbra-zone/types';
+import { StateCommitmentTree } from '@penumbra-zone/types';
 import { JsonValue } from '@bufbuild/protobuf';
-import {
-  authorize,
-  build_action,
-  build_parallel,
-  witness as wasmWitness,
-} from '@penumbra-zone/wasm-bundler';
+import { authorize, build_action, build_parallel, witness } from '@penumbra-zone/wasm-bundler';
 
 export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): AuthorizationData => {
   const result = authorize(spendKey, txPlan.toJson()) as unknown;
@@ -20,7 +15,7 @@ export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): Author
 };
 
 export const getWitness = (txPlan: TransactionPlan, sct: StateCommitmentTree): WitnessData => {
-  const result = validateSchema(WasmWitnessDataSchema, wasmWitness(txPlan.toJson(), sct));
+  const result: unknown = witness(txPlan.toJson(), sct);
   return WitnessData.fromJsonString(JSON.stringify(result));
 };
 
