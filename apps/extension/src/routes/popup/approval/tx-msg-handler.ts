@@ -10,7 +10,7 @@ export const isTxApprovalReq = (req: PopupRequest): req is TxApproval => {
 export const handleTxApproval: InternalMessageHandler<TxApproval> = (jsonReq, responder) => {
   useStore.setState(state => {
     state.txApproval.authorizeRequest = jsonReq.authorizeRequest;
-    state.txApproval.denomMetadataByAssetId = jsonReq.denomMetadataByAssetId;
+    state.txApproval.transactionViewFromPlan = jsonReq.transactionViewFromPlan;
     state.txApproval.responder = responder;
   });
 };

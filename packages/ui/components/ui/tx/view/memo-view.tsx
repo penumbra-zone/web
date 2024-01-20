@@ -1,20 +1,12 @@
 import { MemoView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { AddressViewComponent } from './address-view';
 import { ViewBox, ViewSection } from './viewbox';
-import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
 export const MemoViewComponent = ({ memo }: { memo: MemoView | undefined }) => {
   if (!memo?.memoView) return null;
   if (memo.memoView.case === 'visible') {
     const mv = memo.memoView.value;
     const text = mv.plaintext?.text;
-
-    const av = new AddressView({
-      addressView: {
-        case: 'opaque',
-        value: { address: mv.plaintext!.returnAddress!.addressView.value!.address! },
-      },
-    });
 
     return (
       <ViewSection heading='Memo'>
@@ -27,7 +19,7 @@ export const MemoViewComponent = ({ memo }: { memo: MemoView | undefined }) => {
         />
         <ViewBox
           label='Sender Return Address'
-          visibleContent={<AddressViewComponent view={av} />}
+          visibleContent={<AddressViewComponent view={mv.plaintext!.returnAddress} />}
         />
       </ViewSection>
     );

@@ -2,11 +2,13 @@ import {
   ActionPlan,
   ActionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { bech32AssetId } from '@penumbra-zone/types/src/asset';
 import {
   DenomMetadata,
   Value,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { getAddressView } from './get-address-view';
 import {
   Note,
   NoteView,
@@ -15,8 +17,7 @@ import {
   SpendPlan,
   SpendView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
-import { Jsonified } from '../../jsonified';
-import { bech32AssetId } from '../../asset';
+import { Jsonified } from '@penumbra-zone/types/src/jsonified';
 
 const getValueView = (
   value: Value | undefined,
@@ -43,18 +44,14 @@ const getValueView = (
 const getNoteView = (
   note: Note | undefined,
   denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
+  fullViewingKey: string,
 ) => {
   if (!note) throw new Error('No note to view');
   if (!note.address) throw new Error('No address in note');
   if (!note.value) throw new Error('No value in note');
 
   return new NoteView({
-    address: {
-      addressView: {
-        case: 'opaque',
-        value: { address: note.address },
-      },
-    },
+    address: getAddressView(note.address, fullViewingKey),
     value: getValueView(note.value, denomMetadataByAssetId),
   });
 };
@@ -62,6 +59,7 @@ const getNoteView = (
 const getSpendView = (
   spendPlan: SpendPlan,
   denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
+  fullViewingKey: string,
 ): SpendView => {
   if (!spendPlan.note?.address) throw new Error('No address in spend plan');
 
@@ -69,7 +67,7 @@ const getSpendView = (
     spendView: {
       case: 'visible',
       value: {
-        note: getNoteView(spendPlan.note, denomMetadataByAssetId),
+        note: getNoteView(spendPlan.note, denomMetadataByAssetId, fullViewingKey),
       },
     },
   });
@@ -78,6 +76,7 @@ const getSpendView = (
 const getOutputView = (
   outputPlan: OutputPlan,
   denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
+  fullViewingKey: string,
 ): OutputView => {
   if (!outputPlan.destAddress) throw new Error('No destAddress in output plan');
 
@@ -88,14 +87,7 @@ const getOutputView = (
       value: {
         note: {
           value: getValueView(outputPlan.value, denomMetadataByAssetId),
-          address: {
-            addressView: {
-              case: 'opaque',
-              value: {
-                address: outputPlan.destAddress,
-              },
-            },
-          },
+          address: getAddressView(outputPlan.destAddress, fullViewingKey),
         },
       },
     },
@@ -103,21 +95,21 @@ const getOutputView = (
 };
 
 export const viewActionPlan =
-  (denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>) =>
+  (denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>, fullViewingKey: string) =>
   (actionPlan: ActionPlan): ActionView => {
     switch (actionPlan.action.case) {
       case 'spend':
         return new ActionView({
           actionView: {
             case: 'spend',
-            value: getSpendView(actionPlan.action.value, denomMetadataByAssetId),
+            value: getSpendView(actionPlan.action.value, denomMetadataByAssetId, fullViewingKey),
           },
         });
       case 'output':
         return new ActionView({
           actionView: {
             case: 'output',
-            value: getOutputView(actionPlan.action.value, denomMetadataByAssetId),
+            value: getOutputView(actionPlan.action.value, denomMetadataByAssetId, fullViewingKey),
           },
         });
       case 'withdrawal':
