@@ -12,8 +12,7 @@ describe('viewTransactionPlan()', () => {
   const expiryHeight = 100n;
 
   const validTxnPlan = new TransactionPlan({
-    fee: { amount: { hi: 1n, lo: 0n } },
-    memoPlan: {
+    memo: {
       plaintext: {
         returnAddress: {
           altBech32m: returnAddress,
@@ -21,8 +20,11 @@ describe('viewTransactionPlan()', () => {
         text: 'Memo text here',
       },
     },
-    chainId,
-    expiryHeight,
+    transactionParameters: {
+      fee: { amount: { hi: 1n, lo: 0n } },
+      chainId,
+      expiryHeight,
+    },
   });
 
   test('includes the return address', () => {
@@ -41,17 +43,24 @@ describe('viewTransactionPlan()', () => {
   });
 
   test('includes the fee', () => {
-    expect(viewTransactionPlan(validTxnPlan, {}).bodyView!.fee).toBe(validTxnPlan.fee);
+    expect(viewTransactionPlan(validTxnPlan, {}).bodyView!.transactionParameters!.fee).toBe(
+      validTxnPlan.transactionParameters!.fee,
+    );
   });
 
   test('throws when there is no fee', () => {
     expect(() =>
       viewTransactionPlan(
         new TransactionPlan({
-          memoPlan: {
+          memo: {
             plaintext: {
               returnAddress: {},
             },
+          },
+          transactionParameters: {
+            //fee,
+            chainId,
+            expiryHeight,
           },
         }),
         {},
@@ -68,6 +77,7 @@ describe('viewTransactionPlan()', () => {
 
   test('includes the transaction parameters', () => {
     expect(viewTransactionPlan(validTxnPlan, {}).bodyView!.transactionParameters).toEqual({
+      fee: validTxnPlan.transactionParameters!.fee,
       chainId,
       expiryHeight,
     });

@@ -5,29 +5,17 @@ import {
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { StateCommitmentTree } from '@penumbra-zone/types';
 import { JsonValue } from '@bufbuild/protobuf';
-import {
-  StateCommitmentTree,
-  validateSchema,
-  WasmActionSchema,
-  WasmAuthorizeSchema,
-  WasmBuildSchema,
-  WasmWitnessDataSchema,
-} from '@penumbra-zone/types';
-import {
-  authorize,
-  build_parallel as buildTxParallel,
-  build_action as buildAction,
-  witness as wasmWitness,
-} from '@penumbra-zone/wasm-bundler';
+import { authorize, build_action, build_parallel, witness } from '@penumbra-zone/wasm-bundler';
 
 export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): AuthorizationData => {
-  const result = validateSchema(WasmAuthorizeSchema, authorize(spendKey, txPlan.toJson()));
+  const result = authorize(spendKey, txPlan.toJson()) as unknown;
   return AuthorizationData.fromJsonString(JSON.stringify(result));
 };
 
 export const getWitness = (txPlan: TransactionPlan, sct: StateCommitmentTree): WitnessData => {
-  const result = validateSchema(WasmWitnessDataSchema, wasmWitness(txPlan.toJson(), sct));
+  const result: unknown = witness(txPlan.toJson(), sct);
   return WitnessData.fromJsonString(JSON.stringify(result));
 };
 
@@ -37,16 +25,12 @@ export const buildParallel = (
   witnessData: WitnessData,
   authData: AuthorizationData,
 ): Transaction => {
-  const result = validateSchema(
-    WasmBuildSchema,
-    buildTxParallel(
-      batchActions.map(action => action.toJson()),
-      txPlan.toJson(),
-      witnessData.toJson(),
-      authData.toJson(),
-    ),
+  const result: unknown = build_parallel(
+    batchActions.map(action => action.toJson()),
+    txPlan.toJson(),
+    witnessData.toJson(),
+    authData.toJson(),
   );
-
   return Transaction.fromJson(result as JsonValue);
 };
 
@@ -56,15 +40,12 @@ export const buildActionParallel = (
   fullViewingKey: string,
   actionId: number,
 ): Action => {
-  const result = validateSchema(
-    WasmActionSchema,
-    buildAction(
-      txPlan.toJson(),
-      txPlan.actions[actionId]?.toJson(),
-      fullViewingKey,
-      witnessData.toJson(),
-    ),
-  );
+  const result = build_action(
+    txPlan.toJson(),
+    txPlan.actions[actionId]?.toJson(),
+    fullViewingKey,
+    witnessData.toJson(),
+  ) as unknown;
 
   return Action.fromJson(result as JsonValue);
 };

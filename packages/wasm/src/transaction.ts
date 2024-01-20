@@ -1,9 +1,4 @@
-import {
-  IdbConstants,
-  validateSchema,
-  WasmTransactionInfo,
-  WasmTransactionInfoSchema,
-} from '@penumbra-zone/types';
+import { IdbConstants } from '@penumbra-zone/types';
 import { transaction_info } from '@penumbra-zone/wasm-bundler';
 import {
   Transaction,
@@ -15,13 +10,13 @@ export const transactionInfo = async (
   fullViewingKey: string,
   tx: Transaction,
   idbConstants: IdbConstants,
-): Promise<WasmTransactionInfo> => {
-  const result = validateSchema(
-    WasmTransactionInfoSchema,
-    await transaction_info(fullViewingKey, tx.toJson(), idbConstants),
-  );
+) => {
+  const { txp, txv } = (await transaction_info(fullViewingKey, tx.toJson(), idbConstants)) as {
+    txp: unknown;
+    txv: unknown;
+  };
   return {
-    txp: TransactionPerspective.fromJsonString(JSON.stringify(result.txp)),
-    txv: TransactionView.fromJsonString(JSON.stringify(result.txv)),
+    txp: TransactionPerspective.fromJsonString(JSON.stringify(txp)),
+    txv: TransactionView.fromJsonString(JSON.stringify(txv)),
   };
 };

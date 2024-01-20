@@ -3,7 +3,7 @@ import {
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import type { Impl } from '.';
-import { servicesCtx, assertWalletIdCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx';
 
 import { ConnectError, Code } from '@connectrpc/connect';
 
@@ -16,9 +16,6 @@ const watchStream = async <U>(
 };
 
 export const nullifierStatus: Impl['nullifierStatus'] = async (req, ctx) => {
-  const assertWalletId = ctx.values.get(assertWalletIdCtx);
-  await assertWalletId(req.walletId);
-
   const { nullifier } = req;
   if (!nullifier) throw new ConnectError('No nullifier passed', Code.InvalidArgument);
 
@@ -37,7 +34,7 @@ export const nullifierStatus: Impl['nullifierStatus'] = async (req, ctx) => {
   // nullifier is spent.
   const [swap, note] = await Promise.all([
     indexedDb.getSwapByNullifier(nullifier),
-    indexedDb.getNoteByNullifier(nullifier),
+    indexedDb.getSpendableNoteByNullifier(nullifier),
   ]);
   const spent = Boolean(swap?.heightClaimed) || Boolean(note?.heightSpent);
 

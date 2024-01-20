@@ -14,20 +14,20 @@
     "all-check": "pnpm install && pnpm format && pnpm format-check && pnpm lint && pnpm test && pnpm build"
   },
   "dependencies": {
-    "@buf/cosmos_ibc.bufbuild_es": "1.5.1-20231211183134-b93a64f9fb08.1",
-    "@buf/cosmos_ibc.connectrpc_es": "1.1.4-20231211183134-b93a64f9fb08.1",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.5.1-20231211173138-9acabec31a72.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.1.4-20231211173138-9acabec31a72.1"
+    "@buf/cosmos_ibc.bufbuild_es": "1.6.0-20231221153343-c805262eb055.1",
+    "@buf/cosmos_ibc.connectrpc_es": "1.2.1-20231221153343-c805262eb055.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.6.0-20240108223610-b2df48bf92fa.1",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.2.1-20240108223610-b2df48bf92fa.1",
+    "@penumbra-zone/wasm-bundler": "0.65.0-pre.0"
   },
   "devDependencies": {
-    "@penumbra-zone/wasm-bundler": "0.64.0",
-    "@penumbra-zone/wasm-nodejs": "0.64.0",
-    "@turbo/gen": "^1.11.1",
-    "@typescript-eslint/eslint-plugin": "^6.14.0",
-    "eslint": "^8.55.0",
+    "@penumbra-zone/wasm-nodejs": "0.65.0-pre.0",
+    "@turbo/gen": "^1.11.3",
+    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "eslint": "^8.56.0",
     "eslint-config-custom": "workspace:*",
     "playwright": "^1.40.1",
     "prettier": "^3.1.1",
-    "turbo": "^1.11.2"
+    "turbo": "^1.11.3"
   }
 }

@@ -25,8 +25,7 @@ describe('TX Approval Slice', () => {
       const expiryHeight = 100n;
 
       const validTxnPlan = new TransactionPlan({
-        fee: { amount: { hi: 1n, lo: 0n } },
-        memoPlan: {
+        memo: {
           plaintext: {
             returnAddress: {
               altBech32m: returnAddress,
@@ -34,8 +33,11 @@ describe('TX Approval Slice', () => {
             text: 'Memo text here',
           },
         },
-        chainId,
-        expiryHeight,
+        transactionParameters: {
+          fee: { amount: { hi: 1n, lo: 0n } },
+          chainId,
+          expiryHeight,
+        },
       });
 
       useStore.setState({
