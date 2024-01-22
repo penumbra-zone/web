@@ -267,7 +267,7 @@ export class IndexedDb implements IndexedDbInterface {
 
     while (assetCursor) {
       // Test denom with a regular expression
-      const regex = new RegExp('_delegation_.*');
+      const isDelegationAssetType = new RegExp('_delegation_.*');
 
       const denomMetadata = DenomMetadata.fromJson(assetCursor.value);
       if (regex.test(denomMetadata.base)) {
