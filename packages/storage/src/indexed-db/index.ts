@@ -310,7 +310,6 @@ export class IndexedDb implements IndexedDbInterface {
       const noteIsVotable = note.heightSpent === 0n || note.heightSpent > votable_at_height;
 
       if (isRelevantAsset && noteIsVotable && note.heightCreated < votable_at_height) {
-
         let asset = relevantAssets.get(uint8ArrayToHex(note.note?.value?.assetId?.inner!));
 
         let idk = bech32ToUint8Array(asset?.base.replace('udelegation_', '')!);
