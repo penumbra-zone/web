@@ -1,7 +1,6 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-
 /**
  * Gas prices are published within the 'CompactBlock' whenever they change. The specific block
  * in which the Gas prices change is unknown and the current Gas prices cannot be retrieved
