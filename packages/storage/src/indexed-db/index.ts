@@ -309,9 +309,7 @@ export class IndexedDb implements IndexedDbInterface {
         continue;
       }
 
-      const isRelevantAsset = relevantAssets.has(
-        uint8ArrayToHex(note.note.value.assetId.inner),
-      );
+      const isRelevantAsset = relevantAssets.has(uint8ArrayToHex(note.note.value.assetId.inner));
       const noteIsVotable = note.heightSpent === 0n || note.heightSpent > votable_at_height;
 
       if (isRelevantAsset && noteIsVotable && note.heightCreated < votable_at_height) {
@@ -320,13 +318,12 @@ export class IndexedDb implements IndexedDbInterface {
         const bech32idk = asset?.base.replace('udelegation_', '');
         if (bech32idk) {
           notesForVoting.push(
-              new NotesForVotingResponse({
-                noteRecord: note,
-                identityKey: new IdentityKey({ ik:  bech32ToUint8Array(bech32idk) }),
-              }),
+            new NotesForVotingResponse({
+              noteRecord: note,
+              identityKey: new IdentityKey({ ik: bech32ToUint8Array(bech32idk) }),
+            }),
           );
         }
-
       }
       noteCursor = await noteCursor.continue();
     }
