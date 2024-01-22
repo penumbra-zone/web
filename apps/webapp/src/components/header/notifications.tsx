@@ -33,7 +33,7 @@ export default function Notifications() {
               <div className='absolute right-[2px] top-[5px] z-10 h-[11px] w-[11px] rounded-full bg-red'></div>
             ) : (
               <img
-                src='/sync-bold.svg'
+                src='./sync-bold.svg'
                 alt='Syncing blocks...'
                 className='absolute right-[2px] top-[5px] z-10 h-[15px] w-[15px]'
               />

@@ -15,7 +15,7 @@ type AccountMap = Record<AddressIndex['account'], BalancesMap>;
 export const balances: Impl['balances'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
-  const allNotes = await indexedDb.getAllNotes();
+  const allNotes = await indexedDb.getAllSpendableNotes();
 
   const accounts: AccountMap = {};
 

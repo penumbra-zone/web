@@ -41,7 +41,8 @@ export const assets: Asset[] = [
     symbol: '',
     uri: '',
     uriHash: '',
-    icon: '/favicon.png',
+    /** @todo: Figure out a better long-term URL for this. */
+    icon: 'https://raw.githubusercontent.com/penumbra-zone/web/main/apps/webapp/public/favicon.png',
     penumbraAssetId: {
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
       altBaseDenom: '',
