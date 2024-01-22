@@ -285,8 +285,8 @@ export class IndexedDb implements IndexedDbInterface {
 
       const denomMetadata = DenomMetadata.fromJson(assetCursor.value);
 
-      if (isDelegationAssetType.test(denomMetadata.base)) {
-        relevantAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId?.inner!), denomMetadata);
+      if (isDelegationAssetType.test(denomMetadata.base) && denomMetadata.penumbraAssetId) {
+        relevantAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId.inner), denomMetadata);
       }
       assetCursor = await assetCursor.continue();
     }
@@ -304,21 +304,29 @@ export class IndexedDb implements IndexedDbInterface {
         }
       }
 
+      if (!note.note?.value?.assetId?.inner) {
+        noteCursor = await noteCursor.continue();
+        continue;
+      }
+
       const isRelevantAsset = relevantAssets.has(
-        uint8ArrayToHex(note.note?.value?.assetId?.inner!),
+        uint8ArrayToHex(note.note.value.assetId.inner),
       );
       const noteIsVotable = note.heightSpent === 0n || note.heightSpent > votable_at_height;
 
       if (isRelevantAsset && noteIsVotable && note.heightCreated < votable_at_height) {
-        let asset = relevantAssets.get(uint8ArrayToHex(note.note?.value?.assetId?.inner!));
+        const asset = relevantAssets.get(uint8ArrayToHex(note.note.value.assetId.inner));
 
-        let idk = bech32ToUint8Array(asset?.base.replace('udelegation_', '')!);
-        notesForVoting.push(
-          new NotesForVotingResponse({
-            noteRecord: note,
-            identityKey: new IdentityKey({ ik: idk }),
-          }),
-        );
+        const bech32idk = asset?.base.replace('udelegation_', '');
+        if (bech32idk) {
+          notesForVoting.push(
+              new NotesForVotingResponse({
+                noteRecord: note,
+                identityKey: new IdentityKey({ ik:  bech32ToUint8Array(bech32idk) }),
+              }),
+          );
+        }
+
       }
       noteCursor = await noteCursor.continue();
     }

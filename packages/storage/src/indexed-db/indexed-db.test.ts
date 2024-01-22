@@ -344,7 +344,7 @@ describe('IndexedDb', () => {
 
       await db.saveSpendableNote(noteWithGmAsset);
 
-      let notesForVoting = await db.getNotesForVoting(undefined, 222n);
+      const notesForVoting = await db.getNotesForVoting(undefined, 222n);
 
       expect(notesForVoting.length).toBe(2);
     });
@@ -359,7 +359,7 @@ describe('IndexedDb', () => {
       await db.saveSpendableNote(noteWithDelegationAssetA);
       await db.saveSpendableNote(noteWithDelegationAssetB);
 
-      let notesForVoting = await db.getNotesForVoting(undefined, 50n);
+      const notesForVoting = await db.getNotesForVoting(undefined, 50n);
 
       expect(notesForVoting.length).toBe(1);
     });
@@ -374,7 +374,7 @@ describe('IndexedDb', () => {
       await db.saveSpendableNote(noteWithDelegationAssetA);
       await db.saveSpendableNote(noteWithDelegationAssetB);
 
-      let notesForVoting = await db.getNotesForVoting(new AddressIndex({ account: 2 }), 222n);
+      const notesForVoting = await db.getNotesForVoting(new AddressIndex({ account: 2 }), 222n);
 
       expect(notesForVoting.length === 0).toBeTruthy();
     });
