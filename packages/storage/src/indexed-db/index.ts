@@ -1,5 +1,6 @@
 import { IDBPDatabase, openDB, StoreNames } from 'idb';
 import {
+  bech32ToUint8Array,
   IDB_TABLES,
   IdbConstants,
   IdbUpdate,
@@ -8,12 +9,14 @@ import {
   ScanBlockResult,
   StateCommitmentTree,
   uint8ArrayToBase64,
+  uint8ArrayToHex,
 } from '@penumbra-zone/types';
 import { IbdUpdater, IbdUpdates } from './updater';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 import {
+  NotesForVotingResponse,
   SpendableNoteRecord,
   SwapRecord,
   TransactionInfo,
@@ -24,7 +27,10 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import {
+  AddressIndex,
+  IdentityKey,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -269,27 +275,25 @@ export class IndexedDb implements IndexedDbInterface {
   async getNotesForVoting(
     addressIndex: AddressIndex | undefined,
     votable_at_height: bigint,
-  ): Promise<[]> {
-    const relevantAssets = [];
+  ): Promise<NotesForVotingResponse[]> {
+    const relevantAssets = new Map<string, DenomMetadata>();
 
     let assetCursor = await this.db.transaction('ASSETS').store.openCursor();
 
     while (assetCursor) {
-      const isDelegationAssetType = new RegExp('_delegation_.*');
+      const isDelegationAssetType = new RegExp('udelegation_.*');
 
       const denomMetadata = DenomMetadata.fromJson(assetCursor.value);
-      if (isDelegationAssetType.test(denomMetadata.base)) {
-        relevantAssets.push(denomMetadata.penumbraAssetId);
-      }
 
+      if (isDelegationAssetType.test(denomMetadata.base)) {
+        relevantAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId?.inner!), denomMetadata);
+      }
       assetCursor = await assetCursor.continue();
     }
 
-    const result = [];
+    const notesForVoting = [];
 
-    // Fetch all notes and filter out the relevant ones
-    let noteCursor = await this.db.transaction('NOTES').store.openCursor();
-
+    let noteCursor = await this.db.transaction('SPENDABLE_NOTES').store.openCursor();
     while (noteCursor) {
       const note = SpendableNoteRecord.fromJson(noteCursor.value);
 
@@ -299,19 +303,27 @@ export class IndexedDb implements IndexedDbInterface {
           continue;
         }
       }
+
+      const isRelevantAsset = relevantAssets.has(
+        uint8ArrayToHex(note.note?.value?.assetId?.inner!),
+      );
       const noteIsVotable = note.heightSpent === 0n || note.heightSpent > votable_at_height;
 
-      if (
-        relevantAssets.includes(note.note?.value?.assetId) &&
-        noteIsVotable &&
-        note.heightCreated < votable_at_height
-      ) {
-        result.push(note);
-      }
+      if (isRelevantAsset && noteIsVotable && note.heightCreated < votable_at_height) {
 
+        let asset = relevantAssets.get(uint8ArrayToHex(note.note?.value?.assetId?.inner!));
+
+        let idk = bech32ToUint8Array(asset?.base.replace('udelegation_', '')!);
+        notesForVoting.push(
+          new NotesForVotingResponse({
+            noteRecord: note,
+            identityKey: new IdentityKey({ ik: idk }),
+          }),
+        );
+      }
       noteCursor = await noteCursor.continue();
     }
 
-    return Promise.resolve([]);
+    return Promise.resolve(notesForVoting);
   }
 }
