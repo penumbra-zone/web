@@ -64,7 +64,7 @@ export interface IndexedDbInterface {
   saveGasPrices(value: GasPrices): Promise<void>;
   getNotesForVoting(
     addressIndex: AddressIndex | undefined,
-    votable_at_height: bigint,
+    votableAtHeight: bigint,
   ): Promise<NotesForVotingResponse[]>;
 }
 

@@ -274,7 +274,7 @@ export class IndexedDb implements IndexedDbInterface {
 
   async getNotesForVoting(
     addressIndex: AddressIndex | undefined,
-    votable_at_height: bigint,
+    votableAtHeight: bigint,
   ): Promise<NotesForVotingResponse[]> {
     const relevantAssets = new Map<string, DenomMetadata>();
 
@@ -310,9 +310,9 @@ export class IndexedDb implements IndexedDbInterface {
       }
 
       const isRelevantAsset = relevantAssets.has(uint8ArrayToHex(note.note.value.assetId.inner));
-      const noteIsVotable = note.heightSpent === 0n || note.heightSpent > votable_at_height;
+      const noteIsVotable = note.heightSpent === 0n || note.heightSpent > votableAtHeight;
 
-      if (isRelevantAsset && noteIsVotable && note.heightCreated < votable_at_height) {
+      if (isRelevantAsset && noteIsVotable && note.heightCreated < votableAtHeight) {
         const asset = relevantAssets.get(uint8ArrayToHex(note.note.value.assetId.inner));
 
         const bech32idk = asset?.base.replace('udelegation_', '');
