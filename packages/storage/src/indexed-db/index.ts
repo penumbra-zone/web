@@ -262,15 +262,13 @@ export class IndexedDb implements IndexedDbInterface {
   ): Promise<[]> {
     const relevantAssets = [];
 
-    // Fetch all assets and filter out the relevant asset IDs
     let assetCursor = await this.db.transaction('ASSETS').store.openCursor();
 
     while (assetCursor) {
-      // Test denom with a regular expression
       const isDelegationAssetType = new RegExp('_delegation_.*');
 
       const denomMetadata = DenomMetadata.fromJson(assetCursor.value);
-      if (regex.test(denomMetadata.base)) {
+      if (isDelegationAssetType.test(denomMetadata.base)) {
         relevantAssets.push(denomMetadata.penumbraAssetId);
       }
 
@@ -291,10 +289,11 @@ export class IndexedDb implements IndexedDbInterface {
           continue;
         }
       }
-      // Check if asset_id exists in relevantAssets, and if height is < votable_at_height
+      const noteIsVotable = note.heightSpent === 0n || note.heightSpent > votable_at_height;
+
       if (
         relevantAssets.includes(note.note?.value?.assetId) &&
-        (note.heightSpent === 0n || note.heightSpent > votable_at_height) &&
+        noteIsVotable &&
         note.heightCreated < votable_at_height
       ) {
         result.push(note);
