@@ -20,7 +20,7 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async (req, ctx) => 
   const custodyClient = ctx.values.get(custodyCtx);
 
   // Request authorization data (remove await)
-  const { data: authorizationData } = await custodyClient.authorize({ plan: req.transactionPlan });
+  const { data: authorizationData } = await custodyClient!.authorize({ plan: req.transactionPlan });
   if (!authorizationData) throw new Error('no authorization data in response');
   console.log("authorizationData is: ", authorizationData)
 
