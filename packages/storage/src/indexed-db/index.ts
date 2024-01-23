@@ -285,11 +285,19 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({ table: 'GAS_PRICES', value, key: 'gas_prices' });
   }
 
+  /**
+   * Only 'SpendableNotes' with delegation assets are eligible for voting
+   * This function is like a subquery in SQL:
+   *  SELECT spendable_notes
+   *  WHERE
+   *  notes.asset_id IN ( SELECT asset_id FROM assets WHERE denom LIKE '_delegation\\_%' ESCAPE '\\')
+   * This means that we must first get a list of only delegation assets, and then use it to filter the notes
+   */
   async getNotesForVoting(
     addressIndex: AddressIndex | undefined,
     votableAtHeight: bigint,
   ): Promise<NotesForVotingResponse[]> {
-    const relevantAssets = new Map<string, DenomMetadata>();
+    const delegationAssets = new Map<string, DenomMetadata>();
 
     for await (const asset of this.iterateQuery('ASSETS')) {
       const denomMetadata = DenomMetadata.fromJson(asset);
@@ -297,7 +305,7 @@ export class IndexedDb implements IndexedDbInterface {
         assetPatterns.delegationTokenPattern.test(denomMetadata.display) &&
         denomMetadata.penumbraAssetId
       ) {
-        relevantAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId.inner), denomMetadata);
+        delegationAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId.inner), denomMetadata);
       }
     }
     const notesForVoting: NotesForVotingResponse[] = [];
@@ -311,12 +319,24 @@ export class IndexedDb implements IndexedDbInterface {
       ) {
         continue;
       }
-      const isRelevantAsset = relevantAssets.has(uint8ArrayToHex(note.note.value.assetId.inner));
-      const noteIsVotable = note.heightSpent === 0n || note.heightSpent > votableAtHeight;
 
-      if (isRelevantAsset && noteIsVotable && note.heightCreated < votableAtHeight) {
-        const asset = relevantAssets.get(uint8ArrayToHex(note.note.value.assetId.inner));
+      const isDelegationAssetNote = delegationAssets.has(
+        uint8ArrayToHex(note.note.value.assetId.inner),
+      );
 
+      // Only notes that have not been spent can be used for voting.
+      const noteNotSpentAtVoteHeight =
+        note.heightSpent === 0n || note.heightSpent > votableAtHeight;
+
+      // Note must be created at a height lower than the height of the vote
+      const noteIsCreatedBeforeVote = note.heightCreated < votableAtHeight;
+
+      if (isDelegationAssetNote && noteNotSpentAtVoteHeight && noteIsCreatedBeforeVote) {
+        const asset = delegationAssets.get(uint8ArrayToHex(note.note.value.assetId.inner));
+
+        // delegation asset denom consists of prefix 'delegation_' and validator identity key in bech32m encoding
+        // For example, in denom 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqqas55kkpyf6lhsqs2w0zar'
+        // 'penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar' is  validator identity key.
         const bech32IdentityKey = asset?.display.replace(assetPatterns.delegationTokenPattern, '');
 
         if (!bech32IdentityKey)
