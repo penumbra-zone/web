@@ -155,7 +155,7 @@ const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSl
   });
 };
 
-const validateAmount = (
+export const validateAmount = (
   asset: AssetBalance,
   /**
    * The amount that a user types into the interface will always be in the

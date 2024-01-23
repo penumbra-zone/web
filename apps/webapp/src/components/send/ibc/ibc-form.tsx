@@ -5,11 +5,11 @@ import { ibcSelector } from '../../../state/ibc';
 import { ChainSelector } from './chain-selector';
 import { InputBlock } from '../../shared/input-block';
 import InputToken from '../../shared/input-token';
-import { sendValidationErrors } from '../../../state/send';
+import { validateAmount } from '../../../state/send';
 import { useMemo } from 'react';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { AssetBalance, getAssetBalances } from '../../../fetchers/balances';
-import { penumbraAddrValidation } from '../helpers';
+import { testnetIbcChains } from '@penumbra-zone/constants';
 
 export const IbcAssetBalanceLoader: LoaderFunction = async (): Promise<AssetBalance[]> => {
   const assetBalances = await getAssetBalances();
@@ -18,6 +18,7 @@ export const IbcAssetBalanceLoader: LoaderFunction = async (): Promise<AssetBala
     // set initial account if accounts exist and asset if account has asset list
     useStore.setState(state => {
       state.ibc.selection = assetBalances[0];
+      state.ibc.chain = testnetIbcChains[0];
     });
   }
 
@@ -38,7 +39,7 @@ export default function IbcForm() {
   } = useStore(ibcSelector);
 
   const validationErrors = useMemo(() => {
-    return sendValidationErrors(selection, amount, destinationChainAddress);
+    return ibcValidationErrors(selection, amount, destinationChainAddress);
   }, [selection, amount, destinationChainAddress]);
 
   return (
@@ -74,7 +75,7 @@ export default function IbcForm() {
         label='Recipient on destination chain'
         className='mb-1'
         value={destinationChainAddress}
-        validations={[penumbraAddrValidation()]}
+        validations={[]}
       >
         <Input
           variant='transparent'
@@ -99,3 +100,19 @@ export default function IbcForm() {
     </form>
   );
 }
+
+interface IbcValidationFields {
+  recipientErr: boolean;
+  amountErr: boolean;
+}
+
+const ibcValidationErrors = (
+  asset: AssetBalance | undefined,
+  amount: string,
+  recipient: string,
+): IbcValidationFields => {
+  return {
+    recipientErr: !recipient, // TODO: validate recipient addr matches chain
+    amountErr: !asset ? false : validateAmount(asset, amount),
+  };
+};

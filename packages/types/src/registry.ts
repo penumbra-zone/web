@@ -6,6 +6,7 @@ import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumb
 import { SimulationService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/dex/v1/dex_connect';
 import { TendermintProxyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/util/tendermint_proxy/v1/tendermint_proxy_connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
+import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
 
 /**
  * This type registry is for JSON serialization of protobuf messages.
@@ -25,6 +26,7 @@ export const typeRegistry = createRegistry(
   SimulationService,
   TendermintProxyService,
   ViewService,
+  ClientState,
 );
 
 export const serviceTypeNames = [
