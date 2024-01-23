@@ -12,5 +12,5 @@ export const extLocalCtx = createContextKey(localExtStorage);
 export const extSessionCtx = createContextKey(sessionExtStorage);
 export const approverCtx = createContextKey(getTxApproval);
 export const assertWalletIdCtx = createContextKey(assertWalletId);
-export const custodyCtx: ContextKey<PromiseClient<typeof CustodyProtocolService> | undefined> =
+export const custodyCtx: ContextKey<PromiseClient<typeof CustodyProtocolService>> =
   createContextKey({} as PromiseClient<typeof CustodyProtocolService>);
