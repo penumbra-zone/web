@@ -111,7 +111,7 @@ export class ClientConnectionManager {
         clientPort.postMessage({ error });
       }
     };
-
+    
     const acceptChannelStream = (ev: TransportInitChannel): TransportStream => {
       const { requestId, channel: subName } = ev;
       const sourcePort = chrome.runtime.connect({ includeTlsChannelId: true, name: subName });
