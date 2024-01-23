@@ -95,18 +95,6 @@ export class IndexedDb implements IndexedDbInterface {
     return this.u.subscribe(table);
   }
 
-  async *iterateQuery<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
-    table: StoreName,
-  ) {
-    const tx = this.db.transaction(table);
-    let cursor = await tx.store.openCursor();
-
-    while (cursor) {
-      yield cursor.value;
-      cursor = await cursor.continue();
-    }
-  }
-
   public async getStateCommitmentTree(): Promise<StateCommitmentTree> {
     const lastPosition = await this.db.get('TREE_LAST_POSITION', 'last_position');
     const lastForgotten = await this.db.get('TREE_LAST_FORGOTTEN', 'last_forgotten');
@@ -299,8 +287,8 @@ export class IndexedDb implements IndexedDbInterface {
   ): Promise<NotesForVotingResponse[]> {
     const delegationAssets = new Map<string, DenomMetadata>();
 
-    for await (const asset of this.iterateQuery('ASSETS')) {
-      const denomMetadata = DenomMetadata.fromJson(asset);
+    for await (const assetCursor of this.db.transaction('ASSETS').store) {
+      const denomMetadata = DenomMetadata.fromJson(assetCursor.value);
       if (
         assetPatterns.delegationTokenPattern.test(denomMetadata.display) &&
         denomMetadata.penumbraAssetId
@@ -310,8 +298,8 @@ export class IndexedDb implements IndexedDbInterface {
     }
     const notesForVoting: NotesForVotingResponse[] = [];
 
-    for await (const noteRecord of this.iterateQuery('SPENDABLE_NOTES')) {
-      const note = SpendableNoteRecord.fromJson(noteRecord);
+    for await (const noteCursor of this.db.transaction('SPENDABLE_NOTES').store) {
+      const note = SpendableNoteRecord.fromJson(noteCursor.value);
 
       if (
         (addressIndex && !note.addressIndex?.equals(addressIndex)) ??
