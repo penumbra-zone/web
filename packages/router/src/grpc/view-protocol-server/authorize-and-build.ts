@@ -1,5 +1,5 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../../ctx';
+import { custodyCtx, servicesCtx } from '../../ctx';
 import { offscreenClient } from '../offscreen-client';
 import { buildParallel, getWitness } from '@penumbra-zone/wasm-ts';
 import { ConnectError, Code } from '@connectrpc/connect';
@@ -11,10 +11,18 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async (req, ctx) => 
   if (!req.transactionPlan) throw new ConnectError('No tx plan in request', Code.InvalidArgument);
 
   // Request authorization data without awaiting
-  const authorizationDataPromise = authorize(
-    new AuthorizeRequest({ plan: req.transactionPlan }),
-    ctx,
-  )!;
+  // const authorizationDataPromise = authorize(
+  //   new AuthorizeRequest({ plan: req.transactionPlan }),
+  //   ctx,
+  // )!;
+
+  // Instance of gRPC client (custodyClient) for the Custody Protocol service
+  const custodyClient = ctx.values.get(custodyCtx);
+
+  // Request authorization data (remove await)
+  const { data: authorizationData } = await custodyClient.authorize({ plan: req.transactionPlan });
+  if (!authorizationData) throw new Error('no authorization data in response');
+  console.log("authorizationData is: ", authorizationData)
 
   const services = ctx.values.get(servicesCtx);
   const {
@@ -35,7 +43,8 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async (req, ctx) => 
     batchActions,
     req.transactionPlan,
     witnessData,
-    (await authorizationDataPromise).data as AuthorizationData,
+    // (await authorizationDataPromise).data as AuthorizationData,
+    authorizationData
   );
 
   return { transaction };
