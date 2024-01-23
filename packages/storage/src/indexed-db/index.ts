@@ -1,4 +1,4 @@
-import {IDBPDatabase, openDB, StoreNames} from 'idb';
+import { IDBPDatabase, openDB, StoreNames } from 'idb';
 import {
   bech32ToUint8Array,
   IDB_TABLES,
@@ -95,7 +95,9 @@ export class IndexedDb implements IndexedDbInterface {
     return this.u.subscribe(table);
   }
 
-  async *iterateQuery<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(table: StoreName) {
+  async *iterateQuery<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(
+    table: StoreName,
+  ) {
     const tx = this.db.transaction(table);
     let cursor = await tx.store.openCursor();
 
@@ -292,20 +294,21 @@ export class IndexedDb implements IndexedDbInterface {
     for await (const asset of this.iterateQuery('ASSETS')) {
       const denomMetadata = DenomMetadata.fromJson(asset);
       if (
-          assetPatterns.delegationTokenPattern.test(denomMetadata.display) &&
-          denomMetadata.penumbraAssetId
+        assetPatterns.delegationTokenPattern.test(denomMetadata.display) &&
+        denomMetadata.penumbraAssetId
       ) {
         relevantAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId.inner), denomMetadata);
       }
-
     }
-    const notesForVoting : NotesForVotingResponse[] = [];
+    const notesForVoting: NotesForVotingResponse[] = [];
 
     for await (const noteRecord of this.iterateQuery('SPENDABLE_NOTES')) {
       const note = SpendableNoteRecord.fromJson(noteRecord);
 
-      if ((addressIndex && !note.addressIndex?.equals(addressIndex)) ||
-          !note.note?.value?.assetId?.inner) {
+      if (
+        (addressIndex && !note.addressIndex?.equals(addressIndex)) ||
+        !note.note?.value?.assetId?.inner
+      ) {
         continue;
       }
       const isRelevantAsset = relevantAssets.has(uint8ArrayToHex(note.note.value.assetId.inner));
@@ -317,10 +320,10 @@ export class IndexedDb implements IndexedDbInterface {
         const bech32idk = asset?.display.replace(assetPatterns.delegationTokenPattern, '');
         if (bech32idk) {
           notesForVoting.push(
-              new NotesForVotingResponse({
-                noteRecord: note,
-                identityKey: new IdentityKey({ ik: bech32ToUint8Array(bech32idk) }),
-              }),
+            new NotesForVotingResponse({
+              noteRecord: note,
+              identityKey: new IdentityKey({ ik: bech32ToUint8Array(bech32idk) }),
+            }),
           );
         }
       }
