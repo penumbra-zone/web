@@ -1,4 +1,4 @@
-import { IDBPDatabase, openDB, StoreNames } from 'idb';
+import {IDBPDatabase, openDB, StoreNames} from 'idb';
 import {
   bech32ToUint8Array,
   IDB_TABLES,
@@ -93,6 +93,16 @@ export class IndexedDb implements IndexedDbInterface {
     table: StoreName,
   ): AsyncGenerator<IdbUpdate<DBTypes, StoreName>, void> {
     return this.u.subscribe(table);
+  }
+
+  async *iterateQuery<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>>(table: StoreName) {
+    const tx = this.db.transaction(table);
+    let cursor = await tx.store.openCursor();
+
+    while (cursor) {
+      yield cursor.value;
+      cursor = await cursor.continue();
+    }
   }
 
   public async getStateCommitmentTree(): Promise<StateCommitmentTree> {
@@ -279,38 +289,25 @@ export class IndexedDb implements IndexedDbInterface {
   ): Promise<NotesForVotingResponse[]> {
     const relevantAssets = new Map<string, DenomMetadata>();
 
-    let assetCursor = await this.db.transaction('ASSETS').store.openCursor();
-
-    while (assetCursor) {
-      const denomMetadata = DenomMetadata.fromJson(assetCursor.value);
-
+    for await (const asset of this.iterateQuery('ASSETS')) {
+      const denomMetadata = DenomMetadata.fromJson(asset);
       if (
-        assetPatterns.delegationTokenPattern.test(denomMetadata.display) &&
-        denomMetadata.penumbraAssetId
+          assetPatterns.delegationTokenPattern.test(denomMetadata.display) &&
+          denomMetadata.penumbraAssetId
       ) {
         relevantAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId.inner), denomMetadata);
       }
-      assetCursor = await assetCursor.continue();
+
     }
+    const notesForVoting : NotesForVotingResponse[] = [];
 
-    const notesForVoting = [];
+    for await (const noteRecord of this.iterateQuery('SPENDABLE_NOTES')) {
+      const note = SpendableNoteRecord.fromJson(noteRecord);
 
-    let noteCursor = await this.db.transaction('SPENDABLE_NOTES').store.openCursor();
-    while (noteCursor) {
-      const note = SpendableNoteRecord.fromJson(noteCursor.value);
-
-      if (addressIndex) {
-        if (!note.addressIndex?.equals(addressIndex)) {
-          noteCursor = await noteCursor.continue();
-          continue;
-        }
-      }
-
-      if (!note.note?.value?.assetId?.inner) {
-        noteCursor = await noteCursor.continue();
+      if ((addressIndex && !note.addressIndex?.equals(addressIndex)) ||
+          !note.note?.value?.assetId?.inner) {
         continue;
       }
-
       const isRelevantAsset = relevantAssets.has(uint8ArrayToHex(note.note.value.assetId.inner));
       const noteIsVotable = note.heightSpent === 0n || note.heightSpent > votableAtHeight;
 
@@ -320,16 +317,14 @@ export class IndexedDb implements IndexedDbInterface {
         const bech32idk = asset?.display.replace(assetPatterns.delegationTokenPattern, '');
         if (bech32idk) {
           notesForVoting.push(
-            new NotesForVotingResponse({
-              noteRecord: note,
-              identityKey: new IdentityKey({ ik: bech32ToUint8Array(bech32idk) }),
-            }),
+              new NotesForVotingResponse({
+                noteRecord: note,
+                identityKey: new IdentityKey({ ik: bech32ToUint8Array(bech32idk) }),
+              }),
           );
         }
       }
-      noteCursor = await noteCursor.continue();
     }
-
     return Promise.resolve(notesForVoting);
   }
 }
