@@ -306,7 +306,7 @@ export class IndexedDb implements IndexedDbInterface {
       const note = SpendableNoteRecord.fromJson(noteRecord);
 
       if (
-        (addressIndex && !note.addressIndex?.equals(addressIndex)) ||
+        (addressIndex && !note.addressIndex?.equals(addressIndex)) ??
         !note.note?.value?.assetId?.inner
       ) {
         continue;
@@ -317,15 +317,17 @@ export class IndexedDb implements IndexedDbInterface {
       if (isRelevantAsset && noteIsVotable && note.heightCreated < votableAtHeight) {
         const asset = relevantAssets.get(uint8ArrayToHex(note.note.value.assetId.inner));
 
-        const bech32idk = asset?.display.replace(assetPatterns.delegationTokenPattern, '');
-        if (bech32idk) {
-          notesForVoting.push(
-            new NotesForVotingResponse({
-              noteRecord: note,
-              identityKey: new IdentityKey({ ik: bech32ToUint8Array(bech32idk) }),
-            }),
-          );
-        }
+        const bech32IdentityKey = asset?.display.replace(assetPatterns.delegationTokenPattern, '');
+
+        if (!bech32IdentityKey)
+          throw new Error('expected delegation token identity key not present');
+
+        notesForVoting.push(
+          new NotesForVotingResponse({
+            noteRecord: note,
+            identityKey: new IdentityKey({ ik: bech32ToUint8Array(bech32IdentityKey) }),
+          }),
+        );
       }
     }
     return Promise.resolve(notesForVoting);
