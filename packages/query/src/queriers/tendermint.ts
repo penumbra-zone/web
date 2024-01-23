@@ -6,7 +6,7 @@ import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 // Should add more errors as we discover them
-const tendermintErrors = ['proof did not verify', 'is not a valid field element'];
+const knownTendermintErrors = ['proof did not verify', 'is not a valid field element'];
 
 export class TendermintQuerier implements TendermintQuerierInterface {
   private readonly client: PromiseClient<typeof TendermintProxyService>;
@@ -27,7 +27,7 @@ export class TendermintQuerier implements TendermintQuerierInterface {
     const { hash, log } = await this.client.broadcastTxSync({ params });
 
     if (log) {
-      if (tendermintErrors.some(e => log.includes(e))) {
+      if (knownTendermintErrors.some(e => log.includes(e))) {
         throw new Error(`Tendermint: ${log}`);
       } else {
         console.warn(log);
@@ -38,8 +38,6 @@ export class TendermintQuerier implements TendermintQuerierInterface {
 
   async getTransaction(txId: TransactionId): Promise<{ height: bigint; transaction: Transaction }> {
     const res = await this.client.getTx({ hash: txId.inner });
-    // TODO: check res.code? other failure states?
-    if (res.txResult?.log.length) throw new Error(`Tendermint: ${res.txResult.log}`);
     const transaction = Transaction.fromBinary(res.tx);
     return { height: res.height, transaction };
   }
