@@ -10,9 +10,9 @@ export const SpendViewComponent = ({ value }: { value: SpendView }) => {
       <ViewBox
         label='Spend'
         visibleContent={
-          <div className='flex items-baseline justify-between'>
+          <div className='flex flex-col justify-between gap-2 sm:flex-row sm:gap-0'>
             <ValueViewComponent view={note.value} />
-            <div className='flex items-baseline gap-2'>
+            <div className='flex gap-2'>
               <span className='font-mono text-sm italic text-foreground'>from</span>
               <AddressViewComponent view={note.address} />
             </div>

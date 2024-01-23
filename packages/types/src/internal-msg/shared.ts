@@ -1,5 +1,3 @@
-import { JsonValue } from '@bufbuild/protobuf';
-
 export interface InternalMessage<Type extends string, Req, Res> {
   type: Type;
   request: Req;
@@ -41,8 +39,3 @@ export type InternalResponse<M extends InternalMessage<string, unknown, unknown>
       type: M['type'];
       error: unknown;
     };
-
-// @ts-expect-error Meant to be a marker to indicate it's json serialized.
-//                  Protobuf values often need to be as they are json-deserialized in the wasm crate.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export type Jsonified<T> = JsonValue;

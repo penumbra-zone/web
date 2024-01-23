@@ -14,7 +14,7 @@ export const getAllTransactions = async (): Promise<TransactionSummary[]> => {
     .map(tx => {
       return {
         height: Number(tx.txInfo?.height ?? 0n),
-        hash: tx.txInfo?.id?.hash ? uint8ArrayToHex(tx.txInfo.id.hash) : 'unknown',
+        hash: tx.txInfo?.id?.inner ? uint8ArrayToHex(tx.txInfo.id.inner) : 'unknown',
         description: classifyTransaction(tx.txInfo?.view),
       };
     })

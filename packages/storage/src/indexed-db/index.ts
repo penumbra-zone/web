@@ -1,21 +1,22 @@
 import { IDBPDatabase, openDB, StoreNames } from 'idb';
 import {
+  bech32ToUint8Array,
   IDB_TABLES,
   IdbConstants,
   IdbUpdate,
   IndexedDbInterface,
   PenumbraDb,
-  ScanResult,
+  ScanBlockResult,
   StateCommitmentTree,
   uint8ArrayToBase64,
+  uint8ArrayToHex,
 } from '@penumbra-zone/types';
 import { IbdUpdater, IbdUpdates } from './updater';
-import {
-  FmdParameters,
-  NoteSource,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 import {
+  NotesForVotingResponse,
   SpendableNoteRecord,
   SwapRecord,
   TransactionInfo,
@@ -26,6 +27,11 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import {
+  AddressIndex,
+  IdentityKey,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { assetPatterns } from '@penumbra-zone/constants';
 import {
   PositionId,
   PositionState,
@@ -61,7 +67,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('SPENDABLE_NOTES', {
           keyPath: 'noteCommitment.inner',
         }).createIndex('nullifier', 'nullifier.inner');
-        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.hash' });
+        db.createObjectStore('TRANSACTION_INFO', { keyPath: 'id.inner' });
         db.createObjectStore('TREE_LAST_POSITION');
         db.createObjectStore('TREE_LAST_FORGOTTEN');
         db.createObjectStore('TREE_COMMITMENTS', { keyPath: 'commitment.inner' });
@@ -109,7 +115,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   // All updates must be atomic in order to prevent invalid tree state
-  public async saveScanResult(updates: ScanResult): Promise<void> {
+  public async saveScanResult(updates: ScanBlockResult): Promise<void> {
     const txs = new IbdUpdates();
 
     this.addSctUpdates(txs, updates.sctUpdates);
@@ -124,14 +130,18 @@ export class IndexedDb implements IndexedDbInterface {
     return this.db.get('LAST_BLOCK_SYNCED', 'last_block');
   }
 
-  async getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined> {
+  async getSpendableNoteByNullifier(
+    nullifier: Nullifier,
+  ): Promise<SpendableNoteRecord | undefined> {
     const key = uint8ArrayToBase64(nullifier.inner);
     const json = await this.db.getFromIndex('SPENDABLE_NOTES', 'nullifier', key);
     if (!json) return undefined;
     return SpendableNoteRecord.fromJson(json);
   }
 
-  async getNoteByCommitment(commitment: StateCommitment): Promise<SpendableNoteRecord | undefined> {
+  async getSpendableNoteByCommitment(
+    commitment: StateCommitment,
+  ): Promise<SpendableNoteRecord | undefined> {
     const key = uint8ArrayToBase64(commitment.inner);
     const json = await this.db.get('SPENDABLE_NOTES', key);
     if (!json) return undefined;
@@ -158,28 +168,36 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({ table: 'ASSETS', value: metadata.toJson() });
   }
 
-  async getAllNotes() {
+  async getAllSpendableNotes() {
     const jsonVals = await this.db.getAll('SPENDABLE_NOTES');
     return jsonVals.map(a => SpendableNoteRecord.fromJson(a));
   }
 
-  async getAllTransactions() {
-    return this.db.getAll('TRANSACTIONS');
+  async getAllTransactionInfo() {
+    const jsonVals = await this.db.getAll('TRANSACTION_INFO');
+    return jsonVals.map(a => TransactionInfo.fromJson(a));
   }
 
   async saveTransactionInfo(tx: TransactionInfo): Promise<void> {
-    await this.u.update({ table: 'TRANSACTIONS', value: tx });
+    const value = tx.toJson();
+    await this.u.update({ table: 'TRANSACTION_INFO', value });
   }
 
-  async getTransaction(source: NoteSource): Promise<TransactionInfo | undefined> {
-    return this.db.get('TRANSACTIONS', source.inner);
+  async getTransactionInfo(txId: TransactionId): Promise<TransactionInfo | undefined> {
+    const key = uint8ArrayToBase64(txId.inner);
+    const json = await this.db.get('TRANSACTION_INFO', key);
+    if (!json) return undefined;
+    return TransactionInfo.fromJson(json);
   }
 
   async getFmdParams(): Promise<FmdParameters | undefined> {
-    return this.db.get('FMD_PARAMETERS', 'params');
+    const json = await this.db.get('FMD_PARAMETERS', 'params');
+    if (!json) return undefined;
+    return FmdParameters.fromJson(json);
   }
 
-  async saveFmdParams(value: FmdParameters): Promise<void> {
+  async saveFmdParams(fmd: FmdParameters): Promise<void> {
+    const value = fmd.toJson();
     await this.u.update({ table: 'FMD_PARAMETERS', value, key: 'params' });
   }
 
@@ -194,7 +212,7 @@ export class IndexedDb implements IndexedDbInterface {
     }
   }
 
-  private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanResult['sctUpdates']): void {
+  private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanBlockResult['sctUpdates']): void {
     if (sctUpdates.set_position) {
       txs.add({
         table: 'TREE_LAST_POSITION',
@@ -258,6 +276,74 @@ export class IndexedDb implements IndexedDbInterface {
 
   async saveGasPrices(value: GasPrices): Promise<void> {
     await this.u.update({ table: 'GAS_PRICES', value, key: 'gas_prices' });
+  }
+
+  /**
+   * Only 'SpendableNotes' with delegation assets are eligible for voting
+   * This function is like a subquery in SQL:
+   *  SELECT spendable_notes
+   *  WHERE
+   *  notes.asset_id IN ( SELECT asset_id FROM assets WHERE denom LIKE '_delegation\\_%' ESCAPE '\\')
+   * This means that we must first get a list of only delegation assets, and then use it to filter the notes
+   */
+  async getNotesForVoting(
+    addressIndex: AddressIndex | undefined,
+    votableAtHeight: bigint,
+  ): Promise<NotesForVotingResponse[]> {
+    const delegationAssets = new Map<string, DenomMetadata>();
+
+    for await (const assetCursor of this.db.transaction('ASSETS').store) {
+      const denomMetadata = DenomMetadata.fromJson(assetCursor.value);
+      if (
+        assetPatterns.delegationTokenPattern.test(denomMetadata.display) &&
+        denomMetadata.penumbraAssetId
+      ) {
+        delegationAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId.inner), denomMetadata);
+      }
+    }
+    const notesForVoting: NotesForVotingResponse[] = [];
+
+    for await (const noteCursor of this.db.transaction('SPENDABLE_NOTES').store) {
+      const note = SpendableNoteRecord.fromJson(noteCursor.value);
+
+      if (
+        (addressIndex && !note.addressIndex?.equals(addressIndex)) ??
+        !note.note?.value?.assetId?.inner
+      ) {
+        continue;
+      }
+
+      const isDelegationAssetNote = delegationAssets.has(
+        uint8ArrayToHex(note.note.value.assetId.inner),
+      );
+
+      // Only notes that have not been spent can be used for voting.
+      const noteNotSpentAtVoteHeight =
+        note.heightSpent === 0n || note.heightSpent > votableAtHeight;
+
+      // Note must be created at a height lower than the height of the vote
+      const noteIsCreatedBeforeVote = note.heightCreated < votableAtHeight;
+
+      if (isDelegationAssetNote && noteNotSpentAtVoteHeight && noteIsCreatedBeforeVote) {
+        const asset = delegationAssets.get(uint8ArrayToHex(note.note.value.assetId.inner));
+
+        // delegation asset denom consists of prefix 'delegation_' and validator identity key in bech32m encoding
+        // For example, in denom 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqqas55kkpyf6lhsqs2w0zar'
+        // 'penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar' is  validator identity key.
+        const bech32IdentityKey = asset?.display.replace(assetPatterns.delegationTokenPattern, '');
+
+        if (!bech32IdentityKey)
+          throw new Error('expected delegation token identity key not present');
+
+        notesForVoting.push(
+          new NotesForVotingResponse({
+            noteRecord: note,
+            identityKey: new IdentityKey({ ik: bech32ToUint8Array(bech32IdentityKey) }),
+          }),
+        );
+      }
+    }
+    return Promise.resolve(notesForVoting);
   }
 
   async getOwnedPositionIds(

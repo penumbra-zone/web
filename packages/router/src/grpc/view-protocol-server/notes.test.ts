@@ -1,7 +1,7 @@
 import { notes } from './notes';
 
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
-import { assertWalletIdCtx, servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx';
 
 import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
 import type { Services } from '@penumbra-zone/services';
@@ -16,8 +16,6 @@ import {
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
-const mockAssertWalletId = vi.fn(() => Promise.resolve(true));
-
 describe('Notes request handler', () => {
   let mockServices: Services;
   let mockCtx: HandlerContext;
@@ -29,7 +27,7 @@ describe('Notes request handler', () => {
       getWalletServices: () =>
         Promise.resolve({
           indexedDb: {
-            getAllNotes: (): Promise<SpendableNoteRecord[]> => Promise.resolve(testData),
+            getAllSpendableNotes: (): Promise<SpendableNoteRecord[]> => Promise.resolve(testData),
           },
         }),
     } as Services;
@@ -39,9 +37,7 @@ describe('Notes request handler', () => {
       method: ViewProtocolService.methods.balances,
       protocolName: 'mock',
       requestMethod: 'MOCK',
-      contextValues: createContextValues()
-        .set(servicesCtx, mockServices)
-        .set(assertWalletIdCtx, mockAssertWalletId),
+      contextValues: createContextValues().set(servicesCtx, mockServices),
     });
   });
 
@@ -305,7 +301,7 @@ const testData: SpendableNoteRecord[] = [
     heightCreated: '7197',
     position: '42986962944',
     source: {
-      inner: '3CBS08dM9eLHH45Z9loZciZ9RaG9x1fc26Qnv0lQlto=',
+      transaction: { id: '3CBS08dM9eLHH45Z9loZciZ9RaG9x1fc26Qnv0lQlto=' },
     },
   }),
   SpendableNoteRecord.fromJson({
@@ -337,7 +333,9 @@ const testData: SpendableNoteRecord[] = [
     heightCreated: '7197',
     position: '42986962944',
     source: {
-      inner: '3CBS08dM9eLHH45Z9loZciZ9RaG9x1fc26Qnv0lQlto=',
+      transaction: {
+        id: '3CBS08dM9eLHH45Z9loZciZ9RaG9x1fc26Qnv0lQlto=',
+      },
     },
   }),
   SpendableNoteRecord.fromJson({
@@ -369,7 +367,9 @@ const testData: SpendableNoteRecord[] = [
     heightCreated: '7235',
     position: '42989453314',
     source: {
-      inner: 'VwplfDTpKBFLavZ252viYuVxl+EYpmlmnuj5w+jm/MU=',
+      transaction: {
+        id: 'VwplfDTpKBFLavZ252viYuVxl+EYpmlmnuj5w+jm/MU=',
+      },
     },
   }),
   SpendableNoteRecord.fromJson({
@@ -401,7 +401,9 @@ const testData: SpendableNoteRecord[] = [
     heightCreated: '7235',
     position: '42989453314',
     source: {
-      inner: 'VwplfDTpKBFLavZ252viYuVxl+EYpmlmnuj5w+jm/MU=',
+      transaction: {
+        id: 'VwplfDTpKBFLavZ252viYuVxl+EYpmlmnuj5w+jm/MU=',
+      },
     },
   }),
   SpendableNoteRecord.fromJson({
@@ -432,7 +434,9 @@ const testData: SpendableNoteRecord[] = [
     heightCreated: '7614',
     position: '47262138369',
     source: {
-      inner: 'eD/vckPCdUQ19vXeJP0nSBcBPD5hm7mpgfYXOe4NbMI=',
+      transaction: {
+        id: 'eD/vckPCdUQ19vXeJP0nSBcBPD5hm7mpgfYXOe4NbMI=',
+      },
     },
   }),
   SpendableNoteRecord.fromJson({
@@ -463,7 +467,9 @@ const testData: SpendableNoteRecord[] = [
     },
     position: '20',
     source: {
-      inner: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAA=',
+      transaction: {
+        id: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAA=',
+      },
     },
   }),
 ];

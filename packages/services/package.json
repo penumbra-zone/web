@@ -13,8 +13,8 @@
     "@penumbra-zone/wasm-ts": "workspace:*"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.254",
-    "eslint": "^8.55.0",
+    "@types/chrome": "0.0.256",
+    "eslint": "^8.56.0",
     "eslint-config-custom": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "^5.3.3"

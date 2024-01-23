@@ -5,7 +5,7 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (req, ct
   const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
 
-  const allTxs = await indexedDb.getAllTransactions();
+  const allTxs = await indexedDb.getAllTransactionInfo();
   const responses = allTxs
     // filter transactions between startHeight and endHeight, inclusive
     .filter(tx => tx.height >= req.startHeight && (!req.endHeight || tx.height <= req.endHeight))

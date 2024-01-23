@@ -1,14 +1,15 @@
 import { Account } from '@penumbra-zone/types';
-import { ArrowLeftIcon, ArrowRightIcon, CopyIcon, InfoIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Address } from './address';
+import { AddressIcon } from './address-icon';
+import { ArrowLeftIcon, ArrowRightIcon, InfoIcon } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { CopyToClipboardIconButton } from './copy-to-clipboard-icon-button';
 import { Button } from './button';
-import { CopyToClipboard } from './copy-to-clipboard';
 import { IncognitoIcon } from './icons/incognito';
 import { Input } from './input';
 import { Switch } from './switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
-import { Identicon } from './identicon';
+import { useEffect, useState } from 'react';
 
 interface SelectAccountProps {
   getAccount: (index: number, ephemeral: boolean) => Promise<Account> | Account | undefined;
@@ -100,25 +101,13 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
           </div>
           <div className='mt-4 flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
             <div className='flex items-center gap-[6px]'>
-              <Identicon name={account.address} className='h-6 w-6 rounded-full' type='gradient' />
-              <p
-                className={cn(
-                  'select-none text-center font-mono text-[12px] leading-[18px] text-muted-foreground',
-                  ephemeral && 'text-[#8D5728]',
-                )}
-              >
-                {account.preview}
+              <AddressIcon address={account.address} size={24} />
+
+              <p>
+                <Address address={account.address} ephemeral={ephemeral} />
               </p>
             </div>
-            <CopyToClipboard
-              text={account.address}
-              label={
-                <div>
-                  <CopyIcon className='h-4 w-4 text-muted-foreground hover:opacity-50' />
-                </div>
-              }
-              className='w-4'
-            />
+            <CopyToClipboardIconButton text={account.address} />
           </div>
           <div className='mt-2 flex items-center justify-between'>
             <div className='flex items-center gap-2'>
