@@ -96,6 +96,7 @@ export const getPenumbraPort = (): MessagePort => {
 
   // Attach our event listener
   ourPort.addEventListener("message", eventListener);
+  ourPort.postMessage({ connected: true });
 
   // Start our port
   ourPort.start()
