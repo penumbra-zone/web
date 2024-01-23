@@ -1,5 +1,21 @@
 import { Asset } from '@penumbra-zone/types';
 
+export interface AssetPattens {
+  lpNftPattern: RegExp;
+  delegationTokenPattern: RegExp;
+  proposalNftPattern: RegExp;
+  unbondingTokenPattern: RegExp;
+  votingReceiptPattern: RegExp;
+}
+
+export const assetPatterns: AssetPattens = {
+  lpNftPattern: new RegExp('^lpnft_'),
+  delegationTokenPattern: new RegExp('^delegation_'),
+  proposalNftPattern: new RegExp('^proposal_'),
+  unbondingTokenPattern: new RegExp('^unbonding_'),
+  votingReceiptPattern: new RegExp('^voted_on_'),
+};
+
 // TODO: This should only have things like icon or other fields not available in assets proto
 export const assets: Asset[] = [
   {

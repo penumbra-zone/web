@@ -31,6 +31,7 @@ import {
   AddressIndex,
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { assetPatterns } from '@penumbra-zone/constants';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -281,11 +282,12 @@ export class IndexedDb implements IndexedDbInterface {
     let assetCursor = await this.db.transaction('ASSETS').store.openCursor();
 
     while (assetCursor) {
-      const isDelegationAssetType = new RegExp('udelegation_.*');
-
       const denomMetadata = DenomMetadata.fromJson(assetCursor.value);
 
-      if (isDelegationAssetType.test(denomMetadata.base) && denomMetadata.penumbraAssetId) {
+      if (
+        assetPatterns.delegationTokenPattern.test(denomMetadata.display) &&
+        denomMetadata.penumbraAssetId
+      ) {
         relevantAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId.inner), denomMetadata);
       }
       assetCursor = await assetCursor.continue();
@@ -315,7 +317,7 @@ export class IndexedDb implements IndexedDbInterface {
       if (isRelevantAsset && noteIsVotable && note.heightCreated < votableAtHeight) {
         const asset = relevantAssets.get(uint8ArrayToHex(note.note.value.assetId.inner));
 
-        const bech32idk = asset?.base.replace('udelegation_', '');
+        const bech32idk = asset?.display.replace(assetPatterns.delegationTokenPattern, '');
         if (bech32idk) {
           notesForVoting.push(
             new NotesForVotingResponse({
