@@ -1,5 +1,6 @@
 import { IDBPDatabase, openDB, StoreNames } from 'idb';
 import {
+  bech32ToUint8Array,
   IDB_TABLES,
   IdbConstants,
   IdbUpdate,
@@ -8,12 +9,14 @@ import {
   ScanBlockResult,
   StateCommitmentTree,
   uint8ArrayToBase64,
+  uint8ArrayToHex,
 } from '@penumbra-zone/types';
 import { IbdUpdater, IbdUpdates } from './updater';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 import {
+  NotesForVotingResponse,
   SpendableNoteRecord,
   SwapRecord,
   TransactionInfo,
@@ -24,6 +27,11 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import {
+  AddressIndex,
+  IdentityKey,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { assetPatterns } from '@penumbra-zone/constants';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -263,5 +271,73 @@ export class IndexedDb implements IndexedDbInterface {
 
   async saveGasPrices(value: GasPrices): Promise<void> {
     await this.u.update({ table: 'GAS_PRICES', value, key: 'gas_prices' });
+  }
+
+  /**
+   * Only 'SpendableNotes' with delegation assets are eligible for voting
+   * This function is like a subquery in SQL:
+   *  SELECT spendable_notes
+   *  WHERE
+   *  notes.asset_id IN ( SELECT asset_id FROM assets WHERE denom LIKE '_delegation\\_%' ESCAPE '\\')
+   * This means that we must first get a list of only delegation assets, and then use it to filter the notes
+   */
+  async getNotesForVoting(
+    addressIndex: AddressIndex | undefined,
+    votableAtHeight: bigint,
+  ): Promise<NotesForVotingResponse[]> {
+    const delegationAssets = new Map<string, DenomMetadata>();
+
+    for await (const assetCursor of this.db.transaction('ASSETS').store) {
+      const denomMetadata = DenomMetadata.fromJson(assetCursor.value);
+      if (
+        assetPatterns.delegationTokenPattern.test(denomMetadata.display) &&
+        denomMetadata.penumbraAssetId
+      ) {
+        delegationAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId.inner), denomMetadata);
+      }
+    }
+    const notesForVoting: NotesForVotingResponse[] = [];
+
+    for await (const noteCursor of this.db.transaction('SPENDABLE_NOTES').store) {
+      const note = SpendableNoteRecord.fromJson(noteCursor.value);
+
+      if (
+        (addressIndex && !note.addressIndex?.equals(addressIndex)) ??
+        !note.note?.value?.assetId?.inner
+      ) {
+        continue;
+      }
+
+      const isDelegationAssetNote = delegationAssets.has(
+        uint8ArrayToHex(note.note.value.assetId.inner),
+      );
+
+      // Only notes that have not been spent can be used for voting.
+      const noteNotSpentAtVoteHeight =
+        note.heightSpent === 0n || note.heightSpent > votableAtHeight;
+
+      // Note must be created at a height lower than the height of the vote
+      const noteIsCreatedBeforeVote = note.heightCreated < votableAtHeight;
+
+      if (isDelegationAssetNote && noteNotSpentAtVoteHeight && noteIsCreatedBeforeVote) {
+        const asset = delegationAssets.get(uint8ArrayToHex(note.note.value.assetId.inner));
+
+        // delegation asset denom consists of prefix 'delegation_' and validator identity key in bech32m encoding
+        // For example, in denom 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqqas55kkpyf6lhsqs2w0zar'
+        // 'penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar' is  validator identity key.
+        const bech32IdentityKey = asset?.display.replace(assetPatterns.delegationTokenPattern, '');
+
+        if (!bech32IdentityKey)
+          throw new Error('expected delegation token identity key not present');
+
+        notesForVoting.push(
+          new NotesForVotingResponse({
+            noteRecord: note,
+            identityKey: new IdentityKey({ ik: bech32ToUint8Array(bech32IdentityKey) }),
+          }),
+        );
+      }
+    }
+    return Promise.resolve(notesForVoting);
   }
 }

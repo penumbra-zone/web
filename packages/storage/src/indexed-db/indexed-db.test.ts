@@ -7,17 +7,23 @@ import { IdbUpdate, PenumbraDb } from '@penumbra-zone/types';
 import { describe, expect, it } from 'vitest';
 import { IndexedDb } from './index';
 import {
+  delegationDenomMetadataA,
+  delegationDenomMetadataB,
   denomMetadataA,
   denomMetadataB,
   denomMetadataC,
   emptyScanResult,
   newNote,
+  noteWithDelegationAssetA,
+  noteWithDelegationAssetB,
+  noteWithGmAsset,
   scanResultWithNewSwaps,
   scanResultWithSctUpdates,
   transactionInfo,
 } from './indexed-db.test-data';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place
@@ -319,6 +325,58 @@ describe('IndexedDb', () => {
       const savedPrices = await db.getGasPrices();
 
       expect(gasPrices.equals(savedPrices)).toBeTruthy();
+    });
+  });
+
+  describe('notes for voting', () => {
+    // 'noteWithDelegationAssetA' and 'noteWithDelegationAssetB' can be votable at height 222,
+    // but 'noteWithGmAsset' should not be used for voting since 'Gm' is not a delegation asset.
+    it('should be able to get all notes for voting', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.saveAssetsMetadata(delegationDenomMetadataA);
+      await db.saveAssetsMetadata(delegationDenomMetadataB);
+
+      await db.saveAssetsMetadata(denomMetadataB);
+
+      await db.saveSpendableNote(noteWithDelegationAssetA);
+      await db.saveSpendableNote(noteWithDelegationAssetB);
+
+      await db.saveSpendableNote(noteWithGmAsset);
+
+      const notesForVoting = await db.getNotesForVoting(undefined, 222n);
+
+      expect(notesForVoting.length).toBe(2);
+    });
+
+    // 'noteWithDelegationAssetB' has a creation height of 53 and cannot be votable at height 50
+    it('votable_at_height parameter should screen out noteWithDelegationAssetB', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.saveAssetsMetadata(delegationDenomMetadataA);
+      await db.saveAssetsMetadata(delegationDenomMetadataB);
+
+      await db.saveSpendableNote(noteWithDelegationAssetA);
+      await db.saveSpendableNote(noteWithDelegationAssetB);
+
+      const notesForVoting = await db.getNotesForVoting(undefined, 50n);
+
+      expect(notesForVoting.length).toBe(1);
+    });
+
+    // For all notes addressIndex=0, so we should get an empty list
+    it('addressIndex parameter should screen out all notes', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.saveAssetsMetadata(delegationDenomMetadataA);
+      await db.saveAssetsMetadata(delegationDenomMetadataB);
+
+      await db.saveSpendableNote(noteWithDelegationAssetA);
+      await db.saveSpendableNote(noteWithDelegationAssetB);
+
+      const notesForVoting = await db.getNotesForVoting(new AddressIndex({ account: 2 }), 222n);
+
+      expect(notesForVoting.length === 0).toBeTruthy();
     });
   });
 });

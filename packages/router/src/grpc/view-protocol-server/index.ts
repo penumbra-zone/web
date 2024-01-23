@@ -24,8 +24,9 @@ import { unclaimedSwaps } from './unclaimed-swaps';
 import { walletId } from './wallet-id';
 import { witnessAndBuild } from './witness-and-build';
 import { witness } from './witness';
+import { notesForVoting } from './notes-for-voting';
 
-export const viewImpl: Omit<Impl, 'authorizeAndBuild' | 'notesForVoting' | 'ownedPositionIds'> = {
+export const viewImpl: Omit<Impl, 'authorizeAndBuild' | 'ownedPositionIds'> = {
   addressByIndex,
   appParameters,
   assets,
@@ -37,6 +38,7 @@ export const viewImpl: Omit<Impl, 'authorizeAndBuild' | 'notesForVoting' | 'owne
   indexByAddress,
   noteByCommitment,
   notes,
+  notesForVoting,
   nullifierStatus,
   status,
   statusStream,

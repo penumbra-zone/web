@@ -11,6 +11,7 @@ import {
 import { JsonValue } from '@bufbuild/protobuf';
 
 import {
+  NotesForVotingResponse,
   SpendableNoteRecord,
   SwapRecord,
   TransactionInfo,
@@ -24,6 +25,7 @@ import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -60,6 +62,10 @@ export interface IndexedDbInterface {
   getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined>;
   getGasPrices(): Promise<GasPrices | undefined>;
   saveGasPrices(value: GasPrices): Promise<void>;
+  getNotesForVoting(
+    addressIndex: AddressIndex | undefined,
+    votableAtHeight: bigint,
+  ): Promise<NotesForVotingResponse[]>;
 }
 
 export interface PenumbraDb extends DBSchema {

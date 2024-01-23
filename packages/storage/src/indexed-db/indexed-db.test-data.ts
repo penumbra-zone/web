@@ -1,8 +1,5 @@
-import { base64ToUint8Array, ScanBlockResult } from '@penumbra-zone/types';
-import {
-  AssetId,
-  DenomMetadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { ScanBlockResult } from '@penumbra-zone/types';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import {
   SpendableNoteRecord,
   SwapRecord,
@@ -117,14 +114,22 @@ export const scanResultWithNewSwaps: ScanBlockResult = {
   },
 };
 
-export const denomMetadataA = new DenomMetadata({
-  symbol: 'usdc',
-  penumbraAssetId: new AssetId({ altBaseDenom: 'usdc', inner: base64ToUint8Array('dXNkYw==') }),
+export const denomMetadataA = DenomMetadata.fromJson({
+  denomUnits: [
+    { denom: 'penumbra', exponent: 6 },
+    { denom: 'mpenumbra', exponent: 3 },
+    { denom: 'upenumbra' },
+  ],
+  base: 'upenumbra',
+  display: 'penumbra',
+  penumbraAssetId: { inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=' },
 });
 
-export const denomMetadataB = new DenomMetadata({
-  symbol: 'dai',
-  penumbraAssetId: new AssetId({ altBaseDenom: 'dai', inner: base64ToUint8Array('ZGFp') }),
+export const denomMetadataB = DenomMetadata.fromJson({
+  denomUnits: [{ denom: 'gm', exponent: 6 }, { denom: 'mgm', exponent: 3 }, { denom: 'ugm' }],
+  base: 'ugm',
+  display: 'gm',
+  penumbraAssetId: { inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=' },
 });
 
 export const denomMetadataC = DenomMetadata.fromJson({
@@ -157,6 +162,44 @@ export const denomMetadataC = DenomMetadata.fromJson({
     alt_bech32m: '',
     alt_base_denom: '',
   },
+});
+
+export const delegationDenomMetadataA = DenomMetadata.fromJson({
+  denomUnits: [
+    {
+      denom: 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
+      exponent: 6,
+    },
+    {
+      denom: 'mdelegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
+      exponent: 3,
+    },
+    {
+      denom: 'udelegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
+    },
+  ],
+  base: 'udelegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
+  display: 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
+  penumbraAssetId: { inner: '9gOwzeyGwav8YydzDGlEZyZkN8ITX2IerjVy0YjAIw8=' },
+});
+
+export const delegationDenomMetadataB = DenomMetadata.fromJson({
+  denomUnits: [
+    {
+      denom: 'delegation_penumbravalid15ex9m38fl5gv48vwszyhgsvp9q83wc7nl4z274u6atyfwtlaeqgqpjwkkm',
+      exponent: 6,
+    },
+    {
+      denom: 'mdelegation_penumbravalid15ex9m38fl5gv48vwszyhgsvp9q83wc7nl4z274u6atyfwtlaeqgqpjwkkm',
+      exponent: 3,
+    },
+    {
+      denom: 'udelegation_penumbravalid15ex9m38fl5gv48vwszyhgsvp9q83wc7nl4z274u6atyfwtlaeqgqpjwkkm',
+    },
+  ],
+  base: 'udelegation_penumbravalid15ex9m38fl5gv48vwszyhgsvp9q83wc7nl4z274u6atyfwtlaeqgqpjwkkm',
+  display: 'delegation_penumbravalid15ex9m38fl5gv48vwszyhgsvp9q83wc7nl4z274u6atyfwtlaeqgqpjwkkm',
+  penumbraAssetId: { inner: 'brSeAgTVPCTJsjLKNFWhRSnJOJQgumMRksEe34sJfgc=' },
 });
 
 export const newNote = SpendableNoteRecord.fromJson({
@@ -192,6 +235,66 @@ export const newNote = SpendableNoteRecord.fromJson({
       id: '3CBS08dM9eLHH45Z9loZciZ9RaG9x1fc26Qnv0lQlto=',
     },
   },
+});
+
+export const noteWithDelegationAssetA = SpendableNoteRecord.fromJson({
+  noteCommitment: { inner: 'n86D13I1rRUDoLCkX7LKl/AG8/F+2MV76p4XgPD++xA=' },
+  note: {
+    value: {
+      amount: { lo: '2000000' },
+      assetId: { inner: '9gOwzeyGwav8YydzDGlEZyZkN8ITX2IerjVy0YjAIw8=' },
+    },
+    rseed: 'iA0WPnLr254gAxIacHFjFgKd7khUJzTv6LOkLUhYl4g=',
+    address: {
+      inner:
+        '2VQ9nQKqga8RylgOq+wAY3/Hmxg96mGnI+Te/BRnXWpr5bSxpLShbpOmzO4pPULf+tGjaBum6InyEpipJ+8wk+HufrvSBa43H9o2ir5WPbk=',
+    },
+  },
+  addressIndex: {},
+  nullifier: { inner: 'HuLT6I5OLUScFLaPPFrZe6JmJe3ul3InQ4LvuB/5fgE=' },
+  heightCreated: '43',
+  position: '2818048',
+  source: { transaction: { id: 'i++POrLfH1e5t+ys2ytLAJKi41HLt1s39Rj/bCFrMTI=' } },
+});
+
+export const noteWithDelegationAssetB = SpendableNoteRecord.fromJson({
+  noteCommitment: { inner: 'O5vXQyhaImbVKHuhpZqT5QYVA6HDlY4P+Hz/z3Xc5gU=' },
+  note: {
+    value: {
+      amount: { lo: '1000000' },
+      assetId: { inner: 'brSeAgTVPCTJsjLKNFWhRSnJOJQgumMRksEe34sJfgc=' },
+    },
+    rseed: 'GpSXUcRiiu4DlKm4ICInrGQ14+qB3ETzCryE+j3iEas=',
+    address: {
+      inner:
+        '2VQ9nQKqga8RylgOq+wAY3/Hmxg96mGnI+Te/BRnXWpr5bSxpLShbpOmzO4pPULf+tGjaBum6InyEpipJ+8wk+HufrvSBa43H9o2ir5WPbk=',
+    },
+  },
+  addressIndex: {},
+  nullifier: { inner: 'vFKjF23omWRoBCRP2lvVqe2su7eUntW4S5glizS3pAY=' },
+  heightCreated: '53',
+  position: '3473408',
+  source: { transaction: { id: 'OVtt3KUg5v+yF/O/2pwE1/740EhFGZ3mK74LUvRfcL0=' } },
+});
+
+export const noteWithGmAsset = SpendableNoteRecord.fromJson({
+  noteCommitment: { inner: 'HPA48ggmSUsVVm5u871Y2qpURUZ60ic7/eL32ej0gQo=' },
+  note: {
+    value: {
+      amount: { lo: '10000000' },
+      assetId: { inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=' },
+    },
+    rseed: 'J7YlPuY8pb3aa1qHKrOHs0Eb5ahgFdN8U/qwU8G6OoM=',
+    address: {
+      inner:
+        '2VQ9nQKqga8RylgOq+wAY3/Hmxg96mGnI+Te/BRnXWpr5bSxpLShbpOmzO4pPULf+tGjaBum6InyEpipJ+8wk+HufrvSBa43H9o2ir5WPbk=',
+    },
+  },
+  addressIndex: {},
+  nullifier: { inner: 'PbSX9/S83gUsT4/l4Fw6W2r2JPzeuiYpEZM2que+RxE=' },
+  heightCreated: '17',
+  position: '1114112',
+  source: { transaction: { id: 'NNKqIUJRgSI1dS1VbWLNZeQpmQUG6pInn3sFqPNrFDA=' } },
 });
 
 export const transactionInfo = TransactionInfo.fromJson({
