@@ -2,6 +2,11 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      buffer: 'Buffer',
+    },
+  },
   test: {
     include: ['**/sha256.test.ts'],
     /**
