@@ -45,6 +45,7 @@ export class IbdUpdater {
     const tx = this.db.transaction(tables, 'readwrite');
 
     for (const update of updates.all) {
+      console.debug('update', update);
       await tx.objectStore(update.table).put(update.value, update.key);
       this.notifySubscribers(update);
     }

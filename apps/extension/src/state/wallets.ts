@@ -4,7 +4,6 @@ import {
   getAddressByIndex,
   getEphemeralByIndex,
   getFullViewingKey,
-  getShortAddressByIndex,
   getWalletId,
 } from '@penumbra-zone/wasm-ts';
 import { Key } from '@penumbra-zone/crypto-web';
@@ -86,9 +85,6 @@ export const accountAddrSelector = (state: AllSlices) => (index: number, ephemer
 
   return {
     address: bech32Addr,
-    preview: ephemeral
-      ? bech32Addr.slice(0, 33) + '…'
-      : getShortAddressByIndex(active.fullViewingKey, index),
     index,
   };
 };

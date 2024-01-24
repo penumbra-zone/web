@@ -1,10 +1,9 @@
 import {
-  Action,
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import type { WasmBuildActionInput } from '@penumbra-zone/types/src/internal-msg/offscreen';
-import { Jsonified } from '@penumbra-zone/types/src/internal-msg/shared';
+import type { JsonValue } from '@bufbuild/protobuf';
 
 // necessary to propagate errors that occur in promises
 // see: https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
@@ -43,7 +42,7 @@ async function executeWorker(
   witness: WitnessData,
   fullViewingKey: string,
   actionPlanIndex: number,
-): Promise<Jsonified<Action>> {
+): Promise<JsonValue> {
   // Dynamically load wasm module
   const penumbraWasmModule = await import('@penumbra-zone/wasm-ts');
 

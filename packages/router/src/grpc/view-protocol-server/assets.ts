@@ -1,5 +1,6 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
+import { assetPatterns } from '@penumbra-zone/constants';
 
 export const assets: Impl['assets'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);
@@ -18,46 +19,37 @@ export const assets: Impl['assets'] = async function* (req, ctx) {
     includeSpecificDenominations,
   } = req;
 
-  const patterns = [
+  const patterns: {
+    includeReq: boolean;
+    pattern: RegExp;
+  }[] = [
     {
       includeReq: includeLpNfts,
-      pattern: 'lpnft_',
-      strictEqual: false,
+      pattern: assetPatterns.lpNftPattern,
     },
     {
       includeReq: includeDelegationTokens,
-      pattern: 'delegation_',
-      strictEqual: false,
+      pattern: assetPatterns.delegationTokenPattern,
     },
     {
       includeReq: includeProposalNfts,
-      pattern: 'proposal_',
-      strictEqual: false,
+      pattern: assetPatterns.proposalNftPattern,
     },
     {
       includeReq: includeUnbondingTokens,
-      pattern: 'unbonding_',
-      strictEqual: false,
+      pattern: assetPatterns.unbondingTokenPattern,
     },
     {
       includeReq: includeVotingReceiptTokens,
-      pattern: 'voted_on_',
-      strictEqual: false,
+      pattern: assetPatterns.votingReceiptPattern,
     },
     ...includeSpecificDenominations.map(d => ({
       includeReq: true,
-      pattern: d.denom,
-      strictEqual: true,
+      pattern: new RegExp(`^${d.denom}$`),
     })),
   ].filter(i => i.includeReq);
 
   yield* !filtered
     ? responses
-    : responses.filter(asset =>
-        patterns.find(p =>
-          p.strictEqual
-            ? p.pattern === asset.denomMetadata.display
-            : asset.denomMetadata.display.includes(p.pattern),
-        ),
-      );
+    : responses.filter(asset => patterns.find(p => p.pattern.test(asset.denomMetadata.display)));
 };

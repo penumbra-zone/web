@@ -14,7 +14,7 @@ export const noteByCommitment: Impl['noteByCommitment'] = async (req, ctx) => {
   if (!req.noteCommitment)
     throw new ConnectError('Missing note commitment in request', Code.InvalidArgument);
 
-  const noteByCommitment = await indexedDb.getNoteByCommitment(req.noteCommitment);
+  const noteByCommitment = await indexedDb.getSpendableNoteByCommitment(req.noteCommitment);
   if (noteByCommitment) return { spendableNote: noteByCommitment };
   if (!req.awaitDetection) throw new ConnectError('Note not found', Code.NotFound);
 

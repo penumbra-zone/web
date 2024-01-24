@@ -149,10 +149,12 @@ const rethrowImplErrors = <SI extends object>(sImpl: SI) =>
           const x = (v as (...args: unknown[]) => unknown)(...args);
           if (x instanceof Promise)
             return (x as Promise<unknown>).catch(e => {
+              console.error('Error in impl:', e);
               throw ConnectError.from(e);
             });
           return x;
         } catch (e) {
+          console.error('Error in impl:', e);
           throw ConnectError.from(e);
         }
       },

@@ -1,8 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-import { NoteSource } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
-import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
 import { ConnectError, Code } from '@connectrpc/connect';
 
@@ -13,20 +12,18 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async (req, ct
   if (!req.transaction)
     throw new ConnectError('No transaction provided in request', Code.InvalidArgument);
 
-  const encodedTx = req.transaction.toBinary();
-
   // start subscription early to prevent race condition
-  const subscription = indexedDb.subscribe('SPENDABLE_NOTES');
+  const subscription = indexedDb.subscribe('TRANSACTION_INFO');
 
-  const hash = await tendermint.broadcastTx(encodedTx);
+  const id = await tendermint.broadcastTx(req.transaction);
 
-  // Wait until our DB encounters a new note with this hash
+  // Wait until DB records a new transaction with this id
   if (req.awaitDetection) {
-    for await (const update of subscription) {
-      const note = SpendableNoteRecord.fromJson(update.value);
-      if (note.source?.equals(new NoteSource({ inner: hash }))) break;
+    for await (const { value } of subscription) {
+      const update = TransactionInfo.fromJson(value);
+      if (id.equals(update.id)) return { id, detectionHeight: update.height };
     }
   }
 
-  return { id: { hash } };
+  return { id };
 };

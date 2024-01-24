@@ -26,13 +26,13 @@ export const Header = () => {
     <header className='z-10 flex w-full flex-col items-center justify-between px-6 md:h-[82px] md:flex-row md:gap-12 md:px-12'>
       <div className='mb-[30px] md:mb-0'>
         <img
-          src='/penumbra-logo.svg'
+          src='./penumbra-logo.svg'
           alt='Penumbra logo'
           className='absolute inset-x-0 top-[-75px] mx-auto h-[141px] w-[136px] rotate-[320deg] md:left-[-100px] md:top-[-140px] md:mx-0 md:h-[234px] md:w-[234px]'
         />
         <Link to={PagePath.INDEX}>
           <img
-            src='/logo.svg'
+            src='./logo.svg'
             alt='Penumbra logo'
             className='relative z-10 mt-[20px] h-4 w-[171px] md:mt-0'
           />

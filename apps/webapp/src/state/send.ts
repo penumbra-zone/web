@@ -64,9 +64,9 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
       const { dismiss } = toastFn(loadingTxToast);
 
       try {
-        const txHash = await planWitnessBuildBroadcast(get().send);
+        const txId = await planWitnessBuildBroadcast(get().send);
         dismiss();
-        toastFn(successTxToast(txHash));
+        toastFn(successTxToast(uint8ArrayToHex(txId.inner)));
 
         // Reset form
         set(state => {
@@ -79,6 +79,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         });
         dismiss();
         toastFn(errorTxToast(e));
+        throw e;
       }
     },
   };
@@ -118,7 +119,7 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, selection, memo }:
   const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
   if (!id) throw new Error('no id in broadcast response');
 
-  return uint8ArrayToHex(id.hash);
+  return id;
 };
 
 export const validateAmount = (asset: AssetBalance, amount: string): boolean => {

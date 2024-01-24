@@ -6,7 +6,7 @@ import {
   AddressByIndexRequest,
   EphemeralAddressRequest,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { bech32Address, shortenAddress } from '@penumbra-zone/types';
+import { bech32Address } from '@penumbra-zone/types';
 import { viewClient } from '../clients/grpc';
 
 type Index = number;
@@ -50,7 +50,6 @@ export const getAccountAddr = async (index: number, ephemeral: boolean) => {
 
   return {
     address: bech32,
-    preview: shortenAddress(bech32),
     index,
   };
 };
