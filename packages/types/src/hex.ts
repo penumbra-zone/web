@@ -1,5 +1,4 @@
-// Re: the trailing slash, see https://www.npmjs.com/package/buffer#usage
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import { validateSchema } from './validation';
 import { Base64StringSchema } from './base64';
 
