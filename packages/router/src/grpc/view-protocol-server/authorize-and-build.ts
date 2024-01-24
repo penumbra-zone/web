@@ -31,7 +31,7 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async (req, ctx) => 
     batchActions,
     req.transactionPlan,
     witnessData,
-    (await authorizationData).data! 
+    (await authorizationData).data!,
   );
 
   return { transaction };
