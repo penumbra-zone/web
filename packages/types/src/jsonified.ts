@@ -1,10 +1,11 @@
-import type { JsonValue, Message, PlainMessage } from '@bufbuild/protobuf';
+import type { JsonValue, JsonObject, AnyMessage } from '@bufbuild/protobuf';
 
 // prettier-ignore
 export type Jsonified<T> = T extends JsonValue ? T
                          : T extends (Date | Uint8Array | bigint) ? string
                          : T extends (infer U)[] ? Jsonified<U>[]
-                         : T extends Message<infer U> ? Jsonified<PlainMessage<U>>
+                         // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                         : T extends AnyMessage ? JsonObject
                          : T extends object ? {
                             [P in keyof T as
                               // eslint-disable-next-line @typescript-eslint/ban-types
