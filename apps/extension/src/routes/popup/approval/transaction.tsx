@@ -7,7 +7,8 @@ import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 export const TransactionApproval = () => {
   const { authorizeRequest, transactionViewFromPlan, responder } = useStore(txApprovalSelector);
 
-  if (!authorizeRequest?.plan || !responder || !transactionViewFromPlan) return null;
+  if (!authorizeRequest || !authorizeRequest['plan'] || !responder || !transactionViewFromPlan)
+    return null;
 
   return (
     <div className='flex h-screen flex-col justify-between p-[30px] pt-10 '>
