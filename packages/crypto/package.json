@@ -21,6 +21,7 @@
     "@types/crypto-js": "^4.2.1",
     "@types/lodash": "^4.14.202",
     "@vitest/browser": "^1.2.1",
+    "buffer": "^6.0.3",
     "vite": "^5.0.12",
     "vitest": "^1.2.1"
   }
