@@ -13,7 +13,7 @@ import { AssetBalance } from '../fetchers/balances';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Selection } from './types';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { viewClient, custodyClient } from '../clients/grpc';
+import { viewClient } from '../clients/grpc';
 import { getAddressByIndex } from '../fetchers/address.ts';
 
 export interface SendSlice {
@@ -109,7 +109,6 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, selection, memo }:
   });
 
   const { plan } = await viewClient.transactionPlanner(req);
-
   if (!plan) throw new Error('no plan in response');
 
   const { transaction } = await viewClient.authorizeAndBuild({

@@ -31,10 +31,13 @@ import {
 } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 
-// this is a remote service we proxy
+// transport layer which is generic to the underlying service type
+import { TransportMessage, TransportStream, createChannelTransport, isTransportData, isTransportMessage } from '@penumbra-zone/transport';
+
+// remote service we proxy
 import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
 
-// these are local services we implement
+// local services we implement
 import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { custodyImpl } from '@penumbra-zone/router/src/grpc/custody';
@@ -43,62 +46,42 @@ import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
 // legacy stdRouter
 import { stdRouter } from '@penumbra-zone/router/src/std/router';
 import { isStdRequest } from '@penumbra-zone/types';
-import { ClientConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/client-connection-manager';
-import { ChannelClientLabel, InitChannelClientDataType, InitChannelClientMessage, TransportMessage, TransportStream, createChannelTransport, isTransportData, isTransportMessage } from '@penumbra-zone/transport';
 
-// already inside service worker and have access to router entry (don't need to init)
-// leaking listeners? 
-// one port for client, one port to listen (pair of ports in message transport)
-
-// const clientListener = (ev: MessageEvent<TransportMessage | TransportStream>) => {
-//   try {
-//     if (!isTransportData(ev.data)) throw Error('Unknown transport from client');
-//     else if (isTransportMessage(ev.data)) servicePort.postMessage(ev.data);
-//     else throw Error('Unimplemented request kind');
-//   } catch (error) {
-//     console.error('Error in client listener', error);
-//     clientPort.postMessage({ error });
-//   }
-// };
-
-
-// Tal's comments (remove)
-// Transport layer is generic to the underlying service
-// service-worker to the adapter (listening for rpc requests (client in context is source) coming in on message port)
-
+// Since we're already operating in the background service worker, we have access to 
+// the router entry and don't need to explicitly init the client connection manager. 
 export const getPenumbraPort = (): MessagePort => {
   const { port1: ourPort, port2: clientPort } = new MessageChannel();
   
-  // Attach listener to clientPort
+  // Asynchronous event listener that handles messages recieved on the clientPort
   const eventListener = async (ev: MessageEvent<TransportMessage | TransportStream>) => {
     try {
       if (!isTransportData(ev.data)) throw Error('Unknown transport from client');
       else if (isTransportMessage(ev.data)) {
         const requestId = ev.data.requestId;
         const value = await chromeRuntimeHandler(ev.data.message);
-
-        // Send response to client (check if instance of ReadableStream)
+        
+        // Post message to clientPort
         if (value instanceof ReadableStream) {
           ourPort.postMessage({ requestId, stream: value })
         }
         else {
-          // this makes sense
           ourPort.postMessage({ requestId, message: value })
         }
       }
       else throw Error('Unimplemented request kind');
     }
-    catch(e) {
-      // Catch transport error
-      console.log("entered catch clause: ", e)
+    catch(error) {
+      // Handle and log the error in a more informative way
+      console.error('Error in eventListener:', error);
     } 
   };
 
-  // Attach our event listener
+  // Attach event listener for rpc requests to the ourPort, which will 
+  // be triggered when a message is recieved on the port from the source
+  // client context
   ourPort.addEventListener("message", eventListener);
   ourPort.postMessage({ connected: true });
 
-  // Start our port
   ourPort.start()
   
   return clientPort;
@@ -200,7 +183,7 @@ const chromeRuntimeHandler = connectChromeRuntimeAdapter({
     const contextValues = req.contextValues ?? createContextValues();
 
     // Dynamically initialize custodyClient when createRequestContext is called, 
-    // It defines top level custody client if undefined, other reuse custody client. 
+    // and reuse custody client if it's already been defined. 
     custodyClient ??= getCustodyClient();
 
     contextValues.set(custodyCtx, custodyClient);
@@ -211,7 +194,3 @@ const chromeRuntimeHandler = connectChromeRuntimeAdapter({
 
 // background connection manager handles page connections, streams
 BackgroundConnectionManager.init(chromeRuntimeHandler);
-function async(arg0: (ev: MessageEvent<TransportMessage | TransportStream>) => void) {
-  throw new Error('Function not implemented.');
-}
-
