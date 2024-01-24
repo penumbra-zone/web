@@ -69,9 +69,6 @@ module.exports = {
     },
   },
   plugins: [
-    new webpack.ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
-    }),
     new CopyPlugin({
       patterns: [{ from: '.', to: '../', context: 'public' }],
       options: {},
