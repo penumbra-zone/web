@@ -2,6 +2,8 @@ import { Button, TransactionViewComponent } from '@penumbra-zone/ui';
 import { useStore } from '../../../state';
 import { txApprovalSelector } from '../../../state/tx-approval';
 import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
+import { Jsonified } from '@penumbra-zone/types';
+import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
 
 export const TransactionApproval = () => {
   const { authorizeRequest, transactionViewFromPlan, responder } = useStore(txApprovalSelector);
@@ -18,7 +20,7 @@ export const TransactionApproval = () => {
         <TransactionViewComponent txv={transactionViewFromPlan} />
 
         <div className='mt-8'>
-          <JsonViewer jsonObj={authorizeRequest} />
+          <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
         </div>
       </div>
       <div className='fixed inset-x-0 bottom-0 flex flex-col gap-4 bg-black px-6 py-4 shadow-lg'>
