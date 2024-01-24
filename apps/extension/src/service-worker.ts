@@ -30,8 +30,20 @@ import {
 } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 
-// this is a remote service we proxy
-import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
+import { Query as IbcProxy } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
+
+import { QueryService as AppService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/app/v1alpha1/app_connect';
+import { QueryService as ChainService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/chain/v1alpha1/chain_connect';
+import { QueryService as CompactBlockService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/compact_block/v1alpha1/compact_block_connect';
+import {
+  QueryService as DexService,
+  SimulationService as DexSimulationService,
+} from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/dex/v1alpha1/dex_connect';
+import { QueryService as GovernanceService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/governance/v1alpha1/governance_connect';
+import { QueryService as SctService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/sct/v1alpha1/sct_connect';
+import { QueryService as ShieldedPoolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_connect';
+import { QueryService as StakeService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1alpha1/stake_connect';
+import { TendermintProxyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/util/tendermint_proxy/v1alpha1/tendermint_proxy_connect';
 
 // these are local services we implement
 import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
@@ -70,10 +82,28 @@ chrome.runtime.onMessage.addListener(
   },
 );
 
-// this is a service proxy
-const ibcImpl = createProxyImpl(
-  IbcClientService,
-  createPromiseClient(IbcClientService, createGrpcWebTransport({ baseUrl: grpcEndpoint })),
+const penumbraProxies = [
+  IbcProxy,
+
+  AppService,
+  ChainService,
+  CompactBlockService,
+  DexService,
+  DexSimulationService,
+  GovernanceService,
+  SctService,
+  ShieldedPoolService,
+  StakeService,
+  TendermintProxyService,
+].map(
+  serviceType =>
+    [
+      serviceType,
+      createProxyImpl(
+        serviceType,
+        createPromiseClient(serviceType, createGrpcWebTransport({ baseUrl: grpcEndpoint })),
+      ),
+    ] as const,
 );
 
 /**
@@ -110,8 +140,8 @@ const rpcImpls = [
   // rpc we provide
   [CustodyProtocolService, rethrowImplErrors(custodyImpl)],
   [ViewProtocolService, rethrowImplErrors(viewImpl)],
-  // rpc proxy
-  [IbcClientService, ibcImpl],
+  // rpc proxies
+  ...penumbraProxies,
 ] as const;
 
 // connectrpc adapter
