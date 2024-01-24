@@ -1,14 +1,13 @@
-import { Buffer } from 'buffer/';
 import { BECH32_PREFIX } from './address';
 
+const encoder = new TextEncoder();
 export const stringToUint8Array = (str: string): Uint8Array => {
-  const buffer = Buffer.from(str, 'utf8');
-  return new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+  return encoder.encode(str);
 };
 
+const decoder = new TextDecoder();
 export const uint8ArrayToString = (array: Uint8Array): string => {
-  const buffer = Buffer.from(array.buffer, array.byteOffset, array.byteLength);
-  return buffer.toString('utf8');
+  return decoder.decode(array);
 };
 
 export const shorten = (str: string, endsLength = 4) => {
