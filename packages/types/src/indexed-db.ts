@@ -8,8 +8,6 @@ import {
   StoreHash,
 } from './state-commitment-tree';
 
-import { JsonValue } from '@bufbuild/protobuf';
-
 import {
   NotesForVotingResponse,
   SpendableNoteRecord,
@@ -26,6 +24,8 @@ import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { Jsonified } from './jsonified';
+import { Note } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -86,29 +86,28 @@ export interface PenumbraDb extends DBSchema {
     value: StoreHash;
   };
   TREE_COMMITMENTS: {
-    key: string; // string base64 StoreCommitment['commitment']['inner']
+    key: string; // base64 StoreCommitment['commitment']['inner']
     value: StoreCommitment;
   };
   FMD_PARAMETERS: {
     key: 'params';
-    value: JsonValue; // FmdParameters
+    value: Jsonified<FmdParameters>;
   };
   TRANSACTION_INFO: {
-    key: string; // string base64 TransactionInfo['id']['inner']
-    value: JsonValue; // TransactionInfo
-    //indexes: { nullifier: string; }; // string base64 TransactionInfo['nullifier']['inner']
+    key: Jsonified<Required<TransactionInfo>['id']['inner']>; // base64 Jsonified<TransactionInfo>['id']['inner']
+    value: Jsonified<TransactionInfo>;
   };
   // ======= Json serialized values =======
   // Allows wasm crate to directly deserialize
   ASSETS: {
-    key: string; // string base64 DenomMetadata['penumbraAssetId']['inner']
-    value: JsonValue; // DenomMetadata
+    key: string; // base64 Jsonified<DenomMetadata>['penumbraAssetId']['inner']
+    value: Jsonified<DenomMetadata>;
   };
   SPENDABLE_NOTES: {
-    key: string; // string base64 SpendableNoteRecord['noteCommitment']['inner']
-    value: JsonValue; // SpendableNoteRecord
+    key: string; // base64 Jsonified<SpendableNoteRecord>['noteCommitment']['inner']
+    value: Jsonified<SpendableNoteRecord>;
     indexes: {
-      nullifier: string; // string base64 SpendableNoteRecord['nullifier']['inner']
+      nullifier: string; // base64 Jsonified<SpendableNoteRecord>['nullifier']['inner']
     };
   };
   // Store for Notes that have been detected but cannot yet be spent
@@ -116,11 +115,11 @@ export interface PenumbraDb extends DBSchema {
   // This table is never written or queried by typescript
   NOTES: {
     key: string; // string base64 StateCommitment['inner']  key is not part of the stored object
-    value: JsonValue; // Note;
+    value: Jsonified<Note>;
   };
   SWAPS: {
     key: string; // string base64 SwapRecord['swapCommitment']['inner']
-    value: JsonValue; // SwapRecord
+    value: Jsonified<SwapRecord>;
     indexes: {
       nullifier: string; // base64 SwapRecord['nullifier']['inner']
     };
