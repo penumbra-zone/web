@@ -1,5 +1,6 @@
+// Re: the trailing slash, see https://www.npmjs.com/package/buffer#usage
+import { Buffer } from 'buffer/';
 import { z } from 'zod';
-import { Buffer } from 'buffer';
 import { validateSchema } from './validation';
 
 export const Base64StringSchema = z.string().refine(

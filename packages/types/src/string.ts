@@ -1,4 +1,5 @@
-import { Buffer } from 'buffer';
+// Re: the trailing slash, see https://www.npmjs.com/package/buffer#usage
+import { Buffer } from 'buffer/';
 import { BECH32_PREFIX } from './address';
 
 export const stringToUint8Array = (str: string): Uint8Array => {
