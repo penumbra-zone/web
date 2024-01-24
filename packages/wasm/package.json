@@ -20,6 +20,6 @@
   "devDependencies": {
     "@penumbra-zone/wasm-nodejs": "0.65.0-pre.0",
     "fake-indexeddb": "^5.0.2",
-    "vitest": "^0.34.6"
+    "vitest": "^1.2.1"
   }
 }
