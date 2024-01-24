@@ -1,9 +1,13 @@
-import type { JsonObject, JsonValue } from '@bufbuild/protobuf';
+import type { JsonValue } from '@bufbuild/protobuf';
 import {
   OffscreenRequest,
+  OffscreenResponse,
   ActionBuildRequest,
+  ActionBuildResponse,
   WasmBuildActionInput,
+  WasmBuildActionOutput,
   isActionBuildRequest,
+  isWasmBuildActionOutput,
 } from '@penumbra-zone/types/src/internal-msg/offscreen';
 
 export const isOffscreenRequest = (req: unknown): req is OffscreenRequest =>
@@ -19,20 +23,20 @@ export const offscreenMessageHandler = (
   sendResponse: (x: JsonValue) => void,
 ) => {
   if (!isOffscreenRequest(req)) return;
-  if (isActionBuildRequest(req.request)) {
-    const { type, request } = req;
+  const { type, request } = req;
+  if (isActionBuildRequest(request)) {
     void (async () => {
       const response = Promise.all(buildActionHandler(request));
       const res = await response
-        .then(data => ({ type, data }))
+        .then((data: ActionBuildResponse) => ({ type, data }))
         .catch((e: Error) => ({
           type,
           error: `Offscreen: ${e.message}`,
         }));
-      sendResponse(res);
+      sendResponse(res satisfies OffscreenResponse);
     })();
-  }
-  return true;
+    return true;
+  } else throw new Error('Unknown offscreen request');
 };
 
 chrome.runtime.onMessage.addListener(offscreenMessageHandler);
@@ -41,30 +45,31 @@ export const buildActionHandler = (request: ActionBuildRequest) => {
   // Destructure the data object to get individual fields
   const { transactionPlan, witness, fullViewingKey } = request;
 
-  return transactionPlan.actions.map((_, i) =>
-    spawnWorker(transactionPlan, witness, fullViewingKey, i),
+  return transactionPlan.actions.map((_, actionPlanIndex) =>
+    spawnWorker({ transactionPlan, witness, fullViewingKey, actionPlanIndex }),
   );
 };
 
-const spawnWorker = (
-  transactionPlan: JsonObject & { actions: JsonValue[] },
-  witness: JsonObject,
-  fullViewingKey: string,
-  actionPlanIndex: number,
-): Promise<JsonValue> => {
+const spawnWorker = ({
+  transactionPlan,
+  witness,
+  fullViewingKey,
+  actionPlanIndex,
+}: WasmBuildActionInput): Promise<WasmBuildActionOutput> => {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./wasm-build-action.ts', import.meta.url));
 
-    const onWorkerMessage = (e: MessageEvent) => {
-      resolve(e.data as JsonValue);
+    const onWorkerMessage = (e: MessageEvent<unknown>) => {
       worker.removeEventListener('error', onWorkerError);
       worker.terminate();
+      if (isWasmBuildActionOutput(e.data)) resolve(e.data);
+      else reject(new Error(`No Action data from worker ${actionPlanIndex}`));
     };
 
     const onWorkerError = (error: ErrorEvent) => {
-      reject(new Error(`${error.filename}:${error.lineno} ${error.message}`));
       worker.removeEventListener('message', onWorkerMessage);
       worker.terminate();
+      reject(new Error(`${error.filename}:${error.lineno} ${error.message}`));
     };
 
     worker.addEventListener('message', onWorkerMessage, { once: true });
