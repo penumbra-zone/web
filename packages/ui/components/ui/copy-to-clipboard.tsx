@@ -19,7 +19,11 @@ const CopyToClipboard = React.forwardRef<HTMLButtonElement, CopyToClipboardProps
 
     return (
       <Button
-        className={cn(copied && 'cursor-default text-teal-500 hover:no-underline', className)}
+        className={cn(
+          copied && 'cursor-default text-teal-500 hover:no-underline',
+          'block',
+          className,
+        )}
         variant='link'
         ref={ref}
         size='sm'

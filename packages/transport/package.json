@@ -6,14 +6,14 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^1.5.1",
-    "@connectrpc/connect": "^1.1.4",
-    "@connectrpc/connect-web": "^1.1.4",
+    "@bufbuild/protobuf": "^1.6.0",
+    "@connectrpc/connect": "^1.2.1",
+    "@connectrpc/connect-web": "^1.2.1",
     "@penumbra-zone/types": "workspace:*"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.254",
-    "eslint": "^8.55.0",
+    "@types/chrome": "0.0.256",
+    "eslint": "^8.56.0",
     "eslint-config-custom": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "^5.3.3"

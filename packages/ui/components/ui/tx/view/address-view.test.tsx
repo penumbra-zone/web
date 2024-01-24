@@ -45,7 +45,7 @@ describe('<AddressViewComponent />', () => {
         <AddressViewComponent view={addressViewWithOneTimeAddress} copyable />,
       );
 
-      expect(queryByTestId('AddressView__CopyIcon')).toBeNull();
+      expect(queryByTestId('CopyToClipboardIconButton__icon')).toBeNull();
     });
 
     test('shows the copy icon when the address is not a one-time address', () => {
@@ -53,7 +53,7 @@ describe('<AddressViewComponent />', () => {
         <AddressViewComponent view={addressViewWithNormalAddress} copyable />,
       );
 
-      expect(queryByTestId('AddressView__CopyIcon')).not.toBeNull();
+      expect(queryByTestId('CopyToClipboardIconButton__icon')).not.toBeNull();
     });
   });
 
@@ -63,7 +63,7 @@ describe('<AddressViewComponent />', () => {
         <AddressViewComponent view={addressViewWithOneTimeAddress} copyable={false} />,
       );
 
-      expect(queryByTestId('AddressView__CopyIcon')).toBeNull();
+      expect(queryByTestId('CopyToClipboardIconButton__icon')).toBeNull();
     });
 
     test('does not show the copy icon when the address is not a one-time address', () => {
@@ -71,7 +71,7 @@ describe('<AddressViewComponent />', () => {
         <AddressViewComponent view={addressViewWithNormalAddress} copyable={false} />,
       );
 
-      expect(queryByTestId('AddressView__CopyIcon')).toBeNull();
+      expect(queryByTestId('CopyToClipboardIconButton__icon')).toBeNull();
     });
   });
 });

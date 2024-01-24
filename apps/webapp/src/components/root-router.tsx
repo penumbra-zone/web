@@ -1,4 +1,4 @@
-import { createBrowserRouter, redirect } from 'react-router-dom';
+import { createHashRouter, redirect } from 'react-router-dom';
 import { PagePath } from './metadata/paths.ts';
 import { Layout, LayoutLoader } from './layout.tsx';
 import AssetsTable, { AssetsLoader } from './dashboard/assets-table.tsx';
@@ -11,7 +11,7 @@ import IbcForm, { IbcAssetBalanceLoader } from './send/ibc/ibc-form.tsx';
 import { Receive } from './send/receive.tsx';
 import { ErrorBoundary } from './shared/error-boundary.tsx';
 
-export const rootRouter = createBrowserRouter([
+export const rootRouter = createHashRouter([
   {
     path: '/',
     loader: LayoutLoader,

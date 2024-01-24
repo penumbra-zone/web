@@ -5,16 +5,14 @@ import {
   IdbUpdate,
   IndexedDbInterface,
   PenumbraDb,
-  ScanResult,
+  ScanBlockResult,
   StateCommitmentTree,
   uint8ArrayToBase64,
 } from '@penumbra-zone/types';
 import { IbdUpdater, IbdUpdates } from './updater';
-import {
-  FmdParameters,
-  NoteSource,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 import {
   SpendableNoteRecord,
   SwapRecord,
@@ -56,7 +54,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('SPENDABLE_NOTES', {
           keyPath: 'noteCommitment.inner',
         }).createIndex('nullifier', 'nullifier.inner');
-        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.hash' });
+        db.createObjectStore('TRANSACTION_INFO', { keyPath: 'id.inner' });
         db.createObjectStore('TREE_LAST_POSITION');
         db.createObjectStore('TREE_LAST_FORGOTTEN');
         db.createObjectStore('TREE_COMMITMENTS', { keyPath: 'commitment.inner' });
@@ -104,7 +102,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   // All updates must be atomic in order to prevent invalid tree state
-  public async saveScanResult(updates: ScanResult): Promise<void> {
+  public async saveScanResult(updates: ScanBlockResult): Promise<void> {
     const txs = new IbdUpdates();
 
     this.addSctUpdates(txs, updates.sctUpdates);
@@ -119,14 +117,18 @@ export class IndexedDb implements IndexedDbInterface {
     return this.db.get('LAST_BLOCK_SYNCED', 'last_block');
   }
 
-  async getNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined> {
+  async getSpendableNoteByNullifier(
+    nullifier: Nullifier,
+  ): Promise<SpendableNoteRecord | undefined> {
     const key = uint8ArrayToBase64(nullifier.inner);
     const json = await this.db.getFromIndex('SPENDABLE_NOTES', 'nullifier', key);
     if (!json) return undefined;
     return SpendableNoteRecord.fromJson(json);
   }
 
-  async getNoteByCommitment(commitment: StateCommitment): Promise<SpendableNoteRecord | undefined> {
+  async getSpendableNoteByCommitment(
+    commitment: StateCommitment,
+  ): Promise<SpendableNoteRecord | undefined> {
     const key = uint8ArrayToBase64(commitment.inner);
     const json = await this.db.get('SPENDABLE_NOTES', key);
     if (!json) return undefined;
@@ -153,28 +155,36 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({ table: 'ASSETS', value: metadata.toJson() });
   }
 
-  async getAllNotes() {
+  async getAllSpendableNotes() {
     const jsonVals = await this.db.getAll('SPENDABLE_NOTES');
     return jsonVals.map(a => SpendableNoteRecord.fromJson(a));
   }
 
-  async getAllTransactions() {
-    return this.db.getAll('TRANSACTIONS');
+  async getAllTransactionInfo() {
+    const jsonVals = await this.db.getAll('TRANSACTION_INFO');
+    return jsonVals.map(a => TransactionInfo.fromJson(a));
   }
 
   async saveTransactionInfo(tx: TransactionInfo): Promise<void> {
-    await this.u.update({ table: 'TRANSACTIONS', value: tx });
+    const value = tx.toJson();
+    await this.u.update({ table: 'TRANSACTION_INFO', value });
   }
 
-  async getTransaction(source: NoteSource): Promise<TransactionInfo | undefined> {
-    return this.db.get('TRANSACTIONS', source.inner);
+  async getTransactionInfo(txId: TransactionId): Promise<TransactionInfo | undefined> {
+    const key = uint8ArrayToBase64(txId.inner);
+    const json = await this.db.get('TRANSACTION_INFO', key);
+    if (!json) return undefined;
+    return TransactionInfo.fromJson(json);
   }
 
   async getFmdParams(): Promise<FmdParameters | undefined> {
-    return this.db.get('FMD_PARAMETERS', 'params');
+    const json = await this.db.get('FMD_PARAMETERS', 'params');
+    if (!json) return undefined;
+    return FmdParameters.fromJson(json);
   }
 
-  async saveFmdParams(value: FmdParameters): Promise<void> {
+  async saveFmdParams(fmd: FmdParameters): Promise<void> {
+    const value = fmd.toJson();
     await this.u.update({ table: 'FMD_PARAMETERS', value, key: 'params' });
   }
 
@@ -189,7 +199,7 @@ export class IndexedDb implements IndexedDbInterface {
     }
   }
 
-  private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanResult['sctUpdates']): void {
+  private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanBlockResult['sctUpdates']): void {
     if (sctUpdates.set_position) {
       txs.add({
         table: 'TREE_LAST_POSITION',
