@@ -795,8 +795,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       '@penumbra-zone/wasm-bundler':
-        specifier: 0.65.0-pre.0
-        version: 0.65.0-pre.0
+        specifier: file:/Users/valentine/projects/penumbra/crates/wasm/publish/bundler
+        version: file:../penumbra/crates/wasm/publish/bundler
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -817,8 +817,8 @@ importers:
         version: 3.22.4
     devDependencies:
       '@penumbra-zone/wasm-nodejs':
-        specifier: 0.65.0-pre.0
-        version: 0.65.0-pre.0
+        specifier: file:/Users/valentine/projects/penumbra/crates/wasm/publish/nodejs
+        version: file:../penumbra/crates/wasm/publish/nodejs
       fake-indexeddb:
         specifier: ^5.0.2
         version: 5.0.2
@@ -11884,3 +11884,13 @@ packages:
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
+
+  file:../penumbra/crates/wasm/publish/bundler:
+    resolution: {directory: ../penumbra/crates/wasm/publish/bundler, type: directory}
+    name: '@penumbra-zone/wasm-bundler'
+    dev: false
+
+  file:../penumbra/crates/wasm/publish/nodejs:
+    resolution: {directory: ../penumbra/crates/wasm/publish/nodejs, type: directory}
+    name: '@penumbra-zone/wasm-nodejs'
+    dev: true

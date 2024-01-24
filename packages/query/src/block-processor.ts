@@ -29,6 +29,7 @@ import {
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
+import { computePositionId } from '@penumbra-zone/wasm-ts/src/dex';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -325,12 +326,37 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     for (const tx of txs) {
       for (const { action } of tx.body?.actions ?? []) {
-        if (action.case === 'positionOpen' && action.value.position)
+        if (action.case === 'positionOpen' && action.value.position) {
           for (const state of positionStates) {
             const positionState = new PositionState({ state });
             const metadata = this.viewServer.getLpNftMetadata(action.value.position, positionState);
             await this.indexedDb.saveAssetsMetadata(metadata);
           }
+          // to optimize on-chain storage PositionId is not written in the positionOpen action,
+          // but can be computed via hashing of immutable position fields
+          await this.indexedDb.addPosition(
+            computePositionId(action.value.position),
+            action.value.position,
+          );
+        }
+        if (action.case === 'positionClose' && action.value.positionId) {
+          await this.indexedDb.updatePosition(
+            action.value.positionId,
+            new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+          );
+        }
+        if (action.case === 'positionWithdraw' && action.value.positionId) {
+          await this.indexedDb.updatePosition(
+            action.value.positionId,
+            new PositionState({ state: PositionState_PositionStateEnum.WITHDRAWN }),
+          );
+        }
+        if (action.case === 'positionRewardClaim' && action.value.positionId) {
+          await this.indexedDb.updatePosition(
+            action.value.positionId,
+            new PositionState({ state: PositionState_PositionStateEnum.CLAIMED }),
+          );
+        }
       }
     }
   }

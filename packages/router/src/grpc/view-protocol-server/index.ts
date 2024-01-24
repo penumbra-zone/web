@@ -27,7 +27,7 @@ import { witness } from './witness';
 import { notesForVoting } from './notes-for-voting';
 import { ownedPositionIds } from './ownned-position-ids';
 
-export const viewImpl: Omit<Impl, 'authorizeAndBuild' > = {
+export const viewImpl: Omit<Impl, 'authorizeAndBuild'> = {
   addressByIndex,
   appParameters,
   assets,

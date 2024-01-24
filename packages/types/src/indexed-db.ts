@@ -27,6 +27,7 @@ import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import {
+  Position,
   PositionId,
   PositionState,
   TradingPair,
@@ -71,11 +72,12 @@ export interface IndexedDbInterface {
     addressIndex: AddressIndex | undefined,
     votableAtHeight: bigint,
   ): Promise<NotesForVotingResponse[]>;
-
   getOwnedPositionIds(
     positionState: PositionState | undefined,
     tradingPair: TradingPair | undefined,
   ): Promise<PositionId[]>;
+  addPosition(positionId: PositionId, position: Position): Promise<void>;
+  updatePosition(positionId: PositionId, newState: PositionState): Promise<void>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -139,6 +141,16 @@ export interface PenumbraDb extends DBSchema {
     key: 'gas_prices';
     value: GasPrices;
   };
+  POSITIONS: {
+    key: string; // base64 PositionRecord['id']['inner'];
+    value: PositionRecord;
+  };
+}
+
+// need to store PositionId and Position in the same table
+export interface PositionRecord {
+  id: JsonValue; // PositionId (must be JsonValue because ['id']['inner'] is a key )
+  position: JsonValue; // Position
 }
 
 export type Tables = Record<string, StoreNames<PenumbraDb>>;
