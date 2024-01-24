@@ -1,16 +1,36 @@
-import { Buffer } from 'buffer/';
-import { validateSchema } from './validation';
 import { Base64StringSchema } from './base64';
+import { validateSchema } from './validation';
 
+/**
+ * @see https://stackoverflow.com/a/39460727/974981
+ */
 export const base64ToHex = (base64: string): string => {
   const validated = validateSchema(Base64StringSchema, base64);
-  const buffer = Buffer.from(validated, 'base64');
-  return buffer.toString('hex');
+  const bytes = atob(validated);
+
+  let result = '';
+  for (let i = 0; i < bytes.length; i++) {
+    const hex = bytes.charCodeAt(i).toString(16);
+    result += hex.length === 2 ? hex : '0' + hex;
+  }
+
+  return result;
 };
 
+/**
+ * @see https://stackoverflow.com/a/41797377/974981
+ */
 export const hexToBase64 = (hex: string): string => {
-  const buffer = Buffer.from(hex, 'hex');
-  return buffer.toString('base64');
+  if (!hex) return '';
+
+  return btoa(
+    hex
+      .match(/\w{2}/g)!
+      .map(function (a) {
+        return String.fromCharCode(parseInt(a, 16));
+      })
+      .join(''),
+  );
 };
 
 /**
