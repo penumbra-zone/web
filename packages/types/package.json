@@ -11,7 +11,6 @@
     "@types/chrome": "0.0.256",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",
-    "buffer": "^6.0.3",
     "eslint": "^8.56.0",
     "eslint-config-custom": "workspace:*",
     "idb": "^8.0.0",
