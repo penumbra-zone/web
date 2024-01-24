@@ -1,6 +1,6 @@
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { getAddressView } from './get-address-view';
-import { Jsonified } from '@penumbra-zone/types/src/jsonified';
+import { Jsonified } from '@penumbra-zone/types';
 import {
   TransactionPlan,
   TransactionView,

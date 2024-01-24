@@ -17,7 +17,7 @@ import {
   SpendPlan,
   SpendView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
-import { Jsonified } from '@penumbra-zone/types/src/jsonified';
+import { Jsonified } from '@penumbra-zone/types';
 
 const getValueView = (
   value: Value | undefined,
