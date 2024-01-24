@@ -13,16 +13,23 @@ export const hexToBase64 = (hex: string): string => {
   return buffer.toString('base64');
 };
 
+/**
+ * @see https://stackoverflow.com/a/65851423/974981
+ */
 export const uint8ArrayToHex = (uint8Array: Uint8Array): string => {
-  return Buffer.from(uint8Array).toString('hex');
+  return Array.from(uint8Array, i => i.toString(16).padStart(2, '0')).join('');
 };
 
+/**
+ * @see https://stackoverflow.com/a/65851423/974981
+ */
 export const hexToUint8Array = (hexString: string): Uint8Array => {
   // Check if the input string is a valid hexadecimal string
   if (!/^([0-9A-Fa-f]{2})*$/.test(hexString)) {
     throw new Error(`Invalid hexadecimal string: ${hexString}`);
   }
 
-  const buffer = Buffer.from(hexString, 'hex');
-  return new Uint8Array(buffer);
+  if (!hexString) return new Uint8Array();
+
+  return new Uint8Array(hexString.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
 };
