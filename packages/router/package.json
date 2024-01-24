@@ -7,7 +7,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^1.6.0",
+    "@bufbuild/protobuf": "^1.7.0",
     "@connectrpc/connect": "^1.2.1",
     "@connectrpc/connect-web": "^1.2.1",
     "@penumbra-zone/constants": "workspace:*",

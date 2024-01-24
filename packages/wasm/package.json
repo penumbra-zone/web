@@ -7,7 +7,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^1.6.0",
+    "@bufbuild/protobuf": "^1.7.0",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm-bundler": "0.65.0-pre.0",
     "bech32": "^2.0.0",

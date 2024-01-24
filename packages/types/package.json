@@ -7,7 +7,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^1.6.0",
+    "@bufbuild/protobuf": "^1.7.0",
     "@types/chrome": "0.0.256",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",
