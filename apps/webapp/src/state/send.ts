@@ -15,6 +15,7 @@ import { Selection } from './types';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { viewClient } from '../clients/grpc';
 import { getAddressByIndex } from '../fetchers/address.ts';
+import { planWitnessBuildBroadcast } from './helper.ts';
 
 export interface SendSlice {
   selection: Selection | undefined;
@@ -64,9 +65,10 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
       const { dismiss } = toastFn(loadingTxToast);
 
       try {
-        const txId = await planWitnessBuildBroadcast(get().send);
+        const req = await assembleRequest(get().send);
+        const txHash = await planWitnessBuildBroadcast(req);
         dismiss();
-        toastFn(successTxToast(uint8ArrayToHex(txId.inner)));
+        toastFn(successTxToast(txHash));
 
         // Reset form
         set(state => {
@@ -85,13 +87,11 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
-// rename to PlanAuthorizeWitnessBuildBroadcast or AuthorizeWitnessBuild?
-const planWitnessBuildBroadcast = async ({ amount, recipient, selection, memo }: SendSlice) => {
-  console.log('Entered planWitnessBuildBroadcast!');
+const assembleRequest = async ({ amount, recipient, selection, memo }: SendSlice) => {
   if (typeof selection?.accountIndex === 'undefined') throw new Error('no selected account');
   if (!selection.asset) throw new Error('no selected asset');
 
-  const req = new TransactionPlannerRequest({
+  return new TransactionPlannerRequest({
     outputs: [
       {
         address: { altBech32m: recipient },
@@ -107,19 +107,6 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, selection, memo }:
       text: memo,
     }),
   });
-
-  const { plan } = await viewClient.transactionPlanner(req);
-  if (!plan) throw new Error('no plan in response');
-
-  const { transaction } = await viewClient.authorizeAndBuild({
-    transactionPlan: plan,
-  });
-  if (!transaction) throw new Error('no transaction in response');
-
-  const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
-  if (!id) throw new Error('no id in broadcast response');
-
-  return id;
 };
 
 export const validateAmount = (asset: AssetBalance, amount: string): boolean => {
