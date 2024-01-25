@@ -18,9 +18,10 @@ export type InternalMessageHandler<M extends InternalMessage<string, unknown, un
     : (request: M['request'], response: MessageResponder<M>) => void;
 
 // The awaited response sent back to requestor
-export type AwaitedInternalResponse<T> = T extends InternalMessage<infer Type, unknown, infer Res>
-  ? { type: Type; data: Awaited<Res> }
-  : never;
+export type AwaitedInternalResponse<T> =
+  T extends InternalMessage<infer Type, unknown, infer Res>
+    ? { type: Type; data: Awaited<Res> }
+    : never;
 
 // The awaitable outputs of the handlers
 export type ResponseOf<T> = T extends InternalMessage<string, unknown, infer Res> ? Res : never;
