@@ -1,5 +1,8 @@
 import type { JsonValue, JsonObject, AnyMessage } from '@bufbuild/protobuf';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export type Stringified<J> = J extends Jsonified<infer _T> ? string : never;
+
 // prettier-ignore
 export type Jsonified<T> = T extends JsonValue ? T
                          : T extends (Date | Uint8Array | bigint) ? string
