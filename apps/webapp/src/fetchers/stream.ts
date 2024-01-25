@@ -56,17 +56,13 @@ export const useCollectedStream = <T>(query: AsyncIterable<T>): CollectedStreamQ
 // Note: If the stream is unending, this will not resolve.
 //       This is only useful if you are collecting all of the fixed set of results together.
 export const streamToPromise = <T>(query: AsyncIterable<T>): Promise<T[]> => {
-  return new Promise<T[]>((resolve, reject) => {
+  return new Promise<T[]>(resolve => {
     void (async function () {
       const result: T[] = [];
-      try {
-        for await (const res of query) {
-          result.push(res);
-        }
-        resolve(result);
-      } catch (e) {
-        reject(e);
+      for await (const res of query) {
+        result.push(res);
       }
+      resolve(result);
     })();
   });
 };
