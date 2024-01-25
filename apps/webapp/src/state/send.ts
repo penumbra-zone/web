@@ -113,13 +113,13 @@ const planWitnessBuildBroadcast = async ({ amount, recipient, selection, memo }:
   const { data: authorizationData } = await custodyClient.authorize({ plan });
   if (!authorizationData) throw new Error('no authorization data in response');
 
-  const { transaction } = viewClient.witnessAndBuild({
+  const { transaction } = await viewClient.witnessAndBuild({
     transactionPlan: plan,
     authorizationData,
   });
   if (!transaction) throw new Error('no transaction in response');
 
-  const { id } = viewClient.broadcastTransaction({ transaction, awaitDetection: true });
+  const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
   if (!id) throw new Error('no id in broadcast response');
 
   return id;
