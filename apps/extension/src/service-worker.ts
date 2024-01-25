@@ -31,15 +31,6 @@ import {
 } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 
-// transport layer which is generic to the underlying service type
-import {
-  TransportMessage,
-  TransportStream,
-  createChannelTransport,
-  isTransportData,
-  isTransportMessage,
-} from '@penumbra-zone/transport';
-
 // remote service we proxy
 import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
 
@@ -52,54 +43,7 @@ import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
 // legacy stdRouter
 import { stdRouter } from '@penumbra-zone/router/src/std/router';
 import { isStdRequest } from '@penumbra-zone/types';
-
-// Since we're already operating in the background service worker, we have access to
-// the router entry and don't need to explicitly init the client connection manager.
-export const getPenumbraPort = (): MessagePort => {
-  const { port1: ourPort, port2: clientPort } = new MessageChannel();
-
-  // Asynchronous event listener that handles messages recieved on the clientPort
-  const eventListener = async (ev: MessageEvent<TransportMessage | TransportStream>) => {
-    try {
-      if (!isTransportData(ev.data)) throw Error('Unknown transport from client');
-      else if (isTransportMessage(ev.data)) {
-        const requestId = ev.data.requestId;
-        const value = await chromeRuntimeHandler(ev.data.message);
-
-        // Post message to clientPort
-        if (value instanceof ReadableStream) {
-          ourPort.postMessage({ requestId, stream: value });
-        } else {
-          ourPort.postMessage({ requestId, message: value });
-        }
-      } else throw Error('Unimplemented request kind');
-    } catch (error) {
-      // Handle and log the error in a more informative way
-      console.error('Error in eventListener:', error);
-    }
-  };
-
-  // Attach event listener for rpc requests to the ourPort, which will
-  // be triggered when a message is recieved on the port from the source
-  // client context
-  ourPort.addEventListener('message', eventListener);
-  ourPort.postMessage({ connected: true });
-
-  ourPort.start();
-
-  return clientPort;
-};
-
-const getCustodyClient = () => {
-  return createPromiseClient(
-    CustodyProtocolService,
-    createChannelTransport({
-      defaultTimeoutMs: 10000,
-      serviceType: CustodyProtocolService,
-      getPort: getPenumbraPort,
-    }),
-  );
-};
+import { createSameScriptClient } from './clients/extension-service';
 
 // configure and initialize extension services. services are passed directly to stdRouter, and to rpc handlers as context
 const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
@@ -172,7 +116,7 @@ const rpcImpls = [
   [IbcClientService, ibcImpl],
 ] as const;
 
-let custodyClient: PromiseClient<typeof CustodyProtocolService>;
+let custodyClient: PromiseClient<typeof CustodyProtocolService> | undefined;
 
 // connectrpc adapter
 const chromeRuntimeHandler = connectChromeRuntimeAdapter({
@@ -187,7 +131,7 @@ const chromeRuntimeHandler = connectChromeRuntimeAdapter({
 
     // Dynamically initialize custodyClient when createRequestContext is called,
     // and reuse custody client if it's already been defined.
-    custodyClient ??= getCustodyClient();
+    custodyClient ??= createSameScriptClient(CustodyProtocolService, chromeRuntimeHandler);
 
     contextValues.set(custodyCtx, custodyClient);
     contextValues.set(servicesCtx, services);
