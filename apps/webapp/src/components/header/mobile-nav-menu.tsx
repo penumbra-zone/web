@@ -7,7 +7,7 @@ export const MobileNavMenu = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <HamburgerMenuIcon className='z-10 h-6 w-6 cursor-pointer text-muted hover:opacity-50' />
+        <HamburgerMenuIcon className='z-10 size-6 cursor-pointer text-muted hover:opacity-50' />
       </SheetTrigger>
       <SheetContent side='left' className='w-[311px] bg-charcoal-secondary p-5 '>
         <SheetHeader className='z-10' />

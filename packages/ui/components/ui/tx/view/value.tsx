@@ -23,7 +23,7 @@ export const ValueViewComponent = ({ view }: ValueViewPrpos) => {
           text={encodedAssetId}
           label={
             <div>
-              <CopyIcon className='h-4 w-4 text-muted-foreground hover:opacity-50' />
+              <CopyIcon className='size-4 text-muted-foreground hover:opacity-50' />
             </div>
           }
           className='w-4 px-4'
