@@ -185,7 +185,8 @@ export const createChannelTransport = ({
         return streamImpl as MethodImpl<typeof method>;
       }
       default: {
-        const noImpl: unknown = () => Promise.reject(`${MethodKind[method.kind]} unimplemented`);
+        const noImpl: unknown = () =>
+          Promise.reject(new Error(`${MethodKind[method.kind]} unimplemented`));
         return noImpl as MethodImpl<typeof method>;
       }
     }
