@@ -22,7 +22,6 @@ export const isJsonValue = (res: unknown): res is JsonValue =>
  * This is used to suggest the purpose of a string to a human. It provides no
  * actual type assistance.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type Stringified<J> = Jsonified<J> extends JsonValue ? string : never;
 
 /**
