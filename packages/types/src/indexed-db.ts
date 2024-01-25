@@ -86,7 +86,7 @@ export interface PenumbraDb extends DBSchema {
     value: StoreHash;
   };
   TREE_COMMITMENTS: {
-    key: string; // base64 StoreCommitment['commitment']['inner']
+    key: StoreCommitment['commitment']['inner']; // base64
     value: StoreCommitment;
   };
   FMD_PARAMETERS: {
@@ -94,34 +94,35 @@ export interface PenumbraDb extends DBSchema {
     value: Jsonified<FmdParameters>;
   };
   TRANSACTION_INFO: {
-    key: Jsonified<Required<TransactionInfo>['id']['inner']>; // base64 Jsonified<TransactionInfo>['id']['inner']
+    key: Jsonified<Required<TransactionInfo>['id']['inner']>; // base64
     value: Jsonified<TransactionInfo>;
   };
   // ======= Json serialized values =======
   // Allows wasm crate to directly deserialize
   ASSETS: {
-    key: string; // base64 Jsonified<DenomMetadata>['penumbraAssetId']['inner']
+    key: Jsonified<Required<DenomMetadata>['penumbraAssetId']['inner']>; // base64
     value: Jsonified<DenomMetadata>;
   };
   SPENDABLE_NOTES: {
-    key: string; // base64 Jsonified<SpendableNoteRecord>['noteCommitment']['inner']
+    key: Jsonified<Required<SpendableNoteRecord>['noteCommitment']['inner']>; // base64
     value: Jsonified<SpendableNoteRecord>;
     indexes: {
-      nullifier: string; // base64 Jsonified<SpendableNoteRecord>['nullifier']['inner']
+      nullifier: Jsonified<Required<SpendableNoteRecord>['nullifier']['inner']>; // base64
     };
   };
   // Store for Notes that have been detected but cannot yet be spent
   // Used in wasm crate to process swap and swap claim
   // This table is never written or queried by typescript
   NOTES: {
-    key: string; // string base64 StateCommitment['inner']  key is not part of the stored object
+    // key is not part of the stored object
+    key: Jsonified<StateCommitment['inner']>; // base64
     value: Jsonified<Note>;
   };
   SWAPS: {
-    key: string; // string base64 SwapRecord['swapCommitment']['inner']
+    key: Jsonified<Required<SwapRecord>['swapCommitment']['inner']>; // base64
     value: Jsonified<SwapRecord>;
     indexes: {
-      nullifier: string; // base64 SwapRecord['nullifier']['inner']
+      nullifier: Jsonified<Required<SwapRecord>['nullifier']['inner']>; // base64
     };
   };
   GAS_PRICES: {
