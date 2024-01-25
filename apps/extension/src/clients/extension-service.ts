@@ -1,7 +1,12 @@
 import { ServiceType } from '@bufbuild/protobuf';
 import { ConnectError, createPromiseClient } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import { TransportMessage, createChannelTransport } from '@penumbra-zone/transport';
+import {
+  TransportEvent,
+  TransportMessage,
+  createChannelTransport,
+  isTransportMessage,
+} from '@penumbra-zone/transport';
 import { ChromeRuntimeHandlerFn } from '@penumbra-zone/transport/src/chrome-runtime/adapter';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { transportOptions } from './transport-options';
@@ -21,26 +26,27 @@ export const directEntry = (entry: ChromeRuntimeHandlerFn) => {
   const getDirectEntryPort = (): MessagePort => {
     const { port1: ourPort, port2: clientPort } = new MessageChannel();
 
-    const directEntryListener = (ev: MessageEvent<TransportMessage>) => {
-      void (async () => {
-        // straight-pipe equivalent to connection manager
-        const requestId = ev.data.requestId;
-        await entry(ev.data.message)
-          .then(response =>
-            response instanceof ReadableStream
-              ? { requestId, stream: response }
-              : { requestId, message: response },
-          )
-          .catch(error => ({
-            requestId,
-            error: errorToJson(ConnectError.from(error), { typeRegistry }),
-          }));
-      })();
+    // straight-pipe equivalent to connection manager
+    const directEntryHandler = async ({ requestId, message }: TransportMessage) => {
+      const transportResponse: TransportEvent = await entry(message)
+        .then(response =>
+          response instanceof ReadableStream
+            ? { requestId, stream: response }
+            : { requestId, message: response },
+        )
+        .catch(error => ({
+          requestId,
+          error: errorToJson(ConnectError.from(error), { typeRegistry }),
+        }));
+      ourPort.postMessage(transportResponse);
     };
 
     // Attach event listener for rpc requests to ourPort, which will
     // be triggered when a message is recieved on the port from the client
-    ourPort.addEventListener('message', directEntryListener);
+    ourPort.addEventListener('message', (ev: MessageEvent<unknown>) => {
+      if (isTransportMessage(ev.data)) void directEntryHandler(ev.data);
+      else console.error('Unknown message event', ev);
+    });
 
     // acknowledge connection
     ourPort.postMessage({ connected: true });
