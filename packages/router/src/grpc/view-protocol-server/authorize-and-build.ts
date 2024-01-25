@@ -9,8 +9,13 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async (req, ctx) => 
 
   const custodyClient = ctx.values.get(custodyCtx);
 
-  const authorizationData = custodyClient!.authorize({ plan: req.transactionPlan });
-  if (!authorizationData) throw new Error('no authorization data in response');
+  if (!custodyClient)
+    throw new ConnectError('Cannot access custody service', Code.FailedPrecondition);
+
+  const authorizationData = custodyClient.authorize({ plan: req.transactionPlan }).then(res => {
+    if (res.data) return res.data;
+    else throw new ConnectError('No authorization data in response', Code.PermissionDenied);
+  });
 
   const services = ctx.values.get(servicesCtx);
   const {
@@ -31,7 +36,7 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async (req, ctx) => 
     batchActions,
     req.transactionPlan,
     witnessData,
-    (await authorizationData).data!,
+    await authorizationData,
   );
 
   return { transaction };
