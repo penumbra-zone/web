@@ -4,11 +4,20 @@ import { txApprovalSelector } from '../../../state/tx-approval';
 import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
 import { Jsonified } from '@penumbra-zone/types';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
+import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 export const TransactionApproval = () => {
-  const { authorizeRequest, transactionViewFromPlan, responder } = useStore(txApprovalSelector);
+  const {
+    authorizeRequest: authReqString,
+    transactionViewFromPlan: txPlanString,
+    responder,
+  } = useStore(txApprovalSelector);
+  if (!authReqString || !txPlanString || !responder) return null;
 
-  if (!authorizeRequest?.plan || !responder || !transactionViewFromPlan) return null;
+  const authorizeRequest = AuthorizeRequest.fromJsonString(authReqString);
+  const transactionViewFromPlan = TransactionView.fromJsonString(txPlanString);
+
+  if (!authorizeRequest.plan) return null;
 
   return (
     <div className='flex h-screen flex-col justify-between p-[30px] pt-10 '>
