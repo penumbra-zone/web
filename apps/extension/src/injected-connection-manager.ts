@@ -25,6 +25,7 @@ const services: typeof serviceTypeNames = [
 ];
 
 const sendInitMsg = (services: string[]) => {
+  console.log('sendInitMsg');
   const { port1, port2 } = new MessageChannel();
   const initMsg: InitPenumbraService = { type: 'INIT_PENUMBRA', services, port: port1 };
   window.postMessage(initMsg, '/', [port1]);

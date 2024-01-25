@@ -17,6 +17,7 @@ declare global {
 }
 
 const initPenumbra = (ev: MessageEvent<unknown>) => {
+  console.log('init penumbra!');
   if (ev.origin === window.origin && isInitPenumbra(ev)) {
     const { services, port } = ev.data;
     if (!window[penumbra]) window[penumbra] = {} as Exposed;

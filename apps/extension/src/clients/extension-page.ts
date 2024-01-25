@@ -19,6 +19,7 @@ import { transportOptions } from './transport-options';
  * @returns MessagePort
  */
 export const getExtensionPagePort = () => {
+  console.log('entered getExtensionPagePort');
   const { port1: port, port2: transferPort } = new MessageChannel();
   const initPort = ClientConnectionManager.init(ChannelClientLabel.Extension);
   initPort.postMessage(
@@ -41,4 +42,6 @@ export const createExtensionPageClient = <S extends ServiceType>(serviceType: S)
     }),
   );
 
+// `ExtensionPage` refers to a webpage, for instance a content script or popup page, associated with the extension,
+// and we initialize a client object for establishing communication with the extension's services.
 export const viewClient = createExtensionPageClient(ViewProtocolService);
