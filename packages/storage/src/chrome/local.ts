@@ -12,6 +12,7 @@ export interface LocalStorageState {
   grpcEndpoint: string;
   passwordKeyPrint: KeyPrintJson | undefined;
   lastBlockSynced: number;
+  connectedSites: Record<string, boolean>;
 }
 
 export const localDefaults: LocalStorageState = {
@@ -19,6 +20,7 @@ export const localDefaults: LocalStorageState = {
   grpcEndpoint: testnetConstants.grpcEndpoint,
   passwordKeyPrint: undefined,
   lastBlockSynced: 0,
+  connectedSites: {},
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.

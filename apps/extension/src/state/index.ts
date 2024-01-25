@@ -13,6 +13,7 @@ import {
   SessionStorageState,
 } from '@penumbra-zone/storage';
 import { createTxApprovalSlice, TxApprovalSlice } from './tx-approval';
+import { createOriginApprovalSlice, OriginApprovalSlice } from './origin-approval';
 
 export interface AllSlices {
   wallets: WalletsSlice;
@@ -20,6 +21,7 @@ export interface AllSlices {
   seedPhrase: SeedPhraseSlice;
   network: NetworkSlice;
   txApproval: TxApprovalSlice;
+  originApproval: OriginApprovalSlice;
 }
 
 export type SliceCreator<SliceInterface> = StateCreator<
@@ -39,6 +41,7 @@ export const initializeStore = (
     seedPhrase: createSeedPhraseSlice(setState, getState, store),
     network: createNetworkSlice(local)(setState, getState, store),
     txApproval: createTxApprovalSlice(setState, getState, store),
+    originApproval: createOriginApprovalSlice(setState, getState, store),
   }));
 };
 

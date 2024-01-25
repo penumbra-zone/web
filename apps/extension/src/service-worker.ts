@@ -42,6 +42,7 @@ import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
 // legacy stdRouter
 import { stdRouter } from '@penumbra-zone/router/src/std/router';
 import { isStdRequest } from '@penumbra-zone/types';
+import { getOriginApproval } from './connect';
 
 // configure and initialize extension services. services are passed directly to stdRouter, and to rpc handlers as context
 const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
@@ -129,5 +130,20 @@ const chromeRuntimeHandler = connectChromeRuntimeAdapter({
   },
 });
 
+const approveSender = async (sender: chrome.runtime.MessageSender) => {
+  console.log('approveSender', sender.origin);
+  const senderOrigin = sender.origin;
+  if (!senderOrigin) return false;
+  const connectedSites = await localExtStorage.get('connectedSites');
+  console.log('connectedSites', connectedSites);
+  let approved = connectedSites[senderOrigin];
+  if (approved == undefined) {
+    approved = await getOriginApproval(senderOrigin);
+    if (approved != undefined) connectedSites[senderOrigin] = approved;
+    void localExtStorage.set('connectedSites', connectedSites);
+  }
+  return approved;
+};
+
 // background connection manager handles page connections, streams
-BackgroundConnectionManager.init(chromeRuntimeHandler);
+BackgroundConnectionManager.init(chromeRuntimeHandler, approveSender);

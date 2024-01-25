@@ -1,5 +1,6 @@
 import { handleTxApproval, isTxApprovalReq } from './approval/tx-msg-handler';
 import { handlePingReq, isPingReq } from './approval/ping';
+import { handleOriginApproval, isOriginApprovalReq } from './approval/origin-connect';
 import {
   isPopupRequest,
   PopupRequest,
@@ -30,4 +31,5 @@ export const popupMsgHandler = (
 const typedMessageRouter = (req: PopupRequest, sendResponse: (x: unknown) => void): void => {
   if (isTxApprovalReq(req)) handleTxApproval(req.request, sendResponse);
   if (isPingReq(req)) handlePingReq(req.request, sendResponse);
+  if (isOriginApprovalReq(req)) handleOriginApproval(req.request, sendResponse);
 };

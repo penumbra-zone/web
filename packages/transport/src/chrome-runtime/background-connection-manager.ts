@@ -31,6 +31,10 @@ interface BackgroundConnection {
   tlsChannelId: string | undefined;
 }
 
+export type SenderApprovalFn = (
+  sender: chrome.runtime.MessageSender,
+) => Promise<boolean | undefined>;
+
 import { ChromeRuntimeHandlerFn } from './adapter';
 
 /**
@@ -51,13 +55,16 @@ export class BackgroundConnectionManager {
     Map<ReturnType<typeof crypto.randomUUID>, BackgroundConnection>
   >();
 
-  static init = (handler: ChromeRuntimeHandlerFn) => {
-    BackgroundConnectionManager.singleton ??= new BackgroundConnectionManager(handler);
+  static init = (handler: ChromeRuntimeHandlerFn, approve: SenderApprovalFn) => {
+    BackgroundConnectionManager.singleton ??= new BackgroundConnectionManager(handler, approve);
   };
 
-  private constructor(private handler: ChromeRuntimeHandlerFn) {
+  private constructor(
+    private handler: ChromeRuntimeHandlerFn,
+    private approve: SenderApprovalFn,
+  ) {
     if (BackgroundConnectionManager.singleton) throw Error('Already constructed');
-    chrome.runtime.onConnect.addListener(port => this.connectionListener(port));
+    chrome.runtime.onConnect.addListener(port => void this.connectionListener(port));
   }
 
   /**
@@ -74,9 +81,12 @@ export class BackgroundConnectionManager {
    * @param clientPort opened by any connecting document, preferably an injected
    * content script or other extension script
    */
-  private connectionListener = (clientPort: chrome.runtime.Port) => {
+  private connectionListener = async (clientPort: chrome.runtime.Port) => {
+    console.log(clientPort.sender, origin);
     const sender = clientPort.sender;
+    const ok = sender?.origin === origin || (await this.approve(sender!));
     if (
+      ok &&
       sender?.origin &&
       (clientPort.name.startsWith('Extension') || clientPort.name.startsWith('ContentScript'))
     ) {

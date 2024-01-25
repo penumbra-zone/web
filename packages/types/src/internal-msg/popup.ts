@@ -1,11 +1,12 @@
 import { TxApproval } from './tx-approval';
+import { OriginApproval } from './origin-approval';
 import { InternalRequest, InternalResponse, Ping } from './shared';
 
-type PopupSupportedMsg = TxApproval | Ping; // Add more as needed
+type PopupSupportedMsg = TxApproval | Ping | OriginApproval; // Add more as needed
 export type PopupRequest = InternalRequest<PopupSupportedMsg>;
 export type PopupResponse = InternalResponse<PopupSupportedMsg>;
 
-const popupRequests: PopupRequest['type'][] = ['TX-APPROVAL', 'PING'];
+const popupRequests: PopupRequest['type'][] = ['TX-APPROVAL', 'PING', 'ORIGIN-APPROVAL'];
 
 export const isPopupRequest = (req: unknown): req is PopupRequest => {
   return (
