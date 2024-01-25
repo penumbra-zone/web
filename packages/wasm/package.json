@@ -2,6 +2,7 @@
   "name": "@penumbra-zone/wasm-ts",
   "version": "1.0.0",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"

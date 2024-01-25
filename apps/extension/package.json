@@ -2,6 +2,7 @@
   "name": "chrome-extension",
   "version": "1.0.0",
   "description": "chrome-extension",
+  "type": "module",
   "scripts": {
     "pull-keys": "tsx src/utils/download-proving-keys.ts",
     "dev": "pnpm pull-keys && webpack --config webpack/webpack.dev.js --watch",
