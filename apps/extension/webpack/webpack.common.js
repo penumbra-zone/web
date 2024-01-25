@@ -70,6 +70,7 @@ module.exports = {
   },
   plugins: [
     new webpack.ProvidePlugin({
+      // Required by the `bip39` library
       Buffer: ['buffer', 'Buffer'],
     }),
     new CopyPlugin({
