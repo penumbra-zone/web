@@ -3,7 +3,6 @@ import {
   fromBaseUnitAmount,
   isPenumbraAddr,
   toBaseUnit,
-  uint8ArrayToHex,
 } from '@penumbra-zone/types';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
@@ -13,7 +12,6 @@ import { AssetBalance } from '../fetchers/balances';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Selection } from './types';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { viewClient } from '../clients/grpc';
 import { getAddressByIndex } from '../fetchers/address.ts';
 import { planWitnessBuildBroadcast } from './helper.ts';
 
