@@ -1,1 +1,1 @@
-module.exports = require('@penumbra-zone/ui/tailwind.config');
+export { default } from '@penumbra-zone/ui/tailwind.config.js';
