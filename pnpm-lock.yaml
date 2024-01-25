@@ -795,8 +795,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       '@penumbra-zone/wasm-bundler':
-        specifier: file:/Users/valentine/projects/penumbra/crates/wasm/publish/bundler
-        version: file:../penumbra/crates/wasm/publish/bundler
+        specifier: 0.65.0-pre.1
+        version: 0.65.0-pre.1
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -817,8 +817,8 @@ importers:
         version: 3.22.4
     devDependencies:
       '@penumbra-zone/wasm-nodejs':
-        specifier: file:/Users/valentine/projects/penumbra/crates/wasm/publish/nodejs
-        version: file:../penumbra/crates/wasm/publish/nodejs
+        specifier: 0.65.0-pre.1
+        version: 0.65.0-pre.1
       fake-indexeddb:
         specifier: ^5.0.2
         version: 5.0.2
@@ -2198,8 +2198,16 @@ packages:
     resolution: {integrity: sha512-8DGr3XvDt9GgVEEAsLHV7/9gM1vY//urx9XcefklNGNJKrSQF4nk5d4AYinvEMNacypfS0NiATtt+CfK2NnDCg==}
     dev: false
 
+  /@penumbra-zone/wasm-bundler@0.65.0-pre.1:
+    resolution: {integrity: sha512-YhuTgo7dkg5rAPkGvijLx2E4V+rAUmCjrvfLOcZUU4KAhbm0vglWq1cJ1H3R4MvGAxLmqC4TndCNxX3+mMtWoA==}
+    dev: false
+
   /@penumbra-zone/wasm-nodejs@0.65.0-pre.0:
     resolution: {integrity: sha512-uRYL8M8eMrwFkde8AYW5WlvxUfOD0OK61Teuct/WJuEKmTsLKYzvtTFROOjHjWKoM4PrMcqvsjO86v8XFs2aQQ==}
+    dev: true
+
+  /@penumbra-zone/wasm-nodejs@0.65.0-pre.1:
+    resolution: {integrity: sha512-3HFy8NU9eCO6DaU70xv5WmA1Dv5k0sIgmMjo26G7nXlXGj+Z/FJ/9gi2PGLQWj70YX3LhelUPyPx0g7V659xRA==}
     dev: true
 
   /@pkgjs/parseargs@0.11.0:
@@ -11884,13 +11892,3 @@ packages:
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
-
-  file:../penumbra/crates/wasm/publish/bundler:
-    resolution: {directory: ../penumbra/crates/wasm/publish/bundler, type: directory}
-    name: '@penumbra-zone/wasm-bundler'
-    dev: false
-
-  file:../penumbra/crates/wasm/publish/nodejs:
-    resolution: {directory: ../penumbra/crates/wasm/publish/nodejs, type: directory}
-    name: '@penumbra-zone/wasm-nodejs'
-    dev: true

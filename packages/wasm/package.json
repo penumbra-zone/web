@@ -9,7 +9,7 @@
   "dependencies": {
     "@bufbuild/protobuf": "^1.6.0",
     "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm-bundler": "file:/Users/valentine/projects/penumbra/crates/wasm/publish/bundler",
+    "@penumbra-zone/wasm-bundler": "0.65.0-pre.1",
     "bech32": "^2.0.0",
     "eslint": "^8.56.0",
     "eslint-config-custom": "workspace:*",
@@ -18,7 +18,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@penumbra-zone/wasm-nodejs": "file:/Users/valentine/projects/penumbra/crates/wasm/publish/nodejs",
+    "@penumbra-zone/wasm-nodejs": "0.65.0-pre.1",
     "fake-indexeddb": "^5.0.2",
     "vitest": "^0.34.6"
   }
