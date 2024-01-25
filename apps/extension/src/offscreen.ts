@@ -1,4 +1,5 @@
 import type { JsonValue } from '@bufbuild/protobuf';
+import { isJsonObject } from '@penumbra-zone/types';
 import {
   OffscreenRequest,
   OffscreenResponse,
@@ -7,7 +8,6 @@ import {
   WasmBuildActionInput,
   WasmBuildActionOutput,
   isActionBuildRequest,
-  isWasmBuildActionOutput,
 } from '@penumbra-zone/types/src/internal-msg/offscreen';
 
 export const isOffscreenRequest = (req: unknown): req is OffscreenRequest =>
@@ -62,7 +62,7 @@ const spawnWorker = ({
     const onWorkerMessage = (e: MessageEvent<unknown>) => {
       worker.removeEventListener('error', onWorkerError);
       worker.terminate();
-      if (isWasmBuildActionOutput(e.data)) resolve(e.data);
+      if (isJsonObject(e.data)) resolve(e.data);
       else reject(new Error(`No Action data from worker ${actionPlanIndex}`));
     };
 

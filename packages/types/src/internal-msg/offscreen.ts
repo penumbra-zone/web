@@ -44,6 +44,3 @@ export const isActionBuildRequest = (req: unknown): req is ActionBuildRequest =>
 
 export const isWasmBuildActionInput = (req: unknown): req is WasmBuildActionInput =>
   isActionBuildRequest(req) && 'actionPlanIndex' in req && typeof req.actionPlanIndex === 'number';
-
-export const isWasmBuildActionOutput = (res: unknown): res is WasmBuildActionOutput =>
-  res != null && typeof res === 'object';
