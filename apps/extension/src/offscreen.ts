@@ -66,12 +66,12 @@ const spawnWorker = ({
       else reject(new Error(`No Action data from worker ${actionPlanIndex}`));
     };
 
-    const onWorkerError = ({ filename, lineno, colno, message, error }: ErrorEvent) => {
+    const onWorkerError = (ev: ErrorEvent) => {
+      const { filename, lineno, colno, message } = ev;
       worker.removeEventListener('message', onWorkerMessage);
       worker.terminate();
-      const location = `Worker ${filename}:${lineno}:${colno}`;
-      console.error(location, message, error);
-      reject(error ?? new Error(`${location} ${message}`));
+      console.error('Worker ErrorEvent', ev);
+      reject(ev.error ?? new Error(`Worker ErrorEvent ${filename}:${lineno}:${colno} ${message}`));
     };
 
     worker.addEventListener('message', onWorkerMessage, { once: true });
