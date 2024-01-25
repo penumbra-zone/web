@@ -35,6 +35,7 @@
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
+    "@bufbuild/protobuf": "^1.6.0",
     "@testing-library/react": "^14.1.2",
     "@types/node": "^20.10.6",
     "@types/react": "^18.2.46",

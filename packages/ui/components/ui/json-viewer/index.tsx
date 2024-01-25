@@ -1,8 +1,9 @@
 import ReactJson from 'react-json-view';
+import type { JsonObject, JsonValue } from '@bufbuild/protobuf';
 
 import './overrides.css';
 
-export const JsonViewer = ({ jsonObj }: { jsonObj: object }) => {
+export const JsonViewer = ({ jsonObj }: { jsonObj: JsonObject | JsonValue[] }) => {
   return (
     <div className='mt-5 rounded bg-black p-5'>
       <ReactJson

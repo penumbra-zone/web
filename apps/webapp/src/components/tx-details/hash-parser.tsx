@@ -5,9 +5,10 @@ import {
   TabsTrigger,
   TransactionViewComponent,
 } from '@penumbra-zone/ui';
-import { viewFromEmptyPerspective } from '@penumbra-zone/types';
+import { Jsonified, viewFromEmptyPerspective } from '@penumbra-zone/types';
 import { TxDetailsLoaderResult } from './index.tsx';
 import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
+import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
@@ -28,7 +29,7 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
           <TransactionViewComponent txv={txInfo.view!} />
           <div className='mt-8'>
             <div className='text-xl font-bold'>Raw JSON</div>
-            <JsonViewer jsonObj={txInfo.toJson() as object} />
+            <JsonViewer jsonObj={txInfo.toJson() as Jsonified<TransactionInfo>} />
           </div>
         </TabsContent>
         <TabsContent value={TxDetailsTab.PUBLIC} className='mt-10'>
