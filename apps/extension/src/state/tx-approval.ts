@@ -6,6 +6,7 @@ import { MessageResponder } from '@penumbra-zone/types/src/internal-msg/shared';
 import { TxApproval } from '@penumbra-zone/types/src/internal-msg/tx-approval';
 
 export interface TxApprovalSlice {
+  // zustand doesn't like JsonValue, because the type is infinitely deep. so store json strings
   authorizeRequest?: Stringified<AuthorizeRequest>;
   transactionViewFromPlan?: Stringified<TransactionView>;
   // Holding the message responder function. Service worker will be "awaiting" the call of this.
