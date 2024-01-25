@@ -20,7 +20,6 @@ interface ContextsRequest {
 let active = 0;
 
 const activateOffscreen = async () => {
-  // @ts-expect-error: no types available yet
   const getContexts = chrome.runtime.getContexts as (
     request: ContextsRequest,
   ) => Promise<unknown[]>;
