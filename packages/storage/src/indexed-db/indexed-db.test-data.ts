@@ -5,6 +5,11 @@ import {
   SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import {
+  Position,
+  PositionId,
+  TradingPair,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 
 export const emptyScanResult: ScanBlockResult = {
   height: 1092n,
@@ -1406,4 +1411,57 @@ export const transactionInfo = TransactionInfo.fromJson({
       inner: 'mrchwun83TOMYsdXtkBSdUYXXMzlg6N2NYfEcqWmfwE=',
     },
   },
+});
+
+export const positionGmPenumbraBuy = Position.fromJson({
+  phi: {
+    component: { p: { lo: '1000000' }, q: { lo: '1000000' } },
+    pair: {
+      asset1: { inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=' },
+      asset2: { inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=' },
+    },
+  },
+  nonce: 'QvdZ/22Fhufk9ea3nxSedhYP3C0LHW5HtbMlp27aIpY=',
+  state: { state: 'POSITION_STATE_ENUM_OPENED' },
+  reserves: { r1: {}, r2: { lo: '1000000' } },
+});
+export const positionIdGmPenumbraBuy = PositionId.fromJson({
+  inner: 'qE/PCp65S+GHi2HFO74G8Gx5ansmxeMwEdNUgn3GXYE=',
+});
+
+export const positionGnPenumbraSell = Position.fromJson({
+  phi: {
+    component: { p: { lo: '2000000' }, q: { lo: '2000000' } },
+    pair: {
+      asset1: { inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=' },
+      asset2: { inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=' },
+    },
+  },
+  nonce: 't2atgDbEni8gZFhSiYZiKygHgOM7F593qLWgrc9CPA0=',
+  state: { state: 'POSITION_STATE_ENUM_OPENED' },
+  reserves: { r1: {}, r2: { lo: '2000000' } },
+});
+export const positionIdGnPenumbraSell = PositionId.fromJson({
+  inner: 'jPb6+hLkYgwIs4sVxhyYUmpbvIyPOXATqL/hiKGwhbg=',
+});
+
+export const positionGmGnSell = Position.fromJson({
+  phi: {
+    component: { p: { lo: '2000000' }, q: { lo: '4000000' } },
+    pair: {
+      asset1: { inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=' },
+      asset2: { inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=' },
+    },
+  },
+  nonce: 'fs5uy8JKrLpQiY7ShUgNCgJA+ljdByDIafdi99lPG0U=',
+  state: { state: 'POSITION_STATE_ENUM_OPENED' },
+  reserves: { r1: {}, r2: { lo: '2000000' } },
+});
+export const positionIdGmGnSell = PositionId.fromJson({
+  inner: '8hpmQDWRJFAqYI1NaKltjbFqCRiI4eEQT5DzzNUkDXQ=',
+});
+
+export const tradingPairGmGn = TradingPair.fromJson({
+  asset1: { inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=' },
+  asset2: { inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=' },
 });

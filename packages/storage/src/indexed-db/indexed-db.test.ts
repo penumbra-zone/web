@@ -17,13 +17,24 @@ import {
   noteWithDelegationAssetA,
   noteWithDelegationAssetB,
   noteWithGmAsset,
+  positionGmGnSell,
+  positionGmPenumbraBuy,
+  positionGnPenumbraSell,
+  positionIdGmGnSell,
+  positionIdGmPenumbraBuy,
+  positionIdGnPenumbraSell,
   scanResultWithNewSwaps,
   scanResultWithSctUpdates,
+  tradingPairGmGn,
   transactionInfo,
 } from './indexed-db.test-data';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import {
+  PositionState,
+  PositionState_PositionStateEnum,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place
@@ -377,6 +388,72 @@ describe('IndexedDb', () => {
       const notesForVoting = await db.getNotesForVoting(new AddressIndex({ account: 2 }), 222n);
 
       expect(notesForVoting.length === 0).toBeTruthy();
+    });
+  });
+
+  describe('positions', () => {
+    it('position should be added and their state should change', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy);
+      await db.updatePosition(
+        positionIdGmPenumbraBuy,
+        new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+      );
+
+      const ownedPositions = await db.getOwnedPositionIds(undefined, undefined);
+      expect(ownedPositions.length).toBe(1);
+      expect(ownedPositions[0]?.equals(positionIdGmPenumbraBuy)).toBeTruthy();
+    });
+
+    it('attempt to change state of a non-existent position should throw an error', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+      await expect(
+        db.updatePosition(
+          positionIdGmPenumbraBuy,
+          new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+        ),
+      ).rejects.toThrow('Position not found when trying to change its state');
+    });
+
+    it('should get all records if no filters are specified', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy);
+      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell);
+      await db.addPosition(positionIdGmGnSell, positionGmGnSell);
+
+      const ownedPositions = await db.getOwnedPositionIds(undefined, undefined);
+      expect(ownedPositions.length).toBe(3);
+    });
+
+    it('should only receive records for one trading pair', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy);
+      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell);
+      await db.addPosition(positionIdGmGnSell, positionGmGnSell);
+
+      const ownedPositions = await db.getOwnedPositionIds(undefined, tradingPairGmGn);
+      expect(ownedPositions.length).toBe(1);
+      expect(ownedPositions[0]?.equals(positionIdGmGnSell)).toBeTruthy();
+    });
+
+    it('should only receive records for one state', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy);
+      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell);
+      await db.addPosition(positionIdGmGnSell, positionGmGnSell);
+
+      await db.updatePosition(
+        positionIdGmGnSell,
+        new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+      );
+
+      const ownedPositions = await db.getOwnedPositionIds(
+        new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+        undefined,
+      );
+      expect(ownedPositions.length).toBe(1);
+      expect(ownedPositions[0]?.equals(positionIdGmGnSell)).toBeTruthy();
     });
   });
 });
