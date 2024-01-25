@@ -8,12 +8,11 @@ export interface ServiceWorkerRequest<T extends SwRequestMessage> {
 }
 
 // The core message sent via content-script/popup
-export type IncomingRequest<T> =
-  T extends InternalMessage<infer Type, infer Req, unknown>
-    ? Req extends undefined
-      ? { type: Type }
-      : { type: Type; arg: Req }
-    : never;
+export type IncomingRequest<T> = T extends InternalMessage<infer Type, infer Req, unknown>
+  ? Req extends undefined
+    ? { type: Type }
+    : { type: Type; arg: Req }
+  : never;
 
 export const isStdRequest = (
   message: unknown,

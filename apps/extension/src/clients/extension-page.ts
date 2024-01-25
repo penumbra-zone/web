@@ -19,7 +19,6 @@ import { transportOptions } from './transport-options';
  * @returns MessagePort
  */
 export const getExtensionPagePort = () => {
-  console.log('entered getExtensionPagePort');
   const { port1: port, port2: transferPort } = new MessageChannel();
   const initPort = ClientConnectionManager.init(ChannelClientLabel.Extension);
   initPort.postMessage(
