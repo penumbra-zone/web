@@ -11,10 +11,12 @@ export const isTxApprovalReq = (req: PopupRequest): req is TxApproval => {
 
 export const handleTxApproval: InternalMessageHandler<TxApproval> = (jsonReq, responder) => {
   useStore.setState(state => {
-    state.txApproval.authorizeRequest = AuthorizeRequest.fromJson(jsonReq.authorizeRequest);
+    state.txApproval.authorizeRequest = AuthorizeRequest.fromJson(
+      jsonReq.authorizeRequest,
+    ).toJsonString();
     state.txApproval.transactionViewFromPlan = TransactionView.fromJson(
       jsonReq.transactionViewFromPlan,
-    );
+    ).toJsonString();
     state.txApproval.responder = responder;
   });
 };
