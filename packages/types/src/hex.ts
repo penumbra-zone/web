@@ -23,14 +23,12 @@ export const base64ToHex = (base64: string): string => {
 export const hexToBase64 = (hex: string): string => {
   if (!hex) return '';
 
-  return btoa(
-    hex
-      .match(/\w{2}/g)!
-      .map(function (a) {
-        return String.fromCharCode(parseInt(a, 16));
-      })
-      .join(''),
-  );
+  const hexPairs = hex.match(/[0-9A-Fa-f]{2}/g);
+  if (!hexPairs) throw new Error('Invalid hexadecimal input');
+
+  const binaryString = hexPairs.map(a => String.fromCharCode(parseInt(a, 16))).join('');
+
+  return btoa(binaryString);
 };
 
 /**
