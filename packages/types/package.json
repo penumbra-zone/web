@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.7.0",
-    "@types/chrome": "0.0.256",
+    "@types/chrome": "0.0.258",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",
     "eslint": "^8.56.0",
