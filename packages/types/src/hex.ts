@@ -51,5 +51,9 @@ export const hexToUint8Array = (hexString: string): Uint8Array => {
 
   if (!hexString) return new Uint8Array();
 
-  return new Uint8Array(hexString.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+  // Split the string into pairs of characters
+  const hexPairs = hexString.match(/.{1,2}/g)!;
+
+  // Map each hexadecimal pair to the corresponding integer and create a Uint8Array from it
+  return new Uint8Array(hexPairs.map(byte => parseInt(byte, 16)));
 };
