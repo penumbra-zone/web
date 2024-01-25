@@ -14,7 +14,7 @@ export const IndexHeader = () => {
       <div className='flex items-center justify-between pt-4'>
         <HamburgerMenuIcon
           onClick={() => navigate(PopupPath.SETTINGS)}
-          className='h-6 w-6 cursor-pointer hover:opacity-50'
+          className='size-6 cursor-pointer hover:opacity-50'
         />
         {chainId ? (
           <motion.div

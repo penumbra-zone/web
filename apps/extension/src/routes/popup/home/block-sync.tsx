@@ -31,7 +31,7 @@ export const BlockSync = () => {
             <div className='flex gap-2'>
               <div className='flex items-center'>
                 <p className='font-headline text-xl font-semibold text-teal'>Blocks synced</p>
-                <CheckIcon className='h-6 w-6 text-teal' />
+                <CheckIcon className='size-6 text-teal' />
               </div>
             </div>
             <Progress variant='done' value={(lastBlockSynced / lastBlockHeight) * 100} />
