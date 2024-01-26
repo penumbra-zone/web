@@ -7,7 +7,7 @@ export const SettingsAutoLock = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-6'>
         <SettingsHeader title='Auto-lock timer' />
-        <div className='mx-auto h-20 w-20'>
+        <div className='mx-auto size-20'>
           <TimerGradientIcon />
         </div>
         <div className='flex flex-1 flex-col items-start justify-between px-[30px] pb-5'>

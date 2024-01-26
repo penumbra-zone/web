@@ -21,7 +21,11 @@ export const witnessAndBuild: Impl['witnessAndBuild'] = async (req, ctx) => {
 
   const witnessData = getWitness(req.transactionPlan, sct);
 
-  const batchActions = await offscreenClient.buildAction(req, witnessData, fullViewingKey);
+  const batchActions = await offscreenClient.buildAction(
+    req.transactionPlan,
+    witnessData,
+    fullViewingKey,
+  );
 
   const transaction = buildParallel(
     batchActions,

@@ -2,16 +2,16 @@
   "name": "@penumbra-zone/types",
   "version": "1.0.0",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^1.6.0",
-    "@types/chrome": "0.0.256",
+    "@bufbuild/protobuf": "^1.7.0",
+    "@types/chrome": "0.0.258",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",
-    "buffer": "^6.0.3",
     "eslint": "^8.56.0",
     "eslint-config-custom": "workspace:*",
     "idb": "^8.0.0",
@@ -20,6 +20,6 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "vitest": "^0.34.6"
+    "vitest": "^1.2.1"
   }
 }

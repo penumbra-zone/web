@@ -5,6 +5,7 @@ import {
   IdbConstants,
   IdbUpdate,
   IndexedDbInterface,
+  Jsonified,
   PenumbraDb,
   ScanBlockResult,
   StateCommitmentTree,
@@ -151,7 +152,10 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveSpendableNote(note: SpendableNoteRecord) {
-    await this.u.update({ table: 'SPENDABLE_NOTES', value: note.toJson() });
+    await this.u.update({
+      table: 'SPENDABLE_NOTES',
+      value: note.toJson() as Jsonified<SpendableNoteRecord>,
+    });
   }
 
   async getAssetsMetadata(assetId: AssetId): Promise<DenomMetadata | undefined> {
@@ -167,7 +171,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveAssetsMetadata(metadata: DenomMetadata) {
-    await this.u.update({ table: 'ASSETS', value: metadata.toJson() });
+    await this.u.update({ table: 'ASSETS', value: metadata.toJson() as Jsonified<DenomMetadata> });
   }
 
   async getAllSpendableNotes() {
@@ -181,8 +185,10 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveTransactionInfo(tx: TransactionInfo): Promise<void> {
-    const value = tx.toJson();
-    await this.u.update({ table: 'TRANSACTION_INFO', value });
+    await this.u.update({
+      table: 'TRANSACTION_INFO',
+      value: tx.toJson() as Jsonified<TransactionInfo>,
+    });
   }
 
   async getTransactionInfo(txId: TransactionId): Promise<TransactionInfo | undefined> {
@@ -199,8 +205,11 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveFmdParams(fmd: FmdParameters): Promise<void> {
-    const value = fmd.toJson();
-    await this.u.update({ table: 'FMD_PARAMETERS', value, key: 'params' });
+    await this.u.update({
+      table: 'FMD_PARAMETERS',
+      value: fmd.toJson() as Jsonified<FmdParameters>,
+      key: 'params',
+    });
   }
 
   async getAllSwaps(): Promise<SwapRecord[]> {
@@ -244,13 +253,13 @@ export class IndexedDb implements IndexedDbInterface {
 
   private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {
     for (const n of notes) {
-      txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() });
+      txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() as Jsonified<SpendableNoteRecord> });
     }
   }
 
   private addNewSwaps(txs: IbdUpdates, swaps: SwapRecord[]): void {
     for (const n of swaps) {
-      txs.add({ table: 'SWAPS', value: n.toJson() });
+      txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });
     }
   }
 
@@ -262,7 +271,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveSwap(swap: SwapRecord) {
-    await this.u.update({ table: 'SWAPS', value: swap.toJson() });
+    await this.u.update({ table: 'SWAPS', value: swap.toJson() as Jsonified<SwapRecord> });
   }
 
   async getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined> {

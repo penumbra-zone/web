@@ -20,7 +20,7 @@ export const BlockSync = ({ data }: BlockSyncProps) => {
             <>
               <div className='flex items-center justify-between text-base text-sand'>
                 <div className='flex items-center gap-2'>
-                  <img src='./sync-bold.svg' alt='Syncing blocks...' className='h-6 w-6' />
+                  <img src='./sync-bold.svg' alt='Syncing blocks...' className='size-6' />
                   <p className='font-headline font-semibold'>Syncing blocks...</p>
                 </div>
                 <p className='font-mono'>
@@ -34,7 +34,7 @@ export const BlockSync = ({ data }: BlockSyncProps) => {
             <>
               <div className='flex items-center justify-between text-base text-teal'>
                 <div className='flex items-center gap-2'>
-                  <CheckIcon className='h-6 w-6 text-teal' />
+                  <CheckIcon className='size-6 text-teal' />
                   <p className='font-headline font-semibold'>Blocks synced</p>
                 </div>
                 <p className='font-mono'>

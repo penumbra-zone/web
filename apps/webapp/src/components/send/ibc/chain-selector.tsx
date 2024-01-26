@@ -22,7 +22,7 @@ export const ChainSelector = () => {
           <SelectValue placeholder='Select chain'>
             {chain && (
               <div className='flex gap-2'>
-                <img src={chain.iconUrl} alt='Chain' className='h-5 w-5' />
+                <img src={chain.iconUrl} alt='Chain' className='size-5' />
                 <p className='mt-[2px] text-muted-foreground'>{chain.displayName}</p>
               </div>
             )}
@@ -39,7 +39,7 @@ export const ChainSelector = () => {
               )}
             >
               <div className='flex gap-2'>
-                <img src={i.iconUrl} alt='Chain' className='h-5 w-5' />
+                <img src={i.iconUrl} alt='Chain' className='size-5' />
                 <p className='mt-[2px]'>{i.displayName}</p>
               </div>
             </SelectItem>

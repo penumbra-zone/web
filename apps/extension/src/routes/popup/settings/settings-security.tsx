@@ -30,7 +30,7 @@ export const SettingsSecurity = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-6'>
         <SettingsHeader title='Security & Privacy' />
-        <div className='mx-auto h-20 w-20'>
+        <div className='mx-auto size-20'>
           <EyeGradientIcon />
         </div>
         <div className='flex flex-1 flex-col items-start gap-4 px-[30px]'>

@@ -12,7 +12,7 @@ export const SettingsClearCache = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-6'>
         <SettingsHeader title='Clear cache' />
-        <div className='mx-auto h-20 w-20'>
+        <div className='mx-auto size-20'>
           <TrashGradientIcon />
         </div>
         <div className='flex flex-1 flex-col items-start justify-between px-[30px] pb-5'>
@@ -22,8 +22,8 @@ export const SettingsClearCache = () => {
               Do you really want to clear cache? All local data will be deleted and resynchronized.
             </p>
             <p className='mt-2 flex items-center gap-2 font-headline text-base font-semibold text-rust'>
-              <ExclamationTriangleIcon className='h-[30px] w-[30px] text-rust' /> You private keys
-              won’t be lost!
+              <ExclamationTriangleIcon className='size-[30px] text-rust' /> You private keys won’t
+              be lost!
             </p>
           </div>
           <Button

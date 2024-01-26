@@ -2,6 +2,7 @@
   "name": "@penumbra-zone/crypto-web",
   "version": "1.0.0",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "run-browser-tests": "vitest run --config browser.config.ts",
@@ -18,10 +19,10 @@
   },
   "devDependencies": {
     "@penumbra-zone/types": "workspace:*",
-    "@types/crypto-js": "^4.2.1",
+    "@types/crypto-js": "^4.2.2",
     "@types/lodash": "^4.14.202",
-    "@vitest/browser": "^0.34.6",
-    "vite": "^5.0.11",
-    "vitest": "^0.34.6"
+    "@vitest/browser": "^1.2.1",
+    "vite": "^5.0.12",
+    "vitest": "^1.2.1"
   }
 }

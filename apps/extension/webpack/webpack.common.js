@@ -1,10 +1,11 @@
-const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
-const webpack = require('webpack');
+import path from 'path';
+import CopyPlugin from 'copy-webpack-plugin';
+import webpack from 'webpack';
 
+const __dirname = new URL('.', import.meta.url).pathname;
 const srcDir = path.join(__dirname, '..', 'src');
 
-module.exports = {
+export default {
   entry: {
     popup: path.join(srcDir, 'popup.tsx'),
     page: path.join(srcDir, 'page.tsx'),
@@ -70,6 +71,7 @@ module.exports = {
   },
   plugins: [
     new webpack.ProvidePlugin({
+      // Required by the `bip39` library
       Buffer: ['buffer', 'Buffer'],
     }),
     new CopyPlugin({

@@ -16,7 +16,7 @@ import { Services } from '@penumbra-zone/services';
 import { localExtStorage } from '@penumbra-zone/storage';
 
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
-import { servicesCtx } from '@penumbra-zone/router/src/ctx';
+import { servicesCtx, custodyCtx } from '@penumbra-zone/router/src/ctx';
 
 import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/background-connection-manager';
 import { createProxyImpl } from '@penumbra-zone/transport/src/proxy';
@@ -25,15 +25,16 @@ import { connectChromeRuntimeAdapter } from '@penumbra-zone/transport/src/chrome
 import {
   ConnectError,
   ConnectRouter,
+  PromiseClient,
   createContextValues,
   createPromiseClient,
 } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 
-// this is a remote service we proxy
+// remote service we proxy
 import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
 
-// these are local services we implement
+// local services we implement
 import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { custodyImpl } from '@penumbra-zone/router/src/grpc/custody';
@@ -42,6 +43,7 @@ import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
 // legacy stdRouter
 import { stdRouter } from '@penumbra-zone/router/src/std/router';
 import { isStdRequest } from '@penumbra-zone/types';
+import { createSameScriptClient } from './clients/extension-service';
 
 // configure and initialize extension services. services are passed directly to stdRouter, and to rpc handlers as context
 const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
@@ -114,6 +116,8 @@ const rpcImpls = [
   [IbcClientService, ibcImpl],
 ] as const;
 
+let custodyClient: PromiseClient<typeof CustodyProtocolService> | undefined;
+
 // connectrpc adapter
 const chromeRuntimeHandler = connectChromeRuntimeAdapter({
   // typeRegistry provides Any-based serialization for the adapter
@@ -124,6 +128,12 @@ const chromeRuntimeHandler = connectChromeRuntimeAdapter({
   // this function is used by the adapter to inject contextValues (currently, just a handle to services)
   createRequestContext: req => {
     const contextValues = req.contextValues ?? createContextValues();
+
+    // Dynamically initialize custodyClient when createRequestContext is called,
+    // and reuse custody client if it's already been defined.
+    custodyClient ??= createSameScriptClient(CustodyProtocolService, chromeRuntimeHandler);
+
+    contextValues.set(custodyCtx, custodyClient);
     contextValues.set(servicesCtx, services);
     return Promise.resolve({ ...req, contextValues });
   },

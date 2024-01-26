@@ -1,6 +1,10 @@
-import { Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { InternalMessage, InternalRequest } from './shared';
-import { JsonObject, JsonValue } from '@bufbuild/protobuf';
+import type {
+  Action,
+  TransactionPlan,
+  WitnessData,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import type { Jsonified } from '../jsonified';
+import type { InternalMessage, InternalRequest, InternalResponse } from './shared';
 
 export type ActionBuildMessage = InternalMessage<
   'BUILD_ACTION',
@@ -10,29 +14,33 @@ export type ActionBuildMessage = InternalMessage<
 
 export type OffscreenMessage = ActionBuildMessage;
 export type OffscreenRequest = InternalRequest<OffscreenMessage>;
+export type OffscreenResponse = InternalResponse<OffscreenMessage>;
 
 export interface ActionBuildRequest {
-  transactionPlan: JsonObject & { actions: JsonValue[] };
-  witness: JsonObject;
+  transactionPlan: Jsonified<TransactionPlan> & {
+    actions: Jsonified<TransactionPlan['actions']>;
+  };
+  witness: Jsonified<WitnessData>;
   fullViewingKey: string;
 }
-export type ActionBuildResponse = ActionJsonValue<ActionCase>[];
+export type ActionBuildResponse = Jsonified<Action>[];
 
 export type WasmBuildActionInput = ActionBuildRequest & { actionPlanIndex: number };
-
-type ActionCase = NonNullable<Action['action']['case']>;
-type ActionJsonValue<C extends ActionCase> = Record<C, JsonValue>;
-
-const hasActionPlanJsonArray = (x: JsonValue): x is JsonObject & { actions: JsonValue[] } =>
-  x != null && typeof x === 'object' && 'actions' in x && Array.isArray(x['actions']);
+export type WasmBuildActionOutput = Jsonified<Action>;
 
 export const isActionBuildRequest = (req: unknown): req is ActionBuildRequest =>
   req != null &&
   typeof req === 'object' &&
   'transactionPlan' in req &&
-  hasActionPlanJsonArray(req.transactionPlan as JsonObject) &&
+  req.transactionPlan != null &&
+  typeof req.transactionPlan === 'object' &&
+  'actions' in req.transactionPlan &&
+  Array.isArray(req.transactionPlan.actions) &&
   'witness' in req &&
-  typeof req.witness === 'object' &&
   req.witness != null &&
+  typeof req.witness === 'object' &&
   'fullViewingKey' in req &&
   typeof req.fullViewingKey === 'string';
+
+export const isWasmBuildActionInput = (req: unknown): req is WasmBuildActionInput =>
+  isActionBuildRequest(req) && 'actionPlanIndex' in req && typeof req.actionPlanIndex === 'number';

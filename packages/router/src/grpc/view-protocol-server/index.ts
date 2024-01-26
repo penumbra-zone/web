@@ -5,6 +5,7 @@ export type Impl = ServiceImpl<typeof ViewProtocolService>;
 import { addressByIndex } from './address-by-index';
 import { appParameters } from './app-parameters';
 import { assets } from './assets';
+import { authorizeAndBuild } from './authorize-and-build';
 import { balances } from './balances';
 import { broadcastTransaction } from './broadcast-transaction';
 import { ephemeralAddress } from './ephemeral-address';
@@ -13,7 +14,9 @@ import { gasPrices } from './gas-prices';
 import { indexByAddress } from './index-by-address';
 import { noteByCommitment } from './note-by-commitment';
 import { notes } from './notes';
+import { notesForVoting } from './notes-for-voting';
 import { nullifierStatus } from './nullifier-status';
+import { ownedPositionIds } from './ownned-position-ids';
 import { status } from './status';
 import { statusStream } from './status-stream';
 import { swapByCommitment } from './swap-by-commitment';
@@ -22,15 +25,14 @@ import { transactionInfoByHash } from './transaction-info-by-hash';
 import { transactionPlanner } from './transaction-planner';
 import { unclaimedSwaps } from './unclaimed-swaps';
 import { walletId } from './wallet-id';
-import { witnessAndBuild } from './witness-and-build';
 import { witness } from './witness';
-import { notesForVoting } from './notes-for-voting';
-import { ownedPositionIds } from './ownned-position-ids';
+import { witnessAndBuild } from './witness-and-build';
 
-export const viewImpl: Omit<Impl, 'authorizeAndBuild'> = {
+export const viewImpl: Omit<Impl, 'ownedPositionIds'> = {
   addressByIndex,
   appParameters,
   assets,
+  authorizeAndBuild,
   balances,
   broadcastTransaction,
   ephemeralAddress,
@@ -50,6 +52,6 @@ export const viewImpl: Omit<Impl, 'authorizeAndBuild'> = {
   transactionPlanner,
   unclaimedSwaps,
   walletId,
-  witnessAndBuild,
   witness,
+    witnessAndBuild,
 };

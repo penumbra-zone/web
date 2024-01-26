@@ -30,17 +30,17 @@ export default function Notifications() {
         {status !== 'none' && (
           <>
             {status === 'notification' ? (
-              <div className='absolute right-[2px] top-[5px] z-10 h-[11px] w-[11px] rounded-full bg-red'></div>
+              <div className='absolute right-[2px] top-[5px] z-10 size-[11px] rounded-full bg-red'></div>
             ) : (
               <img
                 src='./sync-bold.svg'
                 alt='Syncing blocks...'
-                className='absolute right-[2px] top-[5px] z-10 h-[15px] w-[15px]'
+                className='absolute right-[2px] top-[5px] z-10 size-[15px]'
               />
             )}
           </>
         )}
-        <div className='h-[30px] w-[30px]'>
+        <div className='size-[30px]'>
           <BellIcon stroke={status === 'sync' ? '#363434' : '#BDB8B8'} />
         </div>
       </PopoverTrigger>

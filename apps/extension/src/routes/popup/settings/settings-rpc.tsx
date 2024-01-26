@@ -37,7 +37,7 @@ export const SettingsRPC = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-6'>
         <SettingsHeader title='RPC' />
-        <div className='mx-auto h-20 w-20'>
+        <div className='mx-auto size-20'>
           <ShareGradientIcon />
         </div>
         <form
