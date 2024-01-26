@@ -51,10 +51,10 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
                       setWidth(Number(String(account.index - 1).length));
                     }
                   }}
-                  className='h-6 w-6 hover:cursor-pointer'
+                  className='size-6 hover:cursor-pointer'
                 />
               ) : (
-                <span className='h-6 w-6' />
+                <span className='size-6' />
               )}
             </Button>
             <div className='select-none text-center font-headline text-xl font-semibold leading-[30px]'>
@@ -92,10 +92,10 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
                     setIndex(state => state + 1);
                     setWidth(Number(String(account.index + 1).length));
                   }}
-                  className='h-6 w-6 hover:cursor-pointer'
+                  className='size-6 hover:cursor-pointer'
                 />
               ) : (
-                <span className='h-6 w-6' />
+                <span className='size-6' />
               )}
             </Button>
           </div>
@@ -117,7 +117,7 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <InfoIcon className='h-4 w-4 cursor-pointer text-muted-foreground hover:text-[#8D5728]' />
+                      <InfoIcon className='size-4 cursor-pointer text-muted-foreground hover:text-[#8D5728]' />
                     </TooltipTrigger>
                     <TooltipContent className='w-[250px]'>
                       <p>

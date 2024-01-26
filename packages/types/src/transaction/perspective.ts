@@ -69,7 +69,7 @@ export const viewFromEmptyPerspective = (tx: Transaction): TransactionView => {
       }),
       actionViews: tx.body.actions.map(action => {
         return viewActionFromEmptyPerspective(action)!;
-      })!,
+      }),
     }),
     bindingSig: tx.bindingSig!,
     anchor: tx.anchor!,

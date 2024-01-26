@@ -65,7 +65,9 @@ export const streamToPromise = <T>(query: AsyncIterable<T>): Promise<T[]> => {
         }
         resolve(result);
       } catch (e) {
-        reject(e);
+        if (e instanceof Error) reject(e);
+        else if (typeof e === 'string') reject(new Error(e));
+        else reject(new Error('Unknown error in `streamToPromise`'));
       }
     })();
   });

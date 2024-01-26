@@ -10,7 +10,7 @@ export const AssetIcon = ({ name }: { name: string }) => {
   return (
     <>
       {icon ? (
-        <img className='h-6 w-6 rounded-full' src={icon} alt='Asset icon' />
+        <img className='size-6 rounded-full' src={icon} alt='Asset icon' />
       ) : (
         <Identicon name={name} size={24} className='rounded-full' type='solid' />
       )}

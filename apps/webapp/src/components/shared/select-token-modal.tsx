@@ -43,7 +43,7 @@ export default function SelectTokenModal({
           <div className='flex flex-col gap-4 px-[30px]'>
             <div className='relative flex w-full items-center justify-center gap-4'>
               <div className='absolute inset-y-0 left-3 flex items-center'>
-                <MagnifyingGlassIcon className='h-5 w-5 text-muted-foreground' />
+                <MagnifyingGlassIcon className='size-5 text-muted-foreground' />
               </div>
               <Input
                 className='pl-10'

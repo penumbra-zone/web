@@ -28,7 +28,7 @@ export const Header = () => {
         <img
           src='./penumbra-logo.svg'
           alt='Penumbra logo'
-          className='absolute inset-x-0 top-[-75px] mx-auto h-[141px] w-[136px] rotate-[320deg] md:left-[-100px] md:top-[-140px] md:mx-0 md:h-[234px] md:w-[234px]'
+          className='absolute inset-x-0 top-[-75px] mx-auto h-[141px] w-[136px] rotate-[320deg] md:left-[-100px] md:top-[-140px] md:mx-0 md:size-[234px]'
         />
         <Link to={PagePath.INDEX}>
           <img

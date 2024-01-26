@@ -71,7 +71,11 @@ const spawnWorker = ({
       worker.removeEventListener('message', onWorkerMessage);
       worker.terminate();
       console.error('Worker ErrorEvent', ev);
-      reject(ev.error ?? new Error(`Worker ErrorEvent ${filename}:${lineno}:${colno} ${message}`));
+      reject(
+        ev.error instanceof Error
+          ? ev.error
+          : new Error(`Worker ErrorEvent ${filename}:${lineno}:${colno} ${message}`),
+      );
     };
 
     worker.addEventListener('message', onWorkerMessage, { once: true });

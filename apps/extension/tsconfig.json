@@ -4,6 +4,6 @@
   "compilerOptions": {
     "outDir": "./dist",
     "declaration": false,
-    "declarationMap": false
-  }
+    "declarationMap": false,
+  },
 }

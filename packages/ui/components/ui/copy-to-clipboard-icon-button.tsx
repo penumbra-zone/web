@@ -10,11 +10,11 @@ export const CopyToClipboardIconButton = ({ text }: { text: string }) => {
       text={text}
       label={
         <CopyIcon
-          className='h-4 w-4 hover:opacity-50'
+          className='size-4 hover:opacity-50'
           data-testid='CopyToClipboardIconButton__icon'
         />
       }
-      className='h-4 w-4'
+      className='size-4'
     />
   );
 };

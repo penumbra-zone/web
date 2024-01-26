@@ -14,7 +14,7 @@ const links = [
   // },
   {
     title: 'Clear cache',
-    icon: <TrashIcon className='h-5 w-5 text-muted-foreground' />,
+    icon: <TrashIcon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_CLEAR_CACHE,
   },
 ];
@@ -26,7 +26,7 @@ export const SettingsAdvanced = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-6'>
         <SettingsHeader title='Advanced' />
-        <div className='mx-auto h-20 w-20'>
+        <div className='mx-auto size-20'>
           <DashboardGradientIcon />
         </div>
         <div className='flex flex-1 flex-col items-start gap-2 px-[30px]'>

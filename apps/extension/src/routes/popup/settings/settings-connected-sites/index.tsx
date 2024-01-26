@@ -19,13 +19,13 @@ export const SettingsConnectedSites = () => {
     <FadeTransition>
       <div className='flex min-h-[100vh] w-[100vw] flex-col gap-6'>
         <SettingsHeader title='Connected sites' />
-        <div className='mx-auto h-20 w-20'>
+        <div className='mx-auto size-20'>
           <LinkGradientIcon />
         </div>
         <div className='flex flex-col gap-4 px-[30px]'>
           <div className='relative flex w-full items-center justify-center gap-4'>
             <div className='absolute inset-y-0 left-3 flex items-center'>
-              <MagnifyingGlassIcon className='h-5 w-5 text-muted-foreground' />
+              <MagnifyingGlassIcon className='size-5 text-muted-foreground' />
             </div>
             <Input
               className='pl-10'

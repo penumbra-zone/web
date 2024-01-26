@@ -9,12 +9,12 @@ import { FadeTransition } from '@penumbra-zone/ui';
 const links = [
   {
     title: 'Security & Privacy',
-    icon: <LockClosedIcon className='h-5 w-5 text-muted-foreground' />,
+    icon: <LockClosedIcon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_SECURITY,
   },
   {
     title: 'RPC',
-    icon: <Share1Icon className='h-5 w-5 text-muted-foreground' />,
+    icon: <Share1Icon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_RPC,
   },
   // TODO: Enable when ready
@@ -25,7 +25,7 @@ const links = [
   // },
   {
     title: 'Advanced',
-    icon: <DashboardIcon className='h-5 w-5 text-muted-foreground' />,
+    icon: <DashboardIcon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_ADVANCED,
   },
 ];
@@ -51,7 +51,7 @@ export const Settings = () => {
         <div className='h-[66px] border-t border-[rgba(75,75,75,0.50)] px-5 pb-[30px] pt-2'>
           <CustomLink
             title='Lock Wallet'
-            icon={<ExitIcon className='h-5 w-5 text-muted-foreground' />}
+            icon={<ExitIcon className='size-5 text-muted-foreground' />}
             onClick={() => {
               clearSessionPassword();
               navigate(PopupPath.LOGIN);

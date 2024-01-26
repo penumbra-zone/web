@@ -76,7 +76,7 @@ export default function InputToken({
           ${displayAmount(Number(value) * tempPrice)}
         </p>
         <div className='flex items-start gap-1'>
-          <img src='./wallet.svg' alt='Wallet' className='h-5 w-5' />
+          <img src='./wallet.svg' alt='Wallet' className='size-5' />
           <p className='font-bold text-muted-foreground'>
             {selection?.asset
               ? fromBaseUnitAmount(

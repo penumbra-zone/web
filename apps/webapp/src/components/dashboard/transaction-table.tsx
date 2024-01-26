@@ -51,7 +51,7 @@ export default function TransactionTable() {
                 <Link to={`/tx/${tx.hash}`}>
                   <img
                     src='./more.svg'
-                    className='h-4 w-4 cursor-pointer hover:opacity-50'
+                    className='size-4 cursor-pointer hover:opacity-50'
                     alt='More'
                   />
                 </Link>
