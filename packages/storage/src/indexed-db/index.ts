@@ -385,8 +385,10 @@ export class IndexedDb implements IndexedDbInterface {
 
     const position = Position.fromJson(positionRecord.position);
     position.state = newState;
-    positionRecord.position = position.toJson();
 
-    await this.u.update({ table: 'POSITIONS', value: positionRecord });
+    await this.u.update({
+      table: 'POSITIONS',
+      value: { id: positionId.toJson(), position: position.toJson() },
+    });
   }
 }
