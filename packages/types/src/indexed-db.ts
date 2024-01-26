@@ -75,7 +75,7 @@ export interface IndexedDbInterface {
   getOwnedPositionIds(
     positionState: PositionState | undefined,
     tradingPair: TradingPair | undefined,
-  ): Promise<PositionId[]>;
+  ): AsyncGenerator<PositionId, void>;
   addPosition(positionId: PositionId, position: Position): Promise<void>;
   updatePosition(positionId: PositionId, newState: PositionState): Promise<void>;
 }

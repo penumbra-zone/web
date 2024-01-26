@@ -32,6 +32,7 @@ import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import {
+  PositionId,
   PositionState,
   PositionState_PositionStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
@@ -400,8 +401,10 @@ describe('IndexedDb', () => {
         positionIdGmPenumbraBuy,
         new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
       );
-
-      const ownedPositions = await db.getOwnedPositionIds(undefined, undefined);
+      const ownedPositions: PositionId[] = [];
+      for await (const positionId of db.getOwnedPositionIds(undefined, undefined)) {
+        ownedPositions.push(positionId);
+      }
       expect(ownedPositions.length).toBe(1);
       expect(ownedPositions[0]?.equals(positionIdGmPenumbraBuy)).toBeTruthy();
     });
@@ -422,7 +425,10 @@ describe('IndexedDb', () => {
       await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell);
       await db.addPosition(positionIdGmGnSell, positionGmGnSell);
 
-      const ownedPositions = await db.getOwnedPositionIds(undefined, undefined);
+      const ownedPositions: PositionId[] = [];
+      for await (const positionId of db.getOwnedPositionIds(undefined, undefined)) {
+        ownedPositions.push(positionId);
+      }
       expect(ownedPositions.length).toBe(3);
     });
 
@@ -432,7 +438,10 @@ describe('IndexedDb', () => {
       await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell);
       await db.addPosition(positionIdGmGnSell, positionGmGnSell);
 
-      const ownedPositions = await db.getOwnedPositionIds(undefined, tradingPairGmGn);
+      const ownedPositions: PositionId[] = [];
+      for await (const positionId of db.getOwnedPositionIds(undefined, tradingPairGmGn)) {
+        ownedPositions.push(positionId);
+      }
       expect(ownedPositions.length).toBe(1);
       expect(ownedPositions[0]?.equals(positionIdGmGnSell)).toBeTruthy();
     });
@@ -448,10 +457,13 @@ describe('IndexedDb', () => {
         new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
       );
 
-      const ownedPositions = await db.getOwnedPositionIds(
+      const ownedPositions: PositionId[] = [];
+      for await (const positionId of db.getOwnedPositionIds(
         new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
         undefined,
-      );
+      )) {
+        ownedPositions.push(positionId);
+      }
       expect(ownedPositions.length).toBe(1);
       expect(ownedPositions[0]?.equals(positionIdGmGnSell)).toBeTruthy();
     });

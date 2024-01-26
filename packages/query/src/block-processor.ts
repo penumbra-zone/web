@@ -10,7 +10,7 @@ import {
   IndexedDbInterface,
   ViewServerInterface,
 } from '@penumbra-zone/types';
-import { decodeSctRoot, transactionInfo } from '@penumbra-zone/wasm-ts';
+import {computePositionId, decodeSctRoot, transactionInfo} from '@penumbra-zone/wasm-ts';
 
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import {
@@ -29,7 +29,6 @@ import {
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
-import { computePositionId } from '@penumbra-zone/wasm-ts/src/dex';
 
 interface QueryClientProps {
   fullViewingKey: string;

@@ -6,7 +6,8 @@ export const ownedPositionIds: Impl['ownedPositionIds'] = async function* (req, 
 
   const { indexedDb } = await services.getWalletServices();
 
-  const positionIds = await indexedDb.getOwnedPositionIds(req.positionState, req.tradingPair);
-  const responses = positionIds.map(positionId => ({ positionId }));
-  yield* responses;
+  const positionIds = indexedDb.getOwnedPositionIds(req.positionState, req.tradingPair);
+  for await (const positionId of positionIds) {
+    yield { positionId };
+  }
 };

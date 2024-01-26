@@ -348,12 +348,10 @@ export class IndexedDb implements IndexedDbInterface {
     return Promise.resolve(notesForVoting);
   }
 
-  async getOwnedPositionIds(
+  async *getOwnedPositionIds(
     positionState: PositionState | undefined,
     tradingPair: TradingPair | undefined,
-  ): Promise<PositionId[]> {
-    const ownedPositionIds: PositionId[] = [];
-
+  ): AsyncGenerator<PositionId, void> {
     for await (const positionCursor of this.db.transaction('POSITIONS').store) {
       const positionId = PositionId.fromJson(positionCursor.value.id);
       const position = Position.fromJson(positionCursor.value.position);
@@ -364,9 +362,8 @@ export class IndexedDb implements IndexedDbInterface {
       if (tradingPair && !tradingPair.equals(position.phi?.pair)) {
         continue;
       }
-      ownedPositionIds.push(positionId);
+      yield positionId;
     }
-    return Promise.resolve(ownedPositionIds);
   }
 
   async addPosition(positionId: PositionId, position: Position): Promise<void> {
