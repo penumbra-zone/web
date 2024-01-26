@@ -377,8 +377,8 @@ export class IndexedDb implements IndexedDbInterface {
 
   async addPosition(positionId: PositionId, position: Position): Promise<void> {
     const positionRecord = {
-      id: positionId.toJson(),
-      position: position.toJson(),
+      id: positionId.toJson() as Jsonified<PositionId>,
+      position: position.toJson() as Jsonified<Position>,
     };
     await this.u.update({ table: 'POSITIONS', value: positionRecord });
   }
@@ -394,7 +394,10 @@ export class IndexedDb implements IndexedDbInterface {
 
     await this.u.update({
       table: 'POSITIONS',
-      value: { id: positionId.toJson(), position: position.toJson() },
+      value: {
+        id: positionId.toJson() as Jsonified<PositionId>,
+        position: position.toJson() as Jsonified<Position>,
+      },
     });
   }
 }

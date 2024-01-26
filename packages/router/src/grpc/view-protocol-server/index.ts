@@ -53,5 +53,5 @@ export const viewImpl: Impl = {
   unclaimedSwaps,
   walletId,
   witness,
-    witnessAndBuild,
+  witnessAndBuild,
 };
