@@ -4,17 +4,17 @@ import { txApprovalSelector } from '../../../../state/tx-approval';
 import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
 import { Jsonified } from '@penumbra-zone/types';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
-import { useTransactionViews } from './use-transaction-views';
+import { useTransactionViewSwitcher } from './use-transaction-view-switcher';
 import { ViewTabs } from './view-tabs';
 
 export const TransactionApproval = () => {
   const { authorizeRequest: authReqString, responder } = useStore(txApprovalSelector);
 
-  const authorizeRequest = AuthorizeRequest.fromJsonString(authReqString ?? '');
-
   const { selectedTransactionView, selectedTransactionViewName, setSelectedTransactionViewName } =
-    useTransactionViews();
+    useTransactionViewSwitcher();
 
+  if (!authReqString) return null;
+  const authorizeRequest = AuthorizeRequest.fromJsonString(authReqString);
   if (!authorizeRequest.plan || !responder || !selectedTransactionView) return null;
 
   return (

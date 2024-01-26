@@ -1,6 +1,6 @@
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { grpcClient } from '../../../../clients';
+import { grpcClient } from '../../../clients';
 
 /**
  * Returns a Promise of a boolean indicating whether the given address is

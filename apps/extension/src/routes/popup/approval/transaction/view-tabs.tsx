@@ -2,8 +2,7 @@ import { Tabs, TabsList, TabsTrigger } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { TransactionViewTab } from './types';
 import { useStore } from '../../../../state';
-import { deserializedTransactionViewSelector } from '../../../../state/tx-approval';
-import { classifyTransaction } from '@penumbra-zone/types';
+import { txApprovalSelector } from '../../../../state/tx-approval';
 
 export const ViewTabs = ({
   defaultValue,
@@ -12,9 +11,8 @@ export const ViewTabs = ({
   defaultValue: TransactionViewTab;
   onValueChange: (value: TransactionViewTab) => void;
 }) => {
-  const transactionView = useStore(deserializedTransactionViewSelector);
-  const classification = classifyTransaction(transactionView);
-  const showReceiverTransactionView = classification === 'send';
+  const { transactionClassification } = useStore(txApprovalSelector);
+  const showReceiverTransactionView = transactionClassification === 'send';
 
   return (
     <Tabs
