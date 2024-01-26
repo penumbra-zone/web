@@ -1,9 +1,9 @@
-import type { Action } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import {
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { isWasmBuildActionInput } from '@penumbra-zone/types/src/internal-msg/offscreen';
+import type { WasmBuildActionInput } from '@penumbra-zone/types/src/internal-msg/offscreen';
+import type { JsonValue } from '@bufbuild/protobuf';
 
 // necessary to propagate errors that occur in promises
 // see: https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
@@ -18,27 +18,31 @@ self.addEventListener(
   { once: true },
 );
 
-const workerInputListener = (ev: MessageEvent<unknown>) => {
-  if (ev.data && isWasmBuildActionInput(ev.data)) {
-    const { transactionPlan, witness, fullViewingKey, actionPlanIndex } = ev.data;
-    void executeWasmBuildAction(
-      TransactionPlan.fromJson(transactionPlan),
-      WitnessData.fromJson(witness),
-      fullViewingKey,
-      actionPlanIndex,
-    ).then((builtAction: Action) => {
-      self.postMessage(builtAction.toJson());
-    });
-  } else throw new Error('Unknown worker input');
-};
-self.addEventListener('message', workerInputListener, { once: true });
+const workerListener = ({ data }: { data: WasmBuildActionInput }) => {
+  const {
+    transactionPlan: transactionPlanJson,
+    witness: witnessJson,
+    fullViewingKey,
+    actionPlanIndex,
+  } = data;
 
-async function executeWasmBuildAction(
+  // Deserialize payload
+  const transactionPlan = TransactionPlan.fromJson(transactionPlanJson);
+  const witness = WitnessData.fromJson(witnessJson);
+
+  void executeWorker(transactionPlan, witness, fullViewingKey, actionPlanIndex).then(
+    self.postMessage,
+  );
+};
+
+self.addEventListener('message', workerListener, { once: true });
+
+async function executeWorker(
   transactionPlan: TransactionPlan,
   witness: WitnessData,
   fullViewingKey: string,
   actionPlanIndex: number,
-): Promise<Action> {
+): Promise<JsonValue> {
   // Dynamically load wasm module
   const penumbraWasmModule = await import('@penumbra-zone/wasm-ts');
 
@@ -49,10 +53,7 @@ async function executeWasmBuildAction(
   await penumbraWasmModule.loadProvingKey(actionPlanType);
 
   // Build action according to specification in `TransactionPlan`
-  return penumbraWasmModule.buildActionParallel(
-    transactionPlan,
-    witness,
-    fullViewingKey,
-    actionPlanIndex,
-  );
+  return penumbraWasmModule
+    .buildActionParallel(transactionPlan, witness, fullViewingKey, actionPlanIndex)
+    .toJson();
 }
