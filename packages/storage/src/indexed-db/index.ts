@@ -362,7 +362,6 @@ export class IndexedDb implements IndexedDbInterface {
     tradingPair: TradingPair | undefined,
   ): AsyncGenerator<PositionId, void> {
     for await (const positionCursor of this.db.transaction('POSITIONS').store) {
-      const positionId = PositionId.fromJson(positionCursor.value.id);
       const position = Position.fromJson(positionCursor.value.position);
 
       if (positionState && !positionState.equals(position.state)) {
@@ -371,7 +370,7 @@ export class IndexedDb implements IndexedDbInterface {
       if (tradingPair && !tradingPair.equals(position.phi?.pair)) {
         continue;
       }
-      yield positionId;
+      yield PositionId.fromJson(positionCursor.value.id);
     }
   }
 
