@@ -18,8 +18,8 @@ export const TransactionApproval = () => {
   if (!authorizeRequest.plan || !responder || !selectedTransactionView) return null;
 
   return (
-    <div className='flex h-screen flex-col justify-between p-[30px] pt-10 '>
-      <div className='mb-20 overflow-auto'>
+    <div className='flex h-screen flex-col justify-between'>
+      <div className='grow overflow-auto p-[30px] pt-10'>
         <p className='bg-text-linear bg-clip-text font-headline text-2xl font-bold text-transparent'>
           Confirm transaction
         </p>
@@ -35,7 +35,7 @@ export const TransactionApproval = () => {
           <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
         </div>
       </div>
-      <div className='fixed inset-x-0 bottom-0 flex flex-col gap-4 bg-black px-6 py-4 shadow-lg'>
+      <div className='inset-x-0 bottom-0 flex flex-col gap-4 bg-black px-6 py-4 shadow-lg'>
         <Button
           size='lg'
           variant='default'
