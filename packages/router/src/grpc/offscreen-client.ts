@@ -1,7 +1,7 @@
-import { WitnessAndBuildRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import {
   WitnessData,
   Action,
+  TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { InternalRequest, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
 import {
@@ -61,14 +61,14 @@ const sendOffscreenMessage = async <T extends OffscreenMessage>(
 };
 
 const buildAction = async (
-  arg: WitnessAndBuildRequest,
+  transactionPlan: TransactionPlan,
   witness: WitnessData,
   fullViewingKey: string,
 ): Promise<Action[]> => {
   const buildRes = await sendOffscreenMessage<ActionBuildMessage>({
     type: 'BUILD_ACTION',
     request: {
-      transactionPlan: arg.transactionPlan!.toJson() as ActionBuildRequest['transactionPlan'],
+      transactionPlan: transactionPlan.toJson() as ActionBuildRequest['transactionPlan'],
       witness: witness.toJson() as ActionBuildRequest['witness'],
       fullViewingKey,
     },
