@@ -32,6 +32,13 @@ describe('hexToBase64', () => {
     const expectedBase64 = '';
     expect(hexToBase64(hex)).toBe(expectedBase64);
   });
+
+  it('should throw when passed an invalid hex input', () => {
+    // Hex input must be in pairs of characters, so a single character is
+    // invalid.
+    const hex = 'a';
+    expect(() => hexToBase64(hex)).toThrow('Invalid hexadecimal input');
+  });
 });
 
 describe('uint8ArrayToHex()', () => {

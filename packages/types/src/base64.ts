@@ -1,6 +1,5 @@
-import { z } from 'zod';
-import { Buffer } from 'buffer';
 import { validateSchema } from './validation';
+import { z } from 'zod';
 
 export const Base64StringSchema = z.string().refine(
   str => {
@@ -19,10 +18,11 @@ export const InnerBase64Schema = z.object({ inner: Base64StringSchema });
 
 export const base64ToUint8Array = (base64: string): Uint8Array => {
   const validated = validateSchema(Base64StringSchema, base64);
-  const buffer = Buffer.from(validated, 'base64');
-  return new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+  const binString = atob(validated);
+  return Uint8Array.from(binString, byte => byte.codePointAt(0)!);
 };
 
 export const uint8ArrayToBase64 = (byteArray: Uint8Array): string => {
-  return Buffer.from(byteArray).toString('base64');
+  const binString = String.fromCodePoint(...byteArray);
+  return btoa(binString);
 };

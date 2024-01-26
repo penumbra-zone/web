@@ -2,12 +2,22 @@ import { Button, TransactionViewComponent } from '@penumbra-zone/ui';
 import { useStore } from '../../../state';
 import { txApprovalSelector } from '../../../state/tx-approval';
 import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
+import { Jsonified } from '@penumbra-zone/types';
+import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
 import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 export const TransactionApproval = () => {
-  const { authorizeRequest, transactionViewFromPlan, responder } = useStore(txApprovalSelector);
+  const {
+    authorizeRequest: authReqString,
+    transactionViewFromPlan: txPlanString,
+    responder,
+  } = useStore(txApprovalSelector);
+  if (!authReqString || !txPlanString || !responder) return null;
 
-  if (!authorizeRequest?.plan || !responder || !transactionViewFromPlan) return null;
+  const authorizeRequest = AuthorizeRequest.fromJsonString(authReqString);
+  const transactionViewFromPlan = TransactionView.fromJsonString(txPlanString);
+
+  if (!authorizeRequest.plan) return null;
 
   return (
     <div className='flex h-screen flex-col justify-between p-[30px] pt-10 '>
@@ -16,10 +26,10 @@ export const TransactionApproval = () => {
           Confirm transaction
         </p>
 
-        <TransactionViewComponent txv={TransactionView.fromJson(transactionViewFromPlan)} />
+        <TransactionViewComponent txv={transactionViewFromPlan} />
 
         <div className='mt-8'>
-          <JsonViewer jsonObj={authorizeRequest} />
+          <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
         </div>
       </div>
       <div className='fixed inset-x-0 bottom-0 flex flex-col gap-4 bg-black px-6 py-4 shadow-lg'>

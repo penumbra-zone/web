@@ -2,6 +2,7 @@
   "name": "@penumbra-zone/ui",
   "version": "1.0.0",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run",
@@ -35,12 +36,13 @@
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
+    "@bufbuild/protobuf": "^1.6.0",
     "@testing-library/react": "^14.1.2",
     "@types/node": "^20.10.6",
     "@types/react": "^18.2.46",
     "@types/react-dom": "^18.2.18",
     "@types/tinycolor2": "^1.4.6",
-    "@vitest/browser": "^0.34.6",
+    "@vitest/browser": "^1.2.1",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.56.0",
     "eslint-config-custom": "workspace:*",
@@ -50,7 +52,7 @@
     "tailwindcss": "^3.4.1",
     "tsconfig": "workspace:*",
     "typescript": "^5.3.3",
-    "vite": "^5.0.11",
-    "vitest": "^0.34.6"
+    "vite": "^5.0.12",
+    "vitest": "^1.2.1"
   }
 }

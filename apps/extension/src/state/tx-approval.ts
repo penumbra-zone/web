@@ -1,13 +1,14 @@
+import type { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import type { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
+import type { Stringified } from '@penumbra-zone/types';
 import { AllSlices, SliceCreator } from './index';
-import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
-import { Jsonified } from '@penumbra-zone/types';
 import { MessageResponder } from '@penumbra-zone/types/src/internal-msg/shared';
-import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { TxApproval } from '@penumbra-zone/types/src/internal-msg/tx-approval';
 
 export interface TxApprovalSlice {
-  authorizeRequest?: Jsonified<AuthorizeRequest>;
-  transactionViewFromPlan?: Jsonified<TransactionView>;
+  // zustand doesn't like JsonValue, because the type is infinitely deep. so store json strings
+  authorizeRequest?: Stringified<AuthorizeRequest>;
+  transactionViewFromPlan?: Stringified<TransactionView>;
   // Holding the message responder function. Service worker will be "awaiting" the call of this.
   responder?: MessageResponder<TxApproval>;
 }
