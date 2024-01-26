@@ -19,9 +19,11 @@ export const asOpaqueOutputView: Translator<OutputView> = outputView => {
   });
 };
 
-export const asReceiverOutputView: (
-  isControlledAddress: (address: Address) => Promise<boolean>,
-) => Translator<OutputView, Promise<OutputView>> = isControlledAddress => async outputView => {
+export const asReceiverOutputView: Translator<
+  OutputView,
+  Promise<OutputView>,
+  { isControlledAddress: (address: Address) => Promise<boolean> }
+> = async (outputView, { isControlledAddress }) => {
   if (!outputView) return new OutputView();
 
   if (outputView.outputView.case === 'opaque') return outputView;

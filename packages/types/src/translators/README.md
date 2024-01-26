@@ -18,8 +18,8 @@ import { asOpaqueAddressView, asOpaqueMemoView } from '@penumbra-zone/types';
 
 Translators should be as simple as possible, delegating to other translators for nested object types. For example, the `asPublicTransactionView` translator doesn't itself modify a transaction view's nested memo view; rather, it delegates that work to `asOpaqueMemoView`. This way, each translator is easy to understand, and easy to test.
 
-## Higher-order functions
+## Contexts
 
-Some "translators" are actually higher-order functions (HOFs) that _return_ translators. This is a useful pattern for when a translator needs access to additional variables besides the translatable object.
+Some translators require context beyond the object they're translating. For example, the `asReceiverOutputView` translator requires an asynchronous `isControlledAddress` function that it can call with the output's address to determine whether to render the address as opaque or visible.
 
-For example, the `asReceiverOutputView` translator is an HOF that takes an async `isControlledAddress` helper and returns a translator that now has that helper in scope and can use it to properly construct a return value.
+In that case, you can define a `CtxType` as the third generic type argument to `Translator` with a key/value pair of context values to pass to that translator. (Even if you only have one context value to pass, a key/value pair is still required, to give the value a name and thus make it clear what its purpose is.)

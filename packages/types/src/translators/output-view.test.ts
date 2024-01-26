@@ -88,7 +88,8 @@ describe('asOpaqueOutputView()', () => {
 describe('asReceiverOutputView()', () => {
   describe('when passed `undefined`', () => {
     test('returns a blank output view', async () => {
-      const result = await asReceiverOutputView(vi.fn())(undefined);
+      const isControlledAddress = vi.fn();
+      const result = await asReceiverOutputView(undefined, { isControlledAddress });
 
       expect(result.equals(new OutputView())).toBe(true);
     });
@@ -111,7 +112,10 @@ describe('asReceiverOutputView()', () => {
     });
 
     test('returns the output view as-is', async () => {
-      await expect(asReceiverOutputView(vi.fn())(outputView)).resolves.toBe(outputView);
+      const isControlledAddress = vi.fn();
+      await expect(asReceiverOutputView(outputView, { isControlledAddress })).resolves.toBe(
+        outputView,
+      );
     });
   });
 
@@ -166,7 +170,7 @@ describe('asReceiverOutputView()', () => {
       const isControlledAddress = () => Promise.resolve(true);
 
       test('returns an opaque version of the output view', async () => {
-        const result = await asReceiverOutputView(isControlledAddress)(outputView);
+        const result = await asReceiverOutputView(outputView, { isControlledAddress });
 
         expect(result.outputView.case).toBe('opaque');
         expect(result.outputView.value?.output).toBe(outputView.outputView.value?.output);
@@ -180,7 +184,7 @@ describe('asReceiverOutputView()', () => {
       const isControlledAddress = () => Promise.resolve(false);
 
       test('returns the output view as-is', async () => {
-        const result = await asReceiverOutputView(isControlledAddress)(outputView);
+        const result = await asReceiverOutputView(outputView, { isControlledAddress });
 
         expect(result).toBe(outputView);
       });

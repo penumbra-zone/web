@@ -34,15 +34,17 @@ export const asPublicActionView: Translator<ActionView> = actionView => {
   }
 };
 
-export const asReceiverActionView: (
-  isControlledAddress: (address: Address) => Promise<boolean>,
-) => Translator<ActionView, Promise<ActionView>> = isControlledAddress => async actionView => {
+export const asReceiverActionView: Translator<
+  ActionView,
+  Promise<ActionView>,
+  { isControlledAddress: (address: Address) => Promise<boolean> }
+> = async (actionView, ctx) => {
   switch (actionView?.actionView.case) {
     case 'output':
       return new ActionView({
         actionView: {
           case: 'output',
-          value: await asReceiverOutputView(isControlledAddress)(actionView.actionView.value),
+          value: await asReceiverOutputView(actionView.actionView.value, ctx),
         },
       });
 

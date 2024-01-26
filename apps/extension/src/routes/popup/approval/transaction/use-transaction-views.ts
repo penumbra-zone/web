@@ -16,7 +16,7 @@ const useAsReceiver = (transactionView?: TransactionView) => {
 
   useEffect(() => {
     if (transactionView) {
-      asReceiverTransactionView(isControlledAddress)(transactionView)
+      asReceiverTransactionView(transactionView, { isControlledAddress })
         .then(setAsReceiver)
         .catch(() => {
           /** no-op */

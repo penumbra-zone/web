@@ -19,22 +19,25 @@ export const asPublicTransactionView: Translator<TransactionView> = transactionV
   });
 };
 
-export const asReceiverTransactionView: (
-  isControlledAddress: (address: Address) => Promise<boolean>,
-) => Translator<TransactionView, Promise<TransactionView>> =
-  isControlledAddress => async transactionView => {
-    if (!transactionView?.bodyView) return new TransactionView();
+export const asReceiverTransactionView: Translator<
+  TransactionView,
+  Promise<TransactionView>,
+  { isControlledAddress: (address: Address) => Promise<boolean> }
+> = async (transactionView, ctx) => {
+  if (!transactionView?.bodyView) return new TransactionView();
 
-    return new TransactionView({
-      bodyView: {
-        memoView: asReceiverMemoView(transactionView.bodyView.memoView),
-        actionViews: await Promise.all(
-          transactionView.bodyView.actionViews.map(asReceiverActionView(isControlledAddress)),
+  return new TransactionView({
+    bodyView: {
+      memoView: asReceiverMemoView(transactionView.bodyView.memoView),
+      actionViews: await Promise.all(
+        transactionView.bodyView.actionViews.map(actionView =>
+          asReceiverActionView(actionView, ctx),
         ),
+      ),
 
-        ...(transactionView.bodyView.transactionParameters
-          ? { transactionParameters: transactionView.bodyView.transactionParameters }
-          : {}),
-      },
-    });
-  };
+      ...(transactionView.bodyView.transactionParameters
+        ? { transactionParameters: transactionView.bodyView.transactionParameters }
+        : {}),
+    },
+  });
+};

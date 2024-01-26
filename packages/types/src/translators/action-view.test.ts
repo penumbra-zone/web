@@ -173,7 +173,8 @@ describe('asPublicActionView()', () => {
 describe('asReceiverActionView()', () => {
   describe('when passed `undefined`', () => {
     test('returns an empty action view', async () => {
-      const result = await asReceiverActionView(vi.fn())(undefined);
+      const isControlledAddress = vi.fn();
+      const result = await asReceiverActionView(undefined, { isControlledAddress });
 
       expect(result.equals(new ActionView())).toBe(true);
     });
@@ -181,8 +182,10 @@ describe('asReceiverActionView()', () => {
 
   describe('when passed an action view with an `undefined` case', () => {
     test('returns an empty action view', async () => {
-      const result = await asReceiverActionView(vi.fn())(
+      const isControlledAddress = vi.fn();
+      const result = await asReceiverActionView(
         new ActionView({ actionView: { case: undefined } }),
+        { isControlledAddress },
       );
 
       expect(result.equals(new ActionView())).toBe(true);
@@ -260,7 +263,8 @@ describe('asReceiverActionView()', () => {
         },
       });
 
-      const result = await asReceiverActionView(vi.fn())(actionView);
+      const isControlledAddress = vi.fn();
+      const result = await asReceiverActionView(actionView, { isControlledAddress });
 
       expect(result.equals(expected)).toBe(true);
     });
@@ -318,7 +322,7 @@ describe('asReceiverActionView()', () => {
 
     test('returns an action view with a receiver output view', async () => {
       const isControlledAddress = () => Promise.resolve(false);
-      const result = await asReceiverActionView(isControlledAddress)(actionView);
+      const result = await asReceiverActionView(actionView, { isControlledAddress });
 
       expect(result.equals(actionView)).toBe(true);
     });
