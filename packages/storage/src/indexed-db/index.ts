@@ -33,6 +33,12 @@ import {
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { assetPatterns } from '@penumbra-zone/constants';
+import {
+  Position,
+  PositionId,
+  PositionState,
+  TradingPair,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -76,6 +82,7 @@ export class IndexedDb implements IndexedDbInterface {
           keyPath: 'swapCommitment.inner',
         }).createIndex('nullifier', 'nullifier.inner');
         db.createObjectStore('GAS_PRICES');
+        db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
       },
     });
     const constants = {
@@ -348,5 +355,48 @@ export class IndexedDb implements IndexedDbInterface {
       }
     }
     return Promise.resolve(notesForVoting);
+  }
+
+  async *getOwnedPositionIds(
+    positionState: PositionState | undefined,
+    tradingPair: TradingPair | undefined,
+  ): AsyncGenerator<PositionId, void> {
+    for await (const positionCursor of this.db.transaction('POSITIONS').store) {
+      const position = Position.fromJson(positionCursor.value.position);
+
+      if (positionState && !positionState.equals(position.state)) {
+        continue;
+      }
+      if (tradingPair && !tradingPair.equals(position.phi?.pair)) {
+        continue;
+      }
+      yield PositionId.fromJson(positionCursor.value.id);
+    }
+  }
+
+  async addPosition(positionId: PositionId, position: Position): Promise<void> {
+    const positionRecord = {
+      id: positionId.toJson() as Jsonified<PositionId>,
+      position: position.toJson() as Jsonified<Position>,
+    };
+    await this.u.update({ table: 'POSITIONS', value: positionRecord });
+  }
+
+  async updatePosition(positionId: PositionId, newState: PositionState): Promise<void> {
+    const key = uint8ArrayToBase64(positionId.inner);
+    const positionRecord = await this.db.get('POSITIONS', key);
+
+    if (!positionRecord) throw new Error('Position not found when trying to change its state');
+
+    const position = Position.fromJson(positionRecord.position);
+    position.state = newState;
+
+    await this.u.update({
+      table: 'POSITIONS',
+      value: {
+        id: positionId.toJson() as Jsonified<PositionId>,
+        position: position.toJson() as Jsonified<Position>,
+      },
+    });
   }
 }

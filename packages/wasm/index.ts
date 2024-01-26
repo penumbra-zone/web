@@ -6,3 +6,4 @@ export * from './src/transaction';
 export * from './src/build';
 export * from './src/address';
 export * from './src/utils';
+export * from './src/dex';

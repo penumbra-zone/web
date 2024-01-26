@@ -24,6 +24,12 @@ import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import {
+  Position,
+  PositionId,
+  PositionState,
+  TradingPair,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 import { Jsonified } from './jsonified';
 import { Note } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 
@@ -66,6 +72,12 @@ export interface IndexedDbInterface {
     addressIndex: AddressIndex | undefined,
     votableAtHeight: bigint,
   ): Promise<NotesForVotingResponse[]>;
+  getOwnedPositionIds(
+    positionState: PositionState | undefined,
+    tradingPair: TradingPair | undefined,
+  ): AsyncGenerator<PositionId, void>;
+  addPosition(positionId: PositionId, position: Position): Promise<void>;
+  updatePosition(positionId: PositionId, newState: PositionState): Promise<void>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -129,6 +141,16 @@ export interface PenumbraDb extends DBSchema {
     key: 'gas_prices';
     value: GasPrices;
   };
+  POSITIONS: {
+    key: string; // base64 PositionRecord['id']['inner'];
+    value: PositionRecord;
+  };
+}
+
+// need to store PositionId and Position in the same table
+export interface PositionRecord {
+  id: Jsonified<PositionId>; // PositionId (must be JsonValue because ['id']['inner'] is a key )
+  position: Jsonified<Position>; // Position
 }
 
 export type Tables = Record<string, StoreNames<PenumbraDb>>;
