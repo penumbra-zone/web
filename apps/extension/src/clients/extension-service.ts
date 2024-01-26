@@ -13,8 +13,10 @@ import { transportOptions } from './transport-options';
 
 /**
  * This enables a channelTransport to communicate directly with a router running
- * in the same script, without going through the connection manager. Given
- * router entry, the returned function satisfies the `getPort` parameter
+ * in the same script. This means communication between happens within the same JavaScript
+ * context / environment within a JavaScript runtime, allowing them to interact directly
+ * without going through external communication mechanisms like the connection manager.
+ * Given router entry, the returned function satisfies the `getPort` parameter
  * required by `createChannelTransport`.
  *
  * TODO: this could probably be provided by ClientConnectionManager
