@@ -9,7 +9,7 @@ import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/c
 import { Selection } from './types';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { getAddressByIndex } from '../fetchers/address.ts';
-import { planWitnessBuildBroadcast } from './helper.ts';
+import { planWitnessBuildBroadcast } from './helpers.ts';
 
 export interface SendSlice {
   selection: Selection | undefined;
