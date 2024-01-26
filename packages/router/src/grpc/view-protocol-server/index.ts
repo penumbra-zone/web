@@ -28,7 +28,7 @@ import { walletId } from './wallet-id';
 import { witness } from './witness';
 import { witnessAndBuild } from './witness-and-build';
 
-export const viewImpl: Omit<Impl, 'ownedPositionIds'> = {
+export const viewImpl: Impl = {
   addressByIndex,
   appParameters,
   assets,
