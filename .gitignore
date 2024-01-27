@@ -5,6 +5,7 @@ node_modules
 
 # testing
 coverage
+e2e/playwright-user-data
 
 # build output
 .next/
