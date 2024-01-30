@@ -4,8 +4,17 @@ import {
   generateSeedPhrase,
   SeedPhraseLength,
   ValidationField,
-  validationFields,
-} from '@penumbra-zone/crypto-web';
+} from '@penumbra-zone/crypto-web/src/mnemonic';
+
+export const generateValidationFields = (
+  seedPhrase: string[],
+  amount: number,
+): ValidationField[] => {
+  const allWords: ValidationField[] = seedPhrase.map((word, index) => ({ word, index }));
+  const shuffleWords = allWords.sort(() => 0.5 - Math.random());
+  const pickWords = shuffleWords.slice(0, amount);
+  return pickWords.sort((a, b) => a.index - b.index);
+};
 
 export interface GenerateFields {
   phrase: string[];
@@ -25,7 +34,7 @@ export const createGenerate: SliceCreator<SeedPhraseSlice['generate']> = (set, g
     set(({ seedPhrase: { generate } }) => {
       const newSeedPhrase = generateSeedPhrase(length);
       generate.phrase = newSeedPhrase;
-      generate.validationFields = validationFields(newSeedPhrase, 3);
+      generate.validationFields = generateValidationFields(newSeedPhrase, 3);
       generate.userValidationAttempt = [];
     });
   },
