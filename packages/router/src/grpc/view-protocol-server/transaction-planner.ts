@@ -5,7 +5,16 @@ import { TxPlanner, getAddressByIndex } from '@penumbra-zone/wasm-ts';
 
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
-import { ConnectError, Code } from '@connectrpc/connect';
+import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+
+/**
+ * Defaults copied from `Impl Default for Parameters` in
+ * `<core>/crates/core/component/shielded-pool/src/fmd.rs`
+ */
+export const DEFAULT_FMD_PARAMETERS = new FmdParameters({
+  precisionBits: 0,
+  asOfBlockHeight: 1n,
+});
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   const services = ctx.values.get(servicesCtx);
@@ -14,8 +23,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
     viewServer: { fullViewingKey },
   } = await services.getWalletServices();
   const chainParams = await services.querier.app.chainParams();
-  const fmdParams = await indexedDb.getFmdParams();
-  if (!fmdParams) throw new ConnectError('Fmd Params not in indexeddb', Code.FailedPrecondition);
+  const fmdParams = (await indexedDb.getFmdParams()) ?? DEFAULT_FMD_PARAMETERS;
   const idbConstants = indexedDb.constants();
 
   const planner = await TxPlanner.initialize({
