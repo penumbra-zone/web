@@ -10,14 +10,9 @@
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/query": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
-    "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm-ts": "workspace:*"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.258",
-    "eslint": "^8.56.0",
-    "eslint-config-custom": "workspace:*",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.3.3"
+    "@types/chrome": "0.0.258"
   }
 }

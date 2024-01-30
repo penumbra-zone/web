@@ -28,7 +28,7 @@ import { walletId } from './wallet-id';
 import { witness } from './witness';
 import { witnessAndBuild } from './witness-and-build';
 
-export const viewImpl: Impl = {
+export const viewImpl: Omit<Impl, 'denomMetadataById'> = {
   addressByIndex,
   appParameters,
   assets,
