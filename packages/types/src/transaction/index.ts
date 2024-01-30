@@ -1,2 +1,3 @@
-export * from './perspective';
+export * from './classification';
 export * from './classify';
+export * from './perspective';
