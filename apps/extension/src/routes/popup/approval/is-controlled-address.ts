@@ -1,6 +1,6 @@
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { grpcClient } from '../../../clients';
+import { viewClient } from '../../../clients/extension-page';
 
 /**
  * Returns a Promise of a boolean indicating whether the given address is
@@ -17,7 +17,7 @@ import { grpcClient } from '../../../clients';
  */
 export const isControlledAddress = async (address: Address): Promise<boolean> => {
   try {
-    await grpcClient.indexByAddress({ address });
+    await viewClient.indexByAddress({ address });
     return true;
   } catch (e) {
     if (e instanceof ConnectError && e.code === Code.Unauthenticated) {
