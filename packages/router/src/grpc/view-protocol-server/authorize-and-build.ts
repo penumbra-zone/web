@@ -5,7 +5,7 @@ import { buildParallel, getWitness } from '@penumbra-zone/wasm-ts';
 import { ConnectError, Code, HandlerContext } from '@connectrpc/connect';
 import { TransactionPlan } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
-export const authorizeAndBuild: Impl['authorizeAndBuild'] = async (req, ctx) => {
+export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (req, ctx) {
   if (!req.transactionPlan) throw new ConnectError('No tx plan in request', Code.InvalidArgument);
 
   const authorizationPromise = authorize(ctx, req.transactionPlan);
@@ -24,7 +24,12 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async (req, ctx) => 
     authorizationData,
   );
 
-  return { transaction };
+  yield {
+    status: {
+      case: 'complete',
+      value: { transaction },
+    },
+  };
 };
 
 async function authorize(ctx: HandlerContext, transactionPlan: TransactionPlan) {

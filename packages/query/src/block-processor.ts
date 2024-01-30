@@ -114,6 +114,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
+      console.log('Syncing block', compactBlock);
       if (compactBlock.fmdParameters)
         await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
 

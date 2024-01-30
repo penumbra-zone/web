@@ -1,4 +1,4 @@
-import { Chain, toBaseUnit, uint8ArrayToHex } from '@penumbra-zone/types';
+import { Chain, toBaseUnit } from '@penumbra-zone/types';
 import { AllSlices, SliceCreator } from '.';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
@@ -9,7 +9,8 @@ import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tender
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Selection } from './types';
-import { viewClient, custodyClient, ibcClient } from '../clients/grpc';
+import { viewClient, ibcClient } from '../clients/grpc';
+import { planWitnessBuildBroadcast } from './helpers';
 
 export interface IbcSendSlice {
   selection: Selection | undefined;
@@ -140,25 +141,6 @@ const getPlanRequest = async ({
     ],
     source: new AddressIndex({ account: selection.accountIndex }),
   });
-};
-
-const planWitnessBuildBroadcast = async (plannerReq: TransactionPlannerRequest) => {
-  const { plan } = await viewClient.transactionPlanner(plannerReq);
-  if (!plan) throw new Error('no plan in response');
-
-  const { data: authorizationData } = await custodyClient.authorize({ plan });
-  if (!authorizationData) throw new Error('no authorization data in response');
-
-  const { transaction } = await viewClient.witnessAndBuild({
-    transactionPlan: plan,
-    authorizationData,
-  });
-  if (!transaction) throw new Error('no transaction in response');
-
-  const { id } = await viewClient.broadcastTransaction({ transaction, awaitDetection: true });
-  if (!id) throw new Error('no id in broadcast response');
-
-  return uint8ArrayToHex(id.inner);
 };
 
 export const ibcSelector = (state: AllSlices) => state.ibc;
