@@ -33,8 +33,8 @@ const mockContext = vi.hoisted(() => ({
  * the underlying implementation changes, these tests will break, and we'll know
  * to update the logic of `isControlledAddress()`.
  */
-vi.mock('../../../clients', () => ({
-  grpcClient: {
+vi.mock('../../../clients/extension-page', () => ({
+  viewClient: {
     indexByAddress: (req: IndexByAddressRequest) =>
       indexByAddress(req, mockContext as unknown as HandlerContext),
   },
