@@ -115,8 +115,8 @@ const sortByAmount = (a: AssetBalance, b: AssetBalance): number => {
 // Sort by account (lowest first)
 const sortByAccount = (a: AccountBalance, b: AccountBalance): number => a.index - b.index;
 
-// Accumulates totals per denom across accounts
-const groupByAsset = (balances: AssetBalance[], curr: AssetBalance): AssetBalance[] => {
+// Accumulates totals per asset across accounts
+export const groupByAsset = (balances: AssetBalance[], curr: AssetBalance): AssetBalance[] => {
   const match = balances.find(b => b.assetId.equals(curr.assetId));
   if (match) {
     match.amount = addAmounts(match.amount, curr.amount);
@@ -140,7 +140,7 @@ export const getBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}
   return streamToPromise(iterable);
 };
 
-export const getBalancesWithMetadata = async (): Promise<NormalizedBalance[]> => {
+const getBalancesWithMetadata = async (): Promise<NormalizedBalance[]> => {
   const balances = await getBalances();
   const accounts = [...new Set(balances.map(b => b.account?.account))];
   const accountAddrs = await getAddresses(accounts);

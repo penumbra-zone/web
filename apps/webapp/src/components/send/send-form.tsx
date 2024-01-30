@@ -2,14 +2,16 @@ import { Button } from '@penumbra-zone/ui';
 import { useStore } from '../../state';
 import { sendSelector, sendValidationErrors } from '../../state/send';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
-import { InputBlock } from '../shared/input-block.tsx';
-import InputToken from '../shared/input-token.tsx';
+import { InputBlock } from '../shared/input-block';
+import InputToken from '../shared/input-token';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances.ts';
+import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances';
 import { useMemo } from 'react';
-import { penumbraAddrValidation } from './helpers.ts';
+import { penumbraAddrValidation } from './helpers';
+import { throwIfExtNotInstalled } from '../../fetchers/is-connected';
 
 export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
+  throwIfExtNotInstalled();
   const balancesByAccount = await getBalancesByAccount();
 
   if (balancesByAccount[0]) {

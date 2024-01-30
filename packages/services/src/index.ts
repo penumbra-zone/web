@@ -81,7 +81,7 @@ export class Services implements ServicesInterface {
       indexedDb,
     });
 
-    return { viewServer, blockProcessor, indexedDb };
+    return { viewServer, blockProcessor, indexedDb, querier: this.querier };
   }
 
   async clearCache() {

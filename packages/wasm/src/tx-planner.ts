@@ -8,12 +8,16 @@ import {
   MemoPlaintext,
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import {
+  DenomMetadata,
+  Value,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import { ChainParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import { JsonValue } from '@bufbuild/protobuf';
 import { Ics20Withdrawal } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/ibc/v1alpha1/ibc_pb';
+import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 
 interface PlannerProps {
   idbConstants: IdbConstants;
@@ -35,6 +39,19 @@ export class TxPlanner {
 
   output(value: Value, addr: Address): void {
     this.wasmPlanner.output(value.toJson(), addr.toJson());
+  }
+
+  swap(inputValue: Value, intoDenom: DenomMetadata, fee: Fee, claimAddress: Address): void {
+    this.wasmPlanner.swap(
+      inputValue.toJson(),
+      intoDenom.toJson(),
+      fee.toJson(),
+      claimAddress.toJson(),
+    );
+  }
+
+  async swapClaim(swapCommitment: StateCommitment): Promise<void> {
+    await this.wasmPlanner.swap_claim(swapCommitment.toJson());
   }
 
   ics20Withdrawal(withdrawal: Ics20Withdrawal): void {
