@@ -36,7 +36,7 @@ describe('asOpaqueAddressView()', () => {
         },
       });
 
-      expect(asOpaqueAddressView(addressView)!.equals(expected)).toBe(true);
+      expect(asOpaqueAddressView(addressView).equals(expected)).toBe(true);
     });
   });
 
