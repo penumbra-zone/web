@@ -37,9 +37,7 @@ describe('AddressByIndex request handler', () => {
   });
 
   test('should successfully get AddressByIndex with default index', async () => {
-    const addressByIndexResponse = new AddressByIndexResponse(
-      await addressByIndex(new AddressByIndexRequest(), mockCtx),
-    );
+    const addressByIndexResponse = await addressByIndex(new AddressByIndexRequest(), mockCtx);
     expect(addressByIndexResponse.address).toBeInstanceOf(Address);
   });
 
