@@ -11,7 +11,7 @@
     "clean": "turbo clean",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
-    "all-check": "pnpm install && pnpm format && pnpm lint && pnpm test && pnpm build"
+    "all-check": "pnpm install && pnpm format && pnpm format-check && pnpm lint && pnpm test && pnpm build"
   },
   "dependencies": {
     "@buf/cosmos_ibc.bufbuild_es": "1.7.1-20240123184419-30c7be3837b0.1",
