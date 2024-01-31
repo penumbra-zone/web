@@ -8,7 +8,7 @@ import { AssetBalance } from '../fetchers/balances';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Selection } from './types';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { getAddressByIndex } from '../fetchers/address.ts';
+import { getAddressByIndex } from '../fetchers/address';
 import { getTransactionPlan, planWitnessBuildBroadcast } from './helpers.ts';
 import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 

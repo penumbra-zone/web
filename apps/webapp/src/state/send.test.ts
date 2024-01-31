@@ -11,6 +11,10 @@ import {
   TransactionPlannerResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
+vi.mock('../fetchers/address', () => ({
+  getAddressByIndex: vi.fn(),
+}));
+
 describe('Send Slice', () => {
   const selectionExample = {
     asset: {
