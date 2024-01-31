@@ -26,14 +26,14 @@
   "devDependencies": {
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm-nodejs": "0.65.0-alpha.1",
-    "@turbo/gen": "^1.12.0",
+    "@turbo/gen": "^1.11.3",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "eslint": "^8.56.0",
     "eslint-config-custom": "workspace:*",
     "playwright": "^1.41.1",
     "prettier": "^3.2.4",
     "tsconfig": "workspace:*",
-    "turbo": "^1.12.0",
+    "turbo": "^1.11.3",
     "typescript": "^5.3.3"
   }
 }
