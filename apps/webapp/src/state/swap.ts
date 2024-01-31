@@ -1,6 +1,7 @@
-import { assets } from '@penumbra-zone/constants';
+import { localAssets } from '@penumbra-zone/constants';
 import { AllSlices, SliceCreator } from './index.ts';
-import { Asset, AssetId } from '@penumbra-zone/types';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 export enum SwapInputs {
   PAY = 'pay',
@@ -13,7 +14,7 @@ export interface SwapValidationFields {
 
 export interface SwapAssetInfo {
   amount: string;
-  asset: Asset;
+  asset: DenomMetadata;
   balance?: number;
 }
 
@@ -31,12 +32,12 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
   return {
     pay: {
       amount: '',
-      asset: assets[0]!,
+      asset: localAssets[0]!,
       balance: 0,
     },
     receive: {
       amount: '',
-      asset: assets[1]!,
+      asset: localAssets[1]!,
     },
     validationErrors: {
       pay: false,
@@ -58,19 +59,19 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
       let payAsset = get().swap.pay.asset;
       let receiveAsset = get().swap.receive.asset;
 
-      const selectedAsset = assets.find(i => i.penumbraAssetId.inner === asset.inner)!;
+      const selectedAsset = localAssets.find(i => asset.equals(i.penumbraAssetId))!;
 
       // checking if we set the same asset in the pay (receive) field as
       // in the receive (pay) field, then the value of the receive (pay)
       // field is undefined
       if (type === SwapInputs.PAY) {
         if (selectedAsset.display === receiveAsset.display) {
-          receiveAsset = assets.find(i => i.display !== selectedAsset.display)!;
+          receiveAsset = localAssets.find(i => i.display !== selectedAsset.display)!;
         }
         payAsset = selectedAsset;
       } else {
         if (selectedAsset.display === payAsset.display) {
-          payAsset = assets.find(i => i.display !== selectedAsset.display)!;
+          payAsset = localAssets.find(i => i.display !== selectedAsset.display)!;
         }
         receiveAsset = selectedAsset;
       }

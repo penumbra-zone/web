@@ -1,10 +1,11 @@
-import { assets } from '@penumbra-zone/constants';
+import { localAssets } from '@penumbra-zone/constants';
 import { Identicon } from '@penumbra-zone/ui';
 import { useMemo } from 'react';
 
 export const AssetIcon = ({ name }: { name: string }) => {
   const icon = useMemo(() => {
-    return assets.find(i => i.display === name)?.icon;
+    const assetImage = localAssets.find(i => i.display === name)?.images[0];
+    return assetImage?.png ?? assetImage?.svg;
   }, [name]);
 
   return (

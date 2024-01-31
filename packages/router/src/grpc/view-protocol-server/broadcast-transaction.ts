@@ -1,11 +1,15 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
 import { ConnectError, Code } from '@connectrpc/connect';
 
-export const broadcastTransaction: Impl['broadcastTransaction'] = async (req, ctx) => {
+import { sha256Hash } from '@penumbra-zone/crypto-web';
+import { uint8ArrayToHex } from '@penumbra-zone/types';
+
+export const broadcastTransaction: Impl['broadcastTransaction'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);
   const { tendermint } = services.querier;
   const { indexedDb } = await services.getWalletServices();
@@ -15,15 +19,38 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async (req, ct
   // start subscription early to prevent race condition
   const subscription = indexedDb.subscribe('TRANSACTION_INFO');
 
-  const id = await tendermint.broadcastTx(req.transaction);
+  const id = new TransactionId({ inner: await sha256Hash(req.transaction.toBinary()) });
+
+  const broadcastId = await tendermint.broadcastTx(req.transaction);
+  if (!id.equals(broadcastId)) {
+    console.error('broadcast transaction id disagrees', id, broadcastId);
+    throw new Error(
+      `broadcast transaction id disagrees: expected ${uint8ArrayToHex(id.inner)} != tendermint ${uint8ArrayToHex(broadcastId.inner)}`,
+    );
+  }
+
+  yield {
+    status: {
+      case: 'broadcastSuccess',
+      value: { id },
+    },
+  };
+
+  if (!req.awaitDetection) return;
 
   // Wait until DB records a new transaction with this id
-  if (req.awaitDetection) {
-    for await (const { value } of subscription) {
-      const update = TransactionInfo.fromJson(value);
-      if (id.equals(update.id)) return { id, detectionHeight: update.height };
+  for await (const { value } of subscription) {
+    const { height: detectionHeight, id: detectionId } = TransactionInfo.fromJson(value);
+    if (id.equals(detectionId)) {
+      yield {
+        status: {
+          case: 'confirmed',
+          value: { id, detectionHeight },
+        },
+      };
+      return;
     }
   }
 
-  return { id };
+  throw new Error('subscription ended');
 };

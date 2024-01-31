@@ -8,18 +8,10 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^1.7.0",
-    "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm-bundler": "0.65.0-pre.1",
     "bech32": "^2.0.0",
-    "eslint": "^8.56.0",
-    "eslint-config-custom": "workspace:*",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.3.3",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@penumbra-zone/wasm-nodejs": "0.65.0-pre.1",
     "fake-indexeddb": "^5.0.2",
     "vitest": "^1.2.1"
   }

@@ -11,14 +11,9 @@
   "dependencies": {
     "bip39": "^3.1.0",
     "crypto-js": "^4.2.0",
-    "eslint": "^8.56.0",
-    "eslint-config-custom": "workspace:*",
-    "lodash": "^4.17.21",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.3.3"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@penumbra-zone/types": "workspace:*",
     "@types/crypto-js": "^4.2.2",
     "@types/lodash": "^4.14.202",
     "@vitest/browser": "^1.2.1",

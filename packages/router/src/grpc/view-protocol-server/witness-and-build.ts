@@ -7,7 +7,7 @@ import { buildParallel, getWitness } from '@penumbra-zone/wasm-ts';
 
 import { ConnectError, Code } from '@connectrpc/connect';
 
-export const witnessAndBuild: Impl['witnessAndBuild'] = async (req, ctx) => {
+export const witnessAndBuild: Impl['witnessAndBuild'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);
   if (!req.authorizationData)
     throw new ConnectError('No authorization data in request', Code.InvalidArgument);
@@ -34,5 +34,10 @@ export const witnessAndBuild: Impl['witnessAndBuild'] = async (req, ctx) => {
     req.authorizationData,
   );
 
-  return { transaction };
+  yield {
+    status: {
+      case: 'complete',
+      value: { transaction },
+    },
+  };
 };

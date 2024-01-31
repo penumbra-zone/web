@@ -160,8 +160,6 @@ export const denomMetadataC = DenomMetadata.fromJson({
   display: 'gn',
   name: '',
   symbol: '',
-  uri: '',
-  uri_hash: '',
   penumbra_asset_id: {
     inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=',
     alt_bech32m: '',

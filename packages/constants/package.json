@@ -5,12 +5,5 @@
   "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\""
-  },
-  "dependencies": {
-    "@penumbra-zone/types": "workspace:*",
-    "eslint": "^8.56.0",
-    "eslint-config-custom": "workspace:*",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.3.3"
   }
 }
