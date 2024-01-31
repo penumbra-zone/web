@@ -23,12 +23,12 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
+import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import {
   SpendableNoteRecord,
   SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -215,7 +215,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (!assetId) continue;
       if (await this.indexedDb.getAssetsMetadata(assetId)) continue;
 
-      let metadata;
+      let metadata: DenomMetadata | undefined;
       metadata = await this.querier.shieldedPool.denomMetadata(assetId);
 
       if (!metadata) {
@@ -265,7 +265,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     const relevantTx = new Map<TransactionId, Transaction>();
     const recordsWithSources = new Array<SpendableNoteRecord | SwapRecord>();
     for (const tx of blockTx) {
-      let txId;
+      let txId: TransactionId | undefined;
 
       const txCommitments = (tx.body?.actions ?? []).flatMap(({ action }) => {
         switch (action.case) {
