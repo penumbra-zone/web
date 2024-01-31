@@ -13,10 +13,9 @@ export const planWitnessBuildBroadcast = async (
   if (!transactionPlan) throw new Error('no plan in response');
 
   let transaction;
-  for await (const { status } of viewClient.authorizeAndBuild({ transactionPlan })) {
+  for await (const { status } of viewClient.authorizeAndBuild({ transactionPlan }))
     switch (status.case) {
       case 'buildProgress':
-        console.log('buildProgress', status.value.progress);
         break;
       case 'complete':
         transaction = status.value.transaction;
@@ -24,19 +23,14 @@ export const planWitnessBuildBroadcast = async (
       default:
         throw new Error(`unknown authorizeAndBuild status: ${status.case}`);
     }
-  }
   if (!transaction) throw new Error('did not build transaction');
-
-  const broadcastStream = viewClient.broadcastTransaction({ transaction, awaitDetection });
 
   const expectId = new TransactionId({ inner: await sha256Hash(transaction.toBinary()) });
 
   let detectionHeight;
-
-  for await (const { status } of broadcastStream) {
+  for await (const { status } of viewClient.broadcastTransaction({ transaction, awaitDetection }))
     switch (status.case) {
       case 'broadcastSuccess':
-        console.log('broadcastSuccess', status.value);
         if (!expectId.equals(status.value.id)) throw new Error('unexpected transaction id');
         break;
       case 'confirmed':
@@ -46,9 +40,7 @@ export const planWitnessBuildBroadcast = async (
       default:
         throw new Error(`unknown broadcastTransaction status: ${status.case}`);
     }
-  }
-
-  if (awaitDetection && !detectionHeight) throw new Error('did not detect transaction');
+  if (!detectionHeight) throw new Error('did not detect transaction');
 
   return uint8ArrayToHex(expectId.inner);
 };
