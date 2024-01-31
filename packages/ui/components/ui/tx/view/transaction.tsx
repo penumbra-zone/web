@@ -6,8 +6,9 @@ import { joinLoHiAmount } from '@penumbra-zone/types';
 
 export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
   if (!txv.bodyView) throw new Error('transaction view missing body view');
+  if (!txv.bodyView.transactionParameters?.fee?.amount) throw new Error('Missing fee amount');
 
-  const fee = joinLoHiAmount(txv.bodyView.transactionParameters!.fee!.amount!).toString();
+  const fee = joinLoHiAmount(txv.bodyView.transactionParameters.fee.amount).toString();
 
   return (
     <div className='flex flex-col gap-8'>
@@ -22,7 +23,7 @@ export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
         <ViewBox
           label='Chain ID'
           visibleContent={
-            <div className='font-mono'>{txv.bodyView.transactionParameters?.chainId}</div>
+            <div className='font-mono'>{txv.bodyView.transactionParameters.chainId}</div>
           }
         />
       </ViewSection>
