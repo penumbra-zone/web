@@ -30,15 +30,15 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0(@bufbuild/protobuf@1.7.1)(@connectrpc/connect@1.3.0)
       '@penumbra-zone/wasm-bundler':
-        specifier: 0.65.0-alpha.1
-        version: 0.65.0-alpha.1
+        specifier: 0.65.0-alpha.1a
+        version: 0.65.0-alpha.1a
     devDependencies:
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:packages/types
       '@penumbra-zone/wasm-nodejs':
-        specifier: 0.65.0-alpha.1
-        version: 0.65.0-alpha.1
+        specifier: 0.65.0-alpha.1a
+        version: 0.65.0-alpha.1a
       '@turbo/gen':
         specifier: ^1.11.3
         version: 1.11.3(@types/node@20.11.13)(typescript@5.3.3)
@@ -1618,12 +1618,12 @@ packages:
     engines: {node: '>=8.12.0'}
     dev: true
 
-  /@penumbra-zone/wasm-bundler@0.65.0-alpha.1:
-    resolution: {integrity: sha512-Y1EnskgLxyzirBUL+PNnuARv4I9FyOa7vwQutoJTZpfhv5hxVUDNIUEzaW6RZCBwaPzWGiKHys0LZp5dLpf/0Q==}
+  /@penumbra-zone/wasm-bundler@0.65.0-alpha.1a:
+    resolution: {integrity: sha512-hNdlQiPZe2k0DAXn6QkjtV77tTPlUaC0axW4Clqd1jOikYG5ERd3a6mWVDQWkfIkrVsjlOOA0oiHEGdxVySkgg==}
     dev: false
 
-  /@penumbra-zone/wasm-nodejs@0.65.0-alpha.1:
-    resolution: {integrity: sha512-xVSPl8hmaGZIBTsC/t6A4GRVtgqyUCpbu5hCc75G+zPh5x7L6BQeTwNOz6pOfDeI3cxo5xfi8LjV8WbjK9ACow==}
+  /@penumbra-zone/wasm-nodejs@0.65.0-alpha.1a:
+    resolution: {integrity: sha512-f5R8fvvZ6VSpdKo2hvX08SFjcIG12eWwcNbyX+Tf+bouSilOWQqkJhdZ0/Q9A2SY5PXm98VMgs6nhWhacH+dWQ==}
     dev: true
 
   /@pkgjs/parseargs@0.11.0:

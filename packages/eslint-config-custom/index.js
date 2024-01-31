@@ -18,6 +18,15 @@ module.exports = {
     '@typescript-eslint/no-unnecessary-condition': ['error', { allowConstantLoopConditions: true }],
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
+    // Catches untyped let declarations
+    'no-restricted-syntax': [
+      'error',
+      {
+        selector:
+          "VariableDeclaration[kind = 'let'] > VariableDeclarator[init = null]:not([id.typeAnnotation])",
+        message: 'Type must be annotated at variable declaration',
+      },
+    ],
   },
   overrides: [
     {

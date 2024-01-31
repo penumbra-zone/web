@@ -1,4 +1,13 @@
-import { ConnectError, Code as ConnectErrorCode } from '@connectrpc/connect';
+import {
+  Code as ConnectErrorCode,
+  ConnectError,
+  ConnectRouter,
+  ConnectRouterOptions,
+  ContextValues,
+  createConnectRouter,
+  StreamResponse,
+  UnaryResponse,
+} from '@connectrpc/connect';
 import {
   Any,
   IMessageTypeRegistry,
@@ -8,22 +17,16 @@ import {
   ServiceType,
 } from '@bufbuild/protobuf';
 import {
-  ConnectRouter,
-  ConnectRouterOptions,
-  ContextValues,
-  createConnectRouter,
-} from '@connectrpc/connect';
-import {
   CommonTransportOptions,
+  createAsyncIterable,
+  createUniversalHandlerClient,
   UniversalHandler,
   UniversalHandlerFn,
   UniversalServerRequest,
-  createAsyncIterable,
-  createUniversalHandlerClient,
 } from '@connectrpc/connect/protocol';
 import { createTransport } from '@connectrpc/connect/protocol-connect';
 
-import { MessageToJson, iterableToStream } from '../stream';
+import { iterableToStream, MessageToJson } from '../stream';
 
 // see https://github.com/connectrpc/connect-es/pull/925
 // hopefully also simplifies transport call soon
@@ -169,7 +172,7 @@ export const connectChromeRuntimeAdapter = (
     if (!methodType)
       throw new ConnectError(`Method ${requestType.typeName} not found`, ConnectErrorCode.NotFound);
 
-    let response;
+    let response: UnaryResponse | StreamResponse | undefined;
     switch (methodType.kind) {
       case MethodKind.Unary:
         response = await transport.unary(
