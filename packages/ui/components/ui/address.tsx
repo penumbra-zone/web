@@ -12,7 +12,7 @@ export const Address = ({
   ephemeral?: boolean;
 }) => (
   <span
-    className={'font-mono text-[12px]' + (ephemeral ? ' text-[#8D5728]' : ' text-muted-foreground')}
+    className={'font-mono' + (ephemeral ? ' text-[#8D5728]' : ' text-muted-foreground')}
   >
     {shortenAddress(address)}
   </span>

@@ -103,7 +103,7 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
             <div className='flex items-center gap-[6px]'>
               <AddressIcon address={account.address} size={24} />
 
-              <p>
+              <p className='text-sm'>
                 <Address address={account.address} ephemeral={ephemeral} />
               </p>
             </div>
