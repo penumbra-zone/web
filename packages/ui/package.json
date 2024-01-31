@@ -6,7 +6,9 @@
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run",
-    "ui:add": "pnpm dlx shadcn-ui@latest add"
+    "ui:add": "pnpm dlx shadcn-ui@latest add",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.0.4",
@@ -35,6 +37,14 @@
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
+    "@storybook/addon-essentials": "^7.6.12",
+    "@storybook/addon-interactions": "^7.6.12",
+    "@storybook/addon-links": "^7.6.12",
+    "@storybook/addon-onboarding": "^1.0.11",
+    "@storybook/blocks": "^7.6.12",
+    "@storybook/react": "^7.6.12",
+    "@storybook/react-vite": "^7.6.12",
+    "@storybook/test": "^7.6.12",
     "@testing-library/react": "^14.1.2",
     "@types/node": "^20.11.6",
     "@types/react": "^18.2.48",
@@ -42,9 +52,12 @@
     "@types/tinycolor2": "^1.4.6",
     "@vitest/browser": "^1.2.1",
     "autoprefixer": "^10.4.17",
+    "eslint-plugin-storybook": "^0.6.15",
     "jsdom": "^24.0.0",
     "postcss": "^8.4.33",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
+    "storybook": "^7.6.12",
     "tailwindcss": "^3.4.1",
     "vite": "^5.0.12",
     "vitest": "^1.2.1"
