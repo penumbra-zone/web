@@ -42,11 +42,13 @@ describe('AppParameters request handler', () => {
   });
 });
 
-// TODO chainParams will be removed, chain id will be a top-level field https://github.com/penumbra-zone/penumbra/pull/3703
 const testData = new AppParameters({
   chainId: 'penumbra-testnet-titan',
   sctParams: {
     epochDuration: 719n,
+  },
+  shieldedPoolParams: {
+    fmdParams: { asOfBlockHeight: 1n, precisionBits: 0 },
   },
   communityPoolParams: {
     communityPoolSpendProposalsEnabled: true,
