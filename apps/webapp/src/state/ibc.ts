@@ -130,8 +130,11 @@ const getPlanRequest = async ({
   return new TransactionPlannerRequest({
     ics20Withdrawals: [
       {
-        amount: toBaseUnit(BigNumber(amount), selection.asset.denom.exponent),
-        denom: { denom: selection.asset.denom.display },
+        amount: toBaseUnit(
+          BigNumber(amount),
+          selection.asset.denomMetadata.denomUnits[0]?.exponent,
+        ),
+        denom: { denom: selection.asset.denomMetadata.display },
         destinationChainAddress,
         returnAddress,
         timeoutHeight,

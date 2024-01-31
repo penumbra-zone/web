@@ -5,7 +5,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import {
   AssetId,
-  DenomUnit,
+  DenomMetadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { getAddresses, IndexAddrRecord } from './address';
 import { getAllAssets } from './assets';
@@ -16,10 +16,7 @@ import { viewClient } from '../clients/grpc';
 import { streamToPromise } from './stream';
 
 export interface AssetBalance {
-  denom: {
-    display: DenomUnit['denom'];
-    exponent: DenomUnit['exponent'];
-  };
+  denomMetadata: DenomMetadata;
   assetId: AssetId;
   amount: Amount;
   usdcValue: number;
@@ -35,29 +32,19 @@ type NormalizedBalance = AssetBalance & {
   account: { index: number; address: string };
 };
 
-// Given an asset has many denom units, the amount should be formatted using
-// the exponent of the display denom (e.g. 1,954,000,000 upenumbra = 1,954 penumbra)
-export const displayDenom = (res?: AssetsResponse): { display: string; exponent: number } => {
-  const display = res?.denomMetadata?.display;
-  if (!display) return { display: 'unknown', exponent: 0 };
-
-  const match = res.denomMetadata?.denomUnits.find(d => d.denom === display);
-  if (!match) return { display, exponent: 0 };
-
-  return { display, exponent: match.exponent };
-};
-
-const getDenomAmount = (res: BalancesResponse, metadata: AssetsResponse[]) => {
+const getDenomAmount = (
+  res: BalancesResponse,
+  metadata: AssetsResponse[],
+): { amount: Amount; denomMetadata: DenomMetadata } => {
   const assetId = uint8ArrayToBase64(res.balance!.assetId!.inner);
   const match = metadata.find(m => {
     if (!m.denomMetadata?.penumbraAssetId?.inner) return false;
     return assetId === uint8ArrayToBase64(m.denomMetadata.penumbraAssetId.inner);
   });
 
-  const { display, exponent } = displayDenom(match);
   const amount = res.balance?.amount ?? new Amount();
 
-  return { display, exponent, amount };
+  return { amount, denomMetadata: match?.denomMetadata ?? new DenomMetadata() };
 };
 
 const normalize =
@@ -66,10 +53,10 @@ const normalize =
     const index = res.account?.account ?? 0;
     const address = indexAddrRecord?.[index] ?? '';
 
-    const { display, exponent, amount } = getDenomAmount(res, metadata);
+    const { denomMetadata, amount } = getDenomAmount(res, metadata);
 
     return {
-      denom: { display, exponent },
+      denomMetadata,
       assetId: res.balance!.assetId!,
       amount,
       //usdcValue: amount * 0.93245, // TODO: Temporary until pricing implemented
@@ -81,7 +68,7 @@ const normalize =
 const groupByAccount = (balances: AccountBalance[], curr: NormalizedBalance): AccountBalance[] => {
   const match = balances.find(b => b.index === curr.account.index);
   const newBalance = {
-    denom: curr.denom,
+    denomMetadata: curr.denomMetadata,
     amount: curr.amount,
     usdcValue: curr.usdcValue,
     assetId: curr.assetId,
@@ -109,7 +96,7 @@ const sortByAmount = (a: AssetBalance, b: AssetBalance): number => {
     return Number(joinLoHiAmount(b.amount) - joinLoHiAmount(a.amount));
 
   // If both are equal, sort by asset name in ascending order
-  return a.denom.display.localeCompare(b.denom.display);
+  return a.denomMetadata.display.localeCompare(b.denomMetadata.display);
 };
 
 // Sort by account (lowest first)

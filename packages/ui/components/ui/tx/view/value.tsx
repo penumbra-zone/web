@@ -4,11 +4,11 @@ import { CopyToClipboard } from '../../copy-to-clipboard';
 import { CopyIcon } from '@radix-ui/react-icons';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 
-interface ValueViewPrpos {
+interface ValueViewProps {
   view: ValueView | undefined;
 }
 
-export const ValueViewComponent = ({ view }: ValueViewPrpos) => {
+export const ValueViewComponent = ({ view }: ValueViewProps) => {
   if (!view) return <></>;
 
   if (view.valueView.case === 'unknownDenom') {

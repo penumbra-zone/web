@@ -1,11 +1,13 @@
 import { Input, InputProps } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { fromBaseUnitAmount, joinLoHiAmount } from '@penumbra-zone/types';
+import { joinLoHiAmount } from '@penumbra-zone/types';
 import SelectTokenModal from './select-token-modal';
 import { Validation, validationResult } from './validation-result';
 import { AccountBalance, AssetBalance } from '../../fetchers/balances';
 import { Selection } from '../../state/types';
 import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 const PENUMBRA_FEE_DENOMINATOR = 1000;
 
@@ -14,10 +16,23 @@ const getFeeAsString = (fee: Fee | undefined) => {
   return `${(Number(joinLoHiAmount(fee.amount)) / PENUMBRA_FEE_DENOMINATOR).toString()} penumbra`;
 };
 
-const getCurrentBalance = (assetBalance: AssetBalance | undefined) =>
-  assetBalance
-    ? fromBaseUnitAmount(assetBalance.amount, assetBalance.denom.exponent).toFormat()
-    : '0';
+const getCurrentBalanceValueView = (assetBalance: AssetBalance | undefined): ValueView => {
+  if (assetBalance?.denomMetadata)
+    return new ValueView({
+      valueView: {
+        case: 'knownDenom',
+        value: { amount: assetBalance.amount, denom: assetBalance.denomMetadata },
+      },
+    });
+  else if (assetBalance?.assetId)
+    return new ValueView({
+      valueView: {
+        case: 'unknownDenom',
+        value: { amount: assetBalance.amount, assetId: assetBalance.assetId },
+      },
+    });
+  else return new ValueView();
+};
 
 interface InputTokenProps extends InputProps {
   label: string;
@@ -47,7 +62,7 @@ export default function InputToken({
 }: InputTokenProps) {
   const vResult = validationResult(value, validations);
 
-  const currentBalance = getCurrentBalance(selection?.asset);
+  const currentBalanceValueView = getCurrentBalanceValueView(selection?.asset);
   const feeAsString = getFeeAsString(fee);
 
   return (
@@ -93,7 +108,7 @@ export default function InputToken({
         </div>
         <div className='flex items-start gap-1'>
           <img src='./wallet.svg' alt='Wallet' className='size-5' />
-          <p className='font-bold text-muted-foreground'>{currentBalance}</p>
+          <ValueViewComponent view={currentBalanceValueView} />
         </div>
       </div>
     </div>

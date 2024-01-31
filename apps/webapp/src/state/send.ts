@@ -113,7 +113,10 @@ const assembleRequest = async ({ amount, recipient, selection, memo }: SendSlice
       {
         address: { altBech32m: recipient },
         value: {
-          amount: toBaseUnit(BigNumber(amount), selection.asset.denom.exponent),
+          amount: toBaseUnit(
+            BigNumber(amount),
+            selection.asset.denomMetadata.denomUnits[0]?.exponent,
+          ),
           assetId: { inner: selection.asset.assetId.inner },
         },
       },
@@ -127,7 +130,7 @@ const assembleRequest = async ({ amount, recipient, selection, memo }: SendSlice
 };
 
 export const validateAmount = (asset: AssetBalance, amount: string): boolean => {
-  const balanceAmt = fromBaseUnitAmount(asset.amount, asset.denom.exponent);
+  const balanceAmt = fromBaseUnitAmount(asset.amount, asset.denomMetadata.denomUnits[0]?.exponent);
   return Boolean(amount) && BigNumber(amount).gt(balanceAmt);
 };
 

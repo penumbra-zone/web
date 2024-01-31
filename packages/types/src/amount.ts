@@ -6,7 +6,7 @@ export const joinLoHiAmount = (amount: Amount): bigint => {
   return joinLoHi(amount.lo, amount.hi);
 };
 
-export const fromBaseUnitAmount = (amount: Amount, exponent: number): BigNumber => {
+export const fromBaseUnitAmount = (amount: Amount, exponent = 0): BigNumber => {
   return fromBaseUnit(amount.lo, amount.hi, exponent);
 };
 
