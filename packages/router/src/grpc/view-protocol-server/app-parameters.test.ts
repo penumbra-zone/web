@@ -42,18 +42,19 @@ describe('AppParameters request handler', () => {
   });
 });
 
-const testData = AppParameters.fromJson({
+// TODO chainParams will be removed, chain id will be a top-level field https://github.com/penumbra-zone/penumbra/pull/3703
+const testData = new AppParameters({
   chainParams: {
     chainId: 'penumbra-testnet-titan',
-    epochDuration: '719',
+    epochDuration: 719n,
   },
   communityPoolParams: {
     communityPoolSpendProposalsEnabled: true,
   },
   governanceParams: {
-    proposalVotingBlocks: '17280',
+    proposalVotingBlocks: 17280n,
     proposalDepositAmount: {
-      lo: '10000000',
+      lo: 10000000n,
     },
     proposalValidQuorum: '40/100',
     proposalPassThreshold: '50/100',
@@ -65,16 +66,16 @@ const testData = AppParameters.fromJson({
     outboundIcs20TransfersEnabled: true,
   },
   stakeParams: {
-    unbondingEpochs: '2',
-    activeValidatorLimit: '80',
-    baseRewardRate: '30000',
-    slashingPenaltyMisbehavior: '10000000',
-    slashingPenaltyDowntime: '10000',
-    signedBlocksWindowLen: '10000',
-    missedBlocksMaximum: '9500',
+    unbondingEpochs: 2n,
+    activeValidatorLimit: 80n,
+    baseRewardRate: 30000n,
+    slashingPenaltyMisbehavior: 10000000n,
+    slashingPenaltyDowntime: 10000n,
+    signedBlocksWindowLen: 10000n,
+    missedBlocksMaximum: 9500n,
   },
   feeParams: {},
   distributionsParams: {
-    stakingIssuancePerBlock: '1',
+    stakingIssuancePerBlock: 1n,
   },
 });
