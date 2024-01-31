@@ -29,8 +29,8 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
           value: {
             amount: balanceOfDenom.amount,
             denom: new DenomMetadata({
-              display: balanceOfDenom.denom.display,
-              denomUnits: [balanceOfDenom.denom],
+              display: balanceOfDenom.denomMetadata.display,
+              denomUnits: balanceOfDenom.denomMetadata.denomUnits,
             }),
           },
         },
