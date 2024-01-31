@@ -86,7 +86,7 @@ export default function InputToken({
         <div className='flex items-start gap-2'>
           {feeAsString && (
             <>
-              <img src='/fuel.svg' alt='Gas fee' className='h-5 w-5' />
+              <img src='/fuel.svg' alt='Gas fee' className='size-5' />
               <p className='font-bold text-muted-foreground'>{feeAsString}</p>
             </>
           )}

@@ -146,14 +146,14 @@ describe('Send Slice', () => {
     const amount = '1';
     const recipient =
       'penumbra1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvxneea442q63sumem7r096p7rd2tywm2v6ppc4';
-    const memo = 'hello'!;
+    const memo = 'hello';
     const mockFee = new Fee({ amount: { hi: 1n, lo: 2n } });
 
     beforeEach(() => {
       vi.spyOn(viewClient, 'addressByIndex').mockResolvedValue(new AddressByIndexResponse());
 
       vi.spyOn(viewClient, 'transactionPlanner').mockResolvedValue(
-        new TransactionPlannerResponse({ plan: { fee: mockFee } }),
+        new TransactionPlannerResponse({ plan: { transactionParameters: { fee: mockFee } } }),
       );
     });
 
