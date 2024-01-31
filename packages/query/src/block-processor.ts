@@ -119,6 +119,9 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       if (compactBlock.gasPrices) await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
 
+      if (compactBlock.appParametersUpdated)
+        await this.indexedDb.saveAppParams(await this.querier.app.appParams());
+
       // wasm view server scan
       // - decrypts new notes
       // - decrypts new swaps
@@ -168,7 +171,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       // if a new record involves a state commitment, scan all block tx
       if (spentNullifiers.size || recordsByCommitment.size) {
         // this is a network query
-        const { transactions: blockTx } = await this.querier.app.txsByHeight(compactBlock.height);
+        const blockTx = await this.querier.app.txsByHeight(compactBlock.height);
 
         // identify tx that involve a new record
         // - compare nullifiers

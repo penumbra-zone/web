@@ -32,6 +32,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 import { Jsonified } from './jsonified';
 import { Note } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
+import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1alpha1/app_pb';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -62,6 +63,8 @@ export interface IndexedDbInterface {
   saveScanResult(updates: ScanBlockResult): Promise<void>;
   getFmdParams(): Promise<FmdParameters | undefined>;
   saveFmdParams(params: FmdParameters): Promise<void>;
+  getAppParams(): Promise<AppParameters | undefined>;
+  saveAppParams(params: AppParameters): Promise<void>;
   getAllSwaps(): Promise<SwapRecord[]>;
   getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined>;
   saveSwap(note: SwapRecord): Promise<void>;
@@ -100,6 +103,10 @@ export interface PenumbraDb extends DBSchema {
   TREE_COMMITMENTS: {
     key: StoreCommitment['commitment']['inner']; // base64
     value: StoreCommitment;
+  };
+  APP_PARAMETERS: {
+    key: 'params';
+    value: Jsonified<AppParameters>;
   };
   FMD_PARAMETERS: {
     key: 'params';

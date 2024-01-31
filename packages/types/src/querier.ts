@@ -1,8 +1,4 @@
-import {
-  AppParameters,
-  TransactionsByHeightResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1alpha1/app_pb';
-import { ChainParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1alpha1/app_pb';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
 import {
   AssetId,
@@ -27,8 +23,7 @@ export interface RootQuerierInterface {
 
 export interface AppQuerierInterface {
   appParams(): Promise<AppParameters>;
-  chainParams(): Promise<ChainParameters>;
-  txsByHeight(height: bigint): Promise<TransactionsByHeightResponse>;
+  txsByHeight(blockHeight: bigint): Promise<Transaction[]>;
 }
 
 export interface CompactBlockRangeParams {

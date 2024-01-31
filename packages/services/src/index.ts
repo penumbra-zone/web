@@ -57,7 +57,13 @@ export class Services implements ServicesInterface {
 
   async initializeWalletServices(): Promise<WalletServices> {
     const { walletId, fullViewingKey } = await this.config.getWallet();
-    const { chainId, epochDuration } = await this.querier.app.chainParams();
+    const params = await this.querier.app.appParams();
+    if (!params.sctParams?.epochDuration) throw new Error('Epoch duration unknown');
+    console.log('initializeWalletServices appParameters', params);
+    const {
+      chainId,
+      sctParams: { epochDuration },
+    } = params;
 
     const indexedDb = await IndexedDb.initialize({
       chainId,
