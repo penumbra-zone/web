@@ -10,6 +10,7 @@ import { SendAssetBalanceLoader, SendForm } from './send/send-form.tsx';
 import IbcForm, { IbcAssetBalanceLoader } from './send/ibc/ibc-form.tsx';
 import { Receive } from './send/receive.tsx';
 import { ErrorBoundary } from './shared/error-boundary.tsx';
+import { SwapLayout, SwapLoader } from './swap/layout.tsx';
 
 export const rootRouter = createHashRouter([
   {
@@ -56,6 +57,11 @@ export const rootRouter = createHashRouter([
             element: <IbcForm />,
           },
         ],
+      },
+      {
+        path: PagePath.SWAP,
+        loader: SwapLoader,
+        element: <SwapLayout />,
       },
       {
         path: PagePath.TRANSACTION_DETAILS,

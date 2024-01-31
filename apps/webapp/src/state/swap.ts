@@ -1,104 +1,101 @@
-import { localAssets } from '@penumbra-zone/constants';
-import { AllSlices, SliceCreator } from './index.ts';
+import { AllSlices, SliceCreator } from './index';
+import { Selection } from './types';
+import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
+import { toBaseUnit } from '@penumbra-zone/types';
+import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { getAddressByIndex } from '../fetchers/address';
+import BigNumber from 'bignumber.js';
+import { planWitnessBuildBroadcast } from './helpers';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-
-export enum SwapInputs {
-  PAY = 'pay',
-  RECEIVE = 'receive',
-}
-
-export interface SwapValidationFields {
-  pay: boolean;
-}
-
-export interface SwapAssetInfo {
-  amount: string;
-  asset: DenomMetadata;
-  balance?: number;
-}
 
 export interface SwapSlice {
-  pay: SwapAssetInfo;
-  receive: SwapAssetInfo;
-  validationErrors: SwapValidationFields;
-  setAmount: (type: SwapInputs) => (amount: string) => void;
-  setAsset: (type: SwapInputs) => (asset: AssetId) => void;
-  replaceAsset: () => void;
-  setAssetBalance: (amount: number) => void;
+  assetIn: Selection | undefined;
+  setAssetIn: (selection: Selection) => void;
+  amount: string;
+  setAmount: (amount: string) => void;
+  assetOut: DenomMetadata | undefined;
+  setAssetOut: (metadata: DenomMetadata) => void;
+  initiateSwapTx: (toastFn: typeof toast) => Promise<void>;
+  txInProgress: boolean;
 }
 
 export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
   return {
-    pay: {
-      amount: '',
-      asset: localAssets[0]!,
-      balance: 0,
-    },
-    receive: {
-      amount: '',
-      asset: localAssets[1]!,
-    },
-    validationErrors: {
-      pay: false,
-    },
-    setAmount: type => amount => {
+    assetIn: undefined,
+    setAssetIn: token => {
       set(state => {
-        state.swap[type].amount = amount;
+        state.swap.assetIn = token;
+      });
+    },
+    assetOut: undefined,
+    setAssetOut: denom => {
+      set(state => {
+        state.swap.assetOut = denom;
+      });
+    },
+    amount: '',
+    setAmount: amount => {
+      set(state => {
+        state.swap.amount = amount;
+      });
+    },
+    txInProgress: false,
+    initiateSwapTx: async toastFn => {
+      set(state => {
+        state.swap.txInProgress = true;
       });
 
-      if (type === SwapInputs.PAY) {
-        // TODO: Finish later
-        // const { balance } = get().swap.pay;
-        // set(state => {
-        // state.swap.validationErrors.pay = validateAmount(amount, balance!);
-        // });
+      const { dismiss } = toastFn(loadingTxToast);
+
+      try {
+        const req = await assembleRequest(get().swap);
+        const txHash = await planWitnessBuildBroadcast(req);
+        dismiss();
+        toastFn(successTxToast(txHash));
+
+        // Reset form
+        set(state => {
+          state.send.amount = '';
+        });
+      } catch (e) {
+        toastFn(errorTxToast(e));
+        throw e;
+      } finally {
+        set(state => {
+          state.send.txInProgress = false;
+        });
+        dismiss();
       }
-    },
-    setAsset: type => asset => {
-      let payAsset = get().swap.pay.asset;
-      let receiveAsset = get().swap.receive.asset;
-
-      const selectedAsset = localAssets.find(i => asset.equals(i.penumbraAssetId))!;
-
-      // checking if we set the same asset in the pay (receive) field as
-      // in the receive (pay) field, then the value of the receive (pay)
-      // field is undefined
-      if (type === SwapInputs.PAY) {
-        if (selectedAsset.display === receiveAsset.display) {
-          receiveAsset = localAssets.find(i => i.display !== selectedAsset.display)!;
-        }
-        payAsset = selectedAsset;
-      } else {
-        if (selectedAsset.display === payAsset.display) {
-          payAsset = localAssets.find(i => i.display !== selectedAsset.display)!;
-        }
-        receiveAsset = selectedAsset;
-      }
-
-      set(state => {
-        state.swap.pay.asset = payAsset;
-        state.swap.receive.asset = receiveAsset;
-      });
-    },
-    setAssetBalance: () => {
-      // TODO: Finish later
-      // const { amount } = get().swap.pay;
-      // set(state => {
-      // state.swap.pay.balance = balance;
-      // state.swap.validationErrors.pay = validateAmount(amount, balance);
-      // });
-    },
-    replaceAsset: () => {
-      const pay = get().swap.pay;
-      const receive = get().swap.receive;
-
-      set(state => {
-        state.swap.pay = { ...receive, balance: 0 };
-        state.swap.receive = { amount: pay.amount, asset: pay.asset };
-      });
     },
   };
+};
+
+const assembleRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
+  if (assetIn?.accountIndex === undefined || !assetIn.asset || !assetOut?.penumbraAssetId)
+    throw new Error('missing selected tokens');
+
+  return new TransactionPlannerRequest({
+    swaps: [
+      {
+        targetAsset: assetOut.penumbraAssetId,
+        value: {
+          amount: toBaseUnit(BigNumber(amount), assetIn.asset.denom.exponent),
+          assetId: assetIn.asset.assetId,
+        },
+        claimAddress: await getAddressByIndex(assetIn.accountIndex),
+        // TODO: Calculate this properly in subsequent PR
+        //       Asset Id should almost certainly be upenumbra,
+        //       may need to indicate native denom in registry
+        fee: {
+          amount: toBaseUnit(BigNumber(amount), assetIn.asset.denom.exponent),
+          assetId: assetIn.asset.assetId,
+        },
+      },
+    ],
+    source: new AddressIndex({ account: assetIn.accountIndex }),
+  });
 };
 
 export const swapSelector = (state: AllSlices) => state.swap;

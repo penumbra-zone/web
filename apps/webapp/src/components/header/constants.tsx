@@ -17,14 +17,14 @@ export const headerLinks: HeaderLink[] = [
     href: PagePath.DASHBOARD,
     label: 'Dashboard',
     active: true,
-    subLinks: [PagePath.DASHBOARD, PagePath.TRANSACTIONS, PagePath.NFTS],
+    subLinks: [PagePath.TRANSACTIONS, PagePath.NFTS],
     mobileIcon: <BoxIcon />,
   },
   {
     href: PagePath.SEND,
     label: 'Send',
     active: true,
-    subLinks: [PagePath.SEND, PagePath.RECEIVE, PagePath.IBC],
+    subLinks: [PagePath.RECEIVE, PagePath.IBC],
     mobileIcon: <ArrowTopRightIcon className='size-5 text-muted-foreground' />,
   },
   {

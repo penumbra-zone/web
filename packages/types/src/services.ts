@@ -7,6 +7,7 @@ export interface WalletServices {
   viewServer: ViewServerInterface;
   blockProcessor: BlockProcessorInterface;
   indexedDb: IndexedDbInterface;
+  querier: RootQuerierInterface;
 }
 
 export interface ServicesInterface {

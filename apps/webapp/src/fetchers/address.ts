@@ -35,13 +35,15 @@ export const getAddressByIndex = async (account: number | undefined): Promise<Ad
   const req = new AddressByIndexRequest();
   if (account) req.addressIndex = new AddressIndex({ account });
   const res = await viewClient.addressByIndex(req);
-  return res.address!;
+  if (!res.address) throw new Error('Address not in getAddressByIndex response');
+  return res.address;
 };
 
 export const getEphemeralAddress = async (account: number): Promise<Address> => {
   const req = new EphemeralAddressRequest({ addressIndex: { account } });
   const res = await viewClient.ephemeralAddress(req);
-  return res.address!;
+  if (!res.address) throw new Error('Address not in getEphemeralAddress response');
+  return res.address;
 };
 
 export const getAccountAddr = async (index: number, ephemeral: boolean) => {

@@ -9,7 +9,7 @@ import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tender
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Selection } from './types';
-import { viewClient, ibcClient } from '../clients/grpc';
+import { ibcClient, viewClient } from '../clients/grpc';
 import { planWitnessBuildBroadcast } from './helpers';
 
 export interface IbcSendSlice {

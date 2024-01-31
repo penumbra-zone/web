@@ -15,8 +15,7 @@ export const Navbar = () => {
             to={link.href}
             className={cn(
               'font-bold py-[10px] select-none',
-              link.subLinks &&
-                link.subLinks.includes(pathname) &&
+              (link.href === pathname || link.subLinks?.includes(pathname)) &&
                 'bg-button-gradient-secondary px-[30px] rounded-lg',
             )}
           >

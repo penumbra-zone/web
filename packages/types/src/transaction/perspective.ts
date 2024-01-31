@@ -12,6 +12,10 @@ import {
   SpendView,
   SpendView_Opaque,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
+import {
+  SwapView,
+  SwapView_Opaque,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
 
 export const viewActionFromEmptyPerspective = (action: Action): ActionView | undefined => {
   switch (action.action.case) {
@@ -38,6 +42,20 @@ export const viewActionFromEmptyPerspective = (action: Action): ActionView | und
               case: 'opaque',
               value: new OutputView_Opaque({
                 output: action.action.value,
+              }),
+            },
+          }),
+        },
+      });
+    case 'swap':
+      return new ActionView({
+        actionView: {
+          case: 'swap',
+          value: new SwapView({
+            swapView: {
+              case: 'opaque',
+              value: new SwapView_Opaque({
+                swap: action.action.value,
               }),
             },
           }),

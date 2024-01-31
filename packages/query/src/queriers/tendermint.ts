@@ -6,7 +6,11 @@ import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 // Should add more errors as we discover them
-const knownTendermintErrors = ['proof did not verify', 'is not a valid field element'];
+const knownTendermintErrors = [
+  'proof did not verify',
+  'is not a valid field element',
+  'is not a valid SCT root',
+];
 
 export class TendermintQuerier implements TendermintQuerierInterface {
   private readonly client: PromiseClient<typeof TendermintProxyService>;

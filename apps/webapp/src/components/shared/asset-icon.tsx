@@ -5,7 +5,9 @@ import { useMemo } from 'react';
 export const AssetIcon = ({ name }: { name: string }) => {
   const icon = useMemo(() => {
     const assetImage = localAssets.find(i => i.display === name)?.images[0];
-    return assetImage?.png ?? assetImage?.svg;
+    // Image default is "" and thus cannot do nullish-coalescing
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    return assetImage?.png || assetImage?.svg;
   }, [name]);
 
   return (
