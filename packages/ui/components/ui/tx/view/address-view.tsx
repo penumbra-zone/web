@@ -23,7 +23,7 @@ export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps
       ? !view.addressView.value.index?.randomizer.every(v => v === 0) // Randomized (and thus, a one-time address) if the randomizer is not all zeros.
       : undefined;
 
-  const addressIndexLabel = isOneTimeAddress ? 'One-time Address for Account #' : 'Account #';
+  const addressIndexLabel = isOneTimeAddress ? 'IBC Deposit Address for Account #' : 'Account #';
 
   copyable = isOneTimeAddress ? false : copyable;
 
