@@ -135,12 +135,8 @@ const testData = [
     display: 'lpnft_closed_plpid1fkf3tlv500vgzwc6dkc7g9wnuv6rzezhefefdywq5tt4lyl97rgsd6j689',
     name: '',
     symbol: '',
-    uri: '',
-    uriHash: '',
     penumbraAssetId: {
       inner: '+q9m+F1um57vD6mtzpp4zsr4uY6llawZK4osfpNimQc=',
-      altBech32m: '',
-      altBaseDenom: '',
     },
   }),
   DenomMetadata.fromJson({
@@ -154,12 +150,8 @@ const testData = [
     display: 'gm',
     name: '',
     symbol: '',
-    uri: '',
-    uriHash: '',
     penumbraAssetId: {
       inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=',
-      altBech32m: '',
-      altBaseDenom: '',
     },
   }),
   DenomMetadata.fromJson({
@@ -175,12 +167,8 @@ const testData = [
     display: 'lpnft_withdrawn_plpid1fkf3tlv500vgzwc6dkc7g9wnuv6rzezhefefdywq5tt4lyl97rgsd6j689',
     name: '',
     symbol: '',
-    uri: '',
-    uriHash: '',
     penumbraAssetId: {
       inner: 'IYAlwlH0ld1wsRLlnYyl4ItsVeukLp4e7/U/Z+6opxA=',
-      altBech32m: '',
-      altBaseDenom: '',
     },
   }),
   DenomMetadata.fromJson({
@@ -194,12 +182,8 @@ const testData = [
     display: 'penumbra',
     name: '',
     symbol: '',
-    uri: '',
-    uriHash: '',
     penumbraAssetId: {
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
-      altBech32m: '',
-      altBaseDenom: '',
     },
   }),
   DenomMetadata.fromJson({
@@ -215,12 +199,8 @@ const testData = [
     display: 'lpnft_opened_plpid1fkf3tlv500vgzwc6dkc7g9wnuv6rzezhefefdywq5tt4lyl97rgsd6j689',
     name: '',
     symbol: '',
-    uri: '',
-    uriHash: '',
     penumbraAssetId: {
       inner: 'ZagbowbVlBeZi5bMUZ3jCf5KDaOipWMSP7iVM/O+PQc=',
-      altBech32m: '',
-      altBaseDenom: '',
     },
   }),
   DenomMetadata.fromJson({
@@ -249,12 +229,8 @@ const testData = [
     display: 'delegation_penumbravalid1grwuc89mjkjfjnpey0qaxt0kzy70mhqf5enwzr5tp77jy6mrxy9swy78ph',
     name: '',
     symbol: '',
-    uri: '',
-    uriHash: '',
     penumbraAssetId: {
       inner: 'hByoL6SVVg9HOwBcMy3TiiJ3Z+OTjhQVi5APR020BAM=',
-      altBech32m: '',
-      altBaseDenom: '',
     },
   }),
   DenomMetadata.fromJson({
@@ -270,12 +246,8 @@ const testData = [
     display: 'lpnft_claimed_plpid1fkf3tlv500vgzwc6dkc7g9wnuv6rzezhefefdywq5tt4lyl97rgsd6j689',
     name: '',
     symbol: '',
-    uri: '',
-    uriHash: '',
     penumbraAssetId: {
       inner: 'mNS0j9YDbrEsQLitqlA9aDJq1NHFJRgYQQCZMgBjlgM=',
-      altBech32m: '',
-      altBaseDenom: '',
     },
   }),
   DenomMetadata.fromJson({
@@ -289,12 +261,8 @@ const testData = [
     display: 'gn',
     name: '',
     symbol: '',
-    uri: '',
-    uriHash: '',
     penumbraAssetId: {
       inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=',
-      altBech32m: '',
-      altBaseDenom: '',
     },
   }),
 ];

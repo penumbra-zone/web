@@ -1,4 +1,4 @@
-import { Asset } from '@penumbra-zone/types';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 export interface AssetPattens {
   lpNftPattern: RegExp;
@@ -16,20 +16,15 @@ export const assetPatterns: AssetPattens = {
   votingReceiptPattern: new RegExp('^voted_on_'),
 };
 
-// TODO: This should only have things like icon or other fields not available in assets proto
-export const assets: Asset[] = [
+export const assets: DenomMetadata[] = [
   {
     base: 'ugm',
     display: 'gm',
     description: '',
     name: '',
     symbol: '',
-    uri: '',
-    uriHash: '',
     penumbraAssetId: {
       inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=',
-      altBaseDenom: '',
-      altBech32: '',
     },
     denomUnits: [
       {
@@ -55,14 +50,9 @@ export const assets: Asset[] = [
     description: '',
     name: '',
     symbol: '',
-    uri: '',
-    uriHash: '',
     /** @todo: Figure out a better long-term URL for this. */
-    icon: 'https://raw.githubusercontent.com/penumbra-zone/web/main/apps/webapp/public/favicon.png',
     penumbraAssetId: {
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
-      altBaseDenom: '',
-      altBech32: '',
     },
     denomUnits: [
       {
@@ -89,12 +79,8 @@ export const assets: Asset[] = [
     description: '',
     name: '',
     symbol: '',
-    uri: '',
-    uriHash: '',
     penumbraAssetId: {
       inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=',
-      altBaseDenom: '',
-      altBech32: '',
     },
     denomUnits: [
       {
@@ -120,13 +106,8 @@ export const assets: Asset[] = [
     description: '',
     name: '',
     symbol: '',
-    uri: '',
-    uriHash: '',
-    icon: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/axelar/images/usdc.svg',
     penumbraAssetId: {
       inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
-      altBaseDenom: '',
-      altBech32: '',
     },
     denomUnits: [
       {
@@ -147,12 +128,8 @@ export const assets: Asset[] = [
     description: '',
     name: '',
     symbol: '',
-    uri: '',
-    uriHash: '',
     penumbraAssetId: {
       inner: '6KBVsPINa8gWSHhfH+kAFJC4afEJA3EtuB2HyCqJUws=',
-      altBaseDenom: '',
-      altBech32: '',
     },
     denomUnits: [
       {
@@ -162,4 +139,4 @@ export const assets: Asset[] = [
       },
     ],
   },
-];
+].map(dm => DenomMetadata.fromJson(dm));
