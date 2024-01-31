@@ -8,6 +8,8 @@ import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/c
 import { Code, ConnectError } from '@connectrpc/connect';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { IndexedDbInterface, RootQuerierInterface } from '@penumbra-zone/types';
+import { gasPrices } from './gas-prices';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
 async function getDenomMetadata(
   indexedDb: IndexedDbInterface,
@@ -43,6 +45,11 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
     chainParams,
     fmdParams,
   });
+
+  const fetchedGasPrices = await gasPrices(req, ctx);
+  if (fetchedGasPrices.gasPrices) {
+    planner.setGasPrices(new GasPrices(fetchedGasPrices.gasPrices));
+  }
 
   if (req.expiryHeight) planner.expiryHeight(req.expiryHeight);
   if (req.memo) planner.memo(req.memo);

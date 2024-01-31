@@ -1,14 +1,15 @@
 import { Button } from '@penumbra-zone/ui';
-import { useStore } from '../../state';
-import { sendSelector, sendValidationErrors } from '../../state/send';
+import { useStore } from '../../../state/index.ts';
+import { sendSelector, sendValidationErrors } from '../../../state/send.ts';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
-import { InputBlock } from '../shared/input-block';
-import InputToken from '../shared/input-token';
+import { InputBlock } from '../../shared/input-block';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances';
+import { AccountBalance, getBalancesByAccount } from '../../../fetchers/balances';
 import { useMemo } from 'react';
-import { penumbraAddrValidation } from './helpers';
-import { throwIfExtNotInstalled } from '../../fetchers/is-connected';
+import { penumbraAddrValidation } from '../helpers';
+import { throwIfExtNotInstalled } from '../../../fetchers/is-connected';
+import InputToken from '../../shared/input-token.tsx';
+import { useRefreshFee } from './use-refresh-fee.ts';
 
 export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
   throwIfExtNotInstalled();
@@ -36,6 +37,7 @@ export const SendForm = () => {
     amount,
     recipient,
     memo,
+    fee,
     setAmount,
     setSelection,
     setRecipient,
@@ -43,6 +45,8 @@ export const SendForm = () => {
     sendTx,
     txInProgress,
   } = useStore(sendSelector);
+
+  useRefreshFee();
 
   const validationErrors = useMemo(() => {
     return sendValidationErrors(selection?.asset, amount, recipient);
@@ -84,7 +88,7 @@ export const SendForm = () => {
           },
         ]}
         balances={accountBalances}
-        tempPrice={1}
+        fee={fee}
       />
       <InputBlock
         label='Memo'

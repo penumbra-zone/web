@@ -8,8 +8,9 @@ import { AssetBalance } from '../fetchers/balances';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Selection } from './types';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { getAddressByIndex } from '../fetchers/address.ts';
-import { planWitnessBuildBroadcast } from './helpers.ts';
+import { getAddressByIndex } from '../fetchers/address';
+import { getTransactionPlan, planWitnessBuildBroadcast } from './helpers.ts';
+import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
 export interface SendSlice {
   selection: Selection | undefined;
@@ -20,6 +21,8 @@ export interface SendSlice {
   setRecipient: (addr: string) => void;
   memo: string;
   setMemo: (txt: string) => void;
+  fee: Fee | undefined;
+  refreshFee: () => Promise<void>;
   sendTx: (toastFn: typeof toast) => Promise<void>;
   txInProgress: boolean;
 }
@@ -30,6 +33,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     amount: '',
     recipient: '',
     memo: '',
+    fee: undefined,
     txInProgress: false,
     setAmount: amount => {
       set(state => {
@@ -49,6 +53,25 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     setMemo: txt => {
       set(state => {
         state.send.memo = txt;
+      });
+    },
+    refreshFee: async () => {
+      const { amount, recipient, selection } = get().send;
+
+      if (!amount || !recipient || !selection) {
+        set(state => {
+          state.send.fee = undefined;
+        });
+        return;
+      }
+
+      const txnPlanReq = await assembleRequest(get().send);
+      const plan = await getTransactionPlan(txnPlanReq);
+      const fee = plan?.transactionParameters?.fee;
+      if (!fee?.amount) return;
+
+      set(state => {
+        state.send.fee = fee;
       });
     },
     sendTx: async toastFn => {

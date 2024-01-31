@@ -1,10 +1,23 @@
 import { Input, InputProps } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { displayAmount, fromBaseUnitAmount } from '@penumbra-zone/types';
+import { fromBaseUnitAmount, joinLoHiAmount } from '@penumbra-zone/types';
 import SelectTokenModal from './select-token-modal';
 import { Validation, validationResult } from './validation-result';
-import { AccountBalance } from '../../fetchers/balances';
+import { AccountBalance, AssetBalance } from '../../fetchers/balances';
 import { Selection } from '../../state/types';
+import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+
+const PENUMBRA_FEE_DENOMINATOR = 1000;
+
+const getFeeAsString = (fee: Fee | undefined) => {
+  if (!fee?.amount) return '';
+  return `${(Number(joinLoHiAmount(fee.amount)) / PENUMBRA_FEE_DENOMINATOR).toString()} penumbra`;
+};
+
+const getCurrentBalance = (assetBalance: AssetBalance | undefined) =>
+  assetBalance
+    ? fromBaseUnitAmount(assetBalance.amount, assetBalance.denom.exponent).toFormat()
+    : '0';
 
 interface InputTokenProps extends InputProps {
   label: string;
@@ -16,7 +29,7 @@ interface InputTokenProps extends InputProps {
   setSelection: (selection: Selection) => void;
   validations?: Validation[];
   balances: AccountBalance[];
-  tempPrice: number;
+  fee: Fee | undefined;
 }
 
 export default function InputToken({
@@ -29,10 +42,13 @@ export default function InputToken({
   inputClassName,
   setSelection,
   balances,
-  tempPrice,
+  fee,
   ...props
 }: InputTokenProps) {
   const vResult = validationResult(value, validations);
+
+  const currentBalance = getCurrentBalance(selection?.asset);
+  const feeAsString = getFeeAsString(fee);
 
   return (
     <div
@@ -67,24 +83,17 @@ export default function InputToken({
       </div>
 
       <div className='mt-[6px] flex items-center justify-between gap-2'>
-        <p
-          className={cn(
-            'break-all md:test-[12px] xl:text-base font-bold text-light-brown',
-            value && 'text-muted-foreground',
+        <div className='flex items-start gap-2'>
+          {feeAsString && (
+            <>
+              <img src='/fuel.svg' alt='Gas fee' className='size-5' />
+              <p className='font-bold text-muted-foreground'>{feeAsString}</p>
+            </>
           )}
-        >
-          ${displayAmount(Number(value) * tempPrice)}
-        </p>
+        </div>
         <div className='flex items-start gap-1'>
           <img src='./wallet.svg' alt='Wallet' className='size-5' />
-          <p className='font-bold text-muted-foreground'>
-            {selection?.asset
-              ? fromBaseUnitAmount(
-                  selection.asset.amount,
-                  selection.asset.denom.exponent,
-                ).toFormat()
-              : '0'}
-          </p>
+          <p className='font-bold text-muted-foreground'>{currentBalance}</p>
         </div>
       </div>
     </div>

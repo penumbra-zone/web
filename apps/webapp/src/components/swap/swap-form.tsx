@@ -33,7 +33,7 @@ export const SwapForm = () => {
         }}
         validations={[]}
         balances={accountBalances}
-        tempPrice={1}
+        fee={undefined}
       />
       <AssetOutBox balances={accountBalances} />
       <Button type='submit' variant='gradient' className='mt-3' size='lg' disabled={false}>
