@@ -1,13 +1,13 @@
 import { AssetBalance } from '../../fetchers/balances';
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTrigger } from '@penumbra-zone/ui';
 import { AssetIcon } from '../shared/asset-icon';
-import { assets } from '@penumbra-zone/constants/assets';
-import { Asset } from '@penumbra-zone/types';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { localAssets } from '@penumbra-zone/constants';
 
 interface AssetOutSelectorProps {
   balances: AssetBalance[];
-  assetOut: Asset | undefined;
-  setAssetOut: (asset: Asset) => void;
+  assetOut: DenomMetadata | undefined;
+  setAssetOut: (denom: DenomMetadata) => void;
 }
 
 export const AssetOutSelector = ({ balances, setAssetOut, assetOut }: AssetOutSelectorProps) => {
@@ -24,7 +24,7 @@ export const AssetOutSelector = ({ balances, setAssetOut, assetOut }: AssetOutSe
           <DialogHeader className='border-b'>Select asset</DialogHeader>
           <div className='flex flex-col gap-4 px-[30px]'>
             <div className='flex flex-col gap-2'>
-              {assets.map(a => (
+              {localAssets.map(a => (
                 <div key={a.display} className='flex flex-col'>
                   <DialogClose>
                     <div

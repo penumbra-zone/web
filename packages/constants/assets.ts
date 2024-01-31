@@ -1,4 +1,5 @@
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { base64ToUint8Array } from '@penumbra-zone/types';
 
 export interface AssetPattens {
   lpNftPattern: RegExp;
@@ -17,135 +18,125 @@ export const assetPatterns: AssetPattens = {
 };
 
 export const localAssets: DenomMetadata[] = [
-  {
-    base: 'ugm',
-    display: 'gm',
-    description: '',
-    name: '',
-    symbol: '',
-    penumbraAssetId: {
-      inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=',
-    },
-    denomUnits: [
-      {
-        aliases: [],
-        denom: 'gm',
-        exponent: 6,
-      },
-      {
-        aliases: [],
-        denom: 'mgm',
-        exponent: 3,
-      },
-      {
-        aliases: [],
-        denom: 'ugm',
-        exponent: 0,
-      },
-    ],
-  },
-  {
+  new DenomMetadata({
     base: 'upenumbra',
     display: 'penumbra',
-    description: '',
-    name: '',
-    symbol: '',
+    penumbraAssetId: {
+      inner: base64ToUint8Array('KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA='),
+    },
     images: [
       {
         png: 'https://raw.githubusercontent.com/penumbra-zone/web/main/apps/webapp/public/favicon.png',
       },
     ],
-    penumbraAssetId: {
-      inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
-    },
     denomUnits: [
       {
-        aliases: [],
         denom: 'penumbra',
         exponent: 6,
       },
       {
-        aliases: [],
         denom: 'mpenumbra',
         exponent: 3,
       },
       {
-        aliases: [],
         denom: 'upenumbra',
         exponent: 0,
       },
     ],
-  },
-
-  {
-    base: 'ugn',
-    display: 'gn',
-    description: '',
-    name: '',
-    symbol: '',
+  }),
+  new DenomMetadata({
+    base: 'ugm',
+    display: 'gm',
     penumbraAssetId: {
-      inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=',
+      inner: base64ToUint8Array('HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc='),
     },
     denomUnits: [
       {
-        aliases: [],
+        denom: 'gm',
+        exponent: 6,
+      },
+      {
+        denom: 'mgm',
+        exponent: 3,
+      },
+      {
+        denom: 'ugm',
+        exponent: 0,
+      },
+    ],
+  }),
+  new DenomMetadata({
+    base: 'ugn',
+    display: 'gn',
+    penumbraAssetId: {
+      inner: base64ToUint8Array('nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE='),
+    },
+    denomUnits: [
+      {
         denom: 'gn',
         exponent: 6,
       },
       {
-        aliases: [],
         denom: 'mgn',
         exponent: 3,
       },
       {
-        aliases: [],
         denom: 'ugn',
         exponent: 0,
       },
     ],
-  },
-  {
+  }),
+  new DenomMetadata({
     base: 'wtest_usd',
     display: 'test_usd',
-    description: '',
-    name: '',
-    symbol: '',
+    penumbraAssetId: {
+      inner: base64ToUint8Array('reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg='),
+    },
     images: [
       {
         svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/axelar/images/usdc.svg',
       },
     ],
-    penumbraAssetId: {
-      inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
-    },
     denomUnits: [
       {
-        aliases: [],
         denom: 'test_usd',
         exponent: 18,
       },
       {
-        aliases: [],
         denom: 'wtest_usd',
         exponent: 0,
       },
     ],
-  },
-  {
+  }),
+  new DenomMetadata({
     base: 'cube',
     display: 'cube',
-    description: '',
-    name: '',
-    symbol: '',
     penumbraAssetId: {
-      inner: '6KBVsPINa8gWSHhfH+kAFJC4afEJA3EtuB2HyCqJUws=',
+      inner: base64ToUint8Array('6KBVsPINa8gWSHhfH+kAFJC4afEJA3EtuB2HyCqJUws='),
     },
     denomUnits: [
       {
-        aliases: [],
         denom: 'cube',
         exponent: 0,
       },
     ],
-  },
-].map(dm => DenomMetadata.fromJson(dm));
+  }),
+  new DenomMetadata({
+    base: 'pizza',
+    display: 'pizza',
+    penumbraAssetId: {
+      inner: base64ToUint8Array('nDjzm+ldIrNMJha1anGMDVxpA5cLCPnUYQ1clmHF1gw='),
+    },
+    images: [
+      {
+        svg: 'https://raw.githubusercontent.com/giuspen/cherrytree/356649a8f84cd5068d676185937d61fc8e0450d1/icons/ct_pizza.svg',
+      },
+    ],
+    denomUnits: [
+      {
+        denom: 'pizza',
+        exponent: 0,
+      },
+    ],
+  }),
+];

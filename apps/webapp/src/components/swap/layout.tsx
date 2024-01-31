@@ -6,7 +6,7 @@ import { throwIfExtNotInstalled } from '../../fetchers/is-connected';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
 import { EduPanel } from '../shared/edu-panels/content';
 import { SwapForm } from './swap-form';
-import { assets } from '@penumbra-zone/constants';
+import { localAssets } from '@penumbra-zone/constants';
 
 export const SwapLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
   throwIfExtNotInstalled();
@@ -21,7 +21,7 @@ export const SwapLoader: LoaderFunction = async (): Promise<AccountBalance[]> =>
         asset: balancesByAccount[0]?.balances[0],
       };
 
-      state.swap.assetOut = assets[0];
+      state.swap.assetOut = localAssets[0];
     });
   }
 

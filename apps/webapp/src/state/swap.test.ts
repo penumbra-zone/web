@@ -6,7 +6,7 @@ import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/a
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import { stringToUint8Array } from '@penumbra-zone/types';
 import { Selection } from './types';
-import { assets } from '@penumbra-zone/constants';
+import { localAssets } from '@penumbra-zone/constants';
 
 describe('Swap Slice', () => {
   const assetBalance: AssetBalance = {
@@ -46,8 +46,8 @@ describe('Swap Slice', () => {
 
   test('assetOut can be set', () => {
     expect(useStore.getState().swap.assetOut).toBeUndefined();
-    useStore.getState().swap.setAssetOut(assets[0]!);
-    expect(useStore.getState().swap.assetOut).toBe(assets[0]!);
+    useStore.getState().swap.setAssetOut(localAssets[0]!);
+    expect(useStore.getState().swap.assetOut).toBe(localAssets[0]!);
   });
 
   test('amount can be set', () => {

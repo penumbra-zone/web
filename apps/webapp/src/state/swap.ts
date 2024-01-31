@@ -1,21 +1,22 @@
 import { AllSlices, SliceCreator } from './index';
 import { Selection } from './types';
 import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
-import { Asset, base64ToUint8Array, toBaseUnit } from '@penumbra-zone/types';
+import { toBaseUnit } from '@penumbra-zone/types';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { getAddressByIndex } from '../fetchers/address';
 import BigNumber from 'bignumber.js';
 import { planWitnessBuildBroadcast } from './helpers';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 export interface SwapSlice {
   assetIn: Selection | undefined;
   setAssetIn: (selection: Selection) => void;
   amount: string;
   setAmount: (amount: string) => void;
-  assetOut: Asset | undefined;
-  setAssetOut: (asset: Asset) => void;
+  assetOut: DenomMetadata | undefined;
+  setAssetOut: (metadata: DenomMetadata) => void;
   initiateSwapTx: (toastFn: typeof toast) => Promise<void>;
   txInProgress: boolean;
 }
@@ -78,7 +79,7 @@ const assembleRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
   return new TransactionPlannerRequest({
     swaps: [
       {
-        targetAsset: { inner: base64ToUint8Array(assetOut.penumbraAssetId.inner) },
+        targetAsset: assetOut.penumbraAssetId,
         value: {
           amount: toBaseUnit(BigNumber(amount), assetIn.asset.denom.exponent),
           assetId: assetIn.asset.assetId,

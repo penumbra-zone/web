@@ -3,7 +3,6 @@ import { swapSelector } from '../../state/swap';
 import { AccountBalance, AssetBalance, groupByAsset } from '../../fetchers/balances';
 import { Input } from '@penumbra-zone/ui';
 import { AssetOutSelector } from './asset-out-selector';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types';
 import {
   DenomMetadata,
   ValueView,
@@ -22,9 +21,7 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
     .reduce<AssetBalance[]>(groupByAsset, []);
 
   // TODO: with https://github.com/penumbra-zone/web/issues/392 convert to use `getValueViewByAccount`
-  const balanceOfDenom = aggregatedBalances.find(
-    b => uint8ArrayToBase64(b.assetId.inner) === assetOut?.penumbraAssetId.inner,
-  );
+  const balanceOfDenom = aggregatedBalances.find(b => b.assetId.equals(assetOut?.penumbraAssetId));
   const valueView = balanceOfDenom
     ? new ValueView({
         valueView: {
