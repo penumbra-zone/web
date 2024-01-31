@@ -16,7 +16,7 @@ export const assetPatterns: AssetPattens = {
   votingReceiptPattern: new RegExp('^voted_on_'),
 };
 
-export const assets: DenomMetadata[] = [
+export const localAssets: DenomMetadata[] = [
   {
     base: 'ugm',
     display: 'gm',
@@ -50,7 +50,11 @@ export const assets: DenomMetadata[] = [
     description: '',
     name: '',
     symbol: '',
-    /** @todo: Figure out a better long-term URL for this. */
+    images: [
+      {
+        png: 'https://raw.githubusercontent.com/penumbra-zone/web/main/apps/webapp/public/favicon.png',
+      },
+    ],
     penumbraAssetId: {
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
     },
@@ -106,6 +110,11 @@ export const assets: DenomMetadata[] = [
     description: '',
     name: '',
     symbol: '',
+    images: [
+      {
+        svg: 'https://raw.githubusercontent.com/cosmos/chain-registry/master/axelar/images/usdc.svg',
+      },
+    ],
     penumbraAssetId: {
       inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=',
     },
