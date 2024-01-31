@@ -4,7 +4,8 @@ import { useMemo } from 'react';
 
 export const AssetIcon = ({ name }: { name: string }) => {
   const icon = useMemo(() => {
-    return localAssets.find(i => i.display === name)?.images[0]?.png;
+    const assetImage = localAssets.find(i => i.display === name)?.images[0];
+    return assetImage?.png ?? assetImage?.svg;
   }, [name]);
 
   return (
