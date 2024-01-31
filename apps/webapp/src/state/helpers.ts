@@ -3,6 +3,7 @@ import { viewClient } from '../clients/grpc.ts';
 import { uint8ArrayToHex } from '@penumbra-zone/types';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 import { sha256Hash } from '@penumbra-zone/crypto-web';
+import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 
 export const planWitnessBuildBroadcast = async (
   req: TransactionPlannerRequest,
@@ -12,7 +13,7 @@ export const planWitnessBuildBroadcast = async (
 
   if (!transactionPlan) throw new Error('no plan in response');
 
-  let transaction;
+  let transaction: Transaction | undefined;
   for await (const { status } of viewClient.authorizeAndBuild({ transactionPlan }))
     switch (status.case) {
       case 'buildProgress':
@@ -27,7 +28,7 @@ export const planWitnessBuildBroadcast = async (
 
   const expectId = new TransactionId({ inner: await sha256Hash(transaction.toBinary()) });
 
-  let detectionHeight;
+  let detectionHeight: bigint | undefined;
   for await (const { status } of viewClient.broadcastTransaction({ transaction, awaitDetection }))
     switch (status.case) {
       case 'broadcastSuccess':
