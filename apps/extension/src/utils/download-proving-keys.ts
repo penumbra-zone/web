@@ -7,7 +7,7 @@ import { provingKeys } from '@penumbra-zone/types/src/proving-keys';
 const githubSourceDir =
   'https://github.com/penumbra-zone/penumbra/raw/main/crates/crypto/proof-params/src/gen/';
 
-const binaryFilesDir = path.join('dist/js/bin');
+const binaryFilesDir = path.join('bin');
 
 const downloadProvingKeys = async () => {
   // Check if the bin directory already exists. Subsequent builds will not
