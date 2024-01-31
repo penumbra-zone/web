@@ -8,7 +8,7 @@ import {
   DialogTrigger,
   Input,
 } from '@penumbra-zone/ui';
-import { fromBaseUnitAmount } from '@penumbra-zone/types';
+import { fromBaseUnitAmountAndDenomMetadata } from '@penumbra-zone/types';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { AccountBalance } from '../../fetchers/balances';
 import { AssetIcon } from './asset-icon';
@@ -81,10 +81,7 @@ export default function SelectTokenModal({
                           <p>{k.denomMetadata.display}</p>
                         </div>
                         <p className='flex justify-end'>
-                          {fromBaseUnitAmount(
-                            k.amount,
-                            k.denomMetadata.denomUnits[0]?.exponent,
-                          ).toFormat()}
+                          {fromBaseUnitAmountAndDenomMetadata(k.amount, k.denomMetadata).toFormat()}
                         </p>
                       </div>
                     </DialogClose>

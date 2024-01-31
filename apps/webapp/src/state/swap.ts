@@ -9,6 +9,7 @@ import { getAddressByIndex } from '../fetchers/address';
 import BigNumber from 'bignumber.js';
 import { planWitnessBuildBroadcast } from './helpers';
 import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { getDisplayDenomExponent } from '@penumbra-zone/types/src/denom-metadata';
 
 export interface SwapSlice {
   assetIn: Selection | undefined;
@@ -81,7 +82,10 @@ const assembleRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
       {
         targetAsset: assetOut.penumbraAssetId,
         value: {
-          amount: toBaseUnit(BigNumber(amount), assetIn.asset.denom.exponent),
+          amount: toBaseUnit(
+            BigNumber(amount),
+            getDisplayDenomExponent(assetIn.asset.denomMetadata),
+          ),
           assetId: assetIn.asset.assetId,
         },
         claimAddress: await getAddressByIndex(assetIn.accountIndex),
@@ -89,7 +93,10 @@ const assembleRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
         //       Asset Id should almost certainly be upenumbra,
         //       may need to indicate native denom in registry
         fee: {
-          amount: toBaseUnit(BigNumber(amount), assetIn.asset.denom.exponent),
+          amount: toBaseUnit(
+            BigNumber(amount),
+            getDisplayDenomExponent(assetIn.asset.denomMetadata),
+          ),
           assetId: assetIn.asset.assetId,
         },
       },

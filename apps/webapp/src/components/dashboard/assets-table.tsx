@@ -1,5 +1,5 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
-import { displayUsd, fromBaseUnitAmount } from '@penumbra-zone/types';
+import { displayUsd, fromBaseUnitAmountAndDenomMetadata } from '@penumbra-zone/types';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
 import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances.ts';
@@ -52,9 +52,9 @@ export default function AssetsTable() {
                     <p className='font-mono text-base font-bold'>{asset.denomMetadata.display}</p>
                   </div>
                   <p className='font-mono text-base font-bold'>
-                    {fromBaseUnitAmount(
+                    {fromBaseUnitAmountAndDenomMetadata(
                       asset.amount,
-                      asset.denomMetadata.denomUnits[0]?.exponent,
+                      asset.denomMetadata,
                     ).toFormat()}
                   </p>
                   <p className='font-mono text-base font-bold'>
@@ -85,9 +85,9 @@ export default function AssetsTable() {
                     <TableCell className='w-1/3 text-center font-mono'>
                       <div className='flex flex-col'>
                         <p className='text-base font-bold'>
-                          {fromBaseUnitAmount(
+                          {fromBaseUnitAmountAndDenomMetadata(
                             asset.amount,
-                            asset.denomMetadata.denomUnits[0]?.exponent,
+                            asset.denomMetadata,
                           ).toFormat()}
                         </p>
                       </div>
