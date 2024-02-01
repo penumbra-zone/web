@@ -1,5 +1,9 @@
 import { AllSlices, SliceCreator } from './index';
-import { fromBaseUnitAmount, isPenumbraAddr, toBaseUnit } from '@penumbra-zone/types';
+import {
+  fromBaseUnitAmountAndDenomMetadata,
+  isPenumbraAddr,
+  toBaseUnit,
+} from '@penumbra-zone/types';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import BigNumber from 'bignumber.js';
@@ -11,6 +15,7 @@ import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { getAddressByIndex } from '../fetchers/address';
 import { getTransactionPlan, planWitnessBuildBroadcast } from './helpers.ts';
 import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import { getDisplayDenomExponent } from '@penumbra-zone/types/src/denom-metadata.ts';
 
 export interface SendSlice {
   selection: Selection | undefined;
@@ -113,7 +118,10 @@ const assembleRequest = async ({ amount, recipient, selection, memo }: SendSlice
       {
         address: { altBech32m: recipient },
         value: {
-          amount: toBaseUnit(BigNumber(amount), selection.asset.denom.exponent),
+          amount: toBaseUnit(
+            BigNumber(amount),
+            getDisplayDenomExponent(selection.asset.denomMetadata),
+          ),
           assetId: { inner: selection.asset.assetId.inner },
         },
       },
@@ -126,9 +134,16 @@ const assembleRequest = async ({ amount, recipient, selection, memo }: SendSlice
   });
 };
 
-export const validateAmount = (asset: AssetBalance, amount: string): boolean => {
-  const balanceAmt = fromBaseUnitAmount(asset.amount, asset.denom.exponent);
-  return Boolean(amount) && BigNumber(amount).gt(balanceAmt);
+const validateAmount = (
+  asset: AssetBalance,
+  /**
+   * The amount that a user types into the interface will always be in the
+   * display denomination -- e.g., in `penumbra`, not in `upenumbra`.
+   */
+  amountInDisplayDenom: string,
+): boolean => {
+  const balanceAmt = fromBaseUnitAmountAndDenomMetadata(asset.amount, asset.denomMetadata);
+  return Boolean(amountInDisplayDenom) && BigNumber(amountInDisplayDenom).gt(balanceAmt);
 };
 
 export interface SendValidationFields {

@@ -76,7 +76,7 @@ export const fromBaseUnit = (lo = 0n, hi = 0n, exponent: number): BigNumber => {
  * @param {number} exponent - The exponent to be applied.
  * @returns {LoHi} An object with properties `lo` and `hi`, representing the low and high 64 bits of the multiplied value.
  */
-export const toBaseUnit = (value: BigNumber, exponent: number): LoHi => {
+export const toBaseUnit = (value: BigNumber, exponent = 0): LoHi => {
   const multipliedValue = value.multipliedBy(new BigNumber(10).pow(exponent));
   const bigInt = BigInt(multipliedValue.toFixed());
 

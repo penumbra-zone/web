@@ -1,5 +1,5 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
-import { displayUsd, fromBaseUnitAmount } from '@penumbra-zone/types';
+import { displayUsd, fromBaseUnitAmountAndDenomMetadata } from '@penumbra-zone/types';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
 import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances.ts';
@@ -48,11 +48,14 @@ export default function AssetsTable() {
               {a.balances.map((asset, i) => (
                 <div key={i} className='flex items-center justify-between border-b pb-3'>
                   <div className='flex items-center gap-2'>
-                    <AssetIcon name={asset.denom.display} />
-                    <p className='font-mono text-base font-bold'>{asset.denom.display}</p>
+                    <AssetIcon name={asset.denomMetadata.display} />
+                    <p className='font-mono text-base font-bold'>{asset.denomMetadata.display}</p>
                   </div>
                   <p className='font-mono text-base font-bold'>
-                    {fromBaseUnitAmount(asset.amount, asset.denom.exponent).toFormat()}
+                    {fromBaseUnitAmountAndDenomMetadata(
+                      asset.amount,
+                      asset.denomMetadata,
+                    ).toFormat()}
                   </p>
                   <p className='font-mono text-base font-bold'>
                     {asset.usdcValue == 0 ? '$–' : `$${displayUsd(asset.usdcValue)}`}
@@ -73,14 +76,19 @@ export default function AssetsTable() {
                   <TableRow key={i}>
                     <TableCell className='w-1/3'>
                       <div className='flex items-center gap-2'>
-                        <AssetIcon name={asset.denom.display} />
-                        <p className='font-mono text-base font-bold'>{asset.denom.display}</p>
+                        <AssetIcon name={asset.denomMetadata.display} />
+                        <p className='font-mono text-base font-bold'>
+                          {asset.denomMetadata.display}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell className='w-1/3 text-center font-mono'>
                       <div className='flex flex-col'>
                         <p className='text-base font-bold'>
-                          {fromBaseUnitAmount(asset.amount, asset.denom.exponent).toFormat()}
+                          {fromBaseUnitAmountAndDenomMetadata(
+                            asset.amount,
+                            asset.denomMetadata,
+                          ).toFormat()}
                         </p>
                       </div>
                     </TableCell>

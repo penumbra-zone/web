@@ -2,7 +2,10 @@ import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { AssetBalance } from '../fetchers/balances';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import {
+  AssetId,
+  DenomMetadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import { stringToUint8Array } from '@penumbra-zone/types';
 import { Selection } from './types';
@@ -10,10 +13,10 @@ import { localAssets } from '@penumbra-zone/constants';
 
 describe('Swap Slice', () => {
   const assetBalance: AssetBalance = {
-    denom: {
+    denomMetadata: new DenomMetadata({
       display: 'xyz',
-      exponent: 3,
-    },
+      denomUnits: [{ denom: 'xyz', exponent: 3 }],
+    }),
     assetId: new AssetId({ inner: stringToUint8Array('abcdefg') }),
     amount: new Amount(),
     usdcValue: 1234,

@@ -3,13 +3,17 @@ import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index.ts';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import { sendValidationErrors } from './send.ts';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import {
+  AssetId,
+  DenomMetadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import { viewClient } from '../clients/grpc.ts';
 import {
   AddressByIndexResponse,
   TransactionPlannerResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { Selection } from './types.ts';
 
 vi.mock('../fetchers/address', () => ({
   getAddressByIndex: vi.fn(),
@@ -22,14 +26,14 @@ describe('Send Slice', () => {
         lo: 0n,
         hi: 0n,
       }),
-      denom: { display: 'test_usd', exponent: 18 },
+      denomMetadata: new DenomMetadata({ display: 'test_usd', denomUnits: [{ exponent: 18 }] }),
       usdcValue: 0,
       assetId: new AssetId().fromJson({ inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=' }),
     },
     address:
       'penumbra1e8k5c3ds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uurrgkvtjpny3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd1',
     accountIndex: 0,
-  };
+  } satisfies Selection;
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
