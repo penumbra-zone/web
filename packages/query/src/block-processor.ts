@@ -27,6 +27,7 @@ import {
   SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { backOff } from 'exponential-backoff';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -56,11 +57,14 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   // If syncBlocks() is called multiple times concurrently, they'll all wait for
   // the same promise rather than each starting their own sync process.
-  public async sync(): Promise<void> {
-    this.syncPromise ??= this.syncAndStore().catch(e => {
-      // prefer abort error
-      this.abortController.signal.throwIfAborted();
-      throw e;
+  public sync(): Promise<void> {
+    this.syncPromise ??= backOff(() => this.syncAndStore(), {
+      maxDelay: 30_000, // 30 seconds
+      retry: async (e, attemptNumber) => {
+        console.warn('Sync failure', attemptNumber, e);
+        await this.viewServer.resetTreeToStored();
+        return !this.abortController.signal.aborted;
+      },
     });
     return this.syncPromise;
   }

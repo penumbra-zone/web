@@ -3,7 +3,6 @@ import { BlockProcessor, RootQuerier } from '@penumbra-zone/query';
 import { IndexedDb, syncLastBlockWithLocal } from '@penumbra-zone/storage';
 import { ViewServer } from '@penumbra-zone/wasm-ts';
 import { ServicesInterface, WalletServices } from '@penumbra-zone/types/src/services';
-import { backOff } from 'exponential-backoff';
 
 export interface ServicesConfig {
   grpcEndpoint: string;
@@ -27,30 +26,6 @@ export class Services implements ServicesInterface {
 
     // await startup for any errors
     await this.getWalletServices();
-
-    // void sync to background
-    void this.autoRetrySync();
-  }
-
-  // TODO: anyone holding a reference to the old walletServices may attempt to use it
-  private async autoRetrySync() {
-    await backOff(
-      () => this.getWalletServices().then(({ blockProcessor }) => blockProcessor.sync()),
-      {
-        maxDelay: 30_000, // 30 seconds
-        retry: (e, attemptNumber) => {
-          // don't interfere with deliberate stop
-          if (typeof e === 'string' && e.startsWith('Sync abort')) return false;
-
-          // backoff will swallow the error, so log it
-          console.warn('Sync failure', e);
-          // next caller will re-init services
-          this.walletServicesPromise = undefined;
-          console.log('Sync retry', attemptNumber);
-          return true;
-        },
-      },
-    );
   }
 
   // If getWalletServices() is called multiple times concurrently,
@@ -63,6 +38,7 @@ export class Services implements ServicesInterface {
         throw e;
       });
     }
+    void this.walletServicesPromise.then(({ blockProcessor }) => blockProcessor.sync());
     return this.walletServicesPromise;
   }
 
