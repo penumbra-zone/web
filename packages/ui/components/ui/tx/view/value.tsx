@@ -3,12 +3,13 @@ import { bech32AssetId, fromBaseUnitAmount } from '@penumbra-zone/types';
 import { CopyToClipboard } from '../../copy-to-clipboard';
 import { CopyIcon } from '@radix-ui/react-icons';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
+import { getDisplayDenomExponent } from '@penumbra-zone/types/src/denom-metadata';
 
-interface ValueViewPrpos {
+interface ValueViewProps {
   view: ValueView | undefined;
 }
 
-export const ValueViewComponent = ({ view }: ValueViewPrpos) => {
+export const ValueViewComponent = ({ view }: ValueViewProps) => {
   if (!view) return <></>;
 
   if (view.valueView.case === 'unknownDenom') {
@@ -17,7 +18,7 @@ export const ValueViewComponent = ({ view }: ValueViewPrpos) => {
     const encodedAssetId = bech32AssetId(value.assetId!);
     return (
       <div className='flex font-mono'>
-        <p className='text-[15px] leading-[22px]'>{fromBaseUnitAmount(amount, 1).toFormat()}</p>
+        <p className='text-[15px] leading-[22px]'>{fromBaseUnitAmount(amount, 0).toFormat()}</p>
         <span className='font-mono text-sm italic text-foreground'>{encodedAssetId}</span>
         <CopyToClipboard
           text={encodedAssetId}
@@ -36,8 +37,8 @@ export const ValueViewComponent = ({ view }: ValueViewPrpos) => {
     const value = view.valueView.value;
     const amount = value.amount ?? new Amount();
     const display_denom = value.denom?.display ?? '';
-    // The first denom unit in the list is the display denom, according to cosmos practice
-    const exponent = value.denom?.denomUnits[0]?.exponent ?? 1;
+    const exponent = value.denom ? getDisplayDenomExponent(value.denom) : 0;
+
     return (
       <div className='flex font-mono'>
         {fromBaseUnitAmount(amount, exponent).toFormat()} {display_denom}

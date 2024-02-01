@@ -11,6 +11,7 @@ import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/c
 import { Selection } from './types';
 import { ibcClient, viewClient } from '../clients/grpc';
 import { planWitnessBuildBroadcast } from './helpers';
+import { getDisplayDenomExponent } from '@penumbra-zone/types/src/denom-metadata';
 
 export interface IbcSendSlice {
   selection: Selection | undefined;
@@ -130,8 +131,11 @@ const getPlanRequest = async ({
   return new TransactionPlannerRequest({
     ics20Withdrawals: [
       {
-        amount: toBaseUnit(BigNumber(amount), selection.asset.denom.exponent),
-        denom: { denom: selection.asset.denom.display },
+        amount: toBaseUnit(
+          BigNumber(amount),
+          getDisplayDenomExponent(selection.asset.denomMetadata),
+        ),
+        denom: { denom: selection.asset.denomMetadata.display },
         destinationChainAddress,
         returnAddress,
         timeoutHeight,

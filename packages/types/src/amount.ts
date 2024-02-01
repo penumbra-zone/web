@@ -1,13 +1,22 @@
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import { fromBaseUnit, joinLoHi, splitLoHi } from './lo-hi';
 import BigNumber from 'bignumber.js';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { getDisplayDenomExponent } from './denom-metadata';
 
 export const joinLoHiAmount = (amount: Amount): bigint => {
   return joinLoHi(amount.lo, amount.hi);
 };
 
-export const fromBaseUnitAmount = (amount: Amount, exponent: number): BigNumber => {
+export const fromBaseUnitAmount = (amount: Amount, exponent = 0): BigNumber => {
   return fromBaseUnit(amount.lo, amount.hi, exponent);
+};
+
+export const fromBaseUnitAmountAndDenomMetadata = (
+  amount: Amount,
+  denomMetadata: DenomMetadata,
+): BigNumber => {
+  return fromBaseUnitAmount(amount, getDisplayDenomExponent(denomMetadata));
 };
 
 export const addAmounts = (a: Amount, b: Amount): Amount => {

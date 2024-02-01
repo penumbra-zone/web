@@ -4,12 +4,14 @@ import {
   displayAmount,
   displayUsd,
   fromBaseUnitAmount,
+  fromBaseUnitAmountAndDenomMetadata,
   joinLoHiAmount,
 } from './amount';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
+import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 describe('lohi helpers', () => {
-  it('convertFromBaseUnitAmount works', () => {
+  it('fromBaseUnitAmount works', () => {
     const result = fromBaseUnitAmount(new Amount({ lo: 1000n, hi: 5n }), 6);
     expect(result.toString()).toBe('92233720368547.75908');
   });
@@ -18,6 +20,33 @@ describe('lohi helpers', () => {
     const lo = 18446744073709551615n;
     const hi = 18446744073709551615n;
     expect(joinLoHiAmount(new Amount({ lo, hi }))).toBe(340282366920938463463374607431768211455n);
+  });
+
+  it('fromBaseUnitAmountAndDenomMetadata works', () => {
+    const penumbraDenomMetadata = new DenomMetadata({
+      display: 'penumbra',
+      denomUnits: [
+        {
+          denom: 'penumbra',
+          exponent: 6,
+        },
+        {
+          denom: 'mpenumbra',
+          exponent: 3,
+        },
+        {
+          denom: 'upenumbra',
+          exponent: 0,
+        },
+      ],
+    });
+
+    const result = fromBaseUnitAmountAndDenomMetadata(
+      new Amount({ lo: 123456789n, hi: 0n }),
+      penumbraDenomMetadata,
+    );
+
+    expect(result.toString()).toBe('123.456789');
   });
 });
 
