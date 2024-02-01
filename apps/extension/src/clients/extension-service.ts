@@ -8,7 +8,7 @@ import {
   isTransportMessage,
 } from '@penumbra-zone/transport';
 import { ChromeRuntimeHandlerFn } from '@penumbra-zone/transport/src/chrome-runtime/adapter';
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
+import { jsonOptions } from '@penumbra-zone/types/src/registry';
 import { transportOptions } from './transport-options';
 
 /**
@@ -37,7 +37,7 @@ export const directEntry = (entry: ChromeRuntimeHandlerFn) => (): MessagePort =>
       )
       .catch(error => ({
         requestId,
-        error: errorToJson(ConnectError.from(error), { typeRegistry }),
+        error: errorToJson(ConnectError.from(error), jsonOptions),
       }));
     ourPort.postMessage(transportResponse);
   };

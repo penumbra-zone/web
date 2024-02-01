@@ -9,7 +9,7 @@
  * adapters are available in `./chrome-runtime/stream.ts`
  */
 
-import { Any, AnyMessage, JsonValue, IMessageTypeRegistry } from '@bufbuild/protobuf';
+import { Any, AnyMessage, JsonValue, JsonReadOptions, JsonWriteOptions } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 
 /**
@@ -17,10 +17,10 @@ import { ConnectError } from '@connectrpc/connect';
  */
 
 export class MessageToJson extends TransformStream<AnyMessage, JsonValue> {
-  constructor(typeRegistry: IMessageTypeRegistry) {
+  constructor(jsonOptions: Partial<JsonWriteOptions>) {
     super({
       transform(chunk: AnyMessage, cont: TransformStreamDefaultController<JsonValue>) {
-        const chunkJson = Any.pack(chunk).toJson({ typeRegistry });
+        const chunkJson = Any.pack(chunk).toJson(jsonOptions);
         cont.enqueue(chunkJson);
       },
     });
@@ -32,10 +32,10 @@ export class MessageToJson extends TransformStream<AnyMessage, JsonValue> {
  */
 
 export class JsonToMessage extends TransformStream<JsonValue, AnyMessage> {
-  constructor(typeRegistry: IMessageTypeRegistry) {
+  constructor(jsonOptions: Required<JsonReadOptions>) {
     super({
       transform(chunk: JsonValue, cont: TransformStreamDefaultController<AnyMessage>) {
-        const message = Any.fromJson(chunk, { typeRegistry }).unpack(typeRegistry);
+        const message = Any.fromJson(chunk, jsonOptions).unpack(jsonOptions.typeRegistry);
         cont.enqueue(message);
       },
     });

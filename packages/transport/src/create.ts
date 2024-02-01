@@ -6,7 +6,6 @@ import {
   JsonWriteOptions,
   MethodKind,
   ServiceType,
-  createRegistry,
 } from '@bufbuild/protobuf';
 import {
   ConnectError,
@@ -35,7 +34,7 @@ type AnyUnaryImpl = (i: AnyMessage, ctx: HandlerContext) => Promise<AnyMessage>;
 
 export interface ChannelTransportOptions {
   defaultTimeoutMs?: number;
-  jsonOptions?: Partial<JsonReadOptions & JsonWriteOptions>;
+  jsonOptions: Required<JsonReadOptions> & Partial<JsonWriteOptions>;
   serviceType: ServiceType;
   getPort: (serviceType: string) => MessagePort | Promise<MessagePort>;
 }
@@ -46,10 +45,6 @@ export const createChannelTransport = ({
   defaultTimeoutMs,
   jsonOptions,
 }: ChannelTransportOptions) => {
-  // if you supply your own registry in jsonOptions, it should at minimum
-  // contain message types for this service, or serialization will fail.
-  const typeRegistry = jsonOptions?.typeRegistry ?? createRegistry(serviceType);
-
   const pending = new Map<
     ReturnType<typeof crypto.randomUUID>,
     (response: TransportEvent) => void
@@ -141,7 +136,7 @@ export const createChannelTransport = ({
     port ??= await connect();
 
     const requestId = crypto.randomUUID();
-    const message = Any.pack(request).toJson({ typeRegistry });
+    const message = Any.pack(request).toJson(jsonOptions);
 
     // this promise is resolved by transportListener
     const futureResponse = new Promise<JsonValue | ReadableStream<JsonValue>>((resolve, reject) =>
@@ -171,7 +166,9 @@ export const createChannelTransport = ({
       case MethodKind.Unary: {
         const unaryImpl: AnyUnaryImpl = async function (message) {
           const responseJson = (await request(message)) as JsonValue;
-          const response = Any.fromJson(responseJson, { typeRegistry }).unpack(typeRegistry)!;
+          const response = Any.fromJson(responseJson, jsonOptions).unpack(
+            jsonOptions.typeRegistry,
+          )!;
           return response;
         };
         return unaryImpl as MethodImpl<typeof method>;
@@ -179,7 +176,7 @@ export const createChannelTransport = ({
       case MethodKind.ServerStreaming: {
         const streamImpl: AnyServerStreamingImpl = async function* (message) {
           const responseStream = (await request(message)) as ReadableStream<JsonValue>;
-          const response = responseStream.pipeThrough(new JsonToMessage(typeRegistry));
+          const response = responseStream.pipeThrough(new JsonToMessage(jsonOptions));
           yield* streamToGenerator(response);
         };
         return streamImpl as MethodImpl<typeof method>;
