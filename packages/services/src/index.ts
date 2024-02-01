@@ -24,7 +24,7 @@ export class Services implements ServicesInterface {
   public async initialize(): Promise<void> {
     this._querier = new RootQuerier({ grpcEndpoint: this.config.grpcEndpoint });
 
-    // await startup for any errors
+    // initialize walletServices separately without exponential backoff to bubble up errors immediately
     await this.getWalletServices();
   }
 
