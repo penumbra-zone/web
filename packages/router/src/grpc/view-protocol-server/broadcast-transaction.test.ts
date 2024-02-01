@@ -11,24 +11,12 @@ import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/co
 import { broadcastTransaction } from './broadcast-transaction';
 import type { Services } from '@penumbra-zone/services';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
+import { IndexedDbMock, MockServices, TendermintMock } from './test-utils';
 
 const mockSha256 = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/crypto-web', () => ({
   sha256Hash: mockSha256,
 }));
-
-interface IndexedDbMock {
-  subscribe: (table: string) => Partial<AsyncIterable<Mock>>;
-}
-interface TendermintMock {
-  broadcastTx: Mock;
-}
-interface MockServices {
-  getWalletServices: Mock<[], Promise<{ indexedDb: IndexedDbMock }>>;
-  querier: {
-    tendermint: TendermintMock;
-  };
-}
 
 describe('BroadcastTransaction request handler', () => {
   let mockServices: MockServices;
@@ -80,7 +68,7 @@ describe('BroadcastTransaction request handler', () => {
   });
 
   test('should successfully broadcastTransaction without await detection', async () => {
-    mockTendermint.broadcastTx.mockResolvedValue(transactionIdData);
+    mockTendermint.broadcastTx?.mockResolvedValue(transactionIdData);
 
     const broadcastResponses: BroadcastTransactionResponse[] = [];
     for await (const response of broadcastTransaction(broadcastTransactionRequest, mockCtx)) {
@@ -98,7 +86,7 @@ describe('BroadcastTransaction request handler', () => {
       id: transactionIdData,
     });
 
-    mockTendermint.broadcastTx.mockResolvedValue(transactionIdData);
+    mockTendermint.broadcastTx?.mockResolvedValue(transactionIdData);
     txSubNext.mockResolvedValueOnce({
       value: { value: txInfo.toJson(), table: 'TRANSACTION_INFO' },
     });
@@ -116,7 +104,7 @@ describe('BroadcastTransaction request handler', () => {
   });
 
   test('should throw error if broadcast transaction id disagrees', async () => {
-    mockTendermint.broadcastTx.mockResolvedValue(new TransactionId());
+    mockTendermint.broadcastTx?.mockResolvedValue(new TransactionId());
     await expect(
       (async () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
@@ -126,7 +114,7 @@ describe('BroadcastTransaction request handler', () => {
   });
 
   test('should throw error if broadcast transaction fails', async () => {
-    mockTendermint.broadcastTx.mockRejectedValue(new Error('broadcast failed'));
+    mockTendermint.broadcastTx?.mockRejectedValue(new Error('broadcast failed'));
     await expect(
       (async () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
