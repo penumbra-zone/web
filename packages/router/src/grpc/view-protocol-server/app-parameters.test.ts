@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { Mock, beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   AppParametersRequest,
   AppParametersResponse,
@@ -10,35 +10,51 @@ import { servicesCtx } from '../../ctx';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1alpha1/app_pb';
 import { appParameters } from './app-parameters';
 
+interface IndexedDbMock {
+  getAppParams: Mock;
+}
+
+interface MockServices {
+  getWalletServices: Mock<[], Promise<{ indexedDb: IndexedDbMock }>>;
+}
+
 describe('AppParameters request handler', () => {
-  let mockServices: ServicesInterface;
+  let mockServices: MockServices;
+  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
 
   beforeEach(() => {
-    mockServices = {
-      querier: {
-        app: {
-          appParams(): Promise<AppParameters> {
-            return Promise.resolve(testData);
-          },
-        },
-      },
-    } as ServicesInterface;
+    vi.resetAllMocks();
 
+    mockIndexedDb = {
+      getAppParams: vi.fn(),
+    };
+    mockServices = {
+      getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb })),
+    };
     mockCtx = createHandlerContext({
       service: ViewProtocolService,
       method: ViewProtocolService.methods.appParameters,
       protocolName: 'mock',
       requestMethod: 'MOCK',
-      contextValues: createContextValues().set(servicesCtx, mockServices),
+      contextValues: createContextValues().set(
+        servicesCtx,
+        mockServices as unknown as ServicesInterface,
+      ),
     });
   });
 
-  test('should successfully get appParameters', async () => {
+  test('should successfully get appParameters when idb has them', async () => {
+    mockIndexedDb.getAppParams.mockResolvedValue(testData);
     const appParameterResponse = new AppParametersResponse(
       await appParameters(new AppParametersRequest(), mockCtx),
     );
     expect(appParameterResponse.parameters?.equals(testData)).toBeTruthy();
+  });
+
+  test('should fail to get appParameters when idb has none', async () => {
+    mockIndexedDb.getAppParams.mockResolvedValue(undefined);
+    await expect(appParameters(new AppParametersRequest(), mockCtx)).rejects.toThrow();
   });
 });
 
