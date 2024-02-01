@@ -15,7 +15,8 @@ const config = {
     getAbsolutePath('@storybook/addon-links'),
     getAbsolutePath('@storybook/addon-essentials'),
     getAbsolutePath('@storybook/addon-interactions'),
-    '@storybook/addon-postcss'
+    '@storybook/addon-postcss',
+    '@storybook/preview-api',
   ],
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
