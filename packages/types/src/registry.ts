@@ -34,8 +34,3 @@ export const serviceTypeNames = [
   TendermintProxyService.typeName,
   ViewProtocolService.typeName,
 ] as const;
-
-export const jsonOptions = {
-  ignoreUnknownFields: true,
-  typeRegistry,
-};

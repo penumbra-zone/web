@@ -8,7 +8,7 @@ import {
   isTransportMessage,
 } from '@penumbra-zone/transport';
 import { ChromeRuntimeHandlerFn } from '@penumbra-zone/transport/src/chrome-runtime/adapter';
-import { jsonOptions } from '@penumbra-zone/types/src/registry';
+import { jsonOptions } from '@penumbra-zone/types/src/json-options';
 import { transportOptions } from './transport-options';
 
 /**

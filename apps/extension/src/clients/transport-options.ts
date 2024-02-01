@@ -1,5 +1,5 @@
 import { CommonTransportOptions } from '@connectrpc/connect/protocol';
-import { jsonOptions } from '@penumbra-zone/types/src/registry';
+import { jsonOptions } from '@penumbra-zone/types/src/json-options';
 
 export const transportOptions = {
   defaultTimeoutMs: 10000,

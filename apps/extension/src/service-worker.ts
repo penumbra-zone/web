@@ -15,7 +15,7 @@
 import { Services } from '@penumbra-zone/services';
 import { localExtStorage } from '@penumbra-zone/storage';
 
-import { jsonOptions } from '@penumbra-zone/types/src/registry';
+import { jsonOptions } from '@penumbra-zone/types/src/json-options';
 import { servicesCtx, custodyCtx } from '@penumbra-zone/router/src/ctx';
 
 import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/background-connection-manager';

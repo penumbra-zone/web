@@ -5,7 +5,7 @@ import { SimulationService } from '@buf/penumbra-zone_penumbra.connectrpc_es/pen
 import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
 import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
 import { getPenumbraPort } from './penumbra-port';
-import { jsonOptions } from '@penumbra-zone/types/src/registry';
+import { jsonOptions } from '@penumbra-zone/types/src/json-options';
 
 const transOpts = {
   defaultTimeoutMs: 10000,
