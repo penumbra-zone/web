@@ -46,11 +46,11 @@ export const SegmentedPicker = <ValueType extends { toString: () => string }>({
           role='button'
           onClick={() => onChange(option.value)}
           className={cn(
-            'px-3 py-1',
+            'px-3 py-1 font-bold',
             index === 0 && 'rounded-l-sm',
             index === options.length - 1 && 'rounded-r-sm',
-            value === option.value && 'bg-teal-800',
-            value !== option.value && 'text-teal',
+            value === option.value && 'bg-teal',
+            value !== option.value && 'text-light-grey',
             value !== option.value && 'bg-light-brown',
           )}
         >
