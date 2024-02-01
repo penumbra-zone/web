@@ -10,7 +10,6 @@ import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/co
 import { broadcastTransaction } from './broadcast-transaction';
 import type { Services } from '@penumbra-zone/services';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
-import { sha256Hash } from '@penumbra-zone/crypto-web';
 
 interface IndexedDbMock {
   subscribe: (table: string) => Partial<AsyncIterable<Mock>>;
@@ -68,14 +67,12 @@ describe('BroadcastTransaction request handler', () => {
   });
 
   test('should successfully broadcastTransaction', async () => {
-    mockTendermint.broadcastTx.mockResolvedValue(
-      new TransactionId({ inner: await sha256Hash(testData.toBinary()) }),
-    );
+    mockTendermint.broadcastTx.mockResolvedValue(transactionIdData);
 
     const broadcastResponses: BroadcastTransactionResponse[] = [];
     for await (const response of broadcastTransaction(
       new BroadcastTransactionRequest({
-        transaction: testData,
+        transaction: transactionData,
       }),
       mockCtx,
     )) {
@@ -86,7 +83,9 @@ describe('BroadcastTransaction request handler', () => {
   });
 });
 
-const testData = Transaction.fromJson({
+const transactionIdData = TransactionId.fromJson({"inner":"BbfE5hIr5e0Qv9K36lCoSIdFy55OnI4guuySeSX6C5s="}
+)
+const transactionData = Transaction.fromJson({
   body: {
     actions: [
       {
