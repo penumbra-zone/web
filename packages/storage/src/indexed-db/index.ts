@@ -222,10 +222,10 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveAppParams(app: AppParameters): Promise<void> {
-    // if chainId changes, we should use a different database.
+    // chain id shouldn't change
     if (app.chainId !== this.chainId) {
       this.db.close();
-      throw new Error(`Updated chainId: idb ${this.chainId} != new ${app.chainId}`);
+      throw new Error(`Mismatched chainId: idb ${this.chainId} != new ${app.chainId}`);
     }
     await this.u.update({
       table: 'APP_PARAMETERS',
