@@ -15,6 +15,16 @@ export interface ValidationField {
   index: number;
 }
 
+export const generateValidationFields = (
+  seedPhrase: string[],
+  amount: number,
+): ValidationField[] => {
+  const allWords: ValidationField[] = seedPhrase.map((word, index) => ({ word, index }));
+  const shuffleWords = allWords.sort(() => 0.5 - Math.random());
+  const pickWords = shuffleWords.slice(0, amount);
+  return pickWords.sort((a, b) => a.index - b.index);
+};
+
 export const validateSeedPhrase = (seedPhrase: string[]): boolean => {
   return validateMnemonic(seedPhrase.join(' '));
 };
