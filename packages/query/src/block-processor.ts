@@ -1,8 +1,6 @@
 import { RootQuerier } from './root-querier';
 
-import { Code, ConnectError } from '@connectrpc/connect';
 import { bech32 } from 'bech32';
-import { backOff } from 'exponential-backoff';
 
 import { sha256Hash } from '@penumbra-zone/crypto-web';
 import {
@@ -47,7 +45,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly indexedDb: IndexedDbInterface;
   private readonly viewServer: ViewServerInterface;
   private readonly abortController: AbortController = new AbortController();
-  private blockSyncPromise: Promise<void> | undefined;
+  private syncPromise: Promise<void> | undefined;
 
   constructor({ indexedDb, viewServer, querier, fullViewingKey }: QueryClientProps) {
     this.fullViewingKey = fullViewingKey;
@@ -56,22 +54,24 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.querier = querier;
   }
 
-  // If syncBlocks() is called multiple times concurrently,
-  // they'll all wait for the same promise rather than each starting their own sync process.
-  async syncBlocks(): Promise<void> {
-    if (!this.blockSyncPromise) {
-      this.blockSyncPromise = this.autoRetrySync();
-    }
-    return this.blockSyncPromise;
+  // If syncBlocks() is called multiple times concurrently, they'll all wait for
+  // the same promise rather than each starting their own sync process.
+  public async sync(): Promise<void> {
+    this.syncPromise ??= this.syncAndStore().catch(e => {
+      // prefer abort error
+      this.abortController.signal.throwIfAborted();
+      throw e;
+    });
+    return this.syncPromise;
   }
 
-  stopSync() {
-    this.abortController.abort();
+  public stop(r?: string) {
+    this.abortController.abort(`Sync abort ${r}`);
   }
 
   // TODO: should this be here? it's only ever used as a fallback by view protocol server
   // identify failures?
-  async getTransactionInfo(id: TransactionId): Promise<TransactionInfo> {
+  public async getTransactionInfo(id: TransactionId): Promise<TransactionInfo> {
     const { transaction, height } = await this.querier.tendermint.getTransaction(id);
     const { txp: perspective, txv: view } = await transactionInfo(
       this.fullViewingKey,
@@ -81,27 +81,6 @@ export class BlockProcessor implements BlockProcessorInterface {
     return new TransactionInfo({ height, id, transaction, perspective, view });
   }
 
-  // After a failure, retrying the sync is critical. An exponential-backoff is used.
-  private async autoRetrySync() {
-    try {
-      await backOff(() => this.syncAndStore(), {
-        maxDelay: 30_000, // 30 seconds
-        retry: async error => {
-          await this.viewServer.resetTreeToStored();
-          if (isAbortSignal(error)) return false;
-          console.error('Syncing error', error);
-          return true;
-        },
-      });
-    } catch {
-      // Was signaled to abort, can swallow this error
-    }
-  }
-
-  /**
-   * Populates IndexedDB with data from the blockchain. Most of what's in
-   * IndexedDB comes from this method.
-   */
   private async syncAndStore() {
     const lastBlockSynced = await this.indexedDb.getLastBlockSynced();
     const startHeight = lastBlockSynced ? lastBlockSynced + 1n : 0n;
@@ -114,19 +93,16 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
-      if (compactBlock.fmdParameters)
-        await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
-
-      if (compactBlock.gasPrices) await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
-
       if (compactBlock.appParametersUpdated)
         await this.indexedDb.saveAppParams(await this.querier.app.appParams());
+      if (compactBlock.fmdParameters)
+        await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
+      if (compactBlock.gasPrices) await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
 
       // wasm view server scan
       // - decrypts new notes
       // - decrypts new swaps
       // - updates idb with advice
-      //const shouldStoreProgress = await this.viewServer.scanBlock(compactBlock);
       const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock);
 
       // flushing is slow, avoid it until
@@ -396,6 +372,3 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 }
-
-const isAbortSignal = (error: unknown): boolean =>
-  error instanceof ConnectError && error.code === Code.Canceled;

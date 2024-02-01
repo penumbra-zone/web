@@ -408,6 +408,9 @@ importers:
       '@penumbra-zone/wasm-ts':
         specifier: workspace:*
         version: link:../wasm
+      exponential-backoff:
+        specifier: ^3.1.1
+        version: 3.1.1
     devDependencies:
       '@types/chrome':
         specifier: 0.0.258

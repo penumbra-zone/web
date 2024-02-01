@@ -3,6 +3,7 @@ import { BlockProcessor, RootQuerier } from '@penumbra-zone/query';
 import { IndexedDb, syncLastBlockWithLocal } from '@penumbra-zone/storage';
 import { ViewServer } from '@penumbra-zone/wasm-ts';
 import { ServicesInterface, WalletServices } from '@penumbra-zone/types/src/services';
+import { backOff } from 'exponential-backoff';
 
 export interface ServicesConfig {
   grpcEndpoint: string;
@@ -21,30 +22,40 @@ export class Services implements ServicesInterface {
     return this._querier;
   }
 
-  async initialize(): Promise<void> {
-    try {
-      this._querier = new RootQuerier({ grpcEndpoint: this.config.grpcEndpoint });
+  public async initialize(): Promise<void> {
+    this._querier = new RootQuerier({ grpcEndpoint: this.config.grpcEndpoint });
 
-      await this.tryToSync();
-    } catch (e) {
-      // Logging here as service worker does not appear to bubble the errors up
-      console.error(e);
-      throw e;
-    }
+    // await startup for any errors
+    await this.getWalletServices();
+
+    // void sync to background
+    void this.autoRetrySync();
   }
 
-  async tryToSync() {
-    try {
-      const ws = await this.getWalletServices();
-      void ws.blockProcessor.syncBlocks();
-    } catch {
-      // With throw if no wallet. Can ignore.
-    }
+  // TODO: anyone holding a reference to the old walletServices may attempt to use it
+  private async autoRetrySync() {
+    await backOff(
+      () => this.getWalletServices().then(({ blockProcessor }) => blockProcessor.sync()),
+      {
+        maxDelay: 30_000, // 30 seconds
+        retry: (e, attemptNumber) => {
+          // don't interfere with deliberate stop
+          if (typeof e === 'string' && e.startsWith('Sync abort')) return false;
+
+          // backoff will swallow the error, so log it
+          console.warn('Sync failure', e);
+          // next caller will re-init services
+          this.walletServicesPromise = undefined;
+          console.log('Sync retry', attemptNumber);
+          return true;
+        },
+      },
+    );
   }
 
   // If getWalletServices() is called multiple times concurrently,
   // they'll all wait for the same promise rather than each starting their own initialization process.
-  async getWalletServices(): Promise<WalletServices> {
+  public async getWalletServices(): Promise<WalletServices> {
     if (!this.walletServicesPromise) {
       this.walletServicesPromise = this.initializeWalletServices().catch(e => {
         // If promise rejected, reset promise to `undefined` so next caller can try again
@@ -55,7 +66,7 @@ export class Services implements ServicesInterface {
     return this.walletServicesPromise;
   }
 
-  async initializeWalletServices(): Promise<WalletServices> {
+  private async initializeWalletServices(): Promise<WalletServices> {
     const { walletId, fullViewingKey } = await this.config.getWallet();
     const params = await this.querier.app.appParams();
     if (!params.sctParams?.epochDuration) throw new Error('Epoch duration unknown');
@@ -92,7 +103,7 @@ export class Services implements ServicesInterface {
   async clearCache() {
     const ws = await this.getWalletServices();
 
-    ws.blockProcessor.stopSync();
+    ws.blockProcessor.stop('clearCache');
     await ws.indexedDb.clear();
     this.walletServicesPromise = undefined;
     await this.initialize();

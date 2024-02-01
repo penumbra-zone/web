@@ -52,6 +52,7 @@ export class IndexedDb implements IndexedDbInterface {
     private readonly db: IDBPDatabase<PenumbraDb>,
     private readonly u: IbdUpdater,
     private readonly c: IdbConstants,
+    private readonly chainId: string,
   ) {}
 
   static async initialize({ dbVersion, walletId, chainId }: IndexedDbProps): Promise<IndexedDb> {
@@ -92,7 +93,7 @@ export class IndexedDb implements IndexedDbInterface {
       version: dbVersion,
       tables: IDB_TABLES,
     } satisfies IdbConstants;
-    return new this(db, new IbdUpdater(db), constants);
+    return new this(db, new IbdUpdater(db), constants, chainId);
   }
 
   constants(): IdbConstants {
@@ -221,8 +222,11 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async saveAppParams(app: AppParameters): Promise<void> {
-    // this always fails, because the chainId is corrupted
-    //if (app.chainId != this.c.name) throw new Error(`New chainId mismatch: stored ${this.c.name}, new ${app.chainId}`);
+    // if chainId changes, we should use a different database.
+    if (app.chainId !== this.chainId) {
+      this.db.close();
+      throw new Error(`Updated chainId: idb ${this.chainId} != new ${app.chainId}`);
+    }
     await this.u.update({
       table: 'APP_PARAMETERS',
       value: app.toJson() as Jsonified<AppParameters>,

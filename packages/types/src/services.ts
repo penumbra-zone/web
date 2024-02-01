@@ -13,8 +13,6 @@ export interface WalletServices {
 export interface ServicesInterface {
   readonly querier: RootQuerierInterface;
   initialize(): Promise<void>;
-  tryToSync(): Promise<void>;
   getWalletServices(): Promise<WalletServices>;
-  initializeWalletServices(): Promise<WalletServices>;
   clearCache(): Promise<void>;
 }
