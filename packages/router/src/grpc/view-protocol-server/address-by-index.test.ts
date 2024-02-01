@@ -37,18 +37,17 @@ describe('AddressByIndex request handler', () => {
   });
 
   test('should successfully get AddressByIndex with default index', async () => {
-    const addressByIndexResponse = await addressByIndex(new AddressByIndexRequest(), mockCtx);
+    const addressByIndexResponse = await addressByIndex(
+      new AddressByIndexRequest({ addressIndex: { account: 0 } }),
+      mockCtx,
+    );
     expect(addressByIndexResponse.address).toBeInstanceOf(Address);
   });
 
-  test('default address and address with index 0 should be equal', async () => {
-    const defaultAddressResponse = new AddressByIndexResponse(
-      await addressByIndex(new AddressByIndexRequest(), mockCtx),
+  test('should get an error if addressIndex is missing', async () => {
+    await expect(addressByIndex(new AddressByIndexRequest(), mockCtx)).rejects.toThrow(
+      'Missing address index',
     );
-    const index0Response = new AddressByIndexResponse(
-      await addressByIndex(new AddressByIndexRequest({ addressIndex: { account: 0 } }), mockCtx),
-    );
-    expect(defaultAddressResponse.address?.equals(index0Response.address)).toBeTruthy();
   });
 
   test('addresses with different indexes should be different', async () => {
