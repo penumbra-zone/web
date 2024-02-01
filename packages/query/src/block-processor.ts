@@ -97,11 +97,15 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
-      if (compactBlock.appParametersUpdated)
+      if (compactBlock.appParametersUpdated) {
         await this.indexedDb.saveAppParams(await this.querier.app.appParams());
-      if (compactBlock.fmdParameters)
+      }
+      if (compactBlock.fmdParameters) {
         await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
-      if (compactBlock.gasPrices) await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
+      }
+      if (compactBlock.gasPrices) {
+        await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
+      }
 
       // wasm view server scan
       // - decrypts new notes
