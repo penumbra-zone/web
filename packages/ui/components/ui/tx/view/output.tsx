@@ -12,8 +12,8 @@ export const OutputViewComponent = ({ value }: { value: OutputView }) => {
         visibleContent={
           <div className='flex flex-col justify-between gap-2 sm:flex-row sm:gap-0'>
             <ValueViewComponent view={note.value} />
-            <div className='flex gap-2'>
-              <span className='font-mono text-sm italic text-foreground'>to</span>
+            <div className='flex gap-2 font-mono text-sm italic text-foreground'>
+              <span className='font-mono'>to</span>
               <AddressViewComponent view={note.address} />
             </div>
           </div>
