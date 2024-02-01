@@ -10,6 +10,7 @@ import { penumbraAddrValidation } from '../helpers';
 import { throwIfExtNotInstalled } from '../../../fetchers/is-connected';
 import InputToken from '../../shared/input-token.tsx';
 import { useRefreshFee } from './use-refresh-fee.ts';
+import { GasFee } from '../../shared/gas-fee.tsx';
 
 export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
   throwIfExtNotInstalled();
@@ -95,6 +96,9 @@ export const SendForm = () => {
         balances={accountBalances}
         fee={fee}
       />
+
+      <GasFee />
+
       <InputBlock
         label='Memo'
         value={memo}
