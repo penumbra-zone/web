@@ -12,6 +12,11 @@ import { broadcastTransaction } from './broadcast-transaction';
 import type { Services } from '@penumbra-zone/services';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 
+const mockSha256 = vi.hoisted(() => vi.fn());
+vi.mock('@penumbra-zone/crypto-web', () => ({
+  sha256Hash: mockSha256,
+}));
+
 interface IndexedDbMock {
   subscribe: (table: string) => Partial<AsyncIterable<Mock>>;
 }
@@ -35,6 +40,8 @@ describe('BroadcastTransaction request handler', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
+
+    mockSha256.mockImplementation(() => transactionIdData.inner);
 
     mockTendermint = {
       broadcastTx: vi.fn(),
@@ -71,6 +78,7 @@ describe('BroadcastTransaction request handler', () => {
       transaction: transactionData,
     });
   });
+
   test('should successfully broadcastTransaction without await detection', async () => {
     mockTendermint.broadcastTx.mockResolvedValue(transactionIdData);
 
