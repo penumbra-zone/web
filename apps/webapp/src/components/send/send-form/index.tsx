@@ -1,4 +1,4 @@
-import { Button } from '@penumbra-zone/ui';
+import { Button, Input } from '@penumbra-zone/ui';
 import { useStore } from '../../../state/index.ts';
 import { sendSelector, sendValidationErrors } from '../../../state/send.ts';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
@@ -62,13 +62,18 @@ export const SendForm = () => {
     >
       <InputBlock
         label='Recipient'
-        placeholder='penumbra1…'
         className='mb-1'
-        inputClassName='font-mono'
         value={recipient}
-        onChange={e => setRecipient(e.target.value)}
         validations={[penumbraAddrValidation()]}
-      />
+      >
+        <Input
+          variant='transparent'
+          className='font-mono'
+          placeholder='penumbra1…'
+          value={recipient}
+          onChange={e => setRecipient(e.target.value)}
+        />
+      </InputBlock>
       <InputToken
         label='Amount to send'
         placeholder='Enter an amount'
@@ -92,9 +97,7 @@ export const SendForm = () => {
       />
       <InputBlock
         label='Memo'
-        placeholder='Optional message'
         value={memo}
-        onChange={e => setMemo(e.target.value)}
         validations={[
           {
             type: 'error',
@@ -102,7 +105,14 @@ export const SendForm = () => {
             checkFn: () => validationErrors.memoErr,
           },
         ]}
-      />
+      >
+        <Input
+          variant='transparent'
+          placeholder='Optional message'
+          value={memo}
+          onChange={e => setMemo(e.target.value)}
+        />
+      </InputBlock>
       <Button
         type='submit'
         variant='gradient'
