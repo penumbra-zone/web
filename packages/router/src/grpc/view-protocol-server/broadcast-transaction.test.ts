@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import {
   BroadcastTransactionRequest,
   BroadcastTransactionResponse,
+  TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
@@ -30,6 +31,7 @@ describe('BroadcastTransaction request handler', () => {
   let mockIndexedDb: IndexedDbMock;
   let mockTendermint: TendermintMock;
   let txSubNext: Mock;
+  let broadcastTransactionRequest: BroadcastTransactionRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -64,27 +66,71 @@ describe('BroadcastTransaction request handler', () => {
       requestMethod: 'MOCK',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
-  });
 
-  test('should successfully broadcastTransaction', async () => {
+    broadcastTransactionRequest = new BroadcastTransactionRequest({
+      transaction: transactionData,
+    });
+  });
+  test('should successfully broadcastTransaction without await detection', async () => {
     mockTendermint.broadcastTx.mockResolvedValue(transactionIdData);
 
     const broadcastResponses: BroadcastTransactionResponse[] = [];
-    for await (const response of broadcastTransaction(
-      new BroadcastTransactionRequest({
-        transaction: transactionData,
-      }),
-      mockCtx,
-    )) {
+    for await (const response of broadcastTransaction(broadcastTransactionRequest, mockCtx)) {
       broadcastResponses.push(new BroadcastTransactionResponse(response));
     }
     expect(broadcastResponses.length === 1).toBeTruthy();
     expect(broadcastResponses[0]?.status.case === 'broadcastSuccess').toBeTruthy();
   });
+
+  test('should successfully broadcastTransaction with await detection', async () => {
+    const detectionHeight = 222n;
+    const txInfo = new TransactionInfo({
+      transaction: transactionData,
+      height: detectionHeight,
+      id: transactionIdData,
+    });
+
+    mockTendermint.broadcastTx.mockResolvedValue(transactionIdData);
+    txSubNext.mockResolvedValueOnce({
+      value: { value: txInfo.toJson(), table: 'TRANSACTION_INFO' },
+    });
+
+    broadcastTransactionRequest.awaitDetection = true;
+
+    const broadcastResponses: BroadcastTransactionResponse[] = [];
+    for await (const response of broadcastTransaction(broadcastTransactionRequest, mockCtx)) {
+      broadcastResponses.push(new BroadcastTransactionResponse(response));
+    }
+    expect(broadcastResponses.length === 2).toBeTruthy();
+    expect(broadcastResponses[0]?.status.case === 'broadcastSuccess').toBeTruthy();
+    expect(broadcastResponses[1]?.status.case === 'confirmed').toBeTruthy();
+    expect(broadcastResponses[1]?.status.value?.id?.equals(transactionIdData)).toBeTruthy();
+  });
+
+  test('should throw error if broadcast transaction id disagrees', async () => {
+    mockTendermint.broadcastTx.mockResolvedValue(new TransactionId());
+    await expect(
+      (async () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
+        for await (const _ of broadcastTransaction(broadcastTransactionRequest, mockCtx)); // eslint-disable-line   no-empty
+      })(),
+    ).rejects.toThrow('broadcast transaction id disagrees');
+  });
+
+  test('should throw error if broadcast transaction fails', async () => {
+    mockTendermint.broadcastTx.mockRejectedValue(new Error('broadcast failed'));
+    await expect(
+      (async () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
+        for await (const _ of broadcastTransaction(broadcastTransactionRequest, mockCtx));
+      })(),
+    ).rejects.toThrow('broadcast failed');
+  });
 });
 
-const transactionIdData = TransactionId.fromJson({"inner":"BbfE5hIr5e0Qv9K36lCoSIdFy55OnI4guuySeSX6C5s="}
-)
+const transactionIdData = TransactionId.fromJson({
+  inner: 'BbfE5hIr5e0Qv9K36lCoSIdFy55OnI4guuySeSX6C5s=',
+});
 const transactionData = Transaction.fromJson({
   body: {
     actions: [
