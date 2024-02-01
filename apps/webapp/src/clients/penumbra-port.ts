@@ -16,7 +16,7 @@ declare global {
 export const getPenumbraPort = (serviceTypeName: string) => {
   const { port1: port, port2: transferPort } = new MessageChannel();
   if (!(penumbra in window)) throw Error('No Penumbra global (extension not installed)');
-  const initPort = window[penumbra].services?.[serviceTypeName];
+  const initPort = window[penumbra]?.services?.[serviceTypeName];
   if (!initPort) throw Error(`No init port for service ${serviceTypeName}`);
   initPort.postMessage(
     {

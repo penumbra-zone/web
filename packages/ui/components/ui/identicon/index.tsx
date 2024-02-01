@@ -7,9 +7,9 @@ export const Identicon = ({ type, ...props }: IdenticonProps & { type: 'gradient
   return <IdenticonSolid {...props} />;
 };
 
-const IdenticonGradient = ({ name, size = 120, className }: IdenticonProps) => {
-  const gradient = useMemo(() => generateGradient(name), [name]);
-  const gradientId = useMemo(() => `gradient-${name}`, [name]);
+const IdenticonGradient = ({ uniqueIdentifier, size = 120, className }: IdenticonProps) => {
+  const gradient = useMemo(() => generateGradient(uniqueIdentifier), [uniqueIdentifier]);
+  const gradientId = useMemo(() => `gradient-${uniqueIdentifier}`, [uniqueIdentifier]);
 
   return (
     <svg
@@ -33,8 +33,8 @@ const IdenticonGradient = ({ name, size = 120, className }: IdenticonProps) => {
   );
 };
 
-const IdenticonSolid = ({ name, size = 120, className }: IdenticonProps) => {
-  const color = useMemo(() => generateSolidColor(name), [name]);
+const IdenticonSolid = ({ uniqueIdentifier, size = 120, className }: IdenticonProps) => {
+  const color = useMemo(() => generateSolidColor(uniqueIdentifier), [uniqueIdentifier]);
 
   return (
     <svg
@@ -55,7 +55,7 @@ const IdenticonSolid = ({ name, size = 120, className }: IdenticonProps) => {
         dy='.3em'
         className='uppercase'
       >
-        {name[0]}
+        {uniqueIdentifier[0]}
       </text>
     </svg>
   );

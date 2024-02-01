@@ -2,13 +2,13 @@ import { Button } from '@penumbra-zone/ui';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import InputToken from '../shared/input-token';
 import { useLoaderData } from 'react-router-dom';
-import { AccountBalance } from '../../fetchers/balances';
+import { AssetBalance } from '../../fetchers/balances';
 import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
 import { AssetOutBox } from './asset-out-box';
 
 export const SwapForm = () => {
-  const accountBalances = useLoaderData() as AccountBalance[];
+  const accountBalances = useLoaderData() as AssetBalance[];
   const { toast } = useToast();
   const { assetIn, setAssetIn, amount, setAmount, initiateSwapTx } = useStore(swapSelector);
 

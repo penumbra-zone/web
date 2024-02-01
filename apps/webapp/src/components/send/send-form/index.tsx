@@ -4,7 +4,7 @@ import { sendSelector, sendValidationErrors } from '../../../state/send.ts';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { InputBlock } from '../../shared/input-block';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { AccountBalance, getBalancesByAccount } from '../../../fetchers/balances';
+import { AssetBalance, getAssetBalances } from '../../../fetchers/balances';
 import { useMemo } from 'react';
 import { penumbraAddrValidation } from '../helpers';
 import { throwIfExtNotInstalled } from '../../../fetchers/is-connected';
@@ -12,18 +12,14 @@ import InputToken from '../../shared/input-token.tsx';
 import { useRefreshFee } from './use-refresh-fee.ts';
 import { GasFee } from '../../shared/gas-fee.tsx';
 
-export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
+export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AssetBalance[]> => {
   throwIfExtNotInstalled();
-  const balancesByAccount = await getBalancesByAccount();
+  const balancesByAccount = await getAssetBalances();
 
   if (balancesByAccount[0]) {
     // set initial account if accounts exist and asset if account has asset list
     useStore.setState(state => {
-      state.send.selection = {
-        address: balancesByAccount[0]?.address,
-        accountIndex: balancesByAccount[0]?.index,
-        asset: balancesByAccount[0]?.balances[0],
-      };
+      state.send.selection = balancesByAccount[0];
     });
   }
 
@@ -31,7 +27,7 @@ export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AccountB
 };
 
 export const SendForm = () => {
-  const accountBalances = useLoaderData() as AccountBalance[];
+  const accountBalances = useLoaderData() as AssetBalance[];
   const { toast } = useToast();
   const {
     selection,
@@ -52,8 +48,8 @@ export const SendForm = () => {
   useRefreshFee();
 
   const validationErrors = useMemo(() => {
-    return sendValidationErrors(selection?.asset, amount, recipient);
-  }, [selection?.asset, amount, recipient]);
+    return sendValidationErrors(selection, amount, recipient);
+  }, [selection, amount, recipient]);
 
   return (
     <form
@@ -128,7 +124,7 @@ export const SendForm = () => {
           !recipient ||
           !!Object.values(validationErrors).find(Boolean) ||
           txInProgress ||
-          !selection?.asset
+          !selection
         }
       >
         Send

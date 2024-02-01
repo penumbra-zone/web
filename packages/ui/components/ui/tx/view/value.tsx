@@ -7,15 +7,16 @@ import { getDisplayDenomExponent } from '@penumbra-zone/types/src/denom-metadata
 
 interface ValueViewProps {
   view: ValueView | undefined;
+  showDenom?: boolean;
 }
 
-export const ValueViewComponent = ({ view }: ValueViewProps) => {
+export const ValueViewComponent = ({ view, showDenom = true }: ValueViewProps) => {
   if (!view) return <></>;
 
   if (view.valueView.case === 'unknownAssetId') {
     const value = view.valueView.value;
     const amount = value.amount ?? new Amount();
-    const encodedAssetId = bech32AssetId(value.assetId!);
+    const encodedAssetId = getDisplayDenomFromView(view);
     return (
       <div className='flex font-mono'>
         <p className='text-[15px] leading-[22px]'>{fromBaseUnitAmount(amount, 0).toFormat()}</p>
@@ -36,15 +37,34 @@ export const ValueViewComponent = ({ view }: ValueViewProps) => {
   if (view.valueView.case === 'knownAssetId') {
     const value = view.valueView.value;
     const amount = value.amount ?? new Amount();
-    const display_denom = value.metadata?.display ?? '';
+    const displayDenom = getDisplayDenomFromView(view);
     const exponent = value.metadata ? getDisplayDenomExponent(value.metadata) : 0;
 
     return (
       <div className='flex font-mono'>
-        {fromBaseUnitAmount(amount, exponent).toFormat()} {display_denom}
+        {fromBaseUnitAmount(amount, exponent).toFormat()} {showDenom && displayDenom}
       </div>
     );
   }
 
   return <></>;
+};
+
+export const getDisplayDenomFromView = (view: ValueView) => {
+  if (view.valueView.case === 'unknownAssetId') {
+    if (!view.valueView.value.assetId) throw new Error('no asset id for unknown denom');
+    return bech32AssetId(view.valueView.value.assetId);
+  }
+
+  if (view.valueView.case === 'knownAssetId') {
+    const displayDenom = view.valueView.value.metadata?.display;
+    if (displayDenom) return displayDenom;
+
+    const assetId = view.valueView.value.metadata?.penumbraAssetId;
+    if (assetId) return bech32AssetId(assetId);
+
+    return 'unknown';
+  }
+
+  throw new Error(`unexpected case ${view.valueView.case}`);
 };

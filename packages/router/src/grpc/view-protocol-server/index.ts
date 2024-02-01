@@ -1,11 +1,13 @@
 import type { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import type { ServiceImpl } from '@connectrpc/connect';
+
 import { addressByIndex } from './address-by-index';
 import { appParameters } from './app-parameters';
 import { assets } from './assets';
 import { authorizeAndBuild } from './authorize-and-build';
 import { balances } from './balances';
 import { broadcastTransaction } from './broadcast-transaction';
+import { assetMetadataById } from './asset-metadata-by-id';
 import { ephemeralAddress } from './ephemeral-address';
 import { fMDParameters } from './fmd-parameters';
 import { gasPrices } from './gas-prices';
@@ -28,13 +30,14 @@ import { witnessAndBuild } from './witness-and-build';
 
 export type Impl = ServiceImpl<typeof ViewService>;
 
-export const viewImpl: Omit<Impl, 'assetMetadataById'> = {
+export const viewImpl: Impl = {
   addressByIndex,
   appParameters,
   assets,
   authorizeAndBuild,
   balances,
   broadcastTransaction,
+  assetMetadataById,
   ephemeralAddress,
   fMDParameters,
   gasPrices,

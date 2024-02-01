@@ -7,15 +7,14 @@ import BigNumber from 'bignumber.js';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-import { Selection } from './types';
 import { ibcClient, viewClient } from '../clients/grpc';
 import { planWitnessBuildBroadcast } from './helpers';
 import { getDisplayDenomExponent } from '@penumbra-zone/types/src/denom-metadata';
+import { AssetBalance } from '../fetchers/balances';
 
 export interface IbcSendSlice {
-  selection: Selection | undefined;
-  setSelection: (selection: Selection) => void;
+  selection: AssetBalance | undefined;
+  setSelection: (selection: AssetBalance) => void;
   amount: string;
   setAmount: (amount: string) => void;
   chain: Chain | undefined;
@@ -117,9 +116,11 @@ const getPlanRequest = async ({
 }: IbcSendSlice): Promise<TransactionPlannerRequest> => {
   if (!destinationChainAddress) throw new Error('no destination chain address set');
   if (!chain?.ibcChannel) throw new Error('Chain ibc channel not available');
-
-  if (typeof selection?.accountIndex === 'undefined') throw new Error('no selected account');
-  if (!selection.asset) throw new Error('no selected asset');
+  if (selection?.value.valueView.case !== 'knownAssetId') throw new Error('unknown denom selected');
+  if (!selection.value.valueView.value.metadata) throw new Error('no metadata in valueView');
+  if (selection.address.addressView.case !== 'decoded')
+    throw new Error('address in view is not decoded');
+  if (!selection.address.addressView.value.index) throw new Error('no index in addressView');
 
   // TODO: implement source address in future, should correspond with asset selector?
   // TODO: change planner to fill this in automatically ?
@@ -131,8 +132,11 @@ const getPlanRequest = async ({
   return new TransactionPlannerRequest({
     ics20Withdrawals: [
       {
-        amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponent(selection.asset.metadata)),
-        denom: { denom: selection.asset.metadata.display },
+        amount: toBaseUnit(
+          BigNumber(amount),
+          getDisplayDenomExponent(selection.value.valueView.value.metadata),
+        ),
+        denom: { denom: selection.value.valueView.value.metadata.base },
         destinationChainAddress,
         returnAddress,
         timeoutHeight,
@@ -140,7 +144,7 @@ const getPlanRequest = async ({
         sourceChannel: chain.ibcChannel,
       },
     ],
-    source: new AddressIndex({ account: selection.accountIndex }),
+    source: selection.address.addressView.value.index,
   });
 };
 

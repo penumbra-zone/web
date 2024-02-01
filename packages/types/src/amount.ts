@@ -1,7 +1,7 @@
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import { fromBaseUnit, joinLoHi, splitLoHi } from './lo-hi';
 import BigNumber from 'bignumber.js';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { ValueView_KnownAssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { getDisplayDenomExponent } from './denom-metadata';
 
 export const joinLoHiAmount = (amount: Amount): bigint => {
@@ -12,7 +12,13 @@ export const fromBaseUnitAmount = (amount: Amount, exponent = 0): BigNumber => {
   return fromBaseUnit(amount.lo, amount.hi, exponent);
 };
 
-export const fromBaseUnitAmountAndMetadata = (amount: Amount, metadata: Metadata): BigNumber => {
+export const fromBaseUnitAmountAndMetadata = ({
+  amount,
+  metadata,
+}: ValueView_KnownAssetId): BigNumber => {
+  if (!amount) throw new Error('No amount in value view');
+  if (!metadata) throw new Error('No denom in value view');
+
   return fromBaseUnitAmount(amount, getDisplayDenomExponent(metadata));
 };
 

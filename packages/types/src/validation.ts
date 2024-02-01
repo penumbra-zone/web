@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { ZodTypeAny, z } from 'zod';
 import { isDevEnv } from './environment';
 
 // In production, we do not want to throw validation errors, but log them.
@@ -18,3 +18,52 @@ export const validateSchema = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
     }
   }
 };
+
+/**
+ * Like `validateSchema`, this validates `data` and then returns it if valid.
+ * _Unlike_ `validateSchema`, this function throws the validation error message
+ * if validation fails. Useful for when you need type safety of the value you're
+ * validating, and intend to show an error when validation fails.
+ */
+export const validateAndReturnOrThrow = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
+  const result = schema.safeParse(data);
+
+  if (result.success) {
+    return result.data;
+  } else {
+    throw new Error(result.error.message);
+  }
+};
+
+/**
+ * Returns a type predicate that allows safe property access.
+ *
+ * @example
+ * ```TS
+ * const visibleAddressViewWithAccountIndexSchema = z.object({
+ *   addressView: z.object({
+ *     case: z.literal('visible'),
+ *     value: z.object({
+ *       index: z.object({
+ *         account: z.number(),
+ *       }),
+ *     }),
+ *   }),
+ * });
+ *
+ * const addressView = new AddressView();
+ *
+ * const hasAccountIndex = isType(visibleAddressViewWithAccountIndexSchema);
+ *
+ * if (hasAccountIndex(addressView)) {
+ *   // No need for `?`, `!`, or `case === 'visible'`.
+ *   console.log(addressView.addressView.value.index.account);
+ * }
+ * ````
+ *
+ * @see https://github.com/colinhacks/zod/issues/2345
+ */
+export const isType =
+  <T extends ZodTypeAny>(schema: T) =>
+  (data: unknown): data is z.infer<T> =>
+    schema.safeParse(data).success;

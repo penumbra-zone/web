@@ -1,26 +1,28 @@
-import { Address } from './address';
+import { AddressComponent } from './address-component';
 import { describe, expect, test } from 'vitest';
 import { render } from '@testing-library/react';
-import { shortenAddress } from '@penumbra-zone/types';
+import { bech32ToUint8Array, shortenAddress } from '@penumbra-zone/types';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
 describe('<Address />', () => {
   const address =
-    'penumbra1nzxd3wqautgr8hmwwvvgwnsgtpnl3rexwyj0srpcyaf75968mq3wseftwzwcsx458la09m3am7x2qlk7jfchuvpv6uvw79ctzpnrt7c2wd6n9j9xgk8regdwkrjple9uh2tekf';
+    'penumbra1u7dk4qw6fz3vlwyjl88vlj6gqv4hcmz2vesm87t7rm0lvwmgqqkrp3zrdmfg6et86ggv4nwmnc8vy39uxyacwm8g7trk77ad0c8n4qt76ncvuukx6xlj8mskhyjpn4twkpwwl2';
+  const pbAddress = new Address({ inner: bech32ToUint8Array(address) });
 
   test('renders the shortened address', () => {
-    const { baseElement } = render(<Address address={address} />);
+    const { baseElement } = render(<AddressComponent address={pbAddress} />);
 
     expect(baseElement).toHaveTextContent(shortenAddress(address));
   });
 
   test('uses text-muted-foreground for non-ephemeral addresses', () => {
-    const { getByText } = render(<Address address={address} />);
+    const { getByText } = render(<AddressComponent address={pbAddress} />);
 
     expect(getByText(shortenAddress(address))).toHaveClass('text-muted-foreground');
   });
 
   test('uses colored text for ephemeral addresses', () => {
-    const { getByText } = render(<Address address={address} ephemeral />);
+    const { getByText } = render(<AddressComponent address={pbAddress} ephemeral />);
 
     expect(getByText(shortenAddress(address))).toHaveClass('text-[#8D5728]');
   });

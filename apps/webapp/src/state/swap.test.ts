@@ -3,30 +3,42 @@ import { AllSlices, initializeStore } from './index';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { AssetBalance } from '../fetchers/balances';
 import {
-  AssetId,
   Metadata,
+  ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
-import { stringToUint8Array } from '@penumbra-zone/types';
-import { Selection } from './types';
+import { bech32ToUint8Array } from '@penumbra-zone/types';
 import { localAssets } from '@penumbra-zone/constants';
+import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 
 describe('Swap Slice', () => {
-  const assetBalance: AssetBalance = {
-    metadata: new Metadata({
-      display: 'xyz',
-      denomUnits: [{ denom: 'xyz', exponent: 3 }],
+  const selectionExample = {
+    value: new ValueView({
+      valueView: {
+        case: 'knownAssetId',
+        value: {
+          amount: new Amount({
+            lo: 0n,
+            hi: 0n,
+          }),
+          metadata: new Metadata({ display: 'test_usd', denomUnits: [{ exponent: 18 }] }),
+        },
+      },
     }),
-    assetId: new AssetId({ inner: stringToUint8Array('abcdefg') }),
-    amount: new Amount(),
-    usdcValue: 1234,
-  };
-
-  const selection: Selection = {
-    address: 'address123',
-    accountIndex: 4,
-    asset: assetBalance,
-  };
+    address: new AddressView({
+      addressView: {
+        case: 'opaque',
+        value: {
+          address: {
+            inner: bech32ToUint8Array(
+              'penumbra1e8k5cyds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uu0rgkvtjpxy3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd4',
+            ),
+          },
+        },
+      },
+    }),
+    usdcValue: 0,
+  } satisfies AssetBalance;
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
@@ -43,8 +55,8 @@ describe('Swap Slice', () => {
 
   test('assetIn can be set', () => {
     expect(useStore.getState().swap.assetIn).toBeUndefined();
-    useStore.getState().swap.setAssetIn(selection);
-    expect(useStore.getState().swap.assetIn).toBe(selection);
+    useStore.getState().swap.setAssetIn(selectionExample);
+    expect(useStore.getState().swap.assetIn).toBe(selectionExample);
   });
 
   test('assetOut can be set', () => {

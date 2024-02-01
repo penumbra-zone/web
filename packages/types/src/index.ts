@@ -20,5 +20,7 @@ export * from './querier';
 export * from './std-route';
 export * from './amount';
 export * from './chain';
-export * from './account';
+export * from './denom-metadata';
 export * from './jsonified';
+export * from './schemas';
+export * from './type-predicates';

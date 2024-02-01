@@ -8,20 +8,16 @@ import InputToken from '../../shared/input-token';
 import { sendValidationErrors } from '../../../state/send';
 import { useMemo } from 'react';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { AccountBalance, getBalancesByAccount } from '../../../fetchers/balances';
+import { AssetBalance, getAssetBalances } from '../../../fetchers/balances';
 import { penumbraAddrValidation } from '../helpers';
 
-export const IbcAssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
-  const balancesByAccount = await getBalancesByAccount();
+export const IbcAssetBalanceLoader: LoaderFunction = async (): Promise<AssetBalance[]> => {
+  const balancesByAccount = await getAssetBalances();
 
   if (balancesByAccount[0]) {
     // set initial account if accounts exist and asset if account has asset list
     useStore.setState(state => {
-      state.ibc.selection = {
-        address: balancesByAccount[0]?.address,
-        accountIndex: balancesByAccount[0]?.index,
-        asset: balancesByAccount[0]?.balances[0],
-      };
+      state.ibc.selection = balancesByAccount[0];
     });
   }
 
@@ -29,7 +25,7 @@ export const IbcAssetBalanceLoader: LoaderFunction = async (): Promise<AccountBa
 };
 
 export default function IbcForm() {
-  const accountBalances = useLoaderData() as AccountBalance[];
+  const accountBalances = useLoaderData() as AssetBalance[];
   const { toast } = useToast();
   const {
     sendIbcWithdraw,
@@ -42,8 +38,8 @@ export default function IbcForm() {
   } = useStore(ibcSelector);
 
   const validationErrors = useMemo(() => {
-    return sendValidationErrors(selection?.asset, amount, destinationChainAddress);
-  }, [selection?.asset, amount, destinationChainAddress]);
+    return sendValidationErrors(selection, amount, destinationChainAddress);
+  }, [selection, amount, destinationChainAddress]);
 
   return (
     <form
@@ -95,7 +91,7 @@ export default function IbcForm() {
           !Number(amount) ||
           !destinationChainAddress ||
           !!Object.values(validationErrors).find(Boolean) ||
-          !selection?.asset
+          !selection
         }
       >
         Send

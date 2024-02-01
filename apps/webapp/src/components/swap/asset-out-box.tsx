@@ -1,41 +1,34 @@
 import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
-import { AccountBalance, AssetBalance, groupByAsset } from '../../fetchers/balances';
+import { AssetBalance } from '../../fetchers/balances';
 import { Input } from '@penumbra-zone/ui';
 import { AssetOutSelector } from './asset-out-selector';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 
+const findMatchingBalance = (
+  denom: Metadata | undefined,
+  balances: AssetBalance[],
+): AssetBalance | undefined => {
+  if (!denom?.penumbraAssetId) return undefined;
+  return balances.find(b => {
+    if (b.value.valueView.case !== 'knownAssetId') return false;
+    const assetId = b.value.valueView.value.metadata?.penumbraAssetId;
+    if (!assetId) return false;
+    return assetId.equals(denom.penumbraAssetId);
+  });
+};
+
 interface AssetOutBoxProps {
-  balances: AccountBalance[];
+  balances: AssetBalance[];
 }
 
 export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
   const { assetOut, setAssetOut } = useStore(swapSelector);
 
-  const aggregatedBalances = balances
-    .flatMap(b => b.balances)
-    .reduce<AssetBalance[]>(groupByAsset, []);
-
-  // TODO: with https://github.com/penumbra-zone/web/issues/392 convert to use `getValueViewByAccount`
-  const balanceOfDenom = aggregatedBalances.find(b => b.assetId.equals(assetOut?.penumbraAssetId));
-  const valueView = balanceOfDenom
-    ? new ValueView({
-        valueView: {
-          case: 'knownAssetId',
-          value: {
-            amount: balanceOfDenom.amount,
-            metadata: new Metadata({
-              display: balanceOfDenom.metadata.display,
-              denomUnits: balanceOfDenom.metadata.denomUnits,
-            }),
-          },
-        },
-      })
-    : new ValueView();
+  // TODO: need to aggregate balances of assets across accounts (.reduce())
+  const aggregatedBalances = balances;
+  const matchingBalance = findMatchingBalance(assetOut, aggregatedBalances);
 
   return (
     <div className='flex flex-col rounded-lg border bg-background px-4 pb-5 pt-3'>
@@ -60,7 +53,7 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
         <div />
         <div className='flex items-start gap-1'>
           <img src='./wallet.svg' alt='Wallet' className='size-5' />
-          <ValueViewComponent view={valueView} />
+          {matchingBalance && <ValueViewComponent view={matchingBalance.value} />}
         </div>
       </div>
     </div>

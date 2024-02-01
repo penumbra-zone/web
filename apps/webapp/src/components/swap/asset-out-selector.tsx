@@ -15,7 +15,7 @@ export const AssetOutSelector = ({ balances, setAssetOut, assetOut }: AssetOutSe
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
         <div className='flex h-9 min-w-[100px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
-          {assetOut?.display && <AssetIcon name={assetOut.display} />}
+          {assetOut?.display && <AssetIcon metadata={assetOut} />}
           <p className='font-bold text-light-grey md:text-sm xl:text-base'>{assetOut?.display}</p>
         </div>
       </DialogTrigger>
@@ -24,16 +24,16 @@ export const AssetOutSelector = ({ balances, setAssetOut, assetOut }: AssetOutSe
           <DialogHeader className='border-b'>Select asset</DialogHeader>
           <div className='flex flex-col gap-4 px-[30px]'>
             <div className='flex flex-col gap-2'>
-              {localAssets.map(a => (
-                <div key={a.display} className='flex flex-col'>
+              {localAssets.map(d => (
+                <div key={d.display} className='flex flex-col'>
                   <DialogClose>
                     <div
                       className='grid cursor-pointer grid-cols-3 py-[10px] font-bold text-muted-foreground hover:-mx-4 hover:bg-light-brown hover:px-4'
-                      onClick={() => setAssetOut(a)}
+                      onClick={() => setAssetOut(d)}
                     >
                       <div className='flex justify-start gap-[6px]'>
-                        <AssetIcon name={a.display} />
-                        <p>{a.display}</p>
+                        <AssetIcon metadata={d} />
+                        <p>{d.display}</p>
                       </div>
                     </div>
                   </DialogClose>

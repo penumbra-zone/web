@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { z } from 'zod';
-import { validateSchema } from './validation';
+import { isType, validateSchema } from './validation';
 
 describe('validation', () => {
   describe('validateSchema()', () => {
@@ -96,6 +96,35 @@ describe('validation', () => {
         validateSchema(z.string(), 123);
       }).not.toThrow();
       expect(mockLogger).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe("isType()'s returned type predicate function", () => {
+    interface Person {
+      name: string;
+      age?: number;
+    }
+
+    const personWithAgeSchema = z.object({
+      name: z.string(),
+      age: z.number(),
+    });
+
+    it('returns `true` if the passed-in value matches the schema', () => {
+      const matchingPerson: Person = {
+        name: 'Ada Lovelace',
+        age: 30,
+      };
+
+      expect(isType(personWithAgeSchema)(matchingPerson)).toBe(true);
+    });
+
+    it('returns `false` if the passed-in value does not match the schema', () => {
+      const nonMatchingPerson: Person = {
+        name: 'Ada Lovelace',
+      };
+
+      expect(isType(personWithAgeSchema)(nonMatchingPerson)).toBe(false);
     });
   });
 });

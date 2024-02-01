@@ -1,32 +1,48 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index.ts';
-import { Chain } from '@penumbra-zone/types';
+import { bech32ToUint8Array, Chain } from '@penumbra-zone/types';
 import {
-  AssetId,
   Metadata,
+  ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import { sendValidationErrors } from './send.ts';
-import { Selection } from './types.ts';
+import { AssetBalance } from '../fetchers/balances';
+import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { produce } from 'immer';
 
 // TODO: Revisit tests when re-implementing ibc form
 
 describe.skip('IBC Slice', () => {
   const selectionExample = {
-    asset: {
-      amount: new Amount({
-        lo: 0n,
-        hi: 0n,
-      }),
-      metadata: new Metadata({ display: 'test_usd', denomUnits: [{ exponent: 18 }] }),
-      usdcValue: 0,
-      assetId: new AssetId().fromJson({ inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=' }),
-    },
-    address:
-      'penumbra1e8k5c3ds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uurrgkvtjpny3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd1',
-    accountIndex: 0,
-  } satisfies Selection;
+    value: new ValueView({
+      valueView: {
+        case: 'knownAssetId',
+        value: {
+          amount: new Amount({
+            lo: 0n,
+            hi: 0n,
+          }),
+          metadata: new Metadata({ display: 'test_usd', denomUnits: [{ exponent: 18 }] }),
+        },
+      },
+    }),
+    address: new AddressView({
+      addressView: {
+        case: 'opaque',
+        value: {
+          address: {
+            inner: bech32ToUint8Array(
+              'penumbra1e8k5cyds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uu0rgkvtjpxy3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd4',
+            ),
+          },
+        },
+      },
+    }),
+    usdcValue: 0,
+  } satisfies AssetBalance;
+
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
   beforeEach(() => {
@@ -47,26 +63,26 @@ describe.skip('IBC Slice', () => {
 
     test('validate high enough amount validates', () => {
       const assetBalance = new Amount({ hi: 1n });
-      useStore.getState().send.setSelection({
-        ...selectionExample,
-        asset: { ...selectionExample.asset, amount: assetBalance },
+      const state = produce(selectionExample, draft => {
+        draft.value.valueView.value!.amount = assetBalance;
       });
+      useStore.getState().send.setSelection(state);
       useStore.getState().send.setAmount('1');
       const { selection, amount } = useStore.getState().send;
 
-      const { amountErr } = sendValidationErrors(selection?.asset, amount, 'xyz');
+      const { amountErr } = sendValidationErrors(selection, amount, 'xyz');
       expect(amountErr).toBeFalsy();
     });
 
     test('validate error when too low the balance of the asset', () => {
       const assetBalance = new Amount({ lo: 2n });
-      useStore.getState().send.setSelection({
-        ...selectionExample,
-        asset: { ...selectionExample.asset, amount: assetBalance },
+      const state = produce(selectionExample, draft => {
+        draft.value.valueView.value!.amount = assetBalance;
       });
+      useStore.getState().send.setSelection(state);
       useStore.getState().send.setAmount('6');
       const { selection, amount } = useStore.getState().send;
-      const { amountErr } = sendValidationErrors(selection?.asset, amount, 'xyz');
+      const { amountErr } = sendValidationErrors(selection, amount, 'xyz');
       expect(amountErr).toBeTruthy();
     });
   });

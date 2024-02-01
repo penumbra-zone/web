@@ -1,5 +1,3 @@
-import { Account } from '@penumbra-zone/types';
-import { Address } from './address';
 import { AddressIcon } from './address-icon';
 import { ArrowLeftIcon, ArrowRightIcon, InfoIcon } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -10,45 +8,49 @@ import { Input } from './input';
 import { Switch } from './switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
 import { useEffect, useState } from 'react';
+import { AddressComponent } from './address-component';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { bech32Address } from '@penumbra-zone/types';
 
 interface SelectAccountProps {
-  getAccount: (index: number, ephemeral: boolean) => Promise<Account> | Account | undefined;
+  getAddrByIndex: (index: number, ephemeral: boolean) => Promise<Address> | Address;
 }
+
 const MAX_INDEX = 2 ** 32;
 
-export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
+export const SelectAccount = ({ getAddrByIndex }: SelectAccountProps) => {
   const [index, setIndex] = useState<number>(0);
   const [ephemeral, setEphemeral] = useState<boolean>(false);
 
   const [width, setWidth] = useState(index.toString().length);
-  const [account, setAccount] = useState<Account | undefined>();
+  const [address, setAddress] = useState<Address>();
 
   useEffect(() => {
     void (async () => {
-      const account = await getAccount(index, ephemeral);
-      setAccount(account);
+      const address = await getAddrByIndex(index, ephemeral);
+      setAddress(address);
     })();
-    // getAccount updates the address every block
+    // getAddrByIndex updates the address every block
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, ephemeral]);
 
   return (
     <>
-      {!account ? (
+      {!address ? (
         <></>
       ) : (
         <div className='flex w-full flex-col'>
           <div className='flex items-center justify-between'>
             <Button
               variant='ghost'
-              className={cn('hover:bg-inherit', account.index === 0 && 'cursor-default')}
+              className={cn('hover:bg-inherit', index === 0 && 'cursor-default')}
             >
-              {account.index !== 0 ? (
+              {index !== 0 ? (
                 <ArrowLeftIcon
                   onClick={() => {
                     if (index > 0) {
                       setIndex(state => state - 1);
-                      setWidth(Number(String(account.index - 1).length));
+                      setWidth(Number(String(index - 1).length));
                     }
                   }}
                   className='size-6 hover:cursor-pointer'
@@ -76,7 +78,7 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
                         setIndex(value);
                       }}
                       style={{ width: width + 'ch' }}
-                      value={account.index ? account.index.toString().replace(/^0+/, '') : '0'}
+                      value={index ? index.toString().replace(/^0+/, '') : '0'}
                     />
                   </div>
                 </div>
@@ -84,13 +86,13 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
             </div>
             <Button
               variant='ghost'
-              className={cn('hover:bg-inherit', account.index === MAX_INDEX && 'cursor-default')}
+              className={cn('hover:bg-inherit', index === MAX_INDEX && 'cursor-default')}
             >
-              {account.index < MAX_INDEX ? (
+              {index < MAX_INDEX ? (
                 <ArrowRightIcon
                   onClick={() => {
                     setIndex(state => state + 1);
-                    setWidth(Number(String(account.index + 1).length));
+                    setWidth(Number(String(index + 1).length));
                   }}
                   className='size-6 hover:cursor-pointer'
                 />
@@ -101,13 +103,13 @@ export const SelectAccount = ({ getAccount }: SelectAccountProps) => {
           </div>
           <div className='mt-4 flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
             <div className='flex items-center gap-[6px]'>
-              <AddressIcon address={account.address} size={24} />
+              <AddressIcon address={address} size={24} />
 
               <p className='text-sm'>
-                <Address address={account.address} ephemeral={ephemeral} />
+                <AddressComponent address={address} ephemeral={ephemeral} />
               </p>
             </div>
-            <CopyToClipboardIconButton text={account.address} />
+            <CopyToClipboardIconButton text={bech32Address(address)} />
           </div>
           <div className='mt-2 flex items-center justify-between'>
             <div className='flex items-center gap-2'>

@@ -1,8 +1,8 @@
-import { Address } from '../../address';
 import { AddressIcon } from '../../address-icon';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { bech32Address } from '@penumbra-zone/types';
 import { CopyToClipboardIconButton } from '../../copy-to-clipboard-icon-button';
+import { AddressComponent } from '../../address-component';
 
 interface AddressViewProps {
   view: AddressView | undefined;
@@ -31,15 +31,14 @@ export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps
     <div className='flex items-center gap-2'>
       {accountIndex !== undefined ? (
         <>
-          <AddressIcon address={encodedAddress} size={14} />
-
+          <AddressIcon address={view.addressView.value.address} size={14} />
           <span className='font-bold'>
             {addressIndexLabel}
             {accountIndex}
           </span>
         </>
       ) : (
-        <Address address={encodedAddress} />
+        <AddressComponent address={view.addressView.value.address} />
       )}
 
       {copyable && <CopyToClipboardIconButton text={encodedAddress} />}
