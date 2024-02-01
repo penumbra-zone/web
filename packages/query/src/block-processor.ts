@@ -69,7 +69,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     return this.syncPromise;
   }
 
-  public stop(r?: string) {
+  public stop(r: string) {
     this.abortController.abort(`Sync abort ${r}`);
   }
 
