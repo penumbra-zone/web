@@ -1,11 +1,4 @@
-import {
-  Address,
-  AddressIndex,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-import {
-  AddressByIndexRequest,
-  EphemeralAddressRequest,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { bech32Address } from '@penumbra-zone/types';
 import { viewClient } from '../clients/grpc';
 
