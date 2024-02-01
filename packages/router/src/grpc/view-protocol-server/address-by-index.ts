@@ -9,7 +9,10 @@ export const addressByIndex: Impl['addressByIndex'] = async (req, ctx) => {
     viewServer: { fullViewingKey },
   } = await services.getWalletServices();
 
-  const address = getAddressByIndex(fullViewingKey, req.addressIndex?.account ?? 0);
+  if (!req.addressIndex) {
+    throw new Error('Missing address index');
+  }
+  const address = getAddressByIndex(fullViewingKey, req.addressIndex.account);
 
   return { address };
 };
