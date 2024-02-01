@@ -6,9 +6,7 @@ on:
   # Support ad-hoc runs via dispatch, so we can deploy from
   # unmerged feature branches if necessary.
   workflow_dispatch:
-  push:
-    branches:
-      - main
+
 jobs:
   build:
     name: Deploy
