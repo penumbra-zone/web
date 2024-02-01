@@ -14,8 +14,11 @@ import { Selection } from './types';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { getAddressByIndex } from '../fetchers/address';
 import { getTransactionPlan, planWitnessBuildBroadcast } from './helpers.ts';
-import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import { getDisplayDenomExponent } from '@penumbra-zone/types/src/denom-metadata.ts';
+import {
+  Fee,
+  FeeTier_Tier,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
 export interface SendSlice {
   selection: Selection | undefined;
@@ -28,6 +31,8 @@ export interface SendSlice {
   setMemo: (txt: string) => void;
   fee: Fee | undefined;
   refreshFee: () => Promise<void>;
+  feeTier: FeeTier_Tier;
+  setFeeTier: (feeTier: FeeTier_Tier) => void;
   sendTx: (toastFn: typeof toast) => Promise<void>;
   txInProgress: boolean;
 }
@@ -39,6 +44,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     recipient: '',
     memo: '',
     fee: undefined,
+    feeTier: FeeTier_Tier.LOW,
     txInProgress: false,
     setAmount: amount => {
       set(state => {
@@ -77,6 +83,11 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
 
       set(state => {
         state.send.fee = fee;
+      });
+    },
+    setFeeTier: feeTier => {
+      set(state => {
+        state.send.feeTier = feeTier;
       });
     },
     sendTx: async toastFn => {
