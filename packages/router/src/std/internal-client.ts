@@ -5,12 +5,10 @@ import {
   ServiceWorkerRequest,
   ServiceWorkerResponse,
   SwRequestMessage,
-  SyncBlocksMessage,
 } from '@penumbra-zone/types';
 import { AwaitedInternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
 
 export const internalSwClient = {
-  syncBlocks: () => sendSwMessage<SyncBlocksMessage>({ type: 'SYNC_BLOCKS' }),
   ping: (arg: string) => sendSwMessage<PingMessage>({ type: 'PING', arg }),
   clearCache: () => sendSwMessage<ClearCacheMessage>({ type: 'CLEAR_CACHE' }),
 };
