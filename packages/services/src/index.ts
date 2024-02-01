@@ -59,7 +59,6 @@ export class Services implements ServicesInterface {
     const { walletId, fullViewingKey } = await this.config.getWallet();
     const params = await this.querier.app.appParams();
     if (!params.sctParams?.epochDuration) throw new Error('Epoch duration unknown');
-    console.log('initializeWalletServices appParameters', params);
     const {
       chainId,
       sctParams: { epochDuration },
