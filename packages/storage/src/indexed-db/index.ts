@@ -39,6 +39,7 @@ import {
   PositionState,
   TradingPair,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
+import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1alpha1/app_pb';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -51,6 +52,7 @@ export class IndexedDb implements IndexedDbInterface {
     private readonly db: IDBPDatabase<PenumbraDb>,
     private readonly u: IbdUpdater,
     private readonly c: IdbConstants,
+    private readonly chainId: string,
   ) {}
 
   static async initialize({ dbVersion, walletId, chainId }: IndexedDbProps): Promise<IndexedDb> {
@@ -76,6 +78,7 @@ export class IndexedDb implements IndexedDbInterface {
         // No unique id for given tree hash and hash can be the same for different positions. Using `autoIncrement` to make the item key an incremented index.
         db.createObjectStore('TREE_HASHES', { autoIncrement: true });
         db.createObjectStore('FMD_PARAMETERS');
+        db.createObjectStore('APP_PARAMETERS');
 
         db.createObjectStore('NOTES');
         db.createObjectStore('SWAPS', {
@@ -90,7 +93,7 @@ export class IndexedDb implements IndexedDbInterface {
       version: dbVersion,
       tables: IDB_TABLES,
     } satisfies IdbConstants;
-    return new this(db, new IbdUpdater(db), constants);
+    return new this(db, new IbdUpdater(db), constants, chainId);
   }
 
   constants(): IdbConstants {
@@ -208,6 +211,25 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({
       table: 'FMD_PARAMETERS',
       value: fmd.toJson() as Jsonified<FmdParameters>,
+      key: 'params',
+    });
+  }
+
+  async getAppParams(): Promise<AppParameters | undefined> {
+    const json = await this.db.get('APP_PARAMETERS', 'params');
+    if (!json) return undefined;
+    return AppParameters.fromJson(json);
+  }
+
+  async saveAppParams(app: AppParameters): Promise<void> {
+    // chain id shouldn't change
+    if (app.chainId !== this.chainId) {
+      this.db.close();
+      throw new Error(`Mismatched chainId: idb ${this.chainId} != new ${app.chainId}`);
+    }
+    await this.u.update({
+      table: 'APP_PARAMETERS',
+      value: app.toJson() as Jsonified<AppParameters>,
       key: 'params',
     });
   }

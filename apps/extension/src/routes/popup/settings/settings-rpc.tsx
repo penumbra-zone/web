@@ -22,7 +22,7 @@ export const SettingsRPC = () => {
       const querier = new AppQuerier({ grpcEndpoint: rpc });
 
       try {
-        await querier.chainParams();
+        await querier.appParams();
         await setGRPCEndpoint(rpc);
         await internalSwClient.clearCache();
         await refetch();

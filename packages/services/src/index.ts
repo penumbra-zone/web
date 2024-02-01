@@ -21,30 +21,16 @@ export class Services implements ServicesInterface {
     return this._querier;
   }
 
-  async initialize(): Promise<void> {
-    try {
-      this._querier = new RootQuerier({ grpcEndpoint: this.config.grpcEndpoint });
+  public async initialize(): Promise<void> {
+    this._querier = new RootQuerier({ grpcEndpoint: this.config.grpcEndpoint });
 
-      await this.tryToSync();
-    } catch (e) {
-      // Logging here as service worker does not appear to bubble the errors up
-      console.error(e);
-      throw e;
-    }
-  }
-
-  async tryToSync() {
-    try {
-      const ws = await this.getWalletServices();
-      void ws.blockProcessor.syncBlocks();
-    } catch {
-      // With throw if no wallet. Can ignore.
-    }
+    // initialize walletServices separately without exponential backoff to bubble up errors immediately
+    await this.getWalletServices();
   }
 
   // If getWalletServices() is called multiple times concurrently,
   // they'll all wait for the same promise rather than each starting their own initialization process.
-  async getWalletServices(): Promise<WalletServices> {
+  public async getWalletServices(): Promise<WalletServices> {
     if (!this.walletServicesPromise) {
       this.walletServicesPromise = this.initializeWalletServices().catch(e => {
         // If promise rejected, reset promise to `undefined` so next caller can try again
@@ -52,12 +38,18 @@ export class Services implements ServicesInterface {
         throw e;
       });
     }
+    void this.walletServicesPromise.then(({ blockProcessor }) => blockProcessor.sync());
     return this.walletServicesPromise;
   }
 
-  async initializeWalletServices(): Promise<WalletServices> {
+  private async initializeWalletServices(): Promise<WalletServices> {
     const { walletId, fullViewingKey } = await this.config.getWallet();
-    const { chainId, epochDuration } = await this.querier.app.chainParams();
+    const params = await this.querier.app.appParams();
+    if (!params.sctParams?.epochDuration) throw new Error('Epoch duration unknown');
+    const {
+      chainId,
+      sctParams: { epochDuration },
+    } = params;
 
     const indexedDb = await IndexedDb.initialize({
       chainId,
@@ -87,7 +79,7 @@ export class Services implements ServicesInterface {
   async clearCache() {
     const ws = await this.getWalletServices();
 
-    ws.blockProcessor.stopSync();
+    ws.blockProcessor.stop('clearCache');
     await ws.indexedDb.clear();
     this.walletServicesPromise = undefined;
     await this.initialize();

@@ -12,7 +12,7 @@ import {
   DenomMetadata,
   Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { ChainParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/chain/v1alpha1/chain_pb';
+import { SctParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import {
   Fee,
@@ -22,21 +22,16 @@ import { JsonValue } from '@bufbuild/protobuf';
 import { Ics20Withdrawal } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/ibc/v1alpha1/ibc_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 
-interface PlannerProps {
-  idbConstants: IdbConstants;
-  chainParams: ChainParameters;
-  fmdParams: FmdParameters;
-}
-
 export class TxPlanner {
   private constructor(private wasmPlanner: WasmPlanner) {}
 
-  static async initialize({
-    idbConstants,
-    chainParams,
-    fmdParams,
-  }: PlannerProps): Promise<TxPlanner> {
-    const wp = await WasmPlanner.new(idbConstants, chainParams, fmdParams);
+  static async initialize(
+    idbConstants: IdbConstants,
+    chainId: string,
+    sctParams: SctParameters,
+    fmdParams: FmdParameters,
+  ): Promise<TxPlanner> {
+    const wp = await WasmPlanner.new(idbConstants, chainId, sctParams, fmdParams);
     return new this(wp);
   }
 

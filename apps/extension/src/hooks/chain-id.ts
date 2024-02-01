@@ -2,10 +2,10 @@ import { useQuery } from '@tanstack/react-query';
 import { viewClient } from '../clients/extension-page';
 
 export const getChainId = async (): Promise<string> => {
-  const res = await viewClient.appParameters({});
-  if (!res.parameters?.chainParams) throw new Error('No chain params in response');
+  const { parameters } = await viewClient.appParameters({});
+  if (!parameters?.chainId) throw new Error('No chainId in response');
 
-  return res.parameters.chainParams.chainId;
+  return parameters.chainId;
 };
 
 export const useChainId = () => {

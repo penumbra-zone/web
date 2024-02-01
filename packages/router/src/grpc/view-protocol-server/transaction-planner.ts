@@ -35,16 +35,15 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
     viewServer: { fullViewingKey },
     querier,
   } = await services.getWalletServices();
-  const chainParams = await services.querier.app.chainParams();
   const fmdParams = await indexedDb.getFmdParams();
-  if (!fmdParams) throw new ConnectError('Fmd Params not in indexeddb', Code.FailedPrecondition);
+  if (!fmdParams) throw new ConnectError('FmdParameters not available', Code.FailedPrecondition);
+  const { chainId, sctParams } = (await indexedDb.getAppParams()) ?? {};
+  if (!sctParams) throw new ConnectError('SctParameters not available', Code.FailedPrecondition);
+  if (!chainId) throw new ConnectError('ChainId not available', Code.FailedPrecondition);
+
   const idbConstants = indexedDb.constants();
 
-  const planner = await TxPlanner.initialize({
-    idbConstants,
-    chainParams,
-    fmdParams,
-  });
+  const planner = await TxPlanner.initialize(idbConstants, chainId, sctParams, fmdParams);
 
   const fetchedGasPrices = await gasPrices(req, ctx);
   if (fetchedGasPrices.gasPrices) {

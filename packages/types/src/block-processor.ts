@@ -2,7 +2,7 @@ import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 
 export interface BlockProcessorInterface {
-  syncBlocks(): Promise<void>;
-  stopSync(): void;
+  sync(): Promise<void>;
+  stop(r?: string): void;
   getTransactionInfo(hash: TransactionId): Promise<TransactionInfo>;
 }

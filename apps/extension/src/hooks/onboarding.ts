@@ -19,6 +19,6 @@ export const useOnboardingSave = () => {
     await setPassword(plaintextPassword);
 
     await addWallet({ label: 'Wallet #1', seedPhrase });
-    void internalSwClient.syncBlocks();
+    void internalSwClient.clearCache();
   };
 };

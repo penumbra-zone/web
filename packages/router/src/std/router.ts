@@ -1,5 +1,4 @@
 import { clearCacheHandler } from './routes/clear-cache';
-import { syncBlocksHandler } from './routes/sync';
 
 import {
   IncomingRequest,
@@ -43,8 +42,6 @@ const typedMessageRouter = async (
   services: ServicesInterface,
 ): Promise<SwResponse> => {
   switch (req.type) {
-    case 'SYNC_BLOCKS':
-      return syncBlocksHandler(services)();
     case 'CLEAR_CACHE':
       return clearCacheHandler(services)();
     default:
