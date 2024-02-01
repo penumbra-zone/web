@@ -36,7 +36,7 @@ describe('AddressByIndex request handler', () => {
     });
   });
 
-  test('should successfully get AddressByIndex with default index', async () => {
+  test('should successfully get AddressByIndex with 0 index', async () => {
     const addressByIndexResponse = await addressByIndex(
       new AddressByIndexRequest({ addressIndex: { account: 0 } }),
       mockCtx,
@@ -44,10 +44,9 @@ describe('AddressByIndex request handler', () => {
     expect(addressByIndexResponse.address).toBeInstanceOf(Address);
   });
 
-  test('should get an error if addressIndex is missing', async () => {
-    await expect(addressByIndex(new AddressByIndexRequest(), mockCtx)).rejects.toThrow(
-      'Missing address index',
-    );
+  test('should successfully get AddressByIndex with no index', async () => {
+    const addressByIndexResponse = await addressByIndex(new AddressByIndexRequest(), mockCtx);
+    expect(addressByIndexResponse.address).toBeInstanceOf(Address);
   });
 
   test('addresses with different indexes should be different', async () => {

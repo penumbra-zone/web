@@ -1,7 +1,7 @@
 import { CommonTransportOptions } from '@connectrpc/connect/protocol';
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
+import { jsonOptions } from '@penumbra-zone/types/src/json-options';
 
-export const transportOptions: Partial<CommonTransportOptions> = {
+export const transportOptions = {
   defaultTimeoutMs: 10000,
-  jsonOptions: { typeRegistry },
-};
+  jsonOptions,
+} satisfies Partial<CommonTransportOptions>;

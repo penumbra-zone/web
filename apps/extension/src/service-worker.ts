@@ -15,7 +15,7 @@
 import { Services } from '@penumbra-zone/services';
 import { localExtStorage } from '@penumbra-zone/storage';
 
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
+import { jsonOptions } from '@penumbra-zone/types/src/json-options';
 import { servicesCtx, custodyCtx } from '@penumbra-zone/router/src/ctx';
 
 import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/background-connection-manager';
@@ -121,7 +121,7 @@ let custodyClient: PromiseClient<typeof CustodyProtocolService> | undefined;
 // connectrpc adapter
 const chromeRuntimeHandler = connectChromeRuntimeAdapter({
   // typeRegistry provides Any-based serialization for the adapter
-  typeRegistry,
+  jsonOptions,
   // this function is used by the adapter to create routes
   routes: (router: ConnectRouter) =>
     rpcImpls.map(([serviceType, serviceImpl]) => router.service(serviceType, serviceImpl)),

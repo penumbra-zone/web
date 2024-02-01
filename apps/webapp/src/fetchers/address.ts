@@ -1,11 +1,4 @@
-import {
-  Address,
-  AddressIndex,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-import {
-  AddressByIndexRequest,
-  EphemeralAddressRequest,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { bech32Address } from '@penumbra-zone/types';
 import { viewClient } from '../clients/grpc';
 
@@ -31,19 +24,16 @@ export const getAddresses = async (accounts: (number | undefined)[]): Promise<In
     }, {});
 };
 
-export const getAddressByIndex = async (account: number | undefined): Promise<Address> => {
-  const req = new AddressByIndexRequest();
-  if (account) req.addressIndex = new AddressIndex({ account });
-  const res = await viewClient.addressByIndex(req);
-  if (!res.address) throw new Error('Address not in getAddressByIndex response');
-  return res.address;
+export const getAddressByIndex = async (account = 0): Promise<Address> => {
+  const { address } = await viewClient.addressByIndex({ addressIndex: { account } });
+  if (!address) throw new Error('Address not in getAddressByIndex response');
+  return address;
 };
 
-export const getEphemeralAddress = async (account: number): Promise<Address> => {
-  const req = new EphemeralAddressRequest({ addressIndex: { account } });
-  const res = await viewClient.ephemeralAddress(req);
-  if (!res.address) throw new Error('Address not in getEphemeralAddress response');
-  return res.address;
+export const getEphemeralAddress = async (account = 0): Promise<Address> => {
+  const { address } = await viewClient.ephemeralAddress({ addressIndex: { account } });
+  if (!address) throw new Error('Address not in getEphemeralAddress response');
+  return address;
 };
 
 export const getAccountAddr = async (index: number, ephemeral: boolean) => {

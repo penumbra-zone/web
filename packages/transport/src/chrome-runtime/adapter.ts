@@ -10,8 +10,9 @@ import {
 } from '@connectrpc/connect';
 import {
   Any,
-  IMessageTypeRegistry,
+  JsonReadOptions,
   JsonValue,
+  JsonWriteOptions,
   MethodInfo,
   MethodKind,
   ServiceType,
@@ -41,7 +42,7 @@ export interface ChromeRuntimeAdapterOptions {
   transport?: Omit<CommonTransportOptions, keyof typeof forceTransportOptions>;
 
   routes: (router: ConnectRouter) => void;
-  typeRegistry: IMessageTypeRegistry;
+  jsonOptions: Required<JsonReadOptions> & Partial<JsonWriteOptions>;
   createRequestContext: (
     h: UniversalServerRequest,
   ) => Promise<UniversalServerRequest & { contextValues: ContextValues }>;
@@ -84,8 +85,7 @@ const forceTransportOptions = {
 export const connectChromeRuntimeAdapter = (
   opt: ChromeRuntimeAdapterOptions,
 ): ChromeRuntimeHandlerFn => {
-  // TODO: could we generate a typeRegistry? should we forward to router, transport?
-  const typeRegistry = opt.typeRegistry;
+  const jsonOptions = opt.jsonOptions;
 
   const routerOpts: ConnectRouterOptions = {
     ...opt.router,
@@ -165,7 +165,7 @@ export const connectChromeRuntimeAdapter = (
 
   // TODO: sender, origin?
   return async function chromeRuntimeHandler(message: ChromeRuntimeRequest) {
-    const request = Any.fromJson(message, { typeRegistry }).unpack(typeRegistry)!;
+    const request = Any.fromJson(message, jsonOptions).unpack(jsonOptions.typeRegistry)!;
     const requestType = request.getType();
 
     const methodType = I_MethodType.get(requestType.typeName);
@@ -204,7 +204,7 @@ export const connectChromeRuntimeAdapter = (
     }
 
     if (response.stream)
-      return iterableToStream(response.message).pipeThrough(new MessageToJson(typeRegistry));
-    else return Any.pack(response.message).toJson({ typeRegistry });
+      return iterableToStream(response.message).pipeThrough(new MessageToJson(jsonOptions));
+    else return Any.pack(response.message).toJson(jsonOptions);
   };
 };
