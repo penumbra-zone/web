@@ -49,9 +49,9 @@ export const SegmentedPicker = <ValueType extends { toString: () => string }>({
             'px-3 py-1',
             index === 0 && 'rounded-l-sm',
             index === options.length - 1 && 'rounded-r-sm',
-            value === option.value && 'bg-teal',
+            value === option.value && 'bg-teal-800',
             value !== option.value && 'text-teal',
-            value !== option.value && 'bg-teal-50',
+            value !== option.value && 'bg-light-brown',
           )}
         >
           {option.label}
