@@ -1,4 +1,4 @@
-import { Button } from '@penumbra-zone/ui';
+import { Button, Input } from '@penumbra-zone/ui';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { useStore } from '../../../state';
 import { ibcSelector } from '../../../state/ibc';
@@ -72,21 +72,21 @@ export default function IbcForm() {
           },
         ]}
         balances={accountBalances}
-        /**
-         * @todo: Pass a real fee here once we're actually using this form. See
-         * `<SendForm />` for an example of how to do this.
-         */
-        fee={undefined}
       />
       <ChainSelector />
       <InputBlock
         label='Recipient on destination chain'
-        placeholder='Enter the address'
         className='mb-1'
         value={destinationChainAddress}
-        onChange={e => setDestinationChainAddress(e.target.value)}
         validations={[penumbraAddrValidation()]}
-      />
+      >
+        <Input
+          variant='transparent'
+          placeholder='Enter the address'
+          value={destinationChainAddress}
+          onChange={e => setDestinationChainAddress(e.target.value)}
+        />
+      </InputBlock>
       <Button
         type='submit'
         variant='gradient'

@@ -1,25 +1,17 @@
-import { Input, InputProps } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { Validation, validationResult } from './validation-result.ts';
+import { ReactNode } from 'react';
 
-interface InputBlockProps extends InputProps {
+interface InputBlockProps {
   label: string;
-  className?: string;
-  inputClassName?: string;
-  validations?: Validation[];
-  value: string;
+  className?: string | undefined;
+  validations?: Validation[] | undefined;
+  value?: unknown;
+  children: ReactNode;
 }
 
-export const InputBlock = ({
-  label,
-  placeholder,
-  className,
-  inputClassName,
-  validations,
-  value,
-  ...props
-}: InputBlockProps) => {
-  const vResult = validationResult(value, validations);
+export const InputBlock = ({ label, className, validations, value, children }: InputBlockProps) => {
+  const vResult = typeof value === 'string' ? validationResult(value, validations) : undefined;
 
   return (
     <div
@@ -30,17 +22,12 @@ export const InputBlock = ({
         className,
       )}
     >
-      <div className='flex items-center gap-2 self-start'>
+      <div className='flex items-center gap-2'>
         <p className='text-base font-bold'>{label}</p>
         {vResult ? <div className={cn('italic', 'text-red-400')}>{vResult.issue}</div> : null}
       </div>
-      <Input
-        variant='transparent'
-        className={inputClassName}
-        placeholder={placeholder}
-        value={value}
-        {...props}
-      />
+
+      {children}
     </div>
   );
 };

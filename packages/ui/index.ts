@@ -13,6 +13,7 @@ export * from './components/ui/navigation-menu';
 export * from './components/ui/networks-popover';
 export * from './components/ui/popover';
 export * from './components/ui/progress';
+export * from './components/ui/segmented-picker';
 export * from './components/ui/select';
 export * from './components/ui/select-account';
 export * from './components/ui/sheet';

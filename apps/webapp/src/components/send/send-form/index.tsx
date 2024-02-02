@@ -1,4 +1,4 @@
-import { Button } from '@penumbra-zone/ui';
+import { Button, Input } from '@penumbra-zone/ui';
 import { useStore } from '../../../state/index.ts';
 import { sendSelector, sendValidationErrors } from '../../../state/send.ts';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
@@ -10,6 +10,7 @@ import { penumbraAddrValidation } from '../helpers';
 import { throwIfExtNotInstalled } from '../../../fetchers/is-connected';
 import InputToken from '../../shared/input-token.tsx';
 import { useRefreshFee } from './use-refresh-fee.ts';
+import { GasFee } from '../../shared/gas-fee.tsx';
 
 export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
   throwIfExtNotInstalled();
@@ -38,9 +39,11 @@ export const SendForm = () => {
     recipient,
     memo,
     fee,
+    feeTier,
     setAmount,
     setSelection,
     setRecipient,
+    setFeeTier,
     setMemo,
     sendTx,
     txInProgress,
@@ -62,13 +65,18 @@ export const SendForm = () => {
     >
       <InputBlock
         label='Recipient'
-        placeholder='penumbra1…'
         className='mb-1'
-        inputClassName='font-mono'
         value={recipient}
-        onChange={e => setRecipient(e.target.value)}
         validations={[penumbraAddrValidation()]}
-      />
+      >
+        <Input
+          variant='transparent'
+          className='font-mono'
+          placeholder='penumbra1…'
+          value={recipient}
+          onChange={e => setRecipient(e.target.value)}
+        />
+      </InputBlock>
       <InputToken
         label='Amount to send'
         placeholder='Enter an amount'
@@ -88,13 +96,13 @@ export const SendForm = () => {
           },
         ]}
         balances={accountBalances}
-        fee={fee}
       />
+
+      <GasFee fee={fee} feeTier={feeTier} setFeeTier={setFeeTier} />
+
       <InputBlock
         label='Memo'
-        placeholder='Optional message'
         value={memo}
-        onChange={e => setMemo(e.target.value)}
         validations={[
           {
             type: 'error',
@@ -102,7 +110,14 @@ export const SendForm = () => {
             checkFn: () => validationErrors.memoErr,
           },
         ]}
-      />
+      >
+        <Input
+          variant='transparent'
+          placeholder='Optional message'
+          value={memo}
+          onChange={e => setMemo(e.target.value)}
+        />
+      </InputBlock>
       <Button
         type='submit'
         variant='gradient'
