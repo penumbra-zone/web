@@ -39,7 +39,7 @@ export const GasFee = ({
 
         {feeValueView && (
           <div className='flex flex-row items-center gap-2'>
-            <img src='/fuel.svg' alt='Gas fee' className='size-5' />
+            <img src='./fuel.svg' alt='Gas fee' className='size-5' />
 
             <ValueViewComponent view={feeValueView} />
           </div>
