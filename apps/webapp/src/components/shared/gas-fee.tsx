@@ -2,7 +2,7 @@ import {
   Fee,
   FeeTier_Tier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
-import { FeeTierSelector } from '@penumbra-zone/ui';
+import { FeeTierPicker } from '@penumbra-zone/ui';
 import { InputBlock } from './input-block';
 import { localAssets } from '@penumbra-zone/constants';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
@@ -32,7 +32,7 @@ export const GasFee = ({
     // @todo: Rename 'Fee tier' to 'Gas fee' if/when we support manual fee entry
     <InputBlock label='Fee tier' value={feeTier}>
       <div className='flex flex-col gap-2'>
-        <FeeTierSelector value={feeTier} onChange={setFeeTier} />
+        <FeeTierPicker value={feeTier} onChange={setFeeTier} />
 
         {feeValueView && (
           <div className='flex flex-row items-center gap-2'>

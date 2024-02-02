@@ -20,7 +20,7 @@ const options: SegmentedPickerOption<FeeTier_Tier>[] = [
  * Thin wrapper around `SegmentedPicker`, allowing users to choose which fee
  * tier they want to use.
  */
-export const FeeTierSelector = ({
+export const FeeTierPicker = ({
   value,
   onChange,
 }: {

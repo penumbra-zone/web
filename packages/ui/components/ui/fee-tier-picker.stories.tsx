@@ -1,18 +1,18 @@
 import { Meta, StoryObj } from '@storybook/react';
 import { useArgs } from '@storybook/preview-api';
 
-import { FeeTierSelector } from './fee-tier-selector';
+import { FeeTierPicker } from './fee-tier-picker';
 import { FeeTier_Tier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
-const meta: Meta<typeof FeeTierSelector> = {
-  component: FeeTierSelector,
-  title: 'FeeTierSelector',
+const meta: Meta<typeof FeeTierPicker> = {
+  component: FeeTierPicker,
+  title: 'FeeTierPicker',
   tags: ['autodocs'],
 };
 
 export default meta;
 
-type Story = StoryObj<typeof FeeTierSelector>;
+type Story = StoryObj<typeof FeeTierPicker>;
 
 export const Basic: Story = {
   args: {
@@ -24,6 +24,6 @@ export const Basic: Story = {
 
     const onChange = (value: FeeTier_Tier) => updateArgs({ value });
 
-    return <FeeTierSelector value={value} onChange={onChange} />;
+    return <FeeTierPicker value={value} onChange={onChange} />;
   },
 };
