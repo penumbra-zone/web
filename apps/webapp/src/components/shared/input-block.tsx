@@ -4,8 +4,8 @@ import { ReactNode } from 'react';
 
 interface InputBlockProps {
   label: string;
-  className?: string;
-  validations?: Validation[];
+  className?: string | undefined;
+  validations?: Validation[] | undefined;
   value?: unknown;
   children: ReactNode;
 }

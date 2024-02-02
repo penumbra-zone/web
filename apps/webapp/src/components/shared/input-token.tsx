@@ -1,11 +1,12 @@
 import { Input, InputProps } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import SelectTokenModal from './select-token-modal';
-import { Validation, validationResult } from './validation-result';
+import { Validation } from './validation-result';
 import { AccountBalance, AssetBalance } from '../../fetchers/balances';
 import { Selection } from '../../state/types';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { InputBlock } from './input-block';
 
 const getCurrentBalanceValueView = (assetBalance: AssetBalance | undefined): ValueView => {
   if (assetBalance?.denomMetadata)
@@ -49,27 +50,10 @@ export default function InputToken({
   balances,
   ...props
 }: InputTokenProps) {
-  const vResult = validationResult(value, validations);
-
   const currentBalanceValueView = getCurrentBalanceValueView(selection?.asset);
 
   return (
-    <div
-      className={cn(
-        'bg-background px-4 pt-3 pb-5 rounded-lg border flex flex-col',
-        vResult?.type === 'error' && 'border-red-400',
-        vResult?.type === 'warn' && 'border-yellow-300',
-        className,
-      )}
-    >
-      <div className='mb-2 flex items-center justify-between gap-1 md:gap-2'>
-        <p className='text-sm font-bold md:text-base'>{label}</p>
-        {vResult ? (
-          <div className={cn('italic text-[12px] md:text-[15px]', 'text-red-400')}>
-            {vResult.issue}
-          </div>
-        ) : null}
-      </div>
+    <InputBlock label={label} value={value} validations={validations} className={className}>
       <div className='flex items-center justify-between gap-4'>
         <Input
           variant='transparent'
@@ -91,6 +75,6 @@ export default function InputToken({
           <ValueViewComponent view={currentBalanceValueView} />
         </div>
       </div>
-    </div>
+    </InputBlock>
   );
 }
