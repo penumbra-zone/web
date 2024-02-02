@@ -7,7 +7,6 @@ interface InputBlockProps {
   className?: string;
   validations?: Validation[];
   value?: unknown;
-  orientation?: 'horizontal' | 'vertical';
   children: ReactNode;
 }
 
