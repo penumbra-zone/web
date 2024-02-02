@@ -4,7 +4,6 @@ export * from './components/ui/card';
 export * from './components/ui/copy-to-clipboard';
 export * from './components/ui/dialog';
 export * from './components/ui/fade-transition';
-export * from './components/ui/fee-tier-picker';
 export * from './components/ui/identicon';
 export * from './components/ui/input';
 export * from './components/ui/logo/compressed-video';

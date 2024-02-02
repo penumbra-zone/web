@@ -2,13 +2,28 @@ import {
   Fee,
   FeeTier_Tier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
-import { FeeTierPicker } from '@penumbra-zone/ui';
+import { SegmentedPicker, SegmentedPickerOption } from '@penumbra-zone/ui';
 import { InputBlock } from './input-block';
 import { localAssets } from '@penumbra-zone/constants';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 const PENUMBRA_DENOM_METADATA = localAssets.find(asset => asset.display === 'penumbra')!;
+
+const FEE_TIER_OPTIONS: SegmentedPickerOption<FeeTier_Tier>[] = [
+  {
+    label: 'Low',
+    value: FeeTier_Tier.LOW,
+  },
+  {
+    label: 'Medium',
+    value: FeeTier_Tier.MEDIUM,
+  },
+  {
+    label: 'High',
+    value: FeeTier_Tier.HIGH,
+  },
+];
 
 export const GasFee = ({
   fee,
@@ -35,7 +50,7 @@ export const GasFee = ({
      */
     <InputBlock label='Fee tier' value={feeTier}>
       <div className='flex flex-col gap-2'>
-        <FeeTierPicker value={feeTier} onChange={setFeeTier} />
+        <SegmentedPicker value={feeTier} options={FEE_TIER_OPTIONS} onChange={setFeeTier} />
 
         {feeValueView && (
           <div className='flex flex-row items-center gap-2'>
