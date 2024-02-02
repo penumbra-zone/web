@@ -17,7 +17,7 @@ export const InputBlock = ({ label, className, validations, value, children }: I
   return (
     <div
       className={cn(
-        'bg-background flex-col pt-3 pb-4 px-4 rounded-lg border flex gap-1',
+        'bg-background px-4 pt-3 pb-4 rounded-lg border flex flex-col gap-1',
         vResult?.type === 'error' && 'border-red-400',
         vResult?.type === 'warn' && 'border-yellow-300',
         className,
