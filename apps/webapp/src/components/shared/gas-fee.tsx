@@ -24,9 +24,11 @@ export const GasFee = ({
 }) => {
   return (
     <InputBlock label='Gas fee' value={feeTier}>
-      {getFeeAsString(fee)}
+      <div className='flex flex-row items-center justify-between gap-2'>
+        {getFeeAsString(fee)}
 
-      <FeeTierSelector value={feeTier} onChange={setFeeTier} />
+        <FeeTierSelector value={feeTier} onChange={setFeeTier} />
+      </div>
     </InputBlock>
   );
 };
