@@ -31,7 +31,7 @@ export const GasFee = ({
   return (
     // @todo: Rename 'Fee tier' to 'Gas fee' if/when we support manual fee entry
     <InputBlock label='Fee tier' value={feeTier}>
-      <div className='flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between lg:gap-4'>
+      <div className='flex flex-col gap-2'>
         <FeeTierSelector value={feeTier} onChange={setFeeTier} />
 
         {feeValueView && (
