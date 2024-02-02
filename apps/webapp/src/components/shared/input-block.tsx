@@ -11,23 +11,13 @@ interface InputBlockProps {
   children: ReactNode;
 }
 
-export const InputBlock = ({
-  label,
-  className,
-  validations,
-  value,
-  orientation = 'vertical',
-  children,
-}: InputBlockProps) => {
+export const InputBlock = ({ label, className, validations, value, children }: InputBlockProps) => {
   const vResult = typeof value === 'string' ? validationResult(value, validations) : undefined;
 
   return (
     <div
       className={cn(
-        'bg-background px-4 rounded-lg border flex gap-1',
-        orientation === 'horizontal'
-          ? 'py-3 flex-row justify-between items-center'
-          : 'flex-col pt-3 pb-4',
+        'bg-background flex-col pt-3 pb-4 px-4 rounded-lg border flex gap-1',
         vResult?.type === 'error' && 'border-red-400',
         vResult?.type === 'warn' && 'border-yellow-300',
         className,
