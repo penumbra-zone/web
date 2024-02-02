@@ -120,7 +120,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
-const assembleRequest = async ({ amount, recipient, selection, memo }: SendSlice) => {
+const assembleRequest = async ({ amount, feeTier, recipient, selection, memo }: SendSlice) => {
   if (typeof selection?.accountIndex === 'undefined') throw new Error('no selected account');
   if (!selection.asset) throw new Error('no selected asset');
 
@@ -138,6 +138,17 @@ const assembleRequest = async ({ amount, recipient, selection, memo }: SendSlice
       },
     ],
     source: new AddressIndex({ account: selection.accountIndex }),
+
+    // Note: we currently don't provide a UI for setting the fee manually. Thus,
+    // a `feeMode` of `manualFee` is not supported here.
+    feeMode:
+      typeof feeTier === 'undefined'
+        ? { case: undefined }
+        : {
+            case: 'autoFee',
+            value: { feeTier },
+          },
+
     memo: new MemoPlaintext({
       returnAddress: await getAddressByIndex(selection.accountIndex),
       text: memo,
