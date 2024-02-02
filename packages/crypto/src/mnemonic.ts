@@ -1,5 +1,4 @@
 import { generateMnemonic, validateMnemonic, wordlists } from 'bip39';
-import { sampleSize } from 'lodash';
 
 export enum SeedPhraseLength {
   TWELVE_WORDS = 12, // 128bits
@@ -16,12 +15,14 @@ export interface ValidationField {
   index: number;
 }
 
-const sortByIndex = (fieldA: ValidationField, fieldB: ValidationField) =>
-  fieldA.index - fieldB.index;
-
-export const validationFields = (seedPhrase: string[], amount: number): ValidationField[] => {
-  const allWords = seedPhrase.map((word, index) => ({ word, index }));
-  return sampleSize(allWords, amount).sort(sortByIndex);
+export const generateValidationFields = (
+  seedPhrase: string[],
+  amount: number,
+): ValidationField[] => {
+  const allWords: ValidationField[] = seedPhrase.map((word, index) => ({ word, index }));
+  const shuffleWords = allWords.sort(() => 0.5 - Math.random());
+  const pickWords = shuffleWords.slice(0, amount);
+  return pickWords.sort((a, b) => a.index - b.index);
 };
 
 export const validateSeedPhrase = (seedPhrase: string[]): boolean => {

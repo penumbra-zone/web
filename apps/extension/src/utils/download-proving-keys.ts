@@ -3,33 +3,45 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { provingKeys } from '@penumbra-zone/types/src/proving-keys';
 
-// TODO: When v0.65.0 launches, change this back to a git tag path
-const githubSourceDir =
-  'https://github.com/penumbra-zone/penumbra/raw/main/crates/crypto/proof-params/src/gen/';
+const VERSION_TAG = 'v0.65.0-alpha.1';
 
-const binaryFilesDir = path.join('dist/js/bin');
+const force = process.argv.includes('--force');
 
-const downloadProvingKeys = async () => {
-  // Check if the bin directory already exists. Subsequent builds will not
-  // re-download the keys. To do so, remove the dist directory and rebuild.
-  if (fs.existsSync(binaryFilesDir)) return;
+const githubSourceDir = `https://github.com/penumbra-zone/penumbra/raw/${VERSION_TAG}/crates/crypto/proof-params/src/gen/`;
 
-  fs.mkdirSync(binaryFilesDir, { recursive: true });
+const binDir = path.join('bin');
 
-  const promises = provingKeys.map(async ({ file }) => {
-    const response = await fetch(`${githubSourceDir}${file}`);
-    if (!response.ok) throw new Error(`Failed to fetch ${file}`);
+fs.mkdirSync(binDir, { recursive: true });
 
-    const buffer = await response.arrayBuffer();
+const missing = new Array<string>();
 
-    const outputPath = path.join(binaryFilesDir, file);
-    const fileStream = fs.createWriteStream(outputPath, { flags: 'a' });
-    fileStream.write(Buffer.from(buffer));
-    fileStream.end();
-    console.log(`Proving key ${file} downloaded to ${outputPath}`);
+const downloads = provingKeys.map(async ({ file }) => {
+  const outputPath = path.join(binDir, file);
+  const downloadPath = new URL(`${githubSourceDir}${file}`);
+
+  if (fs.existsSync(outputPath)) {
+    const size = fs.statSync(outputPath).size;
+    if (size && !force) {
+      // skip if the key already exists, but print size for a visual confirmation
+      const sizeMB = size / 1024 / 1024;
+      console.log(`Skipped download of ${sizeMB.toFixed(2)}MiB ${outputPath}`);
+      return;
+    }
+  }
+  missing.push(file);
+
+  const response = await fetch(downloadPath);
+  if (!response.ok) throw new Error(`Failed to fetch ${file}`);
+
+  const fileStream = fs.createWriteStream(outputPath, { flags: 'w' });
+  fileStream.write(Buffer.from(await response.arrayBuffer()));
+  fileStream.end().close(() => {
+    const size = fs.statSync(outputPath).size;
+    const sizeMB = size / 1024 / 1024;
+    console.log(`Downloaded ${sizeMB.toFixed(2)}MiB ${outputPath}`);
   });
+});
 
-  await Promise.all(promises);
-};
+if (missing.length) console.log('Downloading keys:', missing.join(', '));
 
-void downloadProvingKeys();
+void Promise.allSettled(downloads);

@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vitest';
 import {
   generateSeedPhrase,
+  generateValidationFields,
   isInWordList,
   SeedPhraseLength,
   validateSeedPhrase,
-  validationFields,
 } from './mnemonic';
 import { wordlists } from 'bip39';
 
@@ -47,14 +47,14 @@ describe('Mnemonic tests', () => {
     });
   });
 
-  describe('validationFields()', () => {
+  describe('generateValidationFields()', () => {
     const valuesAscend = (arr: number[]) => arr.every((v, i, a) => !i || a[i - 1]! <= v);
 
     test('returns fields that correspond to phrase', () => {
       // As it's random, run many times
       Array.from({ length: 200 }).forEach(() => {
         const seedPhrase = generateSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
-        const fields = validationFields(seedPhrase, 3);
+        const fields = generateValidationFields(seedPhrase, 3);
         const allMatch = fields.every(f => seedPhrase.at(f.index) === f.word);
         expect(allMatch).toBeTruthy();
 
@@ -66,7 +66,7 @@ describe('Mnemonic tests', () => {
     test('works with 24 words as well', () => {
       Array.from({ length: 200 }).forEach(() => {
         const seedPhrase = generateSeedPhrase(SeedPhraseLength.TWENTY_FOUR_WORDS);
-        const fields = validationFields(seedPhrase, 5);
+        const fields = generateValidationFields(seedPhrase, 5);
         const allMatch = fields.every(f => seedPhrase.at(f.index) === f.word);
         expect(allMatch).toBeTruthy();
 
