@@ -4,14 +4,11 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import { FeeTierSelector } from '@penumbra-zone/ui';
 import { InputBlock } from './input-block';
-import { joinLoHiAmount } from '@penumbra-zone/types';
+import { localAssets } from '@penumbra-zone/constants';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
-const PENUMBRA_DISPLAY_DENOMINATOR = 1_000_000;
-
-const getFeeAsString = (fee: Fee | undefined) => {
-  if (!fee?.amount) return '';
-  return `${(Number(joinLoHiAmount(fee.amount)) / PENUMBRA_DISPLAY_DENOMINATOR).toString()} penumbra`;
-};
+const PENUMBRA_DENOM_METADATA = localAssets.find(asset => asset.display === 'penumbra')!;
 
 export const GasFee = ({
   fee,
@@ -22,15 +19,28 @@ export const GasFee = ({
   feeTier: FeeTier_Tier;
   setFeeTier: (feeTier: FeeTier_Tier) => void;
 }) => {
-  const feeAsString = getFeeAsString(fee);
+  let feeValueView: ValueView | undefined;
+  if (fee?.amount)
+    feeValueView = new ValueView({
+      valueView: {
+        case: 'knownDenom',
+        value: { amount: fee.amount, denom: PENUMBRA_DENOM_METADATA },
+      },
+    });
 
   return (
     // @todo: Rename 'Fee tier' to 'Gas fee' if/when we support manual fee entry
-    <InputBlock label='Fee tier' value={feeTier} orientation='horizontal'>
-      <div className='flex flex-row items-center justify-between gap-4'>
-        {feeAsString && <span className='text-teal'>{feeAsString}</span>}
-
+    <InputBlock label='Fee tier' value={feeTier}>
+      <div className='flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between lg:gap-4'>
         <FeeTierSelector value={feeTier} onChange={setFeeTier} />
+
+        {feeValueView && (
+          <div className='flex flex-row items-center gap-2'>
+            <img src='/fuel.svg' alt='Gas fee' className='size-5' />
+
+            <ValueViewComponent view={feeValueView} />
+          </div>
+        )}
       </div>
     </InputBlock>
   );
