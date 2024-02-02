@@ -6,11 +6,11 @@ import { FeeTierSelector } from '@penumbra-zone/ui';
 import { InputBlock } from './input-block';
 import { joinLoHiAmount } from '@penumbra-zone/types';
 
-const PENUMBRA_FEE_DENOMINATOR = 1000;
+const PENUMBRA_DISPLAY_DENOMINATOR = 1_000_000;
 
 const getFeeAsString = (fee: Fee | undefined) => {
   if (!fee?.amount) return '';
-  return `${(Number(joinLoHiAmount(fee.amount)) / PENUMBRA_FEE_DENOMINATOR).toString()} penumbra`;
+  return `${(Number(joinLoHiAmount(fee.amount)) / PENUMBRA_DISPLAY_DENOMINATOR).toString()} penumbra`;
 };
 
 export const GasFee = ({
