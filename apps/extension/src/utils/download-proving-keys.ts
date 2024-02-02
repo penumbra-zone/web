@@ -13,9 +13,9 @@ const binDir = path.join('bin');
 
 fs.mkdirSync(binDir, { recursive: true });
 
-const missing = new Array();
+const missing = new Array<string>();
 
-provingKeys.forEach(async ({ file }) => {
+const downloads = provingKeys.map(async ({ file }) => {
   const outputPath = path.join(binDir, file);
   const downloadPath = new URL(`${githubSourceDir}${file}`);
 
@@ -43,3 +43,5 @@ provingKeys.forEach(async ({ file }) => {
 });
 
 if (missing.length) console.log('Downloading keys:', missing.join(', '));
+
+void Promise.allSettled(downloads);
