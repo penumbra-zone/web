@@ -32,4 +32,14 @@ describe('<SegmentedPicker />', () => {
 
     expect(onChange).toHaveBeenCalledWith('two');
   });
+
+  it('applies aria-checked=true to the selected option', () => {
+    const { getByText } = render(
+      <SegmentedPicker value='one' options={options} onChange={onChange} />,
+    );
+
+    expect(getByText('One')).toHaveAttribute('aria-checked', 'true');
+    expect(getByText('Two')).toHaveAttribute('aria-checked', 'false');
+    expect(getByText('Three')).toHaveAttribute('aria-checked', 'false');
+  });
 });

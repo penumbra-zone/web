@@ -39,11 +39,12 @@ export const SegmentedPicker = <ValueType extends { toString: () => string }>({
   options: SegmentedPickerOption<ValueType>[];
 }) => {
   return (
-    <div className='flex flex-row gap-0.5'>
+    <div className='flex flex-row gap-0.5' role='radiogroup'>
       {options.map((option, index) => (
         <div
           key={option.value.toString()}
-          role='button'
+          role='radio'
+          aria-checked={value === option.value}
           onClick={() => onChange(option.value)}
           className={cn(
             'px-3 py-1 font-bold',
