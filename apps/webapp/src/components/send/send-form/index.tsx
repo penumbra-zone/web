@@ -39,9 +39,11 @@ export const SendForm = () => {
     recipient,
     memo,
     fee,
+    feeTier,
     setAmount,
     setSelection,
     setRecipient,
+    setFeeTier,
     setMemo,
     sendTx,
     txInProgress,
@@ -96,7 +98,7 @@ export const SendForm = () => {
         balances={accountBalances}
       />
 
-      <GasFee />
+      <GasFee fee={fee} feeTier={feeTier} setFeeTier={setFeeTier} />
 
       <InputBlock
         label='Memo'

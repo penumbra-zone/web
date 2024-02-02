@@ -1,13 +1,31 @@
+import {
+  Fee,
+  FeeTier_Tier,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import { FeeTierSelector } from '@penumbra-zone/ui';
 import { InputBlock } from './input-block';
-import { useStore } from '../../state';
-import { sendSelector } from '../../state/send';
+import { joinLoHiAmount } from '@penumbra-zone/types';
 
-export const GasFee = () => {
-  const { feeTier, setFeeTier } = useStore(sendSelector);
+const PENUMBRA_FEE_DENOMINATOR = 1000;
 
+const getFeeAsString = (fee: Fee | undefined) => {
+  if (!fee?.amount) return '';
+  return `${(Number(joinLoHiAmount(fee.amount)) / PENUMBRA_FEE_DENOMINATOR).toString()} penumbra`;
+};
+
+export const GasFee = ({
+  fee,
+  feeTier,
+  setFeeTier,
+}: {
+  fee: Fee | undefined;
+  feeTier: FeeTier_Tier;
+  setFeeTier: (feeTier: FeeTier_Tier) => void;
+}) => {
   return (
     <InputBlock label='Gas fee' value={feeTier}>
+      {getFeeAsString(fee)}
+
       <FeeTierSelector value={feeTier} onChange={setFeeTier} />
     </InputBlock>
   );
