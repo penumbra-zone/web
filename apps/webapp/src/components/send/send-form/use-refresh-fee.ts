@@ -9,7 +9,7 @@ const DEBOUNCE_MS = 500;
  * changes.
  */
 export const useRefreshFee = () => {
-  const { amount, recipient, selection, refreshFee } = useStore(sendSelector);
+  const { amount, feeTier, recipient, selection, refreshFee } = useStore(sendSelector);
   const timeoutId = useRef<number | null>(null);
 
   const debouncedRefreshFee = useCallback(() => {
@@ -24,5 +24,5 @@ export const useRefreshFee = () => {
     }, DEBOUNCE_MS);
   }, [refreshFee]);
 
-  useEffect(debouncedRefreshFee, [amount, recipient, selection, debouncedRefreshFee]);
+  useEffect(debouncedRefreshFee, [amount, feeTier, recipient, selection, debouncedRefreshFee]);
 };
