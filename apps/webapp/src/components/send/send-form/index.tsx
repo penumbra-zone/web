@@ -94,7 +94,6 @@ export const SendForm = () => {
           },
         ]}
         balances={accountBalances}
-        fee={fee}
       />
 
       <GasFee />

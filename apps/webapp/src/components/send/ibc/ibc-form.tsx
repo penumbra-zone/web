@@ -72,11 +72,6 @@ export default function IbcForm() {
           },
         ]}
         balances={accountBalances}
-        /**
-         * @todo: Pass a real fee here once we're actually using this form. See
-         * `<SendForm />` for an example of how to do this.
-         */
-        fee={undefined}
       />
       <ChainSelector />
       <InputBlock
