@@ -52,7 +52,6 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
 
   if (req.expiryHeight) planner.expiryHeight(req.expiryHeight);
   if (req.memo) planner.memo(req.memo);
-  if (req.fee) planner.fee(req.fee);
 
   for (const { value, address } of req.outputs) {
     if (!value || !address) throw new Error('no value or address in output');
