@@ -16,7 +16,7 @@ import { SctParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import {
   Fee,
-  FeeTier_Tier,
+  FeeTier,
   GasPrices,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import { JsonValue } from '@bufbuild/protobuf';
@@ -73,7 +73,7 @@ export class TxPlanner {
     this.wasmPlanner.fee(fee.toJson());
   }
 
-  setFeeTier(feeTier: FeeTier_Tier): void {
+  setFeeTier(feeTier: FeeTier): void {
     this.wasmPlanner.set_fee_tier(feeTier);
   }
 
