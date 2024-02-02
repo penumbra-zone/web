@@ -7,22 +7,33 @@ interface InputBlockProps {
   className?: string;
   validations?: Validation[];
   value?: unknown;
+  orientation?: 'horizontal' | 'vertical';
   children: ReactNode;
 }
 
-export const InputBlock = ({ label, className, validations, value, children }: InputBlockProps) => {
+export const InputBlock = ({
+  label,
+  className,
+  validations,
+  value,
+  orientation = 'vertical',
+  children,
+}: InputBlockProps) => {
   const vResult = typeof value === 'string' ? validationResult(value, validations) : undefined;
 
   return (
     <div
       className={cn(
-        'bg-background px-4 pt-3 pb-4 rounded-lg border flex flex-col gap-1',
+        'bg-background px-4 rounded-lg border flex gap-1',
+        orientation === 'horizontal'
+          ? 'py-3 flex-row justify-between items-center'
+          : 'flex-col pt-3 pb-4',
         vResult?.type === 'error' && 'border-red-400',
         vResult?.type === 'warn' && 'border-yellow-300',
         className,
       )}
     >
-      <div className='flex items-center gap-2 self-start'>
+      <div className='flex items-center gap-2'>
         <p className='text-base font-bold'>{label}</p>
         {vResult ? <div className={cn('italic', 'text-red-400')}>{vResult.issue}</div> : null}
       </div>

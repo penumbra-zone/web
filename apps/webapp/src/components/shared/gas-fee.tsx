@@ -22,10 +22,13 @@ export const GasFee = ({
   feeTier: FeeTier_Tier;
   setFeeTier: (feeTier: FeeTier_Tier) => void;
 }) => {
+  const feeAsString = getFeeAsString(fee);
+
   return (
-    <InputBlock label='Gas fee' value={feeTier}>
-      <div className='flex flex-row items-center justify-between gap-2'>
-        <span>{getFeeAsString(fee)}</span>
+    // @todo: Rename 'Fee tier' to 'Gas fee' if/when we support manual fee entry
+    <InputBlock label='Fee tier' value={feeTier} orientation='horizontal'>
+      <div className='flex flex-row items-center justify-between gap-4'>
+        {feeAsString && <span className='text-teal'>{feeAsString}</span>}
 
         <FeeTierSelector value={feeTier} onChange={setFeeTier} />
       </div>
