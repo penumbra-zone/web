@@ -33,7 +33,7 @@ export const getAddresses = async (accounts: (number | undefined)[]): Promise<In
 
 export const getAddressByIndex = async (account: number | undefined): Promise<Address> => {
   const req = new AddressByIndexRequest();
-  if (account) req.addressIndex = new AddressIndex({ account });
+  if (typeof account !== 'undefined') req.addressIndex = new AddressIndex({ account });
   const res = await viewClient.addressByIndex(req);
   if (!res.address) throw new Error('Address not in getAddressByIndex response');
   return res.address;
