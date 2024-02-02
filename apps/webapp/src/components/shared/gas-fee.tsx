@@ -25,7 +25,7 @@ export const GasFee = ({
   return (
     <InputBlock label='Gas fee' value={feeTier}>
       <div className='flex flex-row items-center justify-between gap-2'>
-        {getFeeAsString(fee)}
+        <span>{getFeeAsString(fee)}</span>
 
         <FeeTierSelector value={feeTier} onChange={setFeeTier} />
       </div>
