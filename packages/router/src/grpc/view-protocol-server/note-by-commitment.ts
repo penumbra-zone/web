@@ -1,33 +1,34 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
+import { watchSubscription } from './util/watch-subscription';
 
-import {
-  NoteByCommitmentResponse,
-  SpendableNoteRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
 import { ConnectError, Code } from '@connectrpc/connect';
 
-export const noteByCommitment: Impl['noteByCommitment'] = async (req, ctx) => {
+export const noteByCommitment: Impl['noteByCommitment'] = async (
+  { noteCommitment: findNoteCommitment, awaitDetection },
+  ctx,
+) => {
   const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
-  if (!req.noteCommitment)
+  if (!findNoteCommitment)
     throw new ConnectError('Missing note commitment in request', Code.InvalidArgument);
 
-  const noteByCommitment = await indexedDb.getSpendableNoteByCommitment(req.noteCommitment);
-  if (noteByCommitment) return { spendableNote: noteByCommitment };
-  if (!req.awaitDetection) throw new ConnectError('Note not found', Code.NotFound);
-
-  // Wait until our DB encounters a new note with this commitment
-  const response = new NoteByCommitmentResponse();
+  // start subscription early to avoid race condition
   const subscription = indexedDb.subscribe('SPENDABLE_NOTES');
 
-  for await (const update of subscription) {
-    const note = SpendableNoteRecord.fromJson(update.value);
-    if (note.noteCommitment?.equals(req.noteCommitment)) {
-      response.spendableNote = note;
-      break;
-    }
-  }
-  return response;
+  const spendableNote =
+    (await indexedDb.getSpendableNoteByCommitment(findNoteCommitment)) ??
+    (awaitDetection &&
+      SpendableNoteRecord.fromJson(
+        await watchSubscription(subscription, update => {
+          const scannedNote = SpendableNoteRecord.fromJson(update.value);
+          return findNoteCommitment.equals(scannedNote.noteCommitment);
+        }).catch(),
+      ));
+
+  if (spendableNote) return { spendableNote };
+
+  throw new ConnectError('Note not found', Code.NotFound);
 };

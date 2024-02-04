@@ -162,16 +162,16 @@ export interface PositionRecord {
   position: Jsonified<Position>; // Position
 }
 
-export type Tables = Record<string, StoreNames<PenumbraDb>>;
+export type PenumbraTables = StoreNames<PenumbraDb>;
 
 // Must be kept in sync with: https://github.com/penumbra-zone/penumbra/blob/02462635d6c825019822cbeeb44d422cf900f25d/crates/wasm/src/storage.rs#L15C1-L30
 export interface IdbConstants {
   name: string;
   version: number;
-  tables: Tables;
+  tables: Record<string, PenumbraTables>;
 }
 
-export const IDB_TABLES: Tables = {
+export const IDB_TABLES: Record<string, PenumbraTables> = {
   assets: 'ASSETS',
   notes: 'NOTES',
   spendable_notes: 'SPENDABLE_NOTES',
