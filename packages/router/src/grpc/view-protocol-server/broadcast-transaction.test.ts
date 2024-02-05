@@ -5,7 +5,7 @@ import {
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { servicesCtx } from '../../ctx';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { broadcastTransaction } from './broadcast-transaction';
@@ -55,8 +55,8 @@ describe('BroadcastTransaction request handler', () => {
     };
 
     mockCtx = createHandlerContext({
-      service: ViewProtocolService,
-      method: ViewProtocolService.methods.broadcastTransaction,
+      service: ViewService,
+      method: ViewService.methods.broadcastTransaction,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),

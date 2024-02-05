@@ -1,7 +1,7 @@
 import { servicesCtx } from '../../ctx';
 import { balances } from './balances';
 
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
@@ -11,8 +11,8 @@ import {
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 
-import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
-import { ServicesInterface, base64ToUint8Array, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import { base64ToUint8Array, ServicesInterface, uint8ArrayToBase64 } from '@penumbra-zone/types';
 
 import { beforeEach, describe, expect, test } from 'vitest';
 
@@ -43,8 +43,8 @@ describe('Balances request handler', () => {
         }),
     } as ServicesInterface;
     mockCtx = createHandlerContext({
-      service: ViewProtocolService,
-      method: ViewProtocolService.methods.balances,
+      service: ViewService,
+      method: ViewService.methods.balances,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       contextValues: createContextValues().set(servicesCtx, mockServices),

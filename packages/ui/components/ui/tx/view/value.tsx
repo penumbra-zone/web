@@ -12,7 +12,7 @@ interface ValueViewProps {
 export const ValueViewComponent = ({ view }: ValueViewProps) => {
   if (!view) return <></>;
 
-  if (view.valueView.case === 'unknownDenom') {
+  if (view.valueView.case === 'unknownAssetId') {
     const value = view.valueView.value;
     const amount = value.amount ?? new Amount();
     const encodedAssetId = bech32AssetId(value.assetId!);
@@ -33,11 +33,11 @@ export const ValueViewComponent = ({ view }: ValueViewProps) => {
     );
   }
 
-  if (view.valueView.case === 'knownDenom') {
+  if (view.valueView.case === 'knownAssetId') {
     const value = view.valueView.value;
     const amount = value.amount ?? new Amount();
-    const display_denom = value.denom?.display ?? '';
-    const exponent = value.denom ? getDisplayDenomExponent(value.denom) : 0;
+    const display_denom = value.metadata?.display ?? '';
+    const exponent = value.metadata ? getDisplayDenomExponent(value.metadata) : 0;
 
     return (
       <div className='flex font-mono'>

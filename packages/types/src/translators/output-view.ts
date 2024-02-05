@@ -31,7 +31,7 @@ export const asReceiverOutputView: Translator<
   const addressViewCase = outputView.outputView.value?.note?.address?.addressView.case;
   const address = outputView.outputView.value?.note?.address?.addressView.value?.address;
 
-  if (addressViewCase === 'visible' && address && (await isControlledAddress(address))) {
+  if (addressViewCase === 'decoded' && address && (await isControlledAddress(address))) {
     return asOpaqueOutputView(outputView);
   } else {
     return outputView;

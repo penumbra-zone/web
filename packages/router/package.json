@@ -17,8 +17,8 @@
     "@penumbra-zone/wasm-ts": "workspace:*"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.258",
+    "@types/chrome": "0.0.260",
     "vite": "^5.0.12",
-    "vitest": "^1.2.1"
+    "vitest": "^1.2.2"
   }
 }

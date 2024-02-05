@@ -1,9 +1,9 @@
 import { notes } from './notes';
 
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { servicesCtx } from '../../ctx';
 
-import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import type { Services } from '@penumbra-zone/services';
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
@@ -33,8 +33,8 @@ describe('Notes request handler', () => {
     } as Services;
 
     mockCtx = createHandlerContext({
-      service: ViewProtocolService,
-      method: ViewProtocolService.methods.balances,
+      service: ViewService,
+      method: ViewService.methods.balances,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       contextValues: createContextValues().set(servicesCtx, mockServices),

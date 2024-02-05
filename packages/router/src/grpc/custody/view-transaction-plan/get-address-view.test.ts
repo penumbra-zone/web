@@ -30,7 +30,7 @@ describe('getAddressView()', () => {
     test('returns a visible `AddressView`', () => {
       const expected = new AddressView({
         addressView: {
-          case: 'visible',
+          case: 'decoded',
           value: {
             address,
             index: {

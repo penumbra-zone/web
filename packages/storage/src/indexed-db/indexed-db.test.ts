@@ -7,12 +7,12 @@ import { IdbUpdate, PenumbraDb } from '@penumbra-zone/types';
 import { describe, expect, it } from 'vitest';
 import { IndexedDb } from './index';
 import {
-  delegationDenomMetadataA,
-  delegationDenomMetadataB,
-  denomMetadataA,
-  denomMetadataB,
-  denomMetadataC,
+  delegationMetadataA,
+  delegationMetadataB,
   emptyScanResult,
+  metadataA,
+  metadataB,
+  metadataC,
   newNote,
   noteWithDelegationAssetA,
   noteWithDelegationAssetB,
@@ -59,32 +59,26 @@ describe('IndexedDb', () => {
         chainId: 'mainnet',
       });
 
-      await testnetDb.saveAssetsMetadata(denomMetadataA);
-      await mainnetDb.saveAssetsMetadata(denomMetadataB);
+      await testnetDb.saveAssetsMetadata(metadataA);
+      await mainnetDb.saveAssetsMetadata(metadataB);
 
-      expect(await testnetDb.getAssetsMetadata(denomMetadataA.penumbraAssetId!)).toEqual(
-        denomMetadataA,
-      );
-      expect(await mainnetDb.getAssetsMetadata(denomMetadataB.penumbraAssetId!)).toEqual(
-        denomMetadataB,
-      );
+      expect(await testnetDb.getAssetsMetadata(metadataA.penumbraAssetId!)).toEqual(metadataA);
+      expect(await mainnetDb.getAssetsMetadata(metadataB.penumbraAssetId!)).toEqual(metadataB);
     });
 
     it('same version uses same db', async () => {
       const props = generateInitialProps();
       const dbA = await IndexedDb.initialize(props);
-      await dbA.saveAssetsMetadata(denomMetadataA);
+      await dbA.saveAssetsMetadata(metadataA);
 
       const dbB = await IndexedDb.initialize(props);
-      expect((await dbB.getAssetsMetadata(denomMetadataA.penumbraAssetId!))?.name).toBe(
-        denomMetadataA.name,
-      );
+      expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId!))?.name).toBe(metadataA.name);
     });
 
     it('increasing version should re-create object stores', async () => {
       const version1Props = generateInitialProps();
       const dbA = await IndexedDb.initialize(version1Props);
-      await dbA.saveAssetsMetadata(denomMetadataA);
+      await dbA.saveAssetsMetadata(metadataA);
 
       const version2Props = {
         chainId: 'test',
@@ -94,7 +88,7 @@ describe('IndexedDb', () => {
       };
 
       const dbB = await IndexedDb.initialize(version2Props);
-      expect((await dbB.getAssetsMetadata(denomMetadataA.penumbraAssetId!))?.name).toBeUndefined();
+      expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId!))?.name).toBeUndefined();
     });
   });
 
@@ -123,7 +117,7 @@ describe('IndexedDb', () => {
       await db.saveSpendableNote(newNote);
       expect((await db.getAllSpendableNotes()).length).toBe(1);
 
-      await db.saveAssetsMetadata(denomMetadataA);
+      await db.saveAssetsMetadata(metadataA);
       expect((await db.getAllAssetsMetadata()).length).toBe(1);
 
       await db.saveTransactionInfo(
@@ -246,18 +240,18 @@ describe('IndexedDb', () => {
     it('should be able to set/get by id', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveAssetsMetadata(denomMetadataC);
-      const savedDenomMetadata = await db.getAssetsMetadata(denomMetadataC.penumbraAssetId!);
+      await db.saveAssetsMetadata(metadataC);
+      const savedDenomMetadata = await db.getAssetsMetadata(metadataC.penumbraAssetId!);
 
-      expect(denomMetadataC.equals(savedDenomMetadata)).toBeTruthy();
+      expect(metadataC.equals(savedDenomMetadata)).toBeTruthy();
     });
 
     it('should be able to set/get all', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveAssetsMetadata(denomMetadataA);
-      await db.saveAssetsMetadata(denomMetadataB);
-      await db.saveAssetsMetadata(denomMetadataC);
+      await db.saveAssetsMetadata(metadataA);
+      await db.saveAssetsMetadata(metadataB);
+      await db.saveAssetsMetadata(metadataC);
 
       const savedAssets = await db.getAllAssetsMetadata();
 
@@ -346,10 +340,10 @@ describe('IndexedDb', () => {
     it('should be able to get all notes for voting', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveAssetsMetadata(delegationDenomMetadataA);
-      await db.saveAssetsMetadata(delegationDenomMetadataB);
+      await db.saveAssetsMetadata(delegationMetadataA);
+      await db.saveAssetsMetadata(delegationMetadataB);
 
-      await db.saveAssetsMetadata(denomMetadataB);
+      await db.saveAssetsMetadata(metadataB);
 
       await db.saveSpendableNote(noteWithDelegationAssetA);
       await db.saveSpendableNote(noteWithDelegationAssetB);
@@ -365,8 +359,8 @@ describe('IndexedDb', () => {
     it('votable_at_height parameter should screen out noteWithDelegationAssetB', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveAssetsMetadata(delegationDenomMetadataA);
-      await db.saveAssetsMetadata(delegationDenomMetadataB);
+      await db.saveAssetsMetadata(delegationMetadataA);
+      await db.saveAssetsMetadata(delegationMetadataB);
 
       await db.saveSpendableNote(noteWithDelegationAssetA);
       await db.saveSpendableNote(noteWithDelegationAssetB);
@@ -380,8 +374,8 @@ describe('IndexedDb', () => {
     it('addressIndex parameter should screen out all notes', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveAssetsMetadata(delegationDenomMetadataA);
-      await db.saveAssetsMetadata(delegationDenomMetadataB);
+      await db.saveAssetsMetadata(delegationMetadataA);
+      await db.saveAssetsMetadata(delegationMetadataB);
 
       await db.saveSpendableNote(noteWithDelegationAssetA);
       await db.saveSpendableNote(noteWithDelegationAssetB);

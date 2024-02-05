@@ -2,7 +2,7 @@ import {
   Address,
   AddressIndex,
   AddressView,
-  AddressView_Visible,
+  AddressView_Decoded,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { AddressViewComponent } from './address-view';
 import { describe, expect, test } from 'vitest';
@@ -10,9 +10,9 @@ import { render } from '@testing-library/react';
 
 const addressViewWithOneTimeAddress = new AddressView({
   addressView: {
-    case: 'visible',
+    case: 'decoded',
 
-    value: new AddressView_Visible({
+    value: new AddressView_Decoded({
       address: new Address(),
       index: new AddressIndex({
         account: 0,
@@ -26,9 +26,9 @@ const addressViewWithOneTimeAddress = new AddressView({
 
 const addressViewWithNormalAddress = new AddressView({
   addressView: {
-    case: 'visible',
+    case: 'decoded',
 
-    value: new AddressView_Visible({
+    value: new AddressView_Decoded({
       address: new Address(),
       index: new AddressIndex({
         account: 0,

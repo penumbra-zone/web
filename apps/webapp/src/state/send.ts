@@ -1,9 +1,5 @@
 import { AllSlices, SliceCreator } from './index';
-import {
-  fromBaseUnitAmountAndDenomMetadata,
-  isPenumbraAddr,
-  toBaseUnit,
-} from '@penumbra-zone/types';
+import { fromBaseUnitAmountAndMetadata, isPenumbraAddr, toBaseUnit } from '@penumbra-zone/types';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import BigNumber from 'bignumber.js';
@@ -129,10 +125,7 @@ const assembleRequest = async ({ amount, feeTier, recipient, selection, memo }: 
       {
         address: { altBech32m: recipient },
         value: {
-          amount: toBaseUnit(
-            BigNumber(amount),
-            getDisplayDenomExponent(selection.asset.denomMetadata),
-          ),
+          amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponent(selection.asset.metadata)),
           assetId: { inner: selection.asset.assetId.inner },
         },
       },
@@ -164,7 +157,7 @@ const validateAmount = (
    */
   amountInDisplayDenom: string,
 ): boolean => {
-  const balanceAmt = fromBaseUnitAmountAndDenomMetadata(asset.amount, asset.denomMetadata);
+  const balanceAmt = fromBaseUnitAmountAndMetadata(asset.amount, asset.metadata);
   return Boolean(amountInDisplayDenom) && BigNumber(amountInDisplayDenom).gt(balanceAmt);
 };
 

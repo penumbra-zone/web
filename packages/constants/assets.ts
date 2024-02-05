@@ -1,5 +1,5 @@
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { base64ToUint8Array } from '@penumbra-zone/types';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 export interface AssetPattens {
   lpNftPattern: RegExp;
@@ -17,8 +17,8 @@ export const assetPatterns: AssetPattens = {
   votingReceiptPattern: new RegExp('^voted_on_'),
 };
 
-export const localAssets: DenomMetadata[] = [
-  new DenomMetadata({
+export const localAssets: Metadata[] = [
+  new Metadata({
     base: 'upenumbra',
     display: 'penumbra',
     penumbraAssetId: {
@@ -44,7 +44,7 @@ export const localAssets: DenomMetadata[] = [
       },
     ],
   }),
-  new DenomMetadata({
+  new Metadata({
     base: 'ugm',
     display: 'gm',
     penumbraAssetId: {
@@ -65,7 +65,7 @@ export const localAssets: DenomMetadata[] = [
       },
     ],
   }),
-  new DenomMetadata({
+  new Metadata({
     base: 'ugn',
     display: 'gn',
     penumbraAssetId: {
@@ -86,7 +86,7 @@ export const localAssets: DenomMetadata[] = [
       },
     ],
   }),
-  new DenomMetadata({
+  new Metadata({
     base: 'wtest_usd',
     display: 'test_usd',
     penumbraAssetId: {
@@ -108,7 +108,7 @@ export const localAssets: DenomMetadata[] = [
       },
     ],
   }),
-  new DenomMetadata({
+  new Metadata({
     base: 'cube',
     display: 'cube',
     penumbraAssetId: {
@@ -121,7 +121,7 @@ export const localAssets: DenomMetadata[] = [
       },
     ],
   }),
-  new DenomMetadata({
+  new Metadata({
     base: 'pizza',
     display: 'pizza',
     penumbraAssetId: {

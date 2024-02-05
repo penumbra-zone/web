@@ -8,13 +8,13 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@types/chrome": "0.0.258",
+    "@types/chrome": "0.0.260",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",
     "idb": "^8.0.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "vitest": "^1.2.1"
+    "vitest": "^1.2.2"
   }
 }

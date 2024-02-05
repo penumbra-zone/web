@@ -11,7 +11,7 @@ import { IndexedDbInterface, RootQuerierInterface } from '@penumbra-zone/types';
 import { gasPrices } from './gas-prices';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
-async function getDenomMetadata(
+async function getAssetMetadata(
   indexedDb: IndexedDbInterface,
   targetAsset: AssetId,
   querier: RootQuerierInterface,
@@ -21,7 +21,7 @@ async function getDenomMetadata(
   if (localMetadata) return localMetadata;
 
   // If not available locally, query the metadata from the node.
-  const nodeMetadata = await querier.shieldedPool.denomMetadata(targetAsset);
+  const nodeMetadata = await querier.shieldedPool.assetMetadata(targetAsset);
   if (nodeMetadata) return nodeMetadata;
 
   // If the metadata is not found, throw an error with details about the asset.
@@ -68,7 +68,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
     if (!value || !targetAsset || !fee || !claimAddress)
       throw new Error('no value, targetAsset, fee or claimAddress in swap');
 
-    const intoDenomMetadata = await getDenomMetadata(indexedDb, targetAsset, querier);
+    const intoDenomMetadata = await getAssetMetadata(indexedDb, targetAsset, querier);
     planner.swap(value, intoDenomMetadata, fee, claimAddress);
   }
 

@@ -5,7 +5,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { sendValidationErrors } from './send.ts';
 import {
   AssetId,
-  DenomMetadata,
+  Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 import { viewClient } from '../clients/grpc.ts';
@@ -26,7 +26,7 @@ describe('Send Slice', () => {
         lo: 0n,
         hi: 0n,
       }),
-      denomMetadata: new DenomMetadata({ display: 'test_usd', denomUnits: [{ exponent: 18 }] }),
+      metadata: new Metadata({ display: 'test_usd', denomUnits: [{ exponent: 18 }] }),
       usdcValue: 0,
       assetId: new AssetId().fromJson({ inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=' }),
     },

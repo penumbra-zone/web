@@ -1,11 +1,11 @@
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { ServiceType } from '@bufbuild/protobuf';
 import { createPromiseClient } from '@connectrpc/connect';
 import {
   ChannelClientLabel,
+  createChannelTransport,
   InitChannelClientDataType,
   InitChannelClientMessage,
-  createChannelTransport,
 } from '@penumbra-zone/transport';
 import { ClientConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/client-connection-manager';
 import { transportOptions } from './transport-options';
@@ -43,4 +43,4 @@ export const createExtensionPageClient = <S extends ServiceType>(serviceType: S)
 
 // `ExtensionPage` refers to a webpage, for instance a content script or popup page, associated with the extension,
 // and we initialize a client object for establishing communication with the extension's services.
-export const viewClient = createExtensionPageClient(ViewProtocolService);
+export const viewClient = createExtensionPageClient(ViewService);

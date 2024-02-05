@@ -2,7 +2,7 @@ import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1alpha1/compact_block_pb';
 import {
   AssetId,
-  DenomMetadata,
+  Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import {
   QueryClientStatesRequest,
@@ -43,7 +43,7 @@ export interface TendermintQuerierInterface {
 }
 
 export interface ShieldedPoolQuerierInterface {
-  denomMetadata(assetId: AssetId): Promise<DenomMetadata | undefined>;
+  assetMetadata(assetId: AssetId): Promise<Metadata | undefined>;
 }
 
 export interface IbcClientQuerierInterface {

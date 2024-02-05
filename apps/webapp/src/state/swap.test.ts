@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { AssetBalance } from '../fetchers/balances';
 import {
   AssetId,
-  DenomMetadata,
+  Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import { stringToUint8Array } from '@penumbra-zone/types';
@@ -13,7 +13,7 @@ import { localAssets } from '@penumbra-zone/constants';
 
 describe('Swap Slice', () => {
   const assetBalance: AssetBalance = {
-    denomMetadata: new DenomMetadata({
+    metadata: new Metadata({
       display: 'xyz',
       denomUnits: [{ denom: 'xyz', exponent: 3 }],
     }),

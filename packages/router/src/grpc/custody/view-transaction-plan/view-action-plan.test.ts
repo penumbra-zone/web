@@ -12,8 +12,8 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
 import {
   AssetId,
-  DenomMetadata,
-  ValueView_KnownDenom,
+  Metadata,
+  ValueView_KnownAssetId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { Jsonified } from '@penumbra-zone/types';
@@ -29,9 +29,9 @@ describe('viewActionPlan()', () => {
   const address = { inner: bech32ToUint8Array(addressAsBech32) };
   const assetId = new AssetId({ inner: new Uint8Array() });
   const assetIdAsString = bech32AssetId(assetId);
-  const denomMetadata = new DenomMetadata({ penumbraAssetId: assetId });
+  const metadata = new Metadata({ penumbraAssetId: assetId });
   const metadataByAssetId = {
-    [assetIdAsString]: denomMetadata.toJson() as Jsonified<DenomMetadata>,
+    [assetIdAsString]: metadata.toJson() as Jsonified<Metadata>,
   };
   const mockFvk =
     'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09';
@@ -95,9 +95,9 @@ describe('viewActionPlan()', () => {
       const actionView = viewActionPlan(metadataByAssetId, mockFvk)(validSpendActionPlan);
       const spendView = actionView.actionView.value as SpendView;
       const spendViewVisible = spendView.spendView.value as SpendView_Visible;
-      const valueView = spendViewVisible.note!.value?.valueView.value as ValueView_KnownDenom;
+      const valueView = spendViewVisible.note!.value?.valueView.value as ValueView_KnownAssetId;
 
-      expect(valueView.denom?.toJson()).toEqual(denomMetadata.toJson());
+      expect(valueView.metadata?.toJson()).toEqual(metadata.toJson());
     });
 
     test('throws if the asset ID is missing', () => {
@@ -206,9 +206,9 @@ describe('viewActionPlan()', () => {
       const actionView = viewActionPlan(metadataByAssetId, mockFvk)(validOutputActionPlan);
       const outputView = actionView.actionView.value as OutputView;
       const outputViewVisible = outputView.outputView.value as OutputView_Visible;
-      const valueView = outputViewVisible.note!.value?.valueView.value as ValueView_KnownDenom;
+      const valueView = outputViewVisible.note!.value?.valueView.value as ValueView_KnownAssetId;
 
-      expect(valueView.denom?.toJson()).toEqual(denomMetadata.toJson());
+      expect(valueView.metadata?.toJson()).toEqual(metadata.toJson());
     });
 
     test('throws if the asset ID is missing', () => {
@@ -251,7 +251,7 @@ describe('viewActionPlan()', () => {
     test('returns an action view with the `ics20Withdrawal` case and no value', () => {
       const actionPlan = new ActionPlan({
         action: {
-          case: 'withdrawal',
+          case: 'ics20Withdrawal',
           value: { amount: { hi: 1n, lo: 0n } },
         },
       });

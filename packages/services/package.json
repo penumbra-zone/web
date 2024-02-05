@@ -14,6 +14,6 @@
     "exponential-backoff": "^3.1.1"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.258"
+    "@types/chrome": "0.0.260"
   }
 }

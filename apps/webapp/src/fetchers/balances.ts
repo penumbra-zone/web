@@ -5,7 +5,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import {
   AssetId,
-  DenomMetadata,
+  Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { getAddresses, IndexAddrRecord } from './address';
 import { getAllAssets } from './assets';
@@ -16,7 +16,7 @@ import { viewClient } from '../clients/grpc';
 import { streamToPromise } from './stream';
 
 export interface AssetBalance {
-  denomMetadata: DenomMetadata;
+  metadata: Metadata;
   assetId: AssetId;
   amount: Amount;
   usdcValue: number;
@@ -35,7 +35,7 @@ type NormalizedBalance = AssetBalance & {
 const getDenomAmount = (
   res: BalancesResponse,
   metadata: AssetsResponse[],
-): { amount: Amount; denomMetadata: DenomMetadata } => {
+): { amount: Amount; metadata: Metadata } => {
   const assetId = uint8ArrayToBase64(res.balance!.assetId!.inner);
   const match = metadata.find(m => {
     if (!m.denomMetadata?.penumbraAssetId?.inner) return false;
@@ -44,19 +44,19 @@ const getDenomAmount = (
 
   const amount = res.balance?.amount ?? new Amount();
 
-  return { amount, denomMetadata: match?.denomMetadata ?? new DenomMetadata() };
+  return { amount, metadata: match?.denomMetadata ?? new Metadata() };
 };
 
 const normalize =
-  (metadata: AssetsResponse[], indexAddrRecord: IndexAddrRecord | undefined) =>
+  (assetResponses: AssetsResponse[], indexAddrRecord: IndexAddrRecord | undefined) =>
   (res: BalancesResponse): NormalizedBalance => {
     const index = res.account?.account ?? 0;
     const address = indexAddrRecord?.[index] ?? '';
 
-    const { denomMetadata, amount } = getDenomAmount(res, metadata);
+    const { metadata, amount } = getDenomAmount(res, assetResponses);
 
     return {
-      denomMetadata,
+      metadata,
       assetId: res.balance!.assetId!,
       amount,
       //usdcValue: amount * 0.93245, // TODO: Temporary until pricing implemented
@@ -68,7 +68,7 @@ const normalize =
 const groupByAccount = (balances: AccountBalance[], curr: NormalizedBalance): AccountBalance[] => {
   const match = balances.find(b => b.index === curr.account.index);
   const newBalance = {
-    denomMetadata: curr.denomMetadata,
+    metadata: curr.metadata,
     amount: curr.amount,
     usdcValue: curr.usdcValue,
     assetId: curr.assetId,
@@ -96,7 +96,7 @@ const sortByAmount = (a: AssetBalance, b: AssetBalance): number => {
     return Number(joinLoHiAmount(b.amount) - joinLoHiAmount(a.amount));
 
   // If both are equal, sort by asset name in ascending order
-  return a.denomMetadata.display.localeCompare(b.denomMetadata.display);
+  return a.metadata.display.localeCompare(b.metadata.display);
 };
 
 // Sort by account (lowest first)

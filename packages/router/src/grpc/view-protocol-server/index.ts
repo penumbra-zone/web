@@ -1,7 +1,5 @@
-import type { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import type { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import type { ServiceImpl } from '@connectrpc/connect';
-export type Impl = ServiceImpl<typeof ViewProtocolService>;
-
 import { addressByIndex } from './address-by-index';
 import { appParameters } from './app-parameters';
 import { assets } from './assets';
@@ -28,7 +26,9 @@ import { walletId } from './wallet-id';
 import { witness } from './witness';
 import { witnessAndBuild } from './witness-and-build';
 
-export const viewImpl: Omit<Impl, 'denomMetadataById'> = {
+export type Impl = ServiceImpl<typeof ViewService>;
+
+export const viewImpl: Omit<Impl, 'assetMetadataById'> = {
   addressByIndex,
   appParameters,
   assets,

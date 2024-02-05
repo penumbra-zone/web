@@ -13,6 +13,6 @@
   },
   "devDependencies": {
     "fake-indexeddb": "^5.0.2",
-    "vitest": "^1.2.1"
+    "vitest": "^1.2.2"
   }
 }

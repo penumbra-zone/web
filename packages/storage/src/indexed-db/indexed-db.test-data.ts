@@ -1,5 +1,5 @@
 import { ScanBlockResult } from '@penumbra-zone/types';
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import {
   SpendableNoteRecord,
   SwapRecord,
@@ -119,7 +119,7 @@ export const scanResultWithNewSwaps: ScanBlockResult = {
   },
 };
 
-export const denomMetadataA = DenomMetadata.fromJson({
+export const metadataA = Metadata.fromJson({
   denomUnits: [
     { denom: 'penumbra', exponent: 6 },
     { denom: 'mpenumbra', exponent: 3 },
@@ -130,14 +130,14 @@ export const denomMetadataA = DenomMetadata.fromJson({
   penumbraAssetId: { inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=' },
 });
 
-export const denomMetadataB = DenomMetadata.fromJson({
+export const metadataB = Metadata.fromJson({
   denomUnits: [{ denom: 'gm', exponent: 6 }, { denom: 'mgm', exponent: 3 }, { denom: 'ugm' }],
   base: 'ugm',
   display: 'gm',
   penumbraAssetId: { inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=' },
 });
 
-export const denomMetadataC = DenomMetadata.fromJson({
+export const metadataC = Metadata.fromJson({
   denom_units: [
     {
       aliases: [],
@@ -167,7 +167,7 @@ export const denomMetadataC = DenomMetadata.fromJson({
   },
 });
 
-export const delegationDenomMetadataA = DenomMetadata.fromJson({
+export const delegationMetadataA = Metadata.fromJson({
   denomUnits: [
     {
       denom: 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar',
@@ -186,7 +186,7 @@ export const delegationDenomMetadataA = DenomMetadata.fromJson({
   penumbraAssetId: { inner: '9gOwzeyGwav8YydzDGlEZyZkN8ITX2IerjVy0YjAIw8=' },
 });
 
-export const delegationDenomMetadataB = DenomMetadata.fromJson({
+export const delegationMetadataB = Metadata.fromJson({
   denomUnits: [
     {
       denom: 'delegation_penumbravalid15ex9m38fl5gv48vwszyhgsvp9q83wc7nl4z274u6atyfwtlaeqgqpjwkkm',
@@ -716,7 +716,7 @@ export const transactionInfo = TransactionInfo.fromJson({
     ],
     addressViews: [
       {
-        visible: {
+        decoded: {
           address: {
             inner:
               '2VQ9nQKqga8RylgOq+wAY3/Hmxg96mGnI+Te/BRnXWpr5bSxpLShbpOmzO4pPULf+tGjaBum6InyEpipJ+8wk+HufrvSBa43H9o2ir5WPbk=',
@@ -953,11 +953,11 @@ export const transactionInfo = TransactionInfo.fromJson({
               },
               note: {
                 value: {
-                  knownDenom: {
+                  knownAssetId: {
                     amount: {
                       lo: '100000000',
                     },
-                    denom: {
+                    metadata: {
                       denomUnits: [
                         {
                           denom: 'penumbra',
@@ -981,7 +981,7 @@ export const transactionInfo = TransactionInfo.fromJson({
                 },
                 rseed: 'g9BsBqL0ExL6WlJqzIcPcipOdBDn6cg7DyXF29k46tE=',
                 address: {
-                  visible: {
+                  decoded: {
                     address: {
                       inner:
                         '2VQ9nQKqga8RylgOq+wAY3/Hmxg96mGnI+Te/BRnXWpr5bSxpLShbpOmzO4pPULf+tGjaBum6InyEpipJ+8wk+HufrvSBa43H9o2ir5WPbk=',
@@ -1030,11 +1030,11 @@ export const transactionInfo = TransactionInfo.fromJson({
               },
               note: {
                 value: {
-                  knownDenom: {
+                  knownAssetId: {
                     amount: {
                       lo: '10000000',
                     },
-                    denom: {
+                    metadata: {
                       denomUnits: [
                         {
                           denom: 'gm',
@@ -1058,7 +1058,7 @@ export const transactionInfo = TransactionInfo.fromJson({
                 },
                 rseed: 'rjTIozgK0N+GGDJnwvns2++5fMTIJ6PaZGrycq6rJdc=',
                 address: {
-                  visible: {
+                  decoded: {
                     address: {
                       inner:
                         '2VQ9nQKqga8RylgOq+wAY3/Hmxg96mGnI+Te/BRnXWpr5bSxpLShbpOmzO4pPULf+tGjaBum6InyEpipJ+8wk+HufrvSBa43H9o2ir5WPbk=',
@@ -1107,11 +1107,11 @@ export const transactionInfo = TransactionInfo.fromJson({
               },
               note: {
                 value: {
-                  knownDenom: {
+                  knownAssetId: {
                     amount: {
                       lo: '10000000',
                     },
-                    denom: {
+                    metadata: {
                       denomUnits: [
                         {
                           denom: 'gn',
@@ -1135,7 +1135,7 @@ export const transactionInfo = TransactionInfo.fromJson({
                 },
                 rseed: 'GnJfwI1oPFhtFTUBiBhb3lKz/X0BSQNir1klL+pzgsE=',
                 address: {
-                  visible: {
+                  decoded: {
                     address: {
                       inner:
                         '2VQ9nQKqga8RylgOq+wAY3/Hmxg96mGnI+Te/BRnXWpr5bSxpLShbpOmzO4pPULf+tGjaBum6InyEpipJ+8wk+HufrvSBa43H9o2ir5WPbk=',
@@ -1184,12 +1184,12 @@ export const transactionInfo = TransactionInfo.fromJson({
               },
               note: {
                 value: {
-                  knownDenom: {
+                  knownAssetId: {
                     amount: {
                       lo: '3875820019684212736',
                       hi: '54',
                     },
-                    denom: {
+                    metadata: {
                       denomUnits: [
                         {
                           denom: 'test_usd',
@@ -1209,7 +1209,7 @@ export const transactionInfo = TransactionInfo.fromJson({
                 },
                 rseed: 'G7EDdbDKJFpPO8jT4aqxUrDuJ117rI5a/+GHh1J9Xso=',
                 address: {
-                  visible: {
+                  decoded: {
                     address: {
                       inner:
                         '2VQ9nQKqga8RylgOq+wAY3/Hmxg96mGnI+Te/BRnXWpr5bSxpLShbpOmzO4pPULf+tGjaBum6InyEpipJ+8wk+HufrvSBa43H9o2ir5WPbk=',

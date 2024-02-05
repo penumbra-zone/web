@@ -11,7 +11,7 @@ export const getAddressView = (address: Address, fullViewingKey: string): Addres
   if (index) {
     return new AddressView({
       addressView: {
-        case: 'visible',
+        case: 'decoded',
         value: {
           address,
           index,
