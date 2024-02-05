@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   AppParametersRequest,
   AppParametersResponse,
@@ -9,14 +9,7 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 import { servicesCtx } from '../../ctx';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1alpha1/app_pb';
 import { appParameters } from './app-parameters';
-
-interface IndexedDbMock {
-  getAppParams: Mock;
-}
-
-interface MockServices {
-  getWalletServices: Mock<[], Promise<{ indexedDb: IndexedDbMock }>>;
-}
+import { IndexedDbMock, MockServices } from './test-utils';
 
 describe('AppParameters request handler', () => {
   let mockServices: MockServices;
@@ -45,7 +38,7 @@ describe('AppParameters request handler', () => {
   });
 
   test('should successfully get appParameters when idb has them', async () => {
-    mockIndexedDb.getAppParams.mockResolvedValue(testData);
+    mockIndexedDb.getAppParams?.mockResolvedValue(testData);
     const appParameterResponse = new AppParametersResponse(
       await appParameters(new AppParametersRequest(), mockCtx),
     );
@@ -53,7 +46,7 @@ describe('AppParameters request handler', () => {
   });
 
   test('should fail to get appParameters when idb has none', async () => {
-    mockIndexedDb.getAppParams.mockResolvedValue(undefined);
+    mockIndexedDb.getAppParams?.mockResolvedValue(undefined);
     await expect(appParameters(new AppParametersRequest(), mockCtx)).rejects.toThrow();
   });
 });
@@ -64,7 +57,7 @@ const testData = new AppParameters({
     epochDuration: 719n,
   },
   shieldedPoolParams: {
-    fmdParams: { asOfBlockHeight: 1n, precisionBits: 0 },
+    fixedFmdParams: { asOfBlockHeight: 1n, precisionBits: 0 },
   },
   communityPoolParams: {
     communityPoolSpendProposalsEnabled: true,
