@@ -19,5 +19,5 @@ export const indexByAddress: Impl['indexByAddress'] = async (req, ctx) => {
 
   if (!addressIndex) return {};
 
-  return { addressIndex: addressIndex };
+  return { addressIndex };
 };
