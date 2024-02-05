@@ -15,6 +15,6 @@ import { viewClient } from '../../../clients/extension-page';
  * @see packages/router/src/grpc/view-protocol-server/index-by-address.ts
  */
 export const isControlledAddress = async (address: Address): Promise<boolean> => {
-    let indexByAddressResponse = await viewClient.indexByAddress({ address });
-    return indexByAddressResponse.addressIndex !== undefined;
+  const indexByAddressResponse = await viewClient.indexByAddress({ address });
+  return indexByAddressResponse.addressIndex !== undefined;
 };
