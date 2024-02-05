@@ -4,7 +4,7 @@ import { AllSlices, initializeStore } from './index.ts';
 import { Chain } from '@penumbra-zone/types';
 import {
   AssetId,
-  DenomMetadata,
+  Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import { sendValidationErrors } from './send.ts';
@@ -19,7 +19,7 @@ describe.skip('IBC Slice', () => {
         lo: 0n,
         hi: 0n,
       }),
-      denomMetadata: new DenomMetadata({ display: 'test_usd', denomUnits: [{ exponent: 18 }] }),
+      metadata: new Metadata({ display: 'test_usd', denomUnits: [{ exponent: 18 }] }),
       usdcValue: 0,
       assetId: new AssetId().fromJson({ inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=' }),
     },

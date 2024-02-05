@@ -17,9 +17,9 @@ export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps
   const encodedAddress = bech32Address(view.addressView.value.address);
 
   const accountIndex =
-    view.addressView.case === 'visible' ? view.addressView.value.index?.account : undefined;
+    view.addressView.case === 'decoded' ? view.addressView.value.index?.account : undefined;
   const isOneTimeAddress =
-    view.addressView.case === 'visible'
+    view.addressView.case === 'decoded'
       ? !view.addressView.value.index?.randomizer.every(v => v === 0) // Randomized (and thus, a one-time address) if the randomizer is not all zeros.
       : undefined;
 

@@ -8,7 +8,7 @@ import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/c
 import { getAddressByIndex } from '../fetchers/address';
 import BigNumber from 'bignumber.js';
 import { planWitnessBuildBroadcast } from './helpers';
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { getDisplayDenomExponent } from '@penumbra-zone/types/src/denom-metadata';
 
 export interface SwapSlice {
@@ -16,8 +16,8 @@ export interface SwapSlice {
   setAssetIn: (selection: Selection) => void;
   amount: string;
   setAmount: (amount: string) => void;
-  assetOut: DenomMetadata | undefined;
-  setAssetOut: (metadata: DenomMetadata) => void;
+  assetOut: Metadata | undefined;
+  setAssetOut: (metadata: Metadata) => void;
   initiateSwapTx: (toastFn: typeof toast) => Promise<void>;
   txInProgress: boolean;
 }
@@ -82,10 +82,7 @@ const assembleRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
       {
         targetAsset: assetOut.penumbraAssetId,
         value: {
-          amount: toBaseUnit(
-            BigNumber(amount),
-            getDisplayDenomExponent(assetIn.asset.denomMetadata),
-          ),
+          amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponent(assetIn.asset.metadata)),
           assetId: assetIn.asset.assetId,
         },
         claimAddress: await getAddressByIndex(assetIn.accountIndex),
@@ -93,10 +90,7 @@ const assembleRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
         //       Asset Id should almost certainly be upenumbra,
         //       may need to indicate native denom in registry
         fee: {
-          amount: toBaseUnit(
-            BigNumber(amount),
-            getDisplayDenomExponent(assetIn.asset.denomMetadata),
-          ),
+          amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponent(assetIn.asset.metadata)),
           assetId: assetIn.asset.assetId,
         },
       },

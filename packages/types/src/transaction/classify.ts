@@ -30,7 +30,7 @@ export const classifyTransaction = (txv?: TransactionView): TransactionClassific
     a =>
       a.actionView.case === 'output' &&
       a.actionView.value.outputView.case === 'visible' &&
-      a.actionView.value.outputView.value.note?.address?.addressView.case === 'visible',
+      a.actionView.value.outputView.value.note?.address?.addressView.case === 'decoded',
   );
 
   // A transaction is internal if all spends and outputs are visible, and there are no outputs we don't control.

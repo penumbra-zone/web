@@ -45,7 +45,7 @@ describe('asOpaqueSpendView', () => {
           note: {
             address: {
               addressView: {
-                case: 'visible',
+                case: 'decoded',
                 value: {
                   address: {
                     inner: Uint8Array.from([0, 1, 2, 3]),
@@ -58,7 +58,7 @@ describe('asOpaqueSpendView', () => {
             },
             value: {
               valueView: {
-                case: 'unknownDenom',
+                case: 'unknownAssetId',
                 value: {
                   amount: {
                     hi: 1n,

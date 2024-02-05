@@ -38,8 +38,8 @@ export const GasFee = ({
   if (fee?.amount)
     feeValueView = new ValueView({
       valueView: {
-        case: 'knownDenom',
-        value: { amount: fee.amount, denom: PENUMBRA_DENOM_METADATA },
+        case: 'knownAssetId',
+        value: { amount: fee.amount, metadata: PENUMBRA_DENOM_METADATA },
       },
     });
 

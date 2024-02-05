@@ -16,7 +16,7 @@ import { Services } from '@penumbra-zone/services';
 import { localExtStorage } from '@penumbra-zone/storage';
 
 import { jsonOptions } from '@penumbra-zone/types/src/json-options';
-import { servicesCtx, custodyCtx } from '@penumbra-zone/router/src/ctx';
+import { custodyCtx, servicesCtx } from '@penumbra-zone/router/src/ctx';
 
 import { BackgroundConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/background-connection-manager';
 import { createProxyImpl } from '@penumbra-zone/transport/src/proxy';
@@ -25,9 +25,9 @@ import { connectChromeRuntimeAdapter } from '@penumbra-zone/transport/src/chrome
 import {
   ConnectError,
   ConnectRouter,
-  PromiseClient,
   createContextValues,
   createPromiseClient,
+  PromiseClient,
 } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 
@@ -35,8 +35,8 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
 
 // local services we implement
-import { CustodyProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
+import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { custodyImpl } from '@penumbra-zone/router/src/grpc/custody';
 import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
 
@@ -110,13 +110,13 @@ const rethrowImplErrors = <SI extends object>(sImpl: SI) =>
 
 const rpcImpls = [
   // rpc we provide
-  [CustodyProtocolService, rethrowImplErrors(custodyImpl)],
-  [ViewProtocolService, rethrowImplErrors(viewImpl)],
+  [CustodyService, rethrowImplErrors(custodyImpl)],
+  [ViewService, rethrowImplErrors(viewImpl)],
   // rpc proxy
   [IbcClientService, ibcImpl],
 ] as const;
 
-let custodyClient: PromiseClient<typeof CustodyProtocolService> | undefined;
+let custodyClient: PromiseClient<typeof CustodyService> | undefined;
 
 // connectrpc adapter
 const chromeRuntimeHandler = connectChromeRuntimeAdapter({
@@ -131,7 +131,7 @@ const chromeRuntimeHandler = connectChromeRuntimeAdapter({
 
     // Dynamically initialize custodyClient when createRequestContext is called,
     // and reuse custody client if it's already been defined.
-    custodyClient ??= createSameScriptClient(CustodyProtocolService, chromeRuntimeHandler);
+    custodyClient ??= createSameScriptClient(CustodyService, chromeRuntimeHandler);
 
     contextValues.set(custodyCtx, custodyClient);
     contextValues.set(servicesCtx, services);

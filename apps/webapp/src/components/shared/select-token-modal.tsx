@@ -8,7 +8,7 @@ import {
   DialogTrigger,
   Input,
 } from '@penumbra-zone/ui';
-import { fromBaseUnitAmountAndDenomMetadata } from '@penumbra-zone/types';
+import { fromBaseUnitAmountAndMetadata } from '@penumbra-zone/types';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { AccountBalance } from '../../fetchers/balances';
 import { AssetIcon } from './asset-icon';
@@ -31,11 +31,11 @@ export default function SelectTokenModal({
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
         <div className='flex h-9 min-w-[100px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
-          {selection?.asset?.denomMetadata.display && (
-            <AssetIcon name={selection.asset.denomMetadata.display} />
+          {selection?.asset?.metadata.display && (
+            <AssetIcon name={selection.asset.metadata.display} />
           )}
           <p className='font-bold text-light-grey md:text-sm xl:text-base'>
-            {selection?.asset?.denomMetadata.display}
+            {selection?.asset?.metadata.display}
           </p>
         </div>
       </DialogTrigger>
@@ -77,11 +77,11 @@ export default function SelectTokenModal({
                       >
                         <p className='flex justify-start'>{b.index}</p>
                         <div className='flex justify-start gap-[6px]'>
-                          <AssetIcon name={k.denomMetadata.display} />
-                          <p>{k.denomMetadata.display}</p>
+                          <AssetIcon name={k.metadata.display} />
+                          <p>{k.metadata.display}</p>
                         </div>
                         <p className='flex justify-end'>
-                          {fromBaseUnitAmountAndDenomMetadata(k.amount, k.denomMetadata).toFormat()}
+                          {fromBaseUnitAmountAndMetadata(k.amount, k.metadata).toFormat()}
                         </p>
                       </div>
                     </DialogClose>

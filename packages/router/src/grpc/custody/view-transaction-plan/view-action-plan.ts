@@ -4,7 +4,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import { bech32AssetId } from '@penumbra-zone/types/src/asset';
 import {
-  DenomMetadata,
+  Metadata,
   Value,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
@@ -21,7 +21,7 @@ import { Jsonified } from '@penumbra-zone/types';
 
 const getValueView = (
   value: Value | undefined,
-  denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
+  denomMetadataByAssetId: Record<string, Jsonified<Metadata>>,
 ): ValueView => {
   if (!value) throw new Error('No value to view');
   if (!value.assetId) throw new Error('No asset ID in value');
@@ -32,10 +32,10 @@ const getValueView = (
 
   return new ValueView({
     valueView: {
-      case: 'knownDenom',
+      case: 'knownAssetId',
       value: {
         amount: value.amount,
-        denom: DenomMetadata.fromJson(denomMetadata),
+        metadata: Metadata.fromJson(denomMetadata),
       },
     },
   });
@@ -43,7 +43,7 @@ const getValueView = (
 
 const getNoteView = (
   note: Note | undefined,
-  denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
+  denomMetadataByAssetId: Record<string, Jsonified<Metadata>>,
   fullViewingKey: string,
 ) => {
   if (!note) throw new Error('No note to view');
@@ -58,7 +58,7 @@ const getNoteView = (
 
 const getSpendView = (
   spendPlan: SpendPlan,
-  denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
+  denomMetadataByAssetId: Record<string, Jsonified<Metadata>>,
   fullViewingKey: string,
 ): SpendView => {
   if (!spendPlan.note?.address) throw new Error('No address in spend plan');
@@ -75,7 +75,7 @@ const getSpendView = (
 
 const getOutputView = (
   outputPlan: OutputPlan,
-  denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
+  denomMetadataByAssetId: Record<string, Jsonified<Metadata>>,
   fullViewingKey: string,
 ): OutputView => {
   if (!outputPlan.destAddress) throw new Error('No destAddress in output plan');
@@ -95,7 +95,7 @@ const getOutputView = (
 };
 
 export const viewActionPlan =
-  (denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>, fullViewingKey: string) =>
+  (denomMetadataByAssetId: Record<string, Jsonified<Metadata>>, fullViewingKey: string) =>
   (actionPlan: ActionPlan): ActionView => {
     switch (actionPlan.action.case) {
       case 'spend':
@@ -112,7 +112,7 @@ export const viewActionPlan =
             value: getOutputView(actionPlan.action.value, denomMetadataByAssetId, fullViewingKey),
           },
         });
-      case 'withdrawal':
+      case 'ics20Withdrawal':
         /**
          * Special case -- the `withdrawal` case in the action plan maps to the
          * `ics20Withdrawal` case in the action view.

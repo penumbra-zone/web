@@ -1,13 +1,13 @@
 import {
   Denom,
-  DenomMetadata,
+  Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import {
   AssetsRequest,
   AssetsResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
-import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
+import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ServicesInterface } from '@penumbra-zone/types';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { servicesCtx } from '../../ctx';
@@ -23,13 +23,13 @@ describe('Assets request handler', () => {
       getWalletServices: () =>
         Promise.resolve({
           indexedDb: {
-            getAllAssetsMetadata: (): Promise<DenomMetadata[]> => Promise.resolve(testData),
+            getAllAssetsMetadata: (): Promise<Metadata[]> => Promise.resolve(testData),
           },
         }),
     } as ServicesInterface;
     mockCtx = createHandlerContext({
-      service: ViewProtocolService,
-      method: ViewProtocolService.methods.assets,
+      service: ViewService,
+      method: ViewService.methods.assets,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       contextValues: createContextValues().set(servicesCtx, mockServices),
@@ -122,7 +122,7 @@ describe('Assets request handler', () => {
 });
 
 const testData = [
-  DenomMetadata.fromJson({
+  Metadata.fromJson({
     description: '',
     denomUnits: [
       {
@@ -139,7 +139,7 @@ const testData = [
       inner: '+q9m+F1um57vD6mtzpp4zsr4uY6llawZK4osfpNimQc=',
     },
   }),
-  DenomMetadata.fromJson({
+  Metadata.fromJson({
     description: '',
     denomUnits: [
       { denom: 'gm', exponent: 6, aliases: [] },
@@ -154,7 +154,7 @@ const testData = [
       inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=',
     },
   }),
-  DenomMetadata.fromJson({
+  Metadata.fromJson({
     description: '',
     denomUnits: [
       {
@@ -171,7 +171,7 @@ const testData = [
       inner: 'IYAlwlH0ld1wsRLlnYyl4ItsVeukLp4e7/U/Z+6opxA=',
     },
   }),
-  DenomMetadata.fromJson({
+  Metadata.fromJson({
     description: '',
     denomUnits: [
       { denom: 'penumbra', exponent: 6, aliases: [] },
@@ -186,7 +186,7 @@ const testData = [
       inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
     },
   }),
-  DenomMetadata.fromJson({
+  Metadata.fromJson({
     description: '',
     denomUnits: [
       {
@@ -203,7 +203,7 @@ const testData = [
       inner: 'ZagbowbVlBeZi5bMUZ3jCf5KDaOipWMSP7iVM/O+PQc=',
     },
   }),
-  DenomMetadata.fromJson({
+  Metadata.fromJson({
     description: '',
     denomUnits: [
       {
@@ -233,7 +233,7 @@ const testData = [
       inner: 'hByoL6SVVg9HOwBcMy3TiiJ3Z+OTjhQVi5APR020BAM=',
     },
   }),
-  DenomMetadata.fromJson({
+  Metadata.fromJson({
     description: '',
     denomUnits: [
       {
@@ -250,7 +250,7 @@ const testData = [
       inner: 'mNS0j9YDbrEsQLitqlA9aDJq1NHFJRgYQQCZMgBjlgM=',
     },
   }),
-  DenomMetadata.fromJson({
+  Metadata.fromJson({
     description: '',
     denomUnits: [
       { denom: 'gn', exponent: 6, aliases: [] },

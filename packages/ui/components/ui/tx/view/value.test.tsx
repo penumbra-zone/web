@@ -2,13 +2,13 @@ import { describe, expect, test } from 'vitest';
 import { ValueViewComponent } from './value';
 import { render } from '@testing-library/react';
 import {
-  DenomMetadata,
+  Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { base64ToUint8Array, bech32AssetId } from '@penumbra-zone/types';
 
 describe('<ValueViewComponent />', () => {
-  const penumbraDenomMetadata = new DenomMetadata({
+  const penumbraMetadata = new Metadata({
     base: 'upenumbra',
     display: 'penumbra',
     penumbraAssetId: {
@@ -38,13 +38,13 @@ describe('<ValueViewComponent />', () => {
   describe('when rendering a known denomination', () => {
     const valueView = new ValueView({
       valueView: {
-        case: 'knownDenom',
+        case: 'knownAssetId',
         value: {
           amount: {
             hi: 0n,
             lo: 123_456_789n,
           },
-          denom: penumbraDenomMetadata,
+          metadata: penumbraMetadata,
         },
       },
     });
@@ -59,14 +59,14 @@ describe('<ValueViewComponent />', () => {
   describe('when rendering an unknown denomination', () => {
     const valueView = new ValueView({
       valueView: {
-        case: 'unknownDenom',
+        case: 'unknownAssetId',
         value: {
           amount: {
             hi: 0n,
             lo: 123_456_789n,
           },
           assetId: {
-            inner: penumbraDenomMetadata.penumbraAssetId!.inner,
+            inner: penumbraMetadata.penumbraAssetId!.inner,
           },
         },
       },
@@ -74,7 +74,7 @@ describe('<ValueViewComponent />', () => {
 
     test('renders the amount in the base unit, along with an asset ID', () => {
       const { container } = render(<ValueViewComponent view={valueView} />);
-      const assetIdAsString = bech32AssetId(penumbraDenomMetadata.penumbraAssetId!);
+      const assetIdAsString = bech32AssetId(penumbraMetadata.penumbraAssetId!);
 
       expect(container).toHaveTextContent(`123,456,789${assetIdAsString}`);
     });

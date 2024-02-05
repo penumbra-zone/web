@@ -1,4 +1,4 @@
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { getAddressView } from './get-address-view';
 import { Jsonified } from '@penumbra-zone/types';
 import {
@@ -19,7 +19,7 @@ import { viewActionPlan } from './view-action-plan';
  */
 export const viewTransactionPlan = (
   txPlan: TransactionPlan,
-  denomMetadataByAssetId: Record<string, Jsonified<DenomMetadata>>,
+  metadataByAssetId: Record<string, Jsonified<Metadata>>,
   fullViewingKey: string,
 ): TransactionView => {
   const returnAddress = txPlan.memo?.plaintext?.returnAddress;
@@ -29,7 +29,7 @@ export const viewTransactionPlan = (
 
   return new TransactionView({
     bodyView: {
-      actionViews: txPlan.actions.map(viewActionPlan(denomMetadataByAssetId, fullViewingKey)),
+      actionViews: txPlan.actions.map(viewActionPlan(metadataByAssetId, fullViewingKey)),
       memoView: {
         memoView: {
           case: 'visible',

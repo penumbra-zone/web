@@ -24,7 +24,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import {
   AssetId,
-  DenomMetadata,
+  Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
@@ -161,20 +161,20 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
-  async getAssetsMetadata(assetId: AssetId): Promise<DenomMetadata | undefined> {
+  async getAssetsMetadata(assetId: AssetId): Promise<Metadata | undefined> {
     const key = uint8ArrayToBase64(assetId.inner);
     const json = await this.db.get('ASSETS', key);
     if (!json) return undefined;
-    return DenomMetadata.fromJson(json);
+    return Metadata.fromJson(json);
   }
 
   async getAllAssetsMetadata() {
     const jsonVals = await this.db.getAll('ASSETS');
-    return jsonVals.map(a => DenomMetadata.fromJson(a));
+    return jsonVals.map(a => Metadata.fromJson(a));
   }
 
-  async saveAssetsMetadata(metadata: DenomMetadata) {
-    await this.u.update({ table: 'ASSETS', value: metadata.toJson() as Jsonified<DenomMetadata> });
+  async saveAssetsMetadata(metadata: Metadata) {
+    await this.u.update({ table: 'ASSETS', value: metadata.toJson() as Jsonified<Metadata> });
   }
 
   async getAllSpendableNotes() {
@@ -245,46 +245,6 @@ export class IndexedDb implements IndexedDbInterface {
     }
   }
 
-  private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanBlockResult['sctUpdates']): void {
-    if (sctUpdates.set_position) {
-      txs.add({
-        table: 'TREE_LAST_POSITION',
-        value: sctUpdates.set_position,
-        key: 'last_position',
-      });
-    }
-
-    if (sctUpdates.set_forgotten) {
-      txs.add({
-        table: 'TREE_LAST_FORGOTTEN',
-        value: sctUpdates.set_forgotten,
-        key: 'last_forgotten',
-      });
-    }
-
-    for (const c of sctUpdates.store_commitments) {
-      txs.add({ table: 'TREE_COMMITMENTS', value: c });
-    }
-
-    for (const h of sctUpdates.store_hashes) {
-      txs.add({ table: 'TREE_HASHES', value: h });
-    }
-
-    // TODO: What about updates.delete_ranges?
-  }
-
-  private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {
-    for (const n of notes) {
-      txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() as Jsonified<SpendableNoteRecord> });
-    }
-  }
-
-  private addNewSwaps(txs: IbdUpdates, swaps: SwapRecord[]): void {
-    for (const n of swaps) {
-      txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });
-    }
-  }
-
   async getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined> {
     const key = uint8ArrayToBase64(nullifier.inner);
     const json = await this.db.getFromIndex('SWAPS', 'nullifier', key);
@@ -323,10 +283,10 @@ export class IndexedDb implements IndexedDbInterface {
     addressIndex: AddressIndex | undefined,
     votableAtHeight: bigint,
   ): Promise<NotesForVotingResponse[]> {
-    const delegationAssets = new Map<string, DenomMetadata>();
+    const delegationAssets = new Map<string, Metadata>();
 
     for await (const assetCursor of this.db.transaction('ASSETS').store) {
-      const denomMetadata = DenomMetadata.fromJson(assetCursor.value);
+      const denomMetadata = Metadata.fromJson(assetCursor.value);
       if (
         assetPatterns.delegationTokenPattern.test(denomMetadata.display) &&
         denomMetadata.penumbraAssetId
@@ -420,5 +380,45 @@ export class IndexedDb implements IndexedDbInterface {
         position: position.toJson() as Jsonified<Position>,
       },
     });
+  }
+
+  private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanBlockResult['sctUpdates']): void {
+    if (sctUpdates.set_position) {
+      txs.add({
+        table: 'TREE_LAST_POSITION',
+        value: sctUpdates.set_position,
+        key: 'last_position',
+      });
+    }
+
+    if (sctUpdates.set_forgotten) {
+      txs.add({
+        table: 'TREE_LAST_FORGOTTEN',
+        value: sctUpdates.set_forgotten,
+        key: 'last_forgotten',
+      });
+    }
+
+    for (const c of sctUpdates.store_commitments) {
+      txs.add({ table: 'TREE_COMMITMENTS', value: c });
+    }
+
+    for (const h of sctUpdates.store_hashes) {
+      txs.add({ table: 'TREE_HASHES', value: h });
+    }
+
+    // TODO: What about updates.delete_ranges?
+  }
+
+  private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {
+    for (const n of notes) {
+      txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() as Jsonified<SpendableNoteRecord> });
+    }
+  }
+
+  private addNewSwaps(txs: IbdUpdates, swaps: SwapRecord[]): void {
+    for (const n of swaps) {
+      txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });
+    }
   }
 }

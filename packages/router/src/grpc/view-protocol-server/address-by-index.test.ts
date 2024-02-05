@@ -5,7 +5,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { ServicesInterface } from '@penumbra-zone/types';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { servicesCtx } from '../../ctx';
 import { addressByIndex } from './address-by-index';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
@@ -28,8 +28,8 @@ describe('AddressByIndex request handler', () => {
     } as ServicesInterface;
 
     mockCtx = createHandlerContext({
-      service: ViewProtocolService,
-      method: ViewProtocolService.methods.addressByIndex,
+      service: ViewService,
+      method: ViewService.methods.addressByIndex,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       contextValues: createContextValues().set(servicesCtx, mockServices),

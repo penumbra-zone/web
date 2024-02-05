@@ -46,11 +46,11 @@ And pass it in like this:
 ```javascript
 import { createPromiseClient } from '@connectrpc/connect';
 import { createChannelTransport } from '@penumbra-zone/transport';
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 
 const viewClient = createPromiseClient(
-  ViewProtocolService,
-  createChannelTransport(ViewProtocolService, getPenumbraPort),
+  ViewService,
+  createChannelTransport(ViewService, getPenumbraPort),
 );
 ```
 
@@ -72,12 +72,12 @@ synopsis is provided here.
 
 ## for example
 
-An implementation of our CustodyProtocolService, which only has three endpoints,
+An implementation of our CustodyService, which only has three endpoints,
 could specify a type like:
 
-- `ServiceImpl<typeof CustodyProtocolService>`
-- `Omit<ServiceImpl<typeof CustodyProtocolService>, 'exportFullViewingKey' | 'confirmAddress'>`
-- `Pick<ServiceImpl<typeof CustodyProtocolService>, 'authorize'>`
+- `ServiceImpl<typeof CustodyService>`
+- `Omit<ServiceImpl<typeof CustodyService>, 'exportFullViewingKey' | 'confirmAddress'>`
+- `Pick<ServiceImpl<typeof CustodyService>, 'authorize'>`
 
 Targeting the full type, or a few selected methods, will provide type checking
 of your implementation, and providing the impl to a `ConnectRouter` creates a

@@ -1,6 +1,6 @@
 import { nullifierStatus } from './nullifier-status';
 
-import { ViewProtocolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
 import { servicesCtx } from '../../ctx';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
@@ -53,8 +53,8 @@ describe('nullifierStatus', () => {
     };
 
     mockCtx = createHandlerContext({
-      service: ViewProtocolService,
-      method: ViewProtocolService.methods.nullifierStatus,
+      service: ViewService,
+      method: ViewService.methods.nullifierStatus,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),

@@ -9,17 +9,17 @@ import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { InputBlock } from './input-block';
 
 const getCurrentBalanceValueView = (assetBalance: AssetBalance | undefined): ValueView => {
-  if (assetBalance?.denomMetadata)
+  if (assetBalance?.metadata)
     return new ValueView({
       valueView: {
-        case: 'knownDenom',
-        value: { amount: assetBalance.amount, denom: assetBalance.denomMetadata },
+        case: 'knownAssetId',
+        value: { amount: assetBalance.amount, metadata: assetBalance.metadata },
       },
     });
   else if (assetBalance?.assetId)
     return new ValueView({
       valueView: {
-        case: 'unknownDenom',
+        case: 'unknownAssetId',
         value: { amount: assetBalance.amount, assetId: assetBalance.assetId },
       },
     });

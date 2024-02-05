@@ -1,13 +1,13 @@
 import { AssetBalance } from '../../fetchers/balances';
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTrigger } from '@penumbra-zone/ui';
 import { AssetIcon } from '../shared/asset-icon';
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { localAssets } from '@penumbra-zone/constants';
 
 interface AssetOutSelectorProps {
   balances: AssetBalance[];
-  assetOut: DenomMetadata | undefined;
-  setAssetOut: (denom: DenomMetadata) => void;
+  assetOut: Metadata | undefined;
+  setAssetOut: (metadata: Metadata) => void;
 }
 
 export const AssetOutSelector = ({ balances, setAssetOut, assetOut }: AssetOutSelectorProps) => {

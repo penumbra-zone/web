@@ -7,6 +7,6 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {
-    "@types/chrome": "0.0.258"
+    "@types/chrome": "0.0.260"
   }
 }

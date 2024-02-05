@@ -16,7 +16,7 @@ describe('asOpaqueMemoView()', () => {
             text: 'Memo text',
             returnAddress: {
               addressView: {
-                case: 'visible',
+                case: 'decoded',
                 value: {
                   address: {
                     inner: Uint8Array.from([0, 1, 2, 3]),
@@ -82,7 +82,7 @@ describe('asReceiverMemoView()', () => {
             text: 'Memo text',
             returnAddress: {
               addressView: {
-                case: 'visible',
+                case: 'decoded',
                 value: {
                   address: {
                     inner: Uint8Array.from([0, 1, 2, 3]),

@@ -9,7 +9,7 @@ import {
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
 import {
-  DenomMetadata,
+  Metadata,
   Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { SctParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1alpha1/sct_pb';
@@ -40,7 +40,7 @@ export class TxPlanner {
     this.wasmPlanner.output(value.toJson(), addr.toJson());
   }
 
-  swap(inputValue: Value, intoDenom: DenomMetadata, fee: Fee, claimAddress: Address): void {
+  swap(inputValue: Value, intoDenom: Metadata, fee: Fee, claimAddress: Address): void {
     this.wasmPlanner.swap(
       inputValue.toJson(),
       intoDenom.toJson(),

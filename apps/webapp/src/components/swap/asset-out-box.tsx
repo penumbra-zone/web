@@ -4,7 +4,7 @@ import { AccountBalance, AssetBalance, groupByAsset } from '../../fetchers/balan
 import { Input } from '@penumbra-zone/ui';
 import { AssetOutSelector } from './asset-out-selector';
 import {
-  DenomMetadata,
+  Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
@@ -25,12 +25,12 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
   const valueView = balanceOfDenom
     ? new ValueView({
         valueView: {
-          case: 'knownDenom',
+          case: 'knownAssetId',
           value: {
             amount: balanceOfDenom.amount,
-            denom: new DenomMetadata({
-              display: balanceOfDenom.denomMetadata.display,
-              denomUnits: balanceOfDenom.denomMetadata.denomUnits,
+            metadata: new Metadata({
+              display: balanceOfDenom.metadata.display,
+              denomUnits: balanceOfDenom.metadata.denomUnits,
             }),
           },
         },

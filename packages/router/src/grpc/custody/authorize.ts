@@ -1,13 +1,10 @@
 import type { Impl } from '.';
 import { approverCtx, extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx';
-
-import { generateSpendKey, authorizePlan } from '@penumbra-zone/wasm-ts';
-
+import { authorizePlan, generateSpendKey } from '@penumbra-zone/wasm-ts';
 import { Key } from '@penumbra-zone/crypto-web';
-import { Box, Jsonified, bech32AssetId } from '@penumbra-zone/types';
-
-import { ConnectError, Code, HandlerContext } from '@connectrpc/connect';
-import { DenomMetadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { bech32AssetId, Box, Jsonified } from '@penumbra-zone/types';
+import { Code, ConnectError, HandlerContext } from '@connectrpc/connect';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { viewTransactionPlan } from './view-transaction-plan';
 
 /**
@@ -18,13 +15,13 @@ import { viewTransactionPlan } from './view-transaction-plan';
  * asset IDs in it, and then query just those from IndexedDB instead of grabbing
  * all of them.
  */
-const getDenomMetadataByAssetId = async (ctx: HandlerContext) => {
+const getMetadataByAssetId = async (ctx: HandlerContext) => {
   const services = ctx.values.get(servicesCtx);
   const walletServices = await services.getWalletServices();
   const assetsMetadata = await walletServices.indexedDb.getAllAssetsMetadata();
-  return assetsMetadata.reduce<Record<string, Jsonified<DenomMetadata>>>((prev, curr) => {
+  return assetsMetadata.reduce<Record<string, Jsonified<Metadata>>>((prev, curr) => {
     if (curr.penumbraAssetId) {
-      prev[bech32AssetId(curr.penumbraAssetId)] = curr.toJson() as Jsonified<DenomMetadata>;
+      prev[bech32AssetId(curr.penumbraAssetId)] = curr.toJson() as Jsonified<Metadata>;
     }
     return prev;
   }, {});
@@ -55,7 +52,7 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!decryptedSeedPhrase)
     throw new ConnectError('Unable to decrypt seed phrase with password', Code.Unauthenticated);
 
-  const denomMetadataByAssetId = await getDenomMetadataByAssetId(ctx);
+  const denomMetadataByAssetId = await getMetadataByAssetId(ctx);
   const transactionViewFromPlan = viewTransactionPlan(
     req.plan,
     denomMetadataByAssetId,
