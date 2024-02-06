@@ -4,7 +4,7 @@ import {
   displayAmount,
   displayUsd,
   fromBaseUnitAmount,
-  fromBaseUnitAmountAndMetadata,
+  fromValueView,
   joinLoHiAmount,
 } from './amount';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
@@ -44,7 +44,7 @@ describe('lohi helpers', () => {
       ],
     });
 
-    const result = fromBaseUnitAmountAndMetadata(
+    const result = fromValueView(
       new ValueView_KnownAssetId({
         amount: { lo: 123456789n, hi: 0n },
         metadata: penumbraMetadata,

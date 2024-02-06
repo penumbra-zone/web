@@ -3,19 +3,24 @@ import { swapSelector } from '../../state/swap';
 import { AssetBalance } from '../../fetchers/balances';
 import { Input } from '@penumbra-zone/ui';
 import { AssetOutSelector } from './asset-out-selector';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import {
+  Metadata,
+  ValueView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { groupByAsset } from '../../fetchers/balances/by-asset.ts';
 
 const findMatchingBalance = (
   denom: Metadata | undefined,
   balances: AssetBalance[],
-): AssetBalance | undefined => {
+): ValueView | undefined => {
   if (!denom?.penumbraAssetId) return undefined;
-  return balances.find(b => {
-    if (b.value.valueView.case !== 'knownAssetId') return false;
-    const assetId = b.value.valueView.value.metadata?.penumbraAssetId;
-    if (!assetId) return false;
-    return assetId.equals(denom.penumbraAssetId);
+  const grouped = balances.reduce(groupByAsset, []);
+  console.log(grouped);
+
+  return balances.reduce(groupByAsset, []).find(v => {
+    if (v.valueView.case !== 'knownAssetId') return false;
+    return v.valueView.value.metadata?.penumbraAssetId?.equals(denom.penumbraAssetId);
   });
 };
 
@@ -26,9 +31,7 @@ interface AssetOutBoxProps {
 export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
   const { assetOut, setAssetOut } = useStore(swapSelector);
 
-  // TODO: need to aggregate balances of assets across accounts (.reduce())
-  const aggregatedBalances = balances;
-  const matchingBalance = findMatchingBalance(assetOut, aggregatedBalances);
+  const matchingBalance = findMatchingBalance(assetOut, balances);
 
   return (
     <div className='flex flex-col rounded-lg border bg-background px-4 pb-5 pt-3'>
@@ -43,17 +46,13 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
           // TODO: estimate actual swap out amount button: https://github.com/penumbra-zone/web/issues/421
           value=''
         />
-        <AssetOutSelector
-          balances={aggregatedBalances}
-          assetOut={assetOut}
-          setAssetOut={setAssetOut}
-        />
+        <AssetOutSelector balances={balances} assetOut={assetOut} setAssetOut={setAssetOut} />
       </div>
       <div className='mt-[6px] flex items-start justify-between'>
         <div />
         <div className='flex items-start gap-1'>
           <img src='./wallet.svg' alt='Wallet' className='size-5' />
-          {matchingBalance && <ValueViewComponent view={matchingBalance.value} />}
+          {matchingBalance && <ValueViewComponent view={matchingBalance} />}
         </div>
       </div>
     </div>

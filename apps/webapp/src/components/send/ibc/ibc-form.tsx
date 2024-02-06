@@ -12,20 +12,20 @@ import { AssetBalance, getAssetBalances } from '../../../fetchers/balances';
 import { penumbraAddrValidation } from '../helpers';
 
 export const IbcAssetBalanceLoader: LoaderFunction = async (): Promise<AssetBalance[]> => {
-  const balancesByAccount = await getAssetBalances();
+  const assetBalances = await getAssetBalances();
 
-  if (balancesByAccount[0]) {
+  if (assetBalances[0]) {
     // set initial account if accounts exist and asset if account has asset list
     useStore.setState(state => {
-      state.ibc.selection = balancesByAccount[0];
+      state.ibc.selection = assetBalances[0];
     });
   }
 
-  return balancesByAccount;
+  return assetBalances;
 };
 
 export default function IbcForm() {
-  const accountBalances = useLoaderData() as AssetBalance[];
+  const assetBalances = useLoaderData() as AssetBalance[];
   const { toast } = useToast();
   const {
     sendIbcWithdraw,
@@ -67,7 +67,7 @@ export default function IbcForm() {
             checkFn: () => validationErrors.amountErr,
           },
         ]}
-        balances={accountBalances}
+        balances={assetBalances}
       />
       <ChainSelector />
       <InputBlock

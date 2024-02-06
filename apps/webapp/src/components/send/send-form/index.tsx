@@ -14,20 +14,20 @@ import { GasFee } from '../../shared/gas-fee.tsx';
 
 export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AssetBalance[]> => {
   throwIfExtNotInstalled();
-  const balancesByAccount = await getAssetBalances();
+  const assetBalances = await getAssetBalances();
 
-  if (balancesByAccount[0]) {
+  if (assetBalances[0]) {
     // set initial account if accounts exist and asset if account has asset list
     useStore.setState(state => {
-      state.send.selection = balancesByAccount[0];
+      state.send.selection = assetBalances[0];
     });
   }
 
-  return balancesByAccount;
+  return assetBalances;
 };
 
 export const SendForm = () => {
-  const accountBalances = useLoaderData() as AssetBalance[];
+  const assetBalances = useLoaderData() as AssetBalance[];
   const { toast } = useToast();
   const {
     selection,
@@ -91,7 +91,7 @@ export const SendForm = () => {
             checkFn: () => validationErrors.amountErr,
           },
         ]}
-        balances={accountBalances}
+        balances={assetBalances}
       />
 
       <GasFee fee={fee} feeTier={feeTier} setFeeTier={setFeeTier} />

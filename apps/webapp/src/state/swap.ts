@@ -5,9 +5,8 @@ import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_
 import { planWitnessBuildBroadcast } from './helpers';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { AssetBalance } from '../fetchers/balances';
-import { toBaseUnit } from '@penumbra-zone/types';
+import { getDisplayDenomExponent, toBaseUnit } from '@penumbra-zone/types';
 import BigNumber from 'bignumber.js';
-import { getDisplayDenomExponent } from '@penumbra-zone/types/src/denom-metadata';
 import { getAddressByIndex } from '../fetchers/address';
 
 export interface SwapSlice {

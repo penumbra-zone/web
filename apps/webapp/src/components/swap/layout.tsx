@@ -10,17 +10,17 @@ import { localAssets } from '@penumbra-zone/constants';
 
 export const SwapLoader: LoaderFunction = async (): Promise<AssetBalance[]> => {
   throwIfExtNotInstalled();
-  const balancesByAccount = await getAssetBalances();
+  const assetBalances = await getAssetBalances();
 
   // set initial denom in if there is an available balance
-  if (balancesByAccount[0]) {
+  if (assetBalances[0]) {
     useStore.setState(state => {
-      state.swap.assetIn = balancesByAccount[0];
+      state.swap.assetIn = assetBalances[0];
       state.swap.assetOut = localAssets[0];
     });
   }
 
-  return balancesByAccount;
+  return assetBalances;
 };
 
 export const SwapLayout = () => {

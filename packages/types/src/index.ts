@@ -24,3 +24,4 @@ export * from './denom-metadata';
 export * from './jsonified';
 export * from './schemas';
 export * from './type-predicates';
+export * from './value-view';

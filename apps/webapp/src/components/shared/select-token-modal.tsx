@@ -11,10 +11,8 @@ import {
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { AssetBalance } from '../../fetchers/balances';
 import { AssetIcon } from './asset-icon';
-import {
-  getDisplayDenomFromView,
-  ValueViewComponent,
-} from '@penumbra-zone/ui/components/ui/tx/view/value.tsx';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value.tsx';
+import { getDisplayDenomFromView } from '@penumbra-zone/types';
 
 interface SelectTokenModalProps {
   selection: AssetBalance | undefined;
@@ -62,38 +60,39 @@ export default function SelectTokenModal({
               <p className='flex justify-end'>Balance</p>
             </div>
             <div className='flex flex-col gap-2'>
-              {balances.map((b, i) => (
-                <div key={i} className='flex flex-col'>
-                  <DialogClose>
-                    <div
-                      className={cn(
-                        'grid grid-cols-3 py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4 font-bold text-muted-foreground',
-                        selection?.value.equals(b.value) &&
-                          selection.address.equals(b.address) &&
-                          'bg-light-brown px-4 -mx-4',
-                      )}
-                      onClick={() => setSelection(b)}
-                    >
-                      <p className='flex justify-start'>
-                        {b.address.addressView.case === 'decoded' &&
-                        b.address.addressView.value.index?.account
-                          ? b.address.addressView.value.index.account
-                          : '0'}
-                      </p>
-                      <div className='flex justify-start gap-[6px]'>
-                        {b.value.valueView.case === 'knownAssetId' &&
-                          b.value.valueView.value.metadata && (
-                            <AssetIcon metadata={b.value.valueView.value.metadata} />
-                          )}
-                        <p>{getDisplayDenomFromView(b.value)}</p>
+              {balances.map((b, i) => {
+                const index =
+                  b.address.addressView.case === 'decoded' &&
+                  b.address.addressView.value.index?.account;
+
+                return (
+                  <div key={i} className='flex flex-col'>
+                    <DialogClose>
+                      <div
+                        className={cn(
+                          'grid grid-cols-3 py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4 font-bold text-muted-foreground',
+                          selection?.value.equals(b.value) &&
+                            selection.address.equals(b.address) &&
+                            'bg-light-brown px-4 -mx-4',
+                        )}
+                        onClick={() => setSelection(b)}
+                      >
+                        <p className='flex justify-start'>{index}</p>
+                        <div className='flex justify-start gap-[6px]'>
+                          {b.value.valueView.case === 'knownAssetId' &&
+                            b.value.valueView.value.metadata && (
+                              <AssetIcon metadata={b.value.valueView.value.metadata} />
+                            )}
+                          <p>{getDisplayDenomFromView(b.value)}</p>
+                        </div>
+                        <div className='flex justify-end'>
+                          <ValueViewComponent view={b.value} showDenom={false} />
+                        </div>
                       </div>
-                      <p className='flex justify-end'>
-                        <ValueViewComponent view={b.value} showDenom={false} />
-                      </p>
-                    </div>
-                  </DialogClose>
-                </div>
-              ))}
+                    </DialogClose>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

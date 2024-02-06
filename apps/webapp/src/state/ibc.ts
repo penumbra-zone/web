@@ -1,4 +1,4 @@
-import { Chain, toBaseUnit } from '@penumbra-zone/types';
+import { Chain, getDisplayDenomExponent, toBaseUnit } from '@penumbra-zone/types';
 import { AllSlices, SliceCreator } from '.';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
@@ -9,7 +9,6 @@ import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tender
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { ibcClient, viewClient } from '../clients/grpc';
 import { planWitnessBuildBroadcast } from './helpers';
-import { getDisplayDenomExponent } from '@penumbra-zone/types/src/denom-metadata';
 import { AssetBalance } from '../fetchers/balances';
 
 export interface IbcSendSlice {

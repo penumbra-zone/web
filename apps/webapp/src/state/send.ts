@@ -4,11 +4,10 @@ import {
   addressIndex,
   assetId,
   denomMetadata,
-  fromBaseUnitAmountAndMetadata,
+  fromValueView,
   getDisplayDenomExponent,
   isPenumbraAddr,
   toBaseUnit,
-  validateAndReturnOrThrow,
 } from '@penumbra-zone/types';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
@@ -125,7 +124,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
-const selectionSchema = z.object({
+export const selectionSchema = z.object({
   value: z.object({
     valueView: z.object({
       case: z.literal('knownAssetId'),
@@ -147,7 +146,7 @@ const selectionSchema = z.object({
 });
 
 const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSlice) => {
-  const validatedSelection = validateAndReturnOrThrow(selectionSchema, selection);
+  const validatedSelection = selectionSchema.parse(selection);
 
   return new TransactionPlannerRequest({
     outputs: [
@@ -193,7 +192,7 @@ const validateAmount = (
 ): boolean => {
   if (asset.value.valueView.case !== 'knownAssetId') throw new Error('unknown asset selected');
 
-  const balanceAmt = fromBaseUnitAmountAndMetadata(asset.value.valueView.value);
+  const balanceAmt = fromValueView(asset.value.valueView.value);
   return Boolean(amountInDisplayDenom) && BigNumber(amountInDisplayDenom).gt(balanceAmt);
 };
 

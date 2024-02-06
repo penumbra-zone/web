@@ -32,14 +32,14 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
 };
 
 export const PopupIndex = () => {
-  const getAccount = useStore(addrByIndexSelector);
+  const getAddrByIndex = useStore(addrByIndexSelector);
 
   return (
     <div className='relative flex h-full flex-col items-stretch justify-start bg-left-bottom px-[30px]'>
       <div className='absolute bottom-[50px] left-[-10px] -z-10 h-[715px] w-[900px] overflow-hidden bg-logo opacity-10' />
       <IndexHeader />
       <div className='my-32'>
-        <SelectAccount getAddrByIndex={getAccount} />
+        <SelectAccount getAddrByIndex={getAddrByIndex} />
       </div>
       <BlockSync />
     </div>

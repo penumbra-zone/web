@@ -1,9 +1,12 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { bech32AssetId, fromBaseUnitAmount } from '@penumbra-zone/types';
+import {
+  fromBaseUnitAmount,
+  getDisplayDenomExponent,
+  getDisplayDenomFromView,
+} from '@penumbra-zone/types';
 import { CopyToClipboard } from '../../copy-to-clipboard';
 import { CopyIcon } from '@radix-ui/react-icons';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
-import { getDisplayDenomExponent } from '@penumbra-zone/types/src/denom-metadata';
 
 interface ValueViewProps {
   view: ValueView | undefined;
@@ -48,23 +51,4 @@ export const ValueViewComponent = ({ view, showDenom = true }: ValueViewProps) =
   }
 
   return <></>;
-};
-
-export const getDisplayDenomFromView = (view: ValueView) => {
-  if (view.valueView.case === 'unknownAssetId') {
-    if (!view.valueView.value.assetId) throw new Error('no asset id for unknown denom');
-    return bech32AssetId(view.valueView.value.assetId);
-  }
-
-  if (view.valueView.case === 'knownAssetId') {
-    const displayDenom = view.valueView.value.metadata?.display;
-    if (displayDenom) return displayDenom;
-
-    const assetId = view.valueView.value.metadata?.penumbraAssetId;
-    if (assetId) return bech32AssetId(assetId);
-
-    return 'unknown';
-  }
-
-  throw new Error(`unexpected case ${view.valueView.case}`);
 };

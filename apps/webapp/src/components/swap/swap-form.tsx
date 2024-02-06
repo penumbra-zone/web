@@ -8,7 +8,7 @@ import { swapSelector } from '../../state/swap';
 import { AssetOutBox } from './asset-out-box';
 
 export const SwapForm = () => {
-  const accountBalances = useLoaderData() as AssetBalance[];
+  const assetBalances = useLoaderData() as AssetBalance[];
   const { toast } = useToast();
   const { assetIn, setAssetIn, amount, setAmount, initiateSwapTx } = useStore(swapSelector);
 
@@ -32,9 +32,9 @@ export const SwapForm = () => {
           setAmount(e.target.value);
         }}
         validations={[]}
-        balances={accountBalances}
+        balances={assetBalances}
       />
-      <AssetOutBox balances={accountBalances} />
+      <AssetOutBox balances={assetBalances} />
       <Button type='submit' variant='gradient' className='mt-3' size='lg' disabled={false}>
         Swap
       </Button>

@@ -72,9 +72,9 @@ export default function AssetsTable() {
                       </div>
                     </TableCell>
                     <TableCell className='w-1/3 text-center font-mono'>
-                      <p className='flex flex-col items-center text-base font-bold'>
+                      <div className='flex flex-col items-center text-base font-bold'>
                         <ValueViewComponent view={assetBalance.value} showDenom={false} />
-                      </p>
+                      </div>
                     </TableCell>
                     <TableCell className='w-1/3 text-center font-mono'>
                       <div className='flex flex-col'>
