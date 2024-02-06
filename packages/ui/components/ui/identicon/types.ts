@@ -1,5 +1,5 @@
 export interface IdenticonProps {
-  name: string;
+  uniqueIdentifier: string;
   size?: number;
   className?: string;
 }

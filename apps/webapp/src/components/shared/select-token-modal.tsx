@@ -8,16 +8,16 @@ import {
   DialogTrigger,
   Input,
 } from '@penumbra-zone/ui';
-import { fromBaseUnitAmountAndMetadata } from '@penumbra-zone/types';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { AccountBalance } from '../../fetchers/balances';
+import { AssetBalance } from '../../fetchers/balances';
 import { AssetIcon } from './asset-icon';
-import { Selection } from '../../state/types';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value.tsx';
+import { getDisplayDenomFromView } from '@penumbra-zone/types';
 
 interface SelectTokenModalProps {
-  selection: Selection | undefined;
-  setSelection: (selection: Selection) => void;
-  balances: AccountBalance[];
+  selection: AssetBalance | undefined;
+  setSelection: (selection: AssetBalance) => void;
+  balances: AssetBalance[];
 }
 
 export default function SelectTokenModal({
@@ -27,16 +27,16 @@ export default function SelectTokenModal({
 }: SelectTokenModalProps) {
   const [search, setSearch] = useState('');
 
+  const displayDenom = selection && getDisplayDenomFromView(selection.value);
+  const denomMetadata =
+    selection?.value.valueView.case === 'knownAssetId' && selection.value.valueView.value.metadata;
+
   return (
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
         <div className='flex h-9 min-w-[100px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
-          {selection?.asset?.metadata.display && (
-            <AssetIcon name={selection.asset.metadata.display} />
-          )}
-          <p className='font-bold text-light-grey md:text-sm xl:text-base'>
-            {selection?.asset?.metadata.display}
-          </p>
+          {denomMetadata && <AssetIcon metadata={denomMetadata} />}
+          <p className='font-bold text-light-grey md:text-sm xl:text-base'>{displayDenom}</p>
         </div>
       </DialogTrigger>
       <DialogContent className='max-w-[312px] bg-charcoal-secondary md:max-w-[400px]'>
@@ -60,34 +60,39 @@ export default function SelectTokenModal({
               <p className='flex justify-end'>Balance</p>
             </div>
             <div className='flex flex-col gap-2'>
-              {balances.map(b => (
-                <div key={b.index} className='flex flex-col'>
-                  {b.balances.map((k, j) => (
-                    <DialogClose key={j}>
+              {balances.map((b, i) => {
+                const index =
+                  b.address.addressView.case === 'decoded' &&
+                  b.address.addressView.value.index?.account;
+
+                return (
+                  <div key={i} className='flex flex-col'>
+                    <DialogClose>
                       <div
                         className={cn(
                           'grid grid-cols-3 py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4 font-bold text-muted-foreground',
-                          selection?.asset?.assetId.equals(k.assetId) &&
-                            selection.address === b.address &&
+                          selection?.value.equals(b.value) &&
+                            selection.address.equals(b.address) &&
                             'bg-light-brown px-4 -mx-4',
                         )}
-                        onClick={() =>
-                          setSelection({ accountIndex: b.index, address: b.address, asset: k })
-                        }
+                        onClick={() => setSelection(b)}
                       >
-                        <p className='flex justify-start'>{b.index}</p>
+                        <p className='flex justify-start'>{index}</p>
                         <div className='flex justify-start gap-[6px]'>
-                          <AssetIcon name={k.metadata.display} />
-                          <p>{k.metadata.display}</p>
+                          {b.value.valueView.case === 'knownAssetId' &&
+                            b.value.valueView.value.metadata && (
+                              <AssetIcon metadata={b.value.valueView.value.metadata} />
+                            )}
+                          <p>{getDisplayDenomFromView(b.value)}</p>
                         </div>
-                        <p className='flex justify-end'>
-                          {fromBaseUnitAmountAndMetadata(k.amount, k.metadata).toFormat()}
-                        </p>
+                        <div className='flex justify-end'>
+                          <ValueViewComponent view={b.value} showDenom={false} />
+                        </div>
                       </div>
                     </DialogClose>
-                  ))}
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

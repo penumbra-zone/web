@@ -1,6 +1,6 @@
 import { Card } from '@penumbra-zone/ui';
 import { LoaderFunction } from 'react-router-dom';
-import { AccountBalance, getBalancesByAccount } from '../../fetchers/balances';
+import { AssetBalance, getAssetBalances } from '../../fetchers/balances';
 import { useStore } from '../../state';
 import { throwIfExtNotInstalled } from '../../fetchers/is-connected';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
@@ -8,24 +8,19 @@ import { EduPanel } from '../shared/edu-panels/content';
 import { SwapForm } from './swap-form';
 import { localAssets } from '@penumbra-zone/constants';
 
-export const SwapLoader: LoaderFunction = async (): Promise<AccountBalance[]> => {
+export const SwapLoader: LoaderFunction = async (): Promise<AssetBalance[]> => {
   throwIfExtNotInstalled();
-  const balancesByAccount = await getBalancesByAccount();
+  const assetBalances = await getAssetBalances();
 
   // set initial denom in if there is an available balance
-  if (balancesByAccount[0]) {
+  if (assetBalances[0]) {
     useStore.setState(state => {
-      state.swap.assetIn = {
-        address: balancesByAccount[0]?.address,
-        accountIndex: balancesByAccount[0]?.index,
-        asset: balancesByAccount[0]?.balances[0],
-      };
-
+      state.swap.assetIn = assetBalances[0];
       state.swap.assetOut = localAssets[0];
     });
   }
 
-  return balancesByAccount;
+  return assetBalances;
 };
 
 export const SwapLayout = () => {

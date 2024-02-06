@@ -2,13 +2,13 @@ import { Button } from '@penumbra-zone/ui';
 import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import InputToken from '../shared/input-token';
 import { useLoaderData } from 'react-router-dom';
-import { AccountBalance } from '../../fetchers/balances';
+import { AssetBalance } from '../../fetchers/balances';
 import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
 import { AssetOutBox } from './asset-out-box';
 
 export const SwapForm = () => {
-  const accountBalances = useLoaderData() as AccountBalance[];
+  const assetBalances = useLoaderData() as AssetBalance[];
   const { toast } = useToast();
   const { assetIn, setAssetIn, amount, setAmount, initiateSwapTx } = useStore(swapSelector);
 
@@ -32,9 +32,9 @@ export const SwapForm = () => {
           setAmount(e.target.value);
         }}
         validations={[]}
-        balances={accountBalances}
+        balances={assetBalances}
       />
-      <AssetOutBox balances={accountBalances} />
+      <AssetOutBox balances={assetBalances} />
       <Button type='submit' variant='gradient' className='mt-3' size='lg' disabled={false}>
         Swap
       </Button>

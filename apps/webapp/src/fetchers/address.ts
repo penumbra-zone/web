@@ -36,12 +36,6 @@ export const getEphemeralAddress = async (account = 0): Promise<Address> => {
   return address;
 };
 
-export const getAccountAddr = async (index: number, ephemeral: boolean) => {
-  const address = ephemeral ? await getEphemeralAddress(index) : await getAddressByIndex(index);
-  const bech32 = bech32Address(address);
-
-  return {
-    address: bech32,
-    index,
-  };
+export const getAddrByIndex = async (index: number, ephemeral: boolean) => {
+  return ephemeral ? await getEphemeralAddress(index) : await getAddressByIndex(index);
 };

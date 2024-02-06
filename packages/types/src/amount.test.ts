@@ -4,11 +4,14 @@ import {
   displayAmount,
   displayUsd,
   fromBaseUnitAmount,
-  fromBaseUnitAmountAndMetadata,
+  fromValueView,
   joinLoHiAmount,
 } from './amount';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import {
+  Metadata,
+  ValueView_KnownAssetId,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 describe('lohi helpers', () => {
   it('fromBaseUnitAmount works', () => {
@@ -41,9 +44,11 @@ describe('lohi helpers', () => {
       ],
     });
 
-    const result = fromBaseUnitAmountAndMetadata(
-      new Amount({ lo: 123456789n, hi: 0n }),
-      penumbraMetadata,
+    const result = fromValueView(
+      new ValueView_KnownAssetId({
+        amount: { lo: 123456789n, hi: 0n },
+        metadata: penumbraMetadata,
+      }),
     );
 
     expect(result.toString()).toBe('123.456789');

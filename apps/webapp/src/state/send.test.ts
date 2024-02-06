@@ -3,17 +3,20 @@ import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from './index.ts';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
 import { sendValidationErrors } from './send.ts';
+import { AssetBalance } from '../fetchers/balances';
+import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { bech32ToUint8Array, stringToUint8Array } from '@penumbra-zone/types';
 import {
-  AssetId,
   Metadata,
+  ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import { produce } from 'immer';
 import { viewClient } from '../clients/grpc.ts';
 import {
   AddressByIndexResponse,
   TransactionPlannerResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
-import { Selection } from './types.ts';
+import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
 vi.mock('../fetchers/address', () => ({
   getAddressByIndex: vi.fn(),
@@ -21,19 +24,37 @@ vi.mock('../fetchers/address', () => ({
 
 describe('Send Slice', () => {
   const selectionExample = {
-    asset: {
-      amount: new Amount({
-        lo: 0n,
-        hi: 0n,
-      }),
-      metadata: new Metadata({ display: 'test_usd', denomUnits: [{ exponent: 18 }] }),
-      usdcValue: 0,
-      assetId: new AssetId().fromJson({ inner: 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=' }),
-    },
-    address:
-      'penumbra1e8k5c3ds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uurrgkvtjpny3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd1',
-    accountIndex: 0,
-  } satisfies Selection;
+    value: new ValueView({
+      valueView: {
+        case: 'knownAssetId',
+        value: {
+          amount: new Amount({
+            lo: 0n,
+            hi: 0n,
+          }),
+          metadata: new Metadata({
+            display: 'test_usd',
+            denomUnits: [{ exponent: 18 }],
+            penumbraAssetId: { inner: stringToUint8Array('passet1239049023') },
+          }),
+        },
+      },
+    }),
+    address: new AddressView({
+      addressView: {
+        case: 'decoded',
+        value: {
+          address: {
+            inner: bech32ToUint8Array(
+              'penumbra1e8k5cyds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uu0rgkvtjpxy3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd4',
+            ),
+          },
+          index: { account: 12 },
+        },
+      },
+    }),
+    usdcValue: 0,
+  } satisfies AssetBalance;
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
@@ -52,7 +73,7 @@ describe('Send Slice', () => {
     expect(txInProgress).toBeFalsy();
 
     const { amountErr, recipientErr } = sendValidationErrors(
-      selectionExample.asset,
+      selectionExample,
       amount,
       recipient,
       memo,
@@ -69,26 +90,26 @@ describe('Send Slice', () => {
 
     test('validate high enough amount validates', () => {
       const assetBalance = new Amount({ hi: 1n });
-      useStore.getState().send.setSelection({
-        ...selectionExample,
-        asset: { ...selectionExample.asset, amount: assetBalance },
+      const state = produce(selectionExample, draft => {
+        draft.value.valueView.value!.amount = assetBalance;
       });
-      useStore.getState().send.setAmount('1');
+      useStore.getState().send.setSelection(state);
+      useStore.getState().send.setAmount('1000');
       const { selection, amount } = useStore.getState().send;
 
-      const { amountErr } = sendValidationErrors(selection?.asset, amount, 'xyz', 'a memo');
+      const { amountErr } = sendValidationErrors(selection, amount, 'xyz', 'a memo');
       expect(amountErr).toBeFalsy();
     });
 
     test('validate error when too low the balance of the asset', () => {
       const assetBalance = new Amount({ lo: 2n });
-      useStore.getState().send.setSelection({
-        ...selectionExample,
-        asset: { ...selectionExample.asset, amount: assetBalance },
+      const state = produce(selectionExample, draft => {
+        draft.value.valueView.value!.amount = assetBalance;
       });
+      useStore.getState().send.setSelection(state);
       useStore.getState().send.setAmount('6');
       const { selection, amount } = useStore.getState().send;
-      const { amountErr } = sendValidationErrors(selection?.asset, amount, 'xyz', 'a memo');
+      const { amountErr } = sendValidationErrors(selection, amount, 'xyz', 'a memo');
       expect(amountErr).toBeTruthy();
     });
   });
@@ -109,7 +130,7 @@ describe('Send Slice', () => {
       useStore.getState().send.setRecipient(rightAddress);
       expect(useStore.getState().send.recipient).toBe(rightAddress);
       const { selection, amount, recipient, memo } = useStore.getState().send;
-      const { recipientErr } = sendValidationErrors(selection?.asset, amount, recipient, memo);
+      const { recipientErr } = sendValidationErrors(selection, amount, recipient, memo);
       expect(recipientErr).toBeFalsy();
     });
 
@@ -120,7 +141,7 @@ describe('Send Slice', () => {
       useStore.getState().send.setSelection(selectionExample);
       useStore.getState().send.setRecipient(badAddressLength);
       const { selection, amount, recipient, memo } = useStore.getState().send;
-      const { recipientErr } = sendValidationErrors(selection?.asset, amount, recipient, memo);
+      const { recipientErr } = sendValidationErrors(selection, amount, recipient, memo);
       expect(recipientErr).toBeTruthy();
     });
 
@@ -131,14 +152,14 @@ describe('Send Slice', () => {
       useStore.getState().send.setSelection(selectionExample);
       useStore.getState().send.setRecipient(badAddressPrefix);
       const { selection, amount, recipient, memo } = useStore.getState().send;
-      const { recipientErr } = sendValidationErrors(selection?.asset, amount, recipient, memo);
+      const { recipientErr } = sendValidationErrors(selection, amount, recipient, memo);
       expect(recipientErr).toBeTruthy();
     });
 
     test('recipient will have a validation error after entering a very long memo', () => {
       useStore.getState().send.setMemo('b'.repeat(512));
       const { selection, amount, recipient, memo } = useStore.getState().send;
-      const { memoErr } = sendValidationErrors(selection?.asset, amount, recipient, memo);
+      const { memoErr } = sendValidationErrors(selection, amount, recipient, memo);
       expect(memoErr).toBeTruthy();
     });
   });

@@ -1,32 +1,11 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
-
 import { getAddressByIndex, TxPlanner } from '@penumbra-zone/wasm-ts';
-
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-
 import { Code, ConnectError } from '@connectrpc/connect';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { IndexedDbInterface, RootQuerierInterface } from '@penumbra-zone/types';
 import { gasPrices } from './gas-prices';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
-
-async function getAssetMetadata(
-  indexedDb: IndexedDbInterface,
-  targetAsset: AssetId,
-  querier: RootQuerierInterface,
-) {
-  // First, try to get the metadata from the internal database.
-  const localMetadata = await indexedDb.getAssetsMetadata(targetAsset);
-  if (localMetadata) return localMetadata;
-
-  // If not available locally, query the metadata from the node.
-  const nodeMetadata = await querier.shieldedPool.assetMetadata(targetAsset);
-  if (nodeMetadata) return nodeMetadata;
-
-  // If the metadata is not found, throw an error with details about the asset.
-  throw new Error(`No denom metadata found for asset: ${JSON.stringify(targetAsset.toJson())}`);
-}
+import { getAssetMetadata } from './helpers';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   const services = ctx.values.get(servicesCtx);
@@ -68,8 +47,8 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
     if (!value || !targetAsset || !fee || !claimAddress)
       throw new Error('no value, targetAsset, fee or claimAddress in swap');
 
-    const intoDenomMetadata = await getAssetMetadata(indexedDb, targetAsset, querier);
-    planner.swap(value, intoDenomMetadata, fee, claimAddress);
+    const intoAssetMetadata = await getAssetMetadata(targetAsset, indexedDb, querier);
+    planner.swap(value, intoAssetMetadata, fee, claimAddress);
   }
 
   for (const { swapCommitment } of req.swapClaims) {

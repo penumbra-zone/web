@@ -1,24 +1,32 @@
 import { AllSlices, SliceCreator } from './index';
-import { fromBaseUnitAmountAndMetadata, isPenumbraAddr, toBaseUnit } from '@penumbra-zone/types';
+import {
+  address,
+  addressIndex,
+  assetId,
+  denomMetadata,
+  fromValueView,
+  getDisplayDenomExponent,
+  isPenumbraAddr,
+  toBaseUnit,
+} from '@penumbra-zone/types';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import BigNumber from 'bignumber.js';
 import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
 import { AssetBalance } from '../fetchers/balances';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-import { Selection } from './types';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
-import { getAddressByIndex } from '../fetchers/address';
-import { getTransactionPlan, planWitnessBuildBroadcast } from './helpers.ts';
-import { getDisplayDenomExponent } from '@penumbra-zone/types/src/denom-metadata.ts';
+import { getTransactionPlan, planWitnessBuildBroadcast } from './helpers';
+
 import {
   Fee,
   FeeTier_Tier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import { z } from 'zod';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 
 export interface SendSlice {
-  selection: Selection | undefined;
-  setSelection: (selection: Selection) => void;
+  selection: AssetBalance | undefined;
+  setSelection: (selection: AssetBalance) => void;
   amount: string;
   setAmount: (amount: string) => void;
   recipient: string;
@@ -72,7 +80,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         return;
       }
 
-      const txnPlanReq = await assembleRequest(get().send);
+      const txnPlanReq = assembleRequest(get().send);
       const plan = await getTransactionPlan(txnPlanReq);
       const fee = plan?.transactionParameters?.fee;
       if (!fee?.amount) return;
@@ -94,7 +102,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
       const { dismiss } = toastFn(loadingTxToast);
 
       try {
-        const req = await assembleRequest(get().send);
+        const req = assembleRequest(get().send);
         const txHash = await planWitnessBuildBroadcast(req);
         dismiss();
         toastFn(successTxToast(txHash));
@@ -116,21 +124,46 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
-const assembleRequest = async ({ amount, feeTier, recipient, selection, memo }: SendSlice) => {
-  if (typeof selection?.accountIndex === 'undefined') throw new Error('no selected account');
-  if (!selection.asset) throw new Error('no selected asset');
+export const selectionSchema = z.object({
+  value: z.object({
+    valueView: z.object({
+      case: z.literal('knownAssetId'),
+      value: z.object({
+        metadata: denomMetadata.extend({ penumbraAssetId: assetId }).required(),
+      }),
+    }),
+  }),
+
+  address: z.object({
+    addressView: z.object({
+      case: z.literal('decoded'),
+      value: z.object({
+        address,
+        index: addressIndex,
+      }),
+    }),
+  }),
+});
+
+const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSlice) => {
+  const validatedSelection = selectionSchema.parse(selection);
 
   return new TransactionPlannerRequest({
     outputs: [
       {
         address: { altBech32m: recipient },
         value: {
-          amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponent(selection.asset.metadata)),
-          assetId: { inner: selection.asset.assetId.inner },
+          amount: toBaseUnit(
+            BigNumber(amount),
+            getDisplayDenomExponent(
+              new Metadata(validatedSelection.value.valueView.value.metadata),
+            ),
+          ),
+          assetId: validatedSelection.value.valueView.value.metadata.penumbraAssetId,
         },
       },
     ],
-    source: new AddressIndex({ account: selection.accountIndex }),
+    source: validatedSelection.address.addressView.value.index,
 
     // Note: we currently don't provide a UI for setting the fee manually. Thus,
     // a `feeMode` of `manualFee` is not supported here.
@@ -143,7 +176,7 @@ const assembleRequest = async ({ amount, feeTier, recipient, selection, memo }: 
           },
 
     memo: new MemoPlaintext({
-      returnAddress: await getAddressByIndex(selection.accountIndex),
+      returnAddress: validatedSelection.address.addressView.value.address,
       text: memo,
     }),
   });
@@ -157,7 +190,9 @@ const validateAmount = (
    */
   amountInDisplayDenom: string,
 ): boolean => {
-  const balanceAmt = fromBaseUnitAmountAndMetadata(asset.amount, asset.metadata);
+  if (asset.value.valueView.case !== 'knownAssetId') throw new Error('unknown asset selected');
+
+  const balanceAmt = fromValueView(asset.value.valueView.value);
   return Boolean(amountInDisplayDenom) && BigNumber(amountInDisplayDenom).gt(balanceAmt);
 };
 
