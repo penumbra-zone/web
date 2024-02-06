@@ -1,5 +1,6 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
+import { watchSubscription } from './util/watch-subscription';
 
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1alpha1/txhash_pb';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
@@ -9,19 +10,22 @@ import { ConnectError, Code } from '@connectrpc/connect';
 import { sha256Hash } from '@penumbra-zone/crypto-web';
 import { uint8ArrayToHex } from '@penumbra-zone/types';
 
-export const broadcastTransaction: Impl['broadcastTransaction'] = async function* (req, ctx) {
+export const broadcastTransaction: Impl['broadcastTransaction'] = async function* (
+  { transaction, awaitDetection },
+  ctx,
+) {
   const services = ctx.values.get(servicesCtx);
   const { tendermint } = services.querier;
   const { indexedDb } = await services.getWalletServices();
-  if (!req.transaction)
+  if (!transaction)
     throw new ConnectError('No transaction provided in request', Code.InvalidArgument);
 
   // start subscription early to prevent race condition
   const subscription = indexedDb.subscribe('TRANSACTION_INFO');
 
-  const id = new TransactionId({ inner: await sha256Hash(req.transaction.toBinary()) });
+  const id = new TransactionId({ inner: await sha256Hash(transaction.toBinary()) });
 
-  const broadcastId = await tendermint.broadcastTx(req.transaction);
+  const broadcastId = await tendermint.broadcastTx(transaction);
   if (!id.equals(broadcastId)) {
     console.error('broadcast transaction id disagrees', id, broadcastId);
     throw new Error(
@@ -36,21 +40,20 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async function
     },
   };
 
-  if (!req.awaitDetection) return;
+  if (!awaitDetection) return;
 
   // Wait until DB records a new transaction with this id
-  for await (const { value } of subscription) {
-    const { height: detectionHeight, id: detectionId } = TransactionInfo.fromJson(value);
-    if (id.equals(detectionId)) {
-      yield {
-        status: {
-          case: 'confirmed',
-          value: { id, detectionHeight },
-        },
-      };
-      return;
-    }
-  }
+  const { height: detectionHeight } = TransactionInfo.fromJson(
+    await watchSubscription(subscription, ({ value }) => {
+      const { id: scanningId } = TransactionInfo.fromJson(value);
+      return id.equals(scanningId);
+    }),
+  );
 
-  throw new Error('subscription ended');
+  yield {
+    status: {
+      case: 'confirmed',
+      value: { id, detectionHeight },
+    },
+  };
 };
