@@ -3,7 +3,6 @@ import { servicesCtx } from '../../ctx';
 
 import { getEphemeralByIndex } from '@penumbra-zone/wasm-ts';
 
-// TODO handle req.displayConfirm
 export const ephemeralAddress: Impl['ephemeralAddress'] = async (req, ctx) => {
   const services = ctx.values.get(servicesCtx);
   const {
