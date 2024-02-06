@@ -177,14 +177,16 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({ table: 'ASSETS', value: metadata.toJson() as Jsonified<Metadata> });
   }
 
-  async getAllSpendableNotes() {
-    const jsonVals = await this.db.getAll('SPENDABLE_NOTES');
-    return jsonVals.map(a => SpendableNoteRecord.fromJson(a));
+  async *iterateSpendableNotes() {
+    for await (const { value } of this.db.transaction('SPENDABLE_NOTES').store) {
+      yield SpendableNoteRecord.fromJson(value);
+    }
   }
 
-  async getAllTransactionInfo() {
-    const jsonVals = await this.db.getAll('TRANSACTION_INFO');
-    return jsonVals.map(a => TransactionInfo.fromJson(a));
+  async *iterateTransactionInfo() {
+    for await (const { value } of this.db.transaction('TRANSACTION_INFO').store) {
+      yield TransactionInfo.fromJson(value);
+    }
   }
 
   async saveTransactionInfo(tx: TransactionInfo): Promise<void> {
@@ -234,9 +236,10 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
-  async getAllSwaps(): Promise<SwapRecord[]> {
-    const jsonVals = await this.db.getAll('SWAPS');
-    return jsonVals.map(a => SwapRecord.fromJson(a));
+  async *iterateSwaps() {
+    for await (const { value } of this.db.transaction('SWAPS').store) {
+      yield SwapRecord.fromJson(value);
+    }
   }
 
   async clear() {

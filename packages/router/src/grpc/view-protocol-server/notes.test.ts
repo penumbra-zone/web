@@ -27,7 +27,7 @@ describe('Notes request handler', () => {
       getWalletServices: () =>
         Promise.resolve({
           indexedDb: {
-            getAllSpendableNotes: (): Promise<SpendableNoteRecord[]> => Promise.resolve(testData),
+            iterateSpendableNotes: (): Promise<SpendableNoteRecord[]> => Promise.resolve(testData),
           },
         }),
     } as Services;

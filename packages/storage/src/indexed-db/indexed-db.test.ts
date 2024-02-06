@@ -115,7 +115,7 @@ describe('IndexedDb', () => {
     it('object store should be empty after clear', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
       await db.saveSpendableNote(newNote);
-      expect((await db.getAllSpendableNotes()).length).toBe(1);
+      expect((await db.iterateSpendableNotes()).length).toBe(1);
 
       await db.saveAssetsMetadata(metadataA);
       expect((await db.getAllAssetsMetadata()).length).toBe(1);
@@ -128,7 +128,7 @@ describe('IndexedDb', () => {
           },
         }),
       );
-      expect((await db.getAllTransactionInfo()).length).toBe(1);
+      expect((await db.iterateTransactionInfo()).length).toBe(1);
 
       const scanResult = {
         height: 1000n,
@@ -153,9 +153,9 @@ describe('IndexedDb', () => {
       expect(await db.getLastBlockSynced()).toBe(1000n);
 
       await db.clear();
-      expect((await db.getAllSpendableNotes()).length).toBe(0);
+      expect((await db.iterateSpendableNotes()).length).toBe(0);
       expect((await db.getAllAssetsMetadata()).length).toBe(0);
-      expect((await db.getAllTransactionInfo()).length).toBe(0);
+      expect((await db.iterateTransactionInfo()).length).toBe(0);
       expect(await db.getLastBlockSynced()).toBeUndefined();
     });
   });
@@ -197,7 +197,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveSpendableNote(newNote);
-      const savedSpendableNotes = await db.getAllSpendableNotes();
+      const savedSpendableNotes = await db.iterateSpendableNotes();
 
       expect(savedSpendableNotes.length === 1).toBeTruthy();
       expect(newNote.equals(savedSpendableNotes[0])).toBeTruthy();
@@ -276,7 +276,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveTransactionInfo(transactionInfo);
-      const savedTransactions = await db.getAllTransactionInfo();
+      const savedTransactions = await db.iterateTransactionInfo();
 
       expect(savedTransactions.length === 1).toBeTruthy();
       expect(transactionInfo.equals(savedTransactions[0])).toBeTruthy();
@@ -288,7 +288,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveScanResult(scanResultWithNewSwaps);
-      const savedSwaps = await db.getAllSwaps();
+      const savedSwaps = await db.iterateSwaps();
 
       expect(savedSwaps.length === 1).toBeTruthy();
       expect(savedSwaps[0]!.equals(scanResultWithNewSwaps.newSwaps[0])).toBeTruthy();

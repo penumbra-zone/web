@@ -1,7 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-import { Base64Str, addLoHi, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import { addLoHi, Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types';
 
 import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
@@ -15,11 +15,10 @@ type AccountMap = Record<AddressIndex['account'], BalancesMap>;
 export const balances: Impl['balances'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
-  const allNotes = await indexedDb.getAllSpendableNotes();
 
   const accounts: AccountMap = {};
 
-  for (const noteRecord of allNotes) {
+  for await (const noteRecord of indexedDb.iterateSpendableNotes()) {
     if (noteRecord.heightSpent !== 0n) continue;
 
     const accountNumber = noteRecord.addressIndex?.account ?? 0;
