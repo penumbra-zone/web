@@ -8,4 +8,8 @@ export type TransactionClassification =
   /** The transaction is a send to an external account. */
   | 'send'
   /** The transaction is a receive from an external account. */
-  | 'receive';
+  | 'receive'
+  /** The transaction contains a `swap` action. */
+  | 'swap'
+  /** The transaction contains a `swapClaim` action. */
+  | 'swapClaim';

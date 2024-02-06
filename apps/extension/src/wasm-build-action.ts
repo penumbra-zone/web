@@ -4,6 +4,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import type { WasmBuildActionInput } from '@penumbra-zone/types/src/internal-msg/offscreen';
 import type { JsonValue } from '@bufbuild/protobuf';
+import { camelToSnakeCase } from '@penumbra-zone/types';
 
 // necessary to propagate errors that occur in promises
 // see: https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
@@ -50,7 +51,7 @@ async function executeWorker(
   const actionPlanType = transactionPlan.actions[actionPlanIndex]?.action.case;
   if (!actionPlanType) throw new Error('No action key provided');
 
-  await penumbraWasmModule.loadProvingKey(actionPlanType);
+  await penumbraWasmModule.loadProvingKey(camelToSnakeCase(actionPlanType));
 
   // Build action according to specification in `TransactionPlan`
   return penumbraWasmModule

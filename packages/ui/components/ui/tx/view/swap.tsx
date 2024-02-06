@@ -64,5 +64,5 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
     return <ViewBox label='Swap' />;
   }
 
-  return <div>Invalid SpendView</div>;
+  return <div>Invalid SwapView</div>;
 };

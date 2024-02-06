@@ -7,6 +7,9 @@ export const classifyTransaction = (txv?: TransactionView): TransactionClassific
     return 'unknown';
   }
 
+  if (txv.bodyView?.actionViews.some(a => a.actionView.case === 'swap')) return 'swap';
+  if (txv.bodyView?.actionViews.some(a => a.actionView.case === 'swapClaim')) return 'swapClaim';
+
   const hasOpaqueSpend = txv.bodyView?.actionViews.some(
     a => a.actionView.case === 'spend' && a.actionView.value.spendView.case === 'opaque',
   );
@@ -73,6 +76,8 @@ const TRANSACTION_LABEL_BY_CLASSIFICATION: Record<TransactionClassification, str
   receive: 'Receive',
   send: 'Send',
   internalTransfer: 'Internal Transfer',
+  swap: 'Swap',
+  swapClaim: 'Swap Claim',
 };
 
 export const getTransactionClassificationLabel = (txv?: TransactionView): string =>

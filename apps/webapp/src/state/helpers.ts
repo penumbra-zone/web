@@ -48,5 +48,8 @@ export const planWitnessBuildBroadcast = async (
     }
   if (!detectionHeight) throw new Error('did not detect transaction');
 
-  return uint8ArrayToHex(expectId.inner);
+  return transaction;
 };
+
+export const getTransactionHash = async (transaction: Transaction): Promise<string> =>
+  uint8ArrayToHex(await sha256Hash(transaction.toBinary()));

@@ -8,7 +8,7 @@ import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { ibcClient, viewClient } from '../clients/grpc';
-import { planWitnessBuildBroadcast } from './helpers';
+import { getTransactionHash, planWitnessBuildBroadcast } from './helpers';
 import { AssetBalance } from '../fetchers/balances';
 
 export interface IbcSendSlice {
@@ -60,7 +60,8 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
 
       try {
         const plannerReq = await getPlanRequest(get().ibc);
-        const txHash = await planWitnessBuildBroadcast(plannerReq);
+        const transaction = await planWitnessBuildBroadcast(plannerReq);
+        const txHash = await getTransactionHash(transaction);
         dismiss();
         toastFn(successTxToast(txHash));
 

@@ -10,7 +10,10 @@ export const loadLocalBinary = async (filename: string) => {
   return await response.arrayBuffer();
 };
 
-export const loadProvingKey = async (keyType: string) => {
+export const loadProvingKey = async (
+  /** The `snake_case`d name of the proving key to load. */
+  keyType: string,
+) => {
   const keyEntry = provingKeys.find(entry => entry.keyType === keyType);
 
   if (keyEntry) {
