@@ -38,7 +38,7 @@ describe('IndexByAddress request handler', () => {
     testAddress = getAddressByIndex(testFVK, 0);
   });
 
-  test('should successfully get index for address with index 0', async () => {
+  test('should successfully get index for a given address', async () => {
     const addressByIndexResponse = await indexByAddress(
       new IndexByAddressRequest({ address: testAddress }),
       mockCtx,
