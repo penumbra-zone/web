@@ -5,10 +5,12 @@ export interface IndexedDbMock {
   getSwapByNullifier?: Mock;
   getAppParams?: Mock;
   getFmdParams?: Mock;
+  getLastBlockSynced?: Mock;
   subscribe?: (table: string) => Partial<AsyncIterable<Mock>>;
 }
 export interface TendermintMock {
   broadcastTx?: Mock;
+  latestBlockHeight?: Mock;
 }
 export interface MockServices {
   getWalletServices: Mock<[], Promise<{ indexedDb: IndexedDbMock }>>;
