@@ -25,16 +25,7 @@ export const TxDetailsLoader: LoaderFunction = async ({
 export const TxDetailsErrorBoundary = () => {
   const error = useRouteError();
 
-  return (
-    <div className='text-red'>
-      <div>{String(error)}</div>
-      <div>=========================</div>
-      <div>
-        You may need to sync your blocks for this to be found. Or are you trying to view a
-        transaction that you can&apos;t see? 🕵️
-      </div>
-    </div>
-  );
+  return <div className='text-red'>{String(error)}</div>;
 };
 
 export const TxDetails = () => {
