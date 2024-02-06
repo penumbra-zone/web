@@ -96,11 +96,10 @@ const assembleRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
         //       Asset Id should almost certainly be upenumbra,
         //       may need to indicate native denom in registry
         fee: {
-          amount: toBaseUnit(
-            BigNumber(amount),
-            getDisplayDenomExponent(assetIn.value.valueView.value.metadata),
-          ),
-          assetId: assetIn.value.valueView.value.metadata.penumbraAssetId,
+          amount: {
+            hi: 0n,
+            lo: 0n,
+          },
         },
       },
     ],
