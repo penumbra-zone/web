@@ -7,9 +7,13 @@ import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
 import { getAddressByIndex } from '../fetchers/address';
 import BigNumber from 'bignumber.js';
-import { planWitnessBuildBroadcast } from './helpers';
+import { getTransactionPlan, planWitnessBuildBroadcast } from './helpers';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { getDisplayDenomExponent } from '@penumbra-zone/types/src/denom-metadata';
+import {
+  Fee,
+  FeeTier_Tier,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
 export interface SwapSlice {
   assetIn: Selection | undefined;
@@ -18,6 +22,10 @@ export interface SwapSlice {
   setAmount: (amount: string) => void;
   assetOut: Metadata | undefined;
   setAssetOut: (metadata: Metadata) => void;
+  fee: Fee | undefined;
+  refreshFee: () => Promise<void>;
+  feeTier: FeeTier_Tier;
+  setFeeTier: (feeTier: FeeTier_Tier) => void;
   initiateSwapTx: (toastFn: typeof toast) => Promise<void>;
   txInProgress: boolean;
 }
@@ -43,6 +51,33 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
       });
     },
     txInProgress: false,
+    fee: undefined,
+    feeTier: FeeTier_Tier.LOW,
+    refreshFee: async () => {
+      const { amount } = get().swap;
+
+      if (!amount) {
+        set(state => {
+          state.send.fee = undefined;
+        });
+        return;
+      }
+
+      const txnPlanReq = await assembleRequest(get().swap);
+      const plan = await getTransactionPlan(txnPlanReq);
+      const fee = plan?.transactionParameters?.fee;
+      console.log('swap refreshFee', plan);
+      if (!fee?.amount) return;
+
+      set(state => {
+        state.send.fee = fee;
+      });
+    },
+    setFeeTier: feeTier => {
+      set(state => {
+        state.send.feeTier = feeTier;
+      });
+    },
     initiateSwapTx: async toastFn => {
       set(state => {
         state.swap.txInProgress = true;
@@ -89,10 +124,10 @@ const assembleRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
         // TODO: Calculate this properly in subsequent PR
         //       Asset Id should almost certainly be upenumbra,
         //       may need to indicate native denom in registry
-        fee: {
-          amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponent(assetIn.asset.metadata)),
-          assetId: assetIn.asset.assetId,
-        },
+        // fee: {
+        //   amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponent(assetIn.asset.metadata)),
+        //   assetId: assetIn.asset.assetId,
+        // },
       },
     ],
     source: new AddressIndex({ account: assetIn.accountIndex }),

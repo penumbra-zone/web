@@ -9,7 +9,10 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
 import { IndexedDbInterface, RootQuerierInterface } from '@penumbra-zone/types';
 import { gasPrices } from './gas-prices';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import {
+  Fee,
+  GasPrices,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
 
 async function getAssetMetadata(
   indexedDb: IndexedDbInterface,
@@ -65,11 +68,11 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   }
 
   for (const { value, targetAsset, fee, claimAddress } of req.swaps) {
-    if (!value || !targetAsset || !fee || !claimAddress)
+    if (!value || !targetAsset || !claimAddress)
       throw new Error('no value, targetAsset, fee or claimAddress in swap');
 
     const intoDenomMetadata = await getAssetMetadata(indexedDb, targetAsset, querier);
-    planner.swap(value, intoDenomMetadata, fee, claimAddress);
+    planner.swap(value, intoDenomMetadata, fee ?? new Fee(), claimAddress);
   }
 
   for (const { swapCommitment } of req.swapClaims) {

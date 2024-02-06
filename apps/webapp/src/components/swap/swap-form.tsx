@@ -6,11 +6,14 @@ import { AccountBalance } from '../../fetchers/balances';
 import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
 import { AssetOutBox } from './asset-out-box';
+import { useRefreshFee } from './use-refresh-fee';
 
 export const SwapForm = () => {
   const accountBalances = useLoaderData() as AccountBalance[];
   const { toast } = useToast();
   const { assetIn, setAssetIn, amount, setAmount, initiateSwapTx } = useStore(swapSelector);
+
+  useRefreshFee();
 
   return (
     <form
