@@ -17,11 +17,7 @@ export const indexByAddress: Impl['indexByAddress'] = async (req, ctx) => {
 
   const addressIndex = isControlledAddress(fullViewingKey, address);
 
-  if (!addressIndex)
-    throw new ConnectError(
-      'Address is not controlled by view service full viewing key',
-      Code.Unauthenticated,
-    );
+  if (!addressIndex) return {};
 
   return { addressIndex };
 };

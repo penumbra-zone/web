@@ -1,5 +1,4 @@
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
-import { Code, ConnectError } from '@connectrpc/connect';
 import { viewClient } from '../../../clients/extension-page';
 
 /**
@@ -16,14 +15,6 @@ import { viewClient } from '../../../clients/extension-page';
  * @see packages/router/src/grpc/view-protocol-server/index-by-address.ts
  */
 export const isControlledAddress = async (address: Address): Promise<boolean> => {
-  try {
-    await viewClient.indexByAddress({ address });
-    return true;
-  } catch (e) {
-    if (e instanceof ConnectError && e.code === Code.Unauthenticated) {
-      return false;
-    } else {
-      throw e;
-    }
-  }
+  const indexByAddressResponse = await viewClient.indexByAddress({ address });
+  return indexByAddressResponse.addressIndex !== undefined;
 };
