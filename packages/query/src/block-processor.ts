@@ -73,18 +73,6 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.abortController.abort(`Sync abort ${r}`);
   }
 
-  // TODO: should this be here? it's only ever used as a fallback by view protocol server
-  // identify failures?
-  public async getTransactionInfo(id: TransactionId): Promise<TransactionInfo> {
-    const { transaction, height } = await this.querier.tendermint.getTransaction(id);
-    const { txp: perspective, txv: view } = await transactionInfo(
-      this.fullViewingKey,
-      transaction,
-      this.indexedDb.constants(),
-    );
-    return new TransactionInfo({ height, id, transaction, perspective, view });
-  }
-
   async identifyTransactions(
     spentNullifiers: Set<Nullifier>,
     commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
