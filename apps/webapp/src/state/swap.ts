@@ -58,9 +58,10 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
 
         const swapClaimReq = assembleSwapClaimRequest(swapCommitment);
         const swapClaimTx = await planWitnessBuildBroadcast(swapClaimReq);
+        const swapClaimTxHash = await getTransactionHash(swapClaimTx);
 
         dismiss();
-        toastFn(successTxToast(await getTransactionHash(swapClaimTx)));
+        toastFn(successTxToast(swapClaimTxHash));
 
         // Reset form
         set(state => {
