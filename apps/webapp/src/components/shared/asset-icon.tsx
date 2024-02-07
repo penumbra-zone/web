@@ -1,7 +1,7 @@
 import { localAssets } from '@penumbra-zone/constants';
 import { Identicon } from '@penumbra-zone/ui';
 import { useMemo } from 'react';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export const AssetIcon = ({ metadata }: { metadata: Metadata }) => {
   const icon = useMemo(() => {

@@ -1,9 +1,9 @@
-import type { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
+import type { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
 import type { Stringified, TransactionClassification } from '@penumbra-zone/types';
 import { AllSlices, SliceCreator } from './index';
 import { MessageResponder } from '@penumbra-zone/types/src/internal-msg/shared';
 import { TxApproval } from '@penumbra-zone/types/src/internal-msg/tx-approval';
-import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 export interface TxApprovalSlice {
   /**

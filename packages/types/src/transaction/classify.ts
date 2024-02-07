@@ -1,4 +1,4 @@
-import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionClassification as TransactionClassification } from './classification';
 
 export const classifyTransaction = (txv?: TransactionView): TransactionClassification => {

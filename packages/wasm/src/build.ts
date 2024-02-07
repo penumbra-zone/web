@@ -4,7 +4,7 @@ import {
   Transaction,
   TransactionPlan,
   WitnessData,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { StateCommitmentTree } from '@penumbra-zone/types';
 import { JsonValue } from '@bufbuild/protobuf';
 import { authorize, build_action, build_parallel, witness } from '@penumbra-zone/wasm-bundler';

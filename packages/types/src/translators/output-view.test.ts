@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from 'vitest';
 import { asOpaqueOutputView, asReceiverOutputView } from './output-view';
-import { OutputView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
+import { OutputView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 
 describe('asOpaqueOutputView()', () => {
   describe('when passed `undefined`', () => {

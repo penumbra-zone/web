@@ -9,7 +9,7 @@ import {
 import { Key } from '@penumbra-zone/crypto-web';
 import { ExtensionStorage, LocalStorageState } from '@penumbra-zone/storage';
 import { Wallet, WalletCreate } from '@penumbra-zone/types';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export interface WalletsSlice {
   all: Wallet[];

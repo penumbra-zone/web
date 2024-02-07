@@ -2,7 +2,7 @@ import { AssetBalance } from './index.ts';
 import {
   AssetId,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { addAmounts } from '@penumbra-zone/types';
 
 const getAssetId = (v: ValueView): AssetId => {

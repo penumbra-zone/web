@@ -16,17 +16,17 @@
   "dependencies": {
     "@buf/cosmos_ibc.bufbuild_es": "1.7.2-20240123184419-30c7be3837b0.1",
     "@buf/cosmos_ibc.connectrpc_es": "1.3.0-20240123184419-30c7be3837b0.1",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.7.2-20240206003852-3cc57ebd3e94.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.3.0-20240206003852-3cc57ebd3e94.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.7.2-20240207010844-0d588845d243.1",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.3.0-20240207010844-0d588845d243.1",
     "@bufbuild/protobuf": "^1.7.2",
     "@connectrpc/connect": "^1.3.0",
     "@connectrpc/connect-web": "^1.3.0",
-    "@penumbra-zone/wasm-bundler": "0.65.0-alpha.1c"
+    "@penumbra-zone/wasm-bundler": "0.65.0-alpha.1d"
   },
   "devDependencies": {
     "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm-nodejs": "0.65.0-alpha.1c",
-    "@turbo/gen": "^1.12.2",
+    "@penumbra-zone/wasm-nodejs": "0.65.0-alpha.1d",
+    "@turbo/gen": "^1.12.3",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.56.0",
@@ -34,7 +34,7 @@
     "playwright": "^1.41.2",
     "prettier": "^3.2.5",
     "tsconfig": "workspace:*",
-    "turbo": "^1.12.2",
+    "turbo": "^1.12.3",
     "typescript": "^5.3.3"
   }
 }

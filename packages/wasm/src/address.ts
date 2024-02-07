@@ -1,5 +1,5 @@
 import { get_short_address_by_index, is_controlled_address } from '@penumbra-zone/wasm-bundler';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { JsonValue } from '@bufbuild/protobuf';
 
 export const getShortAddressByIndex = (fullViewingKey: string, index: number) =>

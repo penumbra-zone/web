@@ -1,10 +1,10 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 import { getAddressByIndex, TxPlanner } from '@penumbra-zone/wasm-ts';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { gasPrices } from './gas-prices';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { getAssetMetadata } from './helpers';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {

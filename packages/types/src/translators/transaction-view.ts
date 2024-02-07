@@ -1,8 +1,8 @@
 import { asOpaqueMemoView, asReceiverMemoView } from './memo-view';
 import { asPublicActionView, asReceiverActionView } from './action-view';
-import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { Translator } from './types';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export const asPublicTransactionView: Translator<TransactionView> = transactionView => {
   if (!transactionView?.bodyView) return new TransactionView();

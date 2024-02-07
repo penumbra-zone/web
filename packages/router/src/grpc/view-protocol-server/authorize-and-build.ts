@@ -3,7 +3,7 @@ import { custodyCtx, servicesCtx } from '../../ctx';
 import { offscreenClient } from '../offscreen-client';
 import { buildParallel, getWitness } from '@penumbra-zone/wasm-ts';
 import { ConnectError, Code, HandlerContext } from '@connectrpc/connect';
-import { TransactionPlan } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { TransactionPlan } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (req, ctx) {
   if (!req.transactionPlan) throw new ConnectError('No tx plan in request', Code.InvalidArgument);

@@ -4,7 +4,7 @@ import {
   Transaction,
   TransactionPerspective,
   TransactionView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 export const transactionInfo = async (
   fullViewingKey: string,

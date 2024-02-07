@@ -3,7 +3,7 @@ import { InnerBase64Schema } from './base64';
 import {
   SpendableNoteRecord,
   SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 export const Position = z.object({
   epoch: z.number(),

@@ -1,4 +1,4 @@
-import type { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import type { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import type { ServiceImpl } from '@connectrpc/connect';
 
 import { addressByIndex } from './address-by-index';

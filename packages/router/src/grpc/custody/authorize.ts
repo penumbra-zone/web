@@ -4,7 +4,7 @@ import { authorizePlan, generateSpendKey } from '@penumbra-zone/wasm-ts';
 import { Key } from '@penumbra-zone/crypto-web';
 import { bech32AssetId, Box, Jsonified } from '@penumbra-zone/types';
 import { Code, ConnectError, HandlerContext } from '@connectrpc/connect';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { viewTransactionPlan } from './view-transaction-plan';
 
 /**

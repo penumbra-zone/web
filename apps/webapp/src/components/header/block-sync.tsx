@@ -1,5 +1,5 @@
 import { Progress } from '@penumbra-zone/ui';
-import { StatusStreamResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { StatusStreamResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { CheckIcon } from '@radix-ui/react-icons';
 
 interface BlockSyncProps {

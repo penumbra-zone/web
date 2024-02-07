@@ -5,7 +5,7 @@ import {
   get_full_viewing_key,
   get_wallet_id,
 } from '@penumbra-zone/wasm-bundler';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { JsonValue } from '@bufbuild/protobuf';
 
 export const generateSpendKey = (seedPhrase: string) => generate_spend_key(seedPhrase) as string;

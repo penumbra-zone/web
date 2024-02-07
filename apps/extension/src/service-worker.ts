@@ -35,8 +35,8 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
 
 // local services we implement
-import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
-import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
+import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { custodyImpl } from '@penumbra-zone/router/src/grpc/custody';
 import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
 
