@@ -6,11 +6,10 @@ import { offscreenClient } from '../offscreen-client';
 import { buildParallel, getWitness } from '@penumbra-zone/wasm-ts';
 
 import { ConnectError, Code } from '@connectrpc/connect';
+import { AuthorizationData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 export const witnessAndBuild: Impl['witnessAndBuild'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);
-  if (!req.authorizationData)
-    throw new ConnectError('No authorization data in request', Code.InvalidArgument);
   if (!req.transactionPlan) throw new ConnectError('No tx plan in request', Code.InvalidArgument);
 
   const {
@@ -31,7 +30,7 @@ export const witnessAndBuild: Impl['witnessAndBuild'] = async function* (req, ct
     batchActions,
     req.transactionPlan,
     witnessData,
-    req.authorizationData,
+    req.authorizationData ?? new AuthorizationData(),
   );
 
   yield {
