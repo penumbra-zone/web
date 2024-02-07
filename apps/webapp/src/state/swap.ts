@@ -57,7 +57,9 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         const swapCommitment = getSwapCommitment(swapTx);
 
         const swapClaimReq = assembleSwapClaimRequest(swapCommitment);
-        const swapClaimTx = await planWitnessBuildBroadcast(swapClaimReq);
+        const swapClaimTx = await planWitnessBuildBroadcast(swapClaimReq, {
+          rpcMethod: 'witnessAndBuild',
+        });
         const swapClaimTxHash = await getTransactionHash(swapClaimTx);
 
         dismiss();
