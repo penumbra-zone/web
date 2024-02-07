@@ -1,4 +1,4 @@
-import { ActionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { ActionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { asPublicActionView, asReceiverActionView } from './action-view';
 import { describe, expect, test, vi } from 'vitest';
 

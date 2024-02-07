@@ -8,7 +8,7 @@ import {
 import { Jsonified, viewFromEmptyPerspective } from '@penumbra-zone/types';
 import { TxDetailsLoaderResult } from './index.tsx';
 import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
-import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',

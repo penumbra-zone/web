@@ -2,7 +2,7 @@ import { TransactionViewTab } from './types';
 import { txApprovalSelector } from '../../../../state/tx-approval';
 import { useMemo, useState } from 'react';
 import { useStore } from '../../../../state';
-import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 export const useTransactionViewSwitcher = (): {
   selectedTransactionView: TransactionView | undefined;

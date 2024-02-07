@@ -4,7 +4,7 @@ import { servicesCtx } from '../../ctx';
 import {
   NoteByCommitmentResponse,
   SpendableNoteRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 import { ConnectError, Code } from '@connectrpc/connect';
 

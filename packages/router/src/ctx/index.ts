@@ -2,7 +2,7 @@ import { ContextKey, createContextKey, PromiseClient } from '@connectrpc/connect
 import type { Services } from '@penumbra-zone/services';
 import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
 import { getTxApproval } from './approver';
-import type { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1alpha1/custody_connect';
+import type { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
 
 export const servicesCtx = createContextKey<Services>({} as Services);
 export const extLocalCtx = createContextKey(localExtStorage);

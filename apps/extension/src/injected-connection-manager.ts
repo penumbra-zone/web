@@ -18,10 +18,10 @@ import { ClientConnectionManager } from '@penumbra-zone/transport/src/chrome-run
  */
 const services: typeof serviceTypeNames = [
   'ibc.core.client.v1.Query',
-  'penumbra.custody.v1alpha1.CustodyService',
-  'penumbra.core.component.dex.v1alpha1.SimulationService',
-  'penumbra.util.tendermint_proxy.v1alpha1.TendermintProxyService',
-  'penumbra.view.v1alpha1.ViewService',
+  'penumbra.custody.v1.CustodyService',
+  'penumbra.core.component.dex.v1.SimulationService',
+  'penumbra.util.tendermint_proxy.v1.TendermintProxyService',
+  'penumbra.view.v1.ViewService',
 ];
 
 const sendInitMsg = (services: string[]) => {

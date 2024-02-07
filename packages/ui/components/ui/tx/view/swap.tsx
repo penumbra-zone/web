@@ -1,5 +1,5 @@
 import { ViewBox } from './viewbox';
-import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1alpha1/dex_pb';
+import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import {
   bech32Address,
   fromBaseUnitAmount,

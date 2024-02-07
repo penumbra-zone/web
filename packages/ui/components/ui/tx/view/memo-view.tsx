@@ -1,4 +1,4 @@
-import { MemoView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { MemoView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { AddressViewComponent } from './address-view';
 import { ViewBox, ViewSection } from './viewbox';
 

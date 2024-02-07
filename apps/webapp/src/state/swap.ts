@@ -1,9 +1,9 @@
 import { AllSlices, SliceCreator } from './index';
 import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { planWitnessBuildBroadcast } from './helpers';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AssetBalance } from '../fetchers/balances';
 import { getDisplayDenomExponent, toBaseUnit } from '@penumbra-zone/types';
 import BigNumber from 'bignumber.js';

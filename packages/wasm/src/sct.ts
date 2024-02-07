@@ -1,6 +1,6 @@
 import { decode_sct_root } from '@penumbra-zone/wasm-bundler';
 import { uint8ArrayToHex } from '@penumbra-zone/types';
-import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1alpha1/tct_pb';
+import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { JsonValue } from '@bufbuild/protobuf';
 
 export const decodeSctRoot = (hash: Uint8Array): MerkleRoot => {

@@ -2,7 +2,7 @@ import type {
   Action,
   TransactionPlan,
   WitnessData,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import type { Jsonified } from '../jsonified';
 import type { InternalMessage, InternalRequest, InternalResponse } from './shared';
 

@@ -1,7 +1,7 @@
 import { ViewBox } from './viewbox';
 import { SpendViewComponent } from './spend';
 import { OutputViewComponent } from './output';
-import { ActionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { ActionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { SwapViewComponent } from './swap';
 
 const CASE_TO_LABEL: Record<string, string> = {

@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import {
   Metadata,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { base64ToUint8Array, bech32AssetId } from '@penumbra-zone/types';
 
 describe('<ValueViewComponent />', () => {

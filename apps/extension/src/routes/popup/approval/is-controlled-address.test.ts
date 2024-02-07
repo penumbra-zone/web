@@ -1,11 +1,11 @@
 import {
   Address,
   AddressIndex,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { HandlerContext } from '@connectrpc/connect';
 import { indexByAddress } from '@penumbra-zone/router/src/grpc/view-protocol-server/index-by-address';
-import { IndexByAddressRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { IndexByAddressRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { isControlledAddress } from './is-controlled-address';
 
 const mockFvk = vi.hoisted(

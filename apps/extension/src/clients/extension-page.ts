@@ -1,4 +1,4 @@
-import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1alpha1/view_connect';
+import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { ServiceType } from '@bufbuild/protobuf';
 import { createPromiseClient } from '@connectrpc/connect';
 import {
