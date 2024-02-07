@@ -23,7 +23,6 @@ export const viewTransactionPlan = (
   fullViewingKey: string,
 ): TransactionView => {
   const returnAddress = txPlan.memo?.plaintext?.returnAddress;
-  if (!returnAddress) throw new Error('No return address found in transaction plan');
   const transactionParameters = txPlan.transactionParameters;
   if (!transactionParameters?.fee) throw new Error('No fee found in transaction plan');
 
@@ -35,7 +34,9 @@ export const viewTransactionPlan = (
           case: 'visible',
           value: {
             plaintext: {
-              returnAddress: getAddressView(returnAddress, fullViewingKey),
+              returnAddress: returnAddress
+                ? getAddressView(returnAddress, fullViewingKey)
+                : undefined,
               text: txPlan.memo?.plaintext?.text ?? '',
             },
           },
