@@ -12,14 +12,18 @@ export const getTransactionPlan = async (req: TransactionPlannerRequest) => {
 
 export const planWitnessBuildBroadcast = async (
   req: TransactionPlannerRequest,
-  awaitDetection = true,
+  options: {
+    awaitDetection?: boolean;
+    rpcMethod?: 'authorizeAndBuild' | 'witnessAndBuild';
+  } = {},
 ) => {
+  const { awaitDetection = true, rpcMethod = 'authorizeAndBuild' } = options;
   const transactionPlan = await getTransactionPlan(req);
 
   if (!transactionPlan) throw new Error('no plan in response');
 
   let transaction: Transaction | undefined;
-  for await (const { status } of viewClient.authorizeAndBuild({ transactionPlan }))
+  for await (const { status } of viewClient[rpcMethod]({ transactionPlan }))
     switch (status.case) {
       case 'buildProgress':
         break;
