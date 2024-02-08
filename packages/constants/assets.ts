@@ -1,5 +1,5 @@
 import { base64ToUint8Array } from '@penumbra-zone/types';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export interface AssetPattens {
   lpNftPattern: RegExp;

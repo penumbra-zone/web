@@ -1,7 +1,7 @@
 import {
   Address,
   AddressView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { describe, expect, test } from 'vitest';
 import { asOpaqueAddressView } from './address-view';
 

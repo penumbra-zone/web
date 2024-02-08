@@ -7,11 +7,11 @@ import {
   fromValueView,
   joinLoHiAmount,
 } from './amount';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import {
   Metadata,
   ValueView_KnownAssetId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 describe('lohi helpers', () => {
   it('fromBaseUnitAmount works', () => {

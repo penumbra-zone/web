@@ -9,20 +9,20 @@ import {
   isPenumbraAddr,
   toBaseUnit,
 } from '@penumbra-zone/types';
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import BigNumber from 'bignumber.js';
 import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
 import { AssetBalance } from '../fetchers/balances';
-import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { getTransactionPlan, planWitnessBuildBroadcast } from './helpers';
 
 import {
   Fee,
   FeeTier_Tier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { z } from 'zod';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export interface SendSlice {
   selection: AssetBalance | undefined;

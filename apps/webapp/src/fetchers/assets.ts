@@ -1,5 +1,5 @@
 import { streamToPromise } from './stream.ts';
-import { AssetsRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { AssetsRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { viewClient } from '../clients/grpc.ts';
 
 export const getAllAssets = () => {

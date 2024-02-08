@@ -1,13 +1,13 @@
 import {
   ActionPlan,
   ActionView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1alpha1/transaction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { bech32AssetId } from '@penumbra-zone/types/src/asset';
 import {
   Metadata,
   Value,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getAddressView } from './get-address-view';
 import {
   Note,
@@ -16,7 +16,7 @@ import {
   OutputView,
   SpendPlan,
   SpendView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { Jsonified } from '@penumbra-zone/types';
 
 const getValueView = (

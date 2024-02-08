@@ -4,7 +4,7 @@ import { EduInfoCard } from '../shared/edu-panels/edu-info-card.tsx';
 import { EduPanel } from '../shared/edu-panels/content.ts';
 import { LoaderFunction, useLoaderData, useRouteError } from 'react-router-dom';
 import { getTxInfoByHash } from '../../fetchers/tx-info-by-hash.ts';
-import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1alpha1/view_pb';
+import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
 
 export interface TxDetailsLoaderResult {
@@ -25,16 +25,7 @@ export const TxDetailsLoader: LoaderFunction = async ({
 export const TxDetailsErrorBoundary = () => {
   const error = useRouteError();
 
-  return (
-    <div className='text-red'>
-      <div>{String(error)}</div>
-      <div>=========================</div>
-      <div>
-        You may need to sync your blocks for this to be found. Or are you trying to view a
-        transaction that you can&apos;t see? 🕵️
-      </div>
-    </div>
-  );
+  return <div className='text-red'>{String(error)}</div>;
 };
 
 export const TxDetails = () => {

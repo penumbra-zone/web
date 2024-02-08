@@ -1,7 +1,7 @@
 import { AssetBalance } from '../../fetchers/balances';
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTrigger } from '@penumbra-zone/ui';
 import { AssetIcon } from '../shared/asset-icon';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { localAssets } from '@penumbra-zone/constants';
 
 interface AssetOutSelectorProps {

@@ -3,7 +3,7 @@ import { servicesCtx } from '../../ctx';
 
 import { addAmounts, joinLoHiAmount } from '@penumbra-zone/types';
 
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 
 export const notes: Impl['notes'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);

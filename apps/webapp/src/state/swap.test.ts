@@ -5,11 +5,11 @@ import { AssetBalance } from '../fetchers/balances';
 import {
   Metadata,
   ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1alpha1/num_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { bech32ToUint8Array } from '@penumbra-zone/types';
 import { localAssets } from '@penumbra-zone/constants';
-import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 describe('Swap Slice', () => {
   const selectionExample = {
@@ -62,7 +62,7 @@ describe('Swap Slice', () => {
   test('assetOut can be set', () => {
     expect(useStore.getState().swap.assetOut).toBeUndefined();
     useStore.getState().swap.setAssetOut(localAssets[0]!);
-    expect(useStore.getState().swap.assetOut).toBe(localAssets[0]!);
+    expect(useStore.getState().swap.assetOut).toBe(localAssets[0]);
   });
 
   test('amount can be set', () => {

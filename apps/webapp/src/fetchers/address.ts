@@ -1,4 +1,4 @@
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { bech32Address } from '@penumbra-zone/types';
 import { viewClient } from '../clients/grpc';
 

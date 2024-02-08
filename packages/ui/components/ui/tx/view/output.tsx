@@ -1,4 +1,4 @@
-import { OutputView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1alpha1/shielded_pool_pb';
+import { OutputView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { ViewBox } from './viewbox';
 import { ValueViewComponent } from './value';
 import { AddressViewComponent } from './address-view';

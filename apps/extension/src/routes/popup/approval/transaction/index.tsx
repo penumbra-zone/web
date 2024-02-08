@@ -3,15 +3,20 @@ import { useStore } from '../../../../state';
 import { txApprovalSelector } from '../../../../state/tx-approval';
 import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
 import { Jsonified } from '@penumbra-zone/types';
-import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1alpha1/custody_pb';
+import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
 import { useTransactionViewSwitcher } from './use-transaction-view-switcher';
 import { ViewTabs } from './view-tabs';
+import { useCountdown } from 'usehooks-ts';
+import { useEffect } from 'react';
 
 export const TransactionApproval = () => {
   const { authorizeRequest: authReqString, responder } = useStore(txApprovalSelector);
 
   const { selectedTransactionView, selectedTransactionViewName, setSelectedTransactionViewName } =
     useTransactionViewSwitcher();
+
+  const [count, { startCountdown }] = useCountdown({ countStart: 3 });
+  useEffect(startCountdown, [startCountdown]);
 
   if (!authReqString) return null;
   const authorizeRequest = AuthorizeRequest.fromJsonString(authReqString);
@@ -43,8 +48,9 @@ export const TransactionApproval = () => {
             responder({ type: 'TX-APPROVAL', data: true });
             window.close();
           }}
+          disabled={!!count}
         >
-          Approve
+          Approve {count !== 0 && `(${count})`}
         </Button>
         <Button
           size='lg'

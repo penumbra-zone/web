@@ -1,7 +1,7 @@
 import {
   Address,
   AddressIndex,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1alpha1/keys_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { AssetBalance, getAssetBalances } from './index.ts';
 
 export interface AccountGroupedBalances {

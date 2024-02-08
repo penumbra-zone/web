@@ -1,12 +1,12 @@
 import {
   Fee,
   FeeTier_Tier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1alpha1/fee_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { SegmentedPicker, SegmentedPickerOption } from '@penumbra-zone/ui';
 import { InputBlock } from './input-block';
 import { localAssets } from '@penumbra-zone/constants';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1alpha1/asset_pb';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 const PENUMBRA_DENOM_METADATA = localAssets.find(asset => asset.display === 'penumbra')!;
 
