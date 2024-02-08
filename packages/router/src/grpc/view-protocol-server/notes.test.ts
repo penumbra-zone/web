@@ -47,16 +47,18 @@ describe('Notes request handler', () => {
       requestMethod: 'MOCK',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
+
+    for (const record of testData) {
+      notesNext.mockResolvedValueOnce({
+        value: { value: record },
+      });
+    }
+    notesNext.mockResolvedValueOnce({
+      done: true,
+    });
   });
 
   test('empty request return no spend notes', async () => {
-    notesNext.mockResolvedValueOnce({
-      value: { value: testData[0] },
-    });
-
-    notesNext.mockResolvedValueOnce({
-      value: { value: testData[1] },
-    });
 
     const responses: NotesResponse[] = [];
     const req = new NotesRequest({});
