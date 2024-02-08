@@ -36,7 +36,7 @@ export default function SelectTokenModal({
       <DialogTrigger disabled={!balances.length}>
         <div className='flex h-9 min-w-[100px] max-w-[200px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
           {denomMetadata && <AssetIcon metadata={denomMetadata} />}
-          <p className='text-light-grey shrink truncate font-bold md:text-sm xl:text-base'>
+          <p className='shrink truncate font-bold text-light-grey md:text-sm xl:text-base'>
             {displayDenom}
           </p>
         </div>

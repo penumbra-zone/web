@@ -25,7 +25,7 @@ export const ValueViewComponent = ({ view, showDenom = true }: ValueViewProps) =
         <p className='truncate text-[15px] leading-[22px]'>
           {fromBaseUnitAmount(amount, 0).toFormat()}
         </p>
-        <span className='text-foreground truncate font-mono text-sm italic'>{encodedAssetId}</span>
+        <span className='truncate font-mono text-sm italic text-foreground'>{encodedAssetId}</span>
         <CopyToClipboard
           text={encodedAssetId}
           label={
