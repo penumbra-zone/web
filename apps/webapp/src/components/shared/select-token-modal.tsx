@@ -34,15 +34,17 @@ export default function SelectTokenModal({
   return (
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
-        <div className='flex h-9 min-w-[100px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
+        <div className='flex h-9 min-w-[100px] max-w-[200px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
           {denomMetadata && <AssetIcon metadata={denomMetadata} />}
-          <p className='font-bold text-light-grey md:text-sm xl:text-base'>{displayDenom}</p>
+          <p className='shrink truncate font-bold text-light-grey md:text-sm xl:text-base'>
+            {displayDenom}
+          </p>
         </div>
       </DialogTrigger>
       <DialogContent className='max-w-[312px] bg-charcoal-secondary md:max-w-[400px]'>
-        <div className='relative z-10 flex flex-col gap-4 pb-5'>
-          <DialogHeader className='border-b'>Select asset</DialogHeader>
-          <div className='flex flex-col gap-4 px-[30px]'>
+        <div className='relative z-10 flex max-h-screen flex-col gap-4 pb-5'>
+          <DialogHeader className='shrink-0 border-b'>Select asset</DialogHeader>
+          <div className='px-[30px]'>
             <div className='relative flex w-full items-center justify-center gap-4'>
               <div className='absolute inset-y-0 left-3 flex items-center'>
                 <MagnifyingGlassIcon className='size-5 text-muted-foreground' />
@@ -54,6 +56,8 @@ export default function SelectTokenModal({
                 placeholder='Search asset...'
               />
             </div>
+          </div>
+          <div className='flex shrink flex-col gap-4 overflow-auto px-[30px]'>
             <div className='mt-2 grid grid-cols-3 font-headline text-base font-semibold'>
               <p className='flex justify-start'>Account</p>
               <p className='flex justify-start'>Token name</p>
@@ -83,7 +87,7 @@ export default function SelectTokenModal({
                             b.value.valueView.value.metadata && (
                               <AssetIcon metadata={b.value.valueView.value.metadata} />
                             )}
-                          <p>{getDisplayDenomFromView(b.value)}</p>
+                          <p className='truncate'>{getDisplayDenomFromView(b.value)}</p>
                         </div>
                         <div className='flex justify-end'>
                           <ValueViewComponent view={b.value} showDenom={false} />

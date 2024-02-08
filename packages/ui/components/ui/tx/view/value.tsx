@@ -22,8 +22,10 @@ export const ValueViewComponent = ({ view, showDenom = true }: ValueViewProps) =
     const encodedAssetId = getDisplayDenomFromView(view);
     return (
       <div className='flex font-mono'>
-        <p className='text-[15px] leading-[22px]'>{fromBaseUnitAmount(amount, 0).toFormat()}</p>
-        <span className='font-mono text-sm italic text-foreground'>{encodedAssetId}</span>
+        <p className='truncate text-[15px] leading-[22px]'>
+          {fromBaseUnitAmount(amount, 0).toFormat()}
+        </p>
+        <span className='truncate font-mono text-sm italic text-foreground'>{encodedAssetId}</span>
         <CopyToClipboard
           text={encodedAssetId}
           label={
@@ -44,7 +46,7 @@ export const ValueViewComponent = ({ view, showDenom = true }: ValueViewProps) =
     const exponent = value.metadata ? getDisplayDenomExponent(value.metadata) : 0;
 
     return (
-      <div className='flex font-mono'>
+      <div className='flex truncate font-mono'>
         {fromBaseUnitAmount(amount, exponent).toFormat()} {showDenom && displayDenom}
       </div>
     );

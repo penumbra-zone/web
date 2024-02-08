@@ -10,6 +10,7 @@ interface AssetOutSelectorProps {
   setAssetOut: (metadata: Metadata) => void;
 }
 
+/** @todo Refactor to use `SelectTokenModal` */
 export const AssetOutSelector = ({ balances, setAssetOut, assetOut }: AssetOutSelectorProps) => {
   return (
     <Dialog>
