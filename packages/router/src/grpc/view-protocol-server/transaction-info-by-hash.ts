@@ -15,7 +15,6 @@ export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, 
 
   // Check database for transaction first
   const txInDb = await indexedDb.getTransactionInfo(req.id);
-  console.log(txInDb?.toJson());
   if (txInDb) return { txInfo: txInDb };
 
   // If not in database, query tendermint for public info on the transaction
