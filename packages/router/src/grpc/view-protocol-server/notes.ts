@@ -14,7 +14,7 @@ export const notes: Impl['notes'] = async function* (req, ctx) {
   let spent = new Amount();
 
   for await (const n of indexedDb.iterateSpendableNotes()) {
-    console.log(n)
+    console.log(n);
     if (assetId && !n.note?.value?.assetId?.equals(assetId)) continue;
     if (addressIndex && !n.addressIndex?.equals(addressIndex)) continue;
     if (!includeSpent && n.heightSpent) continue;
