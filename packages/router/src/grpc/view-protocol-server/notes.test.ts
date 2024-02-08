@@ -65,7 +65,7 @@ describe('Notes request handler', () => {
     for await (const res of notes(req, mockCtx)) {
       responses.push(new NotesResponse(res));
     }
-    expect(responses.length).toBe(5);
+    expect(responses.length).toBe(6);
   });
 
   test('set includeSpent to false return no spend notes', async () => {
