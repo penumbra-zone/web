@@ -2,12 +2,15 @@ import { AllSlices, SliceCreator } from './index';
 import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { planWitnessBuildBroadcast } from './helpers';
+import { getTransactionHash, planWitnessBuildBroadcast } from './helpers';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AssetBalance } from '../fetchers/balances';
 import { getDisplayDenomExponent, toBaseUnit } from '@penumbra-zone/types';
 import BigNumber from 'bignumber.js';
 import { getAddressByIndex } from '../fetchers/address';
+import { Swap } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 
 export interface SwapSlice {
   assetIn: AssetBalance | undefined;
@@ -49,10 +52,25 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
       const { dismiss } = toastFn(loadingTxToast);
 
       try {
-        const req = await assembleRequest(get().swap);
-        const txHash = await planWitnessBuildBroadcast(req);
+        const swapReq = await assembleSwapRequest(get().swap);
+        const swapTx = await planWitnessBuildBroadcast(swapReq);
+        const swapCommitment = getSwapCommitment(swapTx);
+
+        const swapClaimReq = assembleSwapClaimRequest(swapCommitment);
+        const swapClaimTx = await planWitnessBuildBroadcast(swapClaimReq, {
+          /**
+           * Swap claims are self-authenticating, so we'll use `witnessAndBuild`
+           * rather than `authorizeAndBuild` for the swap claim. That way, we
+           * won't trigger a second, unnecessary approval popup.
+           *
+           * @see https://protocol.penumbra.zone/main/zswap/swap.html#claiming-swap-outputs
+           */
+          rpcMethod: 'witnessAndBuild',
+        });
+        const swapClaimTxHash = await getTransactionHash(swapClaimTx);
+
         dismiss();
-        toastFn(successTxToast(txHash));
+        toastFn(successTxToast(swapClaimTxHash));
 
         // Reset form
         set(state => {
@@ -71,7 +89,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
   };
 };
 
-const assembleRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
+const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
   if (assetIn?.value.valueView.case !== 'knownAssetId') throw new Error('unknown denom selected');
   if (!assetIn.value.valueView.value.metadata?.penumbraAssetId)
     throw new Error('missing metadata for assetIn');
@@ -104,6 +122,26 @@ const assembleRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
       },
     ],
     source: assetIn.address.addressView.value.index,
+  });
+};
+
+const getSwapCommitment = (transaction: Transaction): StateCommitment => {
+  const swap = transaction.body?.actions.find(action => action.action.case === 'swap')?.action
+    .value as Swap | undefined;
+  if (!swap) throw new Error('Swap action could not be found in transaction for swap claim');
+  if (!swap.body?.payload?.commitment)
+    throw new Error('Swap commitment could not be found in swap action');
+
+  return swap.body.payload.commitment;
+};
+
+const assembleSwapClaimRequest = (swapCommitment: StateCommitment) => {
+  return new TransactionPlannerRequest({
+    swapClaims: [
+      {
+        swapCommitment,
+      },
+    ],
   });
 };
 

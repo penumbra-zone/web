@@ -18,6 +18,12 @@ import {
   SpendView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { Jsonified } from '@penumbra-zone/types';
+import {
+  SwapClaimPlan,
+  SwapClaimView,
+  SwapPlan,
+  SwapView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 
 const getValueView = (
   value: Value | undefined,
@@ -94,6 +100,73 @@ const getOutputView = (
   });
 };
 
+const getSwapView = (swapPlan: SwapPlan): SwapView => {
+  return new SwapView({
+    swapView: {
+      case: 'visible',
+      value: {
+        swap: {
+          body: {
+            delta1I: swapPlan.swapPlaintext?.delta1I,
+            delta2I: swapPlan.swapPlaintext?.delta2I,
+            tradingPair: swapPlan.swapPlaintext?.tradingPair,
+          },
+        },
+        swapPlaintext: swapPlan.swapPlaintext,
+      },
+    },
+  });
+};
+
+const getSwapClaimView = (
+  swapClaimPlan: SwapClaimPlan,
+  denomMetadataByAssetId: Record<string, Jsonified<Metadata>>,
+  fullViewingKey: string,
+): SwapClaimView => {
+  return new SwapClaimView({
+    swapClaimView: {
+      case: 'visible',
+      value: {
+        output1: {
+          address: swapClaimPlan.swapPlaintext?.claimAddress
+            ? getAddressView(swapClaimPlan.swapPlaintext.claimAddress, fullViewingKey)
+            : undefined,
+          value: swapClaimPlan.outputData?.lambda1
+            ? getValueView(
+                new Value({
+                  amount: swapClaimPlan.outputData.lambda1,
+                  assetId: swapClaimPlan.outputData.tradingPair?.asset1,
+                }),
+                denomMetadataByAssetId,
+              )
+            : undefined,
+        },
+        output2: {
+          address: swapClaimPlan.swapPlaintext?.claimAddress
+            ? getAddressView(swapClaimPlan.swapPlaintext.claimAddress, fullViewingKey)
+            : undefined,
+          value: swapClaimPlan.outputData?.lambda2
+            ? getValueView(
+                new Value({
+                  amount: swapClaimPlan.outputData.lambda2,
+                  assetId: swapClaimPlan.outputData.tradingPair?.asset2,
+                }),
+                denomMetadataByAssetId,
+              )
+            : undefined,
+        },
+        swapClaim: {
+          body: {
+            fee: swapClaimPlan.swapPlaintext?.claimFee,
+            outputData: swapClaimPlan.outputData,
+          },
+          epochDuration: swapClaimPlan.epochDuration,
+        },
+      },
+    },
+  });
+};
+
 export const viewActionPlan =
   (denomMetadataByAssetId: Record<string, Jsonified<Metadata>>, fullViewingKey: string) =>
   (actionPlan: ActionPlan): ActionView => {
@@ -110,6 +183,24 @@ export const viewActionPlan =
           actionView: {
             case: 'output',
             value: getOutputView(actionPlan.action.value, denomMetadataByAssetId, fullViewingKey),
+          },
+        });
+      case 'swap':
+        return new ActionView({
+          actionView: {
+            case: 'swap',
+            value: getSwapView(actionPlan.action.value),
+          },
+        });
+      case 'swapClaim':
+        return new ActionView({
+          actionView: {
+            case: 'swapClaim',
+            value: getSwapClaimView(
+              actionPlan.action.value,
+              denomMetadataByAssetId,
+              fullViewingKey,
+            ),
           },
         });
       case 'ics20Withdrawal':

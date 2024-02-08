@@ -33,7 +33,7 @@ describe('viewTransactionPlan()', () => {
     },
   });
 
-  test('includes the return address', () => {
+  test('includes the return address if it exists', () => {
     const txnView = viewTransactionPlan(validTxnPlan, {}, mockFvk);
     const memoViewValue = txnView.bodyView!.memoView!.memoView.value! as MemoView_Visible;
 
@@ -42,10 +42,21 @@ describe('viewTransactionPlan()', () => {
     ).toBe(true);
   });
 
-  test('throws when there is no return address', () => {
-    expect(() => viewTransactionPlan(new TransactionPlan(), {}, mockFvk)).toThrow(
-      'No return address found in transaction plan',
-    );
+  test('leaves out the return address when it does not exist', () => {
+    const txnPlan = new TransactionPlan({
+      transactionParameters: {
+        fee: {
+          amount: {
+            hi: 1n,
+            lo: 0n,
+          },
+        },
+      },
+    });
+    const txnView = viewTransactionPlan(txnPlan, {}, mockFvk);
+    const memoViewValue = txnView.bodyView!.memoView!.memoView.value! as MemoView_Visible;
+
+    expect(memoViewValue.plaintext?.returnAddress).toBeUndefined();
   });
 
   test('includes the fee', () => {

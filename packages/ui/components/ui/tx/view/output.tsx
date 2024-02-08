@@ -26,5 +26,5 @@ export const OutputViewComponent = ({ value }: { value: OutputView }) => {
     return <ViewBox label='Output' />;
   }
 
-  return <div>Invalid SpendView</div>;
+  return <div>Invalid OutputView</div>;
 };

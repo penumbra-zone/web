@@ -15,7 +15,7 @@ import BigNumber from 'bignumber.js';
 import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
 import { AssetBalance } from '../fetchers/balances';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { getTransactionPlan, planWitnessBuildBroadcast } from './helpers';
+import { getTransactionHash, getTransactionPlan, planWitnessBuildBroadcast } from './helpers';
 
 import {
   Fee,
@@ -103,7 +103,8 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
 
       try {
         const req = assembleRequest(get().send);
-        const txHash = await planWitnessBuildBroadcast(req);
+        const transaction = await planWitnessBuildBroadcast(req);
+        const txHash = await getTransactionHash(transaction);
         dismiss();
         toastFn(successTxToast(txHash));
 

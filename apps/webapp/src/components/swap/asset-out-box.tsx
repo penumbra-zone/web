@@ -15,8 +15,6 @@ const findMatchingBalance = (
   balances: AssetBalance[],
 ): ValueView | undefined => {
   if (!denom?.penumbraAssetId) return undefined;
-  const grouped = balances.reduce(groupByAsset, []);
-  console.log(grouped);
 
   return balances.reduce(groupByAsset, []).find(v => {
     if (v.valueView.case !== 'knownAssetId') return false;
