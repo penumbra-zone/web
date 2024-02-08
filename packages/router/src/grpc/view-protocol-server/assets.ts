@@ -5,9 +5,6 @@ import { assetPatterns } from '@penumbra-zone/constants';
 export const assets: Impl['assets'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
-  const allMetadata = await indexedDb.getAllAssetsMetadata();
-
-  const responses = allMetadata.map(denomMetadata => ({ denomMetadata }));
 
   const {
     filtered,
@@ -49,7 +46,8 @@ export const assets: Impl['assets'] = async function* (req, ctx) {
     })),
   ].filter(i => i.includeReq);
 
-  yield* !filtered
-    ? responses
-    : responses.filter(asset => patterns.find(p => p.pattern.test(asset.denomMetadata.display)));
+  for await (const metadata of indexedDb.iterateAssetsMetadata()) {
+    if (filtered && !patterns.find(p => p.pattern.test(metadata.display))) continue;
+    yield { denomMetadata: metadata };
+  }
 };

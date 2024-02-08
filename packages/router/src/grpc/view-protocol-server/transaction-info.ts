@@ -5,10 +5,11 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (req, ct
   const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
 
-  const allTxs = await indexedDb.getAllTransactionInfo();
-  const responses = allTxs
+  for await (const txInfo of indexedDb.iterateTransactionInfo()) {
     // filter transactions between startHeight and endHeight, inclusive
-    .filter(tx => tx.height >= req.startHeight && (!req.endHeight || tx.height <= req.endHeight))
-    .map(txInfo => ({ txInfo }));
-  yield* responses;
+    if (txInfo.height < req.startHeight || (req.endHeight && txInfo.height > req.endHeight))
+      continue;
+
+    yield { txInfo };
+  }
 };

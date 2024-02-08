@@ -18,7 +18,11 @@ import { viewTransactionPlan } from './view-transaction-plan';
 const getMetadataByAssetId = async (ctx: HandlerContext) => {
   const services = ctx.values.get(servicesCtx);
   const walletServices = await services.getWalletServices();
-  const assetsMetadata = await walletServices.indexedDb.getAllAssetsMetadata();
+
+  const assetsMetadata: Metadata[] = [];
+  for await (const metadata of walletServices.indexedDb.iterateAssetsMetadata()) {
+    assetsMetadata.push(metadata);
+  }
   return assetsMetadata.reduce<Record<string, Jsonified<Metadata>>>((prev, curr) => {
     if (curr.penumbraAssetId) {
       prev[bech32AssetId(curr.penumbraAssetId)] = curr.toJson() as Jsonified<Metadata>;

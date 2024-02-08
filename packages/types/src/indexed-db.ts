@@ -54,20 +54,20 @@ export interface IndexedDbInterface {
     commitment: StateCommitment,
   ): Promise<SpendableNoteRecord | undefined>;
   saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
-  getAllSpendableNotes(): Promise<SpendableNoteRecord[]>;
+  iterateSpendableNotes(): AsyncGenerator<SpendableNoteRecord, void>;
   saveTransactionInfo(tx: TransactionInfo): Promise<void>;
   getTransactionInfo(txId: TransactionId): Promise<TransactionInfo | undefined>;
-  getAllTransactionInfo(): Promise<TransactionInfo[]>;
+  iterateTransactionInfo(): AsyncGenerator<TransactionInfo, void>;
   getAssetsMetadata(assetId: AssetId): Promise<Metadata | undefined>;
   saveAssetsMetadata(metadata: Metadata): Promise<void>;
-  getAllAssetsMetadata(): Promise<Metadata[]>;
+  iterateAssetsMetadata(): AsyncGenerator<Metadata, void>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
   saveScanResult(updates: ScanBlockResult): Promise<void>;
   getFmdParams(): Promise<FmdParameters | undefined>;
   saveFmdParams(params: FmdParameters): Promise<void>;
   getAppParams(): Promise<AppParameters | undefined>;
   saveAppParams(params: AppParameters): Promise<void>;
-  getAllSwaps(): Promise<SwapRecord[]>;
+  iterateSwaps(): AsyncGenerator<SwapRecord, void>;
   getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined>;
   saveSwap(note: SwapRecord): Promise<void>;
   getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined>;
