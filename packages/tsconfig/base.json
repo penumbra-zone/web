@@ -23,6 +23,7 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "resolveJsonModule": true,
     "target": "ES2020"
   },
   "exclude": ["node_modules"]
