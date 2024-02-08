@@ -14,10 +14,9 @@ export const notes: Impl['notes'] = async function* (req, ctx) {
   let spent = new Amount();
 
   for await (const n of indexedDb.iterateSpendableNotes()) {
-    console.log(n);
     if (assetId && !n.note?.value?.assetId?.equals(assetId)) continue;
     if (addressIndex && !n.addressIndex?.equals(addressIndex)) continue;
-    if (!includeSpent && n.heightSpent) continue;
+    if (!includeSpent && n.heightSpent !== 0n) continue;
 
     // If set, stop returning notes once the total exceeds this amount.
     // Ignored if `assetId` is unset or if `includeSpent` is set.
@@ -28,5 +27,6 @@ export const notes: Impl['notes'] = async function* (req, ctx) {
     }
 
     yield { noteRecord: n };
+
   }
 };

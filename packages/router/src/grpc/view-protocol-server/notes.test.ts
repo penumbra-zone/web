@@ -50,7 +50,7 @@ describe('Notes request handler', () => {
 
     for (const record of testData) {
       notesNext.mockResolvedValueOnce({
-        value: { value: record },
+        value:  record ,
       });
     }
     notesNext.mockResolvedValueOnce({
@@ -58,17 +58,17 @@ describe('Notes request handler', () => {
     });
   });
 
-  test('empty request return no spend notes', async () => {
+  test('should get all unspent notes if the query is empty', async () => {
 
     const responses: NotesResponse[] = [];
     const req = new NotesRequest({});
     for await (const res of notes(req, mockCtx)) {
       responses.push(new NotesResponse(res));
     }
-    expect(responses.length).toBe(6);
+    expect(responses.length).toBe(5);
   });
 
-  test('set includeSpent to false return no spend notes', async () => {
+  test('should get all unspent notes if if includeSpent is false', async () => {
     const responses: NotesResponse[] = [];
     const req = new NotesRequest({
       includeSpent: false,
@@ -79,7 +79,7 @@ describe('Notes request handler', () => {
     expect(responses.length).toBe(5);
   });
 
-  test('set includeSpent to true return all notes', async () => {
+  test('should get both spent and unspent notes, if includeSpent is true', async () => {
     const responses: NotesResponse[] = [];
     const req = new NotesRequest({
       includeSpent: true,
@@ -90,7 +90,7 @@ describe('Notes request handler', () => {
     expect(responses.length).toBe(6);
   });
 
-  test('set assetId return only notes with this AssetId and no spend notes', async () => {
+  test('should get unspent notes with a given assetId', async () => {
     const responses: NotesResponse[] = [];
 
     const assetId = AssetId.fromJson({
@@ -106,7 +106,7 @@ describe('Notes request handler', () => {
     expect(responses.length).toBe(4);
   });
 
-  test('set assetId and includeSpent to true return all notes with this AssetId', async () => {
+  test('should get unspent and spent notes with a given assetId and includeSpent is true', async () => {
     const responses: NotesResponse[] = [];
 
     const assetId = AssetId.fromJson({
@@ -123,7 +123,7 @@ describe('Notes request handler', () => {
     expect(responses.length).toBe(5);
   });
 
-  test('set addressIndex and includeSpent to true return all notes with current addressIndex', async () => {
+  test('should get unspent and spent notes with a given addressIndex and includeSpent is true', async () => {
     const responses: NotesResponse[] = [];
 
     const addressIndex = AddressIndex.fromJson({
@@ -141,7 +141,7 @@ describe('Notes request handler', () => {
     expect(responses.length).toBe(1);
   });
 
-  test('set addressIndex return notes with current addressIndex and no spend notes', async () => {
+  test('should get unspent notes with a given addressIndex', async () => {
     const responses: NotesResponse[] = [];
 
     const addressIndex = AddressIndex.fromJson({
@@ -158,7 +158,7 @@ describe('Notes request handler', () => {
     expect(responses.length).toBe(0);
   });
 
-  test('set addressIndex, includeSpent to true and assetId return all notes with current addressIndex and assetId', async () => {
+  test('should get unspent and spent notes with a given addressIndex and given assetId  and includeSpent is true', async () => {
     const responses: NotesResponse[] = [];
 
     const addressIndex = AddressIndex.fromJson({
@@ -180,7 +180,7 @@ describe('Notes request handler', () => {
     expect(responses.length).toBe(1);
   });
 
-  test('set addressIndex and assetId return no spend notes with current addressIndex and assetId', async () => {
+  test('should get unspent notes with a given addressIndex and given assetId', async () => {
     const responses: NotesResponse[] = [];
 
     const addressIndex = AddressIndex.fromJson({
@@ -201,7 +201,7 @@ describe('Notes request handler', () => {
     expect(responses.length).toBe(0);
   });
 
-  test('set assetId and amountToSpend return notes total exceeds this amountToSpend', async () => {
+  test('should get notes total exceeding the specified amountToSpend given assetId and amountToSpend', async () => {
     const responses: NotesResponse[] = [];
 
     const assetId = AssetId.fromJson({
@@ -223,7 +223,7 @@ describe('Notes request handler', () => {
     expect(responses.length).toBe(2);
   });
 
-  test('set assetId and amountToSpend to zero return empty array', async () => {
+  test('should get an empty array when assetId is set and amountToSpend is zero', async () => {
     const responses: NotesResponse[] = [];
 
     const assetId = AssetId.fromJson({
@@ -245,7 +245,7 @@ describe('Notes request handler', () => {
     expect(responses.length).toBe(0);
   });
 
-  test('set only amountToSpend ignore this filter', async () => {
+  test('should ignore amountToSpend filter when assetId is not set', async () => {
     const responses: NotesResponse[] = [];
 
     const amountToSpend = {
@@ -262,7 +262,7 @@ describe('Notes request handler', () => {
     expect(responses.length).toBe(5);
   });
 
-  test('set assetId, amountToSpend and includeSpent to true ignore this filter', async () => {
+  test('should ignore the filter when assetId, amountToSpend are set and includeSpent is true', async () => {
     const responses: NotesResponse[] = [];
 
     const assetId = AssetId.fromJson({
