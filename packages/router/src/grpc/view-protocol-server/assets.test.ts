@@ -37,7 +37,7 @@ describe('Assets request handler', () => {
 
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.balances,
+      method: ViewService.methods.assets,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
