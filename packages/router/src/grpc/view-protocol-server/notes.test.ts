@@ -5,7 +5,7 @@ import { servicesCtx } from '../../ctx';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
@@ -14,26 +14,24 @@ import {
   NotesResponse,
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import {IndexedDbMock, MockServices} from "./test-utils";
-import {Services} from "@penumbra-zone/services";
+import { IndexedDbMock, MockServices } from './test-utils';
+import { Services } from '@penumbra-zone/services';
 
 describe('Notes request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
   let mockIndexedDb: IndexedDbMock;
-  let notesNext: Mock;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    notesNext = vi.fn();
-    const mockTransactionInfoSubscription = {
-      next: notesNext,
-      [Symbol.asyncIterator]: () => mockTransactionInfoSubscription,
+    const mockIterateSpendableNotes = {
+      next: vi.fn(),
+      [Symbol.asyncIterator]: () => mockIterateSpendableNotes,
     };
 
     mockIndexedDb = {
-      iterateSpendableNotes: () => mockTransactionInfoSubscription,
+      iterateSpendableNotes: () => mockIterateSpendableNotes,
     };
 
     mockServices = {
@@ -49,17 +47,16 @@ describe('Notes request handler', () => {
     });
 
     for (const record of testData) {
-      notesNext.mockResolvedValueOnce({
-        value:  record ,
+      mockIterateSpendableNotes.next.mockResolvedValueOnce({
+        value: record,
       });
     }
-    notesNext.mockResolvedValueOnce({
+    mockIterateSpendableNotes.next.mockResolvedValueOnce({
       done: true,
     });
   });
 
   test('should get all unspent notes if the query is empty', async () => {
-
     const responses: NotesResponse[] = [];
     const req = new NotesRequest({});
     for await (const res of notes(req, mockCtx)) {
@@ -242,7 +239,7 @@ describe('Notes request handler', () => {
     for await (const res of notes(req, mockCtx)) {
       responses.push(new NotesResponse(res));
     }
-    expect(responses.length).toBe(0);
+    expect(responses.length).toBe(1);
   });
 
   test('should ignore amountToSpend filter when assetId is not set', async () => {
@@ -262,7 +259,7 @@ describe('Notes request handler', () => {
     expect(responses.length).toBe(5);
   });
 
-  test('should ignore the filter when assetId, amountToSpend are set and includeSpent is true', async () => {
+  test('should ignore the filter when assetId, amountToSpend are set but includeSpent is true', async () => {
     const responses: NotesResponse[] = [];
 
     const assetId = AssetId.fromJson({

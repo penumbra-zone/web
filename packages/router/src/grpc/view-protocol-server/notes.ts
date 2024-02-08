@@ -18,15 +18,14 @@ export const notes: Impl['notes'] = async function* (req, ctx) {
     if (addressIndex && !n.addressIndex?.equals(addressIndex)) continue;
     if (!includeSpent && n.heightSpent !== 0n) continue;
 
+    yield { noteRecord: n };
+
     // If set, stop returning notes once the total exceeds this amount.
     // Ignored if `assetId` is unset or if `includeSpent` is set.
     if (amountToSpend && assetId && !includeSpent) {
       const noteAmount = n.note?.value?.amount ?? new Amount();
       spent = addAmounts(spent, noteAmount);
-      if (joinLoHiAmount(spent) <= joinLoHiAmount(amountToSpend)) continue;
+      if (joinLoHiAmount(spent) >= joinLoHiAmount(amountToSpend)) break;
     }
-
-    yield { noteRecord: n };
-
   }
 };

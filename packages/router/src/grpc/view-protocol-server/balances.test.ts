@@ -12,9 +12,11 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { base64ToUint8Array, ServicesInterface, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import { base64ToUint8Array, uint8ArrayToBase64 } from '@penumbra-zone/types';
 
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { Services } from '@penumbra-zone/services';
+import { IndexedDbMock, MockServices } from './test-utils';
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {
   const account0Res = responses.filter(r => r.account?.account === accountId);
@@ -30,26 +32,43 @@ const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: numb
 
 describe('Balances request handler', () => {
   let req: BalancesRequest;
-  let mockServices: ServicesInterface;
+  let mockServices: MockServices;
   let mockCtx: HandlerContext;
 
   beforeEach(() => {
+    vi.resetAllMocks();
+
+    const mockIterateSpendableNotes = {
+      next: vi.fn(),
+      [Symbol.asyncIterator]: () => mockIterateSpendableNotes,
+    };
+
+    const mockIndexedDb: IndexedDbMock = {
+      iterateSpendableNotes: () => mockIterateSpendableNotes,
+    };
+
     mockServices = {
-      getWalletServices: () =>
-        Promise.resolve({
-          indexedDb: {
-            iterateSpendableNotes: (): Promise<SpendableNoteRecord[]> => Promise.resolve(testData),
-          },
-        }),
-    } as ServicesInterface;
+      getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb })),
+    };
+
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.balances,
       protocolName: 'mock',
       requestMethod: 'MOCK',
-      contextValues: createContextValues().set(servicesCtx, mockServices),
+      contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
-    req = new BalancesRequest({});
+
+    for (const record of testData) {
+      mockIterateSpendableNotes.next.mockResolvedValueOnce({
+        value: record,
+      });
+    }
+    mockIterateSpendableNotes.next.mockResolvedValueOnce({
+      done: true,
+    });
+
+    req = new BalancesRequest();
   });
 
   test('aggregation, with no filtering', async () => {

@@ -168,9 +168,10 @@ export class IndexedDb implements IndexedDbInterface {
     return Metadata.fromJson(json);
   }
 
-  async getAllAssetsMetadata() {
-    const jsonVals = await this.db.getAll('ASSETS');
-    return jsonVals.map(a => Metadata.fromJson(a));
+  async *iterateAssetsMetadata() {
+    for await (const { value } of this.db.transaction('ASSETS').store) {
+      yield Metadata.fromJson(value);
+    }
   }
 
   async saveAssetsMetadata(metadata: Metadata) {
