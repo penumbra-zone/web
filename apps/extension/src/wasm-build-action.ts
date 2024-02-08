@@ -45,7 +45,7 @@ async function executeWorker(
   actionPlanIndex: number,
 ): Promise<JsonValue> {
   // Dynamically load wasm module
-  const penumbraWasmModule = await import('@penumbra-zone/wasm-ts');
+  const penumbraWasmModule = await import('@penumbra-zone/wasm');
 
   // Conditionally read proving keys from disk and load keys into WASM binary
   const actionPlanType = transactionPlan.actions[actionPlanIndex]?.action.case;

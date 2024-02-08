@@ -13,15 +13,11 @@ import {
 
 vi.stubGlobal('crypto', webcrypto);
 
-vi.mock('@penumbra-zone/wasm-ts', () => ({
-  generateSpendKey: () => 'spend_key',
-  getFullViewingKey: () => 'full_viewing_key',
-  getWalletId: () => 'wallet_id',
-}));
-
 describe('Password Slice', () => {
   const password = 's0meUs3rP@ssword';
-  const seedPhrase = ['correct horse battery staple'];
+  const seedPhrase = [
+    'advance twist canal impact field normal depend pink sick horn world broccoli',
+  ];
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
   let sessionStorage: ExtensionStorage<SessionStorageState>;

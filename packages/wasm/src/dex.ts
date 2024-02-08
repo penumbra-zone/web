@@ -1,4 +1,4 @@
-import { compute_position_id } from '@penumbra-zone/wasm-bundler';
+import { compute_position_id } from '../wasm';
 import {
   Position,
   PositionId,

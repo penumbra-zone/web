@@ -1,0 +1,142 @@
+name: Turbo CI
+on: pull_request
+
+jobs:
+  turbo-compile:
+    name: Compile WASM
+    runs-on: buildjet-16vcpu-ubuntu-2204
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v3
+        id: turbo-cache
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+      - uses: pnpm/action-setup@v2
+      - uses: buildjet/setup-node@v4
+        with:
+          node-version: '21'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo telemetry disable
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: astriaorg/buildjet-rust-cache@v2.5.1
+      - uses: jetli/wasm-pack-action@v0.4.0
+        with:
+          version: 'latest'
+
+      - run: pnpm turbo compile --cache-dir=.turbo
+
+  test-rust:
+    # only run crate tests on pull requests that changed the crate
+    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'packages/wasm/crate/') }}
+    name: 'test:rust'
+    needs: turbo-compile
+    runs-on: buildjet-16vcpu-ubuntu-2204
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v3
+        id: turbo-cache
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+      - uses: pnpm/action-setup@v2
+      - uses: buildjet/setup-node@v4
+        with:
+          node-version: '21'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo telemetry disable
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: astriaorg/buildjet-rust-cache@v2.5.1
+      - uses: jetli/wasm-pack-action@v0.4.0
+        with:
+          version: 'latest'
+
+      - uses: browser-actions/setup-firefox@v1
+
+      - run: pnpm turbo test:rust --cache-dir=.turbo
+
+      - run: cargo tree --invert mio --edges features
+        if: failure()
+        working-directory: packages/wasm/crate
+
+  turbo-lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs: turbo-compile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v3
+        id: turbo-cache
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '21'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo telemetry disable
+      - run: pnpm format-check --cache-dir=.turbo
+      - run: pnpm turbo lint --cache-dir=.turbo
+
+  turbo-build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: turbo-compile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v3
+        id: turbo-cache
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '21'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo telemetry disable
+      - run: pnpm turbo build --cache-dir=.turbo
+
+  turbo-test:
+    strategy:
+      matrix:
+        task: ['test', 'test:browser']
+    name: ${{ matrix.task }}
+    runs-on: ubuntu-latest
+    needs: turbo-build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v3
+        id: turbo-cache
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '21'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo telemetry disable
+      - run: pnpm turbo ${{ matrix.task }} --cache-dir=.turbo

@@ -1,0 +1,4 @@
+crate/target
+crate/**/*.rs.bk
+crate/Cargo.lock
+crate/wasm-pack.log

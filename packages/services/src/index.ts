@@ -1,7 +1,7 @@
 import { testnetConstants } from '@penumbra-zone/constants';
 import { BlockProcessor, RootQuerier } from '@penumbra-zone/query';
 import { IndexedDb, syncLastBlockWithLocal } from '@penumbra-zone/storage';
-import { ViewServer } from '@penumbra-zone/wasm-ts';
+import { ViewServer } from '@penumbra-zone/wasm';
 import { ServicesInterface, WalletServices } from '@penumbra-zone/types/src/services';
 
 export interface ServicesConfig {

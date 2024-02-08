@@ -1,11 +1,16 @@
 {
-  "name": "@penumbra-zone/wasm-ts",
+  "name": "@penumbra-zone/wasm",
   "version": "1.0.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest run"
+    "clean": "rm -rfv dist wasm ; cargo clean --manifest-path ./crate/Cargo.toml",
+    "dev": "cargo watch -C ./crate --postpone -- pnpm turbo run compile",
+    "compile": "wasm-pack build --no-pack ./crate --release --target bundler --out-name index --out-dir ../wasm",
+    "build": "tsc",
+    "lint": "eslint \"src/*.ts*\"",
+    "test": "vitest run",
+    "test:rust": "cd crate ; wasm-pack test --headless --firefox -- --test build --target wasm32-unknown-unknown --release --features 'mock-database'"
   },
   "dependencies": {
     "bech32": "^2.0.0",
@@ -13,6 +18,8 @@
   },
   "devDependencies": {
     "fake-indexeddb": "^5.0.2",
-    "vitest": "^1.2.2"
+    "tsx": "^4.7.0",
+    "vite-plugin-top-level-await": "^1.4.1",
+    "vite-plugin-wasm": "^3.3.0"
   }
 }

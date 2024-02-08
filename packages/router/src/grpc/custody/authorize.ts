@@ -1,6 +1,6 @@
 import type { Impl } from '.';
 import { approverCtx, extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx';
-import { authorizePlan, generateSpendKey } from '@penumbra-zone/wasm-ts';
+import { authorizePlan, generateSpendKey } from '@penumbra-zone/wasm';
 import { Key } from '@penumbra-zone/crypto-web';
 import { bech32AssetId, Box, Jsonified } from '@penumbra-zone/types';
 import { Code, ConnectError, HandlerContext } from '@connectrpc/connect';

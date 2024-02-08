@@ -2,7 +2,7 @@ import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
 import { bech32Address } from '@penumbra-zone/types';
-import { isControlledAddress } from '@penumbra-zone/wasm-ts';
+import { isControlledAddress } from '@penumbra-zone/wasm';
 
 import { ConnectError, Code } from '@connectrpc/connect';
 

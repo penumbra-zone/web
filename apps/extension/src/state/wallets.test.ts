@@ -11,11 +11,36 @@ import {
 import { WalletCreate } from '@penumbra-zone/types';
 
 vi.stubGlobal('crypto', webcrypto);
-vi.mock('@penumbra-zone/wasm-ts', () => ({
-  generateSpendKey: () => 'spend_key',
-  getFullViewingKey: () => 'full_viewing_key',
-  getWalletId: () => 'wallet_id',
-}));
+
+const seedPhrase1 = [
+  'road',
+  'topic',
+  'empty',
+  'egg',
+  'hint',
+  'check',
+  'verb',
+  'document',
+  'dad',
+  'fish',
+  'matrix',
+  'problem',
+];
+
+const seedPhrase2 = [
+  'portion',
+  'coach',
+  'venture',
+  'bomb',
+  'viable',
+  'never',
+  'boring',
+  'session',
+  'ranch',
+  'near',
+  'expose',
+  'similar',
+];
 
 describe('Accounts Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
@@ -34,7 +59,7 @@ describe('Accounts Slice', () => {
     test('throws if no password in storage', async () => {
       const accountA: WalletCreate = {
         label: 'Account #1',
-        seedPhrase: ['apple', 'banana', 'orange'],
+        seedPhrase: seedPhrase1,
       };
       await expect(useStore.getState().wallets.addWallet(accountA)).rejects.toThrow();
     });
@@ -43,7 +68,7 @@ describe('Accounts Slice', () => {
       await useStore.getState().password.setPassword('user_password_123');
       const accountA: WalletCreate = {
         label: 'Account #1',
-        seedPhrase: ['apple', 'banana', 'orange'],
+        seedPhrase: seedPhrase1,
       };
       await useStore.getState().wallets.addWallet(accountA);
       expect(useStore.getState().wallets.all.length).toBe(1);
@@ -56,7 +81,7 @@ describe('Accounts Slice', () => {
 
       const accountB: WalletCreate = {
         label: 'Account #2',
-        seedPhrase: ['pear', 'grape', 'cashew'],
+        seedPhrase: seedPhrase2,
       };
       await useStore.getState().wallets.addWallet(accountB);
       expect(useStore.getState().wallets.all.length).toBe(2);
@@ -74,7 +99,7 @@ describe('Accounts Slice', () => {
   describe('getSeedPhrase()', () => {
     test('seed phrase can be return', async () => {
       await useStore.getState().password.setPassword('user_password_123');
-      const initialSeedPhrase = ['apple', 'banana', 'orange'];
+      const initialSeedPhrase = seedPhrase1;
       const accountA: WalletCreate = {
         label: 'Account #1',
         seedPhrase: initialSeedPhrase,
@@ -90,7 +115,7 @@ describe('Accounts Slice', () => {
     test('seed phrase can be return after relogin', async () => {
       const password = 'user_password_123';
       await useStore.getState().password.setPassword(password);
-      const initialSeedPhrase = ['apple', 'banana', 'orange'];
+      const initialSeedPhrase = seedPhrase1;
       const accountA: WalletCreate = {
         label: 'Account #1',
         seedPhrase: initialSeedPhrase,

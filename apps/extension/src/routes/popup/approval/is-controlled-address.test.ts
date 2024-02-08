@@ -42,12 +42,12 @@ vi.mock('../../../clients/extension-page', () => ({
 
 /**
  * Note that we're mocking the `isControlledAddress` export from
- * `@penumbra-zone/wasm-ts`, which is used under the hood by
+ * `@penumbra-zone/wasm`, which is used under the hood by
  * `grpcClient.indexByAddress`. We're _not_ mocking the `isControlledAddress`
  * function that we're testing, obviously.
  */
 const mockIsControlledAddress = vi.hoisted(() => vi.fn());
-vi.mock('@penumbra-zone/wasm-ts', () => ({
+vi.mock('@penumbra-zone/wasm', () => ({
   isControlledAddress: mockIsControlledAddress,
 }));
 
