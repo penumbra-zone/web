@@ -7,6 +7,9 @@
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
+  "exports": {
+    "@penumbra-zone/wasm-bundler": "./../../../dist/bundler"
+  },
   "dependencies": {
     "bech32": "^2.0.0",
     "zod": "^3.22.4"

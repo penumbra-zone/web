@@ -33,7 +33,6 @@ export const buildParallel = (
   );
   return Transaction.fromJson(result as JsonValue);
 };
-
 export const buildActionParallel = (
   txPlan: TransactionPlan,
   witnessData: WitnessData,

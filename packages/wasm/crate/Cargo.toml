@@ -1,0 +1,50 @@
+
+[package]
+name = "penumbra-wasm"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["console_error_panic_hook"]
+mock-database = []
+
+[dependencies]
+penumbra-asset         = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-asset" }
+penumbra-compact-block = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-compact-block", default-features = false }
+penumbra-dex           = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-dex", default-features = false }
+penumbra-fee           = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-fee", default-features = false }
+penumbra-governance    = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-governance", default-features = false }
+penumbra-ibc           = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-ibc", default-features = false }
+penumbra-keys          = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-keys" }
+penumbra-num           = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-num" }
+penumbra-proof-params  = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-proof-params", default-features = false }
+penumbra-proto         = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-proto", default-features = false }
+penumbra-sct           = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-sct", default-features = false }
+penumbra-shielded-pool = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-shielded-pool", default-features = false }
+penumbra-stake         = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-stake", default-features = false }
+penumbra-tct           = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-tct" }
+penumbra-transaction   = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "main", package = "penumbra-transaction", default-features = false }
+
+anyhow                   = "1.0.75"
+ark-ff                   = { version = "0.4.2", features = ["std"] }
+base64                   = "0.21.2"
+console_error_panic_hook = { version = "0.1.7", optional = true }
+decaf377                 = { version = "0.5", features = ["r1cs"] }
+hex                      = "0.4.3"
+indexed_db_futures       = "0.3.0"
+rand_core                = { version = "0.6.4", features = ["getrandom"] }
+serde                    = { version = "1.0.186", features = ["derive"] }
+serde-wasm-bindgen       = "0.5.0"
+thiserror                = "1.0"
+wasm-bindgen             = "0.2.87"
+wasm-bindgen-futures     = "0.4.37"
+web-sys                  = { version = "0.3.64", features = ["console"] }
+
+[dev-dependencies]
+wasm-bindgen-test        = "0.3.37"
+serde_json               = "1.0.107"
