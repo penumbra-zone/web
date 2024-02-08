@@ -58,6 +58,13 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
 
         const swapClaimReq = assembleSwapClaimRequest(swapCommitment);
         const swapClaimTx = await planWitnessBuildBroadcast(swapClaimReq, {
+          /**
+           * Swap claims are self-authenticating, so we'll use `witnessAndBuild`
+           * rather than `authorizeAndBuild` for the swap claim. That way, we
+           * won't trigger a second, unnecessary approval popup.
+           *
+           * @see https://protocol.penumbra.zone/main/zswap/swap.html#claiming-swap-outputs
+           */
           rpcMethod: 'witnessAndBuild',
         });
         const swapClaimTxHash = await getTransactionHash(swapClaimTx);
