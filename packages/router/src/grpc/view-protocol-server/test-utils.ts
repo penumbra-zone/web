@@ -10,6 +10,7 @@ export interface IndexedDbMock {
   getTransactionInfo?: Mock;
   iterateTransactionInfo?: () => Partial<AsyncIterable<Mock>>;
   iterateSpendableNotes?: () => Partial<AsyncIterable<Mock>>;
+  iterateAssetsMetadata?: () => Partial<AsyncIterable<Mock>>;
   subscribe?: (table: string) => Partial<AsyncIterable<Mock>>;
 }
 export interface TendermintMock {

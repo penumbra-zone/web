@@ -8,31 +8,48 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { ServicesInterface } from '@penumbra-zone/types';
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { servicesCtx } from '../../ctx';
 import { assets } from './assets';
+import { IndexedDbMock, MockServices } from './test-utils';
+import { Services } from '@penumbra-zone/services';
 
 describe('Assets request handler', () => {
   let req: AssetsRequest;
-  let mockServices: ServicesInterface;
+  let mockServices: MockServices;
   let mockCtx: HandlerContext;
 
   beforeEach(() => {
+    vi.resetAllMocks();
+
+    const mockIterateMetadata = {
+      next: vi.fn(),
+      [Symbol.asyncIterator]: () => mockIterateMetadata,
+    };
+
+    const mockIndexedDb: IndexedDbMock = {
+      iterateAssetsMetadata: () => mockIterateMetadata,
+    };
+
     mockServices = {
-      getWalletServices: () =>
-        Promise.resolve({
-          indexedDb: {
-            getAllAssetsMetadata: (): Promise<Metadata[]> => Promise.resolve(testData),
-          },
-        }),
-    } as ServicesInterface;
+      getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb })),
+    };
+
     mockCtx = createHandlerContext({
       service: ViewService,
-      method: ViewService.methods.assets,
+      method: ViewService.methods.balances,
       protocolName: 'mock',
       requestMethod: 'MOCK',
-      contextValues: createContextValues().set(servicesCtx, mockServices),
+      contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
+    });
+
+    for (const record of testData) {
+      mockIterateMetadata.next.mockResolvedValueOnce({
+        value: record,
+      });
+    }
+    mockIterateMetadata.next.mockResolvedValueOnce({
+      done: true,
     });
     req = new AssetsRequest({});
   });
