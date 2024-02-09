@@ -49,7 +49,7 @@ Getter functions are basically the "getter" half of the functional-programming [
 <div>
   <span>
     {/* Note the `?` near the end, since we may be getting `undefined`. */}
-    {getAccountIndex(addressView)?.account}
+    {getAddressIndex(addressView)?.account}
   </span>
 </div>
 ```
@@ -61,8 +61,8 @@ If we want to ensure that the value is not `undefined`, we can add an `orThrow`:
   <span>
     {/* Note the `.account` at the end. This is only possible because we called
     `.orThrow()`. Otherwise, TypeScript would have warned us that the return
-    value of `getAccountIndex()` could be undefined. */}
-    {getAccountIndex.orThrow(addressView, 'account index was missing').account}
+    value of `getAddressIndex()` could be undefined. */}
+    {getAddressIndex.orThrow(addressView, 'address index was missing').account}
   </span>
 </div>
 ```
@@ -74,7 +74,7 @@ A handy byproduct of using getters, which is one of the reasons the lens pattern
 It's worth noting that getters don't make compile-time assertions about the type after being called. That is, you can't use them inside an `if` statement and then safely access deeply nested properties inside the `if` block:
 
 ```ts
-if (getAccountIndex(addressView)) {
+if (getAddressIndex(addressView)) {
   // ❌ TypeScript will complain that `value` may be undefined:
   console.log(addressView.addressView.value.index.account);
 }
