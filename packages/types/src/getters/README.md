@@ -43,30 +43,30 @@ Getters solve all that. Getters are tiny, composable functions, inspired by the 
 Let's solve the above problem with getters. First, let's create a getter that, when given a `MemoView`, returns its `AddressView`:
 
 ```ts
-const getAddress = createGetter<MemoView, AddressView>(memoView =>
+const getAddressView = createGetter((memoView?: MemoView) =>
   memoView.memoView.case === 'visible' ? memoView.memoView.plaintext?.returnAddress : undefined,
 );
 ```
 
-`getAddress()` is now a simple function that can be called with a `MemoView`, like this: `getAddress(memoView)`. It will then return the `AddressView` or `undefined`.
+`getAddressView()` is now a simple function that can be called with a `MemoView`, like this: `getAddressView(memoView)`. It will then return the `AddressView`, or throw if it's `undefined`.
 
 OK, next, let's create another getter that, when given an `AddressView`, returns its `AddressIndex`:
 
 ```ts
-const getAddressIndex = createGetter<AddressView, AddressIndex>(addressView =>
+const getAddressIndex = createGetter((addressView?: AddressView) =>
   addressView?.addressView.case === 'decoded' ? addressView.addressView.value.index : undefined,
 );
 ```
 
-Again, `getAddressIndex()` is a simple function that can be called with an `AddressView`, like this: `getAddressIndex(addressView)`. It will then return the `AddressIndex` or `undefined`.
+Again, `getAddressIndex()` is a simple function that can be called with an `AddressView`, like this: `getAddressIndex(addressView)`. It will then return the `AddressIndex`, or throw if it's `undefined`.
 
 Since we defined these two functions with `createGetter()`, though, they have a `pipe` method that let us chain them together. That way, we can easily create a getter that, when given a `MemoView`, will return an `AddressIndex`:
 
 ```ts
-const getAddressIndexFromMemoView = getAddress.pipe(getAddressIndex);
+const getAddressIndexFromMemoView = getAddressView.pipe(getAddressIndex);
 ```
 
-Thus, we can quickly clean up our component code:
+OK, now we can quickly clean up our component code:
 
 ```tsx
 <div>
@@ -74,60 +74,29 @@ Thus, we can quickly clean up our component code:
 </div>
 ```
 
-Already way cleaner! Of course, we can call `.pipe()` inline in our markup, too:
+Way better!
+
+At this point, it's worth mentioning that getters are _required by default_. If any step along the getter chain above returns `undefined`, they will throw a `GetterMissingValueError`.
+
+(It might seem unintuitive that getter functions are required, but are defined with an _optional_ argument -- e.g., `createGetter((addressView?: AddressView) => ... )`. Without that optionality, you'd get a TypeScript complaint like `Type 'undefined' is not assignable to type 'AddressView'.` Getters assume that they can be passed `undefined`; otherwise, TypeScript would make `pipe()`ing impossible, since deeply nested properties are often optional. Don't worry, though: `createGetter` ensures that your getters still throw if they get `undefined`, which is what guarantees type safety.)
+
+What if the value you're getting _is_ optional, though? What if you don't want your getter to throw if either the value it's passed, or the value it returns, is `undefined`? That's what the `.optional()` property on the getter is for:
 
 ```tsx
+const addressView = getAddressView.optional()(memoView)
+
 <div>
-  <span>{getAddress.pipe(getAddressIndex)(memoView)}</span>
+  {addressView && <AddressViewComponent addressView={addressView} />}
 </div>
 ```
 
-Note, though, that our getter can return `undefined` at any step of the pipe. Perhaps we don't want that -- perhaps we want to assert that the value _has_ to be there. In that case, we can append `.orThrow()` to our getter:
+Or, if you want to chain multiple getters together and make the whole chain optional, call `.optional()` on the _first_ getter in the chain (which will then mark the rest of the chain as optional, too):
 
 ```tsx
-<div>
-  <span>{getAddress.pipe(getAddressIndex).orThrow()(memoView)}</span>
-</div>
-```
-
-This will throw an error if the getter chain returns `undefined`. If we want it to throw an error with a specific message, we can pass that message as the argument to `.orThrow()`:
-
-```tsx
-<div>
-  <span>
-    {getAddress
-      .pipe(getAddressIndex)
-      .orThrow('Either the address or the address index is missing!')(memoView)}
-  </span>
-</div>
-```
-
-This might be getting a bit long for our markup, so we can save it to a variable like we were doing before:
-
-```tsx
-const getAddressIndexFromMemoView = getAddress.pipe(getAddressIndex).orThrow('Either the address or the address index is missing!');
+const getAddressIndexFromMemoView = getAddressView.optional().pipe(getAddressIndex);
+const addressIndex = getAddressIndexFromMemoView(memoView)
 
 <div>
-  <span>{getAddressIndexFromMemoView(memoView)</span>
+  {addressIndex && <AddressIndex addressIndex={addressIndex} />}
 </div>
-```
-
-Finally, we can customize at which step of the pipe we want to throw in case of `undefined`:
-
-```ts
-// Will throw if the address is missing, but not if the address index is
-// missing.
-const getAddressIndexFromMemoView = getAddress
-  .orThrow('The address is missing!')
-  .pipe(getAddressIndex);
-```
-
-And you can set custom error messages for each step of the pipe:
-
-```ts
-// Will throw the first error message if the address is missing, or the second
-// if the address index is missing.
-const getAddressIndexFromMemoView = getAddress
-  .orThrow('The address is missing!')
-  .pipe(getAddressIndex.orThrow('The address index is missing!'));
 ```

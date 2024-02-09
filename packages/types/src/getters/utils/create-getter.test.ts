@@ -21,12 +21,12 @@ const employee: Employee = {
   },
 };
 
-const getFirstName = createGetter<Employee, string>(employee => employee?.firstName);
-const getLastName = createGetter<Employee, string>(employee => employee?.lastName);
-const getAddress = createGetter<Employee, Address>(employee => employee?.address);
-const getCity = createGetter<Address, string>(address => address?.city);
-const getCountry = createGetter<Address, string>(address => address?.country);
-const getFirstLetter = createGetter<string, string>(value => value?.[0]);
+const getFirstName = createGetter((employee?: Employee) => employee?.firstName);
+const getLastName = createGetter((employee?: Employee) => employee?.lastName);
+const getAddress = createGetter((employee?: Employee) => employee?.address);
+const getCity = createGetter((address?: Address) => address?.city);
+const getCountry = createGetter((address?: Address) => address?.country);
+const getFirstLetter = createGetter((value?: string) => value?.[0]);
 
 describe('createGetter()', () => {
   describe('getter()', () => {
@@ -34,31 +34,27 @@ describe('createGetter()', () => {
       expect(getFirstName(employee)).toBe('Alice');
     });
 
-    it('returns `undefined` when the whole value is undefined', () => {
-      expect(getLastName(undefined)).toBeUndefined();
-    });
-
-    it('returns `undefined` for an undefined property', () => {
-      expect(getLastName(employee)).toBeUndefined();
-    });
-  });
-
-  describe('getter.orThrow()', () => {
     it('throws when the whole value is undefined', () => {
-      expect(() => getFirstName.orThrow()(undefined)).toThrow();
+      expect(() => getFirstName(undefined)).toThrow();
     });
 
     it('throws for an undefined property', () => {
-      expect(() => getLastName.orThrow()(employee)).toThrow();
-    });
-
-    it('throws the passed-in error message, if provided', () => {
-      expect(() => getFirstName.orThrow('oops!')(undefined)).toThrow('oops!');
+      expect(() => getLastName(employee)).toThrow();
     });
 
     it('does not throw if a value is falsey but not undefined', () => {
       const employee: Employee = { firstName: 'Alice', lastName: '' };
-      expect(() => getLastName.orThrow()(employee)).not.toThrow();
+      expect(() => getLastName(employee)).not.toThrow();
+    });
+  });
+
+  describe('getter.optional()', () => {
+    it('returns `undefined` when the whole value is undefined', () => {
+      expect(getLastName.optional()(undefined)).toBeUndefined();
+    });
+
+    it('returns `undefined` for an undefined property', () => {
+      expect(getLastName.optional()(employee)).toBeUndefined();
     });
   });
 
@@ -67,35 +63,24 @@ describe('createGetter()', () => {
       expect(getAddress.pipe(getCity)(employee)).toBe('San Francisco');
     });
 
-    describe('getter.pipe().orThrow()', () => {
-      it('throws when any value in the property chain is undefined', () => {
-        expect(() => getAddress.pipe(getCity).orThrow()({ firstName: 'Alice' })).toThrow();
-        expect(() => getAddress.pipe(getCity).orThrow()(undefined)).toThrow();
-        expect(() => getAddress.pipe(getCountry).orThrow()(employee)).toThrow();
-      });
+    it('throws when any value in the property chain is undefined', () => {
+      expect(() => getAddress.pipe(getCity)(undefined)).toThrow();
+      expect(() => getAddress.pipe(getCity)({ firstName: 'Alice' })).toThrow();
+      expect(() => getAddress.pipe(getCountry)(employee)).toThrow();
     });
 
-    describe('getter.pipe(anotherGetter.orThrow())', () => {
-      it('throws when the return value of the getter used with `.orThrow()` is undefined', () => {
-        expect(() => getAddress.pipe(getCity.orThrow())({ firstName: 'Alice' })).toThrow();
-      });
+    describe('getter.pipe() with .optional())', () => {
+      const employee: Employee = {
+        firstName: 'Alice',
+        address: {
+          city: '', // `getFirstLetter` will return undefined
+          state: 'California',
+        },
+      };
 
-      it('does not throws when the return value of the getter _not_ used with `.orThrow` is undefined', () => {
-        const employee: Employee = {
-          firstName: 'Alice',
-          address: {
-            city: '', // `getFirstLetter` will return undefined
-            state: 'California',
-          },
-        };
-
+      it('does not throw when the first getter is used with `.optional()` and some value in the chain is undefined', () => {
         expect(() =>
-          getAddress
-            .pipe(getCity.orThrow())
-            // getFirstLetter returns `undefined` due to the empty string. But we're
-            // not using `getFirstLetter.orThrow`, nor are we calling `.orThrow` on
-            // the whole getter chain, so it won't throw.
-            .pipe(getFirstLetter)(employee),
+          getAddress.optional().pipe(getCity).pipe(getFirstLetter)(employee),
         ).not.toThrow();
       });
     });

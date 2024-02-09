@@ -98,18 +98,18 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
 const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
   if (!assetIn) throw new Error('`assetIn` was undefined');
 
-  const addressIndex = getAddressIndex.orThrow('No index for assetIn address')(assetIn.address);
+  const addressIndex = getAddressIndex(assetIn.address);
 
   return new TransactionPlannerRequest({
     swaps: [
       {
-        targetAsset: getAssetId.orThrow()(assetOut),
+        targetAsset: getAssetId(assetOut),
         value: {
           amount: toBaseUnit(
             BigNumber(amount),
-            getMetadata.pipe(getDisplayDenomExponent).orThrow()(assetIn.value),
+            getMetadata.pipe(getDisplayDenomExponent)(assetIn.value),
           ),
-          assetId: getMetadata.pipe(getAssetId).orThrow()(assetIn.value),
+          assetId: getMetadata.pipe(getAssetId)(assetIn.value),
         },
         claimAddress: await getAddressByIndex(addressIndex.account),
         // TODO: Calculate this properly in subsequent PR
@@ -123,7 +123,7 @@ const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => 
         },
       },
     ],
-    source: getAddressIndex.orThrow()(assetIn.address),
+    source: getAddressIndex(assetIn.address),
   });
 };
 

@@ -47,22 +47,20 @@ Getter functions are basically the "getter" half of the functional-programming [
 
 ```tsx
 <div>
-  <span>
-    {/* Note the `?` near the end, since we may be getting `undefined`. */}
-    {getAddressIndex(addressView)?.account}
-  </span>
+  <span>{getAddressIndex(addressView).account}</span>
 </div>
 ```
 
-If we want to ensure that the value is not `undefined`, we can add an `orThrow`:
+If we want to allow `undefined`, we can add a call to `.optional()`:
 
 ```tsx
 <div>
   <span>
-    {/* Note the `.account` at the end with no `?`. This is only possible
-    because we called `.orThrow()`. Otherwise, TypeScript would have warned us
-    that the return value of `getAddressIndex()` could be undefined. */}
-    {getAddressIndex.orThrow('address index was missing')(addressView).account}
+    {/* Note the `.account` at the end is preceded by a `?`. This is only
+    required because we called `.optional()`. Otherwise, TypeScript would have
+    guaranteed that the return value of `getAddressIndex()` was an actual
+    `AddressIndex`. */}
+    {getAddressIndex.optional()(addressView)?.account}
   </span>
 </div>
 ```
@@ -80,7 +78,7 @@ if (getAddressIndex(addressView)) {
 }
 ```
 
-Rather, they just return the property, or optionally throw if so configured. So, while the values they return are indeed typesafe at both compile- and run-time, they don't provide the functionality of a type guard. (See "Future work" below for more on this.)
+Rather, they just return the property. So, while the values they return are indeed typesafe at both compile- and run-time, they don't provide the functionality of a type guard. (See "Future work" below for more on this.)
 
 ## Future work
 

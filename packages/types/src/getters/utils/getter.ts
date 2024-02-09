@@ -1,14 +1,14 @@
 /**
  * Given a value of type `SourceType`, returns a (possibly nested) property of
- * that value, of type `TargetType`. If `AllowsUndefined` is `true`, returns
+ * that value, of type `TargetType`. If `Optional` is `true`, returns
  * undefined if the property or an ancestor is undefined; if `false`, throws
  * when the property or an ancestor is undefined.
  */
-type GetterFunction<SourceType, TargetType, AllowsUndefined extends boolean> = (
+type GetterFunction<SourceType, TargetType, Optional extends boolean> = (
   value: SourceType | undefined,
-) => AllowsUndefined extends true ? TargetType | undefined : TargetType;
+) => Optional extends true ? TargetType | undefined : TargetType;
 
-interface GetterMethods<SourceType, TargetType> {
+interface GetterMethods<SourceType, TargetType, Optional extends boolean = false> {
   /**
    * Returns a getter that, when given a value of type `SourceType`, returns a
    * (possibly nested) property of that value, of type `TargetType`. If the
@@ -28,10 +28,7 @@ interface GetterMethods<SourceType, TargetType> {
    * const metadata = getMetadata.orThrow('No metadata!')(valueView);
    * ```
    */
-  orThrow: (
-    /** The error message to throw if the target is undefined. */
-    errorMessage?: string,
-  ) => Getter<SourceType, TargetType, false>;
+  optional: () => Getter<SourceType, TargetType, true>;
 
   /**
    * Pipes the output of this getter to another getter or getter function.
@@ -48,12 +45,13 @@ interface GetterMethods<SourceType, TargetType> {
    * ```
    */
   pipe: <PipedTargetType = unknown>(
-    getterFunction: GetterFunction<TargetType, PipedTargetType, true>,
-  ) => Getter<SourceType, PipedTargetType>;
+    pipedGetter: Getter<TargetType, PipedTargetType, Optional>,
+  ) => Getter<SourceType, PipedTargetType, Optional>;
 }
 
 export type Getter<
   SourceType = unknown,
   TargetType = unknown,
-  AllowsUndefined extends boolean = true,
-> = GetterFunction<SourceType, TargetType, AllowsUndefined> & GetterMethods<SourceType, TargetType>;
+  Optional extends boolean = false,
+> = GetterFunction<SourceType, TargetType, Optional> &
+  GetterMethods<SourceType, TargetType, Optional>;
