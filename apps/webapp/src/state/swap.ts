@@ -8,8 +8,8 @@ import { AssetBalance } from '../fetchers/balances';
 import {
   getAddressIndex,
   getAssetId,
-  getDisplayDenomExponent,
-  getMetadata,
+  getAssetIdFromValueView,
+  getDisplayDenomExponentFromValueView,
   toBaseUnit,
 } from '@penumbra-zone/types';
 import BigNumber from 'bignumber.js';
@@ -107,9 +107,9 @@ const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => 
         value: {
           amount: toBaseUnit(
             BigNumber(amount),
-            getMetadata.pipe(getDisplayDenomExponent)(assetIn.value),
+            getDisplayDenomExponentFromValueView(assetIn.value),
           ),
-          assetId: getMetadata.pipe(getAssetId)(assetIn.value),
+          assetId: getAssetIdFromValueView(assetIn.value),
         },
         claimAddress: await getAddressByIndex(addressIndex.account),
         // TODO: Calculate this properly in subsequent PR
