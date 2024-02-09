@@ -120,48 +120,48 @@ export const scanResultWithNewSwaps: ScanBlockResult = {
 };
 
 export const metadataA = Metadata.fromJson({
-  denomUnits: [
-    { denom: 'penumbra', exponent: 6 },
-    { denom: 'mpenumbra', exponent: 3 },
-    { denom: 'upenumbra' },
-  ],
-  base: 'upenumbra',
-  display: 'penumbra',
-  penumbraAssetId: { inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=' },
+  denomUnits: [{ denom: 'mars', exponent: 6 }, { denom: 'mmars', exponent: 3 }, { denom: 'umars' }],
+  base: 'umars',
+  display: 'mars',
+  penumbraAssetId: { inner: 'cGFzc2V0MTgyODQ3MjgxODQzMTg3NDg=' },
 });
 
 export const metadataB = Metadata.fromJson({
-  denomUnits: [{ denom: 'gm', exponent: 6 }, { denom: 'mgm', exponent: 3 }, { denom: 'ugm' }],
-  base: 'ugm',
-  display: 'gm',
-  penumbraAssetId: { inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=' },
+  denomUnits: [
+    { denom: 'jupiter', exponent: 6 },
+    { denom: 'mjupiter', exponent: 3 },
+    { denom: 'ujupiter' },
+  ],
+  base: 'ujupiter',
+  display: 'jupiter',
+  penumbraAssetId: { inner: 'cGFzc2V0OTQ5MjgyODQ1OTg0NTc2' },
 });
 
 export const metadataC = Metadata.fromJson({
   denom_units: [
     {
       aliases: [],
-      denom: 'gn',
+      denom: 'pluto',
       exponent: 6,
     },
     {
       aliases: [],
-      denom: 'mgn',
+      denom: 'mpluto',
       exponent: 3,
     },
     {
       aliases: [],
-      denom: 'ugn',
+      denom: 'upluto',
       exponent: 0,
     },
   ],
   description: '',
-  base: 'ugn',
-  display: 'gn',
+  base: 'upluto',
+  display: 'pluto',
   name: '',
   symbol: '',
   penumbra_asset_id: {
-    inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=',
+    inner: 'cGFzc2V0MTIzMjEyNDEyMzEyNDIy',
     alt_bech32m: '',
     alt_base_denom: '',
   },
