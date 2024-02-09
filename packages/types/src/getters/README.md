@@ -38,7 +38,7 @@ if (typeof memoView.memoView.value.plaintext.returnAddress.addressView.value.ind
 
 This works, but you still have a bunch of boilerplate code crowding your component.
 
-Getters solve all that. Getters are tiny, composable functions that allow you to get at deeply nested, often optional properties without all the boilerplate.
+Getters solve all that. Getters are tiny, composable functions, inspired by the functional programming [lens pattern](https://www.bekk.christmas/post/2019/6/the-lens-pattern-in-typescript), that allow you to get at deeply nested, often optional properties without all the boilerplate.
 
 Let's solve the above problem with getters. First, let's create a getter that, when given a `MemoView`, returns its `AddressView`:
 
