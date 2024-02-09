@@ -9,7 +9,6 @@
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
     "noEmit": true,
     "jsx": "react-jsx",
     "declarationMap": false,
