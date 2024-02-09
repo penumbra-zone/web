@@ -7,7 +7,7 @@ export const createGetter = <SourceType, TargetType>(
 
   getter.orThrow = (value, errorMessage) => {
     const result = getterFunction(value);
-    if (!result) throw new Error(errorMessage);
+    if (typeof result === 'undefined') throw new Error(errorMessage);
     return result;
   };
 
