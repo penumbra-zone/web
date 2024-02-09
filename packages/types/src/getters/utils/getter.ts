@@ -1,20 +1,19 @@
 /**
  * Given a value of type `SourceType`, returns a (possibly nested) property of
- * that value, of type `TargetType`. Returns undefined if the property or any
- * of its ancestors are undefined.
+ * that value, of type `TargetType`. If `AllowsUndefined` is `true`, returns
+ * undefined if the property or an ancestor is undefined; if `false`, throws
+ * when the property or an ancestor is undefined.
  */
-type GetterFunction<SourceType, TargetType> = (
+type GetterFunction<SourceType, TargetType, AllowsUndefined extends boolean> = (
   value: SourceType | undefined,
-) => TargetType | undefined;
+) => AllowsUndefined extends true ? TargetType | undefined : TargetType;
 
-export type Getter<SourceType = unknown, TargetType = unknown> = GetterFunction<
-  SourceType,
-  TargetType
-> & {
+interface GetterMethods<SourceType, TargetType> {
   /**
-   * Given a value of type `SourceType`, returns a (possibly nested) property of
-   * that value, of type `TargetType`. If the property or any of its ancestors
-   * are undefined, throws an error (optionally set to `errorMessage`).
+   * Returns a getter that, when given a value of type `SourceType`, returns a
+   * (possibly nested) property of that value, of type `TargetType`. If the
+   * property or any of its ancestors are undefined, throws an error (optionally
+   * set to `errorMessage`).
    *
    * @example
    * ```ts
@@ -26,15 +25,13 @@ export type Getter<SourceType = unknown, TargetType = unknown> = GetterFunction<
    * const valueView = new ValueView();
    *
    * // Throws a `No metadata!` error due to the lack of metadata.
-   * const metadata = getMetadata.orThrow(valueView, 'No metadata!');
+   * const metadata = getMetadata.orThrow('No metadata!')(valueView);
    * ```
    */
   orThrow: (
-    value: SourceType | undefined,
-
     /** The error message to throw if the target is undefined. */
     errorMessage?: string,
-  ) => TargetType;
+  ) => Getter<SourceType, TargetType, false>;
 
   /**
    * Pipes the output of this getter to another getter or getter function.
@@ -42,15 +39,21 @@ export type Getter<SourceType = unknown, TargetType = unknown> = GetterFunction<
    * @example
    * ```ts
    * // This will throw if any step along the way returns `undefined`.
-   * const assetId1 = getMetadata.pipe(getAssetId).pipe(getInner).orThrow(valueView);
+   * const assetId1 = getMetadata.pipe(getAssetId).pipe(getInner).orThrow()(valueView);
    * // This will throw only if the asset ID specifically is missing.
-   * const assetId2 = getMetadata.pipe(getAssetId.orThrow).pipe(getInner)(valueView);
+   * const assetId2 = getMetadata.pipe(getAssetId.orThrow()).pipe(getInner)(valueView);
    * // This won't throw at all -- it will just return `undefined` if any step
    * // along the way is `undefined`.
    * const assetId3 = getMetadata.pipe(getAssetId).pipe(getInner)(valueView);
    * ```
    */
   pipe: <PipedTargetType = unknown>(
-    getterFunction: GetterFunction<TargetType, PipedTargetType>,
+    getterFunction: GetterFunction<TargetType, PipedTargetType, true>,
   ) => Getter<SourceType, PipedTargetType>;
-};
+}
+
+export type Getter<
+  SourceType = unknown,
+  TargetType = unknown,
+  AllowsUndefined extends boolean = true,
+> = GetterFunction<SourceType, TargetType, AllowsUndefined> & GetterMethods<SourceType, TargetType>;

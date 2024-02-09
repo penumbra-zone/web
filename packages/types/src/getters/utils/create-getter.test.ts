@@ -45,20 +45,20 @@ describe('createGetter()', () => {
 
   describe('getter.orThrow()', () => {
     it('throws when the whole value is undefined', () => {
-      expect(() => getFirstName.orThrow(undefined)).toThrow();
+      expect(() => getFirstName.orThrow()(undefined)).toThrow();
     });
 
     it('throws for an undefined property', () => {
-      expect(() => getLastName.orThrow(employee)).toThrow();
+      expect(() => getLastName.orThrow()(employee)).toThrow();
     });
 
     it('throws the passed-in error message, if provided', () => {
-      expect(() => getFirstName.orThrow(undefined, 'oops!')).toThrow('oops!');
+      expect(() => getFirstName.orThrow('oops!')(undefined)).toThrow('oops!');
     });
 
     it('does not throw if a value is falsey but not undefined', () => {
       const employee: Employee = { firstName: 'Alice', lastName: '' };
-      expect(() => getLastName.orThrow(employee)).not.toThrow();
+      expect(() => getLastName.orThrow()(employee)).not.toThrow();
     });
   });
 
@@ -69,15 +69,15 @@ describe('createGetter()', () => {
 
     describe('getter.pipe().orThrow()', () => {
       it('throws when any value in the property chain is undefined', () => {
-        expect(() => getAddress.pipe(getCity).orThrow({ firstName: 'Alice' })).toThrow();
-        expect(() => getAddress.pipe(getCity).orThrow(undefined)).toThrow();
-        expect(() => getAddress.pipe(getCountry).orThrow(employee)).toThrow();
+        expect(() => getAddress.pipe(getCity).orThrow()({ firstName: 'Alice' })).toThrow();
+        expect(() => getAddress.pipe(getCity).orThrow()(undefined)).toThrow();
+        expect(() => getAddress.pipe(getCountry).orThrow()(employee)).toThrow();
       });
     });
 
-    describe('getter.pipe(anotherGetter.orThrow)', () => {
-      it('throws when the return value of the getter used with `.orThrow` is undefined', () => {
-        expect(() => getAddress.pipe(getCity.orThrow)({ firstName: 'Alice' })).toThrow();
+    describe('getter.pipe(anotherGetter.orThrow())', () => {
+      it('throws when the return value of the getter used with `.orThrow()` is undefined', () => {
+        expect(() => getAddress.pipe(getCity.orThrow())({ firstName: 'Alice' })).toThrow();
       });
 
       it('does not throws when the return value of the getter _not_ used with `.orThrow` is undefined', () => {
@@ -91,7 +91,7 @@ describe('createGetter()', () => {
 
         expect(() =>
           getAddress
-            .pipe(getCity.orThrow)
+            .pipe(getCity.orThrow())
             // getFirstLetter returns `undefined` due to the empty string. But we're
             // not using `getFirstLetter.orThrow`, nor are we calling `.orThrow` on
             // the whole getter chain, so it won't throw.

@@ -59,10 +59,10 @@ If we want to ensure that the value is not `undefined`, we can add an `orThrow`:
 ```tsx
 <div>
   <span>
-    {/* Note the `.account` at the end. This is only possible because we called
-    `.orThrow()`. Otherwise, TypeScript would have warned us that the return
-    value of `getAddressIndex()` could be undefined. */}
-    {getAddressIndex.orThrow(addressView, 'address index was missing').account}
+    {/* Note the `.account` at the end with no `?`. This is only possible
+    because we called `.orThrow()`. Otherwise, TypeScript would have warned us
+    that the return value of `getAddressIndex()` could be undefined. */}
+    {getAddressIndex.orThrow('address index was missing')(addressView).account}
   </span>
 </div>
 ```
@@ -71,7 +71,7 @@ A handy byproduct of using getters, which is one of the reasons the lens pattern
 
 ## Trade-off
 
-It's worth noting that getters don't make compile-time assertions about the type after being called. That is, you can't use them inside an `if` statement and then safely access deeply nested properties inside the `if` block:
+It's worth noting that getters don't make compile-time assertions about the type _after_ being called. That is, you can't use them inside an `if` statement and then safely access deeply nested properties inside the `if` block:
 
 ```ts
 if (getAddressIndex(addressView)) {
