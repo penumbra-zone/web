@@ -1,5 +1,4 @@
 import { Button } from '@penumbra-zone/ui';
-import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import InputToken from '../shared/input-token';
 import { useLoaderData } from 'react-router-dom';
 import { useStore } from '../../state';
@@ -9,7 +8,6 @@ import { SwapLoaderResponse } from './swap-loader.tsx';
 
 export const SwapForm = () => {
   const { assetBalances } = useLoaderData() as SwapLoaderResponse;
-  const { toast } = useToast();
   const { assetIn, setAssetIn, amount, setAmount, initiateSwapTx, txInProgress } =
     useStore(swapSelector);
 
@@ -18,7 +16,7 @@ export const SwapForm = () => {
       className='flex flex-col gap-4 xl:gap-3'
       onSubmit={e => {
         e.preventDefault();
-        void initiateSwapTx(toast);
+        void initiateSwapTx();
       }}
     >
       <InputToken

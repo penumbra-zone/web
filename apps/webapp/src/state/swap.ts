@@ -1,8 +1,12 @@
 import { AllSlices, SliceCreator } from './index';
-import { toast, ToastFnProps } from '@penumbra-zone/ui/components/ui/use-toast';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { authWitnessBuild, broadcast, plan, witnessBuild } from './helpers';
-import { buildingTxToast, errorTxToast, successTxToast } from '../components/shared/toast-content';
+import { authWitnessBuild, broadcast, getTxHash, plan, witnessBuild } from './helpers';
+import {
+  broadcastingTxToast,
+  buildingTxToast,
+  errorTxToast,
+  successTxToast,
+} from '../components/shared/toast-content';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AssetBalance } from '../fetchers/balances';
 import {
@@ -24,7 +28,7 @@ export interface SwapSlice {
   setAmount: (amount: string) => void;
   assetOut: Metadata | undefined;
   setAssetOut: (metadata: Metadata) => void;
-  initiateSwapTx: (toastFn: typeof toast) => Promise<void>;
+  initiateSwapTx: () => Promise<void>;
   txInProgress: boolean;
 }
 
@@ -49,32 +53,36 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
       });
     },
     txInProgress: false,
-    initiateSwapTx: async toastFn => {
+    initiateSwapTx: async () => {
       set(state => {
         state.swap.txInProgress = true;
       });
 
-      const { update } = toastFn(buildingTxToast());
+      const swapToastId = buildingTxToast(undefined, undefined, 'Building swap transaction');
 
       try {
         // build swap
         const swapReq = await assembleSwapRequest(get().swap);
         const swapPlan = await plan(swapReq);
-        const swapTx = await authWitnessBuild(update, { transactionPlan: swapPlan });
-
-        // begin broadcast
-        await broadcast(update, { awaitDetection: true, transaction: swapTx });
+        const swapTx = await authWitnessBuild({ transactionPlan: swapPlan }, status =>
+          buildingTxToast(status, swapToastId, 'Building swap transaction'),
+        );
+        const swapTxHash = await getTxHash(swapTx);
+        await broadcast({ awaitDetection: true, transaction: swapTx }, status =>
+          broadcastingTxToast(swapTxHash, status, swapToastId),
+        );
+        successTxToast(swapTxHash, undefined, swapToastId, 'Swap transaction succeeded! 🎉');
 
         // a swap claim must be broadcast after any successful swap, to claim the output of the swap.
         const swapCommitment = getSwapCommitmentFromTx(swapTx);
-        await issueSwapClaim(toastFn, swapCommitment);
+        await issueSwapClaim(swapCommitment);
 
         // Reset form
         set(state => {
           state.swap.amount = '';
         });
       } catch (e) {
-        toastFn(errorTxToast(e));
+        errorTxToast(e, swapToastId);
         throw e;
       } finally {
         set(state => {
@@ -121,14 +129,20 @@ const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => 
 // This way it won't trigger a second, unnecessary approval popup.
 // @see https://protocol.penumbra.zone/main/zswap/swap.html#claiming-swap-outputs
 export const issueSwapClaim = async (
-  toast: (tp: ToastFnProps) => void,
   swapCommitment: StateCommitment,
+  existingToastId?: string | number,
 ) => {
+  const toastId = buildingTxToast(undefined, existingToastId, 'Building swap claim transaction');
   const swapClaimReq = new TransactionPlannerRequest({ swapClaims: [{ swapCommitment }] });
   const transactionPlan = await plan(swapClaimReq);
-  const transaction = await witnessBuild(toast, { transactionPlan });
-  const { txHash, detectionHeight } = await broadcast(toast, { transaction, awaitDetection: true });
-  toast(successTxToast(txHash, detectionHeight));
+  const transaction = await witnessBuild({ transactionPlan }, status =>
+    buildingTxToast(status, toastId, 'Building swap claim transaction'),
+  );
+  const txHash = await getTxHash(transaction);
+  const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
+    broadcastingTxToast(txHash, status, toastId),
+  );
+  successTxToast(txHash, detectionHeight, toastId, 'Swap claim transaction succeeded! 🎉');
 };
 
 export const swapSelector = (state: AllSlices) => state.swap;

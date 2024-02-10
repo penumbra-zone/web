@@ -26,7 +26,7 @@ export const PopupLayout = () => {
     <div
       className={cn(
         'relative flex flex-col min-h-full',
-        isDarkBg ? 'bg-chachoal' : 'bg-charcoal-secondary',
+        isDarkBg ? 'bg-charcoal' : 'bg-charcoal-secondary',
       )}
     >
       <div className='relative z-10'>

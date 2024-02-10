@@ -27,6 +27,19 @@ module.exports = {
         message: 'Type must be annotated at variable declaration',
       },
     ],
+    'tailwindcss/no-custom-classname': [
+      'error',
+      {
+        // All of these callees are the Tailwind defaults, except `cn`, which is
+        // our own custom helper.
+        callees: ['classnames', 'clsx', 'cn', 'ctl', 'cva', 'tv'],
+        // When adding more items to the allow list, please document the reason.
+        whitelist: [
+          // Used by Sonner
+          'toaster',
+        ],
+      },
+    ],
   },
   overrides: [
     {
@@ -40,5 +53,13 @@ module.exports = {
   ignorePatterns: ['dist/*'],
   settings: {
     react: { version: 'detect' },
+    tailwindcss: {
+      // Ensures that ESLint knows about our Tailwind config, such as color
+      // names, etc. Without this, ESLint integrations (such as with the VSCode
+      // extension) break.
+      //
+      // @see https://github.com/microsoft/vscode-eslint/issues/1706#issuecomment-1916389417
+      config: require.resolve('@penumbra-zone/tailwind-config'),
+    },
   },
 };

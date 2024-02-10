@@ -3,12 +3,10 @@ import { useLoaderData, useRevalidator } from 'react-router-dom';
 import { SwapLoaderResponse } from './swap-loader.tsx';
 import { AssetIcon } from '../shared/asset-icon.tsx';
 import { getSwapRecordCommitment, uint8ArrayToBase64 } from '@penumbra-zone/types';
-import { useToast } from '@penumbra-zone/ui/components/ui/use-toast.ts';
 import { useStore } from '../../state';
 import { unclaimedSwapsSelector } from '../../state/unclaimed-swaps.ts';
 
 export const UnclaimedSwaps = () => {
-  const { toast } = useToast();
   const { revalidate } = useRevalidator();
   const { claimSwap, isInProgress } = useStore(unclaimedSwapsSelector);
 
@@ -40,7 +38,7 @@ export const UnclaimedSwaps = () => {
             </div>
             <Button
               className='w-20'
-              onClick={() => void claimSwap(id, swap, toast, revalidate)}
+              onClick={() => void claimSwap(id, swap, revalidate)}
               disabled={isInProgress(id)}
             >
               {isInProgress(id) ? 'Claiming' : 'Claim'}

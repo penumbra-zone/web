@@ -1,6 +1,5 @@
 import { AllSlices, SliceCreator } from './index';
 import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { toast } from '@penumbra-zone/ui/components/ui/use-toast.ts';
 import { buildingTxToast, errorTxToast } from '../components/shared/toast-content.tsx';
 import { getSwapRecordCommitment } from '@penumbra-zone/types';
 import { issueSwapClaim } from './swap.ts';
@@ -14,7 +13,6 @@ export interface UnclaimedSwapsSlice {
   claimSwap: (
     id: SwapCommitmentId,
     swap: SwapRecord,
-    toastFn: typeof toast,
     reloadData: () => void, // Used to refresh page state after action
   ) => Promise<void>;
 }
@@ -38,20 +36,19 @@ export const createUnclaimedSwapsSlice = (): SliceCreator<UnclaimedSwapsSlice> =
         });
       }
     },
-    claimSwap: async (id, swap, toastFn, reloadData) => {
-      const { dismiss } = toastFn(buildingTxToast());
+    claimSwap: async (id, swap, reloadData) => {
+      const toastId = buildingTxToast(undefined, undefined, 'Building swap claim transaction');
 
       const setStatus = get().unclaimedSwaps.setProgressStatus;
       setStatus('add', id);
 
       try {
         const commitment = getSwapRecordCommitment(swap);
-        await issueSwapClaim(toastFn, commitment);
+        await issueSwapClaim(commitment, toastId);
       } catch (e) {
-        toastFn(errorTxToast(e));
+        errorTxToast(e, toastId);
         throw e;
       } finally {
-        dismiss();
         setStatus('remove', id);
         reloadData();
       }
