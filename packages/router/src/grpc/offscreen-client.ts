@@ -12,26 +12,18 @@ import {
 
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
-interface ContextsRequest {
-  contextTypes: string[];
-  documentUrls: string[];
-}
-
 let active = 0;
 
 const activateOffscreen = async () => {
-  const getContexts = chrome.runtime.getContexts as (
-    request: ContextsRequest,
-  ) => Promise<unknown[]>;
-
-  const offscreenExists = await getContexts({
-    contextTypes: ['OFFSCREEN_DOCUMENT'],
-    documentUrls: [OFFSCREEN_DOCUMENT_PATH],
-  }).then(contexts => contexts.length > 0);
+  const offscreenExists = await chrome.runtime
+    .getContexts({
+      contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
+    })
+    .then(contexts => contexts.length > 0);
 
   if (!active || !offscreenExists) {
     await chrome.offscreen.createDocument({
-      url: OFFSCREEN_DOCUMENT_PATH,
+      url: chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH),
       reasons: [chrome.offscreen.Reason.WORKERS],
       justification: 'Manages Penumbra transaction WASM workers',
     });
