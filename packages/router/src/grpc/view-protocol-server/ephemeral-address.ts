@@ -1,7 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-import { getEphemeralByIndex } from '@penumbra-zone/wasm-ts';
+import { getEphemeralByIndex } from '@penumbra-zone/wasm';
 
 export const ephemeralAddress: Impl['ephemeralAddress'] = async (req, ctx) => {
   const services = ctx.values.get(servicesCtx);

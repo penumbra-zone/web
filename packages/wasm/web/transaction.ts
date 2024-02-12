@@ -1,5 +1,5 @@
 import { IdbConstants } from '@penumbra-zone/types';
-import { transaction_info } from '@penumbra-zone/wasm-bundler';
+import { transaction_info } from '../wasm';
 import {
   Transaction,
   TransactionPerspective,

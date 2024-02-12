@@ -4,30 +4,28 @@
   "globalEnv": ["NODE_ENV"],
   "pipeline": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**"],
-      "cache": false
+      "dependsOn": ["^build", "@penumbra-zone/wasm#build"]
     },
-    "chrome-extension#build": {
-      "dependsOn": ["^compile-wasm"],
-      "outputs": [".next/**", "!.next/cache/**"],
-      "cache": false
+    "@penumbra-zone/wasm#build": {
+      "dependsOn": ["^build", "compile"],
+      "inputs": ["web/**"]
     },
-    "compile-wasm": {
-      "dependsOn": ["^compile-wasm"],
-      "outputs": []
+    "@penumbra-zone/wasm#compile": {
+      "dependsOn": ["^compile"],
+      "inputs": ["crate/**"],
+      "outputs": ["wasm/**"]
     },
     "host": {
       "dependsOn": ["^build"],
-      "outputs": [],
-      "cache": false
+      "cache": false,
+      "persistent": true
     },
-    "lint": {},
+    "lint": { "dependsOn": ["@penumbra-zone/wasm#compile"] },
     "dev": {
       "cache": false,
       "persistent": true
     },
-    "test": {},
+    "test": { "dependsOn": ["@penumbra-zone/wasm#compile"] },
     "clean": {
       "cache": false
     }

@@ -2,5 +2,4 @@
 .pnpm-store/
 pnpm-lock.yaml
 packages/wasm/crate
-packages/wasm-bundler
-packages/wasm-nodejs
+packages/wasm/wasm

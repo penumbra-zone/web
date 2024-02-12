@@ -4,7 +4,7 @@ import {
   get_ephemeral_address,
   get_full_viewing_key,
   get_wallet_id,
-} from '@penumbra-zone/wasm-bundler';
+} from '../wasm';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { JsonValue } from '@bufbuild/protobuf';
 
