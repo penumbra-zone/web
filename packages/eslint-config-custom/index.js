@@ -27,6 +27,16 @@ module.exports = {
         message: 'Type must be annotated at variable declaration',
       },
     ],
+    'tailwindcss/no-custom-classname': [
+      'error',
+      {
+        // When adding more items to the allow list, please document the reason.
+        whitelist: [
+          // Used by Sonner
+          'toaster',
+        ],
+      },
+    ],
   },
   overrides: [
     {
