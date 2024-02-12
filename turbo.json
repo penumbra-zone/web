@@ -20,7 +20,7 @@
       "cache": false,
       "persistent": true
     },
-    "lint": {},
+    "lint": { "dependsOn": ["build"] },
     "dev": {
       "cache": false,
       "persistent": true
