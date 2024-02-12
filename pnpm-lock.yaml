@@ -29,6 +29,9 @@ importers:
       '@connectrpc/connect-web':
         specifier: ^1.3.0
         version: 1.3.0(@bufbuild/protobuf@1.7.2)(@connectrpc/connect@1.3.0)
+      '@penumbra-zone/tailwind-config':
+        specifier: workspace:*
+        version: link:packages/tailwind-config
       '@penumbra-zone/wasm-bundler':
         specifier: 0.65.0
         version: 0.65.0
@@ -438,6 +441,15 @@ importers:
         specifier: ^1.2.2
         version: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
 
+  packages/tailwind-config:
+    dependencies:
+      tailwindcss:
+        specifier: ^3.4.1
+        version: 3.4.1
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.4.1)
+
   packages/transport:
     devDependencies:
       '@types/chrome':
@@ -539,9 +551,6 @@ importers:
       tailwind-merge:
         specifier: ^2.2.1
         version: 2.2.1
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.1)
       tinycolor2:
         specifier: ^1.6.0
         version: 1.6.0
@@ -587,7 +596,7 @@ importers:
         version: 1.4.6
       '@vitest/browser':
         specifier: ^1.2.2
-        version: 1.2.2(playwright@1.41.2)(vitest@1.2.2)
+        version: 1.2.2(vitest@1.2.2)
       autoprefixer:
         specifier: ^10.4.17
         version: 10.4.17(postcss@8.4.35)
@@ -5993,6 +6002,27 @@ packages:
       playwright: 1.41.2
       sirv: 2.0.4
       vitest: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
+    dev: true
+
+  /@vitest/browser@1.2.2(vitest@1.2.2):
+    resolution: {integrity: sha512-N8myxNVLbS9AbZ7B2cK33HTGYVzUTDArbMh3hLojOxaj7s7ZrBYYmzs0Q5J2wyDrOgs51p6OUrrzAIb1Z+Ck3A==}
+    peerDependencies:
+      playwright: '*'
+      safaridriver: '*'
+      vitest: ^1.0.0
+      webdriverio: '*'
+    peerDependenciesMeta:
+      playwright:
+        optional: true
+      safaridriver:
+        optional: true
+      webdriverio:
+        optional: true
+    dependencies:
+      '@vitest/utils': 1.2.2
+      magic-string: 0.30.7
+      sirv: 2.0.4
+      vitest: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
 
   /@vitest/expect@1.2.2:
     resolution: {integrity: sha512-3jpcdPAD7LwHUUiT2pZTj2U82I2Tcgg2oVPvKxhn6mDI2On6tfvPQTjAI4628GUGDZrCm4Zna9iQHm5cEexOAg==}
@@ -9414,6 +9444,7 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
+    dev: true
     optional: true
 
   /fsevents@2.3.3:
@@ -12342,6 +12373,7 @@ packages:
     resolution: {integrity: sha512-VaTvwCA4Y8kxEe+kfm2+uUUw5Lubf38RxF7FpBxLPmGe5sdNkSg5e3ChEigaGrX7qdqT3pt2m/98LiyvU2x6CA==}
     engines: {node: '>=16'}
     hasBin: true
+    dev: true
 
   /playwright@1.41.2:
     resolution: {integrity: sha512-v0bOa6H2GJChDL8pAeLa/LZC4feoAMbSQm1/jF/ySsWWoaNItvrMP7GEkvEEFyCTUYKMxjQKaTSg5up7nR6/8A==}
@@ -12351,6 +12383,7 @@ packages:
       playwright-core: 1.41.2
     optionalDependencies:
       fsevents: 2.3.2
+    dev: true
 
   /polished@4.3.1:
     resolution: {integrity: sha512-OBatVyC/N7SCW/FaDHrSd+vn0o5cS855TOmYi4OkdWUMSJCET/xip//ch8xGUvtr3i44X9LVyWwQlRMTN3pwSA==}
@@ -15242,7 +15275,7 @@ packages:
         optional: true
     dependencies:
       '@types/node': 20.11.16
-      '@vitest/browser': 1.2.2(playwright@1.41.2)(vitest@1.2.2)
+      '@vitest/browser': 1.2.2(vitest@1.2.2)
       '@vitest/expect': 1.2.2
       '@vitest/runner': 1.2.2
       '@vitest/snapshot': 1.2.2

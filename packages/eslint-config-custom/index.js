@@ -53,5 +53,8 @@ module.exports = {
   ignorePatterns: ['dist/*'],
   settings: {
     react: { version: 'detect' },
+    tailwindcss: {
+      config: require.resolve('@penumbra-zone/tailwind-config'),
+    },
   },
 };
