@@ -20,12 +20,12 @@
       "cache": false,
       "persistent": true
     },
-    "lint": { "dependsOn": ["build"] },
+    "lint": { "dependsOn": ["@penumbra-zone/wasm#compile"] },
     "dev": {
       "cache": false,
       "persistent": true
     },
-    "test": { "dependsOn": ["build"] },
+    "test": { "dependsOn": ["@penumbra-zone/wasm#compile"] },
     "clean": {
       "cache": false
     }
