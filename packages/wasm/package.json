@@ -4,7 +4,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "compile-wasm": "tsx compile-crate.ts",
+    "compile-wasm": "tsx compile-wasm.ts",
     "lint": "eslint \"**/*.ts*\" --ignore-pattern \"crate/**\"",
     "test": "vitest run"
   },
