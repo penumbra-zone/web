@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
   generateSpendKey,
   getAddressByIndex,
@@ -6,9 +6,6 @@ import {
   getFullViewingKey,
   getWalletId,
 } from './keys';
-
-// Replace the wasm-pack import with the nodejs version so tests can run
-vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
 
 describe('keys', () => {
   const seedPhrase =

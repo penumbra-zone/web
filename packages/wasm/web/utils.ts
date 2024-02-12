@@ -1,4 +1,4 @@
-import { load_proving_key as wasmLoadProvingKey } from '@penumbra-zone/wasm-bundler';
+import { load_proving_key as wasmLoadProvingKey } from '../crate/pkg';
 import { provingKeys } from '@penumbra-zone/types/src/proving-keys';
 
 export const loadLocalBinary = async (filename: string) => {

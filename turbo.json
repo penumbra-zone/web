@@ -4,23 +4,21 @@
   "globalEnv": ["NODE_ENV"],
   "pipeline": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**"],
-      "cache": false
+      "dependsOn": ["^build", "wasm#build"]
     },
-    "chrome-extension#build": {
-      "dependsOn": ["^compile-wasm"],
-      "outputs": [".next/**", "!.next/cache/**"],
-      "cache": false
+    "wasm#build": {
+      "dependsOn": ["^build", "compile"],
+      "inputs": ["web/**"]
     },
-    "compile-wasm": {
-      "dependsOn": ["^compile-wasm"],
-      "outputs": []
+    "wasm#compile": {
+      "dependsOn": ["^compile"],
+      "inputs": ["crate/Cargo.lock", "crate/Cargo.toml", "crate/target/**", "crate/src/**"],
+      "outputs": ["crate/pkg/**"]
     },
     "host": {
       "dependsOn": ["^build"],
-      "outputs": [],
-      "cache": false
+      "cache": false,
+      "persistent": true
     },
     "lint": {},
     "dev": {

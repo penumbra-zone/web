@@ -10,8 +10,6 @@ import { servicesCtx } from '../../ctx';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { ephemeralAddress } from './ephemeral-address';
 
-vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
-
 describe('EphemeralAddress request handler', () => {
   let mockServices: ServicesInterface;
   let mockCtx: HandlerContext;

@@ -8,8 +8,6 @@ import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/k
 import { indexByAddress } from './index-by-address';
 import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm-ts';
 
-vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
-
 describe('IndexByAddress request handler', () => {
   let mockServices: ServicesInterface;
   let mockCtx: HandlerContext;
