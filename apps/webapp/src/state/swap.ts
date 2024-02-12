@@ -5,7 +5,13 @@ import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_
 import { getTransactionHash, planWitnessBuildBroadcast } from './helpers';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AssetBalance } from '../fetchers/balances';
-import { getDisplayDenomExponent, toBaseUnit } from '@penumbra-zone/types';
+import {
+  getAddressIndex,
+  getAssetId,
+  getAssetIdFromValueView,
+  getDisplayDenomExponentFromValueView,
+  toBaseUnit,
+} from '@penumbra-zone/types';
 import BigNumber from 'bignumber.js';
 import { getAddressByIndex } from '../fetchers/address';
 import { Swap } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
@@ -90,26 +96,22 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
 };
 
 const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
-  if (assetIn?.value.valueView.case !== 'knownAssetId') throw new Error('unknown denom selected');
-  if (!assetIn.value.valueView.value.metadata?.penumbraAssetId)
-    throw new Error('missing metadata for assetIn');
-  if (assetIn.address.addressView.case !== 'decoded')
-    throw new Error('address in view is not decoded');
-  if (!assetIn.address.addressView.value.index) throw new Error('No index for assetIn address');
-  if (assetOut?.penumbraAssetId === undefined) throw new Error('assetOut has no asset id');
+  if (!assetIn) throw new Error('`assetIn` was undefined');
+
+  const addressIndex = getAddressIndex(assetIn.address);
 
   return new TransactionPlannerRequest({
     swaps: [
       {
-        targetAsset: assetOut.penumbraAssetId,
+        targetAsset: getAssetId(assetOut),
         value: {
           amount: toBaseUnit(
             BigNumber(amount),
-            getDisplayDenomExponent(assetIn.value.valueView.value.metadata),
+            getDisplayDenomExponentFromValueView(assetIn.value),
           ),
-          assetId: assetIn.value.valueView.value.metadata.penumbraAssetId,
+          assetId: getAssetIdFromValueView(assetIn.value),
         },
-        claimAddress: await getAddressByIndex(assetIn.address.addressView.value.index.account),
+        claimAddress: await getAddressByIndex(addressIndex.account),
         // TODO: Calculate this properly in subsequent PR
         //       Asset Id should almost certainly be upenumbra,
         //       may need to indicate native denom in registry
@@ -121,7 +123,7 @@ const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => 
         },
       },
     ],
-    source: assetIn.address.addressView.value.index,
+    source: getAddressIndex(assetIn.address),
   });
 };
 

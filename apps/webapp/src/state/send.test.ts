@@ -33,8 +33,8 @@ describe('Send Slice', () => {
             hi: 0n,
           }),
           metadata: new Metadata({
-            display: 'test_usd',
-            denomUnits: [{ exponent: 18 }],
+            display: 'xyz',
+            denomUnits: [{ denom: 'xyz', exponent: 6 }],
             penumbraAssetId: { inner: stringToUint8Array('passet1239049023') },
           }),
         },

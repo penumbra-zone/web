@@ -1,4 +1,7 @@
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { createGetter } from './utils/create-getter';
+
+export const getAssetId = createGetter((metadata?: Metadata) => metadata?.penumbraAssetId);
 
 /**
  * Returns the exponent for a given asset type's display denom unit, given that
@@ -13,5 +16,7 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
  * example, think of US dollars. The dollar is the display unit; the cent is the
  * base unit; the display exponent is 2 (10 to the 2nd).)
  */
-export const getDisplayDenomExponent = (denomMetadata: Metadata): number | undefined =>
-  denomMetadata.denomUnits.find(denomUnit => denomUnit.denom === denomMetadata.display)?.exponent;
+export const getDisplayDenomExponent = createGetter(
+  (metadata?: Metadata) =>
+    metadata?.denomUnits.find(denomUnit => denomUnit.denom === metadata.display)?.exponent,
+);
