@@ -6,7 +6,7 @@
   "scripts": {
     "compile": "wasm-pack build --no-pack ./crate --release --target bundler --out-name index --out-dir ../wasm",
     "build": "tsc",
-    "lint": "eslint \"**/*.ts*\"",
+    "lint": "eslint \"web/*.ts*\"",
     "test": "vitest run"
   },
   "dependencies": {
