@@ -7,7 +7,7 @@ export const createGetter = <SourceType, TargetType, Optional extends boolean = 
 ): Getter<SourceType, TargetType, Optional> => {
   const getter: Getter<SourceType, TargetType, Optional> = value => {
     const result = getterFunction(value);
-    if (typeof result === 'undefined' && !optional) {
+    if (result === undefined && !optional) {
       const errorMessage = `Failed to extract from ${JSON.stringify(value)}`;
       throw new GetterMissingValueError(errorMessage);
     }
@@ -22,8 +22,7 @@ export const createGetter = <SourceType, TargetType, Optional extends boolean = 
   ) => {
     return createGetter<SourceType, PipedTargetType, Optional>(value => {
       try {
-        const result = next(getterFunction(value));
-        return result;
+        return next(getterFunction(value));
       } catch (e) {
         if (!optional || !(e instanceof GetterMissingValueError)) throw e;
         else return undefined;
