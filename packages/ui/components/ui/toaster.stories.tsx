@@ -11,7 +11,10 @@ const meta: Meta<typeof Toaster> = {
   decorators: [
     Story => (
       <>
-        <Button className='w-[200px]' onClick={() => toast('Hear, hear!')}>
+        <Button
+          className='w-[200px]'
+          onClick={() => toast('Hear, hear!', { closeButton: true, duration: Infinity })}
+        >
           Open a toast
         </Button>
 
