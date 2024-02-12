@@ -8,6 +8,15 @@
       "outputs": [".next/**", "!.next/cache/**"],
       "cache": false
     },
+    "chrome-extension#build": {
+      "dependsOn": ["^compile-wasm"],
+      "outputs": [".next/**", "!.next/cache/**"],
+      "cache": false
+    },
+    "compile-wasm": {
+      "dependsOn": ["^compile-wasm"],
+      "outputs": []
+    },
     "host": {
       "dependsOn": ["^build"],
       "outputs": [],

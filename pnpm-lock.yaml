@@ -34,8 +34,8 @@ importers:
         specifier: workspace:*
         version: link:packages/types
       '@penumbra-zone/wasm-nodejs':
-        specifier: ./packages/wasm/crate/dist/nodejs
-        version: link:packages/wasm/crate/dist/nodejs
+        specifier: workspace:*
+        version: link:packages/wasm-nodejs
       '@turbo/gen':
         specifier: ^1.12.3
         version: 1.12.3(@types/node@20.11.16)(typescript@5.3.3)
@@ -613,11 +613,11 @@ importers:
   packages/wasm:
     dependencies:
       '@penumbra-zone/wasm-bundler':
-        specifier: ./crate/dist/bundler
-        version: link:crate/dist/bundler
+        specifier: workspace:*
+        version: link:../wasm-bundler
       '@penumbra-zone/wasm-nodejs':
-        specifier: ./crate/dist/nodejs
-        version: link:crate/dist/nodejs
+        specifier: workspace:*
+        version: link:../wasm-nodejs
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -637,6 +637,10 @@ importers:
       vitest:
         specifier: ^1.2.2
         version: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
+
+  packages/wasm-bundler: {}
+
+  packages/wasm-nodejs: {}
 
 packages:
 

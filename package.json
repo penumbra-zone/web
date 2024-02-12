@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "packageManager": "pnpm@8.6.11",
   "scripts": {
-    "packs": "cd packages/publish && npm run compile-wasm",
     "build": "turbo run build",
     "dev": "turbo run dev  --concurrency 20",
     "lint": "turbo run lint -- --max-warnings=0",
@@ -12,7 +11,8 @@
     "clean": "turbo clean",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
-    "all-check": "pnpm install && pnpm format-check && pnpm lint && pnpm test && pnpm build"
+    "all-check": "pnpm install && pnpm format-check && pnpm lint && pnpm test && pnpm build",
+    "compile-wasm": "turbo run compile-wasm"
   },
   "dependencies": {
     "@buf/cosmos_ibc.bufbuild_es": "1.7.2-20240123184419-30c7be3837b0.1",
@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm-nodejs": "./packages/wasm/crate/dist/nodejs",
+    "@penumbra-zone/wasm-nodejs": "workspace:*",
     "@turbo/gen": "^1.12.3",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
