@@ -1,7 +1,7 @@
 import { LoaderFunction, Outlet } from 'react-router-dom';
 import { HeadTag } from './metadata/head-tag.tsx';
 import { Header } from './header/header.tsx';
-import { Toaster } from '@penumbra-zone/ui/components/ui/toaster.tsx';
+import { Toaster } from '@penumbra-zone/ui';
 import '@penumbra-zone/ui/styles/globals.css';
 import { isExtensionInstalled } from '../fetchers/is-connected.ts';
 import { getChainId } from '../fetchers/chain-id.ts';
