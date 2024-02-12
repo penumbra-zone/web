@@ -57,6 +57,8 @@ module.exports = {
       // Ensures that ESLint knows about our Tailwind config, such as color
       // names, etc. Without this, ESLint integrations (such as with the VSCode
       // extension) break.
+      //
+      // @see https://github.com/microsoft/vscode-eslint/issues/1706#issuecomment-1916389417
       config: require.resolve('@penumbra-zone/tailwind-config'),
     },
   },
