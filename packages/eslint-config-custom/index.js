@@ -54,6 +54,9 @@ module.exports = {
   settings: {
     react: { version: 'detect' },
     tailwindcss: {
+      // Ensures that ESLint knows about our Tailwind config, such as color
+      // names, etc. Without this, ESLint integrations (such as with the VSCode
+      // extension) break.
       config: require.resolve('@penumbra-zone/tailwind-config'),
     },
   },
