@@ -1,4 +1,4 @@
-import { WasmPlanner } from '../crate/pkg';
+import { WasmPlanner } from '../wasm';
 import { IdbConstants } from '@penumbra-zone/types';
 import {
   Address,

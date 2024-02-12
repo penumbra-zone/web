@@ -1,4 +1,4 @@
-import { ViewServer as WasmViewServer } from '../crate/pkg';
+import { ViewServer as WasmViewServer } from '../wasm';
 import {
   IdbConstants,
   ScanBlockResult,

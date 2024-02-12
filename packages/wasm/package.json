@@ -1,10 +1,10 @@
 {
-  "name": "wasm",
+  "name": "@penumbra-zone/wasm",
   "version": "1.0.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "compile": "wasm-pack build ./crate --release --target bundler --out-name index",
+    "compile": "wasm-pack build --no-pack ./crate --release --target bundler --out-name index --out-dir ../wasm",
     "build": "tsc",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
@@ -14,9 +14,11 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "wasm-pack": "^0.12.1",
     "fake-indexeddb": "^5.0.2",
     "tsx": "^4.7.0",
-    "vitest": "^1.2.2"
+    "vite-plugin-top-level-await": "^1.4.1",
+    "vite-plugin-wasm": "^3.3.0",
+    "vitest": "^1.2.2",
+    "wasm-pack": "^0.12.1"
   }
 }

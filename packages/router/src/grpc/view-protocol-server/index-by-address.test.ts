@@ -6,7 +6,7 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 import { servicesCtx } from '../../ctx';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { indexByAddress } from './index-by-address';
-import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm-ts';
+import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm';
 
 describe('IndexByAddress request handler', () => {
   let mockServices: ServicesInterface;

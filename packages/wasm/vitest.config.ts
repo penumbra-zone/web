@@ -4,7 +4,4 @@ import topLevelAwait from 'vite-plugin-top-level-await';
 
 export default defineConfig({
   plugins: [wasm(), topLevelAwait()],
-  test: {
-    setupFiles: ['./src/utils/tests-setup.js'],
-  },
 });

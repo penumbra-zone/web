@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto'; // Instanitating ViewServer requires opening up IndexedDb connection
 import { describe, expect, it } from 'vitest';
 import { generateSpendKey, getFullViewingKey } from './keys';
-import { ViewServer } from '../crate/pkg';
+import { ViewServer } from '../wasm';
 import { IDB_TABLES, IdbConstants } from '@penumbra-zone/types';
 
 describe('wasmViewServer', () => {

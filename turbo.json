@@ -4,16 +4,16 @@
   "globalEnv": ["NODE_ENV"],
   "pipeline": {
     "build": {
-      "dependsOn": ["^build", "wasm#build"]
+      "dependsOn": ["^build", "@penumbra-zone/wasm#build"]
     },
-    "wasm#build": {
+    "@penumbra-zone/wasm#build": {
       "dependsOn": ["^build", "compile"],
       "inputs": ["web/**"]
     },
-    "wasm#compile": {
+    "@penumbra-zone/wasm#compile": {
       "dependsOn": ["^compile"],
-      "inputs": ["crate/Cargo.lock", "crate/Cargo.toml", "crate/target/**", "crate/src/**"],
-      "outputs": ["crate/pkg/**"]
+      "inputs": ["crate/**"],
+      "outputs": ["wasm/**"]
     },
     "host": {
       "dependsOn": ["^build"],

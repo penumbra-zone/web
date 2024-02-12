@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "run-browser-tests": "vitest run --config browser.config.ts",
-    "test": "vitest run && npm run run-browser-tests"
+    "test:browser": "vitest run --config browser.config.ts",
+    "test": "vitest run && npm run test:browser"
   },
   "dependencies": {
     "@penumbra-zone/constants": "workspace:*",
@@ -17,6 +17,7 @@
   "devDependencies": {
     "@types/chrome": "0.0.260",
     "@vitest/browser": "^1.2.2",
+    "@vitest/utils": "^1.2.2",
     "vitest": "^1.2.2"
   }
 }

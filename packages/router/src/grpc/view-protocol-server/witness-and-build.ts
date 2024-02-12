@@ -3,7 +3,7 @@ import { servicesCtx } from '../../ctx';
 
 import { offscreenClient } from '../offscreen-client';
 
-import { buildParallel, getWitness } from '@penumbra-zone/wasm-ts';
+import { buildParallel, getWitness } from '@penumbra-zone/wasm';
 
 import { ConnectError, Code } from '@connectrpc/connect';
 import { AuthorizationData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';

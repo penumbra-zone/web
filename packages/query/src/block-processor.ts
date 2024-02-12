@@ -8,7 +8,7 @@ import {
   IndexedDbInterface,
   ViewServerInterface,
 } from '@penumbra-zone/types';
-import { computePositionId, decodeSctRoot, transactionInfo } from '@penumbra-zone/wasm-ts';
+import { computePositionId, decodeSctRoot, transactionInfo } from '@penumbra-zone/wasm';
 
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
