@@ -18,8 +18,4 @@ TARGETS.forEach(target => {
   const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8')) as { name: string };
   packageJson.name = `@penumbra-zone/wasm-${target}`;
   writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2), 'utf-8');
-
-  // Remove the .gitignore file so it gets checked-in
-  const gitignorePath = path.join(process.cwd(), `../wasm-${target}/.gitignore`);
-  unlinkSync(gitignorePath);
 });
