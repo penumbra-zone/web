@@ -4,18 +4,20 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "lint": "eslint \"**/*.ts*\"",
+    "build": "tsx compile-crate.ts",
+    "lint": "eslint \"**/*.ts*\" --ignore-pattern \"crate/**\"",
     "test": "vitest run"
   },
-  "exports": {
-    "@penumbra-zone/wasm-bundler": "./../../../dist/bundler"
-  },
   "dependencies": {
+    "@penumbra-zone/wasm-bundler": "./crate/dist/bundler",
+    "@penumbra-zone/wasm-nodejs": "./crate/dist/nodejs",
     "bech32": "^2.0.0",
+    "wasm-pack": "^0.12.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "fake-indexeddb": "^5.0.2",
+    "tsx": "^4.7.0",
     "vitest": "^1.2.2"
   }
 }

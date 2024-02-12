@@ -29,16 +29,13 @@ importers:
       '@connectrpc/connect-web':
         specifier: ^1.3.0
         version: 1.3.0(@bufbuild/protobuf@1.7.2)(@connectrpc/connect@1.3.0)
-      '@penumbra-zone/wasm-bundler':
-        specifier: 0.65.0
-        version: 0.65.0
     devDependencies:
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:packages/types
       '@penumbra-zone/wasm-nodejs':
-        specifier: 0.65.0
-        version: 0.65.0
+        specifier: ./packages/wasm/crate/dist/nodejs
+        version: link:packages/wasm/crate/dist/nodejs
       '@turbo/gen':
         specifier: ^1.12.3
         version: 1.12.3(@types/node@20.11.16)(typescript@5.3.3)
@@ -339,25 +336,6 @@ importers:
         specifier: ^0.3.22
         version: 0.3.22(@typescript-eslint/eslint-plugin@6.21.0)(eslint@8.56.0)(typescript@5.3.3)
 
-  packages/publish:
-    dependencies:
-      wasm-pack:
-        specifier: ^0.12.1
-        version: 0.12.1
-    devDependencies:
-      '@types/node':
-        specifier: ^20.11.6
-        version: 20.11.16
-      prettier:
-        specifier: ^3.2.4
-        version: 3.2.5
-      tsx:
-        specifier: ^4.7.0
-        version: 4.7.0
-      typescript:
-        specifier: ^5.3.3
-        version: 5.3.3
-
   packages/query:
     dependencies:
       '@penumbra-zone/crypto-web':
@@ -634,9 +612,18 @@ importers:
 
   packages/wasm:
     dependencies:
+      '@penumbra-zone/wasm-bundler':
+        specifier: ./crate/dist/bundler
+        version: link:crate/dist/bundler
+      '@penumbra-zone/wasm-nodejs':
+        specifier: ./crate/dist/nodejs
+        version: link:crate/dist/nodejs
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
+      wasm-pack:
+        specifier: ^0.12.1
+        version: 0.12.1
       zod:
         specifier: ^3.22.4
         version: 3.22.4
@@ -644,6 +631,9 @@ importers:
       fake-indexeddb:
         specifier: ^5.0.2
         version: 5.0.2
+      tsx:
+        specifier: ^4.7.0
+        version: 4.7.0
       vitest:
         specifier: ^1.2.2
         version: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
@@ -3213,14 +3203,6 @@ packages:
   /@opentelemetry/semantic-conventions@1.3.1:
     resolution: {integrity: sha512-wU5J8rUoo32oSef/rFpOT1HIjLjAv3qIDHkw1QIhODV3OpAVHi5oVzlouozg9obUmZKtbZ0qUe/m7FP0y0yBzA==}
     engines: {node: '>=8.12.0'}
-    dev: true
-
-  /@penumbra-zone/wasm-bundler@0.65.0:
-    resolution: {integrity: sha512-ozm9Xiy3RCXH8/nakwnRMXEzUv+WKU6et9BT/PU73vCkDsBCKmKVQ9vZ9O9ApAKZh6r9aKAjnN0EvetO2FqA8g==}
-    dev: false
-
-  /@penumbra-zone/wasm-nodejs@0.65.0:
-    resolution: {integrity: sha512-eA+tyCbkChofJLP7fNlYBGJIwq/N2pCjZBmof3tP7L2Izg/acL5KlZHNjEWbzt8FCt+U+VWTmNSzr9g5eyzv1w==}
     dev: true
 
   /@pkgjs/parseargs@0.11.0:
