@@ -30,6 +30,9 @@ module.exports = {
     'tailwindcss/no-custom-classname': [
       'error',
       {
+        // All of these callees are the Tailwind defaults, except `cn`, which is
+        // our own custom helper.
+        callees: ['classnames', 'clsx', 'cn', 'ctl', 'cva', 'tv'],
         // When adding more items to the allow list, please document the reason.
         whitelist: [
           // Used by Sonner
