@@ -1,0 +1,5 @@
+{ 
+    "rust-analyzer.linkedProjects": [
+        "packages/wasm/crate/Cargo.toml"
+    ]  
+}
