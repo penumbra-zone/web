@@ -2,11 +2,7 @@ import { Chain, getDisplayDenomExponent, toBaseUnit } from '@penumbra-zone/types
 import { AllSlices, SliceCreator } from '.';
 import { toast } from 'sonner';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import {
-  errorSonnerTxToast,
-  loadingTxSonnerToast,
-  successSonnerTxToast,
-} from '../components/shared/toast-content';
+import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
 import BigNumber from 'bignumber.js';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
@@ -60,20 +56,20 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
         state.send.txInProgress = true;
       });
 
-      const inProgressToastId = toast(...loadingTxSonnerToast());
+      const inProgressToastId = toast(...loadingTxToast());
 
       try {
         const plannerReq = await getPlanRequest(get().ibc);
         const transaction = await planWitnessBuildBroadcast(plannerReq);
         const txHash = await getTransactionHash(transaction);
-        toast.success(...successSonnerTxToast(txHash));
+        toast.success(...successTxToast(txHash));
 
         // Reset form
         set(state => {
           state.send.amount = '';
         });
       } catch (e) {
-        toast.error(...errorSonnerTxToast(e));
+        toast.error(...errorTxToast(e));
         throw e;
       } finally {
         set(state => {

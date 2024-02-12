@@ -11,11 +11,7 @@ import {
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { toast } from 'sonner';
 import BigNumber from 'bignumber.js';
-import {
-  errorSonnerTxToast,
-  loadingTxSonnerToast,
-  successSonnerTxToast,
-} from '../components/shared/toast-content';
+import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
 import { AssetBalance } from '../fetchers/balances';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { getTransactionHash, getTransactionPlan, planWitnessBuildBroadcast } from './helpers';
@@ -100,20 +96,20 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.txInProgress = true;
       });
 
-      const inProgressToastId = toast(...loadingTxSonnerToast());
+      const inProgressToastId = toast(...loadingTxToast());
 
       try {
         const req = assembleRequest(get().send);
         const transaction = await planWitnessBuildBroadcast(req);
         const txHash = await getTransactionHash(transaction);
-        toast.success(...successSonnerTxToast(txHash));
+        toast.success(...successTxToast(txHash));
 
         // Reset form
         set(state => {
           state.send.amount = '';
         });
       } catch (e) {
-        toast.error(...errorSonnerTxToast(e));
+        toast.error(...errorTxToast(e));
         throw e;
       } finally {
         set(state => {

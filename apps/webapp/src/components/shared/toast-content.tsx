@@ -3,7 +3,7 @@ import { Grid } from 'react-loader-spinner';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
-export const loadingTxSonnerToast = (
+export const loadingTxToast = (
   loadingText = 'Transaction build in progress',
 ): Parameters<typeof toast> => [
   <div className='flex items-center justify-center gap-4' key='loading'>
@@ -16,7 +16,7 @@ export const loadingTxSonnerToast = (
   },
 ];
 
-export const successSonnerTxToast = (
+export const successTxToast = (
   txHash: string,
   message = 'Transaction success 🎉',
 ): Parameters<typeof toast> => [
@@ -35,7 +35,7 @@ export const successSonnerTxToast = (
   },
 ];
 
-export const errorSonnerTxToast = (error: unknown): Parameters<typeof toast> => [
+export const errorTxToast = (error: unknown): Parameters<typeof toast> => [
   'Error with transaction',
   { description: <p className='break-all'>{String(error)}</p> },
 ];

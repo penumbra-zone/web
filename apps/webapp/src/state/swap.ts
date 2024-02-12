@@ -1,9 +1,5 @@
 import { AllSlices, SliceCreator } from './index';
-import {
-  errorSonnerTxToast,
-  loadingTxSonnerToast,
-  successSonnerTxToast,
-} from '../components/shared/toast-content';
+import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { getTransactionHash, planWitnessBuildBroadcast } from './helpers';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
@@ -59,7 +55,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         state.swap.txInProgress = true;
       });
 
-      let inProgressToastId = toast(...loadingTxSonnerToast('Building swap transaction'));
+      let inProgressToastId = toast(...loadingTxToast('Building swap transaction'));
 
       try {
         const swapReq = await assembleSwapRequest(get().swap);
@@ -68,8 +64,8 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         const swapTxHash = await getTransactionHash(swapTx);
 
         toast.dismiss(inProgressToastId);
-        toast.success(...successSonnerTxToast(swapTxHash, 'Swap transaction succeeded 🎉'));
-        inProgressToastId = toast(...loadingTxSonnerToast('Building swap claim transaction'));
+        toast.success(...successTxToast(swapTxHash, 'Swap transaction succeeded 🎉'));
+        inProgressToastId = toast(...loadingTxToast('Building swap claim transaction'));
 
         const swapClaimReq = assembleSwapClaimRequest(swapCommitment);
         const swapClaimTx = await planWitnessBuildBroadcast(swapClaimReq, {
@@ -84,16 +80,14 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         });
         const swapClaimTxHash = await getTransactionHash(swapClaimTx);
 
-        toast.success(
-          ...successSonnerTxToast(swapClaimTxHash, 'Swap claim transaction succeeded 🎉'),
-        );
+        toast.success(...successTxToast(swapClaimTxHash, 'Swap claim transaction succeeded 🎉'));
 
         // Reset form
         set(state => {
           state.send.amount = '';
         });
       } catch (e) {
-        toast(...errorSonnerTxToast(e));
+        toast(...errorTxToast(e));
         throw e;
       } finally {
         toast.dismiss(inProgressToastId);
