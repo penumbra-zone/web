@@ -1,8 +1,12 @@
 import { Chain, getDisplayDenomExponent, toBaseUnit } from '@penumbra-zone/types';
 import { AllSlices, SliceCreator } from '.';
-import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
+import { toast } from 'sonner';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
+import {
+  errorSonnerTxToast,
+  loadingTxSonnerToast,
+  successSonnerTxToast,
+} from '../components/shared/toast-content';
 import BigNumber from 'bignumber.js';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
@@ -20,7 +24,7 @@ export interface IbcSendSlice {
   destinationChainAddress: string;
   setDestinationChainAddress: (addr: string) => void;
   setChain: (chain: Chain | undefined) => void;
-  sendIbcWithdraw: (toastFn: typeof toast) => Promise<void>;
+  sendIbcWithdraw: () => Promise<void>;
   txInProgress: boolean;
 }
 
@@ -51,32 +55,31 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
         state.ibc.destinationChainAddress = addr;
       });
     },
-    sendIbcWithdraw: async toastFn => {
+    sendIbcWithdraw: async () => {
       set(state => {
         state.send.txInProgress = true;
       });
 
-      const { dismiss } = toastFn(loadingTxToast);
+      const inProgressToastId = toast(...loadingTxSonnerToast());
 
       try {
         const plannerReq = await getPlanRequest(get().ibc);
         const transaction = await planWitnessBuildBroadcast(plannerReq);
         const txHash = await getTransactionHash(transaction);
-        dismiss();
-        toastFn(successTxToast(txHash));
+        toast.success(...successSonnerTxToast(txHash));
 
         // Reset form
         set(state => {
           state.send.amount = '';
-          state.send.txInProgress = false;
         });
       } catch (e) {
+        toast.error(...errorSonnerTxToast(e));
+        throw e;
+      } finally {
         set(state => {
           state.send.txInProgress = false;
         });
-        dismiss();
-        toastFn(errorTxToast(e));
-        throw e;
+        toast.dismiss(inProgressToastId);
       }
     },
   };

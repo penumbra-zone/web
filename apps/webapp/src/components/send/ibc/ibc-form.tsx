@@ -1,5 +1,4 @@
 import { Button, Input } from '@penumbra-zone/ui';
-import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { useStore } from '../../../state';
 import { ibcSelector } from '../../../state/ibc';
 import { ChainSelector } from './chain-selector';
@@ -26,7 +25,6 @@ export const IbcAssetBalanceLoader: LoaderFunction = async (): Promise<AssetBala
 
 export default function IbcForm() {
   const assetBalances = useLoaderData() as AssetBalance[];
-  const { toast } = useToast();
   const {
     sendIbcWithdraw,
     destinationChainAddress,
@@ -46,7 +44,7 @@ export default function IbcForm() {
       className='flex flex-col gap-4'
       onSubmit={e => {
         e.preventDefault();
-        void sendIbcWithdraw(toast);
+        void sendIbcWithdraw();
       }}
     >
       <InputToken
