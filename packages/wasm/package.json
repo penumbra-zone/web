@@ -18,7 +18,6 @@
     "tsx": "^4.7.0",
     "vite-plugin-top-level-await": "^1.4.1",
     "vite-plugin-wasm": "^3.3.0",
-    "vitest": "^1.2.2",
     "wasm-pack": "^0.12.1"
   }
 }
