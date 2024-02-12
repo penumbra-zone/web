@@ -12,8 +12,7 @@ interface GetterMethods<SourceType, TargetType, Optional extends boolean = false
   /**
    * Returns a getter that, when given a value of type `SourceType`, returns a
    * (possibly nested) property of that value, of type `TargetType`. If the
-   * property or any of its ancestors are undefined, throws an error (optionally
-   * set to `errorMessage`).
+   * property or any of its ancestors are undefined, returned undefined.
    *
    * @example
    * ```ts
@@ -24,8 +23,8 @@ interface GetterMethods<SourceType, TargetType, Optional extends boolean = false
    * // Note that `valueView` has no metadata, nor even a `case`.
    * const valueView = new ValueView();
    *
-   * // Throws a `No metadata!` error due to the lack of metadata.
-   * const metadata = getMetadata.orThrow('No metadata!')(valueView);
+   * // Doesn't throw, even though the metadata is missing.
+   * const metadata = getMetadata.optional()(valueView);
    * ```
    */
   optional: () => Getter<SourceType, TargetType, true>;
@@ -35,13 +34,13 @@ interface GetterMethods<SourceType, TargetType, Optional extends boolean = false
    *
    * @example
    * ```ts
-   * // This will throw if any step along the way returns `undefined`.
-   * const assetId1 = getMetadata.pipe(getAssetId).pipe(getInner).orThrow()(valueView);
-   * // This will throw only if the asset ID specifically is missing.
-   * const assetId2 = getMetadata.pipe(getAssetId.orThrow()).pipe(getInner)(valueView);
-   * // This won't throw at all -- it will just return `undefined` if any step
-   * // along the way is `undefined`.
-   * const assetId3 = getMetadata.pipe(getAssetId).pipe(getInner)(valueView);
+   * // Gets the deeply nested `inner` property in a metadata object, or throws
+   * // if any step in the pipe is undefined.
+   * const assetId1 = getMetadata.pipe(getAssetId).pipe(getInner)(valueView);
+   * // Gets the deeply nested `inner` property in a metadata object, or returns
+   * // undefined if any step in the pipe is undefined. Note that `.optional()`
+   * // must be called at the _beginning_ of the chain.
+   * const assetId2 = getMetadata.optional().pipe(getAssetId).pipe(getInner)(valueView);
    * ```
    */
   pipe: <PipedTargetType = unknown>(
