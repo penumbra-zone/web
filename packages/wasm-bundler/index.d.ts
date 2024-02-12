@@ -1,15 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
-* compute position id
-* Arguments:
-*     position: `Position`
-* Returns: `PositionId`
-* @param {any} position
-* @returns {any}
-*/
-export function compute_position_id(position: any): any;
-/**
 * Loads the proving key as a collection of bytes, and to sets the keys in memory
 * dynamicaly at runtime. Failure to bundle the proving keys in the wasm binary
 * or call the load function will fail to generate a proof. Consumers of this
@@ -93,14 +84,14 @@ export function is_controlled_address(full_viewing_key: string, address: string)
 */
 export function get_short_address_by_index(full_viewing_key: string, index: number): any;
 /**
-* decode SCT root
+* compute position id
 * Arguments:
-*     tx_bytes: `HEX string`
-* Returns: `penumbra_tct::Root`
-* @param {string} tx_bytes
+*     position: `Position`
+* Returns: `PositionId`
+* @param {any} position
 * @returns {any}
 */
-export function decode_sct_root(tx_bytes: string): any;
+export function compute_position_id(position: any): any;
 /**
 * Builds a planned [`Action`] specified by
 * the [`ActionPlan`] in a [`TransactionPlan`].
@@ -205,6 +196,15 @@ export function build_parallel(actions: any, transaction_plan: any, witness_data
 * @returns {Promise<any>}
 */
 export function transaction_info(full_viewing_key: string, tx: any, idb_constants: any): Promise<any>;
+/**
+* decode SCT root
+* Arguments:
+*     tx_bytes: `HEX string`
+* Returns: `penumbra_tct::Root`
+* @param {string} tx_bytes
+* @returns {any}
+*/
+export function decode_sct_root(tx_bytes: string): any;
 /**
 */
 export class ViewServer {
