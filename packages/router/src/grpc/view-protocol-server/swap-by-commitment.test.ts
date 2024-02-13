@@ -81,7 +81,7 @@ describe('SwapByCommitment request handler', () => {
     expect(swapByCommitmentResponse.swap?.equals(testSwap)).toBeTruthy();
   });
 
-  test('should get an empty response if swap is not found in idb, and has not been detected', async () => {
+  test('should throw error if swap is not found in idb, and has not been detected', async () => {
     mockIndexedDb.getSwapByCommitment?.mockResolvedValue(undefined);
     request.awaitDetection = true;
 

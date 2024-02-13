@@ -63,6 +63,12 @@ describe('NoteByCommitment request handler', () => {
     );
   });
 
+  test('should throw an error if note  no found in idb and awaitDetection is false', async () => {
+    mockIndexedDb.getSpendableNoteByCommitment?.mockResolvedValue(undefined);
+    request.awaitDetection = false;
+    await expect(noteByCommitment(request, mockCtx)).rejects.toThrow('Note not found');
+  });
+
   test('should get note if note is not found in idb, but awaitDetection is true, and has been detected', async () => {
     mockIndexedDb.getSpendableNoteByCommitment?.mockResolvedValue(undefined);
     request.awaitDetection = true;
@@ -75,7 +81,7 @@ describe('NoteByCommitment request handler', () => {
     expect(noteByCommitmentResponse.spendableNote?.equals(testNote)).toBeTruthy();
   });
 
-  test('should get an empty response if note is not found in idb, and has not been detected', async () => {
+  test('should throw error if note is not found in idb, and has not been detected', async () => {
     mockIndexedDb.getSpendableNoteByCommitment?.mockResolvedValue(undefined);
     request.awaitDetection = true;
 
@@ -85,10 +91,7 @@ describe('NoteByCommitment request handler', () => {
     noteSubNext.mockResolvedValueOnce({
       done: true,
     });
-    const noteByCommitmentResponse = new NoteByCommitmentResponse(
-      await noteByCommitment(request, mockCtx),
-    );
-    expect(noteByCommitmentResponse.spendableNote).toBeUndefined();
+    await expect(noteByCommitment(request, mockCtx)).rejects.toThrow('Note not found');
   });
 });
 
