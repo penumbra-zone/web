@@ -105,6 +105,14 @@ describe('rethrowImplErrors()', () => {
   });
 
   describe('for a unary method', () => {
+    describe('when the request succeeds', () => {
+      it('returns the response', async () => {
+        await expect(
+          wrappedServiceImplementation.getFoos(new FooRequest(), mockHandlerContext),
+        ).resolves.toEqual(['foo1', 'foo2']);
+      });
+    });
+
     describe('when the impl throws a `ConnectError`', () => {
       it('throws the error as-is', async () => {
         const error = new ConnectError('oh no!');
@@ -133,6 +141,21 @@ describe('rethrowImplErrors()', () => {
   });
 
   describe('for a streaming method', () => {
+    describe('when the request succeeds', () => {
+      it('yields the response', async () => {
+        expect.assertions(3);
+
+        let whichBar = 1;
+        for await (const item of wrappedServiceImplementation.getBars(
+          new BarRequest(),
+          mockHandlerContext,
+        )) {
+          expect(item).toBe(`bar${whichBar}`);
+          whichBar++;
+        }
+      });
+    });
+
     describe('when the impl throws a `ConnectError`', () => {
       it('throws the error as-is', async () => {
         const error = new ConnectError('oh no!');
