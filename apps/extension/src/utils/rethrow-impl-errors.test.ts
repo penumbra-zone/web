@@ -50,9 +50,6 @@ const MockService = {
 
     getBars: {
       name: 'getBars',
-      // Just supplying `I`/`O` to make TypeScript happy. The specific
-      // `TransactionPlanner*` classes I've passed here aren't relevant to the
-      // tests.
       I: BarRequest,
       O: BarResponse,
       kind: MethodKind.ServerStreaming,
