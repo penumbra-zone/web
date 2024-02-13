@@ -1,4 +1,10 @@
-import { Chain, getDisplayDenomExponent, toBaseUnit } from '@penumbra-zone/types';
+import {
+  Chain,
+  getAddressIndex,
+  getDisplayDenomExponentFromValueView,
+  getMetadata,
+  toBaseUnit,
+} from '@penumbra-zone/types';
 import { AllSlices, SliceCreator } from '.';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
@@ -67,16 +73,16 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
 
         // Reset form
         set(state => {
-          state.send.amount = '';
-          state.send.txInProgress = false;
+          state.ibc.amount = '';
         });
       } catch (e) {
-        set(state => {
-          state.send.txInProgress = false;
-        });
-        dismiss();
         toastFn(errorTxToast(e));
         throw e;
+      } finally {
+        set(state => {
+          state.ibc.txInProgress = false;
+        });
+        dismiss();
       }
     },
   };
@@ -115,16 +121,11 @@ const getPlanRequest = async ({
   destinationChainAddress,
 }: IbcSendSlice): Promise<TransactionPlannerRequest> => {
   if (!destinationChainAddress) throw new Error('no destination chain address set');
-  if (!chain?.ibcChannel) throw new Error('Chain ibc channel not available');
-  if (selection?.value.valueView.case !== 'knownAssetId') throw new Error('unknown denom selected');
-  if (!selection.value.valueView.value.metadata) throw new Error('no metadata in valueView');
-  if (selection.address.addressView.case !== 'decoded')
-    throw new Error('address in view is not decoded');
-  if (!selection.address.addressView.value.index) throw new Error('no index in addressView');
+  if (!chain) throw new Error('Chain not set');
+  if (!selection) throw new Error('No asset selected');
 
-  // TODO: implement source address in future, should correspond with asset selector?
-  // TODO: change planner to fill this in automatically ?
-  const { address: returnAddress } = await viewClient.ephemeralAddress({});
+  const addressIndex = getAddressIndex(selection.address);
+  const { address: returnAddress } = await viewClient.ephemeralAddress({ addressIndex });
   if (!returnAddress) throw new Error('Error with generating IBC deposit address');
 
   const { timeoutHeight, timeoutTime } = await getTimeout(chain);
@@ -134,9 +135,9 @@ const getPlanRequest = async ({
       {
         amount: toBaseUnit(
           BigNumber(amount),
-          getDisplayDenomExponent(selection.value.valueView.value.metadata),
+          getDisplayDenomExponentFromValueView(selection.value),
         ),
-        denom: { denom: selection.value.valueView.value.metadata.base },
+        denom: { denom: getMetadata(selection.value).base },
         destinationChainAddress,
         returnAddress,
         timeoutHeight,
@@ -144,7 +145,7 @@ const getPlanRequest = async ({
         sourceChannel: chain.ibcChannel,
       },
     ],
-    source: selection.address.addressView.value.index,
+    source: addressIndex,
   });
 };
 
