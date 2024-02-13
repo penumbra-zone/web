@@ -1,7 +1,10 @@
 import { AnyMessage, MethodKind, ServiceType } from '@bufbuild/protobuf';
 import { ConnectError, ServiceImpl } from '@connectrpc/connect';
 import {
+  BiDiStreamingImpl,
+  ClientStreamingImpl,
   HandlerContext,
+  MethodImpl,
   ServerStreamingImpl,
   UnaryImpl,
 } from '@connectrpc/connect/dist/cjs/implementation';
@@ -32,14 +35,32 @@ const wrapStreamingImpl = (methodImplementation: ServerStreamingImpl<AnyMessage,
     }
   };
 
+const wrapUnhandledImpl =
+  (
+    methodImplementation:
+      | ClientStreamingImpl<AnyMessage, AnyMessage>
+      | BiDiStreamingImpl<AnyMessage, AnyMessage>,
+    kind: MethodKind,
+  ) =>
+  (req: AsyncIterable<AnyMessage>, ctx: HandlerContext) => {
+    console.warn(
+      `Attempted to call a method whose \`kind\` is ${MethodKind[kind]}. This method kind is not wrapped by \`rethrowImplErrors\`; thus, its errors may get swallowed and rethrown as "internal error." To fix this, extend \`rethrowImplErrors\` to cover the \`${MethodKind[kind]}\` case.`,
+    );
+    return methodImplementation(req, ctx);
+  };
+
 const isUnaryMethodKind = (
   methodKind: MethodKind,
-  methodImplementation: (req: AnyMessage, ctx: HandlerContext) => unknown,
+  methodImplementation:
+    | ((req: AsyncIterable<AnyMessage>, ctx: HandlerContext) => unknown)
+    | ((req: AnyMessage, ctx: HandlerContext) => unknown),
 ): methodImplementation is UnaryImpl<AnyMessage, AnyMessage> => methodKind === MethodKind.Unary;
 
 const isServerStreamingMethodKind = (
   methodKind: MethodKind,
-  methodImplementation: (req: AnyMessage, ctx: HandlerContext) => unknown,
+  methodImplementation:
+    | ((req: AsyncIterable<AnyMessage>, ctx: HandlerContext) => unknown)
+    | ((req: AnyMessage, ctx: HandlerContext) => unknown),
 ): methodImplementation is ServerStreamingImpl<AnyMessage, AnyMessage> =>
   methodKind === MethodKind.ServerStreaming;
 
@@ -48,17 +69,17 @@ export const rethrowImplErrors = <T extends ServiceType>(
   serviceImpl: ServiceImpl<T>,
 ): ServiceImpl<T> =>
   Object.fromEntries(
-    Object.entries(serviceImpl).map(([methodName, methodImplementation]) => [
-      methodName,
-      isServerStreamingMethodKind(serviceType.methods[methodName]!.kind, methodImplementation)
-        ? wrapStreamingImpl(methodImplementation)
-        : isUnaryMethodKind(serviceType.methods[methodName]!.kind, methodImplementation)
-          ? wrapUnaryImpl(methodImplementation)
-          : (req: AnyMessage, ctx: HandlerContext) => {
-              throw new Error(
-                `Attempted to call a method whose \`kind\` is ${serviceType.methods[methodName]?.kind}`,
-              );
-              // return methodImplementation(req, ctx);
-            },
-    ]),
+    Object.entries(serviceImpl).map(
+      ([methodName, methodImplementation]: [
+        string,
+        MethodImpl<(typeof serviceType.methods)[string]>,
+      ]) => [
+        methodName,
+        isServerStreamingMethodKind(serviceType.methods[methodName]!.kind, methodImplementation)
+          ? wrapStreamingImpl(methodImplementation)
+          : isUnaryMethodKind(serviceType.methods[methodName]!.kind, methodImplementation)
+            ? wrapUnaryImpl(methodImplementation)
+            : wrapUnhandledImpl(methodImplementation, serviceType.methods[methodName]!.kind),
+      ],
+    ),
   ) as ServiceImpl<T>;
