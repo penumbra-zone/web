@@ -3,13 +3,9 @@ import { rethrowImplErrors } from './rethrow-impl-errors';
 import { ConnectError, HandlerContext, ServiceImpl } from '@connectrpc/connect';
 import {
   AnyMessage,
-  BinaryReadOptions,
   FieldList,
-  JsonReadOptions,
-  JsonValue,
   Message,
   MethodKind,
-  PlainMessage,
   ServiceType,
   proto3,
 } from '@bufbuild/protobuf';
@@ -19,30 +15,19 @@ class MockMessage<T extends Message<T> = AnyMessage> extends Message<T> {
   static readonly typeName = 'penumbra.view.v1.MockMessage';
   static readonly fields: FieldList;
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): MockMessage {
-    bytes;
-    options;
+  static fromBinary(): MockMessage {
     return new MockMessage();
   }
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): MockMessage {
-    jsonValue;
-    options;
+  static fromJson(): MockMessage {
     return new MockMessage();
   }
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): MockMessage {
-    jsonString;
-    options;
+  static fromJsonString(): MockMessage {
     return new MockMessage();
   }
 
-  static equals(
-    a: MockMessage | PlainMessage<MockMessage> | undefined,
-    b: MockMessage | PlainMessage<MockMessage> | undefined,
-  ): boolean {
-    a;
-    b;
+  static equals(): boolean {
     return true;
   }
 }
