@@ -80,11 +80,15 @@ const possiblyThrowError = vi.fn().mockImplementation(() => undefined);
 const mockServiceImplementation = {
   getFoos: async () => {
     possiblyThrowError();
+
     return Promise.resolve(['foo1', 'foo2']);
   },
+
   getBars: async function* () {
     possiblyThrowError();
-    const promises = [Promise.resolve(1), Promise.resolve(2), Promise.resolve(3)];
+
+    const promises = [Promise.resolve('bar1'), Promise.resolve('bar2'), Promise.resolve('bar3')];
+
     for await (const i of promises) {
       yield i;
     }
@@ -92,6 +96,8 @@ const mockServiceImplementation = {
 } satisfies ServiceImpl<typeof MockService>;
 
 const mockHandlerContext = {} as HandlerContext;
+
+const wrappedServiceImplementation = rethrowImplErrors(MockService, mockServiceImplementation);
 
 describe('rethrowImplErrors()', () => {
   beforeEach(() => {
@@ -101,10 +107,6 @@ describe('rethrowImplErrors()', () => {
   describe('for a unary method', () => {
     describe('when the impl throws a `ConnectError`', () => {
       it('throws the error as-is', async () => {
-        const wrappedServiceImplementation = rethrowImplErrors(
-          MockService,
-          mockServiceImplementation,
-        );
         const error = new ConnectError('oh no!');
         possiblyThrowError.mockImplementation(() => {
           throw error;
@@ -118,10 +120,6 @@ describe('rethrowImplErrors()', () => {
 
     describe('when the impl throws an error that is not a `ConnectError`', () => {
       it('throws the error as a `ConnectError`', async () => {
-        const wrappedServiceImplementation = rethrowImplErrors(
-          MockService,
-          mockServiceImplementation,
-        );
         const error = new Error('oh no!');
         possiblyThrowError.mockImplementation(() => {
           throw error;
@@ -137,10 +135,6 @@ describe('rethrowImplErrors()', () => {
   describe('for a streaming method', () => {
     describe('when the impl throws a `ConnectError`', () => {
       it('throws the error as-is', async () => {
-        const wrappedServiceImplementation = rethrowImplErrors(
-          MockService,
-          mockServiceImplementation,
-        );
         const error = new ConnectError('oh no!');
         possiblyThrowError.mockImplementation(() => {
           throw error;
@@ -160,10 +154,6 @@ describe('rethrowImplErrors()', () => {
 
     describe('when the impl throws an error that is not a `ConnectError`', () => {
       it('throws the error as a `ConnectError`', async () => {
-        const wrappedServiceImplementation = rethrowImplErrors(
-          MockService,
-          mockServiceImplementation,
-        );
         const error = new Error('oh no!');
         possiblyThrowError.mockImplementation(() => {
           throw error;
