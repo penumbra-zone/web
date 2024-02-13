@@ -1,8 +1,7 @@
-import type { JsonObject, JsonValue } from '@bufbuild/protobuf';
+import type { JsonValue } from '@bufbuild/protobuf';
 import {
   OffscreenRequest,
   ActionBuildRequest,
-  WasmBuildActionInput,
   isActionBuildRequest,
 } from '@penumbra-zone/types/src/internal-msg/offscreen';
 
@@ -22,7 +21,7 @@ export const offscreenMessageHandler = (
   if (isActionBuildRequest(req.request)) {
     const { type, request } = req;
     void (async () => {
-      const response = Promise.all(buildActionHandler(request));
+      const response = spawnWorker(request);
       const res = await response
         .then(data => ({ type, data }))
         .catch((e: Error) => ({
@@ -37,21 +36,7 @@ export const offscreenMessageHandler = (
 
 chrome.runtime.onMessage.addListener(offscreenMessageHandler);
 
-export const buildActionHandler = (request: ActionBuildRequest) => {
-  // Destructure the data object to get individual fields
-  const { transactionPlan, witness, fullViewingKey } = request;
-
-  return transactionPlan.actions.map((_, i) =>
-    spawnWorker(transactionPlan, witness, fullViewingKey, i),
-  );
-};
-
-const spawnWorker = (
-  transactionPlan: JsonObject & { actions: JsonObject[] },
-  witness: JsonObject,
-  fullViewingKey: string,
-  actionPlanIndex: number,
-): Promise<JsonValue> => {
+const spawnWorker = (req: ActionBuildRequest): Promise<JsonValue> => {
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL('./wasm-build-action.ts', import.meta.url));
 
@@ -76,11 +61,6 @@ const spawnWorker = (
     worker.addEventListener('error', onWorkerError, { once: true });
 
     // Send data to web worker
-    worker.postMessage({
-      transactionPlan,
-      witness,
-      fullViewingKey,
-      actionPlanIndex,
-    } satisfies WasmBuildActionInput);
+    worker.postMessage(req);
   });
 };

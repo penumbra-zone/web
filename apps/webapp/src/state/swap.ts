@@ -1,8 +1,8 @@
 import { AllSlices, SliceCreator } from './index';
-import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { getTransactionHash, planWitnessBuildBroadcast } from './helpers';
+import { authWitnessBuild, broadcast, plan, witnessBuild } from './helpers';
+import { buildingTxToast, errorTxToast, successTxToast } from '../components/shared/toast-content';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AssetBalance } from '../fetchers/balances';
 import {
@@ -55,28 +55,38 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         state.swap.txInProgress = true;
       });
 
-      const { dismiss } = toastFn(loadingTxToast);
+      const { dismiss, update } = toastFn(buildingTxToast());
 
       try {
-        const swapReq = await assembleSwapRequest(get().swap);
-        const swapTx = await planWitnessBuildBroadcast(swapReq);
+        // build swap
+        const swapPlan = await plan(await assembleSwapRequest(get().swap));
+        const swapTx = await authWitnessBuild(update, { transactionPlan: swapPlan });
+
+        // begin broadcast
+        const swapBroadcast = broadcast(update, {
+          awaitDetection: true,
+          transaction: swapTx,
+        });
+
+        // a swap claim must be broadcast after any successful swap, to claim
+        // the output of the swap.  Swap claims don't need authenticationData,
+        // so use `witnessAndBuild`
+        // @see https://protocol.penumbra.zone/main/zswap/swap.html#claiming-swap-outputs
+
+        // start to build swap claim
         const swapCommitment = getSwapCommitment(swapTx);
 
-        const swapClaimReq = assembleSwapClaimRequest(swapCommitment);
-        const swapClaimTx = await planWitnessBuildBroadcast(swapClaimReq, {
-          /**
-           * Swap claims are self-authenticating, so we'll use `witnessAndBuild`
-           * rather than `authorizeAndBuild` for the swap claim. That way, we
-           * won't trigger a second, unnecessary approval popup.
-           *
-           * @see https://protocol.penumbra.zone/main/zswap/swap.html#claiming-swap-outputs
-           */
-          rpcMethod: 'witnessAndBuild',
-        });
-        const swapClaimTxHash = await getTransactionHash(swapClaimTx);
+        const swapClaimPlan = await plan(assembleSwapClaimRequest(swapCommitment));
+        const swapClaimTx = await witnessBuild(update, { transactionPlan: swapClaimPlan });
 
-        dismiss();
-        toastFn(successTxToast(swapClaimTxHash));
+        // after swap broadcast success, emit the claim
+        await swapBroadcast;
+        const { txHash: swapClaimHash, detectionHeight: swapClaimDetectionHeight } =
+          await broadcast(update, {
+            transaction: swapClaimTx,
+          });
+
+        update(successTxToast(swapClaimHash, swapClaimDetectionHeight));
 
         // Reset form
         set(state => {

@@ -11,10 +11,10 @@ import {
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import BigNumber from 'bignumber.js';
-import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
+import { buildingTxToast, errorTxToast, successTxToast } from '../components/shared/toast-content';
 import { AssetBalance } from '../fetchers/balances';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { getTransactionHash, getTransactionPlan, planWitnessBuildBroadcast } from './helpers';
+import { authWitnessBuild, broadcast, plan } from './helpers';
 
 import {
   Fee,
@@ -77,9 +77,8 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         return;
       }
 
-      const txnPlanReq = assembleRequest(get().send);
-      const plan = await getTransactionPlan(txnPlanReq);
-      const fee = plan?.transactionParameters?.fee;
+      const txPlan = await plan(assembleRequest(get().send));
+      const fee = txPlan.transactionParameters?.fee;
       if (!fee?.amount) return;
 
       set(state => {
@@ -96,14 +95,13 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.txInProgress = true;
       });
 
-      const { dismiss } = toastFn(loadingTxToast);
+      const { dismiss, update } = toastFn(buildingTxToast());
 
       try {
-        const req = assembleRequest(get().send);
-        const transaction = await planWitnessBuildBroadcast(req);
-        const txHash = await getTransactionHash(transaction);
-        dismiss();
-        toastFn(successTxToast(txHash));
+        const transactionPlan = await plan(assembleRequest(get().send));
+        const transaction = await authWitnessBuild(update, { transactionPlan });
+        const { txHash, detectionHeight } = await broadcast(update, { transaction });
+        update(successTxToast(txHash, detectionHeight));
 
         // Reset form
         set(state => {
