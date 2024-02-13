@@ -1,10 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-import {
-  NoteByCommitmentResponse,
-  SpendableNoteRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 import { ConnectError, Code } from '@connectrpc/connect';
 
@@ -16,18 +13,13 @@ export const noteByCommitment: Impl['noteByCommitment'] = async (req, ctx) => {
 
   const noteByCommitment = await indexedDb.getSpendableNoteByCommitment(req.noteCommitment);
   if (noteByCommitment) return { spendableNote: noteByCommitment };
-  if (!req.awaitDetection) throw new ConnectError('Note not found', Code.NotFound);
 
   // Wait until our DB encounters a new note with this commitment
-  const response = new NoteByCommitmentResponse();
-  const subscription = indexedDb.subscribe('SPENDABLE_NOTES');
-
-  for await (const update of subscription) {
-    const note = SpendableNoteRecord.fromJson(update.value);
-    if (note.noteCommitment?.equals(req.noteCommitment)) {
-      response.spendableNote = note;
-      break;
+  if (req.awaitDetection) {
+    for await (const update of indexedDb.subscribe('SPENDABLE_NOTES')) {
+      const spendableNote = SpendableNoteRecord.fromJson(update.value);
+      if (spendableNote.noteCommitment?.equals(req.noteCommitment)) return { spendableNote };
     }
   }
-  return response;
+  throw new ConnectError('Note not found', Code.NotFound);
 };
