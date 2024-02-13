@@ -1,10 +1,16 @@
-import { ConnectError } from '@connectrpc/connect';
+import { AnyMessage, MethodKind, ServiceType } from '@bufbuild/protobuf';
+import { ConnectError, ServiceImpl } from '@connectrpc/connect';
+import {
+  HandlerContext,
+  ServerStreamingImpl,
+  UnaryImpl,
+} from '@connectrpc/connect/dist/cjs/implementation';
 
 const wrapUnaryImpl =
-  (methodImplementation: (...args: unknown[]) => unknown) =>
-  (...args: unknown[]) => {
+  (methodImplementation: UnaryImpl<AnyMessage, AnyMessage>) =>
+  (req: AnyMessage, ctx: HandlerContext) => {
     try {
-      const result = methodImplementation(...args);
+      const result = methodImplementation(req, ctx);
       if (result instanceof Promise)
         return (result as Promise<unknown>).catch(e => {
           throw ConnectError.from(e);
@@ -15,10 +21,10 @@ const wrapUnaryImpl =
     }
   };
 
-const wrapStreamingImpl = (methodImplementation: (...args: unknown[]) => AsyncIterable<unknown>) =>
-  async function* (...args: unknown[]) {
+const wrapStreamingImpl = (methodImplementation: ServerStreamingImpl<AnyMessage, AnyMessage>) =>
+  async function* (req: AnyMessage, ctx: HandlerContext) {
     try {
-      for await (const result of methodImplementation(...args)) {
+      for await (const result of methodImplementation(req, ctx)) {
         yield result;
       }
     } catch (e) {
@@ -26,17 +32,33 @@ const wrapStreamingImpl = (methodImplementation: (...args: unknown[]) => AsyncIt
     }
   };
 
-export const rethrowImplErrors = <
-  ServiceImplementation extends Record<string, (...args: unknown[]) => unknown>,
->(
-  serviceImpl: ServiceImplementation,
-) =>
+const isUnaryMethodKind = (
+  methodKind: MethodKind,
+  methodImplementation: (req: AnyMessage, ctx: HandlerContext) => unknown,
+): methodImplementation is UnaryImpl<AnyMessage, AnyMessage> => methodKind === MethodKind.Unary;
+
+const isServerStreamingMethodKind = (
+  methodKind: MethodKind,
+  methodImplementation: (req: AnyMessage, ctx: HandlerContext) => unknown,
+): methodImplementation is ServerStreamingImpl<AnyMessage, AnyMessage> =>
+  methodKind === MethodKind.ServerStreaming;
+
+export const rethrowImplErrors = <T extends ServiceType>(
+  serviceType: T,
+  serviceImpl: ServiceImpl<T>,
+): ServiceImpl<T> =>
   Object.fromEntries(
     Object.entries(serviceImpl).map(([methodName, methodImplementation]) => [
       methodName,
-      methodImplementation.constructor.name === 'GeneratorFunction' ||
-      methodImplementation.constructor.name === 'AsyncGeneratorFunction'
+      isServerStreamingMethodKind(serviceType.methods[methodName]!.kind, methodImplementation)
         ? wrapStreamingImpl(methodImplementation)
-        : wrapUnaryImpl(methodImplementation),
+        : isUnaryMethodKind(serviceType.methods[methodName]!.kind, methodImplementation)
+          ? wrapUnaryImpl(methodImplementation)
+          : (req: AnyMessage, ctx: HandlerContext) => {
+              throw new Error(
+                `Attempted to call a method whose \`kind\` is ${serviceType.methods[methodName]?.kind}`,
+              );
+              // return methodImplementation(req, ctx);
+            },
     ]),
-  ) as ServiceImplementation;
+  ) as ServiceImpl<T>;
