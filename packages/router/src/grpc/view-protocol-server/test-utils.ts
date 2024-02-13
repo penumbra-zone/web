@@ -5,6 +5,7 @@ export interface IndexedDbMock {
   getAppParams?: Mock;
   getFmdParams?: Mock;
   getLastBlockSynced?: Mock;
+  getSpendableNoteByCommitment?: Mock;
   getSpendableNoteByNullifier?: Mock;
   getSwapByNullifier?: Mock;
   getTransactionInfo?: Mock;
