@@ -54,15 +54,20 @@ const isUnaryMethodKind = (
   methodImplementation:
     | ((req: AsyncIterable<AnyMessage>, ctx: HandlerContext) => unknown)
     | ((req: AnyMessage, ctx: HandlerContext) => unknown),
-): methodImplementation is UnaryImpl<AnyMessage, AnyMessage> => methodKind === MethodKind.Unary;
+): methodImplementation is UnaryImpl<AnyMessage, AnyMessage> => {
+  methodImplementation;
+  return methodKind === MethodKind.Unary;
+};
 
 const isServerStreamingMethodKind = (
   methodKind: MethodKind,
   methodImplementation:
     | ((req: AsyncIterable<AnyMessage>, ctx: HandlerContext) => unknown)
     | ((req: AnyMessage, ctx: HandlerContext) => unknown),
-): methodImplementation is ServerStreamingImpl<AnyMessage, AnyMessage> =>
-  methodKind === MethodKind.ServerStreaming;
+): methodImplementation is ServerStreamingImpl<AnyMessage, AnyMessage> => {
+  methodImplementation;
+  return methodKind === MethodKind.ServerStreaming;
+};
 
 export const rethrowImplErrors = <T extends ServiceType>(
   serviceType: T,
