@@ -57,7 +57,7 @@ const MockService = {
   },
 } satisfies ServiceType;
 
-const possiblyThrowError = vi.fn().mockImplementation(() => undefined);
+const possiblyThrowError = vi.fn();
 
 const mockServiceImplementation = {
   getFoos: async () => {
