@@ -84,8 +84,9 @@ const rpcImpls = [
   [
     CustodyService,
     /**
-     * @todo Remove `as` below once `custodyImpl` implemented the entire custody
-     * service. It's just there temporarily to make `rethrowImplErrors` happy.
+     * @todo Remove `as` below once `custodyImpl` has implemented the entire
+     * custody service. It's just there temporarily to make `rethrowImplErrors`
+     * happy.
      */
     rethrowImplErrors(CustodyService, custodyImpl as ServiceImpl<typeof CustodyService>),
   ],
