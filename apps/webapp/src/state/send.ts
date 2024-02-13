@@ -1,11 +1,10 @@
 import { AllSlices, SliceCreator } from './index';
 import {
-  address,
-  addressIndex,
-  assetId,
-  denomMetadata,
   fromValueView,
-  getDisplayDenomExponent,
+  getAddress,
+  getAddressIndex,
+  getAssetIdFromValueView,
+  getDisplayDenomExponentFromValueView,
   isPenumbraAddr,
   toBaseUnit,
 } from '@penumbra-zone/types';
@@ -21,8 +20,6 @@ import {
   Fee,
   FeeTier_Tier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
-import { z } from 'zod';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export interface SendSlice {
   selection: AssetBalance | undefined;
@@ -125,30 +122,7 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
-export const selectionSchema = z.object({
-  value: z.object({
-    valueView: z.object({
-      case: z.literal('knownAssetId'),
-      value: z.object({
-        metadata: denomMetadata.extend({ penumbraAssetId: assetId }).required(),
-      }),
-    }),
-  }),
-
-  address: z.object({
-    addressView: z.object({
-      case: z.literal('decoded'),
-      value: z.object({
-        address,
-        index: addressIndex,
-      }),
-    }),
-  }),
-});
-
 const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSlice) => {
-  const validatedSelection = selectionSchema.parse(selection);
-
   return new TransactionPlannerRequest({
     outputs: [
       {
@@ -156,15 +130,13 @@ const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSl
         value: {
           amount: toBaseUnit(
             BigNumber(amount),
-            getDisplayDenomExponent(
-              new Metadata(validatedSelection.value.valueView.value.metadata),
-            ),
+            getDisplayDenomExponentFromValueView(selection?.value),
           ),
-          assetId: validatedSelection.value.valueView.value.metadata.penumbraAssetId,
+          assetId: getAssetIdFromValueView(selection?.value),
         },
       },
     ],
-    source: validatedSelection.address.addressView.value.index,
+    source: getAddressIndex(selection?.address),
 
     // Note: we currently don't provide a UI for setting the fee manually. Thus,
     // a `feeMode` of `manualFee` is not supported here.
@@ -177,7 +149,7 @@ const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSl
           },
 
     memo: new MemoPlaintext({
-      returnAddress: validatedSelection.address.addressView.value.address,
+      returnAddress: getAddress(selection?.address),
       text: memo,
     }),
   });

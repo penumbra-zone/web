@@ -27,11 +27,16 @@ export const sendPopupRequest = async <M extends PopupSupportedMsg>(
   }
 };
 
-export const spawnDetachedPopup = async (url: string) => {
+export const spawnDetachedPopup = async (path: string) => {
+  const alreadyPopup = await chrome.runtime.getContexts({
+    documentUrls: [chrome.runtime.getURL(path)],
+  });
+  if (alreadyPopup.length) throw new Error('Popup already open');
+
   const { top, left, width } = await chrome.windows.getLastFocused();
 
   await chrome.windows.create({
-    url,
+    url: chrome.runtime.getURL(path),
     type: 'popup',
     width: 400,
     height: 628,

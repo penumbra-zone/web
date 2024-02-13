@@ -38,6 +38,7 @@ import {
   PositionState_PositionStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { localAssets } from '@penumbra-zone/constants';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place
@@ -130,7 +131,7 @@ describe('IndexedDb', () => {
       for await (const asset of db.iterateAssetsMetadata()) {
         assets.push(asset);
       }
-      expect(assets.length).toBe(1);
+      expect(assets.length).toBe(1 + localAssets.length);
 
       await db.saveTransactionInfo(
         TransactionInfo.fromJson({
@@ -271,6 +272,22 @@ describe('IndexedDb', () => {
   });
 
   describe('assets', () => {
+    it('should be pre-loaded with hardcoded assets', async () => {
+      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+
+      const savedAssets: Metadata[] = [];
+      for await (const asset of db.iterateAssetsMetadata()) {
+        savedAssets.push(asset);
+      }
+
+      for (const metadata of localAssets) {
+        const match = savedAssets.find(a => a.equals(metadata));
+        expect(match).toBeTruthy();
+      }
+
+      expect(savedAssets.length === localAssets.length).toBeTruthy();
+    });
+
     it('should be able to set/get by id', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
@@ -291,7 +308,7 @@ describe('IndexedDb', () => {
       for await (const asset of db.iterateAssetsMetadata()) {
         savedAssets.push(asset);
       }
-      expect(savedAssets.length === 3).toBeTruthy();
+      expect(savedAssets.length === 3 + localAssets.length).toBeTruthy();
     });
   });
 

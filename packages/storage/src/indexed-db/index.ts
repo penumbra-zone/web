@@ -32,7 +32,7 @@ import {
   AddressIndex,
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { assetPatterns } from '@penumbra-zone/constants';
+import { assetPatterns, localAssets } from '@penumbra-zone/constants';
 import {
   Position,
   PositionId,
@@ -93,7 +93,10 @@ export class IndexedDb implements IndexedDbInterface {
       version: dbVersion,
       tables: IDB_TABLES,
     } satisfies IdbConstants;
-    return new this(db, new IbdUpdater(db), constants, chainId);
+
+    const instance = new this(db, new IbdUpdater(db), constants, chainId);
+    await instance.saveLocalAssetsMetadata(); // Pre-load asset metadata
+    return instance;
   }
 
   constants(): IdbConstants {
@@ -176,6 +179,19 @@ export class IndexedDb implements IndexedDbInterface {
 
   async saveAssetsMetadata(metadata: Metadata) {
     await this.u.update({ table: 'ASSETS', value: metadata.toJson() as Jsonified<Metadata> });
+  }
+
+  // Save all hard-coded assets in config to database
+  async saveLocalAssetsMetadata() {
+    const saveLocalMetadata = localAssets.map(async m => {
+      if (m.penumbraAssetId) {
+        const metadata = await this.getAssetsMetadata(m.penumbraAssetId);
+        if (!metadata) {
+          await this.saveAssetsMetadata(m);
+        }
+      }
+    });
+    await Promise.all(saveLocalMetadata);
   }
 
   async *iterateSpendableNotes() {
