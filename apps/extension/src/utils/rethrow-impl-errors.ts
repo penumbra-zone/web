@@ -24,7 +24,9 @@ const wrapUnaryImpl =
     }
   };
 
-const wrapStreamingImpl = (methodImplementation: ServerStreamingImpl<AnyMessage, AnyMessage>) =>
+const wrapServerStreamingImpl = (
+  methodImplementation: ServerStreamingImpl<AnyMessage, AnyMessage>,
+) =>
   async function* (req: AnyMessage, ctx: HandlerContext) {
     try {
       for await (const result of methodImplementation(req, ctx)) {
@@ -81,7 +83,7 @@ export const rethrowImplErrors = <T extends ServiceType>(
       ]) => [
         methodName,
         isServerStreamingMethodKind(serviceType.methods[methodName]!.kind, methodImplementation)
-          ? wrapStreamingImpl(methodImplementation)
+          ? wrapServerStreamingImpl(methodImplementation)
           : isUnaryMethodKind(serviceType.methods[methodName]!.kind, methodImplementation)
             ? wrapUnaryImpl(methodImplementation)
             : wrapUnhandledImpl(methodImplementation, serviceType.methods[methodName]!.kind),
