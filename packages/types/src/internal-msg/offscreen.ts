@@ -22,11 +22,9 @@ export interface ActionBuildRequest {
   };
   witness: Jsonified<WitnessData>;
   fullViewingKey: string;
+  actionPlanIndex: number;
 }
-export type ActionBuildResponse = Jsonified<Action>[];
-
-export type WasmBuildActionInput = ActionBuildRequest & { actionPlanIndex: number };
-export type WasmBuildActionOutput = Jsonified<Action>;
+export type ActionBuildResponse = Jsonified<Action>;
 
 export const isActionBuildRequest = (req: unknown): req is ActionBuildRequest =>
   req != null &&
@@ -40,7 +38,6 @@ export const isActionBuildRequest = (req: unknown): req is ActionBuildRequest =>
   req.witness != null &&
   typeof req.witness === 'object' &&
   'fullViewingKey' in req &&
-  typeof req.fullViewingKey === 'string';
-
-export const isWasmBuildActionInput = (req: unknown): req is WasmBuildActionInput =>
-  isActionBuildRequest(req) && 'actionPlanIndex' in req && typeof req.actionPlanIndex === 'number';
+  typeof req.fullViewingKey === 'string' &&
+  'actionPlanIndex' in req &&
+  typeof req.actionPlanIndex === 'number';

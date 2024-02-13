@@ -2,13 +2,13 @@ import { Chain, getDisplayDenomExponent, toBaseUnit } from '@penumbra-zone/types
 import { AllSlices, SliceCreator } from '.';
 import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { errorTxToast, loadingTxToast, successTxToast } from '../components/shared/toast-content';
+import { errorTxToast, buildingTxToast, successTxToast } from '../components/shared/toast-content';
 import BigNumber from 'bignumber.js';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { ibcClient, viewClient } from '../clients/grpc';
-import { getTransactionHash, planWitnessBuildBroadcast } from './helpers';
+import { authWitnessBuild, broadcast, plan } from './helpers';
 import { AssetBalance } from '../fetchers/balances';
 
 export interface IbcSendSlice {
@@ -56,14 +56,14 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
         state.send.txInProgress = true;
       });
 
-      const { dismiss } = toastFn(loadingTxToast);
+      const { dismiss, update } = toastFn(buildingTxToast());
 
       try {
-        const plannerReq = await getPlanRequest(get().ibc);
-        const transaction = await planWitnessBuildBroadcast(plannerReq);
-        const txHash = await getTransactionHash(transaction);
-        dismiss();
-        toastFn(successTxToast(txHash));
+        const transactionPlan = await plan(await getPlanRequest(get().ibc));
+        const transaction = await authWitnessBuild(update, { transactionPlan });
+        const { txHash, detectionHeight } = await broadcast(update, { transaction });
+
+        update(successTxToast(txHash, detectionHeight));
 
         // Reset form
         set(state => {

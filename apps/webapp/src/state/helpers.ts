@@ -1,59 +1,99 @@
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import {
+  AuthorizeAndBuildRequest,
+  WitnessAndBuildRequest,
+  BroadcastTransactionRequest,
+  TransactionPlannerRequest,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { viewClient } from '../clients/grpc.ts';
 import { uint8ArrayToHex } from '@penumbra-zone/types';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { sha256Hash } from '@penumbra-zone/crypto-web';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
+import { ToastFnProps } from '@penumbra-zone/ui/components/ui/use-toast';
+import { broadcastingTxToast, buildingTxToast } from '../components/shared/toast-content.tsx';
+import { PartialMessage } from '@bufbuild/protobuf';
 
-export const getTransactionPlan = async (req: TransactionPlannerRequest) => {
-  const { plan } = await viewClient.transactionPlanner(req);
-  return plan;
-};
+export const plan = (req: PartialMessage<TransactionPlannerRequest>) =>
+  viewClient.transactionPlanner(req).then(({ plan }) => plan!);
 
-export const planWitnessBuildBroadcast = async (
-  req: TransactionPlannerRequest,
-  options: {
-    awaitDetection?: boolean;
-    rpcMethod?: 'authorizeAndBuild' | 'witnessAndBuild';
-  } = {},
+export const authWitnessBuild = async (
+  toastUp: (tp: ToastFnProps) => void,
+  req: PartialMessage<AuthorizeAndBuildRequest>,
 ) => {
-  const { awaitDetection = true, rpcMethod = 'authorizeAndBuild' } = options;
-  const transactionPlan = await getTransactionPlan(req);
-
-  if (!transactionPlan) throw new Error('no plan in response');
-
-  let transaction: Transaction | undefined;
-  for await (const { status } of viewClient[rpcMethod]({ transactionPlan }))
+  for await (const { status } of viewClient.authorizeAndBuild(req)) {
+    toastUp(buildingTxToast(status));
     switch (status.case) {
+      case undefined:
       case 'buildProgress':
         break;
       case 'complete':
-        transaction = status.value.transaction;
-        break;
+        return status.value.transaction!;
       default:
-        throw new Error(`unknown authorizeAndBuild status: ${status.case}`);
+        console.warn('unknown authorizeAndBuild status', status);
     }
-  if (!transaction) throw new Error('did not build transaction');
-
-  const expectId = new TransactionId({ inner: await sha256Hash(transaction.toBinary()) });
-
-  let detectionHeight: bigint | undefined;
-  for await (const { status } of viewClient.broadcastTransaction({ transaction, awaitDetection }))
-    switch (status.case) {
-      case 'broadcastSuccess':
-        if (!expectId.equals(status.value.id)) throw new Error('unexpected transaction id');
-        break;
-      case 'confirmed':
-        detectionHeight = status.value.detectionHeight;
-        if (!expectId.equals(status.value.id)) throw new Error('unexpected transaction id');
-        break;
-      default:
-        throw new Error(`unknown broadcastTransaction status: ${status.case}`);
-    }
-  if (!detectionHeight) throw new Error('did not detect transaction');
-
-  return transaction;
+  }
+  throw new Error('did not build transaction');
 };
 
-export const getTransactionHash = async (transaction: Transaction): Promise<string> =>
-  uint8ArrayToHex(await sha256Hash(transaction.toBinary()));
+export const witnessBuild = async (
+  toastUp: (tp: ToastFnProps) => void,
+  req: PartialMessage<WitnessAndBuildRequest>,
+) => {
+  for await (const { status } of viewClient.witnessAndBuild(req)) {
+    toastUp(buildingTxToast(status));
+    switch (status.case) {
+      case undefined:
+      case 'buildProgress':
+        break;
+      case 'complete':
+        return status.value.transaction!;
+      default:
+        console.warn('unknown witnessAndBuild status', status);
+    }
+  }
+  throw new Error('did not build transaction');
+};
+
+export const broadcast = async (
+  toastUp: (tp: ToastFnProps) => void,
+  req: PartialMessage<BroadcastTransactionRequest>,
+): Promise<{ txHash: string; detectionHeight?: bigint }> => {
+  const { awaitDetection, transaction } = req;
+  if (!transaction) throw new Error('no transaction');
+  const txId = await getTxId(transaction);
+  const txHash = getTxHash(txId);
+  toastUp(broadcastingTxToast(txHash));
+  for await (const { status } of viewClient.broadcastTransaction({ awaitDetection, transaction })) {
+    if (!txId.equals(status.value?.id)) throw new Error('unexpected transaction id');
+    toastUp(broadcastingTxToast(txHash, status));
+    switch (status.case) {
+      case 'broadcastSuccess':
+        if (!awaitDetection) return { txHash, detectionHeight: undefined };
+        break;
+      case 'confirmed':
+        return { txHash, detectionHeight: status.value.detectionHeight };
+      default:
+        console.warn(`unknown broadcastTransaction status: ${status.case}`);
+    }
+  }
+  // TODO: detail broadcastSuccess status
+  throw new Error('did not broadcast transaction');
+};
+
+export const getTxHash = <
+  T extends Required<PartialMessage<TransactionId>> | PartialMessage<Transaction>,
+>(
+  t: T,
+): T extends Required<PartialMessage<TransactionId>> ? string : Promise<string> =>
+  'inner' in t && t.inner instanceof Uint8Array
+    ? (uint8ArrayToHex(t.inner) as T extends Required<PartialMessage<TransactionId>>
+        ? string
+        : never)
+    : (getTxId(t as PartialMessage<Transaction>).then(({ inner }) =>
+        uint8ArrayToHex(inner),
+      ) as T extends Required<PartialMessage<TransactionId>> ? never : Promise<string>);
+
+export const getTxId = (tx: Transaction | PartialMessage<Transaction>) =>
+  sha256Hash(tx instanceof Transaction ? tx.toBinary() : new Transaction(tx).toBinary()).then(
+    inner => new TransactionId({ inner }),
+  );
