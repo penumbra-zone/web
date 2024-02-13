@@ -104,7 +104,7 @@ describe('rethrowImplErrors()', () => {
     possiblyThrowError.mockReset();
   });
 
-  describe('for a unary method', () => {
+  describe('for a MethodKind.Unary method', () => {
     describe('when the request succeeds', () => {
       it('returns the response', async () => {
         await expect(
@@ -140,7 +140,7 @@ describe('rethrowImplErrors()', () => {
     });
   });
 
-  describe('for a streaming method', () => {
+  describe('for a MethodKind.ServerStreaming method', () => {
     describe('when the request succeeds', () => {
       it('yields the response', async () => {
         expect.assertions(3);
