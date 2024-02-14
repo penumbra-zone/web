@@ -1,13 +1,20 @@
 name: Turbo CI
 on: pull_request
 
+# this is pretty verbose and repetitive, but github workflows require it
+# the first action is commented, most of those comments apply to all actions
+
+# every 'turbo' call is cached and essentially no-op if the inputs match
+
+# pnpm deps are cached by lockfile hash
+
 jobs:
   turbo-compile:
     name: Compile WASM
-    runs-on: buildjet-16vcpu-ubuntu-2204
+    runs-on: buildjet-16vcpu-ubuntu-2204 # buildjet for rust, github standard for everything else
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/cache@v3
+      - uses: actions/cache@v3 # turbo cache, shared between buildjet and github
         id: turbo-cache
         with:
           path: .turbo
@@ -15,22 +22,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-
       - uses: pnpm/action-setup@v2
-      - uses: buildjet/setup-node@v4
+      - uses: buildjet/setup-node@v4 # pnpm and node cache, buildjet and github have their own
         with:
           node-version: '21'
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile # commit your lockfile
       - run: pnpm turbo telemetry disable
 
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@stable # rust setup
         with:
           targets: wasm32-unknown-unknown
-      - uses: astriaorg/buildjet-rust-cache@v2.5.1
+      - uses: astriaorg/buildjet-rust-cache@v2.5.1 # rust cache, buildjet only
       - uses: jetli/wasm-pack-action@v0.4.0
         with:
           version: 'latest'
 
-      - run: pnpm turbo compile --cache-dir=.turbo
+      - run: pnpm turbo compile --cache-dir=.turbo # compile wasm and cache it
 
   test-rust:
     # only run crate tests on pull requests that changed the crate
@@ -91,7 +98,7 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm turbo telemetry disable
-      - run: pnpm format-check --cache-dir=.turbo
+      - run: pnpm format-check
       - run: pnpm turbo lint --cache-dir=.turbo
 
   turbo-build:
