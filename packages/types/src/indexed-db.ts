@@ -163,6 +163,7 @@ export interface PositionRecord {
 }
 
 export type Tables = Record<string, StoreNames<PenumbraDb>>;
+export type PenumbraStoreNames = StoreNames<PenumbraDb>;
 
 // Must be kept in sync with: https://github.com/penumbra-zone/penumbra/blob/02462635d6c825019822cbeeb44d422cf900f25d/crates/wasm/src/storage.rs#L15C1-L30
 export interface IdbConstants {

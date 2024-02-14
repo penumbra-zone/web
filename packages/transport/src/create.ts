@@ -17,7 +17,8 @@ import {
 } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 import { CreateAnyMethodImpl, makeAnyServiceImpl } from './any-impl';
-import { JsonToMessage, streamToGenerator } from './stream';
+import { JsonToMessage } from './stream';
+import { streamToGenerator } from '@penumbra-zone/types/src/stream';
 import {
   TransportEvent,
   TransportMessage,

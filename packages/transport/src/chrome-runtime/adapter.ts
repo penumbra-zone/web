@@ -27,7 +27,8 @@ import {
 } from '@connectrpc/connect/protocol';
 import { createTransport } from '@connectrpc/connect/protocol-connect';
 
-import { iterableToStream, MessageToJson } from '../stream';
+import { MessageToJson } from '../stream';
+import { iterableToStream } from '@penumbra-zone/types/src/stream';
 
 // see https://github.com/connectrpc/connect-es/pull/925
 // hopefully also simplifies transport call soon
