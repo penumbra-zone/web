@@ -4,15 +4,11 @@
   "globalEnv": ["NODE_ENV"],
   "pipeline": {
     "build": {
-      "dependsOn": ["^build", "@penumbra-zone/wasm#build"]
+      "dependsOn": ["download-keys", "compile", "^build"]
     },
-    "@penumbra-zone/wasm#build": {
-      "dependsOn": ["^build", "compile"],
-      "inputs": ["web/**"]
-    },
-    "@penumbra-zone/wasm#compile": {
-      "dependsOn": ["^compile"],
-      "inputs": ["crate/**"],
+    "download-keys": {},
+    "compile": {
+      "inputs": ["crate/src/**"],
       "outputs": ["wasm/**"]
     },
     "host": {
@@ -20,12 +16,12 @@
       "cache": false,
       "persistent": true
     },
-    "lint": { "dependsOn": ["@penumbra-zone/wasm#compile"] },
+    "lint": { "dependsOn": ["compile"] },
     "dev": {
-      "cache": false,
+      "dependsOn": ["download-keys", "compile"],
       "persistent": true
     },
-    "test": { "dependsOn": ["@penumbra-zone/wasm#compile"] },
+    "test": { "dependsOn": ["compile"] },
     "clean": {
       "cache": false
     }

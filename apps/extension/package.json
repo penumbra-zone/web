@@ -4,10 +4,10 @@
   "description": "chrome-extension",
   "type": "module",
   "scripts": {
-    "pull-keys": "tsx src/utils/download-proving-keys.ts",
-    "dev": "pnpm pull-keys && webpack --config webpack/webpack.dev.js --watch",
-    "clean": "rm -rf dist",
-    "build": "pnpm pull-keys && webpack --config webpack/webpack.prod.js",
+    "download-keys": "tsx src/utils/download-proving-keys.ts",
+    "dev": "webpack --config webpack/webpack.dev.js --watch",
+    "clean": "rm -rfv dist bin",
+    "build": "webpack --config webpack/webpack.prod.js",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
