@@ -1,7 +1,7 @@
 import {
   AuthorizeAndBuildResponse,
-  WitnessAndBuildResponse,
   BroadcastTransactionResponse,
+  WitnessAndBuildResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { shorten } from '@penumbra-zone/types';
 import { ToastAction } from '@penumbra-zone/ui/components/ui/toast';
@@ -35,8 +35,7 @@ export const buildingTxToast = (
     main: (
       <div className='flex items-center justify-center gap-4'>
         <span>
-          Transaction building...
-          {progress != null ? `${Math.round(progress * 100)}%` : null}
+          Transaction building... {progress != null ? `${Math.round(progress * 100)}%` : null}
         </span>
         <Grid height='20' width='20' color='white' />
       </div>

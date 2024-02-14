@@ -10,7 +10,8 @@ import { SendAssetBalanceLoader, SendForm } from './send/send-form/index.tsx';
 import IbcForm, { IbcAssetBalanceLoader } from './send/ibc/ibc-form.tsx';
 import { Receive } from './send/receive.tsx';
 import { ErrorBoundary } from './shared/error-boundary.tsx';
-import { SwapLayout, SwapLoader } from './swap/layout.tsx';
+import { SwapLayout } from './swap/layout.tsx';
+import { SwapLoader } from './swap/swap-loader.tsx';
 
 export const rootRouter = createHashRouter([
   {
