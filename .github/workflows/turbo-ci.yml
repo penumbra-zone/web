@@ -18,9 +18,13 @@ jobs:
   test-rust:
     # only run crate tests on pull requests that changed the crate
     if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'packages/wasm/crate/') }}
-    name: 'test:rust'
+    uses: ./.github/workflows/test-wasm.yml
+
+  turbo-lint:
+    name: Lint
+    runs-on: ubuntu-latest # github default for ts, rust uses buildjet
     needs: turbo-compile
-    runs-on: buildjet-16vcpu-ubuntu-2204 # buildjet for rust, github standard for everything else
+    if: always() # always run even if we skip compile
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v3 # turbo cache, shared between buildjet and github
@@ -31,48 +35,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-
       - uses: pnpm/action-setup@v2
-      - uses: buildjet/setup-node@v4 # node cache, distinct between buildjet and github
+      - uses: actions/setup-node@v4 # node cache, distinct between buildjet and github
         with:
           node-version: '21'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile # commit your lockfile
-      - run: pnpm turbo telemetry disable
-
-      - uses: dtolnay/rust-toolchain@stable # rust only on buildjet
-        with:
-          targets: wasm32-unknown-unknown
-      - uses: astriaorg/buildjet-rust-cache@v2.5.1 # buildjet rust cache
-      - uses: jetli/wasm-pack-action@v0.4.0 # preinstall wasm-pack
-        with:
-          version: 'latest'
-      - uses: browser-actions/setup-firefox@v1 # wasm tests in ffx
-
-      - run: pnpm turbo test:rust --cache-dir=.turbo
-
-      - run: cargo tree --invert mio --edges features # debug tree
-        if: failure()
-        working-directory: packages/wasm/crate
-
-  turbo-lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    needs: turbo-compile
-    if: always() # always run even if we skip compile
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v3
-        id: turbo-cache
-        with:
-          path: .turbo
-          key: ${{ runner.os }}-turbo-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-
-      - uses: pnpm/action-setup@v2
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '21'
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
       - run: pnpm turbo telemetry disable
       - run: pnpm format-check
       - run: pnpm turbo lint --cache-dir=.turbo
@@ -103,7 +70,7 @@ jobs:
   turbo-test:
     strategy:
       matrix:
-        task: ['test', 'test:browser']
+        task: ['test', 'test:browser'] # all typescript tests
     name: ${{ matrix.task }}
     runs-on: ubuntu-latest
     needs: turbo-build

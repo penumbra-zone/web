@@ -4,7 +4,8 @@ on: workflow_call
 # workflow_call for optional forcing
 
 jobs:
-  compile-wasm:
+  test-rust:
+    name: 'test:rust'
     runs-on: buildjet-16vcpu-ubuntu-2204 # buildjet for rust, github standard for everything else
     steps:
       - uses: actions/checkout@v4
@@ -30,8 +31,9 @@ jobs:
       - uses: jetli/wasm-pack-action@v0.4.0 # preinstall wasm-pack
         with:
           version: 'latest'
+      - uses: browser-actions/setup-firefox@v1 # wasm tests in ffx
 
-      - run: pnpm turbo compile --cache-dir=.turbo # compile wasm
+      - run: pnpm turbo test:rust --cache-dir=.turbo # test wasm
 
       - run: cargo tree --invert mio --edges features # debug tree
         if: failure()
