@@ -20,6 +20,7 @@ export * from './components/ui/sheet';
 export * from './components/ui/switch';
 export * from './components/ui/table';
 export * from './components/ui/tabs';
+export * from './components/ui/toaster';
 export * from './components/ui/toggle';
 export * from './components/ui/tooltip';
 export * from './components/ui/tx/view/transaction';

@@ -6,15 +6,20 @@ import {
   toBaseUnit,
 } from '@penumbra-zone/types';
 import { AllSlices, SliceCreator } from '.';
-import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
+import { toast } from 'sonner';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { errorTxToast, buildingTxToast, successTxToast } from '../components/shared/toast-content';
+import {
+  errorTxToast,
+  buildingTxToast,
+  successTxToast,
+  broadcastingTxToast,
+} from '../components/shared/toast-content';
 import BigNumber from 'bignumber.js';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { ibcClient, viewClient } from '../clients/grpc';
-import { authWitnessBuild, broadcast, plan } from './helpers';
+import { authWitnessBuild, broadcast, getTxHash, plan } from './helpers';
 import { AssetBalance } from '../fetchers/balances';
 
 export interface IbcSendSlice {
@@ -26,7 +31,7 @@ export interface IbcSendSlice {
   destinationChainAddress: string;
   setDestinationChainAddress: (addr: string) => void;
   setChain: (chain: Chain | undefined) => void;
-  sendIbcWithdraw: (toastFn: typeof toast) => Promise<void>;
+  sendIbcWithdraw: () => Promise<void>;
   txInProgress: boolean;
 }
 
@@ -57,32 +62,37 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
         state.ibc.destinationChainAddress = addr;
       });
     },
-    sendIbcWithdraw: async toastFn => {
+    sendIbcWithdraw: async () => {
       set(state => {
         state.send.txInProgress = true;
       });
 
-      const { dismiss, update } = toastFn(buildingTxToast());
+      const txToastId = buildingTxToast();
 
       try {
         const transactionPlan = await plan(await getPlanRequest(get().ibc));
-        const transaction = await authWitnessBuild(update, { transactionPlan });
-        const { txHash, detectionHeight } = await broadcast(update, { transaction });
+        const transaction = await authWitnessBuild({ transactionPlan }, status =>
+          buildingTxToast(status, txToastId),
+        );
+        const txHash = await getTxHash(transaction);
+        const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
+          broadcastingTxToast(txHash, status, txToastId),
+        );
 
-        update(successTxToast(txHash, detectionHeight));
+        successTxToast(txHash, detectionHeight);
 
         // Reset form
         set(state => {
           state.ibc.amount = '';
         });
       } catch (e) {
-        toastFn(errorTxToast(e));
+        errorTxToast(e, txToastId);
         throw e;
       } finally {
         set(state => {
           state.ibc.txInProgress = false;
         });
-        dismiss();
+        toast.dismiss(txToastId);
       }
     },
   };

@@ -1,7 +1,6 @@
 import { Button, Input } from '@penumbra-zone/ui';
 import { useStore } from '../../../state/index.ts';
 import { sendSelector, sendValidationErrors } from '../../../state/send.ts';
-import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import { InputBlock } from '../../shared/input-block';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { AssetBalance, getAssetBalances } from '../../../fetchers/balances';
@@ -28,7 +27,6 @@ export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AssetBal
 
 export const SendForm = () => {
   const assetBalances = useLoaderData() as AssetBalance[];
-  const { toast } = useToast();
   const {
     selection,
     amount,
@@ -56,7 +54,7 @@ export const SendForm = () => {
       className='flex flex-col gap-4 xl:gap-3'
       onSubmit={e => {
         e.preventDefault();
-        void sendTx(toast);
+        void sendTx();
       }}
     >
       <InputBlock
