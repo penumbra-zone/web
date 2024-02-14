@@ -1,0 +1,34 @@
+name: WASM
+on: workflow_call
+
+# workflow_call for optional forcing
+
+jobs:
+  compile-wasm:
+    runs-on: buildjet-16vcpu-ubuntu-2204
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v3
+        id: turbo-cache
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+      - uses: pnpm/action-setup@v2
+      - uses: buildjet/setup-node@v4
+        with:
+          node-version: '21'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo telemetry disable
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: astriaorg/buildjet-rust-cache@v2.5.1
+      - uses: jetli/wasm-pack-action@v0.4.0
+        with:
+          version: 'latest'
+
+      - run: pnpm turbo compile --cache-dir=.turbo
