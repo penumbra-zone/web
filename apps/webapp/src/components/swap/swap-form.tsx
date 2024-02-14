@@ -1,23 +1,22 @@
 import { Button } from '@penumbra-zone/ui';
-import { useToast } from '@penumbra-zone/ui/components/ui/use-toast';
 import InputToken from '../shared/input-token';
 import { useLoaderData } from 'react-router-dom';
-import { AssetBalance } from '../../fetchers/balances';
 import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
 import { AssetOutBox } from './asset-out-box';
+import { SwapLoaderResponse } from './swap-loader.tsx';
 
 export const SwapForm = () => {
-  const assetBalances = useLoaderData() as AssetBalance[];
-  const { toast } = useToast();
-  const { assetIn, setAssetIn, amount, setAmount, initiateSwapTx } = useStore(swapSelector);
+  const { assetBalances } = useLoaderData() as SwapLoaderResponse;
+  const { assetIn, setAssetIn, amount, setAmount, initiateSwapTx, txInProgress } =
+    useStore(swapSelector);
 
   return (
     <form
       className='flex flex-col gap-4 xl:gap-3'
       onSubmit={e => {
         e.preventDefault();
-        void initiateSwapTx(toast);
+        void initiateSwapTx();
       }}
     >
       <InputToken
@@ -35,7 +34,7 @@ export const SwapForm = () => {
         balances={assetBalances}
       />
       <AssetOutBox balances={assetBalances} />
-      <Button type='submit' variant='gradient' className='mt-3' size='lg' disabled={false}>
+      <Button type='submit' variant='gradient' className='mt-3' size='lg' disabled={txInProgress}>
         Swap
       </Button>
     </form>

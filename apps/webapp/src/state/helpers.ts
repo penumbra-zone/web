@@ -1,27 +1,38 @@
 import {
   AuthorizeAndBuildRequest,
-  WitnessAndBuildRequest,
   BroadcastTransactionRequest,
   TransactionPlannerRequest,
+  WitnessAndBuildRequest,
+  WitnessAndBuildResponse,
+  AuthorizeAndBuildResponse,
+  BroadcastTransactionResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { viewClient } from '../clients/grpc.ts';
 import { uint8ArrayToHex } from '@penumbra-zone/types';
 import { sha256Hash } from '@penumbra-zone/crypto-web';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import {
+  Transaction,
+  TransactionPlan,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
-import { ToastFnProps } from '@penumbra-zone/ui/components/ui/use-toast';
-import { broadcastingTxToast, buildingTxToast } from '../components/shared/toast-content.tsx';
 import { PartialMessage } from '@bufbuild/protobuf';
 
-export const plan = (req: PartialMessage<TransactionPlannerRequest>) =>
-  viewClient.transactionPlanner(req).then(({ plan }) => plan!);
+export const plan = async (
+  req: PartialMessage<TransactionPlannerRequest>,
+): Promise<TransactionPlan> => {
+  const { plan } = await viewClient.transactionPlanner(req);
+  if (!plan) throw new Error('No plan in planner response');
+  return plan;
+};
 
 export const authWitnessBuild = async (
-  toastUp: (tp: ToastFnProps) => void,
   req: PartialMessage<AuthorizeAndBuildRequest>,
+  onStatusUpdate?: (
+    status?: (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'],
+  ) => void,
 ) => {
   for await (const { status } of viewClient.authorizeAndBuild(req)) {
-    toastUp(buildingTxToast(status));
+    if (onStatusUpdate) onStatusUpdate(status);
     switch (status.case) {
       case undefined:
       case 'buildProgress':
@@ -36,11 +47,13 @@ export const authWitnessBuild = async (
 };
 
 export const witnessBuild = async (
-  toastUp: (tp: ToastFnProps) => void,
   req: PartialMessage<WitnessAndBuildRequest>,
+  onStatusUpdate: (
+    status?: (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'],
+  ) => void,
 ) => {
   for await (const { status } of viewClient.witnessAndBuild(req)) {
-    toastUp(buildingTxToast(status));
+    onStatusUpdate(status);
     switch (status.case) {
       case undefined:
       case 'buildProgress':
@@ -55,17 +68,17 @@ export const witnessBuild = async (
 };
 
 export const broadcast = async (
-  toastUp: (tp: ToastFnProps) => void,
   req: PartialMessage<BroadcastTransactionRequest>,
+  onStatusUpdate: (status?: BroadcastTransactionResponse['status']) => void,
 ): Promise<{ txHash: string; detectionHeight?: bigint }> => {
   const { awaitDetection, transaction } = req;
   if (!transaction) throw new Error('no transaction');
   const txId = await getTxId(transaction);
   const txHash = getTxHash(txId);
-  toastUp(broadcastingTxToast(txHash));
+  onStatusUpdate(undefined);
   for await (const { status } of viewClient.broadcastTransaction({ awaitDetection, transaction })) {
     if (!txId.equals(status.value?.id)) throw new Error('unexpected transaction id');
-    toastUp(broadcastingTxToast(txHash, status));
+    onStatusUpdate(status);
     switch (status.case) {
       case 'broadcastSuccess':
         if (!awaitDetection) return { txHash, detectionHeight: undefined };

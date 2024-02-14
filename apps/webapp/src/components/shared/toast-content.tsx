@@ -1,17 +1,23 @@
 import {
   AuthorizeAndBuildResponse,
-  WitnessAndBuildResponse,
   BroadcastTransactionResponse,
+  WitnessAndBuildResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { shorten } from '@penumbra-zone/types';
-import { ToastAction } from '@penumbra-zone/ui/components/ui/toast';
-import { ToastFnProps } from '@penumbra-zone/ui/components/ui/use-toast';
-import { Bars, Grid, Watch } from 'react-loader-spinner';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
+
+type ToastId = string | number;
 
 export const buildingTxToast = (
-  status?: (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'],
-): ToastFnProps => {
+  status?: (
+    | AuthorizeAndBuildResponse
+    | BroadcastTransactionResponse
+    | WitnessAndBuildResponse
+  )['status'],
+  toastId?: string | number,
+  message = 'Building transaction',
+): ToastId => {
   let progress: undefined | number;
 
   switch (status?.case) {
@@ -29,91 +35,63 @@ export const buildingTxToast = (
       break;
   }
 
-  return {
+  return toast.loading(message, {
     duration: Infinity,
-    title: 'Building Transaction',
-    main: (
-      <div className='flex items-center justify-center gap-4'>
-        <span>
-          Transaction building...
-          {progress != null ? `${Math.round(progress * 100)}%` : null}
-        </span>
-        <Grid height='20' width='20' color='white' />
-      </div>
-    ),
-  };
+    description: progress !== undefined ? `${Math.round(progress * 100)}%` : undefined,
+    id: toastId,
+  });
 };
 
 export const broadcastingTxToast = (
   txHash: string,
   status?: BroadcastTransactionResponse['status'],
-): ToastFnProps => {
-  let main: JSX.Element | undefined = undefined;
-  let variant: 'default' | 'success' | undefined = undefined;
+  toastId?: string | number,
+): ToastId => {
+  let message = 'Broadcasting transaction';
   switch (status?.case) {
     case undefined:
-      variant = 'default';
-      main = (
-        <div className='flex items-center justify-center gap-4'>
-          <span>Emitting transaction...</span>
-          <Bars height='20' width='20' color='white' />
-        </div>
-      );
+      message = 'Emitting transaction';
       break;
     case 'broadcastSuccess':
-      variant = 'default';
-      main = (
-        <div className='flex items-center justify-center gap-4'>
-          <span>Waiting for confirmation...</span>
-          <Watch height='20' width='20' color='white' />
-        </div>
-      );
+      message = 'Waiting for confirmation';
       break;
     case 'confirmed': // about to dismiss the toast
-      variant = 'success';
       break;
     default:
       console.warn('Unknown broadcast status', status);
       break;
   }
 
-  return {
+  return toast.loading(message, {
     duration: Infinity,
-    title: 'Broadcasting Transaction',
-    variant,
-    subText: shorten(txHash, 8),
-    main,
-  };
+    description: shorten(txHash, 8),
+    id: toastId,
+  });
 };
 
 export const successTxToast = (
   txHash: string,
   detectionHeight?: bigint | undefined,
-): ToastFnProps => ({
-  duration: Infinity,
-  title: 'Confirmed Transaction',
-  variant: 'success',
-  subText: shorten(txHash, 8),
-  main: (
-    <div className='flex items-center justify-center gap-4'>
-      <span>
-        Transaction appeared on chain
-        {detectionHeight ? <>at height ${detectionHeight}</> : null}
-      </span>
-    </div>
-  ),
-  action: (
-    <Link to={`/tx/${txHash}`}>
-      <ToastAction className='border-transparent bg-teal-800' altText='See transaction details'>
-        See details
-      </ToastAction>
-    </Link>
-  ),
-});
+  toastId?: string | number,
+  message = 'Confirmed transaction',
+): ToastId =>
+  toast.success(message, {
+    duration: Infinity,
+    closeButton: true,
+    description: `Transaction ${shorten(txHash, 8)} appeared on chain ${detectionHeight ? `at height ${detectionHeight}` : ''}`,
+    action: {
+      label: <Link to={`/tx/${txHash}`}>See details</Link>,
+      onClick: () => {
+        /* no-op */
+      },
+    },
+    id: toastId,
+  });
 
-export const errorTxToast = (error: unknown): ToastFnProps => ({
-  duration: Infinity,
-  variant: 'error',
-  main: 'Error with transaction',
-  subText: <p className='break-all'>{String(error)}</p>,
-});
+export const errorTxToast = (error: unknown, toastId?: string | number): ToastId =>
+  toast.error('Error with transaction', {
+    duration: Infinity,
+    closeButton: true,
+    description: String(error),
+    id: toastId,
+  });

@@ -1,1 +1,1 @@
-export { default } from '@penumbra-zone/ui/tailwind.config.js';
+export { default } from '@penumbra-zone/tailwind-config';

@@ -9,12 +9,16 @@ import {
   toBaseUnit,
 } from '@penumbra-zone/types';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { toast } from '@penumbra-zone/ui/components/ui/use-toast';
 import BigNumber from 'bignumber.js';
-import { buildingTxToast, errorTxToast, successTxToast } from '../components/shared/toast-content';
+import {
+  broadcastingTxToast,
+  buildingTxToast,
+  errorTxToast,
+  successTxToast,
+} from '../components/shared/toast-content';
 import { AssetBalance } from '../fetchers/balances';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { authWitnessBuild, broadcast, plan } from './helpers';
+import { authWitnessBuild, broadcast, getTxHash, plan } from './helpers';
 
 import {
   Fee,
@@ -34,7 +38,7 @@ export interface SendSlice {
   refreshFee: () => Promise<void>;
   feeTier: FeeTier_Tier;
   setFeeTier: (feeTier: FeeTier_Tier) => void;
-  sendTx: (toastFn: typeof toast) => Promise<void>;
+  sendTx: () => Promise<void>;
   txInProgress: boolean;
 }
 
@@ -90,31 +94,35 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.feeTier = feeTier;
       });
     },
-    sendTx: async toastFn => {
+    sendTx: async () => {
       set(state => {
         state.send.txInProgress = true;
       });
 
-      const { dismiss, update } = toastFn(buildingTxToast());
+      const txToastId = buildingTxToast();
 
       try {
         const transactionPlan = await plan(assembleRequest(get().send));
-        const transaction = await authWitnessBuild(update, { transactionPlan });
-        const { txHash, detectionHeight } = await broadcast(update, { transaction });
-        update(successTxToast(txHash, detectionHeight));
+        const transaction = await authWitnessBuild({ transactionPlan }, status =>
+          buildingTxToast(status, txToastId),
+        );
+        const txHash = await getTxHash(transaction);
+        const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
+          broadcastingTxToast(txHash, status, txToastId),
+        );
+        successTxToast(txHash, detectionHeight, txToastId);
 
         // Reset form
         set(state => {
           state.send.amount = '';
-          state.send.txInProgress = false;
         });
       } catch (e) {
+        errorTxToast(e, txToastId);
+        throw e;
+      } finally {
         set(state => {
           state.send.txInProgress = false;
         });
-        dismiss();
-        toastFn(errorTxToast(e));
-        throw e;
       }
     },
   };
