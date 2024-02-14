@@ -5,7 +5,7 @@ import {
   getEphemeralByIndex,
   getFullViewingKey,
   getWalletId,
-} from '@penumbra-zone/wasm-ts';
+} from '@penumbra-zone/wasm';
 import { Key } from '@penumbra-zone/crypto-web';
 import { ExtensionStorage, LocalStorageState } from '@penumbra-zone/storage';
 import { Wallet, WalletCreate } from '@penumbra-zone/types';

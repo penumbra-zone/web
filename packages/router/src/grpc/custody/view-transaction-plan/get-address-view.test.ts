@@ -9,7 +9,7 @@ import { bech32ToUint8Array } from '@penumbra-zone/types';
 
 const mockIsControlledAddress = vi.hoisted(() => vi.fn());
 
-vi.mock('@penumbra-zone/wasm-ts', () => ({
+vi.mock('@penumbra-zone/wasm', () => ({
   isControlledAddress: mockIsControlledAddress,
 }));
 

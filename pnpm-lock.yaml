@@ -32,16 +32,13 @@ importers:
       '@penumbra-zone/tailwind-config':
         specifier: workspace:*
         version: link:packages/tailwind-config
-      '@penumbra-zone/wasm-bundler':
-        specifier: 0.65.0
-        version: 0.65.0
     devDependencies:
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:packages/types
-      '@penumbra-zone/wasm-nodejs':
-        specifier: 0.65.0
-        version: 0.65.0
+      '@penumbra-zone/wasm':
+        specifier: workspace:*
+        version: link:packages/wasm
       '@turbo/gen':
         specifier: ^1.12.3
         version: 1.12.3(@types/node@20.11.16)(typescript@5.3.3)
@@ -72,6 +69,9 @@ importers:
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
+      vitest:
+        specifier: ^1.2.2
+        version: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
 
   apps/extension:
     dependencies:
@@ -99,7 +99,7 @@ importers:
       '@penumbra-zone/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@penumbra-zone/wasm-ts':
+      '@penumbra-zone/wasm':
         specifier: workspace:*
         version: link:../../packages/wasm
       '@tanstack/react-query':
@@ -187,9 +187,12 @@ importers:
       vite:
         specifier: ^5.0.12
         version: 5.0.12(@types/node@20.11.16)
-      vitest:
-        specifier: ^1.2.2
-        version: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
+      vite-plugin-top-level-await:
+        specifier: ^1.4.1
+        version: 1.4.1(vite@5.0.12)
+      vite-plugin-wasm:
+        specifier: ^3.3.0
+        version: 3.3.0(vite@5.0.12)
       webpack:
         specifier: ^5.90.1
         version: 5.90.1(webpack-cli@5.1.4)
@@ -284,9 +287,6 @@ importers:
       vite:
         specifier: ^5.0.12
         version: 5.0.12(@types/node@20.11.16)
-      vitest:
-        specifier: ^1.2.2
-        version: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
 
   packages/constants: {}
 
@@ -308,9 +308,6 @@ importers:
       vite:
         specifier: ^5.0.12
         version: 5.0.12(@types/node@20.11.16)
-      vitest:
-        specifier: ^1.2.2
-        version: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
 
   packages/eslint-config-custom:
     dependencies:
@@ -346,14 +343,14 @@ importers:
         version: 1.12.3(eslint@8.56.0)
       eslint-plugin-vitest:
         specifier: ^0.3.22
-        version: 0.3.22(@typescript-eslint/eslint-plugin@6.21.0)(eslint@8.56.0)(typescript@5.3.3)
+        version: 0.3.22(@typescript-eslint/eslint-plugin@6.21.0)(eslint@8.56.0)(typescript@5.3.3)(vitest@1.2.2)
 
   packages/query:
     dependencies:
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../crypto
-      '@penumbra-zone/wasm-ts':
+      '@penumbra-zone/wasm':
         specifier: workspace:*
         version: link:../wasm
       bech32:
@@ -383,7 +380,7 @@ importers:
       '@penumbra-zone/transport':
         specifier: workspace:*
         version: link:../transport
-      '@penumbra-zone/wasm-ts':
+      '@penumbra-zone/wasm':
         specifier: workspace:*
         version: link:../wasm
     devDependencies:
@@ -393,9 +390,12 @@ importers:
       vite:
         specifier: ^5.0.12
         version: 5.0.12(@types/node@20.11.16)
-      vitest:
-        specifier: ^1.2.2
-        version: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
+      vite-plugin-top-level-await:
+        specifier: ^1.4.1
+        version: 1.4.1(vite@5.0.12)
+      vite-plugin-wasm:
+        specifier: ^3.3.0
+        version: 3.3.0(vite@5.0.12)
 
   packages/services:
     dependencies:
@@ -408,7 +408,7 @@ importers:
       '@penumbra-zone/storage':
         specifier: workspace:*
         version: link:../storage
-      '@penumbra-zone/wasm-ts':
+      '@penumbra-zone/wasm':
         specifier: workspace:*
         version: link:../wasm
       exponential-backoff:
@@ -440,9 +440,9 @@ importers:
       '@vitest/browser':
         specifier: ^1.2.2
         version: 1.2.2(playwright@1.41.2)(vitest@1.2.2)
-      vitest:
-        specifier: ^1.2.2
-        version: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
+      playwright:
+        specifier: ^1.41.2
+        version: 1.41.2
 
   packages/tailwind-config:
     dependencies:
@@ -478,10 +478,6 @@ importers:
       zod:
         specifier: ^3.22.4
         version: 3.22.4
-    devDependencies:
-      vitest:
-        specifier: ^1.2.2
-        version: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
 
   packages/ui:
     dependencies:
@@ -599,7 +595,7 @@ importers:
         version: 1.4.6
       '@vitest/browser':
         specifier: ^1.2.2
-        version: 1.2.2(vitest@1.2.2)
+        version: 1.2.2(playwright@1.41.2)(vitest@1.2.2)
       autoprefixer:
         specifier: ^10.4.17
         version: 10.4.17(postcss@8.4.35)
@@ -627,9 +623,6 @@ importers:
       vite:
         specifier: ^5.0.12
         version: 5.0.12(@types/node@20.11.16)
-      vitest:
-        specifier: ^1.2.2
-        version: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
 
   packages/wasm:
     dependencies:
@@ -643,9 +636,15 @@ importers:
       fake-indexeddb:
         specifier: ^5.0.2
         version: 5.0.2
-      vitest:
-        specifier: ^1.2.2
-        version: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
+      tsx:
+        specifier: ^4.7.0
+        version: 4.7.0
+      vite-plugin-top-level-await:
+        specifier: ^1.4.1
+        version: 1.4.1(vite@5.0.12)
+      vite-plugin-wasm:
+        specifier: ^3.3.0
+        version: 3.3.0(vite@5.0.12)
 
 packages:
 
@@ -3214,14 +3213,6 @@ packages:
     engines: {node: '>=8.12.0'}
     dev: true
 
-  /@penumbra-zone/wasm-bundler@0.65.0:
-    resolution: {integrity: sha512-ozm9Xiy3RCXH8/nakwnRMXEzUv+WKU6et9BT/PU73vCkDsBCKmKVQ9vZ9O9ApAKZh6r9aKAjnN0EvetO2FqA8g==}
-    dev: false
-
-  /@penumbra-zone/wasm-nodejs@0.65.0:
-    resolution: {integrity: sha512-eA+tyCbkChofJLP7fNlYBGJIwq/N2pCjZBmof3tP7L2Izg/acL5KlZHNjEWbzt8FCt+U+VWTmNSzr9g5eyzv1w==}
-    dev: true
-
   /@pkgjs/parseargs@0.11.0:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
@@ -4278,6 +4269,16 @@ packages:
     resolution: {integrity: sha512-HOil5aFtme37dVQTB6M34G95kPM3MMuqSmIRVCC52eKV+Y/tGSqw9P3rWhlAx6A+mz+MoX+XxsGsNJbaI5qCgQ==}
     engines: {node: '>=14.0.0'}
     dev: false
+
+  /@rollup/plugin-virtual@3.0.2:
+    resolution: {integrity: sha512-10monEYsBp3scM4/ND4LNH5Rxvh3e/cVeL3jWTgZ2SrQ+BmUoQcopVQvnaMcOnykb1VkxUFuDAN+0FnpTFRy2A==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dev: true
 
   /@rollup/pluginutils@5.1.0:
     resolution: {integrity: sha512-XTIWOPPcpvyKI6L1NHo0lFlCyznUEyPmPY1mc3KpPVDYulHSTvyeLNVW00QTLIAFNhR3kYnJTQHeGqU4M3n09g==}
@@ -6012,27 +6013,6 @@ packages:
       '@vitest/utils': 1.2.2
       magic-string: 0.30.7
       playwright: 1.41.2
-      sirv: 2.0.4
-      vitest: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
-    dev: true
-
-  /@vitest/browser@1.2.2(vitest@1.2.2):
-    resolution: {integrity: sha512-N8myxNVLbS9AbZ7B2cK33HTGYVzUTDArbMh3hLojOxaj7s7ZrBYYmzs0Q5J2wyDrOgs51p6OUrrzAIb1Z+Ck3A==}
-    peerDependencies:
-      playwright: '*'
-      safaridriver: '*'
-      vitest: ^1.0.0
-      webdriverio: '*'
-    peerDependenciesMeta:
-      playwright:
-        optional: true
-      safaridriver:
-        optional: true
-      webdriverio:
-        optional: true
-    dependencies:
-      '@vitest/utils': 1.2.2
-      magic-string: 0.30.7
       sirv: 2.0.4
       vitest: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
 
@@ -8736,7 +8716,7 @@ packages:
       eslint: 8.56.0
     dev: false
 
-  /eslint-plugin-vitest@0.3.22(@typescript-eslint/eslint-plugin@6.21.0)(eslint@8.56.0)(typescript@5.3.3):
+  /eslint-plugin-vitest@0.3.22(@typescript-eslint/eslint-plugin@6.21.0)(eslint@8.56.0)(typescript@5.3.3)(vitest@1.2.2):
     resolution: {integrity: sha512-atkFGQ7aVgcuSeSMDqnyevIyUpfBPMnosksgEPrKE7Y8xQlqG/5z2IQ6UDau05zXaaFv7Iz8uzqvIuKshjZ0Zw==}
     engines: {node: ^18.0.0 || >= 20.0.0}
     peerDependencies:
@@ -8752,6 +8732,7 @@ packages:
       '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0)(eslint@8.56.0)(typescript@5.3.3)
       '@typescript-eslint/utils': 6.21.0(eslint@8.56.0)(typescript@5.3.3)
       eslint: 8.56.0
+      vitest: 1.2.2(@types/node@20.11.16)(@vitest/browser@1.2.2)(jsdom@24.0.0)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -9456,7 +9437,6 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /fsevents@2.3.3:
@@ -12385,7 +12365,6 @@ packages:
     resolution: {integrity: sha512-VaTvwCA4Y8kxEe+kfm2+uUUw5Lubf38RxF7FpBxLPmGe5sdNkSg5e3ChEigaGrX7qdqT3pt2m/98LiyvU2x6CA==}
     engines: {node: '>=16'}
     hasBin: true
-    dev: true
 
   /playwright@1.41.2:
     resolution: {integrity: sha512-v0bOa6H2GJChDL8pAeLa/LZC4feoAMbSQm1/jF/ySsWWoaNItvrMP7GEkvEEFyCTUYKMxjQKaTSg5up7nR6/8A==}
@@ -12395,7 +12374,6 @@ packages:
       playwright-core: 1.41.2
     optionalDependencies:
       fsevents: 2.3.2
-    dev: true
 
   /polished@4.3.1:
     resolution: {integrity: sha512-OBatVyC/N7SCW/FaDHrSd+vn0o5cS855TOmYi4OkdWUMSJCET/xip//ch8xGUvtr3i44X9LVyWwQlRMTN3pwSA==}
@@ -15226,6 +15204,28 @@ packages:
       - supports-color
       - terser
 
+  /vite-plugin-top-level-await@1.4.1(vite@5.0.12):
+    resolution: {integrity: sha512-hogbZ6yT7+AqBaV6lK9JRNvJDn4/IJvHLu6ET06arNfo0t2IsyCaon7el9Xa8OumH+ESuq//SDf8xscZFE0rWw==}
+    peerDependencies:
+      vite: '>=2.8'
+    dependencies:
+      '@rollup/plugin-virtual': 3.0.2
+      '@swc/core': 1.4.0
+      uuid: 9.0.1
+      vite: 5.0.12(@types/node@20.11.16)
+    transitivePeerDependencies:
+      - '@swc/helpers'
+      - rollup
+    dev: true
+
+  /vite-plugin-wasm@3.3.0(vite@5.0.12):
+    resolution: {integrity: sha512-tVhz6w+W9MVsOCHzxo6SSMSswCeIw4HTrXEi6qL3IRzATl83jl09JVO1djBqPSwfjgnpVHNLYcaMbaDX5WB/pg==}
+    peerDependencies:
+      vite: ^2 || ^3 || ^4 || ^5
+    dependencies:
+      vite: 5.0.12(@types/node@20.11.16)
+    dev: true
+
   /vite@5.0.12(@types/node@20.11.16):
     resolution: {integrity: sha512-4hsnEkG3q0N4Tzf1+t6NdN9dg/L3BM+q8SWgbSPnJvrgH2kgdyzfVJwbR1ic69/4uMJJ/3dqDZZE5/WwqW8U1w==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -15287,7 +15287,7 @@ packages:
         optional: true
     dependencies:
       '@types/node': 20.11.16
-      '@vitest/browser': 1.2.2(vitest@1.2.2)
+      '@vitest/browser': 1.2.2(playwright@1.41.2)(vitest@1.2.2)
       '@vitest/expect': 1.2.2
       '@vitest/runner': 1.2.2
       '@vitest/snapshot': 1.2.2

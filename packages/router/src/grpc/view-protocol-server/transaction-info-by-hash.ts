@@ -1,7 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { transactionInfo } from '@penumbra-zone/wasm-ts';
+import { transactionInfo } from '@penumbra-zone/wasm';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, ctx) => {

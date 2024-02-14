@@ -13,7 +13,7 @@ import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import type { Services } from '@penumbra-zone/services';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
-vi.mock('@penumbra-zone/wasm-ts', () => ({
+vi.mock('@penumbra-zone/wasm', () => ({
   transactionInfo: mockTransactionInfo,
 }));
 describe('TransactionInfoByHash request handler', () => {

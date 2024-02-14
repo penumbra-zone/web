@@ -1,7 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-import { getWitness } from '@penumbra-zone/wasm-ts';
+import { getWitness } from '@penumbra-zone/wasm';
 
 import { ConnectError, Code } from '@connectrpc/connect';
 

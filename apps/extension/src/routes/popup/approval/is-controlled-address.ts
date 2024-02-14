@@ -6,7 +6,7 @@ import { viewClient } from '../../../clients/extension-page';
  * controlled by the current user.
  *
  * Note that this is different from the `isControlledAddress` export from
- * `@penumbra-zone/wasm-ts`, which requires a full viewing key to be passed to
+ * `@penumbra-zone/wasm`, which requires a full viewing key to be passed to
  * it. We don't have access to the full viewing key here inside the popup, so
  * we'll call to the gRPC client's `.indexByAddress()` method. That method
  * throws when the given address is not controlled by the user's full viewing

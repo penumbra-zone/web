@@ -1,10 +1,7 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { generateSpendKey, getAddressByIndex, getFullViewingKey } from './keys';
 import { isControlledAddress } from './address';
 import { bech32Address } from '@penumbra-zone/types';
-
-// Replace the wasm-pack import with the nodejs version so tests can run
-vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
 
 describe('address', () => {
   const seedPhrase =

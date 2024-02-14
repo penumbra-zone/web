@@ -14,11 +14,12 @@
     "@penumbra-zone/services": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/transport": "workspace:*",
-    "@penumbra-zone/wasm-ts": "workspace:*"
+    "@penumbra-zone/wasm": "workspace:*"
   },
   "devDependencies": {
     "@types/chrome": "0.0.260",
     "vite": "^5.0.12",
-    "vitest": "^1.2.2"
+    "vite-plugin-top-level-await": "^1.4.1",
+    "vite-plugin-wasm": "^3.3.0"
   }
 }
