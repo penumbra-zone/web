@@ -11,13 +11,9 @@ on: [pull_request, workflow_dispatch]
 jobs:
   turbo-compile:
     name: Compile
-    # only run crate compile on pull requests that changed the crate
-    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'packages/wasm/crate/') }}
     uses: ./.github/workflows/compile-wasm.yml
 
   test-rust:
-    # only run crate tests on pull requests that changed the crate
-    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'packages/wasm/crate/') }}
     uses: ./.github/workflows/test-wasm.yml
 
   turbo-lint:
