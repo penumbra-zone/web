@@ -14,14 +14,14 @@ const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
 let active = 0;
 
-const activateOffscreen = async () => {
-  const noOffscreen = chrome.runtime
+export const activateOffscreen = async () => {
+  const noOffscreenContextsExist = chrome.runtime
     .getContexts({
       contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
     })
     .then(offscreenContexts => !offscreenContexts.length);
 
-  if (!active++ || (await noOffscreen))
+  if (!active++ || (await noOffscreenContextsExist))
     await chrome.offscreen
       .createDocument({
         url: chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH),
