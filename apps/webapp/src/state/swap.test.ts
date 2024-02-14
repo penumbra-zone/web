@@ -70,4 +70,35 @@ describe('Swap Slice', () => {
     useStore.getState().swap.setAmount('22.44');
     expect(useStore.getState().swap.amount).toBe('22.44');
   });
+
+  test('changing parameters clears simulation', () => {
+    expect(useStore.getState().swap.simulateOutResult).toBeUndefined();
+    useStore.setState(state => {
+      state.swap.simulateOutResult = new ValueView();
+      return state;
+    });
+    expect(useStore.getState().swap.simulateOutResult).toBeDefined();
+
+    // Asset in change resets simulateOutResult
+    useStore.getState().swap.setAssetIn({} as AssetBalance);
+    expect(useStore.getState().swap.simulateOutResult).toBeUndefined();
+
+    // Asset out change resets simulateOutResult
+    useStore.setState(state => {
+      state.swap.simulateOutResult = new ValueView();
+      return state;
+    });
+    expect(useStore.getState().swap.simulateOutResult).toBeDefined();
+    useStore.getState().swap.setAssetOut({} as Metadata);
+    expect(useStore.getState().swap.simulateOutResult).toBeUndefined();
+
+    // Amount change resets simulateOutResult
+    useStore.setState(state => {
+      state.swap.simulateOutResult = new ValueView();
+      return state;
+    });
+    expect(useStore.getState().swap.simulateOutResult).toBeDefined();
+    useStore.getState().swap.setAmount('123');
+    expect(useStore.getState().swap.simulateOutResult).toBeUndefined();
+  });
 });

@@ -30,7 +30,7 @@ export const headerLinks: HeaderLink[] = [
   {
     href: PagePath.SWAP,
     label: 'Swap',
-    active: false,
+    active: true,
     mobileIcon: <SwapIcon />,
   },
   {

@@ -20,6 +20,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { getAddressByIndex } from '../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
+import { simulateSwapOutput } from '../fetchers/simulate.ts';
 
 export interface SwapSlice {
   assetIn: AssetBalance | undefined;
@@ -30,29 +31,49 @@ export interface SwapSlice {
   setAssetOut: (metadata: Metadata) => void;
   initiateSwapTx: () => Promise<void>;
   txInProgress: boolean;
+  simulateSwap: (toastFn: typeof toast) => Promise<void>;
+  simulateOutResult: ValueView | undefined;
 }
 
 export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
   return {
     assetIn: undefined,
-    setAssetIn: token => {
-      set(state => {
-        state.swap.assetIn = token;
+    setAssetIn: asset => {
+      set(({ swap }) => {
+        swap.assetIn = asset;
+        swap.simulateOutResult = undefined;
       });
     },
     assetOut: undefined,
-    setAssetOut: denom => {
-      set(state => {
-        state.swap.assetOut = denom;
+    setAssetOut: metadata => {
+      set(({ swap }) => {
+        swap.assetOut = metadata;
+        swap.simulateOutResult = undefined;
       });
     },
     amount: '',
     setAmount: amount => {
-      set(state => {
-        state.swap.amount = amount;
+      set(({ swap }) => {
+        swap.amount = amount;
+        swap.simulateOutResult = undefined;
       });
     },
     txInProgress: false,
+    simulateOutResult: undefined,
+    simulateSwap: async toastFn => {
+      try {
+        const assetIn = get().swap.assetIn;
+        const assetOut = get().swap.assetOut;
+        if (!assetIn || !assetOut) throw new Error('Both asset in and out need to be set');
+
+        const outputVal = await simulateSwapOutput(assetIn.value, assetOut);
+        set(({ swap }) => {
+          swap.simulateOutResult = outputVal;
+        });
+      } catch (e) {
+        toastFn(errorTxToast(e));
+      }
+    },
     initiateSwapTx: async () => {
       set(state => {
         state.swap.txInProgress = true;

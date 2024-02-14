@@ -45,6 +45,7 @@ import { stdRouter } from '@penumbra-zone/router/src/std/router';
 import { isStdRequest } from '@penumbra-zone/types';
 import { createSameScriptClient } from './clients/extension-service';
 import { rethrowImplErrors } from './utils/rethrow-impl-errors';
+import { SimulationService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/dex/v1/dex_connect';
 
 // configure and initialize extension services. services are passed directly to stdRouter, and to rpc handlers as context
 const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
@@ -79,6 +80,11 @@ const ibcImpl = createProxyImpl(
   createPromiseClient(IbcClientService, createGrpcWebTransport({ baseUrl: grpcEndpoint })),
 );
 
+const simulationImpl = createProxyImpl(
+  SimulationService,
+  createPromiseClient(SimulationService, createGrpcWebTransport({ baseUrl: grpcEndpoint })),
+);
+
 const rpcImpls = [
   // rpc we provide
   [
@@ -93,6 +99,7 @@ const rpcImpls = [
   [ViewService, rethrowImplErrors(ViewService, viewImpl)],
   // rpc proxy
   [IbcClientService, ibcImpl],
+  [SimulationService, simulationImpl],
 ] as const;
 
 let custodyClient: PromiseClient<typeof CustodyService> | undefined;
