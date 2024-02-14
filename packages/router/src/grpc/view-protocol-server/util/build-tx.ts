@@ -20,8 +20,8 @@ export const optimisticBuild = async function* (
   authorizationRequest: PromiseLike<AuthorizationData>,
   fvk: string,
 ) {
-  // a promise that rejects if auth denies. raced with build tasks to cancel.
-  // if we raced auth directly, approval would complete the race.
+  // A promise that never resolves, but will reject if auth denies. Raced with
+  // build tasks to cancel them if auth fails.
   const cancel = new Promise<never>(
     (_, reject) =>
       void Promise.resolve(authorizationRequest).catch((r: unknown) =>
@@ -52,21 +52,32 @@ export const optimisticBuild = async function* (
   } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
 };
 
+/**
+ * Given an array of tasks in the form of promises, yields a `buildProgress`
+ * status update as each one completes. This is useful for RPC methods of the
+ * `MethodKind.ServerStreaming` variety, where we get back incremental updates
+ * from the server.
+ */
 const progressStream = async function* <T>(tasks: PromiseLike<T>[], cancel: PromiseLike<never>) {
-  // deliberately not a 'map' - tasks and promises have no direct relationship.
-  const tasksRemaining = Array.from(tasks, () => Promise.withResolvers<T>());
+  // `remainingTasksTracker` is just a way of keeping track of the _count_ of
+  // remaining tasks. To make that clear, we'll create it as an array of
+  // `PromiseWithResolvers`s with no values to resolve to. That's because
+  // there's no direct relationship between the _contents_ of `tasks` and
+  // `remainingTasksTracker` -- rather, just between the _lengths_.
+  const remainingTasksTracker = Array.from(tasks, () => Promise.withResolvers<T>());
 
-  // tasksRemaining will be consumed in order, as tasks complete in any order.
-  tasks.forEach(task => void task.then(() => tasksRemaining.shift()?.resolve(task)));
+  // `remainingTasksTracker` will be consumed in order, as `tasks` complete in
+  // any order.
+  tasks.forEach(task => void task.then(() => remainingTasksTracker.shift()?.resolve(task)));
 
   // yield status when any task resolves the next 'remaining' promise
-  while (tasksRemaining.length) {
-    await Promise.race([cancel, tasksRemaining[0]?.promise]);
+  while (remainingTasksTracker.length) {
+    await Promise.race([cancel, remainingTasksTracker[0]?.promise]);
     yield {
       status: {
         case: 'buildProgress',
         // +1 to represent the final build step, which we aren't handling here
-        value: { progress: (tasks.length - tasksRemaining.length) / (tasks.length + 1) },
+        value: { progress: (tasks.length - remainingTasksTracker.length) / (tasks.length + 1) },
       },
       // TODO: satisfies type parameter?
     } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
