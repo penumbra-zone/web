@@ -41,6 +41,10 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 
+import { IdbCursorSource } from './stream';
+
+import { streamToGenerator } from '@penumbra-zone/types/src/stream';
+
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
   chainId: string;
@@ -172,9 +176,11 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async *iterateAssetsMetadata() {
-    for await (const { value } of this.db.transaction('ASSETS').store) {
-      yield Metadata.fromJson(value);
-    }
+    yield* streamToGenerator(
+      new ReadableStream(
+        new IdbCursorSource(this.db.transaction('ASSETS').store.openCursor(), Metadata),
+      ),
+    );
   }
 
   async saveAssetsMetadata(metadata: Metadata) {
@@ -195,15 +201,25 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async *iterateSpendableNotes() {
-    for await (const { value } of this.db.transaction('SPENDABLE_NOTES').store) {
-      yield SpendableNoteRecord.fromJson(value);
-    }
+    yield* streamToGenerator(
+      new ReadableStream(
+        new IdbCursorSource(
+          this.db.transaction('SPENDABLE_NOTES').store.openCursor(),
+          SpendableNoteRecord,
+        ),
+      ),
+    );
   }
 
   async *iterateTransactionInfo() {
-    for await (const { value } of this.db.transaction('TRANSACTION_INFO').store) {
-      yield TransactionInfo.fromJson(value);
-    }
+    yield* streamToGenerator(
+      new ReadableStream(
+        new IdbCursorSource(
+          this.db.transaction('TRANSACTION_INFO').store.openCursor(),
+          TransactionInfo,
+        ),
+      ),
+    );
   }
 
   async saveTransactionInfo(tx: TransactionInfo): Promise<void> {
@@ -254,9 +270,11 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async *iterateSwaps() {
-    for await (const { value } of this.db.transaction('SWAPS').store) {
-      yield SwapRecord.fromJson(value);
-    }
+    yield* streamToGenerator(
+      new ReadableStream(
+        new IdbCursorSource(this.db.transaction('SWAPS').store.openCursor(), SwapRecord),
+      ),
+    );
   }
 
   async clear() {
