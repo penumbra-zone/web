@@ -21,9 +21,11 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+        working-directory: apps/webapp
 
       - name: Build static site
         run: pnpm build
+        working-directory: apps/webapp
 
       - name: Deploy dapp static site to firebase
         uses: w9jds/firebase-action@v2.0.0
