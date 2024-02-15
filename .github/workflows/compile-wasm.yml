@@ -26,7 +26,11 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable # rust only on buildjet
         with:
           targets: wasm32-unknown-unknown
-      - uses: astriaorg/buildjet-rust-cache@v2.5.1 # buildjet rust cache
+      - uses: Swatinem/rust-cache@v2.7.3 # rust cache
+        with:
+          shared-key: wasm
+          cache-provider: 'buildjet'
+          workspaces: 'packages/wasm/crate'
       - uses: jetli/wasm-pack-action@v0.4.0 # preinstall wasm-pack
         with:
           version: 'latest'
