@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 import {
   AddressByIndexRequest,
   AddressByIndexResponse,
@@ -9,8 +9,6 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 import { servicesCtx } from '../../ctx';
 import { addressByIndex } from './address-by-index';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-
-vi.mock('@penumbra-zone/wasm-bundler', () => vi.importActual('@penumbra-zone/wasm-nodejs'));
 
 describe('AddressByIndex request handler', () => {
   let mockServices: ServicesInterface;

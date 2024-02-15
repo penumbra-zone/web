@@ -7,7 +7,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { StateCommitmentTree } from '@penumbra-zone/types';
 import { JsonValue } from '@bufbuild/protobuf';
-import { authorize, build_action, build_parallel, witness } from '@penumbra-zone/wasm-bundler';
+import { authorize, build_action, build_parallel, witness } from '../wasm';
 
 export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): AuthorizationData => {
   const result = authorize(spendKey, txPlan.toJson()) as unknown;
@@ -33,7 +33,6 @@ export const buildParallel = (
   );
   return Transaction.fromJson(result as JsonValue);
 };
-
 export const buildActionParallel = (
   txPlan: TransactionPlan,
   witnessData: WitnessData,

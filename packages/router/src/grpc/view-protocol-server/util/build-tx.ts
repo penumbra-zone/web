@@ -4,7 +4,7 @@ import {
   AuthorizationData,
   Transaction,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { buildParallel } from '@penumbra-zone/wasm-ts';
+import { buildParallel } from '@penumbra-zone/wasm';
 import { offscreenClient } from '../../offscreen-client';
 import {
   AuthorizeAndBuildResponse,

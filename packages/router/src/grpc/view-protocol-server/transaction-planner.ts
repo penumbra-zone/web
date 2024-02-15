@@ -1,6 +1,6 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
-import { getAddressByIndex, TxPlanner } from '@penumbra-zone/wasm-ts';
+import { getAddressByIndex, TxPlanner } from '@penumbra-zone/wasm';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { gasPrices } from './gas-prices';

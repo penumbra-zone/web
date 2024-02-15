@@ -1,0 +1,107 @@
+name: Turbo CI
+on: [pull_request, workflow_dispatch]
+
+# this is pretty verbose and repetitive, but github workflows require it
+# the first action is commented, most of those comments apply to all actions
+
+# every 'turbo' call is cached and essentially no-op if the inputs match
+
+# pnpm deps are cached by lockfile hash
+
+jobs:
+  wasm-diff:
+    outputs:
+      wasm-diff: ${{ steps.diff.outputs.exit_code }}
+    name: Diff
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' # only run on PRs
+    steps:
+      - uses: actions/checkout@v4
+      - id: diff # store diff exit code in output
+        run: git diff --exit-code main packages/wasm/crate
+        continue-on-error: true
+
+  turbo-compile:
+    name: Compile
+    needs: wasm-diff
+    # only run if wasm crate changed, or dispatch
+    if: github.workflow_dispatch || needs.wasm-diff.outputs.wasm-diff == '1'
+    uses: ./.github/workflows/compile-wasm.yml
+
+  test-rust:
+    name: test:rust
+    needs: turbo-compile
+    uses: ./.github/workflows/test-wasm.yml
+
+  turbo-lint:
+    name: Lint
+    runs-on: ubuntu-latest # github default for ts, rust uses buildjet
+    needs: turbo-compile
+    if: always() # always run even if we skip compile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v3 # turbo cache, shared between buildjet and github
+        id: turbo-cache
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v4 # node cache, distinct between buildjet and github
+        with:
+          node-version: '21'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile # commit your lockfile
+      - run: pnpm turbo telemetry disable
+      - run: pnpm format-check
+      - run: pnpm turbo lint --cache-dir=.turbo
+
+  turbo-build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: turbo-compile
+    if: always() # always run even if we skip compile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v3
+        id: turbo-cache
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '21'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo telemetry disable
+      - run: pnpm turbo build --cache-dir=.turbo
+
+  turbo-test:
+    strategy:
+      matrix:
+        task: ['test', 'test:browser'] # all typescript tests
+    name: ${{ matrix.task }}
+    runs-on: ubuntu-latest
+    needs: turbo-build
+    if: always() # always run even if we skip compile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v3
+        id: turbo-cache
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '21'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo telemetry disable
+      - run: pnpm turbo ${{ matrix.task }} --cache-dir=.turbo

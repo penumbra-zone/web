@@ -4,21 +4,29 @@
   "globalEnv": ["NODE_ENV"],
   "pipeline": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**"],
-      "cache": false
+      "dependsOn": ["download-keys", "compile", "^build"]
+    },
+    "download-keys": {
+      "outputs": ["bin/*_pk.bin"]
+    },
+    "compile": {
+      "inputs": ["crate/src/**"],
+      "outputs": ["wasm/**"]
     },
     "host": {
       "dependsOn": ["^build"],
-      "outputs": [],
-      "cache": false
-    },
-    "lint": {},
-    "dev": {
       "cache": false,
       "persistent": true
     },
-    "test": {},
+    "lint": { "dependsOn": ["compile"] },
+    "dev": {
+      "dependsOn": ["download-keys", "compile"],
+      "persistent": true
+    },
+    "test": { "dependsOn": ["compile"] },
+    "test:browser": { "dependsOn": ["compile", "//#playwright-install"] },
+    "//#playwright-install": { "cache": false },
+    "test:rust": { "dependsOn": ["download-keys", "compile"] },
     "clean": {
       "cache": false
     }

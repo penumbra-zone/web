@@ -1,3 +1,5 @@
 .next/
 .pnpm-store/
 pnpm-lock.yaml
+packages/wasm/crate
+packages/wasm/wasm
