@@ -3,6 +3,7 @@ import { Mock } from 'vitest';
 export interface IndexedDbMock {
   constants?: Mock;
   getAppParams?: Mock;
+  getAssetsMetadata?: Mock;
   getFmdParams?: Mock;
   getLastBlockSynced?: Mock;
   getSpendableNoteByCommitment?: Mock;
@@ -21,12 +22,17 @@ export interface TendermintMock {
   latestBlockHeight?: Mock;
 }
 
+export interface ShieldedPoolMock {
+  assetMetadata: Mock;
+}
+
 export interface ViewServerMock {
   fullViewingKey?: Mock;
 }
 export interface MockServices {
   getWalletServices: Mock<[], Promise<{ indexedDb?: IndexedDbMock; viewServer?: ViewServerMock }>>;
   querier?: {
-    tendermint: TendermintMock;
+    tendermint?: TendermintMock;
+    shieldedPool?: ShieldedPoolMock;
   };
 }
