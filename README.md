@@ -2,9 +2,7 @@
 
 The [Penumbra](https://penumbra.zone/) monorepo for all things web.
 
-![build status](https://github.com/penumbra-zone/web/actions/workflows/build.yml/badge.svg?branch=main)
-![test status](https://github.com/penumbra-zone/web/actions/workflows/test.yml/badge.svg?branch=main)
-![lint status](https://github.com/penumbra-zone/web/actions/workflows/lint.yml/badge.svg?branch=main)
+![ci status](https://github.com/penumbra-zone/web/actions/workflows/turbo-ci.yml/badge.svg?branch=main)
 
 ### Technical Documentation
 
