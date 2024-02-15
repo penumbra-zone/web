@@ -1,7 +1,5 @@
-name: WASM
-on: workflow_call
-
-# workflow_call for optional forcing
+name: Compile WASM
+on: [workflow_call, workflow_dispatch]
 
 jobs:
   compile-wasm:

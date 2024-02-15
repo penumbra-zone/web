@@ -24,8 +24,8 @@
       "persistent": true
     },
     "test": { "dependsOn": ["compile"] },
-    "test:browser": { "dependsOn": ["compile", "playwright-install"] },
-    "playwright-install": { "cache": false },
+    "test:browser": { "dependsOn": ["compile", "//#playwright-install"] },
+    "//#playwright-install": { "cache": false },
     "test:rust": { "dependsOn": ["download-keys", "compile"] },
     "clean": {
       "cache": false

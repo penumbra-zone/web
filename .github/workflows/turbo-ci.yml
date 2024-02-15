@@ -1,5 +1,5 @@
 name: Turbo CI
-on: pull_request
+on: [pull_request, workflow_dispatch]
 
 # this is pretty verbose and repetitive, but github workflows require it
 # the first action is commented, most of those comments apply to all actions
@@ -9,15 +9,28 @@ on: pull_request
 # pnpm deps are cached by lockfile hash
 
 jobs:
+  wasm-diff:
+    outputs:
+      wasm-diff: ${{ steps.diff.outputs.exit_code }}
+    name: Diff
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' # only run on PRs
+    steps:
+      - uses: actions/checkout@v4
+      - id: diff # store diff exit code in output
+        run: git diff --exit-code main packages/wasm/crate
+        continue-on-error: true
+
   turbo-compile:
     name: Compile
-    # only run crate compile on pull requests that changed the crate
-    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'packages/wasm/crate/') }}
+    needs: wasm-diff
+    # only run if wasm crate changed, or dispatch
+    if: github.workflow_dispatch || needs.wasm-diff.outputs.wasm-diff == '1'
     uses: ./.github/workflows/compile-wasm.yml
 
   test-rust:
-    # only run crate tests on pull requests that changed the crate
-    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.changed_files, 'packages/wasm/crate/') }}
+    name: test:rust
+    needs: turbo-compile
     uses: ./.github/workflows/test-wasm.yml
 
   turbo-lint:
