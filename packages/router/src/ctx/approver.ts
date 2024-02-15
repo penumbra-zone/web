@@ -3,6 +3,7 @@ import { Jsonified } from '@penumbra-zone/types';
 import { sendPopupRequest, spawnDetachedPopup } from '@penumbra-zone/types/src/internal-msg/popup';
 import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { TxApproval } from '@penumbra-zone/types/src/internal-msg/tx-approval';
+import { Code, ConnectError } from '@connectrpc/connect';
 
 export const getTxApproval = async (
   req: AuthorizeRequest,
@@ -22,5 +23,5 @@ export const getTxApproval = async (
     },
   });
   if ('error' in res) throw res.error;
-  if (!res.data) throw new Error('Transaction was not approved');
+  if (!res.data) throw new ConnectError('Transaction was not approved', Code.PermissionDenied);
 };
