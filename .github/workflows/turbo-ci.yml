@@ -10,6 +10,7 @@ on: [pull_request, workflow_dispatch]
 
 jobs:
   check-diff:
+    if: ${{ github.run_attempt == 0 && github.ref != 'refs/heads/main' }}
     outputs:
       wasm-diff-main: ${{ steps.run-wasm-diff-main.outcome }}
       wasm-diff-prev: ${{ steps.run-wasm-diff-prev.outcome }}
@@ -31,15 +32,16 @@ jobs:
 
   turbo-compile:
     name: Compile
+    if: ${{ !cancelled() && ( github.event_name == 'workflow_dispatch' || github.run_attempt > 1 || github.ref == 'refs/heads/main' || needs.check-diff.outputs.wasm-diff-main == 'failure'|| needs.check-diff.outputs.wasm-diff-prev == 'failure' )}}
     needs: check-diff
     # only run if wasm crate changed, rerun was requested, or manually dispatched
-    if: github.event_name == 'workflow_dispatch' || needs.check-diff.outputs.wasm-diff-main == 'failure'|| needs.check-diff.outputs.wasm-diff-prev == 'failure' || github.run_attempt > 1 || github.ref == 'refs/heads/main'
     uses: ./.github/workflows/compile-wasm.yml
 
   turbo-test-rust:
     name: 'test:rust'
     runs-on: buildjet-16vcpu-ubuntu-2204 # buildjet for rust, github standard for everything else
-    needs: [turbo-compile, turbo-build]
+    if: ${{ !cancelled() && ( github.event_name == 'workflow_dispatch' || github.run_attempt > 1 || github.ref == 'refs/heads/main' || needs.check-diff.outputs.wasm-diff-main == 'failure'|| needs.check-diff.outputs.wasm-diff-prev == 'failure' )}}
+    needs: [check-diff, turbo-build]
     steps:
       - uses: actions/checkout@v4
       - id: compiled # this also compiles, so we can use or write the same cache
@@ -63,7 +65,11 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable # rust only on buildjet
         with:
           targets: wasm32-unknown-unknown
-      - uses: astriaorg/buildjet-rust-cache@v2.5.1 # buildjet rust cache
+      - uses: Swatinem/rust-cache@v2.7.3 # rust cache
+        with:
+          shared-key: wasm
+          cache-provider: 'buildjet'
+          workspaces: 'packages/wasm/crate'
       - uses: jetli/wasm-pack-action@v0.4.0 # preinstall wasm-pack
         with:
           version: 'latest'
@@ -79,7 +85,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest # github default for ts, rust uses buildjet
     needs: turbo-compile
-    if: always() # always run even if we skip compile
+    if: ${{ always() && !cancelled() }} # run even if we skip compile
     steps:
       - uses: actions/checkout@v4
       - id: lint
@@ -106,7 +112,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     needs: turbo-compile
-    if: always() # always run even if we skip compile
+    if: ${{ always() && !cancelled() }} # run even if we skip compile
     steps:
       - uses: actions/checkout@v4
       - id: built
@@ -135,7 +141,7 @@ jobs:
     name: ${{ matrix.test }}
     runs-on: ubuntu-latest
     needs: turbo-build
-    if: always() # always run even if we skip compile
+    if: ${{ always() && !cancelled() }} # run even if we skip compile
     steps:
       - uses: actions/checkout@v4
       - id: tested
