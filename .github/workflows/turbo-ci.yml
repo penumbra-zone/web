@@ -54,6 +54,7 @@ jobs:
             ${{ runner.os }}-turbo-${{ hashFiles('packages/wasm/cargo/src/**') }}-${{ github.ref }}-${{ github.sha }}
             ${{ runner.os }}-turbo-${{ hashFiles('packages/wasm/cargo/src/**') }}-${{ github.ref }}
             ${{ runner.os }}-turbo-${{ hashFiles('packages/wasm/cargo/src/**') }}
+            ${{ runner.os }}-turbo-
       - uses: pnpm/action-setup@v2
       - uses: buildjet/setup-node@v4 # node cache, distinct between buildjet and github
         with:
