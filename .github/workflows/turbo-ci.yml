@@ -1,5 +1,11 @@
 name: Turbo CI
-on: [pull_request, workflow_dispatch]
+on:
+  pull_request:
+    env:
+      compile_wasm: false # default to no compile-wasm
+  workflow_dispatch:
+    env:
+      compile_wasm: true # force compile-wasm
 
 # this is pretty verbose and repetitive, but github workflows require it
 # the first action is commented, most of those comments apply to all actions
@@ -9,11 +15,28 @@ on: [pull_request, workflow_dispatch]
 # pnpm deps are cached by lockfile hash
 
 jobs:
+  wasm-diff:
+    outputs:
+      wasm-diff: ${{ steps.diff.outputs.exit_code }}
+    name: Diff
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' # only run on PRs
+    steps:
+      - uses: actions/checkout@v4
+      - id: diff # store diff exit code in output
+        run: git diff --exit-code main packages/wasm/crate
+        continue-on-error: true
+
   turbo-compile:
     name: Compile
+    needs: wasm-diff
+    # only run if wasm crate changed, or dispatch
+    if: github.workflow_dispatch || jobs.wasm-diff.outputs.wasm-diff == '1'
     uses: ./.github/workflows/compile-wasm.yml
 
   test-rust:
+    name: test:rust
+    needs: turbo-compile
     uses: ./.github/workflows/test-wasm.yml
 
   turbo-lint:
