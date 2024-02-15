@@ -27,6 +27,7 @@ jobs:
       - id: run-wasm-diff-prev
         run: git diff ${{ github.head_ref }} --exit-code packages/wasm/crate
         continue-on-error: true
+      - run: exit 0 # always succeed
 
   turbo-compile:
     name: Compile
