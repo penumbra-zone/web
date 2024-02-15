@@ -1,17 +1,15 @@
 import { Card } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils.ts';
 import { EduPanel, eduPanelContent } from './content';
-import { ReactNode } from 'react';
 
 interface HelperCardProps {
   src: string;
   label: string;
   className?: string;
-  content?: EduPanel;
-  children?: ReactNode;
+  content: EduPanel;
 }
 
-export const EduInfoCard = ({ src, label, className, content, children }: HelperCardProps) => {
+export const EduInfoCard = ({ src, label, className, content }: HelperCardProps) => {
   return (
     <Card gradient className={cn('p-5 row-span-1', className)}>
       <div className='flex gap-2'>
@@ -20,9 +18,7 @@ export const EduInfoCard = ({ src, label, className, content, children }: Helper
           {label}
         </p>
       </div>
-      <p className='mt-4 text-muted-foreground md:mt-2'>
-        {content ? eduPanelContent[content] : children}
-      </p>
+      <p className='mt-4 text-muted-foreground md:mt-2'>{eduPanelContent[content]}</p>
     </Card>
   );
 };
