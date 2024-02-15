@@ -15,6 +15,6 @@
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
     "@vitest/browser": "^1.2.2",
-    "vite": "^5.1.2"
+    "vite": "^5.1.3"
   }
 }

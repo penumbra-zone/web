@@ -1,20 +1,89 @@
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Metadata, ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   fromBaseUnitAmount,
   getDisplayDenomExponent,
   getDisplayDenomFromView,
 } from '@penumbra-zone/types';
 import { CopyToClipboard } from '../../copy-to-clipboard';
+//import { AssetIcon } from '../../webapp/shared/asset-icon.tsx';
 import { CopyIcon } from '@radix-ui/react-icons';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { Identicon } from '../../identicon';
 
 interface ValueViewProps {
   view: ValueView | undefined;
   showDenom?: boolean;
+  showValue?: boolean;
+  showIcon?: boolean;
+  showEquivalent?: boolean;
 }
 
-export const ValueViewComponent = ({ view, showDenom = true }: ValueViewProps) => {
+export const AssetIcon = ({ metadata }: { metadata?: Metadata }) => {
+  const icon = metadata?.images[0]?.png || metadata?.images[0]?.svg;
+  return (
+    <>
+      {icon ? (
+        <img className='size-6 rounded-full' src={icon} alt='Asset icon' />
+      ) : (
+        <Identicon
+          uniqueIdentifier={metadata?.symbol ?? '?'}
+          size={24}
+          className='rounded-full'
+          type='solid'
+        />
+      )}
+    </>
+  );
+};
+
+
+export const ValueViewComponent = ({ view, showDenom = true, showValue = true, showIcon = true, showEquivalent = true }: ValueViewProps) => {
   if (!view) return <></>;
+
+  if (view.valueView.case === 'knownAssetId' && view.valueView.value.metadata) {
+    const value = view.valueView.value;
+    const metadata = view.valueView.value.metadata;
+    const amount = value.amount ?? new Amount();
+    const exponent = getDisplayDenomExponent(metadata);
+    const formattedAmount = fromBaseUnitAmount(amount, exponent).toFormat();
+    const symbol = metadata.symbol || 'Unknown Asset';
+
+    return (
+      <div className='flex items-center text-base font-bold'>
+        {showIcon && (
+          <AssetIcon metadata={metadata} />
+        )}
+        {showValue && (
+          <span className="ml-1">
+            {formattedAmount}
+          </span>
+        )}
+        {showDenom && (
+          <span className="ml-1">
+            {symbol}
+          </span>
+        )}
+        {
+          // TODO: this will need refinement once we actually hand out
+          // equivalent values to the frontend. it would be nice to have
+          // another parameter that controls whether the valueview should
+          // fill width or not (with value to the left, equiv values to the right)
+        }
+        {showEquivalent && value.equivalentValues.map((equivalentValue, index) => {
+          const exponent = getDisplayDenomExponent(equivalentValue.numeraire);
+          const formattedEquivalent = fromBaseUnitAmount(equivalentValue.equivalentAmount ?? new Amount(), exponent).toFormat();
+          const symbol = equivalentValue.numeraire?.symbol || 'Unknown Asset';
+          return (
+            <div key={index} className='flex'>
+              <AssetIcon metadata={equivalentValue.numeraire} />
+              <span>{formattedEquivalent}</span>
+              <span>{symbol}</span>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
 
   if (view.valueView.case === 'unknownAssetId') {
     const value = view.valueView.value;
@@ -39,18 +108,6 @@ export const ValueViewComponent = ({ view, showDenom = true }: ValueViewProps) =
     );
   }
 
-  if (view.valueView.case === 'knownAssetId') {
-    const value = view.valueView.value;
-    const amount = value.amount ?? new Amount();
-    const displayDenom = getDisplayDenomFromView(view);
-    const exponent = value.metadata ? getDisplayDenomExponent(value.metadata) : 0;
-
-    return (
-      <div className='flex truncate font-mono'>
-        {fromBaseUnitAmount(amount, exponent).toFormat()} {showDenom && displayDenom}
-      </div>
-    );
-  }
 
   return <></>;
 };
