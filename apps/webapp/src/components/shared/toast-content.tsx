@@ -95,3 +95,9 @@ export const errorTxToast = (error: unknown, toastId?: string | number): ToastId
     description: String(error),
     id: toastId,
   });
+
+export const infoTxToast = (
+  message: string,
+  description?: string,
+  toastId?: string | number,
+): ToastId => toast.info(message, { duration: 4000, description, id: toastId });
