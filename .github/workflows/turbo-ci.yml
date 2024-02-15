@@ -30,7 +30,7 @@ jobs:
     name: Compile
     needs: check-diff
     # only run if wasm crate changed, rerun was requested, or manually dispatched
-    if: github.event_name == 'workflow_dispatch' || needs.check-diff.outputs.wasm-diff-main == 'failure'|| needs.check-diff.outputs.wasm-diff-prev == 'failure' || github.run_attempt > 1
+    if: github.event_name == 'workflow_dispatch' || needs.check-diff.outputs.wasm-diff-main == 'failure'|| needs.check-diff.outputs.wasm-diff-prev == 'failure' || github.run_attempt > 1 || github.ref == 'refs/heads/main'
     uses: ./.github/workflows/compile-wasm.yml
 
   turbo-test-rust:
