@@ -1,5 +1,5 @@
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
+import { throwIfExtNotInstalled } from '../../utils/is-connected.ts';
 import { AddressIcon } from '@penumbra-zone/ui/components/ui/address-icon';
 import { AddressComponent } from '@penumbra-zone/ui/components/ui/address-component';
 import {
