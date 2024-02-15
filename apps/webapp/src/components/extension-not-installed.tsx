@@ -7,7 +7,7 @@ export const ExtensionNotInstalled = () => {
   return (
     <>
       <HeadTag />
-      <SplashPage title='Install our extension'>
+      <SplashPage title='Welcome to Penumbra'>
         <div className='flex items-center justify-between gap-4'>
           To get started, install the Penumbra Chrome extension.
           <Button asChild className='px-4 text-white'>
