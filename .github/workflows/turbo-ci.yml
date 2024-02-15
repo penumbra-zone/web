@@ -31,7 +31,7 @@ jobs:
     name: Compile
     needs: wasm-diff
     # only run if wasm crate changed, or dispatch
-    if: github.workflow_dispatch || jobs.wasm-diff.outputs.wasm-diff == '1'
+    if: github.workflow_dispatch || needs.wasm-diff.outputs.wasm-diff == '1'
     uses: ./.github/workflows/compile-wasm.yml
 
   test-rust:
