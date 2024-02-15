@@ -1,7 +1,13 @@
 import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
 import { AssetBalance } from '../../fetchers/balances';
-import { Button } from '@penumbra-zone/ui';
+import {
+  Button,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@penumbra-zone/ui';
 import { AssetOutSelector } from './asset-out-selector';
 import {
   Metadata,
@@ -40,16 +46,7 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
         {simulateOutResult ? (
           <ValueViewComponent view={simulateOutResult} showDenom={false} />
         ) : (
-          <Button
-            variant='secondary'
-            className='w-32 md:h-9'
-            onClick={e => {
-              e.preventDefault();
-              void simulateSwap();
-            }}
-          >
-            estimate swap
-          </Button>
+          <EstimateButton simulateFn={simulateSwap} />
         )}
         <AssetOutSelector balances={balances} assetOut={assetOut} setAssetOut={setAssetOut} />
       </div>
@@ -63,3 +60,28 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
     </div>
   );
 };
+
+const EstimateButton = ({ simulateFn }: { simulateFn: () => Promise<void> }) => (
+  <TooltipProvider delayDuration={0}>
+    <Tooltip>
+      <TooltipTrigger>
+        <Button
+          variant='secondary'
+          className='w-32 md:h-9'
+          onClick={e => {
+            e.preventDefault();
+            void simulateFn();
+          }}
+        >
+          estimate swap
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side='bottom' className='w-60'>
+        <p>
+          Privacy note: This makes a request to your config&apos;s grpc node to simulate a swap of
+          these assets. That means you are possibly revealing your intent to this node.
+        </p>
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+);
