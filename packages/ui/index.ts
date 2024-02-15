@@ -7,7 +7,6 @@ export * from './components/ui/fade-transition';
 export * from './components/ui/identicon';
 export * from './components/ui/input';
 export * from './components/ui/logo/compressed-video';
-export * from './components/ui/logo/hd-video';
 export * from './components/ui/logo/static';
 export * from './components/ui/navigation-menu';
 export * from './components/ui/networks-popover';
