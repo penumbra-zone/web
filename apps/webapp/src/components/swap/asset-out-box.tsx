@@ -1,7 +1,13 @@
 import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
 import { AssetBalance } from '../../fetchers/balances';
-import { Input } from '@penumbra-zone/ui';
+import {
+  buttonVariants,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@penumbra-zone/ui';
 import { AssetOutSelector } from './asset-out-selector';
 import {
   Metadata,
@@ -9,6 +15,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { groupByAsset } from '../../fetchers/balances/by-asset.ts';
+import { cn } from '@penumbra-zone/ui/lib/utils.ts';
 
 const findMatchingBalance = (
   denom: Metadata | undefined,
@@ -27,7 +34,7 @@ interface AssetOutBoxProps {
 }
 
 export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
-  const { assetOut, setAssetOut } = useStore(swapSelector);
+  const { assetOut, setAssetOut, simulateSwap, simulateOutResult } = useStore(swapSelector);
 
   const matchingBalance = findMatchingBalance(assetOut, balances);
 
@@ -37,13 +44,11 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
         <p className='text-sm font-bold md:text-base'>Swap into</p>
       </div>
       <div className='flex items-center justify-between gap-4'>
-        <Input
-          variant='transparent'
-          type='number'
-          className='font-bold leading-10 md:h-8 md:w-[calc(100%-80px)] md:text-xl  xl:h-10 xl:w-[calc(100%-160px)] xl:text-3xl'
-          // TODO: estimate actual swap out amount button: https://github.com/penumbra-zone/web/issues/421
-          value=''
-        />
+        {simulateOutResult ? (
+          <ValueViewComponent view={simulateOutResult} showDenom={false} />
+        ) : (
+          <EstimateButton simulateFn={simulateSwap} />
+        )}
         <AssetOutSelector balances={balances} assetOut={assetOut} setAssetOut={setAssetOut} />
       </div>
       <div className='mt-[6px] flex items-start justify-between'>
@@ -56,3 +61,28 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
     </div>
   );
 };
+
+const EstimateButton = ({ simulateFn }: { simulateFn: () => Promise<void> }) => (
+  <TooltipProvider delayDuration={0}>
+    <Tooltip>
+      <TooltipTrigger>
+        <div
+          // Nested buttons are not allowed. Manually passing button classes.
+          className={cn(buttonVariants({ variant: 'secondary' }), 'w-32 md:h-9')}
+          onClick={e => {
+            e.preventDefault();
+            void simulateFn();
+          }}
+        >
+          estimate swap
+        </div>
+      </TooltipTrigger>
+      <TooltipContent side='bottom' className='w-60'>
+        <p>
+          Privacy note: This makes a request to your config&apos;s grpc node to simulate a swap of
+          these assets. That means you are possibly revealing your intent to this node.
+        </p>
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+);

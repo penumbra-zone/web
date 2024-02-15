@@ -12,7 +12,7 @@ import { cn } from '@penumbra-zone/ui/lib/utils';
 import { AssetBalance } from '../../fetchers/balances';
 import { AssetIcon } from './asset-icon';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value.tsx';
-import { getDisplayDenomFromView } from '@penumbra-zone/types';
+import { getAddressIndex, getDisplayDenomFromView, getMetadata } from '@penumbra-zone/types';
 
 interface SelectTokenModalProps {
   selection: AssetBalance | undefined;
@@ -27,9 +27,8 @@ export default function SelectTokenModal({
 }: SelectTokenModalProps) {
   const [search, setSearch] = useState('');
 
-  const displayDenom = selection && getDisplayDenomFromView(selection.value);
-  const denomMetadata =
-    selection?.value.valueView.case === 'knownAssetId' && selection.value.valueView.value.metadata;
+  const displayDenom = getDisplayDenomFromView(selection?.value);
+  const denomMetadata = getMetadata.optional()(selection?.value);
 
   return (
     <Dialog>
@@ -65,9 +64,8 @@ export default function SelectTokenModal({
             </div>
             <div className='flex flex-col gap-2'>
               {balances.map((b, i) => {
-                const index =
-                  b.address.addressView.case === 'decoded' &&
-                  b.address.addressView.value.index?.account;
+                const index = getAddressIndex(b.address).account;
+                const metadata = getMetadata.optional()(b.value);
 
                 return (
                   <div key={i} className='flex flex-col'>
@@ -83,10 +81,7 @@ export default function SelectTokenModal({
                       >
                         <p className='flex justify-start'>{index}</p>
                         <div className='flex justify-start gap-[6px]'>
-                          {b.value.valueView.case === 'knownAssetId' &&
-                            b.value.valueView.value.metadata && (
-                              <AssetIcon metadata={b.value.valueView.value.metadata} />
-                            )}
+                          {metadata && <AssetIcon metadata={metadata} />}
                           <p className='truncate'>{getDisplayDenomFromView(b.value)}</p>
                         </div>
                         <div className='flex justify-end'>

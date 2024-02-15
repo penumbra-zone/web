@@ -23,5 +23,4 @@ export * from './chain';
 export * from './jsonified';
 export * from './schemas';
 export * from './type-predicates';
-export * from './value-view';
 export * from './getters';

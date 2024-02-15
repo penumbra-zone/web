@@ -7,7 +7,11 @@ import {
   errorTxToast,
   successTxToast,
 } from '../components/shared/toast-content';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {
+  Metadata,
+  Value,
+  ValueView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AssetBalance } from '../fetchers/balances';
 import {
   getAddressIndex,
@@ -20,6 +24,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { getAddressByIndex } from '../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
+import { simulateSwapOutput } from '../fetchers/simulate.ts';
 
 export interface SwapSlice {
   assetIn: AssetBalance | undefined;
@@ -30,29 +35,57 @@ export interface SwapSlice {
   setAssetOut: (metadata: Metadata) => void;
   initiateSwapTx: () => Promise<void>;
   txInProgress: boolean;
+  simulateSwap: () => Promise<void>;
+  simulateOutResult: ValueView | undefined;
 }
 
 export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
   return {
     assetIn: undefined,
-    setAssetIn: token => {
-      set(state => {
-        state.swap.assetIn = token;
+    setAssetIn: asset => {
+      set(({ swap }) => {
+        swap.assetIn = asset;
+        swap.simulateOutResult = undefined;
       });
     },
     assetOut: undefined,
-    setAssetOut: denom => {
-      set(state => {
-        state.swap.assetOut = denom;
+    setAssetOut: metadata => {
+      set(({ swap }) => {
+        swap.assetOut = metadata;
+        swap.simulateOutResult = undefined;
       });
     },
     amount: '',
     setAmount: amount => {
-      set(state => {
-        state.swap.amount = amount;
+      set(({ swap }) => {
+        swap.amount = amount;
+        swap.simulateOutResult = undefined;
       });
     },
     txInProgress: false,
+    simulateOutResult: undefined,
+    simulateSwap: async () => {
+      try {
+        const assetIn = get().swap.assetIn;
+        const assetOut = get().swap.assetOut;
+        if (!assetIn || !assetOut) throw new Error('Both asset in and out need to be set');
+
+        const swapInValue = new Value({
+          assetId: getAssetIdFromValueView(assetIn.value),
+          amount: toBaseUnit(
+            BigNumber(get().swap.amount || 0),
+            getDisplayDenomExponentFromValueView(assetIn.value),
+          ),
+        });
+
+        const outputVal = await simulateSwapOutput(swapInValue, assetOut);
+        set(({ swap }) => {
+          swap.simulateOutResult = outputVal;
+        });
+      } catch (e) {
+        errorTxToast(e);
+      }
+    },
     initiateSwapTx: async () => {
       set(state => {
         state.swap.txInProgress = true;
