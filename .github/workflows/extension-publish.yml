@@ -11,24 +11,34 @@ on:
   workflow_dispatch:
 
 jobs:
+  compile:
+    uses: ./.github/workflows/compile-wasm.yml
+
   publish:
-    name: Publish chrome extension
     environment: ext-publish
     runs-on: ubuntu-latest
+    needs: compile
 
     steps:
-      - name: Checkout sources
-        uses: actions/checkout@v3
-
-      - uses: pnpm/action-setup@v2
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v3
         with:
-          version: 8
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ hashFiles('packages/wasm/cargo/src/**') }}-${{ github.ref }}-${{ github.sha }}-publish
+          restore-keys: |
+            ${{ runner.os }}-turbo-${{ hashFiles('packages/wasm/cargo/src/**') }}-${{ github.ref }}-${{ github.sha }}-compiled
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '21'
+          cache: 'pnpm'
 
-      - name: Install dependencies
-        run: pnpm install
+      - run: pnpm install --frozen-lockfile
 
-      - name: Build monorepo
-        run: pnpm build
+      - run: pnpm turbo telemetry disable
+
+      - run: pnpm turbo download-keys --force --cache-dir=.turbo
+      - run: pnpm turbo build --cache-dir=.turbo
 
       - name: Package up extension
         run: zip -r dist.zip apps/extension/dist
