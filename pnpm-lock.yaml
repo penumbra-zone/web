@@ -32,9 +32,6 @@ importers:
       '@penumbra-zone/tailwind-config':
         specifier: workspace:*
         version: link:packages/tailwind-config
-      wasm-pack:
-        specifier: ^0.12.1
-        version: 0.12.1
     devDependencies:
       '@penumbra-zone/types':
         specifier: workspace:*
