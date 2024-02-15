@@ -9,7 +9,6 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { groupByAsset } from '../../fetchers/balances/by-asset.ts';
-import { useToast } from '@penumbra-zone/ui/components/ui/use-toast.ts';
 
 const findMatchingBalance = (
   denom: Metadata | undefined,
@@ -29,7 +28,6 @@ interface AssetOutBoxProps {
 
 export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
   const { assetOut, setAssetOut, simulateSwap, simulateOutResult } = useStore(swapSelector);
-  const { toast } = useToast();
 
   const matchingBalance = findMatchingBalance(assetOut, balances);
 
@@ -47,7 +45,7 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
             className='w-32 md:h-9'
             onClick={e => {
               e.preventDefault();
-              void simulateSwap(toast);
+              void simulateSwap();
             }}
           >
             estimate swap

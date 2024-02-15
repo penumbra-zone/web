@@ -17,7 +17,7 @@ export const getAmountFromValueView = createGetter((valueView?: ValueView) =>
 
 export const getDisplayDenomFromView = createGetter((view?: ValueView) => {
   if (view?.valueView.case === 'unknownAssetId') {
-    if (!view.valueView.value.assetId) throw new Error('no asset id for unknown denom');
+    if (!view.valueView.value.assetId) return undefined;
     return bech32AssetId(view.valueView.value.assetId);
   }
 

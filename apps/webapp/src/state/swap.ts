@@ -7,7 +7,10 @@ import {
   errorTxToast,
   successTxToast,
 } from '../components/shared/toast-content';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {
+  Metadata,
+  ValueView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AssetBalance } from '../fetchers/balances';
 import {
   getAddressIndex,
@@ -31,7 +34,7 @@ export interface SwapSlice {
   setAssetOut: (metadata: Metadata) => void;
   initiateSwapTx: () => Promise<void>;
   txInProgress: boolean;
-  simulateSwap: (toastFn: typeof toast) => Promise<void>;
+  simulateSwap: () => Promise<void>;
   simulateOutResult: ValueView | undefined;
 }
 
@@ -60,7 +63,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
     },
     txInProgress: false,
     simulateOutResult: undefined,
-    simulateSwap: async toastFn => {
+    simulateSwap: async () => {
       try {
         const assetIn = get().swap.assetIn;
         const assetOut = get().swap.assetOut;
@@ -71,7 +74,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
           swap.simulateOutResult = outputVal;
         });
       } catch (e) {
-        toastFn(errorTxToast(e));
+        errorTxToast(e);
       }
     },
     initiateSwapTx: async () => {
