@@ -2,7 +2,7 @@ import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
 import { AssetBalance } from '../../fetchers/balances';
 import {
-  Button,
+  buttonVariants,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -15,6 +15,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { groupByAsset } from '../../fetchers/balances/by-asset.ts';
+import { cn } from '@penumbra-zone/ui/lib/utils.ts';
 
 const findMatchingBalance = (
   denom: Metadata | undefined,
@@ -65,16 +66,16 @@ const EstimateButton = ({ simulateFn }: { simulateFn: () => Promise<void> }) => 
   <TooltipProvider delayDuration={0}>
     <Tooltip>
       <TooltipTrigger>
-        <Button
-          variant='secondary'
-          className='w-32 md:h-9'
+        <div
+          // Nested buttons are not allowed. Manually passing button classes.
+          className={cn(buttonVariants({ variant: 'secondary' }), 'w-32 md:h-9')}
           onClick={e => {
             e.preventDefault();
             void simulateFn();
           }}
         >
           estimate swap
-        </Button>
+        </div>
       </TooltipTrigger>
       <TooltipContent side='bottom' className='w-60'>
         <p>

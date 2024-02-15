@@ -9,6 +9,7 @@ import {
 } from '../components/shared/toast-content';
 import {
   Metadata,
+  Value,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AssetBalance } from '../fetchers/balances';
@@ -69,7 +70,15 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         const assetOut = get().swap.assetOut;
         if (!assetIn || !assetOut) throw new Error('Both asset in and out need to be set');
 
-        const outputVal = await simulateSwapOutput(assetIn.value, assetOut);
+        const swapInValue = new Value({
+          assetId: getAssetIdFromValueView(assetIn.value),
+          amount: toBaseUnit(
+            BigNumber(get().swap.amount || 0),
+            getDisplayDenomExponentFromValueView(assetIn.value),
+          ),
+        });
+
+        const outputVal = await simulateSwapOutput(swapInValue, assetOut);
         set(({ swap }) => {
           swap.simulateOutResult = outputVal;
         });
