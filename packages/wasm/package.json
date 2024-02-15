@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "bech32": "^2.0.0",
+    "wasm-pack": "^0.12.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
