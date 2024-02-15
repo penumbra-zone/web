@@ -24,6 +24,21 @@ After you have updated this file, you should start the full node as instructed b
 If everything was configured correctly, you should be able to open the database and inspect for Block and Transaction events.
 If there is no data, check the logs for `cometbft` for any errors with inserting data into the indexer.
 
-### Name
+
+## CI
+
+Merges to main will automatically build a container and deploy to a publicly accessible URL.
+Each deploy of the application has its own Penumbra fullnode sidecar, with CometBFT indexing enabled.
+The URLs are:
+
+  * https://dex-explorer.testnet.penumbra.zone
+  * https://dex-explorer.testnet-preview.penumbra.zone
+
+The "testnet" environment is the public stable testnet with active community participation.
+The "preview" environment is a shorter-lived chain, rebuilt from the tip of `main` merge
+on the [Penumbra monorepo](https://github.com/penumbra-zone/penumbra). As such, it changes
+several times per day, and generally has less information on its chain.
+
+## Name
 
 It'd be nice to have a cool name for the DEX explorer. We don't have one yet.
