@@ -1,6 +1,6 @@
 import { Card } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils.ts';
-import { EduPanel, eduPanelContent } from './content.ts';
+import { EduPanel, eduPanelContent } from './content';
 
 interface HelperCardProps {
   src: string;

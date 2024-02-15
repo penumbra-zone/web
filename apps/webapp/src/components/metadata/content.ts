@@ -1,9 +1,10 @@
 import { PagePath } from './paths.ts';
-import { EduPanel, eduPanelContent } from '../shared/edu-panels/content.ts';
+import { EduPanel, eduPanelContent } from '../shared/edu-panels/content';
+import { ReactNode } from 'react';
 
 export interface PageMetadata {
   title: string;
-  description: string;
+  description: ReactNode;
 }
 
 export const metadata: Record<PagePath, PageMetadata> = {

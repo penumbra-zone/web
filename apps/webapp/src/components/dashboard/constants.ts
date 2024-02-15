@@ -1,6 +1,6 @@
 import { DashboardTabMap } from './types';
 import { PagePath } from '../metadata/paths.ts';
-import { EduPanel } from '../shared/edu-panels/content.ts';
+import { EduPanel } from '../shared/edu-panels/content';
 
 export const dashboardTabs = [
   { title: 'Assets', href: PagePath.DASHBOARD, active: true },
