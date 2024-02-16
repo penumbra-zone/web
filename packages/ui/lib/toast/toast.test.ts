@@ -1,5 +1,5 @@
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest';
-import { Toast } from '.';
+import { Toast } from './toast';
 
 const TOAST_FN_PROPERTIES = vi.hoisted(
   () => ['success', 'info', 'warning', 'error', 'message', 'dismiss', 'loading'] as const,
