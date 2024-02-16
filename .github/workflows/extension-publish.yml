@@ -24,9 +24,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-${{ hashFiles('packages/wasm/cargo/src/**') }}-${{ github.ref }}-${{ github.sha }}-publish
+          key: ${{ runner.os }}-turbo-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-publish
           restore-keys: |
-            ${{ runner.os }}-turbo-${{ hashFiles('packages/wasm/cargo/src/**') }}-${{ github.ref }}-${{ github.sha }}-compiled
+            ${{ runner.os }}-turbo-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}
       - uses: pnpm/action-setup@v2
       - uses: actions/setup-node@v4
         with:
