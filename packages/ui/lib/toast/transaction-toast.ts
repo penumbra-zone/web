@@ -38,37 +38,31 @@ export class TransactionToast {
       .message(`Building ${this.getLabel()} transaction`);
   }
 
-  txHash(txHash?: string): this {
+  txHash(txHash?: string): void {
     this._txHash = txHash;
-    return this;
   }
 
-  onStart(): this {
+  onStart(): void {
     this.toast.show();
-    return this;
   }
 
-  onBuildStatus(status?: BuildStatus): this {
+  onBuildStatus(status?: BuildStatus): void {
     this.toast
       .loading()
       .message(`Building ${this.getLabel()} transaction`)
       .description(getBuildingStatusDescription(status))
       .show();
-
-    return this;
   }
 
-  onBroadcastStatus(status?: BroadcastStatus): this {
+  onBroadcastStatus(status?: BroadcastStatus): void {
     this.toast
       .loading()
       .message(getBroadcastingStatusMessage(this.getLabel(), status))
       .description(this.shortenedTxHash)
       .show();
-
-    return this;
   }
 
-  onSuccess(detectionHeight?: bigint): this {
+  onSuccess(detectionHeight?: bigint): void {
     this.toast
       .success()
       .message(`${this.getLabel()} transaction succeeded! 🎉`)
@@ -77,25 +71,19 @@ export class TransactionToast {
       )
       .closeButton()
       .show();
-
-    return this;
   }
 
-  onFailure(error: unknown): this {
+  onFailure(error: unknown): void {
     this.toast
       .error()
       .message(`${this.getLabel()} transaction failed`)
       .description(String(error))
       .closeButton()
       .show();
-
-    return this;
   }
 
-  onDenied(): this {
+  onDenied(): void {
     this.toast.info().message('Transaction canceled').description(undefined).duration(5_000).show();
-
-    return this;
   }
 
   private getLabel(): string {
