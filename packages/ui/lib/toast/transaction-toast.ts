@@ -48,16 +48,6 @@ export class TransactionToast {
     return this;
   }
 
-  onFailure(error: unknown): this {
-    this.toast
-      .error()
-      .message(`${this.getLabel()} transaction failed`)
-      .description(String(error))
-      .closeButton();
-
-    return this;
-  }
-
   onBuildStatus(status?: BuildStatus): this {
     this.toast
       .loading()
@@ -76,12 +66,6 @@ export class TransactionToast {
     return this;
   }
 
-  onDenied(): this {
-    this.toast.info().message('Transaction canceled').description(undefined).duration(5_000);
-
-    return this;
-  }
-
   onSuccess(detectionHeight?: bigint): this {
     this.toast
       .success()
@@ -90,6 +74,22 @@ export class TransactionToast {
         `Transaction ${this.shortenedTxHash} appeared on chain ${detectionHeight ? `at height ${detectionHeight}` : ''}`,
       )
       .closeButton();
+
+    return this;
+  }
+
+  onFailure(error: unknown): this {
+    this.toast
+      .error()
+      .message(`${this.getLabel()} transaction failed`)
+      .description(String(error))
+      .closeButton();
+
+    return this;
+  }
+
+  onDenied(): this {
+    this.toast.info().message('Transaction canceled').description(undefined).duration(5_000);
 
     return this;
   }
