@@ -44,7 +44,7 @@ export class TransactionToast {
   }
 
   onStart(): void {
-    this.toast.show();
+    this.toast.render();
   }
 
   onBuildStatus(status?: BuildStatus): void {
@@ -52,7 +52,7 @@ export class TransactionToast {
       .loading()
       .message(`Building ${this.label} transaction`)
       .description(getBuildStatusDescription(status))
-      .show();
+      .render();
   }
 
   onBroadcastStatus(status?: BroadcastStatus): void {
@@ -60,7 +60,7 @@ export class TransactionToast {
       .loading()
       .message(getBroadcastStatusMessage(this.label, status))
       .description(this.shortenedTxHash)
-      .show();
+      .render();
   }
 
   onSuccess(detectionHeight?: bigint): void {
@@ -77,7 +77,7 @@ export class TransactionToast {
       )
       .action(<Link to={`/tx/${this._txHash}`}>See details</Link>)
       .closeButton()
-      .show();
+      .render();
   }
 
   onFailure(error: unknown): void {
@@ -86,11 +86,16 @@ export class TransactionToast {
       .message(`${this.label} transaction failed`)
       .description(String(error))
       .closeButton()
-      .show();
+      .render();
   }
 
   onDenied(): void {
-    this.toast.info().message('Transaction canceled').description(undefined).duration(5_000).show();
+    this.toast
+      .info()
+      .message('Transaction canceled')
+      .description(undefined)
+      .duration(5_000)
+      .render();
   }
 
   private get label(): string {

@@ -14,7 +14,7 @@ const noOp = () => {
  *
  * @example
  * ```ts
- * const toast = new Toast().message('This is a toast').show();
+ * const toast = new Toast().message('This is a toast').render();
  *
  * // later...
  *
@@ -22,11 +22,12 @@ const noOp = () => {
  *   .error() // Style the toast as an error
  *   .message('Uh oh -- something went wrong!') // Update the message
  *   .description('Here are the error details') // Update the description
- *   .show();
+ *   .render();
  * ```
  *
- * Note that the toast only gets shown or updated when calling `show()`. That
- * way, you can configure your toast before anything gets rendered to the user.
+ * Note that the toast only gets rendered or updated when calling `render()`.
+ * That way, you can configure your toast before anything gets rendered to the
+ * user.
  *
  * @example
  * ```ts
@@ -37,14 +38,14 @@ const noOp = () => {
  * toast.description('Here is a description.');
  *
  * // Now the user sees a toast with the above message and description:
- * toast.show();
+ * toast.render();
  *
  * // After this line, the toast still hasn't changed at all, since we haven't
- * // called `.show()` yet:
+ * // called `.render()` yet:
  * toast.error().message('Uh oh!').description('Houston, we have a problem');
  *
  * // Finally, the toast updates to show the error message:
- * toast.show()
+ * toast.render()
  * ```
  */
 export class Toast {
@@ -60,7 +61,7 @@ export class Toast {
     onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   };
 
-  show() {
+  render() {
     this.toastId = this.toastFn(this._message, {
       description: this._description,
       id: this.toastId,

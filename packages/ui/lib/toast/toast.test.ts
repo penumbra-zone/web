@@ -29,17 +29,17 @@ describe('Toast', () => {
     TOAST_FN_PROPERTIES.forEach(property => mockToastFn[property].mockClear());
   });
 
-  it('does not show the toast until .show() is called', () => {
+  it('does not render the toast until .render() is called', () => {
     const toast = new Toast().message('Hello, world!').description('Description here');
 
     expect(mockToastFn).not.toHaveBeenCalled();
-    toast.show();
+    toast.render();
     expect(mockToastFn).toHaveBeenCalledTimes(1);
   });
 
-  describe('.show()', () => {
-    it('shows the toast with the configured message and description', () => {
-      new Toast().message('Hello, world!').description('Description here').show();
+  describe('.render()', () => {
+    it('renders the toast with the configured message and description', () => {
+      new Toast().message('Hello, world!').description('Description here').render();
 
       expect(mockToastFn).toHaveBeenCalledWith(
         'Hello, world!',
@@ -53,11 +53,11 @@ describe('Toast', () => {
       let toast: Toast;
 
       beforeEach(() => {
-        toast = new Toast().message('Hello, world!').show();
+        toast = new Toast().message('Hello, world!').render();
       });
 
       it("updates the toast with the existing toast's ID", () => {
-        toast.message('New message here').show();
+        toast.message('New message here').render();
 
         expect(mockToastFn).toHaveBeenCalledWith('New message here', { id: MOCK_TOAST_ID });
       });
@@ -65,9 +65,9 @@ describe('Toast', () => {
   });
 
   describe('.message()', () => {
-    it('changes the message once .show() is called', () => {
-      const toast = new Toast().message('Hello, world!').description('Description here').show();
-      toast.message('New message!').show();
+    it('changes the message once .render() is called', () => {
+      const toast = new Toast().message('Hello, world!').description('Description here').render();
+      toast.message('New message!').render();
 
       expect(mockToastFn).toHaveBeenCalledTimes(2);
       expect(mockToastFn).toHaveBeenLastCalledWith(
@@ -80,9 +80,9 @@ describe('Toast', () => {
   });
 
   describe('.description()', () => {
-    it('changes the description once .show() is called', () => {
-      const toast = new Toast().message('Hello, world!').description('Description here').show();
-      toast.description('New description!').show();
+    it('changes the description once .render() is called', () => {
+      const toast = new Toast().message('Hello, world!').description('Description here').render();
+      toast.description('New description!').render();
 
       expect(mockToastFn).toHaveBeenCalledTimes(2);
       expect(mockToastFn).toHaveBeenLastCalledWith(
@@ -95,10 +95,10 @@ describe('Toast', () => {
   });
 
   describe('.duration()', () => {
-    it('changes the duration once .show() is called', () => {
-      const toast = new Toast().message('Hello, world!').description('Description here').show();
+    it('changes the duration once .render() is called', () => {
+      const toast = new Toast().message('Hello, world!').description('Description here').render();
 
-      toast.duration(10_000).show();
+      toast.duration(10_000).render();
 
       expect(mockToastFn).toHaveBeenLastCalledWith(
         'Hello, world!',
@@ -107,7 +107,7 @@ describe('Toast', () => {
         }),
       );
 
-      toast.duration(Infinity).show();
+      toast.duration(Infinity).render();
 
       expect(mockToastFn).toHaveBeenLastCalledWith(
         'Hello, world!',
@@ -116,7 +116,7 @@ describe('Toast', () => {
         }),
       );
 
-      toast.duration(undefined).show();
+      toast.duration(undefined).render();
 
       expect(mockToastFn).toHaveBeenLastCalledWith(
         'Hello, world!',
@@ -128,10 +128,10 @@ describe('Toast', () => {
   });
 
   describe('.closeButton()', () => {
-    it('changes the closeButton setting once .show() is called', () => {
-      const toast = new Toast().message('Hello, world!').description('Description here').show();
+    it('changes the closeButton setting once .render() is called', () => {
+      const toast = new Toast().message('Hello, world!').description('Description here').render();
 
-      toast.closeButton().show();
+      toast.closeButton().render();
 
       expect(mockToastFn).toHaveBeenLastCalledWith(
         'Hello, world!',
@@ -140,7 +140,7 @@ describe('Toast', () => {
         }),
       );
 
-      toast.closeButton(false).show();
+      toast.closeButton(false).render();
 
       expect(mockToastFn).toHaveBeenLastCalledWith(
         'Hello, world!',
@@ -152,9 +152,9 @@ describe('Toast', () => {
   });
 
   describe('.action()', () => {
-    it('sets the action once .show() is called', () => {
+    it('sets the action once .render() is called', () => {
       const onClick = vi.fn();
-      new Toast().message('Hello, world!').action('Click here', onClick).show();
+      new Toast().message('Hello, world!').action('Click here', onClick).render();
 
       expect(mockToastFn).toHaveBeenLastCalledWith(
         'Hello, world!',
@@ -168,7 +168,7 @@ describe('Toast', () => {
     });
 
     it('provides a default no-op click handler if no onClick is passed', () => {
-      new Toast().message('Hello, world!').action('Click here').show();
+      new Toast().message('Hello, world!').action('Click here').render();
 
       expect(mockToastFn).toHaveBeenLastCalledWith(
         'Hello, world!',
@@ -182,7 +182,7 @@ describe('Toast', () => {
     });
 
     it('sets the action back to `undefined` if `undefined` is passed', () => {
-      const toast = new Toast().message('Hello, world!').action('Click here').show();
+      const toast = new Toast().message('Hello, world!').action('Click here').render();
 
       // First, ensure that an action is actually being set.
       expect(mockToastFn).toHaveBeenLastCalledWith(
@@ -192,7 +192,7 @@ describe('Toast', () => {
         }),
       );
 
-      toast.action(undefined).show();
+      toast.action(undefined).render();
 
       expect(mockToastFn).toHaveBeenLastCalledWith(
         'Hello, world!',
@@ -205,7 +205,7 @@ describe('Toast', () => {
 
   describe('.dismiss()', () => {
     it('dismisses the toast', () => {
-      const toast = new Toast().message('Hello, world!').description('Description here').show();
+      const toast = new Toast().message('Hello, world!').description('Description here').render();
       toast.dismiss();
 
       expect(mockToastFn.dismiss).toHaveBeenCalled();
@@ -219,9 +219,9 @@ describe('Toast', () => {
         .error()
         .message('Hello, world!')
         .description('Description here')
-        .show();
+        .render();
 
-      toast.default().show();
+      toast.default().render();
 
       expect(mockToastFn).toHaveBeenCalledTimes(1);
       expect(mockToastFn).toHaveBeenCalledWith(
@@ -236,9 +236,9 @@ describe('Toast', () => {
   (['success', 'info', 'warning', 'error', 'loading'] as const).forEach(toastFn => {
     describe(`.${toastFn}()`, () => {
       it(`switches to use the ${toastFn} toast function`, () => {
-        const toast = new Toast().message('Hello, world!').description('Description here').show();
+        const toast = new Toast().message('Hello, world!').description('Description here').render();
 
-        toast[toastFn]().show();
+        toast[toastFn]().render();
 
         expect(mockToastFn[toastFn]).toHaveBeenCalledTimes(1);
         expect(mockToastFn[toastFn]).toHaveBeenCalledWith(
