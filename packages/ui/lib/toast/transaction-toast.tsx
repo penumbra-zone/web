@@ -10,6 +10,8 @@ import {
   WitnessAndBuildResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Link } from 'react-router-dom';
+import { Progress } from '../../components/ui/progress';
+import { ReactNode } from 'react';
 
 type BroadcastStatus = BroadcastTransactionResponse['status'];
 type BuildStatus = (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'];
@@ -22,9 +24,18 @@ const getBroadcastStatusMessage = (label: string, status?: BroadcastStatus) => {
 
 const getBuildStatusDescription = (
   status?: Exclude<BuildStatus, undefined>,
-): string | undefined => {
-  if (status?.case === 'buildProgress') return `${Math.round(status.value.progress * 100)}%`;
-  if (status?.case === 'complete') return '100%';
+): ReactNode | undefined => {
+  if (status?.case === 'buildProgress')
+    return (
+      <Progress
+        variant='in-progress'
+        value={Math.round(status.value.progress * 100)}
+        size='sm'
+        className='mt-2'
+      />
+    );
+  if (status?.case === 'complete')
+    return <Progress variant='done' value={100} size='sm' className='mt-2' />;
   return undefined;
 };
 

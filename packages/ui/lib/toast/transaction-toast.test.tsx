@@ -5,6 +5,7 @@ import {
   AuthorizeAndBuildResponse,
   BroadcastTransactionResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { Progress } from '../../components/ui/progress';
 
 const TOAST_FN_PROPERTIES = vi.hoisted(
   () => ['success', 'info', 'warning', 'error', 'message', 'dismiss', 'loading'] as const,
@@ -65,7 +66,30 @@ describe('TransactionToast', () => {
       expect(mockToastFn.loading).toHaveBeenCalledWith(
         'Building Send transaction',
         expect.objectContaining({
-          description: '50%',
+          description: <Progress variant='in-progress' value={50} size='sm' className='mt-2' />,
+          duration: Infinity,
+          id: MOCK_TOAST_ID,
+        }),
+      );
+    });
+
+    it('updates the toast when it is done building', () => {
+      const toast = new TransactionToast('send');
+      toast.onStart();
+
+      const buildStatus = new AuthorizeAndBuildResponse({
+        status: {
+          case: 'complete',
+          value: {},
+        },
+      }).status;
+
+      toast.onBuildStatus(buildStatus);
+
+      expect(mockToastFn.loading).toHaveBeenCalledWith(
+        'Building Send transaction',
+        expect.objectContaining({
+          description: <Progress variant='done' value={100} size='sm' className='mt-2' />,
           duration: Infinity,
           id: MOCK_TOAST_ID,
         }),
