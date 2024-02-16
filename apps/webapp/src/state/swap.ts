@@ -144,27 +144,28 @@ const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => 
 };
 
 export const issueSwap = async (swapSlice: SwapSlice): Promise<Transaction | undefined> => {
-  const swapToast = new TransactionToast('swap').show();
+  const swapToast = new TransactionToast('swap');
+  swapToast.onStart();
 
   try {
     const swapReq = await assembleSwapRequest(swapSlice);
     const swapPlan = await plan(swapReq);
     const swapTx = await authWitnessBuild({ transactionPlan: swapPlan }, status =>
-      swapToast.onBuildStatus(status).show(),
+      swapToast.onBuildStatus(status),
     );
     const swapTxHash = await getTxHash(swapTx);
     swapToast.txHash(swapTxHash);
     await broadcast({ awaitDetection: true, transaction: swapTx }, status =>
-      swapToast.onBroadcastStatus(status).show(),
+      swapToast.onBroadcastStatus(status),
     );
-    swapToast.onSuccess().show();
+    swapToast.onSuccess();
     return swapTx;
   } catch (e) {
     if (userDeniedTransaction(e)) {
-      swapToast.onDenied().show();
+      swapToast.onDenied();
       return undefined;
     } else {
-      swapToast.onFailure(e).show();
+      swapToast.onFailure(e);
       return undefined;
     }
   }
@@ -174,22 +175,23 @@ export const issueSwap = async (swapSlice: SwapSlice): Promise<Transaction | und
 // This way it won't trigger a second, unnecessary approval popup.
 // @see https://protocol.penumbra.zone/main/zswap/swap.html#claiming-swap-outputs
 export const issueSwapClaim = async (swapCommitment: StateCommitment) => {
-  const toast = new TransactionToast('swapClaim').show();
+  const toast = new TransactionToast('swapClaim');
+  toast.onStart();
 
   try {
     const swapClaimReq = new TransactionPlannerRequest({ swapClaims: [{ swapCommitment }] });
     const transactionPlan = await plan(swapClaimReq);
     const transaction = await witnessBuild({ transactionPlan }, status =>
-      toast.onBuildStatus(status).show(),
+      toast.onBuildStatus(status),
     );
     const txHash = await getTxHash(transaction);
     toast.txHash(txHash);
     const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
-      toast.onBroadcastStatus(status).show(),
+      toast.onBroadcastStatus(status),
     );
-    toast.onSuccess(detectionHeight).show();
+    toast.onSuccess(detectionHeight);
   } catch (e) {
-    toast.onFailure(e).show();
+    toast.onFailure(e);
   }
 };
 
