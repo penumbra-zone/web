@@ -218,8 +218,7 @@ describe('Toast', () => {
         // Switch to error first, to verify that it switches back to the default
         .error()
         .message('Hello, world!')
-        .description('Description here')
-        .render();
+        .description('Description here');
 
       toast.default().render();
 
