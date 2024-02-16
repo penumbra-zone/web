@@ -10,13 +10,6 @@ import {
 } from '@penumbra-zone/types';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import BigNumber from 'bignumber.js';
-import {
-  broadcastingTxToast,
-  buildingTxToast,
-  errorTxToast,
-  infoTxToast,
-  successTxToast,
-} from '../components/shared/toast-content';
 import { AssetBalance } from '../fetchers/balances';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from './helpers';
@@ -25,6 +18,7 @@ import {
   Fee,
   FeeTier_Tier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
+import { TransactionToast } from '@penumbra-zone/ui';
 
 export interface SendSlice {
   selection: AssetBalance | undefined;
@@ -100,18 +94,20 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.txInProgress = true;
       });
 
-      const txToastId = buildingTxToast();
+      const toast = new TransactionToast('send');
+      toast.onStart();
 
       try {
         const transactionPlan = await plan(assembleRequest(get().send));
         const transaction = await authWitnessBuild({ transactionPlan }, status =>
-          buildingTxToast(status, txToastId),
+          toast.onBuildStatus(status),
         );
         const txHash = await getTxHash(transaction);
+        toast.txHash(txHash);
         const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
-          broadcastingTxToast(txHash, status, txToastId),
+          toast.onBroadcastStatus(status),
         );
-        successTxToast(txHash, detectionHeight, txToastId);
+        toast.onSuccess(detectionHeight);
 
         // Reset form
         set(state => {
@@ -119,9 +115,9 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         });
       } catch (e) {
         if (userDeniedTransaction(e)) {
-          infoTxToast('Transaction canceled.', undefined, txToastId);
+          toast.onDenied();
         } else {
-          errorTxToast(e, txToastId);
+          toast.onFailure(e);
           throw e;
         }
       } finally {
