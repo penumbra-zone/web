@@ -1,7 +1,6 @@
 import {
   ClearCacheMessage,
   IncomingRequest,
-  PingMessage,
   ServiceWorkerRequest,
   ServiceWorkerResponse,
   SwRequestMessage,
@@ -9,7 +8,6 @@ import {
 import { AwaitedInternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
 
 export const internalSwClient = {
-  ping: (arg: string) => sendSwMessage<PingMessage>({ type: 'PING', arg }),
   clearCache: () => sendSwMessage<ClearCacheMessage>({ type: 'CLEAR_CACHE' }),
 };
 

@@ -7,7 +7,11 @@ export type TxApproval = InternalMessage<
   'TX-APPROVAL',
   {
     authorizeRequest: Jsonified<AuthorizeRequest>;
-    transactionViewFromPlan: Jsonified<TransactionView>;
+    transactionView: Jsonified<TransactionView>;
   },
-  boolean
+  {
+    attitude: boolean;
+    authorizeRequest: Jsonified<AuthorizeRequest>;
+    transactionView: Jsonified<TransactionView>;
+  }
 >;

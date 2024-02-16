@@ -6,22 +6,26 @@ import { TxApproval } from '@penumbra-zone/types/src/internal-msg/tx-approval';
 import { Code, ConnectError } from '@connectrpc/connect';
 
 export const getTxApproval = async (
-  req: AuthorizeRequest,
-  transactionViewFromPlan: TransactionView,
+  authorizeRequest: AuthorizeRequest,
+  transactionView: TransactionView,
 ): Promise<void> => {
   await spawnDetachedPopup('popup.html#/approval/tx');
 
-  /**
-   * @todo: Should this include a request ID so as not to cross wires with other
-   * requests?
-   */
   const res = await sendPopupRequest<TxApproval>({
     type: 'TX-APPROVAL',
     request: {
-      authorizeRequest: req.toJson() as Jsonified<AuthorizeRequest>,
-      transactionViewFromPlan: transactionViewFromPlan.toJson() as Jsonified<TransactionView>,
+      authorizeRequest: authorizeRequest.toJson() as Jsonified<AuthorizeRequest>,
+      transactionView: transactionView.toJson() as Jsonified<TransactionView>,
     },
   });
   if ('error' in res) throw res.error;
-  if (!res.data) throw new ConnectError('Transaction was not approved', Code.PermissionDenied);
+
+  const resAuthorizeRequest = AuthorizeRequest.fromJson(res.data.authorizeRequest);
+  const resTransactionView = TransactionView.fromJson(res.data.transactionView);
+
+  if (!authorizeRequest.equals(resAuthorizeRequest) || !transactionView.equals(resTransactionView))
+    throw new ConnectError('Invalid response from popup');
+
+  if (!res.data.attitude)
+    throw new ConnectError('Transaction was not approved', Code.PermissionDenied);
 };

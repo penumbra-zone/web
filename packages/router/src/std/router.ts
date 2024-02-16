@@ -17,12 +17,11 @@ export const stdRouter = (
   services: ServicesInterface,
 ) => {
   (async function () {
-    const result = await typedMessageRouter(req.penumbraSwReq, services);
+    await typedMessageRouter(req.penumbraSwReq, services);
     sendResponse({
       sequence: req.sequence,
       penumbraSwRes: {
         type: req.penumbraSwReq.type,
-        data: result,
       } as AwaitedInternalResponse<SwRequestMessage>,
     });
   })().catch(e => {

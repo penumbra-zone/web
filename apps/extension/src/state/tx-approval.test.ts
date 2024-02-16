@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { HandlerContext } from '@connectrpc/connect';
 import { indexByAddress } from '@penumbra-zone/router/src/grpc/view-protocol-server/index-by-address';
 import { IndexByAddressRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { isControlledAddress } from './is-controlled-address';
+import { isControlledAddress } from './tx-approval';
 
 const mockFvk = vi.hoisted(
   () =>
@@ -33,7 +33,7 @@ const mockContext = vi.hoisted(() => ({
  * the underlying implementation changes, these tests will break, and we'll know
  * to update the logic of `isControlledAddress()`.
  */
-vi.mock('../../../clients/extension-page', () => ({
+vi.mock('../clients/extension-page', () => ({
   viewClient: {
     indexByAddress: (req: IndexByAddressRequest) =>
       indexByAddress(req, mockContext as unknown as HandlerContext),

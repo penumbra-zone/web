@@ -47,13 +47,6 @@ export const isServiceWorkerResponse = <T extends SwRequestMessage>(
 export type SwResponse = ResponseOf<SwRequestMessage>;
 
 /* ========= List all service worker messages here ========= */
-export type SwRequestMessage = PingMessage | ClearCacheMessage;
+export type SwRequestMessage = ClearCacheMessage;
 
-// List all service worker messages that are allowed to be called from dapp
-export const allowedDappMessages: SwRequestMessage['type'][] = ['PING'];
-
-export interface PongResponse {
-  ack: string;
-}
-export type PingMessage = InternalMessage<'PING', string, PongResponse>;
 export type ClearCacheMessage = InternalMessage<'CLEAR_CACHE', undefined, Promise<void>>;
