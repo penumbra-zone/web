@@ -10,7 +10,7 @@ import {
 } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { AssetBalance } from '../../fetchers/balances';
-import { AssetIcon } from './asset-icon';
+import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value.tsx';
 import { getAddressIndex, getDisplayDenomFromView, getMetadata } from '@penumbra-zone/types';
 

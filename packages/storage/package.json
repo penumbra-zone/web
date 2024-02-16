@@ -12,7 +12,7 @@
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "idb": "^8.0.0",
-    "vite": "^5.1.2"
+    "vite": "^5.1.3"
   },
   "devDependencies": {
     "@types/chrome": "0.0.260",
