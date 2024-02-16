@@ -151,6 +151,58 @@ describe('Toast', () => {
     });
   });
 
+  describe('.action()', () => {
+    it('sets the action once .show() is called', () => {
+      const onClick = vi.fn();
+      new Toast().message('Hello, world!').action('Click here', onClick).show();
+
+      expect(mockToastFn).toHaveBeenLastCalledWith(
+        'Hello, world!',
+        expect.objectContaining({
+          action: {
+            label: 'Click here',
+            onClick,
+          },
+        }),
+      );
+    });
+
+    it('provides a default no-op click handler if no onClick is passed', () => {
+      new Toast().message('Hello, world!').action('Click here').show();
+
+      expect(mockToastFn).toHaveBeenLastCalledWith(
+        'Hello, world!',
+        expect.objectContaining({
+          action: expect.objectContaining({
+            label: 'Click here',
+            onClick: expect.any(Function) as unknown,
+          }) as unknown,
+        }),
+      );
+    });
+
+    it('sets the action back to `undefined` if `undefined` is passed', () => {
+      const toast = new Toast().message('Hello, world!').action('Click here').show();
+
+      // First, ensure that an action is actually being set.
+      expect(mockToastFn).toHaveBeenLastCalledWith(
+        'Hello, world!',
+        expect.objectContaining({
+          action: expect.any(Object) as unknown,
+        }),
+      );
+
+      toast.action(undefined).show();
+
+      expect(mockToastFn).toHaveBeenLastCalledWith(
+        'Hello, world!',
+        expect.objectContaining({
+          action: undefined,
+        }),
+      );
+    });
+  });
+
   describe('.dismiss()', () => {
     it('dismisses the toast', () => {
       const toast = new Toast().message('Hello, world!').description('Description here').show();

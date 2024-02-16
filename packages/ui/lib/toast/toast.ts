@@ -3,6 +3,10 @@ import { ExternalToast, toast } from 'sonner';
 
 type ToastId = string | number;
 
+const noOp = () => {
+  /** no-op */
+};
+
 /**
  * A nice wrapper around the `toast()` function from Sonner that uses the
  * builder pattern to construct a toast and update it as needed, without having
@@ -51,6 +55,10 @@ export class Toast {
   private _description?: ReactNode;
   private _duration?: number;
   private _closeButton?: boolean;
+  private _action?: {
+    label: ReactNode;
+    onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  };
 
   show() {
     this.toastId = this.toastFn(this._message, {
@@ -58,6 +66,7 @@ export class Toast {
       id: this.toastId,
       duration: this._duration,
       closeButton: this._closeButton,
+      action: this._action,
     });
 
     return this;
@@ -88,6 +97,12 @@ export class Toast {
 
   closeButton(closeButton = true): this {
     this._closeButton = closeButton;
+    return this;
+  }
+
+  action(label?: ReactNode, onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void): this {
+    if (typeof label === 'undefined') this._action = undefined;
+    else this._action = { label, onClick: onClick ?? noOp };
     return this;
   }
 
