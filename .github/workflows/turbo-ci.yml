@@ -36,7 +36,7 @@ jobs:
 
   turbo-test-rust:
     name: 'test:rust'
-    needs: [check-needs-wasm-test, turbo-compile]
+    needs: [check-needs-wasm-test, turbo-build]
     # crate tests are expensive. only run if wasm changed, rerun, or manual dispatch
     if: ${{ !cancelled() && needs.check-needs-wasm-test.outputs.needs-wasm-test }}
     runs-on: buildjet-16vcpu-ubuntu-2204 # buildjet for rust, github standard for everything else
