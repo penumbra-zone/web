@@ -8,7 +8,6 @@ import {
   userDeniedTransaction,
   witnessBuild,
 } from './helpers';
-import { errorTxToast } from '../components/shared/toast-content';
 import {
   Metadata,
   Value,
@@ -27,7 +26,7 @@ import BigNumber from 'bignumber.js';
 import { getAddressByIndex } from '../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { simulateSwapOutput } from '../fetchers/simulate.ts';
-import { TransactionToast } from '@penumbra-zone/ui';
+import { TransactionToast, errorToast } from '@penumbra-zone/ui';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 export interface SwapSlice {
@@ -87,7 +86,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
           swap.simulateOutResult = outputVal;
         });
       } catch (e) {
-        errorTxToast(e);
+        errorToast(e, 'Error estimating swap').render();
       }
     },
     initiateSwapTx: async () => {
