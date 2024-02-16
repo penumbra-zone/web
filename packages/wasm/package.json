@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rm -rfv dist wasm ; cargo clean --manifest-path ./crate/Cargo.toml",
     "dev": "cargo watch -C ./crate --postpone -- pnpm turbo run compile",
-    "compile": "wasm-pack build --no-pack ./crate --release --target bundler --out-name index --out-dir ../wasm",
+    "compile": "cd crate ; wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",
     "build": "tsc",
     "lint": "eslint \"src/*.ts*\"",
     "test": "vitest run",

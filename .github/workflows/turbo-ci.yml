@@ -3,17 +3,20 @@ on: [pull_request, workflow_dispatch]
 
 # this is pretty verbose and repetitive, but github workflows require it
 # the first action is commented, most of those comments apply to all actions
-
 # every 'turbo' call is cached and essentially no-op if the inputs match
 
-# pnpm deps are cached by lockfile hash
+# tried to make wasm compile conditional, but that turned out to be complex.
+# cache should make it decently fast.
+
+# pnpm cached by lock hash
+# turbo cached by cargo lock, pnpm lock in that order
+# mostly, compiled wasm will restore from turbo cache
+# rust cache only used in rust jobs
 
 jobs:
-  check-diff:
-    if: ${{ github.run_attempt == 0 && github.ref != 'refs/heads/main' }}
+  check-needs-wasm-test:
     outputs:
-      wasm-diff-main: ${{ steps.run-wasm-diff-main.outcome }}
-      wasm-diff-prev: ${{ steps.run-wasm-diff-prev.outcome }}
+      needs-wasm-test: ${{ github.event_name == 'workflow_dispatch' || github.run_attempt > 1 || github.ref == 'refs/heads/main' || steps.run-wasm-diff-main.outcome == 'failure' }}
     name: Diff
     runs-on: ubuntu-latest
     steps:
@@ -25,26 +28,21 @@ jobs:
       - id: run-wasm-diff-main
         run: git diff main --exit-code packages/wasm/crate
         continue-on-error: true
-      - id: run-wasm-diff-prev
-        run: git diff ${{ github.head_ref }} --exit-code packages/wasm/crate
-        continue-on-error: true
       - run: exit 0 # always succeed
 
   turbo-compile:
     name: Compile
-    needs: check-diff
-    # only run if wasm crate changed, rerun was requested, or manually dispatched
-    if: ${{ !cancelled() && ( github.event_name == 'workflow_dispatch' || github.run_attempt > 1 || github.ref == 'refs/heads/main' || needs.check-diff.outputs.wasm-diff-main == 'failure'|| needs.check-diff.outputs.wasm-diff-prev == 'failure' )}}
     uses: ./.github/workflows/compile-wasm.yml
 
   turbo-test-rust:
     name: 'test:rust'
-    needs: [check-diff, turbo-build]
-    if: ${{ !cancelled() && ( github.event_name == 'workflow_dispatch' || github.run_attempt > 1 || github.ref == 'refs/heads/main' || needs.check-diff.outputs.wasm-diff-main == 'failure'|| needs.check-diff.outputs.wasm-diff-prev == 'failure' )}}
+    needs: [check-needs-wasm-test, turbo-compile]
+    # crate tests are expensive. only run if wasm changed, rerun, or manual dispatch
+    if: ${{ !cancelled() && needs.check-needs-wasm-test.outputs.needs-wasm-test }}
     runs-on: buildjet-16vcpu-ubuntu-2204 # buildjet for rust, github standard for everything else
     steps:
       - uses: actions/checkout@v4
-      - id: compiled # this also compiles, so we can use or write the same cache
+      - id: test-rust
         uses: actions/cache@v3 # turbo cache, shared between buildjet and github
         with:
           path: .turbo
@@ -60,9 +58,8 @@ jobs:
         with:
           node-version: '21'
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile # commit your lockfile
+      - run: pnpm install --frozen-lockfile
       - run: pnpm turbo telemetry disable
-
       - uses: dtolnay/rust-toolchain@stable # rust only on buildjet
         with:
           targets: wasm32-unknown-unknown
@@ -75,9 +72,7 @@ jobs:
         with:
           version: 'latest'
       - uses: browser-actions/setup-firefox@v1 # wasm tests in ffx
-
       - run: pnpm turbo test:rust --cache-dir=.turbo # test wasm
-
       - run: cargo tree --invert mio --edges features # debug tree
         if: failure()
         working-directory: packages/wasm/crate
@@ -86,7 +81,6 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest # github default for ts, rust uses buildjet
     needs: turbo-compile
-    if: ${{ always() && !cancelled() }} # run even if we skip compile
     steps:
       - uses: actions/checkout@v4
       - id: lint
@@ -102,7 +96,7 @@ jobs:
         with:
           node-version: '21'
           cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile # commit your lockfile
+      - run: pnpm install --frozen-lockfile
       - run: pnpm turbo telemetry disable
       - run: pnpm format-check
       - run: pnpm turbo lint --cache-dir=.turbo
@@ -111,7 +105,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     needs: turbo-compile
-    if: ${{ always() && !cancelled() }} # run even if we skip compile
     steps:
       - uses: actions/checkout@v4
       - id: built
@@ -138,7 +131,6 @@ jobs:
     name: ${{ matrix.test }}
     runs-on: ubuntu-latest
     needs: turbo-build
-    if: ${{ always() && !cancelled() }} # run even if we skip compile
     steps:
       - uses: actions/checkout@v4
       - id: tested
