@@ -6,21 +6,15 @@ import {
   toBaseUnit,
 } from '@penumbra-zone/types';
 import { AllSlices, SliceCreator } from '.';
-import { toast } from 'sonner';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import {
-  errorTxToast,
-  buildingTxToast,
-  successTxToast,
-  broadcastingTxToast,
-} from '../components/shared/toast-content';
 import BigNumber from 'bignumber.js';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { ibcClient, viewClient } from '../clients/grpc';
-import { authWitnessBuild, broadcast, getTxHash, plan } from './helpers';
+import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from './helpers';
 import { AssetBalance } from '../fetchers/balances';
+import { TransactionToast } from '@penumbra-zone/ui';
 
 export interface IbcSendSlice {
   selection: AssetBalance | undefined;
@@ -67,32 +61,36 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
         state.send.txInProgress = true;
       });
 
-      const txToastId = buildingTxToast();
+      const toast = new TransactionToast('unknown');
+      toast.onStart();
 
       try {
         const transactionPlan = await plan(await getPlanRequest(get().ibc));
         const transaction = await authWitnessBuild({ transactionPlan }, status =>
-          buildingTxToast(status, txToastId),
+          toast.onBuildStatus(status),
         );
         const txHash = await getTxHash(transaction);
+        toast.txHash(txHash);
         const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
-          broadcastingTxToast(txHash, status, txToastId),
+          toast.onBroadcastStatus(status),
         );
 
-        successTxToast(txHash, detectionHeight);
+        toast.onSuccess(detectionHeight);
 
         // Reset form
         set(state => {
           state.ibc.amount = '';
         });
       } catch (e) {
-        errorTxToast(e, txToastId);
-        throw e;
+        if (userDeniedTransaction(e)) {
+          toast.onDenied();
+        } else {
+          toast.onFailure(e);
+        }
       } finally {
         set(state => {
           state.ibc.txInProgress = false;
         });
-        toast.dismiss(txToastId);
       }
     },
   };
