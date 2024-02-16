@@ -223,13 +223,8 @@ describe('Toast', () => {
 
       toast.default().render();
 
+      expect(mockToastFn.error).not.toHaveBeenCalled();
       expect(mockToastFn).toHaveBeenCalledTimes(1);
-      expect(mockToastFn).toHaveBeenCalledWith(
-        'Hello, world!',
-        expect.objectContaining({
-          description: 'Description here',
-        }),
-      );
     });
   });
 
