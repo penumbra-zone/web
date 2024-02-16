@@ -165,6 +165,7 @@ export const issueSwap = async (swapSlice: SwapSlice): Promise<Transaction | und
       return undefined;
     } else {
       swapToast.onFailure(e).show();
+      return undefined;
     }
   }
 };
