@@ -39,7 +39,7 @@ export class TransactionToast {
       .message(`Building ${this.label} transaction`);
   }
 
-  txHash(txHash?: string): void {
+  txHash(txHash: string): void {
     this._txHash = txHash;
   }
 
