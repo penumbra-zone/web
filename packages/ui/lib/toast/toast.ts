@@ -88,7 +88,7 @@ export class Toast {
 
   /**
    * Dismisses the toast. Dismissing a toast doesn't actually destroy it in any
-   * meaninful sense, so you can always re-open the toast by calling
+   * meaningful sense, so you can always re-open the toast by calling
    * `.render()`.
    */
   dismiss(): this {
