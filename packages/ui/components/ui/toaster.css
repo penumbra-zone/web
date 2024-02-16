@@ -1,0 +1,11 @@
+/**
+ * Annoyingly, the content div doesn't have `flex-grow: 1` applied to it, so it
+ * shrinks by default to the size of the toast title. This causes a problem when
+ * e.g. a progress bar is being rendered inside the content div, because the
+ * progress bar ends up not taking up the full width of the toast.
+ *
+ * @see https://github.com/emilkowalski/sonner/pull/338
+ */
+[data-sonner-toast] [data-content] {
+  flex-grow: 1;
+}
