@@ -1,5 +1,8 @@
 # Publishes extension to chrome web store when a release is made in github.
+
 # `maniftest.json` should already be updated to the desired version before release.
+# make sure download-proving-keys contains the correct version tag.
+
 # https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe
 name: Publish extension
 
@@ -24,25 +27,20 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-${{ hashFiles('packages/wasm/cargo/src/**') }}-${{ github.ref }}-${{ github.sha }}-publish
+          key: ${{ runner.os }}-turbo-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-publish
           restore-keys: |
-            ${{ runner.os }}-turbo-${{ hashFiles('packages/wasm/cargo/src/**') }}-${{ github.ref }}-${{ github.sha }}-compiled
+            ${{ runner.os }}-turbo-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}
       - uses: pnpm/action-setup@v2
       - uses: actions/setup-node@v4
         with:
           node-version: '21'
           cache: 'pnpm'
-
       - run: pnpm install --frozen-lockfile
-
       - run: pnpm turbo telemetry disable
-
       - run: pnpm turbo download-keys --force --cache-dir=.turbo
       - run: pnpm turbo build --cache-dir=.turbo
-
       - name: Package up extension
         run: zip -r dist.zip apps/extension/dist
-
       - name: Upload & release
         uses: penumbra-zone/chrome-extension-upload@v1
         with:
