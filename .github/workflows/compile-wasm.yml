@@ -10,10 +10,8 @@ jobs:
         uses: actions/cache@v3 # turbo cache, shared between buildjet and github
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-${{ hashFiles('**/Cargo.lock') }}-${{ github.ref }}-${{ github.sha }}-compiled
+          key: ${{ runner.os }}-turbo-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-turbo-${{ hashFiles('**/Cargo.lock') }}-${{ github.ref }}-${{ github.sha }}}
-            ${{ runner.os }}-turbo-${{ hashFiles('**/Cargo.lock') }}-${{ github.ref }}
             ${{ runner.os }}-turbo-${{ hashFiles('**/Cargo.lock') }}
             ${{ runner.os }}-turbo-
       - uses: pnpm/action-setup@v2
