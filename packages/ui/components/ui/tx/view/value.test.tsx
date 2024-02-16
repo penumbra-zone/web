@@ -11,6 +11,7 @@ describe('<ValueViewComponent />', () => {
   const penumbraMetadata = new Metadata({
     base: 'upenumbra',
     display: 'penumbra',
+    symbol: 'UM',
     penumbraAssetId: {
       inner: base64ToUint8Array('KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA='),
     },
@@ -52,7 +53,7 @@ describe('<ValueViewComponent />', () => {
     test('renders the amount in the display denom unit', () => {
       const { container } = render(<ValueViewComponent view={valueView} />);
 
-      expect(container).toHaveTextContent('123.456789 penumbra');
+      expect(container).toHaveTextContent('123.456789UM');
     });
   });
 
