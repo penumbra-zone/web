@@ -164,7 +164,7 @@ export const issueSwap = async (swapSlice: SwapSlice): Promise<Transaction | und
       swapToast.onDenied().show();
       return undefined;
     } else {
-      swapToast.error(e).show();
+      swapToast.onFailure(e).show();
     }
   }
 };
@@ -188,7 +188,7 @@ export const issueSwapClaim = async (swapCommitment: StateCommitment) => {
     );
     toast.onSuccess(detectionHeight).show();
   } catch (e) {
-    toast.error(e).show();
+    toast.onFailure(e).show();
   }
 };
 

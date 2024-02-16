@@ -45,7 +45,7 @@ export class TransactionToast {
     return this;
   }
 
-  error(error: unknown): this {
+  onFailure(error: unknown): this {
     this.toast.error().message(`${this.getLabel()} transaction failed`).description(String(error));
 
     return this;
