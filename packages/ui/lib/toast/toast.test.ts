@@ -94,6 +94,39 @@ describe('Toast', () => {
     });
   });
 
+  describe('.duration()', () => {
+    it('changes the duration once .show() is called', () => {
+      const toast = new Toast().message('Hello, world!').description('Description here').show();
+
+      toast.duration(10_000).show();
+
+      expect(mockToastFn).toHaveBeenLastCalledWith(
+        'Hello, world!',
+        expect.objectContaining({
+          duration: 10_000,
+        }),
+      );
+
+      toast.duration(Infinity).show();
+
+      expect(mockToastFn).toHaveBeenLastCalledWith(
+        'Hello, world!',
+        expect.objectContaining({
+          duration: Infinity,
+        }),
+      );
+
+      toast.duration(undefined).show();
+
+      expect(mockToastFn).toHaveBeenLastCalledWith(
+        'Hello, world!',
+        expect.objectContaining({
+          duration: undefined,
+        }),
+      );
+    });
+  });
+
   describe('.dismiss()', () => {
     it('dismisses the toast', () => {
       const toast = new Toast().message('Hello, world!').description('Description here').show();

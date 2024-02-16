@@ -44,16 +44,18 @@ type ToastId = string | number;
  * ```
  */
 export class Toast {
-  private toastId: ToastId | undefined;
+  private toastId?: ToastId;
   private toastFn: (message: string | React.ReactNode, data?: ExternalToast) => string | number =
     toast;
-  private _message: ReactNode | undefined;
-  private _description: ReactNode | undefined;
+  private _message?: ReactNode;
+  private _description?: ReactNode;
+  private _duration?: number;
 
   show() {
     this.toastId = this.toastFn(this._message, {
       description: this._description,
       id: this.toastId,
+      duration: this._duration,
     });
 
     return this;
@@ -72,8 +74,13 @@ export class Toast {
     return this;
   }
 
-  description(description: ReactNode | undefined): this {
+  description(description?: ReactNode): this {
     this._description = description;
+    return this;
+  }
+
+  duration(duration?: number): this {
+    this._duration = duration;
     return this;
   }
 
