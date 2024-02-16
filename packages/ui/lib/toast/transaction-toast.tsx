@@ -44,15 +44,10 @@ const getBuildStatusDescription = (
  * authorizing, building, and broadcasting.
  */
 export class TransactionToast {
-  private toast: Toast;
+  private toast = new Toast();
   private _txHash?: string;
 
-  constructor(private transactionClassification: TransactionClassification) {
-    this.toast = new Toast()
-      .duration(Infinity)
-      .loading()
-      .message(`Building ${this.label} transaction`);
-  }
+  constructor(private transactionClassification: TransactionClassification) {}
 
   /**
    * Stores the transaction hash so that it can be used in the success and
@@ -70,7 +65,7 @@ export class TransactionToast {
    * Shows the toast to the user with a loading indicator.
    */
   onStart(): void {
-    this.toast.render();
+    this.toast.duration(Infinity).loading().message(`Building ${this.label} transaction`).render();
   }
 
   /**
