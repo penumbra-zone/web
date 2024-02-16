@@ -64,11 +64,16 @@ export class TransactionToast {
   }
 
   onSuccess(detectionHeight?: bigint): void {
+    if (!this._txHash)
+      throw new Error(
+        'You called TransactionToast.onSuccess() without first calling `TransactionToast.txHash()`. You must first call `TransactionToast.txHash()` with the transaction hash, so that the success toast can construct a link to the transaction.',
+      );
+
     this.toast
       .success()
       .message(`${this.label} transaction succeeded! 🎉`)
       .description(
-        `Transaction ${this.shortenedTxHash} appeared on chain ${detectionHeight ? `at height ${detectionHeight}` : ''}`,
+        `Transaction ${this.shortenedTxHash} appeared on chain${detectionHeight ? ` at height ${detectionHeight}` : ''}.`,
       )
       .action(<Link to={`/tx/${this._txHash}`}>See details</Link>)
       .closeButton()
