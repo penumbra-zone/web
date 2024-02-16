@@ -28,6 +28,10 @@ const getBuildStatusDescription = (
   return undefined;
 };
 
+/**
+ * Manages the lifecycle of a toast for a transaction through the stages of
+ * authorizing, building, and broadcasting.
+ */
 export class TransactionToast {
   private toast: Toast;
   private _txHash?: string;
@@ -39,14 +43,37 @@ export class TransactionToast {
       .message(`Building ${this.label} transaction`);
   }
 
+  /**
+   * Stores the transaction hash so that it can be used in the success and
+   * (optionally) broadcast stages. This _must_ be called before calling
+   * `.onSuccess()`, as the hash is needed for rendering the link to the
+   * transaction. If possible, also call it before calling
+   * `.onBroadcastStatus()`, so that the hash can be included in the toast while
+   * broadcasting.
+   */
   txHash(txHash: string): void {
     this._txHash = txHash;
   }
 
+  /**
+   * Shows the toast to the user with a loading indicator.
+   */
   onStart(): void {
     this.toast.render();
   }
 
+  /**
+   * Updates the toast to show the build's progress. Call this with the `status`
+   * that comes back from `viewClient.authorizeAndBuild` or
+   * `viewClient.witnessAndBuild`.
+   *
+   * @example
+   * ```
+   * const tx = await authWitnessBuild({ transactionPlan }, status =>
+   *   toast.onBuildStatus(status),
+   * );
+   * ```
+   */
   onBuildStatus(status?: BuildStatus): void {
     this.toast
       .loading()
@@ -55,6 +82,17 @@ export class TransactionToast {
       .render();
   }
 
+  /**
+   * Updates the toast to show the broadcast status. Call this with the `status`
+   * that comes back from `viewClient.broadcastTransaction`.
+   *
+   * @example
+   * ```
+   * await broadcast({ transaction }, status =>
+   *   toast.onBroadcastStatus(status),
+   * );
+   * ```
+   */
   onBroadcastStatus(status?: BroadcastStatus): void {
     this.toast
       .loading()
@@ -63,7 +101,18 @@ export class TransactionToast {
       .render();
   }
 
-  onSuccess(detectionHeight?: bigint): void {
+  /**
+   * Updates the toast to show that a transaction succeeded. Note that you must
+   * call `.txHash()` before calling `.onSuccess()`, so that `.onSuccess()` can
+   * render a link to the transaction.
+   */
+  onSuccess(
+    /**
+     * Optional. If passed, will indicate to the user what block height the
+     * transaction was detected at.
+     */
+    detectionHeight?: bigint,
+  ): void {
     if (!this._txHash)
       throw new Error(
         'You called TransactionToast.onSuccess() without first calling `TransactionToast.txHash()`. You must first call `TransactionToast.txHash()` with the transaction hash, so that the success toast can construct a link to the transaction.',
@@ -80,6 +129,10 @@ export class TransactionToast {
       .render();
   }
 
+  /**
+   * Updates the toast to show that a transaction failed. Pass it any relevant
+   * error, which will be stringified in the toast.
+   */
   onFailure(error: unknown): void {
     this.toast
       .error()
@@ -89,6 +142,9 @@ export class TransactionToast {
       .render();
   }
 
+  /**
+   * Updates the toast to show that the user denied the transaction.
+   */
   onDenied(): void {
     this.toast
       .info()
