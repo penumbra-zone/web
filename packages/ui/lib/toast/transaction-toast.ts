@@ -32,7 +32,10 @@ export class TransactionToast {
   private _txHash?: string;
 
   constructor(private transactionClassification: TransactionClassification) {
-    this.toast = new Toast().loading().message(`Building ${this.getLabel()} transaction`);
+    this.toast = new Toast()
+      .duration(Infinity)
+      .loading()
+      .message(`Building ${this.getLabel()} transaction`);
   }
 
   show(): this {
@@ -46,7 +49,11 @@ export class TransactionToast {
   }
 
   onFailure(error: unknown): this {
-    this.toast.error().message(`${this.getLabel()} transaction failed`).description(String(error));
+    this.toast
+      .error()
+      .message(`${this.getLabel()} transaction failed`)
+      .description(String(error))
+      .closeButton();
 
     return this;
   }
@@ -70,7 +77,7 @@ export class TransactionToast {
   }
 
   onDenied(): this {
-    this.toast.info().message('Transaction canceled.').description(undefined);
+    this.toast.info().message('Transaction canceled').description(undefined).duration(5_000);
 
     return this;
   }
@@ -81,7 +88,8 @@ export class TransactionToast {
       .message(`${this.getLabel()} transaction succeeded! 🎉`)
       .description(
         `Transaction ${this.shortenedTxHash} appeared on chain ${detectionHeight ? `at height ${detectionHeight}` : ''}`,
-      );
+      )
+      .closeButton();
 
     return this;
   }
