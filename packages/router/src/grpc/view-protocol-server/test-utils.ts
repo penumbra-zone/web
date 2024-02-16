@@ -4,6 +4,7 @@ export interface IndexedDbMock {
   constants?: Mock;
   getAppParams?: Mock;
   getAssetsMetadata?: Mock;
+  getGasPrices?: Mock;
   getFmdParams?: Mock;
   getLastBlockSynced?: Mock;
   getSpendableNoteByCommitment?: Mock;

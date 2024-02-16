@@ -1,5 +1,6 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
+import { Code, ConnectError } from '@connectrpc/connect';
 
 /**
  * Gas prices are published within the 'CompactBlock' whenever they change. The specific block
@@ -23,7 +24,7 @@ export const gasPrices: Impl['gasPrices'] = async (_, ctx) => {
   const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
   const gasPrices = await indexedDb.getGasPrices();
-  if (!gasPrices) throw new Error('Gas prices is not available');
+  if (!gasPrices) throw new ConnectError('Gas prices is not available', Code.NotFound);
 
   return {
     gasPrices,
