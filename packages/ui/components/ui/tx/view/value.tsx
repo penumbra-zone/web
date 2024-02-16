@@ -57,6 +57,7 @@ export const ValueViewComponent = ({
             )
               .toFormat(6)
               .replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
+            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             const symbol = equivalentValue.numeraire?.symbol || 'Unknown Asset';
             return (
               <div key={index} className='flex'>
