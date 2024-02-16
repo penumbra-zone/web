@@ -35,7 +35,7 @@ export class TransactionToast {
     this.toast = new Toast()
       .duration(Infinity)
       .loading()
-      .message(`Building ${this.getLabel()} transaction`);
+      .message(`Building ${this.label} transaction`);
   }
 
   txHash(txHash?: string): void {
@@ -49,7 +49,7 @@ export class TransactionToast {
   onBuildStatus(status?: BuildStatus): void {
     this.toast
       .loading()
-      .message(`Building ${this.getLabel()} transaction`)
+      .message(`Building ${this.label} transaction`)
       .description(getBuildingStatusDescription(status))
       .show();
   }
@@ -57,7 +57,7 @@ export class TransactionToast {
   onBroadcastStatus(status?: BroadcastStatus): void {
     this.toast
       .loading()
-      .message(getBroadcastingStatusMessage(this.getLabel(), status))
+      .message(getBroadcastingStatusMessage(this.label, status))
       .description(this.shortenedTxHash)
       .show();
   }
@@ -65,7 +65,7 @@ export class TransactionToast {
   onSuccess(detectionHeight?: bigint): void {
     this.toast
       .success()
-      .message(`${this.getLabel()} transaction succeeded! 🎉`)
+      .message(`${this.label} transaction succeeded! 🎉`)
       .description(
         `Transaction ${this.shortenedTxHash} appeared on chain ${detectionHeight ? `at height ${detectionHeight}` : ''}`,
       )
@@ -76,7 +76,7 @@ export class TransactionToast {
   onFailure(error: unknown): void {
     this.toast
       .error()
-      .message(`${this.getLabel()} transaction failed`)
+      .message(`${this.label} transaction failed`)
       .description(String(error))
       .closeButton()
       .show();
@@ -86,7 +86,7 @@ export class TransactionToast {
     this.toast.info().message('Transaction canceled').description(undefined).duration(5_000).show();
   }
 
-  private getLabel(): string {
+  private get label(): string {
     return TRANSACTION_LABEL_BY_CLASSIFICATION[this.transactionClassification];
   }
 
