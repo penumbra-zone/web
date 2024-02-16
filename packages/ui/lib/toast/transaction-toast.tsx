@@ -9,6 +9,7 @@ import {
   BroadcastTransactionResponse,
   WitnessAndBuildResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { Link } from 'react-router-dom';
 
 type BroadcastStatus = BroadcastTransactionResponse['status'];
 type BuildStatus = (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'];
@@ -69,6 +70,7 @@ export class TransactionToast {
       .description(
         `Transaction ${this.shortenedTxHash} appeared on chain ${detectionHeight ? `at height ${detectionHeight}` : ''}`,
       )
+      .action(<Link to={`/tx/${this._txHash}`}>See details</Link>)
       .closeButton()
       .show();
   }
