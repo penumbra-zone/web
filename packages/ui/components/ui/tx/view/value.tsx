@@ -31,7 +31,10 @@ export const ValueViewComponent = ({
     const metadata = view.valueView.value.metadata;
     const amount = value.amount ?? new Amount();
     const exponent = getDisplayDenomExponent(metadata);
-    const formattedAmount = fromBaseUnitAmount(amount, exponent).toFormat();
+    // The regex trims trailing zeros which toFormat adds in
+    const formattedAmount = fromBaseUnitAmount(amount, exponent)
+      .toFormat(6)
+      .replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
     const symbol = metadata.symbol || 'Unknown Asset';
 
     return (
@@ -51,7 +54,9 @@ export const ValueViewComponent = ({
             const formattedEquivalent = fromBaseUnitAmount(
               equivalentValue.equivalentAmount ?? new Amount(),
               exponent,
-            ).toFormat();
+            )
+              .toFormat(6)
+              .replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
             const symbol = equivalentValue.numeraire?.symbol || 'Unknown Asset';
             return (
               <div key={index} className='flex'>
