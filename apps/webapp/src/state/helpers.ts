@@ -16,6 +16,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
+import { ConnectError } from '@connectrpc/connect';
 
 export const plan = async (
   req: PartialMessage<TransactionPlannerRequest>,
@@ -110,3 +111,17 @@ export const getTxId = (tx: Transaction | PartialMessage<Transaction>) =>
   sha256Hash(tx instanceof Transaction ? tx.toBinary() : new Transaction(tx).toBinary()).then(
     inner => new TransactionId({ inner }),
   );
+
+/**
+ * @todo: The error flow between extension <-> webapp needs to be refactored a
+ * bit. Right now, if we throw a `ConnectError` with `Code.PermissionDenied` (as
+ * we do in the approver), it gets swallowed by ConnectRPC's internals and
+ * rethrown via `ConnectError.from()`.  This means that the original code is
+ * lost, although the stringified error message still contains
+ * `[permission_denied]`. So we'll (somewhat hackily) check the stringified
+ * error message for now; but in the future, we need ot get the error flow
+ * working properly so that we can actually check `e.code ===
+ * Code.PermissionDenied`.
+ */
+export const userDeniedTransaction = (e: unknown): boolean =>
+  e instanceof ConnectError && e.message.includes('[permission_denied]');
