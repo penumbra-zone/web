@@ -35,7 +35,7 @@ export const ImportSeedPhrase = () => {
             className='mt-4'
             variant='gradient'
             disabled={!phrase.every(w => w.length > 0) || !phraseIsValid()}
-            onClick={() => navigate(PagePath.SET_PASSWORD)}
+            onClick={() => navigate(PagePath.CHOOSE_ENDPOINT)}
           >
             {!phrase.length || !phrase.every(w => w.length > 0)
               ? 'Fill in passphrase'

@@ -38,7 +38,7 @@ export const ConfirmBackup = () => {
           <Button
             variant='gradient'
             disabled={!userAttemptCorrect()}
-            onClick={() => navigate(PagePath.SET_PASSWORD)}
+            onClick={() => navigate(PagePath.CHOOSE_ENDPOINT)}
           >
             Next
           </Button>

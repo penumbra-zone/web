@@ -4,7 +4,7 @@ import { SetPassword } from './set-password';
 
 export const restorePasswordRoutes = [
   {
-    path: PagePath.RESTORE_PASSWORD_INDEX,
+    path: PagePath.RESTORE_PASSWORD,
     element: <RestorePassword />,
   },
   {

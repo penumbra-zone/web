@@ -29,8 +29,16 @@ export const OnboardingSuccess = () => {
           <Button
             variant='gradient'
             onClick={() => {
-              window.open('https://app.testnet.penumbra.zone/', '_blank');
-              window.close();
+              void (async () => {
+                const dapp_url = 'https://app.testnet.penumbra.zone/';
+                if (
+                  (await chrome.permissions.contains({ origins: [dapp_url] })) ||
+                  (await chrome.permissions.request({ origins: [dapp_url] }))
+                ) {
+                  window.open('https://app.testnet.penumbra.zone/', '_blank');
+                  window.close();
+                }
+              })();
             }}
             className='mt-4'
           >
