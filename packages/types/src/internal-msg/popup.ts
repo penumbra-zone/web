@@ -1,5 +1,7 @@
-import { TxApproval } from './tx-approval';
-import { InternalRequest, InternalResponse } from './shared';
+import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
+import { Jsonified } from '../jsonified';
+import { InternalMessage, InternalRequest, InternalResponse } from './shared';
 
 type PopupSupportedMsg = TxApproval; // Add more as needed
 export type PopupRequest = InternalRequest<PopupSupportedMsg>;
@@ -49,4 +51,23 @@ export const spawnDetachedPopup = async (path: string) => {
   await new Promise(resolve => {
     setTimeout(resolve, 500);
   });
+};
+
+export type TxApproval = InternalMessage<
+  'TX-APPROVAL',
+  {
+    authorizeRequest: Jsonified<AuthorizeRequest>;
+    transactionView: Jsonified<TransactionView>;
+  },
+  {
+    attitude: boolean;
+    authorizeRequest: Jsonified<AuthorizeRequest>;
+    transactionView: Jsonified<TransactionView>;
+  }
+>;
+
+export const isTxApprovalReq = (req: PopupRequest): req is TxApproval => {
+  // more types in the future
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  return req.type === 'TX-APPROVAL';
 };
