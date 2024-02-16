@@ -2,7 +2,6 @@ import { PagePath } from '../metadata/paths.ts';
 import { BoxIcon, SwapIcon } from '../../icons/index.tsx';
 import { ReactElement } from 'react';
 import { ArrowTopRightIcon, MixerHorizontalIcon, TextAlignLeftIcon } from '@radix-ui/react-icons';
-import { DragHandleDotsIcon } from '../../icons/drag-handle-dots.tsx';
 
 export interface HeaderLink {
   href: PagePath;
@@ -32,12 +31,6 @@ export const headerLinks: HeaderLink[] = [
     label: 'Swap',
     active: true,
     mobileIcon: <SwapIcon />,
-  },
-  {
-    href: PagePath.POOLS,
-    label: 'Pools',
-    active: false,
-    mobileIcon: <DragHandleDotsIcon />,
   },
   {
     href: PagePath.GOVERNANCE,
