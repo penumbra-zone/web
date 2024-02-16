@@ -13,6 +13,10 @@ const noOp = () => {
  * construct a toast and update it as needed without having to keep track of a
  * toast ID.
  *
+ * Generally speaking, this class will probably not be used directly by UIs;
+ * rather, it will be used by other classes that manage the lifecycle of a toast
+ * for specific use cases.
+ *
  * @example
  * ```ts
  * const toast = new Toast().loading().message('Loading data...').render();
