@@ -14,13 +14,13 @@ import { Link } from 'react-router-dom';
 type BroadcastStatus = BroadcastTransactionResponse['status'];
 type BuildStatus = (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'];
 
-const getBroadcastingStatusMessage = (label: string, status?: BroadcastStatus) => {
+const getBroadcastStatusMessage = (label: string, status?: BroadcastStatus) => {
   if (status?.case === 'broadcastSuccess' || status?.case === 'confirmed')
     return 'Waiting for confirmation';
   return `Emitting ${label} transaction`;
 };
 
-const getBuildingStatusDescription = (
+const getBuildStatusDescription = (
   status?: Exclude<BuildStatus, undefined>,
 ): string | undefined => {
   if (status?.case === 'buildProgress') return `${Math.round(status.value.progress * 100)}%`;
@@ -51,14 +51,14 @@ export class TransactionToast {
     this.toast
       .loading()
       .message(`Building ${this.label} transaction`)
-      .description(getBuildingStatusDescription(status))
+      .description(getBuildStatusDescription(status))
       .show();
   }
 
   onBroadcastStatus(status?: BroadcastStatus): void {
     this.toast
       .loading()
-      .message(getBroadcastingStatusMessage(this.label, status))
+      .message(getBroadcastStatusMessage(this.label, status))
       .description(this.shortenedTxHash)
       .show();
   }
