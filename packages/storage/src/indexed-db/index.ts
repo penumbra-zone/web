@@ -189,14 +189,7 @@ export class IndexedDb implements IndexedDbInterface {
 
   // Save all hard-coded assets in config to database
   async saveLocalAssetsMetadata() {
-    const saveLocalMetadata = localAssets.map(async m => {
-      if (m.penumbraAssetId) {
-        const metadata = await this.getAssetsMetadata(m.penumbraAssetId);
-        if (!metadata) {
-          await this.saveAssetsMetadata(m);
-        }
-      }
-    });
+    const saveLocalMetadata = localAssets.map(m => this.saveAssetsMetadata(m));
     await Promise.all(saveLocalMetadata);
   }
 
