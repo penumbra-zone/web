@@ -118,7 +118,6 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
           toast.onDenied();
         } else {
           toast.onFailure(e);
-          throw e;
         }
       } finally {
         set(state => {
