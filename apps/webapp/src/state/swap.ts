@@ -150,12 +150,12 @@ export const issueSwap = async (swapSlice: SwapSlice): Promise<Transaction | und
     const swapReq = await assembleSwapRequest(swapSlice);
     const swapPlan = await plan(swapReq);
     const swapTx = await authWitnessBuild({ transactionPlan: swapPlan }, status =>
-      swapToast.onBuildingStatus(status).show(),
+      swapToast.onBuildStatus(status).show(),
     );
     const swapTxHash = await getTxHash(swapTx);
     swapToast.txHash(swapTxHash);
     await broadcast({ awaitDetection: true, transaction: swapTx }, status =>
-      swapToast.onBroadcastingStatus(status).show(),
+      swapToast.onBroadcastStatus(status).show(),
     );
     swapToast.onSuccess().show();
     return swapTx;
@@ -180,12 +180,12 @@ export const issueSwapClaim = async (swapCommitment: StateCommitment) => {
     const swapClaimReq = new TransactionPlannerRequest({ swapClaims: [{ swapCommitment }] });
     const transactionPlan = await plan(swapClaimReq);
     const transaction = await witnessBuild({ transactionPlan }, status =>
-      toast.onBuildingStatus(status).show(),
+      toast.onBuildStatus(status).show(),
     );
     const txHash = await getTxHash(transaction);
     toast.txHash(txHash);
     const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
-      toast.onBroadcastingStatus(status).show(),
+      toast.onBroadcastStatus(status).show(),
     );
     toast.onSuccess(detectionHeight).show();
   } catch (e) {

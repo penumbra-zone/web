@@ -10,17 +10,17 @@ import {
   WitnessAndBuildResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
-type BroadcastingStatus = BroadcastTransactionResponse['status'];
-type BuildingStatus = (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'];
+type BroadcastStatus = BroadcastTransactionResponse['status'];
+type BuildStatus = (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'];
 
-const getBroadcastingStatusMessage = (label: string, status?: BroadcastingStatus) => {
+const getBroadcastingStatusMessage = (label: string, status?: BroadcastStatus) => {
   if (status?.case === 'broadcastSuccess' || status?.case === 'confirmed')
     return 'Waiting for confirmation';
   return `Emitting ${label} transaction`;
 };
 
 const getBuildingStatusDescription = (
-  status?: Exclude<BuildingStatus, undefined>,
+  status?: Exclude<BuildStatus, undefined>,
 ): string | undefined => {
   if (status?.case === 'buildProgress') return `${Math.round(status.value.progress * 100)}%`;
   if (status?.case === 'complete') return '100%';
@@ -51,7 +51,7 @@ export class TransactionToast {
     return this;
   }
 
-  onBuildingStatus(status?: BuildingStatus): this {
+  onBuildStatus(status?: BuildStatus): this {
     this.toast
       .loading()
       .message(`Building ${this.getLabel()} transaction`)
@@ -60,7 +60,7 @@ export class TransactionToast {
     return this;
   }
 
-  onBroadcastingStatus(status?: BroadcastingStatus): this {
+  onBroadcastStatus(status?: BroadcastStatus): this {
     this.toast
       .loading()
       .message(getBroadcastingStatusMessage(this.getLabel(), status))
