@@ -127,6 +127,30 @@ describe('Toast', () => {
     });
   });
 
+  describe('.closeButton()', () => {
+    it('changes the closeButton setting once .show() is called', () => {
+      const toast = new Toast().message('Hello, world!').description('Description here').show();
+
+      toast.closeButton().show();
+
+      expect(mockToastFn).toHaveBeenLastCalledWith(
+        'Hello, world!',
+        expect.objectContaining({
+          closeButton: true,
+        }),
+      );
+
+      toast.closeButton(false).show();
+
+      expect(mockToastFn).toHaveBeenLastCalledWith(
+        'Hello, world!',
+        expect.objectContaining({
+          closeButton: false,
+        }),
+      );
+    });
+  });
+
   describe('.dismiss()', () => {
     it('dismisses the toast', () => {
       const toast = new Toast().message('Hello, world!').description('Description here').show();

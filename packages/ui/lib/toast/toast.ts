@@ -50,12 +50,14 @@ export class Toast {
   private _message?: ReactNode;
   private _description?: ReactNode;
   private _duration?: number;
+  private _closeButton?: boolean;
 
   show() {
     this.toastId = this.toastFn(this._message, {
       description: this._description,
       id: this.toastId,
       duration: this._duration,
+      closeButton: this._closeButton,
     });
 
     return this;
@@ -81,6 +83,11 @@ export class Toast {
 
   duration(duration?: number): this {
     this._duration = duration;
+    return this;
+  }
+
+  closeButton(closeButton = true): this {
+    this._closeButton = closeButton;
     return this;
   }
 
