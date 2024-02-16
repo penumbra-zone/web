@@ -6,9 +6,7 @@ import {
   AccountGroupedBalances,
   getBalancesByAccount,
 } from '../../fetchers/balances/by-account.ts';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
-import { AssetIcon } from '../shared/asset-icon.tsx';
-import { displayUsd, hasDenomMetadata } from '@penumbra-zone/types';
+import { Table, TableBody, TableCell, TableRow } from '@penumbra-zone/ui';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value.tsx';
 
 export const AssetsLoader: LoaderFunction = async (): Promise<AccountGroupedBalances[]> => {
@@ -49,15 +47,13 @@ export default function AssetsTable() {
 
           <Table className='md:table'>
             <TableBody>
-              {a.balances.map((assetBalance, index) => {
-                return (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <ValueViewComponent view={assetBalance.value} />
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {a.balances.map((assetBalance, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <ValueViewComponent view={assetBalance.value} />
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>

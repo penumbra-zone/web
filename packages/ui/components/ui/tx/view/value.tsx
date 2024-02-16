@@ -1,14 +1,13 @@
-import { Metadata, ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   fromBaseUnitAmount,
   getDisplayDenomExponent,
   getDisplayDenomFromView,
 } from '@penumbra-zone/types';
 import { CopyToClipboard } from '../../copy-to-clipboard';
-//import { AssetIcon } from '../../webapp/shared/asset-icon.tsx';
+import { AssetIcon } from './asset-icon';
 import { CopyIcon } from '@radix-ui/react-icons';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { Identicon } from '../../identicon';
 
 interface ValueViewProps {
   view: ValueView | undefined;
@@ -18,26 +17,13 @@ interface ValueViewProps {
   showEquivalent?: boolean;
 }
 
-export const AssetIcon = ({ metadata }: { metadata?: Metadata }) => {
-  const icon = metadata?.images[0]?.png || metadata?.images[0]?.svg;
-  return (
-    <>
-      {icon ? (
-        <img className='size-6 rounded-full' src={icon} alt='Asset icon' />
-      ) : (
-        <Identicon
-          uniqueIdentifier={metadata?.symbol ?? '?'}
-          size={24}
-          className='rounded-full'
-          type='solid'
-        />
-      )}
-    </>
-  );
-};
-
-
-export const ValueViewComponent = ({ view, showDenom = true, showValue = true, showIcon = true, showEquivalent = true }: ValueViewProps) => {
+export const ValueViewComponent = ({
+  view,
+  showDenom = true,
+  showValue = true,
+  showIcon = true,
+  showEquivalent = true,
+}: ValueViewProps) => {
   if (!view) return <></>;
 
   if (view.valueView.case === 'knownAssetId' && view.valueView.value.metadata) {
@@ -50,39 +36,33 @@ export const ValueViewComponent = ({ view, showDenom = true, showValue = true, s
 
     return (
       <div className='flex items-center text-base font-bold'>
-        {showIcon && (
-          <AssetIcon metadata={metadata} />
-        )}
-        {showValue && (
-          <span className="ml-1">
-            {formattedAmount}
-          </span>
-        )}
-        {showDenom && (
-          <span className="ml-1">
-            {symbol}
-          </span>
-        )}
+        {showIcon && <AssetIcon metadata={metadata} />}
+        {showValue && <span className='ml-1'>{formattedAmount}</span>}
+        {showDenom && <span className='ml-1'>{symbol}</span>}
         {
           // TODO: this will need refinement once we actually hand out
           // equivalent values to the frontend. it would be nice to have
           // another parameter that controls whether the valueview should
           // fill width or not (with value to the left, equiv values to the right)
         }
-        {showEquivalent && value.equivalentValues.map((equivalentValue, index) => {
-          const exponent = getDisplayDenomExponent(equivalentValue.numeraire);
-          const formattedEquivalent = fromBaseUnitAmount(equivalentValue.equivalentAmount ?? new Amount(), exponent).toFormat();
-          const symbol = equivalentValue.numeraire?.symbol || 'Unknown Asset';
-          return (
-            <div key={index} className='flex'>
-              <AssetIcon metadata={equivalentValue.numeraire} />
-              <span>{formattedEquivalent}</span>
-              <span>{symbol}</span>
-            </div>
-          )
-        })}
+        {showEquivalent &&
+          value.equivalentValues.map((equivalentValue, index) => {
+            const exponent = getDisplayDenomExponent(equivalentValue.numeraire);
+            const formattedEquivalent = fromBaseUnitAmount(
+              equivalentValue.equivalentAmount ?? new Amount(),
+              exponent,
+            ).toFormat();
+            const symbol = equivalentValue.numeraire?.symbol || 'Unknown Asset';
+            return (
+              <div key={index} className='flex'>
+                <AssetIcon metadata={equivalentValue.numeraire} />
+                <span>{formattedEquivalent}</span>
+                <span>{symbol}</span>
+              </div>
+            );
+          })}
       </div>
-    )
+    );
   }
 
   if (view.valueView.case === 'unknownAssetId') {
@@ -107,7 +87,6 @@ export const ValueViewComponent = ({ view, showDenom = true, showValue = true, s
       </div>
     );
   }
-
 
   return <></>;
 };
