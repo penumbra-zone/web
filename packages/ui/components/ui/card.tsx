@@ -11,7 +11,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={cn(baseClasses, gradient && 'bg-card-radial', className)}
+        className={cn(baseClasses, !!gradient && 'bg-card-radial', className)}
         {...props}
       >
         {children}
