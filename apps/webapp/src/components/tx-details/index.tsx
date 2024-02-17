@@ -1,11 +1,11 @@
 import { Card, FadeTransition } from '@penumbra-zone/ui';
 import { TxViewer } from './hash-parser.tsx';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card.tsx';
-import { EduPanel } from '../shared/edu-panels/content.ts';
+import { EduPanel } from '../shared/edu-panels/content';
 import { LoaderFunction, useLoaderData, useRouteError } from 'react-router-dom';
 import { getTxInfoByHash } from '../../fetchers/tx-info-by-hash.ts';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { throwIfExtNotInstalled } from '../../fetchers/is-connected.ts';
+import { throwIfExtNotInstalled } from '../../utils/is-connected.ts';
 
 export interface TxDetailsLoaderResult {
   hash: string;

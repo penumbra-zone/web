@@ -16,6 +16,7 @@ export * from './components/ui/segmented-picker';
 export * from './components/ui/select';
 export * from './components/ui/select-account';
 export * from './components/ui/sheet';
+export * from './components/ui/splash-page';
 export * from './components/ui/switch';
 export * from './components/ui/table';
 export * from './components/ui/tabs';

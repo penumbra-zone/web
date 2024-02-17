@@ -6,7 +6,7 @@ import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { AssetBalance, getAssetBalances } from '../../../fetchers/balances';
 import { useMemo } from 'react';
 import { penumbraAddrValidation } from '../helpers';
-import { throwIfExtNotInstalled } from '../../../fetchers/is-connected';
+import { throwIfExtNotInstalled } from '../../../utils/is-connected.ts';
 import InputToken from '../../shared/input-token.tsx';
 import { useRefreshFee } from './use-refresh-fee.ts';
 import { GasFee } from '../../shared/gas-fee.tsx';

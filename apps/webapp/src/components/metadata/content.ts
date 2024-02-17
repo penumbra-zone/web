@@ -1,5 +1,5 @@
 import { PagePath } from './paths.ts';
-import { EduPanel, eduPanelContent } from '../shared/edu-panels/content.ts';
+import { EduPanel, eduPanelContent } from '../shared/edu-panels/content';
 
 export interface PageMetadata {
   title: string;
