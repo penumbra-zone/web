@@ -8,12 +8,12 @@ const srcDir = path.join(__dirname, '..', 'src');
 
 export default {
   entry: {
-    popup: path.join(srcDir, 'popup.tsx'),
+    offscreen: path.join(srcDir, 'offscreen.ts'),
     page: path.join(srcDir, 'page.tsx'),
-    'service-worker': path.join(srcDir, 'service-worker.ts'),
+    popup: path.join(srcDir, 'popup.tsx'),
     'injected-connection-manager': path.join(srcDir, 'injected-connection-manager.ts'),
     'injected-penumbra-global': path.join(srcDir, 'injected-penumbra-global.ts'),
-    offscreen: path.join(srcDir, 'offscreen.ts'),
+    'service-worker': path.join(srcDir, 'service-worker.ts'),
     'wasm-build-action': path.join(srcDir, 'wasm-build-action.ts'),
   },
   output: {
@@ -22,21 +22,18 @@ export default {
   },
   optimization: {
     splitChunks: {
-      name: 'vendor',
-      chunks(chunk) {
-        // These files cannot be chunked due to their runtime env
-        return (
-          chunk.name !== 'service-worker' &&
-          chunk.name !== 'injected-connection-manager' &&
-          chunk.name !== 'injected-penumbra-global' &&
-          chunk.name !== 'offscreen' &&
-          chunk.name !== 'wasm-build-action'
-        );
-      },
+      chunks: chunk =>
+        ![
+          'injected-connection-manager',
+          'injected-penumbra-global',
+          'service-worker',
+          'wasm-build-action',
+        ].includes(chunk.name),
     },
   },
   module: {
     rules: [
+      { test: /\.wasm/ },
       {
         test: /\.tsx?$/,
         use: 'ts-loader',
