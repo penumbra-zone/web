@@ -28,7 +28,7 @@ const VideoLogo = React.forwardRef<HTMLDivElement, InnerVidProps>(
     return (
       <div className={cn(logoVariants({ size, className }), 'relative')} ref={ref} {...props}>
         {noWords ? null : <Logo onlyWords={!noWords} className='absolute z-10' />}
-        <video autoPlay loop playsInline className='absolute z-0 w-[70%]'>
+        <video autoPlay loop playsInline muted className='absolute z-0 w-[70%]'>
           <source src={videoSrc} type='video/mp4' />
         </video>
       </div>
