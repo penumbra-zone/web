@@ -10,22 +10,15 @@ import {
 } from '@penumbra-zone/types';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import BigNumber from 'bignumber.js';
-import {
-  broadcastingTxToast,
-  buildingTxToast,
-  errorTxToast,
-  infoTxToast,
-  successTxToast,
-} from '../components/shared/toast-content';
 import { AssetBalance } from '../fetchers/balances';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { authWitnessBuild, broadcast, getTxHash, plan } from './helpers';
+import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from './helpers';
 
 import {
   Fee,
   FeeTier_Tier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
-import { ConnectError } from '@connectrpc/connect';
+import { TransactionToast } from '@penumbra-zone/ui';
 
 export interface SendSlice {
   selection: AssetBalance | undefined;
@@ -101,40 +94,30 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.txInProgress = true;
       });
 
-      const txToastId = buildingTxToast();
+      const toast = new TransactionToast('send');
+      toast.onStart();
 
       try {
         const transactionPlan = await plan(assembleRequest(get().send));
         const transaction = await authWitnessBuild({ transactionPlan }, status =>
-          buildingTxToast(status, txToastId),
+          toast.onBuildStatus(status),
         );
         const txHash = await getTxHash(transaction);
+        toast.txHash(txHash);
         const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
-          broadcastingTxToast(txHash, status, txToastId),
+          toast.onBroadcastStatus(status),
         );
-        successTxToast(txHash, detectionHeight, txToastId);
+        toast.onSuccess(detectionHeight);
 
         // Reset form
         set(state => {
           state.send.amount = '';
         });
       } catch (e) {
-        /**
-         * @todo: The error flow between extension <-> webapp needs to be
-         * refactored a bit. Right now, if we throw a `ConnectError` with
-         * `Code.PermissionDenied` (as we do in the approver), it gets swallowed
-         * by ConnectRPC's internals and rethrown via `ConnectError.from()`.
-         * This means that the original code is lost, although the stringified
-         * error message still contains `[permission_denied]`. So we'll
-         * (somewhat hackily) check the stringified error message for now; but
-         * in the future, we need ot get the error flow working properly so that
-         * we can actually check `e.code === Code.PermissionDenied`.
-         */
-        if (e instanceof ConnectError && e.message.includes('[permission_denied]')) {
-          infoTxToast('Transaction canceled.', undefined, txToastId);
+        if (userDeniedTransaction(e)) {
+          toast.onDenied();
         } else {
-          errorTxToast(e, txToastId);
-          throw e;
+          toast.onFailure(e);
         }
       } finally {
         set(state => {

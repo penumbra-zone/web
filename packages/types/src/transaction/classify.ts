@@ -70,7 +70,7 @@ export const classifyTransaction = (txv?: TransactionView): TransactionClassific
   return 'unknown';
 };
 
-const TRANSACTION_LABEL_BY_CLASSIFICATION: Record<TransactionClassification, string> = {
+export const TRANSACTION_LABEL_BY_CLASSIFICATION: Record<TransactionClassification, string> = {
   unknown: 'Unknown',
   unknownInternal: 'Unknown (Internal)',
   receive: 'Receive',

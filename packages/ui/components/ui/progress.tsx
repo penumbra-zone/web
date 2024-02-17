@@ -19,13 +19,21 @@ const progressVariants = cva('', {
 
 interface ProgressProps
   extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>,
-    VariantProps<typeof progressVariants> {}
+    VariantProps<typeof progressVariants> {
+  size?: 'lg' | 'sm';
+}
 
 const Progress = React.forwardRef<React.ElementRef<typeof ProgressPrimitive.Root>, ProgressProps>(
-  ({ className, value, variant, ...props }, ref) => (
+  ({ className, value, variant, size = 'lg', ...props }, ref) => (
     <ProgressPrimitive.Root
       ref={ref}
-      className={cn('relative h-3 w-full overflow-hidden rounded-lg bg-background', className)}
+      className={cn(
+        'relative',
+        size === 'lg' && 'h-3',
+        size === 'sm' && 'h-1',
+        'w-full overflow-hidden rounded-lg bg-background',
+        className,
+      )}
       {...props}
     >
       <ProgressPrimitive.Indicator
