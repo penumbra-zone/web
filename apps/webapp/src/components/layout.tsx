@@ -31,7 +31,7 @@ export const Layout = () => {
       <HeadTag />
       <div className='relative flex min-h-screen flex-col bg-background text-muted'>
         <Header />
-        <main className='flex-1 px-6 pb-4 pt-10 md:px-[88px] md:pb-0 xl:px-12'>
+        <main className='mx-auto w-full flex-1 px-6 pb-4 pt-10 md:px-[88px] md:pb-0 xl:max-w-[1276px] xl:px-12'>
           <Outlet />
         </main>
       </div>

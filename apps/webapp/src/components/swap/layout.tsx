@@ -6,7 +6,7 @@ import { UnclaimedSwaps } from './unclaimed-swaps.tsx';
 
 export const SwapLayout = () => {
   return (
-    <div className='relative mx-auto grid gap-6 md:grid-cols-2 md:gap-4 xl:max-w-[1276px] xl:grid-cols-3 xl:gap-5'>
+    <div className='grid gap-6 md:grid-cols-2 md:gap-4 xl:grid-cols-3 xl:gap-5'>
       <div className='xl:order-1 xl:block'>
         <UnclaimedSwaps />
       </div>

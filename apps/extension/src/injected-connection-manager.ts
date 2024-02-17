@@ -20,6 +20,7 @@ const services: typeof serviceTypeNames = [
   'ibc.core.client.v1.Query',
   'penumbra.custody.v1.CustodyService',
   'penumbra.core.component.dex.v1.SimulationService',
+  'penumbra.core.component.stake.v1.QueryService',
   'penumbra.util.tendermint_proxy.v1.TendermintProxyService',
   'penumbra.view.v1.ViewService',
 ];

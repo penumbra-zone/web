@@ -10,10 +10,14 @@ export const SendLayout = () => {
   const pathname = usePagePath<SendTab>();
 
   return (
-    <div className='relative mx-auto grid gap-6 md:grid-cols-2 md:gap-4 xl:max-w-[1276px] xl:grid-cols-3 xl:gap-5'>
+    <div className='grid gap-6 md:grid-cols-2 md:gap-4 xl:grid-cols-3 xl:gap-5'>
       <div className='hidden xl:order-1 xl:block' />
       <Card gradient className='order-2 row-span-2 flex-1 p-5 md:order-1 md:p-4 xl:p-5'>
-        <Tabs tabs={sendTabs} activeTab={pathname} className='mx-auto flex w-[75%] lg:w-[372px]' />
+        <Tabs
+          tabs={sendTabs}
+          activeTab={pathname}
+          className='mx-auto flex w-[75%] lg:min-w-[300px]'
+        />
         <Outlet />
       </Card>
       <EduInfoCard
