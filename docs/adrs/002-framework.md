@@ -35,7 +35,7 @@ to a "meta-framework" that would handle all of this for us. However, we discover
 It allows any network adversary to watch a user's activity as they navigate the app (since the requests are predictable and content-free, they may leak paths through the length of the encrypted data, which TLS does not protect).
 
 If we are not code-splitting, pre-rendering html by route also doesn't make sense.
-Unfortunately, the better performance characteristics is not compatible with our stated philosophical goals.
+Unfortunately, the better performance characteristics are not compatible with our stated philosophical goals.
 The momentum in the industry of web stack tech (putting more responsibility on the server) does not serve us well.
 
 ### Settled design
