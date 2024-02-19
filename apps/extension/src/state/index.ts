@@ -38,7 +38,7 @@ export const initializeStore = (
     password: createPasswordSlice(session, local)(setState, getState, store),
     seedPhrase: createSeedPhraseSlice(setState, getState, store),
     network: createNetworkSlice(local)(setState, getState, store),
-    txApproval: createTxApprovalSlice(setState, getState, store),
+    txApproval: createTxApprovalSlice()(setState, getState, store),
   }));
 };
 

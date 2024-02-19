@@ -10,7 +10,11 @@ import { useCountdown } from 'usehooks-ts';
 import { useEffect } from 'react';
 
 export const TransactionApproval = () => {
-  const { authorizeRequest: authReqString, responder } = useStore(txApprovalSelector);
+  const {
+    authorizeRequest: authReqString,
+    setAttitude,
+    sendResponse,
+  } = useStore(txApprovalSelector);
 
   const { selectedTransactionView, selectedTransactionViewName, setSelectedTransactionViewName } =
     useTransactionViewSwitcher();
@@ -20,7 +24,7 @@ export const TransactionApproval = () => {
 
   if (!authReqString) return null;
   const authorizeRequest = AuthorizeRequest.fromJsonString(authReqString);
-  if (!authorizeRequest.plan || !responder || !selectedTransactionView) return null;
+  if (!authorizeRequest.plan || !selectedTransactionView) return null;
 
   return (
     <div className='flex h-screen flex-col justify-between'>
@@ -45,7 +49,8 @@ export const TransactionApproval = () => {
           size='lg'
           variant='default'
           onClick={() => {
-            responder({ type: 'TX-APPROVAL', data: true });
+            setAttitude(true);
+            sendResponse();
             window.close();
           }}
           disabled={!!count}
@@ -56,7 +61,8 @@ export const TransactionApproval = () => {
           size='lg'
           variant='destructive'
           onClick={() => {
-            responder({ type: 'TX-APPROVAL', data: false });
+            setAttitude(false);
+            sendResponse();
             window.close();
           }}
         >

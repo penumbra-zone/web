@@ -4,8 +4,6 @@ export interface InternalMessage<Type extends string, Req, Res> {
   response: Res;
 }
 
-export type Ping = InternalMessage<'PING', string, string>;
-
 export type MessageResponder<M extends InternalMessage<string, unknown, unknown>> = (
   arg: InternalResponse<M>,
 ) => void;
