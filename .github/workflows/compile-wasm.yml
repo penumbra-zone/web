@@ -38,6 +38,9 @@ jobs:
         with:
           version: 'latest'
       - run: pnpm turbo compile --cache-dir=.turbo # compile wasm
+      - name: Verify no unexpected file changes (like cargo.lock change)
+        run: git diff --exit-code
+        working-directory: packages/wasm/crate
       - run: cargo tree --invert penumbra-wasm --edges features # debug tree
         if: failure()
         working-directory: packages/wasm/crate
