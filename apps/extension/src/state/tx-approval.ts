@@ -4,7 +4,6 @@ import { AllSlices, SliceCreator } from './index';
 import { MessageResponder } from '@penumbra-zone/types/src/internal-msg/shared';
 import { TxApproval } from '@penumbra-zone/types/src/internal-msg/popup';
 import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { viewClient } from '../clients/extension-page';
 
 import {
@@ -55,10 +54,14 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
     const authorizeRequest = AuthorizeRequest.fromJson(authReqJson);
     const transactionView = TransactionView.fromJson(txViewJson);
 
+    // pregenerate views from various perspectives.
+    // TODO: should this be done in the component?
     const asSender = transactionView;
     const asPublic = asPublicTransactionView(transactionView);
     const asReceiver = await asReceiverTransactionView(transactionView, {
-      isControlledAddress,
+      // asRecieverTransactionView will need to ask viewClient about address provenace
+      isControlledAddress: address =>
+        viewClient.indexByAddress({ address }).then(({ addressIndex }) => Boolean(addressIndex)),
     });
 
     set(state => {
@@ -123,14 +126,3 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
 });
 
 export const txApprovalSelector = (state: AllSlices) => state.txApproval;
-
-/**
- * Returns a boolean indicating whether the given address is controlled by the
- * current user.
- *
- * @see packages/router/src/grpc/view-protocol-server/index-by-address.ts
- */
-export const isControlledAddress = async (address: Address): Promise<boolean> => {
-  const indexByAddressResponse = await viewClient.indexByAddress({ address });
-  return Boolean(indexByAddressResponse.addressIndex);
-};
