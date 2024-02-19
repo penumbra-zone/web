@@ -108,8 +108,7 @@ export const createChannelTransport = ({
           if (isTransportState(ev.data)) connectionState(ev.data);
           else if (isTransportEvent(ev.data)) {
             const respond = pending.get(ev.data.requestId);
-            if (!respond) throw Error(`Request ${ev.data.requestId} not pending`);
-            respond(ev.data);
+            if (respond) respond(ev.data);
           } else if (isTransportError(ev.data))
             throw errorFromJson(ev.data.error, {}, new ConnectError('Transport error'));
           else throw Error('Unknown transport item');
