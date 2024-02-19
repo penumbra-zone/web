@@ -1,5 +1,11 @@
 name: Turbo CI
-on: [pull_request, workflow_dispatch]
+on:
+  workflow_call:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
 
 # this is pretty verbose and repetitive, but github workflows require it
 # the first action is commented, most of those comments apply to all actions

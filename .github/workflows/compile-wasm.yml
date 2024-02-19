@@ -1,5 +1,10 @@
 name: Compile WASM
-on: [workflow_call, workflow_dispatch]
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   wasm:
@@ -32,8 +37,6 @@ jobs:
       - uses: jetli/wasm-pack-action@v0.4.0 # preinstall wasm-pack
         with:
           version: 'latest'
-      - run: cargo generate-lockfile --locked # commit your lockfile
-        working-directory: packages/wasm/crate
       - run: pnpm turbo compile --cache-dir=.turbo # compile wasm
       - run: cargo tree --invert penumbra-wasm --edges features # debug tree
         if: failure()
