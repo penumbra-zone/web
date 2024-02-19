@@ -4,12 +4,12 @@ import { EduPanel } from '../shared/edu-panels/content';
 
 export const sendTabsHelper: SendTabMap = {
   [PagePath.SEND]: {
-    src: './funds-gradient.svg',
+    src: './send-icon.svg',
     label: 'Sending Funds',
     content: EduPanel.SENDING_FUNDS,
   },
   [PagePath.RECEIVE]: {
-    src: './receive-gradient.svg',
+    src: './receive-icon.svg',
     label: 'Receiving Funds',
     content: EduPanel.RECEIVING_FUNDS,
   },

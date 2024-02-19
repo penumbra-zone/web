@@ -10,12 +10,12 @@ export const dashboardTabs = [
 
 export const dashboardTabsHelper: DashboardTabMap = {
   [PagePath.DASHBOARD]: {
-    src: './funds-gradient.svg',
+    src: './coin-stack-icon.svg',
     label: 'Asset Balances',
     content: EduPanel.ASSETS,
   },
   [PagePath.TRANSACTIONS]: {
-    src: './receive-gradient.svg',
+    src: './history-icon.svg',
     label: 'Transaction history',
     content: EduPanel.TRANSACTIONS_LIST,
   },

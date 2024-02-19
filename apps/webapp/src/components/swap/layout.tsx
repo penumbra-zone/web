@@ -15,9 +15,9 @@ export const SwapLayout = () => {
       </Card>
       <EduInfoCard
         className='order-1 md:order-2'
-        src='./receive-gradient.svg'
-        label='Swap me'
-        content={EduPanel.TEMP_FILLER}
+        src='./swap-icon.svg'
+        label='Shielded Swap'
+        content={EduPanel.SWAP}
       />
     </div>
   );
