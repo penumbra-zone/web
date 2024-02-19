@@ -13,7 +13,7 @@ Doing so requires us to be quite deliberate on what our web stack looks like.
 
 ### History
 
-We first began the app as a Next.js app. However, it's very server-focused and does not support patterns like data loaders that are quite helpful for
+We first began the app as a Next.js app. However, Next.js is very server-focused and does not support patterns like data loaders that are quite helpful for
 client-side only apps. So we [migrated to React-Router](https://github.com/penumbra-zone/web/pull/227).
 
 Upon trying to allow PD to host the build output, we found that the default vite config requires you to set re-directs
