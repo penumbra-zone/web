@@ -10,6 +10,8 @@ import {
 import { ClientConnectionManager } from '@penumbra-zone/transport/src/chrome-runtime/client-connection-manager';
 import { transportOptions } from './transport-options';
 
+let extPagePort: MessagePort | undefined;
+
 /**
  * This enables a channelTransport running in a page displayed by the extension
  * to communicate with the extension's services through the chrome runtime, by
@@ -19,16 +21,20 @@ import { transportOptions } from './transport-options';
  * @returns MessagePort
  */
 export const getExtensionPagePort = () => {
-  const { port1: port, port2: transferPort } = new MessageChannel();
-  const initPort = ClientConnectionManager.init(ChannelClientLabel.Extension);
-  initPort.postMessage(
-    {
-      type: 'INIT_CHANNEL_CLIENT' as typeof InitChannelClientDataType,
-      port: transferPort,
-    } as InitChannelClientMessage,
-    [transferPort],
-  );
-  return port;
+  if (!extPagePort) {
+    const { port1, port2 } = new MessageChannel();
+    extPagePort = port1;
+    const initPort = ClientConnectionManager.init(ChannelClientLabel.Extension);
+    initPort.postMessage(
+      {
+        type: 'INIT_CHANNEL_CLIENT' as typeof InitChannelClientDataType,
+        port: port2,
+      } as InitChannelClientMessage,
+      [port2],
+    );
+  }
+
+  return extPagePort;
 };
 
 export const createExtensionPageClient = <S extends ServiceType>(serviceType: S) =>
