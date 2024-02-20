@@ -1,23 +1,12 @@
-import {
-  BondingState_BondingStateEnum,
-  ValidatorInfo,
-  ValidatorState_ValidatorStateEnum,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import {
   getValidator,
-  getStateEnumFromValidatorInfo,
-  getBondingStateEnumFromValidatorInfo,
   getFundingStreamsFromValidatorInfo,
   getRateBpsFromFundingStream,
 } from '@penumbra-zone/types';
 import { TableRow, TableCell } from '@penumbra-zone/ui';
 import { Oval } from 'react-loader-spinner';
-
-const getStateLabel = (validatorInfo: ValidatorInfo): string =>
-  ValidatorState_ValidatorStateEnum[getStateEnumFromValidatorInfo(validatorInfo)];
-
-const getBondingStateLabel = (validatorInfo: ValidatorInfo): string =>
-  BondingState_BondingStateEnum[getBondingStateEnumFromValidatorInfo(validatorInfo)];
+import { getBondingStateLabel, getStateLabel } from './helpers';
 
 const toSum = (prev: number, curr: number) => prev + curr;
 
