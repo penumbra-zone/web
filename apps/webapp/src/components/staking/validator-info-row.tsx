@@ -5,10 +5,10 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import {
   getValidator,
-  joinLoHiAmount,
-  getValidatorRewardRateFromValidatorInfoOptional,
   getStateEnumFromValidatorInfo,
   getBondingStateEnumFromValidatorInfo,
+  getFundingStreamsFromValidatorInfo,
+  getRateBpsFromFundingStream,
 } from '@penumbra-zone/types';
 import { TableRow, TableCell } from '@penumbra-zone/ui';
 import { Oval } from 'react-loader-spinner';
@@ -19,6 +19,8 @@ const getStateLabel = (validatorInfo: ValidatorInfo): string =>
 const getBondingStateLabel = (validatorInfo: ValidatorInfo): string =>
   BondingState_BondingStateEnum[getBondingStateEnumFromValidatorInfo(validatorInfo)];
 
+const toSum = (prev: number, curr: number) => prev + curr;
+
 export const ValidatorInfoRow = ({
   loading,
   validatorInfo,
@@ -28,8 +30,8 @@ export const ValidatorInfoRow = ({
   validatorInfo: ValidatorInfo;
   votingPowerByValidatorInfo: Map<ValidatorInfo, number>;
 }) => {
-  const rewardRate = getValidatorRewardRateFromValidatorInfoOptional(validatorInfo);
-  const commission = rewardRate ? Number(joinLoHiAmount(rewardRate)) : '';
+  const fundingStreams = getFundingStreamsFromValidatorInfo(validatorInfo);
+  const totalRateBps = fundingStreams.map(getRateBpsFromFundingStream).reduce(toSum);
 
   return (
     <TableRow>
@@ -48,7 +50,7 @@ export const ValidatorInfoRow = ({
       {/** @todo: Render an icon for each state */}
       <TableCell>{getBondingStateLabel(validatorInfo)}</TableCell>
 
-      <TableCell>{commission}</TableCell>
+      <TableCell>{totalRateBps}bps</TableCell>
     </TableRow>
   );
 };

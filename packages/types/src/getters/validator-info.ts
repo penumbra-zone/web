@@ -4,6 +4,7 @@ import { getBondingState, getState, getVotingPower } from './validator-status';
 import { getValidatorStateEnum } from './validator-state';
 import { getValidatorRewardRate } from './rate-data';
 import { getBondingStateEnum } from './bonding-state';
+import { getFundingStreams } from './validator';
 
 export const getStatus = createGetter((validatorInfo?: ValidatorInfo) => validatorInfo?.status);
 
@@ -25,3 +26,5 @@ export const getValidatorRewardRateFromValidatorInfoOptional = getStatus
   .optional()
   .pipe(getRateData)
   .pipe(getValidatorRewardRate);
+
+export const getFundingStreamsFromValidatorInfo = getValidator.pipe(getFundingStreams);
