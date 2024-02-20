@@ -19,10 +19,16 @@ export const getBondingStateLabel = (validatorInfo: ValidatorInfo): string =>
 const toSum = (prev: number, curr: number) => prev + curr;
 
 /**
- * Given a `ValidatorInfo`, returns the sum of all commission rates in terms of
- * [basis points](https://en.wikipedia.org/wiki/Basis_point).
+ * Given a `ValidatorInfo`, returns the sum of all commission rates as a
+ * percentage.
+ *
+ * To do this, we convert the rate from [basis
+ * points](https://en.wikipedia.org/wiki/Basis_point) (which are one hundredth
+ * of one percent).
  */
-export const calculateCommission = (validatorInfo: ValidatorInfo): number => {
+export const calculateCommissionAsPercentage = (validatorInfo: ValidatorInfo): number => {
   const fundingStreams = getFundingStreamsFromValidatorInfo(validatorInfo);
-  return fundingStreams.map(getRateBpsFromFundingStream).reduce(toSum);
+  const totalBps = fundingStreams.map(getRateBpsFromFundingStream).reduce(toSum);
+
+  return totalBps / 100;
 };

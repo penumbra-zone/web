@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculateCommission } from './helpers';
+import { calculateCommissionAsPercentage } from './helpers';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
 describe('calculateCommission()', () => {
@@ -10,7 +10,7 @@ describe('calculateCommission()', () => {
           recipient: {
             case: 'toAddress',
             value: {
-              rateBps: 1,
+              rateBps: 100,
             },
           },
         },
@@ -18,7 +18,7 @@ describe('calculateCommission()', () => {
           recipient: {
             case: 'toCommunityPool',
             value: {
-              rateBps: 2,
+              rateBps: 200,
             },
           },
         },
@@ -26,7 +26,7 @@ describe('calculateCommission()', () => {
           recipient: {
             case: 'toAddress',
             value: {
-              rateBps: 3,
+              rateBps: 300,
             },
           },
         },
@@ -35,6 +35,6 @@ describe('calculateCommission()', () => {
   });
 
   it("returns the sum of all of a validator's funding streams' rates", () => {
-    expect(calculateCommission(validatorInfo)).toBe(6);
+    expect(calculateCommissionAsPercentage(validatorInfo)).toBe(6);
   });
 });

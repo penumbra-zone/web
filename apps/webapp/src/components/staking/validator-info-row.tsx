@@ -2,7 +2,7 @@ import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { getValidator } from '@penumbra-zone/types';
 import { TableRow, TableCell } from '@penumbra-zone/ui';
 import { Oval } from 'react-loader-spinner';
-import { calculateCommission, getBondingStateLabel, getStateLabel } from './helpers';
+import { calculateCommissionAsPercentage, getBondingStateLabel, getStateLabel } from './helpers';
 
 export const ValidatorInfoRow = ({
   loading,
@@ -29,6 +29,6 @@ export const ValidatorInfoRow = ({
     {/** @todo: Render an icon for each state */}
     <TableCell>{getBondingStateLabel(validatorInfo)}</TableCell>
 
-    <TableCell>{calculateCommission(validatorInfo)}bps</TableCell>
+    <TableCell>{calculateCommissionAsPercentage(validatorInfo)}%</TableCell>
   </TableRow>
 );
