@@ -10,8 +10,8 @@ import { servicesCtx } from '../../ctx';
 import { IndexedDbMock, MockServices } from './test-utils';
 import { witness } from './witness';
 import {
-    TransactionPlan,
-    WitnessData
+  TransactionPlan,
+  WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 describe('Witness request handler', () => {
