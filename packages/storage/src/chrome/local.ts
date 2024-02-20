@@ -1,5 +1,4 @@
 import { ExtensionStorage } from './base';
-import { testnetConstants } from '@penumbra-zone/constants';
 import { KeyPrintJson } from '@penumbra-zone/crypto-web';
 import { WalletJson } from '@penumbra-zone/types';
 
@@ -14,9 +13,15 @@ export interface LocalStorageState {
   lastBlockSynced: number;
 }
 
+// this will be injected by webpack build, but we don't have access to the
+// declaration in `apps/extension/prax.d.ts` because we are in an independent
+// package. we should probably move the localExtStorage declaration into the
+// extension app.
+declare const DEFAULT_GRPC_URL: string;
+
 export const localDefaults: LocalStorageState = {
   wallets: [],
-  grpcEndpoint: testnetConstants.grpcEndpoint,
+  grpcEndpoint: DEFAULT_GRPC_URL,
   passwordKeyPrint: undefined,
   lastBlockSynced: 0,
 };

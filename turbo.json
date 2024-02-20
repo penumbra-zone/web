@@ -4,7 +4,9 @@
   "globalEnv": ["NODE_ENV"],
   "pipeline": {
     "build": {
-      "dependsOn": ["download-keys", "compile", "^build"]
+      "env": ["MINIFRONT_URL", "PENUMBRA_NODE_PD_URL"],
+      "dependsOn": ["download-keys", "compile", "^build"],
+      "outputs": ["dist/**"]
     },
     "download-keys": {
       "outputs": ["bin/*_pk.bin"]
@@ -20,7 +22,9 @@
     },
     "lint": { "dependsOn": ["compile"] },
     "dev": {
+      "env": ["MINIFRONT_URL", "PENUMBRA_NODE_PD_URL"],
       "dependsOn": ["download-keys", "compile"],
+      "outputs": ["dist/**"],
       "persistent": true
     },
     "test": { "dependsOn": ["compile"] },

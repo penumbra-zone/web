@@ -1,4 +1,3 @@
-import { testnetConstants } from '@penumbra-zone/constants';
 import { BlockProcessor, RootQuerier } from '@penumbra-zone/query';
 import { IndexedDb, syncLastBlockWithLocal } from '@penumbra-zone/storage';
 import { ViewServer } from '@penumbra-zone/wasm';
@@ -6,6 +5,7 @@ import { ServicesInterface, WalletServices } from '@penumbra-zone/types/src/serv
 
 export interface ServicesConfig {
   grpcEndpoint: string;
+  idbVersion: number;
   getWallet(): Promise<{ walletId: string; fullViewingKey: string }>;
 }
 
@@ -53,7 +53,7 @@ export class Services implements ServicesInterface {
 
     const indexedDb = await IndexedDb.initialize({
       chainId,
-      dbVersion: testnetConstants.indexedDbVersion,
+      dbVersion: this.config.idbVersion,
       walletId,
     });
 

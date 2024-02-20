@@ -38,7 +38,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm turbo telemetry disable
       - run: pnpm turbo download-keys --force --cache-dir=.turbo
-      - run: pnpm turbo build --cache-dir=.turbo
+      - run: pnpm webpack --mode=production
+        working-directory: apps/extension
       - name: Package up extension
         run: zip -r dist.zip apps/extension/dist
       - name: Upload & release

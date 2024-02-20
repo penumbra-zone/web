@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "download-keys": "tsx src/utils/download-proving-keys.ts",
-    "dev": "webpack --config webpack/webpack.dev.js --watch",
+    "dev": "webpack --watch --mode=development -d inline-source-map",
     "clean": "rm -rfv dist bin",
-    "build": "webpack --config webpack/webpack.prod.js",
+    "build": "webpack --mode=development -d inline-source-map",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
