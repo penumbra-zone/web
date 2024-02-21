@@ -139,7 +139,7 @@
     "penumbraAssetId": {
       "inner": "CwpUYIdQ9H5Dnf3oQ1l7ISeVMVahWbVNNvMA0dBSdwI="
     },
-    "symbol": "Delegated UM (Penumbra Labs CI 1)",
+    "symbol": "Delegation (Penumbra Labs CI 1)",
     "images": [
       {
         "png": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/webapp/public/favicon.png"
@@ -165,7 +165,7 @@
     "penumbraAssetId": {
       "inner": "qUn70lKZ3qQlCT5gj5sakux4daiTPKj0AN6ZuuFldQU="
     },
-    "symbol": "Delegated UM (Penumbra Labs CI 2)",
+    "symbol": "Delegation (Penumbra Labs CI 2)",
     "images": [
       {
         "png": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/webapp/public/favicon.png"
