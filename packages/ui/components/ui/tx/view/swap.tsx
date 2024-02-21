@@ -3,14 +3,20 @@ import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import {
   bech32Address,
   fromBaseUnitAmount,
+  getSwapPlaintext,
+  getValueView,
   joinLoHiAmount,
   uint8ArrayToBase64,
 } from '@penumbra-zone/types';
+import { ValueViewComponent } from './value';
 
 export const SwapViewComponent = ({ value }: { value: SwapView }) => {
   if (value.swapView.case === 'visible') {
-    const { tradingPair, delta1I, delta2I, claimFee, claimAddress } =
-      value.swapView.value.swapPlaintext!;
+    const { tradingPair, delta1I, delta2I, claimFee, claimAddress } = getSwapPlaintext(value);
+
+    const { output1, output2 } = value.swapView.value;
+    console.log(value.swapView);
+    const output1ValueView = getValueView.optional()(output1);
 
     const encodedAddress = bech32Address(claimAddress!);
 
@@ -28,6 +34,7 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
               <div className='ml-5'>
                 <b>Amount: </b>
                 <span className='font-mono'>{joinLoHiAmount(delta1I!).toString()}</span>
+                {output1ValueView && <ValueViewComponent view={output1ValueView} />}
               </div>
             </div>
             <div>
