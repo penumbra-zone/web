@@ -14,10 +14,16 @@ import { importSelector } from '../../../state/seed-phrase/import';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { ImportForm } from '../../../shared';
+import { FormEvent, MouseEvent } from 'react';
 
 export const ImportSeedPhrase = () => {
   const navigate = usePageNav();
   const { phrase, phraseIsValid } = useStore(importSelector);
+
+  const handleSubmit = (event: MouseEvent | FormEvent) => {
+    event.preventDefault();
+    navigate(PagePath.SET_PASSWORD);
+  };
 
   return (
     <FadeTransition>
@@ -29,20 +35,22 @@ export const ImportSeedPhrase = () => {
             Feel free to paste it into the first box and the rest will fill
           </CardDescription>
         </CardHeader>
-        <CardContent className='mt-6 grid gap-4'>
-          <ImportForm />
-          <Button
-            className='mt-4'
-            variant='gradient'
-            disabled={!phrase.every(w => w.length > 0) || !phraseIsValid()}
-            onClick={() => navigate(PagePath.SET_PASSWORD)}
-          >
-            {!phrase.length || !phrase.every(w => w.length > 0)
-              ? 'Fill in passphrase'
-              : !phraseIsValid()
-                ? 'Phrase is invalid'
-                : 'Import'}
-          </Button>
+        <CardContent>
+          <form className='mt-6 grid gap-4' onSubmit={handleSubmit}>
+            <ImportForm />
+            <Button
+              className='mt-4'
+              variant='gradient'
+              disabled={!phrase.every(w => w.length > 0) || !phraseIsValid()}
+              onClick={handleSubmit}
+            >
+              {!phrase.length || !phrase.every(w => w.length > 0)
+                ? 'Fill in passphrase'
+                : !phraseIsValid()
+                  ? 'Phrase is invalid'
+                  : 'Import'}
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </FadeTransition>
