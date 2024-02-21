@@ -36,13 +36,6 @@ export const SetPassword = () => {
             passwordValue={password}
             label='New password'
             onChange={({ target: { value } }) => setPassword(value)}
-            validations={[
-              {
-                type: 'warn',
-                issue: 'password too short',
-                checkFn: (txt: string) => Boolean(txt.length) && txt.length < 8,
-              },
-            ]}
           />
           <PasswordInput
             passwordValue={confirmation}
@@ -52,14 +45,14 @@ export const SetPassword = () => {
               {
                 type: 'warn',
                 issue: "passwords don't match",
-                checkFn: (txt: string) => Boolean(txt.length) && password !== txt,
+                checkFn: (txt: string) => password !== txt,
               },
             ]}
           />
           <Button
             variant='gradient'
             className='mt-2'
-            disabled={password.length < 8 || password !== confirmation}
+            disabled={password !== confirmation}
             onClick={() => {
               void (async function () {
                 await finalOnboardingSave(password);
