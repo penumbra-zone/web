@@ -1,12 +1,20 @@
 import { ReactNode } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
 import { CompressedVideoLogo } from './logo/compressed-video';
 import { FadeTransition } from './fade-transition';
 
-export const SplashPage = ({ title, children }: { title: string; children: ReactNode }) => {
+export const SplashPage = ({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: ReactNode;
+  children: ReactNode;
+}) => {
   return (
     <FadeTransition>
-      <div className='absolute inset-0 flex w-screen items-center justify-center'>
+      <div className='absolute inset-0 z-[-1] flex w-screen items-center justify-center'>
         <CompressedVideoLogo noWords className='w-[calc(100%-25vw)]' />
       </div>
       <Card className='w-[608px]' gradient>
@@ -15,6 +23,7 @@ export const SplashPage = ({ title, children }: { title: string; children: React
             {title}
           </CardTitle>
         </CardHeader>
+        {description && <CardDescription>{description}</CardDescription>}
         <CardContent className='mt-4'>{children}</CardContent>
       </Card>
     </FadeTransition>

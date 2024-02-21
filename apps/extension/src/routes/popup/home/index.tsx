@@ -35,8 +35,7 @@ export const PopupIndex = () => {
   const getAddrByIndex = useStore(addrByIndexSelector);
 
   return (
-    <div className='relative flex h-full flex-col items-stretch justify-start bg-left-bottom px-[30px]'>
-      <div className='absolute bottom-[50px] left-[-10px] -z-10 h-[715px] w-[900px] overflow-hidden bg-logo opacity-10' />
+    <div className='flex h-full grow flex-col items-stretch justify-start bg-logo bg-left-bottom px-[30px]'>
       <IndexHeader />
       <div className='my-32'>
         <SelectAccount getAddrByIndex={getAddrByIndex} />
