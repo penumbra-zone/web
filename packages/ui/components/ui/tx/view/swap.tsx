@@ -50,7 +50,7 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
               <div className='ml-5'>
                 <b>Fee: </b>
                 <span className='font-mono'>
-                  {fromBaseUnitAmount(claimFee!.amount!, 1).toFormat()} upenumbra
+                  {fromBaseUnitAmount(claimFee!.amount!, 0).toFormat()} upenumbra
                 </span>
               </div>
             </div>
