@@ -33,6 +33,7 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 
 // remote service we proxy
 import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
+import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
 
 // local services we implement
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
@@ -85,6 +86,11 @@ const simulationImpl = createProxyImpl(
   createPromiseClient(SimulationService, createGrpcWebTransport({ baseUrl: grpcEndpoint })),
 );
 
+const stakingImpl = createProxyImpl(
+  StakingService,
+  createPromiseClient(StakingService, createGrpcWebTransport({ baseUrl: grpcEndpoint })),
+);
+
 const rpcImpls = [
   // rpc we provide
   [
@@ -100,6 +106,7 @@ const rpcImpls = [
   // rpc proxy
   [IbcClientService, ibcImpl],
   [SimulationService, simulationImpl],
+  [StakingService, stakingImpl],
 ] as const;
 
 let custodyClient: PromiseClient<typeof CustodyService> | undefined;

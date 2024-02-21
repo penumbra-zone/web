@@ -19,6 +19,15 @@ export const simpleContextHandler: ProxyContextHandler = (i, ctx) => {
   return [i, opt];
 };
 
+/**
+ * Creates an implementation of a service type that proxies all requests via a
+ * gRPC-web transport.
+ *
+ * To do this, it iterates over each method in the service type definition,
+ * creating a method on the new proxy object with the same name that calls out
+ * to the gRPC-web transport. Thus, the returned implementation is basically
+ * just a bunch of methods that call out to an RPC endpoint.
+ */
 export const createProxyImpl = <S extends ServiceType>(
   service: S,
   client: PromiseClient<S>,

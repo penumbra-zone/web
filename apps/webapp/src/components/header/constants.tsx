@@ -33,16 +33,16 @@ export const headerLinks: HeaderLink[] = [
     mobileIcon: <SwapIcon />,
   },
   {
+    href: PagePath.STAKING,
+    label: 'Staking',
+    active: true,
+    mobileIcon: <TextAlignLeftIcon className='size-5 text-muted-foreground' />,
+  },
+  {
     href: PagePath.GOVERNANCE,
     label: 'Governance',
     active: false,
     mobileIcon: <MixerHorizontalIcon className='size-5 text-muted-foreground' />,
-  },
-  {
-    href: PagePath.STAKING,
-    label: 'Staking',
-    active: false,
-    mobileIcon: <TextAlignLeftIcon className='size-5 text-muted-foreground' />,
   },
 ];
 

@@ -12,6 +12,7 @@ import { Receive } from './send/receive.tsx';
 import { ErrorBoundary } from './shared/error-boundary.tsx';
 import { SwapLayout } from './swap/layout.tsx';
 import { SwapLoader } from './swap/swap-loader.tsx';
+import { StakingLayout } from './staking/layout.tsx';
 
 export const rootRouter = createHashRouter([
   {
@@ -69,6 +70,10 @@ export const rootRouter = createHashRouter([
         loader: TxDetailsLoader,
         element: <TxDetails />,
         errorElement: <TxDetailsErrorBoundary />,
+      },
+      {
+        path: PagePath.STAKING,
+        element: <StakingLayout />,
       },
     ],
   },

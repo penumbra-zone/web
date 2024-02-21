@@ -24,3 +24,4 @@ export * from './jsonified';
 export * from './schemas';
 export * from './type-predicates';
 export * from './getters';
+export * from './staking';
