@@ -20,8 +20,11 @@ WORKDIR /home/penumbra/dex-explorer
 # Copy the rest of the project files
 COPY . .
 
+# Configure registry
+RUN npm config set @buf:registry  https://buf.build/gen/npm/v1/
+
 # Install dependencies
-RUN yarn install
+RUN npm install
 
 # Normal user settings
 ARG USERNAME=penumbra
