@@ -40,7 +40,7 @@ export const ValueViewComponent = ({
     return (
       <div className='flex items-center text-base font-bold'>
         {showIcon && <AssetIcon metadata={metadata} />}
-        {showValue && <span className='ml-1'>{formattedAmount}</span>}
+        {showValue && <span className='ml-1 truncate'>{formattedAmount}</span>}
         {showDenom && <span className='ml-1'>{symbol}</span>}
         {
           // TODO: this will need refinement once we actually hand out
