@@ -15,7 +15,7 @@ export const StakingLayout = () => {
       </div>
 
       <div>
-        <EduInfoCard label='Staking' content={EduPanel.STAKING} src='./funds-gradient.svg' />
+        <EduInfoCard label='Staking' content={EduPanel.STAKING} src='./nodes-icon.svg' />
       </div>
     </div>
   );
