@@ -9,6 +9,7 @@ export interface IndexedDbMock {
   getLastBlockSynced?: Mock;
   getSpendableNoteByCommitment?: Mock;
   getSpendableNoteByNullifier?: Mock;
+  getStateCommitmentTree?: Mock;
   getSwapByNullifier?: Mock;
   getTransactionInfo?: Mock;
   iterateTransactionInfo?: () => Partial<AsyncIterable<Mock>>;
