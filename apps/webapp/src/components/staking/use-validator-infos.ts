@@ -1,5 +1,7 @@
 import {
+  VotingPowerAsIntegerPercentage,
   getValidatorInfo,
+  getVotingPowerByValidatorInfo,
   getVotingPowerFromValidatorInfo,
   joinLoHiAmount,
 } from '@penumbra-zone/types';
@@ -12,15 +14,6 @@ const byVotingPower = (validatorInfoA: ValidatorInfo, validatorInfoB: ValidatorI
   Number(
     joinLoHiAmount(getVotingPowerFromValidatorInfo(validatorInfoB)) -
       joinLoHiAmount(getVotingPowerFromValidatorInfo(validatorInfoA)),
-  );
-
-const toTotalVotingPower = (prev: number, curr: ValidatorInfo) =>
-  prev + Number(joinLoHiAmount(getVotingPowerFromValidatorInfo(curr)));
-
-const getFormattedVotingPower = (validatorInfo: ValidatorInfo, totalVotingPower: number) =>
-  Math.round(
-    (Number(joinLoHiAmount(getVotingPowerFromValidatorInfo(validatorInfo))) / totalVotingPower) *
-      100,
   );
 
 interface UseValidatorInfos {
@@ -54,7 +47,7 @@ export const useValidatorInfos = (): UseValidatorInfos => {
   const { validatorInfos, votingPowerByValidatorInfo } = useMemo(() => {
     const validatorInfos = validatorInfoResponses.map(getValidatorInfo).sort(byVotingPower);
 
-    const votingPowerByValidatorInfo = new Map();
+    let votingPowerByValidatorInfo = new Map<ValidatorInfo, VotingPowerAsIntegerPercentage>();
 
     /**
      * Only calculate each validator's voting power once we have everyone's
@@ -62,12 +55,7 @@ export const useValidatorInfos = (): UseValidatorInfos => {
      * total.
      */
     if (allValidatorInfosRetrieved) {
-      const totalVotingPower = validatorInfos.reduce(toTotalVotingPower, 0);
-
-      validatorInfos.reduce((prev, curr) => {
-        prev.set(curr, getFormattedVotingPower(curr, totalVotingPower));
-        return prev;
-      }, votingPowerByValidatorInfo);
+      votingPowerByValidatorInfo = getVotingPowerByValidatorInfo(validatorInfos);
     }
 
     return { validatorInfos, votingPowerByValidatorInfo };

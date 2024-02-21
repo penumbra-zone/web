@@ -8,7 +8,9 @@ import {
   getFundingStreamsFromValidatorInfo,
   getRateBpsFromFundingStream,
   getStateEnumFromValidatorInfo,
-} from '@penumbra-zone/types';
+  getVotingPowerFromValidatorInfo,
+} from './getters';
+import { joinLoHiAmount } from './amount';
 
 export const getStateLabel = (validatorInfo: ValidatorInfo): string =>
   ValidatorState_ValidatorStateEnum[getStateEnumFromValidatorInfo(validatorInfo)];
@@ -31,4 +33,37 @@ export const calculateCommissionAsPercentage = (validatorInfo: ValidatorInfo): n
   const totalBps = fundingStreams.map(getRateBpsFromFundingStream).reduce(toSum);
 
   return totalBps / 100;
+};
+
+const toTotalVotingPower = (prev: number, curr: ValidatorInfo) =>
+  prev + Number(joinLoHiAmount(getVotingPowerFromValidatorInfo(curr)));
+
+const getFormattedVotingPower = (validatorInfo: ValidatorInfo, totalVotingPower: number) =>
+  Math.round(
+    (Number(joinLoHiAmount(getVotingPowerFromValidatorInfo(validatorInfo))) / totalVotingPower) *
+      100,
+  );
+
+/**
+ * Just a `number`, but used to indicate what information this number
+ * represents.
+ */
+export type VotingPowerAsIntegerPercentage = number;
+
+/**
+ * Creates a `Map` of validator infos to their voting power, expressed as a
+ * percentage of total voting power.
+ */
+export const getVotingPowerByValidatorInfo = (
+  validatorInfos: ValidatorInfo[],
+): Map<ValidatorInfo, VotingPowerAsIntegerPercentage> => {
+  const votingPowerByValidatorInfo = new Map<ValidatorInfo, VotingPowerAsIntegerPercentage>();
+  const totalVotingPower = validatorInfos.reduce(toTotalVotingPower, 0);
+
+  validatorInfos.reduce((prev, curr) => {
+    prev.set(curr, getFormattedVotingPower(curr, totalVotingPower));
+    return prev;
+  }, votingPowerByValidatorInfo);
+
+  return votingPowerByValidatorInfo;
 };

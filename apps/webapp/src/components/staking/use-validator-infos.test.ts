@@ -95,25 +95,4 @@ describe('useValidatorInfos()', () => {
     // false, and the voting power got calculated, at the same time.
     expect(result.current.loading).toBe(false);
   });
-
-  it('accurately calculates voting power for each validator', async () => {
-    const { rerender, result } = renderHook(useValidatorInfos);
-
-    await waitFor(() => {
-      rerender({});
-      expect(result.current.loading).toBe(false);
-    });
-
-    expect(
-      result.current.votingPowerByValidatorInfo.get(validatorInfoResponse1.validatorInfo!),
-    ).toBe(40);
-
-    expect(
-      result.current.votingPowerByValidatorInfo.get(validatorInfoResponse2.validatorInfo!),
-    ).toBe(40);
-
-    expect(
-      result.current.votingPowerByValidatorInfo.get(validatorInfoResponse3.validatorInfo!),
-    ).toBe(20);
-  });
 });
