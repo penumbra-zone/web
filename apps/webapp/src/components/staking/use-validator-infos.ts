@@ -23,15 +23,20 @@ const getFormattedVotingPower = (validatorInfo: ValidatorInfo, totalVotingPower:
       100,
   );
 
-export const useValidatorInfos = (): {
+interface UseValidatorInfos {
   validatorInfos: ValidatorInfo[];
 
-  /** Each validator's voting power, expressed as an integer between 0-100. */
+  /**
+   * Each validator's voting power, expressed as an integer percentage between
+   * 0-100.
+   */
   votingPowerByValidatorInfo: Map<ValidatorInfo, number>;
 
   loading: boolean;
   error: unknown;
-} => {
+}
+
+export const useValidatorInfos = (): UseValidatorInfos => {
   /**
    * Use a ref so that it doesn't constantly re-fetch when the component
    * re-renders.
