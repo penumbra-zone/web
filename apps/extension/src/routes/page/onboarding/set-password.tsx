@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEvent, MouseEvent, useState } from 'react';
 import {
   BackIcon,
   Button,
@@ -20,6 +20,15 @@ export const SetPassword = () => {
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
 
+  const handleSubmit = (event: FormEvent | MouseEvent) => {
+    event.preventDefault();
+
+    void (async () => {
+      await finalOnboardingSave(password);
+      navigate(PagePath.ONBOARDING_SUCCESS);
+    })();
+  };
+
   return (
     <FadeTransition>
       <BackIcon className='float-left mb-4' onClick={() => navigate(-1)} />
@@ -31,44 +40,38 @@ export const SetPassword = () => {
             wallet.
           </CardDescription>
         </CardHeader>
-        <CardContent className='mt-6 grid gap-4'>
-          <PasswordInput
-            passwordValue={password}
-            label='New password'
-            onChange={({ target: { value } }) => setPassword(value)}
-            validations={[
-              {
-                type: 'warn',
-                issue: 'password too short',
-                checkFn: (txt: string) => Boolean(txt.length) && txt.length < 8,
-              },
-            ]}
-          />
-          <PasswordInput
-            passwordValue={confirmation}
-            label='Confirm password'
-            onChange={({ target: { value } }) => setConfirmation(value)}
-            validations={[
-              {
-                type: 'warn',
-                issue: "passwords don't match",
-                checkFn: (txt: string) => Boolean(txt.length) && password !== txt,
-              },
-            ]}
-          />
-          <Button
-            variant='gradient'
-            className='mt-2'
-            disabled={password.length < 8 || password !== confirmation}
-            onClick={() => {
-              void (async function () {
-                await finalOnboardingSave(password);
-                navigate(PagePath.ONBOARDING_SUCCESS);
-              })();
-            }}
-          >
-            Next
-          </Button>
+        <CardContent>
+          <form className='mt-6 grid gap-4' onSubmit={handleSubmit}>
+            <PasswordInput
+              passwordValue={password}
+              label='New password'
+              onChange={({ target: { value } }) => setPassword(value)}
+            />
+            <PasswordInput
+              passwordValue={confirmation}
+              label='Confirm password'
+              onChange={({ target: { value } }) => setConfirmation(value)}
+              validations={[
+                {
+                  type: 'warn',
+                  issue: "passwords don't match",
+                  checkFn: (txt: string) => password !== txt,
+                },
+              ]}
+            />
+            <Button
+              variant='gradient'
+              className='mt-2'
+              disabled={password !== confirmation}
+              onClick={handleSubmit}
+            >
+              Next
+            </Button>
+
+            <Button variant='secondary' onClick={handleSubmit}>
+              Skip
+            </Button>
+          </form>
         </CardContent>
       </Card>
     </FadeTransition>

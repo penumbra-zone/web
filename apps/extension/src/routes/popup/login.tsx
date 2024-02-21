@@ -55,7 +55,7 @@ export const Login = () => {
               },
             ]}
           />
-          <Button size='lg' variant='gradient' disabled={!input || enteredIncorrect} type='submit'>
+          <Button size='lg' variant='gradient' disabled={enteredIncorrect} type='submit'>
             Unlock
           </Button>
         </form>

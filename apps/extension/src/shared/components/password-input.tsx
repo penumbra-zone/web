@@ -8,7 +8,7 @@ import { useValidationResult } from '../../hooks/validation-result';
 interface PasswordInputProps {
   passwordValue: string;
   label: string | ReactElement;
-  validations: Validation[];
+  validations?: Validation[];
   onChange: InputProps['onChange'];
 }
 

@@ -30,7 +30,7 @@ export const createWalletsSlice =
         const fullViewingKey = getFullViewingKey(spendKey);
 
         const passwordKey = get().password.key;
-        if (!passwordKey) throw new Error('Password Key not in storage');
+        if (passwordKey === undefined) throw new Error('Password Key not in storage');
 
         const key = await Key.fromJson(passwordKey);
         const encryptedSeedPhrase = await key.seal(seedPhraseStr);
