@@ -12,14 +12,24 @@ import {
 import { BalancesByAccount } from '../../../fetchers/balances/by-account';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { useMemo } from 'react';
+import { assetPatterns } from '@penumbra-zone/constants';
 
 export const Account = ({ account }: { account: BalancesByAccount }) => {
-  const unstakedBalance = useMemo(
-    () => account.balances.find(balance => getDisplayDenomFromView(balance.value) === 'penumbra'),
+  const { unstakedBalance, delegationBalances } = useMemo(
+    () => ({
+      unstakedBalance: account.balances.find(
+        balance => getDisplayDenomFromView(balance.value) === 'penumbra',
+      ),
+      delegationBalances: account.balances.filter(balance =>
+        assetPatterns.delegationTokenPattern.test(getDisplayDenomFromView(balance.value)),
+      ),
+    }),
     [account.balances],
   );
 
-  if (!unstakedBalance) return null;
+  const shouldRender = !!unstakedBalance || !!delegationBalances.length;
+
+  if (!shouldRender) return null;
 
   return (
     <Card gradient>
@@ -27,15 +37,21 @@ export const Account = ({ account }: { account: BalancesByAccount }) => {
         <CardTitle>Account #{account.index.account}</CardTitle>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableBody>
-            <TableRow>
-              <TableCell>
-                <ValueViewComponent view={unstakedBalance.value} />
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+        {unstakedBalance && <ValueViewComponent view={unstakedBalance.value} />}
+
+        {!!delegationBalances.length && (
+          <Table>
+            <TableBody>
+              {delegationBalances.map(delegationBalance => (
+                <TableRow key={getDisplayDenomFromView(delegationBalance.value)}>
+                  <TableCell>
+                    <ValueViewComponent view={delegationBalance.value} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </CardContent>
     </Card>
   );
