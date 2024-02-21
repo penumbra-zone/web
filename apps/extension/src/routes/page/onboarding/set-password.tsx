@@ -67,10 +67,6 @@ export const SetPassword = () => {
             >
               Next
             </Button>
-
-            <Button variant='secondary' onClick={handleSubmit}>
-              Skip
-            </Button>
           </form>
         </CardContent>
       </Card>
