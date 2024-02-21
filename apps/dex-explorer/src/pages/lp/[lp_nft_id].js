@@ -52,9 +52,9 @@ export default function LP() {
         ) : liquidityPosition ? (
           <>
             <h1>NFT ID: {lp_nft_id}</h1>
-            {/* Render your liquidity position details here using `liquidityPosition` */}
+            {/* todo */}
             <p>{JSON.stringify(liquidityPosition)}</p>{" "}
-            {/* Example: remove this after using real fields */}
+            {/* todo */}
           </>
         ) : (
           <p>No liquidity position found.</p>
