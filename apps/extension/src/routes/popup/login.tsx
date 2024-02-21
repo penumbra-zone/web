@@ -51,7 +51,7 @@ export const Login = () => {
               {
                 type: 'error',
                 issue: 'wrong password',
-                checkFn: (txt: string) => Boolean(txt) && enteredIncorrect,
+                checkFn: () => enteredIncorrect,
               },
             ]}
           />
