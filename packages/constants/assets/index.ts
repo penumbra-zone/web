@@ -2,6 +2,8 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import LocalAssetRegistry from './local-asset-registry.json';
 import { JsonValue } from '@bufbuild/protobuf';
 
+export const STAKING_TOKEN = 'penumbra';
+
 export interface AssetPattens {
   lpNft: RegExp;
   delegationToken: RegExp;
