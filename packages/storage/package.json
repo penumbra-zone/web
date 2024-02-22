@@ -11,12 +11,10 @@
   "dependencies": {
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
-    "idb": "^8.0.0",
-    "vite": "^5.1.3"
+    "idb": "^8.0.0"
   },
   "devDependencies": {
     "@types/chrome": "0.0.260",
-    "@vitest/browser": "^1.2.2",
     "playwright": "^1.41.2"
   }
 }
