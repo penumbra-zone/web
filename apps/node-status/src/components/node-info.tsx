@@ -1,5 +1,5 @@
 import { useLoaderData } from 'react-router-dom';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types';
+import { uint8ArrayToString } from '@penumbra-zone/types';
 import { Card, Identicon } from '@penumbra-zone/ui';
 import { IndexLoaderResponse } from '../fetching/loader.ts';
 
@@ -43,7 +43,7 @@ export const NodeInfo = () => {
       </div>
       <div className='flex flex-col'>
         <strong>Channels</strong>
-        <span className='ml-2'>{uint8ArrayToBase64(nodeInfo.channels)}</span>
+        <span className='ml-2'>{uint8ArrayToString(nodeInfo.channels)}</span>
       </div>
       <div className='flex flex-col'>
         <strong>Moniker</strong>

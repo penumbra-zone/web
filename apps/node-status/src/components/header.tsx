@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom';
 import { LineWave } from 'react-loader-spinner';
 import { cn } from '@penumbra-zone/ui/lib/utils.ts';
-import { useDeceleratedFetchState } from '../fetching/refetch-hook.ts';
+import { useDelayedIsLoading } from '../fetching/refetch-hook.ts';
 
 export const Header = () => {
-  const isLoading = useDeceleratedFetchState();
+  const isLoading = useDelayedIsLoading();
 
   return (
     <header className='z-10 flex w-full flex-col items-center justify-between px-6 md:h-[82px] md:flex-row md:gap-12 md:px-12'>

@@ -15,7 +15,7 @@ export const useRefetchStatusOnInterval = () => {
 const VISIBILITY_STATE_CHANGE_DELAY = 800;
 
 // Meant to slow down the state transition from loading to idle so the UI can show a discernible spinner
-export const useDeceleratedFetchState = () => {
+export const useDelayedIsLoading = () => {
   const { state } = useRevalidator();
 
   const [isVisible, setIsVisible] = useState(false);
