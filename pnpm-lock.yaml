@@ -353,6 +353,9 @@ importers:
 
   packages/query:
     dependencies:
+      '@penumbra-zone/constants':
+        specifier: workspace:*
+        version: link:../constants
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../crypto

@@ -1,7 +1,5 @@
 import { RootQuerier } from './root-querier';
 
-import { bech32 } from 'bech32';
-
 import { sha256Hash } from '@penumbra-zone/crypto-web';
 import {
   BlockProcessorInterface,
@@ -9,8 +7,6 @@ import {
   ViewServerInterface,
 } from '@penumbra-zone/types';
 import { computePositionId, decodeSctRoot, transactionInfo } from '@penumbra-zone/wasm';
-
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   PositionState,
   PositionState_PositionStateEnum,
@@ -28,6 +24,7 @@ import {
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { backOff } from 'exponential-backoff';
+import { customizeSymbol } from './customize-symbol';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -246,23 +243,16 @@ export class BlockProcessor implements BlockProcessorInterface {
     for (const n of newNotes) {
       const assetId = n.note?.value?.assetId;
       if (!assetId) continue;
-      if (await this.indexedDb.getAssetsMetadata(assetId)) continue;
 
-      let metadata: Metadata | undefined;
-      metadata = await this.querier.shieldedPool.assetMetadata(assetId);
+      const metadataInDb = await this.indexedDb.getAssetsMetadata(assetId);
+      if (metadataInDb) continue;
 
-      if (!metadata) {
-        const UNNAMED_ASSET_PREFIX = 'passet';
-        const denom = bech32.encode(UNNAMED_ASSET_PREFIX, bech32.toWords(assetId.inner));
-        metadata = new Metadata({
-          base: denom,
-          denomUnits: [{ aliases: [], denom, exponent: 0 }],
-          display: denom,
-          penumbraAssetId: assetId,
-        });
+      const metadataFromNode = await this.querier.shieldedPool.assetMetadata(assetId);
+
+      if (metadataFromNode) {
+        customizeSymbol(metadataFromNode);
+        await this.indexedDb.saveAssetsMetadata(metadataFromNode);
       }
-
-      await this.indexedDb.saveAssetsMetadata(metadata);
     }
   }
 

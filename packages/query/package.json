@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@penumbra-zone/crypto-web": "workspace:*",
+    "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*",
     "bech32": "^2.0.0",
     "exponential-backoff": "^3.1.1"

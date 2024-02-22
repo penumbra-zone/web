@@ -119,5 +119,57 @@
         "svg": "https://raw.githubusercontent.com/giuspen/cherrytree/356649a8f84cd5068d676185937d61fc8e0450d1/icons/ct_pizza.svg"
       }
     ]
+  },
+  {
+    "denomUnits": [
+      {
+        "denom": "delegation_penumbravalid18nkv0r3sfp2seleq6du5kt3mhfce3k6cqm77kj2e7mhakmyw9v9qx42a20",
+        "exponent": 6
+      },
+      {
+        "denom": "mdelegation_penumbravalid18nkv0r3sfp2seleq6du5kt3mhfce3k6cqm77kj2e7mhakmyw9v9qx42a20",
+        "exponent": 3
+      },
+      {
+        "denom": "udelegation_penumbravalid18nkv0r3sfp2seleq6du5kt3mhfce3k6cqm77kj2e7mhakmyw9v9qx42a20"
+      }
+    ],
+    "base": "udelegation_penumbravalid18nkv0r3sfp2seleq6du5kt3mhfce3k6cqm77kj2e7mhakmyw9v9qx42a20",
+    "display": "delegation_penumbravalid18nkv0r3sfp2seleq6du5kt3mhfce3k6cqm77kj2e7mhakmyw9v9qx42a20",
+    "penumbraAssetId": {
+      "inner": "CwpUYIdQ9H5Dnf3oQ1l7ISeVMVahWbVNNvMA0dBSdwI="
+    },
+    "symbol": "Delegation (Penumbra Labs CI 1)",
+    "images": [
+      {
+        "png": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/webapp/public/favicon.png"
+      }
+    ]
+  },
+  {
+    "denomUnits": [
+      {
+        "denom": "delegation_penumbravalid1qfxldejdhanmu302kcn5fm98q5d7d2upfhzqhaz95hyjdn82pqysqfq050",
+        "exponent": 6
+      },
+      {
+        "denom": "mdelegation_penumbravalid1qfxldejdhanmu302kcn5fm98q5d7d2upfhzqhaz95hyjdn82pqysqfq050",
+        "exponent": 3
+      },
+      {
+        "denom": "udelegation_penumbravalid1qfxldejdhanmu302kcn5fm98q5d7d2upfhzqhaz95hyjdn82pqysqfq050"
+      }
+    ],
+    "base": "udelegation_penumbravalid1qfxldejdhanmu302kcn5fm98q5d7d2upfhzqhaz95hyjdn82pqysqfq050",
+    "display": "delegation_penumbravalid1qfxldejdhanmu302kcn5fm98q5d7d2upfhzqhaz95hyjdn82pqysqfq050",
+    "penumbraAssetId": {
+      "inner": "qUn70lKZ3qQlCT5gj5sakux4daiTPKj0AN6ZuuFldQU="
+    },
+    "symbol": "Delegation (Penumbra Labs CI 2)",
+    "images": [
+      {
+        "png": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/webapp/public/favicon.png"
+      }
+    ]
   }
 ]
