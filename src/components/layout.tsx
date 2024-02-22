@@ -2,10 +2,17 @@
 
 import Head from "next/head";
 import Image from "next/image";
-import styles from "../../styles/Home.module.css";
+import styles from "@/Home.module.css";
 import { Text, HStack } from "@chakra-ui/react";
+import React from "react";
 
-const Layout = ({ children, pageTitle }) => {
+interface LayoutProps {
+  children?: React.ReactNode; 
+  pageTitle: string;
+}
+
+
+const Layout = ({ children, pageTitle }: LayoutProps) => {
   return (
     <>
       <Head>
