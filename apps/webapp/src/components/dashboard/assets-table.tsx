@@ -2,20 +2,17 @@ import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { throwIfExtNotInstalled } from '../../utils/is-connected.ts';
 import { AddressIcon } from '@penumbra-zone/ui/components/ui/address-icon';
 import { AddressComponent } from '@penumbra-zone/ui/components/ui/address-component';
-import {
-  AccountGroupedBalances,
-  getBalancesByAccount,
-} from '../../fetchers/balances/by-account.ts';
+import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account.ts';
 import { Table, TableBody, TableCell, TableRow } from '@penumbra-zone/ui';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value.tsx';
 
-export const AssetsLoader: LoaderFunction = async (): Promise<AccountGroupedBalances[]> => {
+export const AssetsLoader: LoaderFunction = async (): Promise<BalancesByAccount[]> => {
   throwIfExtNotInstalled();
   return await getBalancesByAccount();
 };
 
 export default function AssetsTable() {
-  const data = useLoaderData() as AccountGroupedBalances[];
+  const data = useLoaderData() as BalancesByAccount[];
 
   if (data.length === 0) {
     return (
