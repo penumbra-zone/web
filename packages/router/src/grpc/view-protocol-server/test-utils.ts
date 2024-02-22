@@ -12,9 +12,10 @@ export interface IndexedDbMock {
   getStateCommitmentTree?: Mock;
   getSwapByNullifier?: Mock;
   getTransactionInfo?: Mock;
+  iterateAssetsMetadata?: () => Partial<AsyncIterable<Mock>>;
   iterateTransactionInfo?: () => Partial<AsyncIterable<Mock>>;
   iterateSpendableNotes?: () => Partial<AsyncIterable<Mock>>;
-  iterateAssetsMetadata?: () => Partial<AsyncIterable<Mock>>;
+  iterateSwaps?: () => Partial<AsyncIterable<Mock>>;
   subscribe?: (table: string) => Partial<AsyncIterable<Mock>>;
   getSwapByCommitment?: Mock;
 }
