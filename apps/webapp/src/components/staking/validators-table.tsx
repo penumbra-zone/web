@@ -4,7 +4,7 @@ import { Oval } from 'react-loader-spinner';
 import { ValidatorInfoRow } from './validator-info-row';
 import { ValidatorInfoContext } from './validator-info-context';
 
-const HEADERS = ['Validator', 'Voting power', 'State', 'Bonding state', 'Commission'];
+const HEADERS = ['Validator', 'Voting power', 'State', 'Commission'];
 
 export const ValidatorsTable = ({
   loading,
