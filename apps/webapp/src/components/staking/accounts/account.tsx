@@ -3,60 +3,80 @@ import {
   getDisplayDenomFromView,
   getIdentityKeyFromValidatorInfo,
 } from '@penumbra-zone/types';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from '@penumbra-zone/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@penumbra-zone/ui';
 import { BalancesByAccount } from '../../../fetchers/balances/by-account';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { useContext, useMemo } from 'react';
-import { assetPatterns } from '@penumbra-zone/constants';
+import { STAKING_TOKEN, assetPatterns } from '@penumbra-zone/constants';
 import { ValidatorInfoContext } from '../validator-info-context';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { ValidatorsTable } from '../validators-table';
+import { AssetBalance } from '../../../fetchers/balances';
+import { StakingActions } from './staking-actions';
+import { getBech32IdentityKeyFromValueView } from './helpers';
+
+const hasDelegationOrUnbondingTokens =
+  (delegationBalances: AssetBalance[], unbondingBalances: AssetBalance[]) =>
+  (validatorInfo: ValidatorInfo): boolean => {
+    const identityKey = bech32IdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo));
+    const hasDelegationTokens = delegationBalances.some(
+      ({ value }) => getBech32IdentityKeyFromValueView(value) === identityKey,
+    );
+    const hasUnbondingTokens = unbondingBalances.some(
+      ({ value }) => getBech32IdentityKeyFromValueView(value) === identityKey,
+    );
+
+    return hasDelegationTokens || hasUnbondingTokens;
+  };
 
 export const Account = ({ account }: { account: BalancesByAccount }) => {
   const { unstakedBalance, delegationBalances, unbondingBalances } = useMemo(
     () => ({
       unstakedBalance: account.balances.find(
-        balance => getDisplayDenomFromView(balance.value) === 'penumbra',
+        balance => getDisplayDenomFromView(balance.value) === STAKING_TOKEN,
       ),
       delegationBalances: account.balances.filter(balance =>
-        assetPatterns.delegationTokenPattern.test(getDisplayDenomFromView(balance.value)),
+        assetPatterns.delegationToken.test(getDisplayDenomFromView(balance.value)),
       ),
       unbondingBalances: account.balances.filter(balance =>
-        assetPatterns.unbondingTokenPattern.test(getDisplayDenomFromView(balance.value)),
+        assetPatterns.unbondingToken.test(getDisplayDenomFromView(balance.value)),
       ),
     }),
     [account.balances],
   );
 
-  const { validatorInfos } = useContext(ValidatorInfoContext);
+  const {
+    validatorInfos: unfilteredValidatorInfos,
+    votingPowerByValidatorInfo,
+    loading,
+    error,
+  } = useContext(ValidatorInfoContext);
 
-  const validatorInfoByDelegation: Record<string, ValidatorInfo> = useMemo(
-    () =>
-      delegationBalances.reduce<Record<string, ValidatorInfo>>((prev, curr) => {
-        const displayDenom = getDisplayDenomFromView(curr.value);
-        const validatorInfo = validatorInfos.find(
-          validatorInfo =>
-            bech32IdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo)) ===
-            displayDenom.replace('delegation_', ''),
-        );
-
-        if (validatorInfo) prev[displayDenom] = validatorInfo;
-
-        return prev;
-      }, {}),
-    [delegationBalances, validatorInfos],
+  const validatorInfos = unfilteredValidatorInfos.filter(
+    hasDelegationOrUnbondingTokens(delegationBalances, unbondingBalances),
   );
 
-  const shouldRender =
-    !!unstakedBalance || !!delegationBalances.length || !!unbondingBalances.length;
+  const tokensByValidatorInfo: Map<
+    ValidatorInfo,
+    { delegation?: ValueView; unbonding?: ValueView }
+  > = validatorInfos.reduce((prev, curr) => {
+    const validatorIdentityKey = bech32IdentityKey(getIdentityKeyFromValidatorInfo(curr));
+
+    const tokens = {
+      delegation: delegationBalances.find(
+        balance => getBech32IdentityKeyFromValueView(balance.value) === validatorIdentityKey,
+      )?.value,
+      unbonding: unbondingBalances.find(
+        balance => getBech32IdentityKeyFromValueView(balance.value) === validatorIdentityKey,
+      )?.value,
+    };
+    prev.set(curr, tokens);
+
+    return prev;
+  }, new Map<ValidatorInfo, { delegation?: ValueView; unbonding?: ValueView }>());
+
+  const shouldRender = !!unstakedBalance || !!validatorInfos.length;
 
   if (!shouldRender) return null;
 
@@ -73,26 +93,22 @@ export const Account = ({ account }: { account: BalancesByAccount }) => {
           </div>
         )}
 
-        {!!delegationBalances.length && (
-          <Table>
-            <TableBody>
-              {delegationBalances.map(delegationBalance => (
-                <TableRow key={getDisplayDenomFromView(delegationBalance.value)}>
-                  <TableCell>
-                    {
-                      validatorInfoByDelegation[getDisplayDenomFromView(delegationBalance.value)]
-                        ?.validator?.name
-                    }
-                    <ValueViewComponent
-                      view={delegationBalance.value}
-                      showIcon={false}
-                      showDenom={false}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        {!!validatorInfos.length && (
+          <div className='mt-8'>
+            <ValidatorsTable
+              validatorInfos={validatorInfos}
+              votingPowerByValidatorInfo={votingPowerByValidatorInfo}
+              loading={loading}
+              error={error}
+              renderStaking={validatorInfo => (
+                <StakingActions
+                  canDelegate={!!unstakedBalance}
+                  delegationTokens={tokensByValidatorInfo.get(validatorInfo)?.delegation}
+                  unbondingTokens={tokensByValidatorInfo.get(validatorInfo)?.unbonding}
+                />
+              )}
+            />
+          </div>
         )}
       </CardContent>
     </Card>

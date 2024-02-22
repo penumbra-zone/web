@@ -12,7 +12,8 @@ export const AllValidators = () => {
         <CardTitle>Active validators</CardTitle>
       </CardHeader>
       <CardContent>
-        <ValidatorsTable {...validatorInfoContext} />
+        {/** @todo: Render delegate button in the staking cell */}
+        <ValidatorsTable {...validatorInfoContext} renderStaking={() => null} />
       </CardContent>
     </Card>
   );

@@ -3,15 +3,25 @@ import { getValidator } from '@penumbra-zone/types';
 import { Oval } from 'react-loader-spinner';
 import { ValidatorInfoRow } from './validator-info-row';
 import { ValidatorInfoContext } from './validator-info-context';
+import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import { ReactNode } from 'react';
 
-const HEADERS = ['Validator', 'Voting power', 'State', 'Commission'];
+const HEADERS = ['Validator', 'Voting power', 'Commission', 'Staking'];
+
+interface ValidatorsTableProps extends ValidatorInfoContext {
+  /**
+   * Content to display inside the Staking cell.
+   */
+  renderStaking: (validatorInfo: ValidatorInfo) => ReactNode;
+}
 
 export const ValidatorsTable = ({
   loading,
   error,
   validatorInfos,
   votingPowerByValidatorInfo,
-}: ValidatorInfoContext) => {
+  renderStaking,
+}: ValidatorsTableProps) => {
   const showError = !!error;
   const showLoading = loading && !validatorInfos.length;
   const showValidators = !showError && !showLoading;
@@ -49,6 +59,7 @@ export const ValidatorsTable = ({
               loading={loading}
               validatorInfo={validatorInfo}
               votingPowerByValidatorInfo={votingPowerByValidatorInfo}
+              staking={renderStaking(validatorInfo)}
             />
           ))}
       </TableBody>
