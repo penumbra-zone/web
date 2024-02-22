@@ -8,7 +8,6 @@ import {
 import {
   Position,
   PositionId,
-  TradingPair,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 
 export const emptyScanResult: ScanBlockResult = {
@@ -1457,9 +1456,4 @@ export const positionGmGnSell = Position.fromJson({
 });
 export const positionIdGmGnSell = PositionId.fromJson({
   inner: '8hpmQDWRJFAqYI1NaKltjbFqCRiI4eEQT5DzzNUkDXQ=',
-});
-
-export const tradingPairGmGn = TradingPair.fromJson({
-  asset1: { inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=' },
-  asset2: { inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=' },
 });

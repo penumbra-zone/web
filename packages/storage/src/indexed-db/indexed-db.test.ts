@@ -26,7 +26,6 @@ import {
   positionIdGnPenumbraSell,
   scanResultWithNewSwaps,
   scanResultWithSctUpdates,
-  tradingPairGmGn,
   transactionInfo,
 } from './indexed-db.test-data';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
@@ -453,8 +452,8 @@ describe('IndexedDb', () => {
         new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
       );
       const ownedPositions: PositionId[] = [];
-      for await (const positionId of db.getOwnedPositionIds(undefined, undefined)) {
-        ownedPositions.push(positionId);
+      for await (const record of db.iteratePositions()) {
+        ownedPositions.push(PositionId.fromJson(record.id));
       }
       expect(ownedPositions.length).toBe(1);
       expect(ownedPositions[0]?.equals(positionIdGmPenumbraBuy)).toBeTruthy();
@@ -470,53 +469,17 @@ describe('IndexedDb', () => {
       ).rejects.toThrow('Position not found when trying to change its state');
     });
 
-    it('should get all records if no filters are specified', async () => {
+    it('should get all position records', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
       await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy);
       await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell);
       await db.addPosition(positionIdGmGnSell, positionGmGnSell);
 
       const ownedPositions: PositionId[] = [];
-      for await (const positionId of db.getOwnedPositionIds(undefined, undefined)) {
-        ownedPositions.push(positionId);
+      for await (const record of db.iteratePositions()) {
+        ownedPositions.push(PositionId.fromJson(record.id));
       }
       expect(ownedPositions.length).toBe(3);
-    });
-
-    it('should only receive records for one trading pair', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy);
-      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell);
-      await db.addPosition(positionIdGmGnSell, positionGmGnSell);
-
-      const ownedPositions: PositionId[] = [];
-      for await (const positionId of db.getOwnedPositionIds(undefined, tradingPairGmGn)) {
-        ownedPositions.push(positionId);
-      }
-      expect(ownedPositions.length).toBe(1);
-      expect(ownedPositions[0]?.equals(positionIdGmGnSell)).toBeTruthy();
-    });
-
-    it('should only receive records for one state', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.addPosition(positionIdGmPenumbraBuy, positionGmPenumbraBuy);
-      await db.addPosition(positionIdGnPenumbraSell, positionGnPenumbraSell);
-      await db.addPosition(positionIdGmGnSell, positionGmGnSell);
-
-      await db.updatePosition(
-        positionIdGmGnSell,
-        new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
-      );
-
-      const ownedPositions: PositionId[] = [];
-      for await (const positionId of db.getOwnedPositionIds(
-        new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
-        undefined,
-      )) {
-        ownedPositions.push(positionId);
-      }
-      expect(ownedPositions.length).toBe(1);
-      expect(ownedPositions[0]?.equals(positionIdGmGnSell)).toBeTruthy();
     });
   });
 });

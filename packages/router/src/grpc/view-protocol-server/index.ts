@@ -16,7 +16,7 @@ import { noteByCommitment } from './note-by-commitment';
 import { notes } from './notes';
 import { notesForVoting } from './notes-for-voting';
 import { nullifierStatus } from './nullifier-status';
-import { ownedPositionIds } from './ownned-position-ids';
+import { ownedPositionIds } from './owned-position-ids';
 import { status } from './status';
 import { statusStream } from './status-stream';
 import { swapByCommitment } from './swap-by-commitment';

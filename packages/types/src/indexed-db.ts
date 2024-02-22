@@ -31,7 +31,6 @@ import {
   Position,
   PositionId,
   PositionState,
-  TradingPair,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { Jsonified } from './jsonified';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
@@ -77,10 +76,7 @@ export interface IndexedDbInterface {
     addressIndex: AddressIndex | undefined,
     votableAtHeight: bigint,
   ): Promise<NotesForVotingResponse[]>;
-  getOwnedPositionIds(
-    positionState: PositionState | undefined,
-    tradingPair: TradingPair | undefined,
-  ): AsyncGenerator<PositionId, void>;
+  iteratePositions(): AsyncGenerator<PositionRecord, void>;
   addPosition(positionId: PositionId, position: Position): Promise<void>;
   updatePosition(positionId: PositionId, newState: PositionState): Promise<void>;
 }

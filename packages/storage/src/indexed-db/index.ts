@@ -37,7 +37,6 @@ import {
   Position,
   PositionId,
   PositionState,
-  TradingPair,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 
@@ -362,20 +361,9 @@ export class IndexedDb implements IndexedDbInterface {
     return Promise.resolve(notesForVoting);
   }
 
-  async *getOwnedPositionIds(
-    positionState: PositionState | undefined,
-    tradingPair: TradingPair | undefined,
-  ): AsyncGenerator<PositionId, void> {
-    for await (const positionCursor of this.db.transaction('POSITIONS').store) {
-      const position = Position.fromJson(positionCursor.value.position);
-
-      if (positionState && !positionState.equals(position.state)) {
-        continue;
-      }
-      if (tradingPair && !tradingPair.equals(position.phi?.pair)) {
-        continue;
-      }
-      yield PositionId.fromJson(positionCursor.value.id);
+  async *iteratePositions() {
+    for await (const { value } of this.db.transaction('POSITIONS').store) {
+      yield value;
     }
   }
 
