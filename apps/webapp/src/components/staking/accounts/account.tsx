@@ -1,4 +1,8 @@
-import { getDisplayDenomFromView } from '@penumbra-zone/types';
+import {
+  bech32IdentityKey,
+  getDisplayDenomFromView,
+  getIdentityKeyFromValidatorInfo,
+} from '@penumbra-zone/types';
 import {
   Card,
   CardContent,
@@ -11,8 +15,10 @@ import {
 } from '@penumbra-zone/ui';
 import { BalancesByAccount } from '../../../fetchers/balances/by-account';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { assetPatterns } from '@penumbra-zone/constants';
+import { ValidatorInfoContext } from '../validator-info-context';
+import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
 export const Account = ({ account }: { account: BalancesByAccount }) => {
   const { unstakedBalance, delegationBalances } = useMemo(
@@ -27,6 +33,25 @@ export const Account = ({ account }: { account: BalancesByAccount }) => {
     [account.balances],
   );
 
+  const { validatorInfos } = useContext(ValidatorInfoContext);
+
+  const validatorInfoByDelegation: Record<string, ValidatorInfo> = useMemo(
+    () =>
+      delegationBalances.reduce<Record<string, ValidatorInfo>>((prev, curr) => {
+        const displayDenom = getDisplayDenomFromView(curr.value);
+        const validatorInfo = validatorInfos.find(
+          validatorInfo =>
+            bech32IdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo)) ===
+            displayDenom.replace('delegation_', ''),
+        );
+
+        if (validatorInfo) prev[displayDenom] = validatorInfo;
+
+        return prev;
+      }, {}),
+    [delegationBalances, validatorInfos],
+  );
+
   const shouldRender = !!unstakedBalance || !!delegationBalances.length;
 
   if (!shouldRender) return null;
@@ -37,7 +62,12 @@ export const Account = ({ account }: { account: BalancesByAccount }) => {
         <CardTitle>Account #{account.index.account}</CardTitle>
       </CardHeader>
       <CardContent>
-        {unstakedBalance && <ValueViewComponent view={unstakedBalance.value} />}
+        {unstakedBalance && (
+          <div className='flex gap-1'>
+            <ValueViewComponent view={unstakedBalance.value} />
+            <span>available to delegate</span>
+          </div>
+        )}
 
         {!!delegationBalances.length && (
           <Table>
@@ -45,7 +75,15 @@ export const Account = ({ account }: { account: BalancesByAccount }) => {
               {delegationBalances.map(delegationBalance => (
                 <TableRow key={getDisplayDenomFromView(delegationBalance.value)}>
                   <TableCell>
-                    <ValueViewComponent view={delegationBalance.value} />
+                    {
+                      validatorInfoByDelegation[getDisplayDenomFromView(delegationBalance.value)]
+                        ?.validator?.name
+                    }
+                    <ValueViewComponent
+                      view={delegationBalance.value}
+                      showIcon={false}
+                      showDenom={false}
+                    />
                   </TableCell>
                 </TableRow>
               ))}
