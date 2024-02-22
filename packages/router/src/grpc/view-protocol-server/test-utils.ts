@@ -40,3 +40,7 @@ export interface MockServices {
     shieldedPool?: ShieldedPoolMock;
   };
 }
+
+export interface MockExtLocalCtx {
+  get: Mock;
+}
