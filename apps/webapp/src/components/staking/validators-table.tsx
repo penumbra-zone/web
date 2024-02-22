@@ -1,74 +1,57 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@penumbra-zone/ui';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
 import { getValidator } from '@penumbra-zone/types';
 import { Oval } from 'react-loader-spinner';
 import { ValidatorInfoRow } from './validator-info-row';
-import { useContext } from 'react';
 import { ValidatorInfoContext } from './validator-info-context';
 
 const HEADERS = ['Validator', 'Voting power', 'State', 'Bonding state', 'Commission'];
 
-export const ValidatorsTable = () => {
-  const { loading, error, validatorInfos, votingPowerByValidatorInfo } =
-    useContext(ValidatorInfoContext);
-
+export const ValidatorsTable = ({
+  loading,
+  error,
+  validatorInfos,
+  votingPowerByValidatorInfo,
+}: ValidatorInfoContext) => {
   const showError = !!error;
   const showLoading = loading && !validatorInfos.length;
   const showValidators = !showError && !showLoading;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Active validators</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table className='w-full'>
-          <TableHeader>
-            <TableRow>
-              {HEADERS.map(header => (
-                <TableHead key={header}>{header}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {showError && (
-              <TableRow>
-                <TableCell colSpan={HEADERS.length}>
-                  There was an error loading validators. Please reload the page.
-                </TableCell>
-              </TableRow>
-            )}
+    <Table className='w-full'>
+      <TableHeader>
+        <TableRow>
+          {HEADERS.map(header => (
+            <TableHead key={header}>{header}</TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {showError && (
+          <TableRow>
+            <TableCell colSpan={HEADERS.length}>
+              There was an error loading validators. Please reload the page.
+            </TableCell>
+          </TableRow>
+        )}
 
-            {showLoading && (
-              <TableRow>
-                <TableCell colSpan={HEADERS.length} className='flex gap-4'>
-                  <Oval width={16} height={16} color='white' secondaryColor='white' />
-                </TableCell>
-              </TableRow>
-            )}
+        {showLoading && (
+          <TableRow>
+            <TableCell colSpan={HEADERS.length} className='flex gap-4'>
+              <Oval width={16} height={16} color='white' secondaryColor='white' />
+            </TableCell>
+          </TableRow>
+        )}
 
-            {showValidators &&
-              validatorInfos.map(validatorInfo => (
-                <ValidatorInfoRow
-                  key={getValidator(validatorInfo).name}
-                  loading={loading}
-                  validatorInfo={validatorInfo}
-                  votingPowerByValidatorInfo={votingPowerByValidatorInfo}
-                />
-              ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+        {showValidators &&
+          validatorInfos.map(validatorInfo => (
+            <ValidatorInfoRow
+              key={getValidator(validatorInfo).name}
+              loading={loading}
+              validatorInfo={validatorInfo}
+              votingPowerByValidatorInfo={votingPowerByValidatorInfo}
+            />
+          ))}
+      </TableBody>
+    </Table>
   );
 };
