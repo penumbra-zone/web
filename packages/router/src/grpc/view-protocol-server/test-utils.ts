@@ -7,6 +7,7 @@ export interface IndexedDbMock {
   getGasPrices?: Mock;
   getFmdParams?: Mock;
   getLastBlockSynced?: Mock;
+  getNotesForVoting?: Mock;
   getSpendableNoteByCommitment?: Mock;
   getSpendableNoteByNullifier?: Mock;
   getStateCommitmentTree?: Mock;
