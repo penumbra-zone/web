@@ -1,5 +1,5 @@
-import Head from 'next/head';
-import styles from '../../styles/Home.module.css';
+import Head from "next/head";
+import styles from "../../styles/Home.module.css";
 
 export default function Home() {
   return (
@@ -14,8 +14,14 @@ export default function Home() {
       </main>
 
       <style jsx>{`
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, Avenir Next, Avenir,
+            Helvetica, sans-serif;
+        }
+        margin: 0;
+        padding: 0;
+        }
         main {
-          padding: 5rem 0;
           flex: 1;
           display: flex;
           flex-direction: column;
@@ -43,7 +49,7 @@ export default function Home() {
         code {
           background: #fafafa;
           border-radius: 5px;
-          padding: 0.75rem;
+          padding: 0;
           font-size: 1.1rem;
           font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
             DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;

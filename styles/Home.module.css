@@ -90,3 +90,12 @@
     flex-direction: column;
   }
 }
+
+.header {
+  width: 100%;
+  background-color: rgba(155, 128, 128, 0.3); /* Grey with 50% opacity */
+  /* position: fixed; /* Optional: makes the header stay at the top on scroll */
+  top: 0;
+  z-index: 10; 
+  padding-left: 1em;
+}
