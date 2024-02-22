@@ -2,3 +2,5 @@ import { Validator } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { createGetter } from './utils/create-getter';
 
 export const getFundingStreams = createGetter((validator?: Validator) => validator?.fundingStreams);
+
+export const getIdentityKey = createGetter((validator?: Validator) => validator?.identityKey);
