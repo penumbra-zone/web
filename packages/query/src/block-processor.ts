@@ -1,17 +1,12 @@
 import { RootQuerier } from './root-querier';
 
-import { bech32 } from 'bech32';
-
 import { sha256Hash } from '@penumbra-zone/crypto-web';
 import {
   BlockProcessorInterface,
   IndexedDbInterface,
   ViewServerInterface,
 } from '@penumbra-zone/types';
-import { assetPatterns } from '@penumbra-zone/constants';
 import { computePositionId, decodeSctRoot, transactionInfo } from '@penumbra-zone/wasm';
-
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   PositionState,
   PositionState_PositionStateEnum,
@@ -29,6 +24,7 @@ import {
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { backOff } from 'exponential-backoff';
+import { customizeSymbol } from './customize-symbol';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -247,43 +243,16 @@ export class BlockProcessor implements BlockProcessorInterface {
     for (const n of newNotes) {
       const assetId = n.note?.value?.assetId;
       if (!assetId) continue;
-      if (await this.indexedDb.getAssetsMetadata(assetId)) continue;
 
-      let metadata: Metadata | undefined;
-      metadata = await this.querier.shieldedPool.assetMetadata(assetId);
+      const metadataInDb = await this.indexedDb.getAssetsMetadata(assetId);
+      if (metadataInDb) continue;
 
-      // If the metadata is for a delegation token, customize its symbol.
-      if (metadata && assetPatterns.delegationTokenPattern.test(metadata.display)) {
-        // We can't trust the validator's self-described name, so use their validator ID.
-        // We know it's delegation_penumbravalid1... so use substrings:
+      const metadataFromNode = await this.querier.shieldedPool.assetMetadata(assetId);
 
-        // TODO: what's the best way to handle delegation tokens to unknown validators?
-
-        // Find the index of '1' in the string
-        const index = metadata.display.indexOf('1');
-        // Get the first N characters after the '1'
-        const id = metadata.display.substring(index + 1, index + 1 + 24);
-
-        metadata.symbol = 'Delegated UM (' + id + '...)';
+      if (metadataFromNode) {
+        customizeSymbol(metadataFromNode);
+        await this.indexedDb.saveAssetsMetadata(metadataFromNode);
       }
-
-      // TODO: unbonding tokens?
-
-      // Note: the below code is incorrect, the asset ID is the hash of the denom,
-      // so this is actually generating metadata for a different asset. Not sure
-      // when/if this is used.
-      if (!metadata) {
-        const UNNAMED_ASSET_PREFIX = 'passet';
-        const denom = bech32.encode(UNNAMED_ASSET_PREFIX, bech32.toWords(assetId.inner));
-        metadata = new Metadata({
-          base: denom,
-          denomUnits: [{ aliases: [], denom, exponent: 0 }],
-          display: denom,
-          penumbraAssetId: assetId,
-        });
-      }
-
-      await this.indexedDb.saveAssetsMetadata(metadata);
     }
   }
 

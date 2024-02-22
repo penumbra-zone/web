@@ -22,23 +22,23 @@ export const assets: Impl['assets'] = async function* (req, ctx) {
   }[] = [
     {
       includeReq: includeLpNfts,
-      pattern: assetPatterns.lpNftPattern,
+      pattern: assetPatterns.lpNft,
     },
     {
       includeReq: includeDelegationTokens,
-      pattern: assetPatterns.delegationTokenPattern,
+      pattern: assetPatterns.delegationToken,
     },
     {
       includeReq: includeProposalNfts,
-      pattern: assetPatterns.proposalNftPattern,
+      pattern: assetPatterns.proposalNft,
     },
     {
       includeReq: includeUnbondingTokens,
-      pattern: assetPatterns.unbondingTokenPattern,
+      pattern: assetPatterns.unbondingToken,
     },
     {
       includeReq: includeVotingReceiptTokens,
-      pattern: assetPatterns.votingReceiptPattern,
+      pattern: assetPatterns.votingReceipt,
     },
     ...includeSpecificDenominations.map(d => ({
       includeReq: true,

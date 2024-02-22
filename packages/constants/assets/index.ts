@@ -3,19 +3,34 @@ import LocalAssetRegistry from './local-asset-registry.json';
 import { JsonValue } from '@bufbuild/protobuf';
 
 export interface AssetPattens {
-  lpNftPattern: RegExp;
-  delegationTokenPattern: RegExp;
-  proposalNftPattern: RegExp;
-  unbondingTokenPattern: RegExp;
-  votingReceiptPattern: RegExp;
+  lpNft: RegExp;
+  delegationToken: RegExp;
+  proposalNft: RegExp;
+  unbondingToken: RegExp;
+  votingReceipt: RegExp;
 }
 
+export interface DelegationCaptureGroups {
+  id: string;
+  bech32IdentityKey: string;
+}
+
+export interface UnbondingCaptureGroups {
+  epoch: string;
+  id: string;
+}
+
+// Source of truth for regex patterns: https://github.com/penumbra-zone/penumbra/blob/main/crates/core/asset/src/asset/registry.rs
 export const assetPatterns: AssetPattens = {
-  lpNftPattern: new RegExp('^lpnft_'),
-  delegationTokenPattern: new RegExp('^delegation_'),
-  proposalNftPattern: new RegExp('^proposal_'),
-  unbondingTokenPattern: new RegExp('^unbonding_'),
-  votingReceiptPattern: new RegExp('^voted_on_'),
+  lpNft: new RegExp(/^lpnft_/),
+  delegationToken: new RegExp(
+    /.*delegation_(?<bech32IdentityKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
+  ),
+  proposalNft: new RegExp(/^proposal_/),
+  unbondingToken: new RegExp(
+    /.*unbonding_epoch_(?<epoch>[0-9]+)_penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+)$/,
+  ),
+  votingReceipt: new RegExp(/^voted_on_/),
 };
 
 export const localAssets: Metadata[] = LocalAssetRegistry.map(a =>

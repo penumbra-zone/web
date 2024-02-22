@@ -32,7 +32,7 @@ import {
   AddressIndex,
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { assetPatterns, localAssets } from '@penumbra-zone/constants';
+import { assetPatterns, DelegationCaptureGroups, localAssets } from '@penumbra-zone/constants';
 import {
   Position,
   PositionId,
@@ -319,7 +319,7 @@ export class IndexedDb implements IndexedDbInterface {
     for await (const assetCursor of this.db.transaction('ASSETS').store) {
       const denomMetadata = Metadata.fromJson(assetCursor.value);
       if (
-        assetPatterns.delegationTokenPattern.test(denomMetadata.display) &&
+        assetPatterns.delegationToken.test(denomMetadata.display) &&
         denomMetadata.penumbraAssetId
       ) {
         delegationAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId.inner), denomMetadata);
@@ -354,10 +354,10 @@ export class IndexedDb implements IndexedDbInterface {
         // delegation asset denom consists of prefix 'delegation_' and validator identity key in bech32m encoding
         // For example, in denom 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqqas55kkpyf6lhsqs2w0zar'
         // 'penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar' is  validator identity key.
-        const bech32IdentityKey = asset?.display.replace(assetPatterns.delegationTokenPattern, '');
+        const regexResult = assetPatterns.delegationToken.exec(asset?.display ?? '');
+        if (!regexResult) throw new Error('expected delegation token identity key not present');
 
-        if (!bech32IdentityKey)
-          throw new Error('expected delegation token identity key not present');
+        const { bech32IdentityKey } = regexResult.groups as unknown as DelegationCaptureGroups;
 
         notesForVoting.push(
           new NotesForVotingResponse({
