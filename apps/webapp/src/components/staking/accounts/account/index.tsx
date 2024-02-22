@@ -4,16 +4,16 @@ import {
   getIdentityKeyFromValidatorInfo,
 } from '@penumbra-zone/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@penumbra-zone/ui';
-import { BalancesByAccount } from '../../../fetchers/balances/by-account';
+import { BalancesByAccount } from '../../../../fetchers/balances/by-account';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { useContext, useMemo } from 'react';
 import { STAKING_TOKEN, assetPatterns } from '@penumbra-zone/constants';
-import { ValidatorInfoContext } from '../validator-info-context';
+import { ValidatorInfoContext } from '../../validator-info-context';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { ValidatorsTable } from '../validators-table';
-import { AssetBalance } from '../../../fetchers/balances';
-import { StakingActions } from './staking-actions';
+import { ValidatorsTable } from '../../validators-table';
+import { AssetBalance } from '../../../../fetchers/balances';
+import { StakingActions } from '.././staking-actions';
 import { getBech32IdentityKeyFromValueView } from './helpers';
 
 const hasDelegationOrUnbondingTokens =
