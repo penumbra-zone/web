@@ -16,12 +16,3 @@ export const isClientInitMessage = (evt: Event): evt is MessageEvent<InitChannel
   evt.data !== null &&
   'type' in evt.data &&
   evt.data.type === InitChannelClientDataType;
-
-export interface InitChannelClientMessage extends InitChannelClientData {
-  type: typeof InitChannelClientDataType;
-}
-
-export interface InitChannelClientData {
-  port: MessagePort;
-  service: string;
-}
