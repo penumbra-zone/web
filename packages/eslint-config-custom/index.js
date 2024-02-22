@@ -14,7 +14,6 @@ module.exports = {
   ],
   plugins: ['@typescript-eslint', 'turbo', 'vitest', 'react-refresh'],
   rules: {
-    'import/no-named-as-default': 'off',
     'import/extensions': [
       'error',
       'always',
