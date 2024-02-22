@@ -1,4 +1,4 @@
-import { AllSlices, SliceCreator } from './index';
+import { AllSlices, SliceCreator } from '.';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
   authWitnessBuild,

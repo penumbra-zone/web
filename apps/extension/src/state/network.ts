@@ -1,5 +1,5 @@
 import { ExtensionStorage, LocalStorageState } from '@penumbra-zone/storage';
-import { AllSlices, SliceCreator } from './index';
+import { AllSlices, SliceCreator } from '.';
 
 export interface NetworkSlice {
   grpcEndpoint: string | undefined;

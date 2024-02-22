@@ -1,5 +1,5 @@
 import { createHashRouter, Outlet, RouteObject } from 'react-router-dom';
-import { PageIndex, pageIndexLoader } from './index';
+import { PageIndex, pageIndexLoader } from '.';
 import { Onboarding } from './onboarding';
 import { onboardingRoutes } from './onboarding/routes';
 import { PagePath } from './paths';

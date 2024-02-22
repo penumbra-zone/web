@@ -6,7 +6,7 @@ import TransactionTable, { TxsLoader } from './dashboard/transaction-table';
 import { DashboardLayout } from './dashboard/layout';
 import { TxDetails, TxDetailsErrorBoundary, TxDetailsLoader } from './tx-details';
 import { SendLayout } from './send/layout';
-import { SendAssetBalanceLoader, SendForm } from './send/send-form/index';
+import { SendAssetBalanceLoader, SendForm } from './send/send-form';
 import IbcForm, { IbcAssetBalanceLoader } from './send/ibc/ibc-form';
 import { Receive } from './send/receive';
 import { ErrorBoundary } from './shared/error-boundary';

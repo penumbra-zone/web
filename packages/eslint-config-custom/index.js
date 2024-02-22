@@ -26,6 +26,7 @@ module.exports = {
         mjs: 'never',
       },
     ],
+    'import/no-useless-path-segments': ['error', { noUselessIndex: true }],
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-confusing-void-expression': ['error', { ignoreArrowShorthand: true }],
     '@typescript-eslint/switch-exhaustiveness-check': 'error',

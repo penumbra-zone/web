@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { AllSlices } from './index';
+import { AllSlices } from '.';
 import { Middleware } from './persist';
 
 type LoggerImpl = (f: StateCreator<AllSlices>) => StateCreator<AllSlices>;

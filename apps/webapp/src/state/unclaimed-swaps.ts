@@ -1,4 +1,4 @@
-import { AllSlices, SliceCreator } from './index';
+import { AllSlices, SliceCreator } from '.';
 import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { getSwapRecordCommitment } from '@penumbra-zone/types';
 import { issueSwapClaim } from './swap';

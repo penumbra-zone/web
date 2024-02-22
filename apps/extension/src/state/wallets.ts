@@ -1,4 +1,4 @@
-import { AllSlices, SliceCreator } from './index';
+import { AllSlices, SliceCreator } from '.';
 import {
   generateSpendKey,
   getAddressByIndex,

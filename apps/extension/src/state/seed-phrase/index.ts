@@ -1,4 +1,4 @@
-import { SliceCreator } from '../index';
+import { SliceCreator } from '..';
 import { createGenerate, GenerateFields } from './generate';
 import { createImport, ImportFields } from './import';
 

@@ -1,5 +1,5 @@
 import { Button, Input } from '@penumbra-zone/ui';
-import { useStore } from '../../../state/index';
+import { useStore } from '../../../state';
 import { sendSelector, sendValidationErrors } from '../../../state/send';
 import { InputBlock } from '../../shared/input-block';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
