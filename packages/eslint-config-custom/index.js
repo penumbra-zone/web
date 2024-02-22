@@ -15,6 +15,15 @@ module.exports = {
   plugins: ['@typescript-eslint', 'turbo', 'vitest', 'react-refresh'],
   rules: {
     'import/no-named-as-default': 'off',
+    'import/extensions': [
+      'error',
+      'always',
+      {
+        ts: 'never',
+        tsx: 'never',
+        mts: 'never,',
+      },
+    ],
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-confusing-void-expression': ['error', { ignoreArrowShorthand: true }],
     '@typescript-eslint/switch-exhaustiveness-check': 'error',
