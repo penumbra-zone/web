@@ -9,6 +9,7 @@ import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { useCollectedStream } from '../../fetchers/stream';
 import { getValidatorInfos } from '../../fetchers/staking';
 import { useMemo, useRef } from 'react';
+import { ValidatorInfoContext } from './validator-info-context';
 
 const byVotingPower = (validatorInfoA: ValidatorInfo, validatorInfoB: ValidatorInfo) =>
   Number(
@@ -16,20 +17,7 @@ const byVotingPower = (validatorInfoA: ValidatorInfo, validatorInfoB: ValidatorI
       joinLoHiAmount(getVotingPowerFromValidatorInfo(validatorInfoA)),
   );
 
-interface UseValidatorInfos {
-  validatorInfos: ValidatorInfo[];
-
-  /**
-   * Each validator's voting power, expressed as an integer percentage between
-   * 0-100.
-   */
-  votingPowerByValidatorInfo: Map<ValidatorInfo, number>;
-
-  loading: boolean;
-  error: unknown;
-}
-
-export const useValidatorInfos = (): UseValidatorInfos => {
+export const useValidatorInfos = (): ValidatorInfoContext => {
   /**
    * Use a ref so that it doesn't constantly re-fetch when the component
    * re-renders.

@@ -11,14 +11,16 @@ import {
   TableRow,
 } from '@penumbra-zone/ui';
 import { getValidator } from '@penumbra-zone/types';
-import { useValidatorInfos } from './use-validator-infos';
 import { Oval } from 'react-loader-spinner';
 import { ValidatorInfoRow } from './validator-info-row';
+import { useContext } from 'react';
+import { ValidatorInfoContext } from './validator-info-context';
 
 const HEADERS = ['Validator', 'Voting power', 'State', 'Bonding state', 'Commission'];
 
 export const ValidatorsTable = () => {
-  const { loading, error, validatorInfos, votingPowerByValidatorInfo } = useValidatorInfos();
+  const { loading, error, validatorInfos, votingPowerByValidatorInfo } =
+    useContext(ValidatorInfoContext);
 
   const showError = !!error;
   const showLoading = loading && !validatorInfos.length;

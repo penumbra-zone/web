@@ -6,6 +6,7 @@ import { EduPanel } from '../shared/edu-panels/content';
 import { ValidatorsTable } from './validators-table';
 import { Accounts } from './accounts';
 import { cn } from '@penumbra-zone/ui/lib/utils';
+import { ValidatorInfoProvider } from './validator-info-provider';
 
 export const StakingLoader: LoaderFunction = async (): Promise<BalancesByAccount[]> => {
   throwIfExtNotInstalled();
@@ -17,16 +18,18 @@ const GAPS = 'gap-6 md:gap-4 xl:gap-5';
 
 export const StakingLayout = () => {
   return (
-    <div className={cn('grid md:grid-cols-3', GAPS)}>
-      <div className={cn('col-span-2 flex flex-col', GAPS)}>
-        <Accounts />
+    <ValidatorInfoProvider>
+      <div className={cn('grid md:grid-cols-3', GAPS)}>
+        <div className={cn('col-span-2 flex flex-col', GAPS)}>
+          <Accounts />
 
-        <ValidatorsTable />
-      </div>
+          <ValidatorsTable />
+        </div>
 
-      <div>
-        <EduInfoCard label='Staking' content={EduPanel.STAKING} src='./nodes-icon.svg' />
+        <div>
+          <EduInfoCard label='Staking' content={EduPanel.STAKING} src='./nodes-icon.svg' />
+        </div>
       </div>
-    </div>
+    </ValidatorInfoProvider>
   );
 };
