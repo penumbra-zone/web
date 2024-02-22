@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Head from "next/head";
 import styles from "../../../styles/Home.module.css";
 import { LiquidityPositionQuerier } from "../../utils/protos/services/dex/liquidity-positions";
 import { testnetConstants } from "../../utils/protos/constants";
 import { PositionId } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+import Layout from "../../components/layout";
 
 export default function LP() {
   const router = useRouter();
@@ -38,30 +38,25 @@ export default function LP() {
     }
   }, [lp_nft_id]); // Runs when lp_nft_id changes, important as this isnt always grabbed immediately on page load.
 
-
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>LP - {lp_nft_id}</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <Layout pageTitle={`LP - ${lp_nft_id}`}>
+      <div className={styles.container}>
+        <main className={styles.main}>
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : liquidityPosition ? (
+            <>
+              <h1>NFT ID: {lp_nft_id}</h1>
+              {/* todo */}
+              <p>{JSON.stringify(liquidityPosition)}</p> {/* todo */}
+            </>
+          ) : (
+            <p>No liquidity position found.</p>
+          )}
+        </main>
 
-      <main className={styles.main}>
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : liquidityPosition ? (
-          <>
-            <h1>NFT ID: {lp_nft_id}</h1>
-            {/* todo */}
-            <p>{JSON.stringify(liquidityPosition)}</p>{" "}
-            {/* todo */}
-          </>
-        ) : (
-          <p>No liquidity position found.</p>
-        )}
-      </main>
-
-      {/* todo */}
-    </div>
+        {/* todo */}
+      </div>
+    </Layout>
   );
 }
