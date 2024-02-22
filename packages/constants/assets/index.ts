@@ -47,7 +47,7 @@ export const assetPatterns: AssetPattens = {
    * the extra `u` at the beginning.
    */
   unbondingToken: new RegExp(
-    /^uunbonding_epoch_(?<epoch>[0-9]+)_penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+)$/,
+    /^uunbonding_epoch_(?<epoch>[0-9]+)_(?<bech32IdentityKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
   ),
   votingReceipt: new RegExp(/^voted_on_/),
 };
