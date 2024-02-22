@@ -1,9 +1,9 @@
 import { create, StateCreator } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { createIbcSendSlice, IbcSendSlice } from './ibc.ts';
-import { createSendSlice, SendSlice } from './send.ts';
-import { createSwapSlice, SwapSlice } from './swap.ts';
-import { createUnclaimedSwapsSlice, UnclaimedSwapsSlice } from './unclaimed-swaps.ts';
+import { createIbcSendSlice, IbcSendSlice } from './ibc';
+import { createSendSlice, SendSlice } from './send';
+import { createSwapSlice, SwapSlice } from './swap';
+import { createUnclaimedSwapsSlice, UnclaimedSwapsSlice } from './unclaimed-swaps';
 
 export interface AllSlices {
   send: SendSlice;

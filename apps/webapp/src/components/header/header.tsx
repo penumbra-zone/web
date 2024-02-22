@@ -1,7 +1,7 @@
-import { LayoutLoaderResult } from '../layout.tsx';
+import { LayoutLoaderResult } from '../layout';
 import { Link, useLoaderData } from 'react-router-dom';
-import { MessageWarningIcon } from '../../icons/message-warning.tsx';
-import { MobileNavMenu } from './mobile-nav-menu.tsx';
+import { MessageWarningIcon } from '../../icons/message-warning';
+import { MobileNavMenu } from './mobile-nav-menu';
 import { Navbar } from './navbar';
 import {
   NetworksPopover,
@@ -10,9 +10,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@penumbra-zone/ui';
-import Notifications from './notifications.tsx';
-import { PagePath } from '../metadata/paths.ts';
-import { TabletNavMenu } from './tablet-nav-menu.tsx';
+import Notifications from './notifications';
+import { PagePath } from '../metadata/paths';
+import { TabletNavMenu } from './tablet-nav-menu';
 
 // Infinite-expiry invite link to the #web-ext-feedback channel. Provided by
 // Henry (@hdevalence) and thus tied to his Discord account, so reach out to him

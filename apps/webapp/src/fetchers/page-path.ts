@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import { PagePath } from '../components/metadata/paths.ts';
+import { PagePath } from '../components/metadata/paths';
 
 // Some pages have query params like: /tx/?hash=12342
 // This normalizes to return a path of /tx instead of /tx/

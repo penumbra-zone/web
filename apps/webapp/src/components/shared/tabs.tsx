@@ -1,6 +1,6 @@
 import { Button } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { PagePath } from '../metadata/paths.ts';
+import { PagePath } from '../metadata/paths';
 import { useNavigate } from 'react-router-dom';
 
 interface TabsProps {

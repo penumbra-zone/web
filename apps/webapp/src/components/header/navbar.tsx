@@ -1,7 +1,7 @@
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { headerLinks } from './constants';
 import { Link } from 'react-router-dom';
-import { usePagePath } from '../../fetchers/page-path.ts';
+import { usePagePath } from '../../fetchers/page-path';
 
 export const Navbar = () => {
   const pathname = usePagePath();

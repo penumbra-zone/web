@@ -25,7 +25,7 @@ import {
 import BigNumber from 'bignumber.js';
 import { getAddressByIndex } from '../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
-import { simulateSwapOutput } from '../fetchers/simulate.ts';
+import { simulateSwapOutput } from '../fetchers/simulate';
 import { TransactionToast, errorToast } from '@penumbra-zone/ui';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 

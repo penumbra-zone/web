@@ -14,8 +14,8 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
-import { groupByAsset } from '../../fetchers/balances/by-asset.ts';
-import { cn } from '@penumbra-zone/ui/lib/utils.ts';
+import { groupByAsset } from '../../fetchers/balances/by-asset';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 
 const findMatchingBalance = (
   denom: Metadata | undefined,

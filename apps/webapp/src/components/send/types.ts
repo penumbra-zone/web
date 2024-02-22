@@ -1,4 +1,4 @@
-import { PagePath } from '../metadata/paths.ts';
+import { PagePath } from '../metadata/paths';
 import { EduPanel } from '../shared/edu-panels/content';
 
 export type SendTab = PagePath.SEND | PagePath.RECEIVE | PagePath.IBC;

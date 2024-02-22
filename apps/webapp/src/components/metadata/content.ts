@@ -1,4 +1,4 @@
-import { PagePath } from './paths.ts';
+import { PagePath } from './paths';
 import { EduPanel, eduPanelContent } from '../shared/edu-panels/content';
 
 export interface PageMetadata {

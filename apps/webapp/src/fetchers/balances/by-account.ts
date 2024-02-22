@@ -2,7 +2,7 @@ import {
   Address,
   AddressIndex,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { AssetBalance, getAssetBalances } from './index.ts';
+import { AssetBalance, getAssetBalances } from './index';
 
 export interface BalancesByAccount {
   index: AddressIndex;

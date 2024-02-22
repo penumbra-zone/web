@@ -11,7 +11,7 @@ import {
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { AssetBalance } from '../../fetchers/balances';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value.tsx';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { getAddressIndex, getDisplayDenomFromView, getMetadata } from '@penumbra-zone/types';
 
 interface SelectTokenModalProps {

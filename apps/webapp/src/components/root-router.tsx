@@ -1,18 +1,18 @@
 import { createHashRouter, redirect } from 'react-router-dom';
-import { PagePath } from './metadata/paths.ts';
-import { Layout, LayoutLoader } from './layout.tsx';
-import AssetsTable, { AssetsLoader } from './dashboard/assets-table.tsx';
-import TransactionTable, { TxsLoader } from './dashboard/transaction-table.tsx';
-import { DashboardLayout } from './dashboard/layout.tsx';
+import { PagePath } from './metadata/paths';
+import { Layout, LayoutLoader } from './layout';
+import AssetsTable, { AssetsLoader } from './dashboard/assets-table';
+import TransactionTable, { TxsLoader } from './dashboard/transaction-table';
+import { DashboardLayout } from './dashboard/layout';
 import { TxDetails, TxDetailsErrorBoundary, TxDetailsLoader } from './tx-details';
-import { SendLayout } from './send/layout.tsx';
-import { SendAssetBalanceLoader, SendForm } from './send/send-form/index.tsx';
-import IbcForm, { IbcAssetBalanceLoader } from './send/ibc/ibc-form.tsx';
-import { Receive } from './send/receive.tsx';
-import { ErrorBoundary } from './shared/error-boundary.tsx';
-import { SwapLayout } from './swap/layout.tsx';
-import { SwapLoader } from './swap/swap-loader.tsx';
-import { StakingLayout, StakingLoader } from './staking/layout.tsx';
+import { SendLayout } from './send/layout';
+import { SendAssetBalanceLoader, SendForm } from './send/send-form/index';
+import IbcForm, { IbcAssetBalanceLoader } from './send/ibc/ibc-form';
+import { Receive } from './send/receive';
+import { ErrorBoundary } from './shared/error-boundary';
+import { SwapLayout } from './swap/layout';
+import { SwapLoader } from './swap/swap-loader';
+import { StakingLayout, StakingLoader } from './staking/layout';
 
 export const rootRouter = createHashRouter([
   {

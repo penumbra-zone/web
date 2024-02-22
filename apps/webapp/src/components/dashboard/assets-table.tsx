@@ -1,10 +1,10 @@
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { throwIfExtNotInstalled } from '../../utils/is-connected.ts';
+import { throwIfExtNotInstalled } from '../../utils/is-connected';
 import { AddressIcon } from '@penumbra-zone/ui/components/ui/address-icon';
 import { AddressComponent } from '@penumbra-zone/ui/components/ui/address-component';
-import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account.ts';
+import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
 import { Table, TableBody, TableCell, TableRow } from '@penumbra-zone/ui';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value.tsx';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 
 export const AssetsLoader: LoaderFunction = async (): Promise<BalancesByAccount[]> => {
   throwIfExtNotInstalled();
