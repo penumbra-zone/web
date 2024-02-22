@@ -21,13 +21,16 @@ import { ValidatorInfoContext } from '../validator-info-context';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
 export const Account = ({ account }: { account: BalancesByAccount }) => {
-  const { unstakedBalance, delegationBalances } = useMemo(
+  const { unstakedBalance, delegationBalances, unbondingBalances } = useMemo(
     () => ({
       unstakedBalance: account.balances.find(
         balance => getDisplayDenomFromView(balance.value) === 'penumbra',
       ),
       delegationBalances: account.balances.filter(balance =>
         assetPatterns.delegationTokenPattern.test(getDisplayDenomFromView(balance.value)),
+      ),
+      unbondingBalances: account.balances.filter(balance =>
+        assetPatterns.unbondingTokenPattern.test(getDisplayDenomFromView(balance.value)),
       ),
     }),
     [account.balances],
@@ -52,7 +55,8 @@ export const Account = ({ account }: { account: BalancesByAccount }) => {
     [delegationBalances, validatorInfos],
   );
 
-  const shouldRender = !!unstakedBalance || !!delegationBalances.length;
+  const shouldRender =
+    !!unstakedBalance || !!delegationBalances.length || !!unbondingBalances.length;
 
   if (!shouldRender) return null;
 
