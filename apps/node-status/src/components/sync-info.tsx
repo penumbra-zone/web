@@ -1,5 +1,5 @@
 import { useLoaderData } from 'react-router-dom';
-import { IndexLoaderResponse } from '../fetching/loader.ts';
+import { IndexLoaderResponse } from '../fetching/loader';
 import { Card } from '@penumbra-zone/ui';
 import { format } from 'date-fns';
 import { SyncInfo as SyncInfoProto } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/util/tendermint_proxy/v1/tendermint_proxy_pb';

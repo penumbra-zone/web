@@ -1,7 +1,7 @@
 import { createHashRouter } from 'react-router-dom';
-import { ErrorBoundary } from './error-boundary.tsx';
-import { Index } from './index.tsx';
-import { IndexLoader } from '../fetching/loader.ts';
+import { ErrorBoundary } from './error-boundary';
+import { Index } from '.';
+import { IndexLoader } from '../fetching/loader';
 
 export const router = createHashRouter([
   {

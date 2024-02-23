@@ -1,5 +1,5 @@
 import { Button } from '@penumbra-zone/ui';
-import { devFrontend, prodFrontend } from '../constants.ts';
+import { devFrontend, prodFrontend } from '../constants';
 
 export const FrontendReferral = () => {
   const onClickHandler = () => {
