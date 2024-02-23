@@ -5,6 +5,11 @@ import { ValidatorsTable } from '../../validators-table';
 import { StakingActions } from '.././staking-actions';
 import { useValidatorsForAccount } from './use-validators-for-account';
 
+/**
+ * Renders the user's unstaked tokens (i.e., their balance in the staking token,
+ * which is available to them for staking) in the given account, along with all
+ * validators that this account holds delegation/unbonding tokens for.
+ */
 export const Account = ({ account }: { account: BalancesByAccount }) => {
   const {
     error,
@@ -14,7 +19,7 @@ export const Account = ({ account }: { account: BalancesByAccount }) => {
     unbondingTokensByValidatorInfo,
     validatorInfos,
     votingPowerByValidatorInfo,
-    unstakedTokens: unstakedBalance,
+    unstakedTokens,
   } = useValidatorsForAccount(account.balances);
 
   if (!shouldRender) return null;
@@ -25,9 +30,9 @@ export const Account = ({ account }: { account: BalancesByAccount }) => {
         <CardTitle>Account #{account.index.account}</CardTitle>
       </CardHeader>
       <CardContent>
-        {unstakedBalance && (
+        {unstakedTokens && (
           <div className='flex gap-1'>
-            <ValueViewComponent view={unstakedBalance} />
+            <ValueViewComponent view={unstakedTokens} />
             <span>available to delegate</span>
           </div>
         )}
@@ -41,7 +46,7 @@ export const Account = ({ account }: { account: BalancesByAccount }) => {
               error={error}
               renderStaking={validatorInfo => (
                 <StakingActions
-                  canDelegate={!!unstakedBalance}
+                  canDelegate={!!unstakedTokens}
                   delegationTokens={delegationTokensByValidatorInfo.get(validatorInfo)}
                   unbondingTokens={unbondingTokensByValidatorInfo.get(validatorInfo)}
                 />
