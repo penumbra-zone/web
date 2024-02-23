@@ -12,7 +12,7 @@ interface ValidatorsTableProps extends ValidatorInfoContext {
   /**
    * Content to display inside the Staking cell.
    */
-  renderStaking: (validatorInfo: ValidatorInfo) => ReactNode;
+  renderStakingActions: (validatorInfo: ValidatorInfo) => ReactNode;
 }
 
 export const ValidatorsTable = ({
@@ -20,7 +20,7 @@ export const ValidatorsTable = ({
   error,
   validatorInfos,
   votingPowerByValidatorInfo,
-  renderStaking,
+  renderStakingActions,
 }: ValidatorsTableProps) => {
   const showError = !!error;
   const showLoading = loading && !validatorInfos.length;
@@ -59,7 +59,7 @@ export const ValidatorsTable = ({
               loading={loading}
               validatorInfo={validatorInfo}
               votingPowerByValidatorInfo={votingPowerByValidatorInfo}
-              staking={renderStaking(validatorInfo)}
+              staking={renderStakingActions(validatorInfo)}
             />
           ))}
       </TableBody>

@@ -44,7 +44,7 @@ export const Account = ({ account }: { account: BalancesByAccount }) => {
               votingPowerByValidatorInfo={votingPowerByValidatorInfo}
               loading={loading}
               error={error}
-              renderStaking={validatorInfo => (
+              renderStakingActions={validatorInfo => (
                 <StakingActions
                   canDelegate={!!unstakedTokens}
                   delegationTokens={delegationTokensByValidatorInfo.get(validatorInfo)}
