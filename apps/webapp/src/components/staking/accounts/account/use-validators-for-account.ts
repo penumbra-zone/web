@@ -107,6 +107,9 @@ interface UseValidatorsForAccount {
 }
 
 /**
+ * Returns all data needed to render the `<Account />` component. See the
+ * `UseValidatorsForAccount` interface above for details on what it returns.
+ *
  * This hook is a bit of a bear, but at present, there doesn't seem to be a
  * better way to do it. (If you find a better way, feel free to refactor.) To
  * optimize performance, it makes heavy use of `useMemo()`.
