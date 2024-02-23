@@ -7,10 +7,9 @@ import { Text, HStack } from "@chakra-ui/react";
 import React from "react";
 
 interface LayoutProps {
-  children?: React.ReactNode; 
+  children?: React.ReactNode;
   pageTitle: string;
 }
-
 
 const Layout = ({ children, pageTitle }: LayoutProps) => {
   return (
