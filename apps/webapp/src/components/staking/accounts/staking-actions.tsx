@@ -25,7 +25,7 @@ export const StakingActions = ({
         <Button
           variant='secondary'
           className='px-4'
-          disabled={!hasTokens}
+          disabled={!delegationTokens}
           onClick={handleClickAction}
         >
           Undelegate
