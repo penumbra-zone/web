@@ -128,7 +128,7 @@ describe('useValidatorsForAccount()', () => {
   });
 
   describe('delegationTokensByValidatorInfo', () => {
-    it('returns a map of validators to delegation tokens', () => {
+    it('is a map of validators to delegation tokens', () => {
       const { result } = renderHook(() => useValidatorsForAccount(assetBalances), {
         wrapper: MockValidatorInfoContextProvider,
       });
@@ -142,7 +142,7 @@ describe('useValidatorsForAccount()', () => {
   });
 
   describe('unbondingTokensByValidatorInfo', () => {
-    it('returns a map of validators to unbonding tokens', () => {
+    it('is a map of validators to unbonding tokens', () => {
       const { result } = renderHook(() => useValidatorsForAccount(assetBalances), {
         wrapper: MockValidatorInfoContextProvider,
       });
@@ -156,7 +156,7 @@ describe('useValidatorsForAccount()', () => {
   });
 
   describe('unstakedTokensByValidatorInfo', () => {
-    it('returns a map of validators to unstaked tokens', () => {
+    it('is a map of validators to unstaked tokens', () => {
       const { result } = renderHook(() => useValidatorsForAccount(assetBalances), {
         wrapper: MockValidatorInfoContextProvider,
       });
