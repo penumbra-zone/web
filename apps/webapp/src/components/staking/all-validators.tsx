@@ -3,6 +3,11 @@ import { ValidatorInfoContext } from './validator-info-context';
 import { ValidatorsTable } from './validators-table';
 import { Card, CardHeader, CardTitle, CardContent } from '@penumbra-zone/ui';
 
+/**
+ * Renders all validators that the user has no delegation/unbonding tokens for.
+ *
+ * @todo: Filter out validators that the user has tokens for.
+ */
 export const AllValidators = () => {
   const validatorInfoContext = useContext(ValidatorInfoContext);
 
