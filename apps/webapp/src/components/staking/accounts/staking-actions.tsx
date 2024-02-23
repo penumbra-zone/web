@@ -3,6 +3,10 @@ import { getDisplayDenomFromView } from '@penumbra-zone/types';
 import { Button } from '@penumbra-zone/ui';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 
+/**
+ * Renders Delegate/Undelegate buttons for a validator, as well as our balances
+ * of delegation and unbonding tokens for the validator (if any exist).
+ */
 export const StakingActions = ({
   delegationTokens,
   unbondingTokens,
