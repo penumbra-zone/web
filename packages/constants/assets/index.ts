@@ -20,6 +20,7 @@ export interface DelegationCaptureGroups {
 export interface UnbondingCaptureGroups {
   epoch: string;
   id: string;
+  bech32IdentityKey: string;
 }
 
 /**
