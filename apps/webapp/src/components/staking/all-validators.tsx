@@ -1,7 +1,7 @@
-import { useContext } from 'react';
-import { ValidatorInfoContext } from './validator-info-context';
 import { ValidatorsTable } from './validators-table';
 import { Card, CardHeader, CardTitle, CardContent } from '@penumbra-zone/ui';
+import { useStore } from '../../state';
+import { stakingSelector } from '../../state/staking';
 
 /**
  * Renders all validators that the user has no delegation/unbonding tokens for.
@@ -9,7 +9,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@penumbra-zone/ui';
  * @todo: Filter out validators that the user has tokens for.
  */
 export const AllValidators = () => {
-  const validatorInfoContext = useContext(ValidatorInfoContext);
+  const validatorInfoContext = useStore(stakingSelector);
 
   return (
     <Card>

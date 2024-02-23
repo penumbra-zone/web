@@ -1,14 +1,17 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
-import { getValidator } from '@penumbra-zone/types';
+import { VotingPowerAsIntegerPercentage, getValidator } from '@penumbra-zone/types';
 import { Oval } from 'react-loader-spinner';
 import { ValidatorInfoRow } from './validator-info-row';
-import { ValidatorInfoContext } from './validator-info-context';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { ReactNode } from 'react';
 
 const HEADERS = ['Validator', 'Voting power', 'Commission', 'Staking'];
 
-interface ValidatorsTableProps extends ValidatorInfoContext {
+interface ValidatorsTableProps {
+  loading: boolean;
+  error: unknown;
+  validatorInfos: ValidatorInfo[];
+  votingPowerByValidatorInfo: Map<ValidatorInfo, VotingPowerAsIntegerPercentage>;
   /**
    * Content to display inside the Staking cell.
    */

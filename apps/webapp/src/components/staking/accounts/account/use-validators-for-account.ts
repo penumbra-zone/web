@@ -1,6 +1,5 @@
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { useContext, useMemo } from 'react';
-import { ValidatorInfoContext } from '../../validator-info-context';
+import { useMemo } from 'react';
 import {
   bech32IdentityKey,
   getDisplayDenomFromView,
@@ -10,6 +9,8 @@ import { AssetBalance } from '../../../../fetchers/balances';
 import { getBech32IdentityKeyFromValueView } from './helpers';
 import { STAKING_TOKEN, assetPatterns } from '@penumbra-zone/constants';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { stakingSelector } from '../../../../state/staking';
+import { useStore } from '../../../../state';
 
 const hasDelegationOrUnbondingTokens =
   (delegationBalances: AssetBalance[], unbondingBalances: AssetBalance[]) =>
@@ -121,7 +122,7 @@ export const useValidatorsForAccount = (assetBalances: AssetBalance[]): UseValid
     votingPowerByValidatorInfo,
     loading,
     error,
-  } = useContext(ValidatorInfoContext);
+  } = useStore(stakingSelector);
 
   // Then, grab the unstaked tokens, delegation tokens, and unbonding tokens
   // from this account.

@@ -1,7 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useValidatorsForAccount } from './use-validators-for-account';
-import { ContextType, ReactNode } from 'react';
-import { ValidatorInfoContext } from '../../validator-info-context';
 import { renderHook } from '@testing-library/react';
 import { AssetBalance } from '../../../../fetchers/balances';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
@@ -10,6 +8,7 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import { useStore } from '../../../../state';
 
 const VALIDATOR_BECH32_IDENTITY_KEY =
   'penumbravalid1pv99gcy82r68usualh5yxktmyyne2v2k59vm2nfk7vqdr5zjwupq3t3sq7';
@@ -48,16 +47,6 @@ const validatorInfo3 = new ValidatorInfo({
     },
   },
 });
-
-const MockValidatorInfoContextProvider = ({ children }: { children: ReactNode }) => {
-  const value: ContextType<typeof ValidatorInfoContext> = {
-    error: undefined,
-    loading: false,
-    validatorInfos: [validatorInfo1, validatorInfo2, validatorInfo3],
-    votingPowerByValidatorInfo: new Map(),
-  };
-  return <ValidatorInfoContext.Provider value={value}>{children}</ValidatorInfoContext.Provider>;
-};
 
 const stakingMetadata = Metadata.fromJson({
   display: 'penumbra',
@@ -117,11 +106,21 @@ const unstakedTokens = {
 const assetBalances: AssetBalance[] = [delegationTokens, unbondingTokens, unstakedTokens];
 
 describe('useValidatorsForAccount()', () => {
+  beforeEach(() => {
+    useStore.setState({
+      staking: {
+        validatorInfos: [validatorInfo1, validatorInfo2, validatorInfo3],
+        loading: false,
+        error: undefined,
+        loadValidators: vi.fn(),
+        votingPowerByValidatorInfo: new Map(),
+      },
+    });
+  });
+
   describe('validatorInfos', () => {
     it('is a list of validators relevant to the given account', () => {
-      const { result } = renderHook(() => useValidatorsForAccount(assetBalances), {
-        wrapper: MockValidatorInfoContextProvider,
-      });
+      const { result } = renderHook(() => useValidatorsForAccount(assetBalances));
 
       expect(result.current.validatorInfos).toEqual([validatorInfo1]);
     });
@@ -129,9 +128,7 @@ describe('useValidatorsForAccount()', () => {
 
   describe('delegationTokensByValidatorInfo', () => {
     it('is a map of validators to delegation tokens', () => {
-      const { result } = renderHook(() => useValidatorsForAccount(assetBalances), {
-        wrapper: MockValidatorInfoContextProvider,
-      });
+      const { result } = renderHook(() => useValidatorsForAccount(assetBalances));
 
       expect(result.current.delegationTokensByValidatorInfo.get(validatorInfo1)).toBe(
         delegationTokens.value,
@@ -143,9 +140,7 @@ describe('useValidatorsForAccount()', () => {
 
   describe('unbondingTokensByValidatorInfo', () => {
     it('is a map of validators to unbonding tokens', () => {
-      const { result } = renderHook(() => useValidatorsForAccount(assetBalances), {
-        wrapper: MockValidatorInfoContextProvider,
-      });
+      const { result } = renderHook(() => useValidatorsForAccount(assetBalances));
 
       expect(result.current.unbondingTokensByValidatorInfo.get(validatorInfo1)).toBe(
         unbondingTokens.value,
@@ -157,9 +152,7 @@ describe('useValidatorsForAccount()', () => {
 
   describe('unstakedTokensByValidatorInfo', () => {
     it('is a map of validators to unstaked tokens', () => {
-      const { result } = renderHook(() => useValidatorsForAccount(assetBalances), {
-        wrapper: MockValidatorInfoContextProvider,
-      });
+      const { result } = renderHook(() => useValidatorsForAccount(assetBalances));
 
       expect(result.current.unstakedTokens).toBe(unstakedTokens.value);
     });
