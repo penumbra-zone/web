@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest run"
+    "test": "vitest"
   },
   "dependencies": {
     "@types/chrome": "0.0.260",
