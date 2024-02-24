@@ -79,6 +79,8 @@ interface UseValidatorsForAccount {
    */
   delegationTokensByValidatorInfo: Map<ValidatorInfo, ValueView | undefined>;
 
+  delegation: ValueView[];
+
   /**
    * A `Map` of `ValidatorInfo`s to `ValueView`s containing this account's
    * balance of unbonding tokens to that validator. Will be `undefined` if this
@@ -165,6 +167,7 @@ export const useValidatorsForAccount = (assetBalances: AssetBalance[]): UseValid
     delegationTokensByValidatorInfo,
     unbondingTokensByValidatorInfo,
     votingPowerByValidatorInfo,
+    delegation: delegationBalances.map(({ value }) => value),
     unstakedTokens,
     loading,
     error,
