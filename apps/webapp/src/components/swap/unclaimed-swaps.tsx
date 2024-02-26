@@ -1,20 +1,27 @@
 import { Button, Card } from '@penumbra-zone/ui';
 import { useLoaderData, useRevalidator } from 'react-router-dom';
-import { SwapLoaderResponse } from './swap-loader';
+import { SwapLoaderResponse, UnclaimedSwapsWithMetadata } from './swap-loader';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 import { getSwapRecordCommitment, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { useStore } from '../../state';
 import { unclaimedSwapsSelector } from '../../state/unclaimed-swaps';
 
 export const UnclaimedSwaps = () => {
+  const { unclaimedSwaps } = useLoaderData() as SwapLoaderResponse;
+
+  return !unclaimedSwaps.length ? (
+    <div className='hidden xl:block'></div>
+  ) : (
+    <_UnclaimedSwaps unclaimedSwaps={unclaimedSwaps}></_UnclaimedSwaps>
+  );
+};
+
+const _UnclaimedSwaps = ({ unclaimedSwaps }: { unclaimedSwaps: UnclaimedSwapsWithMetadata[] }) => {
   const { revalidate } = useRevalidator();
   const { claimSwap, isInProgress } = useStore(unclaimedSwapsSelector);
 
-  const { unclaimedSwaps } = useLoaderData() as SwapLoaderResponse;
-  if (!unclaimedSwaps.length) return <></>;
-
   return (
-    <Card className=''>
+    <Card className='order-1 md:order-3 xl:order-1'>
       <p className='bg-text-linear bg-clip-text font-headline text-xl font-semibold leading-[30px] text-transparent md:text-2xl md:font-bold md:leading-9'>
         Unclaimed Swaps
       </p>
