@@ -37,6 +37,7 @@ import {
   Position,
   PositionId,
   PositionState,
+  TradingPair,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 
@@ -361,10 +362,33 @@ export class IndexedDb implements IndexedDbInterface {
     return Promise.resolve(notesForVoting);
   }
 
-  async *iteratePositions() {
-    for await (const { value } of this.db.transaction('POSITIONS').store) {
-      yield value;
-    }
+  async *getOwnedPositionIds(
+    positionState: PositionState | undefined,
+    tradingPair: TradingPair | undefined,
+  ): AsyncGenerator<PositionId, void> {
+    console.log(positionState, tradingPair);
+    yield* streamToGenerator(
+      new ReadableStream({
+        start: async cont => {
+          let cursor = await this.db.transaction('POSITIONS').store.openCursor();
+          while (cursor) {
+            console.log(cursor.value);
+            const position = Position.fromJson(cursor.value.position);
+            if (positionState && !positionState.equals(position.state)) {
+              cursor = await cursor.continue();
+              continue;
+            }
+            if (tradingPair && !tradingPair.equals(position.phi?.pair)) {
+              cursor = await cursor.continue();
+              continue;
+            }
+            cont.enqueue(PositionId.fromJson(cursor.value.id));
+            cursor = await cursor.continue();
+          }
+          cont.close();
+        },
+      }),
+    );
   }
 
   async addPosition(positionId: PositionId, position: Position): Promise<void> {

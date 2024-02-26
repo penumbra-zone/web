@@ -8,13 +8,13 @@ export interface IndexedDbMock {
   getFmdParams?: Mock;
   getFullSyncHeight?: Mock;
   getNotesForVoting?: Mock;
+  getOwnedPositionIds?: () => Partial<AsyncIterable<Mock>>;
   getSpendableNoteByCommitment?: Mock;
   getSpendableNoteByNullifier?: Mock;
   getStateCommitmentTree?: Mock;
   getSwapByNullifier?: Mock;
   getTransactionInfo?: Mock;
   iterateAssetsMetadata?: () => Partial<AsyncIterable<Mock>>;
-  iteratePositions?: () => Partial<AsyncIterable<Mock>>;
   iterateSpendableNotes?: () => Partial<AsyncIterable<Mock>>;
   iterateSwaps?: () => Partial<AsyncIterable<Mock>>;
   iterateTransactionInfo?: () => Partial<AsyncIterable<Mock>>;
