@@ -1,41 +1,33 @@
+import dotenv from 'dotenv';
 import path from 'path';
 import CopyPlugin from 'copy-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import webpack from 'webpack';
 
-const PRAX = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe';
+// Loads default vars from `.env` file in this directory.  If you set
+// environment variables, you will override those defaults.
+dotenv.config();
 
-const IDB_VERSION = 23;
-const USDC_ASSET_ID = 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=';
+const definitions = {
+  // process.env.NODE_ENV is automatically provided by DefinePlugin
 
-const MINIFRONT_URL = 'https://app.testnet.penumbra.zone/';
-const PENUMBRA_NODE_PD_URL = 'https://grpc.testnet.penumbra.zone/';
+  PRAX: JSON.stringify(process.env.PRAX),
+  PRAX_ORIGIN: JSON.stringify(`chrome-extension://${process.env.PRAX}`),
+
+  IDB_VERSION: JSON.stringify(Number(process.env.IDB_VERSION)),
+  USDC_ASSET_ID: JSON.stringify(process.env.USDC_ASSET_ID),
+
+  MINIFRONT_URL: JSON.stringify(process.env.MINIFRONT_URL),
+
+  // you may want https://grpc.testnet-preview.penumbra.zone/
+  DEFAULT_GRPC_URL: JSON.stringify(process.env.PENUMBRA_NODE_PD_URL),
+};
 
 const __dirname = new URL('.', import.meta.url).pathname;
 const srcDir = path.join(__dirname, 'src');
 
 export default (env, argv) => {
   // types declared in prax.d.ts
-  const definitions = {
-    // process.env.NODE_ENV is automatically provided by DefinePlugin
-
-    PRAX: JSON.stringify(PRAX),
-    PRAX_ORIGIN: JSON.stringify(`chrome-extension://${PRAX}`),
-
-    IDB_VERSION: JSON.stringify(IDB_VERSION),
-    USDC_ASSET_ID: JSON.stringify(USDC_ASSET_ID),
-
-    MINIFRONT_URL: JSON.stringify(
-      (argv.mode == 'development' && process.env.MINIFRONT_URL) || MINIFRONT_URL,
-    ),
-
-    DEFAULT_GRPC_URL: JSON.stringify(
-      // you may want https://grpc.testnet-preview.penumbra.zone/
-      (argv.mode == 'development' && process.env.PENUMBRA_NODE_PD_URL) || PENUMBRA_NODE_PD_URL,
-    ),
-  };
-
-  console.log('webpack', { argv, definitions });
 
   return {
     entry: {
