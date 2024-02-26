@@ -1,4 +1,5 @@
 export * from './components/ui/back-icon';
+export * from './components/ui/block-sync-status';
 export * from './components/ui/button';
 export * from './components/ui/card';
 export * from './components/ui/copy-to-clipboard';
