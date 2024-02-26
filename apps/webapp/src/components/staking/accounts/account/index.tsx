@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@penumbra-zone/ui';
 import { BalancesByAccount } from '../../../../fetchers/balances/by-account';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { ValidatorsTable } from '../../validators-table';
-import { StakingActions } from '.././staking-actions';
+import { StakingActions } from '../staking-actions';
 import { useValidatorsForAccount } from './use-validators-for-account';
 
 /**
