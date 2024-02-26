@@ -1,28 +1,25 @@
-import { LoaderFunction } from 'react-router-dom';
-import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
-import { throwIfExtNotInstalled } from '../../utils/is-connected';
-import { Accounts } from './accounts';
-import { cn } from '@penumbra-zone/ui/lib/utils';
-import { AllValidators } from './all-validators';
+import { useEffect } from 'react';
 import { useStore } from '../../state';
+import { stakingSelector } from '../../state/staking';
+import { throwIfExtNotInstalled } from '../../utils/is-connected';
+import { Account } from './account';
 
-export const StakingLoader: LoaderFunction = async (): Promise<BalancesByAccount[]> => {
+export const StakingLoader = () => {
   throwIfExtNotInstalled();
+  void useStore.getState().staking.loadUnstakedTokensByAccount();
 
-  void useStore.getState().staking.loadValidators();
-
-  const balancesByAccount = await getBalancesByAccount();
-  return balancesByAccount;
+  return null;
 };
 
-const GAPS = 'gap-6 md:gap-4 xl:gap-5';
-
 export const StakingLayout = () => {
-  return (
-    <div className={cn('flex flex-col', GAPS)}>
-      <Accounts />
+  const { account, loadDelegationsForCurrentAccount } = useStore(stakingSelector);
 
-      <AllValidators />
-    </div>
+  /** Load delegations every time the account changes. */
+  useEffect(
+    () => void loadDelegationsForCurrentAccount(),
+    [account, loadDelegationsForCurrentAccount],
   );
+
+  /** @todo: Render an account switcher. */
+  return <Account />;
 };

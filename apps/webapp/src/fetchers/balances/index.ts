@@ -35,8 +35,8 @@ const getBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}) => {
   return streamToPromise(iterable);
 };
 
-export const getAssetBalances = async (): Promise<AssetBalance[]> => {
-  const balances = await getBalances();
+export const getAssetBalances = async (balanceProps?: BalancesProps): Promise<AssetBalance[]> => {
+  const balances = await getBalances(balanceProps);
   const balancePromises = balances.map(constructAssetBalanceWithMetadata);
   return Promise.all(balancePromises);
 };

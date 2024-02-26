@@ -6,11 +6,13 @@ import {
 import {
   getBondingStateEnumFromValidatorInfo,
   getFundingStreamsFromValidatorInfo,
+  getIdentityKeyFromValidatorInfo,
   getRateBpsFromFundingStream,
   getStateEnumFromValidatorInfo,
   getVotingPowerFromValidatorInfo,
 } from './getters';
 import { joinLoHiAmount } from './amount';
+import { bech32IdentityKey } from './identity-key';
 
 export const getStateLabel = (validatorInfo: ValidatorInfo): string =>
   ValidatorState_ValidatorStateEnum[getStateEnumFromValidatorInfo(validatorInfo)];
@@ -51,19 +53,19 @@ const getFormattedVotingPower = (validatorInfo: ValidatorInfo, totalVotingPower:
 export type VotingPowerAsIntegerPercentage = number;
 
 /**
- * Creates a `Map` of validator infos to their voting power, expressed as a
- * percentage of total voting power.
+ * Returns an object mapping validator infos (by bech32 identity key) to their
+ * voting power, expressed as a percentage of total voting power.
  */
 export const getVotingPowerByValidatorInfo = (
   validatorInfos: ValidatorInfo[],
-): Map<ValidatorInfo, VotingPowerAsIntegerPercentage> => {
-  const votingPowerByValidatorInfo = new Map<ValidatorInfo, VotingPowerAsIntegerPercentage>();
+): Record<string, VotingPowerAsIntegerPercentage> => {
   const totalVotingPower = validatorInfos.reduce(toTotalVotingPower, 0);
 
-  validatorInfos.reduce((prev, curr) => {
-    prev.set(curr, getFormattedVotingPower(curr, totalVotingPower));
+  return validatorInfos.reduce<Record<string, VotingPowerAsIntegerPercentage>>((prev, curr) => {
+    prev[bech32IdentityKey(getIdentityKeyFromValidatorInfo(curr))] = getFormattedVotingPower(
+      curr,
+      totalVotingPower,
+    );
     return prev;
-  }, votingPowerByValidatorInfo);
-
-  return votingPowerByValidatorInfo;
+  }, {});
 };
