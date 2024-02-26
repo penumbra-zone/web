@@ -10,7 +10,7 @@
       "outputs": ["dist/**"]
     },
     "download-keys": {
-      "outputs": ["bin/*_pk.bin"]
+      "outputs": ["bin/**"]
     },
     "compile": {
       "inputs": ["crate/src/**"],
