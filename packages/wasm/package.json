@@ -9,7 +9,7 @@
     "compile": "cd crate ; wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",
     "build": "tsc",
     "lint": "eslint \"src/*.ts*\"",
-    "test": "vitest",
+    "test": "vitest run",
     "test:rust": "cd crate ; wasm-pack test --headless --firefox -- --test build --target wasm32-unknown-unknown --release --features 'mock-database'"
   },
   "dependencies": {

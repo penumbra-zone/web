@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "dependencies": {
     "@penumbra-zone/constants": "workspace:*",
