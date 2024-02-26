@@ -9,7 +9,7 @@
     "lint": "eslint . --ext ts,tsx",
     "preview": "vite preview",
     "host": "turbo run build && firebase deploy --only hosting",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "dependencies": {
     "@penumbra-zone/constants": "workspace:*",
