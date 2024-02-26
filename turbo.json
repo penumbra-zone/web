@@ -4,7 +4,10 @@
   "globalEnv": ["NODE_ENV"],
   "pipeline": {
     "build": {
-      "dependsOn": ["download-keys", "compile", "^build"]
+      "dotEnv": [".env"],
+      "env": ["PRAX", "IDB_VERSION", "USDC_ASSET_ID", "MINIFRONT_URL", "PENUMBRA_NODE_PD_URL"],
+      "dependsOn": ["download-keys", "compile", "^build"],
+      "outputs": ["dist/**"]
     },
     "download-keys": {
       "outputs": ["bin/*_pk.bin"]
@@ -20,7 +23,10 @@
     },
     "lint": { "dependsOn": ["compile"] },
     "dev": {
+      "dotEnv": [".env"],
+      "env": ["PRAX", "IDB_VERSION", "USDC_ASSET_ID", "MINIFRONT_URL", "PENUMBRA_NODE_PD_URL"],
       "dependsOn": ["download-keys", "compile"],
+      "outputs": ["dist/**"],
       "persistent": true
     },
     "test": { "dependsOn": ["compile"] },

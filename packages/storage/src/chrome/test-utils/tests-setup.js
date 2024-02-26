@@ -20,3 +20,5 @@ global.chrome = {
     },
   },
 };
+
+global.DEFAULT_GRPC_URL = 'https://example.com/';

@@ -51,6 +51,7 @@ import { SimulationService } from '@buf/penumbra-zone_penumbra.connectrpc_es/pen
 // configure and initialize extension services. services are passed directly to stdRouter, and to rpc handlers as context
 const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 const servicesConfig = {
+  idbVersion: IDB_VERSION,
   grpcEndpoint,
   getWallet: async () => {
     const wallets = await localExtStorage.get('wallets');

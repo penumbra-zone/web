@@ -24,7 +24,7 @@ export const PageIndex = () => {
         variant='gradient'
         className='w-full'
         onClick={() => {
-          window.open('https://app.testnet.penumbra.zone/', '_blank');
+          window.open(MINIFRONT_URL, '_blank');
           window.close();
         }}
       >
