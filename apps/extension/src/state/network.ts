@@ -3,7 +3,7 @@ import { AllSlices, SliceCreator } from '.';
 
 export interface NetworkSlice {
   grpcEndpoint: string | undefined;
-  lastBlockSynced: number;
+  fullSyncHeight: number;
   setGRPCEndpoint: (endpoint: string) => Promise<void>;
 }
 
@@ -12,7 +12,7 @@ export const createNetworkSlice =
   set => {
     return {
       grpcEndpoint: undefined,
-      lastBlockSynced: 0,
+      fullSyncHeight: 0,
       setGRPCEndpoint: async (endpoint: string) => {
         set(state => {
           state.network.grpcEndpoint = endpoint;

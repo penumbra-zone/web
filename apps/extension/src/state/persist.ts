@@ -63,13 +63,13 @@ function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: S
     );
   }
 
-  if (changes['lastBlockSynced']) {
-    const stored = changes['lastBlockSynced'].newValue as
-      | StorageItem<LocalStorageState['lastBlockSynced']>
+  if (changes['fullSyncHeight']) {
+    const stored = changes['fullSyncHeight'].newValue as
+      | StorageItem<LocalStorageState['fullSyncHeight']>
       | undefined;
     set(
       produce((state: AllSlices) => {
-        state.network.lastBlockSynced = stored?.value ?? 0;
+        state.network.fullSyncHeight = stored?.value ?? 0;
       }),
     );
   }

@@ -8,7 +8,7 @@ import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
 import { addrByIndexSelector } from '../../../state/wallets';
 
 export interface PopupLoaderData {
-  lastBlockSynced: number;
+  fullSyncHeight: number;
 }
 
 // Because Zustand initializes default empty (prior to persisted storage synced),
@@ -26,9 +26,9 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
 
   if (!password) return redirect(PopupPath.LOGIN);
 
-  const lastBlockSynced = await localExtStorage.get('lastBlockSynced');
+  const fullSyncHeight = await localExtStorage.get('fullSyncHeight');
 
-  return { lastBlockSynced };
+  return { fullSyncHeight };
 };
 
 export const PopupIndex = () => {

@@ -1,7 +1,7 @@
 import {
+  shorten,
   TRANSACTION_LABEL_BY_CLASSIFICATION,
   TransactionClassification,
-  shorten,
 } from '@penumbra-zone/types';
 import { Toast } from './toast';
 import {
@@ -28,14 +28,15 @@ const getBuildStatusDescription = (
   if (status?.case === 'buildProgress')
     return (
       <Progress
-        variant='in-progress'
+        status='in-progress'
         value={Math.round(status.value.progress * 100)}
         size='sm'
         className='mt-2'
+        background='stone'
       />
     );
   if (status?.case === 'complete')
-    return <Progress variant='done' value={100} size='sm' className='mt-2' />;
+    return <Progress status='done' value={100} size='sm' className='mt-2' />;
   return undefined;
 };
 
@@ -48,6 +49,14 @@ export class TransactionToast {
   private _txHash?: string;
 
   constructor(private transactionClassification: TransactionClassification) {}
+
+  private get label(): string {
+    return TRANSACTION_LABEL_BY_CLASSIFICATION[this.transactionClassification];
+  }
+
+  private get shortenedTxHash(): string {
+    return this._txHash ? shorten(this._txHash, 8) : '';
+  }
 
   /**
    * Stores the transaction hash so that it can be used in the success and
@@ -158,13 +167,5 @@ export class TransactionToast {
       .description(undefined)
       .duration(5_000)
       .render();
-  }
-
-  private get label(): string {
-    return TRANSACTION_LABEL_BY_CLASSIFICATION[this.transactionClassification];
-  }
-
-  private get shortenedTxHash(): string {
-    return this._txHash ? shorten(this._txHash, 8) : '';
   }
 }

@@ -10,7 +10,7 @@ export interface LocalStorageState {
   wallets: WalletJson[];
   grpcEndpoint: string;
   passwordKeyPrint: KeyPrintJson | undefined;
-  lastBlockSynced: number;
+  fullSyncHeight: number;
 }
 
 // this will be injected by webpack build, but we don't have access to the
@@ -23,7 +23,7 @@ export const localDefaults: LocalStorageState = {
   wallets: [],
   grpcEndpoint: DEFAULT_GRPC_URL,
   passwordKeyPrint: undefined,
-  lastBlockSynced: 0,
+  fullSyncHeight: 0,
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.
