@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run --config mockbrowser.config.js",
+    "test-watch": "vitest --config mockbrowser.config.js",
     "test:browser": "vitest run --browser.provider=playwright --browser.name=chromium --config browser.config.js"
   },
   "dependencies": {

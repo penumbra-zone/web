@@ -6,7 +6,9 @@
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "test:browser": "vitest run --config browser.config.ts",
-    "test": "vitest run"
+    "test:browser-watch": "vitest --config browser.config.ts",
+    "test": "vitest run",
+    "test-watch": "vitest"
   },
   "dependencies": {
     "bip39": "^3.1.0",
