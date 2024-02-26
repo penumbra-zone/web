@@ -20,7 +20,7 @@ describe('Status request handler', () => {
     vi.resetAllMocks();
 
     mockIndexedDb = {
-      getLastBlockSynced: vi.fn(),
+      getfullSyncHeight: vi.fn(),
     };
 
     mockTendermint = {
@@ -47,7 +47,7 @@ describe('Status request handler', () => {
   });
 
   test('should get status when view service is synchronized with last known block in tendermint', async () => {
-    mockIndexedDb.getLastBlockSynced?.mockResolvedValue(222n);
+    mockIndexedDb.getfullSyncHeight?.mockResolvedValue(222n);
     mockTendermint.latestBlockHeight?.mockResolvedValue(222n);
     const statusResponse = new StatusResponse(await status(new StatusRequest(), mockCtx));
     expect(statusResponse.catchingUp).toBeTruthy();
@@ -55,15 +55,15 @@ describe('Status request handler', () => {
   });
 
   test('should receive status when view service synchronizes and lags behind last known block in tendermint', async () => {
-    mockIndexedDb.getLastBlockSynced?.mockResolvedValue(111n);
+    mockIndexedDb.getfullSyncHeight?.mockResolvedValue(111n);
     mockTendermint.latestBlockHeight?.mockResolvedValue(222n);
     const statusResponse = new StatusResponse(await status(new StatusRequest(), mockCtx));
     expect(statusResponse.catchingUp).toBeFalsy();
     expect(statusResponse.partialSyncHeight === 111n).toBeTruthy();
   });
 
-  test('should get an error if there is no LastBlockSynced record in indexed-db', async () => {
-    mockIndexedDb.getLastBlockSynced?.mockResolvedValue(undefined);
+  test('should get an error if there is no fullSyncHeight record in indexed-db', async () => {
+    mockIndexedDb.getfullSyncHeight?.mockResolvedValue(undefined);
     mockTendermint.latestBlockHeight?.mockResolvedValue(222n);
     await expect(status(new StatusRequest(), mockCtx)).rejects.toThrow();
   });

@@ -129,8 +129,8 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async syncAndStore() {
-    const lastBlockSynced = await this.indexedDb.getLastBlockSynced();
-    const startHeight = lastBlockSynced ? lastBlockSynced + 1n : 0n;
+    const fullSyncHeight = await this.indexedDb.getfullSyncHeight();
+    const startHeight = fullSyncHeight ? fullSyncHeight + 1n : 0n;
     const latestBlockHeight = await this.querier.tendermint.latestBlockHeight();
 
     // this is an indefinite stream of the (compact) chain from the network

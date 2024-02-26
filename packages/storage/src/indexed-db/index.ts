@@ -139,7 +139,7 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.updateAll(txs);
   }
 
-  async getLastBlockSynced() {
+  async getfullSyncHeight() {
     return this.db.get('LAST_BLOCK_SYNCED', 'last_block');
   }
 

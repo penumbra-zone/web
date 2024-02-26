@@ -7,13 +7,14 @@ import { cva, VariantProps } from 'class-variance-authority';
 
 const progressVariants = cva('', {
   variants: {
-    variant: {
+    status: {
       'in-progress': 'bg-sand',
       done: 'bg-teal',
     },
-  },
-  defaultVariants: {
-    variant: 'in-progress',
+    background: {
+      black: 'bg-black',
+      stone: 'bg-stone-800',
+    },
   },
 });
 
@@ -24,27 +25,30 @@ interface ProgressProps
 }
 
 const Progress = React.forwardRef<React.ElementRef<typeof ProgressPrimitive.Root>, ProgressProps>(
-  ({ className, value, variant, size = 'lg', ...props }, ref) => (
-    <ProgressPrimitive.Root
-      ref={ref}
-      className={cn(
-        'relative',
-        size === 'lg' && 'h-3',
-        size === 'sm' && 'h-1',
-        'w-full overflow-hidden rounded-lg bg-background',
-        className,
-      )}
-      {...props}
-    >
-      <ProgressPrimitive.Indicator
+  ({ className, value, status, background = 'black', size = 'lg', ...props }, ref) => {
+    return (
+      <ProgressPrimitive.Root
+        ref={ref}
         className={cn(
-          'h-full w-full flex-1 rounded-lg transition-all',
-          progressVariants({ variant }),
+          'relative z-0',
+          size === 'lg' && 'h-3',
+          size === 'sm' && 'h-1',
+          'w-full overflow-hidden rounded-lg',
+          progressVariants({ background }),
+          className,
         )}
-        style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}
-      />
-    </ProgressPrimitive.Root>
-  ),
+        {...props}
+      >
+        <ProgressPrimitive.Indicator
+          className={cn(
+            'h-full w-full flex-1 rounded-lg transition-all z-20',
+            progressVariants({ status }),
+          )}
+          style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}
+        />
+      </ProgressPrimitive.Root>
+    );
+  },
 );
 Progress.displayName = ProgressPrimitive.Root.displayName;
 

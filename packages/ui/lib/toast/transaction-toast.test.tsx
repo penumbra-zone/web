@@ -1,4 +1,4 @@
-import { Mock, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { TransactionToast } from './transaction-toast';
 import { Link } from 'react-router-dom';
 import {
@@ -66,7 +66,15 @@ describe('TransactionToast', () => {
       expect(mockToastFn.loading).toHaveBeenCalledWith(
         'Building Send transaction',
         expect.objectContaining({
-          description: <Progress variant='in-progress' value={50} size='sm' className='mt-2' />,
+          description: (
+            <Progress
+              status='in-progress'
+              background='stone'
+              value={50}
+              size='sm'
+              className='mt-2'
+            />
+          ),
           duration: Infinity,
           id: MOCK_TOAST_ID,
         }),
@@ -89,7 +97,7 @@ describe('TransactionToast', () => {
       expect(mockToastFn.loading).toHaveBeenCalledWith(
         'Building Send transaction',
         expect.objectContaining({
-          description: <Progress variant='done' value={100} size='sm' className='mt-2' />,
+          description: <Progress status='done' value={100} size='sm' className='mt-2' />,
           duration: Infinity,
           id: MOCK_TOAST_ID,
         }),

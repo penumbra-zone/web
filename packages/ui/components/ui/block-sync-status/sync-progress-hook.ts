@@ -12,14 +12,14 @@ import humanizeDuration from 'humanize-duration';
  *          - confident: A boolean flag indicating whether the speed calculation is considered reliable.
  */
 export const useSyncProgress = (
-  lastBlockSynced: number,
+  fullSyncHeight: number,
   lastBlockHeight: number,
   syncUpdatesThreshold = 10, // The number of synchronization updates required before the speed calculation is considered reliable
 ) => {
   const ewmaSpeedRef = useRef(new EWMA());
 
   const [speed, setSpeed] = useState<number>(0);
-  const lastSyncedRef = useRef<number>(lastBlockSynced);
+  const lastSyncedRef = useRef<number>(fullSyncHeight);
   const lastUpdateTimeRef = useRef<number>(Date.now());
   const [confident, setConfident] = useState<boolean>(false); // Tracks confidence in the speed calculation
   const [syncUpdates, setSyncUpdates] = useState<number>(0); // Tracks the number of synchronization updates
@@ -27,7 +27,7 @@ export const useSyncProgress = (
   useEffect(() => {
     const now = Date.now();
     const timeElapsedMs = now - lastUpdateTimeRef.current;
-    const blocksSynced = lastBlockSynced - lastSyncedRef.current;
+    const blocksSynced = fullSyncHeight - lastSyncedRef.current;
 
     if (timeElapsedMs > 0 && blocksSynced >= 0) {
       const instantSpeed = (blocksSynced / timeElapsedMs) * 1000; // Calculate speed in blocks per second
@@ -36,16 +36,16 @@ export const useSyncProgress = (
       setSyncUpdates(prev => prev + 1); // Increment the number of sync updates
     }
 
-    lastSyncedRef.current = lastBlockSynced;
+    lastSyncedRef.current = fullSyncHeight;
     lastUpdateTimeRef.current = now;
 
     // Update confident flag based on the number of sync updates
     if (syncUpdates >= syncUpdatesThreshold && !confident) {
       setConfident(true);
     }
-  }, [lastBlockSynced, syncUpdates, syncUpdatesThreshold, confident]);
+  }, [fullSyncHeight, syncUpdates, syncUpdatesThreshold, confident]);
 
-  const blocksRemaining = lastBlockHeight - lastBlockSynced;
+  const blocksRemaining = lastBlockHeight - fullSyncHeight;
   const timeRemaining = speed > 0 ? blocksRemaining / speed : Infinity;
   const formattedTimeRemaining =
     timeRemaining === Infinity ? '' : humanizeDuration(timeRemaining * 1000, { round: true });
