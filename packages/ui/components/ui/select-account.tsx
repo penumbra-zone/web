@@ -115,22 +115,20 @@ export const SelectAccount = ({ getAddrByIndex }: SelectAccountProps) => {
             <div className='flex items-center gap-2'>
               <IncognitoIcon fill='#BDB8B8' />
               <p className='mt-1 font-bold'>IBC Deposit Address</p>
-              {ephemeral && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <InfoIcon className='size-4 cursor-pointer text-muted-foreground hover:text-[#8D5728]' />
-                    </TooltipTrigger>
-                    <TooltipContent className='w-[250px]'>
-                      <p>
-                        IBC transfers into Penumbra post the destination address in public on the
-                        source chain. Use this randomized IBC deposit address to preserve privacy
-                        when transferring funds into Penumbra.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
+              <TooltipProvider delayDuration={0}>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <InfoIcon className='size-4 cursor-pointer text-muted-foreground hover:text-[#8D5728]' />
+                  </TooltipTrigger>
+                  <TooltipContent className='w-[250px]'>
+                    <p>
+                      IBC transfers into Penumbra post the destination address in public on the
+                      source chain. Use this randomized IBC deposit address to preserve privacy when
+                      transferring funds into Penumbra.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <Switch
               id='address-mode'

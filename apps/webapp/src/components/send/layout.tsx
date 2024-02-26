@@ -12,12 +12,11 @@ export const SendLayout = () => {
   return (
     <div className='grid gap-6 md:grid-cols-2 md:gap-4 xl:grid-cols-3 xl:gap-5'>
       <div className='hidden xl:order-1 xl:block' />
-      <Card gradient className='order-2 row-span-2 flex-1 p-5 md:order-1 md:p-4 xl:p-5'>
-        <Tabs
-          tabs={sendTabs}
-          activeTab={pathname}
-          className='mx-auto flex w-[75%] lg:min-w-[300px]'
-        />
+      <Card
+        gradient
+        className='order-2 row-span-2 flex flex-1 flex-col p-5 md:order-1 md:p-4 xl:p-5'
+      >
+        <Tabs tabs={sendTabs} activeTab={pathname} />
         <Outlet />
       </Card>
       <EduInfoCard

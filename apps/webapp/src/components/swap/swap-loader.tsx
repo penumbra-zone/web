@@ -9,7 +9,7 @@ import { viewClient } from '../../clients/grpc';
 import { getSwapAsset1, getSwapAsset2, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { localAssets } from '@penumbra-zone/constants';
 
-interface UnclaimedSwapsWithMetadata {
+export interface UnclaimedSwapsWithMetadata {
   swap: SwapRecord;
   asset1: Metadata;
   asset2: Metadata;
