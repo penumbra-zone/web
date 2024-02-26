@@ -3,12 +3,16 @@ import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances
 import { throwIfExtNotInstalled } from '../../utils/is-connected';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
 import { EduPanel } from '../shared/edu-panels/content';
-import { ValidatorsTable } from './validators-table';
 import { Accounts } from './accounts';
 import { cn } from '@penumbra-zone/ui/lib/utils';
+import { AllValidators } from './all-validators';
+import { useStore } from '../../state';
 
 export const StakingLoader: LoaderFunction = async (): Promise<BalancesByAccount[]> => {
   throwIfExtNotInstalled();
+
+  void useStore.getState().staking.loadValidators();
+
   const balancesByAccount = await getBalancesByAccount();
   return balancesByAccount;
 };
@@ -21,7 +25,7 @@ export const StakingLayout = () => {
       <div className={cn('col-span-2 flex flex-col', GAPS)}>
         <Accounts />
 
-        <ValidatorsTable />
+        <AllValidators />
       </div>
 
       <div>

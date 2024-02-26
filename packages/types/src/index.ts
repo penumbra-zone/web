@@ -25,3 +25,4 @@ export * from './schemas';
 export * from './type-predicates';
 export * from './getters';
 export * from './staking';
+export * from './identity-key';

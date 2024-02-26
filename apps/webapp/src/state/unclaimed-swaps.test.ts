@@ -1,14 +1,7 @@
-import { create, StoreApi, UseBoundStore } from 'zustand';
-import { AllSlices, initializeStore } from '.';
-import { beforeEach, describe, expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
+import { useStore } from '.';
 
 describe('Unclaimed Swaps Slice', () => {
-  let useStore: UseBoundStore<StoreApi<AllSlices>>;
-
-  beforeEach(() => {
-    useStore = create<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
-  });
-
   test('the default in progress list is empty', () => {
     expect(useStore.getState().unclaimedSwaps.inProgress.length).toBe(0);
   });

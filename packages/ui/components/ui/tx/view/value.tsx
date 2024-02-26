@@ -38,10 +38,10 @@ export const ValueViewComponent = ({
     const symbol = metadata.symbol || 'Unknown Asset';
 
     return (
-      <div className='flex items-center text-base font-bold'>
+      <div className='flex items-center gap-1 text-base font-bold'>
         {showIcon && <AssetIcon metadata={metadata} />}
-        {showValue && <span className='ml-1'>{formattedAmount}</span>}
-        {showDenom && <span className='ml-1'>{symbol}</span>}
+        {showValue && <span>{formattedAmount}</span>}
+        {showDenom && <span>{symbol}</span>}
         {
           // TODO: this will need refinement once we actually hand out
           // equivalent values to the frontend. it would be nice to have

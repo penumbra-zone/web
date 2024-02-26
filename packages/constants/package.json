@@ -4,6 +4,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "lint": "eslint \"**/*.ts*\""
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
   }
 }
