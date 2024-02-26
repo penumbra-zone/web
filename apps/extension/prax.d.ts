@@ -1,7 +1,5 @@
-// these are defined at build time by webpack.
+// these are defined at build time by webpack, using values in .env
 
-// extension id
-// 'lkpmkhpnhknhmibgnmmhdhgdilepfghe'
 declare const PRAX: string;
 declare const PRAX_ORIGIN: string;
 
