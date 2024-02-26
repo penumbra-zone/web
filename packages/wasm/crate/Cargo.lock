@@ -761,8 +761,8 @@ dependencies = [
 
 [[package]]
 name = "decaf377-fmd"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "ark-ff",
  "ark-serialize",
@@ -775,8 +775,8 @@ dependencies = [
 
 [[package]]
 name = "decaf377-ka"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "ark-ff",
  "decaf377 0.5.0",
@@ -1998,8 +1998,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-asset"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2035,8 +2035,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-community-pool"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2065,8 +2065,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-compact-block"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2097,8 +2097,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-dex"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2149,8 +2149,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-distributions"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2165,8 +2165,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-fee"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2188,8 +2188,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-funding"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2207,8 +2207,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-governance"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2258,8 +2258,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-ibc"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2291,8 +2291,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-keys"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "aes",
  "anyhow",
@@ -2335,8 +2335,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-num"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2371,8 +2371,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-proof-params"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "ark-ec",
@@ -2397,8 +2397,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-proto"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2424,8 +2424,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sct"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2455,8 +2455,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-shielded-pool"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2502,8 +2502,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-stake"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2543,8 +2543,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-tct"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "ark-ed-on-bls12-377",
  "ark-ff",
@@ -2571,8 +2571,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-transaction"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2621,8 +2621,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-txhash"
-version = "0.68.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?branch=erwan/move_scaling_factor#a9c2cf8a34c4ada11f43cfa0ba0f19b814231aad"
+version = "0.68.0-alpha.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0-alpha.2#bc4b854b726a95f8f2c011f4a1d22bd90550a5da"
 dependencies = [
  "anyhow",
  "blake2b_simd 1.0.2",

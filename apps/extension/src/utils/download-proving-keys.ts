@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { provingKeys } from '@penumbra-zone/types/src/proving-keys';
 
-const VERSION_TAG = 'v0.68.0-alpha.1';
+const VERSION_TAG = 'v0.68.0-alpha.2';
 
 const force = process.argv.includes('--force');
 
