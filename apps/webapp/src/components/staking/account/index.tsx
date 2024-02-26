@@ -6,11 +6,7 @@ import {
   getValidatorInfoFromValueView,
 } from '@penumbra-zone/types';
 import { useStore } from '../../../state';
-import {
-  stakedValidatorsSelector,
-  stakingSelector,
-  unstakedValidatorsSelector,
-} from '../../../state/staking';
+import { stakingSelector } from '../../../state/staking';
 import { DelegationValueView } from './delegation-value-view';
 import { Card, CardContent, CardHeader, CardTitle } from '@penumbra-zone/ui';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
@@ -25,11 +21,10 @@ const getVotingPowerAsIntegerPercentage = (
   ];
 
 export const Account = () => {
-  const { account, unstakedTokensByAccount, votingPowerByValidatorInfo } =
+  const { account, delegationsByAccount, unstakedTokensByAccount, votingPowerByValidatorInfo } =
     useStore(stakingSelector);
-  const delegations = useStore(stakedValidatorsSelector);
-  const unstakedValidators = useStore(unstakedValidatorsSelector);
   const unstakedTokens = unstakedTokensByAccount.get(account);
+  const delegations = delegationsByAccount.get(account) ?? [];
 
   return (
     <div className='flex flex-col gap-4'>
@@ -47,7 +42,7 @@ export const Account = () => {
       {!!delegations.length && (
         <Card>
           <CardHeader>
-            <CardTitle>Staked delegation tokens</CardTitle>
+            <CardTitle>Delegation tokens</CardTitle>
           </CardHeader>
           <CardContent>
             <div className='mt-8 flex flex-col gap-8'>
@@ -59,29 +54,6 @@ export const Account = () => {
                   votingPowerAsIntegerPercentage={getVotingPowerAsIntegerPercentage(
                     votingPowerByValidatorInfo,
                     delegation,
-                  )}
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {!!unstakedValidators.length && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Validators available for delegating</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className='mt-8 flex flex-col gap-8'>
-              {unstakedValidators.map(valueView => (
-                <DelegationValueView
-                  key={getDisplayDenomFromView(valueView)}
-                  canDelegate={!!unstakedTokens}
-                  valueView={valueView}
-                  votingPowerAsIntegerPercentage={getVotingPowerAsIntegerPercentage(
-                    votingPowerByValidatorInfo,
-                    valueView,
                   )}
                 />
               ))}

@@ -3,11 +3,9 @@ import { AllSlices, SliceCreator } from '.';
 import { getDelegationsForAccount } from '../fetchers/staking';
 import {
   VotingPowerAsIntegerPercentage,
-  getAmount,
   getDisplayDenomFromView,
   getValidatorInfoFromValueView,
   getVotingPowerByValidatorInfo,
-  joinLoHiAmount,
 } from '@penumbra-zone/types';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getBalancesByAccount } from '../fetchers/balances/by-account';
@@ -92,19 +90,3 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
 });
 
 export const stakingSelector = (state: AllSlices) => state.staking;
-
-export const stakedValidatorsSelector = (state: AllSlices) => {
-  const { account, delegationsByAccount } = state.staking;
-
-  return (delegationsByAccount.get(account) ?? []).filter(
-    delegation => joinLoHiAmount(getAmount(delegation)) > 0n,
-  );
-};
-
-export const unstakedValidatorsSelector = (state: AllSlices) => {
-  const { account, delegationsByAccount } = state.staking;
-
-  return (delegationsByAccount.get(account) ?? []).filter(
-    delegation => joinLoHiAmount(getAmount(delegation)) === 0n,
-  );
-};
