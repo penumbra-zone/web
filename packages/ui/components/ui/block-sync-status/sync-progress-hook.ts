@@ -8,8 +8,6 @@ import humanizeDuration from 'humanize-duration';
  * to smooth the speed calculation.
  *
  * @returns An object containing:
- *          - speed: Current speed of synchronization in blocks per second.
- *          - timeRemaining: Estimated time remaining to complete the synchronization, in seconds.
  *          - formattedTimeRemaining: Human-readable string representation (e.g., "13 min, 49 sec").
  *          - confident: A boolean flag indicating whether the speed calculation is considered reliable.
  */
@@ -52,5 +50,5 @@ export const useSyncProgress = (
   const formattedTimeRemaining =
     timeRemaining === Infinity ? '' : humanizeDuration(timeRemaining * 1000, { round: true });
 
-  return { speed, timeRemaining, formattedTimeRemaining, confident };
+  return { formattedTimeRemaining, confident };
 };
