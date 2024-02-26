@@ -366,13 +366,11 @@ export class IndexedDb implements IndexedDbInterface {
     positionState: PositionState | undefined,
     tradingPair: TradingPair | undefined,
   ): AsyncGenerator<PositionId, void> {
-    console.log(positionState, tradingPair);
     yield* streamToGenerator(
       new ReadableStream({
         start: async cont => {
           let cursor = await this.db.transaction('POSITIONS').store.openCursor();
           while (cursor) {
-            console.log(cursor.value);
             const position = Position.fromJson(cursor.value.position);
             if (positionState && !positionState.equals(position.state)) {
               cursor = await cursor.continue();
