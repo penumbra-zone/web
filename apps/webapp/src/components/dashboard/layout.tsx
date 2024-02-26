@@ -1,10 +1,10 @@
 import { Card } from '@penumbra-zone/ui';
 import { dashboardTabs, dashboardTabsHelper } from './constants';
 import { Outlet } from 'react-router-dom';
-import { EduInfoCard } from '../shared/edu-panels/edu-info-card.tsx';
-import { Tabs } from '../shared/tabs.tsx';
-import { usePagePath } from '../../fetchers/page-path.ts';
-import { DashboardTab } from './types.ts';
+import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
+import { Tabs } from '../shared/tabs';
+import { usePagePath } from '../../fetchers/page-path';
+import { DashboardTab } from './types';
 
 export const DashboardLayout = () => {
   const pathname = usePagePath<DashboardTab>();

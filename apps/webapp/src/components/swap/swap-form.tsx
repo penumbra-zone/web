@@ -4,7 +4,7 @@ import { useLoaderData } from 'react-router-dom';
 import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
 import { AssetOutBox } from './asset-out-box';
-import { SwapLoaderResponse } from './swap-loader.tsx';
+import { SwapLoaderResponse } from './swap-loader';
 
 export const SwapForm = () => {
   const { assetBalances } = useLoaderData() as SwapLoaderResponse;

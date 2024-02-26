@@ -3,7 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@penumbra-zone/ui';
 import { BellIcon } from '../../icons';
 import { useStream } from '../../fetchers/stream';
 import { BlockSync } from './block-sync';
-import { viewClient } from '../../clients/grpc.ts';
+import { viewClient } from '../../clients/grpc';
 
 type NotificationState = 'sync' | 'notification' | 'none';
 

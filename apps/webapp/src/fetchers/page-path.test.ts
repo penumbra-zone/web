@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { matchPagePath, removeTrailingSlash } from './page-path.ts';
-import { PagePath } from '../components/metadata/paths.ts';
+import { matchPagePath, removeTrailingSlash } from './page-path';
+import { PagePath } from '../components/metadata/paths';
 
 describe('removeTrailingSlash', () => {
   test('should remove trailing slash when present', () => {

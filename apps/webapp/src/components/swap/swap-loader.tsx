@@ -1,11 +1,11 @@
 import { LoaderFunction } from 'react-router-dom';
 import { AssetBalance, getAssetBalances } from '../../fetchers/balances';
 import { useStore } from '../../state';
-import { throwIfExtNotInstalled } from '../../utils/is-connected.ts';
+import { throwIfExtNotInstalled } from '../../utils/is-connected';
 import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { fetchUnclaimedSwaps } from '../../fetchers/unclaimed-swaps.ts';
-import { viewClient } from '../../clients/grpc.ts';
+import { fetchUnclaimedSwaps } from '../../fetchers/unclaimed-swaps';
+import { viewClient } from '../../clients/grpc';
 import { getSwapAsset1, getSwapAsset2, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { localAssets } from '@penumbra-zone/constants';
 

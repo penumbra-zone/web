@@ -1,5 +1,5 @@
 import { StateCreator, StoreMutatorIdentifier } from 'zustand';
-import { AllSlices } from './index';
+import { AllSlices } from '.';
 import { produce } from 'immer';
 
 import {

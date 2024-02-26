@@ -7,7 +7,7 @@ import {
   AuthorizeAndBuildResponse,
   BroadcastTransactionResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { viewClient } from '../clients/grpc.ts';
+import { viewClient } from '../clients/grpc';
 import { uint8ArrayToHex } from '@penumbra-zone/types';
 import { sha256Hash } from '@penumbra-zone/crypto-web';
 import {

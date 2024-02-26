@@ -1,10 +1,10 @@
 import { Button, Card } from '@penumbra-zone/ui';
 import { useLoaderData, useRevalidator } from 'react-router-dom';
-import { SwapLoaderResponse } from './swap-loader.tsx';
-import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon.tsx';
+import { SwapLoaderResponse } from './swap-loader';
+import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 import { getSwapRecordCommitment, uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { useStore } from '../../state';
-import { unclaimedSwapsSelector } from '../../state/unclaimed-swaps.ts';
+import { unclaimedSwapsSelector } from '../../state/unclaimed-swaps';
 
 export const UnclaimedSwaps = () => {
   const { revalidate } = useRevalidator();

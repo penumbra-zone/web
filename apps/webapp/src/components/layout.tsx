@@ -1,11 +1,11 @@
 import { LoaderFunction, Outlet, useLoaderData } from 'react-router-dom';
-import { HeadTag } from './metadata/head-tag.tsx';
-import { Header } from './header/header.tsx';
+import { HeadTag } from './metadata/head-tag';
+import { Header } from './header/header';
 import { Toaster } from '@penumbra-zone/ui';
 import '@penumbra-zone/ui/styles/globals.css';
-import { isExtensionInstalled } from '../utils/is-connected.ts';
-import { getChainId } from '../fetchers/chain-id.ts';
-import { ExtensionNotInstalled } from './extension-not-installed.tsx';
+import { isExtensionInstalled } from '../utils/is-connected';
+import { getChainId } from '../fetchers/chain-id';
+import { ExtensionNotInstalled } from './extension-not-installed';
 
 export type LayoutLoaderResult =
   | { isInstalled: false }

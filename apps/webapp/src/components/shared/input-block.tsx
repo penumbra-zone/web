@@ -1,5 +1,5 @@
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { Validation, validationResult } from './validation-result.ts';
+import { Validation, validationResult } from './validation-result';
 import { ReactNode } from 'react';
 
 interface InputBlockProps {

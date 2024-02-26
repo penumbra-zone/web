@@ -1,4 +1,4 @@
-import { AssetBalance } from './index.ts';
+import { AssetBalance } from '.';
 import {
   AssetId,
   ValueView,

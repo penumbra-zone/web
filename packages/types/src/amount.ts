@@ -1,6 +1,6 @@
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { fromBaseUnit, joinLoHi, splitLoHi } from './lo-hi';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import { ValueView_KnownAssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getDisplayDenomExponent } from './getters';
 

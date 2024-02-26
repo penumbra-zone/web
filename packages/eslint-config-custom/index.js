@@ -3,6 +3,8 @@ module.exports = {
     'prettier',
     'eslint:recommended',
     'turbo',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
     'plugin:tailwindcss/recommended',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/strict-type-checked',
@@ -12,6 +14,22 @@ module.exports = {
   ],
   plugins: ['@typescript-eslint', 'turbo', 'vitest', 'react-refresh'],
   rules: {
+    'import/extensions': [
+      'error',
+      'always',
+      {
+        ts: 'never',
+        tsx: 'never',
+        mts: 'never,',
+        js: 'never',
+        jsx: 'never',
+        mjs: 'never',
+      },
+    ],
+    'import/no-useless-path-segments': ['error', { noUselessIndex: true }],
+    'import/no-relative-packages': 'error',
+    'import/no-self-import': 'error',
+    'import/first': 'error',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-confusing-void-expression': ['error', { ignoreArrowShorthand: true }],
     '@typescript-eslint/switch-exhaustiveness-check': 'error',
@@ -52,6 +70,9 @@ module.exports = {
   },
   ignorePatterns: ['dist/*'],
   settings: {
+    'import/resolver': {
+      typescript: true,
+    },
     react: { version: 'detect' },
     tailwindcss: {
       // Ensures that ESLint knows about our Tailwind config, such as color

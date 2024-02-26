@@ -7,13 +7,13 @@ import {
   Value,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { getAddressByIndex } from '../address.ts';
+import { getAddressByIndex } from '../address';
 import {
   AddressIndex,
   AddressView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { viewClient } from '../../clients/grpc.ts';
-import { streamToPromise } from '../stream.ts';
+import { viewClient } from '../../clients/grpc';
+import { streamToPromise } from '../stream';
 
 export interface AssetBalance {
   value: ValueView;

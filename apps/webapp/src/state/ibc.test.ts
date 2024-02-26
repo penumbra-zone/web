@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
-import { AllSlices, initializeStore } from './index.ts';
+import { AllSlices, initializeStore } from '.';
 import { bech32ToUint8Array, Chain } from '@penumbra-zone/types';
 import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { sendValidationErrors } from './send.ts';
+import { sendValidationErrors } from './send';
 import { AssetBalance } from '../fetchers/balances';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { produce } from 'immer';

@@ -2,7 +2,7 @@ import { Card } from '@penumbra-zone/ui';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
 import { EduPanel } from '../shared/edu-panels/content';
 import { SwapForm } from './swap-form';
-import { UnclaimedSwaps } from './unclaimed-swaps.tsx';
+import { UnclaimedSwaps } from './unclaimed-swaps';
 
 export const SwapLayout = () => {
   return (

@@ -1,6 +1,6 @@
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
 import type { Jsonified, Stringified, TransactionClassification } from '@penumbra-zone/types';
-import { AllSlices, SliceCreator } from './index';
+import { AllSlices, SliceCreator } from '.';
 import { MessageResponder } from '@penumbra-zone/types/src/internal-msg/shared';
 import { TxApproval } from '@penumbra-zone/types/src/internal-msg/popup';
 import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';

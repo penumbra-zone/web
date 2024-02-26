@@ -1,15 +1,15 @@
 import { Button, Input } from '@penumbra-zone/ui';
-import { useStore } from '../../../state/index.ts';
-import { sendSelector, sendValidationErrors } from '../../../state/send.ts';
+import { useStore } from '../../../state';
+import { sendSelector, sendValidationErrors } from '../../../state/send';
 import { InputBlock } from '../../shared/input-block';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { AssetBalance, getAssetBalances } from '../../../fetchers/balances';
 import { useMemo } from 'react';
 import { penumbraAddrValidation } from '../helpers';
-import { throwIfExtNotInstalled } from '../../../utils/is-connected.ts';
-import InputToken from '../../shared/input-token.tsx';
-import { useRefreshFee } from './use-refresh-fee.ts';
-import { GasFee } from '../../shared/gas-fee.tsx';
+import { throwIfExtNotInstalled } from '../../../utils/is-connected';
+import InputToken from '../../shared/input-token';
+import { useRefreshFee } from './use-refresh-fee';
+import { GasFee } from '../../shared/gas-fee';
 
 export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<AssetBalance[]> => {
   throwIfExtNotInstalled();

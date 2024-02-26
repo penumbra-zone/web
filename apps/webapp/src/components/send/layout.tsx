@@ -1,10 +1,10 @@
 import { Card } from '@penumbra-zone/ui';
 import { sendTabs, sendTabsHelper } from './constants';
 import { SendTab } from './types';
-import { usePagePath } from '../../fetchers/page-path.ts';
-import { Tabs } from '../shared/tabs.tsx';
+import { usePagePath } from '../../fetchers/page-path';
+import { Tabs } from '../shared/tabs';
 import { Outlet } from 'react-router-dom';
-import { EduInfoCard } from '../shared/edu-panels/edu-info-card.tsx';
+import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
 
 export const SendLayout = () => {
   const pathname = usePagePath<SendTab>();

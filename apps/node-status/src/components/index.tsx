@@ -1,9 +1,9 @@
-import { Header } from './header.tsx';
-import { FrontendReferral } from './frontend-referral.tsx';
-import { NodeInfo } from './node-info.tsx';
-import { SyncInfo } from './sync-info.tsx';
-import { ValidatorInfo } from './validator-info.tsx';
-import { useRefetchStatusOnInterval } from '../fetching/refetch-hook.ts';
+import { Header } from './header';
+import { FrontendReferral } from './frontend-referral';
+import { NodeInfo } from './node-info';
+import { SyncInfo } from './sync-info';
+import { ValidatorInfo } from './validator-info';
+import { useRefetchStatusOnInterval } from '../fetching/refetch-hook';
 
 export const Index = () => {
   useRefetchStatusOnInterval();

@@ -1,5 +1,5 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
-import { AllSlices, initializeStore } from '../index';
+import { AllSlices, initializeStore } from '..';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { SeedPhraseLength } from '@penumbra-zone/crypto-web/src/mnemonic';
 import { mockLocalExtStorage, mockSessionExtStorage } from '@penumbra-zone/storage';

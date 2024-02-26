@@ -21,6 +21,8 @@ import {
 } from './errors';
 import { ChromeRuntimeStreamSink } from './stream';
 
+import { ChromeRuntimeHandlerFn } from './adapter';
+
 interface BackgroundConnection {
   type: ChannelClientLabel;
   port: chrome.runtime.Port;
@@ -30,8 +32,6 @@ interface BackgroundConnection {
   documentId: string | undefined;
   tlsChannelId: string | undefined;
 }
-
-import { ChromeRuntimeHandlerFn } from './adapter';
 
 /**
  * Only for use as an extension-level singleton in the extension's main

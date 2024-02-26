@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { addLoHi, fromBaseUnit, joinLoHi, splitLoHi, toBaseUnit } from './lo-hi';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 
 describe('lo-hi', () => {
   describe('splitLoHi', () => {

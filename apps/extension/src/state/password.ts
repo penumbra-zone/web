@@ -1,4 +1,4 @@
-import { AllSlices, SliceCreator } from './index';
+import { AllSlices, SliceCreator } from '.';
 import { Key, KeyJson, KeyPrint } from '@penumbra-zone/crypto-web';
 import { ExtensionStorage, LocalStorageState, SessionStorageState } from '@penumbra-zone/storage';
 

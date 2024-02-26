@@ -6,7 +6,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { IdbUpdate, PenumbraDb } from '@penumbra-zone/types';
 import { describe, expect, it } from 'vitest';
-import { IndexedDb } from './index';
+import { IndexedDb } from '.';
 import {
   delegationMetadataA,
   delegationMetadataB,

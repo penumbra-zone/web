@@ -1,5 +1,5 @@
-import { AllSlices, SliceCreator } from '../index';
-import { SeedPhraseSlice } from './index';
+import { AllSlices, SliceCreator } from '..';
+import { SeedPhraseSlice } from '.';
 import {
   isInWordList,
   SeedPhraseLength,

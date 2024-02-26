@@ -1,5 +1,5 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
-import { AllSlices, initializeStore } from './index';
+import { AllSlices, initializeStore } from '.';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { webcrypto } from 'crypto';
 import {
