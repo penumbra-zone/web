@@ -115,7 +115,7 @@ export default (env, argv) => {
       }),
       new webpack.DefinePlugin(definitions),
       new CopyPlugin({
-        patterns: ['public', { from: 'bin', to: 'bin', transform: { cache: true } }],
+        patterns: ['public', { from: 'bin', to: 'bin' }],
       }),
       // html entry points
       new HtmlWebpackPlugin({
