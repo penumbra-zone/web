@@ -1,3 +1,8 @@
+// This re-exports ReadableStream with a static method `from`, if the method is
+// not already present. Unfortunately typescript's dom library types the global
+// `ReadableStream` as a var and not just an interface, so we can't just extend
+// and merge the global declarations.
+
 type ReadableStreamFrom = <T>(iterable: Iterable<T> | AsyncIterable<T>) => ReadableStream<T>;
 
 const ReadableStreamWithFrom: typeof ReadableStream & { from: ReadableStreamFrom } =
