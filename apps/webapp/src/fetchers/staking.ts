@@ -15,7 +15,7 @@ import { DelegationCaptureGroups, assetPatterns } from '@penumbra-zone/constants
 import { Any } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
-const isDelegationBalance = (identityKey: IdentityKey) => (assetBalance: AssetBalance) => {
+const isDelegationBalance = (assetBalance: AssetBalance, identityKey: IdentityKey) => {
   const match = assetPatterns.delegationToken.exec(getDisplayDenomFromView(assetBalance.value));
   if (!match) return false;
 
@@ -53,7 +53,9 @@ export const getDelegationsForAccount = async function* (addressIndex: AddressIn
     const identityKey = getValidatorInfo.pipe(getIdentityKeyFromValidatorInfo)(
       validatorInfoResponse,
     );
-    const delegation = assetBalances.find(isDelegationBalance(identityKey));
+    const delegation = assetBalances.find(assetBalance =>
+      isDelegationBalance(assetBalance, identityKey),
+    );
 
     if (delegation) {
       const withValidatorInfo = delegation.value.clone();
