@@ -19,6 +19,7 @@ import {
 } from '@bufbuild/protobuf';
 import {
   CommonTransportOptions,
+  createAsyncIterable,
   createUniversalHandlerClient,
   UniversalHandler,
   UniversalHandlerFn,
@@ -194,7 +195,7 @@ export const connectChromeRuntimeAdapter = (
           undefined, // TODO abort
           undefined, // TODO timeout
           undefined, // TODO headers
-          ReadableStream.from([request]),
+          createAsyncIterable([request]),
         );
         break;
       default:
