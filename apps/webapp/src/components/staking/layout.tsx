@@ -4,9 +4,11 @@ import { stakingSelector } from '../../state/staking';
 import { throwIfExtNotInstalled } from '../../utils/is-connected';
 import { Account } from './account';
 
-export const StakingLoader = () => {
+export const StakingLoader = async () => {
   throwIfExtNotInstalled();
-  void useStore.getState().staking.loadUnstakedTokensByAccount();
+
+  // Await to avoid screen flicker.
+  await useStore.getState().staking.loadUnstakedTokensByAccount();
 
   return null;
 };
