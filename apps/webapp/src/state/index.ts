@@ -8,9 +8,9 @@ import { createStakingSlice, StakingSlice } from './staking';
 import { createUnclaimedSwapsSlice, UnclaimedSwapsSlice } from './unclaimed-swaps';
 
 /**
- * Required to enable use of maps in Zustand state when using Immer middleware.
- * Without this, calling `.set()` on a `Map` in Zustand state results in an
- * error.
+ * Required to enable use of `Map`s in Zustand state when using Immer
+ * middleware. Without this, calling `.set()` on a `Map` in Zustand state
+ * results in an error.
  */
 enableMapSet();
 
