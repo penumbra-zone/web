@@ -2,12 +2,12 @@ import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
 import { NetworksPopover } from '@penumbra-zone/ui';
-import { useChainId } from '../../../hooks/chain-id';
+import { useChainIdQuery } from '../../../hooks/chain-id';
 import { motion } from 'framer-motion';
 
 export const IndexHeader = () => {
   const navigate = usePopupNav();
-  const { chainId } = useChainId();
+  const { chainId } = useChainIdQuery();
 
   return (
     <header className='top-0 z-40 w-full'>

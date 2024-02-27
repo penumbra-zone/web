@@ -1,34 +1,54 @@
-import { AppQuerier } from '@penumbra-zone/query';
+import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/app/v1/app_connect';
+import { createGrpcWebTransport } from '@connectrpc/connect-web';
+import { createPromiseClient } from '@connectrpc/connect';
 import { FormEvent, useState } from 'react';
 import { Button, FadeTransition, Input } from '@penumbra-zone/ui';
-import { cn } from '@penumbra-zone/ui/lib/utils';
-import { useChainId } from '../../../hooks/chain-id';
+import { useChainIdQuery } from '../../../hooks/chain-id';
 import { ShareGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { networkSelector } from '../../../state/network';
 import { internalSwClient } from '@penumbra-zone/router';
+import '@penumbra-zone/types/src/promise-with-resolvers';
 
 export const SettingsRPC = () => {
-  const { chainId, refetch } = useChainId();
+  const { chainId: currentChainId } = useChainIdQuery();
+  const [newChainId, setNewChainId] = useState(undefined as string | undefined);
   const { grpcEndpoint, setGRPCEndpoint } = useStore(networkSelector);
 
-  const [rpc, setRpc] = useState(grpcEndpoint ?? '');
-  const [rpcError, setRpcError] = useState(false);
+  const [rpcInput, setRpcInput] = useState(grpcEndpoint ?? '');
+  const [rpcError, setRpcError] = useState(undefined as string | undefined);
+  const [countdownTime, setCountdownTime] = useState(undefined as number | undefined);
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const countdown = (seconds: number) => {
+    const { promise, resolve } = Promise.withResolvers<undefined>();
+    setCountdownTime(seconds);
+    setInterval(() => {
+      if (!seconds) resolve(undefined);
+      setCountdownTime(--seconds);
+    }, 1000);
+    return promise;
+  };
+
+  const onSubmit = (evt: FormEvent<HTMLFormElement>) => {
+    evt.preventDefault();
     void (async () => {
-      const querier = new AppQuerier({ grpcEndpoint: rpc });
-
       try {
-        await querier.appParams();
-        await setGRPCEndpoint(rpc);
-        await internalSwClient.clearCache();
-        await refetch();
-        setRpcError(false);
-      } catch {
-        setRpcError(true);
+        const { appParameters } = await createPromiseClient(
+          QueryService,
+          createGrpcWebTransport({ baseUrl: rpcInput }),
+        ).appParameters({});
+        if (!appParameters?.chainId) throw new Error('Endpoint did not provide a valid chainId');
+
+        setRpcError(undefined);
+        setNewChainId(appParameters.chainId);
+        await setGRPCEndpoint(rpcInput);
+        // TODO: show dialog, explain new chain
+        if (appParameters.chainId != currentChainId) void internalSwClient.clearCache();
+        await countdown(5).then(() => chrome.runtime.reload());
+      } catch (e: unknown) {
+        console.error('Could not use RPC endpoint', e);
+        setRpcError(String(e) || 'Unknown RPC failure');
       }
     })();
   };
@@ -48,18 +68,14 @@ export const SettingsRPC = () => {
             <div className='flex flex-col items-center justify-center gap-2'>
               <div className='flex items-center gap-2 self-start'>
                 <div className='text-base font-bold'>RPC URL</div>
-                {rpcError ? (
-                  <div className={cn('italic', 'text-red-400')}>
-                    Failed to get response from rpc
-                  </div>
-                ) : null}
+                {rpcError ? <div className='italic text-red-400'>{rpcError}</div> : null}
               </div>
               <Input
                 variant={rpcError ? 'error' : 'default'}
-                value={rpc}
-                onChange={e => {
-                  setRpc(e.target.value);
-                  setRpcError(false);
+                value={rpcInput}
+                onChange={evt => {
+                  setRpcError(undefined);
+                  setRpcInput(evt.target.value);
                 }}
                 className='text-muted-foreground'
               />
@@ -67,19 +83,19 @@ export const SettingsRPC = () => {
             <div className='flex flex-col gap-2'>
               <p className='font-headline text-base font-semibold'>Chain id</p>
               <div className='flex h-11 w-full items-center rounded-lg border bg-background px-3 py-2 text-muted-foreground'>
-                {chainId}
+                {newChainId ?? currentChainId}
               </div>
             </div>
           </div>
-          <Button
-            variant='gradient'
-            size='lg'
-            className='w-full'
-            type='submit'
-            disabled={rpc === grpcEndpoint || rpcError}
-          >
-            Save
-          </Button>
+          {countdownTime != null ? (
+            <Button disabled variant='outline' size='lg' className='w-full'>
+              Saved! Restarting in {countdownTime}...
+            </Button>
+          ) : (
+            <Button variant='gradient' size='lg' className='w-full' type='submit'>
+              Save
+            </Button>
+          )}
         </form>
       </div>
     </FadeTransition>
