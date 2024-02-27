@@ -11,12 +11,7 @@ import {
   getIdentityKeyFromValidatorInfo,
   getValidatorInfo,
 } from '@penumbra-zone/types';
-import {
-  DelegationCaptureGroups,
-  STAKING_TOKEN,
-  assetPatterns,
-  localAssets,
-} from '@penumbra-zone/constants';
+import { DelegationCaptureGroups, assetPatterns } from '@penumbra-zone/constants';
 import { Any } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
@@ -78,7 +73,6 @@ export const getDelegationsForAccount = async function* (addressIndex: AddressIn
               hi: 0n,
               lo: 0n,
             },
-            metadata: localAssets.find(metadata => metadata.display === STAKING_TOKEN),
             extendedMetadata,
           },
         },
