@@ -1,9 +1,22 @@
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import {
+  AddressIndex,
+  IdentityKey,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { stakingClient } from '../clients/grpc';
 import { AssetBalance, getAssetBalances } from './balances';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { getDisplayDenomFromView } from '@penumbra-zone/types';
-import { STAKING_TOKEN, assetPatterns, localAssets } from '@penumbra-zone/constants';
+import {
+  bech32IdentityKey,
+  getDisplayDenomFromView,
+  getIdentityKeyFromValidatorInfo,
+  getValidatorInfo,
+} from '@penumbra-zone/types';
+import {
+  DelegationCaptureGroups,
+  STAKING_TOKEN,
+  assetPatterns,
+  localAssets,
+} from '@penumbra-zone/constants';
 import { Any } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
@@ -12,8 +25,14 @@ import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
  */
 export const getValidatorInfos = () => stakingClient.validatorInfo({ showInactive: false });
 
-const isDelegationBalance = (assetBalance: AssetBalance) =>
-  assetPatterns.delegationToken.test(getDisplayDenomFromView(assetBalance.value));
+const isDelegationBalance = (identityKey: IdentityKey) => (assetBalance: AssetBalance) => {
+  const match = assetPatterns.delegationToken.exec(getDisplayDenomFromView(assetBalance.value));
+  if (!match) return false;
+
+  const matchGroups = match.groups as unknown as DelegationCaptureGroups;
+
+  return bech32IdentityKey(identityKey) === matchGroups.bech32IdentityKey;
+};
 
 /**
  * Given an `AddressIndex`, yields `ValueView`s of the given address's balance
@@ -41,7 +60,10 @@ export const getDelegationsForAccount = async function* (addressIndex: AddressIn
       value: validatorInfoResponse.validatorInfo?.toBinary(),
     });
 
-    const delegation = assetBalances.find(isDelegationBalance);
+    const identityKey = getValidatorInfo.pipe(getIdentityKeyFromValidatorInfo)(
+      validatorInfoResponse,
+    );
+    const delegation = assetBalances.find(isDelegationBalance(identityKey));
 
     if (delegation) {
       const withValidatorInfo = delegation.value.clone();

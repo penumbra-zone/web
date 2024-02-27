@@ -3,9 +3,11 @@ import { AllSlices, SliceCreator } from '.';
 import { getDelegationsForAccount } from '../fetchers/staking';
 import {
   VotingPowerAsIntegerPercentage,
+  getAmount,
   getDisplayDenomFromView,
   getValidatorInfoFromValueView,
   getVotingPowerByValidatorInfo,
+  joinLoHiAmount,
 } from '@penumbra-zone/types';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getBalancesByAccount } from '../fetchers/balances/by-account';
@@ -36,6 +38,12 @@ export interface StakingSlice {
   votingPowerByValidatorInfo: Record<string, VotingPowerAsIntegerPercentage>;
 }
 
+/**
+ * Used with `.sort()` to sort value views by balance.
+ */
+const byBalance = (valueViewA: ValueView, valueViewB: ValueView): number =>
+  Number(joinLoHiAmount(getAmount(valueViewB)) - joinLoHiAmount(getAmount(valueViewA)));
+
 export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) => ({
   account: 0,
   delegationsByAccount: new Map(),
@@ -52,8 +60,10 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     for await (const delegation of getDelegationsForAccount(addressIndex)) {
       const delegations = get().staking.delegationsByAccount.get(addressIndex.account) ?? [];
 
+      const sortedDelegations = [...delegations, delegation].sort(byBalance);
+
       set(state => {
-        state.staking.delegationsByAccount.set(addressIndex.account, [...delegations, delegation]);
+        state.staking.delegationsByAccount.set(addressIndex.account, sortedDelegations);
       });
 
       validatorInfos.push(getValidatorInfoFromValueView(delegation));
