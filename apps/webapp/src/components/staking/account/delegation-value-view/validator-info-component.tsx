@@ -14,6 +14,10 @@ import {
 } from '@penumbra-zone/ui';
 import { CopyToClipboardIconButton } from '@penumbra-zone/ui/components/ui/copy-to-clipboard-icon-button';
 
+/**
+ * Renders a single `ValidatorInfo`: its name, bech32-encoded identity key,
+ * voting power, and commission.
+ */
 export const ValidatorInfoComponent = ({
   validatorInfo,
   votingPowerAsIntegerPercentage,
