@@ -42,3 +42,7 @@ several times per day, and generally has less information on its chain.
 ## Name
 
 It'd be nice to have a cool name for the DEX explorer. We don't have one yet.
+
+
+## Proto Generation
+Using https://buf.build/penumbra-zone/penumbra/sdks/main
