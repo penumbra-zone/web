@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
+    "jsx": "preserve",
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -11,7 +16,6 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
     "incremental": true,
     "plugins": [
       {
@@ -19,7 +23,10 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*", "./styles/*"]
+      "@/*": [
+        "./src/*",
+        "./styles/*"
+      ]
     }
   },
   "include": [
@@ -29,5 +36,7 @@
     ".next/types/**/*.ts",
     "styles/styles.d.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
