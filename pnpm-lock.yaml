@@ -505,7 +505,7 @@ importers:
         version: 8.0.0
     devDependencies:
       '@penumbra-zone/polyfills':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../polyfills
       '@types/chrome':
         specifier: 0.0.260
@@ -526,7 +526,7 @@ importers:
   packages/transport:
     devDependencies:
       '@penumbra-zone/polyfills':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../polyfills
       '@types/chrome':
         specifier: 0.0.260
@@ -16150,7 +16150,7 @@ packages:
       '@rollup/plugin-virtual': 3.0.2
       '@swc/core': 1.4.2
       uuid: 9.0.1
-      vite: 5.1.4(@types/node@20.11.20)
+      vite: 5.1.4(@types/node@20.11.19)
     transitivePeerDependencies:
       - '@swc/helpers'
       - rollup
@@ -16161,7 +16161,7 @@ packages:
     peerDependencies:
       vite: ^2 || ^3 || ^4 || ^5
     dependencies:
-      vite: 5.1.4(@types/node@20.11.20)
+      vite: 5.1.4(@types/node@20.11.19)
     dev: true
 
   /vite@4.5.2(@types/node@20.11.19):
