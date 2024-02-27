@@ -20,11 +20,6 @@ import {
 import { Any } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
-/**
- * @todo: Make `showInactive` configurable via UI filters.
- */
-export const getValidatorInfos = () => stakingClient.validatorInfo({ showInactive: false });
-
 const isDelegationBalance = (identityKey: IdentityKey) => (assetBalance: AssetBalance) => {
   const match = assetPatterns.delegationToken.exec(getDisplayDenomFromView(assetBalance.value));
   if (!match) return false;
