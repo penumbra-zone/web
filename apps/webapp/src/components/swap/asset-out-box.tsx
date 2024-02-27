@@ -63,7 +63,7 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
 };
 
 const EstimateButton = ({ simulateFn }: { simulateFn: () => Promise<void> }) => (
-  <TooltipProvider delayDuration={0}>
+  <TooltipProvider>
     <Tooltip>
       <TooltipTrigger>
         <div

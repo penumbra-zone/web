@@ -29,7 +29,7 @@ export const ValidatorInfoComponent = ({
   const identityKey = getIdentityKeyFromValidatorInfo(validatorInfo);
 
   return (
-    <TooltipProvider delayDuration={0}>
+    <TooltipProvider>
       <div className='flex items-center gap-4'>
         <div className='shrink-0'>
           <Identicon

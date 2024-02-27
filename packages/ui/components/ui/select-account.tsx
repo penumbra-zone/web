@@ -115,7 +115,7 @@ export const SelectAccount = ({ getAddrByIndex }: SelectAccountProps) => {
             <div className='flex items-center gap-2'>
               <IncognitoIcon fill='#BDB8B8' />
               <p className='mt-1 font-bold'>IBC Deposit Address</p>
-              <TooltipProvider delayDuration={0}>
+              <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
                     <InfoIcon className='size-4 cursor-pointer text-muted-foreground hover:text-[#8D5728]' />
