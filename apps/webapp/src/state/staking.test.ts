@@ -53,12 +53,25 @@ const validatorInfoResponse3 = new ValidatorInfoResponse({
   },
 });
 
+const validator4IdentityKey = new IdentityKey({ ik: new Uint8Array([0]) });
+const validatorInfoResponse4 = new ValidatorInfoResponse({
+  validatorInfo: {
+    status: {
+      votingPower: { hi: 0n, lo: 9n },
+    },
+    validator: {
+      name: 'Validator 4',
+      identityKey: validator4IdentityKey,
+    },
+  },
+});
+
 const mockStakingClient = vi.hoisted(() => ({
   validatorInfo: vi.fn(async function* () {
     yield await Promise.resolve(validatorInfoResponse1);
     yield await Promise.resolve(validatorInfoResponse2);
     yield await Promise.resolve(validatorInfoResponse3);
-    return;
+    yield await Promise.resolve(validatorInfoResponse4);
   }),
 }));
 
@@ -170,7 +183,7 @@ describe('Staking Slice', () => {
     });
   });
 
-  it('adds the delegation tokens from responses to the state, sorted by balance descending', async () => {
+  it('adds the delegation tokens from responses to the state, sorted by balance (descending) then voting power (descending)', async () => {
     const { getState } = useStore;
 
     await getState().staking.loadDelegationsForCurrentAccount();
@@ -179,7 +192,9 @@ describe('Staking Slice', () => {
 
     /**
      * Note sorting - validator 2 comes before validator 1, since we have a
-     * higher balance of validator 2's delegation tokens.
+     * higher balance of validator 2's delegation tokens. And validator 4 comes
+     * before validator 3 at the end: we have a 0 balance of both, but validator
+     * 4 has more voting power.
      */
     expect(getValidatorInfoFromValueView(delegations[0])).toEqual(
       validatorInfoResponse2.validatorInfo,
@@ -188,6 +203,9 @@ describe('Staking Slice', () => {
       validatorInfoResponse1.validatorInfo,
     );
     expect(getValidatorInfoFromValueView(delegations[2])).toEqual(
+      validatorInfoResponse4.validatorInfo,
+    );
+    expect(getValidatorInfoFromValueView(delegations[3])).toEqual(
       validatorInfoResponse3.validatorInfo,
     );
   });
@@ -197,6 +215,6 @@ describe('Staking Slice', () => {
 
     expect(getState().staking.votingPowerByValidatorInfo).toEqual({});
     await getState().staking.loadDelegationsForCurrentAccount();
-    expect(Object.values(getState().staking.votingPowerByValidatorInfo).length).toBe(3);
+    expect(Object.values(getState().staking.votingPowerByValidatorInfo).length).toBe(4);
   });
 });

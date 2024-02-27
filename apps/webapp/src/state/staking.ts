@@ -7,6 +7,7 @@ import {
   getDisplayDenomFromView,
   getValidatorInfoFromValueView,
   getVotingPowerByValidatorInfo,
+  getVotingPowerFromValidatorInfo,
   joinLoHiAmount,
 } from '@penumbra-zone/types';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
@@ -39,10 +40,25 @@ export interface StakingSlice {
 }
 
 /**
- * Used with `.sort()` to sort value views by balance.
+ * Used with `.sort()` to sort value views by balance and then voting power
+ * (both descending).
  */
-const byBalance = (valueViewA: ValueView, valueViewB: ValueView): number =>
-  Number(joinLoHiAmount(getAmount(valueViewB)) - joinLoHiAmount(getAmount(valueViewA)));
+const byBalanceAndVotingPower = (valueViewA: ValueView, valueViewB: ValueView): number => {
+  const byBalance = Number(
+    joinLoHiAmount(getAmount(valueViewB)) - joinLoHiAmount(getAmount(valueViewA)),
+  );
+  if (byBalance !== 0) return byBalance;
+
+  const validatorInfoA = getValidatorInfoFromValueView(valueViewA);
+  const validatorInfoB = getValidatorInfoFromValueView(valueViewB);
+
+  const byVotingPower = Number(
+    joinLoHiAmount(getVotingPowerFromValidatorInfo(validatorInfoB)) -
+      joinLoHiAmount(getVotingPowerFromValidatorInfo(validatorInfoA)),
+  );
+
+  return byVotingPower;
+};
 
 export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) => ({
   account: 0,
@@ -60,7 +76,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     for await (const delegation of getDelegationsForAccount(addressIndex)) {
       const delegations = get().staking.delegationsByAccount.get(addressIndex.account) ?? [];
 
-      const sortedDelegations = [...delegations, delegation].sort(byBalance);
+      const sortedDelegations = [...delegations, delegation].sort(byBalanceAndVotingPower);
 
       set(state => {
         state.staking.delegationsByAccount.set(addressIndex.account, sortedDelegations);
