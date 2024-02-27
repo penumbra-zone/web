@@ -3,6 +3,11 @@
 // `ReadableStream` as a var and not just an interface, so we can't just extend
 // and merge the global declarations.
 
+// It doesn't matter for any of our use cases, but notably, there seems to be a
+// spec error: Unlike a Generator, a ReadableStream cannot be both 'done' and
+// convey a 'value' at the same time, so this should not be used to streamify a
+// generator with a return value.
+
 type ReadableStreamFrom = <T>(iterable: Iterable<T> | AsyncIterable<T>) => ReadableStream<T>;
 
 const ReadableStreamWithFrom: typeof ReadableStream & { from: ReadableStreamFrom } =
