@@ -12,7 +12,8 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
-import '@penumbra-zone/types/src/promise-with-resolvers';
+
+import '@penumbra-zone/polyfills/Promise.withResolvers';
 
 export const optimisticBuild = async function* (
   transactionPlan: TransactionPlan,

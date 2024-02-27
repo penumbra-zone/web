@@ -43,7 +43,7 @@ import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 
 import { IdbCursorSource } from './stream';
 
-import { streamToGenerator } from '@penumbra-zone/types/src/stream';
+import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -176,10 +176,8 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async *iterateAssetsMetadata() {
-    yield* streamToGenerator(
-      new ReadableStream(
-        new IdbCursorSource(this.db.transaction('ASSETS').store.openCursor(), Metadata),
-      ),
+    yield* new ReadableStream(
+      new IdbCursorSource(this.db.transaction('ASSETS').store.openCursor(), Metadata),
     );
   }
 
@@ -194,23 +192,19 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async *iterateSpendableNotes() {
-    yield* streamToGenerator(
-      new ReadableStream(
-        new IdbCursorSource(
-          this.db.transaction('SPENDABLE_NOTES').store.openCursor(),
-          SpendableNoteRecord,
-        ),
+    yield* new ReadableStream(
+      new IdbCursorSource(
+        this.db.transaction('SPENDABLE_NOTES').store.openCursor(),
+        SpendableNoteRecord,
       ),
     );
   }
 
   async *iterateTransactionInfo() {
-    yield* streamToGenerator(
-      new ReadableStream(
-        new IdbCursorSource(
-          this.db.transaction('TRANSACTION_INFO').store.openCursor(),
-          TransactionInfo,
-        ),
+    yield* new ReadableStream(
+      new IdbCursorSource(
+        this.db.transaction('TRANSACTION_INFO').store.openCursor(),
+        TransactionInfo,
       ),
     );
   }
@@ -263,10 +257,8 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async *iterateSwaps() {
-    yield* streamToGenerator(
-      new ReadableStream(
-        new IdbCursorSource(this.db.transaction('SWAPS').store.openCursor(), SwapRecord),
-      ),
+    yield* new ReadableStream(
+      new IdbCursorSource(this.db.transaction('SWAPS').store.openCursor(), SwapRecord),
     );
   }
 

@@ -1,0 +1,12 @@
+{
+  "name": "@penumbra-zone/polyfills",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\"",
+    "test:browser": "vitest run --config browser.config.ts"
+  },
+  "devDependencies": {
+    "tsconfig": "workspace:*"
+  }
+}
