@@ -28,16 +28,16 @@ export const Account = () => {
 
   return (
     <div className='flex flex-col gap-4'>
-      <Card gradient>
-        <CardContent>
-          {!!unstakedTokens && (
+      {!!unstakedTokens && (
+        <Card gradient>
+          <CardContent>
             <div className='flex gap-1'>
               <ValueViewComponent view={unstakedTokens} />
               <span>available to delegate</span>
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {!!delegations.length && (
         <Card>
