@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { calculateCommissionAsPercentage, getVotingPowerByValidatorInfo } from './staking';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import { bech32IdentityKey } from './identity-key';
+import { getIdentityKeyFromValidatorInfo } from './getters';
 
 describe('calculateCommission()', () => {
   const validatorInfo = new ValidatorInfo({
@@ -46,6 +48,7 @@ describe('getVotingPowerByValidatorInfo()', () => {
     },
     validator: {
       name: 'Validator 1',
+      identityKey: { ik: new Uint8Array([1, 2, 3]) },
     },
   });
 
@@ -55,6 +58,7 @@ describe('getVotingPowerByValidatorInfo()', () => {
     },
     validator: {
       name: 'Validator 2',
+      identityKey: { ik: new Uint8Array([4, 5, 6]) },
     },
   });
 
@@ -64,14 +68,27 @@ describe('getVotingPowerByValidatorInfo()', () => {
     },
     validator: {
       name: 'Validator 3',
+      identityKey: { ik: new Uint8Array([7, 8, 9]) },
     },
   });
+
+  const validator1Bech32IdentityKey = bech32IdentityKey(
+    getIdentityKeyFromValidatorInfo(validatorInfo1),
+  );
+
+  const validator2Bech32IdentityKey = bech32IdentityKey(
+    getIdentityKeyFromValidatorInfo(validatorInfo2),
+  );
+
+  const validator3Bech32IdentityKey = bech32IdentityKey(
+    getIdentityKeyFromValidatorInfo(validatorInfo3),
+  );
 
   it('accurately calculates voting power for each validator', () => {
     const result = getVotingPowerByValidatorInfo([validatorInfo1, validatorInfo2, validatorInfo3]);
 
-    expect(result.get(validatorInfo1)).toBe(40);
-    expect(result.get(validatorInfo2)).toBe(40);
-    expect(result.get(validatorInfo3)).toBe(20);
+    expect(result[validator1Bech32IdentityKey]).toBe(40);
+    expect(result[validator2Bech32IdentityKey]).toBe(40);
+    expect(result[validator3Bech32IdentityKey]).toBe(20);
   });
 });

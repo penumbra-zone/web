@@ -39,9 +39,13 @@ export const ValueViewComponent = ({
 
     return (
       <div className='flex items-center gap-1 text-base font-bold'>
-        {showIcon && <AssetIcon metadata={metadata} />}
+        {showIcon && (
+          <div className='size-6'>
+            <AssetIcon metadata={metadata} />
+          </div>
+        )}
         {showValue && <span>{formattedAmount}</span>}
-        {showDenom && <span>{symbol}</span>}
+        {showDenom && <span className='truncate'>{symbol}</span>}
         {
           // TODO: this will need refinement once we actually hand out
           // equivalent values to the frontend. it would be nice to have

@@ -1,36 +1,27 @@
-import { LoaderFunction } from 'react-router-dom';
-import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
-import { throwIfExtNotInstalled } from '../../utils/is-connected';
-import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
-import { EduPanel } from '../shared/edu-panels/content';
-import { Accounts } from './accounts';
-import { cn } from '@penumbra-zone/ui/lib/utils';
-import { AllValidators } from './all-validators';
+import { useEffect } from 'react';
 import { useStore } from '../../state';
+import { stakingSelector } from '../../state/staking';
+import { throwIfExtNotInstalled } from '../../utils/is-connected';
+import { Account } from './account';
 
-export const StakingLoader: LoaderFunction = async (): Promise<BalancesByAccount[]> => {
+export const StakingLoader = async () => {
   throwIfExtNotInstalled();
 
-  void useStore.getState().staking.loadValidators();
+  // Await to avoid screen flicker.
+  await useStore.getState().staking.loadUnstakedTokensByAccount();
 
-  const balancesByAccount = await getBalancesByAccount();
-  return balancesByAccount;
+  return null;
 };
 
-const GAPS = 'gap-6 md:gap-4 xl:gap-5';
-
 export const StakingLayout = () => {
-  return (
-    <div className={cn('grid md:grid-cols-3', GAPS)}>
-      <div className={cn('col-span-2 flex flex-col', GAPS)}>
-        <Accounts />
+  const { account, loadDelegationsForCurrentAccount } = useStore(stakingSelector);
 
-        <AllValidators />
-      </div>
-
-      <div>
-        <EduInfoCard label='Staking' content={EduPanel.STAKING} src='./nodes-icon.svg' />
-      </div>
-    </div>
+  /** Load delegations every time the account changes. */
+  useEffect(
+    () => void loadDelegationsForCurrentAccount(),
+    [account, loadDelegationsForCurrentAccount],
   );
+
+  /** @todo: Render an account switcher. */
+  return <Account />;
 };

@@ -1,10 +1,18 @@
 import { create, StateCreator } from 'zustand';
+import { enableMapSet } from 'immer';
 import { immer } from 'zustand/middleware/immer';
 import { createSwapSlice, SwapSlice } from './swap';
 import { createIbcSendSlice, IbcSendSlice } from './ibc';
 import { createSendSlice, SendSlice } from './send';
 import { createStakingSlice, StakingSlice } from './staking';
 import { createUnclaimedSwapsSlice, UnclaimedSwapsSlice } from './unclaimed-swaps';
+
+/**
+ * Required to enable use of `Map`s in Zustand state when using Immer
+ * middleware. Without this, calling `.set()` on a `Map` in Zustand state
+ * results in an error.
+ */
+enableMapSet();
 
 export interface AllSlices {
   ibc: IbcSendSlice;
