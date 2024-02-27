@@ -3,7 +3,7 @@
 // `stream.ts` It's close to release, so we should be able to remove soon.
 // https://chromium-review.googlesource.com/c/chromium/src/+/5263918/11
 
-ReadableStream.prototype[Symbol.asyncIterator] = async function* () {
+ReadableStream.prototype[Symbol.asyncIterator] ??= async function* () {
   const reader = this.getReader();
   try {
     for (;;) {

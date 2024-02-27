@@ -15,6 +15,7 @@
     "idb": "^8.0.0"
   },
   "devDependencies": {
+    "@penumbra-zone/polyfills": "workspace:^",
     "@types/chrome": "0.0.260",
     "playwright": "^1.41.2"
   }

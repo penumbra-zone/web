@@ -29,7 +29,7 @@ import { createTransport } from '@connectrpc/connect/protocol-connect';
 
 import { MessageToJson } from '../stream';
 
-import ReadableStream from '@penumbra-zone/types/polyfill-readable-stream-from';
+import ReadableStream from '@penumbra-zone/polyfills/ReadableStream.from';
 
 // see https://github.com/connectrpc/connect-es/pull/925
 // hopefully also simplifies transport call soon

@@ -43,7 +43,7 @@ import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 
 import { IdbCursorSource } from './stream';
 
-import '@penumbra-zone/types/polyfill-readable-stream-async-iterable';
+import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes

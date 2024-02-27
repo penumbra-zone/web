@@ -29,7 +29,7 @@ import {
   isTransportStream,
 } from './types';
 
-import '@penumbra-zone/types/polyfill-readable-stream-async-iterable';
+import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
 
 type AnyServerStreamingImpl = (i: AnyMessage, ctx: HandlerContext) => AsyncIterable<AnyMessage>;
 type AnyUnaryImpl = (i: AnyMessage, ctx: HandlerContext) => Promise<AnyMessage>;
