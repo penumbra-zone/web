@@ -19,6 +19,11 @@ export const DelegationValueView = ({
 }: {
   valueView?: ValueView;
   votingPowerAsIntegerPercentage?: number;
+  /**
+   * Whether the user can delegate to this validator (i.e., whether the user has
+   * a nonzero balance of the staking token with which to stake in this
+   * validator).
+   */
   canDelegate: boolean;
 }) => {
   const delegationBalance = getAmount.optional()(valueView);
