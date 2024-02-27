@@ -1,8 +1,8 @@
 import {
   VotingPowerAsIntegerPercentage,
   bech32IdentityKey,
-  getDisplayDenomFromView,
   getIdentityKeyFromValidatorInfo,
+  getIdentityKeyFromValueView,
   getValidatorInfoFromValueView,
 } from '@penumbra-zone/types';
 import { useStore } from '../../../state';
@@ -48,7 +48,7 @@ export const Account = () => {
             <div className='mt-8 flex flex-col gap-8'>
               {delegations.map(delegation => (
                 <DelegationValueView
-                  key={getDisplayDenomFromView(delegation)}
+                  key={bech32IdentityKey(getIdentityKeyFromValueView(delegation))}
                   canDelegate={!!unstakedTokens}
                   valueView={delegation}
                   votingPowerAsIntegerPercentage={getVotingPowerAsIntegerPercentage(
