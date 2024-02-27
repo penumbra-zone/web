@@ -57,7 +57,7 @@ describe('ReadableStream[Symbol.asyncIterator]', () => {
     expect(values).toEqual([1, 2, 3]);
   });
 
-  test("ReadableStream can't be yielded to by a synchronous generator", async () => {
+  test("ReadableStream can't be yielded to by a synchronous generator", () => {
     function* genFn() {
       // @ts-expect-error - this should be an error
       yield* new ReadableStream<number>({

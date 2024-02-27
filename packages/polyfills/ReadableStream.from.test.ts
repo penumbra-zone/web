@@ -70,6 +70,7 @@ describe('ReadableStream.from', () => {
         yield 1;
         await Promise.resolve();
         yield 2;
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         await Promise.reject('hmmm');
         yield 3;
       })(),
@@ -82,8 +83,8 @@ describe('ReadableStream.from', () => {
   });
 });
 
-describe('ReadableStream cannot handle a return value', async () => {
-  test('generator can end with a returned value', async () => {
+describe('ReadableStream cannot handle a return value', () => {
+  test('a Generator can end with a returned value', () => {
     const gen = (function* () {
       yield 1;
       yield 2;
@@ -96,7 +97,7 @@ describe('ReadableStream cannot handle a return value', async () => {
     expect(gen.next()).toEqual({ value: undefined, done: true });
   });
 
-  test('ReadableStream eats a return value', async () => {
+  test('but ReadableStream eats the returned value', async () => {
     const stream = ReadableStream.from(
       (function* () {
         yield 1;
