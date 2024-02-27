@@ -8,8 +8,8 @@ describe('Customizing metadata', () => {
       display:
         'delegation_penumbravalid1fjuj67ayaqueqxg03d65ps5aah6m39u39qeacu3zv2cw3dzxssyq3yrcez',
     });
-    customizeSymbol(metadata);
-    expect(metadata.symbol).toBe('Delegated UM (fjuj67ayaqueqxg03d65ps5aa...)');
+
+    expect(customizeSymbol(metadata).symbol).toBe('Delegated UM (fjuj67ayaqueqxg03d65ps5aa...)');
   });
 
   test('should work for unbonding token', () => {
@@ -17,8 +17,10 @@ describe('Customizing metadata', () => {
       display:
         'uunbonding_epoch_29_penumbravalid1fjuj67ayaqueqxg03d65ps5aah6m39u39qeacu3zv2cw3dzxssyq3yrcez',
     });
-    customizeSymbol(metadata);
-    expect(metadata.symbol).toBe('Unbonding UM, epoch 29 (fjuj67ayaqueqxg03d65ps5aa...)');
+
+    expect(customizeSymbol(metadata).symbol).toBe(
+      'Unbonding UM, epoch 29 (fjuj67ayaqueqxg03d65ps5aa...)',
+    );
   });
 
   test('should do nothing if no matches', () => {
@@ -26,7 +28,7 @@ describe('Customizing metadata', () => {
       display: 'test_usd',
       symbol: 'usdc',
     });
-    customizeSymbol(metadata);
-    expect(metadata.symbol).toBe('usdc');
+
+    expect(customizeSymbol(metadata).symbol).toBe('usdc');
   });
 });

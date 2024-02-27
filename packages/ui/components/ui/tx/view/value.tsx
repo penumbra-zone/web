@@ -1,5 +1,6 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
+  customizeSymbol,
   fromBaseUnitAmount,
   getDisplayDenomExponent,
   getDisplayDenomFromView,
@@ -29,7 +30,7 @@ export const ValueViewComponent = ({
 
   if (view.valueView.case === 'knownAssetId' && view.valueView.value.metadata) {
     const value = view.valueView.value;
-    const metadata = view.valueView.value.metadata;
+    const metadata = customizeSymbol(view.valueView.value.metadata);
     const amount = value.amount ?? new Amount();
     const exponent = getDisplayDenomExponent(metadata);
     // The regex trims trailing zeros which toFormat adds in

@@ -15,13 +15,19 @@ export const customizeSymbol = (metadata: Metadata) => {
   if (delegationMatch) {
     const { id } = delegationMatch.groups as unknown as DelegationCaptureGroups;
     const shortenedId = id.slice(0, DELEGATION_SYMBOL_LENGTH);
-    metadata.symbol = `Delegated UM (${shortenedId}...)`;
+    const customized = metadata.clone();
+    customized.symbol = `Delegated UM (${shortenedId}...)`;
+    return customized;
   }
 
   const unbondingMatch = assetPatterns.unbondingToken.exec(metadata.display);
   if (unbondingMatch) {
     const { id, epoch } = unbondingMatch.groups as unknown as UnbondingCaptureGroups;
     const shortenedId = id.slice(0, UNBONDING_SYMBOL_LENGTH);
-    metadata.symbol = `Unbonding UM, epoch ${epoch} (${shortenedId}...)`;
+    const customized = metadata.clone();
+    customized.symbol = `Unbonding UM, epoch ${epoch} (${shortenedId}...)`;
+    return customized;
   }
+
+  return metadata;
 };

@@ -24,7 +24,6 @@ import {
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { backOff } from 'exponential-backoff';
-import { customizeSymbol } from './customize-symbol';
 
 interface QueryClientProps {
   fullViewingKey: string;
@@ -250,7 +249,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       const metadataFromNode = await this.querier.shieldedPool.assetMetadata(assetId);
 
       if (metadataFromNode) {
-        customizeSymbol(metadataFromNode);
         await this.indexedDb.saveAssetsMetadata(metadataFromNode);
       }
     }
