@@ -1,9 +1,7 @@
 import {
   VotingPowerAsIntegerPercentage,
   bech32IdentityKey,
-  getIdentityKeyFromValidatorInfo,
   getIdentityKeyFromValueView,
-  getValidatorInfoFromValueView,
 } from '@penumbra-zone/types';
 import { useStore } from '../../../state';
 import { stakingSelector } from '../../../state/staking';
@@ -15,10 +13,7 @@ import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/valu
 const getVotingPowerAsIntegerPercentage = (
   votingPowerByValidatorInfo: Record<string, VotingPowerAsIntegerPercentage>,
   delegation: ValueView,
-) =>
-  votingPowerByValidatorInfo[
-    bech32IdentityKey(getIdentityKeyFromValidatorInfo(getValidatorInfoFromValueView(delegation)))
-  ];
+) => votingPowerByValidatorInfo[bech32IdentityKey(getIdentityKeyFromValueView(delegation))];
 
 export const Account = () => {
   const { account, delegationsByAccount, unstakedTokensByAccount, votingPowerByValidatorInfo } =
