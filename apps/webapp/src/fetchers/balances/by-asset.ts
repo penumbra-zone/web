@@ -1,47 +1,28 @@
-import { AssetBalance } from '.';
-import {
-  AssetId,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { addAmounts } from '@penumbra-zone/types';
-
-const getAssetId = (v: ValueView): AssetId => {
-  if (v.valueView.case === 'knownAssetId') {
-    const assetId = v.valueView.value.metadata?.penumbraAssetId;
-    if (!assetId) throw new Error('No asset id in value view');
-    return assetId;
-  }
-
-  if (v.valueView.case === 'unknownAssetId') {
-    const assetId = v.valueView.value.assetId;
-    if (!assetId) throw new Error('No asset id in value view');
-    return assetId;
-  }
-
-  throw new Error('unrecognized value view case');
-};
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { addAmounts, getAssetIdFromValueView } from '@penumbra-zone/types';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 const hasMatchingAssetId = (vA: ValueView, vB: ValueView) => {
-  return getAssetId(vA).equals(getAssetId(vB));
+  return getAssetIdFromValueView(vA).equals(getAssetIdFromValueView(vB));
 };
 
-// Use for doing a .reduce() on AssetBalance[]
-export const groupByAsset = (acc: ValueView[], curr: AssetBalance): ValueView[] => {
-  if (!curr.value.valueView.value?.amount) throw new Error('No amount in value view');
+// Use for doing a .reduce() on BalancesResponse[]
+export const groupByAsset = (acc: ValueView[], curr: BalancesResponse): ValueView[] => {
+  if (!curr.balanceView?.valueView.value?.amount) throw new Error('No amount in value view');
 
-  const grouping = acc.find(v => hasMatchingAssetId(v, curr.value));
+  const grouping = acc.find(v => hasMatchingAssetId(v, curr.balanceView!));
 
   if (grouping) {
     // Combine the amounts
     if (!grouping.valueView.value?.amount) throw new Error('Grouping without amount');
     grouping.valueView.value.amount = addAmounts(
       grouping.valueView.value.amount,
-      curr.value.valueView.value.amount,
+      curr.balanceView.valueView.value.amount,
     );
   } else {
     // Add a new entry to the array
     // clone so we don't mutate the original
-    acc.push(curr.value.clone());
+    acc.push(curr.balanceView.clone());
   }
 
   return acc;

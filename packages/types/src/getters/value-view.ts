@@ -1,6 +1,6 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { createGetter } from './utils/create-getter';
-import { getAssetId, getDisplayDenomExponent } from './metadata';
+import { getDisplayDenomExponent } from './metadata';
 import { bech32AssetId } from '../asset';
 import { Any } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
@@ -36,7 +36,16 @@ export const getIdentityKeyFromValueView = getValidatorInfoFromValueView.pipe(
 
 export const getDisplayDenomExponentFromValueView = getMetadata.pipe(getDisplayDenomExponent);
 
-export const getAssetIdFromValueView = getMetadata.pipe(getAssetId);
+export const getAssetIdFromValueView = createGetter((v?: ValueView) => {
+  switch (v?.valueView.case) {
+    case 'knownAssetId':
+      return v.valueView.value.metadata?.penumbraAssetId;
+    case 'unknownAssetId':
+      return v.valueView.value.assetId;
+    default:
+      return undefined;
+  }
+});
 
 export const getAmount = createGetter(
   (valueView?: ValueView) => valueView?.valueView.value?.amount,

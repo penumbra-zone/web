@@ -1,6 +1,5 @@
 import { useStore } from '../../state';
 import { swapSelector } from '../../state/swap';
-import { AssetBalance } from '../../fetchers/balances';
 import {
   buttonVariants,
   Tooltip,
@@ -16,11 +15,11 @@ import {
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { groupByAsset } from '../../fetchers/balances/by-asset';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 const findMatchingBalance = (
   metadata: Metadata | undefined,
-  balances: AssetBalance[],
+  balances: BalancesResponse[],
 ): ValueView | undefined => {
   if (!metadata?.penumbraAssetId) return undefined;
 
@@ -39,7 +38,7 @@ const findMatchingBalance = (
 };
 
 interface AssetOutBoxProps {
-  balances: AssetBalance[];
+  balances: BalancesResponse[];
 }
 
 export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {

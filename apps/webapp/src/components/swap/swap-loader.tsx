@@ -1,8 +1,11 @@
 import { LoaderFunction } from 'react-router-dom';
-import { AssetBalance, getAssetBalances } from '../../fetchers/balances';
+import { getBalances } from '../../fetchers/balances';
 import { useStore } from '../../state';
 import { throwIfExtNotInstalled } from '../../utils/is-connected';
-import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import {
+  BalancesResponse,
+  SwapRecord,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { fetchUnclaimedSwaps } from '../../fetchers/unclaimed-swaps';
 import { viewClient } from '../../clients/grpc';
@@ -16,12 +19,12 @@ export interface UnclaimedSwapsWithMetadata {
 }
 
 export interface SwapLoaderResponse {
-  assetBalances: AssetBalance[];
+  assetBalances: BalancesResponse[];
   unclaimedSwaps: UnclaimedSwapsWithMetadata[];
 }
 
 const getAndSetDefaultAssetBalances = async () => {
-  const assetBalances = await getAssetBalances();
+  const assetBalances = await getBalances();
 
   // set initial denom in if there is an available balance
   if (assetBalances[0]) {

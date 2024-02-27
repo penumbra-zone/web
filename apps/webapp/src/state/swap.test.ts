@@ -1,7 +1,6 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
 import { beforeEach, describe, expect, test } from 'vitest';
-import { AssetBalance } from '../fetchers/balances';
 import {
   Metadata,
   ValueView,
@@ -10,10 +9,11 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { bech32ToUint8Array } from '@penumbra-zone/types';
 import { localAssets } from '@penumbra-zone/constants';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 describe('Swap Slice', () => {
-  const selectionExample = {
-    value: new ValueView({
+  const selectionExample = new BalancesResponse({
+    balanceView: new ValueView({
       valueView: {
         case: 'knownAssetId',
         value: {
@@ -25,7 +25,7 @@ describe('Swap Slice', () => {
         },
       },
     }),
-    address: new AddressView({
+    accountAddress: new AddressView({
       addressView: {
         case: 'opaque',
         value: {
@@ -37,8 +37,7 @@ describe('Swap Slice', () => {
         },
       },
     }),
-    usdcValue: 0,
-  } satisfies AssetBalance;
+  });
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
@@ -78,7 +77,7 @@ describe('Swap Slice', () => {
       return state;
     });
     expect(useStore.getState().swap.simulateOutResult).toBeDefined();
-    useStore.getState().swap.setAssetIn({} as AssetBalance);
+    useStore.getState().swap.setAssetIn({} as BalancesResponse);
     expect(useStore.getState().swap.simulateOutResult).toBeUndefined();
   });
 

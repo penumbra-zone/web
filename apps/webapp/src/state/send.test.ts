@@ -3,7 +3,6 @@ import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { sendValidationErrors } from './send';
-import { AssetBalance } from '../fetchers/balances';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { bech32ToUint8Array, stringToUint8Array } from '@penumbra-zone/types';
 import {
@@ -14,6 +13,7 @@ import { produce } from 'immer';
 import { viewClient } from '../clients/grpc';
 import {
   AddressByIndexResponse,
+  BalancesResponse,
   TransactionPlannerResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
@@ -23,8 +23,8 @@ vi.mock('../fetchers/address', () => ({
 }));
 
 describe('Send Slice', () => {
-  const selectionExample = {
-    value: new ValueView({
+  const selectionExample = new BalancesResponse({
+    balanceView: new ValueView({
       valueView: {
         case: 'knownAssetId',
         value: {
@@ -40,7 +40,7 @@ describe('Send Slice', () => {
         },
       },
     }),
-    address: new AddressView({
+    accountAddress: new AddressView({
       addressView: {
         case: 'decoded',
         value: {
@@ -53,8 +53,7 @@ describe('Send Slice', () => {
         },
       },
     }),
-    usdcValue: 0,
-  } satisfies AssetBalance;
+  });
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
@@ -91,7 +90,7 @@ describe('Send Slice', () => {
     test('validate high enough amount validates', () => {
       const assetBalance = new Amount({ hi: 1n });
       const state = produce(selectionExample, draft => {
-        draft.value.valueView.value!.amount = assetBalance;
+        draft.balanceView!.valueView.value!.amount = assetBalance;
       });
       useStore.getState().send.setSelection(state);
       useStore.getState().send.setAmount('1000');
@@ -104,7 +103,7 @@ describe('Send Slice', () => {
     test('validate error when too low the balance of the asset', () => {
       const assetBalance = new Amount({ lo: 2n });
       const state = produce(selectionExample, draft => {
-        draft.value.valueView.value!.amount = assetBalance;
+        draft.balanceView!.valueView.value!.amount = assetBalance;
       });
       useStore.getState().send.setSelection(state);
       useStore.getState().send.setAmount('6');

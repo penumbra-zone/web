@@ -1,5 +1,8 @@
 import { AllSlices, SliceCreator } from '.';
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import {
+  BalancesResponse,
+  TransactionPlannerRequest,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
   authWitnessBuild,
   broadcast,
@@ -13,7 +16,6 @@ import {
   Value,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { AssetBalance } from '../fetchers/balances';
 import {
   getAddressIndex,
   getAssetId,
@@ -30,8 +32,8 @@ import { errorToast, TransactionToast } from '@penumbra-zone/ui';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 export interface SwapSlice {
-  assetIn: AssetBalance | undefined;
-  setAssetIn: (asset: AssetBalance) => void;
+  assetIn: BalancesResponse | undefined;
+  setAssetIn: (asset: BalancesResponse) => void;
   amount: string;
   setAmount: (amount: string) => void;
   assetOut: Metadata | undefined;
@@ -74,10 +76,10 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         if (!assetIn || !assetOut) throw new Error('Both asset in and out need to be set');
 
         const swapInValue = new Value({
-          assetId: getAssetIdFromValueView(assetIn.value),
+          assetId: getAssetIdFromValueView(assetIn.balanceView),
           amount: toBaseUnit(
             BigNumber(get().swap.amount || 0),
-            getDisplayDenomExponentFromValueView(assetIn.value),
+            getDisplayDenomExponentFromValueView(assetIn.balanceView),
           ),
         });
 
@@ -113,7 +115,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
 const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
   if (!assetIn) throw new Error('`assetIn` was undefined');
 
-  const addressIndex = getAddressIndex(assetIn.address);
+  const addressIndex = getAddressIndex(assetIn.accountAddress);
 
   return new TransactionPlannerRequest({
     swaps: [
@@ -122,9 +124,9 @@ const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => 
         value: {
           amount: toBaseUnit(
             BigNumber(amount),
-            getDisplayDenomExponentFromValueView(assetIn.value),
+            getDisplayDenomExponentFromValueView(assetIn.balanceView),
           ),
-          assetId: getAssetIdFromValueView(assetIn.value),
+          assetId: getAssetIdFromValueView(assetIn.balanceView),
         },
         claimAddress: await getAddressByIndex(addressIndex.account),
         // TODO: Calculate this properly in subsequent PR
@@ -138,7 +140,7 @@ const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => 
         },
       },
     ],
-    source: getAddressIndex(assetIn.address),
+    source: getAddressIndex(assetIn.accountAddress),
   });
 };
 

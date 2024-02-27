@@ -7,11 +7,12 @@ import InputToken from '../../shared/input-token';
 import { validateAmount } from '../../../state/send';
 import { useMemo } from 'react';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { AssetBalance, getAssetBalances } from '../../../fetchers/balances';
+import { getBalances } from '../../../fetchers/balances';
 import { testnetIbcChains } from '@penumbra-zone/constants';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
-export const IbcAssetBalanceLoader: LoaderFunction = async (): Promise<AssetBalance[]> => {
-  const assetBalances = await getAssetBalances();
+export const IbcAssetBalanceLoader: LoaderFunction = async (): Promise<BalancesResponse[]> => {
+  const assetBalances = await getBalances();
 
   if (assetBalances[0]) {
     // set initial account if accounts exist and asset if account has asset list
@@ -25,7 +26,7 @@ export const IbcAssetBalanceLoader: LoaderFunction = async (): Promise<AssetBala
 };
 
 export default function IbcForm() {
-  const assetBalances = useLoaderData() as AssetBalance[];
+  const assetBalances = useLoaderData() as BalancesResponse[];
   const {
     sendIbcWithdraw,
     destinationChainAddress,
@@ -105,7 +106,7 @@ interface IbcValidationFields {
 }
 
 const ibcValidationErrors = (
-  asset: AssetBalance | undefined,
+  asset: BalancesResponse | undefined,
   amount: string,
   recipient: string,
 ): IbcValidationFields => {
