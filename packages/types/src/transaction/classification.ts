@@ -12,4 +12,8 @@ export type TransactionClassification =
   /** The transaction contains a `swap` action. */
   | 'swap'
   /** The transaction contains a `swapClaim` action. */
-  | 'swapClaim';
+  | 'swapClaim'
+  /** The transaction contains a `delegate` action. */
+  | 'delegate'
+  /** The transaction contains an `undelegate` action. */
+  | 'undelegate';

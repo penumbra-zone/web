@@ -230,6 +230,64 @@ describe('classifyTransaction()', () => {
     expect(classifyTransaction(transactionView)).toBe('swapClaim');
   });
 
+  it('returns `delegate` for transactions with a `delegate` action', () => {
+    const transactionView = new TransactionView({
+      bodyView: {
+        actionViews: [
+          {
+            actionView: {
+              case: 'delegate',
+              value: {},
+            },
+          },
+          {
+            actionView: {
+              case: 'spend',
+              value: {},
+            },
+          },
+          {
+            actionView: {
+              case: 'output',
+              value: {},
+            },
+          },
+        ],
+      },
+    });
+
+    expect(classifyTransaction(transactionView)).toBe('delegate');
+  });
+
+  it('returns `undelegate` for transactions with an `undelegate` action', () => {
+    const transactionView = new TransactionView({
+      bodyView: {
+        actionViews: [
+          {
+            actionView: {
+              case: 'undelegate',
+              value: {},
+            },
+          },
+          {
+            actionView: {
+              case: 'spend',
+              value: {},
+            },
+          },
+          {
+            actionView: {
+              case: 'output',
+              value: {},
+            },
+          },
+        ],
+      },
+    });
+
+    expect(classifyTransaction(transactionView)).toBe('undelegate');
+  });
+
   it("returns `unknown` for transactions that don't fit the above categories", () => {
     const transactionView = new TransactionView({
       bodyView: {
@@ -258,7 +316,7 @@ describe('classifyTransaction()', () => {
           },
           {
             actionView: {
-              case: 'delegate',
+              case: 'delegatorVote',
               value: {},
             },
           },
