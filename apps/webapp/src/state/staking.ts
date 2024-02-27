@@ -26,12 +26,13 @@ export interface StakingSlice {
   unstakedTokensByAccount: Map<number, ValueView | undefined>;
   /**
    * Load all delegations for the currently selected account, and save them into
-   * `delegationsByAccount`.
+   * `delegationsByAccount`. Should be called each time `account` is changed.
    */
   loadDelegationsForCurrentAccount: () => Promise<void>;
   /**
    * Load unstaked (UM) tokens across _all_ accounts, and save them to
-   * `unstakedTokensByAccount`.
+   * `unstakedTokensByAccount`. Does not need to be called each time `account`
+   * is changed, as a single call populates data across all accounts.
    */
   loadUnstakedTokensByAccount: () => Promise<void>;
   loading: boolean;
