@@ -5,7 +5,10 @@ import {
   ValidatorInfo,
   ValidatorInfoResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {
+  Metadata,
+  ValueView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { bech32IdentityKey, getValidatorInfoFromValueView } from '@penumbra-zone/types';
 import {
   AddressView,
@@ -159,8 +162,13 @@ vi.mock('../fetchers/balances', () => ({
   ),
 }));
 
+const mockViewClient = vi.hoisted(() => ({
+  assetMetadataById: vi.fn(() => new Metadata()),
+}));
+
 vi.mock('../clients/grpc', () => ({
   stakingClient: mockStakingClient,
+  viewClient: mockViewClient,
 }));
 
 describe('Staking Slice', () => {
