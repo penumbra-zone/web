@@ -19,7 +19,6 @@ import {
 } from '@bufbuild/protobuf';
 import {
   CommonTransportOptions,
-  createAsyncIterable,
   createUniversalHandlerClient,
   UniversalHandler,
   UniversalHandlerFn,
@@ -28,7 +27,8 @@ import {
 import { createTransport } from '@connectrpc/connect/protocol-connect';
 
 import { MessageToJson } from '../stream';
-import { iterableToStream } from '@penumbra-zone/types/src/stream';
+
+import ReadableStream from '@penumbra-zone/types/polyfill-readable-stream-from';
 
 // see https://github.com/connectrpc/connect-es/pull/925
 // hopefully also simplifies transport call soon
@@ -194,7 +194,7 @@ export const connectChromeRuntimeAdapter = (
           undefined, // TODO abort
           undefined, // TODO timeout
           undefined, // TODO headers
-          createAsyncIterable([request]),
+          ReadableStream.from([request]),
         );
         break;
       default:
@@ -205,7 +205,7 @@ export const connectChromeRuntimeAdapter = (
     }
 
     if (response.stream)
-      return iterableToStream(response.message).pipeThrough(new MessageToJson(jsonOptions));
+      return ReadableStream.from(response.message).pipeThrough(new MessageToJson(jsonOptions));
     else return Any.pack(response.message).toJson(jsonOptions);
   };
 };

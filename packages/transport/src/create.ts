@@ -18,7 +18,6 @@ import {
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 import { CreateAnyMethodImpl, makeAnyServiceImpl } from './any-impl';
 import { JsonToMessage } from './stream';
-import { streamToGenerator } from '@penumbra-zone/types/src/stream';
 import {
   TransportEvent,
   TransportMessage,
@@ -29,6 +28,8 @@ import {
   isTransportState,
   isTransportStream,
 } from './types';
+
+import '@penumbra-zone/types/polyfill-readable-stream-async-iterable';
 
 type AnyServerStreamingImpl = (i: AnyMessage, ctx: HandlerContext) => AsyncIterable<AnyMessage>;
 type AnyUnaryImpl = (i: AnyMessage, ctx: HandlerContext) => Promise<AnyMessage>;
@@ -177,7 +178,7 @@ export const createChannelTransport = ({
         const streamImpl: AnyServerStreamingImpl = async function* (message) {
           const responseStream = (await request(message)) as ReadableStream<JsonValue>;
           const response = responseStream.pipeThrough(new JsonToMessage(jsonOptions));
-          yield* streamToGenerator(response);
+          yield* response;
         };
         return streamImpl as MethodImpl<typeof method>;
       }
