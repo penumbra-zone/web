@@ -19,19 +19,17 @@ jobs:
 
   publish:
     environment: ext-publish
-    runs-on: ubuntu-latest
+    runs-on: buildjet-16vcpu-ubuntu-2204
     needs: compile
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/cache@v3
+      - uses: buildjet/cache@v3
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-publish
-          restore-keys: |
-            ${{ runner.os }}-turbo-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
       - uses: pnpm/action-setup@v2
-      - uses: actions/setup-node@v4
+      - uses: buildjet/setup-node@v4
         with:
           node-version: '21'
           cache: 'pnpm'

@@ -12,15 +12,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: compiled
-        uses: actions/cache@v3 # turbo cache, shared between buildjet and github
+        uses: buildjet/cache@v3
         with:
           path: .turbo
-          key: ${{ runner.os }}-turbo-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-${{ hashFiles('**/Cargo.lock') }}
-            ${{ runner.os }}-turbo-
+          key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
+          restore-keys: ${{ hashFiles('**/Cargo.lock') }}
       - uses: pnpm/action-setup@v2
-      - uses: buildjet/setup-node@v4 # node cache, distinct between buildjet and github
+      - uses: buildjet/setup-node@v4
         with:
           node-version: '21'
           cache: 'pnpm'
@@ -29,11 +27,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable # rust only on buildjet
         with:
           targets: wasm32-unknown-unknown
-      - uses: Swatinem/rust-cache@v2.7.3 # rust cache
-        with:
-          shared-key: wasm
-          cache-provider: 'buildjet'
-          workspaces: 'packages/wasm/crate'
       - uses: jetli/wasm-pack-action@v0.4.0 # preinstall wasm-pack
         with:
           version: 'latest'
