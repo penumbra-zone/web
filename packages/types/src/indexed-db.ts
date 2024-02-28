@@ -48,7 +48,7 @@ export interface IndexedDbInterface {
   ): AsyncGenerator<IdbUpdate<DBTypes, StoreName>, void>;
   constants(): IdbConstants;
   clear(): Promise<void>;
-  getfullSyncHeight(): Promise<bigint | undefined>;
+  getFullSyncHeight(): Promise<bigint | undefined>;
   getSpendableNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
   getSpendableNoteByCommitment(
     commitment: StateCommitment,
@@ -86,8 +86,8 @@ export interface IndexedDbInterface {
 }
 
 export interface PenumbraDb extends DBSchema {
-  LAST_BLOCK_SYNCED: {
-    key: 'last_block';
+  FULL_SYNC_HEIGHT: {
+    key: 'height';
     value: bigint;
   };
   TREE_LAST_POSITION: {

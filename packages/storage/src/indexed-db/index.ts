@@ -70,7 +70,7 @@ export class IndexedDb implements IndexedDbInterface {
           db.deleteObjectStore(objectStoreName);
         }
 
-        db.createObjectStore('LAST_BLOCK_SYNCED');
+        db.createObjectStore('FULL_SYNC_HEIGHT');
         db.createObjectStore('ASSETS', { keyPath: 'penumbraAssetId.inner' });
         db.createObjectStore('SPENDABLE_NOTES', {
           keyPath: 'noteCommitment.inner',
@@ -134,13 +134,13 @@ export class IndexedDb implements IndexedDbInterface {
     this.addSctUpdates(txs, updates.sctUpdates);
     this.addNewNotes(txs, updates.newNotes);
     this.addNewSwaps(txs, updates.newSwaps);
-    txs.add({ table: 'LAST_BLOCK_SYNCED', value: updates.height, key: 'last_block' });
+    txs.add({ table: 'FULL_SYNC_HEIGHT', value: updates.height, key: 'height' });
 
     await this.u.updateAll(txs);
   }
 
-  async getfullSyncHeight() {
-    return this.db.get('LAST_BLOCK_SYNCED', 'last_block');
+  async getFullSyncHeight() {
+    return this.db.get('FULL_SYNC_HEIGHT', 'height');
   }
 
   async getSpendableNoteByNullifier(

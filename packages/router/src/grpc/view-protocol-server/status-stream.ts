@@ -8,7 +8,7 @@ export const statusStream: Impl['statusStream'] = async function* (_, ctx) {
 
   // As syncing does not end, nor does this stream.
   // It waits for events triggered externally when block sync has progressed.
-  const subscription = indexedDb.subscribe('LAST_BLOCK_SYNCED');
+  const subscription = indexedDb.subscribe('FULL_SYNC_HEIGHT');
 
   for await (const update of subscription) {
     const syncHeight = update.value;

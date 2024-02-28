@@ -13,7 +13,7 @@ import humanizeDuration from 'humanize-duration';
  */
 export const useSyncProgress = (
   fullSyncHeight: number,
-  lastBlockHeight: number,
+  latestKnownBlockHeight: number,
   syncUpdatesThreshold = 10, // The number of synchronization updates required before the speed calculation is considered reliable
 ) => {
   const ewmaSpeedRef = useRef(new EWMA());
@@ -45,7 +45,7 @@ export const useSyncProgress = (
     }
   }, [fullSyncHeight, syncUpdates, syncUpdatesThreshold, confident]);
 
-  const blocksRemaining = lastBlockHeight - fullSyncHeight;
+  const blocksRemaining = latestKnownBlockHeight - fullSyncHeight;
   const timeRemaining = speed > 0 ? blocksRemaining / speed : Infinity;
   const formattedTimeRemaining =
     timeRemaining === Infinity ? '' : humanizeDuration(timeRemaining * 1000, { round: true });

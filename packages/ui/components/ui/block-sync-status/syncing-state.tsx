@@ -78,7 +78,7 @@ const CondensedSyncingState = ({
         <div className='flex items-center gap-2'>
           <p
             className={cn(
-              'font-mono  transition-all duration-300',
+              'font-mono transition-all duration-300',
               confident ? 'opacity-100' : 'opacity-0',
             )}
           >
