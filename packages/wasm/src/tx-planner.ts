@@ -59,7 +59,7 @@ export class TxPlanner {
   }
 
   delegate(delegation: TransactionPlannerRequest_Delegate): void {
-    this.wasmPlanner.delegate(delegation.amount, delegation.rateData);
+    this.wasmPlanner.delegate(delegation.amount?.toJson(), delegation.rateData?.toJson());
   }
 
   expiryHeight(value: bigint): void {
