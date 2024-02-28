@@ -17,7 +17,7 @@ export const useSyncProgress = () => {
   const fullSyncHeight = useFullSyncHeight();
   const { grpcEndpoint } = useStore(networkSelector);
 
-  const { data } = useQuery({
+  const { data, error } = useQuery({
     queryKey: ['latestBlockHeight'],
     queryFn: async () => {
       const querier = new TendermintQuerier({ grpcEndpoint: grpcEndpoint! });
@@ -33,5 +33,5 @@ export const useSyncProgress = () => {
       ? fullSyncHeight
       : Number(data);
 
-  return { latestBlockHeight, fullSyncHeight };
+  return { latestBlockHeight, fullSyncHeight, error };
 };

@@ -11,7 +11,7 @@ export const LargeBlockSyncStatus = ({
   fullSyncHeight,
   error,
 }: BlockSyncProps) => {
-  if (error) return <BlockSyncErrorState />;
+  if (error) return <BlockSyncErrorState error={error} />;
   if (!latestKnownBlockHeight || !fullSyncHeight) return <div />;
 
   const isSyncing = latestKnownBlockHeight - fullSyncHeight > 10;
@@ -33,15 +33,16 @@ export const LargeBlockSyncStatus = ({
   );
 };
 
-const BlockSyncErrorState = () => {
+const BlockSyncErrorState = ({ error }: { error: unknown }) => {
   return (
     <motion.div
-      className='flex flex-col leading-[30px]'
+      className='flex w-full select-none flex-col items-center leading-[30px]'
       initial={{ opacity: 0.6 }}
       animate={{ opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }}
     >
-      <p className='font-headline text-red-900'>Error while retrieving block sync status</p>
+      <p className='font-headline text-red-900'>Block sync error</p>
       <Progress status='error' value={100} />
+      <p className='font-mono text-red-900'>{String(error)}</p>
     </motion.div>
   );
 };

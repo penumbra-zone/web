@@ -8,7 +8,7 @@ export const SyncStatusSection = () => {
   const { data, error } = useStream(syncStream);
 
   return (
-    <div className='relative z-30 mt-[-30px] w-full'>
+    <div className='relative z-30 flex w-full flex-col'>
       <CondensedBlockSyncStatus
         fullSyncHeight={data?.fullSyncHeight ? Number(data.fullSyncHeight) : undefined}
         latestKnownBlockHeight={

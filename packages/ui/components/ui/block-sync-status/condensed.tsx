@@ -11,13 +11,13 @@ export const CondensedBlockSyncStatus = ({
   fullSyncHeight,
   error,
 }: Partial<BlockSyncProps>) => {
-  if (error) return <BlockSyncErrorState />;
+  if (error) return <BlockSyncErrorState error={error} />;
   if (!latestKnownBlockHeight || !fullSyncHeight) return <AwaitingSyncState />;
 
   const isSyncing = latestKnownBlockHeight - fullSyncHeight > 10;
 
   return (
-    <div className='flex w-full select-none flex-col items-center leading-[30px]'>
+    <div className='flex w-full select-none flex-col items-center'>
       {isSyncing ? (
         <SyncingState
           latestKnownBlockHeight={latestKnownBlockHeight}
@@ -33,39 +33,39 @@ export const CondensedBlockSyncStatus = ({
   );
 };
 
-const BlockSyncErrorState = () => {
+const BlockSyncErrorState = ({ error }: { error: unknown }) => {
   return (
     <motion.div
-      className='flex flex-col leading-[30px]'
+      className='flex w-full select-none flex-col'
       initial={{ opacity: 0.6 }}
       animate={{ opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }}
     >
-      <p className='font-headline text-red-900'>Error while retrieving block sync status</p>
-      <Progress status='error' value={100} />
+      <div className='absolute z-20 flex w-full justify-between px-2'>
+        <div className='mt-[-5.5px] font-mono text-[10px] text-red-300'>
+          Block sync error: {String(error)}
+        </div>
+      </div>
+      <Progress status='error' value={100} shape='squared' />
     </motion.div>
   );
 };
 
 const AwaitingSyncState = () => {
   return (
-    <div className='flex select-none flex-col items-center gap-1 leading-[30px]'>
-      <div className='flex w-full flex-col'>
-        <div className='flex justify-between'>
-          <div className='flex gap-2'>
-            <p className='font-headline text-stone-500'>Loading sync state...</p>
-          </div>
-          <div className='relative -mr-6 -mt-4'>
-            <LineWave
-              visible={true}
-              height='50'
-              width='50'
-              color='#78716c'
-              wrapperClass="transition-all duration-300 absolute right-0 bottom-0'"
-            />
-          </div>
+    <div className='flex select-none flex-col'>
+      <div className='absolute z-20 flex w-full justify-between px-2'>
+        <div className='mt-[-5.5px] font-mono text-[10px] text-stone-400'>
+          <div>Loading sync state...</div>
         </div>
-        <Progress status='in-progress' background='stone' value={0} />
+        <LineWave
+          visible={true}
+          height='20'
+          width='20'
+          color='#a8a29e'
+          wrapperClass='mt-[-7.5px]'
+        />
       </div>
+      <Progress status='in-progress' background='stone' shape='squared' value={0} />
     </div>
   );
 };
@@ -82,28 +82,28 @@ const SyncingState = ({ fullSyncHeight, latestKnownBlockHeight }: SyncingStatePr
       initial={{ opacity: 0.6 }}
       animate={{ opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }}
     >
-      <div className='flex justify-between text-sand'>
-        <div className='flex gap-2'>
-          <p className='font-headline'>Syncing blocks...</p>
-        </div>
-        <div className='flex items-center gap-2'>
-          <p
+      <div className='absolute z-20 flex w-full justify-between px-2 font-mono text-[10px] text-[#4a4127] mix-blend-plus-lighter'>
+        <div className='mt-[-5.5px]'>Syncing blocks...</div>
+        <div className='mt-[-5.5px] flex gap-2'>
+          <span
             className={cn(
               'font-mono transition-all duration-300',
               confident ? 'opacity-100' : 'opacity-0',
             )}
           >
-            {formattedTimeRemaining} ::
-          </p>
-          <p className='font-mono'>
-            {fullSyncHeight}/{latestKnownBlockHeight}
-          </p>
+            {formattedTimeRemaining}
+          </span>
+          <span className={confident ? 'opacity-100' : 'opacity-0'}>::</span>
+          <span className='font-mono'>
+            {fullSyncHeight} / {latestKnownBlockHeight}
+          </span>
         </div>
       </div>
       <Progress
         status='in-progress'
         value={(fullSyncHeight / latestKnownBlockHeight) * 100}
         background='stone'
+        shape='squared'
       />
     </motion.div>
   );
@@ -114,40 +114,38 @@ const FullySyncedState = ({ latestKnownBlockHeight, fullSyncHeight }: SyncingSta
 
   return (
     <motion.div
-      className='flex w-full flex-col'
+      className='relative flex w-full flex-col'
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { duration: 0.3, ease: 'easeOut' } }}
     >
-      <div className='flex justify-between'>
-        <div className='flex gap-2'>
+      <div className='absolute z-20 flex w-full justify-between px-2'>
+        <div className='mt-[-5.5px] font-mono text-[10px] text-teal-900'>
           <div className='flex items-center'>
-            <p className='font-headline text-teal'>Blocks synced</p>
-            <CheckIcon className='size-6 text-teal' />
+            <p>Blocks synced</p>
+            <CheckIcon className='size-3 text-teal-900' />
           </div>
         </div>
-        <div className='relative flex'>
+        <div className='flex'>
           <LineWave
             visible={true}
-            height='50'
-            width='50'
-            color='var(--teal)'
+            height='20'
+            width='20'
+            color='#134e4a'
             wrapperClass={cn(
-              'transition-all duration-300 absolute bottom-0 right-3',
+              'transition-all duration-300 mt-[-7px] mr-[-7px]',
               showLoader ? 'opacity-100' : 'opacity-0',
             )}
           />
-          <p className='font-mono text-teal'>{fullSyncHeight}</p>
+          <div className='mt-[-5.5px] font-mono text-[10px] text-teal-900'>
+            Block {fullSyncHeight}
+          </div>
         </div>
       </div>
-      <div className='relative'>
-        <div className='absolute left-1 top-0 z-20 -mt-2.5 font-mono text-[10px] text-teal-900'>
-          Blocks synced
-        </div>
-        <div className='absolute right-1 top-0 z-20 -mt-2.5 font-mono text-[10px] text-teal-900'>
-          {fullSyncHeight}
-        </div>
-        <Progress status='done' value={(fullSyncHeight / latestKnownBlockHeight) * 100} />
-      </div>
+      <Progress
+        status='done'
+        value={(fullSyncHeight / latestKnownBlockHeight) * 100}
+        shape='squared'
+      />
     </motion.div>
   );
 };
