@@ -11,6 +11,7 @@ import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/valu
 import { InputBlock } from '../../../../shared/input-block';
 import { Validator } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { FormEvent } from 'react';
 
 const getDialogHeader = (action: 'delegate' | 'undelegate', validator: Validator) => {
   if (action === 'delegate') return `Delegate to ${validator.name}`;
@@ -55,13 +56,19 @@ export const FormDialog = ({
   const handleOpenChange = (open: boolean) => {
     if (!open) onClose();
   };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    onSubmit();
+  };
+
   return (
     <Dialog open={!!action} onOpenChange={handleOpenChange}>
       <DialogContent size='sm'>
         {!!action && (
           <>
             <DialogHeader>{getDialogHeader(action, validator)}</DialogHeader>
-            <form className='flex flex-col gap-4 overflow-hidden px-4 pb-4' onSubmit={onSubmit}>
+            <form className='flex flex-col gap-4 overflow-hidden px-4 pb-4' onSubmit={handleSubmit}>
               <div className='flex flex-col'>
                 <div className='truncate'>{validator.name}</div>
                 <IdentityKeyComponent identityKey={getIdentityKey(validator)} />
