@@ -10,6 +10,7 @@ import { useStore } from '../../../state';
 import { networkSelector } from '../../../state/network';
 import { internalSwClient } from '@penumbra-zone/router';
 import '@penumbra-zone/polyfills/Promise.withResolvers';
+import { TrashIcon } from '@radix-ui/react-icons';
 
 export const SettingsRPC = () => {
   const { chainId: currentChainId } = useChainIdQuery();
@@ -74,15 +75,28 @@ export const SettingsRPC = () => {
                 <div className='text-base font-bold'>RPC URL</div>
                 {rpcError ? <div className='italic text-red-400'>{rpcError}</div> : null}
               </div>
-              <Input
-                variant={rpcError ? 'error' : 'default'}
-                value={rpcInput}
-                onChange={evt => {
-                  setRpcError(undefined);
-                  setRpcInput(evt.target.value);
-                }}
-                className='text-muted-foreground'
-              />
+              <div className='relative w-full'>
+                <div className='absolute inset-y-0 right-4 flex cursor-pointer items-center'>
+                  {rpcInput != grpcEndpoint ? (
+                    <Button
+                      type='reset'
+                      variant='outline'
+                      onClick={() => setRpcInput(grpcEndpoint ?? DEFAULT_GRPC_URL)}
+                    >
+                      <TrashIcon />
+                    </Button>
+                  ) : null}
+                </div>
+                <Input
+                  variant={rpcError ? 'error' : rpcInput != grpcEndpoint ? 'warn' : 'default'}
+                  value={rpcInput}
+                  onChange={evt => {
+                    setRpcError(undefined);
+                    setRpcInput(evt.target.value);
+                  }}
+                  className='text-muted-foreground'
+                />
+              </div>
             </div>
             <div className='flex flex-col gap-2'>
               <p className='font-headline text-base font-semibold'>Chain id</p>
@@ -96,7 +110,12 @@ export const SettingsRPC = () => {
               Saved! Restarting in {countdownTime}...
             </Button>
           ) : (
-            <Button variant='gradient' size='lg' className='w-full' type='submit'>
+            <Button
+              variant={rpcInput != grpcEndpoint ? 'gradient' : 'outline'}
+              size='lg'
+              className='w-full'
+              type='submit'
+            >
               Save
             </Button>
           )}
