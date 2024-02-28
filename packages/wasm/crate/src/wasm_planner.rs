@@ -1,6 +1,7 @@
 use anyhow::anyhow;
 use ark_ff::UniformRand;
 use decaf377::Fq;
+use penumbra_num::Amount;
 use penumbra_sct::params::SctParameters;
 use penumbra_shielded_pool::fmd;
 use rand_core::OsRng;
@@ -11,8 +12,11 @@ use penumbra_dex::swap_claim::SwapClaimPlan;
 use penumbra_proto::{
     core::{
         asset::v1::{Metadata as AssetMetadata, Value},
-        component::fee::v1::{Fee, FeeTier, GasPrices},
-        component::ibc::v1::Ics20Withdrawal,
+        component::{
+            fee::v1::{Fee, FeeTier, GasPrices},
+            ibc::v1::Ics20Withdrawal,
+            stake::v1::RateData,
+        },
         keys::v1::{Address, AddressIndex},
         transaction::v1::MemoPlaintext,
     },
@@ -206,6 +210,19 @@ impl WasmPlanner {
     pub fn ics20_withdrawal(&mut self, withdrawal: JsValue) -> WasmResult<()> {
         let withdrawal_proto: Ics20Withdrawal = serde_wasm_bindgen::from_value(withdrawal)?;
         self.planner.ics20_withdrawal(withdrawal_proto.try_into()?);
+        Ok(())
+    }
+
+    /// Add a delegation to this transaction.
+    ///
+    /// If you don't specify spends or outputs as well, they will be filled in automatically.
+    pub fn delegate(&mut self, unbonded_amount: JsValue, rate_data: JsValue) -> WasmResult<()> {
+        let unbonded_amount_proto: Amount = serde_wasm_bindgen::from_value(unbonded_amount)?;
+        let rate_data_proto: RateData = serde_wasm_bindgen::from_value(rate_data)?;
+        self.planner.delegate(
+            unbonded_amount_proto.try_into()?,
+            rate_data_proto.try_into()?,
+        );
         Ok(())
     }
 
