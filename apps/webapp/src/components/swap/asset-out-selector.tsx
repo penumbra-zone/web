@@ -22,30 +22,25 @@ export const AssetOutSelector = ({ balances, setAssetOut, assetOut }: AssetOutSe
           </p>
         </div>
       </DialogTrigger>
-      <DialogContent className='max-w-[312px] bg-charcoal-secondary md:max-w-[400px]'>
-        <div className='relative z-10 flex flex-col gap-4 pb-5'>
-          <DialogHeader className='border-b'>Select asset</DialogHeader>
-          <div className='flex flex-col gap-4 px-[30px]'>
-            <div className='flex flex-col gap-2'>
-              {localAssets.map(d => (
-                <div key={d.display} className='flex flex-col'>
-                  <DialogClose>
-                    <div
-                      className='grid cursor-pointer break-all py-[10px] font-bold text-muted-foreground hover:-mx-4 hover:bg-light-brown hover:px-4'
-                      onClick={() => setAssetOut(d)}
-                    >
-                      <div className='flex justify-start gap-[6px]'>
-                        <AssetIcon metadata={d} />
-                        <p>{d.display}</p>
-                      </div>
-                    </div>
-                  </DialogClose>
+      <DialogContent>
+        <DialogHeader>Select asset</DialogHeader>
+        <div className='flex flex-col gap-2 overflow-hidden px-[30px]'>
+          {localAssets.map(d => (
+            <div key={d.display} className='flex flex-col'>
+              <DialogClose>
+                <div
+                  className={
+                    'flex cursor-pointer justify-start gap-[6px] overflow-hidden py-[10px] font-bold text-muted-foreground hover:-mx-4 hover:bg-light-brown hover:px-4'
+                  }
+                  onClick={() => setAssetOut(d)}
+                >
+                  <AssetIcon metadata={d} />
+                  <p className='truncate'>{d.display}</p>
                 </div>
-              ))}
+              </DialogClose>
             </div>
-          </div>
+          ))}
         </div>
-        <div className='absolute inset-0 z-0 bg-card-radial opacity-20' />
       </DialogContent>
     </Dialog>
   );
