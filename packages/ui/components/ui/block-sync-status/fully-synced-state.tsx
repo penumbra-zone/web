@@ -38,7 +38,7 @@ const LargeFullySyncedState = ({ latestKnownBlockHeight, fullSyncHeight }: Synci
             width='50'
             color='var(--teal)'
             wrapperClass={cn(
-              'transition-all duration-300 absolute bottom-0 right-6',
+              'transition-all duration-300 absolute bottom-0 right-3',
               showLoader ? 'opacity-100' : 'opacity-0',
             )}
           />
@@ -75,7 +75,7 @@ const CondensedFullySyncedState = ({
             width='50'
             color='var(--teal)'
             wrapperClass={cn(
-              'transition-all duration-300 absolute bottom-0 right-6',
+              'transition-all duration-300 absolute bottom-0 right-3',
               showLoader ? 'opacity-100' : 'opacity-0',
             )}
           />

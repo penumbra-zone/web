@@ -50,14 +50,6 @@ export class TransactionToast {
 
   constructor(private transactionClassification: TransactionClassification) {}
 
-  private get label(): string {
-    return TRANSACTION_LABEL_BY_CLASSIFICATION[this.transactionClassification];
-  }
-
-  private get shortenedTxHash(): string {
-    return this._txHash ? shorten(this._txHash, 8) : '';
-  }
-
   /**
    * Stores the transaction hash so that it can be used in the success and
    * (optionally) broadcast stages. This _must_ be called before calling
@@ -167,5 +159,13 @@ export class TransactionToast {
       .description(undefined)
       .duration(5_000)
       .render();
+  }
+
+  private get label(): string {
+    return TRANSACTION_LABEL_BY_CLASSIFICATION[this.transactionClassification];
+  }
+
+  private get shortenedTxHash(): string {
+    return this._txHash ? shorten(this._txHash, 8) : '';
   }
 }

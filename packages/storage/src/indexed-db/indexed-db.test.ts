@@ -52,7 +52,7 @@ describe('IndexedDb', () => {
   describe('initializing', () => {
     it('sets up as expected in initialize()', async () => {
       const db = await IndexedDb.initialize(generateInitialProps());
-      await expect(db.getfullSyncHeight()).resolves.not.toThrow();
+      await expect(db.getFullSyncHeight()).resolves.not.toThrow();
     });
 
     it('different chain ids result in different databases', async () => {
@@ -167,7 +167,7 @@ describe('IndexedDb', () => {
       };
 
       await db.saveScanResult(scanResult);
-      expect(await db.getfullSyncHeight()).toBe(1000n);
+      expect(await db.getFullSyncHeight()).toBe(1000n);
 
       await db.clear();
 
@@ -188,7 +188,7 @@ describe('IndexedDb', () => {
         txsAfterClean.push(tx);
       }
       expect(txsAfterClean.length).toBe(0);
-      expect(await db.getfullSyncHeight()).toBeUndefined();
+      expect(await db.getFullSyncHeight()).toBeUndefined();
     });
   });
 
@@ -209,7 +209,7 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveScanResult(emptyScanResult);
-      const savedLastBlock = await db.getfullSyncHeight();
+      const savedLastBlock = await db.getFullSyncHeight();
 
       expect(emptyScanResult.height === savedLastBlock).toBeTruthy();
     });
