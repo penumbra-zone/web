@@ -30,7 +30,8 @@ export const StakingActions = ({
 }) => {
   const handleClickUndelegate = () => alert('Not yet implemented; coming soon!');
 
-  const { action, amount, onClickActionButton, setAction, setAmount } = useStore(stakingSelector);
+  const { action, amount, onSubmit, onClickActionButton, onClose, setAmount } =
+    useStore(stakingSelector);
 
   const validator = getValidator(validatorInfo);
 
@@ -67,12 +68,13 @@ export const StakingActions = ({
 
       <FormDialog
         action={action}
+        validator={validator}
         amount={amount}
         delegationTokens={delegationTokens}
         unstakedTokens={unstakedTokens}
         onChangeAmount={setAmount}
-        onClose={() => setAction(undefined)}
-        validator={validator}
+        onClose={onClose}
+        onSubmit={onSubmit}
       />
     </>
   );

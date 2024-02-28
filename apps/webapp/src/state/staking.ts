@@ -6,7 +6,7 @@ import {
   getAmount,
   getDisplayDenomExponent,
   getDisplayDenomFromView,
-  getIdentityKeyFromValidatorInfo,
+  getRateData,
   getValidatorInfoFromValueView,
   getVotingPowerByValidatorInfo,
   getVotingPowerFromValidatorInfo,
@@ -16,14 +16,11 @@ import {
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getBalancesByAccount } from '../fetchers/balances/by-account';
 import { STAKING_TOKEN, localAssets } from '@penumbra-zone/constants';
-import {
-  AddressIndex,
-  IdentityKey,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { TransactionToast } from '@penumbra-zone/ui';
-import { plan } from './helpers';
+import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from './helpers';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 
 const STAKING_TOKEN_DISPLAY_DENOM_EXPONENT = (() => {
   const stakingAsset = localAssets.find(asset => asset.display === STAKING_TOKEN);
@@ -56,8 +53,18 @@ export interface StakingSlice {
   loading: boolean;
   error: unknown;
   votingPowerByValidatorInfo: Record<string, VotingPowerAsIntegerPercentage>;
+  /**
+   * Called when the user clicks either the Delegate or Undelegate button for a
+   * given validator (represented by `validatorInfo`).
+   */
   onClickActionButton: (action: 'delegate' | 'undelegate', validatorInfo: ValidatorInfo) => void;
-  setAction: (action?: 'delegate' | 'undelegate') => void;
+  /** Called when the user submits the delegate or undelegate form. */
+  onSubmit: () => void;
+  /**
+   * Called when the user closes the delegate or undelegate form without
+   * submitting it.
+   */
+  onClose: () => void;
   setAmount: (amount: string) => void;
   /**
    * The action that the user is currently taking. This is populated once the
@@ -71,10 +78,10 @@ export interface StakingSlice {
    */
   amount: string;
   /**
-   * The identity key of the validator that the user has clicked the delegate or
-   * undelegate button for.
+   * The `ValidatorInfo` for the validator that the user has clicked the
+   * delegate or undelegate button for.
    */
-  identityKey?: IdentityKey;
+  validatorInfo?: ValidatorInfo;
 }
 
 /**
@@ -106,15 +113,15 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     }),
   action: undefined,
   amount: '',
-  identityKey: undefined,
+  validatorInfo: undefined,
   onClickActionButton: (action, validatorInfo) =>
     set(state => {
       state.staking.action = action;
-      state.staking.identityKey = getIdentityKeyFromValidatorInfo(validatorInfo);
+      state.staking.validatorInfo = validatorInfo;
     }),
-  setAction: action =>
+  onClose: () =>
     set(state => {
-      state.staking.action = action;
+      state.staking.action = undefined;
     }),
   setAmount: amount =>
     set(state => {
@@ -168,8 +175,42 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       state.staking.unstakedTokensByAccount = unstakedTokensByAccount;
     });
   },
+  onSubmit: () => {
+    /**
+     * @todo: Add switching logic depending on the value of `action`, once
+     * undelegation is implemented.
+     */
+    void get().staking.delegate();
+  },
   delegate: async () => {
-    // not yet implemented
+    const toast = new TransactionToast('delegate');
+    toast.onStart();
+
+    // Reset form
+    set(state => {
+      state.staking.amount = '';
+      state.staking.action = undefined;
+      state.staking.validatorInfo = undefined;
+    });
+
+    try {
+      const transactionPlan = await plan(assembleRequest(get().staking));
+      const transaction = await authWitnessBuild({ transactionPlan }, status =>
+        toast.onBuildStatus(status),
+      );
+      const txHash = await getTxHash(transaction);
+      toast.txHash(txHash);
+      const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
+        toast.onBroadcastStatus(status),
+      );
+      toast.onSuccess(detectionHeight);
+    } catch (e) {
+      if (userDeniedTransaction(e)) {
+        toast.onDenied();
+      } else {
+        toast.onFailure(e);
+      }
+    }
   },
   loading: false,
   error: undefined,
@@ -178,11 +219,12 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
 
 export const stakingSelector = (state: AllSlices) => state.staking;
 
-const assembleRequest = ({ account, amount }: StakingSlice) => {
+const assembleRequest = ({ account, amount, validatorInfo }: StakingSlice) => {
   return new TransactionPlannerRequest({
     delegations: [
       {
         amount: toBaseUnit(BigNumber(amount), STAKING_TOKEN_DISPLAY_DENOM_EXPONENT),
+        rateData: getRateData(validatorInfo),
       },
     ],
     source: { account },

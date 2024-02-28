@@ -17,6 +17,9 @@ const getDialogHeader = (action: 'delegate' | 'undelegate', validator: Validator
   return `Undelegate from ${validator.name}`;
 };
 
+const getCapitalizedAction = (action: 'delegate' | 'undelegate') =>
+  action.replace(/^./, firstCharacter => firstCharacter.toLocaleUpperCase());
+
 /**
  * Renders a dialog with a form for delegating to, or undelegating from, a
  * validator.
@@ -29,6 +32,7 @@ export const FormDialog = ({
   unstakedTokens,
   onChangeAmount,
   onClose,
+  onSubmit,
 }: {
   action?: 'delegate' | 'undelegate';
   /** The validator we're delegating to or undelegating from. */
@@ -46,6 +50,7 @@ export const FormDialog = ({
   unstakedTokens?: ValueView;
   onChangeAmount: (amount: string) => void;
   onClose: () => void;
+  onSubmit: () => void;
 }) => {
   const handleOpenChange = (open: boolean) => {
     if (!open) onClose();
@@ -56,7 +61,7 @@ export const FormDialog = ({
         {!!action && (
           <>
             <DialogHeader>{getDialogHeader(action, validator)}</DialogHeader>
-            <form className='flex flex-col gap-4 overflow-hidden px-4 pb-4'>
+            <form className='flex flex-col gap-4 overflow-hidden px-4 pb-4' onSubmit={onSubmit}>
               <div className='flex flex-col'>
                 <div className='truncate'>{validator.name}</div>
                 <IdentityKeyComponent identityKey={getIdentityKey(validator)} />
@@ -88,7 +93,8 @@ export const FormDialog = ({
                   />
                 </div>
               </InputBlock>
-              <Button>Delegate</Button>
+
+              <Button type='submit'>{getCapitalizedAction(action)}</Button>
             </form>
           </>
         )}
