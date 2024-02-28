@@ -186,15 +186,16 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     const toast = new TransactionToast('delegate');
     toast.onStart();
 
-    // Reset form
-    set(state => {
-      state.staking.amount = '';
-      state.staking.action = undefined;
-      state.staking.validatorInfo = undefined;
-    });
-
     try {
       const transactionPlan = await plan(assembleRequest(get().staking));
+
+      // Reset form after building the transaction form, since it depends on the state.
+      set(state => {
+        state.staking.amount = '';
+        state.staking.action = undefined;
+        state.staking.validatorInfo = undefined;
+      });
+
       const transaction = await authWitnessBuild({ transactionPlan }, status =>
         toast.onBuildStatus(status),
       );
