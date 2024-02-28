@@ -4,8 +4,8 @@ import { SyncStatusSection } from './sync-status-section';
 export const Header = () => {
   return (
     <header>
-      <TopRow />
       <SyncStatusSection />
+      <TopRow />
     </header>
   );
 };

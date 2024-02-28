@@ -52,3 +52,16 @@ export const useSyncProgress = (
 
   return { formattedTimeRemaining, confident };
 };
+
+// Meant to show item temporarily when a new value shows
+export const useNewBlockDelay = (value: number, duration = 1000) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+    const timer = setTimeout(() => setIsVisible(false), duration);
+    return () => clearTimeout(timer);
+  }, [value, duration]);
+
+  return isVisible;
+};

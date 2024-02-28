@@ -22,12 +22,12 @@ export const TopRow = () => {
   const result = useLoaderData() as LayoutLoaderResult;
 
   return (
-    <div className='z-10 flex w-full flex-col items-center justify-between px-6 md:h-[82px] md:flex-row md:gap-12 md:px-12'>
+    <div className='flex w-full flex-col items-center justify-between px-6 md:h-[82px] md:flex-row md:gap-12 md:px-12'>
       <div className='mb-[30px] md:mb-0'>
         <img
           src='./penumbra-logo.svg'
           alt='Penumbra logo'
-          className='absolute inset-x-0 top-[-75px] mx-auto h-[141px] w-[136px] rotate-[320deg] md:left-[-100px] md:top-[-140px] md:mx-0 md:size-[234px]'
+          className='absolute inset-x-0 top-[-75px] z-0 mx-auto h-[141px] w-[136px] rotate-[320deg] md:left-[-100px] md:top-[-140px] md:mx-0 md:size-[234px]'
         />
         <Link to={PagePath.INDEX}>
           <img
