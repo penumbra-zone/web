@@ -365,28 +365,26 @@ export class IndexedDb implements IndexedDbInterface {
   async *getOwnedPositionIds(
     positionState: PositionState | undefined,
     tradingPair: TradingPair | undefined,
-  ): AsyncGenerator<PositionId, void> {
-    yield* streamToGenerator(
-      new ReadableStream({
-        start: async cont => {
-          let cursor = await this.db.transaction('POSITIONS').store.openCursor();
-          while (cursor) {
-            const position = Position.fromJson(cursor.value.position);
-            if (positionState && !positionState.equals(position.state)) {
-              cursor = await cursor.continue();
-              continue;
-            }
-            if (tradingPair && !tradingPair.equals(position.phi?.pair)) {
-              cursor = await cursor.continue();
-              continue;
-            }
-            cont.enqueue(PositionId.fromJson(cursor.value.id));
+  ) {
+    yield* new ReadableStream({
+      start: async cont => {
+        let cursor = await this.db.transaction('POSITIONS').store.openCursor();
+        while (cursor) {
+          const position = Position.fromJson(cursor.value.position);
+          if (positionState && !positionState.equals(position.state)) {
             cursor = await cursor.continue();
+            continue;
           }
-          cont.close();
-        },
-      }),
-    );
+          if (tradingPair && !tradingPair.equals(position.phi?.pair)) {
+            cursor = await cursor.continue();
+            continue;
+          }
+          cont.enqueue(PositionId.fromJson(cursor.value.id));
+          cursor = await cursor.continue();
+        }
+        cont.close();
+      },
+    });
   }
 
   async addPosition(positionId: PositionId, position: Position): Promise<void> {
