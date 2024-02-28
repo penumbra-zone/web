@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    include: ['**/*.test.*.ts'],
+    include: ['**/*.test.ts'],
     setupFiles: ['./src/chrome/test-utils/tests-setup.js'],
     browser: {
       name: 'chromium',
