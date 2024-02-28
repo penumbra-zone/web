@@ -173,11 +173,13 @@ describe('Staking Slice', () => {
   it('has correct initial state', () => {
     expect(useStore.getState().staking).toEqual({
       account: 0,
+      currentAction: undefined,
       delegationsByAccount: new Map(),
       unstakedTokensByAccount: new Map(),
       setAccount: expect.any(Function) as unknown,
       loadDelegationsForCurrentAccount: expect.any(Function) as unknown,
       loadUnstakedTokensByAccount: expect.any(Function) as unknown,
+      delegate: expect.any(Function) as unknown,
       error: undefined,
       loading: false,
       votingPowerByValidatorInfo: {},

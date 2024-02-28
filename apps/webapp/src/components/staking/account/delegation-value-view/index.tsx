@@ -2,7 +2,7 @@ import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { ValidatorInfoComponent } from './validator-info-component';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { StakingActions } from './staking-actions';
-import { getAmount, getValidatorInfoFromValueView, joinLoHiAmount } from '@penumbra-zone/types';
+import { getValidatorInfoFromValueView } from '@penumbra-zone/types';
 
 /**
  * Renders a `ValueView` that contains a delegation token, along with the
@@ -15,19 +15,20 @@ import { getAmount, getValidatorInfoFromValueView, joinLoHiAmount } from '@penum
 export const DelegationValueView = ({
   valueView,
   votingPowerAsIntegerPercentage,
-  canDelegate,
+  unstakedTokens,
 }: {
-  valueView?: ValueView;
+  /**
+   * A `ValueView` representing the address's balance of the given delegation
+   * token.
+   */
+  valueView: ValueView;
   votingPowerAsIntegerPercentage?: number;
   /**
-   * Whether the user can delegate to this validator (i.e., whether the user has
-   * a nonzero balance of the staking token with which to stake in this
-   * validator).
+   * A `ValueView` representing the address's balance of staking (UM) tokens.
+   * Used to show the user how many tokens they have available to delegate.
    */
-  canDelegate: boolean;
+  unstakedTokens?: ValueView;
 }) => {
-  const delegationBalance = getAmount.optional()(valueView);
-  const canUndelegate = delegationBalance ? !!joinLoHiAmount(delegationBalance) : false;
   const validatorInfo = getValidatorInfoFromValueView(valueView);
 
   return (
@@ -43,7 +44,11 @@ export const DelegationValueView = ({
         <ValueViewComponent view={valueView} />
       </div>
 
-      <StakingActions canDelegate={canDelegate} canUndelegate={canUndelegate} />
+      <StakingActions
+        validatorInfo={validatorInfo}
+        delegationTokens={valueView}
+        unstakedTokens={unstakedTokens}
+      />
     </div>
   );
 };

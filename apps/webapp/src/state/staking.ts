@@ -4,16 +4,31 @@ import { getDelegationsForAccount } from '../fetchers/staking';
 import {
   VotingPowerAsIntegerPercentage,
   getAmount,
+  getDisplayDenomExponent,
   getDisplayDenomFromView,
+  getIdentityKeyFromValidatorInfo,
   getValidatorInfoFromValueView,
   getVotingPowerByValidatorInfo,
   getVotingPowerFromValidatorInfo,
   joinLoHiAmount,
+  toBaseUnit,
 } from '@penumbra-zone/types';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getBalancesByAccount } from '../fetchers/balances/by-account';
-import { STAKING_TOKEN } from '@penumbra-zone/constants';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { STAKING_TOKEN, localAssets } from '@penumbra-zone/constants';
+import {
+  AddressIndex,
+  IdentityKey,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { TransactionToast } from '@penumbra-zone/ui';
+import { plan } from './helpers';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import BigNumber from 'bignumber.js';
+
+const STAKING_TOKEN_DISPLAY_DENOM_EXPONENT = (() => {
+  const stakingAsset = localAssets.find(asset => asset.display === STAKING_TOKEN);
+  return getDisplayDenomExponent(stakingAsset);
+})();
 
 export interface StakingSlice {
   /** The account for which we're viewing delegations. */
@@ -37,9 +52,29 @@ export interface StakingSlice {
    * is changed, as a single call populates data across all accounts.
    */
   loadUnstakedTokensByAccount: () => Promise<void>;
+  delegate: () => Promise<void>;
   loading: boolean;
   error: unknown;
   votingPowerByValidatorInfo: Record<string, VotingPowerAsIntegerPercentage>;
+  onClickActionButton: (action: 'delegate' | 'undelegate', validatorInfo: ValidatorInfo) => void;
+  setAction: (action?: 'delegate' | 'undelegate') => void;
+  setAmount: (amount: string) => void;
+  /**
+   * The action that the user is currently taking. This is populated once the
+   * user clicks the "Delegate" or "Undelegate" button, and it is reset to
+   * `undefined` when the transaction starts or the user cancels.
+   */
+  action?: 'delegate' | 'undelegate';
+  /**
+   * The amount the user has typed into the form that appears after clicking the
+   * "Delegate" or "Undelegate" button.
+   */
+  amount: string;
+  /**
+   * The identity key of the validator that the user has clicked the delegate or
+   * undelegate button for.
+   */
+  identityKey?: IdentityKey;
 }
 
 /**
@@ -68,6 +103,22 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
   setAccount: (account: number) =>
     set(state => {
       state.staking.account = account;
+    }),
+  action: undefined,
+  amount: '',
+  identityKey: undefined,
+  onClickActionButton: (action, validatorInfo) =>
+    set(state => {
+      state.staking.action = action;
+      state.staking.identityKey = getIdentityKeyFromValidatorInfo(validatorInfo);
+    }),
+  setAction: action =>
+    set(state => {
+      state.staking.action = action;
+    }),
+  setAmount: amount =>
+    set(state => {
+      state.staking.amount = amount;
     }),
   delegationsByAccount: new Map(),
   unstakedTokensByAccount: new Map(),
@@ -117,9 +168,23 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       state.staking.unstakedTokensByAccount = unstakedTokensByAccount;
     });
   },
-  error: undefined,
+  delegate: async () => {
+    // not yet implemented
+  },
   loading: false,
+  error: undefined,
   votingPowerByValidatorInfo: {},
 });
 
 export const stakingSelector = (state: AllSlices) => state.staking;
+
+const assembleRequest = ({ account, amount }: StakingSlice) => {
+  return new TransactionPlannerRequest({
+    delegations: [
+      {
+        amount: toBaseUnit(BigNumber(amount), STAKING_TOKEN_DISPLAY_DENOM_EXPONENT),
+      },
+    ],
+    source: { account },
+  });
+};
