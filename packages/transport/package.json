@@ -5,5 +5,8 @@
   "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\""
+  },
+  "devDependencies": {
+    "@penumbra-zone/polyfills": "workspace:*",
   }
 }
