@@ -50,7 +50,7 @@ export default function InputToken({
       <div className='mt-[6px] flex items-center justify-between gap-2'>
         <div className='flex items-start gap-1 truncate'>
           <img src='./wallet.svg' alt='Wallet' className='size-5' />
-          <ValueViewComponent view={selection?.value} />
+          <ValueViewComponent view={selection?.value} showIcon={false} />
         </div>
       </div>
     </InputBlock>

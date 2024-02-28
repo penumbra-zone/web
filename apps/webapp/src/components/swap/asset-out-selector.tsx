@@ -15,9 +15,11 @@ export const AssetOutSelector = ({ balances, setAssetOut, assetOut }: AssetOutSe
   return (
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
-        <div className='flex h-9 min-w-[100px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
+        <div className='flex h-9 min-w-[100px] max-w-[150px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
           {assetOut?.display && <AssetIcon metadata={assetOut} />}
-          <p className='font-bold text-light-grey md:text-sm xl:text-base'>{assetOut?.display}</p>
+          <p className='truncate font-bold text-light-grey md:text-sm xl:text-base'>
+            {assetOut?.display}
+          </p>
         </div>
       </DialogTrigger>
       <DialogContent className='max-w-[312px] bg-charcoal-secondary md:max-w-[400px]'>
@@ -29,7 +31,7 @@ export const AssetOutSelector = ({ balances, setAssetOut, assetOut }: AssetOutSe
                 <div key={d.display} className='flex flex-col'>
                   <DialogClose>
                     <div
-                      className='grid cursor-pointer grid-cols-3 py-[10px] font-bold text-muted-foreground hover:-mx-4 hover:bg-light-brown hover:px-4'
+                      className='grid cursor-pointer break-all py-[10px] font-bold text-muted-foreground hover:-mx-4 hover:bg-light-brown hover:px-4'
                       onClick={() => setAssetOut(d)}
                     >
                       <div className='flex justify-start gap-[6px]'>
