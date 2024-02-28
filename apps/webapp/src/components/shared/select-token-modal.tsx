@@ -57,15 +57,13 @@ export default function SelectTokenModal({
             </div>
           </div>
           <div className='flex shrink flex-col gap-4 overflow-auto px-[30px]'>
-            <div className='mt-2 grid grid-cols-3 font-headline text-base font-semibold'>
+            <div className='mt-2 grid grid-cols-2 font-headline text-base font-semibold'>
               <p className='flex justify-start'>Account</p>
-              <p className='flex justify-start'>Token name</p>
-              <p className='flex justify-end'>Balance</p>
+              <p className='flex justify-start'>Asset</p>
             </div>
             <div className='flex flex-col gap-2'>
               {balances.map((b, i) => {
                 const index = getAddressIndex(b.address).account;
-                const metadata = getMetadata.optional()(b.value);
 
                 return (
                   <div key={i} className='flex flex-col'>
@@ -80,12 +78,8 @@ export default function SelectTokenModal({
                         onClick={() => setSelection(b)}
                       >
                         <p className='flex justify-start'>{index}</p>
-                        <div className='flex justify-start gap-[6px]'>
-                          {metadata && <AssetIcon metadata={metadata} />}
-                          <p className='truncate'>{getDisplayDenomFromView(b.value)}</p>
-                        </div>
-                        <div className='flex justify-end'>
-                          <ValueViewComponent view={b.value} showDenom={false} />
+                        <div className='flex justify-start'>
+                          <ValueViewComponent view={b.value} />
                         </div>
                       </div>
                     </DialogClose>

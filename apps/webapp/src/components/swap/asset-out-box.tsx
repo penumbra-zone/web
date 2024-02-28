@@ -16,17 +16,26 @@ import {
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { groupByAsset } from '../../fetchers/balances/by-asset';
 import { cn } from '@penumbra-zone/ui/lib/utils';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 
 const findMatchingBalance = (
-  denom: Metadata | undefined,
+  metadata: Metadata | undefined,
   balances: AssetBalance[],
 ): ValueView | undefined => {
-  if (!denom?.penumbraAssetId) return undefined;
+  if (!metadata?.penumbraAssetId) return undefined;
 
-  return balances.reduce(groupByAsset, []).find(v => {
+  const foundMatch = balances.reduce(groupByAsset, []).find(v => {
     if (v.valueView.case !== 'knownAssetId') return false;
-    return v.valueView.value.metadata?.penumbraAssetId?.equals(denom.penumbraAssetId);
+    return v.valueView.value.metadata?.penumbraAssetId?.equals(metadata.penumbraAssetId);
   });
+
+  if (!foundMatch) {
+    return new ValueView({
+      valueView: { case: 'knownAssetId', value: { metadata, amount: new Amount() } },
+    });
+  }
+
+  return foundMatch;
 };
 
 interface AssetOutBoxProps {
@@ -45,7 +54,7 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
       </div>
       <div className='flex items-center justify-between gap-4'>
         {simulateOutResult ? (
-          <ValueViewComponent view={simulateOutResult} showDenom={false} />
+          <ValueViewComponent view={simulateOutResult} showDenom={false} showIcon={false} />
         ) : (
           <EstimateButton simulateFn={simulateSwap} />
         )}
@@ -55,7 +64,7 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
         <div />
         <div className='flex items-start gap-1'>
           <img src='./wallet.svg' alt='Wallet' className='size-5' />
-          {matchingBalance && <ValueViewComponent view={matchingBalance} />}
+          <ValueViewComponent view={matchingBalance} showIcon={false} />
         </div>
       </div>
     </div>
