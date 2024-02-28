@@ -4,7 +4,7 @@ import { servicesCtx } from '../../ctx';
 import {
   addLoHi,
   Base64Str,
-  getAmountFromValueView,
+  getAmount,
   uint8ArrayToBase64,
 } from '@penumbra-zone/types';
 
@@ -82,7 +82,7 @@ class BalancesAggregator {
 
     // Many type overrides, but initialization above guarantees presence
     const valueView = this.accounts[accountNumber]![assetIdBase64]!.balanceView;
-    const currentAmount = getAmountFromValueView(valueView);
+    const currentAmount = getAmount(valueView);
     this.aggregateAmount(currentAmount, n);
   }
 

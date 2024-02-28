@@ -3,7 +3,6 @@ import { balances } from './balances';
 
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 
-import {AssetId, Metadata} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import {
   BalancesRequest,
@@ -12,17 +11,18 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { base64ToUint8Array, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import {base64ToUint8Array, getAddressIndex, getAssetIdFromValueView, getMetadata} from '@penumbra-zone/types';
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { Services } from '@penumbra-zone/services';
 import { IndexedDbMock, MockServices } from './test-utils';
+import {AssetId, Metadata} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb";
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {
-  const account0Res = responses.filter(r => r.account?.account === accountId);
+  const account0Res = responses.filter(r => getAddressIndex(r.accountAddress).account === accountId);
   const uniqueAssetIds = account0Res.reduce((collection, res) => {
     collection.add(
-      res.balance?.assetId ? uint8ArrayToBase64(res.balance.assetId.inner) : undefined,
+        getAssetIdFromValueView(res.balanceView)
     );
     return collection;
   }, new Set());
@@ -79,8 +79,11 @@ describe('Balances request handler', () => {
       done: true,
     });
 
-    mockIndexedDb.getAssetsMetadata?.mockResolvedValueOnce(assetMetadata);
-
+    mockIndexedDb.getAssetsMetadata?.mockImplementation((assetId) => {
+     return Promise.resolve(new Metadata({
+       penumbraAssetId: assetId
+     }));
+    });
     req = new BalancesRequest();
   });
 
@@ -97,17 +100,17 @@ describe('Balances request handler', () => {
   });
 
   test('filtering asset id', async () => {
-    const assetIdStr = 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=';
-    req.assetIdFilter = new AssetId({
-      inner: base64ToUint8Array(assetIdStr),
+    const assetId = new AssetId({
+      inner: base64ToUint8Array('KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA='),
     });
+    req.assetIdFilter =assetId;
     const responses: BalancesResponse[] = [];
     for await (const res of balances(req, mockCtx)) {
       responses.push(new BalancesResponse(res));
     }
     expect(responses.length).toBe(3);
     responses.forEach(r => {
-      expect(uint8ArrayToBase64(r.balance!.assetId!.inner)).toBe(assetIdStr);
+      expect(getMetadata(r.balanceView).penumbraAssetId?.equals(assetId)).toBeTruthy();
     });
   });
 
@@ -119,7 +122,7 @@ describe('Balances request handler', () => {
     }
     expect(responses.length).toBe(1);
     responses.forEach(r => {
-      expect(r.account!.account).toBe(12);
+      expect(getAddressIndex(r.accountAddress).account).toBe(12);
     });
   });
 
@@ -337,19 +340,4 @@ const testData: SpendableNoteRecord[] = [
   }),
 ];
 
-const assetMetadata = Metadata.fromJson({
-  description: '',
-  denomUnits: [
-    { denom: 'gn', exponent: 6, aliases: [] },
-    { denom: 'mgn', exponent: 3, aliases: [] },
-    { denom: 'ugn', exponent: 0, aliases: [] },
-  ],
-  base: 'ugn',
-  display: 'gn',
-  name: '',
-  symbol: '',
-  penumbraAssetId: {
-    inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=',
-  },
-});
 
