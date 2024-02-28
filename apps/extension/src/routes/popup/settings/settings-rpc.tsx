@@ -9,19 +9,19 @@ import { SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { networkSelector } from '../../../state/network';
 import { internalSwClient } from '@penumbra-zone/router';
-import '@penumbra-zone/types/src/promise-with-resolvers';
+import '@penumbra-zone/polyfills/Promise.withResolvers';
 
 export const SettingsRPC = () => {
   const { chainId: currentChainId } = useChainIdQuery();
-  const [newChainId, setNewChainId] = useState(undefined as string | undefined);
+  const [newChainId, setNewChainId] = useState<string>();
   const { grpcEndpoint, setGRPCEndpoint } = useStore(networkSelector);
 
-  const [rpcInput, setRpcInput] = useState(grpcEndpoint ?? '');
-  const [rpcError, setRpcError] = useState(undefined as string | undefined);
-  const [countdownTime, setCountdownTime] = useState(undefined as number | undefined);
+  const [rpcInput, setRpcInput] = useState<string>(grpcEndpoint ?? '');
+  const [rpcError, setRpcError] = useState<string>();
+  const [countdownTime, setCountdownTime] = useState<number>();
 
   const countdown = (seconds: number) => {
-    const { promise, resolve } = Promise.withResolvers<undefined>();
+    const { promise, resolve } = Promise.withResolvers();
     setCountdownTime(seconds);
     setInterval(() => {
       if (!seconds) resolve(undefined);
@@ -34,18 +34,22 @@ export const SettingsRPC = () => {
     evt.preventDefault();
     void (async () => {
       try {
-        const { appParameters } = await createPromiseClient(
+        const trialClient = createPromiseClient(
           QueryService,
           createGrpcWebTransport({ baseUrl: rpcInput }),
-        ).appParameters({});
+        );
+        const { appParameters } = await trialClient.appParameters({});
         if (!appParameters?.chainId) throw new Error('Endpoint did not provide a valid chainId');
 
         setRpcError(undefined);
         setNewChainId(appParameters.chainId);
         await setGRPCEndpoint(rpcInput);
-        // TODO: show dialog, explain new chain
+        // If the chain id has changed, our cache is invalid
         if (appParameters.chainId != currentChainId) void internalSwClient.clearCache();
-        await countdown(5).then(() => chrome.runtime.reload());
+        // Visually confirm success for a few seconds
+        await countdown(5);
+        // Reload the extension to ensure all scopes holding the old config are killed
+        chrome.runtime.reload();
       } catch (e: unknown) {
         console.error('Could not use RPC endpoint', e);
         setRpcError(String(e) || 'Unknown RPC failure');
