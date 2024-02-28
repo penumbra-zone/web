@@ -16,6 +16,10 @@ const progressVariants = cva('', {
       black: 'bg-black',
       stone: 'bg-stone-800',
     },
+    shape: {
+      rounded: 'rounded-lg',
+      squared: '',
+    },
   },
 });
 
@@ -26,7 +30,10 @@ interface ProgressProps
 }
 
 const Progress = React.forwardRef<React.ElementRef<typeof ProgressPrimitive.Root>, ProgressProps>(
-  ({ className, value, status, background = 'black', size = 'lg', ...props }, ref) => {
+  (
+    { className, value, status, shape = 'rounded', background = 'black', size = 'lg', ...props },
+    ref,
+  ) => {
     return (
       <ProgressPrimitive.Root
         ref={ref}
@@ -34,7 +41,8 @@ const Progress = React.forwardRef<React.ElementRef<typeof ProgressPrimitive.Root
           'relative z-0',
           size === 'lg' && 'h-3',
           size === 'sm' && 'h-1',
-          'w-full overflow-hidden rounded-lg',
+          'w-full overflow-hidden',
+          progressVariants({ shape }),
           progressVariants({ background }),
           className,
         )}
@@ -42,7 +50,8 @@ const Progress = React.forwardRef<React.ElementRef<typeof ProgressPrimitive.Root
       >
         <ProgressPrimitive.Indicator
           className={cn(
-            'h-full w-full flex-1 rounded-lg transition-all z-20',
+            'h-full w-full flex-1 transition-all z-20',
+            progressVariants({ shape }),
             progressVariants({ status }),
           )}
           style={{ transform: `translateX(-${100 - (value ?? 0)}%)` }}
