@@ -13,6 +13,7 @@
     "idb": "^8.0.0"
   },
   "devDependencies": {
+    "@penumbra-zone/polyfills": "workspace:*",
     "playwright": "^1.41.2"
   }
 }
