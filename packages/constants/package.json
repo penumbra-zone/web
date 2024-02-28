@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest run",
-    "test-watch": "vitest"
+    "test": "vitest run"
   }
 }

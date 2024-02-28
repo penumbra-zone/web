@@ -1,6 +1,6 @@
 {
   "extends": "tsconfig/extension.json",
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "prax.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "*.ts"],
   "compilerOptions": {
     "outDir": "./dist",
     "declaration": false,

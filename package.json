@@ -9,7 +9,6 @@
     "lint": "turbo run lint -- --max-warnings=0",
     "lint:fix": "turbo run lint -- --fix",
     "test": "turbo run test",
-    "test:browser": "turbo run test:browser",
     "clean": "turbo clean",
     "format": "prettier --write .",
     "format-check": "prettier --check .",

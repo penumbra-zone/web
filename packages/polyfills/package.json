@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "test:browser": "vitest run --config browser.config.ts"
+    "test": "vitest run"
   },
   "devDependencies": {
     "tsconfig": "workspace:*"
