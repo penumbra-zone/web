@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { MockStorageArea } from './test-utils/mock';
 import { ExtensionStorage } from './base';
-import { flushPromises } from './test-utils/utils';
 
 interface MockV1State {
   network: string;
@@ -147,7 +146,7 @@ describe('Storage migrations', () => {
         },
       ]);
 
-      await flushPromises();
+      await Promise.resolve();
 
       // from a different version, the migration is different
       await v2ExtStorage.set('accounts', [

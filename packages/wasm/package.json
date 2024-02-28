@@ -10,7 +10,6 @@
     "build": "tsc",
     "lint": "eslint \"src/*.ts*\"",
     "test": "vitest run",
-    "test-watch": "vitest",
     "test:rust": "cd crate ; wasm-pack test --headless --firefox -- --test build --target wasm32-unknown-unknown --release --features 'mock-database'"
   },
   "dependencies": {

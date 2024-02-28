@@ -227,21 +227,17 @@ describe('Toast', () => {
     });
   });
 
-  (['success', 'info', 'warning', 'error', 'loading'] as const).forEach(toastFn => {
-    describe(`.${toastFn}()`, () => {
-      it(`switches to use the ${toastFn} toast function`, () => {
-        const toast = new Toast().message('Hello, world!').description('Description here').render();
-
-        toast[toastFn]().render();
-
-        expect(mockToastFn[toastFn]).toHaveBeenCalledTimes(1);
-        expect(mockToastFn[toastFn]).toHaveBeenCalledWith(
-          'Hello, world!',
-          expect.objectContaining({
-            description: 'Description here',
-          }),
-        );
-      });
+  it('switches the toast function', () => {
+    const toast = new Toast().message('Hello, world!').description('Description here').render();
+    (['success', 'info', 'warning', 'error', 'loading'] as const).map(toastFn => {
+      toast[toastFn]().render();
+      expect(mockToastFn[toastFn]).toHaveBeenCalledTimes(1);
+      expect(mockToastFn[toastFn]).toHaveBeenCalledWith(
+        'Hello, world!',
+        expect.objectContaining({
+          description: 'Description here',
+        }),
+      );
     });
   });
 });

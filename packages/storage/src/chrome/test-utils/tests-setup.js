@@ -2,7 +2,7 @@ import { vi } from 'vitest';
 
 // chrome.storage persistence middleware is run upon importing from `state/index.ts`.
 // For tests, this is problematic as it uses globals. This mocks those out.
-global.chrome = {
+globalThis.chrome = {
   storage: {
     onChanged: {
       addListener: vi.fn(),
@@ -21,4 +21,4 @@ global.chrome = {
   },
 };
 
-global.DEFAULT_GRPC_URL = 'https://example.com/';
+globalThis.DEFAULT_GRPC_URL = 'https://rpc.example.com/';

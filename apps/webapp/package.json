@@ -8,9 +8,7 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx",
     "preview": "vite preview",
-    "host": "turbo run build && firebase deploy --only hosting",
-    "test": "vitest run",
-    "test-watch": "vitest"
+    "test": "vitest run"
   },
   "dependencies": {
     "@penumbra-zone/constants": "workspace:*",

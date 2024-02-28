@@ -6,7 +6,6 @@
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run",
-    "test-watch": "vitest",
     "ui:add": "pnpm dlx shadcn-ui@latest add",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

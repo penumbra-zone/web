@@ -9,8 +9,7 @@
     "clean": "rm -rfv dist bin",
     "build": "webpack",
     "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest run",
-    "test-watch": "vitest"
+    "test": "vitest run"
   },
   "dependencies": {
     "@penumbra-zone/constants": "workspace:*",

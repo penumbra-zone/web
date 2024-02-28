@@ -72,10 +72,7 @@ jobs:
       - run: pnpm turbo build --cache-dir=.turbo
 
   turbo-test:
-    strategy:
-      matrix:
-        test: ['test', 'test:browser']
-    name: ${{ matrix.test }}
+    name: test
     runs-on: buildjet-2vcpu-ubuntu-2204
     needs: turbo-compile
     steps:
@@ -84,7 +81,7 @@ jobs:
         uses: buildjet/cache@v3
         with:
           path: .turbo
-          key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-${{ matrix.test }}
+          key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-test
           restore-keys: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
       - uses: pnpm/action-setup@v2
       - uses: buildjet/setup-node@v4
@@ -93,7 +90,7 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm turbo telemetry disable
-      - run: pnpm turbo ${{ matrix.test }} --cache-dir=.turbo
+      - run: pnpm turbo test --cache-dir=.turbo
 
   turbo-test-rust:
     name: test:rust

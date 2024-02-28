@@ -2,7 +2,8 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    include: ['**/encryption.test.ts', '**/sha256.test.ts'],
+    include: ['**/*.test.*.ts'],
+    setupFiles: ['./src/chrome/test-utils/tests-setup.js'],
     browser: {
       name: 'chromium',
       provider: 'playwright',
