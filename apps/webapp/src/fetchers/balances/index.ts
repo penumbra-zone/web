@@ -26,7 +26,7 @@ interface BalancesProps {
   assetIdFilter?: AssetId;
 }
 
-const getBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}) => {
+export const getBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}) => {
   const req = new BalancesRequest();
   if (accountFilter) req.accountFilter = accountFilter;
   if (assetIdFilter) req.assetIdFilter = assetIdFilter;

@@ -99,9 +99,9 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     const unstakedTokensByAccount = balancesByAccount.reduce<Map<number, ValueView | undefined>>(
       (prev, curr) => {
         const unstakedTokens = curr.balances.find(
-          ({ value }) => getDisplayDenomFromView(value) === STAKING_TOKEN,
+          ({ balanceView }) => getDisplayDenomFromView(balanceView) === STAKING_TOKEN,
         );
-        prev.set(curr.index.account, unstakedTokens?.value);
+        prev.set(curr.index.account, unstakedTokens?.balanceView);
         return prev;
       },
       new Map(),
