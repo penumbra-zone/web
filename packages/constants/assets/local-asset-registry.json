@@ -21,7 +21,7 @@
     },
     "images": [
       {
-        "png": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/webapp/public/favicon.png"
+        "svg": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/extension/public/um-token.svg"
       }
     ]
   },
