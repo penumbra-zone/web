@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styles from "../../../styles/Home.module.css";
 import { LiquidityPositionQuerier } from "../../utils/protos/services/dex/liquidity-positions";
-import { testnetConstants } from "../../utils/protos/constants";
+import { testnetConstants } from "../../constants/configConstants";
 import {
   PositionId,
   Position,
@@ -21,7 +21,7 @@ export default function LP() {
     null
   );
   const [isLoading, setIsLoading] = useState(false);
-
+    
   useEffect(() => {
     if (lp_nft_id) {
       setIsLoading(true);
