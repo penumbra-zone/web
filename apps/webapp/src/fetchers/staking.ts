@@ -17,7 +17,7 @@ import { getBalances } from './balances';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 const isDelegationBalance = (balance: BalancesResponse, identityKey: IdentityKey) => {
-  const match = assetPatterns.delegationToken.exec(getDisplayDenomFromView(balance?.balanceView));
+  const match = assetPatterns.delegationToken.exec(getDisplayDenomFromView(balance.balanceView));
   if (!match) return false;
 
   const matchGroups = match.groups as unknown as DelegationCaptureGroups;
