@@ -11,19 +11,27 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import {base64ToUint8Array, getAddressIndex, getAssetIdFromValueView, getMetadata} from '@penumbra-zone/types';
+import {
+  base64ToUint8Array,
+  getAddressIndex,
+  getAssetIdFromValueView,
+  getMetadata,
+} from '@penumbra-zone/types';
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { Services } from '@penumbra-zone/services';
 import { IndexedDbMock, MockServices } from './test-utils';
-import {AssetId, Metadata} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb";
+import {
+  AssetId,
+  Metadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {
-  const account0Res = responses.filter(r => getAddressIndex(r.accountAddress).account === accountId);
+  const account0Res = responses.filter(
+    r => getAddressIndex(r.accountAddress).account === accountId,
+  );
   const uniqueAssetIds = account0Res.reduce((collection, res) => {
-    collection.add(
-        getAssetIdFromValueView(res.balanceView)
-    );
+    collection.add(getAssetIdFromValueView(res.balanceView));
     return collection;
   }, new Set());
 
@@ -53,13 +61,20 @@ describe('Balances request handler', () => {
     };
 
     const mockViewServer = {
-      fullViewingKey: 'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+      fullViewingKey:
+        'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
     };
 
     mockServices = {
-      getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb, viewServer: mockViewServer, querier: {
-          shieldedPool: mockShieldedPool,
-        }, })),
+      getWalletServices: vi.fn(() =>
+        Promise.resolve({
+          indexedDb: mockIndexedDb,
+          viewServer: mockViewServer,
+          querier: {
+            shieldedPool: mockShieldedPool,
+          },
+        }),
+      ),
     };
 
     mockCtx = createHandlerContext({
@@ -79,10 +94,12 @@ describe('Balances request handler', () => {
       done: true,
     });
 
-    mockIndexedDb.getAssetsMetadata?.mockImplementation((assetId) => {
-     return Promise.resolve(new Metadata({
-       penumbraAssetId: assetId
-     }));
+    mockIndexedDb.getAssetsMetadata?.mockImplementation(assetId => {
+      return Promise.resolve(
+        new Metadata({
+          penumbraAssetId: assetId,
+        }),
+      );
     });
     req = new BalancesRequest();
   });
@@ -103,7 +120,7 @@ describe('Balances request handler', () => {
     const assetId = new AssetId({
       inner: base64ToUint8Array('KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA='),
     });
-    req.assetIdFilter =assetId;
+    req.assetIdFilter = assetId;
     const responses: BalancesResponse[] = [];
     for await (const res of balances(req, mockCtx)) {
       responses.push(new BalancesResponse(res));
@@ -339,5 +356,3 @@ const testData: SpendableNoteRecord[] = [
     },
   }),
 ];
-
-

@@ -1,12 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-import {
-  addLoHi,
-  Base64Str,
-  getAmount,
-  uint8ArrayToBase64,
-} from '@penumbra-zone/types';
+import { addLoHi, Base64Str, getAmount, uint8ArrayToBase64 } from '@penumbra-zone/types';
 
 import {
   AssetId,

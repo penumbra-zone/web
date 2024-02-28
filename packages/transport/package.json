@@ -7,6 +7,6 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {
-    "@penumbra-zone/polyfills": "workspace:*",
+    "@penumbra-zone/polyfills": "workspace:*"
   }
 }

@@ -514,9 +514,6 @@ importers:
       '@penumbra-zone/polyfills':
         specifier: workspace:*
         version: link:../polyfills
-      '@types/chrome':
-        specifier: 0.0.260
-        version: 0.0.260
 
   packages/tsconfig: {}
 
@@ -5742,13 +5739,6 @@ packages:
     dependencies:
       '@types/connect': 3.4.38
       '@types/node': 20.11.20
-    dev: true
-
-  /@types/chrome@0.0.260:
-    resolution: {integrity: sha512-lX6QpgfsZRTDpNcCJ+3vzfFnFXq9bScFRTlfhbK5oecSAjamsno+ejFTCbNtc5O/TPnVK9Tja/PyecvWQe0F2w==}
-    dependencies:
-      '@types/filesystem': 0.0.35
-      '@types/har-format': 1.2.15
     dev: true
 
   /@types/chrome@0.0.262:
