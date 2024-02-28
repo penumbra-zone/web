@@ -3,7 +3,7 @@ import { balances } from './balances';
 
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {AssetId, Metadata} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import {
   BalancesRequest,
@@ -44,11 +44,22 @@ describe('Balances request handler', () => {
     };
 
     const mockIndexedDb: IndexedDbMock = {
+      getAssetsMetadata: vi.fn(),
       iterateSpendableNotes: () => mockIterateSpendableNotes,
     };
 
+    const mockShieldedPool = {
+      assetMetadata: vi.fn(),
+    };
+
+    const mockViewServer = {
+      fullViewingKey: 'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+    };
+
     mockServices = {
-      getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb })),
+      getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb, viewServer: mockViewServer, querier: {
+          shieldedPool: mockShieldedPool,
+        }, })),
     };
 
     mockCtx = createHandlerContext({
@@ -67,6 +78,8 @@ describe('Balances request handler', () => {
     mockIterateSpendableNotes.next.mockResolvedValueOnce({
       done: true,
     });
+
+    mockIndexedDb.getAssetsMetadata?.mockResolvedValueOnce(assetMetadata);
 
     req = new BalancesRequest();
   });
@@ -323,3 +336,20 @@ const testData: SpendableNoteRecord[] = [
     },
   }),
 ];
+
+const assetMetadata = Metadata.fromJson({
+  description: '',
+  denomUnits: [
+    { denom: 'gn', exponent: 6, aliases: [] },
+    { denom: 'mgn', exponent: 3, aliases: [] },
+    { denom: 'ugn', exponent: 0, aliases: [] },
+  ],
+  base: 'ugn',
+  display: 'gn',
+  name: '',
+  symbol: '',
+  penumbraAssetId: {
+    inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=',
+  },
+});
+
