@@ -454,7 +454,7 @@ describe('IndexedDb', () => {
       );
       const ownedPositions: PositionId[] = [];
       for await (const positionId of db.getOwnedPositionIds(undefined, undefined)) {
-        ownedPositions.push(positionId);
+        ownedPositions.push(positionId as PositionId);
       }
       expect(ownedPositions.length).toBe(1);
       expect(ownedPositions[0]?.equals(positionIdGmPenumbraBuy)).toBeTruthy();
@@ -478,7 +478,7 @@ describe('IndexedDb', () => {
 
       const ownedPositions: PositionId[] = [];
       for await (const positionId of db.getOwnedPositionIds(undefined, undefined)) {
-        ownedPositions.push(positionId);
+        ownedPositions.push(positionId as PositionId);
       }
       expect(ownedPositions.length).toBe(3);
     });
@@ -494,7 +494,7 @@ describe('IndexedDb', () => {
         new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
         undefined,
       )) {
-        ownedPositions.push(positionId);
+        ownedPositions.push(positionId as PositionId);
       }
       expect(ownedPositions.length).toBe(1);
     });
@@ -507,7 +507,7 @@ describe('IndexedDb', () => {
 
       const ownedPositions: PositionId[] = [];
       for await (const positionId of db.getOwnedPositionIds(undefined, tradingPairGmGn)) {
-        ownedPositions.push(positionId);
+        ownedPositions.push(positionId as PositionId);
       }
       expect(ownedPositions.length).toBe(1);
     });
