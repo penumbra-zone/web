@@ -8,12 +8,12 @@ export const getChainId = async (): Promise<string> => {
   return parameters.chainId;
 };
 
-export const useChainId = () => {
+export const useChainIdQuery = () => {
   const { data, refetch } = useQuery({
     queryKey: ['chain-id'],
     queryFn: getChainId,
     refetchInterval: false,
   });
 
-  return { chainId: data, refetch };
+  return { chainId: data, refetchChainId: refetch };
 };

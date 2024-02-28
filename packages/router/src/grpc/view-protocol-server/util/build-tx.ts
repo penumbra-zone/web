@@ -55,10 +55,10 @@ export const optimisticBuild = async function* (
 
 const progressStream = async function* <T>(tasks: PromiseLike<T>[], cancel: PromiseLike<never>) {
   // deliberately not a 'map' - tasks and promises have no direct relationship.
-  const tasksRemaining = Array.from(tasks, () => Promise.withResolvers<T>());
+  const tasksRemaining = Array.from(tasks, () => Promise.withResolvers());
 
   // tasksRemaining will be consumed in order, as tasks complete in any order.
-  tasks.forEach(task => void task.then(() => tasksRemaining.shift()?.resolve(task)));
+  tasks.forEach(task => void task.then(() => tasksRemaining.shift()?.resolve()));
 
   // yield status when any task resolves the next 'remaining' promise
   while (tasksRemaining.length) {
