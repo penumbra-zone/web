@@ -9,7 +9,6 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { produce } from 'immer';
 import { viewClient } from '../clients/grpc';
 import {
   AddressByIndexResponse,
@@ -89,9 +88,9 @@ describe('Send Slice', () => {
 
     test('validate high enough amount validates', () => {
       const assetBalance = new Amount({ hi: 1n });
-      const state = produce(selectionExample, draft => {
-        draft.balanceView!.valueView.value!.amount = assetBalance;
-      });
+      let state = selectionExample.clone();
+      state.balanceView!.valueView.value!.amount = assetBalance;
+
       useStore.getState().send.setSelection(state);
       useStore.getState().send.setAmount('1000');
       const { selection, amount } = useStore.getState().send;
@@ -102,9 +101,9 @@ describe('Send Slice', () => {
 
     test('validate error when too low the balance of the asset', () => {
       const assetBalance = new Amount({ lo: 2n });
-      const state = produce(selectionExample, draft => {
-        draft.balanceView!.valueView.value!.amount = assetBalance;
-      });
+      let state = selectionExample.clone();
+      state.balanceView!.valueView.value!.amount = assetBalance;
+
       useStore.getState().send.setSelection(state);
       useStore.getState().send.setAmount('6');
       const { selection, amount } = useStore.getState().send;

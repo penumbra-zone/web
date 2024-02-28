@@ -3,7 +3,6 @@ import {
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { stakingClient } from '../clients/grpc';
-import { AssetBalance, getAssetBalances } from './balances';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   bech32IdentityKey,
@@ -14,9 +13,11 @@ import {
 import { DelegationCaptureGroups, assetPatterns } from '@penumbra-zone/constants';
 import { Any } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import { getBalances } from './balances';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
-const isDelegationBalance = (assetBalance: AssetBalance, identityKey: IdentityKey) => {
-  const match = assetPatterns.delegationToken.exec(getDisplayDenomFromView(assetBalance.value));
+const isDelegationBalance = (balance: BalancesResponse, identityKey: IdentityKey) => {
+  const match = assetPatterns.delegationToken.exec(getDisplayDenomFromView(balance?.balanceView));
   if (!match) return false;
 
   const matchGroups = match.groups as unknown as DelegationCaptureGroups;
@@ -41,7 +42,7 @@ const isDelegationBalance = (assetBalance: AssetBalance, identityKey: IdentityKe
  * @todo: Make `showInactive` configurable via UI filters.
  */
 export const getDelegationsForAccount = async function* (addressIndex: AddressIndex) {
-  const assetBalances = await getAssetBalances({ accountFilter: addressIndex });
+  const assetBalances = await getBalances({ accountFilter: addressIndex });
   const validatorInfoResponses = stakingClient.validatorInfo({ showInactive: false });
 
   for await (const validatorInfoResponse of validatorInfoResponses) {
@@ -53,15 +54,13 @@ export const getDelegationsForAccount = async function* (addressIndex: AddressIn
     const identityKey = getValidatorInfo.pipe(getIdentityKeyFromValidatorInfo)(
       validatorInfoResponse,
     );
-    const delegation = assetBalances.find(assetBalance =>
-      isDelegationBalance(assetBalance, identityKey),
-    );
+    const delegation = assetBalances.find(balance => isDelegationBalance(balance, identityKey));
 
     if (delegation) {
-      const withValidatorInfo = delegation.value.clone();
+      const withValidatorInfo = delegation.balanceView?.clone();
 
-      if (withValidatorInfo.valueView.case !== 'knownAssetId')
-        throw new Error(`Unexpected ValueView case: ${withValidatorInfo.valueView.case}`);
+      if (withValidatorInfo?.valueView.case !== 'knownAssetId')
+        throw new Error(`Unexpected ValueView case: ${withValidatorInfo?.valueView.case}`);
 
       withValidatorInfo.valueView.value.extendedMetadata = extendedMetadata;
 

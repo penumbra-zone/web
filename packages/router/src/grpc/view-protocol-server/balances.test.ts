@@ -94,7 +94,7 @@ describe('Balances request handler', () => {
       done: true,
     });
 
-    mockIndexedDb.getAssetsMetadata?.mockImplementation(assetId => {
+    mockIndexedDb.getAssetsMetadata?.mockImplementation((assetId: AssetId) => {
       return Promise.resolve(
         new Metadata({
           penumbraAssetId: assetId,
