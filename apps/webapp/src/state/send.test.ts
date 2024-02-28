@@ -88,7 +88,7 @@ describe('Send Slice', () => {
 
     test('validate high enough amount validates', () => {
       const assetBalance = new Amount({ hi: 1n });
-      let state = selectionExample.clone();
+      const state = selectionExample.clone();
       state.balanceView!.valueView.value!.amount = assetBalance;
 
       useStore.getState().send.setSelection(state);
@@ -101,7 +101,7 @@ describe('Send Slice', () => {
 
     test('validate error when too low the balance of the asset', () => {
       const assetBalance = new Amount({ lo: 2n });
-      let state = selectionExample.clone();
+      const state = selectionExample.clone();
       state.balanceView!.valueView.value!.amount = assetBalance;
 
       useStore.getState().send.setSelection(state);
