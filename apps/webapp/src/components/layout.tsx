@@ -6,6 +6,7 @@ import '@penumbra-zone/ui/styles/globals.css';
 import { isExtensionInstalled } from '../utils/is-connected';
 import { getChainId } from '../fetchers/chain-id';
 import { ExtensionNotInstalled } from './extension-not-installed';
+import { Footer } from './footer';
 
 export type LayoutLoaderResult =
   | { isInstalled: false }
@@ -34,6 +35,7 @@ export const Layout = () => {
         <main className='mx-auto w-full flex-1 px-6 pb-4 pt-5 md:px-[88px] md:pb-0 xl:max-w-[1276px] xl:px-12'>
           <Outlet />
         </main>
+        <Footer />
       </div>
       <Toaster />
     </>
