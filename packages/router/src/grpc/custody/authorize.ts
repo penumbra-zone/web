@@ -42,7 +42,6 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!passwordKey) throw new ConnectError('User must login to extension', Code.Unavailable);
 
   const wallets = await local.get('wallets');
-
   const {
     custody: { encryptedSeedPhrase },
     fullViewingKey,
@@ -52,7 +51,6 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
     throw new ConnectError('Unable to get full viewing key', Code.Unauthenticated);
 
   const key = await Key.fromJson(passwordKey);
-
   const decryptedSeedPhrase = await key.unseal(Box.fromJson(encryptedSeedPhrase));
 
   if (!decryptedSeedPhrase)
