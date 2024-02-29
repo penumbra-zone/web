@@ -35,6 +35,7 @@ export const FormDialog = ({
   onClose,
   onSubmit,
 }: {
+  /** When defined, the dialog will be open. */
   action?: 'delegate' | 'undelegate';
   /** The validator we're delegating to or undelegating from. */
   validator: Validator;
