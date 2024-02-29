@@ -13,9 +13,9 @@ import {
   getDisplayDenomFromView,
   getSwapAsset1,
   getSwapAsset2,
-  uint8ArrayToBase64
+  uint8ArrayToBase64,
 } from '@penumbra-zone/types';
-import {assetPatterns, localAssets} from '@penumbra-zone/constants';
+import { assetPatterns, localAssets } from '@penumbra-zone/constants';
 
 export interface UnclaimedSwapsWithMetadata {
   swap: SwapRecord;
@@ -33,8 +33,9 @@ const getAndSetDefaultAssetBalances = async () => {
 
   // filter assets that are not available for swap
   const filteredAssetBalances = assetBalances.filter(b =>
-      [assetPatterns.lpNft, assetPatterns.proposalNft, assetPatterns.unbondingToken, assetPatterns.votingReceipt]
-          .every(pattern => !pattern.test(getDisplayDenomFromView(b.balanceView)))
+    [assetPatterns.lpNft, assetPatterns.proposalNft, assetPatterns.votingReceipt].every(
+      pattern => !pattern.test(getDisplayDenomFromView(b.balanceView)),
+    ),
   );
   // set initial denom in if there is an available balance
   if (filteredAssetBalances[0]) {
