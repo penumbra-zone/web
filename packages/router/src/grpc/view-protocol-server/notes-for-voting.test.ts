@@ -7,7 +7,7 @@ import { ServicesInterface } from '@penumbra-zone/types';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { servicesCtx } from '../../ctx';
-import { IndexedDbMock, MockServices } from './test-utils';
+import { IndexedDbMock, MockServices } from '../test-utils';
 import { notesForVoting } from './notes-for-voting';
 
 describe('NotesForVoting request handler', () => {
@@ -29,6 +29,7 @@ describe('NotesForVoting request handler', () => {
       method: ViewService.methods.notesForVoting,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(
         servicesCtx,
         mockServices as unknown as ServicesInterface,

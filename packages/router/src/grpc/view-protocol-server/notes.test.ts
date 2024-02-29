@@ -14,7 +14,7 @@ import {
   NotesResponse,
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from './test-utils';
+import { IndexedDbMock, MockServices } from '../test-utils';
 import { Services } from '@penumbra-zone/services';
 
 describe('Notes request handler', () => {
@@ -43,6 +43,7 @@ describe('Notes request handler', () => {
       method: ViewService.methods.notes,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
 

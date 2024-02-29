@@ -10,7 +10,7 @@ import {
   UnclaimedSwapsRequest,
   UnclaimedSwapsResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from './test-utils';
+import { IndexedDbMock, MockServices } from '../test-utils';
 import { Services } from '@penumbra-zone/services';
 import { unclaimedSwaps } from './unclaimed-swaps';
 
@@ -41,6 +41,7 @@ describe('UnclaimedSwaps request handler', () => {
       method: ViewService.methods.unclaimedSwaps,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
 

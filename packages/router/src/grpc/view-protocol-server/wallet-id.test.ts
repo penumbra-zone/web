@@ -7,7 +7,7 @@ import { createContextValues, createHandlerContext, HandlerContext } from '@conn
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { extLocalCtx } from '../../ctx';
 import { walletId } from './wallet-id';
-import { MockExtLocalCtx } from './test-utils';
+import { MockExtLocalCtx } from '../test-utils';
 
 describe('WalletId request handler', () => {
   let mockExtLocalCtx: MockExtLocalCtx;
@@ -30,6 +30,7 @@ describe('WalletId request handler', () => {
       method: ViewService.methods.walletId,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(extLocalCtx, mockExtLocalCtx as unknown),
     });
   });

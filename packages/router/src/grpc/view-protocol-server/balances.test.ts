@@ -20,7 +20,7 @@ import {
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { Services } from '@penumbra-zone/services';
-import { IndexedDbMock, MockServices } from './test-utils';
+import { IndexedDbMock, MockServices } from '../test-utils';
 import {
   AssetId,
   Metadata,
@@ -82,6 +82,7 @@ describe('Balances request handler', () => {
       method: ViewService.methods.balances,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
 

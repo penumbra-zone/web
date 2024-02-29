@@ -10,7 +10,7 @@ import {
   TransactionInfoRequest,
   TransactionInfoResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from './test-utils';
+import { IndexedDbMock, MockServices } from '../test-utils';
 import { Services } from '@penumbra-zone/services';
 import { transactionInfo } from './transaction-info';
 
@@ -41,6 +41,7 @@ describe('TransactionInfo request handler', () => {
       method: ViewService.methods.transactionInfo,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
 

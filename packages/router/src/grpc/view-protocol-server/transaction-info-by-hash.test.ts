@@ -7,7 +7,7 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { servicesCtx } from '../../ctx';
-import { IndexedDbMock, MockServices, TendermintMock, ViewServerMock } from './test-utils';
+import { IndexedDbMock, MockServices, TendermintMock, ViewServerMock } from '../test-utils';
 import { transactionInfoByHash } from './transaction-info-by-hash';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import type { Services } from '@penumbra-zone/services';
@@ -54,6 +54,7 @@ describe('TransactionInfoByHash request handler', () => {
       method: ViewService.methods.transactionInfoByHash,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
     mockViewServer.fullViewingKey?.mockReturnValueOnce(
@@ -87,9 +88,6 @@ describe('TransactionInfoByHash request handler', () => {
     const txInfoByHashResponse = new TransactionInfoByHashResponse(
       await transactionInfoByHash(new TransactionInfoByHashRequest({ id: transactionId }), mockCtx),
     );
-
-    console.log(txInfoByHashResponse);
-
     expect(txInfoByHashResponse.txInfo?.equals(transactionInfoTendermintData)).toBeTruthy();
   });
 

@@ -30,6 +30,7 @@ describe('EphemeralAddress request handler', () => {
       method: ViewService.methods.ephemeralAddress,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices),
     });
   });
