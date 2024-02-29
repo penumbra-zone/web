@@ -91,16 +91,16 @@ export const viewFromEmptyPerspective = (tx: Transaction): TransactionView => {
     bodyView: new TransactionBodyView({
       transactionParameters: tx.body.transactionParameters!,
       detectionData: tx.body.detectionData!,
-      memoView: new MemoView({
-        memoView: tx.body.memo
-          ? {
-              case: 'opaque',
-              value: {
-                ciphertext: tx.body.memo,
-              },
-            }
-          : undefined,
-      }),
+      memoView:
+        tx.body.memo &&
+        new MemoView({
+          memoView: {
+            case: 'opaque',
+            value: {
+              ciphertext: tx.body.memo,
+            },
+          },
+        }),
       actionViews: tx.body.actions.map(action => {
         return viewActionFromEmptyPerspective(action)!;
       }),
