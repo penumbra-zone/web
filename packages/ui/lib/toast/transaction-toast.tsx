@@ -25,7 +25,7 @@ const getBroadcastStatusMessage = (label: string, status?: BroadcastStatus) => {
 const getBuildStatusDescription = (
   status?: Exclude<BuildStatus, undefined>,
 ): ReactNode | undefined => {
-  if (status?.case === 'buildProgress')
+  if (status?.case === 'buildProgress') {
     return (
       <Progress
         status='in-progress'
@@ -35,6 +35,7 @@ const getBuildStatusDescription = (
         background='stone'
       />
     );
+  }
   if (status?.case === 'complete')
     return <Progress status='done' value={100} size='sm' className='mt-2' />;
   return undefined;
@@ -120,10 +121,11 @@ export class TransactionToast {
      */
     detectionHeight?: bigint,
   ): void {
-    if (!this._txHash)
+    if (!this._txHash) {
       throw new Error(
         'You called TransactionToast.onSuccess() without first calling `TransactionToast.txHash()`. You must first call `TransactionToast.txHash()` with the transaction hash, so that the success toast can construct a link to the transaction.',
       );
+    }
 
     this.toast
       .success()

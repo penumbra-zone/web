@@ -27,6 +27,7 @@ module.exports = {
       },
     ],
     eqeqeq: ['error', 'always', { null: 'ignore' }],
+    curly: ['error', 'multi-or-nest'],
     'import/no-useless-path-segments': ['error', { noUselessIndex: true }],
     'import/no-relative-packages': 'error',
     'import/no-self-import': 'error',

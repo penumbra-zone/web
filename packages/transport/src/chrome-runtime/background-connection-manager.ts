@@ -94,21 +94,24 @@ export class BackgroundConnectionManager {
         this.connections.set(sender.origin, new Map()).get(sender.origin);
 
       try {
-        if (!channelConfig || !(clientType in ChannelClientLabel))
+        if (!channelConfig || !(clientType in ChannelClientLabel)) {
           throw new ConnectError(
             `Invalid connection: ${clientPort.name}`,
             ConnectErrorCode.OutOfRange,
           );
-        if (sender.origin !== claimedOrigin)
+        }
+        if (sender.origin !== claimedOrigin) {
           throw new ConnectError(
             `Origin mismatch: ${sender.origin} claimed ${claimedOrigin}`,
             ConnectErrorCode.Unauthenticated,
           );
-        if (originConnections?.has(clientId))
+        }
+        if (originConnections?.has(clientId)) {
           throw new ConnectError(
             `Client id collision: ${clientId}`,
             ConnectErrorCode.AlreadyExists,
           );
+        }
       } catch (error) {
         console.error('Connection rejected', error);
         clientPort.postMessage({
