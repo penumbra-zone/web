@@ -9,8 +9,13 @@ import {
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { fetchUnclaimedSwaps } from '../../fetchers/unclaimed-swaps';
 import { viewClient } from '../../clients/grpc';
-import { getSwapAsset1, getSwapAsset2, uint8ArrayToBase64 } from '@penumbra-zone/types';
-import { localAssets } from '@penumbra-zone/constants';
+import {
+  getDisplayDenomFromView,
+  getSwapAsset1,
+  getSwapAsset2,
+  uint8ArrayToBase64
+} from '@penumbra-zone/types';
+import {assetPatterns, localAssets} from '@penumbra-zone/constants';
 
 export interface UnclaimedSwapsWithMetadata {
   swap: SwapRecord;
@@ -26,13 +31,18 @@ export interface SwapLoaderResponse {
 const getAndSetDefaultAssetBalances = async () => {
   const assetBalances = await getBalances();
 
+  // filter assets that are not available for swap
+  const filteredAssetBalances = assetBalances.filter(b =>
+      [assetPatterns.lpNft, assetPatterns.proposalNft, assetPatterns.unbondingToken, assetPatterns.votingReceipt]
+          .every(pattern => !pattern.test(getDisplayDenomFromView(b.balanceView)))
+  );
   // set initial denom in if there is an available balance
-  if (assetBalances[0]) {
-    useStore.getState().swap.setAssetIn(assetBalances[0]);
+  if (filteredAssetBalances[0]) {
+    useStore.getState().swap.setAssetIn(filteredAssetBalances[0]);
     useStore.getState().swap.setAssetOut(localAssets[0]!);
   }
 
-  return assetBalances;
+  return filteredAssetBalances;
 };
 
 const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapsWithMetadata> => {
