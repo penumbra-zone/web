@@ -3,7 +3,7 @@ import { AddressViewComponent } from './address-view';
 import { ViewBox, ViewSection } from './viewbox';
 
 export const MemoViewComponent = ({ memo }: { memo: MemoView | undefined }) => {
-  if (!memo?.memoView) return null;
+  if (!memo?.memoView.case) return null;
   if (memo.memoView.case === 'visible') {
     const mv = memo.memoView.value;
     const text = mv.plaintext?.text;
@@ -25,14 +25,10 @@ export const MemoViewComponent = ({ memo }: { memo: MemoView | undefined }) => {
     );
   }
 
-  if (memo.memoView.case === 'opaque') {
-    return (
-      <ViewSection heading='Memo'>
-        <ViewBox label='Memo Text' />
-        <ViewBox label='Sender Return Address' />
-      </ViewSection>
-    );
-  }
-
-  return <span>Invalid MemoView</span>;
+  return (
+    <ViewSection heading='Memo'>
+      <ViewBox label='Memo Text' />
+      <ViewBox label='Sender Return Address' />
+    </ViewSection>
+  );
 };
