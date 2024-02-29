@@ -1,12 +1,7 @@
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { approverCtx, extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx';
-import {
-  IndexedDbMock,
-  MockExtLocalCtx,
-  MockExtSessionCtx,
-  MockServices,
-} from '../test-utils';
+import { IndexedDbMock, MockExtLocalCtx, MockExtSessionCtx, MockServices } from '../test-utils';
 import { authorize } from './authorize';
 import {
   AuthorizeRequest,
