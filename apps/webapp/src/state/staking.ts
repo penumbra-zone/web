@@ -187,7 +187,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     toast.onStart();
 
     try {
-      const transactionPlan = await plan(assembleRequest(get().staking));
+      const transactionPlan = await plan(assembleDelegateRequest(get().staking));
 
       // Reset form _after_ building the transaction form, since it depends on
       // the state.
@@ -221,7 +221,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
 
 export const stakingSelector = (state: AllSlices) => state.staking;
 
-const assembleRequest = ({ account, amount, validatorInfo }: StakingSlice) => {
+const assembleDelegateRequest = ({ account, amount, validatorInfo }: StakingSlice) => {
   return new TransactionPlannerRequest({
     delegations: [
       {
