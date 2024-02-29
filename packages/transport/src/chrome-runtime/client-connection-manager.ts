@@ -59,7 +59,7 @@ export class ClientConnectionManager {
       const { port1, port2 } = new MessageChannel();
       ClientConnectionManager.singleton ??= new ClientConnectionManager(label, port1);
       ClientConnectionManager.attached ??= port2;
-    } else if (label == ChannelClientLabel.ContentScript && initPort) {
+    } else if (label === ChannelClientLabel.ContentScript && initPort) {
       ClientConnectionManager.singleton ??= new ClientConnectionManager(label, initPort);
       ClientConnectionManager.attached ??= undefined;
       if (ClientConnectionManager.attached) throw Error('Somehow already attached');
