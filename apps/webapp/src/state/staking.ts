@@ -206,6 +206,11 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
         toast.onBroadcastStatus(status),
       );
       toast.onSuccess(detectionHeight);
+
+      // Reload delegation tokens and unstaked tokens to reflect their updated
+      // balances.
+      void get().staking.loadDelegationsForCurrentAccount();
+      void get().staking.loadUnstakedTokensByAccount();
     } catch (e) {
       if (userDeniedTransaction(e)) {
         toast.onDenied();
