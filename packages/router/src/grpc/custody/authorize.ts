@@ -43,7 +43,6 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
 
   const wallets = await local.get('wallets');
 
-  console.log('wallets', wallets);
   const {
     custody: { encryptedSeedPhrase },
     fullViewingKey,
@@ -54,8 +53,6 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
 
   const key = await Key.fromJson(passwordKey);
 
-  console.log(JSON.stringify(passwordKey));
-  console.log(encryptedSeedPhrase);
   const decryptedSeedPhrase = await key.unseal(Box.fromJson(encryptedSeedPhrase));
 
   if (!decryptedSeedPhrase)

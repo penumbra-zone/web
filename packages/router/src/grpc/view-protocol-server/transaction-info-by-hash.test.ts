@@ -88,9 +88,6 @@ describe('TransactionInfoByHash request handler', () => {
     const txInfoByHashResponse = new TransactionInfoByHashResponse(
       await transactionInfoByHash(new TransactionInfoByHashRequest({ id: transactionId }), mockCtx),
     );
-
-    console.log(txInfoByHashResponse);
-
     expect(txInfoByHashResponse.txInfo?.equals(transactionInfoTendermintData)).toBeTruthy();
   });
 
