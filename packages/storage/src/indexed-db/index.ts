@@ -365,18 +365,22 @@ export class IndexedDb implements IndexedDbInterface {
   async *getOwnedPositionIds(
     positionState: PositionState | undefined,
     tradingPair: TradingPair | undefined,
-  ): AsyncGenerator<PositionId, void> {
-    for await (const positionCursor of this.db.transaction('POSITIONS').store) {
-      const position = Position.fromJson(positionCursor.value.position);
-
-      if (positionState && !positionState.equals(position.state)) {
-        continue;
-      }
-      if (tradingPair && !tradingPair.equals(position.phi?.pair)) {
-        continue;
-      }
-      yield PositionId.fromJson(positionCursor.value.id);
-    }
+  ) {
+    yield* new ReadableStream({
+      start: async cont => {
+        let cursor = await this.db.transaction('POSITIONS').store.openCursor();
+        while (cursor) {
+          const position = Position.fromJson(cursor.value.position);
+          if (
+            (!positionState || positionState.equals(position.state)) &&
+            (!tradingPair || tradingPair.equals(position.phi?.pair))
+          )
+            cont.enqueue(PositionId.fromJson(cursor.value.id));
+          cursor = await cursor.continue();
+        }
+        cont.close();
+      },
+    });
   }
 
   async addPosition(positionId: PositionId, position: Position): Promise<void> {

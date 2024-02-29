@@ -1452,7 +1452,7 @@ export const positionGmGnSell = Position.fromJson({
     },
   },
   nonce: 'fs5uy8JKrLpQiY7ShUgNCgJA+ljdByDIafdi99lPG0U=',
-  state: { state: 'POSITION_STATE_ENUM_OPENED' },
+  state: { state: 'POSITION_STATE_ENUM_CLOSED' },
   reserves: { r1: {}, r2: { lo: '2000000' } },
 });
 export const positionIdGmGnSell = PositionId.fromJson({
