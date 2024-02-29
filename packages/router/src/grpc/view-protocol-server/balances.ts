@@ -26,6 +26,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 
 // Handles aggregating amounts and filtering by account number/asset id
 export const balances: Impl['balances'] = async function* (req, ctx) {
+  console.log(ctx.url);
   const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
 

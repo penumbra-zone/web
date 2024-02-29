@@ -47,6 +47,7 @@ describe('Status stream request handler', () => {
       method: ViewService.methods.statusStream,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(
         servicesCtx,
         mockServices as unknown as ServicesInterface,

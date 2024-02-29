@@ -41,6 +41,7 @@ describe('UnclaimedSwaps request handler', () => {
       method: ViewService.methods.unclaimedSwaps,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
 

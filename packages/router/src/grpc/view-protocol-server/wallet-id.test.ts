@@ -30,6 +30,7 @@ describe('WalletId request handler', () => {
       method: ViewService.methods.walletId,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(extLocalCtx, mockExtLocalCtx as unknown),
     });
   });

@@ -45,3 +45,11 @@ export interface MockServices {
 export interface MockExtLocalCtx {
   get: Mock;
 }
+
+export interface MockApproverCtx {
+  get: Mock;
+}
+
+export interface MockExtSessionCtx {
+  get: Mock;
+}

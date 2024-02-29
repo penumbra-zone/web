@@ -54,6 +54,7 @@ describe('TransactionInfoByHash request handler', () => {
       method: ViewService.methods.transactionInfoByHash,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
     mockViewServer.fullViewingKey?.mockReturnValueOnce(

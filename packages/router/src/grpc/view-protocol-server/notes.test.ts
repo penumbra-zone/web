@@ -43,6 +43,7 @@ describe('Notes request handler', () => {
       method: ViewService.methods.notes,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
 

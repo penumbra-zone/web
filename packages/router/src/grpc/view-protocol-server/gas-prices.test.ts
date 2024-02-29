@@ -30,6 +30,7 @@ describe('GasPrices request handler', () => {
       method: ViewService.methods.gasPrices,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(
         servicesCtx,
         mockServices as unknown as ServicesInterface,

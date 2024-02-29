@@ -30,6 +30,7 @@ describe('IndexByAddress request handler', () => {
       method: ViewService.methods.indexByAddress,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices),
     });
 

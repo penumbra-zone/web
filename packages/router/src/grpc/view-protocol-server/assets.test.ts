@@ -40,6 +40,7 @@ describe('Assets request handler', () => {
       method: ViewService.methods.assets,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
 

@@ -59,6 +59,7 @@ describe('BroadcastTransaction request handler', () => {
       method: ViewService.methods.broadcastTransaction,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
 

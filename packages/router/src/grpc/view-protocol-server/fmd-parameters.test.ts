@@ -30,6 +30,7 @@ describe('FmdParameters request handler', () => {
       method: ViewService.methods.fMDParameters,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(
         servicesCtx,
         mockServices as unknown as ServicesInterface,

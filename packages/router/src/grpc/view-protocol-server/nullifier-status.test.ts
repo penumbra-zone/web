@@ -57,6 +57,7 @@ describe('nullifierStatus', () => {
       method: ViewService.methods.nullifierStatus,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
   });

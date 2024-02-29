@@ -41,6 +41,7 @@ describe('OwnedPositionIds request handler', () => {
       method: ViewService.methods.ownedPositionIds,
       protocolName: 'mock',
       requestMethod: 'MOCK',
+      url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
 
