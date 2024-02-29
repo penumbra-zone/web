@@ -6,7 +6,7 @@ import {
   MockExtLocalCtx,
   MockExtSessionCtx,
   MockServices,
-} from '../view-protocol-server/test-utils';
+} from '../test-utils';
 import { authorize } from './authorize';
 import {
   AuthorizeRequest,

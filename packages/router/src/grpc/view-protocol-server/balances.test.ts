@@ -20,7 +20,7 @@ import {
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { Services } from '@penumbra-zone/services';
-import { IndexedDbMock, MockServices } from './test-utils';
+import { IndexedDbMock, MockServices } from '../test-utils';
 import {
   AssetId,
   Metadata,

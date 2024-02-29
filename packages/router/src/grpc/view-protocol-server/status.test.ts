@@ -7,7 +7,7 @@ import { ServicesInterface } from '@penumbra-zone/types';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { servicesCtx } from '../../ctx';
-import { IndexedDbMock, MockServices, TendermintMock } from './test-utils';
+import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils';
 import { status } from './status';
 
 describe('Status request handler', () => {

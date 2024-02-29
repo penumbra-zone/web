@@ -15,7 +15,7 @@ import {
   SpendableNoteRecord,
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from './test-utils';
+import { IndexedDbMock, MockServices } from '../test-utils';
 
 describe('nullifierStatus', () => {
   let mockServices: MockServices;

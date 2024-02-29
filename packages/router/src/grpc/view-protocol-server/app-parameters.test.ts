@@ -9,7 +9,7 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 import { servicesCtx } from '../../ctx';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import { appParameters } from './app-parameters';
-import { IndexedDbMock, MockServices } from './test-utils';
+import { IndexedDbMock, MockServices } from '../test-utils';
 
 describe('AppParameters request handler', () => {
   let mockServices: MockServices;

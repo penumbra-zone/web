@@ -11,7 +11,7 @@ import { createContextValues, createHandlerContext, HandlerContext } from '@conn
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { servicesCtx } from '../../ctx';
 import { assets } from './assets';
-import { IndexedDbMock, MockServices } from './test-utils';
+import { IndexedDbMock, MockServices } from '../test-utils';
 import { Services } from '@penumbra-zone/services';
 
 describe('Assets request handler', () => {
