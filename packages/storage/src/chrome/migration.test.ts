@@ -146,8 +146,6 @@ describe('Storage migrations', () => {
         },
       ]);
 
-      await Promise.resolve();
-
       // from a different version, the migration is different
       await v2ExtStorage.set('accounts', [
         { viewKey: 'v2-view-key-efg', encryptedSeedPhrase: '12345' },
