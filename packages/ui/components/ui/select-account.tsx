@@ -1,28 +1,26 @@
 import { AddressIcon } from './address-icon';
-import { ArrowLeftIcon, ArrowRightIcon, InfoIcon } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { InfoIcon } from 'lucide-react';
 import { CopyToClipboardIconButton } from './copy-to-clipboard-icon-button';
-import { Button } from './button';
 import { IncognitoIcon } from './icons/incognito';
-import { Input } from './input';
 import { Switch } from './switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
 import { useEffect, useState } from 'react';
 import { AddressComponent } from './address-component';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { bech32Address } from '@penumbra-zone/types';
+import { AccountSwitcher } from './account-switcher';
 
 interface SelectAccountProps {
   getAddrByIndex: (index: number, ephemeral: boolean) => Promise<Address> | Address;
 }
 
-const MAX_INDEX = 2 ** 32;
-
+/**
+ * Renders an account address, along with a switcher to choose a different
+ * account index. Also allows the user to view a one-time IBC deposit address.
+ */
 export const SelectAccount = ({ getAddrByIndex }: SelectAccountProps) => {
   const [index, setIndex] = useState<number>(0);
   const [ephemeral, setEphemeral] = useState<boolean>(false);
-
-  const [width, setWidth] = useState(index.toString().length);
   const [address, setAddress] = useState<Address>();
 
   useEffect(() => {
@@ -40,67 +38,8 @@ export const SelectAccount = ({ getAddrByIndex }: SelectAccountProps) => {
         <></>
       ) : (
         <div className='flex w-full flex-col'>
-          <div className='flex items-center justify-between'>
-            <Button
-              variant='ghost'
-              className={cn('hover:bg-inherit', index === 0 && 'cursor-default')}
-            >
-              {index !== 0 ? (
-                <ArrowLeftIcon
-                  onClick={() => {
-                    if (index > 0) {
-                      setIndex(state => state - 1);
-                      setWidth(Number(String(index - 1).length));
-                    }
-                  }}
-                  className='size-6 hover:cursor-pointer'
-                />
-              ) : (
-                <span className='size-6' />
-              )}
-            </Button>
-            <div className='select-none text-center font-headline text-xl font-semibold leading-[30px]'>
-              <div className='flex flex-row flex-wrap items-end gap-[6px]'>
-                <span>Account</span>
-                <div className='flex items-end gap-0'>
-                  <p>#</p>
-                  <div className='relative w-min min-w-[24px]'>
-                    <Input
-                      variant='transparent'
-                      type='number'
-                      className='mb-[3px] h-6 py-[2px] font-headline text-xl font-semibold leading-[30px]'
-                      onChange={e => {
-                        const value = Number(e.target.value);
-                        const valueLength = e.target.value.replace(/^0+/, '').length;
+          <AccountSwitcher account={index} onChange={setIndex} />
 
-                        if (value > MAX_INDEX || valueLength > MAX_INDEX.toString().length) return;
-                        setWidth(valueLength ? valueLength : 1);
-                        setIndex(value);
-                      }}
-                      style={{ width: width + 'ch' }}
-                      value={index ? index.toString().replace(/^0+/, '') : '0'}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <Button
-              variant='ghost'
-              className={cn('hover:bg-inherit', index === MAX_INDEX && 'cursor-default')}
-            >
-              {index < MAX_INDEX ? (
-                <ArrowRightIcon
-                  onClick={() => {
-                    setIndex(state => state + 1);
-                    setWidth(Number(String(index + 1).length));
-                  }}
-                  className='size-6 hover:cursor-pointer'
-                />
-              ) : (
-                <span className='size-6' />
-              )}
-            </Button>
-          </div>
           <div className='mt-4 flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
             <div className='flex items-center gap-[6px]'>
               <AddressIcon address={address} size={24} />
