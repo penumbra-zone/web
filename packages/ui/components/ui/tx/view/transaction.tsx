@@ -12,7 +12,7 @@ export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
 
   return (
     <div className='flex flex-col gap-8'>
-      <MemoViewComponent memo={txv.bodyView.memoView} />
+      {txv.bodyView.memoView?.memoView && <MemoViewComponent memo={txv.bodyView.memoView} />}
       <ViewSection heading='Actions'>
         {txv.bodyView.actionViews.map((av, i) => (
           <ActionViewComponent av={av} key={i} />
