@@ -7,12 +7,10 @@ import { isDevEnv } from './environment';
 export const validateSchema = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
   const result = schema.safeParse(data);
 
-  if (result.success) 
-    return result.data;
-   else {
-    if (isDevEnv()) 
-      throw result.error;
-     else {
+  if (result.success) return result.data;
+  else {
+    if (isDevEnv()) throw result.error;
+    else {
       console.error(result.error);
       return data as T;
     }

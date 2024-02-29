@@ -22,10 +22,11 @@ export class AppQuerier implements AppQuerierInterface {
     const { blockHeight: responseHeight, transactions } = await this.client.transactionsByHeight({
       blockHeight,
     });
-    if (responseHeight !== blockHeight)
-      {throw new Error(
+    if (responseHeight !== blockHeight) {
+      throw new Error(
         `block height mismatch: requested ${blockHeight}, received ${responseHeight}`,
-      );}
+      );
+    }
     return transactions;
   }
 }

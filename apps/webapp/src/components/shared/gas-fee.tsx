@@ -35,13 +35,14 @@ export const GasFee = ({
   setFeeTier: (feeTier: FeeTier_Tier) => void;
 }) => {
   let feeValueView: ValueView | undefined;
-  if (fee?.amount)
-    {feeValueView = new ValueView({
+  if (fee?.amount) {
+    feeValueView = new ValueView({
       valueView: {
         case: 'knownAssetId',
         value: { amount: fee.amount, metadata: PENUMBRA_DENOM_METADATA },
       },
-    });}
+    });
+  }
 
   return (
     /**
