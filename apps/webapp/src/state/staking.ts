@@ -18,6 +18,8 @@ import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/c
 export interface StakingSlice {
   /** The account for which we're viewing delegations. */
   account: number;
+  /** Switch to view a different account. */
+  setAccount: (account: number) => void;
   /** A map of numeric account indexes to delegations for that account. */
   delegationsByAccount: Map<number, ValueView[]>;
   /**
@@ -63,6 +65,10 @@ const byBalanceAndVotingPower = (valueViewA: ValueView, valueViewB: ValueView): 
 
 export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) => ({
   account: 0,
+  setAccount: (account: number) =>
+    set(state => {
+      state.staking.account = account;
+    }),
   delegationsByAccount: new Map(),
   unstakedTokensByAccount: new Map(),
   loadDelegationsForCurrentAccount: async () => {

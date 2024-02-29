@@ -22,6 +22,5 @@ export const StakingLayout = () => {
     [account, loadDelegationsForCurrentAccount],
   );
 
-  /** @todo: Render an account switcher. */
   return <Account />;
 };

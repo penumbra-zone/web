@@ -175,6 +175,7 @@ describe('Staking Slice', () => {
       account: 0,
       delegationsByAccount: new Map(),
       unstakedTokensByAccount: new Map(),
+      setAccount: expect.any(Function) as unknown,
       loadDelegationsForCurrentAccount: expect.any(Function) as unknown,
       loadUnstakedTokensByAccount: expect.any(Function) as unknown,
       error: undefined,
