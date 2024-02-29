@@ -189,7 +189,8 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     try {
       const transactionPlan = await plan(assembleRequest(get().staking));
 
-      // Reset form after building the transaction form, since it depends on the state.
+      // Reset form _after_ building the transaction form, since it depends on
+      // the state.
       set(state => {
         state.staking.amount = '';
         state.staking.action = undefined;
