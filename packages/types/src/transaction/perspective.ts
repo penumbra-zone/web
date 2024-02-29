@@ -99,7 +99,7 @@ export const viewFromEmptyPerspective = (tx: Transaction): TransactionView => {
                 ciphertext: tx.body.memo,
               },
             }
-          : { case: undefined },
+          : undefined,
       }),
       actionViews: tx.body.actions.map(action => {
         return viewActionFromEmptyPerspective(action)!;

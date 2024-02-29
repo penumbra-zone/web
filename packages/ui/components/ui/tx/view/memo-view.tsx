@@ -28,6 +28,6 @@ export const MemoViewComponent = ({ memo: { memoView } }: { memo: MemoView }) =>
         </ViewSection>
       );
     default:
-      return <span>Invalid MemoView</span>;
+      return <span>Invalid MemoView: &quot;{memoView.case}&quot;</span>;
   }
 };
