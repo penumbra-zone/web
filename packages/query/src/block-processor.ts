@@ -3,6 +3,7 @@ import { RootQuerier } from './root-querier';
 import { sha256Hash } from '@penumbra-zone/crypto-web';
 import {
   BlockProcessorInterface,
+  customizeSymbol,
   IndexedDbInterface,
   ViewServerInterface,
 } from '@penumbra-zone/types';
@@ -249,7 +250,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       const metadataFromNode = await this.querier.shieldedPool.assetMetadata(assetId);
 
       if (metadataFromNode) {
-        await this.indexedDb.saveAssetsMetadata(metadataFromNode);
+        await this.indexedDb.saveAssetsMetadata(customizeSymbol(metadataFromNode));
       }
     }
   }

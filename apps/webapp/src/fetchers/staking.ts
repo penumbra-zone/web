@@ -6,6 +6,7 @@ import { stakingClient, viewClient } from '../clients/grpc';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   bech32IdentityKey,
+  customizeSymbol,
   getDisplayDenomFromView,
   getIdentityKeyFromValidatorInfo,
   getValidatorInfo,
@@ -70,7 +71,7 @@ export const getDelegationsForAccount = async function* (addressIndex: AddressIn
 
       yield withValidatorInfo;
     } else {
-      const assetMetadataByIdResponse = await viewClient.assetMetadataById({
+      const { denomMetadata } = await viewClient.assetMetadataById({
         assetId: { altBaseDenom: getDelegationTokenBaseDenom(validatorInfo) },
       });
 
@@ -82,7 +83,7 @@ export const getDelegationsForAccount = async function* (addressIndex: AddressIn
               hi: 0n,
               lo: 0n,
             },
-            metadata: assetMetadataByIdResponse.denomMetadata,
+            metadata: denomMetadata ? customizeSymbol(denomMetadata) : undefined,
             extendedMetadata,
           },
         },
