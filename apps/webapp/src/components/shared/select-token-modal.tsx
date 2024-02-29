@@ -9,15 +9,15 @@ import {
   Input,
 } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { AssetBalance } from '../../fetchers/balances';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { getAddressIndex, getDisplayDenomFromView, getMetadata } from '@penumbra-zone/types';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 interface SelectTokenModalProps {
-  selection: AssetBalance | undefined;
-  setSelection: (selection: AssetBalance) => void;
-  balances: AssetBalance[];
+  selection: BalancesResponse | undefined;
+  setSelection: (selection: BalancesResponse) => void;
+  balances: BalancesResponse[];
 }
 
 export default function SelectTokenModal({
@@ -27,8 +27,8 @@ export default function SelectTokenModal({
 }: SelectTokenModalProps) {
   const [search, setSearch] = useState('');
 
-  const displayDenom = getDisplayDenomFromView(selection?.value);
-  const denomMetadata = getMetadata.optional()(selection?.value);
+  const displayDenom = getDisplayDenomFromView(selection?.balanceView);
+  const denomMetadata = getMetadata.optional()(selection?.balanceView);
 
   return (
     <Dialog>
@@ -63,7 +63,7 @@ export default function SelectTokenModal({
             </div>
             <div className='flex flex-col gap-2'>
               {balances.map((b, i) => {
-                const index = getAddressIndex(b.address).account;
+                const index = getAddressIndex(b.accountAddress).account;
 
                 return (
                   <div key={i} className='flex flex-col'>
@@ -71,15 +71,15 @@ export default function SelectTokenModal({
                       <div
                         className={cn(
                           'grid grid-cols-3 py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4 font-bold text-muted-foreground',
-                          selection?.value.equals(b.value) &&
-                            selection.address.equals(b.address) &&
+                          selection?.balanceView?.equals(b.balanceView) &&
+                            selection.accountAddress?.equals(b.accountAddress) &&
                             'bg-light-brown px-4 -mx-4',
                         )}
                         onClick={() => setSelection(b)}
                       >
                         <p className='flex justify-start'>{index}</p>
                         <div className='flex justify-start'>
-                          <ValueViewComponent view={b.value} />
+                          <ValueViewComponent view={b.balanceView} />
                         </div>
                       </div>
                     </DialogClose>

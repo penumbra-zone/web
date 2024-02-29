@@ -6,19 +6,21 @@ import {
   toBaseUnit,
 } from '@penumbra-zone/types';
 import { AllSlices, SliceCreator } from '.';
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import {
+  BalancesResponse,
+  TransactionPlannerRequest,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { ibcClient, viewClient } from '../clients/grpc';
 import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from './helpers';
-import { AssetBalance } from '../fetchers/balances';
 import { TransactionToast } from '@penumbra-zone/ui';
 
 export interface IbcSendSlice {
-  selection: AssetBalance | undefined;
-  setSelection: (selection: AssetBalance) => void;
+  selection: BalancesResponse | undefined;
+  setSelection: (selection: BalancesResponse) => void;
   amount: string;
   setAmount: (amount: string) => void;
   chain: Chain | undefined;
@@ -132,7 +134,7 @@ const getPlanRequest = async ({
   if (!chain) throw new Error('Chain not set');
   if (!selection) throw new Error('No asset selected');
 
-  const addressIndex = getAddressIndex(selection.address);
+  const addressIndex = getAddressIndex(selection.accountAddress);
   const { address: returnAddress } = await viewClient.ephemeralAddress({ addressIndex });
   if (!returnAddress) throw new Error('Error with generating IBC deposit address');
 
@@ -143,9 +145,9 @@ const getPlanRequest = async ({
       {
         amount: toBaseUnit(
           BigNumber(amount),
-          getDisplayDenomExponentFromValueView(selection.value),
+          getDisplayDenomExponentFromValueView(selection.balanceView),
         ),
-        denom: { denom: getMetadata(selection.value).base },
+        denom: { denom: getMetadata(selection.balanceView).base },
         destinationChainAddress,
         returnAddress,
         timeoutHeight,

@@ -47,7 +47,7 @@ export default function AssetsTable() {
               {a.balances.map((assetBalance, index) => (
                 <TableRow key={index}>
                   <TableCell>
-                    <ValueViewComponent view={assetBalance.value} />
+                    <ValueViewComponent view={assetBalance.balanceView} />
                   </TableCell>
                 </TableRow>
               ))}

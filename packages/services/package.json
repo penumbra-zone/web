@@ -12,8 +12,5 @@
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*",
     "exponential-backoff": "^3.1.1"
-  },
-  "devDependencies": {
-    "@types/chrome": "0.0.260"
   }
 }

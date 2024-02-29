@@ -1,11 +1,11 @@
-import { AssetBalance } from '../../fetchers/balances';
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTrigger } from '@penumbra-zone/ui';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { localAssets } from '@penumbra-zone/constants';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 interface AssetOutSelectorProps {
-  balances: AssetBalance[];
+  balances: BalancesResponse[];
   assetOut: Metadata | undefined;
   setAssetOut: (metadata: Metadata) => void;
 }

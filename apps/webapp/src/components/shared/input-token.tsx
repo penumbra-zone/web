@@ -2,20 +2,20 @@ import { Input, InputProps } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import SelectTokenModal from './select-token-modal';
 import { Validation } from './validation-result';
-import { AssetBalance } from '../../fetchers/balances';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { InputBlock } from './input-block';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 interface InputTokenProps extends InputProps {
   label: string;
-  selection: AssetBalance | undefined;
+  selection: BalancesResponse | undefined;
   placeholder: string;
   className?: string;
   inputClassName?: string;
   value: string;
-  setSelection: (selection: AssetBalance) => void;
+  setSelection: (selection: BalancesResponse) => void;
   validations?: Validation[];
-  balances: AssetBalance[];
+  balances: BalancesResponse[];
 }
 
 export default function InputToken({
@@ -50,7 +50,7 @@ export default function InputToken({
       <div className='mt-[6px] flex items-center justify-between gap-2'>
         <div className='flex items-start gap-1 truncate'>
           <img src='./wallet.svg' alt='Wallet' className='size-5' />
-          <ValueViewComponent view={selection?.value} showIcon={false} />
+          <ValueViewComponent view={selection?.balanceView} showIcon={false} />
         </div>
       </div>
     </InputBlock>

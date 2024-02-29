@@ -8,9 +8,11 @@ import {
   isPenumbraAddr,
   toBaseUnit,
 } from '@penumbra-zone/types';
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import {
+  BalancesResponse,
+  TransactionPlannerRequest,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
-import { AssetBalance } from '../fetchers/balances';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from './helpers';
 
@@ -21,8 +23,8 @@ import {
 import { TransactionToast } from '@penumbra-zone/ui';
 
 export interface SendSlice {
-  selection: AssetBalance | undefined;
-  setSelection: (selection: AssetBalance) => void;
+  selection: BalancesResponse | undefined;
+  setSelection: (selection: BalancesResponse) => void;
   amount: string;
   setAmount: (amount: string) => void;
   recipient: string;
@@ -136,13 +138,13 @@ const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSl
         value: {
           amount: toBaseUnit(
             BigNumber(amount),
-            getDisplayDenomExponentFromValueView(selection?.value),
+            getDisplayDenomExponentFromValueView(selection?.balanceView),
           ),
-          assetId: getAssetIdFromValueView(selection?.value),
+          assetId: getAssetIdFromValueView(selection?.balanceView),
         },
       },
     ],
-    source: getAddressIndex(selection?.address),
+    source: getAddressIndex(selection?.accountAddress),
 
     // Note: we currently don't provide a UI for setting the fee manually. Thus,
     // a `feeMode` of `manualFee` is not supported here.
@@ -155,23 +157,24 @@ const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSl
           },
 
     memo: new MemoPlaintext({
-      returnAddress: getAddress(selection?.address),
+      returnAddress: getAddress(selection?.accountAddress),
       text: memo,
     }),
   });
 };
 
 export const validateAmount = (
-  asset: AssetBalance,
+  asset: BalancesResponse,
   /**
    * The amount that a user types into the interface will always be in the
    * display denomination -- e.g., in `penumbra`, not in `upenumbra`.
    */
   amountInDisplayDenom: string,
 ): boolean => {
-  if (asset.value.valueView.case !== 'knownAssetId') throw new Error('unknown asset selected');
+  if (asset.balanceView?.valueView.case !== 'knownAssetId')
+    throw new Error('unknown asset selected');
 
-  const balanceAmt = fromValueView(asset.value.valueView.value);
+  const balanceAmt = fromValueView(asset.balanceView.valueView.value);
   return Boolean(amountInDisplayDenom) && BigNumber(amountInDisplayDenom).gt(balanceAmt);
 };
 
@@ -182,7 +185,7 @@ export interface SendValidationFields {
 }
 
 export const sendValidationErrors = (
-  asset: AssetBalance | undefined,
+  asset: BalancesResponse | undefined,
   amount: string,
   recipient: string,
   memo?: string,

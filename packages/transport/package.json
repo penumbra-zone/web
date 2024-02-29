@@ -7,7 +7,6 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {
-    "@penumbra-zone/polyfills": "workspace:*",
-    "@types/chrome": "0.0.260"
+    "@penumbra-zone/polyfills": "workspace:*"
   }
 }

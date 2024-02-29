@@ -76,10 +76,10 @@ const mockStakingClient = vi.hoisted(() => ({
 }));
 
 vi.mock('../fetchers/balances', () => ({
-  getAssetBalances: vi.fn(async () =>
+  getBalances: vi.fn(async () =>
     Promise.resolve([
       {
-        value: new ValueView({
+        balanceView: new ValueView({
           valueView: {
             case: 'knownAssetId',
             value: {
@@ -94,7 +94,7 @@ vi.mock('../fetchers/balances', () => ({
             },
           },
         }),
-        address: new AddressView({
+        accountAddress: new AddressView({
           addressView: {
             case: 'decoded',
             value: {
@@ -106,7 +106,7 @@ vi.mock('../fetchers/balances', () => ({
         }),
       },
       {
-        value: new ValueView({
+        balanceView: new ValueView({
           valueView: {
             case: 'knownAssetId',
             value: {
@@ -121,7 +121,7 @@ vi.mock('../fetchers/balances', () => ({
             },
           },
         }),
-        address: new AddressView({
+        accountAddress: new AddressView({
           addressView: {
             case: 'decoded',
             value: {
@@ -133,7 +133,7 @@ vi.mock('../fetchers/balances', () => ({
         }),
       },
       {
-        value: new ValueView({
+        balanceView: new ValueView({
           valueView: {
             case: 'knownAssetId',
             value: {
@@ -144,7 +144,7 @@ vi.mock('../fetchers/balances', () => ({
             },
           },
         }),
-        address: new AddressView({
+        accountAddress: new AddressView({
           addressView: {
             case: 'decoded',
             value: {

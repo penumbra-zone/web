@@ -8,15 +8,15 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { sendValidationErrors } from './send';
-import { AssetBalance } from '../fetchers/balances';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { produce } from 'immer';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 // TODO: Revisit tests when re-implementing ibc form
 
 describe.skip('IBC Slice', () => {
-  const selectionExample = {
-    value: new ValueView({
+  const selectionExample = new BalancesResponse({
+    balanceView: new ValueView({
       valueView: {
         case: 'knownAssetId',
         value: {
@@ -28,7 +28,7 @@ describe.skip('IBC Slice', () => {
         },
       },
     }),
-    address: new AddressView({
+    accountAddress: new AddressView({
       addressView: {
         case: 'opaque',
         value: {
@@ -40,8 +40,7 @@ describe.skip('IBC Slice', () => {
         },
       },
     }),
-    usdcValue: 0,
-  } satisfies AssetBalance;
+  });
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
 
@@ -64,7 +63,7 @@ describe.skip('IBC Slice', () => {
     test('validate high enough amount validates', () => {
       const assetBalance = new Amount({ hi: 1n });
       const state = produce(selectionExample, draft => {
-        draft.value.valueView.value!.amount = assetBalance;
+        draft.balanceView!.valueView.value!.amount = assetBalance;
       });
       useStore.getState().send.setSelection(state);
       useStore.getState().send.setAmount('1');
@@ -77,7 +76,7 @@ describe.skip('IBC Slice', () => {
     test('validate error when too low the balance of the asset', () => {
       const assetBalance = new Amount({ lo: 2n });
       const state = produce(selectionExample, draft => {
-        draft.value.valueView.value!.amount = assetBalance;
+        draft.balanceView!.valueView.value!.amount = assetBalance;
       });
       useStore.getState().send.setSelection(state);
       useStore.getState().send.setAmount('6');
