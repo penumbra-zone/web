@@ -19,11 +19,11 @@ export const SettingsFullViewingKey = () => {
     e.preventDefault();
 
     void (async function () {
-      if (await isPassword(password)) {
+      if (await isPassword(password)) 
         setFullViewingKey(await getFullViewingKey());
-      } else {
+       else 
         setEnteredIncorrect(true);
-      }
+      
     })();
   };
 

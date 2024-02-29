@@ -22,9 +22,9 @@ export const SpendViewComponent = ({ value }: { value: SpendView }) => {
     );
   }
 
-  if (value.spendView.case === 'opaque') {
+  if (value.spendView.case === 'opaque') 
     return <ViewBox label='Spend' />;
-  }
+  
 
   return <div>Invalid SpendView</div>;
 };

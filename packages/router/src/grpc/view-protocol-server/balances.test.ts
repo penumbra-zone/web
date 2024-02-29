@@ -107,9 +107,9 @@ describe('Balances request handler', () => {
 
   test('aggregation, with no filtering', async () => {
     const responses: BalancesResponse[] = [];
-    for await (const res of balances(req, mockCtx)) {
+    for await (const res of balances(req, mockCtx)) 
       responses.push(new BalancesResponse(res));
-    }
+    
     expect(responses.length).toBe(4);
     assertOnlyUniqueAssetIds(responses, 0);
     assertOnlyUniqueAssetIds(responses, 1);
@@ -123,9 +123,9 @@ describe('Balances request handler', () => {
     });
     req.assetIdFilter = assetId;
     const responses: BalancesResponse[] = [];
-    for await (const res of balances(req, mockCtx)) {
+    for await (const res of balances(req, mockCtx)) 
       responses.push(new BalancesResponse(res));
-    }
+    
     expect(responses.length).toBe(3);
     responses.forEach(r => {
       expect(getMetadata(r.balanceView).penumbraAssetId?.equals(assetId)).toBeTruthy();
@@ -135,9 +135,9 @@ describe('Balances request handler', () => {
   test('filtering account', async () => {
     req.accountFilter = new AddressIndex({ account: 12 });
     const responses: BalancesResponse[] = [];
-    for await (const res of balances(req, mockCtx)) {
+    for await (const res of balances(req, mockCtx)) 
       responses.push(new BalancesResponse(res));
-    }
+    
     expect(responses.length).toBe(1);
     responses.forEach(r => {
       expect(getAddressIndex(r.accountAddress).account).toBe(12);
@@ -147,9 +147,9 @@ describe('Balances request handler', () => {
   test('spent notes', async () => {
     req.accountFilter = new AddressIndex({ account: 99 });
     const responses: BalancesResponse[] = [];
-    for await (const res of balances(req, mockCtx)) {
+    for await (const res of balances(req, mockCtx)) 
       responses.push(new BalancesResponse(res));
-    }
+    
     expect(responses.length).toBe(0);
   });
 });

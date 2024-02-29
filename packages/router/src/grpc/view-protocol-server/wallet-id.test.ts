@@ -18,11 +18,11 @@ describe('WalletId request handler', () => {
 
     mockExtLocalCtx = {
       get: vi.fn().mockImplementation((key: string) => {
-        if (key === 'wallets') {
+        if (key === 'wallets') 
           return Promise.resolve([{ id: 'mockWalletId' }]);
-        } else {
+         else 
           return Promise.resolve([]);
-        }
+        
       }),
     };
     mockCtx = createHandlerContext({

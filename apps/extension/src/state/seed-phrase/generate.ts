@@ -39,11 +39,11 @@ export const createGenerate: SliceCreator<SeedPhraseSlice['generate']> = (set, g
   updateAttempt: attempt => {
     set(({ seedPhrase: { generate } }) => {
       const match = generate.userValidationAttempt.find(v => v.index === attempt.index);
-      if (match) {
+      if (match) 
         match.word = attempt.word;
-      } else {
+       else 
         generate.userValidationAttempt.push(attempt);
-      }
+      
     });
   },
   userAttemptCorrect: () => {

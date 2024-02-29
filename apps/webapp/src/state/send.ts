@@ -116,11 +116,11 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
           state.send.amount = '';
         });
       } catch (e) {
-        if (userDeniedTransaction(e)) {
+        if (userDeniedTransaction(e)) 
           toast.onDenied();
-        } else {
+         else 
           toast.onFailure(e);
-        }
+        
       } finally {
         set(state => {
           state.send.txInProgress = false;

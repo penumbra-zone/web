@@ -140,15 +140,15 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
-      if (compactBlock.appParametersUpdated) {
+      if (compactBlock.appParametersUpdated) 
         await this.indexedDb.saveAppParams(await this.querier.app.appParams());
-      }
-      if (compactBlock.fmdParameters) {
+      
+      if (compactBlock.fmdParameters) 
         await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
-      }
-      if (compactBlock.gasPrices) {
+      
+      if (compactBlock.gasPrices) 
         await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
-      }
+      
 
       // wasm view server scan
       // - decrypts new notes
@@ -234,9 +234,9 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   private async saveRecoveredCommitmentSources(recovered: (SpendableNoteRecord | SwapRecord)[]) {
     for (const record of recovered)
-      if (record instanceof SpendableNoteRecord) await this.indexedDb.saveSpendableNote(record);
+      {if (record instanceof SpendableNoteRecord) await this.indexedDb.saveSpendableNote(record);
       else if (record instanceof SwapRecord) await this.indexedDb.saveSwap(record);
-      else throw new Error('Unexpected record type');
+      else throw new Error('Unexpected record type');}
   }
 
   private async identifyNewAssets(newNotes: SpendableNoteRecord[]) {

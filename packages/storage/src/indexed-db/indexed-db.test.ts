@@ -120,17 +120,17 @@ describe('IndexedDb', () => {
       await db.saveSpendableNote(newNote);
 
       const notes: SpendableNoteRecord[] = [];
-      for await (const note of db.iterateSpendableNotes()) {
+      for await (const note of db.iterateSpendableNotes()) 
         notes.push(note);
-      }
+      
       expect(notes.length).toBe(1);
 
       await db.saveAssetsMetadata(metadataA);
 
       const assets: Metadata[] = [];
-      for await (const asset of db.iterateAssetsMetadata()) {
+      for await (const asset of db.iterateAssetsMetadata()) 
         assets.push(asset);
-      }
+      
       expect(assets.length).toBe(1 + localAssets.length);
 
       await db.saveTransactionInfo(
@@ -142,9 +142,9 @@ describe('IndexedDb', () => {
         }),
       );
       const txs: TransactionInfo[] = [];
-      for await (const tx of db.iterateTransactionInfo()) {
+      for await (const tx of db.iterateTransactionInfo()) 
         txs.push(tx);
-      }
+      
       expect(txs.length).toBe(1);
 
       const scanResult = {
@@ -172,21 +172,21 @@ describe('IndexedDb', () => {
       await db.clear();
 
       const notesAfterClear: SpendableNoteRecord[] = [];
-      for await (const note of db.iterateSpendableNotes()) {
+      for await (const note of db.iterateSpendableNotes()) 
         notesAfterClear.push(note);
-      }
+      
       expect(notesAfterClear.length).toBe(0);
 
       const assetsAfterClear: Metadata[] = [];
-      for await (const asset of db.iterateAssetsMetadata()) {
+      for await (const asset of db.iterateAssetsMetadata()) 
         assetsAfterClear.push(asset);
-      }
+      
       expect(assetsAfterClear.length).toBe(0);
 
       const txsAfterClean: TransactionInfo[] = [];
-      for await (const tx of db.iterateTransactionInfo()) {
+      for await (const tx of db.iterateTransactionInfo()) 
         txsAfterClean.push(tx);
-      }
+      
       expect(txsAfterClean.length).toBe(0);
       expect(await db.getFullSyncHeight()).toBeUndefined();
     });
@@ -231,9 +231,9 @@ describe('IndexedDb', () => {
       await db.saveSpendableNote(newNote);
 
       const notes: SpendableNoteRecord[] = [];
-      for await (const note of db.iterateSpendableNotes()) {
+      for await (const note of db.iterateSpendableNotes()) 
         notes.push(note);
-      }
+      
       expect(notes.length === 1).toBeTruthy();
       expect(newNote.equals(notes[0])).toBeTruthy();
     });
@@ -276,9 +276,9 @@ describe('IndexedDb', () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       const savedAssets: Metadata[] = [];
-      for await (const asset of db.iterateAssetsMetadata()) {
+      for await (const asset of db.iterateAssetsMetadata()) 
         savedAssets.push(asset);
-      }
+      
 
       for (const metadata of localAssets) {
         const match = savedAssets.find(a => a.equals(metadata));
@@ -305,9 +305,9 @@ describe('IndexedDb', () => {
       await db.saveAssetsMetadata(metadataC);
 
       const savedAssets: Metadata[] = [];
-      for await (const asset of db.iterateAssetsMetadata()) {
+      for await (const asset of db.iterateAssetsMetadata()) 
         savedAssets.push(asset);
-      }
+      
       expect(savedAssets.length === 3 + localAssets.length).toBeTruthy();
     });
   });
@@ -330,9 +330,9 @@ describe('IndexedDb', () => {
 
       await db.saveTransactionInfo(transactionInfo);
       const savedTransactions: TransactionInfo[] = [];
-      for await (const tx of db.iterateTransactionInfo()) {
+      for await (const tx of db.iterateTransactionInfo()) 
         savedTransactions.push(tx);
-      }
+      
       expect(savedTransactions.length === 1).toBeTruthy();
       expect(transactionInfo.equals(savedTransactions[0])).toBeTruthy();
     });
@@ -344,9 +344,9 @@ describe('IndexedDb', () => {
 
       await db.saveScanResult(scanResultWithNewSwaps);
       const savedSwaps: SwapRecord[] = [];
-      for await (const swap of db.iterateSwaps()) {
+      for await (const swap of db.iterateSwaps()) 
         savedSwaps.push(swap);
-      }
+      
       expect(savedSwaps.length === 1).toBeTruthy();
       expect(savedSwaps[0]!.equals(scanResultWithNewSwaps.newSwaps[0])).toBeTruthy();
     });
@@ -453,9 +453,9 @@ describe('IndexedDb', () => {
         new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
       );
       const ownedPositions: PositionId[] = [];
-      for await (const positionId of db.getOwnedPositionIds(undefined, undefined)) {
+      for await (const positionId of db.getOwnedPositionIds(undefined, undefined)) 
         ownedPositions.push(positionId as PositionId);
-      }
+      
       expect(ownedPositions.length).toBe(1);
       expect(ownedPositions[0]?.equals(positionIdGmPenumbraBuy)).toBeTruthy();
     });
@@ -477,9 +477,9 @@ describe('IndexedDb', () => {
       await db.addPosition(positionIdGmGnSell, positionGmGnSell);
 
       const ownedPositions: PositionId[] = [];
-      for await (const positionId of db.getOwnedPositionIds(undefined, undefined)) {
+      for await (const positionId of db.getOwnedPositionIds(undefined, undefined)) 
         ownedPositions.push(positionId as PositionId);
-      }
+      
       expect(ownedPositions.length).toBe(3);
     });
 
@@ -493,9 +493,9 @@ describe('IndexedDb', () => {
       for await (const positionId of db.getOwnedPositionIds(
         new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
         undefined,
-      )) {
+      )) 
         ownedPositions.push(positionId as PositionId);
-      }
+      
       expect(ownedPositions.length).toBe(1);
     });
 
@@ -506,9 +506,9 @@ describe('IndexedDb', () => {
       await db.addPosition(positionIdGmGnSell, positionGmGnSell);
 
       const ownedPositions: PositionId[] = [];
-      for await (const positionId of db.getOwnedPositionIds(undefined, tradingPairGmGn)) {
+      for await (const positionId of db.getOwnedPositionIds(undefined, tradingPairGmGn)) 
         ownedPositions.push(positionId as PositionId);
-      }
+      
       expect(ownedPositions.length).toBe(1);
     });
   });

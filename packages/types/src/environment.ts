@@ -32,9 +32,9 @@ export const isDevEnv = (): boolean => {
 // Should consider moving this to a package if other consumers need this
 const getEnv = (): Environment => {
   // Check for Node.js environment
-  if (globalThis.process?.versions?.node !== null) {
+  if (globalThis.process?.versions?.node !== null) 
     return process.env['NODE_ENV'] === 'production' ? Environment.NODE_PROD : Environment.NODE_DEV;
-  }
+  
 
   // Check for Chrome extension environment
   else if (globalThis?.window?.chrome?.runtime?.id) {
@@ -44,12 +44,12 @@ const getEnv = (): Environment => {
   }
 
   // Check for browser environment
-  else if (globalThis?.window) {
+  else if (globalThis?.window) 
     return Environment.BROWSER;
-  }
+  
 
   // If neither node.js, chrome extension, nor browser
-  else {
+  else 
     return Environment.UNKNOWN;
-  }
+  
 };

@@ -16,9 +16,9 @@ const groupByAccount = (acc: BalancesByAccount[], curr: BalancesResponse): Balan
   const index = getAddressIndex(curr.accountAddress);
   const grouping = acc.find(a => a.index.equals(index));
 
-  if (grouping) {
+  if (grouping) 
     grouping.balances.push(curr);
-  } else {
+   else {
     acc.push({
       index,
       address: getAddress(curr.accountAddress),

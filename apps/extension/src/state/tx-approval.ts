@@ -109,10 +109,10 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
       });
     } catch (err) {
       if (responder)
-        responder({
+        {responder({
           type: 'TX-APPROVAL',
           error: ConnectError.from(err),
-        });
+        });}
       else throw err;
     } finally {
       set(state => {

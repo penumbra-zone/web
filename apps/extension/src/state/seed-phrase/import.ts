@@ -20,9 +20,9 @@ export const createImport: SliceCreator<SeedPhraseSlice['import']> = (set, get) 
     const words = text.trim().split(' ');
 
     // Extend phrase length if trying to paste in one that's longer
-    if (words.length > get().seedPhrase.import.phrase.length) {
+    if (words.length > get().seedPhrase.import.phrase.length) 
       get().seedPhrase.import.setLength(SeedPhraseLength.TWENTY_FOUR_WORDS);
-    }
+    
 
     // If attempting to add entire seed phrase, spread through the subsequent fields
     words.slice(0, get().seedPhrase.import.phrase.length - position).forEach((word, i) => {

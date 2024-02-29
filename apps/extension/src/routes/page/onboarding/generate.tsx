@@ -28,9 +28,9 @@ export const GenerateSeedPhrase = () => {
 
   // On render, generate a new seed phrase
   useEffect(() => {
-    if (!phrase.length) {
+    if (!phrase.length) 
       generateRandomSeedPhrase(SeedPhraseLength.TWELVE_WORDS);
-    }
+    
     startCountdown();
   }, [generateRandomSeedPhrase, phrase.length, startCountdown]);
 

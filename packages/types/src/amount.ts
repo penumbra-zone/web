@@ -40,9 +40,9 @@ export const displayAmount = (num: number): string => {
 
   if (!decimal) return formattedInt;
 
-  if (Math.abs(num) >= 1) {
+  if (Math.abs(num) >= 1) 
     decimal = decimal.slice(0, 3);
-  }
+  
 
   return `${formattedInt}.${decimal}`;
 };

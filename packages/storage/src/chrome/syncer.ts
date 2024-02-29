@@ -8,7 +8,7 @@ export const syncLastBlockWithLocal = async (indexedDb: IndexedDb) => {
   await localExtStorage.set('fullSyncHeight', Number(fullSyncHeightDb));
 
   const subscription = indexedDb.subscribe('FULL_SYNC_HEIGHT');
-  for await (const update of subscription) {
+  for await (const update of subscription) 
     await localExtStorage.set('fullSyncHeight', Number(update.value));
-  }
+  
 };

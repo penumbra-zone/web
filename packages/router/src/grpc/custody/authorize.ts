@@ -20,13 +20,13 @@ const getMetadataByAssetId = async (ctx: HandlerContext) => {
   const walletServices = await services.getWalletServices();
 
   const assetsMetadata: Metadata[] = [];
-  for await (const metadata of walletServices.indexedDb.iterateAssetsMetadata()) {
+  for await (const metadata of walletServices.indexedDb.iterateAssetsMetadata()) 
     assetsMetadata.push(metadata);
-  }
+  
   return assetsMetadata.reduce<Record<string, Jsonified<Metadata>>>((prev, curr) => {
-    if (curr.penumbraAssetId) {
+    if (curr.penumbraAssetId) 
       prev[bech32AssetId(curr.penumbraAssetId)] = curr.toJson() as Jsonified<Metadata>;
-    }
+    
     return prev;
   }, {});
 };

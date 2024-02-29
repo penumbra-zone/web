@@ -58,9 +58,9 @@ describe('UnclaimedSwaps request handler', () => {
 
   test('should get all swaps with undefined heightClaimed', async () => {
     const responses: UnclaimedSwapsResponse[] = [];
-    for await (const res of unclaimedSwaps(req, mockCtx)) {
+    for await (const res of unclaimedSwaps(req, mockCtx)) 
       responses.push(new UnclaimedSwapsResponse(res));
-    }
+    
     expect(responses.length).toBe(2);
   });
 });

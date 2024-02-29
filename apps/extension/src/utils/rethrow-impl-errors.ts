@@ -15,9 +15,9 @@ const wrapUnaryImpl =
     try {
       const result = methodImplementation(req, ctx);
       if (result instanceof Promise)
-        return result.catch(e => {
+        {return result.catch(e => {
           throw ConnectError.from(e);
-        });
+        });}
       return result;
     } catch (e) {
       throw ConnectError.from(e);
@@ -29,9 +29,9 @@ const wrapServerStreamingImpl = (
 ) =>
   async function* (req: AnyMessage, ctx: HandlerContext) {
     try {
-      for await (const result of methodImplementation(req, ctx)) {
+      for await (const result of methodImplementation(req, ctx)) 
         yield result;
-      }
+      
     } catch (e) {
       throw ConnectError.from(e);
     }

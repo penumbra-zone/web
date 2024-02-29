@@ -9,9 +9,9 @@ export const ephemeralAddress: Impl['ephemeralAddress'] = async (req, ctx) => {
     viewServer: { fullViewingKey },
   } = await services.getWalletServices();
 
-  if (!req.addressIndex) {
+  if (!req.addressIndex) 
     throw new Error('Missing address index');
-  }
+  
   const address = getEphemeralByIndex(fullViewingKey, req.addressIndex.account);
 
   return { address };

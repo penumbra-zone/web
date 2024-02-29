@@ -54,9 +54,9 @@ describe('Import Slice', () => {
       expect(phrase[11]).toBe('ghi');
 
       // New fields are ""
-      for (let i = 12; i < 24; i++) {
+      for (let i = 12; i < 24; i++) 
         expect(phrase[i]).toBe('');
-      }
+      
     });
 
     test('chops if longer', () => {

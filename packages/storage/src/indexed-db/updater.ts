@@ -65,9 +65,9 @@ export class IbdUpdater {
   ) {
     const resolversForTable = this.subscribers.get(update.table);
     if (resolversForTable) {
-      for (const resolve of resolversForTable) {
+      for (const resolve of resolversForTable) 
         resolve(update);
-      }
+      
       this.subscribers.set(update.table, []); // Clear the resolvers for this table after notifying all of them
     }
   }

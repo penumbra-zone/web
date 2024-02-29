@@ -63,17 +63,17 @@ class BalancesAggregator {
     const accountNumber = n.addressIndex?.account ?? 0;
 
     // Initialize account obj if not present
-    if (!this.accounts[accountNumber]) {
+    if (!this.accounts[accountNumber]) 
       this.accounts[accountNumber] = {};
-    }
+    
 
     const assetId = getAssetIdFromRecord(n);
     const assetIdBase64 = uint8ArrayToBase64(assetId.inner);
 
     // If asset not present in map, initialize it with its metadata
-    if (!this.accounts[accountNumber]![assetIdBase64]) {
+    if (!this.accounts[accountNumber]![assetIdBase64]) 
       this.accounts[accountNumber]![assetIdBase64] = await this.initializeBalResponse(n);
-    }
+    
 
     // Many type overrides, but initialization above guarantees presence
     const valueView = this.accounts[accountNumber]![assetIdBase64]!.balanceView;

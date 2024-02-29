@@ -31,11 +31,11 @@ export class TendermintQuerier implements TendermintQuerierInterface {
     const { hash, log } = await this.client.broadcastTxSync({ params });
 
     if (log) {
-      if (knownTendermintErrors.some(e => log.includes(e))) {
+      if (knownTendermintErrors.some(e => log.includes(e))) 
         throw new Error(`Tendermint: ${log}`);
-      } else {
+       else 
         console.warn(log);
-      }
+      
     }
     return new TransactionId({ inner: hash });
   }

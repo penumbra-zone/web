@@ -142,14 +142,14 @@ export class Key {
     try {
       return await decrypt(box.cipherText, box.nonce, this.key);
     } catch (e) {
-      if (e instanceof TypeError) {
+      if (e instanceof TypeError) 
         return null;
-      }
+      
 
       if (e instanceof DOMException) {
-        if (e.name === 'OperationError') {
+        if (e.name === 'OperationError') 
           return null;
-        }
+        
       }
 
       throw e;

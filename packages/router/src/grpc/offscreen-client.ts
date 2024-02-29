@@ -22,7 +22,7 @@ const activateOffscreen = async () => {
     .then(offscreenContexts => !offscreenContexts.length);
 
   if (!active++ || (await noOffscreen))
-    await chrome.offscreen
+    {await chrome.offscreen
       .createDocument({
         url: chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH),
         reasons: [chrome.offscreen.Reason.WORKERS],
@@ -32,7 +32,7 @@ const activateOffscreen = async () => {
         // the offscreen window might have been created since we checked
         // TODO: other failures?
         console.warn('Failed to create offscreen window', e);
-      });
+      });}
 };
 
 /**

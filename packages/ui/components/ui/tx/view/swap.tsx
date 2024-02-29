@@ -60,9 +60,9 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
     );
   }
 
-  if (value.swapView.case === 'opaque') {
+  if (value.swapView.case === 'opaque') 
     return <ViewBox label='Swap' />;
-  }
+  
 
   return <div>Invalid SwapView</div>;
 };

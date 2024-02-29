@@ -19,11 +19,11 @@ export const SettingsPassphrase = () => {
     e.preventDefault();
 
     void (async function () {
-      if (await isPassword(password)) {
+      if (await isPassword(password)) 
         setPhrase(await getSeedPhrase());
-      } else {
+       else 
         setEnteredIncorrect(true);
-      }
+      
     })();
   };
 

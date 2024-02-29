@@ -16,9 +16,9 @@ export const SwapClaimViewComponent = ({ value }: { value: SwapClaimView }) => {
     );
   }
 
-  if (value.swapClaimView.case === 'opaque') {
+  if (value.swapClaimView.case === 'opaque') 
     return <ViewBox label='Swap Claim' />;
-  }
+  
 
   return <div>Invalid SpendView</div>;
 };

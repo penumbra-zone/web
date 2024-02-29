@@ -95,20 +95,20 @@ export class BackgroundConnectionManager {
 
       try {
         if (!channelConfig || !(clientType in ChannelClientLabel))
-          throw new ConnectError(
+          {throw new ConnectError(
             `Invalid connection: ${clientPort.name}`,
             ConnectErrorCode.OutOfRange,
-          );
+          );}
         if (sender.origin !== claimedOrigin)
-          throw new ConnectError(
+          {throw new ConnectError(
             `Origin mismatch: ${sender.origin} claimed ${claimedOrigin}`,
             ConnectErrorCode.Unauthenticated,
-          );
+          );}
         if (originConnections?.has(clientId))
-          throw new ConnectError(
+          {throw new ConnectError(
             `Client id collision: ${clientId}`,
             ConnectErrorCode.AlreadyExists,
-          );
+          );}
       } catch (error) {
         console.error('Connection rejected', error);
         clientPort.postMessage({
