@@ -76,12 +76,13 @@ describe('Authorize request handler', () => {
             },
           });
         } else {
-          return Promise.resolve([]);
+          return Promise.resolve(undefined);
         }
       }),
     };
 
     mockApproverCtx = vi.fn();
+
     mockCtx = createHandlerContext({
       service: CustodyService,
       method: CustodyService.methods.authorize,
@@ -107,9 +108,56 @@ describe('Authorize request handler', () => {
     req = new AuthorizeRequest({ plan: testTxPlanData });
   });
 
-  test('should successfully authorize', async () => {
+  test('should successfully authorize request', async () => {
     const authorizeResponse = new AuthorizeResponse(await authorize(req, mockCtx));
     expect(authorizeResponse.data).toBeDefined();
+  });
+
+  test('should fail if plan is missing in request', async () => {
+    await expect(authorize(new AuthorizeRequest(), mockCtx)).rejects.toThrow(
+      'No plan included in request',
+    );
+  });
+
+  test('should fail if user is not logged in extension', async () => {
+    mockExtSessionCtx.get.mockImplementation(() => {
+      return Promise.resolve(undefined);
+    });
+    await expect(authorize(req, mockCtx)).rejects.toThrow('User must login to extension');
+  });
+
+  test('should fail if local context not include FVK', async () => {
+    mockExtLocalCtx.get.mockImplementation(() => {
+      return Promise.resolve([
+        {
+          custody: {
+            encryptedSeedPhrase: {
+              cipherText: '1MUyDW2GHSeZYVF4f=',
+              nonce: 'MUyDW2GHSeZYVF4f',
+            },
+          },
+          fullViewingKey: undefined,
+        },
+      ]);
+    });
+    await expect(authorize(req, mockCtx)).rejects.toThrow('Unable to get full viewing key');
+  });
+
+  test('should fail if incorrect password is used', async () => {
+    mockExtSessionCtx.get.mockImplementation(() => {
+      return Promise.resolve({
+        _inner: {
+          alg: 'A256GCM',
+          ext: true,
+          k: '1l2K1HKpGWaOriS58zwdDTwAMtMuczuUQc4IYzGxyhN',
+          kty: 'oct',
+          key_ops: ['encrypt', 'decrypt'],
+        },
+      });
+    });
+    await expect(authorize(req, mockCtx)).rejects.toThrow(
+      'Unable to decrypt seed phrase with password',
+    );
   });
 });
 
