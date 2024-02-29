@@ -41,9 +41,8 @@ describe('NotesForVoting request handler', () => {
     mockIndexedDb.getNotesForVoting?.mockResolvedValueOnce(testData);
     const responses: NotesForVotingResponse[] = [];
     const req = new NotesForVotingRequest({});
-    for await (const res of notesForVoting(req, mockCtx)) 
+    for await (const res of notesForVoting(req, mockCtx))
       responses.push(new NotesForVotingResponse(res));
-    
     expect(responses.length).toBe(2);
   });
 });

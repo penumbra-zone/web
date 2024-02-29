@@ -18,9 +18,6 @@ export const sendSwMessage = async <T extends SwRequestMessage>(
     penumbraSwReq: req,
     sequence: 10000000000000, // Not used internally
   });
-  if ('penumbraSwRes' in res) 
-    return res.penumbraSwRes.data;
-   else 
-    throw new Error(res.penumbraSwError);
-  
+  if ('penumbraSwRes' in res) return res.penumbraSwRes.data;
+  else throw new Error(res.penumbraSwError);
 };

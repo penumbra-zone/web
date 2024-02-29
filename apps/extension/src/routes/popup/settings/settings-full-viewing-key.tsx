@@ -23,7 +23,6 @@ export const SettingsFullViewingKey = () => {
         setFullViewingKey(await getFullViewingKey());
        else 
         setEnteredIncorrect(true);
-      
     })();
   };
 

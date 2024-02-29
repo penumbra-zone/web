@@ -84,11 +84,8 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
           state.ibc.amount = '';
         });
       } catch (e) {
-        if (userDeniedTransaction(e)) 
-          toast.onDenied();
-         else 
-          toast.onFailure(e);
-        
+        if (userDeniedTransaction(e)) toast.onDenied();
+        else toast.onFailure(e);
       } finally {
         set(state => {
           state.ibc.txInProgress = false;

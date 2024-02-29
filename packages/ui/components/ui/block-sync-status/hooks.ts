@@ -40,9 +40,7 @@ export const useSyncProgress = (
     lastUpdateTimeRef.current = now;
 
     // Update confident flag based on the number of sync updates
-    if (syncUpdates >= syncUpdatesThreshold && !confident) 
-      setConfident(true);
-    
+    if (syncUpdates >= syncUpdatesThreshold && !confident) setConfident(true);
   }, [fullSyncHeight, syncUpdates, syncUpdatesThreshold, confident]);
 
   const blocksRemaining = latestKnownBlockHeight - fullSyncHeight;

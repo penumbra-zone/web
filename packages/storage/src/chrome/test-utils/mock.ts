@@ -9,11 +9,8 @@ export class MockStorageArea implements IStorage {
   async get(key: string): Promise<Record<string, unknown>> {
     return new Promise(resolve => {
       const value = this.store.get(key);
-      if (value !== undefined) 
-        resolve({ [key]: value });
-       else 
-        resolve({});
-      
+      if (value !== undefined) resolve({ [key]: value });
+      else resolve({});
     });
   }
 
@@ -26,9 +23,7 @@ export class MockStorageArea implements IStorage {
 
   async set(items: Record<string, unknown>): Promise<void> {
     return new Promise(resolve => {
-      for (const key in items) 
-        this.store.set(key, items[key]);
-      
+      for (const key in items) this.store.set(key, items[key]);
       resolve();
     });
   }

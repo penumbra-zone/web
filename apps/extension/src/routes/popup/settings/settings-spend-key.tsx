@@ -19,11 +19,8 @@ export const SettingsSpendKey = () => {
     e.preventDefault();
 
     void (async function () {
-      if (await isPassword(password)) 
-        setSpendKey(await getSpendKey());
-       else 
-        setEnteredIncorrect(true);
-      
+      if (await isPassword(password)) setSpendKey(await getSpendKey());
+      else setEnteredIncorrect(true);
     })();
   };
 

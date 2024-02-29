@@ -71,9 +71,7 @@ const mockServiceImplementation = {
 
     const promises = [Promise.resolve('bar1'), Promise.resolve('bar2'), Promise.resolve('bar3')];
 
-    for await (const i of promises) 
-      yield i;
-    
+    for await (const i of promises) yield i;
   },
 } satisfies ServiceImpl<typeof MockService>;
 

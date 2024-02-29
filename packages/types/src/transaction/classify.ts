@@ -3,9 +3,7 @@ import { TransactionClassification as TransactionClassification } from './classi
 
 export const classifyTransaction = (txv?: TransactionView): TransactionClassification => {
   // Check if 'txv' is undefined and return "Unknown" if it is.
-  if (!txv) 
-    return 'unknown';
-  
+  if (!txv) return 'unknown';
 
   if (txv.bodyView?.actionViews.some(a => a.actionView.case === 'swap')) return 'swap';
   if (txv.bodyView?.actionViews.some(a => a.actionView.case === 'swapClaim')) return 'swapClaim';
@@ -47,17 +45,12 @@ export const classifyTransaction = (txv?: TransactionView): TransactionClassific
   // If the tx has only spends and outputs, then it's a transfer. What kind?
   if (isTransfer) {
     // If we can't see at least one spend, but we can see an output we control, it's a receive.
-    if (hasOpaqueSpend && hasVisibleOutputWithVisibleAddress) 
-      return 'receive';
-    
+    if (hasOpaqueSpend && hasVisibleOutputWithVisibleAddress) return 'receive';
     // If we can see all spends and outputs, it's a transaction we created...
     if (allSpendsVisible && allOutputsVisible) {
       // ... so it's either a send or an internal transfer, depending on whether there's an output we don't control.
-      if (isInternal) 
-        return 'internalTransfer';
-       else 
-        return 'send';
-      
+      if (isInternal) return 'internalTransfer';
+      else return 'send';
     }
   }
 

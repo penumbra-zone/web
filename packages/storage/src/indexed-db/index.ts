@@ -66,9 +66,7 @@ export class IndexedDb implements IndexedDbInterface {
       upgrade(db: IDBPDatabase<PenumbraDb>) {
         // delete existing ObjectStores before re-creating them
         // all existing indexed-db data will be deleted when version is increased
-        for (const objectStoreName of db.objectStoreNames) 
-          db.deleteObjectStore(objectStoreName);
-        
+        for (const objectStoreName of db.objectStoreNames) db.deleteObjectStore(objectStoreName);
 
         db.createObjectStore('FULL_SYNC_HEIGHT');
         db.createObjectStore('ASSETS', { keyPath: 'penumbraAssetId.inner' });
@@ -263,9 +261,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async clear() {
-    for (const storeName of Object.values(this.db.objectStoreNames)) 
-      await this.db.clear(storeName);
-    
+    for (const storeName of Object.values(this.db.objectStoreNames)) await this.db.clear(storeName);
   }
 
   async getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined> {
@@ -313,9 +309,8 @@ export class IndexedDb implements IndexedDbInterface {
       if (
         assetPatterns.delegationToken.test(denomMetadata.display) &&
         denomMetadata.penumbraAssetId
-      ) 
+      )
         delegationAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId.inner), denomMetadata);
-      
     }
     const notesForVoting: NotesForVotingResponse[] = [];
 
@@ -325,9 +320,8 @@ export class IndexedDb implements IndexedDbInterface {
       if (
         (addressIndex && !note.addressIndex?.equals(addressIndex)) ??
         !note.note?.value?.assetId?.inner
-      ) 
+      )
         continue;
-      
 
       const isDelegationAssetNote = delegationAssets.has(
         uint8ArrayToHex(note.note.value.assetId.inner),
@@ -426,26 +420,19 @@ export class IndexedDb implements IndexedDbInterface {
       });
     }
 
-    for (const c of sctUpdates.store_commitments) 
-      txs.add({ table: 'TREE_COMMITMENTS', value: c });
-    
+    for (const c of sctUpdates.store_commitments) txs.add({ table: 'TREE_COMMITMENTS', value: c });
 
-    for (const h of sctUpdates.store_hashes) 
-      txs.add({ table: 'TREE_HASHES', value: h });
-    
+    for (const h of sctUpdates.store_hashes) txs.add({ table: 'TREE_HASHES', value: h });
 
     // TODO: What about updates.delete_ranges?
   }
 
   private addNewNotes(txs: IbdUpdates, notes: SpendableNoteRecord[]): void {
-    for (const n of notes) 
+    for (const n of notes)
       txs.add({ table: 'SPENDABLE_NOTES', value: n.toJson() as Jsonified<SpendableNoteRecord> });
-    
   }
 
   private addNewSwaps(txs: IbdUpdates, swaps: SwapRecord[]): void {
-    for (const n of swaps) 
-      txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });
-    
+    for (const n of swaps) txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });
   }
 }

@@ -15,17 +15,13 @@ export const usePagePath = <T extends PagePath>() => {
 export const matchPagePath = (str: string): PagePath => {
   const pathValues = Object.values(PagePath);
 
-  if (pathValues.includes(str as PagePath)) 
-    return str as PagePath;
-  
+  if (pathValues.includes(str as PagePath)) return str as PagePath;
 
   for (const pathValue of pathValues) {
     if (pathValue.includes(':')) {
       const regex = new RegExp('^' + pathValue.replace(/:(\w+)/g, '([^/]+)') + '$');
       const match = str.match(regex);
-      if (match) 
-        return pathValue as PagePath;
-      
+      if (match) return pathValue as PagePath;
     }
   }
 

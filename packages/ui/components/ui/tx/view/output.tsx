@@ -22,9 +22,7 @@ export const OutputViewComponent = ({ value }: { value: OutputView }) => {
     );
   }
 
-  if (value.outputView.case === 'opaque') 
-    return <ViewBox label='Output' />;
-  
+  if (value.outputView.case === 'opaque') return <ViewBox label='Output' />;
 
   return <div>Invalid OutputView</div>;
 };

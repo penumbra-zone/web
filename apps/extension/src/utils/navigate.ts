@@ -6,11 +6,8 @@ import { PopupPath } from '../routes/popup/paths';
 export const useTypesafeNav = <T extends string>() => {
   const navigate = useNavigate();
   return (to: T | number, options?: NavigateOptions): void => {
-    if (typeof to === 'number') 
-      navigate(to);
-     else 
-      navigate(to, options);
-    
+    if (typeof to === 'number') navigate(to);
+    else navigate(to, options);
   };
 };
 

@@ -19,11 +19,8 @@ export const SettingsPassphrase = () => {
     e.preventDefault();
 
     void (async function () {
-      if (await isPassword(password)) 
-        setPhrase(await getSeedPhrase());
-       else 
-        setEnteredIncorrect(true);
-      
+      if (await isPassword(password)) setPhrase(await getSeedPhrase());
+      else setEnteredIncorrect(true);
     })();
   };
 

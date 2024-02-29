@@ -60,9 +60,7 @@ describe('Notes request handler', () => {
   test('should get all unspent notes if the query is empty', async () => {
     const responses: NotesResponse[] = [];
     const req = new NotesRequest({});
-    for await (const res of notes(req, mockCtx)) 
-      responses.push(new NotesResponse(res));
-    
+    for await (const res of notes(req, mockCtx)) responses.push(new NotesResponse(res));
     expect(responses.length).toBe(5);
   });
 
@@ -71,9 +69,7 @@ describe('Notes request handler', () => {
     const req = new NotesRequest({
       includeSpent: false,
     });
-    for await (const res of notes(req, mockCtx)) 
-      responses.push(new NotesResponse(res));
-    
+    for await (const res of notes(req, mockCtx)) responses.push(new NotesResponse(res));
     expect(responses.length).toBe(5);
   });
 
@@ -82,9 +78,7 @@ describe('Notes request handler', () => {
     const req = new NotesRequest({
       includeSpent: true,
     });
-    for await (const res of notes(req, mockCtx)) 
-      responses.push(new NotesResponse(res));
-    
+    for await (const res of notes(req, mockCtx)) responses.push(new NotesResponse(res));
     expect(responses.length).toBe(6);
   });
 
@@ -98,9 +92,7 @@ describe('Notes request handler', () => {
     const req = new NotesRequest({
       assetId,
     });
-    for await (const res of notes(req, mockCtx)) 
-      responses.push(new NotesResponse(res));
-    
+    for await (const res of notes(req, mockCtx)) responses.push(new NotesResponse(res));
     expect(responses.length).toBe(4);
   });
 
@@ -115,9 +107,7 @@ describe('Notes request handler', () => {
       includeSpent: true,
       assetId,
     });
-    for await (const res of notes(req, mockCtx)) 
-      responses.push(new NotesResponse(res));
-    
+    for await (const res of notes(req, mockCtx)) responses.push(new NotesResponse(res));
     expect(responses.length).toBe(5);
   });
 
@@ -133,9 +123,7 @@ describe('Notes request handler', () => {
       includeSpent: true,
       addressIndex,
     });
-    for await (const res of notes(req, mockCtx)) 
-      responses.push(new NotesResponse(res));
-    
+    for await (const res of notes(req, mockCtx)) responses.push(new NotesResponse(res));
     expect(responses.length).toBe(1);
   });
 
@@ -150,9 +138,7 @@ describe('Notes request handler', () => {
     const req = new NotesRequest({
       addressIndex,
     });
-    for await (const res of notes(req, mockCtx)) 
-      responses.push(new NotesResponse(res));
-    
+    for await (const res of notes(req, mockCtx)) responses.push(new NotesResponse(res));
     expect(responses.length).toBe(0);
   });
 
@@ -172,9 +158,7 @@ describe('Notes request handler', () => {
       addressIndex,
       assetId,
     });
-    for await (const res of notes(req, mockCtx)) 
-      responses.push(new NotesResponse(res));
-    
+    for await (const res of notes(req, mockCtx)) responses.push(new NotesResponse(res));
     expect(responses.length).toBe(1);
   });
 
@@ -193,9 +177,7 @@ describe('Notes request handler', () => {
       addressIndex,
       assetId,
     });
-    for await (const res of notes(req, mockCtx)) 
-      responses.push(new NotesResponse(res));
-    
+    for await (const res of notes(req, mockCtx)) responses.push(new NotesResponse(res));
     expect(responses.length).toBe(0);
   });
 
@@ -215,9 +197,7 @@ describe('Notes request handler', () => {
       assetId,
       amountToSpend,
     });
-    for await (const res of notes(req, mockCtx)) 
-      responses.push(new NotesResponse(res));
-    
+    for await (const res of notes(req, mockCtx)) responses.push(new NotesResponse(res));
     expect(responses.length).toBe(2);
   });
 
@@ -237,9 +217,7 @@ describe('Notes request handler', () => {
       assetId,
       amountToSpend,
     });
-    for await (const res of notes(req, mockCtx)) 
-      responses.push(new NotesResponse(res));
-    
+    for await (const res of notes(req, mockCtx)) responses.push(new NotesResponse(res));
     expect(responses.length).toBe(1);
   });
 
@@ -254,9 +232,7 @@ describe('Notes request handler', () => {
     const req = new NotesRequest({
       amountToSpend,
     });
-    for await (const res of notes(req, mockCtx)) 
-      responses.push(new NotesResponse(res));
-    
+    for await (const res of notes(req, mockCtx)) responses.push(new NotesResponse(res));
     expect(responses.length).toBe(5);
   });
 
@@ -278,9 +254,7 @@ describe('Notes request handler', () => {
       includeSpent: true,
     });
 
-    for await (const res of notes(req, mockCtx)) 
-      responses.push(new NotesResponse(res));
-    
+    for await (const res of notes(req, mockCtx)) responses.push(new NotesResponse(res));
 
     expect(responses.length).toBe(5);
   });

@@ -58,27 +58,24 @@ describe('TransactionInfo request handler', () => {
 
   test('should get all transactions if startHeight and endHeight are not set in request', async () => {
     const responses: TransactionInfoResponse[] = [];
-    for await (const res of transactionInfo(req, mockCtx)) 
+    for await (const res of transactionInfo(req, mockCtx))
       responses.push(new TransactionInfoResponse(res));
-    
     expect(responses.length).toBe(4);
   });
 
   test('should get only transactions whose height is not greater than endHeight', async () => {
     const responses: TransactionInfoResponse[] = [];
     req.endHeight = 2525n;
-    for await (const res of transactionInfo(req, mockCtx)) 
+    for await (const res of transactionInfo(req, mockCtx))
       responses.push(new TransactionInfoResponse(res));
-    
     expect(responses.length).toBe(3);
   });
 
   test('should receive only transactions whose height is not less than startHeight', async () => {
     const responses: TransactionInfoResponse[] = [];
     req.startHeight = 2525n;
-    for await (const res of transactionInfo(req, mockCtx)) 
+    for await (const res of transactionInfo(req, mockCtx))
       responses.push(new TransactionInfoResponse(res));
-    
     expect(responses.length).toBe(2);
   });
 
@@ -86,9 +83,8 @@ describe('TransactionInfo request handler', () => {
     const responses: TransactionInfoResponse[] = [];
     req.startHeight = 998n;
     req.endHeight = 2525n;
-    for await (const res of transactionInfo(req, mockCtx)) 
+    for await (const res of transactionInfo(req, mockCtx))
       responses.push(new TransactionInfoResponse(res));
-    
     expect(responses.length).toBe(2);
   });
 });

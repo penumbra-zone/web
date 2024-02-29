@@ -57,9 +57,7 @@ describe('Assets request handler', () => {
 
   test('empty req return all asset', async () => {
     const responses: AssetsResponse[] = [];
-    for await (const res of assets(req, mockCtx)) 
-      responses.push(new AssetsResponse(res));
-    
+    for await (const res of assets(req, mockCtx)) responses.push(new AssetsResponse(res));
     expect(responses.length).toBe(8);
   });
 
@@ -68,9 +66,7 @@ describe('Assets request handler', () => {
     const req = new AssetsRequest({
       filtered: false,
     });
-    for await (const res of assets(req, mockCtx)) 
-      responses.push(new AssetsResponse(res));
-    
+    for await (const res of assets(req, mockCtx)) responses.push(new AssetsResponse(res));
     expect(responses.length).toBe(8);
   });
 
@@ -80,9 +76,7 @@ describe('Assets request handler', () => {
       filtered: true,
       includeLpNfts: true,
     });
-    for await (const res of assets(req, mockCtx)) 
-      responses.push(new AssetsResponse(res));
-    
+    for await (const res of assets(req, mockCtx)) responses.push(new AssetsResponse(res));
     expect(responses.length).toBe(4);
   });
 
@@ -92,9 +86,7 @@ describe('Assets request handler', () => {
       filtered: false,
       includeLpNfts: true,
     });
-    for await (const res of assets(req, mockCtx)) 
-      responses.push(new AssetsResponse(res));
-    
+    for await (const res of assets(req, mockCtx)) responses.push(new AssetsResponse(res));
     expect(responses.length).toBe(8);
   });
 
@@ -104,9 +96,7 @@ describe('Assets request handler', () => {
       filtered: true,
       includeLpNfts: true,
     });
-    for await (const res of assets(req, mockCtx)) 
-      responses.push(new AssetsResponse(res));
-    
+    for await (const res of assets(req, mockCtx)) responses.push(new AssetsResponse(res));
     expect(responses.length).toBe(4);
   });
 
@@ -116,9 +106,7 @@ describe('Assets request handler', () => {
       filtered: true,
       includeDelegationTokens: true,
     });
-    for await (const res of assets(req, mockCtx)) 
-      responses.push(new AssetsResponse(res));
-    
+    for await (const res of assets(req, mockCtx)) responses.push(new AssetsResponse(res));
     expect(responses.length).toBe(1);
   });
 
@@ -132,9 +120,7 @@ describe('Assets request handler', () => {
         }),
       ],
     });
-    for await (const res of assets(req, mockCtx)) 
-      responses.push(new AssetsResponse(res));
-    
+    for await (const res of assets(req, mockCtx)) responses.push(new AssetsResponse(res));
     expect(responses.length).toBe(1);
   });
 });

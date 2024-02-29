@@ -43,9 +43,8 @@ export const uint8ArrayToHex = (uint8Array: Uint8Array): string => {
  */
 export const hexToUint8Array = (hexString: string): Uint8Array => {
   // Check if the input string is a valid hexadecimal string
-  if (!/^([0-9A-Fa-f]{2})*$/.test(hexString)) 
+  if (!/^([0-9A-Fa-f]{2})*$/.test(hexString))
     throw new Error(`Invalid hexadecimal string: ${hexString}`);
-  
 
   if (!hexString) return new Uint8Array();
 

@@ -72,9 +72,8 @@ describe('BroadcastTransaction request handler', () => {
     mockTendermint.broadcastTx?.mockResolvedValue(transactionIdData);
 
     const broadcastResponses: BroadcastTransactionResponse[] = [];
-    for await (const response of broadcastTransaction(broadcastTransactionRequest, mockCtx)) 
+    for await (const response of broadcastTransaction(broadcastTransactionRequest, mockCtx))
       broadcastResponses.push(new BroadcastTransactionResponse(response));
-    
     expect(broadcastResponses.length === 1).toBeTruthy();
     expect(broadcastResponses[0]?.status.case === 'broadcastSuccess').toBeTruthy();
   });
@@ -95,9 +94,8 @@ describe('BroadcastTransaction request handler', () => {
     broadcastTransactionRequest.awaitDetection = true;
 
     const broadcastResponses: BroadcastTransactionResponse[] = [];
-    for await (const response of broadcastTransaction(broadcastTransactionRequest, mockCtx)) 
+    for await (const response of broadcastTransaction(broadcastTransactionRequest, mockCtx))
       broadcastResponses.push(new BroadcastTransactionResponse(response));
-    
     expect(broadcastResponses.length === 2).toBeTruthy();
     expect(broadcastResponses[0]?.status.case === 'broadcastSuccess').toBeTruthy();
     expect(broadcastResponses[1]?.status.case === 'confirmed').toBeTruthy();

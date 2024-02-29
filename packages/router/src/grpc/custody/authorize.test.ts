@@ -52,9 +52,7 @@ describe('Authorize request handler', () => {
                 'penumbrafullviewingkey1f33fr3zrquh869s3h8d0pjx4fpa9fyut2utw7x5y7xdcxz6z7c8sgf5hslrkpf3mh8d26vufsq8y666chx0x0su06ay3rkwu74zuwqq9w8aza',
             },
           ]);
-        } else 
-          return Promise.resolve([]);
-        
+        } else return Promise.resolve([]);
       }),
     };
 
@@ -70,9 +68,7 @@ describe('Authorize request handler', () => {
               key_ops: ['encrypt', 'decrypt'],
             },
           });
-        } else 
-          return Promise.resolve(undefined);
-        
+        } else return Promise.resolve(undefined);
       }),
     };
 

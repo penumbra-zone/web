@@ -27,9 +27,7 @@ const useStreamCommon = <T, U>(
   useEffect(() => {
     const streamData = async () => {
       try {
-        for await (const res of query) 
-          setData(prevData => dataHandler(prevData, res));
-        
+        for await (const res of query) setData(prevData => dataHandler(prevData, res));
         setEnd(true);
       } catch (e) {
         setError(e);
@@ -60,9 +58,7 @@ export const streamToPromise = <T>(query: AsyncIterable<T>): Promise<T[]> => {
     void (async function () {
       const result: T[] = [];
       try {
-        for await (const res of query) 
-          result.push(res);
-        
+        for await (const res of query) result.push(res);
         resolve(result);
       } catch (e) {
         if (e instanceof Error) reject(e);

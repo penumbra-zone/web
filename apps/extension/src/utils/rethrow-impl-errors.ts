@@ -14,10 +14,11 @@ const wrapUnaryImpl =
   (req: AnyMessage, ctx: HandlerContext) => {
     try {
       const result = methodImplementation(req, ctx);
-      if (result instanceof Promise)
-        {return result.catch(e => {
+      if (result instanceof Promise) {
+        return result.catch(e => {
           throw ConnectError.from(e);
-        });}
+        });
+      }
       return result;
     } catch (e) {
       throw ConnectError.from(e);
@@ -29,9 +30,7 @@ const wrapServerStreamingImpl = (
 ) =>
   async function* (req: AnyMessage, ctx: HandlerContext) {
     try {
-      for await (const result of methodImplementation(req, ctx)) 
-        yield result;
-      
+      for await (const result of methodImplementation(req, ctx)) yield result;
     } catch (e) {
       throw ConnectError.from(e);
     }

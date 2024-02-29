@@ -21,13 +21,9 @@ export const useDelayedIsLoading = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (state === 'loading') 
-      setIsVisible(true);
-    
+    if (state === 'loading') setIsVisible(true);
 
-    if (state === 'idle') 
-      setTimeout(() => setIsVisible(false), VISIBILITY_STATE_CHANGE_DELAY);
-    
+    if (state === 'idle') setTimeout(() => setIsVisible(false), VISIBILITY_STATE_CHANGE_DELAY);
   }, [state]);
 
   return isVisible;

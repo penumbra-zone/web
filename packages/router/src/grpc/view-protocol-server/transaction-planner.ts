@@ -25,18 +25,13 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   const planner = await TxPlanner.initialize(idbConstants, chainId, sctParams, fmdParams);
 
   const fetchedGasPrices = await gasPrices(req, ctx);
-  if (fetchedGasPrices.gasPrices) 
-    planner.setGasPrices(new GasPrices(fetchedGasPrices.gasPrices));
-  
+  if (fetchedGasPrices.gasPrices) planner.setGasPrices(new GasPrices(fetchedGasPrices.gasPrices));
 
   if (req.expiryHeight) planner.expiryHeight(req.expiryHeight);
   if (req.memo) planner.memo(req.memo);
 
-  if (req.feeMode.case === 'autoFee') 
-    planner.setFeeTier(req.feeMode.value);
-   else if (req.feeMode.case === 'manualFee') 
-    planner.fee(req.feeMode.value);
-  
+  if (req.feeMode.case === 'autoFee') planner.setFeeTier(req.feeMode.value);
+  else if (req.feeMode.case === 'manualFee') planner.fee(req.feeMode.value);
 
   for (const { value, address } of req.outputs) {
     if (!value || !address) throw new Error('no value or address in output');
@@ -56,9 +51,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
     await planner.swapClaim(swapCommitment);
   }
 
-  for (const withdrawal of req.ics20Withdrawals) 
-    planner.ics20Withdrawal(withdrawal);
-  
+  for (const withdrawal of req.ics20Withdrawals) planner.ics20Withdrawal(withdrawal);
 
   const source = req.source ?? new AddressIndex({ account: 0 });
 

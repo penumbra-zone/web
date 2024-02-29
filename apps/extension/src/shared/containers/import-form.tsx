@@ -12,9 +12,7 @@ export const ImportForm = () => {
   const { cleanup } = useStore(generateSelector);
 
   useEffect(() => {
-    if (!phrase.length) 
-      setLength(SeedPhraseLength.TWELVE_WORDS);
-    
+    if (!phrase.length) setLength(SeedPhraseLength.TWELVE_WORDS);
     cleanup(); // Ensures no competing state from generate path
   }, [cleanup, phrase.length, setLength]);
 

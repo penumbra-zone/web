@@ -21,9 +21,7 @@ export const Login = () => {
       if (await isPassword(input)) {
         await setSessionPassword(input); // saves to session state
         navigate(PopupPath.INDEX);
-      } else 
-        setEnteredIncorrect(true);
-      
+      } else setEnteredIncorrect(true);
     })();
   };
 
