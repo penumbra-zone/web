@@ -371,15 +371,11 @@ export class IndexedDb implements IndexedDbInterface {
         let cursor = await this.db.transaction('POSITIONS').store.openCursor();
         while (cursor) {
           const position = Position.fromJson(cursor.value.position);
-          if (positionState && !positionState.equals(position.state)) {
-            cursor = await cursor.continue();
-            continue;
-          }
-          if (tradingPair && !tradingPair.equals(position.phi?.pair)) {
-            cursor = await cursor.continue();
-            continue;
-          }
-          cont.enqueue(PositionId.fromJson(cursor.value.id));
+          if (
+            (!positionState || positionState?.equals(position.state)) &&
+            (!tradingPair || tradingPair?.equals(position.phi?.pair))
+          )
+            cont.enqueue(PositionId.fromJson(cursor.value.id));
           cursor = await cursor.continue();
         }
         cont.close();
