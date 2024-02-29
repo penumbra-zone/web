@@ -102,7 +102,9 @@ export const FormDialog = ({
                 </div>
               </InputBlock>
 
-              <Button type='submit'>{getCapitalizedAction(action)}</Button>
+              <Button type='submit' disabled={amount.length === 0}>
+                {getCapitalizedAction(action)}
+              </Button>
             </form>
           </>
         )}
