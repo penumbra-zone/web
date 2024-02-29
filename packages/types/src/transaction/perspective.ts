@@ -13,6 +13,8 @@ import {
   SpendView_Opaque,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
+  SwapClaimView,
+  SwapClaimView_Opaque,
   SwapView,
   SwapView_Opaque,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
@@ -56,6 +58,20 @@ export const viewActionFromEmptyPerspective = (action: Action): ActionView | und
               case: 'opaque',
               value: new SwapView_Opaque({
                 swap: action.action.value,
+              }),
+            },
+          }),
+        },
+      });
+    case 'swapClaim':
+      return new ActionView({
+        actionView: {
+          case: 'swapClaim',
+          value: new SwapClaimView({
+            swapClaimView: {
+              case: 'opaque',
+              value: new SwapClaimView_Opaque({
+                swapClaim: action.action.value,
               }),
             },
           }),
