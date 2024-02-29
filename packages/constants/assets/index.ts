@@ -2,7 +2,14 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import LocalAssetRegistry from './local-asset-registry.json';
 import { JsonValue } from '@bufbuild/protobuf';
 
+export const localAssets: Metadata[] = LocalAssetRegistry.map(a =>
+  Metadata.fromJson(a as JsonValue),
+);
+
 export const STAKING_TOKEN = 'penumbra';
+export const STAKING_TOKEN_METADATA = localAssets.find(
+  metadata => metadata.display === STAKING_TOKEN,
+);
 
 export interface AssetPattens {
   lpNft: RegExp;
@@ -54,7 +61,3 @@ export const assetPatterns: AssetPattens = {
   ),
   votingReceipt: new RegExp(/^voted_on_/),
 };
-
-export const localAssets: Metadata[] = LocalAssetRegistry.map(a =>
-  Metadata.fromJson(a as JsonValue),
-);

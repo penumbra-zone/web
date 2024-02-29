@@ -15,10 +15,16 @@ import {
   isDelegationTokenForValidator,
   joinLoHiAmount,
   toBaseUnit,
+  splitLoHi,
 } from '@penumbra-zone/types';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getBalancesByAccount } from '../fetchers/balances/by-account';
-import { STAKING_TOKEN, localAssets } from '@penumbra-zone/constants';
+import {
+  localAssets,
+  STAKING_TOKEN,
+  STAKING_TOKEN_METADATA,
+  assetPatterns,
+} from '@penumbra-zone/constants';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { TransactionToast } from '@penumbra-zone/ui';
 import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from './helpers';
@@ -29,6 +35,15 @@ const STAKING_TOKEN_DISPLAY_DENOM_EXPONENT = (() => {
   const stakingAsset = localAssets.find(asset => asset.display === STAKING_TOKEN);
   return getDisplayDenomExponent(stakingAsset);
 })();
+
+interface UnbondingTokensForAccount {
+  /**
+   * The total value of all unbonding tokens in this account, in the staking
+   * token. This is what they will be worth once claimed, assuming no slashing.
+   */
+  total: ValueView;
+  tokens: ValueView[];
+}
 
 export interface StakingSlice {
   /** The account for which we're viewing delegations. */
@@ -42,16 +57,15 @@ export interface StakingSlice {
    */
   unstakedTokensByAccount: Map<number, ValueView | undefined>;
   /**
+   * A map of numeric account indexes to information about unbonding tokens for
+   * that account.
+   */
+  unbondingTokensByAccount: Map<number, UnbondingTokensForAccount>;
+  /**
    * Load all delegations for the currently selected account, and save them into
    * `delegationsByAccount`. Should be called each time `account` is changed.
    */
   loadDelegationsForCurrentAccount: () => Promise<void>;
-  /**
-   * Load unstaked (UM) tokens across _all_ accounts, and save them to
-   * `unstakedTokensByAccount`. Does not need to be called each time `account`
-   * is changed, as a single call populates data across all accounts.
-   */
-  loadUnstakedTokensByAccount: () => Promise<void>;
   /**
    * Build and submit the Delegate transaction.
    */
@@ -60,6 +74,7 @@ export interface StakingSlice {
    * Build and submit the Undelegate transaction.
    */
   undelegate: () => Promise<void>;
+  loadUnstakedAndUnbondingTokensByAccount: () => Promise<void>;
   loading: boolean;
   error: unknown;
   votingPowerByValidatorInfo: Record<string, VotingPowerAsIntegerPercentage>;
@@ -137,6 +152,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     }),
   delegationsByAccount: new Map(),
   unstakedTokensByAccount: new Map(),
+  unbondingTokensByAccount: new Map(),
   loadDelegationsForCurrentAccount: async () => {
     const addressIndex = new AddressIndex({ account: get().staking.account });
     const validatorInfos: ValidatorInfo[] = [];
@@ -166,21 +182,55 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       state.staking.votingPowerByValidatorInfo = getVotingPowerByValidatorInfo(validatorInfos);
     });
   },
-  loadUnstakedTokensByAccount: async () => {
+  loadUnstakedAndUnbondingTokensByAccount: async () => {
     const balancesByAccount = await getBalancesByAccount();
-    const unstakedTokensByAccount = balancesByAccount.reduce<Map<number, ValueView | undefined>>(
+    const { unstakedTokensByAccount, unbondingTokensByAccount } = balancesByAccount.reduce<{
+      unstakedTokensByAccount: Map<number, ValueView | undefined>;
+      unbondingTokensByAccount: Map<number, UnbondingTokensForAccount>;
+    }>(
       (prev, curr) => {
-        const unstakedTokens = curr.balances.find(
-          ({ balanceView }) => getDisplayDenomFromView(balanceView) === STAKING_TOKEN,
+        prev.unstakedTokensByAccount.set(
+          curr.index.account,
+          curr.balances.find(
+            ({ balanceView }) => getDisplayDenomFromView(balanceView) === STAKING_TOKEN,
+          )?.balanceView,
         );
-        prev.set(curr.index.account, unstakedTokens?.balanceView);
+        const unbondingTokens = curr.balances
+          .filter(({ balanceView }) =>
+            assetPatterns.unbondingToken.test(getDisplayDenomFromView(balanceView)),
+          )
+          .map(({ balanceView }) => balanceView!);
+
+        if (unbondingTokens.length) {
+          const unbondingTotalAmount = unbondingTokens.reduce<bigint>(
+            (prev, curr) => prev + joinLoHiAmount(getAmount(curr)),
+            0n,
+          );
+
+          const unbondingTotal = new ValueView({
+            valueView: {
+              case: 'knownAssetId',
+              value: {
+                amount: splitLoHi(unbondingTotalAmount),
+                metadata: STAKING_TOKEN_METADATA,
+              },
+            },
+          });
+
+          prev.unbondingTokensByAccount.set(curr.index.account, {
+            tokens: unbondingTokens,
+            total: unbondingTotal,
+          });
+        }
+
         return prev;
       },
-      new Map(),
+      { unstakedTokensByAccount: new Map(), unbondingTokensByAccount: new Map() },
     );
 
     set(state => {
       state.staking.unstakedTokensByAccount = unstakedTokensByAccount;
+      state.staking.unbondingTokensByAccount = unbondingTokensByAccount;
     });
   },
   delegate: async () => {
@@ -211,7 +261,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       // Reload delegation tokens and unstaked tokens to reflect their updated
       // balances.
       void get().staking.loadDelegationsForCurrentAccount();
-      void get().staking.loadUnstakedTokensByAccount();
+      void get().staking.loadUnstakedAndUnbondingTokensByAccount();
     } catch (e) {
       if (userDeniedTransaction(e)) {
         toast.onDenied();
