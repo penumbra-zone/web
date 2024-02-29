@@ -8,7 +8,8 @@ import { FormDialog } from './form-dialog';
 import { useMemo } from 'react';
 
 /**
- * Renders Delegate/Undelegate buttons for a validator.
+ * Renders Delegate/Undelegate buttons for a validator, as well as a form inside
+ * a dialog that opens when the user clicks one of those buttons.
  */
 export const StakingActions = ({
   validatorInfo,
