@@ -5,6 +5,7 @@ import {
 import type { ActionBuildRequest } from '@penumbra-zone/types/src/internal-msg/offscreen';
 import type { JsonValue } from '@bufbuild/protobuf';
 import { camelToSnakeCase } from '@penumbra-zone/types/src/utility';
+import { provingKeys } from '@penumbra-zone/types/src/proving-keys';
 
 // necessary to propagate errors that occur in promises
 // see: https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
@@ -38,6 +39,10 @@ const workerListener = ({ data }: { data: ActionBuildRequest }) => {
 
 self.addEventListener('message', workerListener, { once: true });
 
+const actionTypeRequiresProvingKey = (
+  actionPlanType: Exclude<TransactionPlan['actions'][number]['action']['case'], undefined>,
+) => provingKeys.some(provingKey => provingKey.keyType === camelToSnakeCase(actionPlanType));
+
 async function executeWorker(
   transactionPlan: TransactionPlan,
   witness: WitnessData,
@@ -48,10 +53,11 @@ async function executeWorker(
   const penumbraWasmModule = await import('@penumbra-zone/wasm');
 
   // Conditionally read proving keys from disk and load keys into WASM binary
-  const actionPlanType = transactionPlan.actions[actionPlanIndex]?.action.case;
-  if (!actionPlanType) throw new Error('No action key provided');
+  const actionType = transactionPlan.actions[actionPlanIndex]?.action.case;
+  if (!actionType) throw new Error('No action key provided');
 
-  await penumbraWasmModule.loadProvingKey(camelToSnakeCase(actionPlanType));
+  if (actionTypeRequiresProvingKey(actionType))
+    await penumbraWasmModule.loadProvingKey(camelToSnakeCase(actionType));
 
   // Build action according to specification in `TransactionPlan`
   return penumbraWasmModule
