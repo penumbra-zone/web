@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { provingKeys } from '@penumbra-zone/types/src/proving-keys';
 
-const VERSION_TAG = 'v0.68.0-alpha.2';
+const VERSION_TAG = 'v0.68.0';
 
 const githubSourceDir = `https://github.com/penumbra-zone/penumbra/raw/${VERSION_TAG}/crates/crypto/proof-params/src/gen/`;
 
