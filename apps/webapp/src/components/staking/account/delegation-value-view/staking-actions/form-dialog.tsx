@@ -13,11 +13,6 @@ import { Validator } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { FormEvent } from 'react';
 
-const getDialogHeader = (action: 'delegate' | 'undelegate', validator: Validator) => {
-  if (action === 'delegate') return `Delegate to ${validator.name}`;
-  return `Undelegate from ${validator.name}`;
-};
-
 const getCapitalizedAction = (action: 'delegate' | 'undelegate') =>
   action.replace(/^./, firstCharacter => firstCharacter.toLocaleUpperCase());
 
@@ -68,7 +63,7 @@ export const FormDialog = ({
       <DialogContent size='sm'>
         {!!action && (
           <>
-            <DialogHeader>{getDialogHeader(action, validator)}</DialogHeader>
+            <DialogHeader>{getCapitalizedAction(action)}</DialogHeader>
             <form className='flex flex-col gap-4 overflow-hidden px-4 pb-4' onSubmit={handleSubmit}>
               <div className='flex flex-col'>
                 <div className='truncate'>{validator.name}</div>
