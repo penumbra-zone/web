@@ -21,7 +21,7 @@ export default function LP() {
     null
   );
   const [isLoading, setIsLoading] = useState(false);
-    
+
   useEffect(() => {
     if (lp_nft_id) {
       setIsLoading(true);
@@ -61,18 +61,24 @@ export default function LP() {
           <>
             <VStack width={"100%"} paddingTop={"4em"}>
               <VStack>
-                <Text fontWeight={"bold"} width={"100%"} alignContent={"left"} fontSize={"1.5em"}>
+                <Text
+                  fontWeight={"bold"}
+                  width={"100%"}
+                  alignContent={"left"}
+                  fontSize={"1.5em"}
+                >
                   Position Status
                 </Text>
                 <LPStatus nftId={lp_nft_id} position={liquidityPosition} />
               </VStack>
             </VStack>
+            {/* 
             <br />
             <br />
             <br />
             <h1>NFT ID: {lp_nft_id}</h1>
-            {/* todo */}
-            <p>{JSON.stringify(liquidityPosition)}</p> {/* todo */}
+            <p>{JSON.stringify(liquidityPosition)}</p> 
+             */}
           </>
         ) : (
           <p>No liquidity position found.</p>
