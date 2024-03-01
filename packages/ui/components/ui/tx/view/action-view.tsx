@@ -4,6 +4,7 @@ import { OutputViewComponent } from './output';
 import { ActionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { SwapViewComponent } from './swap';
 import { SwapClaimViewComponent } from './swap-claim';
+import { DelegateComponent } from './delegate';
 
 const CASE_TO_LABEL: Record<string, string> = {
   daoDeposit: 'DAO Deposit',
@@ -55,7 +56,7 @@ export const ActionViewComponent = ({ av: { actionView } }: { av: ActionView }) 
       return <ViewBox label='ICS20 Withdrawal' />;
 
     case 'delegate':
-      return <ViewBox label='Delegate' />;
+      return <DelegateComponent value={actionView.value} />;
 
     case 'undelegate':
       return <ViewBox label='Undelegate' />;

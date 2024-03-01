@@ -60,6 +60,10 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
     planner.ics20Withdrawal(withdrawal);
   }
 
+  for (const delegation of req.delegations) {
+    planner.delegate(delegation);
+  }
+
   const source = req.source ?? new AddressIndex({ account: 0 });
 
   // If there are any balances left over, refund back to source. Default to account 0.

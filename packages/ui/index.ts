@@ -6,6 +6,7 @@ export * from './components/ui/copy-to-clipboard';
 export * from './components/ui/dialog';
 export * from './components/ui/fade-transition';
 export * from './components/ui/identicon';
+export * from './components/ui/identity-key-component';
 export * from './components/ui/input';
 export * from './components/ui/logo/compressed-video';
 export * from './components/ui/logo/static';

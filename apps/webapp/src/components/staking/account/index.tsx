@@ -51,8 +51,8 @@ export const Account = () => {
               {delegations.map(delegation => (
                 <DelegationValueView
                   key={bech32IdentityKey(getIdentityKeyFromValueView(delegation))}
-                  canDelegate={!!unstakedTokens}
                   valueView={delegation}
+                  unstakedTokens={unstakedTokens}
                   votingPowerAsIntegerPercentage={getVotingPowerAsIntegerPercentage(
                     votingPowerByValidatorInfo,
                     delegation,

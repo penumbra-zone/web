@@ -22,6 +22,7 @@ import {
 import { JsonValue } from '@bufbuild/protobuf';
 import { Ics20Withdrawal } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/ibc/v1/ibc_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
+import { TransactionPlannerRequest_Delegate } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 export class TxPlanner {
   private constructor(private wasmPlanner: WasmPlanner) {}
@@ -55,6 +56,10 @@ export class TxPlanner {
 
   ics20Withdrawal(withdrawal: Ics20Withdrawal): void {
     this.wasmPlanner.ics20_withdrawal(withdrawal.toJson());
+  }
+
+  delegate(delegation: TransactionPlannerRequest_Delegate): void {
+    this.wasmPlanner.delegate(delegation.amount?.toJson(), delegation.rateData?.toJson());
   }
 
   expiryHeight(value: bigint): void {

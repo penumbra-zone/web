@@ -7,12 +7,12 @@ import {
 } from '@penumbra-zone/types';
 import {
   Identicon,
+  IdentityKeyComponent,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@penumbra-zone/ui';
-import { CopyToClipboardIconButton } from '@penumbra-zone/ui/components/ui/copy-to-clipboard-icon-button';
 
 /**
  * Renders a single `ValidatorInfo`: its name, bech32-encoded identity key,
@@ -41,14 +41,7 @@ export const ValidatorInfoComponent = ({
         </div>
 
         <div className='flex min-w-0 shrink flex-col gap-1'>
-          <div className='flex items-center gap-2'>
-            <div className='truncate font-mono text-muted-foreground'>
-              {bech32IdentityKey(identityKey)}
-            </div>
-
-            <CopyToClipboardIconButton text={bech32IdentityKey(identityKey)} />
-          </div>
-
+          <IdentityKeyComponent identityKey={identityKey} />
           <div className='flex flex-col lg:flex-row lg:gap-8'>
             <span className='truncate font-bold'>{validator.name}</span>
 
