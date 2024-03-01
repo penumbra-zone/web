@@ -1,20 +1,51 @@
+:root {
+  --background: 0, 0%, 0%;
+  --foreground: 0, 4%, 73%;
+  --muted: 0, 0%, 100%;
+  --muted-foreground: 0, 4%, 73%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --border: 0, 2%, 21%;
+  --border-secondary: rgba(75, 75, 75, 0.5);
+  --input: 214.3 31.8% 91.4%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 0, 2%, 21%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: ;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --ring: 215 20.2% 65.1%;
+  --radius: 0.5rem;
+  --text-secondary: 0, 0%, 100%;
+  --charcoal: #1d1d1d;
+  --charcoal-secondary: #141010;
+  --teal: #629994;
+  --sand: #847a5b;
+  --rust: #8d5728;
+  --teal-700: rgba(139, 228, 217, 0.7);
+  --sand-700: rgba(200, 184, 128, 0.7);
+  --rust-600: rgba(255, 144, 47, 0.6);
+  --teal-420: rgba(139, 228, 217, 0.42);
+  --sand-420: rgba(200, 184, 128, 0.42);
+  --rust-420: rgba(255, 144, 47, 0.36);
+  --black: #000000;
+  --green: #23be4e;
+  --red: #af4545;
+  --light-brown: #363434;
+  --light-grey: #e3e3e3;
+  --brown: rgba(29, 29, 29, 0.7);
+  --background-gradient: linear-gradient(90deg, rgba(139, 228, 217, .42) 0%, rgba(200, 184, 128, .42) 50%, rgba(255, 144, 47, .36) 100%);
+  --complimentary-background: #5b6584;
+}
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    Segoe UI,
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    Fira Sans,
-    Droid Sans,
-    Helvetica Neue,
-    sans-serif;
 }
 
 a {
@@ -30,4 +61,3 @@ img {
   max-width: 100%;
   height: auto;
 }
-
