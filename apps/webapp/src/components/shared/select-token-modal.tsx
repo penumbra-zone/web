@@ -59,7 +59,7 @@ export default function SelectTokenModal({
           <div className='flex shrink flex-col gap-4 overflow-auto px-[30px]'>
             <div className='mt-2 grid grid-cols-4 font-headline text-base font-semibold'>
               <p className='flex justify-start'>Account</p>
-              <p className='flex justify-start col-span-3'>Asset</p>
+              <p className='col-span-3 flex justify-start'>Asset</p>
             </div>
             <div className='flex flex-col gap-2'>
               {balances.map((b, i) => {
@@ -78,7 +78,7 @@ export default function SelectTokenModal({
                         onClick={() => setSelection(b)}
                       >
                         <p className='flex justify-start'>{index}</p>
-                        <div className='flex justify-start col-span-3'>
+                        <div className='col-span-3 flex justify-start'>
                           <ValueViewComponent view={b.balanceView} />
                         </div>
                       </div>
