@@ -2,7 +2,7 @@ export interface Token {
   decimals: number;
   symbol: string;
   inner: string;
-  imagePath: string;
+  imagePath?: string;
 }
 
 export const tokenConfigMapOnInner: { [key: string]: Token } = {
