@@ -1,10 +1,11 @@
 import { defineConfig, splitVendorChunkPlugin } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import basicSsl from '@vitejs/plugin-basic-ssl';
+import { commitInfoPlugin } from './src/utils/commit-info-vite-plugin';
 
 export default defineConfig({
   base: './',
-  plugins: [react(), splitVendorChunkPlugin(), basicSsl()],
+  plugins: [react(), splitVendorChunkPlugin(), basicSsl(), commitInfoPlugin()],
   build: {
     rollupOptions: {
       output: {
