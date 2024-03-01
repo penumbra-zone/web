@@ -40,9 +40,9 @@ export default function SelectTokenModal({
           </p>
         </div>
       </DialogTrigger>
-      <DialogContent className='max-w-[312px] bg-charcoal-secondary md:max-w-[400px]'>
+      <DialogContent>
         <div className='relative z-10 flex max-h-screen flex-col gap-4 pb-5'>
-          <DialogHeader className='shrink-0 border-b'>Select asset</DialogHeader>
+          <DialogHeader>Select asset</DialogHeader>
           <div className='px-[30px]'>
             <div className='relative flex w-full items-center justify-center gap-4'>
               <div className='absolute inset-y-0 left-3 flex items-center'>
