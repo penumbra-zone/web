@@ -1,26 +1,23 @@
-import { format } from 'date-fns';
-
-const REPO_URL = 'https://github.com/penumbra-zone/web';
-
+/* eslint-disable @typescript-eslint/dot-notation */
 export const Footer = () => {
-  const shortenedCommitHash = __COMMIT_HASH__.slice(0, 7);
-  const dateObj = new Date(__COMMIT_DATE__);
-  const formattedDate = format(dateObj, "MMM dd yyyy HH:mm:ss 'GMT'x");
+  const dirty = GIT_DESCRIBE.endsWith('-dirty');
+  const commitHref = new URL('/tree/' + GIT_DESCRIBE.split('-dirty')[0], GIT_ORIGIN).href;
 
   return (
     <div className='my-4 flex justify-center'>
       <div className='flex flex-col text-center text-stone-700'>
-        <div className='font-bold'>Frontend app version</div>
+        <div className='font-bold'>{import.meta.env['VITE_MINIFRONT_LABEL']}</div>
         <div>
           <a
             target='_blank'
-            className='underline'
-            href={`${REPO_URL}/commits/${__COMMIT_HASH__}`}
+            className={dirty ? 'text-red-500' : 'underline'}
+            href={commitHref}
             rel='noreferrer'
           >
-            {shortenedCommitHash}
-          </a>{' '}
-          - {formattedDate}
+            {GIT_DESCRIBE}
+          </a>
+          {' - '}
+          {BUILD_DATE}
         </div>
       </div>
     </div>
