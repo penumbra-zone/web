@@ -203,17 +203,21 @@ impl<R: RngCore + CryptoRng> Planner<R> {
     }
 
     /// Withdraw a liquidity position in the order book.
+    ///
+    /// Note: Currently this only supports an initial withdrawal from Closed, with no rewards.
     pub fn position_withdraw(
         &mut self,
         position_id: position::Id,
         reserves: Reserves,
         pair: TradingPair,
     ) -> &mut Self {
-        self.action(ActionPlan::PositionWithdraw(PositionWithdrawPlan::new(
+        self.action(ActionPlan::PositionWithdraw(PositionWithdrawPlan {
             reserves,
             position_id,
             pair,
-        )));
+            sequence: 0,
+            rewards: Vec::new(),
+        }));
         self
     }
 
