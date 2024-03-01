@@ -8,6 +8,7 @@ import { CopyToClipboard } from '../../copy-to-clipboard';
 import { AssetIcon } from './asset-icon';
 import { CopyIcon } from '@radix-ui/react-icons';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { cn } from '../../../../lib/utils';
 
 interface ValueViewProps {
   view: ValueView | undefined;
@@ -38,14 +39,22 @@ export const ValueViewComponent = ({
     const symbol = metadata.symbol || 'Unknown Asset';
 
     return (
-      <div className='flex items-center gap-1 text-base font-bold'>
+      <div
+        className={cn(
+          'inline-flex min-w-0 max-w-full items-center gap-1 rounded-full bg-light-brown py-1 pl-1 pr-3 text-sm hover:bg-brown',
+          showIcon && 'pl-1',
+          !showIcon && 'pl-3',
+        )}
+      >
         {showIcon && (
-          <div className='size-6'>
+          <div className='mr-1 flex size-6 items-center justify-center rounded-full'>
             <AssetIcon metadata={metadata} />
           </div>
         )}
-        {showValue && <span>{formattedAmount}</span>}
-        {showDenom && <span className='truncate'>{symbol}</span>}
+        {showValue && <span className='leading-[15px]'>{formattedAmount}</span>}
+        {showDenom && (
+          <span className='truncate font-mono text-xs text-muted-foreground'>{symbol}</span>
+        )}
         {
           // TODO: this will need refinement once we actually hand out
           // equivalent values to the frontend. it would be nice to have
