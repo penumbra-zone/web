@@ -15,7 +15,7 @@ export const Footer = () => {
             href='https://www.coincenter.org/electronic-cash-decentralized-exchange-and-the-constitution/'
           >
             Learn more
-          </a>{' '}
+          </a>
           about your rights.
         </div>
         <div>
@@ -27,7 +27,7 @@ export const Footer = () => {
             rel='noreferrer'
           >
             {shortenedCommitHash}
-          </a>{' '}
+          </a>
           - {formattedDate}
         </div>
       </div>
