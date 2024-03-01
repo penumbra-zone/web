@@ -126,10 +126,11 @@ const LPStatus = ({ nftId, position }: LPStatusProps) => {
 
   return (
     <Box
-      outline={".15em solid black"}
+      outline={".15em solid var(--complimentary-background)"}
       borderRadius={".5em"}
       padding={15}
       width="fit-content"
+      backgroundImage={"var(--background-gradient)"}
     >
       <VStack width={"100%"}>
         <Text>{nftId}</Text>

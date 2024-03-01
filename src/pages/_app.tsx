@@ -1,11 +1,24 @@
 import type { AppProps } from "next/app";
 import "@/global.css";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 function MyApp({ Component, pageProps }: AppProps) {
-  
+  // May not necessarily be the best way to apply global styles
+  const theme = extendTheme({
+    styles: {
+      global: {
+        // Apply some styles globally across all elements
+        body: {
+          bg: "var(--charcoal)",
+          color: "var(--light-grey)",
+          fontFamily: "sans-serif",
+          fontWeight: "400",
+        },
+      },
+    },
+  });
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <Component {...pageProps} />
     </ChakraProvider>
   );
