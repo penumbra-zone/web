@@ -1,7 +1,5 @@
 import { format } from 'date-fns';
 
-const REPO_URL = 'https://github.com/penumbra-zone/web';
-
 export const Footer = () => {
   const shortenedCommitHash = __COMMIT_HASH__.slice(0, 7);
   const dateObj = new Date(__COMMIT_DATE__);
@@ -15,7 +13,7 @@ export const Footer = () => {
           <a
             target='_blank'
             className='underline'
-            href={`${REPO_URL}/commits/${__COMMIT_HASH__}`}
+            href={`${__GIT_ORIGIN_URL__}/commits/${__COMMIT_HASH__}`}
             rel='noreferrer'
           >
             {shortenedCommitHash}
