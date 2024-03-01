@@ -72,7 +72,9 @@ export const Account = () => {
                   <ValueViewComponent view={unbondingTokens?.total ?? zeroBalanceUm} />
                   <TooltipProvider>
                     <Tooltip>
-                      <TooltipTrigger>(i)</TooltipTrigger>
+                      <TooltipTrigger>
+                        <img src='./info-icon.svg' className='size-4' alt='An info icon' />
+                      </TooltipTrigger>
                       <TooltipContent>
                         <div className='flex flex-col gap-4'>
                           <div className='max-w-[250px]'>
