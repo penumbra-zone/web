@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 
 interface StreamQueryResult<T> {
   data: T | undefined;
@@ -52,6 +53,7 @@ export const useCollectedStream = <T>(query: AsyncIterable<T>): CollectedStreamQ
   return useStreamCommon(query, [] as T[], (prevData, newData) => [...prevData, newData]);
 };
 
+/*
 // Meant to convert a stream into a promise of the completed result
 // Note: If the stream is unending, this will not resolve.
 //       This is only useful if you are collecting all of the fixed set of results together.
@@ -72,3 +74,7 @@ export const streamToPromise = <T>(query: AsyncIterable<T>): Promise<T[]> => {
     })();
   });
 };
+*/
+
+// eslint-disable-next-line @typescript-eslint/unbound-method
+export const streamToPromise = Array.fromAsync;
