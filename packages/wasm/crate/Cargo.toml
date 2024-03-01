@@ -15,27 +15,27 @@ default = ["console_error_panic_hook"]
 mock-database = []
 
 [dependencies]
-penumbra-asset         = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-asset" }
-penumbra-compact-block = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-compact-block", default-features = false }
-penumbra-dex           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-dex", default-features = false }
-penumbra-fee           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-fee", default-features = false }
-penumbra-governance    = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-governance", default-features = false }
-penumbra-ibc           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-ibc", default-features = false }
-penumbra-keys          = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-keys" }
-penumbra-num           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-num" }
-penumbra-proof-params  = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-proof-params", default-features = false }
-penumbra-proto         = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-proto", default-features = false }
-penumbra-sct           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-sct", default-features = false }
-penumbra-shielded-pool = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-shielded-pool", default-features = false }
-penumbra-stake         = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-stake", default-features = false }
-penumbra-tct           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-tct" }
-penumbra-transaction   = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.67.1", package = "penumbra-transaction", default-features = false }
+penumbra-asset         = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-asset" }
+penumbra-compact-block = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-compact-block", default-features = false }
+penumbra-dex           = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-dex", default-features = false }
+penumbra-fee           = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-fee", default-features = false }
+penumbra-governance    = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-governance", default-features = false }
+penumbra-ibc           = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-ibc", default-features = false }
+penumbra-keys          = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-keys" }
+penumbra-num           = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-num" }
+penumbra-proof-params  = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-proof-params", default-features = false }
+penumbra-proto         = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-proto", default-features = false }
+penumbra-sct           = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-sct", default-features = false }
+penumbra-shielded-pool = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-shielded-pool", default-features = false }
+penumbra-stake         = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-stake", default-features = false }
+penumbra-tct           = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-tct" }
+penumbra-transaction   = { git = "https://github.com/penumbra-zone/penumbra.git", branch = "upgrade-decaf377", package = "penumbra-transaction", default-features = false }
+decaf377               = { git = "https://github.com/penumbra-zone/decaf377", branch = "visibility", features = ["r1cs", "u32_backend"] }
 
 anyhow                   = "1.0.75"
 ark-ff                   = { version = "0.4.2", features = ["std"] }
 base64                   = "0.21.2"
 console_error_panic_hook = { version = "0.1.7", optional = true }
-decaf377                 = { version = "0.5", features = ["r1cs"] }
 hex                      = "0.4.3"
 indexed_db_futures       = "0.3.0"
 rand_core                = { version = "0.6.4", features = ["getrandom"] }
