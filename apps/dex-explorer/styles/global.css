@@ -39,7 +39,12 @@
   --light-grey: #e3e3e3;
   --brown: rgba(29, 29, 29, 0.7);
   --background-gradient: linear-gradient(90deg, rgba(139, 228, 217, .42) 0%, rgba(200, 184, 128, .42) 50%, rgba(255, 144, 47, .36) 100%);
-  --complimentary-background: #5b6584;
+  --complimentary-background: #6e6eb8;
+  --teal-accent: #5b6584;
+  --purple-accent: #6e6eb8;
+  --purple-accent-700: rgba(110, 110, 184, 0.7);
+  --soft-gold: #b5a642;
+  --steal-blue: #4a6d7c;
 }
 
 html,
