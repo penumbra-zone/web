@@ -3,7 +3,13 @@ import { CopyToClipboardIconButton } from './copy-to-clipboard-icon-button';
 import { bech32IdentityKey } from '@penumbra-zone/types';
 
 /**
- * Renders an `IdentityKey` for a validator, along with a copy button.
+ * Renders a validator's `IdentityKey` as a bech32-encoded string, along with a
+ * copy button.
+ *
+ * @example
+ * ```tsx
+ * <IdentityKeyComponent identityKey={validator.identityKey} />
+ * ```
  */
 export const IdentityKeyComponent = ({ identityKey }: { identityKey: IdentityKey }) => {
   return (
