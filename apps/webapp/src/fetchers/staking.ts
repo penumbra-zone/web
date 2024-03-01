@@ -2,10 +2,11 @@ import {
   AddressIndex,
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { stakingClient } from '../clients/grpc';
+import { stakingClient, viewClient } from '../clients/grpc';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   bech32IdentityKey,
+  customizeSymbol,
   getDisplayDenomFromView,
   getIdentityKeyFromValidatorInfo,
   getValidatorInfo,
@@ -24,6 +25,9 @@ const isDelegationBalance = (balance: BalancesResponse, identityKey: IdentityKey
 
   return bech32IdentityKey(identityKey) === matchGroups.bech32IdentityKey;
 };
+
+const getDelegationTokenBaseDenom = (validatorInfo: ValidatorInfo) =>
+  `udelegation_${bech32IdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo))}`;
 
 /**
  * Given an `AddressIndex`, yields `ValueView`s of the given address's balance
@@ -46,9 +50,10 @@ export const getDelegationsForAccount = async function* (addressIndex: AddressIn
   const validatorInfoResponses = stakingClient.validatorInfo({ showInactive: false });
 
   for await (const validatorInfoResponse of validatorInfoResponses) {
+    const validatorInfo = getValidatorInfo(validatorInfoResponse);
     const extendedMetadata = new Any({
       typeUrl: ValidatorInfo.typeName,
-      value: validatorInfoResponse.validatorInfo?.toBinary(),
+      value: validatorInfo.toBinary(),
     });
 
     const identityKey = getValidatorInfo.pipe(getIdentityKeyFromValidatorInfo)(
@@ -66,6 +71,10 @@ export const getDelegationsForAccount = async function* (addressIndex: AddressIn
 
       yield withValidatorInfo;
     } else {
+      const { denomMetadata } = await viewClient.assetMetadataById({
+        assetId: { altBaseDenom: getDelegationTokenBaseDenom(validatorInfo) },
+      });
+
       yield new ValueView({
         valueView: {
           case: 'knownAssetId',
@@ -74,6 +83,7 @@ export const getDelegationsForAccount = async function* (addressIndex: AddressIn
               hi: 0n,
               lo: 0n,
             },
+            metadata: denomMetadata ? customizeSymbol(denomMetadata) : undefined,
             extendedMetadata,
           },
         },

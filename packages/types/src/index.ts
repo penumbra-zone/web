@@ -26,3 +26,4 @@ export * from './type-predicates';
 export * from './getters';
 export * from './staking';
 export * from './identity-key';
+export * from './customize-symbol';
