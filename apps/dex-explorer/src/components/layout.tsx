@@ -18,7 +18,7 @@ const Layout = ({ children, pageTitle }: LayoutProps) => {
         <title className={styles.title}>{pageTitle}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <header className={styles.header}>
+      <header className={styles.header} >
         <HStack>
           <Image
             src="/favicon.ico"
