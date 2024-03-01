@@ -264,8 +264,8 @@ describe('IndexedDb', () => {
 
       const stateCommitmentTree = await db.getStateCommitmentTree();
 
-      expect(stateCommitmentTree.hashes.length == 1).toBeTruthy();
-      expect(stateCommitmentTree.commitments.length == 1).toBeTruthy();
+      expect(stateCommitmentTree.hashes.length === 1).toBeTruthy();
+      expect(stateCommitmentTree.commitments.length === 1).toBeTruthy();
       expect(stateCommitmentTree.last_forgotten === 12n).toBeTruthy();
       expect(stateCommitmentTree.last_position).toBeTruthy();
     });

@@ -26,6 +26,7 @@ module.exports = {
         mjs: 'never',
       },
     ],
+    eqeqeq: ['error', 'always', { null: 'ignore' }],
     'import/no-useless-path-segments': ['error', { noUselessIndex: true }],
     'import/no-relative-packages': 'error',
     'import/no-self-import': 'error',

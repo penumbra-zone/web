@@ -46,7 +46,7 @@ export const SettingsRPC = () => {
         setNewChainId(appParameters.chainId);
         await setGRPCEndpoint(rpcInput);
         // If the chain id has changed, our cache is invalid
-        if (appParameters.chainId != currentChainId) void internalSwClient.clearCache();
+        if (appParameters.chainId !== currentChainId) void internalSwClient.clearCache();
         // Visually confirm success for a few seconds
         await countdown(5);
         // Reload the extension to ensure all scopes holding the old config are killed
@@ -77,7 +77,7 @@ export const SettingsRPC = () => {
               </div>
               <div className='relative w-full'>
                 <div className='absolute inset-y-0 right-4 flex cursor-pointer items-center'>
-                  {rpcInput != grpcEndpoint ? (
+                  {rpcInput !== grpcEndpoint ? (
                     <Button
                       type='reset'
                       variant='outline'
@@ -88,7 +88,7 @@ export const SettingsRPC = () => {
                   ) : null}
                 </div>
                 <Input
-                  variant={rpcError ? 'error' : rpcInput != grpcEndpoint ? 'warn' : 'default'}
+                  variant={rpcError ? 'error' : rpcInput !== grpcEndpoint ? 'warn' : 'default'}
                   value={rpcInput}
                   onChange={evt => {
                     setRpcError(undefined);
@@ -105,13 +105,13 @@ export const SettingsRPC = () => {
               </div>
             </div>
           </div>
-          {countdownTime != null ? (
+          {countdownTime !== undefined ? (
             <Button disabled variant='outline' size='lg' className='w-full'>
               Saved! Restarting in {countdownTime}...
             </Button>
           ) : (
             <Button
-              variant={rpcInput != grpcEndpoint ? 'gradient' : 'outline'}
+              variant={rpcInput !== grpcEndpoint ? 'gradient' : 'outline'}
               size='lg'
               className='w-full'
               type='submit'
