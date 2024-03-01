@@ -1,5 +1,5 @@
 import { viewClient } from '../clients';
-import { streamToPromise } from './stream';
+import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { getTransactionClassificationLabel, uint8ArrayToHex } from '@penumbra-zone/types';
 
 export interface TransactionSummary {
@@ -9,7 +9,7 @@ export interface TransactionSummary {
 }
 
 export const getAllTransactions = async (): Promise<TransactionSummary[]> => {
-  const responses = await streamToPromise(viewClient.transactionInfo({}));
+  const responses = await Array.fromAsync(viewClient.transactionInfo({}));
   return responses
     .map(tx => {
       return {

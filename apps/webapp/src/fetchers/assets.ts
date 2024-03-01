@@ -1,9 +1,9 @@
-import { streamToPromise } from './stream';
+import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { AssetsRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { viewClient } from '../clients';
 
 export const getAllAssets = () => {
   const req = new AssetsRequest();
   const iterable = viewClient.assets(req);
-  return streamToPromise(iterable);
+  return Array.fromAsync(iterable);
 };

@@ -2,7 +2,7 @@ import { BalancesRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { viewClient } from '../../clients';
-import { streamToPromise } from '../stream';
+import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 
 interface BalancesProps {
   accountFilter?: AddressIndex;
@@ -15,5 +15,5 @@ export const getBalances = ({ accountFilter, assetIdFilter }: BalancesProps = {}
   if (assetIdFilter) req.assetIdFilter = assetIdFilter;
 
   const iterable = viewClient.balances(req);
-  return streamToPromise(iterable);
+  return Array.fromAsync(iterable);
 };
