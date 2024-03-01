@@ -8,8 +8,18 @@ export const Footer = () => {
   return (
     <div className='my-4 flex justify-center'>
       <div className='flex flex-col text-center text-stone-700'>
-        <div className='font-bold'>Frontend app version</div>
+        <div className='font-bold'>This software runs entirely on your device.</div>
         <div>
+          <a
+            className='underline'
+            href='https://www.coincenter.org/electronic-cash-decentralized-exchange-and-the-constitution/'
+          >
+            Learn more
+          </a>{' '}
+          about your rights.
+        </div>
+        <div>
+          Version&nbsp;
           <a
             target='_blank'
             className='underline'
