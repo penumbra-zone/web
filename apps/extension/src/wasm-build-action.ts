@@ -39,9 +39,10 @@ const workerListener = ({ data }: { data: ActionBuildRequest }) => {
 
 self.addEventListener('message', workerListener, { once: true });
 
-const actionTypeRequiresProvingKey = (
-  actionPlanType: Exclude<TransactionPlan['actions'][number]['action']['case'], undefined>,
-) => provingKeys.some(provingKey => provingKey.keyType === camelToSnakeCase(actionPlanType));
+type ActionType = Exclude<TransactionPlan['actions'][number]['action']['case'], undefined>;
+
+const actionTypeRequiresProvingKey = (actionType: ActionType) =>
+  provingKeys.some(provingKey => provingKey.keyType === camelToSnakeCase(actionType));
 
 async function executeWorker(
   transactionPlan: TransactionPlan,
