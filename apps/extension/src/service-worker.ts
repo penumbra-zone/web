@@ -30,6 +30,9 @@ import { approveTransaction } from './approve-transaction';
 // all rpc implementations, local and proxy
 import { rpcImpls } from './impls';
 
+console.error('TODO: remove before merge');
+void localExtStorage.set('connectedSites', []);
+
 const services = new Services({
   idbVersion: IDB_VERSION,
   grpcEndpoint: await localExtStorage.get('grpcEndpoint'),
