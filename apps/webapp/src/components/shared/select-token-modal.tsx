@@ -57,9 +57,9 @@ export default function SelectTokenModal({
             </div>
           </div>
           <div className='flex shrink flex-col gap-4 overflow-auto px-[30px]'>
-            <div className='mt-2 grid grid-cols-2 font-headline text-base font-semibold'>
+            <div className='mt-2 grid grid-cols-4 font-headline text-base font-semibold'>
               <p className='flex justify-start'>Account</p>
-              <p className='flex justify-start'>Asset</p>
+              <p className='col-span-3 flex justify-start'>Asset</p>
             </div>
             <div className='flex flex-col gap-2'>
               {balances.map((b, i) => {
@@ -70,7 +70,7 @@ export default function SelectTokenModal({
                     <DialogClose>
                       <div
                         className={cn(
-                          'grid grid-cols-3 py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4 font-bold text-muted-foreground',
+                          'grid grid-cols-4 py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4 font-bold text-muted-foreground',
                           selection?.balanceView?.equals(b.balanceView) &&
                             selection.accountAddress?.equals(b.accountAddress) &&
                             'bg-light-brown px-4 -mx-4',
@@ -78,7 +78,7 @@ export default function SelectTokenModal({
                         onClick={() => setSelection(b)}
                       >
                         <p className='flex justify-start'>{index}</p>
-                        <div className='flex justify-start'>
+                        <div className='col-span-3 flex justify-start'>
                           <ValueViewComponent view={b.balanceView} />
                         </div>
                       </div>
