@@ -62,13 +62,13 @@ export const SettingsConnectedSites = () => {
               ?.map(site => (
                 <SiteRecord key={site.origin} site={site} discardSiteRecord={discardSiteRecord} />
               ))
-              .toSpliced(0, 0, <div className='mt-2 text-muted-foreground'>Connected sites</div>)}
+              .toSpliced(0, 0, <div className='mt-2 text-muted-foreground'>Approved sites</div>)}
             {filteredByAttitude
               .get(false)
               ?.map(site => (
                 <SiteRecord key={site.origin} site={site} discardSiteRecord={discardSiteRecord} />
               ))
-              .toSpliced(0, 0, <div className='mt-2 text-muted-foreground'>Ignored sites</div>)}
+              .toSpliced(0, 0, <div className='mt-2 text-muted-foreground'>Denied sites</div>)}
           </div>
         </div>
       </div>
