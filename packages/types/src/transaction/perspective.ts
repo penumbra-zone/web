@@ -77,6 +77,11 @@ export const viewActionFromEmptyPerspective = (action: Action): ActionView | und
           }),
         },
       });
+    case 'delegate':
+    case 'undelegate':
+      return new ActionView({
+        actionView: action.action,
+      });
     default:
       // TODO: fill in other actions. most actions don't have views (they are their own view) so they can be passed through.
       return undefined;

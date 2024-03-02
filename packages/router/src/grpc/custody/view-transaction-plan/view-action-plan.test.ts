@@ -24,6 +24,10 @@ import {
   SwapPlaintext,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { JsonObject } from '@bufbuild/protobuf';
+import {
+  Delegate,
+  Undelegate,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
 describe('viewActionPlan()', () => {
   const addressAsBech32 =
@@ -117,24 +121,6 @@ describe('viewActionPlan()', () => {
 
       expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow('No asset ID in value');
     });
-
-    test('throws if the asset ID refers to an unknown asset type', () => {
-      const actionPlan = new ActionPlan({
-        action: {
-          case: 'spend',
-          value: {
-            note: {
-              address,
-              value: { amount: { hi: 1n, lo: 0n }, assetId: { altBech32m: 'invalid' } },
-            },
-          },
-        },
-      });
-
-      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow(
-        'Asset ID refers to an unknown asset type',
-      );
-    });
   });
 
   describe('`output` action', () => {
@@ -227,25 +213,6 @@ describe('viewActionPlan()', () => {
       });
 
       expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow('No asset ID in value');
-    });
-
-    test('throws if the asset ID refers to an unknown asset type', () => {
-      const actionPlan = new ActionPlan({
-        action: {
-          case: 'output',
-          value: {
-            value: {
-              amount: { hi: 1n, lo: 0n },
-              assetId: { altBech32m: 'invalid' },
-            },
-            destAddress,
-          },
-        },
-      });
-
-      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow(
-        'Asset ID refers to an unknown asset type',
-      );
     });
   });
 
@@ -484,12 +451,16 @@ describe('viewActionPlan()', () => {
     });
   });
 
-  describe('all other action cases', () => {
-    test('returns an action view with the case but no value', () => {
+  describe('`delegate` action', () => {
+    test('returns an action view with the action as-is', () => {
+      const delegate = new Delegate({
+        epochIndex: 0n,
+        delegationAmount: { hi: 123n, lo: 456n },
+      });
       const actionPlan = new ActionPlan({
         action: {
           case: 'delegate',
-          value: { delegationAmount: { hi: 123n, lo: 456n } },
+          value: delegate,
         },
       });
 
@@ -500,6 +471,58 @@ describe('viewActionPlan()', () => {
           new ActionView({
             actionView: {
               case: 'delegate',
+              value: delegate,
+            },
+          }),
+        ),
+      ).toBe(true);
+    });
+  });
+
+  describe('`undelegate` action', () => {
+    test('returns an action view with the action as-is', () => {
+      const undelegate = new Undelegate({
+        startEpochIndex: 0n,
+        delegationAmount: { hi: 123n, lo: 456n },
+      });
+      const actionPlan = new ActionPlan({
+        action: {
+          case: 'undelegate',
+          value: undelegate,
+        },
+      });
+
+      const actionView = viewActionPlan({}, mockFvk)(actionPlan);
+
+      expect(
+        actionView.equals(
+          new ActionView({
+            actionView: {
+              case: 'undelegate',
+              value: undelegate,
+            },
+          }),
+        ),
+      ).toBe(true);
+    });
+  });
+
+  describe('all other action cases', () => {
+    test('returns an action view with the case but no value', () => {
+      const actionPlan = new ActionPlan({
+        action: {
+          case: 'proposalSubmit',
+          value: {},
+        },
+      });
+
+      const actionView = viewActionPlan({}, mockFvk)(actionPlan);
+
+      expect(
+        actionView.equals(
+          new ActionView({
+            actionView: {
+              case: 'proposalSubmit',
               value: {},
             },
           }),

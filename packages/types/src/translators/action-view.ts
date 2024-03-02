@@ -22,6 +22,10 @@ export const asPublicActionView: Translator<ActionView> = actionView => {
         },
       });
 
+    case 'delegate':
+    case 'undelegate':
+      return actionView;
+
     default:
       return new ActionView({
         actionView: actionView?.actionView.case

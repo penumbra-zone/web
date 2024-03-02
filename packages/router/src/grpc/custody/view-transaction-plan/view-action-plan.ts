@@ -34,14 +34,13 @@ const getValueView = (
   if (!value.amount) throw new Error('No amount in value');
 
   const denomMetadata = denomMetadataByAssetId[bech32AssetId(value.assetId)];
-  if (!denomMetadata) throw new Error('Asset ID refers to an unknown asset type');
 
   return new ValueView({
     valueView: {
       case: 'knownAssetId',
       value: {
         amount: value.amount,
-        metadata: Metadata.fromJson(denomMetadata),
+        metadata: denomMetadata ? Metadata.fromJson(denomMetadata) : undefined,
       },
     },
   });
@@ -217,6 +216,10 @@ export const viewActionPlan =
             value: {},
           },
         });
+      case 'delegate':
+      case 'undelegate':
+        return new ActionView({ actionView: actionPlan.action });
+
       case undefined:
         throw new Error('No action case in action plan');
       default:

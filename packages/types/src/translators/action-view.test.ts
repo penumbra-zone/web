@@ -168,6 +168,38 @@ describe('asPublicActionView()', () => {
       expect(asPublicActionView(actionView).equals(expected)).toBe(true);
     });
   });
+
+  describe('when passed a delegate action view', () => {
+    const actionView = new ActionView({
+      actionView: {
+        case: 'delegate',
+        value: {
+          epochIndex: 0n,
+          delegationAmount: { hi: 0n, lo: 1n },
+        },
+      },
+    });
+
+    test('returns the action view as-is', () => {
+      expect(asPublicActionView(actionView).equals(actionView)).toBe(true);
+    });
+  });
+
+  describe('when passed an undelegate action view', () => {
+    const actionView = new ActionView({
+      actionView: {
+        case: 'undelegate',
+        value: {
+          startEpochIndex: 0n,
+          delegationAmount: { hi: 0n, lo: 1n },
+        },
+      },
+    });
+
+    test('returns the action view as-is', () => {
+      expect(asPublicActionView(actionView).equals(actionView)).toBe(true);
+    });
+  });
 });
 
 describe('asReceiverActionView()', () => {
@@ -321,6 +353,44 @@ describe('asReceiverActionView()', () => {
     });
 
     test('returns an action view with a receiver output view', async () => {
+      const isControlledAddress = () => Promise.resolve(false);
+      const result = await asReceiverActionView(actionView, { isControlledAddress });
+
+      expect(result.equals(actionView)).toBe(true);
+    });
+  });
+
+  describe('when passed a delegate action view', () => {
+    const actionView = new ActionView({
+      actionView: {
+        case: 'delegate',
+        value: {
+          epochIndex: 0n,
+          delegationAmount: { hi: 0n, lo: 1n },
+        },
+      },
+    });
+
+    test('returns the action view as-is', async () => {
+      const isControlledAddress = () => Promise.resolve(false);
+      const result = await asReceiverActionView(actionView, { isControlledAddress });
+
+      expect(result.equals(actionView)).toBe(true);
+    });
+  });
+
+  describe('when passed an undelegate action view', () => {
+    const actionView = new ActionView({
+      actionView: {
+        case: 'undelegate',
+        value: {
+          startEpochIndex: 0n,
+          delegationAmount: { hi: 0n, lo: 1n },
+        },
+      },
+    });
+
+    test('returns the action view as-is', async () => {
       const isControlledAddress = () => Promise.resolve(false);
       const result = await asReceiverActionView(actionView, { isControlledAddress });
 
