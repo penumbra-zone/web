@@ -31,7 +31,9 @@ import { approveTransaction } from './approve-transaction';
 import { rpcImpls } from './impls';
 
 console.error('TODO: remove before merge');
-void localExtStorage.set('connectedSites', []);
+void localExtStorage.set('connectedSites', [
+  { origin: MINIFRONT_URL, attitude: true, date: Date.now() },
+]);
 
 const services = new Services({
   idbVersion: IDB_VERSION,
