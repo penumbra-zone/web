@@ -1,13 +1,6 @@
-import { DotsVerticalIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { MagnifyingGlassIcon, TrashIcon } from '@radix-ui/react-icons';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Button,
-  FadeTransition,
-  Input,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@penumbra-zone/ui';
+import { Button, FadeTransition, Input } from '@penumbra-zone/ui';
 import { LinkGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
 import { OriginRecord, localExtStorage } from '@penumbra-zone/storage';
@@ -24,6 +17,16 @@ export const SettingsConnectedSites = () => {
     [],
   );
   useEffect(() => void loadSitesFromStorage(), [loadSitesFromStorage]);
+
+  const disconnectSite = useCallback(
+    (site: OriginRecord) => {
+      if (!sitesFromStorage) return;
+      const sitesWithoutRecord = sitesFromStorage.filter(({ origin }) => origin !== site.origin);
+      void localExtStorage.set('connectedSites', sitesWithoutRecord);
+      setSitesFromStorage(sitesWithoutRecord);
+    },
+    [sitesFromStorage],
+  );
 
   const [attitude, match] = useMemo(() => {
     if (!sitesFromStorage) return [];
@@ -51,15 +54,17 @@ export const SettingsConnectedSites = () => {
               className='pl-10'
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder='Dapp name...'
+              placeholder='Search by origin...'
             />
           </div>
           <div className='flex flex-col gap-2'>
-            {attitude?.get(true)?.map((site, index) => (
-              <div
-                key={index}
-                className='flex items-center justify-between rounded-lg border bg-background px-3 py-[14px]'
-              >
+            {attitude?.get(true)?.map(site => (
+              <div key={site.origin} className='relative w-full'>
+                <div className='absolute inset-y-0 right-4 flex cursor-pointer items-center'>
+                  <Button variant='ghost' onClick={() => disconnectSite(site)}>
+                    <TrashIcon />
+                  </Button>
+                </div>
                 <p>{site.origin}</p>
               </div>
             ))}
@@ -67,25 +72,5 @@ export const SettingsConnectedSites = () => {
         </div>
       </div>
     </FadeTransition>
-  );
-};
-export const ConnectedSitesActionPopover = () => {
-  return (
-    <Popover>
-      <PopoverTrigger>
-        <DotsVerticalIcon className='size-5 cursor-pointer hover:opacity-50' />
-      </PopoverTrigger>
-      <PopoverContent align='center' className='w-[120px] p-0'>
-        <Button variant='outline' className='flex h-11 w-full justify-start rounded-t-lg px-5'>
-          Delete
-        </Button>
-        <Button
-          variant='outline'
-          className='flex h-11 w-full justify-start rounded-b-lg border-b-0 px-5'
-        >
-          Edit
-        </Button>
-      </PopoverContent>
-    </Popover>
   );
 };
