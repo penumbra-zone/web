@@ -6,12 +6,18 @@ export enum LocalStorageVersion {
   V1 = 'V1',
 }
 
+export interface OriginRecord {
+  origin: string;
+  attitude: boolean;
+  date: number;
+}
+
 export interface LocalStorageState {
   wallets: WalletJson[];
   grpcEndpoint: string;
   passwordKeyPrint?: KeyPrintJson;
   fullSyncHeight: number;
-  connectedSites: Record<string, boolean>;
+  connectedSites: OriginRecord[];
 }
 
 // this will be injected by webpack build, but we don't have access to the
@@ -25,7 +31,7 @@ export const localDefaults: LocalStorageState = {
   wallets: [],
   grpcEndpoint: DEFAULT_GRPC_URL,
   fullSyncHeight: 0,
-  connectedSites: { [MINIFRONT_URL]: true },
+  connectedSites: [{ origin: MINIFRONT_URL, attitude: true, date: Date.now() }],
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.
