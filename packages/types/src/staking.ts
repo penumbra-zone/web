@@ -5,6 +5,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import {
   getBondingStateEnumFromValidatorInfo,
+  getDisplayDenomFromView,
   getFundingStreamsFromValidatorInfo,
   getIdentityKeyFromValidatorInfo,
   getRateBpsFromFundingStream,
@@ -13,6 +14,8 @@ import {
 } from './getters';
 import { joinLoHiAmount } from './amount';
 import { bech32IdentityKey } from './identity-key';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { DelegationCaptureGroups, assetPatterns } from '@penumbra-zone/constants';
 
 export const getStateLabel = (validatorInfo: ValidatorInfo): string =>
   ValidatorState_ValidatorStateEnum[getStateEnumFromValidatorInfo(validatorInfo)];
@@ -21,6 +24,21 @@ export const getBondingStateLabel = (validatorInfo: ValidatorInfo): string =>
   BondingState_BondingStateEnum[getBondingStateEnumFromValidatorInfo(validatorInfo)];
 
 const toSum = (prev: number, curr: number) => prev + curr;
+
+export const isDelegationTokenForValidator = (
+  delegation: ValueView,
+  validatorInfo: ValidatorInfo,
+) => {
+  const delegationMatch = assetPatterns.delegationToken.exec(getDisplayDenomFromView(delegation));
+  if (!delegationMatch) return;
+
+  const matchGroups = delegationMatch.groups as unknown as DelegationCaptureGroups;
+
+  return (
+    matchGroups.bech32IdentityKey ===
+    bech32IdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo))
+  );
+};
 
 /**
  * Given a `ValidatorInfo`, returns the sum of all commission rates as a

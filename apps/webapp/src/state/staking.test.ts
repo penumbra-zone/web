@@ -190,6 +190,7 @@ describe('Staking Slice', () => {
       loadDelegationsForCurrentAccount: expect.any(Function) as unknown,
       loadUnstakedTokensByAccount: expect.any(Function) as unknown,
       delegate: expect.any(Function) as unknown,
+      undelegate: expect.any(Function) as unknown,
       onClickActionButton: expect.any(Function) as unknown,
       onSubmit: expect.any(Function) as unknown,
       onClose: expect.any(Function) as unknown,

@@ -4,12 +4,15 @@ import { getDelegationsForAccount } from '../fetchers/staking';
 import {
   VotingPowerAsIntegerPercentage,
   getAmount,
+  getAssetIdFromValueView,
   getDisplayDenomExponent,
+  getDisplayDenomExponentFromValueView,
   getDisplayDenomFromView,
   getRateData,
   getValidatorInfoFromValueView,
   getVotingPowerByValidatorInfo,
   getVotingPowerFromValidatorInfo,
+  isDelegationTokenForValidator,
   joinLoHiAmount,
   toBaseUnit,
 } from '@penumbra-zone/types';
@@ -50,6 +53,7 @@ export interface StakingSlice {
    */
   loadUnstakedTokensByAccount: () => Promise<void>;
   delegate: () => Promise<void>;
+  undelegate: () => Promise<void>;
   loading: boolean;
   error: unknown;
   votingPowerByValidatorInfo: Record<string, VotingPowerAsIntegerPercentage>;
@@ -176,11 +180,8 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     });
   },
   onSubmit: () => {
-    /**
-     * @todo: Add switching logic depending on the value of `action`, once
-     * undelegation is implemented.
-     */
-    void get().staking.delegate();
+    if (get().staking.action === 'delegate') void get().staking.delegate();
+    else void get().staking.undelegate();
   },
   delegate: async () => {
     const toast = new TransactionToast('delegate');
@@ -188,6 +189,43 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
 
     try {
       const transactionPlan = await plan(assembleDelegateRequest(get().staking));
+
+      // Reset form _after_ building the transaction form, since it depends on
+      // the state.
+      set(state => {
+        state.staking.amount = '';
+        state.staking.action = undefined;
+        state.staking.validatorInfo = undefined;
+      });
+
+      const transaction = await authWitnessBuild({ transactionPlan }, status =>
+        toast.onBuildStatus(status),
+      );
+      const txHash = await getTxHash(transaction);
+      toast.txHash(txHash);
+      const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
+        toast.onBroadcastStatus(status),
+      );
+      toast.onSuccess(detectionHeight);
+
+      // Reload delegation tokens and unstaked tokens to reflect their updated
+      // balances.
+      void get().staking.loadDelegationsForCurrentAccount();
+      void get().staking.loadUnstakedTokensByAccount();
+    } catch (e) {
+      if (userDeniedTransaction(e)) {
+        toast.onDenied();
+      } else {
+        toast.onFailure(e);
+      }
+    }
+  },
+  undelegate: async () => {
+    const toast = new TransactionToast('undelegate');
+    toast.onStart();
+
+    try {
+      const transactionPlan = await plan(assembleUndelegateRequest(get().staking));
 
       // Reset form _after_ building the transaction form, since it depends on
       // the state.
@@ -232,6 +270,32 @@ const assembleDelegateRequest = ({ account, amount, validatorInfo }: StakingSlic
       {
         amount: toBaseUnit(BigNumber(amount), STAKING_TOKEN_DISPLAY_DENOM_EXPONENT),
         rateData: getRateData(validatorInfo),
+      },
+    ],
+    source: { account },
+  });
+};
+
+const assembleUndelegateRequest = ({
+  account,
+  amount,
+  delegationsByAccount,
+  validatorInfo,
+}: StakingSlice) => {
+  const delegation = delegationsByAccount
+    .get(account)
+    ?.find(delegation => isDelegationTokenForValidator(delegation, validatorInfo!));
+  if (!delegation)
+    throw new Error('Tried to assemble undelegate request from account with no delegation tokens');
+
+  return new TransactionPlannerRequest({
+    undelegations: [
+      {
+        rateData: getRateData(validatorInfo),
+        value: {
+          amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponentFromValueView(delegation)),
+          assetId: getAssetIdFromValueView(delegation),
+        },
       },
     ],
     source: { account },

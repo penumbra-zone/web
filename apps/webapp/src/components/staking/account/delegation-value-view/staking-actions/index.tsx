@@ -29,8 +29,6 @@ export const StakingActions = ({
    */
   unstakedTokens?: ValueView;
 }) => {
-  const handleClickUndelegate = () => alert('Not yet implemented; coming soon!');
-
   const { action, amount, onSubmit, onClickActionButton, onClose, setAmount } =
     useStore(stakingSelector);
 
@@ -60,7 +58,7 @@ export const StakingActions = ({
             variant='secondary'
             className='px-4'
             disabled={!canUndelegate}
-            onClick={handleClickUndelegate}
+            onClick={() => onClickActionButton('undelegate', validatorInfo)}
           >
             Undelegate
           </Button>
