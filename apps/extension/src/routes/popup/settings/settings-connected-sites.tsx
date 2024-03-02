@@ -4,7 +4,7 @@ import { Button, FadeTransition, Input } from '@penumbra-zone/ui';
 import { LinkGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
 import { OriginRecord, localExtStorage } from '@penumbra-zone/storage';
-
+import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
 import Map from '@penumbra-zone/polyfills/Map.groupBy';
 
 export const SettingsConnectedSites = () => {
@@ -74,19 +74,6 @@ export const SettingsConnectedSites = () => {
   );
 };
 
-const ApprovedConnectionIcon = ({ onClick }: { onClick: () => void }) => (
-  <Button className='group bg-transparent p-3' onClick={onClick}>
-    <Link1Icon className='visible absolute inset-0 text-green-400 group-hover:invisible' />
-    <TrashIcon className='invisible absolute inset-0 text-muted-foreground group-hover:visible' />
-  </Button>
-);
-const DeniedConnectionIcon = ({ onClick }: { onClick: () => void }) => (
-  <Button className='group bg-transparent p-3' onClick={onClick}>
-    <LinkBreak1Icon className='visible absolute inset-0 text-red-400 group-hover:invisible' />
-    <TrashIcon className='invisible absolute inset-0 text-muted-foreground group-hover:visible' />
-  </Button>
-);
-
 const SiteRecord = ({
   site,
   discardSiteRecord,
@@ -94,20 +81,40 @@ const SiteRecord = ({
   site: OriginRecord;
   discardSiteRecord: (site: OriginRecord) => void;
 }) => (
-  <div key={site.origin} className='relative w-full'>
-    <div className='absolute inset-y-0 right-4 flex cursor-pointer items-center'>
-      {site.attitude ? (
-        <ApprovedConnectionIcon onClick={() => discardSiteRecord(site)} />
-      ) : (
-        <DeniedConnectionIcon onClick={() => discardSiteRecord(site)} />
-      )}
+  <div key={site.origin} className='relative my-1 w-full'>
+    <div className='absolute inset-y-0 right-0 flex items-center'>
+      <Button
+        aria-description='Remove'
+        className='group bg-transparent p-3'
+        onClick={() => discardSiteRecord(site)}
+      >
+        {site.attitude ? (
+          <Link1Icon
+            aria-description='Connected'
+            className='visible absolute text-green-400 group-hover:invisible'
+          />
+        ) : (
+          <LinkBreak1Icon
+            aria-description='Ignored'
+            className='visible absolute text-red-400 group-hover:invisible'
+          />
+        )}
+        <TrashIcon className='invisible absolute text-muted-foreground group-hover:visible' />
+      </Button>
     </div>
-    <div
-      className={
-        site.attitude ? 'text-primary-foreground' : 'text-muted-foreground underline decoration-red'
-      }
-    >
-      {new URL(site.origin).host}
-    </div>
+    {site.attitude ? (
+      <a
+        href={site.origin}
+        target='_blank'
+        rel='noreferrer'
+        className='text-primary-foreground decoration-green hover:underline'
+      >
+        <DisplayOriginURL url={new URL(site.origin)} />
+      </a>
+    ) : (
+      <span className='cursor-default text-muted-foreground line-through decoration-red'>
+        <DisplayOriginURL url={new URL(site.origin)} />
+      </span>
+    )}
   </div>
 );
