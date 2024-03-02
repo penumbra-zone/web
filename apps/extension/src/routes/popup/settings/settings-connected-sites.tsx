@@ -28,15 +28,14 @@ export const SettingsConnectedSites = () => {
     [sitesFromStorage],
   );
 
-  const [attitude, match] = useMemo(() => {
-    if (!sitesFromStorage) return [];
-    return [
-      Map.groupBy(sitesFromStorage, ({ attitude }) => attitude),
-      search ? Map.groupBy(sitesFromStorage, ({ origin }) => origin.includes(search)) : undefined,
-    ];
-  }, [sitesFromStorage, search]);
-
-  console.log({ attitude, match });
+  const filteredByAttitude = useMemo(
+    () =>
+      Map.groupBy(
+        (sitesFromStorage ?? []).filter(site => !search || site.origin.includes(search)),
+        ({ attitude }) => attitude,
+      ),
+    [sitesFromStorage, search],
+  );
 
   return (
     <FadeTransition>
@@ -58,14 +57,34 @@ export const SettingsConnectedSites = () => {
             />
           </div>
           <div className='flex flex-col gap-2'>
-            {attitude?.get(true)?.map(site => (
+            <div className='pt-4'>Connected sites:</div>
+            {filteredByAttitude.get(true)?.map(site => (
               <div key={site.origin} className='relative w-full'>
                 <div className='absolute inset-y-0 right-4 flex cursor-pointer items-center'>
-                  <Button variant='ghost' onClick={() => disconnectSite(site)}>
+                  <Button
+                    className='bg-transparent p-3'
+                    variant='destructive'
+                    onClick={() => disconnectSite(site)}
+                  >
                     <TrashIcon />
                   </Button>
                 </div>
                 <p>{site.origin}</p>
+              </div>
+            ))}
+            <div className='pt-4 text-muted-foreground'>Ignored sites:</div>
+            {filteredByAttitude.get(false)?.map(site => (
+              <div key={site.origin} className='relative w-full'>
+                <div className='absolute inset-y-0 right-4 flex cursor-pointer items-center'>
+                  <Button
+                    className='bg-transparent p-3'
+                    variant='secondary'
+                    onClick={() => disconnectSite(site)}
+                  >
+                    <TrashIcon />
+                  </Button>
+                </div>
+                <p className='text-muted-foreground'>{site.origin}</p>
               </div>
             ))}
           </div>
