@@ -11,10 +11,10 @@ import {
   TransactionPlannerRequest,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
+import { typeRegistry } from '@penumbra-zone/types/registry';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
-import { ibcClient, viewClient } from '../clients/grpc';
+import { ibcClient, viewClient } from '../clients';
 import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from './helpers';
 import { TransactionToast } from '@penumbra-zone/ui';
 

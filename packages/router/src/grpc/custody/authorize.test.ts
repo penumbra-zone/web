@@ -76,7 +76,7 @@ describe('Authorize request handler', () => {
       }),
     };
 
-    mockApproverCtx = vi.fn();
+    mockApproverCtx = vi.fn().mockImplementation(() => Promise.resolve(true));
 
     mockCtx = createHandlerContext({
       service: CustodyService,

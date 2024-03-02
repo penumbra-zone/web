@@ -1,4 +1,4 @@
-import { viewClient } from '../clients/grpc';
+import { viewClient } from '../clients';
 import { streamToPromise } from './stream';
 import { getTransactionClassificationLabel, uint8ArrayToHex } from '@penumbra-zone/types';
 

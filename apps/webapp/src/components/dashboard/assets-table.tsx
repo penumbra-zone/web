@@ -1,13 +1,13 @@
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { throwIfExtNotInstalled } from '../../utils/is-connected';
 import { AddressIcon } from '@penumbra-zone/ui/components/ui/address-icon';
 import { AddressComponent } from '@penumbra-zone/ui/components/ui/address-component';
 import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
 import { Table, TableBody, TableCell, TableRow } from '@penumbra-zone/ui';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 
 export const AssetsLoader: LoaderFunction = async (): Promise<BalancesByAccount[]> => {
-  throwIfExtNotInstalled();
+  await throwIfPraxNotConnectedTimeout();
   return await getBalancesByAccount();
 };
 

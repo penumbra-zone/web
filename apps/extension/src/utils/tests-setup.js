@@ -19,6 +19,18 @@ global.chrome = {
       remove: vi.fn(),
     },
   },
+  runtime: {
+    connect: vi.fn().mockReturnValue({
+      onMessage: {
+        addListener: vi.fn(),
+      },
+      onDisconnect: {
+        addListener: vi.fn(),
+      },
+    }),
+  },
 };
 
-global.DEFAULT_GRPC_URL = 'https://example.com/';
+global.DEFAULT_GRPC_URL = 'https://rpc.example.com/';
+global.MINIFRONT_URL = 'https://app.example.com/';
+global.PRAX = 'thisisnotarealextensionid';

@@ -6,14 +6,14 @@ import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { getBalances } from '../../../fetchers/balances';
 import { useMemo } from 'react';
 import { penumbraAddrValidation } from '../helpers';
-import { throwIfExtNotInstalled } from '../../../utils/is-connected';
+import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 import InputToken from '../../shared/input-token';
 import { useRefreshFee } from './use-refresh-fee';
 import { GasFee } from '../../shared/gas-fee';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<BalancesResponse[]> => {
-  throwIfExtNotInstalled();
+  await throwIfPraxNotConnectedTimeout();
   const assetBalances = await getBalances();
 
   if (assetBalances[0]) {

@@ -8,7 +8,7 @@ import { ShareGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { networkSelector } from '../../../state/network';
-import { internalSwClient } from '@penumbra-zone/router';
+import { ServicesMessage } from '@penumbra-zone/types/src/services';
 import '@penumbra-zone/polyfills/Promise.withResolvers';
 import { TrashIcon } from '@radix-ui/react-icons';
 
@@ -46,13 +46,14 @@ export const SettingsRPC = () => {
         setNewChainId(appParameters.chainId);
         await setGRPCEndpoint(rpcInput);
         // If the chain id has changed, our cache is invalid
-        if (appParameters.chainId !== currentChainId) void internalSwClient.clearCache();
+        if (appParameters.chainId !== currentChainId)
+          void chrome.runtime.sendMessage(ServicesMessage.ClearCache);
         // Visually confirm success for a few seconds
         await countdown(5);
         // Reload the extension to ensure all scopes holding the old config are killed
         chrome.runtime.reload();
       } catch (e: unknown) {
-        console.error('Could not use RPC endpoint', e);
+        console.warn('Could not use new RPC endpoint', e);
         setRpcError(String(e) || 'Unknown RPC failure');
       }
     })();

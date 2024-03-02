@@ -11,9 +11,10 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@penumbra-zone/client": "workspace:*",
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
-    "@penumbra-zone/transport": "workspace:*",
+    "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/ui": "workspace:*",
     "@radix-ui/react-icons": "^1.3.0",
     "@tanstack/react-query": "^5.24.1",

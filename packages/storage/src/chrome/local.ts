@@ -11,6 +11,7 @@ export interface LocalStorageState {
   grpcEndpoint: string;
   passwordKeyPrint: KeyPrintJson | undefined;
   fullSyncHeight: number;
+  connectedSites: Record<string, boolean>;
 }
 
 // this will be injected by webpack build, but we don't have access to the
@@ -18,12 +19,14 @@ export interface LocalStorageState {
 // package. we should probably move the localExtStorage declaration into the
 // extension app.
 declare const DEFAULT_GRPC_URL: string;
+declare const MINIFRONT_URL: string;
 
 export const localDefaults: LocalStorageState = {
   wallets: [],
   grpcEndpoint: DEFAULT_GRPC_URL,
   passwordKeyPrint: undefined,
   fullSyncHeight: 0,
+  connectedSites: { [MINIFRONT_URL]: true },
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.

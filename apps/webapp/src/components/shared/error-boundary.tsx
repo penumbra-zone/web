@@ -1,11 +1,11 @@
 import { useRouteError } from 'react-router-dom';
-import { ExtensionNotInstalledError } from '../../utils/extension-not-installed-error';
-import { ExtensionNotInstalled } from '../extension-not-installed';
+import { PraxNotConnectedError } from '@penumbra-zone/client/prax';
+import { ExtensionNotConnected } from '../extension-not-connected';
 
 export const ErrorBoundary = () => {
   const error = useRouteError();
 
-  if (error instanceof ExtensionNotInstalledError) return <ExtensionNotInstalled />;
+  if (error instanceof PraxNotConnectedError) return <ExtensionNotConnected />;
 
   console.error(error);
 

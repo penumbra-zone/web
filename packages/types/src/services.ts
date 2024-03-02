@@ -14,5 +14,8 @@ export interface ServicesInterface {
   readonly querier: RootQuerierInterface;
   initialize(): Promise<void>;
   getWalletServices(): Promise<WalletServices>;
-  clearCache(): Promise<void>;
+}
+
+export enum ServicesMessage {
+  ClearCache = 'ClearCache',
 }

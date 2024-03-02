@@ -1,4 +1,4 @@
-import { viewClient } from '../clients/grpc';
+import { viewClient } from '../clients';
 
 export const getChainId = async (): Promise<string> => {
   const { parameters } = await viewClient.appParameters({});

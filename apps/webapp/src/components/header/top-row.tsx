@@ -62,7 +62,7 @@ export const TopRow = () => {
           </TooltipProvider>
         </div>
 
-        {result.isInstalled ? (
+        {'chainId' in result ? (
           <div className='order-2 flex grow justify-center md:order-none'>
             <NetworksPopover name={result.chainId} />
           </div>

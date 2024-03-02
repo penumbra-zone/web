@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { rootRouter } from './components/root-router';
 
-export const Main = () => {
+const Main = () => {
   const [queryClient] = useState(() => new QueryClient());
 
   return (

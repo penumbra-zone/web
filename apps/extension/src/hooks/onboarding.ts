@@ -3,7 +3,7 @@ import { passwordSelector } from '../state/password';
 import { generateSelector } from '../state/seed-phrase/generate';
 import { importSelector } from '../state/seed-phrase/import';
 import { walletsSelector } from '../state/wallets';
-import { internalSwClient } from '@penumbra-zone/router';
+import { ServicesMessage } from '@penumbra-zone/types/src/services';
 
 // Saves hashed password, uses that hash to encrypt the seed phrase
 // and then saves that to session + local storage
@@ -19,6 +19,6 @@ export const useOnboardingSave = () => {
     await setPassword(plaintextPassword);
 
     await addWallet({ label: 'Wallet #1', seedPhrase });
-    void internalSwClient.clearCache();
+    void chrome.runtime.sendMessage(ServicesMessage.ClearCache);
   };
 };

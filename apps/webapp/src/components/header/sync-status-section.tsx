@@ -1,6 +1,6 @@
 import { useStream } from '../../fetchers/stream';
 import { useMemo } from 'react';
-import { viewClient } from '../../clients/grpc';
+import { viewClient } from '../../clients';
 import { CondensedBlockSyncStatus } from '@penumbra-zone/ui';
 
 export const SyncStatusSection = () => {

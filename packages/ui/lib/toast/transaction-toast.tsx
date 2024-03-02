@@ -141,6 +141,7 @@ export class TransactionToast {
    * error, which will be stringified in the toast.
    */
   onFailure(error: unknown): void {
+    console.error(error);
     this.toast
       .error()
       .message(`${this.label} transaction failed`)

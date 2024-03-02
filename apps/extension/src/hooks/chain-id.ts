@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { viewClient } from '../clients/extension-page';
+import { viewClient } from '../clients';
 
 export const getChainId = async (): Promise<string> => {
   const { parameters } = await viewClient.appParameters({});
