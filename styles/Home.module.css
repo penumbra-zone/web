@@ -93,7 +93,7 @@
 
 .header {
   width: 100%;
-  background-color: var(--steal-blue); /* Grey with 50% opacity */
+  background-color: var(--purple-accent-700); /* Grey with 50% opacity */
   /* position: fixed; /* Optional: makes the header stay at the top on scroll */
   top: 0;
   z-index: 10; 
