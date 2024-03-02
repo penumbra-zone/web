@@ -25,12 +25,18 @@ export const getBondingStateLabel = (validatorInfo: ValidatorInfo): string =>
 
 const toSum = (prev: number, curr: number) => prev + curr;
 
+/**
+ * Given A) a `ValueView` with a delegation token, and B) a `ValidatorInfo`,
+ * returns a boolean indicating whether the delegation token is for the given
+ * validator. Useful for using with `Array.prototype.find`/`.filter` to identify
+ * a value of delegation tokens for a given validator
+ */
 export const isDelegationTokenForValidator = (
   delegation: ValueView,
   validatorInfo: ValidatorInfo,
-) => {
+): boolean => {
   const delegationMatch = assetPatterns.delegationToken.exec(getDisplayDenomFromView(delegation));
-  if (!delegationMatch) return;
+  if (!delegationMatch) return false;
 
   const matchGroups = delegationMatch.groups as unknown as DelegationCaptureGroups;
 
