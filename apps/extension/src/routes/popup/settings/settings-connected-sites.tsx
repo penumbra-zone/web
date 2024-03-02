@@ -1,4 +1,4 @@
-import { MagnifyingGlassIcon, TrashIcon } from '@radix-ui/react-icons';
+import { Link1Icon, LinkBreak1Icon, MagnifyingGlassIcon, TrashIcon } from '@radix-ui/react-icons';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, FadeTransition, Input } from '@penumbra-zone/ui';
 import { LinkGradientIcon } from '../../../icons';
@@ -18,7 +18,7 @@ export const SettingsConnectedSites = () => {
   );
   useEffect(() => void loadSitesFromStorage(), [loadSitesFromStorage]);
 
-  const disconnectSite = useCallback(
+  const discardSiteRecord = useCallback(
     (site: OriginRecord) => {
       if (!sitesFromStorage) return;
       const sitesWithoutRecord = sitesFromStorage.filter(({ origin }) => origin !== site.origin);
@@ -57,39 +57,57 @@ export const SettingsConnectedSites = () => {
             />
           </div>
           <div className='flex flex-col gap-2'>
-            <div className='pt-4'>Connected sites:</div>
-            {filteredByAttitude.get(true)?.map(site => (
-              <div key={site.origin} className='relative w-full'>
-                <div className='absolute inset-y-0 right-4 flex cursor-pointer items-center'>
-                  <Button
-                    className='bg-transparent p-3'
-                    variant='destructive'
-                    onClick={() => disconnectSite(site)}
-                  >
-                    <TrashIcon />
-                  </Button>
-                </div>
-                <p>{site.origin}</p>
-              </div>
-            ))}
-            <div className='pt-4 text-muted-foreground'>Ignored sites:</div>
-            {filteredByAttitude.get(false)?.map(site => (
-              <div key={site.origin} className='relative w-full'>
-                <div className='absolute inset-y-0 right-4 flex cursor-pointer items-center'>
-                  <Button
-                    className='bg-transparent p-3'
-                    variant='secondary'
-                    onClick={() => disconnectSite(site)}
-                  >
-                    <TrashIcon />
-                  </Button>
-                </div>
-                <p className='text-muted-foreground'>{site.origin}</p>
-              </div>
-            ))}
+            {filteredByAttitude
+              .get(true)
+              ?.map(site => (
+                <SiteRecord key={site.origin} site={site} discardSiteRecord={discardSiteRecord} />
+              ))}
+            {filteredByAttitude
+              .get(false)
+              ?.map(site => (
+                <SiteRecord key={site.origin} site={site} discardSiteRecord={discardSiteRecord} />
+              ))}
           </div>
         </div>
       </div>
     </FadeTransition>
   );
 };
+
+const ApprovedConnectionIcon = ({ onClick }: { onClick: () => void }) => (
+  <Button className='group bg-transparent p-3' onClick={onClick}>
+    <Link1Icon className='visible absolute inset-0 text-green-400 group-hover:invisible' />
+    <TrashIcon className='invisible absolute inset-0 text-muted-foreground group-hover:visible' />
+  </Button>
+);
+const DeniedConnectionIcon = ({ onClick }: { onClick: () => void }) => (
+  <Button className='group bg-transparent p-3' onClick={onClick}>
+    <LinkBreak1Icon className='visible absolute inset-0 text-red-400 group-hover:invisible' />
+    <TrashIcon className='invisible absolute inset-0 text-muted-foreground group-hover:visible' />
+  </Button>
+);
+
+const SiteRecord = ({
+  site,
+  discardSiteRecord,
+}: {
+  site: OriginRecord;
+  discardSiteRecord: (site: OriginRecord) => void;
+}) => (
+  <div key={site.origin} className='relative w-full'>
+    <div className='absolute inset-y-0 right-4 flex cursor-pointer items-center'>
+      {site.attitude ? (
+        <ApprovedConnectionIcon onClick={() => discardSiteRecord(site)} />
+      ) : (
+        <DeniedConnectionIcon onClick={() => discardSiteRecord(site)} />
+      )}
+    </div>
+    <div
+      className={
+        site.attitude ? 'text-primary-foreground' : 'text-muted-foreground underline decoration-red'
+      }
+    >
+      {new URL(site.origin).host}
+    </div>
+  </div>
+);
