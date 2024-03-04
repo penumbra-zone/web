@@ -9,7 +9,7 @@ export enum LocalStorageVersion {
 export interface LocalStorageState {
   wallets: WalletJson[];
   grpcEndpoint: string;
-  passwordKeyPrint: KeyPrintJson | undefined;
+  passwordKeyPrint: KeyPrintJson;
   fullSyncHeight: number;
   connectedSites: Record<string, boolean>;
 }
@@ -21,16 +21,13 @@ export interface LocalStorageState {
 declare const DEFAULT_GRPC_URL: string;
 declare const MINIFRONT_URL: string;
 
-export const localDefaults: LocalStorageState = {
-  wallets: [],
+export const localDefaults: Partial<LocalStorageState> = {
   grpcEndpoint: DEFAULT_GRPC_URL,
-  passwordKeyPrint: undefined,
-  fullSyncHeight: 0,
   connectedSites: { [MINIFRONT_URL]: true },
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.
-export const localExtStorage = new ExtensionStorage<LocalStorageState>(
+export const localExtStorage = new ExtensionStorage<Partial<LocalStorageState>>(
   chrome.storage.local,
   localDefaults,
   LocalStorageVersion.V1,
