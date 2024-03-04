@@ -23,16 +23,16 @@ const directGetPort =
 
     // straight-pipe connection, no conditions or transformations
     const directEntryHandler = async ({ requestId, message }: TransportMessage) => {
-      const transportResponse: TransportEvent = await entry(message)
-        .then(response =>
+      const transportResponse: TransportEvent = await entry(message).then(
+        response =>
           response instanceof ReadableStream
             ? { requestId, stream: response }
             : { requestId, message: response },
-        )
-        .catch(error => ({
+        error => ({
           requestId,
           error: errorToJson(ConnectError.from(error), jsonOptions),
-        }));
+        }),
+      );
       servicePort.postMessage(transportResponse);
     };
 
