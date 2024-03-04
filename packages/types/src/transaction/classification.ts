@@ -16,4 +16,6 @@ export type TransactionClassification =
   /** The transaction contains a `delegate` action. */
   | 'delegate'
   /** The transaction contains an `undelegate` action. */
-  | 'undelegate';
+  | 'undelegate'
+  /** The transaction contains an `undelegateClaim` action. */
+  | 'undelegateClaim';
