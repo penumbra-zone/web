@@ -5,7 +5,9 @@ use indexed_db_futures::{
     prelude::{IdbObjectStoreParameters, IdbOpenDbRequestLike, OpenDbRequest},
     IdbDatabase, IdbKeyPath, IdbQuerySource, IdbVersionChangeEvent,
 };
-use penumbra_asset::asset::{Id, Metadata};
+use penumbra_asset::asset::{self, Id, Metadata};
+use penumbra_keys::keys::AddressIndex;
+use penumbra_num::Amount;
 use penumbra_proto::{
     crypto::tct::v1::StateCommitment,
     view::v1::{NotesRequest, SwapRecord},
@@ -16,7 +18,7 @@ use penumbra_shielded_pool::{note, Note};
 use serde::{Deserialize, Serialize};
 use web_sys::IdbTransactionMode::Readwrite;
 
-use crate::error::{WasmError, WasmResult};
+use crate::error::WasmResult;
 use crate::note_record::SpendableNoteRecord;
 use wasm_bindgen::JsValue;
 
@@ -104,39 +106,48 @@ impl IndexedDBStorage {
             .transaction_on_one(&self.constants.tables.spendable_notes)?;
         let store = idb_tx.object_store(&self.constants.tables.spendable_notes)?;
 
-        let raw_values = store.get_all()?.await?;
-        let parsed_notes = raw_values
-            .into_iter()
-            .filter_map(|js_value| self.parse_note(js_value, &request).ok())
-            .collect();
+        let asset_id: Option<asset::Id> = request.asset_id.map(TryInto::try_into).transpose()?;
+        let address_index: Option<AddressIndex> =
+            request.address_index.map(TryInto::try_into).transpose()?;
+        let amount_to_spend: Option<Amount> =
+            request.amount_to_spend.map(TryInto::try_into).transpose()?;
 
-        Ok(parsed_notes)
-    }
-
-    fn parse_note(
-        &self,
-        js_value: JsValue,
-        request: &NotesRequest,
-    ) -> WasmResult<SpendableNoteRecord> {
-        let note: SpendableNoteRecord = serde_wasm_bindgen::from_value(js_value)?;
-
-        let asset_id_matches = match &request.asset_id {
-            Some(asset_id) => note.note.asset_id() == asset_id.clone().try_into()?,
-            None => true,
-        };
-
-        let address_index_matches = match &request.address_index {
-            Some(address_index) => note.address_index.eq(&address_index.clone().try_into()?),
-            None => true,
-        };
-
-        if asset_id_matches && address_index_matches && note.height_spent.is_none() {
-            Ok(note)
-        } else {
-            Err(WasmError::Anyhow(anyhow::anyhow!(
-                "Note does not match the request"
-            )))
+        if let (None, Some(_)) = (asset_id, amount_to_spend) {
+            return Err(
+                anyhow::anyhow!("specified amount_to_spend without asset_id filter").into(),
+            );
         }
+
+        let mut records = Vec::new();
+        let mut total = Amount::zero();
+
+        let raw_values = store.get_all()?.await?;
+        for raw_record in raw_values {
+            let record: SpendableNoteRecord = serde_wasm_bindgen::from_value(raw_record)?;
+
+            if !request.include_spent && record.height_spent.is_some() {
+                continue;
+            }
+
+            if Some(record.note.asset_id()) != asset_id {
+                continue;
+            }
+
+            if Some(record.address_index) != address_index {
+                continue;
+            }
+
+            total += record.note.amount();
+            records.push(record);
+
+            if let Some(amount_to_spend) = amount_to_spend {
+                if total >= amount_to_spend {
+                    break;
+                }
+            }
+        }
+
+        Ok(records)
     }
 
     pub async fn get_asset(&self, id: &Id) -> WasmResult<Option<Metadata>> {
