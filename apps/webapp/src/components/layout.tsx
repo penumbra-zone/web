@@ -8,7 +8,7 @@ import { ExtensionNotConnected } from './extension-not-connected';
 import { ExtensionNotInstalled } from './extension-not-installed';
 import { Footer } from './footer';
 import {
-  isPraxAvailable,
+  isPraxInstalled,
   isPraxConnected,
   isPraxConnectedTimeout,
 } from '@penumbra-zone/client/prax';
@@ -22,7 +22,7 @@ export type LayoutLoaderResult =
     };
 
 export const LayoutLoader: LoaderFunction = async (): Promise<LayoutLoaderResult> => {
-  const isInstalled = isPraxAvailable();
+  const isInstalled = isPraxInstalled();
   if (!isInstalled) return { isInstalled, isConnected: false };
   const isConnected = isPraxConnected() || (await isPraxConnectedTimeout(1000));
   if (!isConnected) return { isInstalled, isConnected };
