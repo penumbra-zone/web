@@ -24,7 +24,6 @@ chrome.runtime.onMessage.addListener(
     sender,
     respond: PraxResponder<Prax.RequestConnection>,
   ) => {
-    console.log('chrome runtime request listener');
     if (req !== Prax.RequestConnection) return false; // instruct chrome we will not respond
 
     void approveOrigin(sender).then(

@@ -51,7 +51,6 @@ requestPromise.promise.catch(() => connection.reject());
 
 // Called to request a connection to the extension.
 const postRequest = () => {
-  console.log('postRequest');
   window.addEventListener('message', requestResponseHandler);
   window.postMessage(requestMessage, window.origin);
   return requestPromise.promise;
@@ -60,7 +59,6 @@ const postRequest = () => {
 // declared outside of postRequest to prevent attaching multiple identical listeners
 const requestResponseHandler = (msg: MessageEvent<unknown>) => {
   if (msg.origin === window.origin && isPraxRequestResponseMessageEvent(msg)) {
-    console.log('requestResponseHandler');
     // @ts-expect-error - ts can't understand the injected string
     const attitude = msg.data[PRAX] as Prax.ApprovedConnection | Prax.DeniedConnection;
     if (attitude === Prax.ApprovedConnection) requestPromise.resolve();
