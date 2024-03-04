@@ -30,10 +30,13 @@ import { approveTransaction } from './approve-transaction';
 // all rpc implementations, local and proxy
 import { rpcImpls } from './impls';
 
-console.error('TODO: remove before merge');
-void localExtStorage.set('connectedSites', [
-  { origin: MINIFRONT_URL, attitude: true, date: Date.now() },
-]);
+// this helps test the ui by resetting state every reload
+console.error(
+  'TODO: remove before merge',
+  void localExtStorage.set('connectedSites', [
+    { origin: MINIFRONT_URL, attitude: true, date: Date.now() },
+  ]),
+);
 
 const services = new Services({
   idbVersion: IDB_VERSION,
