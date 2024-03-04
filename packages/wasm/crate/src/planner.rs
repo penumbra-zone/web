@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::str::FromStr;
 
 use crate::storage::IndexedDBStorage;
 use crate::utils;
@@ -14,8 +15,9 @@ use penumbra_dex::{
 };
 use penumbra_fee::{Fee, FeeTier, Gas, GasPrices};
 use penumbra_keys::keys::AddressIndex;
-use penumbra_keys::Address;
+use penumbra_keys::{Address, FullViewingKey};
 use penumbra_num::Amount;
+use penumbra_proto::core::app::v1::AppParameters;
 use penumbra_sct::params::SctParameters;
 use penumbra_shielded_pool::{fmd, OutputPlan, SpendPlan};
 use penumbra_stake::rate::RateData;
@@ -112,37 +114,42 @@ impl ActionList {
 pub async fn plan_transaction(
     idb_constants: JsValue,
     request: JsValue,
-    // TODO: use fvk to infer from source?
-    change_address: JsValue,
-    // all of these params should be removed
-    // TODO: read directly from IDB
-    fmd_params: JsValue,
-    // TODO: read directly from IDB
-    sct_params: JsValue,
-    // TODO: read directly from IDB
-    gas_prices: JsValue,
-    // TODO: read directly from IDB
-    chain_id: JsValue,
+    bech32_full_viewing_key: &str,
 ) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
     let request: TransactionPlannerRequest = serde_wasm_bindgen::from_value(request)?;
-    // TODO: should we take an FVK to derive this from the data in the request?
-    let change_address: Address = serde_wasm_bindgen::from_value(change_address)?;
 
-    // TODO: instead, all of this should be read directly out of IDB
-    let fmd_params: fmd::Parameters = serde_wasm_bindgen::from_value(fmd_params)?;
-    let sct_params: SctParameters = serde_wasm_bindgen::from_value(sct_params)?;
-    // TODO GasPrices is missing domain type impl, requiring this
-    //let gas_prices: GasPrices = serde_wasm_bindgen::from_value(gas_prices)?;
-    let gas_prices: GasPrices = {
-        let gas_prices: penumbra_proto::core::component::fee::v1::GasPrices =
-            serde_wasm_bindgen::from_value(gas_prices)?;
-        gas_prices.try_into()?
-    };
-    let chain_id: String = serde_wasm_bindgen::from_value(chain_id)?;
+    let fvk = FullViewingKey::from_str(bech32_full_viewing_key)?;
+    let (change_address, _) = fvk.incoming().payment_address(0u32.into());
 
     let storage = IndexedDBStorage::new(serde_wasm_bindgen::from_value(idb_constants)?).await?;
+
+    let fmd_params: fmd::Parameters = storage
+        .get_fmd_params()
+        .await?
+        .ok_or_else(|| anyhow!("FmdParameters not available"))?;
+
+    let app_parameters: AppParameters = storage
+        .get_app_params()
+        .await?
+        .ok_or_else(|| anyhow!("AppParameters not available"))?;
+    let sct_params: SctParameters = app_parameters
+        .sct_params
+        .ok_or_else(|| anyhow!("SctParameters not available"))?
+        .try_into()?;
+    let chain_id: String = app_parameters.chain_id;
+
+    let gas_prices: GasPrices = {
+        let gas_prices: penumbra_proto::core::component::fee::v1::GasPrices =
+            serde_wasm_bindgen::from_value(
+                storage
+                    .get_gas_prices()
+                    .await?
+                    .ok_or_else(|| anyhow!("GasPrices not available"))?,
+            )?;
+        gas_prices.try_into()?
+    };
 
     // Phase 1: process all of the user-supplied intents into complete action plans.
 

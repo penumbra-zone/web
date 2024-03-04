@@ -13,8 +13,10 @@ use penumbra_proto::{
     view::v1::{NotesRequest, SwapRecord},
     DomainType,
 };
+
+use penumbra_proto::core::app::v1::AppParameters;
 use penumbra_sct::Nullifier;
-use penumbra_shielded_pool::{note, Note};
+use penumbra_shielded_pool::{fmd, note, Note};
 use serde::{Deserialize, Serialize};
 use web_sys::IdbTransactionMode::Readwrite;
 
@@ -35,6 +37,9 @@ pub struct Tables {
     pub notes: String,
     pub spendable_notes: String,
     pub swaps: String,
+    pub fmd_parameters: String,
+    pub app_parameters: String,
+    pub gas_prices: String,
 }
 
 pub struct IndexedDBStorage {
@@ -257,5 +262,42 @@ impl IndexedDBStorage {
             .await?
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)
+    }
+    pub async fn get_fmd_params(&self) -> WasmResult<Option<fmd::Parameters>> {
+        let tx = self
+            .db
+            .transaction_on_one(&self.constants.tables.fmd_parameters)?;
+        let store = tx.object_store(&self.constants.tables.fmd_parameters)?;
+
+        Ok(store
+            .get_owned("params")?
+            .await?
+            .map(serde_wasm_bindgen::from_value)
+            .transpose()?)
+    }
+
+    pub async fn get_app_params(&self) -> WasmResult<Option<AppParameters>> {
+        let tx = self
+            .db
+            .transaction_on_one(&self.constants.tables.app_parameters)?;
+        let store = tx.object_store(&self.constants.tables.app_parameters)?;
+
+        Ok(store
+            .get_owned("params")?
+            .await?
+            .map(serde_wasm_bindgen::from_value)
+            .transpose()?)
+    }
+
+    pub async fn get_gas_prices(&self) -> WasmResult<Option<JsValue>> {
+        let tx = self
+            .db
+            .transaction_on_one(&self.constants.tables.gas_prices)?;
+        let store = tx.object_store(&self.constants.tables.gas_prices)?;
+
+        Ok(store.get_owned("gas_prices")?.await?)
+        // TODO GasPrices is missing domain type impl, requiring this
+        // .map(serde_wasm_bindgen::from_value)
+        // .transpose()?)
     }
 }

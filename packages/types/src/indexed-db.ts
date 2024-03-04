@@ -177,4 +177,7 @@ export const IDB_TABLES: Tables = {
   notes: 'NOTES',
   spendable_notes: 'SPENDABLE_NOTES',
   swaps: 'SWAPS',
+  fmd_parameters: 'FMD_PARAMETERS',
+  app_parameters: 'APP_PARAMETERS',
+  gas_prices: 'GAS_PRICES',
 };
