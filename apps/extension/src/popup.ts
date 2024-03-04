@@ -16,11 +16,13 @@ export const popup = async <M extends PopupMessage>(
 };
 
 const spawnExtensionPopup = async (path: string) => {
-  await throwIfAlreadyOpen(path);
-  return chrome.action
-    .setPopup({ popup: path })
-    .then(() => chrome.action.openPopup({}))
-    .finally(() => void chrome.action.setPopup({ popup: 'popup.html' }));
+  try {
+    await throwIfAlreadyOpen(path);
+    await chrome.action.setPopup({ popup: path });
+    await chrome.action.openPopup({});
+  } finally {
+    void chrome.action.setPopup({ popup: 'popup.html' });
+  }
 };
 
 const spawnDetachedPopup = async (path: string) => {
@@ -51,7 +53,9 @@ const throwIfAlreadyOpen = (path: string) =>
 const spawnPopup = async (pop: PopupType) => {
   const popUrl = new URL(chrome.runtime.getURL('popup.html'));
 
-  if (!(await sessionExtStorage.get('passwordKey'))) {
+  const loggedIn = Boolean(await sessionExtStorage.get('passwordKey'));
+
+  if (!loggedIn) {
     popUrl.hash = PopupPath.LOGIN;
     void spawnExtensionPopup(popUrl.href);
     throw Error('User must login to extension');
