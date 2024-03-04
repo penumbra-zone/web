@@ -1,7 +1,7 @@
 import { JsonValue } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
-import { OriginRecord, localExtStorage } from '@penumbra-zone/storage';
+import { localExtStorage } from '@penumbra-zone/storage';
 import { OriginApproval, PopupType } from './message/popup';
 import { popup } from './popup';
 import Map from '@penumbra-zone/polyfills/Map.groupBy';
@@ -45,14 +45,15 @@ export const approveOrigin = async ({
   if ('error' in res)
     throw errorFromJson(res.error as JsonValue, undefined, ConnectError.from(res));
 
-  const createRecord: OriginRecord = {
-    ...res.data,
-    date: Date.now(),
-  };
-
   // TODO: is there a race condition here?
   // if something has written after our initial read, we'll clobber them
-  void localExtStorage.set('connectedSites', [createRecord, ...irrelevant]);
+  void localExtStorage.set('connectedSites', [
+    {
+      ...res.data,
+      date: Date.now(),
+    },
+    ...irrelevant,
+  ]);
 
-  return Boolean(createRecord.attitude);
+  return Boolean(res.data.attitude);
 };
