@@ -13,6 +13,7 @@ import {
 } from '@penumbra-zone/types';
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
+import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
 
 export interface TxApprovalSlice {
   /**
@@ -25,7 +26,7 @@ export interface TxApprovalSlice {
   responder?: (m: InternalResponse<TxApproval>) => void;
   authorizeRequest?: Stringified<AuthorizeRequest>;
   transactionView?: Stringified<TransactionView>;
-  attitude?: boolean;
+  attitude?: UserAttitude;
 
   asSender?: Stringified<TransactionView>;
   asReceiver?: Stringified<TransactionView>;
@@ -37,7 +38,7 @@ export interface TxApprovalSlice {
     responder: (m: InternalResponse<TxApproval>) => void,
   ) => Promise<void>;
 
-  setAttitude: (attitude: boolean) => void;
+  setAttitude: (attitude: UserAttitude) => void;
 
   sendResponse: () => void;
 }

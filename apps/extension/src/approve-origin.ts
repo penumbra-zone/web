@@ -5,13 +5,15 @@ import { localExtStorage } from '@penumbra-zone/storage';
 import { OriginApproval, PopupType } from './message/popup';
 import { popup } from './popup';
 import Map from '@penumbra-zone/polyfills/Map.groupBy';
+import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
 
 export const originAlreadyApproved = async (url: string): Promise<boolean> => {
   // parses the origin and returns a consistent format
   const urlOrigin = new URL(url).origin;
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  const connectedSites = await localExtStorage.get('connectedSites');
-  return Boolean(connectedSites.find(site => site.origin === urlOrigin)?.attitude);
+  const knownSites = await localExtStorage.get('knownSites');
+  const existingRecord = knownSites.find(site => site.origin === urlOrigin);
+  return existingRecord?.attitude === UserAttitude.Approved;
 };
 
 export const approveOrigin = async ({
@@ -24,9 +26,9 @@ export const approveOrigin = async ({
 
   // parses the origin and returns a consistent format
   const urlOrigin = new URL(senderOrigin).origin;
-  const connectedSites = await localExtStorage.get('connectedSites');
+  const knownSites = await localExtStorage.get('knownSites');
 
-  const siteRecords = Map.groupBy(connectedSites, site => site.origin === urlOrigin);
+  const siteRecords = Map.groupBy(knownSites, site => site.origin === urlOrigin);
   const irrelevant = siteRecords.get(false) ?? []; // we need to handle these in order to write back to storage
   const [existingRecord, ...extraRecords] = siteRecords.get(true) ?? [];
 
@@ -47,7 +49,7 @@ export const approveOrigin = async ({
 
   // TODO: is there a race condition here?
   // if something has written after our initial read, we'll clobber them
-  void localExtStorage.set('connectedSites', [
+  void localExtStorage.set('knownSites', [
     {
       ...res.data,
       date: Date.now(),
@@ -55,5 +57,5 @@ export const approveOrigin = async ({
     ...irrelevant,
   ]);
 
-  return Boolean(res.data.attitude);
+  return Boolean(res.data.attitude === UserAttitude.Approved);
 };

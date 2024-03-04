@@ -1,40 +1,30 @@
 import { Link1Icon, LinkBreak1Icon, MagnifyingGlassIcon, TrashIcon } from '@radix-ui/react-icons';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button, FadeTransition, Input } from '@penumbra-zone/ui';
 import { LinkGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
-import { OriginRecord, localExtStorage } from '@penumbra-zone/storage';
+import { OriginRecord } from '@penumbra-zone/storage';
 import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
-import Map from '@penumbra-zone/polyfills/Map.groupBy';
+import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
+import { useStore } from '../../../state';
+import { connectedSitesSelector } from '../../../state/connected-sites';
 
 export const SettingsConnectedSites = () => {
-  const [search, setSearch] = useState<string>();
+  const { approvedSites, deniedSites, ignoredSites, setFilter, discardKnownSite, loadKnownSites } =
+    useStore(connectedSitesSelector);
+  const [searchInput, setSearchInput] = useState<string>('');
 
-  const [sitesFromStorage, setSitesFromStorage] = useState<OriginRecord[]>();
+  useEffect(() => void loadKnownSites(), [loadKnownSites]);
+  useEffect(() => setFilter(searchInput), [searchInput, setFilter]);
 
-  const loadSitesFromStorage = useCallback(
-    async () => setSitesFromStorage(await localExtStorage.get('connectedSites')),
-    [],
-  );
-  useEffect(() => void loadSitesFromStorage(), [loadSitesFromStorage]);
-
-  const discardSiteRecord = useCallback(
+  const discard = useCallback(
     (site: OriginRecord) => {
-      if (!sitesFromStorage) return;
-      const sitesWithoutRecord = sitesFromStorage.filter(({ origin }) => origin !== site.origin);
-      void localExtStorage.set('connectedSites', sitesWithoutRecord);
-      setSitesFromStorage(sitesWithoutRecord);
+      void (async () => {
+        await discardKnownSite(site);
+        await loadKnownSites();
+      })();
     },
-    [sitesFromStorage],
-  );
-
-  const filteredByAttitude = useMemo(
-    () =>
-      Map.groupBy(
-        (sitesFromStorage ?? []).filter(site => !search || site.origin.includes(search)),
-        ({ attitude }) => attitude,
-      ),
-    [sitesFromStorage, search],
+    [discardKnownSite, loadKnownSites],
   );
 
   return (
@@ -51,24 +41,36 @@ export const SettingsConnectedSites = () => {
             </div>
             <Input
               className='pl-10'
-              value={search}
-              onChange={e => setSearch(e.target.value)}
+              value={searchInput}
+              onChange={e => setSearchInput(e.target.value)}
               placeholder='Search by origin...'
             />
           </div>
           <div className='flex flex-col gap-2'>
-            {filteredByAttitude
-              .get(true)
-              ?.map(site => (
-                <SiteRecord key={site.origin} site={site} discardSiteRecord={discardSiteRecord} />
-              ))
-              .toSpliced(0, 0, <div className='mt-2 text-muted-foreground'>Approved sites</div>)}
-            {filteredByAttitude
-              .get(false)
-              ?.map(site => (
-                <SiteRecord key={site.origin} site={site} discardSiteRecord={discardSiteRecord} />
-              ))
-              .toSpliced(0, 0, <div className='mt-2 text-muted-foreground'>Denied sites</div>)}
+            {approvedSites.length ? (
+              <>
+                <div className='mt-2 text-muted-foreground'>Approved sites</div>
+                {approvedSites.map(site => (
+                  <SiteRecord key={site.origin} site={site} discard={discard} />
+                ))}
+              </>
+            ) : null}
+            {deniedSites.length ? (
+              <>
+                <div className='mt-2 text-muted-foreground'>Denied sites</div>
+                {deniedSites.map(site => (
+                  <SiteRecord key={site.origin} site={site} discard={discard} />
+                ))}
+              </>
+            ) : null}
+            {ignoredSites.length ? (
+              <>
+                <div className='mt-2 text-muted-foreground'>Ignored sites</div>
+                {ignoredSites.map(site => (
+                  <SiteRecord key={site.origin} site={site} discard={discard} />
+                ))}
+              </>
+            ) : null}
           </div>
         </div>
       </div>
@@ -78,19 +80,19 @@ export const SettingsConnectedSites = () => {
 
 const SiteRecord = ({
   site,
-  discardSiteRecord,
+  discard,
 }: {
   site: OriginRecord;
-  discardSiteRecord: (site: OriginRecord) => void;
+  discard: (d: OriginRecord) => void;
 }) => (
   <div key={site.origin} className='relative my-1 w-full'>
     <div className='absolute inset-y-0 right-0 flex items-center'>
       <Button
         aria-description='Remove'
         className='group bg-transparent p-3'
-        onClick={() => discardSiteRecord(site)}
+        onClick={() => discard(site)}
       >
-        {site.attitude ? (
+        {site.attitude === UserAttitude.Approved ? (
           <Link1Icon
             aria-description='Connected'
             className='visible absolute text-green-400 group-hover:invisible'
@@ -104,7 +106,7 @@ const SiteRecord = ({
         <TrashIcon className='invisible absolute text-muted-foreground group-hover:visible' />
       </Button>
     </div>
-    {site.attitude ? (
+    {site.attitude === UserAttitude.Approved ? (
       <a
         href={site.origin}
         target='_blank'

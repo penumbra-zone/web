@@ -1,6 +1,7 @@
 import { ExtensionStorage } from './base';
 import { KeyPrintJson } from '@penumbra-zone/crypto-web';
 import { WalletJson } from '@penumbra-zone/types';
+import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
 
 export enum LocalStorageVersion {
   V1 = 'V1',
@@ -8,7 +9,7 @@ export enum LocalStorageVersion {
 
 export interface OriginRecord {
   origin: string;
-  attitude: boolean;
+  attitude: UserAttitude;
   date: number;
 }
 
@@ -17,7 +18,7 @@ export interface LocalStorageState {
   grpcEndpoint: string;
   passwordKeyPrint?: KeyPrintJson;
   fullSyncHeight: number;
-  connectedSites: OriginRecord[];
+  knownSites: OriginRecord[];
 }
 
 // this will be injected by webpack build, but we don't have access to the
@@ -31,7 +32,7 @@ export const localDefaults: LocalStorageState = {
   wallets: [],
   grpcEndpoint: DEFAULT_GRPC_URL,
   fullSyncHeight: 0,
-  connectedSites: [{ origin: MINIFRONT_URL, attitude: true, date: Date.now() }],
+  knownSites: [{ origin: MINIFRONT_URL, attitude: UserAttitude.Approved, date: Date.now() }],
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.

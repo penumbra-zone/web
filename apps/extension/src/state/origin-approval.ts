@@ -3,26 +3,27 @@ import { PopupType, OriginApproval } from '../message/popup';
 import { AllSlices, SliceCreator } from '.';
 import { InternalRequest, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
+import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
 
 export interface OriginApprovalSlice {
   responder?: (m: InternalResponse<OriginApproval>) => void;
   favIconUrl?: string;
   title?: string;
   requestOrigin?: string;
-  attitude?: boolean;
+  attitude?: UserAttitude;
 
   acceptRequest: (
     req: InternalRequest<OriginApproval>,
     responder: (m: InternalResponse<OriginApproval>) => void,
   ) => void;
 
-  setAttitude: (attitute: boolean) => void;
+  setAttitude: (attitute: UserAttitude) => void;
 
   sendResponse: () => void;
 }
 
 export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> => (set, get) => ({
-  setAttitude: (attitude: boolean) => {
+  setAttitude: (attitude: UserAttitude) => {
     set(state => {
       state.originApproval.attitude = attitude;
     });

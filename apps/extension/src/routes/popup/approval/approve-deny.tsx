@@ -5,10 +5,12 @@ import { useCountdown } from 'usehooks-ts';
 export const ApproveDeny = ({
   approve,
   deny,
+  ignore,
   wait = 0,
 }: {
   approve: () => void;
   deny: () => void;
+  ignore?: () => void;
   wait?: number;
 }) => {
   const [count, { startCountdown }] = useCountdown({ countStart: wait });
@@ -19,9 +21,20 @@ export const ApproveDeny = ({
       <Button size='lg' variant='default' onClick={approve} disabled={!!count}>
         Approve {count !== 0 && `(${count})`}
       </Button>
-      <Button size='lg' variant='destructive' onClick={deny}>
-        Deny
-      </Button>
+      {!ignore ? (
+        <Button size='lg' variant='destructive' onClick={deny}>
+          Deny
+        </Button>
+      ) : (
+        <div>
+          <Button size='lg' variant='destructive' onClick={deny}>
+            Deny
+          </Button>
+          <Button size='lg' variant='destructive' onClick={ignore}>
+            Ignore
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

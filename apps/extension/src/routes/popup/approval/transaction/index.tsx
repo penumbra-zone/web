@@ -7,6 +7,7 @@ import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumb
 import { useTransactionViewSwitcher } from './use-transaction-view-switcher';
 import { ViewTabs } from './view-tabs';
 import { ApproveDeny } from '../approve-deny';
+import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
 
 export const TransactionApproval = () => {
   const {
@@ -23,13 +24,13 @@ export const TransactionApproval = () => {
   if (!authorizeRequest.plan || !selectedTransactionView) return null;
 
   const approve = () => {
-    setAttitude(true);
+    setAttitude(UserAttitude.Approved);
     sendResponse();
     window.close();
   };
 
   const deny = () => {
-    setAttitude(false);
+    setAttitude(UserAttitude.Denied);
     sendResponse();
     window.close();
   };
