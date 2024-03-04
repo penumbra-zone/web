@@ -8,8 +8,6 @@
  * - session manager for rpc entry
  */
 
-// import './auto-login';
-
 // side-effectful import attaches transport init listeners
 import './listeners';
 
