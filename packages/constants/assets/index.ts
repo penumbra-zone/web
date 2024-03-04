@@ -9,7 +9,7 @@ export const localAssets: Metadata[] = LocalAssetRegistry.map(a =>
 export const STAKING_TOKEN = 'penumbra';
 export const STAKING_TOKEN_METADATA = localAssets.find(
   metadata => metadata.display === STAKING_TOKEN,
-);
+)!;
 
 export interface AssetPattens {
   lpNft: RegExp;
