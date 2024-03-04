@@ -29,9 +29,7 @@ export const StakingActions = ({
    */
   unstakedTokens?: ValueView;
 }) => {
-  const handleClickUndelegate = () => alert('Not yet implemented; coming soon!');
-
-  const { action, amount, onSubmit, onClickActionButton, onClose, setAmount } =
+  const { action, amount, onClickActionButton, delegate, undelegate, onClose, setAmount } =
     useStore(stakingSelector);
 
   const validator = getValidator(validatorInfo);
@@ -44,6 +42,11 @@ export const StakingActions = ({
     () => !!joinLoHiAmount(getAmount(delegationTokens)),
     [delegationTokens],
   );
+
+  const handleSubmit = () => {
+    if (action === 'delegate') void delegate();
+    else void undelegate();
+  };
 
   return (
     <>
@@ -60,7 +63,7 @@ export const StakingActions = ({
             variant='secondary'
             className='px-4'
             disabled={!canUndelegate}
-            onClick={handleClickUndelegate}
+            onClick={() => onClickActionButton('undelegate', validatorInfo)}
           >
             Undelegate
           </Button>
@@ -75,7 +78,7 @@ export const StakingActions = ({
         unstakedTokens={unstakedTokens}
         onChangeAmount={setAmount}
         onClose={onClose}
-        onSubmit={onSubmit}
+        onSubmit={handleSubmit}
       />
     </>
   );

@@ -64,6 +64,10 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
     planner.delegate(delegation);
   }
 
+  for (const undelegation of req.undelegations) {
+    planner.undelegate(undelegation);
+  }
+
   const source = req.source ?? new AddressIndex({ account: 0 });
 
   // If there are any balances left over, refund back to source. Default to account 0.

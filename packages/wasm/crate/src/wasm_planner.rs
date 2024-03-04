@@ -226,6 +226,17 @@ impl WasmPlanner {
         Ok(())
     }
 
+    /// Add an undelegation to this transaction.
+    pub fn undelegate(&mut self, delegation_amount: JsValue, rate_data: JsValue) -> WasmResult<()> {
+        let delegation_amount_proto: Amount = serde_wasm_bindgen::from_value(delegation_amount)?;
+        let rate_data_proto: RateData = serde_wasm_bindgen::from_value(rate_data)?;
+        self.planner.undelegate(
+            delegation_amount_proto.try_into()?,
+            rate_data_proto.try_into()?,
+        );
+        Ok(())
+    }
+
     /// Builds transaction plan.
     /// Refund address provided in the case there is extra balances to be returned
     //  If source present, only spends funds from the given account.
