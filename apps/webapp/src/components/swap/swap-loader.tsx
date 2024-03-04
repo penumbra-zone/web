@@ -1,14 +1,14 @@
 import { LoaderFunction } from 'react-router-dom';
 import { getBalances } from '../../fetchers/balances';
 import { useStore } from '../../state';
-import { throwIfExtNotInstalled } from '../../utils/is-connected';
+import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 import {
   BalancesResponse,
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { fetchUnclaimedSwaps } from '../../fetchers/unclaimed-swaps';
-import { viewClient } from '../../clients/grpc';
+import { viewClient } from '../../clients';
 import {
   getDisplayDenomFromView,
   getSwapAsset1,
@@ -73,7 +73,7 @@ export const unclaimedSwapsWithMetadata = async (): Promise<UnclaimedSwapsWithMe
 };
 
 export const SwapLoader: LoaderFunction = async (): Promise<SwapLoaderResponse> => {
-  throwIfExtNotInstalled();
+  await throwIfPraxNotConnectedTimeout();
 
   const [assetBalances, unclaimedSwaps] = await Promise.all([
     getAndSetDefaultAssetBalances(),

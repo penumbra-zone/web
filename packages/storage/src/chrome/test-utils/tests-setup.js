@@ -22,3 +22,4 @@ globalThis.chrome = {
 };
 
 globalThis.DEFAULT_GRPC_URL = 'https://rpc.example.com/';
+globalThis.MINIFRONT_URL = 'https://app.example.com/';

@@ -247,7 +247,7 @@ export class IndexedDb implements IndexedDbInterface {
     // chain id shouldn't change
     if (app.chainId !== this.chainId) {
       this.db.close();
-      throw new Error(`Mismatched chainId: idb ${this.chainId} != new ${app.chainId}`);
+      throw new Error(`Mismatched chainId: idb ${this.chainId} but new ${app.chainId}`);
     }
     await this.u.update({
       table: 'APP_PARAMETERS',

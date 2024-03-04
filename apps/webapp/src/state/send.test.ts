@@ -9,7 +9,7 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { viewClient } from '../clients/grpc';
+import { viewClient } from '../clients';
 import {
   AddressByIndexResponse,
   BalancesResponse,

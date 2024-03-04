@@ -26,16 +26,20 @@ const definitions = {
 const __dirname = new URL('.', import.meta.url).pathname;
 const srcDir = path.join(__dirname, 'src');
 
+const entryDir = path.join(srcDir, 'entry');
+const injectDir = path.join(srcDir, 'content-scripts');
+
 export default (env, argv) => {
   // types declared in prax.d.ts
 
   return {
     entry: {
-      offscreen: path.join(srcDir, 'offscreen.ts'),
-      page: path.join(srcDir, 'page.tsx'),
-      popup: path.join(srcDir, 'popup.tsx'),
-      'injected-connection-manager': path.join(srcDir, 'injected-connection-manager.ts'),
-      'injected-penumbra-global': path.join(srcDir, 'injected-penumbra-global.ts'),
+      'injected-connection-port': path.join(injectDir, 'injected-connection-port.ts'),
+      'injected-penumbra-global': path.join(injectDir, 'injected-penumbra-global.ts'),
+      'injected-request-listener': path.join(injectDir, 'injected-request-listener.ts'),
+      'offscreen-handler': path.join(entryDir, 'offscreen-handler.ts'),
+      'page-root': path.join(entryDir, 'page-root.tsx'),
+      'popup-root': path.join(entryDir, 'popup-root.tsx'),
       'service-worker': path.join(srcDir, 'service-worker.ts'),
       'wasm-build-action': path.join(srcDir, 'wasm-build-action.ts'),
     },
@@ -47,8 +51,9 @@ export default (env, argv) => {
       splitChunks: {
         chunks: chunk =>
           ![
-            'injected-connection-manager',
+            'injected-connection-port',
             'injected-penumbra-global',
+            'injected-request-listner',
             'service-worker',
             'wasm-build-action',
           ].includes(chunk.name),
@@ -115,20 +120,19 @@ export default (env, argv) => {
         title: 'Penumbra Wallet',
         template: 'react-root.html',
         filename: 'page.html',
-        chunks: ['page'],
+        chunks: ['page-root'],
       }),
       new HtmlWebpackPlugin({
         title: 'Penumbra Wallet',
         template: 'react-root.html',
         rootId: 'popup-root',
         filename: 'popup.html',
-        chunks: ['popup'],
+        chunks: ['popup-root'],
       }),
       new HtmlWebpackPlugin({
-        favicon: 'public/icon.png',
         title: 'Penumbra Offscreen',
         filename: 'offscreen.html',
-        chunks: ['offscreen'],
+        chunks: ['offscreen-handler'],
       }),
     ],
     experiments: {

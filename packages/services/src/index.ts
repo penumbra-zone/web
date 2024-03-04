@@ -1,7 +1,12 @@
 import { BlockProcessor, RootQuerier } from '@penumbra-zone/query';
 import { IndexedDb, syncLastBlockWithLocal } from '@penumbra-zone/storage';
 import { ViewServer } from '@penumbra-zone/wasm';
-import { ServicesInterface, WalletServices } from '@penumbra-zone/types/src/services';
+import {
+  ServicesInterface,
+  ServicesMessage,
+  WalletServices,
+} from '@penumbra-zone/types/src/services';
+import type { JsonValue } from '@bufbuild/protobuf';
 
 export interface ServicesConfig {
   grpcEndpoint: string;
@@ -12,7 +17,20 @@ export interface ServicesConfig {
 export class Services implements ServicesInterface {
   private walletServicesPromise: Promise<WalletServices> | undefined;
 
-  constructor(private readonly config: ServicesConfig) {}
+  constructor(private readonly config: ServicesConfig) {
+    // Attach a listener to allow extension documents to control services.
+    // Note that you can't activate this handler from another part of the background script.
+    chrome.runtime.onMessage.addListener((req: JsonValue, sender, respond) => {
+      if (sender.origin !== origin || typeof req !== 'string') return false;
+      switch (req in ServicesMessage && (req as ServicesMessage)) {
+        case false:
+          return false;
+        case ServicesMessage.ClearCache:
+          void this.clearCache().then(() => respond());
+          return true;
+      }
+    });
+  }
 
   private _querier: RootQuerier | undefined;
 
@@ -76,7 +94,7 @@ export class Services implements ServicesInterface {
     return { viewServer, blockProcessor, indexedDb, querier: this.querier };
   }
 
-  async clearCache() {
+  private async clearCache() {
     const ws = await this.getWalletServices();
 
     ws.blockProcessor.stop('clearCache');

@@ -2,7 +2,7 @@ import {
   AddressIndex,
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { stakingClient, viewClient } from '../clients/grpc';
+import { stakeClient, viewClient } from '../clients';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   bech32IdentityKey,
@@ -47,7 +47,7 @@ const getDelegationTokenBaseDenom = (validatorInfo: ValidatorInfo) =>
  */
 export const getDelegationsForAccount = async function* (addressIndex: AddressIndex) {
   const assetBalances = await getBalances({ accountFilter: addressIndex });
-  const validatorInfoResponses = stakingClient.validatorInfo({ showInactive: false });
+  const validatorInfoResponses = stakeClient.validatorInfo({ showInactive: false });
 
   for await (const validatorInfoResponse of validatorInfoResponses) {
     const validatorInfo = getValidatorInfo(validatorInfoResponse);

@@ -1,4 +1,4 @@
-import { viewClient } from '../clients/grpc';
+import { viewClient } from '../clients';
 import { streamToPromise } from './stream';
 import { getUnclaimedSwaps } from '@penumbra-zone/types';
 import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';

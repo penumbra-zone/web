@@ -5,7 +5,7 @@ import { EduPanel } from '../shared/edu-panels/content';
 import { LoaderFunction, useLoaderData, useRouteError } from 'react-router-dom';
 import { getTxInfoByHash } from '../../fetchers/tx-info-by-hash';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { throwIfExtNotInstalled } from '../../utils/is-connected';
+import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 
 export interface TxDetailsLoaderResult {
   hash: string;
@@ -15,8 +15,7 @@ export interface TxDetailsLoaderResult {
 export const TxDetailsLoader: LoaderFunction = async ({
   params,
 }): Promise<TxDetailsLoaderResult> => {
-  throwIfExtNotInstalled();
-
+  await throwIfPraxNotConnectedTimeout();
   const hash = params['hash']!;
   const txInfo = await getTxInfoByHash(hash);
   return { txInfo, hash };

@@ -1,31 +1,40 @@
 import { LoaderFunction, Outlet, useLoaderData } from 'react-router-dom';
+import { getChainId } from '../fetchers/chain-id';
 import { HeadTag } from './metadata/head-tag';
 import { Header } from './header/header';
 import { Toaster } from '@penumbra-zone/ui';
 import '@penumbra-zone/ui/styles/globals.css';
-import { isExtensionInstalled } from '../utils/is-connected';
-import { getChainId } from '../fetchers/chain-id';
+import { ExtensionNotConnected } from './extension-not-connected';
 import { ExtensionNotInstalled } from './extension-not-installed';
 import { Footer } from './footer';
+import {
+  isPraxInstalled,
+  isPraxConnected,
+  isPraxConnectedTimeout,
+} from '@penumbra-zone/client/prax';
 
 export type LayoutLoaderResult =
-  | { isInstalled: false }
+  | { isInstalled: boolean; isConnected: boolean }
   | {
       isInstalled: true;
+      isConnected: true;
       chainId: string;
     };
 
 export const LayoutLoader: LoaderFunction = async (): Promise<LayoutLoaderResult> => {
-  const isInstalled = isExtensionInstalled();
-  if (!isInstalled) return { isInstalled };
+  const isInstalled = isPraxInstalled();
+  if (!isInstalled) return { isInstalled, isConnected: false };
+  const isConnected = isPraxConnected() || (await isPraxConnectedTimeout(1000));
+  if (!isConnected) return { isInstalled, isConnected };
   const chainId = await getChainId();
-  return { isInstalled, chainId };
+  return { isInstalled, isConnected, chainId };
 };
 
 export const Layout = () => {
-  const { isInstalled } = useLoaderData() as LayoutLoaderResult;
+  const { isInstalled, isConnected } = useLoaderData() as LayoutLoaderResult;
 
   if (!isInstalled) return <ExtensionNotInstalled />;
+  if (!isConnected) return <ExtensionNotConnected />;
 
   return (
     <>

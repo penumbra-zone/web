@@ -25,7 +25,7 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async function
   if (!id.equals(broadcastId)) {
     console.error('broadcast transaction id disagrees', id, broadcastId);
     throw new Error(
-      `broadcast transaction id disagrees: expected ${uint8ArrayToHex(id.inner)} != tendermint ${uint8ArrayToHex(broadcastId.inner)}`,
+      `broadcast transaction id disagrees: expected ${uint8ArrayToHex(id.inner)} but tendermint ${uint8ArrayToHex(broadcastId.inner)}`,
     );
   }
 

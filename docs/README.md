@@ -25,3 +25,4 @@
 - [Custody](custody.md)
 - [Web Workers](web-workers.md)
 - [Protobufs](protobufs.md)
+- [Extension services](extension-services.md)

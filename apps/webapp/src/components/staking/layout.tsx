@@ -1,12 +1,11 @@
 import { useEffect } from 'react';
 import { useStore } from '../../state';
 import { stakingSelector } from '../../state/staking';
-import { throwIfExtNotInstalled } from '../../utils/is-connected';
+import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 import { Account } from './account';
 
 export const StakingLoader = async () => {
-  throwIfExtNotInstalled();
-
+  await throwIfPraxNotConnectedTimeout();
   // Await to avoid screen flicker.
   await useStore.getState().staking.loadUnstakedTokensByAccount();
 

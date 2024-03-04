@@ -38,6 +38,8 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   const sess = ctx.values.get(extSessionCtx);
   const local = ctx.values.get(extLocalCtx);
 
+  if (!approveReq) throw new ConnectError('Approver not found', Code.Unavailable);
+
   const passwordKey = await sess.get('passwordKey');
   if (!passwordKey) throw new ConnectError('User must login to extension', Code.Unavailable);
 
@@ -62,7 +64,9 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
     denomMetadataByAssetId,
     fullViewingKey,
   );
-  await approveReq(req, transactionViewFromPlan);
+
+  if (!(await approveReq(req, transactionViewFromPlan)))
+    throw new ConnectError('Transaction was not approved', Code.PermissionDenied);
 
   const spendKey = generateSpendKey(decryptedSeedPhrase);
   const data = authorizePlan(spendKey, req.plan);

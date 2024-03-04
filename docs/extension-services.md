@@ -1,95 +1,123 @@
 # Extension Services
 
-The browser extension uses a custom transport for `@connectrpc/connect` to
-provide Protobuf-specified services via a DOM `MessagePort`. This provides many
-benefits including auto-generated clients and server stubs.
+Prax uses a custom transport for `@connectrpc/connect` to provide
+Protobuf-specified services via a DOM channel `MessagePort` and the Chrome
+extension runtime.
 
-You may use locally generated service types or simply install the [appropriate
+Interestingly, this transport should be generally applicable to any
+Protobuf-specified interface, including all auto-generated clients and server
+stubs from the buf registry.
+
+If you are interested in using the transport for
+your own project, the generic packages are available in
+`@penumbra-zone/transport-dom` and `@penumbra-zone/transport-chrome`.
+
+You may use locally generated service types, or simply install the [appropriate
 packages from the buf
-registry](https://buf.build/penumbra-zone/penumbra/sdks/main) for whatever
-language you're working in.
+registry](https://buf.build/penumbra-zone/penumbra/sdks/main). If you are using
+npm, buf's [npm-specific guide](https://buf.build/docs/bsr/generated-sdks/npm)
+is recommended reading.
 
-Bufbuild provides documentation explaining the buf registry; if you are using
-npm their [npm-specific guide](https://buf.build/docs/bsr/generated-sdks/npm) is
-recommended reading.
+## Clients
 
-## Third-party connection
+Each channel transport can be used as a page-level singleton servicing multiple
+clients. Developers using React queriers may be interested in
+`@connectrpc/connect-query`.
 
-The custom transport is available in `@penumbra-zone/transport`. The transport
-is generic for any `ServiceType`, and not Penumbra-specific. Each transport should
-be used only for one client at a time.
+Creation is fully synchronous from the constructor's perspective, and the client
+is immediately useable, but requests are delayed until init actually completes.
 
-<!--
-TODO: transport could imminently support multiple clients
--->
+### Connection to Prax
 
-For successful init of a channel transport, you must provide a function to
-acquire a private `MessagePort`. The Penumbra extension creates a global at
-`window.penumbra` containing access to our service connection manager. You could
-provide something like this to the transport:
+For developing a dapp that connects to Prax, you may use the convenience functions in `@penumbra-zone/client`.
 
-```javascript
-function getPenumbraPort(service: string): MessagePort {
-  const serviceInitPort = window.penumbra.services[service];
-  if (!serviceInitPort) throw Error(`No init port for service ${service}`);
-  const { port1, port2 } = new MessageChannel();
-  serviceInitPort.postMessage(
-    { type: 'INIT_CHANNEL_CLIENT', port: port2, service },
-    [port2],
-  );
-  return port1;
+```ts
+import { createPraxClient } from '@penumbra-zone/client';
+import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
+
+const viewClient = createPraxClient(ViewService);
+```
+
+### Connection to other Penumbra wallets
+
+Other providers may be available.
+
+```ts
+import { getAnyPenumbraPort } from '@penumbra-zone/client';
+import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
+
+const channelTransport = createChannelTransport({
+  getPort: getAnyPenumbraPort,
+  jsonOptions: { typeRegistry: createRegistry(ViewService) },
+});
+
+const viewClient = createPromiseClient(ViewService, channelTransport);
+```
+
+### The actual interface
+
+These are just convenience methods to this interface. A global record, on which
+arbitrary strings identify providers, with a simple interface to connect or
+request permission to connect.
+
+If you're developing a wallet, injection of a record here will allow you to
+expose your wallet to potentially interested web apps.
+
+<!-- keep in sync with @penumbra-zone/client/global.ts` -->
+
+```ts
+export const PenumbraSymbol = Symbol.for('penumbra');
+
+export interface PenumbraProvider {
+  readonly connect: () => Promise<MessagePort>;
+  readonly request: () => Promise<boolean | undefined>;
+  readonly isConnected: () => boolean | undefined;
+  readonly manifest: string;
+}
+
+declare global {
+  interface Window {
+    readonly [PenumbraSymbol]?: undefined | Readonly<Record<string, PenumbraProvider>>;
+  }
 }
 ```
 
-And pass it in like this:
-
-```javascript
-import { createPromiseClient } from '@connectrpc/connect';
-import { createChannelTransport } from '@penumbra-zone/transport';
-import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
-
-const viewClient = createPromiseClient(
-  ViewService,
-  createChannelTransport(ViewService, getPenumbraPort),
-);
-```
-
-Creation is fully synchronous and the client is immediately useable.
-
-If you are writing a React or other Tanstack app, it should be possible to use
-connectrpc's Query tooling, for Unary requests at least. Check out the docs for
-`TransportProvider` and `useTransport` in [the connect-query
-readme](https://github.com/connectrpc/connect-query-es/blob/49308a24ea15568828e50d91dd1c8bf808555983/README.md#transportprovider).
-
 ## Service Implementation
 
-Services can be implemented using the normal connectrpc server metaphors and
-types. This means you can target the `ServiceImpl<ServiceType>` of a
+Services in this repository should eventually be re-useable, but you can also
+implement your own services. Implementation is much like developing a web
+service, using the normal ConnectRPC server-side metaphors and types.
+
+This means your implementation should target the `ServiceImpl<ServiceType>` of a
 `ServiceType` imported from a `connectrpc_es` package from the buf registry.
+
 Full documentation is [available from
 connectrpc](https://connectrpc.com/docs/node/implementing-services) but a brief
 synopsis is provided here.
 
-## for example
+### Custody type example
 
 An implementation of our CustodyService, which only has three endpoints,
-could specify a type like:
+would specify a type like:
 
-- `ServiceImpl<typeof CustodyService>`
-- `Omit<ServiceImpl<typeof CustodyService>, 'exportFullViewingKey' | 'confirmAddress'>`
-- `Pick<ServiceImpl<typeof CustodyService>, 'authorize'>`
+- `ServiceImpl<typeof CustodyService>` for a complete implementation
+- `Omit<ServiceImpl<typeof CustodyService>, 'exportFullViewingKey' | 'confirmAddress'>` for an implementation that omits two endpoints
+- `Pick<ServiceImpl<typeof CustodyService>, 'authorize'>` for an implementation that only includes one endpoint
 
 Targeting the full type, or a few selected methods, will provide type checking
-of your implementation, and providing the impl to a `ConnectRouter` creates a
-type-safe router into your service. The `ConnectRouter` accepts a
-`Partial<ServiceImpl<ServiceType>>` but targeting this type in your
-implementation is not recommended, as it provides no type safety.
+of your implementation.
 
-You may also individually implement methods by targeting
-`MethodImpl<MethodInfo>` where `MethodInfo` is any member of
-`ServiceType.methods`. The `HandlerContext` parameter is not required to be
-implemented, but you may choose to require it in any particular method
-implementation.
+Providing your implementation to `ConnectRouter` creates a type-safe router into
+your service. The `ConnectRouter` accepts a `Partial<ServiceImpl<ServiceType>>`,
+but using this type for your implementation is not recommended, as it
+provides no type safety.
+
+You may alternatively type individual methods with `MethodImpl<MethodInfo>`
+where `MethodInfo` is any member of `ServiceType.methods`.
+
+The `HandlerContext` parameter on each method is not required to be implemented,
+but unless your method is a pure function, you will need context. Context can be
+injected by `adapter` from `@penumbra-zone/transport-dom`.
 
 See connectrpc's [helper types
 documentation](https://connectrpc.com/docs/node/implementing-services#helper-types)

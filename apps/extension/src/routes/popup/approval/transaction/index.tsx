@@ -1,4 +1,4 @@
-import { Button, TransactionViewComponent } from '@penumbra-zone/ui';
+import { TransactionViewComponent } from '@penumbra-zone/ui';
 import { useStore } from '../../../../state';
 import { txApprovalSelector } from '../../../../state/tx-approval';
 import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
@@ -6,8 +6,7 @@ import { Jsonified } from '@penumbra-zone/types';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
 import { useTransactionViewSwitcher } from './use-transaction-view-switcher';
 import { ViewTabs } from './view-tabs';
-import { useCountdown } from 'usehooks-ts';
-import { useEffect } from 'react';
+import { ApproveDeny } from '../approve-deny';
 
 export const TransactionApproval = () => {
   const {
@@ -19,12 +18,21 @@ export const TransactionApproval = () => {
   const { selectedTransactionView, selectedTransactionViewName, setSelectedTransactionViewName } =
     useTransactionViewSwitcher();
 
-  const [count, { startCountdown }] = useCountdown({ countStart: 3 });
-  useEffect(startCountdown, [startCountdown]);
-
   if (!authReqString) return null;
   const authorizeRequest = AuthorizeRequest.fromJsonString(authReqString);
   if (!authorizeRequest.plan || !selectedTransactionView) return null;
+
+  const approve = () => {
+    setAttitude(true);
+    sendResponse();
+    window.close();
+  };
+
+  const deny = () => {
+    setAttitude(false);
+    sendResponse();
+    window.close();
+  };
 
   return (
     <div className='flex h-screen flex-col justify-between'>
@@ -44,31 +52,7 @@ export const TransactionApproval = () => {
           <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
         </div>
       </div>
-      <div className='inset-x-0 bottom-0 flex flex-col gap-4 bg-black px-6 py-4 shadow-lg'>
-        <Button
-          size='lg'
-          variant='default'
-          onClick={() => {
-            setAttitude(true);
-            sendResponse();
-            window.close();
-          }}
-          disabled={!!count}
-        >
-          Approve {count !== 0 && `(${count})`}
-        </Button>
-        <Button
-          size='lg'
-          variant='destructive'
-          onClick={() => {
-            setAttitude(false);
-            sendResponse();
-            window.close();
-          }}
-        >
-          Deny
-        </Button>
-      </div>
+      <ApproveDeny approve={approve} deny={deny} wait={3} />
     </div>
   );
 };

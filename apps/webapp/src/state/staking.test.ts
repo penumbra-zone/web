@@ -69,7 +69,7 @@ const validatorInfoResponse4 = new ValidatorInfoResponse({
   },
 });
 
-const mockStakingClient = vi.hoisted(() => ({
+const mockStakeClient = vi.hoisted(() => ({
   validatorInfo: vi.fn(async function* () {
     yield await Promise.resolve(validatorInfoResponse1);
     yield await Promise.resolve(validatorInfoResponse2);
@@ -166,8 +166,8 @@ const mockViewClient = vi.hoisted(() => ({
   assetMetadataById: vi.fn(() => new Metadata()),
 }));
 
-vi.mock('../clients/grpc', () => ({
-  stakingClient: mockStakingClient,
+vi.mock('../clients', () => ({
+  stakeClient: mockStakeClient,
   viewClient: mockViewClient,
 }));
 

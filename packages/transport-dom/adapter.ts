@@ -1,0 +1,210 @@
+import {
+  Code as ConnectErrorCode,
+  ConnectError,
+  ConnectRouter,
+  ConnectRouterOptions,
+  ContextValues,
+  createConnectRouter,
+  StreamResponse,
+  UnaryResponse,
+} from '@connectrpc/connect';
+import {
+  Any,
+  JsonReadOptions,
+  JsonValue,
+  JsonWriteOptions,
+  MethodInfo,
+  MethodKind,
+  ServiceType,
+} from '@bufbuild/protobuf';
+import {
+  CommonTransportOptions,
+  createAsyncIterable,
+  createUniversalHandlerClient,
+  UniversalHandler,
+  UniversalHandlerFn,
+  UniversalServerRequest,
+} from '@connectrpc/connect/protocol';
+import { createTransport } from '@connectrpc/connect/protocol-connect';
+import { MessageToJson } from './stream';
+import ReadableStream from '@penumbra-zone/polyfills/ReadableStream.from';
+
+// see https://github.com/connectrpc/connect-es/pull/925
+// hopefully also simplifies transport call soon
+type MethodType = MethodInfo & { service: { typeName: string } };
+
+type ChannelRequest = JsonValue;
+type ChannelResponse = JsonValue | ReadableStream<JsonValue>;
+
+export type ChannelHandlerFn = (r: ChannelRequest) => Promise<ChannelResponse>;
+export type ChannelContextFn = (
+  h: UniversalServerRequest,
+) => Promise<UniversalServerRequest & { contextValues: ContextValues }>;
+
+export interface ChannelAdapterOptions {
+  router?: Omit<ConnectRouterOptions, keyof typeof forceRouterOptions>;
+  transport?: Omit<CommonTransportOptions, keyof typeof forceTransportOptions>;
+
+  routes: (router: ConnectRouter) => void;
+  jsonOptions: Required<JsonReadOptions> & Partial<JsonWriteOptions>;
+  createRequestContext: ChannelContextFn;
+}
+
+// these 'force' options objects are used to negatively define the options
+// available in ChannelAdapter options, and to provide defaults. in
+// particular the transportOption httpClient is generated internally, and should
+// never be passed as an option.
+
+const forceRouterOptions = {
+  connect: true,
+  grpc: false,
+  grpcWeb: false,
+};
+
+// keys of CommonTransportOptions
+const forceTransportOptions = {
+  httpClient: null as never,
+  baseUrl: 'https://in-memory',
+  useBinaryFormat: true,
+  acceptCompression: [],
+  sendCompression: null,
+  compressMinBytes: Number.MAX_SAFE_INTEGER,
+  readMaxBytes: Number.MAX_SAFE_INTEGER,
+  writeMaxBytes: Number.MAX_SAFE_INTEGER,
+};
+
+/**
+ * This creates returns a simple service entry function.
+ *
+ * You should provide a context function that creates all the context required
+ * by the implementations to which you are routing.
+ *
+ * The returned handler accepts 'Any'-packed json message requests, hopefully
+ * annotated with types present in your provided typeRegistry, hopefully mapping
+ * to endpoints present in your router.
+ *
+ * The entry function will respond with a single message or a ReadableStream.
+ */
+export const connectChannelAdapter = (opt: ChannelAdapterOptions): ChannelHandlerFn => {
+  const jsonOptions = opt.jsonOptions;
+
+  const routerOpts: ConnectRouterOptions = {
+    ...opt.router,
+    ...forceRouterOptions,
+  };
+
+  const router = createConnectRouter(routerOpts);
+  opt.routes(router);
+
+  /**
+   * We're creating a router transport to provide service entry.  Some of this
+   * is very much like what happens in createRouterTransport, but we can't use
+   * createRouterTransport because it does not provide any ContextValues to the
+   * router.
+   *
+   * Connectrpc enforces a separation between client-side ContextValues and
+   * server-side ContextValues, even though they use the same types. You can't
+   * simply provide contextValues to a client's CallOptions - those are only for
+   * Interceptors running in your client-side Transport. They won't be forwarded
+   * to the server.
+   *
+   * Server framework adapters are responsible for applying context values to
+   * the implemenation. Normally, this would be a simple parameter in a call to
+   * the function connectNodeAdapter.  But, we're not using node.
+   *
+   * And unfortunately, createUniversalHandlerClient which createRouterTransport
+   * uses internally doesn't pass a context parameter at all when it calls a
+   * handler - meaning every HandlerContext has no contextValues. So the only
+   * way to get context to the implementation is to either createHandlerContext
+   * yourself and call the Impl directly, or createContextValues yourself and
+   * call the router directly.
+   *
+   * I've chosen to reimplement the simple createRouterTransport, but wrap the
+   * router's handlers, inserting contextValues into the requests made by the
+   * UniversalClient. At request time, this kind of context injector only has
+   * access to data present in the UniversalServerRequest (parameter to
+   * UniversalHandlerFn).
+   *
+   * Ideally, this should happen at a lower level (write our own handler
+   * factory) but this is less work.
+   *
+   * See https://github.com/connectrpc/connect-es/blob/main/packages/connect-node/src/node-universal-handler.ts
+   */
+  const injectRequestContext = createUniversalHandlerClient(
+    router.handlers.map((handler: UniversalHandler): UniversalHandler => {
+      // disaggregate the handler into actual function and keyed attributes
+      const handlerFn = handler as UniversalHandlerFn;
+      const handlerMeta = Object.fromEntries(
+        Object.entries(handler) as [keyof UniversalHandler, unknown][],
+      ) as { [k in keyof UniversalHandler]: UniversalHandler[k] };
+      // wrap the handler function to generate and apply context
+      const wrappedFn: UniversalHandlerFn = req => opt.createRequestContext(req).then(handlerFn);
+      // replace attributes onto the wrapped handler
+      return Object.assign(wrappedFn, handlerMeta);
+    }),
+  );
+
+  // TODO: alternatively, we could have the channelClient provide a requestPath
+  const I_MethodType = new Map<string, MethodType>(
+    router.handlers.map(({ method, service }) => [
+      method.I.typeName,
+      { ...method, service: { typeName: service.typeName } },
+    ]),
+  );
+
+  // TODO: connectrpc interceptors, typically a client feature, likely work here
+  // with no further effort, but haven't been tested. we could investigate using
+  // them as service middleware.
+  // https://connectrpc.com/docs/web/interceptors/
+  const transport = createTransport({
+    // order matters :)
+    interceptors: [],
+    ...opt.transport,
+    ...forceTransportOptions,
+    httpClient: injectRequestContext,
+  });
+
+  return async function channelHandler(message: ChannelRequest) {
+    const request = Any.fromJson(message, jsonOptions).unpack(jsonOptions.typeRegistry)!;
+    const requestType = request.getType();
+
+    const methodType = I_MethodType.get(requestType.typeName);
+    if (!methodType)
+      throw new ConnectError(`Method ${requestType.typeName} not found`, ConnectErrorCode.NotFound);
+
+    let response: UnaryResponse | StreamResponse | undefined;
+    switch (methodType.kind) {
+      case MethodKind.Unary:
+        response = await transport.unary(
+          // only uses service.typeName, so this cast is ok
+          methodType.service as ServiceType,
+          methodType satisfies MethodInfo,
+          undefined, // TODO abort
+          undefined, // TODO timeout
+          undefined, // TODO headers
+          request,
+        );
+        break;
+      case MethodKind.ServerStreaming:
+        response = await transport.stream(
+          // only uses service.typeName, so this cast is ok
+          methodType.service as ServiceType,
+          methodType satisfies MethodInfo,
+          undefined, // TODO abort
+          undefined, // TODO timeout
+          undefined, // TODO headers
+          createAsyncIterable([request]),
+        );
+        break;
+      default:
+        throw new ConnectError(
+          `Unimplemented method kind ${methodType.kind}`,
+          ConnectErrorCode.Unimplemented,
+        );
+    }
+
+    if (response.stream)
+      return ReadableStream.from(response.message).pipeThrough(new MessageToJson(jsonOptions));
+    else return Any.pack(response.message).toJson(jsonOptions);
+  };
+};

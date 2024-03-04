@@ -17,12 +17,6 @@ const links = [
     icon: <Share1Icon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_RPC,
   },
-  // TODO: Enable when ready
-  // {
-  //   title: 'Connected sites',
-  //   icon: <Link1Icon className='h-5 w-5 text-muted-foreground' />,
-  //   href: PopupPath.SETTINGS_CONNECTED_SITES,
-  // },
   {
     title: 'Advanced',
     icon: <DashboardIcon className='size-5 text-muted-foreground' />,

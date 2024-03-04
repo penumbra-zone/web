@@ -41,3 +41,10 @@ export const isActionBuildRequest = (req: unknown): req is ActionBuildRequest =>
   typeof req.fullViewingKey === 'string' &&
   'actionPlanIndex' in req &&
   typeof req.actionPlanIndex === 'number';
+
+export const isOffscreenRequest = (req: unknown): req is OffscreenRequest =>
+  req != null &&
+  typeof req === 'object' &&
+  'type' in req &&
+  typeof req.type === 'string' &&
+  req.type === 'BUILD_ACTION';
