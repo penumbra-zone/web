@@ -18,7 +18,7 @@ import {
   splitLoHi,
 } from '@penumbra-zone/types';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { getBalancesByAccount } from '../fetchers/balances/by-account';
+import { BalancesByAccount, getBalancesByAccount } from '../fetchers/balances/by-account';
 import {
   localAssets,
   STAKING_TOKEN,
@@ -184,49 +184,12 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
   },
   loadUnstakedAndUnbondingTokensByAccount: async () => {
     const balancesByAccount = await getBalancesByAccount();
-    const { unstakedTokensByAccount, unbondingTokensByAccount } = balancesByAccount.reduce<{
-      unstakedTokensByAccount: Map<number, ValueView | undefined>;
-      unbondingTokensByAccount: Map<number, UnbondingTokensForAccount>;
-    }>(
-      (prev, curr) => {
-        const stakingTokenBalance = curr.balances.find(
-          ({ balanceView }) => getDisplayDenomFromView(balanceView) === STAKING_TOKEN,
-        );
 
-        if (stakingTokenBalance?.balanceView)
-          prev.unstakedTokensByAccount.set(curr.index.account, stakingTokenBalance.balanceView);
+    const unstakedTokensByAccount = balancesByAccount.reduce(toUnstakedTokensByAccount, new Map());
 
-        const unbondingTokens = curr.balances
-          .filter(({ balanceView }) =>
-            assetPatterns.unbondingToken.test(getDisplayDenomFromView(balanceView)),
-          )
-          .map(({ balanceView }) => balanceView!);
-
-        if (unbondingTokens.length) {
-          const unbondingTotalAmount = unbondingTokens.reduce<bigint>(
-            (prev, curr) => prev + joinLoHiAmount(getAmount(curr)),
-            0n,
-          );
-
-          const unbondingTotal = new ValueView({
-            valueView: {
-              case: 'knownAssetId',
-              value: {
-                amount: splitLoHi(unbondingTotalAmount),
-                metadata: STAKING_TOKEN_METADATA,
-              },
-            },
-          });
-
-          prev.unbondingTokensByAccount.set(curr.index.account, {
-            tokens: unbondingTokens,
-            total: unbondingTotal,
-          });
-        }
-
-        return prev;
-      },
-      { unstakedTokensByAccount: new Map(), unbondingTokensByAccount: new Map() },
+    const unbondingTokensByAccount = balancesByAccount.reduce(
+      toUnbondingTokensByAccount,
+      new Map(),
     );
 
     set(state => {
@@ -354,4 +317,61 @@ const assembleUndelegateRequest = ({
     ],
     source: { account },
   });
+};
+
+/**
+ * Function to use with `reduce()` over an array of `BalancesByAccount` objects.
+ * Returns a map of accounts to `ValueView`s of the staking token.
+ */
+const toUnstakedTokensByAccount = (
+  unstakedTokensByAccount: Map<number, ValueView>,
+  curr: BalancesByAccount,
+) => {
+  const stakingTokenBalance = curr.balances.find(
+    ({ balanceView }) => getDisplayDenomFromView(balanceView) === STAKING_TOKEN,
+  );
+
+  if (stakingTokenBalance?.balanceView)
+    unstakedTokensByAccount.set(curr.index.account, stakingTokenBalance.balanceView);
+
+  return unstakedTokensByAccount;
+};
+
+/**
+ * Function to use with `reduce()` over an array of `BalancesByAccount` objects.
+ * Returns a map of accounts to `ValueView`s of the staking token.
+ */
+const toUnbondingTokensByAccount = (
+  unbondingTokensByAccount: Map<number, UnbondingTokensForAccount>,
+  curr: BalancesByAccount,
+) => {
+  const unbondingTokens = curr.balances
+    .filter(({ balanceView }) =>
+      assetPatterns.unbondingToken.test(getDisplayDenomFromView(balanceView)),
+    )
+    .map(({ balanceView }) => balanceView!);
+
+  if (unbondingTokens.length) {
+    const unbondingTotalAmount = unbondingTokens.reduce<bigint>(
+      (prev, curr) => prev + joinLoHiAmount(getAmount(curr)),
+      0n,
+    );
+
+    const unbondingTotal = new ValueView({
+      valueView: {
+        case: 'knownAssetId',
+        value: {
+          amount: splitLoHi(unbondingTotalAmount),
+          metadata: STAKING_TOKEN_METADATA,
+        },
+      },
+    });
+
+    unbondingTokensByAccount.set(curr.index.account, {
+      tokens: unbondingTokens,
+      total: unbondingTotal,
+    });
+  }
+
+  return unbondingTokensByAccount;
 };
