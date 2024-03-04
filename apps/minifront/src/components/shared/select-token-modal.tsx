@@ -9,9 +9,8 @@ import {
   Input,
 } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
-import { getAddressIndex, getDisplayDenomFromView, getMetadata } from '@penumbra-zone/getters';
+import { getAddressIndex } from '@penumbra-zone/getters';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 interface SelectTokenModalProps {
@@ -27,17 +26,15 @@ export default function SelectTokenModal({
 }: SelectTokenModalProps) {
   const [search, setSearch] = useState('');
 
-  const displayDenom = getDisplayDenomFromView(selection?.balanceView);
-  const denomMetadata = getMetadata.optional()(selection?.balanceView);
-
   return (
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
         <div className='flex h-9 min-w-[100px] max-w-[200px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
-          {denomMetadata && <AssetIcon metadata={denomMetadata} />}
-          <p className='shrink truncate font-bold text-light-grey md:text-sm xl:text-base'>
-            {displayDenom}
-          </p>
+          <ValueViewComponent
+            view={selection?.balanceView}
+            showValue={false}
+            showEquivalent={false}
+          />
         </div>
       </DialogTrigger>
       <DialogContent>
