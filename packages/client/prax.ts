@@ -4,6 +4,9 @@
  * additional conveniences.
  */
 
+const prax_id = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe' as const;
+const prax_origin = `chrome-extension://${prax_id}`;
+
 import type { JsonValue, ServiceType } from '@bufbuild/protobuf';
 import type { Transport } from '@connectrpc/connect';
 import { createPromiseClient } from '@connectrpc/connect';
@@ -15,30 +18,19 @@ export class PraxNotAvailableError extends Error {}
 export class PraxNotConnectedError extends Error {}
 export class PraxManifestError extends Error {}
 
-export const getPraxPort = async () =>
-  window[PenumbraSymbol]?.['chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe']?.connect()!;
+export const getPraxPort = async () => window[PenumbraSymbol]?.[prax_origin]?.connect()!;
 
-export const requestPraxConnection = async () =>
-  window[PenumbraSymbol]?.['chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe']?.request();
+export const requestPraxConnection = async () => window[PenumbraSymbol]?.[prax_origin]?.request();
 
-export const isPraxConnected = () =>
-  Boolean(
-    window[PenumbraSymbol]?.['chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe']?.isConnected(),
-  );
+export const isPraxConnected = () => Boolean(window[PenumbraSymbol]?.[prax_origin]?.isConnected());
 
 export const isPraxConnectedTimeout = (timeout: number) =>
   new Promise<boolean>(resolve => {
-    if (
-      window[PenumbraSymbol]?.['chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe']?.isConnected()
-    )
-      resolve(true);
+    const isConnected = window[PenumbraSymbol]?.[prax_origin]?.isConnected();
+    if (!isConnected) resolve(true);
 
     const interval = setInterval(() => {
-      if (
-        window[PenumbraSymbol]?.[
-          'chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe'
-        ]?.isConnected()
-      ) {
+      if (window[PenumbraSymbol]?.[prax_origin]?.isConnected()) {
         clearInterval(interval);
         resolve(true);
       }
@@ -51,15 +43,14 @@ export const isPraxConnectedTimeout = (timeout: number) =>
   });
 
 export const throwIfPraxNotConnectedTimeout = async (timeout: number = 500) => {
-  if (!(await isPraxConnectedTimeout(timeout)))
-    throw new PraxNotConnectedError('Prax not connected');
+  const isConnected = await isPraxConnectedTimeout(timeout);
+  if (!isConnected) throw new PraxNotConnectedError('Prax not connected');
 };
 
-export const isPraxAvailable = () =>
-  Boolean(window[PenumbraSymbol]?.['chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe']);
+export const isPraxInstalled = () => Boolean(window[PenumbraSymbol]?.[prax_origin]);
 
 export const throwIfPraxNotAvailable = () => {
-  if (!isPraxAvailable()) throw new PraxNotAvailableError('Prax not available');
+  if (!isPraxInstalled()) throw new PraxNotAvailableError('Prax not available');
 };
 
 export const throwIfPraxNotConnected = () => {
@@ -67,13 +58,10 @@ export const throwIfPraxNotConnected = () => {
 };
 
 export const getPraxManifest = async () => {
-  const manifestHref =
-    window[PenumbraSymbol]?.['chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe']?.manifest;
-  if (manifestHref !== 'chrome-extension://lkpmkhpnhknhmibgnmmhdhgdilepfghe/manifest.json')
+  const manifestHref = window[PenumbraSymbol]?.[prax_origin]?.manifest;
+  if (manifestHref !== `${prax_origin}/manifest.json`)
     throw new PraxManifestError('Incorrect Prax manifest href');
   const manifest = await (await fetch(manifestHref)).json();
-  if (manifest['id'] !== 'lkpmkhpnhknhmibgnmmhdhgdilepfghe')
-    throw new PraxManifestError('Incorrect Prax manifest id');
   return manifest as JsonValue;
 };
 
