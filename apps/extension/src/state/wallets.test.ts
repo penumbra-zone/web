@@ -75,7 +75,7 @@ describe('Accounts Slice', () => {
       expect(useStore.getState().wallets.all.at(0)!.label).toBe(accountA.label);
 
       // Test in long term storage
-      const accountsPt1 = await localStorage.get('wallets');
+      const accountsPt1 = (await localStorage.get('wallets')) ?? [];
       expect(accountsPt1.length).toBe(1);
       expect(accountsPt1.at(0)!.label).toBe(accountA.label);
 
@@ -89,7 +89,7 @@ describe('Accounts Slice', () => {
       expect(useStore.getState().wallets.all.at(1)!.label).toBe(accountA.label);
 
       // Test in long term storage
-      const accountsPt2 = await localStorage.get('wallets');
+      const accountsPt2 = (await localStorage.get('wallets')) ?? [];
       expect(accountsPt2.length).toBe(2);
       expect(accountsPt2.at(0)!.label).toBe(accountB.label);
       expect(accountsPt2.at(1)!.label).toBe(accountA.label);

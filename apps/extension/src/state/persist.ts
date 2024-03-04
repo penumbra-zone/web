@@ -30,7 +30,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
   void (async function () {
     // Part 1: Get storage values and sync them to store
     const passwordKey = await sessionExtStorage.get('passwordKey');
-    const wallets = await localExtStorage.get('wallets');
+    const wallets = (await localExtStorage.get('wallets')) ?? [];
     const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 
     set(
@@ -58,7 +58,7 @@ function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: S
       | undefined;
     set(
       produce((state: AllSlices) => {
-        state.wallets.all = wallets ? walletsFromJson(wallets.value) : [];
+        state.wallets.all = wallets ? walletsFromJson(wallets.value ?? []) : [];
       }),
     );
   }
