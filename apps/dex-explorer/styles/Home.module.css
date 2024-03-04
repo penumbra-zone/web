@@ -93,9 +93,11 @@
 
 .header {
   width: 100%;
-  background-color: var(--purple-accent-700); /* Grey with 50% opacity */
+  background: linear-gradient(to bottom, var(--purple-accent-700), transparent);
   /* position: fixed; /* Optional: makes the header stay at the top on scroll */
   top: 0;
-  z-index: 10; 
+  z-index: 10;
   padding: 1em;
 }
+
+

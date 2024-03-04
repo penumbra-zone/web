@@ -11,8 +11,8 @@ import {
 } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import Layout from "../../components/layout";
 import LPStatus from "../../components/liquidityPositions/status";
-import { VStack } from "@chakra-ui/layout";
-import { Text } from "@chakra-ui/react";
+import { VStack, Text, Spinner, Center } from "@chakra-ui/react";
+import { LoadingSpinner } from "../../components/util/loadingSpinner";
 
 export default function LP() {
   const router = useRouter();
@@ -56,7 +56,7 @@ export default function LP() {
     <Layout pageTitle={`LP - ${lp_nft_id}`}>
       <main className={styles.main}>
         {isLoading ? (
-          <p>Loading...</p>
+          <LoadingSpinner />
         ) : liquidityPosition ? (
           <>
             <VStack width={"100%"} paddingTop={"4em"}>
@@ -66,19 +66,13 @@ export default function LP() {
                   width={"100%"}
                   alignContent={"left"}
                   fontSize={"1.5em"}
+                  paddingBottom=".5em"
                 >
                   Position Status
                 </Text>
                 <LPStatus nftId={lp_nft_id} position={liquidityPosition} />
               </VStack>
             </VStack>
-            {/* 
-            <br />
-            <br />
-            <br />
-            <h1>NFT ID: {lp_nft_id}</h1>
-            <p>{JSON.stringify(liquidityPosition)}</p> 
-             */}
           </>
         ) : (
           <p>No liquidity position found.</p>
