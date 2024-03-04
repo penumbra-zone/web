@@ -22,6 +22,12 @@ export const OriginApproval = () => {
     window.close();
   };
 
+  const ignore = () => {
+    setAttitude(UserAttitude.Ignored);
+    sendResponse();
+    window.close();
+  };
+
   if (!requestOrigin) return null;
 
   const originUrl = new URL(requestOrigin);
@@ -71,7 +77,7 @@ export const OriginApproval = () => {
             </div>
           </div>
         </div>
-        <ApproveDeny approve={approve} deny={deny} wait={3} />
+        <ApproveDeny approve={approve} deny={deny} ignore={ignore} wait={3} />
       </div>
     </FadeTransition>
   );

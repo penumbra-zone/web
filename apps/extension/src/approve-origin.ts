@@ -33,29 +33,37 @@ export const approveOrigin = async ({
   const [existingRecord, ...extraRecords] = siteRecords.get(true) ?? [];
 
   if (extraRecords.length) throw new Error('Multiple records for the same origin');
-  if (existingRecord) return Boolean(existingRecord.attitude);
 
-  const res = await popup<OriginApproval>({
-    type: PopupType.OriginApproval,
-    request: {
-      origin: urlOrigin,
-      favIconUrl: tab.favIconUrl,
-      title: tab.title,
-    },
-  });
+  switch (existingRecord?.attitude) {
+    case UserAttitude.Approved:
+      return true;
+    case UserAttitude.Ignored:
+      return false;
+    case UserAttitude.Denied: // TODO: cooldown on re-request
+    default: {
+      const res = await popup<OriginApproval>({
+        type: PopupType.OriginApproval,
+        request: {
+          origin: urlOrigin,
+          favIconUrl: tab.favIconUrl,
+          title: tab.title,
+        },
+      });
 
-  if ('error' in res)
-    throw errorFromJson(res.error as JsonValue, undefined, ConnectError.from(res));
+      if ('error' in res)
+        throw errorFromJson(res.error as JsonValue, undefined, ConnectError.from(res));
 
-  // TODO: is there a race condition here?
-  // if something has written after our initial read, we'll clobber them
-  void localExtStorage.set('knownSites', [
-    {
-      ...res.data,
-      date: Date.now(),
-    },
-    ...irrelevant,
-  ]);
+      // TODO: is there a race condition here?
+      // if something has written after our initial read, we'll clobber them
+      void localExtStorage.set('knownSites', [
+        {
+          ...res.data,
+          date: Date.now(),
+        },
+        ...irrelevant,
+      ]);
 
-  return Boolean(res.data.attitude === UserAttitude.Approved);
+      return Boolean(res.data.attitude === UserAttitude.Approved);
+    }
+  }
 };

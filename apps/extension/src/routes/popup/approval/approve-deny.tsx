@@ -21,19 +21,13 @@ export const ApproveDeny = ({
       <Button size='lg' variant='default' onClick={approve} disabled={!!count}>
         Approve {count !== 0 && `(${count})`}
       </Button>
-      {!ignore ? (
-        <Button size='lg' variant='destructive' onClick={deny}>
-          Deny
+      <Button size='lg' variant='destructive' onClick={deny}>
+        Deny
+      </Button>
+      {ignore && (
+        <Button size='lg' variant='destructive' className='bg-black' onClick={ignore}>
+          Always Deny
         </Button>
-      ) : (
-        <div>
-          <Button size='lg' variant='destructive' onClick={deny}>
-            Deny
-          </Button>
-          <Button size='lg' variant='destructive' onClick={ignore}>
-            Ignore
-          </Button>
-        </div>
       )}
     </div>
   );
