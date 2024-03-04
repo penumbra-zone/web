@@ -29,7 +29,7 @@ export const StakingActions = ({
    */
   unstakedTokens?: ValueView;
 }) => {
-  const { action, amount, onSubmit, onClickActionButton, onClose, setAmount } =
+  const { action, amount, onClickActionButton, delegate, undelegate, onClose, setAmount } =
     useStore(stakingSelector);
 
   const validator = getValidator(validatorInfo);
@@ -42,6 +42,11 @@ export const StakingActions = ({
     () => !!joinLoHiAmount(getAmount(delegationTokens)),
     [delegationTokens],
   );
+
+  const handleSubmit = () => {
+    if (action === 'delegate') void delegate();
+    else void undelegate();
+  };
 
   return (
     <>
@@ -73,7 +78,7 @@ export const StakingActions = ({
         unstakedTokens={unstakedTokens}
         onChangeAmount={setAmount}
         onClose={onClose}
-        onSubmit={onSubmit}
+        onSubmit={handleSubmit}
       />
     </>
   );

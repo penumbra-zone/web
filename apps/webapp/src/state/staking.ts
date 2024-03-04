@@ -52,7 +52,13 @@ export interface StakingSlice {
    * is changed, as a single call populates data across all accounts.
    */
   loadUnstakedTokensByAccount: () => Promise<void>;
+  /**
+   * Build and submit the Delegate transaction.
+   */
   delegate: () => Promise<void>;
+  /**
+   * Build and submit the Undelegate transaction.
+   */
   undelegate: () => Promise<void>;
   loading: boolean;
   error: unknown;
@@ -62,8 +68,6 @@ export interface StakingSlice {
    * given validator (represented by `validatorInfo`).
    */
   onClickActionButton: (action: 'delegate' | 'undelegate', validatorInfo: ValidatorInfo) => void;
-  /** Called when the user submits the delegate or undelegate form. */
-  onSubmit: () => void;
   /**
    * Called when the user closes the delegate or undelegate form without
    * submitting it.
@@ -178,10 +182,6 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     set(state => {
       state.staking.unstakedTokensByAccount = unstakedTokensByAccount;
     });
-  },
-  onSubmit: () => {
-    if (get().staking.action === 'delegate') void get().staking.delegate();
-    else void get().staking.undelegate();
   },
   delegate: async () => {
     const toast = new TransactionToast('delegate');
