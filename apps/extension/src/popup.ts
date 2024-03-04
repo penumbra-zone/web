@@ -8,15 +8,12 @@ import { PopupPath } from './routes/popup/paths';
 
 export const popup = async <M extends PopupMessage>(
   req: PopupRequest<M>,
-): Promise<PopupResponse<M>> =>
-  spawnPopup(req.type)
-    .then(async () => {
-      // We have to wait for React to bootup, navigate to the page, and render the components
-      await new Promise(resolve => {
-        setTimeout(resolve, 1000);
-      });
-    })
-    .then(() => chrome.runtime.sendMessage<InternalRequest<M>, InternalResponse<M>>(req));
+): Promise<PopupResponse<M>> => {
+  await spawnPopup(req.type);
+  // We have to wait for React to bootup, navigate to the page, and render the components
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  return chrome.runtime.sendMessage<InternalRequest<M>, InternalResponse<M>>(req);
+};
 
 const spawnExtensionPopup = async (path: string) => {
   await throwIfAlreadyOpen(path);
