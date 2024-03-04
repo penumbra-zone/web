@@ -32,11 +32,8 @@ export class ExtensionStorage<T> {
       | Record<K, StorageItem<T[K]>>
       | EmptyObject;
 
-    if (isEmptyObj(result)) {
-      return this.defaults[key];
-    } else {
-      return await this.migrateIfNeeded(key, result[key]);
-    }
+    if (isEmptyObj(result)) return this.defaults[key];
+    else return await this.migrateIfNeeded(key, result[key]);
   }
 
   async set<K extends keyof T>(key: K, value: T[K]): Promise<void> {

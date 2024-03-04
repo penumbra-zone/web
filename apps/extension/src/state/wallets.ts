@@ -41,7 +41,7 @@ export const createWalletsSlice =
           state.wallets.all.unshift(newWallet);
         });
 
-        const wallets = (await local.get('wallets')) ?? [];
+        const wallets = await local.get('wallets');
         await local.set('wallets', [newWallet.toJson(), ...wallets]);
         return newWallet;
       },

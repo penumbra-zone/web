@@ -6,13 +6,13 @@ export enum LocalStorageVersion {
   V1 = 'V1',
 }
 
-export type LocalStorageState = Partial<{
+export interface LocalStorageState {
   wallets: WalletJson[];
   grpcEndpoint: string;
-  passwordKeyPrint: KeyPrintJson;
+  passwordKeyPrint?: KeyPrintJson;
   fullSyncHeight: number;
   connectedSites: Record<string, boolean>;
-}>;
+}
 
 // this will be injected by webpack build, but we don't have access to the
 // declaration in `apps/extension/prax.d.ts` because we are in an independent
@@ -22,7 +22,9 @@ declare const DEFAULT_GRPC_URL: string;
 declare const MINIFRONT_URL: string;
 
 export const localDefaults: LocalStorageState = {
+  wallets: [],
   grpcEndpoint: DEFAULT_GRPC_URL,
+  fullSyncHeight: 0,
   connectedSites: { [MINIFRONT_URL]: true },
 };
 

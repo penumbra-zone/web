@@ -34,9 +34,9 @@ void localExtStorage.set('connectedSites', {});
 
 const services = new Services({
   idbVersion: IDB_VERSION,
-  grpcEndpoint: (await localExtStorage.get('grpcEndpoint')) ?? '',
+  grpcEndpoint: await localExtStorage.get('grpcEndpoint'),
   getWallet: async () => {
-    const wallets = (await localExtStorage.get('wallets')) ?? [];
+    const wallets = await localExtStorage.get('wallets');
     if (!wallets[0]) throw new Error('No wallets connected');
     const { fullViewingKey, id } = wallets[0];
     return { walletId: id, fullViewingKey };

@@ -20,7 +20,7 @@ import { custodyImpl } from '@penumbra-zone/router/src/grpc/custody';
 import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
 
 import { localExtStorage } from '@penumbra-zone/storage';
-const grpcEndpoint = (await localExtStorage.get('grpcEndpoint')) ?? '';
+const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 
 const penumbraProxies = [
   IbcProxy,

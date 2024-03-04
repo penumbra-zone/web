@@ -43,7 +43,7 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   const passwordKey = await sess.get('passwordKey');
   if (!passwordKey) throw new ConnectError('User must login to extension', Code.Unavailable);
 
-  const wallets = (await local.get('wallets')) ?? [];
+  const wallets = await local.get('wallets');
   const {
     custody: { encryptedSeedPhrase },
     fullViewingKey,

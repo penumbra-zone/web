@@ -7,7 +7,7 @@ import { localExtStorage } from '@penumbra-zone/storage';
 // We need to manually check storage for accounts in the loader.
 // Will redirect to onboarding if necessary.
 export const pageIndexLoader = async () => {
-  const wallets = (await localExtStorage.get('wallets')) ?? [];
+  const wallets = await localExtStorage.get('wallets');
 
   if (!wallets.length) return redirect(PagePath.WELCOME);
 

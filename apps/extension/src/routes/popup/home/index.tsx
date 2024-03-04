@@ -15,7 +15,7 @@ export interface PopupLoaderData {
 // We need to manually check storage for accounts & password in the loader.
 // Will redirect to onboarding or password check if necessary.
 export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> => {
-  const wallets = (await localExtStorage.get('wallets')) ?? [];
+  const wallets = await localExtStorage.get('wallets');
 
   if (!wallets.length) {
     await chrome.tabs.create({ url: chrome.runtime.getURL(`page.html`) });
@@ -26,7 +26,7 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
 
   if (!password) return redirect(PopupPath.LOGIN);
 
-  const fullSyncHeight = (await localExtStorage.get('fullSyncHeight')) ?? 0;
+  const fullSyncHeight = await localExtStorage.get('fullSyncHeight');
 
   return { fullSyncHeight };
 };

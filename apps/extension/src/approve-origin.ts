@@ -9,7 +9,7 @@ export const originAlreadyApproved = async (url: string): Promise<boolean> => {
   // parses the origin and returns a consistent format
   const urlOrigin = new URL(url).origin;
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  const connectedSites = (await localExtStorage.get('connectedSites')) ?? {};
+  const connectedSites = await localExtStorage.get('connectedSites');
   return Boolean(connectedSites[urlOrigin]);
 };
 
@@ -24,7 +24,7 @@ export const approveOrigin = async ({
   // parses the origin and returns a consistent format
   const urlOrigin = new URL(senderOrigin).origin;
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  const connectedSites = (await localExtStorage.get('connectedSites')) ?? {};
+  const connectedSites = await localExtStorage.get('connectedSites');
   if (typeof connectedSites[urlOrigin] === 'boolean') return Boolean(connectedSites[urlOrigin]);
 
   const res = await popup<OriginApproval>({
