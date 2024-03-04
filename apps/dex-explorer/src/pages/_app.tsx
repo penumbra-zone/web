@@ -9,7 +9,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       global: {
         // Apply some styles globally across all elements
         body: {
-          bg: "var(--charcoal)",
+          bg: "var(--charcoal-secondary)",
           color: "var(--light-grey)",
           fontFamily: "sans-serif",
           fontWeight: "400",
