@@ -9,6 +9,9 @@ import { useStore } from '../state';
 import { originApprovalSelector } from '../state/origin-approval';
 import { txApprovalSelector } from '../state/tx-approval';
 
+import { errorToJson } from '@connectrpc/connect/protocol-connect';
+import { ConnectError } from '@connectrpc/connect';
+
 import '@penumbra-zone/ui/styles/globals.css';
 
 chrome.runtime.onMessage.addListener(
@@ -23,7 +26,7 @@ chrome.runtime.onMessage.addListener(
       } catch (e) {
         responder({
           type: req.type,
-          error: String(e),
+          error: errorToJson(ConnectError.from(e), undefined),
         });
       }
       return true; // instruct chrome runtime to wait for a response
