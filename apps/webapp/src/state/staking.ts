@@ -189,12 +189,13 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       unbondingTokensByAccount: Map<number, UnbondingTokensForAccount>;
     }>(
       (prev, curr) => {
-        prev.unstakedTokensByAccount.set(
-          curr.index.account,
-          curr.balances.find(
-            ({ balanceView }) => getDisplayDenomFromView(balanceView) === STAKING_TOKEN,
-          )?.balanceView,
+        const stakingTokenBalance = curr.balances.find(
+          ({ balanceView }) => getDisplayDenomFromView(balanceView) === STAKING_TOKEN,
         );
+
+        if (stakingTokenBalance?.balanceView)
+          prev.unstakedTokensByAccount.set(curr.index.account, stakingTokenBalance.balanceView);
+
         const unbondingTokens = curr.balances
           .filter(({ balanceView }) =>
             assetPatterns.unbondingToken.test(getDisplayDenomFromView(balanceView)),
