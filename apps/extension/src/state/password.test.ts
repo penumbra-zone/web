@@ -48,7 +48,7 @@ describe('Password Slice', () => {
     // Saves to local storage
     const localPrint = await localStorage.get('passwordKeyPrint');
     expect(localPrint).toBeTruthy();
-    expect(() => KeyPrint.fromJson(localPrint)).not.toThrow();
+    expect(() => KeyPrint.fromJson(localPrint!)).not.toThrow();
 
     // Slice method works
     expect(await useStore.getState().password.isPassword(password)).toBeTruthy();
