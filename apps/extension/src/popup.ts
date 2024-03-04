@@ -64,7 +64,7 @@ const spawnPopup = async (pop: PopupType) => {
   switch (pop) {
     case PopupType.OriginApproval:
       popUrl.hash = PopupPath.ORIGIN_APPROVAL;
-      return spawnExtensionPopup(popUrl.href);
+      return spawnDetachedPopup(popUrl.href);
     case PopupType.TxApproval:
       popUrl.hash = PopupPath.TRANSACTION_APPROVAL;
       return spawnDetachedPopup(popUrl.href);

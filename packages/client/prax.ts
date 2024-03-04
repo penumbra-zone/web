@@ -26,8 +26,7 @@ export const isPraxConnected = () => Boolean(window[PenumbraSymbol]?.[prax_origi
 
 export const isPraxConnectedTimeout = (timeout: number) =>
   new Promise<boolean>(resolve => {
-    const isConnected = window[PenumbraSymbol]?.[prax_origin]?.isConnected();
-    if (!isConnected) resolve(true);
+    if (window[PenumbraSymbol]?.[prax_origin]?.isConnected()) resolve(true);
 
     const interval = setInterval(() => {
       if (window[PenumbraSymbol]?.[prax_origin]?.isConnected()) {
