@@ -297,7 +297,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       // Reload delegation tokens and unstaked tokens to reflect their updated
       // balances.
       void get().staking.loadDelegationsForCurrentAccount();
-      void get().staking.loadUnstakedTokensByAccount();
+      void get().staking.loadUnstakedAndUnbondingTokensByAccount();
     } catch (e) {
       if (userDeniedTransaction(e)) {
         toast.onDenied();
