@@ -1,6 +1,10 @@
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { createGetter } from './utils/create-getter';
-import { UnbondingCaptureGroups, assetPatterns } from '@penumbra-zone/constants';
+import {
+  DelegationCaptureGroups,
+  UnbondingCaptureGroups,
+  assetPatterns,
+} from '@penumbra-zone/constants';
 
 export const getAssetId = createGetter((metadata?: Metadata) => metadata?.penumbraAssetId);
 
@@ -37,6 +41,30 @@ export const getStartEpochIndex = createGetter((metadata?: Metadata) => {
     const { epoch } = unbondingMatch.groups as unknown as UnbondingCaptureGroups;
 
     if (epoch) return BigInt(epoch);
+  }
+
+  return undefined;
+});
+
+/**
+ * Get the bech32 representation of a validator's identity key from the metadata
+ * of a delegation or unbonding token.
+ *
+ * For metadata of other token types, will return `undefined`.
+ */
+export const getValidatorIdentityKeyAsBech32String = createGetter((metadata?: Metadata) => {
+  if (!metadata) return undefined;
+
+  const delegationMatch = assetPatterns.delegationToken.exec(metadata.display);
+  if (delegationMatch) {
+    const { bech32IdentityKey } = delegationMatch.groups as unknown as DelegationCaptureGroups;
+    return bech32IdentityKey;
+  }
+
+  const unbondingMatch = assetPatterns.unbondingToken.exec(metadata.display);
+  if (unbondingMatch) {
+    const { bech32IdentityKey } = unbondingMatch.groups as unknown as UnbondingCaptureGroups;
+    return bech32IdentityKey;
   }
 
   return undefined;
