@@ -5,5 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@penumbra-zone/types": "workspace:^"
   }
 }
