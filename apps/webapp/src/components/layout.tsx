@@ -7,11 +7,7 @@ import '@penumbra-zone/ui/styles/globals.css';
 import { ExtensionNotConnected } from './extension-not-connected';
 import { ExtensionNotInstalled } from './extension-not-installed';
 import { Footer } from './footer';
-import {
-  isPraxInstalled,
-  isPraxConnected,
-  isPraxConnectedTimeout,
-} from '@penumbra-zone/client/prax';
+import { isPraxConnected, isPraxConnectedTimeout, isPraxInstalled } from '@penumbra-zone/client';
 
 export type LayoutLoaderResult =
   | { isInstalled: boolean; isConnected: boolean }

@@ -1,7 +1,7 @@
 import { LoaderFunction } from 'react-router-dom';
 import { getBalances } from '../../fetchers/balances';
 import { useStore } from '../../state';
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
+import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
 import {
   BalancesResponse,
   SwapRecord,

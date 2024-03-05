@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "type": "module",
+  "main": "index.ts",
   "scripts": {
     "clean": "rm -rfv dist wasm ; cargo clean --manifest-path ./crate/Cargo.toml",
     "dev": "cargo watch -C ./crate --postpone -- pnpm turbo run compile",

@@ -4,7 +4,7 @@ import { AddressComponent } from '@penumbra-zone/ui/components/ui/address-compon
 import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
 import { Table, TableBody, TableCell, TableRow } from '@penumbra-zone/ui';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
+import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
 
 export const AssetsLoader: LoaderFunction = async (): Promise<BalancesByAccount[]> => {
   await throwIfPraxNotConnectedTimeout();

@@ -1,7 +1,7 @@
 import { Button, SplashPage } from '@penumbra-zone/ui';
 import { HeadTag } from './metadata/head-tag';
 
-import { requestPraxConnection } from '@penumbra-zone/client/prax';
+import { requestPraxConnection } from '@penumbra-zone/client';
 import { useEffect, useState } from 'react';
 
 export const ExtensionNotConnected = () => {
