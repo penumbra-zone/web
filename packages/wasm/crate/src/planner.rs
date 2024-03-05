@@ -323,7 +323,7 @@ pub async fn plan_transaction(
     } in request.undelegation_claims
     {
         let validator_identity: IdentityKey = validator_identity
-            .ok_or_else(|| anyhow!("missing valiator identity in undelegation claim"))?
+            .ok_or_else(|| anyhow!("missing validator identity in undelegation claim"))?
             .try_into()?;
         let penalty: Penalty = penalty
             .ok_or_else(|| anyhow!("missing penalty in undelegation claim"))?
