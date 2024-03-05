@@ -18,6 +18,9 @@ import {
   joinLoHiAmount,
   toBaseUnit,
   splitLoHi,
+  getStartEpochIndexFromValueView,
+  asIdentityKey,
+  getValidatorIdentityKeyAsBech32StringFromValueView,
 } from '@penumbra-zone/types';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { BalancesByAccount, getBalancesByAccount } from '../fetchers/balances/by-account';
@@ -32,6 +35,7 @@ import { TransactionToast } from '@penumbra-zone/ui';
 import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from './helpers';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
+import { sctClient, stakeClient, viewClient } from '../clients';
 
 const STAKING_TOKEN_DISPLAY_DENOM_EXPONENT = (() => {
   const stakingAsset = localAssets.find(asset => asset.display === STAKING_TOKEN);
@@ -76,6 +80,10 @@ export interface StakingSlice {
    * Build and submit the Undelegate transaction.
    */
   undelegate: () => Promise<void>;
+  /**
+   * Build and submit Undelegate Claim transaction(s).
+   */
+  undelegateClaim: () => Promise<void>;
   loadUnstakedAndUnbondingTokensByAccount: () => Promise<void>;
   loading: boolean;
   error: unknown;
@@ -279,6 +287,57 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       });
     }
   },
+  undelegateClaim: async () => {
+    const { account, unbondingTokensByAccount } = get().staking;
+    const unbondingTokens = unbondingTokensByAccount.get(account);
+    if (!unbondingTokens) return;
+
+    const { fullSyncHeight } = await viewClient.status({});
+    const { epoch } = await sctClient.epochByHeight({ height: fullSyncHeight });
+    const endEpochIndex = epoch?.index;
+    if (!endEpochIndex) return;
+
+    unbondingTokens.tokens.forEach(unbondingToken => {
+      const toast = new TransactionToast('undelegateClaim');
+      const startEpochIndex = getStartEpochIndexFromValueView(unbondingToken);
+      toast.onStart();
+
+      void (async () => {
+        try {
+          const req = await assembleUndelegateClaimRequest({
+            account,
+            startEpochIndex,
+            endEpochIndex,
+            unbondingToken,
+            validatorIdentityKeyAsBech32String:
+              getValidatorIdentityKeyAsBech32StringFromValueView(unbondingToken),
+          });
+          const transactionPlan = await plan(req);
+
+          const transaction = await authWitnessBuild({ transactionPlan }, status =>
+            toast.onBuildStatus(status),
+          );
+          const txHash = await getTxHash(transaction);
+          toast.txHash(txHash);
+          const { detectionHeight } = await broadcast(
+            { transaction, awaitDetection: true },
+            status => toast.onBroadcastStatus(status),
+          );
+          toast.onSuccess(detectionHeight);
+
+          // Reload unstaked and unbonding tokens to reflect their updated
+          // balances.
+          void get().staking.loadUnstakedAndUnbondingTokensByAccount();
+        } catch (e) {
+          if (userDeniedTransaction(e)) {
+            toast.onDenied();
+          } else {
+            toast.onFailure(e);
+          }
+        }
+      })();
+    });
+  },
   loading: false,
   error: undefined,
   votingPowerByValidatorInfo: {},
@@ -345,6 +404,39 @@ const assembleUndelegateRequest = ({
           amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponentFromValueView(delegation)),
           assetId: getAssetIdFromValueView(delegation),
         },
+      },
+    ],
+    source: { account },
+  });
+};
+
+const assembleUndelegateClaimRequest = async ({
+  account,
+  startEpochIndex,
+  endEpochIndex,
+  unbondingToken,
+  validatorIdentityKeyAsBech32String,
+}: {
+  account: number;
+  unbondingToken: ValueView;
+  startEpochIndex: bigint;
+  endEpochIndex: bigint;
+  validatorIdentityKeyAsBech32String: string;
+}) => {
+  const identityKey = asIdentityKey(validatorIdentityKeyAsBech32String);
+  const { penalty } = await stakeClient.validatorPenalty({
+    startEpochIndex,
+    endEpochIndex,
+    identityKey,
+  });
+
+  return new TransactionPlannerRequest({
+    undelegationClaims: [
+      {
+        validatorIdentity: identityKey,
+        startEpochIndex,
+        penalty,
+        unbondingAmount: getAmount(unbondingToken),
       },
     ],
     source: { account },

@@ -194,6 +194,7 @@ describe('Staking Slice', () => {
       loadUnstakedAndUnbondingTokensByAccount: expect.any(Function) as unknown,
       delegate: expect.any(Function) as unknown,
       undelegate: expect.any(Function) as unknown,
+      undelegateClaim: expect.any(Function) as unknown,
       onClickActionButton: expect.any(Function) as unknown,
       onClose: expect.any(Function) as unknown,
       setAmount: expect.any(Function) as unknown,

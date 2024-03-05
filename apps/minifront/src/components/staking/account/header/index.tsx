@@ -6,6 +6,7 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  Button,
 } from '@penumbra-zone/ui';
 import { AccountSwitcher } from '@penumbra-zone/ui/components/ui/account-switcher';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
@@ -34,8 +35,13 @@ const zeroBalanceUm = new ValueView({
  * various token types related to staking.
  */
 export const Header = () => {
-  const { account, setAccount, unstakedTokensByAccount, unbondingTokensByAccount } =
-    useStore(stakingSelector);
+  const {
+    account,
+    setAccount,
+    unstakedTokensByAccount,
+    unbondingTokensByAccount,
+    undelegateClaim,
+  } = useStore(stakingSelector);
   const unstakedTokens = unstakedTokensByAccount.get(account);
   const unbondingTokens = unbondingTokensByAccount.get(account);
   const accountSwitcherFilter = useStore(accountsSelector);
@@ -65,9 +71,23 @@ export const Header = () => {
                           Total amount of UM you will receive when all your unbonding tokens are
                           claimed, assuming no slashing.
                         </div>
-                        {unbondingTokens?.tokens.map(token => (
-                          <ValueViewComponent key={getDisplayDenomFromView(token)} view={token} />
-                        ))}
+                        {unbondingTokens?.tokens.length && (
+                          <>
+                            {unbondingTokens.tokens.map(token => (
+                              <ValueViewComponent
+                                key={getDisplayDenomFromView(token)}
+                                view={token}
+                              />
+                            ))}
+
+                            <Button
+                              className='self-end px-4 text-white'
+                              onClick={() => void undelegateClaim()}
+                            >
+                              Claim
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </TooltipContent>
                   </Tooltip>
