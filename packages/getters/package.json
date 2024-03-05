@@ -1,0 +1,9 @@
+{
+  "name": "@penumbra-zone/getters",
+  "version": "1.0.0",
+  "description": "Convenience getters for the deeply nested optionals of Penumbra's protobuf types",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
