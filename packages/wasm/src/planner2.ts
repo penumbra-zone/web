@@ -10,6 +10,10 @@ export const planTransaction = async (
   request: TransactionPlannerRequest,
   fullViewingKey: string,
 ) => {
-  const plan = await plan_transaction(idbConstants, request.toJson(), fullViewingKey) as JsonValue;
+  const plan = (await plan_transaction(
+    idbConstants,
+    request.toJson(),
+    fullViewingKey,
+  )) as JsonValue;
   return TransactionPlan.fromJson(plan);
 };
