@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ProvingKey, provingKeysByActionType } from '@penumbra-zone/wasm/src/proving-keys';
+import { provingKeys } from '@penumbra-zone/wasm/src/proving-keys';
 
 const main = () => {
   const VERSION_TAG = 'v0.68.0';
@@ -10,17 +10,11 @@ const main = () => {
 
   const binDir = path.join('bin');
 
-  const defined = (value: ProvingKey | undefined): value is ProvingKey => Boolean(value);
-  const provingKeysAsArray = Object.values(provingKeysByActionType).filter(defined);
-
-  console.log(
-    'Downloading keys',
-    VERSION_TAG,
-    provingKeysAsArray.map(({ file }) => file).join(', '),
-  );
+  console.log('Downloading keys', VERSION_TAG, Object.values(provingKeys).join(', '));
 
   fs.mkdirSync(binDir, { recursive: true });
-  const downloads = provingKeysAsArray.map(async ({ file }) => {
+  const downloads = Object.values(provingKeys).map(async name => {
+    const file = `${name}_pk.bin`;
     const outputPath = path.join(binDir, file);
     const downloadPath = new URL(`${githubSourceDir}${file}`);
 
