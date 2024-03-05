@@ -1,13 +1,11 @@
 import { AllSlices, SliceCreator } from '.';
 import {
-  fromValueView,
   getAddress,
   getAddressIndex,
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
-  isPenumbraAddr,
-  toBaseUnit,
-} from '@penumbra-zone/types';
+} from '@penumbra-zone/getters';
+import { fromValueView, isPenumbraAddr, toBaseUnit } from '@penumbra-zone/types';
 import {
   BalancesResponse,
   TransactionPlannerRequest,

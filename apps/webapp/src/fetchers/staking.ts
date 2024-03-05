@@ -4,13 +4,13 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { stakeClient, viewClient } from '../clients';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { bech32IdentityKey, customizeSymbol } from '@penumbra-zone/types';
+
 import {
-  bech32IdentityKey,
-  customizeSymbol,
   getDisplayDenomFromView,
   getIdentityKeyFromValidatorInfo,
   getValidatorInfo,
-} from '@penumbra-zone/types';
+} from '@penumbra-zone/getters';
 import { DelegationCaptureGroups, assetPatterns } from '@penumbra-zone/constants';
 import { Any } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';

@@ -1,4 +1,4 @@
-import { getIdentityKey } from '@penumbra-zone/types';
+import { getIdentityKey } from '@penumbra-zone/getters';
 import {
   Dialog,
   DialogContent,

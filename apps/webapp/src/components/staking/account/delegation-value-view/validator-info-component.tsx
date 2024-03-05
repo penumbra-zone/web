@@ -1,10 +1,6 @@
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import {
-  bech32IdentityKey,
-  calculateCommissionAsPercentage,
-  getIdentityKeyFromValidatorInfo,
-  getValidator,
-} from '@penumbra-zone/types';
+import { bech32IdentityKey, calculateCommissionAsPercentage } from '@penumbra-zone/types';
+import { getIdentityKeyFromValidatorInfo, getValidator } from '@penumbra-zone/getters';
 import {
   Identicon,
   IdentityKeyComponent,

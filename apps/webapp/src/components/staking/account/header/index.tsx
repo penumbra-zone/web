@@ -1,4 +1,4 @@
-import { getDisplayDenomFromView } from '@penumbra-zone/types';
+import { getDisplayDenomFromView } from '@penumbra-zone/getters';
 import {
   Card,
   CardContent,

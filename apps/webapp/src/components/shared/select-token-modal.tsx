@@ -11,7 +11,7 @@ import {
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
-import { getAddressIndex, getDisplayDenomFromView, getMetadata } from '@penumbra-zone/types';
+import { getAddressIndex, getDisplayDenomFromView, getMetadata } from '@penumbra-zone/getters';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 interface SelectTokenModalProps {

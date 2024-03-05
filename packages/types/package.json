@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@penumbra-zone/constants": "workspace:*",
+    "@penumbra-zone/getters": "workspace:*",
     "@types/chrome": "0.0.260",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",

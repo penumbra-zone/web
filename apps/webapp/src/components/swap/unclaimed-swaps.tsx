@@ -2,7 +2,8 @@ import { Button, Card } from '@penumbra-zone/ui';
 import { useLoaderData, useRevalidator } from 'react-router-dom';
 import { SwapLoaderResponse, UnclaimedSwapsWithMetadata } from './swap-loader';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
-import { getSwapRecordCommitment, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import { getSwapRecordCommitment } from '@penumbra-zone/getters';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { useStore } from '../../state';
 import { unclaimedSwapsSelector } from '../../state/unclaimed-swaps';
 

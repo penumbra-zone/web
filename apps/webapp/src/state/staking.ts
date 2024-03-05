@@ -2,7 +2,6 @@ import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { AllSlices, SliceCreator } from '.';
 import { getDelegationsForAccount } from '../fetchers/staking';
 import {
-  VotingPowerAsIntegerPercentage,
   getAmount,
   getAssetIdFromValueView,
   getDisplayDenomExponent,
@@ -10,8 +9,11 @@ import {
   getDisplayDenomFromView,
   getRateData,
   getValidatorInfoFromValueView,
-  getVotingPowerByValidatorInfo,
   getVotingPowerFromValidatorInfo,
+} from '@penumbra-zone/getters';
+import {
+  VotingPowerAsIntegerPercentage,
+  getVotingPowerByValidatorInfo,
   isDelegationTokenForValidator,
   joinLoHiAmount,
   toBaseUnit,
