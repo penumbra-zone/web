@@ -1,5 +1,6 @@
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { createGetter } from './utils/create-getter';
+import { UnbondingCaptureGroups, assetPatterns } from '@penumbra-zone/constants';
 
 export const getAssetId = createGetter((metadata?: Metadata) => metadata?.penumbraAssetId);
 
@@ -20,3 +21,23 @@ export const getDisplayDenomExponent = createGetter(
   (metadata?: Metadata) =>
     metadata?.denomUnits.find(denomUnit => denomUnit.denom === metadata.display)?.exponent,
 );
+
+/**
+ * Get the start epoch index from the metadata of an unbonding token -- that is,
+ * the epoch at which unbonding started.
+ *
+ * For metadata of a non-unbonding token, will return `undefined`.
+ */
+export const getStartEpochIndex = createGetter((metadata?: Metadata) => {
+  if (!metadata) return undefined;
+
+  const unbondingMatch = assetPatterns.unbondingToken.exec(metadata.display);
+
+  if (unbondingMatch) {
+    const { epoch } = unbondingMatch.groups as unknown as UnbondingCaptureGroups;
+
+    if (epoch) return BigInt(epoch);
+  }
+
+  return undefined;
+});

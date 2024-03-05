@@ -1,6 +1,6 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { createGetter } from './utils/create-getter';
-import { getDisplayDenomExponent } from './metadata';
+import { getDisplayDenomExponent, getStartEpochIndex } from './metadata';
 import { bech32AssetId } from './asset';
 import { Any } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
@@ -50,6 +50,11 @@ export const getAssetIdFromValueView = createGetter((v?: ValueView) => {
 export const getAmount = createGetter(
   (valueView?: ValueView) => valueView?.valueView.value?.amount,
 );
+
+/**
+ * For a `ValueView` containing an unbonding token, gets the start epoch index.
+ */
+export const getStartEpochIndexFromValueView = getMetadata.pipe(getStartEpochIndex);
 
 export const getDisplayDenomFromView = createGetter((view?: ValueView) => {
   if (view?.valueView.case === 'unknownAssetId') {
