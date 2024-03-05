@@ -8,6 +8,8 @@ import {
 import { StateCommitmentTree } from '@penumbra-zone/types';
 import { JsonValue } from '@bufbuild/protobuf';
 import { authorize, build_action, build_parallel, witness } from '../wasm';
+import { provingKeysByActionType } from './proving-keys';
+import { loadProvingKey } from './utils';
 
 export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): AuthorizationData => {
   const result = authorize(spendKey, txPlan.toJson()) as unknown;
@@ -33,12 +35,18 @@ export const buildParallel = (
   );
   return Transaction.fromJson(result as JsonValue);
 };
-export const buildActionParallel = (
+export const buildActionParallel = async (
   txPlan: TransactionPlan,
   witnessData: WitnessData,
   fullViewingKey: string,
   actionId: number,
-): Action => {
+): Promise<Action> => {
+  // Conditionally read proving keys from disk and load keys into WASM binary
+  const actionType = txPlan.actions[actionId]?.action.case;
+  if (!actionType) throw new Error('No action key provided');
+  const provingKey = provingKeysByActionType[actionType];
+  if (provingKey) await loadProvingKey(provingKey);
+
   const result = build_action(
     txPlan.toJson(),
     txPlan.actions[actionId]?.toJson(),

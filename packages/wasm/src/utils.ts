@@ -1,5 +1,5 @@
 import { load_proving_key as wasmLoadProvingKey } from '../wasm';
-import { ProvingKey } from '@penumbra-zone/types/src/proving-keys';
+import { ProvingKey } from './proving-keys';
 
 export const loadLocalBinary = async (filename: string) => {
   const response = await fetch(`bin/${filename}`);
