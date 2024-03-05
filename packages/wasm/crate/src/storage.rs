@@ -94,6 +94,10 @@ impl IndexedDBStorage {
                     &commitment_object_store_params,
                 )?;
                 evt.db().create_object_store("TREE_HASHES")?;
+                evt.db().create_object_store("FMD_PARAMETERS")?;
+                evt.db().create_object_store("APP_PARAMETERS")?;
+                evt.db().create_object_store("GAS_PRICES")?;
+
             }
             Ok(())
         }));
