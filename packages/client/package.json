@@ -2,8 +2,9 @@
   "name": "@penumbra-zone/client",
   "version": "1.0.0",
   "description": "Package for connecting to Prax extension",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsup index.ts --format cjs,esm --dts"

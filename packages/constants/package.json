@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
-  "type": "module",
+  "main": "index.ts",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"

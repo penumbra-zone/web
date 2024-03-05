@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "license": "MIT",
   "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
+    "build": "tsup index.ts --format cjs,esm --dts",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run",
     "ui:add": "pnpm dlx shadcn-ui@latest add",
