@@ -1,6 +1,6 @@
 // pages/lp/[lp_nft_id].js
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import styles from "../../../styles/Home.module.css";
 import { LiquidityPositionQuerier } from "../../utils/protos/services/dex/liquidity-positions";
@@ -57,8 +57,25 @@ export default function LP() {
 
   useEffect(() => {
     // TODO: Fetch timeline trade data from indexer
-    setTradeTimelineData([1, 2, 3]);
+    setTradeTimelineData([1, 2,]);
   }, [lp_nft_id]);
+
+  const currentStatusRef = useRef<HTMLDivElement>(null);
+  const originalStatusRef = useRef<HTMLDivElement>(null);
+  const [lineHeight, setLineHeight] = useState(0);
+  const [lineTop, setLineTop] = useState(0);
+
+  useEffect(() => {
+    if (currentStatusRef.current && originalStatusRef.current) {
+      const firstBoxRect = currentStatusRef.current.getBoundingClientRect();
+      const lastBoxRect = originalStatusRef.current.getBoundingClientRect();
+      const height = lastBoxRect.top - firstBoxRect.bottom;
+      const top = firstBoxRect.top;
+
+      setLineHeight(height + 100);
+      setLineTop(top + firstBoxRect.bottom + 50);
+    }
+  }, [currentStatusRef, originalStatusRef, liquidityPosition, tradeTimelineData, isLoading, lp_nft_id]);
 
   return (
     <Layout pageTitle={`LP - ${lp_nft_id}`}>
@@ -68,6 +85,7 @@ export default function LP() {
         ) : liquidityPosition ? (
           <>
             <Box
+              position="relative" // Ensure this Box is the positioning context for the vertical line
               display="flex"
               flexDirection="column"
               alignItems="center"
@@ -86,23 +104,13 @@ export default function LP() {
                     >
                       Position Status
                     </Text>
-                    <CurrentLPStatus
-                      nftId={lp_nft_id}
-                      position={liquidityPosition}
-                    />
+                    <Box ref={currentStatusRef}>
+                      <CurrentLPStatus
+                        nftId={lp_nft_id}
+                        position={liquidityPosition}
+                      />
+                    </Box>
                   </VStack>
-                  {/* 
-                  <Box
-                    position="absolute"
-                    zIndex={-1}
-                    left="50%"
-                    top="100%"
-                    height="9em"
-                    width={".1em"}
-                    className="neon-box"
-                    backgroundColor="var(--complimentary-background)"
-                  />
-                   End Vertical line */}
                   <Text
                     fontWeight={"bold"}
                     width={"100%"}
@@ -116,7 +124,10 @@ export default function LP() {
                   </Text>
                   <VStack align={"flex-end"}>
                     {tradeTimelineData.map((dataItem, index) => (
-                      <VStack key={index} paddingTop={index === 0 ? "0" : "3em"} >
+                      <VStack
+                        key={index}
+                        paddingTop={index === 0 ? "0" : "3em"}
+                      >
                         <Box
                           key={index}
                           className="neon-box"
@@ -132,12 +143,27 @@ export default function LP() {
                     ))}
                   </VStack>
 
-                  <Box paddingTop={"4em"} paddingBottom={"5em"}>
+                  <Box
+                    paddingTop={"4em"}
+                    paddingBottom={"5em"}
+                    ref={originalStatusRef}
+                  >
                     <OriginalLPStatus nftId={lp_nft_id} />
                   </Box>
                 </VStack>
               </VStack>
             </Box>
+            <Box
+              position="absolute"
+              zIndex={-999}
+              left="50%"
+              top={`${lineTop}`}
+              height={`${lineHeight}`}
+              width={".1em"}
+              className="neon-box"
+              backgroundColor="var(--complimentary-background)"
+              id="vertical-line"
+            />
           </>
         ) : (
           <p>No liquidity position found.</p>
