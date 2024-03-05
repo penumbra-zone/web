@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 use std::str::FromStr;
 
+use crate::note_record::SpendableNoteRecord;
 use crate::storage::IndexedDBStorage;
 use crate::utils;
 use crate::{error::WasmResult, swap_record::SwapRecord};
@@ -107,6 +108,49 @@ impl ActionList {
             e.value.amount = e.value.amount.saturating_sub(&fee.0.amount);
         });
     }
+}
+
+/// Prioritize notes to spend to release value of a specific transaction.
+///
+/// Various logic is possible for note selection. Currently, this method
+/// prioritizes notes sent to a one-time address, then notes with the largest
+/// value:
+///
+/// - Prioritizing notes sent to one-time addresses optimizes for a future in
+/// which we implement DAGSync keyed by fuzzy message detection (which will not
+/// be able to detect notes sent to one-time addresses). Spending these notes
+/// immediately converts them into change notes, sent to the default address for
+/// the users' account, which are detectable.
+///
+/// - Prioritizing notes with the largest value optimizes for gas used by the
+/// transaction.
+///
+/// We may want to make note prioritization configurable in the future. For
+/// instance, a user might prefer a note prioritization strategy that harvested
+/// capital losses when possible, using cost basis information retained by the
+/// view server.
+fn prioritize_and_filter_spendable_notes(
+    records: Vec<SpendableNoteRecord>,
+) -> Vec<SpendableNoteRecord> {
+    let mut filtered = records
+        .into_iter()
+        .filter(|record| record.note.amount() > Amount::zero())
+        .collect::<Vec<_>>();
+
+    filtered.sort_by(|a, b| {
+        // Sort by whether the note was sent to an ephemeral address...
+        match (
+            a.address_index.is_ephemeral(),
+            b.address_index.is_ephemeral(),
+        ) {
+            (true, false) => std::cmp::Ordering::Less,
+            (false, true) => std::cmp::Ordering::Greater,
+            // ... then by largest amount.
+            _ => b.note.amount().cmp(&a.note.amount()),
+        }
+    });
+
+    filtered
 }
 
 /// Process a `TransactionPlannerRequest`, returning a `TransactionPlan`
@@ -325,7 +369,10 @@ pub async fn plan_transaction(
                 amount_to_spend: None,
             })
             .await?;
-        notes_by_asset_id.insert(required.asset_id, records);
+        notes_by_asset_id.insert(
+            required.asset_id,
+            prioritize_and_filter_spendable_notes(records),
+        );
     }
 
     let mut iterations = 0usize;
