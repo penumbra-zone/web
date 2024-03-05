@@ -10,8 +10,9 @@ import {
   Position,
 } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import Layout from "../../components/layout";
-import LPStatus from "../../components/liquidityPositions/status";
-import { VStack, Text, Spinner, Center } from "@chakra-ui/react";
+import CurrentLPStatus from "../../components/liquidityPositions/currentStatus";
+import OriginalLPStatus from "../../components/liquidityPositions/originalStatus";
+import { VStack, Text, Spinner, Center, Box, HStack } from "@chakra-ui/react";
 import { LoadingSpinner } from "../../components/util/loadingSpinner";
 
 export default function LP() {
@@ -52,6 +53,13 @@ export default function LP() {
     }
   }, [lp_nft_id]); // Runs when lp_nft_id changes, important as this isnt always grabbed immediately on page load.
 
+  const [tradeTimelineData, setTradeTimelineData] = useState<any[]>([]);
+
+  useEffect(() => {
+    // TODO: Fetch timeline trade data from indexer
+    setTradeTimelineData([1, 2, 3]);
+  }, [lp_nft_id]);
+
   return (
     <Layout pageTitle={`LP - ${lp_nft_id}`}>
       <main className={styles.main}>
@@ -59,27 +67,82 @@ export default function LP() {
           <LoadingSpinner />
         ) : liquidityPosition ? (
           <>
-            <VStack width={"100%"} paddingTop={"4em"}>
-              <VStack>
-                <Text
-                  fontWeight={"bold"}
-                  width={"100%"}
-                  alignContent={"left"}
-                  fontSize={"1.5em"}
-                  paddingBottom=".5em"
-                >
-                  Position Status
-                </Text>
-                <LPStatus nftId={lp_nft_id} position={liquidityPosition} />
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              width="100%"
+            >
+              <VStack spacing="5em" width="full" maxW="container.md" px={4}>
+                <VStack align="stretch" paddingTop={"3em"}>
+                  <VStack align="stretch">
+                    <Text
+                      fontWeight={"bold"}
+                      width={"100%"}
+                      alignContent={"left"}
+                      fontSize={"1.5em"}
+                      paddingBottom=".5em"
+                      alignSelf="flex-start"
+                    >
+                      Position Status
+                    </Text>
+                    <CurrentLPStatus
+                      nftId={lp_nft_id}
+                      position={liquidityPosition}
+                    />
+                  </VStack>
+                  {/* 
+                  <Box
+                    position="absolute"
+                    zIndex={-1}
+                    left="50%"
+                    top="100%"
+                    height="9em"
+                    width={".1em"}
+                    className="neon-box"
+                    backgroundColor="var(--complimentary-background)"
+                  />
+                   End Vertical line */}
+                  <Text
+                    fontWeight={"bold"}
+                    width={"100%"}
+                    alignContent={"left"}
+                    fontSize={"1.5em"}
+                    paddingBottom=".5em"
+                    alignSelf="flex-start"
+                    paddingTop="2em"
+                  >
+                    Timeline
+                  </Text>
+                  <VStack align={"flex-end"}>
+                    {tradeTimelineData.map((dataItem, index) => (
+                      <VStack key={index} paddingTop={index === 0 ? "0" : "3em"} >
+                        <Box
+                          key={index}
+                          className="neon-box"
+                          width={"20em"}
+                          height={"5em"}
+                          padding="2em"
+                        >
+                          <Text textAlign={"center"}>
+                            Example Trade {index}
+                          </Text>
+                        </Box>
+                      </VStack>
+                    ))}
+                  </VStack>
+
+                  <Box paddingTop={"4em"} paddingBottom={"5em"}>
+                    <OriginalLPStatus nftId={lp_nft_id} />
+                  </Box>
+                </VStack>
               </VStack>
-            </VStack>
+            </Box>
           </>
         ) : (
           <p>No liquidity position found.</p>
         )}
       </main>
-
-      {/* todo */}
     </Layout>
   );
 }
