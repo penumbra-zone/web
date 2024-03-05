@@ -4,7 +4,8 @@
   "description": "Convenience getters for the deeply nested optionals of Penumbra's protobuf types",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
   },
   "devDependencies": {
     "bech32": "^2.0.0"
