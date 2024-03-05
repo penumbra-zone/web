@@ -1,10 +1,9 @@
+import { Chain, toBaseUnit } from '@penumbra-zone/types';
 import {
-  Chain,
   getAddressIndex,
   getDisplayDenomExponentFromValueView,
   getMetadata,
-  toBaseUnit,
-} from '@penumbra-zone/types';
+} from '@penumbra-zone/getters';
 import { AllSlices, SliceCreator } from '.';
 import {
   BalancesResponse,

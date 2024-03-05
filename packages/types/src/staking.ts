@@ -11,7 +11,7 @@ import {
   getRateBpsFromFundingStream,
   getStateEnumFromValidatorInfo,
   getVotingPowerFromValidatorInfo,
-} from './getters';
+} from '@penumbra-zone/getters';
 import { joinLoHiAmount } from './amount';
 import { bech32IdentityKey } from './identity-key';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';

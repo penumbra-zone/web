@@ -2,7 +2,7 @@ import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { ValidatorInfoComponent } from './validator-info-component';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { StakingActions } from './staking-actions';
-import { getValidatorInfoFromValueView } from '@penumbra-zone/types';
+import { getValidatorInfoFromValueView } from '@penumbra-zone/getters';
 
 /**
  * Renders a `ValueView` that contains a delegation token, along with the

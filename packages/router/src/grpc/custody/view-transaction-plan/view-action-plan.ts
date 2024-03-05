@@ -2,7 +2,7 @@ import {
   ActionPlan,
   ActionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { bech32AssetId } from '@penumbra-zone/types/src/asset';
+import { bech32AssetId } from '@penumbra-zone/getters/asset';
 import {
   Metadata,
   Value,

@@ -22,8 +22,8 @@ import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
   getSwapCommitmentFromTx,
-  toBaseUnit,
-} from '@penumbra-zone/types';
+} from '@penumbra-zone/getters';
+import { toBaseUnit } from '@penumbra-zone/types';
 import { BigNumber } from 'bignumber.js';
 import { getAddressByIndex } from '../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';

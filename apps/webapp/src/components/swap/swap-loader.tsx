@@ -9,12 +9,8 @@ import {
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { fetchUnclaimedSwaps } from '../../fetchers/unclaimed-swaps';
 import { viewClient } from '../../clients';
-import {
-  getDisplayDenomFromView,
-  getSwapAsset1,
-  getSwapAsset2,
-  uint8ArrayToBase64,
-} from '@penumbra-zone/types';
+import { getDisplayDenomFromView, getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types';
 import { assetPatterns, localAssets } from '@penumbra-zone/constants';
 
 export interface UnclaimedSwapsWithMetadata {

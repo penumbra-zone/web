@@ -32,6 +32,7 @@
     "zustand": "^4.5.1"
   },
   "devDependencies": {
+    "@penumbra-zone/getters": "workspace:*",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.2.1",
     "@types/node": "^20.11.22",

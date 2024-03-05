@@ -11,12 +11,8 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import {
-  base64ToUint8Array,
-  getAddressIndex,
-  getAssetIdFromValueView,
-  getMetadata,
-} from '@penumbra-zone/types';
+import { base64ToUint8Array } from '@penumbra-zone/types';
+import { getAddressIndex, getAssetIdFromValueView, getMetadata } from '@penumbra-zone/getters';
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { Services } from '@penumbra-zone/services';

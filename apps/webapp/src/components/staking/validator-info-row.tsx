@@ -1,5 +1,6 @@
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { calculateCommissionAsPercentage, getValidator } from '@penumbra-zone/types';
+import { getValidator } from '@penumbra-zone/getters';
+import { calculateCommissionAsPercentage } from '@penumbra-zone/types';
 import { TableRow, TableCell } from '@penumbra-zone/ui';
 import { ReactNode } from 'react';
 import { Oval } from 'react-loader-spinner';

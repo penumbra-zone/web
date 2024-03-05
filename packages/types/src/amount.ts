@@ -2,7 +2,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { fromBaseUnit, joinLoHi, splitLoHi } from './lo-hi';
 import { BigNumber } from 'bignumber.js';
 import { ValueView_KnownAssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { getDisplayDenomExponent } from '@penubmra-zone/getters';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters';
 
 export const joinLoHiAmount = (amount: Amount): bigint => {
   return joinLoHi(amount.lo, amount.hi);

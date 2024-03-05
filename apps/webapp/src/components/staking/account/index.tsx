@@ -1,8 +1,5 @@
-import {
-  VotingPowerAsIntegerPercentage,
-  bech32IdentityKey,
-  getIdentityKeyFromValueView,
-} from '@penumbra-zone/types';
+import { VotingPowerAsIntegerPercentage, bech32IdentityKey } from '@penumbra-zone/types';
+import { getIdentityKeyFromValueView } from '@penumbra-zone/getters';
 import { useStore } from '../../../state';
 import { stakingSelector } from '../../../state/staking';
 import { DelegationValueView } from './delegation-value-view';

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { calculateCommissionAsPercentage, getVotingPowerByValidatorInfo } from './staking';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { bech32IdentityKey } from './identity-key';
-import { getIdentityKeyFromValidatorInfo } from './getters';
+import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters';
 
 describe('calculateCommission()', () => {
   const validatorInfo = new ValidatorInfo({

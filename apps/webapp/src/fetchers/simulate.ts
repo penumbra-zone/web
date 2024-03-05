@@ -1,6 +1,6 @@
 import { simulateClient } from '../clients';
 import { SimulateTradeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { getAssetId } from '@penumbra-zone/types';
+import { getAssetId } from '@penumbra-zone/getters';
 import {
   Metadata,
   Value,

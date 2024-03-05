@@ -1,5 +1,6 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { addAmounts, getAssetIdFromValueView } from '@penumbra-zone/types';
+import { addAmounts } from '@penumbra-zone/types';
+import { getAssetIdFromValueView } from '@penumbra-zone/getters';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 const hasMatchingAssetId = (vA: ValueView, vB: ValueView) => {

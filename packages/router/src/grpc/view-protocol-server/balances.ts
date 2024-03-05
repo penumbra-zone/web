@@ -1,7 +1,8 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-import { addLoHi, Base64Str, getAmount, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import { addLoHi, Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types';
+import { getAmount } from '@penumbra-zone/getters';
 
 import {
   AssetId,
@@ -18,7 +19,7 @@ import {
   BalancesResponse,
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { getAssetIdFromRecord } from '@penumbra-zone/types/src/getters/spendable-note-record';
+import { getAssetIdFromRecord } from '@penumbra-zone/getters/spendable-note-record';
 import { HandlerContext } from '@connectrpc/connect';
 import { assetMetadataById } from './asset-metadata-by-id';
 import { addressByIndex } from './address-by-index';
