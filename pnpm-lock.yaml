@@ -290,6 +290,9 @@ importers:
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../../packages/crypto
+      '@penumbra-zone/getters':
+        specifier: workspace:*
+        version: link:../../packages/getters
       '@penumbra-zone/transport-dom':
         specifier: workspace:*
         version: link:../../packages/transport-dom
@@ -339,9 +342,6 @@ importers:
         specifier: ^4.5.1
         version: 4.5.1(@types/react@18.2.60)(immer@10.0.3)(react@18.2.0)
     devDependencies:
-      '@penumbra-zone/getters':
-        specifier: workspace:*
-        version: link:../../packages/getters
       '@testing-library/jest-dom':
         specifier: ^6.4.2
         version: 6.4.2(vitest@1.3.1)
@@ -437,7 +437,7 @@ importers:
         version: 0.3.22(@typescript-eslint/eslint-plugin@7.1.0)(eslint@8.57.0)(typescript@5.3.3)(vitest@1.3.1)
 
   packages/getters:
-    devDependencies:
+    dependencies:
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
@@ -474,6 +474,9 @@ importers:
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../crypto
+      '@penumbra-zone/getters':
+        specifier: workspace:*
+        version: link:../getters
       '@penumbra-zone/polyfills':
         specifier: workspace:*
         version: link:../polyfills
@@ -492,10 +495,6 @@ importers:
       '@penumbra-zone/wasm':
         specifier: workspace:*
         version: link:../wasm
-    devDependencies:
-      '@penumbra-zone/getters':
-        specifier: workspace:*
-        version: link:../getters
 
   packages/services:
     dependencies:
@@ -584,6 +583,9 @@ importers:
       '@penumbra-zone/constants':
         specifier: workspace:*
         version: link:../constants
+      '@penumbra-zone/getters':
+        specifier: workspace:*
+        version: link:../getters
       '@types/chrome':
         specifier: 0.0.260
         version: 0.0.260
@@ -599,13 +601,12 @@ importers:
       zod:
         specifier: ^3.22.4
         version: 3.22.4
-    devDependencies:
-      '@penumbra-zone/getters':
-        specifier: workspace:*
-        version: link:../getters
 
   packages/ui:
     dependencies:
+      '@penumbra-zone/getters':
+        specifier: workspace:*
+        version: link:../getters
       '@radix-ui/react-checkbox':
         specifier: ^1.0.4
         version: 1.0.4(@types/react-dom@18.2.19)(@types/react@18.2.60)(react-dom@18.2.0)(react@18.2.0)
@@ -688,9 +689,6 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0
     devDependencies:
-      '@penumbra-zone/getters':
-        specifier: workspace:*
-        version: link:../getters
       '@storybook/addon-essentials':
         specifier: ^7.6.17
         version: 7.6.17(@types/react-dom@18.2.19)(@types/react@18.2.60)(react-dom@18.2.0)(react@18.2.0)
@@ -7344,6 +7342,7 @@ packages:
 
   /bech32@2.0.0:
     resolution: {integrity: sha512-LcknSilhIGatDAsY1ak2I8VtGaHNhgMSYVxFrGLXv+xLHytaKZKcaUJJUE7qmBr7h33o5YQwP55pMI0xmkpJwg==}
+    dev: false
 
   /better-opn@3.0.2:
     resolution: {integrity: sha512-aVNobHnJqLiUelTaHat9DZ1qM2w0C0Eym4LPI/3JxOnSokGVdsl1T1kN7TFvsEAD8G47A6VKQ0TVHqbBnYMJlQ==}

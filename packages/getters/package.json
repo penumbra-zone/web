@@ -7,7 +7,7 @@
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
-  "devDependencies": {
+  "dependencies": {
     "bech32": "^2.0.0"
   }
 }
