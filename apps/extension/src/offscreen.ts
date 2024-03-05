@@ -28,6 +28,7 @@ export const offscreenMessageHandler = (
           type,
           error: `Offscreen: ${e.message}`,
         }));
+
       sendResponse(res);
     })();
   }

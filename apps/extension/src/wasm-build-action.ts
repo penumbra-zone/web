@@ -3,7 +3,7 @@ import {
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import type { ActionBuildRequest } from '@penumbra-zone/types/src/internal-msg/offscreen';
-import type { JsonValue } from '@bufbuild/protobuf';
+import type { JsonObject, JsonValue } from '@bufbuild/protobuf';
 import { camelToSnakeCase } from '@penumbra-zone/types/src/utility';
 import { provingKeys } from '@penumbra-zone/types/src/proving-keys';
 
@@ -32,9 +32,20 @@ const workerListener = ({ data }: { data: ActionBuildRequest }) => {
   const transactionPlan = TransactionPlan.fromJson(transactionPlanJson);
   const witness = WitnessData.fromJson(witnessJson);
 
-  void executeWorker(transactionPlan, witness, fullViewingKey, actionPlanIndex).then(
-    self.postMessage,
-  );
+  void executeWorker(transactionPlan, witness, fullViewingKey, actionPlanIndex).then(result => {
+    performance.measure('executeWorker', 'executeWorker-start', 'executeWorker-end');
+    performance.measure('loadProvingKey', 'loadProvingKey-start', 'loadProvingKey-end');
+    performance.measure(
+      'buildActionParallel',
+      'buildActionParallel-start',
+      'buildActionParallel-end',
+    );
+    self.postMessage(
+      Object.assign(result as JsonObject, {
+        performance: performance.getEntriesByType('measure').map(e => e.toJSON() as JsonObject),
+      }),
+    );
+  });
 };
 
 self.addEventListener('message', workerListener, { once: true });
@@ -50,6 +61,7 @@ async function executeWorker(
   fullViewingKey: string,
   actionPlanIndex: number,
 ): Promise<JsonValue> {
+  performance.mark('executeWorker-start', { detail: actionPlanIndex });
   // Dynamically load wasm module
   const penumbraWasmModule = await import('@penumbra-zone/wasm');
 
@@ -61,7 +73,13 @@ async function executeWorker(
     await penumbraWasmModule.loadProvingKey(camelToSnakeCase(actionType));
 
   // Build action according to specification in `TransactionPlan`
-  return penumbraWasmModule
-    .buildActionParallel(transactionPlan, witness, fullViewingKey, actionPlanIndex)
-    .toJson();
+  const action = penumbraWasmModule.buildActionParallel(
+    transactionPlan,
+    witness,
+    fullViewingKey,
+    actionPlanIndex,
+  );
+
+  performance.mark('executeWorker-end');
+  return action.toJson();
 }

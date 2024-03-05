@@ -39,12 +39,14 @@ export const buildActionParallel = (
   fullViewingKey: string,
   actionId: number,
 ): Action => {
+  performance.mark('buildActionParallel-start');
   const result = build_action(
     txPlan.toJson(),
     txPlan.actions[actionId]?.toJson(),
     fullViewingKey,
     witnessData.toJson(),
   ) as unknown;
+  performance.mark('buildActionParallel-end');
 
   return Action.fromJson(result as JsonValue);
 };

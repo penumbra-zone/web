@@ -14,6 +14,7 @@ export const loadProvingKey = async (
   /** The `snake_case`d name of the proving key to load. */
   keyType: string,
 ) => {
+  performance.mark('loadProvingKey-start');
   const keyEntry = provingKeys.find(entry => entry.keyType === keyType);
 
   if (keyEntry) {
@@ -22,4 +23,5 @@ export const loadProvingKey = async (
   } else {
     throw new Error(`Proving key not found for key type: ${keyType}`);
   }
+  performance.mark('loadProvingKey-end');
 };
