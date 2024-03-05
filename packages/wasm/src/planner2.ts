@@ -10,21 +10,6 @@ export const planTransaction = async (
   request: TransactionPlannerRequest,
   fullViewingKey: string,
 ) => {
-  console.log('got here 1');
-  const ret = await plan_transaction(idbConstants, request.toJson(), fullViewingKey);
-  console.log('got here 2');
-  /*
-    const jsonPlan = (await plan_transaction(
-        idbConstants,
-        request,
-        changeAddress,
-        fmdParams,
-        sctParams,
-        gasPrices,
-        chainId,
-    )) as JsonValue;
-    */
-  const jsonPlan = ret as JsonValue;
-
-  return TransactionPlan.fromJson(jsonPlan);
+  const plan = await plan_transaction(idbConstants, request.toJson(), fullViewingKey) as JsonValue;
+  return TransactionPlan.fromJson(plan);
 };
