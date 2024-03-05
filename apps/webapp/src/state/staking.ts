@@ -204,10 +204,9 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     try {
       const transactionPlan = await plan(assembleDelegateRequest(get().staking));
 
-      // Reset form _after_ building the transaction form, since it depends on
+      // Reset form _after_ building the transaction planner request, since it depends on
       // the state.
       set(state => {
-        state.staking.amount = '';
         state.staking.action = undefined;
         state.staking.validatorInfo = undefined;
       });
@@ -232,6 +231,10 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       } else {
         toast.onFailure(e);
       }
+    } finally {
+      set(state => {
+        state.staking.amount = '';
+      });
     }
   },
   undelegate: async () => {
