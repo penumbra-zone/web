@@ -342,6 +342,9 @@ importers:
         specifier: ^4.5.1
         version: 4.5.1(@types/react@18.2.60)(immer@10.0.3)(react@18.2.0)
     devDependencies:
+      '@penumbra-zone/polyfills':
+        specifier: workspace:*
+        version: link:../../packages/polyfills
       '@testing-library/jest-dom':
         specifier: ^6.4.2
         version: 6.4.2(vitest@1.3.1)
