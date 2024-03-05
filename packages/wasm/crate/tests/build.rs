@@ -13,6 +13,10 @@ mod tests {
         IdbDatabase, IdbObjectStore, IdbQuerySource, IdbTransaction, IdbTransactionMode,
     };
 
+    use penumbra_proto::core::app::v1::AppParameters;
+    use penumbra_proto::core::component::fee::v1::GasPrices;
+    use penumbra_proto::view::v1::transaction_planner_request::Output;
+    use penumbra_proto::view::v1::TransactionPlannerRequest;
     use penumbra_proto::{
         core::{
             asset::v1::Value,
@@ -21,19 +25,20 @@ mod tests {
             transaction::v1::{MemoPlaintext, TransactionPlan as tp},
         },
         view::v1::SpendableNoteRecord,
+        DomainType,
     };
     use penumbra_tct::{structure::Hash, Forgotten};
     use penumbra_transaction::{
         plan::{ActionPlan, TransactionPlan},
         Action, Transaction,
     };
+    use penumbra_wasm::planner::plan_transaction;
     use penumbra_wasm::{
         build::build_action,
         error::WasmError,
         keys::load_proving_key,
         storage::IndexedDBStorage,
         tx::{authorize, build, build_parallel, witness},
-        wasm_planner::WasmPlanner,
     };
 
     #[wasm_bindgen_test]
@@ -89,6 +94,9 @@ mod tests {
             notes: String,
             spendable_notes: String,
             swaps: String,
+            fmd_parameters: String,
+            app_parameters: String,
+            gas_prices: String,
         }
 
         // Define `IndexDB` table parameters and constants.
@@ -97,6 +105,9 @@ mod tests {
             notes: "NOTES".to_string(),
             spendable_notes: "SPENDABLE_NOTES".to_string(),
             swaps: "SWAPS".to_string(),
+            fmd_parameters: "FMD_PARAMETERS".to_string(),
+            app_parameters: "APP_PARAMETERS".to_string(),
+            gas_prices: "GAS_PRICES".to_string(),
         };
 
         let constants: IndexedDbConstants = IndexedDbConstants {
@@ -111,26 +122,35 @@ mod tests {
             epoch_duration: 5u64,
         };
 
+        let app_params = AppParameters {
+            chain_id,
+            sct_params: Some(sct_params.to_proto()),
+            community_pool_params: None,
+            governance_params: None,
+            ibc_params: None,
+            stake_params: None,
+            fee_params: None,
+            distributions_params: None,
+            funding_params: None,
+            shielded_pool_params: None,
+        };
+
         let fmd_params = FmdParameters {
             precision_bits: 0u32,
             as_of_block_height: 1u64,
         };
+        let gas_prices = GasPrices {
+            block_space_price: 0,
+            compact_block_space_price: 0,
+            verification_price: 0,
+            execution_price: 0,
+        };
 
         // Serialize the parameters into `JsValue`.
-        let js_chain_id_value: JsValue = serde_wasm_bindgen::to_value(&chain_id).unwrap();
-        let js_sct_params_value: JsValue = serde_wasm_bindgen::to_value(&sct_params).unwrap();
+        let js_app_params_value: JsValue = serde_wasm_bindgen::to_value(&app_params).unwrap();
         let js_fmd_params_value: JsValue = serde_wasm_bindgen::to_value(&fmd_params).unwrap();
         let js_constants_params_value: JsValue = serde_wasm_bindgen::to_value(&constants).unwrap();
-
-        // Construct `WasmPlanner` instance.
-        let mut wasm_planner = WasmPlanner::new(
-            js_constants_params_value,
-            js_chain_id_value,
-            js_sct_params_value,
-            js_fmd_params_value,
-        )
-        .await
-        .unwrap();
+        let js_gas_prices_value: JsValue = serde_wasm_bindgen::to_value(&gas_prices).unwrap();
 
         // Create spendable UTXO note in JSON format.
         let spendable_note_json = r#"
@@ -203,26 +223,20 @@ mod tests {
         let address: Address = serde_json::from_str(address_json).unwrap();
         let value: Value = serde_json::from_str(value_json).unwrap();
 
-        // Add output action to plan.
-        wasm_planner
-            .output(
-                serde_wasm_bindgen::to_value(&value).unwrap(),
-                serde_wasm_bindgen::to_value(&address).unwrap(),
-            )
-            .unwrap();
-
         // Add memo to plan.
         let memo: MemoPlaintext = MemoPlaintext {
-            return_address: Some(address),
+            return_address: Some(address.clone()),
             text: "sample memo".to_string(),
         };
-        let memo_plan_deserialized = serde_wasm_bindgen::to_value(&memo).unwrap();
-        wasm_planner.memo(memo_plan_deserialized).unwrap();
 
         // Retrieve private database handle with public getters.
-        let storage = wasm_planner.get_storage();
-        let storage_ref: &IndexedDBStorage = unsafe { &*storage };
-        let database: *const IdbDatabase = storage_ref.get_database();
+        let storage = IndexedDBStorage::new(
+            serde_wasm_bindgen::from_value(js_constants_params_value.clone()).unwrap(),
+        )
+        .await
+        .unwrap();
+        // let storage_ref: &IndexedDBStorage = unsafe { &*storage };
+        let database: *const IdbDatabase = storage.get_database();
         let database_ref: &IdbDatabase = unsafe { &*database };
 
         // Define SCT-related structs.
@@ -317,6 +331,15 @@ mod tests {
         let tx_tree_last_forgotten: IdbTransaction = database_ref
             .transaction_on_one_with_mode("TREE_LAST_FORGOTTEN", IdbTransactionMode::Readwrite)
             .unwrap();
+        let tx_fmd: IdbTransaction = database_ref
+            .transaction_on_one_with_mode("FMD_PARAMETERS", IdbTransactionMode::Readwrite)
+            .unwrap();
+        let tx_app: IdbTransaction = database_ref
+            .transaction_on_one_with_mode("APP_PARAMETERS", IdbTransactionMode::Readwrite)
+            .unwrap();
+        let tx_gas: IdbTransaction = database_ref
+            .transaction_on_one_with_mode("GAS_PRICES", IdbTransactionMode::Readwrite)
+            .unwrap();
 
         let store_note: IdbObjectStore = tx_note.object_store("SPENDABLE_NOTES").unwrap();
         let store_tree_commitments: IdbObjectStore = tx_tree_commitments
@@ -328,6 +351,9 @@ mod tests {
         let store_tree_last_forgotten: IdbObjectStore = tx_tree_last_forgotten
             .object_store("TREE_LAST_FORGOTTEN")
             .unwrap();
+        let store_fmd: IdbObjectStore = tx_fmd.object_store("FMD_PARAMETERS").unwrap();
+        let store_app: IdbObjectStore = tx_app.object_store("APP_PARAMETERS").unwrap();
+        let store_gas: IdbObjectStore = tx_gas.object_store("GAS_PRICES").unwrap();
 
         let spendable_note_json = serde_wasm_bindgen::to_value(&spendable_note).unwrap();
         let tree_commitments_json =
@@ -339,6 +365,9 @@ mod tests {
             serde_wasm_bindgen::to_value(&sctUpdates.set_forgotten).unwrap();
         let tree_last_forgotten_json_key: JsValue =
             serde_wasm_bindgen::to_value(&"last_forgotten").unwrap();
+        let fmd_json_key: JsValue = serde_wasm_bindgen::to_value(&"params").unwrap();
+        let app_json_key: JsValue = serde_wasm_bindgen::to_value(&"params").unwrap();
+        let gas_json_key: JsValue = serde_wasm_bindgen::to_value(&"gas_prices").unwrap();
 
         store_note.put_val(&spendable_note_json).unwrap();
         store_tree_commitments
@@ -352,6 +381,15 @@ mod tests {
                 &tree_last_forgotten_json_key,
                 &tree_last_forgotten_json_value,
             )
+            .unwrap();
+        store_fmd
+            .put_key_val(&fmd_json_key, &js_fmd_params_value)
+            .unwrap();
+        store_app
+            .put_key_val(&app_json_key, &js_app_params_value)
+            .unwrap();
+        store_gas
+            .put_key_val(&gas_json_key, &js_gas_prices_value)
             .unwrap();
 
         // Set refund address.
@@ -367,10 +405,36 @@ mod tests {
 
         // -------------- 1. Query transaction plan performing a spend --------------
 
-        let transaction_plan: JsValue = wasm_planner
-            .plan(refund_address_json, source)
-            .await
-            .unwrap();
+        let planner_request = TransactionPlannerRequest {
+            expiry_height: 0,
+            memo: Some(memo),
+            source: None,
+            outputs: vec![Output {
+                address: Some(address),
+                value: Some(value),
+            }],
+            swaps: vec![],
+            swap_claims: vec![],
+            delegations: vec![],
+            undelegations: vec![],
+            ibc_relay_actions: vec![],
+            ics20_withdrawals: vec![],
+            position_opens: vec![],
+            position_closes: vec![],
+            position_withdraws: vec![],
+            fee_mode: None,
+        };
+
+        // Viewing key to reveal asset balances and transactions.
+        let full_viewing_key = "penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2";
+
+        let transaction_plan: JsValue = plan_transaction(
+            js_constants_params_value,
+            serde_wasm_bindgen::to_value(&planner_request).unwrap(),
+            full_viewing_key,
+        )
+        .await
+        .unwrap();
 
         // -------------- 2. Generate authorization data from spend key and transaction plan --------------
 
@@ -437,9 +501,6 @@ mod tests {
 
         // Generate witness data from SCT and specific transaction plan.
         let witness_data: Result<JsValue, WasmError> = witness(transaction_plan.clone(), sct_json);
-
-        // Viewing key to reveal asset balances and transactions.
-        let full_viewing_key = "penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2";
 
         // Serialize transaction plan into `TransactionPlan`.
         let transaction_plan_serialized: tp =
