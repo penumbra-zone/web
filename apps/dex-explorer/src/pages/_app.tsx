@@ -2,7 +2,7 @@ import type { AppProps } from "next/app";
 import "@/global.css";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
-function MyApp({ Component, pageProps }: AppProps) {
+function app({ Component, pageProps }: AppProps) {
   // May not necessarily be the best way to apply global styles
   const theme = extendTheme({
     styles: {
@@ -24,4 +24,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default MyApp;
+export default app;
