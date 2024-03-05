@@ -1,4 +1,4 @@
-// components/LPStatus.js
+// components/CurrentLPStatus.js
 
 import React, { useEffect, useState } from "react";
 import {
@@ -21,12 +21,12 @@ import { tokenConfigMapOnInner, Token } from "../../constants/tokenConstants";
 import { fetchToken } from "../../utils/token/tokenFetch";
 import BigNumber from "bignumber.js";
 
-interface LPStatusProps {
+interface CurrentLPStatusProps {
   nftId: string;
   position: Position;
 }
 
-const LPStatus = ({ nftId, position }: LPStatusProps) => {
+const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
   // First process position to human readable pieces
 
   // Get status
@@ -125,10 +125,7 @@ const LPStatus = ({ nftId, position }: LPStatusProps) => {
   );
 
   return (
-    <Box
-      className="neon-box"
-      padding={15}
-    >
+    <Box className="neon-box" padding={15} >
       <VStack width={"100%"}>
         <Text>{nftId}</Text>
         <HStack width={"100%"} justifyContent={"center"} paddingTop={"1em"}>
@@ -196,4 +193,4 @@ const LPStatus = ({ nftId, position }: LPStatusProps) => {
   );
 };
 
-export default LPStatus;
+export default CurrentLPStatus;
