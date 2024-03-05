@@ -17,7 +17,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { Jsonified } from '@penumbra-zone/types';
-import { bech32AssetId } from '@penumbra-zone/getters/asset';
+import { bech32AssetId } from '@penumbra-zone/getters/src/asset';
 import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
 import {
   BatchSwapOutputData,

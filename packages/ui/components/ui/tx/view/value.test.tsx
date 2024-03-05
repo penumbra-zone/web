@@ -5,7 +5,7 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { bech32AssetId } from '@penumbra-zone/getters/asset';
+import { bech32AssetId } from '@penumbra-zone/getters';
 import { base64ToUint8Array } from '@penumbra-zone/types';
 
 describe('<ValueViewComponent />', () => {
