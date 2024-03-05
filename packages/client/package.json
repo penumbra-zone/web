@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "Package for connecting to Prax extension",
   "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": "./index.ts"
   },
   "scripts": {
+    "build": "tsup index.ts --format esm --dts",
     "lint": "eslint \"**/*.ts*\""
   },
   "dependencies": {
