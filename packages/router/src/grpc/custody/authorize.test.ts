@@ -3,14 +3,15 @@ import { createContextValues, createHandlerContext, HandlerContext } from '@conn
 import { approverCtx, extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx';
 import { IndexedDbMock, MockExtLocalCtx, MockExtSessionCtx, MockServices } from '../test-utils';
 import { authorize } from './authorize';
-import {
-  AuthorizeRequest,
-  AuthorizeResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
+import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
-import { TransactionPlan } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import {
+  AuthorizationData,
+  TransactionPlan,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { Services } from '@penumbra-zone/services';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
 
 describe('Authorize request handler', () => {
   let mockServices: MockServices;
@@ -76,7 +77,7 @@ describe('Authorize request handler', () => {
       }),
     };
 
-    mockApproverCtx = vi.fn().mockImplementation(() => Promise.resolve(true));
+    mockApproverCtx = vi.fn().mockImplementation(() => Promise.resolve(UserAttitude.Approved));
 
     mockCtx = createHandlerContext({
       service: CustodyService,
@@ -104,8 +105,15 @@ describe('Authorize request handler', () => {
   });
 
   test('should successfully authorize request', async () => {
-    const authorizeResponse = new AuthorizeResponse(await authorize(req, mockCtx));
-    expect(authorizeResponse.data).toBeDefined();
+    const authData = authorize(req, mockCtx);
+    await expect(authData).resolves.toHaveProperty('data');
+    const { data } = await authData;
+    expect(data).toBeInstanceOf(AuthorizationData);
+  });
+
+  test('should fail if user denies request', async () => {
+    mockApproverCtx.mockImplementation(() => Promise.resolve(UserAttitude.Denied));
+    await expect(authorize(req, mockCtx)).rejects.toThrow();
   });
 
   test('should fail if plan is missing in request', async () => {
