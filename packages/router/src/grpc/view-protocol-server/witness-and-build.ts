@@ -23,6 +23,7 @@ export const witnessAndBuild: Impl['witnessAndBuild'] = async function* (
 
   const witnessData = getWitness(transactionPlan, sct);
 
+
   yield* optimisticBuild(
     transactionPlan,
     witnessData,
