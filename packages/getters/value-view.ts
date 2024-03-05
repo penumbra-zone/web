@@ -1,7 +1,7 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { createGetter } from './utils/create-getter';
 import { getDisplayDenomExponent } from './metadata';
-import { bech32AssetId } from '@penumbra-zone/types/src/asset';
+import { bech32AssetId } from './asset';
 import { Any } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { getIdentityKeyFromValidatorInfo } from './validator-info';

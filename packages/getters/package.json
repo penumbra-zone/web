@@ -2,11 +2,11 @@
   "name": "@penumbra-zone/getters",
   "version": "1.0.0",
   "description": "Convenience getters for the deeply nested optionals of Penumbra's protobuf types",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-    "@penumbra-zone/types": "workspace:^"
+    "bech32": "^2.0.0"
   }
 }
