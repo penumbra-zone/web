@@ -2,12 +2,15 @@ import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { AllSlices, SliceCreator } from '.';
 import { getDelegationsForAccount } from '../fetchers/staking';
 import {
+  asIdentityKey,
   getAmount,
   getAssetIdFromValueView,
   getDisplayDenomExponent,
   getDisplayDenomExponentFromValueView,
   getDisplayDenomFromView,
   getRateData,
+  getStartEpochIndexFromValueView,
+  getValidatorIdentityKeyAsBech32StringFromValueView,
   getValidatorInfoFromValueView,
   getVotingPowerFromValidatorInfo,
 } from '@penumbra-zone/getters';
@@ -18,9 +21,6 @@ import {
   joinLoHiAmount,
   toBaseUnit,
   splitLoHi,
-  getStartEpochIndexFromValueView,
-  asIdentityKey,
-  getValidatorIdentityKeyAsBech32StringFromValueView,
 } from '@penumbra-zone/types';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { BalancesByAccount, getBalancesByAccount } from '../fetchers/balances/by-account';
