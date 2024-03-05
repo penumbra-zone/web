@@ -7,7 +7,8 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { StateCommitmentTree } from '@penumbra-zone/types';
 import { JsonValue } from '@bufbuild/protobuf';
-import { authorize, build_action, build_parallel, witness } from '../wasm';
+import { authorize, build_action, build_parallel, load_proving_key, witness } from '../wasm';
+import { ActionType, provingKeys } from './proving-keys';
 
 export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): AuthorizationData => {
   const result = authorize(spendKey, txPlan.toJson()) as unknown;
@@ -33,12 +34,18 @@ export const buildParallel = (
   );
   return Transaction.fromJson(result as JsonValue);
 };
-export const buildActionParallel = (
+
+export const buildActionParallel = async (
   txPlan: TransactionPlan,
   witnessData: WitnessData,
   fullViewingKey: string,
   actionId: number,
-): Action => {
+): Promise<Action> => {
+  // Conditionally read proving keys from disk and load keys into WASM binary
+  const actionType = txPlan.actions[actionId]?.action.case;
+  if (!actionType) throw new Error('No action key provided');
+  await loadProvingKey(actionType);
+
   const result = build_action(
     txPlan.toJson(),
     txPlan.actions[actionId]?.toJson(),
@@ -47,4 +54,11 @@ export const buildActionParallel = (
   ) as unknown;
 
   return Action.fromJson(result as JsonValue);
+};
+
+const loadProvingKey = async (actionType: ActionType) => {
+  const keyType = provingKeys[actionType];
+  if (!keyType) return;
+  const keyBin = (await fetch(`bin/${actionType}_pk.bin`)).arrayBuffer();
+  load_proving_key(await keyBin, keyType);
 };

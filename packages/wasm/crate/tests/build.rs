@@ -52,7 +52,7 @@ mod tests {
         let delegator_vote_key: &[u8] =
             include_bytes!("../../../../apps/extension/bin/delegator_vote_pk.bin");
         let swap_key: &[u8] = include_bytes!("../../../../apps/extension/bin/swap_pk.bin");
-        let swap_claim_key: &[u8] =
+        let swapclaim_key: &[u8] =
             include_bytes!("../../../../apps/extension/bin/swapclaim_pk.bin");
         let convert_key: &[u8] = include_bytes!("../../../../apps/extension/bin/convert_pk.bin");
 
@@ -62,7 +62,7 @@ mod tests {
         let delegator_vote_key_js: JsValue =
             serde_wasm_bindgen::to_value(&delegator_vote_key).unwrap();
         let swap_key_js: JsValue = serde_wasm_bindgen::to_value(&swap_key).unwrap();
-        let swap_claim_key_js: JsValue = serde_wasm_bindgen::to_value(&swap_claim_key).unwrap();
+        let swapclaim_key_js: JsValue = serde_wasm_bindgen::to_value(&swapclaim_key).unwrap();
         let convert_key_js: JsValue = serde_wasm_bindgen::to_value(&convert_key).unwrap();
 
         // Dynamically load the proving keys at runtime for each key type.
@@ -71,7 +71,7 @@ mod tests {
         load_proving_key(delegator_vote_key_js, "delegator_vote")
             .expect("can load delegator vote key");
         load_proving_key(swap_key_js, "swap").expect("can load swap key");
-        load_proving_key(swap_claim_key_js, "swap_claim").expect("can load swap claim key");
+        load_proving_key(swapclaim_key_js, "swapclaim").expect("can load swapclaim key");
         load_proving_key(convert_key_js, "convert").expect("can load convert key");
 
         // Define database parameters.

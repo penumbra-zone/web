@@ -4,7 +4,6 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import type { ActionBuildRequest } from '@penumbra-zone/types/src/internal-msg/offscreen';
 import type { JsonValue } from '@bufbuild/protobuf';
-import { provingKeysByActionType } from '@penumbra-zone/types/src/proving-keys';
 
 // necessary to propagate errors that occur in promises
 // see: https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
@@ -47,15 +46,13 @@ async function executeWorker(
   // Dynamically load wasm module
   const penumbraWasmModule = await import('@penumbra-zone/wasm');
 
-  // Conditionally read proving keys from disk and load keys into WASM binary
-  const actionType = transactionPlan.actions[actionPlanIndex]?.action.case;
-  if (!actionType) throw new Error('No action key provided');
-
-  const provingKey = provingKeysByActionType[actionType];
-  if (provingKey) await penumbraWasmModule.loadProvingKey(provingKey);
-
   // Build action according to specification in `TransactionPlan`
-  return penumbraWasmModule
-    .buildActionParallel(transactionPlan, witness, fullViewingKey, actionPlanIndex)
-    .toJson();
+  const action = await penumbraWasmModule.buildActionParallel(
+    transactionPlan,
+    witness,
+    fullViewingKey,
+    actionPlanIndex,
+  );
+
+  return action.toJson();
 }

@@ -32,7 +32,7 @@ pub fn load_proving_key(parameters: JsValue, key_type: &str) -> WasmResult<()> {
         "output" => &OUTPUT_PROOF_PROVING_KEY,
         "delegator_vote" => &DELEGATOR_VOTE_PROOF_PROVING_KEY,
         "swap" => &SWAP_PROOF_PROVING_KEY,
-        "swap_claim" => &SWAPCLAIM_PROOF_PROVING_KEY,
+        "swapclaim" => &SWAPCLAIM_PROOF_PROVING_KEY,
         "convert" => &CONVERT_PROOF_PROVING_KEY,
         _ => return Err(anyhow::anyhow!("Unsupported key type").into()),
     };
