@@ -6,14 +6,16 @@
     "build": "turbo run build",
     "compile": "turbo run compile",
     "dev": "turbo run dev  --concurrency 20",
+    "download-keys": "turbo run download-keys",
     "lint": "turbo run lint -- --max-warnings=0",
     "lint:fix": "turbo run lint -- --fix",
     "test": "turbo run test",
+    "test:rust": "turbo run test:rust",
     "clean": "turbo clean",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
     "playwright-install": "playwright install",
-    "all-check": "pnpm install && pnpm format-check && pnpm lint && pnpm test && pnpm build"
+    "all-check": "pnpm install && pnpm compile && pnpm format-check && pnpm lint && pnpm test && pnpm download-keys && pnpm build && pnpm test:rust"
   },
   "dependencies": {
     "@buf/cosmos_ibc.bufbuild_es": "1.7.2-20240215124455-b32ecf3ebbcb.1",
