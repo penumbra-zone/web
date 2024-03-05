@@ -3,6 +3,7 @@ export * from './address-view';
 export * from './funding-stream';
 export * from './metadata';
 export * from './rate-data';
+export * from './string';
 export * from './swap';
 export * from './swap-record';
 export * from './spendable-note-record';
