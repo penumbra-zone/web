@@ -30,15 +30,6 @@ import { approveTransaction } from './approve-transaction';
 // all rpc implementations, local and proxy
 import { rpcImpls } from './impls';
 
-// this helps test the ui by resetting state every reload
-import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
-console.error(
-  'TODO: remove before merge',
-  void localExtStorage.set('knownSites', [
-    { origin: MINIFRONT_URL, attitude: UserAttitude.Approved, date: Date.now() },
-  ]),
-);
-
 const services = new Services({
   idbVersion: IDB_VERSION,
   grpcEndpoint: await localExtStorage.get('grpcEndpoint'),
