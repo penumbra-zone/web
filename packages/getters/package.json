@@ -8,6 +8,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@penumbra-zone/constants": "workspace:*",
     "bech32": "^2.0.0"
   }
 }

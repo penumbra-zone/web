@@ -438,6 +438,9 @@ importers:
 
   packages/getters:
     dependencies:
+      '@penumbra-zone/constants':
+        specifier: workspace:*
+        version: link:../constants
       bech32:
         specifier: ^2.0.0
         version: 2.0.0
