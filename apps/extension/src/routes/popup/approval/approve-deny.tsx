@@ -26,7 +26,7 @@ export const ApproveDeny = ({
       </Button>
       {ignore && (
         <Button size='lg' variant='destructive' className='bg-black' onClick={ignore}>
-          Always Deny
+          Ignore Site
         </Button>
       )}
     </div>
