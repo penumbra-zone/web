@@ -4,8 +4,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import type { ActionBuildRequest } from '@penumbra-zone/types/src/internal-msg/offscreen';
 import type { JsonValue } from '@bufbuild/protobuf';
-import { camelToSnakeCase } from '@penumbra-zone/types/src/utility';
-import { provingKeys } from '@penumbra-zone/types/src/proving-keys';
+import { provingKeysByActionType } from '@penumbra-zone/types/src/proving-keys';
 
 // necessary to propagate errors that occur in promises
 // see: https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
@@ -39,11 +38,6 @@ const workerListener = ({ data }: { data: ActionBuildRequest }) => {
 
 self.addEventListener('message', workerListener, { once: true });
 
-type ActionType = Exclude<TransactionPlan['actions'][number]['action']['case'], undefined>;
-
-const actionTypeRequiresProvingKey = (actionType: ActionType) =>
-  provingKeys.some(provingKey => provingKey.keyType === camelToSnakeCase(actionType));
-
 async function executeWorker(
   transactionPlan: TransactionPlan,
   witness: WitnessData,
@@ -57,8 +51,8 @@ async function executeWorker(
   const actionType = transactionPlan.actions[actionPlanIndex]?.action.case;
   if (!actionType) throw new Error('No action key provided');
 
-  if (actionTypeRequiresProvingKey(actionType))
-    await penumbraWasmModule.loadProvingKey(camelToSnakeCase(actionType));
+  const provingKey = provingKeysByActionType[actionType];
+  if (provingKey) await penumbraWasmModule.loadProvingKey(provingKey);
 
   // Build action according to specification in `TransactionPlan`
   return penumbraWasmModule

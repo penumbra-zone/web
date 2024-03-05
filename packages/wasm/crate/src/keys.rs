@@ -7,9 +7,8 @@ use wasm_bindgen::prelude::*;
 use penumbra_keys::keys::{Bip44Path, SeedPhrase, SpendKey};
 use penumbra_keys::{Address, FullViewingKey};
 use penumbra_proof_params::{
-    CONVERT_PROOF_PROVING_KEY, DELEGATOR_VOTE_PROOF_PROVING_KEY,
-    NULLIFIER_DERIVATION_PROOF_PROVING_KEY, OUTPUT_PROOF_PROVING_KEY, SPEND_PROOF_PROVING_KEY,
-    SWAPCLAIM_PROOF_PROVING_KEY, SWAP_PROOF_PROVING_KEY,
+    CONVERT_PROOF_PROVING_KEY, DELEGATOR_VOTE_PROOF_PROVING_KEY, OUTPUT_PROOF_PROVING_KEY,
+    SPEND_PROOF_PROVING_KEY, SWAPCLAIM_PROOF_PROVING_KEY, SWAP_PROOF_PROVING_KEY,
 };
 use penumbra_proto::{core::keys::v1 as pb, serializers::bech32str, DomainType};
 use wasm_bindgen_futures::js_sys::Uint8Array;
@@ -32,7 +31,6 @@ pub fn load_proving_key(parameters: JsValue, key_type: &str) -> WasmResult<()> {
         "spend" => &SPEND_PROOF_PROVING_KEY,
         "output" => &OUTPUT_PROOF_PROVING_KEY,
         "delegator_vote" => &DELEGATOR_VOTE_PROOF_PROVING_KEY,
-        "nullifier_derivation" => &NULLIFIER_DERIVATION_PROOF_PROVING_KEY,
         "swap" => &SWAP_PROOF_PROVING_KEY,
         "swap_claim" => &SWAPCLAIM_PROOF_PROVING_KEY,
         "convert" => &CONVERT_PROOF_PROVING_KEY,
