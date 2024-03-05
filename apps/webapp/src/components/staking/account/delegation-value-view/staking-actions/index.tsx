@@ -30,8 +30,16 @@ export const StakingActions = ({
    */
   unstakedTokens?: ValueView;
 }) => {
-  const { action, amount, onClickActionButton, delegate, undelegate, onClose, setAmount } =
-    useStore(stakingSelector);
+  const {
+    action,
+    amount,
+    onClickActionButton,
+    delegate,
+    undelegate,
+    onClose,
+    setAmount,
+    validatorInfo: selectedValidatorInfo,
+  } = useStore(stakingSelector);
 
   const validator = getValidator(validatorInfo);
 
@@ -73,6 +81,7 @@ export const StakingActions = ({
 
       <FormDialog
         action={action}
+        open={!!action && validator.equals(getValidator(selectedValidatorInfo))}
         validator={validator}
         amount={amount}
         delegationTokens={delegationTokens}

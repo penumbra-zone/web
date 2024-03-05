@@ -26,6 +26,7 @@ export const FormDialog = ({
   amount,
   delegationTokens,
   unstakedTokens,
+  open,
   onChangeAmount,
   onClose,
   onSubmit,
@@ -45,6 +46,10 @@ export const FormDialog = ({
    * Used to show the user how many tokens they have available to delegate.
    */
   unstakedTokens?: ValueView;
+  /**
+   * Whether the form is open.
+   */
+  open: boolean;
   onChangeAmount: (amount: string) => void;
   onClose: () => void;
   onSubmit: () => void;
@@ -59,9 +64,9 @@ export const FormDialog = ({
   };
 
   return (
-    <Dialog open={!!action} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent size='sm'>
-        {!!action && (
+        {!!open && !!action && (
           <>
             <DialogHeader>{getCapitalizedAction(action)}</DialogHeader>
             <form className='flex flex-col gap-4 overflow-hidden px-4 pb-4' onSubmit={handleSubmit}>
