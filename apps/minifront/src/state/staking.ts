@@ -286,6 +286,33 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
 
 export const stakingSelector = (state: AllSlices) => state.staking;
 
+/**
+ * Selector to get all accounts that are relevant to staking (in the form of
+ * their numeric address index). This includes accounts that:
+ * 1. have unstaked UM tokens.
+ * 2. have delegation tokens.
+ * 3. have unbonding tokens.
+ */
+export const accountsSelector = (state: AllSlices): number[] => {
+  const accounts = new Set<number>();
+
+  for (const account of state.staking.unstakedTokensByAccount.keys()) {
+    if (state.staking.unstakedTokensByAccount.get(account)) accounts.add(account);
+  }
+
+  for (const account of state.staking.delegationsByAccount.keys()) {
+    const delegations = state.staking.delegationsByAccount.get(account);
+    if (delegations?.length) accounts.add(account);
+  }
+
+  for (const account of state.staking.unbondingTokensByAccount.keys()) {
+    const unbondingTokens = state.staking.unbondingTokensByAccount.get(account)?.tokens;
+    if (unbondingTokens?.length) accounts.add(account);
+  }
+
+  return Array.from(accounts.values());
+};
+
 const assembleDelegateRequest = ({ account, amount, validatorInfo }: StakingSlice) => {
   return new TransactionPlannerRequest({
     delegations: [

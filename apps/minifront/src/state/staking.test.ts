@@ -15,6 +15,7 @@ import {
   AddressView,
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { accountsSelector } from './staking';
 
 const validator1IdentityKey = new IdentityKey({ ik: new Uint8Array([1, 2, 3]) });
 const validator1Bech32IdentityKey = bech32IdentityKey(validator1IdentityKey);
@@ -235,5 +236,68 @@ describe('Staking Slice', () => {
     expect(getState().staking.votingPowerByValidatorInfo).toEqual({});
     await getState().staking.loadDelegationsForCurrentAccount();
     expect(Object.values(getState().staking.votingPowerByValidatorInfo).length).toBe(4);
+  });
+
+  describe('accountsSelector return value', () => {
+    let result: number[];
+
+    beforeEach(() => {
+      const state = useStore.getState();
+
+      useStore.setState({
+        ...state,
+        staking: {
+          ...state.staking,
+          unstakedTokensByAccount: new Map([
+            // Leave unsorted for the sake of the sorting test below.
+            [1, new ValueView()],
+            [2, undefined],
+            [0, new ValueView()],
+          ]),
+
+          delegationsByAccount: new Map([
+            [3, []],
+            [4, [new ValueView()]],
+            [5, []],
+          ]),
+
+          unbondingTokensByAccount: new Map([
+            // Leave unsorted for the sake of the sorting test below.
+            [6, { total: new ValueView(), tokens: [new ValueView()] }],
+            [5, { total: new ValueView(), tokens: [new ValueView()] }],
+          ]),
+        },
+      });
+
+      result = accountsSelector(useStore.getState());
+    });
+
+    it('includes accounts that have only unstaked tokens', () => {
+      expect(result).toContain(0);
+    });
+
+    it('includes accounts that have only delegation tokens', () => {
+      expect(result).toContain(4);
+    });
+
+    it('includes accounts that have only unbonding tokens', () => {
+      expect(result).toContain(6);
+    });
+
+    it('includes accounts that have empty delegations but populated unbonding tokens', () => {
+      expect(result).toContain(5);
+    });
+
+    it('excludes accounts that only have undefined unstaked tokens', () => {
+      expect(result).not.toContain(2);
+    });
+
+    it('excludes accounts that only have empty delegation tokens', () => {
+      expect(result).not.toContain(3);
+    });
+
+    it('excludes accounts that have no relevant tokens', () => {
+      expect(result).not.toContain(7);
+    });
   });
 });
