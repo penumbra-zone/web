@@ -52,47 +52,41 @@ export const Header = () => {
         <div className='flex flex-col gap-2'>
           <AccountSwitcher account={account} onChange={setAccount} filter={accountSwitcherFilter} />
 
-          <div className='flex justify-center gap-8'>
+          <div className='flex items-start justify-center gap-8'>
             <Stat label='Available to delegate'>
               <ValueViewComponent view={unstakedTokens ?? zeroBalanceUm} />
             </Stat>
 
             <Stat label='Unbonding amount'>
-              <div className='flex gap-2'>
-                <ValueViewComponent view={unbondingTokens?.total ?? zeroBalanceUm} />
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <img src='./info-icon.svg' className='size-4' alt='An info icon' />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <div className='flex flex-col gap-4'>
-                        <div className='max-w-[250px]'>
-                          Total amount of UM you will receive when all your unbonding tokens are
-                          claimed, assuming no slashing.
-                        </div>
-                        {unbondingTokens?.tokens.length && (
-                          <>
-                            {unbondingTokens.tokens.map(token => (
-                              <ValueViewComponent
-                                key={getDisplayDenomFromView(token)}
-                                view={token}
-                              />
-                            ))}
-
-                            <Button
-                              className='self-end px-4 text-white'
-                              onClick={() => void undelegateClaim()}
-                            >
-                              Claim
-                            </Button>
-                          </>
-                        )}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <ValueViewComponent view={unbondingTokens?.total ?? zeroBalanceUm} />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <div className='flex flex-col gap-4'>
+                      <div className='max-w-[250px]'>
+                        Total amount of UM you will receive when all your unbonding tokens are
+                        claimed, assuming no slashing.
                       </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
+                      {unbondingTokens?.tokens.length && (
+                        <>
+                          {unbondingTokens.tokens.map(token => (
+                            <ValueViewComponent key={getDisplayDenomFromView(token)} view={token} />
+                          ))}
+
+                          <Button
+                            className='self-end px-4 text-white'
+                            onClick={() => void undelegateClaim()}
+                          >
+                            Claim
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </Stat>
           </div>
         </div>
