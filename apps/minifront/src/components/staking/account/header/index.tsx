@@ -12,7 +12,7 @@ import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/valu
 import { Stat } from './stat';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants';
-import { stakingSelector } from '../../../../state/staking';
+import { accountsSelector, stakingSelector } from '../../../../state/staking';
 import { useStore } from '../../../../state';
 
 /**
@@ -38,12 +38,13 @@ export const Header = () => {
     useStore(stakingSelector);
   const unstakedTokens = unstakedTokensByAccount.get(account);
   const unbondingTokens = unbondingTokensByAccount.get(account);
+  const accountSwitcherFilter = useStore(accountsSelector);
 
   return (
     <Card gradient>
       <CardContent>
         <div className='flex flex-col gap-2'>
-          <AccountSwitcher account={account} onChange={setAccount} />
+          <AccountSwitcher account={account} onChange={setAccount} filter={accountSwitcherFilter} />
 
           <div className='flex justify-center gap-8'>
             <Stat label='Available to delegate'>
