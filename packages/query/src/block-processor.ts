@@ -142,9 +142,8 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
-      const isNewEpoch = nextEpochStartHeight === compactBlock.height;
-      if (isNewEpoch) {
-        await this.indexedDb.addEpoch(nextEpochStartHeight!);
+      if (nextEpochStartHeight === compactBlock.height) {
+        await this.indexedDb.addEpoch(nextEpochStartHeight);
         nextEpochStartHeight = undefined;
       }
 
