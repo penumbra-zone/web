@@ -15,7 +15,7 @@ import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tender
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { ibcClient, viewClient } from '../clients';
 import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from './helpers';
-import { TransactionToast } from '@penumbra-zone/ui';
+import { TransactionToast } from '@penumbra-zone/ui/lib/toast';
 
 export interface IbcSendSlice {
   selection: BalancesResponse | undefined;
