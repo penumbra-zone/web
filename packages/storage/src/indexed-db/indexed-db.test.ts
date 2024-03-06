@@ -527,7 +527,7 @@ describe('IndexedDb', () => {
     });
 
     describe('addEpoch', () => {
-      it('auto-incrememnts the epoch index if one is not provided', async () => {
+      it('auto-increments the epoch index if one is not provided', async () => {
         const [result1, result2, result3] = await Promise.all([
           db.getEpochByHeight(50n),
           db.getEpochByHeight(150n),

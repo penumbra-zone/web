@@ -160,9 +160,7 @@ export interface PenumbraDb extends DBSchema {
     value: PositionRecord;
   };
   EPOCHS: {
-    // The stringified epoch start height -- NOT the epoch index -- so that
-    // querying epoch by height is more performant.
-    key: string;
+    key: number; // auto-increment
     value: Jsonified<Epoch>;
   };
 }

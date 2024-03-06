@@ -93,7 +93,7 @@ export class IndexedDb implements IndexedDbInterface {
         }).createIndex('nullifier', 'nullifier.inner');
         db.createObjectStore('GAS_PRICES');
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
-        db.createObjectStore('EPOCHS');
+        db.createObjectStore('EPOCHS', { autoIncrement: true });
       },
     });
     const constants = {
@@ -415,17 +415,19 @@ export class IndexedDb implements IndexedDbInterface {
 
   async addEpoch(startHeight: bigint, index?: bigint): Promise<void> {
     if (index === undefined) {
-      const cursor = await this.db
-        .transaction('EPOCHS', 'readonly')
-        .store.openCursor(undefined, 'prev');
+      const cursor = await this.db.transaction('EPOCHS', 'readonly').store.openCursor(null, 'prev');
       const previousEpoch = cursor?.value ? Epoch.fromJson(cursor.value) : undefined;
       index = previousEpoch?.index !== undefined ? previousEpoch.index + 1n : 0n;
     }
 
+    const newEpoch = {
+      startHeight: startHeight.toString(),
+      index: index.toString(),
+    };
+
     await this.u.update({
       table: 'EPOCHS',
-      value: new Epoch({ startHeight, index }).toJson() as Jsonified<Epoch>,
-      key: startHeight.toString(),
+      value: newEpoch,
     });
   }
 
@@ -444,13 +446,22 @@ export class IndexedDb implements IndexedDbInterface {
 
     let epoch: Epoch | undefined;
 
-    // Iterate over epochs and return the one with the largest start height
-    // smaller than `height`.
+    /**
+     * Iterate over epochs and return the one with the largest start height
+     * smaller than `height`.
+     *
+     * Unfortunately, there doesn't appear to be a more efficient way of doing
+     * this. We tried using epochs' start heights as their key so that we could
+     * use a particular start height as a query bounds, but IndexedDB casts the
+     * `bigint` start height to a string, which messes up sorting (the string
+     * '11' is greater than the string '100', for example). For now, then, we
+     * have to just iterate over all epochs to find the correct starting height.
+     */
     while (cursor) {
-      const epochStartHeight = BigInt(cursor.key);
+      const currentEpoch = Epoch.fromJson(cursor.value);
 
-      if (epochStartHeight <= height) epoch = Epoch.fromJson(cursor.value);
-      else if (epochStartHeight > height) break;
+      if (currentEpoch.startHeight <= height) epoch = currentEpoch;
+      else if (currentEpoch.startHeight > height) break;
 
       cursor = await cursor.continue();
     }
