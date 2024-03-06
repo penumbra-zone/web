@@ -1,17 +1,19 @@
 import { AnyMessage, MethodKind, ServiceType } from '@bufbuild/protobuf';
-import { ConnectError, ServiceImpl } from '@connectrpc/connect';
 import {
-  BiDiStreamingImpl,
-  ClientStreamingImpl,
+  ConnectError,
   HandlerContext,
   MethodImpl,
-  ServerStreamingImpl,
-  UnaryImpl,
-} from '@connectrpc/connect/dist/cjs/implementation';
+  MethodImplSpec,
+  ServiceImpl,
+} from '@connectrpc/connect';
+
+type UnaryImpl = (MethodImplSpec & { kind: MethodKind.Unary })['impl'];
+type ServerStreamingImpl = (MethodImplSpec & { kind: MethodKind.ServerStreaming })['impl'];
+type ClientStreamingImpl = (MethodImplSpec & { kind: MethodKind.ClientStreaming })['impl'];
+type BiDiStreamingImpl = (MethodImplSpec & { kind: MethodKind.BiDiStreaming })['impl'];
 
 const wrapUnaryImpl =
-  (methodImplementation: UnaryImpl<AnyMessage, AnyMessage>) =>
-  (req: AnyMessage, ctx: HandlerContext) => {
+  (methodImplementation: UnaryImpl) => (req: AnyMessage, ctx: HandlerContext) => {
     try {
       const result = methodImplementation(req, ctx);
       if (result instanceof Promise)
@@ -24,26 +26,17 @@ const wrapUnaryImpl =
     }
   };
 
-const wrapServerStreamingImpl = (
-  methodImplementation: ServerStreamingImpl<AnyMessage, AnyMessage>,
-) =>
+const wrapServerStreamingImpl = (methodImplementation: ServerStreamingImpl) =>
   async function* (req: AnyMessage, ctx: HandlerContext) {
     try {
-      for await (const result of methodImplementation(req, ctx)) {
-        yield result;
-      }
+      yield* methodImplementation(req, ctx);
     } catch (e) {
       throw ConnectError.from(e);
     }
   };
 
 const wrapUnhandledImpl =
-  (
-    methodImplementation:
-      | ClientStreamingImpl<AnyMessage, AnyMessage>
-      | BiDiStreamingImpl<AnyMessage, AnyMessage>,
-    kind: MethodKind,
-  ) =>
+  (methodImplementation: ClientStreamingImpl | BiDiStreamingImpl, kind: MethodKind) =>
   (req: AsyncIterable<AnyMessage>, ctx: HandlerContext) => {
     console.warn(
       `Attempted to call a method whose \`kind\` is ${MethodKind[kind]}. This method kind is not wrapped by \`rethrowImplErrors\`; thus, its errors may get swallowed and rethrown as "internal error." To fix this, extend \`rethrowImplErrors\` to cover the \`${MethodKind[kind]}\` case.`,
@@ -56,7 +49,7 @@ const isUnaryMethodKind = (
   methodImplementation:
     | ((req: AsyncIterable<AnyMessage>, ctx: HandlerContext) => unknown)
     | ((req: AnyMessage, ctx: HandlerContext) => unknown),
-): methodImplementation is UnaryImpl<AnyMessage, AnyMessage> => {
+): methodImplementation is UnaryImpl => {
   methodImplementation;
   return methodKind === MethodKind.Unary;
 };
@@ -66,7 +59,7 @@ const isServerStreamingMethodKind = (
   methodImplementation:
     | ((req: AsyncIterable<AnyMessage>, ctx: HandlerContext) => unknown)
     | ((req: AnyMessage, ctx: HandlerContext) => unknown),
-): methodImplementation is ServerStreamingImpl<AnyMessage, AnyMessage> => {
+): methodImplementation is ServerStreamingImpl => {
   methodImplementation;
   return methodKind === MethodKind.ServerStreaming;
 };

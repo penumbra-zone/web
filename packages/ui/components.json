@@ -3,7 +3,7 @@
   "style": "default",
   "rsc": true,
   "tailwind": {
-    "config": "@penumbra-zone/tailwind-config",
+    "config": "tailwind-config",
     "css": "styles/globals.css",
     "baseColor": "slate",
     "cssVariables": true

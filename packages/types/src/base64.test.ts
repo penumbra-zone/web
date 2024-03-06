@@ -6,7 +6,7 @@ import {
   InnerBase64Schema,
   uint8ArrayToBase64,
 } from './base64';
-import { SafeParseError } from 'zod/lib/types';
+import { SafeParseError } from 'zod';
 
 describe('Base64StringSchema', () => {
   it('validates base64 strings', () => {

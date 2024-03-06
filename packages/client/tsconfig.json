@@ -1,6 +1,6 @@
 {
   "extends": "tsconfig/base.json",
-  "include": ["./src", "./vite.config.ts"],
+  "include": ["."],
   "exclude": ["dist", "node_modules"],
   "compilerOptions": {
     "outDir": "dist"

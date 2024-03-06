@@ -17,7 +17,7 @@
  * other content scripts could interfere or intercept connections.
  */
 
-import { PenumbraSymbol, PenumbraProvider } from '@penumbra-zone/client/global';
+import { PenumbraSymbol, PenumbraProvider } from '@penumbra-zone/client';
 import {
   isPraxConnectionPortMessageEvent,
   isPraxRequestResponseMessageEvent,

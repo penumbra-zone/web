@@ -81,7 +81,7 @@ module.exports = {
       // extension) break.
       //
       // @see https://github.com/microsoft/vscode-eslint/issues/1706#issuecomment-1916389417
-      config: require.resolve('@penumbra-zone/tailwind-config'),
+      config: require.resolve('tailwind-config'),
     },
   },
 };

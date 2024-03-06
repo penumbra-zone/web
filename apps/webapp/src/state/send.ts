@@ -18,7 +18,7 @@ import {
   Fee,
   FeeTier_Tier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
-import { TransactionToast } from '@penumbra-zone/ui';
+import { TransactionToast } from '@penumbra-zone/ui/lib/toast';
 
 export interface SendSlice {
   selection: BalancesResponse | undefined;

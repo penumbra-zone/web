@@ -28,7 +28,7 @@ import { BigNumber } from 'bignumber.js';
 import { getAddressByIndex } from '../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { simulateSwapOutput } from '../fetchers/simulate';
-import { errorToast, TransactionToast } from '@penumbra-zone/ui';
+import { errorToast, TransactionToast } from '@penumbra-zone/ui/lib/toast';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 export interface SwapSlice {

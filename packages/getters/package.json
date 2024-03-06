@@ -1,11 +1,32 @@
 {
   "name": "@penumbra-zone/getters",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Convenience getters for the deeply nested optionals of Penumbra's protobuf types",
   "type": "module",
   "scripts": {
+    "clean": "rm -rfv dist",
+    "build": "tsc && vite build",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./asset": "./src/asset.ts"
+  },
+  "publishConfig": {
+    "files": [
+      "dist"
+    ],
+    "exports": {
+      ".": {
+        "import": "./dist/src/index.js",
+        "types": "./dist/src/index.d.ts"
+      },
+      "./asset": {
+        "import": "./dist/src/asset.js",
+        "types": "./dist/src/asset.d.ts"
+      }
+    }
   },
   "dependencies": {
     "bech32": "^2.0.0"

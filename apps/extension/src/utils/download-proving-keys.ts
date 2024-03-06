@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 import * as fs from 'fs';
 import * as path from 'path';
-import { provingKeys } from '@penumbra-zone/wasm/src/proving-keys';
+import { provingKeys } from '@penumbra-zone/wasm/proving-keys';
 
 const main = () => {
   const VERSION_TAG = 'v0.68.0';
