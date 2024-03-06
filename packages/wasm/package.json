@@ -1,17 +1,36 @@
 {
   "name": "@penumbra-zone/wasm",
-  "version": "1.0.0",
-  "license": "MIT",
+  "version": "0.0.1",
+  "description": "Penumbra WASM modules for accelerated transactions",
   "type": "module",
-  "main": "index.ts",
   "scripts": {
     "clean": "rm -rfv dist wasm ; cargo clean --manifest-path ./crate/Cargo.toml",
     "dev": "cargo watch -C ./crate --postpone -- pnpm turbo run compile",
     "compile": "cd crate ; wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",
-    "build": "tsc",
+    "build": "tsc && vite build",
     "lint": "eslint \"src/*.ts*\"",
     "test": "vitest run",
     "test:rust": "cd crate ; wasm-pack test --headless --firefox -- --test build --target wasm32-unknown-unknown --release --features 'mock-database'"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "publishConfig": {
+    "files": [
+      "dist",
+      "wasm"
+    ],
+    "exports": {
+      ".": {
+        "import": "./dist/src/index.js",
+        "types": "./dist/src/index.d.ts"
+      },
+      "./*": {
+        "import": "./dist/src/*.js",
+        "types": "./dist/src/*.d.ts"
+      }
+    }
   },
   "dependencies": {
     "bech32": "^2.0.0",

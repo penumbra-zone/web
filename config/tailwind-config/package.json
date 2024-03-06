@@ -1,11 +1,7 @@
 {
-  "name": "@penumbra-zone/tailwind-config",
+  "name": "tailwind-config",
   "private": true,
   "main": "index.js",
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
   "dependencies": {
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7"

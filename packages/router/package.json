@@ -1,15 +1,14 @@
 {
   "name": "@penumbra-zone/router",
-  "version": "1.0.0",
-  "license": "MIT",
+  "private": true,
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./ctx": "./src/ctx/index.ts"
   },
   "dependencies": {
     "@penumbra-zone/constants": "workspace:*",

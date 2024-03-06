@@ -16,8 +16,7 @@ import { QueryService as StakeService } from '@buf/penumbra-zone_penumbra.connec
 import { TendermintProxyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/util/tendermint_proxy/v1/tendermint_proxy_connect';
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
-import { custodyImpl } from '@penumbra-zone/router/src/grpc/custody';
-import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
+import { custodyImpl, viewImpl } from '@penumbra-zone/router';
 
 import { localExtStorage } from '@penumbra-zone/storage';
 const grpcEndpoint = await localExtStorage.get('grpcEndpoint');

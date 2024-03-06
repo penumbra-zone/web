@@ -1,8 +1,6 @@
 {
   "name": "@penumbra-zone/constants",
-  "version": "1.0.0",
   "private": true,
-  "license": "MIT",
   "main": "index.ts",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",

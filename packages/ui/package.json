@@ -1,18 +1,38 @@
 {
   "name": "@penumbra-zone/ui",
-  "version": "1.0.0",
-  "license": "MIT",
+  "version": "0.0.1",
+  "description": "React components for unifying aesthetics and features of Minifront and Prax",
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup index.ts --format cjs,esm --dts",
+    "clean": "rm -rfv dist",
+    "build": "tsc && vite build",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run",
     "ui:add": "pnpm dlx shadcn-ui@latest add",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
+  },
+  "exports": {
+    ".": "./components/index.ts",
+    "./components/ui/*": "./components/ui/*.tsx",
+    "./components/ui/json-viewer": "./components/ui/json-viewer/index.tsx",
+    "./components/ui/tx/view/*": "./components/ui/tx/view/*.tsx",
+    "./styles/*": "./styles/*",
+    "./lib/utils": "./lib/utils.ts",
+    "./lib/toast": "./lib/toast/index.ts",
+    "./postcss.config.js": "./postcss.config.js"
+  },
+  "publishConfig": {
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": "./dist/components/index.js",
+      "./components/ui/*": "./dist/components/ui/*",
+      "./components/ui/json-viewer": "./dist/components/ui/json-viewer/index.js",
+      "./components/ui/tx/view/*": "./dist/components/ui/tx/view/*",
+      "./lib/utils": "./dist/lib/utils.js",
+      "./lib/toast": "./dist/lib/toast/index.js",
+      "./postcss.config.js": "./dist/postcss.config.js"
+    }
   },
   "dependencies": {
     "@penumbra-zone/getters": "workspace:*",
@@ -55,7 +75,6 @@
     "@storybook/react-vite": "^7.6.17",
     "@testing-library/react": "^14.2.1",
     "@types/humanize-duration": "^3.27.4",
-    "@types/node": "^20.11.22",
     "@types/react": "^18.2.60",
     "@types/react-dom": "^18.2.19",
     "@types/tinycolor2": "^1.4.6",

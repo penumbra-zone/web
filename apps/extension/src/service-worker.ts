@@ -23,7 +23,7 @@ import { transportOptions } from '@penumbra-zone/types/registry';
 
 // context
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
-import { approverCtx, custodyCtx, servicesCtx } from '@penumbra-zone/router/src/ctx';
+import { approverCtx, custodyCtx, servicesCtx } from '@penumbra-zone/router/ctx';
 import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
 import { approveTransaction } from './approve-transaction';
 

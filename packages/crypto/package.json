@@ -1,8 +1,6 @@
 {
   "name": "@penumbra-zone/crypto-web",
-  "version": "1.0.0",
   "private": true,
-  "license": "MIT",
   "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",

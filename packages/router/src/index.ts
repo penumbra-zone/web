@@ -1,2 +1,2 @@
-export * as custodyImpl from './grpc/custody';
-export * as viewImpl from './grpc/view-protocol-server';
+export { custodyImpl } from './grpc/custody';
+export { viewImpl } from './grpc/view-protocol-server';

@@ -1,4 +1,4 @@
-import penumbra from '.';
+import { PenumbraSymbol as penumbra } from '.';
 
 export const getAnyPenumbraPort = async (request?: boolean) => {
   if (!penumbra) throw Error('No Penumbra global (no provider installed)');
