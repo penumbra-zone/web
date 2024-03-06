@@ -8,21 +8,20 @@ use indexed_db_futures::{
 use penumbra_asset::asset::{self, Id, Metadata};
 use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
+use penumbra_proto::core::app::v1::AppParameters;
 use penumbra_proto::{
     crypto::tct::v1::StateCommitment,
     view::v1::{NotesRequest, SwapRecord},
     DomainType,
 };
-
-use penumbra_proto::core::app::v1::AppParameters;
 use penumbra_sct::Nullifier;
 use penumbra_shielded_pool::{fmd, note, Note};
 use serde::{Deserialize, Serialize};
+use wasm_bindgen::JsValue;
 use web_sys::IdbTransactionMode::Readwrite;
 
 use crate::error::WasmResult;
 use crate::note_record::SpendableNoteRecord;
-use wasm_bindgen::JsValue;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct IndexedDbConstants {
@@ -97,7 +96,6 @@ impl IndexedDBStorage {
                 evt.db().create_object_store("FMD_PARAMETERS")?;
                 evt.db().create_object_store("APP_PARAMETERS")?;
                 evt.db().create_object_store("GAS_PRICES")?;
-
             }
             Ok(())
         }));
@@ -219,7 +217,7 @@ impl IndexedDBStorage {
         let store = tx.object_store(&self.constants.tables.notes)?;
 
         let note_proto: penumbra_proto::core::component::shielded_pool::v1::Note =
-            note.clone().try_into()?;
+            note.clone().into();
         let note_js = serde_wasm_bindgen::to_value(&note_proto)?;
 
         let commitment_proto = note.commit().to_proto();

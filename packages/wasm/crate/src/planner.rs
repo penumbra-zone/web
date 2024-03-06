@@ -1,10 +1,6 @@
 use std::collections::BTreeMap;
 use std::str::FromStr;
 
-use crate::note_record::SpendableNoteRecord;
-use crate::storage::IndexedDBStorage;
-use crate::utils;
-use crate::{error::WasmResult, swap_record::SwapRecord};
 use anyhow::anyhow;
 use ark_ff::UniformRand;
 use decaf377::Fq;
@@ -19,19 +15,24 @@ use penumbra_keys::keys::AddressIndex;
 use penumbra_keys::{Address, FullViewingKey};
 use penumbra_num::Amount;
 use penumbra_proto::core::app::v1::AppParameters;
+use penumbra_proto::core::component::ibc;
+use penumbra_proto::view::v1::{
+    transaction_planner_request as tpr, NotesRequest, TransactionPlannerRequest,
+};
 use penumbra_sct::params::SctParameters;
 use penumbra_shielded_pool::{fmd, OutputPlan, SpendPlan};
 use penumbra_stake::rate::RateData;
 use penumbra_transaction::gas::GasCost;
 use penumbra_transaction::memo::MemoPlaintext;
+use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters, TransactionPlan};
 use rand_core::OsRng;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 
-use penumbra_proto::view::v1::{
-    transaction_planner_request as tpr, NotesRequest, TransactionPlannerRequest,
-};
-use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters, TransactionPlan};
+use crate::note_record::SpendableNoteRecord;
+use crate::storage::IndexedDBStorage;
+use crate::utils;
+use crate::{error::WasmResult, swap_record::SwapRecord};
 
 struct ActionList {
     // A list of the user-specified outputs.
@@ -83,9 +84,7 @@ impl ActionList {
 
     fn fee_estimate(&self, gas_prices: &GasPrices, fee_tier: &FeeTier) -> Fee {
         let base_fee = Fee::from_staking_token_amount(gas_prices.fee(&self.gas_estimate()));
-        let fee = base_fee.apply_tier(*fee_tier);
-
-        fee
+        base_fee.apply_tier(*fee_tier)
     }
 
     fn balance_with_fee_estimate(&self, gas_prices: &GasPrices, fee_tier: &FeeTier) -> Balance {
@@ -273,9 +272,8 @@ pub async fn plan_transaction(
     }
 
     for tpr::SwapClaim { swap_commitment } in request.swap_claims {
-        let swap_commitment = swap_commitment
-            .ok_or_else(|| anyhow!("missing swap commitment in swap claim"))?
-            .try_into()?;
+        let swap_commitment =
+            swap_commitment.ok_or_else(|| anyhow!("missing swap commitment in swap claim"))?;
 
         let swap_record: SwapRecord = storage
             .get_swap_by_commitment(swap_commitment)
@@ -322,7 +320,8 @@ pub async fn plan_transaction(
     }
      */
 
-    for _ in request.ibc_relay_actions {
+    #[allow(clippy::never_loop)]
+    for ibc::v1::IbcRelay { .. } in request.ibc_relay_actions {
         return Err(anyhow!("IbcRelay not yet implemented").into());
     }
 
@@ -330,14 +329,17 @@ pub async fn plan_transaction(
         actions.push(ActionPlan::Ics20Withdrawal(ics20_withdrawal.try_into()?));
     }
 
+    #[allow(clippy::never_loop)]
     for tpr::PositionOpen { .. } in request.position_opens {
         return Err(anyhow!("PositionOpen not yet implemented").into());
     }
 
+    #[allow(clippy::never_loop)]
     for tpr::PositionClose { .. } in request.position_closes {
         return Err(anyhow!("PositionClose not yet implemented").into());
     }
 
+    #[allow(clippy::never_loop)]
     for tpr::PositionWithdraw { .. } in request.position_withdraws {
         return Err(anyhow!("PositionWithdraw not yet implemented").into());
     }
@@ -403,7 +405,7 @@ pub async fn plan_transaction(
         let fee = actions.fee_estimate(&gas_prices, &fee_tier);
         actions.adjust_change_for_fee(fee);
 
-        iterations = iterations + 1;
+        iterations += 1;
         if iterations > 100 {
             return Err(anyhow!("failed to plan transaction after 100 iterations").into());
         }
@@ -419,7 +421,7 @@ pub async fn plan_transaction(
             .collect(),
         transaction_parameters: TransactionParameters {
             expiry_height: request.expiry_height,
-            chain_id: chain_id,
+            chain_id,
             fee,
         },
         detection_data: None,

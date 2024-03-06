@@ -3,6 +3,18 @@
 version = 3
 
 [[package]]
+name = "accessory"
+version = "1.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "850bb534b9dc04744fbbb71d30ad6d25a7e4cf6dc33e223c81ef3a92ebab4e0b"
+dependencies = [
+ "macroific",
+ "proc-macro2 1.0.78",
+ "quote",
+ "syn 2.0.52",
+]
+
+[[package]]
 name = "aead"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -345,6 +357,12 @@ name = "base64"
 version = "0.21.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9d297deb1925b89f2ccc13d7635fa0714f12c87adce1c75356b39ca9b7178567"
+
+[[package]]
+name = "base64"
+version = "0.22.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9475866fec1451be56a3c2400fd081ff546538961565ccb5b7142cbd22bc7a51"
 
 [[package]]
 name = "base64ct"
@@ -758,8 +776,8 @@ dependencies = [
 
 [[package]]
 name = "decaf377-fmd"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "ark-ff",
  "ark-serialize",
@@ -772,8 +790,8 @@ dependencies = [
 
 [[package]]
 name = "decaf377-ka"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "ark-ff",
  "decaf377 0.5.0",
@@ -800,6 +818,18 @@ dependencies = [
  "rand_core",
  "serde",
  "thiserror",
+]
+
+[[package]]
+name = "delegate-display"
+version = "2.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "98a85201f233142ac819bbf6226e36d0b5e129a47bd325084674261c82d4cd66"
+dependencies = [
+ "macroific",
+ "proc-macro2 1.0.78",
+ "quote",
+ "syn 2.0.52",
 ]
 
 [[package]]
@@ -989,6 +1019,18 @@ version = "0.0.0"
 source = "git+https://github.com/zcash/librustzcash?rev=2425a0869098e3b0588ccd73c42716bcf418612c#2425a0869098e3b0588ccd73c42716bcf418612c"
 dependencies = [
  "blake2b_simd 1.0.2",
+]
+
+[[package]]
+name = "fancy_constructor"
+version = "1.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f71f317e4af73b2f8f608fac190c52eac4b1879d2145df1db2fe48881ca69435"
+dependencies = [
+ "macroific",
+ "proc-macro2 1.0.78",
+ "quote",
+ "syn 2.0.52",
 ]
 
 [[package]]
@@ -1253,11 +1295,11 @@ dependencies = [
 
 [[package]]
 name = "ibc-proto"
-version = "0.40.0"
+version = "0.41.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4222cfac37f21da28292db0f2673fdb8455284895891ff09979680243efb9a20"
+checksum = "dd4ee32b22d3b06f31529b956f4928e5c9a068d71e46cf6abfa19c31ca550553"
 dependencies = [
- "base64",
+ "base64 0.21.7",
  "bytes",
  "flex-error",
  "ics23",
@@ -1270,9 +1312,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3178d46ae589af5cab981989a8c631a76d12411edc54d23fd35a52e2fffee07f"
+checksum = "ba606d86e2015991f86a129935dbaeacd94beab72fb90a733c1b1ea76be708a2"
 dependencies = [
  "ibc-types-core-channel",
  "ibc-types-core-client",
@@ -1288,9 +1330,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-core-channel"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "743cdc9ec7f4b2c0985136ee0af8f24536b5e1624fb5d88fde7c300881322a82"
+checksum = "86fb64ef52086b727e5ae01da0e773f8ca9172ec1fd9d0aa1a79c0c2c610b17a"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1320,9 +1362,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-core-client"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab7ff8d18f423c0ec0614104f3c07e320cdce2ae5d395606c7d83e4e25a34afc"
+checksum = "4db9d4b136b9e84ccf581fec02bb9ebc4478ac0f145c526760ed4310b98741e7"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1346,9 +1388,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-core-commitment"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "421f7cdfc48065437b276a2abe597ef47d6ffaff4815ba4efd111d5a3af43998"
+checksum = "7e2c527e14707dd0b2c7e6e2f6f62b0655c83154ae3eb1504e441d9d8f454ac6"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1380,9 +1422,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-core-connection"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f79832a232d5a69325f87aff6a4703c5490f39107a223998b30e83bc3a69510"
+checksum = "5a8a326c00e9ba48059407478c826237fe39cc90dd2b47182484192926904fe7"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1409,9 +1451,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-domain-type"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "73649683daa4fa967f54ef7cf3f98429522895c37fc2dee2a94d490969444779"
+checksum = "3abc9619b9dd7201804f45fc7f335dda72d2e4d6f82d96e8fe3abf4585e6101b"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1420,9 +1462,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-identifier"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e007333cded43d125cacb26aeb1a3630a8ffe03144d798ad9a8f2c99e4529a3a"
+checksum = "405880cf06fef65f51c5c91b7efbdcbc8d7eba0ac16b43538b36ebd17f21edea"
 dependencies = [
  "displaydoc",
  "serde",
@@ -1430,9 +1472,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-lightclients-tendermint"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f7f9305a26e8d78faca85ac5414d5432549bb6c196a49032c00e723c9054d7b5"
+checksum = "2ab22446058bd5afa50d64f8519a9107bbc5101ee65373df896314f52afa0fc6"
 dependencies = [
  "anyhow",
  "bytes",
@@ -1466,9 +1508,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-path"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a22688a533f90b48e6fde7a1271028f01b66f7a44d298747403bc346fdf08529"
+checksum = "a29e6fd8871fdced76402a3008219abf8773e527a46f120e0d76d6a3bb9706c1"
 dependencies = [
  "bytes",
  "derive_more",
@@ -1488,9 +1530,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-timestamp"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "25e93de4be3480445111959b61b10b4f1865e6cad206961a46cb5170b88fdfc0"
+checksum = "93d2e763838dbef62ca8a1344b4dd5b3919d685b4c61874183724644c912237a"
 dependencies = [
  "bytes",
  "displaydoc",
@@ -1506,9 +1548,9 @@ dependencies = [
 
 [[package]]
 name = "ibc-types-transfer"
-version = "0.11.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "45f7420000987bca27f718a44a220efbf4114dcf8dffbfea1aaed6e9b1e9551a"
+checksum = "ad973ca1fbad8d0d1632ec0a329aecff8731bbb96395b7553d6b9fd749356d34"
 dependencies = [
  "displaydoc",
  "serde",
@@ -1603,11 +1645,14 @@ checksum = "ce23b50ad8242c51a442f3ff322d56b02f08852c77e4c0b4d3fd684abc89c683"
 
 [[package]]
 name = "indexed_db_futures"
-version = "0.3.0"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bfbcff6ae46750b15cc594bfd277b188cbddcfdc1817848f97f03f26f8625b9e"
+checksum = "6cc2083760572ee02385ab8b7c02c20925d2dd1f97a1a25a8737a238608f1152"
 dependencies = [
+ "accessory",
  "cfg-if",
+ "delegate-display",
+ "fancy_constructor",
  "js-sys",
  "uuid",
  "wasm-bindgen",
@@ -1643,7 +1688,7 @@ version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9aa4a0980c8379295100d70854354e78df2ee1c6ca0f96ffe89afeb3140e3a3d"
 dependencies = [
- "base64",
+ "base64 0.21.7",
  "serde",
 ]
 
@@ -1682,9 +1727,9 @@ checksum = "b1a46d1a171d865aa5f83f92695765caa047a9b4cbae2cbf37dbd613a793fd4c"
 
 [[package]]
 name = "js-sys"
-version = "0.3.68"
+version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "406cda4b368d531c842222cf9d2600a9a4acce8d29423695379c6868a143a9ee"
+checksum = "29c15563dc2726973df627357ce0c9ddddbea194836909d655df6a75d2cf296d"
 dependencies = [
  "wasm-bindgen",
 ]
@@ -1743,6 +1788,53 @@ name = "log"
 version = "0.4.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "90ed8c1e510134f979dbc4f070f87d4313098b704861a105fe34231c70a3901c"
+
+[[package]]
+name = "macroific"
+version = "1.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f05c00ac596022625d01047c421a0d97d7f09a18e429187b341c201cb631b9dd"
+dependencies = [
+ "macroific_attr_parse",
+ "macroific_core",
+ "macroific_macro",
+]
+
+[[package]]
+name = "macroific_attr_parse"
+version = "1.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fd94d5da95b30ae6e10621ad02340909346ad91661f3f8c0f2b62345e46a2f67"
+dependencies = [
+ "cfg-if",
+ "proc-macro2 1.0.78",
+ "quote",
+ "syn 2.0.52",
+]
+
+[[package]]
+name = "macroific_core"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "13198c120864097a565ccb3ff947672d969932b7975ebd4085732c9f09435e55"
+dependencies = [
+ "proc-macro2 1.0.78",
+ "quote",
+ "syn 2.0.52",
+]
+
+[[package]]
+name = "macroific_macro"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b0c9853143cbed7f1e41dc39fee95f9b361bec65c8dc2a01bf609be01b61f5ae"
+dependencies = [
+ "macroific_attr_parse",
+ "macroific_core",
+ "proc-macro2 1.0.78",
+ "quote",
+ "syn 2.0.52",
+]
 
 [[package]]
 name = "matchers"
@@ -1952,7 +2044,7 @@ version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1030c719b0ec2a2d25a5df729d6cff1acf3cc230bf766f4f97833591f7577b90"
 dependencies = [
- "base64",
+ "base64 0.21.7",
  "serde",
 ]
 
@@ -1995,8 +2087,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-asset"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2004,7 +2096,7 @@ dependencies = [
  "ark-relations",
  "ark-serialize",
  "ark-std",
- "base64",
+ "base64 0.21.7",
  "bech32",
  "blake2b_simd 1.0.2",
  "bytes",
@@ -2032,13 +2124,13 @@ dependencies = [
 
 [[package]]
 name = "penumbra-community-pool"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "ark-ff",
  "async-trait",
- "base64",
+ "base64 0.21.7",
  "blake2b_simd 1.0.2",
  "futures",
  "hex",
@@ -2062,8 +2154,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-compact-block"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2094,8 +2186,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-dex"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2106,7 +2198,7 @@ dependencies = [
  "ark-snark",
  "async-stream",
  "async-trait",
- "base64",
+ "base64 0.21.7",
  "bincode",
  "blake2b_simd 1.0.2",
  "decaf377 0.5.0",
@@ -2146,8 +2238,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-distributions"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2162,8 +2254,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-fee"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2185,8 +2277,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-funding"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2204,8 +2296,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-governance"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2216,7 +2308,7 @@ dependencies = [
  "ark-snark",
  "async-stream",
  "async-trait",
- "base64",
+ "base64 0.21.7",
  "blake2b_simd 1.0.2",
  "bytes",
  "decaf377 0.5.0",
@@ -2255,13 +2347,13 @@ dependencies = [
 
 [[package]]
 name = "penumbra-ibc"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "ark-ff",
  "async-trait",
- "base64",
+ "base64 0.21.7",
  "blake2b_simd 1.0.2",
  "hex",
  "ibc-proto",
@@ -2288,8 +2380,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-keys"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "aes",
  "anyhow",
@@ -2298,7 +2390,7 @@ dependencies = [
  "ark-relations",
  "ark-serialize",
  "ark-std",
- "base64",
+ "base64 0.21.7",
  "bech32",
  "bip32",
  "blake2b_simd 1.0.2",
@@ -2332,8 +2424,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-num"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2343,7 +2435,7 @@ dependencies = [
  "ark-serialize",
  "ark-snark",
  "ark-std",
- "base64",
+ "base64 0.21.7",
  "bech32",
  "blake2b_simd 1.0.2",
  "bytes",
@@ -2368,8 +2460,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-proof-params"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "ark-ec",
@@ -2394,8 +2486,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-proto"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2421,8 +2513,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sct"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2452,8 +2544,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-shielded-pool"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2463,7 +2555,7 @@ dependencies = [
  "ark-serialize",
  "ark-snark",
  "async-trait",
- "base64",
+ "base64 0.21.7",
  "blake2b_simd 1.0.2",
  "bytes",
  "chacha20poly1305",
@@ -2499,8 +2591,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-stake"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2509,7 +2601,7 @@ dependencies = [
  "ark-relations",
  "ark-serialize",
  "ark-snark",
- "base64",
+ "base64 0.21.7",
  "bech32",
  "bitvec",
  "decaf377 0.5.0",
@@ -2540,8 +2632,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-tct"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "ark-ed-on-bls12-377",
  "ark-ff",
@@ -2568,13 +2660,13 @@ dependencies = [
 
 [[package]]
 name = "penumbra-transaction"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "ark-ff",
  "ark-serialize",
- "base64",
+ "base64 0.21.7",
  "bech32",
  "blake2b_simd 1.0.2",
  "bytes",
@@ -2618,8 +2710,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-txhash"
-version = "0.68.0"
-source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.0#1c99e24ad5cf1ecc2855849d66221ecec25f9235"
+version = "0.68.2"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.68.2#b37252bb584499f635fee863dcf948ab570361c2"
 dependencies = [
  "anyhow",
  "blake2b_simd 1.0.2",
@@ -2635,7 +2727,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "ark-ff",
- "base64",
+ "base64 0.22.0",
  "console_error_panic_hook",
  "decaf377 0.5.0",
  "hex",
@@ -3165,9 +3257,9 @@ dependencies = [
 
 [[package]]
 name = "serde-wasm-bindgen"
-version = "0.5.0"
+version = "0.6.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f3b143e2833c57ab9ad3ea280d21fd34e285a42837aeb0ee301f4f41890fa00e"
+checksum = "8302e169f0eddcc139c70f139d19d6467353af16f9fce27e8c30158036a1e16b"
 dependencies = [
  "js-sys",
  "serde",
@@ -3241,7 +3333,7 @@ version = "3.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "15d167997bd841ec232f5b2b8e0e26606df2e7caa4c31b95ea9ca52b200bd270"
 dependencies = [
- "base64",
+ "base64 0.21.7",
  "chrono",
  "hex",
  "indexmap 1.9.3",
@@ -3733,9 +3825,9 @@ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 
 [[package]]
 name = "wasm-bindgen"
-version = "0.2.91"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c1e124130aee3fb58c5bdd6b639a0509486b0338acaaae0c84a5124b0f588b7f"
+checksum = "4be2531df63900aeb2bca0daaaddec08491ee64ceecbee5076636a3b026795a8"
 dependencies = [
  "cfg-if",
  "wasm-bindgen-macro",
@@ -3743,9 +3835,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-backend"
-version = "0.2.91"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c9e7e1900c352b609c8488ad12639a311045f40a35491fb69ba8c12f758af70b"
+checksum = "614d787b966d3989fa7bb98a654e369c762374fd3213d212cfc0251257e747da"
 dependencies = [
  "bumpalo",
  "log",
@@ -3758,9 +3850,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-futures"
-version = "0.4.41"
+version = "0.4.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "877b9c3f61ceea0e56331985743b13f3d25c406a7098d45180fb5f09bc19ed97"
+checksum = "76bc14366121efc8dbb487ab05bcc9d346b3b5ec0eaa76e46594cabbe51762c0"
 dependencies = [
  "cfg-if",
  "js-sys",
@@ -3770,9 +3862,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro"
-version = "0.2.91"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b30af9e2d358182b5c7449424f017eba305ed32a7010509ede96cdc4696c46ed"
+checksum = "a1f8823de937b71b9460c0c34e25f3da88250760bec0ebac694b49997550d726"
 dependencies = [
  "quote",
  "wasm-bindgen-macro-support",
@@ -3780,9 +3872,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro-support"
-version = "0.2.91"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "642f325be6301eb8107a83d12a8ac6c1e1c54345a7ef1a9261962dfefda09e66"
+checksum = "e94f17b526d0a461a191c78ea52bbce64071ed5c04c9ffe424dcb38f74171bb7"
 dependencies = [
  "proc-macro2 1.0.78",
  "quote",
@@ -3793,15 +3885,15 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-shared"
-version = "0.2.91"
+version = "0.2.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f186bd2dcf04330886ce82d6f33dd75a7bfcf69ecf5763b89fcde53b6ac9838"
+checksum = "af190c94f2773fdb3729c55b007a722abb5384da03bc0986df4c289bf5567e96"
 
 [[package]]
 name = "wasm-bindgen-test"
-version = "0.3.41"
+version = "0.3.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "143ddeb4f833e2ed0d252e618986e18bfc7b0e52f2d28d77d05b2f045dd8eb61"
+checksum = "d9bf62a58e0780af3e852044583deee40983e5886da43a271dd772379987667b"
 dependencies = [
  "console_error_panic_hook",
  "js-sys",
@@ -3813,9 +3905,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-test-macro"
-version = "0.3.41"
+version = "0.3.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5211b7550606857312bba1d978a8ec75692eae187becc5e680444fffc5e6f89"
+checksum = "b7f89739351a2e03cb94beb799d47fb2cac01759b40ec441f7de39b00cbf7ef0"
 dependencies = [
  "proc-macro2 1.0.78",
  "quote",
@@ -3824,9 +3916,9 @@ dependencies = [
 
 [[package]]
 name = "web-sys"
-version = "0.3.68"
+version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96565907687f7aceb35bc5fc03770a8a0471d82e479f25832f54a0e3f4b28446"
+checksum = "77afa9a11836342370f4817622a2f0f418b134426d91a82dfb48f532d2ec13ef"
 dependencies = [
  "js-sys",
  "wasm-bindgen",

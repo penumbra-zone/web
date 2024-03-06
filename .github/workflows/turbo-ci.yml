@@ -92,6 +92,31 @@ jobs:
       - run: pnpm turbo telemetry disable
       - run: pnpm turbo test --cache-dir=.turbo
 
+  turbo-lint-rust:
+    name: lint:rust
+    runs-on: buildjet-16vcpu-ubuntu-2204
+    needs: turbo-compile
+    steps:
+      - uses: actions/checkout@v4
+      - id: rust-linted
+        uses: buildjet/cache@v3
+        with:
+          path: .turbo
+          key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-lint:rust
+          restore-keys: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
+      - uses: pnpm/action-setup@v2
+      - uses: buildjet/setup-node@v4
+        with:
+          node-version: '21'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - run: pnpm turbo download-keys --cache-dir=.turbo
+      - run: pnpm turbo format-check:rust --cache-dir=.turbo
+      - run: pnpm turbo lint:rust --cache-dir=.turbo
+
   turbo-test-rust:
     name: test:rust
     runs-on: buildjet-16vcpu-ubuntu-2204
