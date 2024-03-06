@@ -54,18 +54,21 @@ export const AccountSwitcher = ({
 
   return (
     <div className='flex items-center justify-between'>
-      <Button variant='ghost' className={cn('hover:bg-inherit', account === 0 && 'cursor-default')}>
-        {shouldShowPreviousButton ? (
+      {shouldShowPreviousButton ? (
+        <Button
+          variant='ghost'
+          className={cn('hover:bg-inherit', account === 0 && 'cursor-default')}
+        >
           <ArrowLeftIcon
             aria-label='Previous account'
             role='button'
             onClick={handleClickPrevious}
             className='size-6 hover:cursor-pointer'
           />
-        ) : (
-          <span className='size-6' />
-        )}
-      </Button>
+        </Button>
+      ) : (
+        <span className='size-6' />
+      )}
       <div className='select-none text-center font-headline text-xl font-semibold leading-[30px]'>
         <div className='flex flex-row flex-wrap items-end gap-[6px]'>
           <span id='AccountSwitcher__label'>Account</span>
@@ -102,21 +105,21 @@ export const AccountSwitcher = ({
           </div>
         </div>
       </div>
-      <Button
-        variant='ghost'
-        className={cn('hover:bg-inherit', account === MAX_INDEX && 'cursor-default')}
-      >
-        {shouldShowNextButton ? (
+      {shouldShowNextButton ? (
+        <Button
+          variant='ghost'
+          className={cn('hover:bg-inherit', account === MAX_INDEX && 'cursor-default')}
+        >
           <ArrowRightIcon
             aria-label='Next account'
             role='button'
             onClick={handleClickNext}
             className='size-6 hover:cursor-pointer'
           />
-        ) : (
-          <span className='size-6' />
-        )}
-      </Button>
+        </Button>
+      ) : (
+        <span className='size-6' />
+      )}
     </div>
   );
 };
