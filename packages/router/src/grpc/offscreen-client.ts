@@ -75,6 +75,12 @@ const buildActions = (
       }),
     ]);
     if ('error' in buildRes) throw new Error(String(buildRes.error));
+    console.log('buildRes.data performance', buildRes.data['performance']);
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete buildRes.data['performance'];
+
+    console.log('buildRes.data action', buildRes.data);
+    
     return Action.fromJson(buildRes.data);
   });
   void Promise.all(buildTasks).finally(() => void releaseOffscreen());

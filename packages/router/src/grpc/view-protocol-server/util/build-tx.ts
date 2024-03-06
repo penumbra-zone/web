@@ -21,6 +21,7 @@ export const optimisticBuild = async function* (
   authorizationRequest: PromiseLike<AuthorizationData>,
   fvk: string,
 ) {
+  performance.mark('optimisticBuild-begin');
   // a promise that rejects if auth denies. raced with build tasks to cancel.
   // if we raced auth directly, approval would complete the race.
   const cancel = new Promise<never>(
@@ -37,12 +38,14 @@ export const optimisticBuild = async function* (
   yield* progressStream(offscreenTasks, cancel);
 
   // final build is synchronous
+  performance.mark('buildParallel-start');
   const transaction: Transaction = buildParallel(
     await Promise.all(offscreenTasks),
     transactionPlan,
     witnessData,
     await authorizationRequest,
   );
+  performance.mark('buildParallel-end');
 
   yield {
     status: {
@@ -51,6 +54,10 @@ export const optimisticBuild = async function* (
     },
     // TODO: satisfies type parameter?
   } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
+  performance.mark('optimisticBuild-end');
+  performance.measure('optimisticBuild', 'optimisticBuild-begin', 'optimisticBuild-end');
+  performance.measure('buildParallel', 'buildParallel-start', 'buildParallel-end');
+  console.log(performance.getEntriesByType('measure'));
 };
 
 const progressStream = async function* <T>(tasks: PromiseLike<T>[], cancel: PromiseLike<never>) {

@@ -44,14 +44,19 @@ export const buildActionParallel = async (
   // Conditionally read proving keys from disk and load keys into WASM binary
   const actionType = txPlan.actions[actionId]?.action.case;
   if (!actionType) throw new Error('No action key provided');
-  await loadProvingKey(actionType);
 
+  performance.mark('loadProvingKey-start');
+  await loadProvingKey(actionType);
+  performance.mark('loadProvingKey-end');
+  
+  performance.mark('buildActionParallel-start');
   const result = build_action(
     txPlan.toJson(),
     txPlan.actions[actionId]?.toJson(),
     fullViewingKey,
     witnessData.toJson(),
   ) as unknown;
+  performance.mark('buildActionParallel-end');
 
   return Action.fromJson(result as JsonValue);
 };
