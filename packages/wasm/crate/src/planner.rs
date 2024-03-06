@@ -164,8 +164,14 @@ pub async fn plan_transaction(
 
     let request: TransactionPlannerRequest = serde_wasm_bindgen::from_value(request)?;
 
+    let source_address_index: AddressIndex = request
+        .source
+        .map(TryInto::try_into)
+        .transpose()?
+        .unwrap_or_default();
+
     let fvk = FullViewingKey::from_str(bech32_full_viewing_key)?;
-    let (change_address, _) = fvk.incoming().payment_address(0u32.into());
+    let (change_address, _) = fvk.incoming().payment_address(source_address_index);
 
     let storage = IndexedDBStorage::new(serde_wasm_bindgen::from_value(idb_constants)?).await?;
 
@@ -345,12 +351,6 @@ pub async fn plan_transaction(
             return Err(anyhow!("Manual fee mode not yet implemented").into());
         }
     };
-
-    let source_address_index: AddressIndex = request
-        .source
-        .map(TryInto::try_into)
-        .transpose()?
-        .unwrap_or_default();
 
     // It's possible that adding spends could increase the gas, increasing the fee
     // amount, and so on, so we add spends iteratively.
