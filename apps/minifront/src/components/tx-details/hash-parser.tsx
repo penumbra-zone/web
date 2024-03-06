@@ -1,4 +1,5 @@
 import {
+  JsonViewer,
   Tabs,
   TabsContent,
   TabsList,
@@ -7,7 +8,6 @@ import {
 } from '@penumbra-zone/ui';
 import { Jsonified, viewFromEmptyPerspective } from '@penumbra-zone/types';
 import { TxDetailsLoaderResult } from '.';
-import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 export enum TxDetailsTab {

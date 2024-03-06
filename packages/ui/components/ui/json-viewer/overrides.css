@@ -1,5 +1,0 @@
-/* For some reason, the ✔️ is not aligned with 📋. This fixes that. */
-.copy-to-clipboard-container > span > span {
-  display: flex;
-  gap: 10px;
-}
