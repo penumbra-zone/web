@@ -28,7 +28,9 @@ describe('Status request handler', () => {
     };
 
     mockServices = {
-      getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb })),
+      getWalletServices: vi.fn(() =>
+        Promise.resolve({ indexedDb: mockIndexedDb }),
+      ) as MockServices['getWalletServices'],
       querier: {
         tendermint: mockTendermint,
       },
@@ -51,7 +53,7 @@ describe('Status request handler', () => {
     mockIndexedDb.getFullSyncHeight?.mockResolvedValue(222n);
     mockTendermint.latestBlockHeight?.mockResolvedValue(222n);
     const statusResponse = new StatusResponse(await status(new StatusRequest(), mockCtx));
-    expect(statusResponse.catchingUp).toBeTruthy();
+    expect(statusResponse.catchingUp).toBe(false);
     expect(statusResponse.fullSyncHeight === 222n).toBeTruthy();
   });
 
@@ -59,7 +61,7 @@ describe('Status request handler', () => {
     mockIndexedDb.getFullSyncHeight?.mockResolvedValue(111n);
     mockTendermint.latestBlockHeight?.mockResolvedValue(222n);
     const statusResponse = new StatusResponse(await status(new StatusRequest(), mockCtx));
-    expect(statusResponse.catchingUp).toBeFalsy();
+    expect(statusResponse.catchingUp).toBe(true);
     expect(statusResponse.partialSyncHeight === 111n).toBeTruthy();
   });
 

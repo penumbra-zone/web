@@ -9,7 +9,7 @@ export const status: Impl['status'] = async (_, ctx) => {
   if (!fullSyncHeight) throw new Error('Last block synced not in db');
 
   return {
-    catchingUp: fullSyncHeight === latestBlockHeight,
+    catchingUp: fullSyncHeight !== latestBlockHeight,
     partialSyncHeight: fullSyncHeight,
     fullSyncHeight: fullSyncHeight,
   };
