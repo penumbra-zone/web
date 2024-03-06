@@ -3,16 +3,9 @@ extern crate penumbra_wasm;
 #[cfg(test)]
 mod tests {
     use anyhow::Result;
-    use penumbra_sct::params::SctParameters;
-    use serde::{Deserialize, Serialize};
-    use serde_json;
-    use wasm_bindgen::JsValue;
-    use wasm_bindgen_test::*;
-    wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
     use indexed_db_futures::prelude::{
         IdbDatabase, IdbObjectStore, IdbQuerySource, IdbTransaction, IdbTransactionMode,
     };
-
     use penumbra_proto::core::app::v1::AppParameters;
     use penumbra_proto::core::component::fee::v1::GasPrices;
     use penumbra_proto::view::v1::transaction_planner_request::Output;
@@ -21,17 +14,22 @@ mod tests {
         core::{
             asset::v1::Value,
             component::shielded_pool::v1::FmdParameters,
-            keys::v1::{Address, AddressIndex},
+            keys::v1::Address,
             transaction::v1::{MemoPlaintext, TransactionPlan as tp},
         },
         view::v1::SpendableNoteRecord,
         DomainType,
     };
+    use penumbra_sct::params::SctParameters;
     use penumbra_tct::{structure::Hash, Forgotten};
     use penumbra_transaction::{
         plan::{ActionPlan, TransactionPlan},
         Action, Transaction,
     };
+    use serde::{Deserialize, Serialize};
+    use wasm_bindgen::JsValue;
+    use wasm_bindgen_test::*;
+
     use penumbra_wasm::planner::plan_transaction;
     use penumbra_wasm::{
         build::build_action,
@@ -41,6 +39,7 @@ mod tests {
         tx::{authorize, build, build_parallel, witness},
     };
 
+    wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
     #[wasm_bindgen_test]
     async fn mock_build_serial_and_parallel() {
         // Limit the use of Penumbra Rust libraries since we're mocking JS calls
@@ -386,17 +385,6 @@ mod tests {
             .put_key_val(&gas_json_key, &js_gas_prices_value)
             .unwrap();
 
-        // Set refund address.
-        #[derive(Clone, Debug, Serialize, Deserialize)]
-        struct RefundAddress {
-            inner: String,
-        }
-        let refund_address = RefundAddress {
-            inner: "ts1I61pd5+xWqlwcuPwsPOGbjevxAoQVymTXyHe60jLlY57WHcAuGsSwYuSxnOX+nTgEBm3MHn7mBlNTxqEkbnJwlNu6YUSDmA8D+aOqCT4=".to_string(),
-        };
-        let refund_address_json: JsValue = serde_wasm_bindgen::to_value(&refund_address).unwrap();
-        let source: JsValue = serde_wasm_bindgen::to_value(&None::<AddressIndex>).unwrap();
-
         // -------------- 1. Query transaction plan performing a spend --------------
 
         let planner_request = TransactionPlannerRequest {
@@ -480,12 +468,11 @@ mod tests {
             serde_wasm_bindgen::from_value(JsValue::from(value_commitments.clone())).unwrap();
 
         // Reconstruct SCT struct.
-        let mut vec_store_commitments: Vec<StoreCommitment> = Vec::new();
-        vec_store_commitments.push(commitments_jsvalue.clone());
+        let vec_store_commitments: Vec<StoreCommitment> = vec![commitments_jsvalue.clone()];
 
         let sct = StoredTree {
             last_position: Some(last_position_json.clone()),
-            last_forgotten: Some(last_forgotten_json.clone()),
+            last_forgotten: Some(last_forgotten_json),
             hashes: [].to_vec(),
             commitments: vec_store_commitments,
         };

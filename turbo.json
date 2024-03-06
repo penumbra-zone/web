@@ -34,6 +34,8 @@
     "test": { "dependsOn": ["compile", "//#playwright-install"] },
     "//#playwright-install": { "cache": false },
     "test:rust": { "dependsOn": ["download-keys", "compile"] },
+    "lint:rust": { "dependsOn": ["download-keys", "compile"] },
+    "format-check:rust": { "dependsOn": ["download-keys", "compile"] },
     "clean": {
       "cache": false
     }

@@ -3,12 +3,6 @@ use std::convert::TryInto;
 use std::str::FromStr;
 
 use anyhow::anyhow;
-use rand_core::OsRng;
-use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::Error;
-use wasm_bindgen::prelude::wasm_bindgen;
-use wasm_bindgen::JsValue;
-
 use penumbra_keys::keys::SpendKey;
 use penumbra_keys::FullViewingKey;
 use penumbra_proto::core::transaction::v1 as pb;
@@ -18,6 +12,11 @@ use penumbra_tct::{Proof, StateCommitment};
 use penumbra_transaction::plan::TransactionPlan;
 use penumbra_transaction::Action;
 use penumbra_transaction::{AuthorizationData, Transaction, WitnessData};
+use rand_core::OsRng;
+use serde::{Deserialize, Serialize};
+use serde_wasm_bindgen::Error;
+use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::JsValue;
 
 use crate::error::WasmResult;
 use crate::storage::IndexedDBStorage;
@@ -46,8 +45,7 @@ pub fn encode_tx(transaction: JsValue) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
     let tx: Transaction = serde_wasm_bindgen::from_value(transaction)?;
-    let tx_encoding: Vec<u8> = tx.try_into()?;
-    let result = serde_wasm_bindgen::to_value(&tx_encoding)?;
+    let result = serde_wasm_bindgen::to_value::<Vec<u8>>(&tx.into())?;
     Ok(result)
 }
 
@@ -366,12 +364,9 @@ pub async fn transaction_info_inner(
     // Finally, compute the full TxV from the full TxP:
     let txv = tx.view_from_perspective(&txp);
 
-    let txp_proto = TransactionPerspective::try_from(txp)?;
-    let txv_proto = TransactionView::try_from(txv)?;
-
     let response = TxInfoResponse {
-        txp: txp_proto,
-        txv: txv_proto,
+        txp: txp.into(),
+        txv: txv.into(),
     };
     Ok(response)
 }
