@@ -19,7 +19,7 @@ export const AccountSwitcher = ({
   onChange: (account: number) => void;
   /**
    * An array of address indexes to switch between, if you want to limit the
-   * options. Must be pre-sorted! `AccountSwitcher` won't sort this for you.
+   * options. No need to sort them, as the component will do that for you.
    */
   filter?: number[];
 }) => {
@@ -31,14 +31,18 @@ export const AccountSwitcher = ({
     if (sortedFilter) {
       const previousAccount = sortedFilter[sortedFilter.indexOf(account) - 1];
       if (previousAccount !== undefined) onChange(previousAccount);
-    } else onChange(account - 1);
+    } else {
+      onChange(account - 1);
+    }
   };
 
   const handleClickNext = () => {
     if (sortedFilter) {
       const nextAccount = sortedFilter[sortedFilter.indexOf(account) + 1];
       if (nextAccount !== undefined) onChange(nextAccount);
-    } else onChange(account + 1);
+    } else {
+      onChange(account + 1);
+    }
   };
 
   const shouldShowPreviousButton =
@@ -71,7 +75,7 @@ export const AccountSwitcher = ({
       )}
       <div className='select-none text-center font-headline text-xl font-semibold leading-[30px]'>
         <div className='flex flex-row flex-wrap items-end gap-[6px]'>
-          <span id='AccountSwitcher__label'>Account</span>
+          <span>Account</span>
           <div className='flex items-end gap-0'>
             <p>#</p>
             <div className='relative w-min min-w-[24px]'>
