@@ -2,7 +2,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Button } from './button';
 import { Input } from './input';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 const MAX_INDEX = 2 ** 32;
 
@@ -13,11 +13,39 @@ const MAX_INDEX = 2 ** 32;
 export const AccountSwitcher = ({
   account,
   onChange,
+  filter,
 }: {
   account: number;
   onChange: (account: number) => void;
+  /**
+   * An array of address indexes to switch between, if you want to limit the
+   * options. Must be pre-sorted! `AccountSwitcher` won't sort this for you.
+   */
+  filter?: number[];
 }) => {
   const [inputCharWidth, setInputCharWidth] = useState(1);
+
+  const sortedFilter = useMemo(() => (filter ? [...filter].sort() : undefined), [filter]);
+
+  const handleClickPrevious = () => {
+    if (sortedFilter) {
+      const previousAccount = sortedFilter[sortedFilter.indexOf(account) - 1];
+      if (previousAccount !== undefined) onChange(previousAccount);
+    } else onChange(account - 1);
+  };
+
+  const handleClickNext = () => {
+    if (sortedFilter) {
+      const nextAccount = sortedFilter[sortedFilter.indexOf(account) + 1];
+      if (nextAccount !== undefined) onChange(nextAccount);
+    } else onChange(account + 1);
+  };
+
+  const shouldShowPreviousButton =
+    account !== 0 && (!sortedFilter || sortedFilter.indexOf(account) > 0);
+  const shouldShowNextButton =
+    account !== MAX_INDEX &&
+    (!sortedFilter || sortedFilter.indexOf(account) < sortedFilter.length - 1);
 
   const handleChange = (value: number) => {
     onChange(value);
@@ -27,11 +55,11 @@ export const AccountSwitcher = ({
   return (
     <div className='flex items-center justify-between'>
       <Button variant='ghost' className={cn('hover:bg-inherit', account === 0 && 'cursor-default')}>
-        {account !== 0 ? (
+        {shouldShowPreviousButton ? (
           <ArrowLeftIcon
-            onClick={() => {
-              if (account > 0) handleChange(account - 1);
-            }}
+            aria-label='Previous account'
+            role='button'
+            onClick={handleClickPrevious}
             className='size-6 hover:cursor-pointer'
           />
         ) : (
@@ -40,11 +68,12 @@ export const AccountSwitcher = ({
       </Button>
       <div className='select-none text-center font-headline text-xl font-semibold leading-[30px]'>
         <div className='flex flex-row flex-wrap items-end gap-[6px]'>
-          <span>Account</span>
+          <span id='AccountSwitcher__label'>Account</span>
           <div className='flex items-end gap-0'>
             <p>#</p>
             <div className='relative w-min min-w-[24px]'>
               <Input
+                aria-label={`Account #${account}`}
                 variant='transparent'
                 type='number'
                 className='mb-[3px] h-6 py-[2px] font-headline text-xl font-semibold leading-[30px]'
@@ -66,9 +95,11 @@ export const AccountSwitcher = ({
         variant='ghost'
         className={cn('hover:bg-inherit', account === MAX_INDEX && 'cursor-default')}
       >
-        {account < MAX_INDEX ? (
+        {shouldShowNextButton ? (
           <ArrowRightIcon
-            onClick={() => handleChange(account + 1)}
+            aria-label='Next account'
+            role='button'
+            onClick={handleClickNext}
             className='size-6 hover:cursor-pointer'
           />
         ) : (
