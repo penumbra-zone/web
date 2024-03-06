@@ -12,7 +12,7 @@ import type { Transport } from '@connectrpc/connect';
 import { createPromiseClient } from '@connectrpc/connect';
 import { createChannelTransport } from '@penumbra-zone/transport-dom/create';
 import { jsonOptions } from '@penumbra-zone/types/registry';
-import { PenumbraSymbol } from './global';
+import { PenumbraSymbol } from './index';
 
 export class PraxNotAvailableError extends Error {}
 export class PraxNotConnectedError extends Error {}

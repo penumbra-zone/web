@@ -4,7 +4,7 @@ import dts from 'vite-plugin-dts';
 export default defineConfig({
   build: {
     lib: {
-      entry: ['./src/index.ts', './src/get-port.ts', './src/prax.ts', './src/global.ts'],
+      entry: ['./src/index.ts', './src/get-port.ts', './src/prax.ts'],
       formats: ['es'],
     },
   },
