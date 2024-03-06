@@ -6,7 +6,7 @@ import topLevelAwait from 'vite-plugin-top-level-await';
 export default defineConfig({
   build: {
     lib: {
-      entry: ['./src/index.ts', './src/proving-keys.ts', './src/build.ts', './src/planner.ts'],
+      entry: ['./src/index.ts', './src/proving-keys.ts', './src/build.ts'],
       formats: ['es'],
     },
   },
