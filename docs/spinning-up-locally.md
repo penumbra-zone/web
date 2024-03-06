@@ -10,7 +10,8 @@ pnpm install
 pnpm dev
 ```
 
-This will spin up both the webapp and extension on different ports.
+This will spin up both _minifront_ and the node status page on different ports.
+The extension will appear in its 'dist' directory and must be loaded manually.
 
 ### Running extension code from repo
 

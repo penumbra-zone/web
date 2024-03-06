@@ -18,7 +18,7 @@ describe('<ValueViewComponent />', () => {
     },
     images: [
       {
-        png: 'https://raw.githubusercontent.com/penumbra-zone/web/main/apps/webapp/public/favicon.png',
+        png: 'https://raw.githubusercontent.com/penumbra-zone/web/main/apps/minifront/public/favicon.png',
       },
     ],
     denomUnits: [

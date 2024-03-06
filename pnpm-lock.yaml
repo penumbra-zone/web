@@ -245,41 +245,7 @@ importers:
         specifier: ^5.10.0
         version: 5.10.0
 
-  apps/node-status:
-    dependencies:
-      '@penumbra-zone/crypto-web':
-        specifier: workspace:*
-        version: link:../../packages/crypto
-      '@penumbra-zone/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      date-fns:
-        specifier: ^3.3.1
-        version: 3.3.1
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: ^18.2.0
-        version: 18.2.0(react@18.2.0)
-      react-loader-spinner:
-        specifier: ^6.1.6
-        version: 6.1.6(react-dom@18.2.0)(react@18.2.0)
-      react-router-dom:
-        specifier: ^6.22.2
-        version: 6.22.2(react-dom@18.2.0)(react@18.2.0)
-      tailwindcss:
-        specifier: ^3.4.1
-        version: 3.4.1
-    devDependencies:
-      '@types/react':
-        specifier: ^18.2.60
-        version: 18.2.60
-      '@types/react-dom':
-        specifier: ^18.2.19
-        version: 18.2.19
-
-  apps/webapp:
+  apps/minifront:
     dependencies:
       '@penumbra-zone/client':
         specifier: workspace:*
@@ -372,6 +338,40 @@ importers:
       postcss:
         specifier: ^8.4.35
         version: 8.4.35
+
+  apps/node-status:
+    dependencies:
+      '@penumbra-zone/crypto-web':
+        specifier: workspace:*
+        version: link:../../packages/crypto
+      '@penumbra-zone/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      date-fns:
+        specifier: ^3.3.1
+        version: 3.3.1
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
+      react-loader-spinner:
+        specifier: ^6.1.6
+        version: 6.1.6(react-dom@18.2.0)(react@18.2.0)
+      react-router-dom:
+        specifier: ^6.22.2
+        version: 6.22.2(react-dom@18.2.0)(react@18.2.0)
+      tailwindcss:
+        specifier: ^3.4.1
+        version: 3.4.1
+    devDependencies:
+      '@types/react':
+        specifier: ^18.2.60
+        version: 18.2.60
+      '@types/react-dom':
+        specifier: ^18.2.19
+        version: 18.2.19
 
   packages/client:
     dependencies:
