@@ -5,12 +5,15 @@ import {
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { IdbUpdate, PenumbraDb } from '@penumbra-zone/types';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { IndexedDb } from '.';
 import {
   delegationMetadataA,
   delegationMetadataB,
   emptyScanResult,
+  epoch1,
+  epoch2,
+  epoch3,
   metadataA,
   metadataB,
   metadataC,
@@ -510,6 +513,45 @@ describe('IndexedDb', () => {
         ownedPositions.push(positionId as PositionId);
       }
       expect(ownedPositions.length).toBe(1);
+    });
+  });
+
+  describe('epochs', () => {
+    let db: IndexedDb;
+
+    beforeEach(async () => {
+      db = await IndexedDb.initialize({ ...generateInitialProps() });
+      await db.addEpoch(epoch1.startHeight);
+      await db.addEpoch(epoch2.startHeight);
+      await db.addEpoch(epoch3.startHeight);
+    });
+
+    describe('addEpoch', () => {
+      it('auto-incrememnts the epoch index if one is not provided', async () => {
+        const [result1, result2, result3] = await Promise.all([
+          db.getEpochByHeight(50n),
+          db.getEpochByHeight(150n),
+          db.getEpochByHeight(250n),
+        ]);
+
+        expect(result1?.index).toBe(0n);
+        expect(result2?.index).toBe(1n);
+        expect(result3?.index).toBe(2n);
+      });
+    });
+
+    describe('getEpochByHeight', () => {
+      it('returns the epoch containing the given block height', async () => {
+        const [result1, result2, result3] = await Promise.all([
+          db.getEpochByHeight(50n),
+          db.getEpochByHeight(150n),
+          db.getEpochByHeight(250n),
+        ]);
+
+        expect(result1?.toJson()).toEqual(epoch1.toJson());
+        expect(result2?.toJson()).toEqual(epoch2.toJson());
+        expect(result3?.toJson()).toEqual(epoch3.toJson());
+      });
     });
   });
 });

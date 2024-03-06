@@ -10,6 +10,7 @@ import {
   PositionId,
   TradingPair,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import { Epoch } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
 
 export const emptyScanResult: ScanBlockResult = {
   height: 1092n,
@@ -1462,4 +1463,19 @@ export const positionIdGmGnSell = PositionId.fromJson({
 export const tradingPairGmGn = TradingPair.fromJson({
   asset1: { inner: 'HW2Eq3UZVSBttoUwUi/MUtE7rr2UU7/UH500byp7OAc=' },
   asset2: { inner: 'nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=' },
+});
+
+export const epoch1 = new Epoch({
+  index: 0n,
+  startHeight: 0n,
+});
+
+export const epoch2 = new Epoch({
+  index: 1n,
+  startHeight: 100n,
+});
+
+export const epoch3 = new Epoch({
+  index: 2n,
+  startHeight: 200n,
 });

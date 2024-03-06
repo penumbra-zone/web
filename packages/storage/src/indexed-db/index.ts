@@ -14,7 +14,10 @@ import {
 } from '@penumbra-zone/types';
 import { IbdUpdater, IbdUpdates } from './updater';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
-import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
+import {
+  Epoch,
+  Nullifier,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import {
   NotesForVotingResponse,
@@ -90,6 +93,7 @@ export class IndexedDb implements IndexedDbInterface {
         }).createIndex('nullifier', 'nullifier.inner');
         db.createObjectStore('GAS_PRICES');
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
+        db.createObjectStore('EPOCHS');
       },
     });
     const constants = {
@@ -407,6 +411,51 @@ export class IndexedDb implements IndexedDbInterface {
         position: position.toJson() as Jsonified<Position>,
       },
     });
+  }
+
+  async addEpoch(startHeight: bigint, index?: bigint): Promise<void> {
+    if (index === undefined) {
+      const cursor = await this.db
+        .transaction('EPOCHS', 'readonly')
+        .store.openCursor(undefined, 'prev');
+      const previousEpoch = cursor?.value ? Epoch.fromJson(cursor.value) : undefined;
+      index = previousEpoch?.index !== undefined ? previousEpoch.index + 1n : 0n;
+    }
+
+    await this.u.update({
+      table: 'EPOCHS',
+      value: new Epoch({ startHeight, index }).toJson() as Jsonified<Epoch>,
+      key: startHeight.toString(),
+    });
+  }
+
+  /**
+   * Get the epoch that contains the given block height.
+   */
+  async getEpochByHeight(
+    /**
+     * The block height to query by. Will return the epoch with the largest
+     * start height smaller than `height` -- that is, the epoch that contains
+     * this height.
+     */
+    height: bigint,
+  ): Promise<Epoch | undefined> {
+    let cursor = await this.db.transaction('EPOCHS', 'readonly').store.openCursor();
+
+    let epoch: Epoch | undefined;
+
+    // Iterate over epochs and return the one with the largest start height
+    // smaller than `height`.
+    while (cursor) {
+      const epochStartHeight = BigInt(cursor.key);
+
+      if (epochStartHeight <= height) epoch = Epoch.fromJson(cursor.value);
+      else if (epochStartHeight > height) break;
+
+      cursor = await cursor.continue();
+    }
+
+    return epoch;
   }
 
   private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanBlockResult['sctUpdates']): void {
