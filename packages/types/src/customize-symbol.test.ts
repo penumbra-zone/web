@@ -9,7 +9,7 @@ describe('Customizing metadata', () => {
         'delegation_penumbravalid1fjuj67ayaqueqxg03d65ps5aah6m39u39qeacu3zv2cw3dzxssyq3yrcez',
     });
 
-    expect(customizeSymbol(metadata).symbol).toBe('Delegated UM (fjuj67ayaqueqxg03d65ps5aa...)');
+    expect(customizeSymbol(metadata).symbol).toBe('delUM(fjuj67ay…)');
   });
 
   test('should work for unbonding token', () => {
@@ -18,9 +18,7 @@ describe('Customizing metadata', () => {
         'uunbonding_epoch_29_penumbravalid1fjuj67ayaqueqxg03d65ps5aah6m39u39qeacu3zv2cw3dzxssyq3yrcez',
     });
 
-    expect(customizeSymbol(metadata).symbol).toBe(
-      'Unbonding UM, epoch 29 (fjuj67ayaqueqxg03d65ps5aa...)',
-    );
+    expect(customizeSymbol(metadata).symbol).toBe('unbondUMe29(fjuj67ay…)');
   });
 
   test('should do nothing if no matches', () => {
