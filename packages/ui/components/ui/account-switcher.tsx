@@ -74,10 +74,21 @@ export const AccountSwitcher = ({
             <div className='relative w-min min-w-[24px]'>
               <Input
                 aria-label={`Account #${account}`}
+                aria-disabled={!!filter}
                 variant='transparent'
                 type='number'
                 className='mb-[3px] h-6 py-[2px] font-headline text-xl font-semibold leading-[30px]'
                 onChange={e => {
+                  /**
+                   * Don't allow manual account number entry when there's a
+                   * filter.
+                   *
+                   * @todo: Change this to only call `handleChange()` when the
+                   * user presses Enter? Then it could validate that the entered
+                   * account index is in the filter.
+                   */
+                  if (filter) return;
+
                   const value = Number(e.target.value);
                   const valueLength = e.target.value.replace(/^0+/, '').length;
 

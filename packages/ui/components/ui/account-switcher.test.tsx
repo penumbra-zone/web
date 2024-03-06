@@ -18,6 +18,32 @@ describe('<AccountSwitcher />', () => {
       fireEvent.change(getByLabelText('Account #123'), { target: { value: 456 } });
       expect(onChange).toHaveBeenCalledWith(456);
     });
+
+    it('has aria-disabled=false', () => {
+      const { getByLabelText } = render(<AccountSwitcher account={123} onChange={vi.fn()} />);
+
+      expect(getByLabelText('Account #123')).toHaveAttribute('aria-disabled', 'false');
+    });
+
+    describe('when a filter has been passed', () => {
+      it('does not call `onChange` -- i.e., it is effectively disabled', () => {
+        const onChange = vi.fn();
+        const { getByLabelText } = render(
+          <AccountSwitcher account={123} onChange={onChange} filter={[1, 2, 3]} />,
+        );
+
+        fireEvent.change(getByLabelText('Account #123'), { target: { value: 456 } });
+        expect(onChange).not.toHaveBeenCalled();
+      });
+
+      it('has aria-disabled=true', () => {
+        const { getByLabelText } = render(
+          <AccountSwitcher account={123} onChange={vi.fn()} filter={[1, 2, 3]} />,
+        );
+
+        expect(getByLabelText('Account #123')).toHaveAttribute('aria-disabled', 'true');
+      });
+    });
   });
 
   describe('the previous button', () => {
