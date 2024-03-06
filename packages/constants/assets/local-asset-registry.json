@@ -142,7 +142,7 @@
     "symbol": "Delegation (Penumbra Labs CI 1)",
     "images": [
       {
-        "png": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/webapp/public/favicon.png"
+        "png": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/minifront/public/favicon.png"
       }
     ]
   },
@@ -168,7 +168,7 @@
     "symbol": "Delegation (Penumbra Labs CI 2)",
     "images": [
       {
-        "png": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/webapp/public/favicon.png"
+        "png": "https://raw.githubusercontent.com/penumbra-zone/web/main/apps/minifront/public/favicon.png"
       }
     ]
   },
