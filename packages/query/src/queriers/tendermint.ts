@@ -10,6 +10,8 @@ const knownTendermintErrors = [
   'proof did not verify',
   'is not a valid field element',
   'is not a valid SCT root',
+  'cannot claim unbonding tokens before the end epoch',
+  'undelegation was prepared for next epoch',
 ];
 
 export class TendermintQuerier implements TendermintQuerierInterface {
