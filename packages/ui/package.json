@@ -11,6 +11,9 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.15.12",
     "@penumbra-zone/getters": "workspace:*",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dialog": "1.0.5",
@@ -26,6 +29,7 @@
     "@radix-ui/react-toggle": "^1.0.3",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@testing-library/jest-dom": "^6.4.2",
+    "@textea/json-viewer": "^3.4.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "djb2a": "^2.0.0",
@@ -33,7 +37,6 @@
     "humanize-duration": "^3.31.0",
     "lucide-react": "^0.344.0",
     "react-dom": "^18.2.0",
-    "react-json-view": "^1.21.3",
     "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^6.22.2",
     "sonner": "1.4.3",
