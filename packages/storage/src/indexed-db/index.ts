@@ -475,7 +475,7 @@ export class IndexedDb implements IndexedDbInterface {
 
   /**
    * Inserts the validator info into the database, or updates an existing
-   * validator info if one with the same identity key exists,
+   * validator info if one with the same identity key exists.
    */
   async upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void> {
     const identityKeyAsBech32 = bech32IdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo));
