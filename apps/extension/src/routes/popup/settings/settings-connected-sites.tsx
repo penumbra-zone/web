@@ -104,7 +104,7 @@ const SiteRecord = ({
           />
         ) : (
           <LinkBreak1Icon
-            aria-description='Ignored'
+            aria-description='Denied'
             className='visible absolute text-red-400 group-hover:invisible'
           />
         )}
