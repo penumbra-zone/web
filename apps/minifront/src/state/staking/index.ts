@@ -33,6 +33,7 @@ import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } f
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { assembleUndelegateClaimRequest } from './assemble-undelegate-claim-request';
+import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 
 const STAKING_TOKEN_DISPLAY_DENOM_EXPONENT = (() => {
   const stakingAsset = localAssets.find(asset => asset.display === STAKING_TOKEN);
@@ -169,17 +170,16 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       state.staking.votingPowerByValidatorInfo = {};
     });
 
+    const delegations: ValueView[] = [];
     for await (const delegation of getDelegationsForAccount(addressIndex)) {
-      const delegations = get().staking.delegationsByAccount.get(addressIndex.account) ?? [];
-
-      const sortedDelegations = [...delegations, delegation].sort(byBalanceAndVotingPower);
-
-      set(state => {
-        state.staking.delegationsByAccount.set(addressIndex.account, sortedDelegations);
-      });
-
+      delegations.push(delegation);
       validatorInfos.push(getValidatorInfoFromValueView(delegation));
     }
+    delegations.sort(byBalanceAndVotingPower);
+
+    set(state => {
+      state.staking.delegationsByAccount.set(addressIndex.account, delegations);
+    });
 
     /**
      * We can only calculate _each_ validator's percentage voting power once
