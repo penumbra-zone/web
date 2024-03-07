@@ -487,6 +487,9 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
+  /**
+   * Iterates over all validator infos in the database.
+   */
   async *iterateValidatorInfos() {
     yield* new ReadableStream(
       new IdbCursorSource(this.db.transaction('VALIDATOR_INFOS').store.openCursor(), ValidatorInfo),
