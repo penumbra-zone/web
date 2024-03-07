@@ -238,6 +238,11 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.saveTransactionInfos(compactBlock.height, relevantTx);
       }
 
+      // We only query Tendermint for the latest known block height once, when
+      // the block processor starts running. Once we're caught up, though, the
+      // chain will of course continue adding blocks, and we'll keep processing
+      // them. So, we need to update `latestKnownBlockHeight` once we've passed
+      // it.
       if (compactBlock.height > latestKnownBlockHeight) {
         latestKnownBlockHeight = compactBlock.height;
       }
