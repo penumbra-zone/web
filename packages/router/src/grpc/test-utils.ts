@@ -18,6 +18,7 @@ export interface IndexedDbMock {
   iterateSpendableNotes?: () => Partial<AsyncIterable<Mock>>;
   iterateSwaps?: () => Partial<AsyncIterable<Mock>>;
   iterateTransactionInfo?: () => Partial<AsyncIterable<Mock>>;
+  iterateValidatorInfos?: () => Partial<AsyncIterable<Mock>>;
   subscribe?: (table: string) => Partial<AsyncIterable<Mock>>;
   getSwapByCommitment?: Mock;
   getEpochByHeight?: Mock;

@@ -131,9 +131,15 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async syncAndStore() {
     const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
     const startHeight = fullSyncHeight ? fullSyncHeight + 1n : 0n;
-    const latestBlockHeight = await this.querier.tendermint.latestBlockHeight();
+    let latestKnownBlockHeight = await this.querier.tendermint.latestBlockHeight();
 
-    let nextEpochStartHeight: bigint | undefined = startHeight === 0n ? 0n : undefined;
+    // In the `for` loop below, we only update validator infos once we've
+    // reached the latest known epoch. This means that, if a user is syncing for
+    // the first time, they could experience a broken UI until the latest known
+    // epoch is reached, since they may have delegation tokens but no validator
+    // info to go with them. So we'll update validator infos at the beginning of
+    // sync as well, and force the rest of sync to wait until it's done.
+    if (startHeight === 0n) await this.updateValidatorInfos();
 
     // this is an indefinite stream of the (compact) chain from the network
     // intended to run continuously
@@ -142,10 +148,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
-      if (nextEpochStartHeight === compactBlock.height) {
-        await this.indexedDb.addEpoch(nextEpochStartHeight);
-        nextEpochStartHeight = undefined;
-      }
       if (compactBlock.appParametersUpdated) {
         await this.indexedDb.saveAppParams(await this.querier.app.appParams());
       }
@@ -169,7 +171,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       const flushReasons = {
         scannerWantsFlush,
         interval: compactBlock.height % 1000n === 0n,
-        new: compactBlock.height > latestBlockHeight,
+        new: compactBlock.height > latestKnownBlockHeight,
       };
 
       const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
@@ -236,8 +238,19 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.saveTransactionInfos(compactBlock.height, relevantTx);
       }
 
+      // We only query Tendermint for the latest known block height once, when
+      // the block processor starts running. Once we're caught up, though, the
+      // chain will of course continue adding blocks, and we'll keep processing
+      // them. So, we need to update `latestKnownBlockHeight` once we've passed
+      // it.
+      if (compactBlock.height > latestKnownBlockHeight) {
+        latestKnownBlockHeight = compactBlock.height;
+      }
+
       const isLastBlockOfEpoch = !!compactBlock.epochRoot;
-      if (isLastBlockOfEpoch) nextEpochStartHeight = compactBlock.height + 1n;
+      if (isLastBlockOfEpoch) {
+        void this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
+      }
     }
   }
 
@@ -363,6 +376,38 @@ export class BlockProcessor implements BlockProcessorInterface {
       throw new Error(
         `Block height: ${blockHeight}. Wasm root does not match remote source of truth. Programmer error.`,
       );
+    }
+  }
+
+  private async handleEpochTransition(
+    endHeightOfPreviousEpoch: bigint,
+    latestKnownBlockHeight: bigint,
+  ): Promise<void> {
+    const { sctParams } = await this.querier.app.appParams();
+    const nextEpochStartHeight = endHeightOfPreviousEpoch + 1n;
+
+    await this.indexedDb.addEpoch(nextEpochStartHeight);
+
+    const nextEpochIsLatestKnownEpoch =
+      sctParams && latestKnownBlockHeight - nextEpochStartHeight < sctParams.epochDuration;
+
+    // If we're doing a full sync from block 0, there could be hundreds or even
+    // thousands of epoch transitions in the chain already. If we update
+    // validator infos on every epoch transition, we'd be making tons of
+    // unnecessary calls to the RPC node for validator infos. Instead, we'll
+    // only get updated validator infos once we're within the latest known
+    // epoch.
+    if (nextEpochIsLatestKnownEpoch) void this.updateValidatorInfos();
+  }
+
+  private async updateValidatorInfos(): Promise<void> {
+    for await (const validatorInfoResponse of this.querier.staking.allValidatorInfos()) {
+      if (!validatorInfoResponse.validatorInfo) continue;
+
+      // Await the upsert. This makes it possible for users of this method to
+      // await the entire method, if they want to block all other code until all
+      // validator infos have been upserted.
+      await this.indexedDb.upsertValidatorInfo(validatorInfoResponse.validatorInfo);
     }
   }
 }
