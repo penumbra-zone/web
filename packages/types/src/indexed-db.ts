@@ -38,6 +38,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { Jsonified } from './jsonified';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
+import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -88,6 +89,7 @@ export interface IndexedDbInterface {
   updatePosition(positionId: PositionId, newState: PositionState): Promise<void>;
   addEpoch(startHeight: bigint, index?: bigint): Promise<void>;
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
+  upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -163,6 +165,10 @@ export interface PenumbraDb extends DBSchema {
     key: number; // auto-increment
     value: Jsonified<Epoch>;
   };
+  VALIDATOR_INFOS: {
+    key: string; // bech32-encoded validator identity key
+    value: Jsonified<ValidatorInfo>;
+  };
 }
 
 // need to store PositionId and Position in the same table
@@ -190,4 +196,5 @@ export const IDB_TABLES: Tables = {
   app_parameters: 'APP_PARAMETERS',
   gas_prices: 'GAS_PRICES',
   epochs: 'EPOCHS',
+  validator_infos: 'VALIDATOR_INFOS',
 };

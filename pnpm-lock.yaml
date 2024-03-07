@@ -528,6 +528,9 @@ importers:
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../crypto
+      '@penumbra-zone/getters':
+        specifier: workspace:^
+        version: link:../getters
       idb:
         specifier: ^8.0.0
         version: 8.0.0

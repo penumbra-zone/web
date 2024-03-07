@@ -1,5 +1,6 @@
 import { IDBPDatabase, openDB, StoreNames } from 'idb';
 import {
+  bech32IdentityKey,
   bech32ToUint8Array,
   IDB_TABLES,
   IdbConstants,
@@ -47,6 +48,8 @@ import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { IdbCursorSource } from './stream';
 
 import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
+import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -94,6 +97,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('GAS_PRICES');
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
         db.createObjectStore('EPOCHS', { autoIncrement: true });
+        db.createObjectStore('VALIDATOR_INFOS');
       },
     });
     const constants = {
@@ -467,6 +471,20 @@ export class IndexedDb implements IndexedDbInterface {
     }
 
     return epoch;
+  }
+
+  /**
+   * Inserts the validator info into the database, or updates an existing
+   * validator info if one with the same identity key exists,
+   */
+  async upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void> {
+    const identityKeyAsBech32 = bech32IdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo));
+
+    await this.u.update({
+      table: 'VALIDATOR_INFOS',
+      key: identityKeyAsBech32,
+      value: validatorInfo.toJson() as Jsonified<ValidatorInfo>,
+    });
   }
 
   private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanBlockResult['sctUpdates']): void {
