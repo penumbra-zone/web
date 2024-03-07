@@ -46,25 +46,33 @@ export const OriginApproval = () => {
         <div className='flex flex-1 flex-col items-start justify-between px-[30px] pb-[30px]'>
           <div className='flex w-full flex-col gap-4'>
             <div className='flex flex-col gap-2'>
-              <div className='flex h-11 w-full items-center rounded-lg border bg-background px-3 py-2 text-muted-foreground'>
-                {favIconUrl ? <img src={favIconUrl} alt='icon' className='h-11' /> : null}
-                <div className='p-2 font-headline text-base font-semibold'>
-                  {title ? title : <div className='text-muted-foreground'>{'<no title>'}</div>}
-                </div>
-              </div>
-              <div className='flex h-11 w-full items-center rounded-lg border bg-background px-3 py-2 text-muted-foreground'>
-                <div className='p-2 font-mono'>
-                  <span className='tracking-tighter'>
-                    {protocol}
-                    {'//'}
-                  </span>
-                  <span className='text-white'>{hostname}</span>
-                  {port ? (
-                    <span className='tracking-tighter'>
-                      {':'}
-                      <span className='text-white'>{port}</span>
-                    </span>
+              <div className='flex flex-col gap-2 rounded-lg border-[2px] [border-image:linear-gradient(to_top_right,var(--teal-420),var(--rust-420))_30]'>
+                <div className='flex h-11 w-full items-center rounded-lg border bg-background px-3 py-2 text-muted-foreground'>
+                  {favIconUrl ? (
+                    <img
+                      src={favIconUrl}
+                      alt='icon'
+                      className='h-20 rounded-lg border-[2px] [border-image:linear-gradient(to_top_left,var(--teal-420),var(--rust-420))_30]'
+                    />
                   ) : null}
+                  <div className='p-2 font-headline text-base font-semibold text-white'>
+                    {title ? title : <div className='text-muted-foreground'>{'<no title>'}</div>}
+                  </div>
+                </div>
+                <div className='flex h-11 w-full items-center rounded-lg border bg-background px-3 py-2 text-muted-foreground'>
+                  <div className='p-2 font-mono'>
+                    <span className='tracking-tighter'>
+                      {protocol}
+                      {'//'}
+                    </span>
+                    <span className='text-white'>{hostname}</span>
+                    {port ? (
+                      <span className='tracking-tighter'>
+                        {':'}
+                        <span className='text-white'>{port}</span>
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
               </div>
               <div className='mt-3 flex flex-col gap-3'>
