@@ -90,7 +90,7 @@ describe('rethrowImplErrors()', () => {
     describe('when the request succeeds', () => {
       it('returns the response', async () => {
         await expect(
-          wrappedServiceImplementation.getFoos(new FooRequest(), mockHandlerContext),
+          wrappedServiceImplementation.getFoos!(new FooRequest(), mockHandlerContext),
         ).resolves.toEqual(['foo1', 'foo2']);
       });
     });
@@ -103,7 +103,7 @@ describe('rethrowImplErrors()', () => {
         });
 
         await expect(() =>
-          wrappedServiceImplementation.getFoos(new FooRequest(), mockHandlerContext),
+          wrappedServiceImplementation.getFoos!(new FooRequest(), mockHandlerContext),
         ).rejects.toThrow(error);
       });
     });
@@ -116,7 +116,7 @@ describe('rethrowImplErrors()', () => {
         });
 
         await expect(() =>
-          wrappedServiceImplementation.getFoos(new FooRequest(), mockHandlerContext),
+          wrappedServiceImplementation.getFoos!(new FooRequest(), mockHandlerContext),
         ).rejects.toThrow(new ConnectError('oh no!'));
       });
     });
@@ -128,7 +128,7 @@ describe('rethrowImplErrors()', () => {
         expect.assertions(3);
 
         let whichBar = 1;
-        for await (const item of wrappedServiceImplementation.getBars(
+        for await (const item of wrappedServiceImplementation.getBars!(
           new BarRequest(),
           mockHandlerContext,
         )) {
@@ -146,7 +146,7 @@ describe('rethrowImplErrors()', () => {
         });
 
         await expect(async () => {
-          for await (const item of wrappedServiceImplementation.getBars(
+          for await (const item of wrappedServiceImplementation.getBars!(
             new BarRequest(),
             mockHandlerContext,
           )) {
@@ -165,7 +165,7 @@ describe('rethrowImplErrors()', () => {
         });
 
         await expect(async () => {
-          for await (const item of wrappedServiceImplementation.getBars(
+          for await (const item of wrappedServiceImplementation.getBars!(
             new BarRequest(),
             mockHandlerContext,
           )) {
