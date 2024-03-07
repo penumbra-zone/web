@@ -25,13 +25,12 @@ import { localExtStorage } from '@penumbra-zone/storage';
 const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 
 const penumbraProxies = [
-  IbcProxy,
-
   AppService,
   CompactBlockService,
   DexService,
   DexSimulationService,
   GovernanceService,
+  IbcProxy,
   ShieldedPoolService,
   TendermintProxyService,
 ].map(
