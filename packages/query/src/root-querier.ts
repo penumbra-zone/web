@@ -5,6 +5,7 @@ import { ShieldedPoolQuerier } from './queriers/shielded-pool';
 import { RootQuerierInterface } from '@penumbra-zone/types';
 import { IbcClientQuerier } from './queriers/ibc-client';
 import { CnidariumQuerier } from './queriers/cnidarium';
+import { StakingQuerier } from './queriers/staking';
 
 // Given the amount of query services, this root querier aggregates them all
 // to make it easier for consumers
@@ -14,6 +15,7 @@ export class RootQuerier implements RootQuerierInterface {
   readonly tendermint: TendermintQuerier;
   readonly shieldedPool: ShieldedPoolQuerier;
   readonly ibcClient: IbcClientQuerier;
+  readonly staking: StakingQuerier;
   readonly cnidarium: CnidariumQuerier;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
@@ -22,6 +24,7 @@ export class RootQuerier implements RootQuerierInterface {
     this.tendermint = new TendermintQuerier({ grpcEndpoint });
     this.shieldedPool = new ShieldedPoolQuerier({ grpcEndpoint });
     this.ibcClient = new IbcClientQuerier({ grpcEndpoint });
+    this.staking = new StakingQuerier({ grpcEndpoint });
     this.cnidarium = new CnidariumQuerier({ grpcEndpoint });
   }
 }

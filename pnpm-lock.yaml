@@ -459,6 +459,9 @@ importers:
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../crypto
+      '@penumbra-zone/polyfills':
+        specifier: workspace:*
+        version: link:../polyfills
       '@penumbra-zone/wasm':
         specifier: workspace:*
         version: link:../wasm

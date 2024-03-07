@@ -11,6 +11,10 @@ import {
 import { KeyValueResponse_Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/cnidarium/v1/cnidarium_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import {
+  ValidatorInfoRequest,
+  ValidatorInfoResponse,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
 export interface RootQuerierInterface {
   app: AppQuerierInterface;
@@ -48,6 +52,10 @@ export interface ShieldedPoolQuerierInterface {
 
 export interface IbcClientQuerierInterface {
   ibcClientStates(req: QueryClientStatesRequest): Promise<QueryClientStatesResponse>;
+}
+
+export interface StakingQuerierInterface {
+  allValidatorInfos(req: ValidatorInfoRequest): AsyncIterable<ValidatorInfoResponse>;
 }
 
 export interface CnidariumQuerierInterface {
