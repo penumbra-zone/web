@@ -487,6 +487,12 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
+  async *iterateValidatorInfos() {
+    yield* new ReadableStream(
+      new IdbCursorSource(this.db.transaction('VALIDATOR_INFOS').store.openCursor(), ValidatorInfo),
+    );
+  }
+
   private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanBlockResult['sctUpdates']): void {
     if (sctUpdates.set_position) {
       txs.add({

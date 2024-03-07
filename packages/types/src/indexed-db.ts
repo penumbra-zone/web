@@ -90,6 +90,7 @@ export interface IndexedDbInterface {
   addEpoch(startHeight: bigint, index?: bigint): Promise<void>;
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
+  iterateValidatorInfos(): AsyncGenerator<ValidatorInfo, void>;
 }
 
 export interface PenumbraDb extends DBSchema {
