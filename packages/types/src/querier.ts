@@ -14,6 +14,8 @@ import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/co
 import {
   ValidatorInfoRequest,
   ValidatorInfoResponse,
+  ValidatorPenaltyRequest,
+  ValidatorPenaltyResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
 export interface RootQuerierInterface {
@@ -22,6 +24,7 @@ export interface RootQuerierInterface {
   tendermint: TendermintQuerierInterface;
   shieldedPool: ShieldedPoolQuerierInterface;
   ibcClient: IbcClientQuerierInterface;
+  staking: StakingQuerierInterface;
   cnidarium: CnidariumQuerierInterface;
 }
 
@@ -56,6 +59,7 @@ export interface IbcClientQuerierInterface {
 
 export interface StakingQuerierInterface {
   allValidatorInfos(req: ValidatorInfoRequest): AsyncIterable<ValidatorInfoResponse>;
+  validatorPenalty(req: ValidatorPenaltyRequest): Promise<ValidatorPenaltyResponse>;
 }
 
 export interface CnidariumQuerierInterface {
