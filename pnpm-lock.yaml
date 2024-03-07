@@ -526,7 +526,7 @@ importers:
         specifier: workspace:*
         version: link:../crypto
       '@penumbra-zone/getters':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../getters
       idb:
         specifier: ^8.0.0
