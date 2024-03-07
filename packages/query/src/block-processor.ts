@@ -131,7 +131,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async syncAndStore() {
     const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
     const startHeight = fullSyncHeight ? fullSyncHeight + 1n : 0n;
-    const latestBlockHeight = await this.querier.tendermint.latestBlockHeight();
+    let latestKnownBlockHeight = await this.querier.tendermint.latestBlockHeight();
 
     // In the `for` loop below, we only update validator infos once we've
     // reached the latest known epoch. This means that, if a user is syncing for
@@ -171,7 +171,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       const flushReasons = {
         scannerWantsFlush,
         interval: compactBlock.height % 1000n === 0n,
-        new: compactBlock.height > latestBlockHeight,
+        new: compactBlock.height > latestKnownBlockHeight,
       };
 
       const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
@@ -238,9 +238,12 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.saveTransactionInfos(compactBlock.height, relevantTx);
       }
 
+      if (compactBlock.height > latestKnownBlockHeight)
+        latestKnownBlockHeight = compactBlock.height;
+
       const isLastBlockOfEpoch = !!compactBlock.epochRoot;
       if (isLastBlockOfEpoch)
-        void this.handleEpochTransition(compactBlock.height, latestBlockHeight);
+        void this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
     }
   }
 
@@ -371,7 +374,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   private async handleEpochTransition(
     endHeightOfPreviousEpoch: bigint,
-    latestBlockHeight: bigint,
+    latestKnownBlockHeight: bigint,
   ): Promise<void> {
     const { sctParams } = await this.querier.app.appParams();
     const nextEpochStartHeight = endHeightOfPreviousEpoch + 1n;
@@ -379,7 +382,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     await this.indexedDb.addEpoch(nextEpochStartHeight);
 
     const nextEpochIsLatestKnownEpoch =
-      sctParams && latestBlockHeight - nextEpochStartHeight < sctParams.epochDuration;
+      sctParams && latestKnownBlockHeight - nextEpochStartHeight < sctParams.epochDuration;
 
     // If we're doing a full sync from block 0, there could be hundreds or even
     // thousands of epoch transitions in the chain already. If we update
