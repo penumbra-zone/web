@@ -14,7 +14,10 @@ import {
 } from '@penumbra-zone/types';
 import { IbdUpdater, IbdUpdates } from './updater';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
-import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
+import {
+  Epoch,
+  Nullifier,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import {
   NotesForVotingResponse,
@@ -90,6 +93,7 @@ export class IndexedDb implements IndexedDbInterface {
         }).createIndex('nullifier', 'nullifier.inner');
         db.createObjectStore('GAS_PRICES');
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
+        db.createObjectStore('EPOCHS', { autoIncrement: true });
       },
     });
     const constants = {
@@ -407,6 +411,62 @@ export class IndexedDb implements IndexedDbInterface {
         position: position.toJson() as Jsonified<Position>,
       },
     });
+  }
+
+  async addEpoch(startHeight: bigint, index?: bigint): Promise<void> {
+    if (index === undefined) {
+      const cursor = await this.db.transaction('EPOCHS', 'readonly').store.openCursor(null, 'prev');
+      const previousEpoch = cursor?.value ? Epoch.fromJson(cursor.value) : undefined;
+      index = previousEpoch?.index !== undefined ? previousEpoch.index + 1n : 0n;
+    }
+
+    const newEpoch = {
+      startHeight: startHeight.toString(),
+      index: index.toString(),
+    };
+
+    await this.u.update({
+      table: 'EPOCHS',
+      value: newEpoch,
+    });
+  }
+
+  /**
+   * Get the epoch that contains the given block height.
+   */
+  async getEpochByHeight(
+    /**
+     * The block height to query by. Will return the epoch with the largest
+     * start height smaller than `height` -- that is, the epoch that contains
+     * this height.
+     */
+    height: bigint,
+  ): Promise<Epoch | undefined> {
+    let cursor = await this.db.transaction('EPOCHS', 'readonly').store.openCursor();
+
+    let epoch: Epoch | undefined;
+
+    /**
+     * Iterate over epochs and return the one with the largest start height
+     * smaller than `height`.
+     *
+     * Unfortunately, there doesn't appear to be a more efficient way of doing
+     * this. We tried using epochs' start heights as their key so that we could
+     * use a particular start height as a query bounds, but IndexedDB casts the
+     * `bigint` start height to a string, which messes up sorting (the string
+     * '11' is greater than the string '100', for example). For now, then, we
+     * have to just iterate over all epochs to find the correct starting height.
+     */
+    while (cursor) {
+      const currentEpoch = Epoch.fromJson(cursor.value);
+
+      if (currentEpoch.startHeight <= height) epoch = currentEpoch;
+      else if (currentEpoch.startHeight > height) break;
+
+      cursor = await cursor.continue();
+    }
+
+    return epoch;
   }
 
   private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanBlockResult['sctUpdates']): void {

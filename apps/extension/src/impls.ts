@@ -17,6 +17,7 @@ import { TendermintProxyService } from '@buf/penumbra-zone_penumbra.connectrpc_e
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { custodyImpl } from '@penumbra-zone/router/src/grpc/custody';
+import { sctImpl } from '@penumbra-zone/router/src/grpc/sct';
 import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
 
 import { localExtStorage } from '@penumbra-zone/storage';
@@ -30,7 +31,6 @@ const penumbraProxies = [
   DexService,
   DexSimulationService,
   GovernanceService,
-  SctService,
   ShieldedPoolService,
   StakeService,
   TendermintProxyService,
@@ -49,6 +49,7 @@ export const rpcImpls = [
   // rpc local implementations
   // @ts-expect-error TODO: accept partial impl
   [CustodyService, rethrowImplErrors(CustodyService, custodyImpl)],
+  [SctService, rethrowImplErrors(SctService, sctImpl)],
   [ViewService, rethrowImplErrors(ViewService, viewImpl)],
   // rpc remote proxies
   ...penumbraProxies,

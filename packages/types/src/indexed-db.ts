@@ -22,7 +22,10 @@ import {
   FmdParameters,
   Note,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
-import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
+import {
+  Epoch,
+  Nullifier,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
@@ -83,6 +86,8 @@ export interface IndexedDbInterface {
   ): AsyncGenerator<PositionId, void>;
   addPosition(positionId: PositionId, position: Position): Promise<void>;
   updatePosition(positionId: PositionId, newState: PositionState): Promise<void>;
+  addEpoch(startHeight: bigint, index?: bigint): Promise<void>;
+  getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -154,6 +159,10 @@ export interface PenumbraDb extends DBSchema {
     key: string; // base64 PositionRecord['id']['inner'];
     value: PositionRecord;
   };
+  EPOCHS: {
+    key: number; // auto-increment
+    value: Jsonified<Epoch>;
+  };
 }
 
 // need to store PositionId and Position in the same table
@@ -180,4 +189,5 @@ export const IDB_TABLES: Tables = {
   fmd_parameters: 'FMD_PARAMETERS',
   app_parameters: 'APP_PARAMETERS',
   gas_prices: 'GAS_PRICES',
+  epochs: 'EPOCHS',
 };

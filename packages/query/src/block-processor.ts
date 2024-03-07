@@ -133,6 +133,8 @@ export class BlockProcessor implements BlockProcessorInterface {
     const startHeight = fullSyncHeight ? fullSyncHeight + 1n : 0n;
     const latestBlockHeight = await this.querier.tendermint.latestBlockHeight();
 
+    let nextEpochStartHeight: bigint | undefined = startHeight === 0n ? 0n : undefined;
+
     // this is an indefinite stream of the (compact) chain from the network
     // intended to run continuously
     for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
@@ -140,6 +142,10 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
+      if (nextEpochStartHeight === compactBlock.height) {
+        await this.indexedDb.addEpoch(nextEpochStartHeight);
+        nextEpochStartHeight = undefined;
+      }
       if (compactBlock.appParametersUpdated) {
         await this.indexedDb.saveAppParams(await this.querier.app.appParams());
       }
@@ -229,6 +235,9 @@ export class BlockProcessor implements BlockProcessorInterface {
         // - saves to idb
         await this.saveTransactionInfos(compactBlock.height, relevantTx);
       }
+
+      const isLastBlockOfEpoch = !!compactBlock.epochRoot;
+      if (isLastBlockOfEpoch) nextEpochStartHeight = compactBlock.height + 1n;
     }
   }
 
