@@ -12,6 +12,11 @@ export class StakingQuerier implements StakingQuerierInterface {
   }
 
   allValidatorInfos(): AsyncIterable<ValidatorInfoResponse> {
+    /**
+     * Include inactive validators when saving to our local database, since we
+     * serve the `ValidatorInfo` RPC method from the extension, and may receive
+     * requests for inactive validators.
+     */
     return this.client.validatorInfo({ showInactive: true });
   }
 }
