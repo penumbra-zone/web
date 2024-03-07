@@ -20,27 +20,24 @@ export const ExtensionNotConnected = () => {
     <>
       <HeadTag />
       <SplashPage title='Welcome to Penumbra'>
-        <div className='flex items-center justify-between gap-4'>
+        <div className='flex items-center justify-between gap-[1em] text-lg'>
           {approved !== false ? (
-            <p> To get started, connect the Penumbra Chrome extension. </p>
+            <>
+              <div>To get started, connect the Penumbra Chrome extension.</div>
+              <Button variant='gradient' className='px-4' onClick={request}>
+                Connect
+              </Button>
+            </>
           ) : (
-            <div>
-              <p className='text-red-500'>Connection failed - reload to try again.</p>
-              <p>You may need to un-ignore this site in your extension settings.</p>
-            </div>
-          )}
-          {approved !== false ? (
-            <Button variant='gradient' className='px-4 text-white' onClick={request}>
-              Connect
-            </Button>
-          ) : (
-            <Button
-              variant='gradient'
-              className='px-4 text-white'
-              onClick={() => location.reload()}
-            >
-              Reload
-            </Button>
+            <>
+              <div>
+                <div className='text-destructive'>Connection failed - reload to try again.</div>
+                <div>You may need to un-ignore this site in your extension settings.</div>
+              </div>
+              <Button variant='gradient' className='px-4' onClick={() => location.reload()}>
+                Reload
+              </Button>
+            </>
           )}
         </div>
       </SplashPage>
