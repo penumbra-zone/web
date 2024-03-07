@@ -4,7 +4,6 @@ import {
   BiDiStreamingImpl,
   ClientStreamingImpl,
   HandlerContext,
-  MethodImpl,
   ServerStreamingImpl,
   UnaryImpl,
 } from '@connectrpc/connect/dist/cjs/implementation';
@@ -73,20 +72,16 @@ const isServerStreamingMethodKind = (
 
 export const rethrowImplErrors = <T extends ServiceType>(
   serviceType: T,
-  serviceImpl: ServiceImpl<T>,
-): ServiceImpl<T> =>
-  Object.fromEntries(
-    Object.entries(serviceImpl).map(
-      ([methodName, methodImplementation]: [
-        string,
-        MethodImpl<(typeof serviceType.methods)[string]>,
-      ]) => [
-        methodName,
-        isServerStreamingMethodKind(serviceType.methods[methodName]!.kind, methodImplementation)
-          ? wrapServerStreamingImpl(methodImplementation)
-          : isUnaryMethodKind(serviceType.methods[methodName]!.kind, methodImplementation)
-            ? wrapUnaryImpl(methodImplementation)
-            : wrapUnhandledImpl(methodImplementation, serviceType.methods[methodName]!.kind),
-      ],
-    ),
-  ) as ServiceImpl<T>;
+  serviceImpl: Partial<ServiceImpl<T>>,
+): Partial<ServiceImpl<T>> => {
+  const entries = Object.entries(serviceImpl).map(([methodName, methodImplementation]) => {
+    const methodKind = serviceType.methods[methodName]!.kind;
+    const wrappedMethodImpl = isServerStreamingMethodKind(methodKind, methodImplementation!)
+      ? wrapServerStreamingImpl(methodImplementation)
+      : isUnaryMethodKind(methodKind, methodImplementation!)
+        ? wrapUnaryImpl(methodImplementation)
+        : wrapUnhandledImpl(methodImplementation!, methodKind);
+    return [methodName, wrappedMethodImpl];
+  });
+  return Object.fromEntries(entries) as Partial<ServiceImpl<T>>;
+};

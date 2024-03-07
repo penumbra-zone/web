@@ -1,4 +1,4 @@
-import { createPromiseClient } from '@connectrpc/connect';
+import { ServiceImpl, createPromiseClient } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { createProxyImpl } from '@penumbra-zone/transport-dom/proxy';
 import { rethrowImplErrors } from './utils/rethrow-impl-errors';
@@ -22,9 +22,12 @@ import { stakingImpl } from '@penumbra-zone/router/src/grpc/staking';
 import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
 
 import { localExtStorage } from '@penumbra-zone/storage';
+import { ServiceType } from '@bufbuild/protobuf';
 const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 
-const penumbraProxies = [
+type RpcImplTuple<T extends ServiceType> = [T, Partial<ServiceImpl<T>>];
+
+const penumbraProxies: RpcImplTuple<ServiceType>[] = [
   AppService,
   CompactBlockService,
   DexService,
@@ -44,12 +47,10 @@ const penumbraProxies = [
     ] as const,
 );
 
-export const rpcImpls = [
+export const rpcImpls: RpcImplTuple<ServiceType>[] = [
   // rpc local implementations
-  // @ts-expect-error TODO: accept partial impl
   [CustodyService, rethrowImplErrors(CustodyService, custodyImpl)],
   [SctService, rethrowImplErrors(SctService, sctImpl)],
-  // @ts-expect-error TODO: accept partial impl
   [StakingService, rethrowImplErrors(StakingService, stakingImpl)],
   [ViewService, rethrowImplErrors(ViewService, viewImpl)],
   // rpc remote proxies
