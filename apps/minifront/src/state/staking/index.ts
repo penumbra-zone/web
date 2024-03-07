@@ -33,7 +33,6 @@ import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } f
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { assembleUndelegateClaimRequest } from './assemble-undelegate-claim-request';
-import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 
 const STAKING_TOKEN_DISPLAY_DENOM_EXPONENT = (() => {
   const stakingAsset = localAssets.find(asset => asset.display === STAKING_TOKEN);
@@ -136,6 +135,8 @@ const byBalanceAndVotingPower = (valueViewA: ValueView, valueViewB: ValueView): 
   return byVotingPower;
 };
 
+const FLUSH_INTERVAL = 20;
+
 export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) => ({
   account: 0,
   setAccount: (account: number) =>
@@ -170,16 +171,45 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       state.staking.votingPowerByValidatorInfo = {};
     });
 
-    const delegations: ValueView[] = [];
-    for await (const delegation of getDelegationsForAccount(addressIndex)) {
-      delegations.push(delegation);
-      validatorInfos.push(getValidatorInfoFromValueView(delegation));
-    }
-    delegations.sort(byBalanceAndVotingPower);
+    let delegationsToFlush: ValueView[] = [];
+    let allDelegationsLoaded = false;
 
-    set(state => {
-      state.staking.delegationsByAccount.set(addressIndex.account, delegations);
-    });
+    const flushToState = () => {
+      if (allDelegationsLoaded) return;
+
+      if (delegationsToFlush.length < FLUSH_INTERVAL) {
+        requestAnimationFrame(flushToState);
+        return;
+      }
+      const delegations = get().staking.delegationsByAccount.get(addressIndex.account) ?? [];
+
+      const sortedDelegations = [...delegations, ...delegationsToFlush].sort(
+        byBalanceAndVotingPower,
+      );
+
+      delegationsToFlush = [];
+
+      set(state => {
+        state.staking.delegationsByAccount.set(addressIndex.account, sortedDelegations);
+      });
+
+      requestAnimationFrame(flushToState);
+
+      console.log('flushToState');
+    };
+
+    let isFirstDelegation = true;
+    for await (const delegation of getDelegationsForAccount(addressIndex)) {
+      delegationsToFlush.push(delegation);
+      validatorInfos.push(getValidatorInfoFromValueView(delegation));
+
+      if (isFirstDelegation) {
+        requestAnimationFrame(flushToState);
+        isFirstDelegation = false;
+      }
+    }
+
+    allDelegationsLoaded = true;
 
     /**
      * We can only calculate _each_ validator's percentage voting power once
