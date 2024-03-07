@@ -14,6 +14,7 @@ export const ExtensionNotConnected = () => {
 
   useEffect(() => {
     if (approved === true) location.reload();
+    else document.title = 'Penumbra Minifront';
   }, [approved]);
 
   return (
