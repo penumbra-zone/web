@@ -10,12 +10,17 @@ import { useStore } from '../../../state';
 import { connectedSitesSelector } from '../../../state/connected-sites';
 
 export const SettingsConnectedSites = () => {
-  const { approvedSites, deniedSites, ignoredSites, setFilter, discardKnownSite, loadKnownSites } =
-    useStore(connectedSitesSelector);
-  const [searchInput, setSearchInput] = useState<string>('');
+  const {
+    filter,
+    approvedSites,
+    deniedSites,
+    ignoredSites,
+    setFilter,
+    discardKnownSite,
+    loadKnownSites,
+  } = useStore(connectedSitesSelector);
 
   useEffect(() => void loadKnownSites(), [loadKnownSites]);
-  useEffect(() => setFilter(searchInput), [searchInput, setFilter]);
 
   const discard = useCallback(
     (site: OriginRecord) => {
@@ -41,8 +46,8 @@ export const SettingsConnectedSites = () => {
             </div>
             <Input
               className='pl-10'
-              value={searchInput}
-              onChange={e => setSearchInput(e.target.value)}
+              value={filter}
+              onChange={e => setFilter(e.target.value)}
               placeholder='Search by origin...'
             />
           </div>

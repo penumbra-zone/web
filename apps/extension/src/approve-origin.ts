@@ -10,7 +10,6 @@ import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
 export const originAlreadyApproved = async (url: string): Promise<boolean> => {
   // parses the origin and returns a consistent format
   const urlOrigin = new URL(url).origin;
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const knownSites = await localExtStorage.get('knownSites');
   const existingRecord = knownSites.find(site => site.origin === urlOrigin);
   return existingRecord?.attitude === UserAttitude.Approved;
