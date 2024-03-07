@@ -388,7 +388,8 @@ export class BlockProcessor implements BlockProcessorInterface {
     // thousands of epoch transitions in the chain already. If we update
     // validator infos on every epoch transition, we'd be making tons of
     // unnecessary calls to the RPC node for validator infos. Instead, we'll
-    // only get updated validator infos once we're within the final epoch.
+    // only get updated validator infos once we're within the latest known
+    // epoch.
     if (nextEpochIsLatestKnownEpoch) void this.updateValidatorInfos();
   }
 
