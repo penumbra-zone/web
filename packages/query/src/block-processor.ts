@@ -236,7 +236,8 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.saveTransactionInfos(compactBlock.height, relevantTx);
       }
 
-      if (compactBlock.epochRoot) nextEpochStartHeight = compactBlock.height + 1n;
+      const isLastBlockOfEpoch = !!compactBlock.epochRoot;
+      if (isLastBlockOfEpoch) nextEpochStartHeight = compactBlock.height + 1n;
     }
   }
 
