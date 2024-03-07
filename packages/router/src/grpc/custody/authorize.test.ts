@@ -11,7 +11,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { Services } from '@penumbra-zone/services';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 describe('Authorize request handler', () => {
   let mockServices: MockServices;
@@ -77,7 +77,7 @@ describe('Authorize request handler', () => {
       }),
     };
 
-    mockApproverCtx = vi.fn().mockImplementation(() => Promise.resolve(UserAttitude.Approved));
+    mockApproverCtx = vi.fn().mockImplementation(() => Promise.resolve(UserChoice.Approved));
 
     mockCtx = createHandlerContext({
       service: CustodyService,
@@ -112,7 +112,7 @@ describe('Authorize request handler', () => {
   });
 
   test('should fail if user denies request', async () => {
-    mockApproverCtx.mockImplementation(() => Promise.resolve(UserAttitude.Denied));
+    mockApproverCtx.mockImplementation(() => Promise.resolve(UserChoice.Denied));
     await expect(authorize(req, mockCtx)).rejects.toThrow();
   });
 

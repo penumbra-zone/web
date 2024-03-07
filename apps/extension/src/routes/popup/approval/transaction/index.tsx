@@ -7,14 +7,10 @@ import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumb
 import { useTransactionViewSwitcher } from './use-transaction-view-switcher';
 import { ViewTabs } from './view-tabs';
 import { ApproveDeny } from '../approve-deny';
-import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 export const TransactionApproval = () => {
-  const {
-    authorizeRequest: authReqString,
-    setAttitude,
-    sendResponse,
-  } = useStore(txApprovalSelector);
+  const { authorizeRequest: authReqString, setChoice, sendResponse } = useStore(txApprovalSelector);
 
   const { selectedTransactionView, selectedTransactionViewName, setSelectedTransactionViewName } =
     useTransactionViewSwitcher();
@@ -24,13 +20,13 @@ export const TransactionApproval = () => {
   if (!authorizeRequest.plan || !selectedTransactionView) return null;
 
   const approve = () => {
-    setAttitude(UserAttitude.Approved);
+    setChoice(UserChoice.Approved);
     sendResponse();
     window.close();
   };
 
   const deny = () => {
-    setAttitude(UserAttitude.Denied);
+    setChoice(UserChoice.Denied);
     sendResponse();
     window.close();
   };

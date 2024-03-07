@@ -9,7 +9,7 @@ import {
   mockLocalExtStorage,
   mockSessionExtStorage,
 } from '@penumbra-zone/storage';
-import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 describe('Connected Sites Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
@@ -90,7 +90,7 @@ describe('Connected Sites Slice', () => {
       test('discarding unknown site has no effect on storage', async () => {
         const deletant: OriginRecord = {
           origin: 'https://test',
-          attitude: UserAttitude.Ignored,
+          choice: UserChoice.Ignored,
           date: Date.now(),
         };
 

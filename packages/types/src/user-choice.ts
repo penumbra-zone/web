@@ -1,4 +1,4 @@
-export enum UserAttitude {
+export enum UserChoice {
   Approved = 'Approved',
   Denied = 'Denied',
   Ignored = 'Ignored',

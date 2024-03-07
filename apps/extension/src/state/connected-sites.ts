@@ -2,7 +2,7 @@ import { ExtensionStorage, LocalStorageState, OriginRecord } from '@penumbra-zon
 import { AllSlices, SliceCreator } from '.';
 
 import Map from '@penumbra-zone/polyfills/Map.groupBy';
-import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 export interface ConnectedSitesSlice {
   filter?: string;
@@ -26,13 +26,13 @@ export const createConnectedSitesSlice =
 
     loadKnownSites: async () => {
       const knownSites = await local.get('knownSites');
-      const groupedSites = Map.groupBy(knownSites, ({ attitude }) => attitude);
+      const groupedSites = Map.groupBy(knownSites, ({ choice }) => choice);
 
       set(state => {
         state.connectedSites.knownSites = knownSites;
-        state.connectedSites.approvedSites = groupedSites.get(UserAttitude.Approved) ?? [];
-        state.connectedSites.deniedSites = groupedSites.get(UserAttitude.Denied) ?? [];
-        state.connectedSites.ignoredSites = groupedSites.get(UserAttitude.Ignored) ?? [];
+        state.connectedSites.approvedSites = groupedSites.get(UserChoice.Approved) ?? [];
+        state.connectedSites.deniedSites = groupedSites.get(UserChoice.Denied) ?? [];
+        state.connectedSites.ignoredSites = groupedSites.get(UserChoice.Ignored) ?? [];
       });
     },
 
@@ -42,14 +42,14 @@ export const createConnectedSitesSlice =
 
       const filteredSites = Map.groupBy(
         knownSites.filter(site => !search || site.origin.includes(search)),
-        ({ attitude }) => attitude,
+        ({ choice }) => choice,
       );
 
       set(state => {
         state.connectedSites.filter = filter;
-        state.connectedSites.approvedSites = filteredSites.get(UserAttitude.Approved) ?? [];
-        state.connectedSites.deniedSites = filteredSites.get(UserAttitude.Denied) ?? [];
-        state.connectedSites.ignoredSites = filteredSites.get(UserAttitude.Ignored) ?? [];
+        state.connectedSites.approvedSites = filteredSites.get(UserChoice.Approved) ?? [];
+        state.connectedSites.deniedSites = filteredSites.get(UserChoice.Denied) ?? [];
+        state.connectedSites.ignoredSites = filteredSites.get(UserChoice.Ignored) ?? [];
       });
     },
 

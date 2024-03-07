@@ -7,7 +7,7 @@ import { Box, Jsonified } from '@penumbra-zone/types';
 import { Code, ConnectError, HandlerContext } from '@connectrpc/connect';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { viewTransactionPlan } from './view-transaction-plan';
-import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 /**
  * @todo As more asset types get used, the amount of asset metadata we store
@@ -67,8 +67,8 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
     fullViewingKey,
   );
 
-  const attitude = await approveReq(req, transactionViewFromPlan);
-  if (attitude !== UserAttitude.Approved)
+  const choice = await approveReq(req, transactionViewFromPlan);
+  if (choice !== UserChoice.Approved)
     throw new ConnectError('Transaction was not approved', Code.PermissionDenied);
 
   const spendKey = generateSpendKey(decryptedSeedPhrase);

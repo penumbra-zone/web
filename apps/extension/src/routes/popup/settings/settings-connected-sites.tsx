@@ -5,7 +5,7 @@ import { LinkGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
 import { OriginRecord } from '@penumbra-zone/storage';
 import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
-import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import { useStore } from '../../../state';
 import { connectedSitesSelector } from '../../../state/connected-sites';
 
@@ -97,7 +97,7 @@ const SiteRecord = ({
         className='group bg-transparent p-3'
         onClick={() => discard(site)}
       >
-        {site.attitude === UserAttitude.Approved ? (
+        {site.choice === UserChoice.Approved ? (
           <Link1Icon
             aria-description='Connected'
             className='visible absolute text-green-400 group-hover:invisible'
@@ -111,7 +111,7 @@ const SiteRecord = ({
         <TrashIcon className='invisible absolute text-muted-foreground group-hover:visible' />
       </Button>
     </div>
-    {site.attitude === UserAttitude.Approved ? (
+    {site.choice === UserChoice.Approved ? (
       <a
         href={site.origin}
         target='_blank'

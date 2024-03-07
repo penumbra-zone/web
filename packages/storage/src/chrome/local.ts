@@ -1,7 +1,7 @@
 import { ExtensionStorage } from './base';
 import { KeyPrintJson } from '@penumbra-zone/crypto-web';
 import { WalletJson } from '@penumbra-zone/types';
-import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 export enum LocalStorageVersion {
   V1 = 'V1',
@@ -9,7 +9,7 @@ export enum LocalStorageVersion {
 
 export interface OriginRecord {
   origin: string;
-  attitude: UserAttitude;
+  choice: UserChoice;
   date: number;
 }
 
@@ -32,7 +32,7 @@ export const localDefaults: LocalStorageState = {
   wallets: [],
   grpcEndpoint: DEFAULT_GRPC_URL,
   fullSyncHeight: 0,
-  knownSites: [{ origin: MINIFRONT_URL, attitude: UserAttitude.Approved, date: Date.now() }],
+  knownSites: [{ origin: MINIFRONT_URL, choice: UserChoice.Approved, date: Date.now() }],
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.

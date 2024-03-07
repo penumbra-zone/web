@@ -5,14 +5,14 @@ import { localExtStorage } from '@penumbra-zone/storage';
 import { OriginApproval, PopupType } from './message/popup';
 import { popup } from './popup';
 import Map from '@penumbra-zone/polyfills/Map.groupBy';
-import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 export const originAlreadyApproved = async (url: string): Promise<boolean> => {
   // parses the origin and returns a consistent format
   const urlOrigin = new URL(url).origin;
   const knownSites = await localExtStorage.get('knownSites');
   const existingRecord = knownSites.find(site => site.origin === urlOrigin);
-  return existingRecord?.attitude === UserAttitude.Approved;
+  return existingRecord?.choice === UserChoice.Approved;
 };
 
 export const approveOrigin = async ({
@@ -33,12 +33,12 @@ export const approveOrigin = async ({
 
   if (extraRecords.length) throw new Error('Multiple records for the same origin');
 
-  switch (existingRecord?.attitude) {
-    case UserAttitude.Approved:
+  switch (existingRecord?.choice) {
+    case UserChoice.Approved:
       return true;
-    case UserAttitude.Ignored:
+    case UserChoice.Ignored:
       return false;
-    case UserAttitude.Denied: // TODO: cooldown on re-request
+    case UserChoice.Denied: // TODO: cooldown on re-request
     default: {
       const res = await popup<OriginApproval>({
         type: PopupType.OriginApproval,
@@ -62,7 +62,7 @@ export const approveOrigin = async ({
         ...irrelevant,
       ]);
 
-      return Boolean(res.data.attitude === UserAttitude.Approved);
+      return Boolean(res.data.choice === UserChoice.Approved);
     }
   }
 };

@@ -13,7 +13,7 @@ import {
 } from '@penumbra-zone/types';
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 export interface TxApprovalSlice {
   /**
@@ -26,7 +26,7 @@ export interface TxApprovalSlice {
   responder?: (m: InternalResponse<TxApproval>) => void;
   authorizeRequest?: Stringified<AuthorizeRequest>;
   transactionView?: Stringified<TransactionView>;
-  attitude?: UserAttitude;
+  choice?: UserChoice;
 
   asSender?: Stringified<TransactionView>;
   asReceiver?: Stringified<TransactionView>;
@@ -38,7 +38,7 @@ export interface TxApprovalSlice {
     responder: (m: InternalResponse<TxApproval>) => void,
   ) => Promise<void>;
 
-  setAttitude: (attitude: UserAttitude) => void;
+  setChoice: (choice: UserChoice) => void;
 
   sendResponse: () => void;
 }
@@ -76,20 +76,20 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
       state.txApproval.asReceiver = asReceiver.toJsonString();
       state.txApproval.transactionClassification = transactionClassification;
 
-      state.txApproval.attitude = undefined;
+      state.txApproval.choice = undefined;
     });
   },
 
-  setAttitude: attitude => {
+  setChoice: choice => {
     set(state => {
-      state.txApproval.attitude = attitude;
+      state.txApproval.choice = choice;
     });
   },
 
   sendResponse: () => {
     const {
       responder,
-      attitude,
+      choice,
       transactionView: transactionViewString,
       authorizeRequest: authorizeRequestString,
     } = get().txApproval;
@@ -97,7 +97,7 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
     if (!responder) throw new Error('No responder');
 
     try {
-      if (attitude === undefined || !transactionViewString || !authorizeRequestString)
+      if (choice === undefined || !transactionViewString || !authorizeRequestString)
         throw new Error('Missing response data');
 
       // zustand doesn't like jsonvalue so stringify
@@ -111,7 +111,7 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
       responder({
         type: PopupType.TxApproval,
         data: {
-          attitude,
+          choice,
           transactionView,
           authorizeRequest,
         },
@@ -126,7 +126,7 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
         state.txApproval.responder = undefined;
         state.txApproval.authorizeRequest = undefined;
         state.txApproval.transactionView = undefined;
-        state.txApproval.attitude = undefined;
+        state.txApproval.choice = undefined;
 
         state.txApproval.asSender = undefined;
         state.txApproval.asReceiver = undefined;

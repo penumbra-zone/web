@@ -4,26 +4,26 @@ import { originApprovalSelector } from '../../../state/origin-approval';
 import { ApproveDeny } from './approve-deny';
 import { LinkGradientIcon } from '../../../icons';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { UserAttitude } from '@penumbra-zone/types/src/user-attitude';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 export const OriginApproval = () => {
-  const { requestOrigin, favIconUrl, title, setAttitude, sendResponse } =
+  const { requestOrigin, favIconUrl, title, setChoice, sendResponse } =
     useStore(originApprovalSelector);
 
   const approve = () => {
-    setAttitude(UserAttitude.Approved);
+    setChoice(UserChoice.Approved);
     sendResponse();
     window.close();
   };
 
   const deny = () => {
-    setAttitude(UserAttitude.Denied);
+    setChoice(UserChoice.Denied);
     sendResponse();
     window.close();
   };
 
   const ignore = () => {
-    setAttitude(UserAttitude.Ignored);
+    setChoice(UserChoice.Ignored);
     sendResponse();
     window.close();
   };
