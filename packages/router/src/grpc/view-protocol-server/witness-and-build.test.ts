@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import {beforeAll, beforeEach, describe, expect, test, vi} from 'vitest';
 import {
   WitnessAndBuildRequest,
   WitnessAndBuildResponse,
@@ -19,7 +19,11 @@ describe('WitnessAndBuild request handler', () => {
   let mockCtx: HandlerContext;
   let req: WitnessAndBuildRequest;
 
+  beforeAll(async () => {
+
+  })
   beforeEach(() => {
+
     vi.resetAllMocks();
 
     mockIndexedDb = {
@@ -33,8 +37,8 @@ describe('WitnessAndBuild request handler', () => {
             fullViewingKey:
               'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
           },
-        }),
-      ),
+        }) ,
+      ) ,
     };
     mockCtx = createHandlerContext({
       service: ViewService,
@@ -55,15 +59,11 @@ describe('WitnessAndBuild request handler', () => {
   test('should successfully  witness and build transaction ', async () => {
     mockIndexedDb.getStateCommitmentTree?.mockResolvedValue(testSct);
 
-    const mockOffscreenClient = {
-      buildActions: vi.fn(() => []),
-    };
-
-
     const responses: WitnessAndBuildResponse[] = [];
     for await (const res of witnessAndBuild(req, mockCtx)) {
       responses.push(new WitnessAndBuildResponse(res));
     }
+
     console.log(responses);
   });
 
