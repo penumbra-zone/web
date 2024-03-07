@@ -42,6 +42,8 @@ const services = new Services({
 });
 await services.initialize();
 
+await localExtStorage.remove('knownSites');
+
 let custodyClient: PromiseClient<typeof CustodyService> | undefined;
 const handler = connectChannelAdapter({
   // jsonOptions contains typeRegistry providing ser/de

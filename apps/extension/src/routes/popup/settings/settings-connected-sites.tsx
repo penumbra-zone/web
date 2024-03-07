@@ -1,5 +1,5 @@
 import { Link1Icon, LinkBreak1Icon, MagnifyingGlassIcon, TrashIcon } from '@radix-ui/react-icons';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Button, FadeTransition, Input } from '@penumbra-zone/ui';
 import { LinkGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
@@ -12,6 +12,7 @@ import { connectedSitesSelector } from '../../../state/connected-sites';
 export const SettingsConnectedSites = () => {
   const {
     filter,
+    knownSites,
     approvedSites,
     deniedSites,
     ignoredSites,
@@ -22,14 +23,20 @@ export const SettingsConnectedSites = () => {
 
   useEffect(() => void loadKnownSites(), [loadKnownSites]);
 
+  const noFilterMatch = useMemo(
+    () => !approvedSites.length && !deniedSites.length && !ignoredSites.length,
+    [approvedSites, deniedSites, ignoredSites],
+  );
+
   const discard = useCallback(
     (site: OriginRecord) => {
       void (async () => {
         await discardKnownSite(site);
         await loadKnownSites();
+        setFilter(filter);
       })();
     },
-    [discardKnownSite, loadKnownSites],
+    [discardKnownSite, filter, loadKnownSites, setFilter],
   );
 
   return (
@@ -39,43 +46,62 @@ export const SettingsConnectedSites = () => {
         <div className='mx-auto size-20'>
           <LinkGradientIcon />
         </div>
-        <div className='flex flex-col gap-4 px-[30px]'>
-          <div className='relative flex w-full items-center justify-center gap-4'>
+        <div className='px-[30px]'>
+          <div className='relative my-5 flex w-full items-center justify-center'>
             <div className='absolute inset-y-0 left-3 flex items-center'>
               <MagnifyingGlassIcon className='size-5 text-muted-foreground' />
             </div>
             <Input
+              disabled={!knownSites.length}
+              variant={filter && noFilterMatch ? 'warn' : null}
               className='pl-10'
-              value={filter}
               onChange={e => setFilter(e.target.value)}
               placeholder='Search by origin...'
             />
           </div>
-          <div className='flex flex-col gap-2'>
-            {approvedSites.length ? (
+          <div className='text-muted-foreground'>
+            {!knownSites.length ? (
+              <div className='py-[2em] text-center text-lg font-bold'>no known sites</div>
+            ) : filter && noFilterMatch ? (
+              <div className='py-[2em] text-center text-lg font-bold text-yellow-500'>
+                all known sites filtered
+              </div>
+            ) : (
               <>
-                <div className='mt-2 text-muted-foreground'>Approved sites</div>
-                {approvedSites.map(site => (
-                  <SiteRecord key={site.origin} site={site} discard={discard} />
-                ))}
+                {!!approvedSites.length && (
+                  <>
+                    <div className='ml-4 font-headline'>Approved sites</div>
+                    <div role='list'>
+                      {approvedSites.map(site => (
+                        <SiteRecord key={site.origin} site={site} discard={discard} />
+                      ))}
+                    </div>
+                  </>
+                )}
+                {!!deniedSites.length && (
+                  <>
+                    {!!approvedSites.length && <hr className='my-2' />}
+                    <div className='ml-4 font-headline'>Denied sites</div>
+                    <div role='list'>
+                      {deniedSites.map(site => (
+                        <SiteRecord key={site.origin} site={site} discard={discard} />
+                      ))}
+                    </div>
+                  </>
+                )}
+                {!!ignoredSites.length && (
+                  <>
+                    {!!(approvedSites.length || deniedSites.length) && <hr className='my-2' />}
+                    <div className='ml-4 font-headline'>Ignored sites</div>
+                    <div role='list'>
+                      {ignoredSites.map(site => (
+                        <SiteRecord key={site.origin} site={site} discard={discard} />
+                      ))}
+                    </div>
+                  </>
+                )}
               </>
-            ) : null}
-            {deniedSites.length ? (
-              <>
-                <div className='mt-2 text-muted-foreground'>Denied sites</div>
-                {deniedSites.map(site => (
-                  <SiteRecord key={site.origin} site={site} discard={discard} />
-                ))}
-              </>
-            ) : null}
-            {ignoredSites.length ? (
-              <>
-                <div className='mt-2 text-muted-foreground'>Ignored sites</div>
-                {ignoredSites.map(site => (
-                  <SiteRecord key={site.origin} site={site} discard={discard} />
-                ))}
-              </>
-            ) : null}
+            )}
           </div>
         </div>
       </div>
@@ -90,38 +116,51 @@ const SiteRecord = ({
   site: OriginRecord;
   discard: (d: OriginRecord) => void;
 }) => (
-  <div key={site.origin} className='relative my-1 w-full'>
+  <div key={site.origin} role='listitem' className='relative my-1 w-full'>
     <div className='absolute inset-y-0 right-0 flex items-center'>
       <Button
         aria-description='Remove'
         className='group bg-transparent p-3'
         onClick={() => discard(site)}
       >
-        {site.choice === UserChoice.Approved ? (
+        {site.choice === UserChoice.Approved && (
           <Link1Icon
             aria-description='Connected'
             className='visible absolute text-green-400 group-hover:invisible'
           />
-        ) : (
+        )}
+        {site.choice === UserChoice.Denied && (
           <LinkBreak1Icon
             aria-description='Denied'
+            className='visible absolute group-hover:invisible'
+          />
+        )}
+        {site.choice === UserChoice.Ignored && (
+          <LinkBreak1Icon
+            aria-description='Ignored'
             className='visible absolute text-red-400 group-hover:invisible'
           />
         )}
         <TrashIcon className='invisible absolute text-muted-foreground group-hover:visible' />
       </Button>
     </div>
-    {site.choice === UserChoice.Approved ? (
+    {site.choice === UserChoice.Approved && (
       <a
         href={site.origin}
         target='_blank'
         rel='noreferrer'
-        className='text-primary-foreground decoration-green hover:underline'
+        className='decoration-green hover:underline'
       >
         <DisplayOriginURL url={new URL(site.origin)} />
       </a>
-    ) : (
-      <span className='cursor-default text-muted-foreground line-through decoration-red'>
+    )}
+    {site.choice === UserChoice.Denied && (
+      <span className='brightness-75'>
+        <DisplayOriginURL url={new URL(site.origin)} />
+      </span>
+    )}
+    {site.choice === UserChoice.Ignored && (
+      <span className='line-through decoration-red decoration-wavy brightness-75'>
         <DisplayOriginURL url={new URL(site.origin)} />
       </span>
     )}
