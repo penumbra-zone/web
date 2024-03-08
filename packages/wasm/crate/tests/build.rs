@@ -399,6 +399,7 @@ mod tests {
             swap_claims: vec![],
             delegations: vec![],
             undelegations: vec![],
+            undelegation_claims: vec![],
             ibc_relay_actions: vec![],
             ics20_withdrawals: vec![],
             position_opens: vec![],
