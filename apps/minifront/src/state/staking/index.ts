@@ -135,7 +135,12 @@ const byBalanceAndVotingPower = (valueViewA: ValueView, valueViewB: ValueView): 
   return byVotingPower;
 };
 
-const FLUSH_INTERVAL = 50;
+/**
+ * To optimize performance while streaming potentially hundreds of
+ * delegations/validators in rapid succession, we only "flush" to state at a
+ * fixed interval, so as to prevent React from having to re-render too often.
+ */
+const DELEGATIONS_FLUSH_TO_STATE_INTERVAL = 50;
 
 export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) => ({
   account: 0,
@@ -175,24 +180,34 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     let delegationsToFlush: ValueView[] = [];
     let allDelegationsLoaded = false;
 
+    /**
+     * Per the RPC call, we get delegations in a stream, one-by-one. If we push
+     * them to state as we receive them, React has to re-render super
+     * frequently. Rendering happens synchronously, which means that the `for`
+     * loop below has to wait until rendering is done before moving on to the
+     * next delegation. Thus, the staking page loads super slowly if we render
+     * delegations as soon as we receive them.
+     *
+     * To resolve this performance issue, we instead queue up a number of
+     * delegations (up to `DELEGATIONS_FLUSH_TO_STATE_INTERVAL`), and then flush
+     * them to state in batches.
+     */
     const flushToState = (ignoreInterval = false) => {
       if (allDelegationsLoaded) return;
 
-      if (!ignoreInterval && delegationsToFlush.length < FLUSH_INTERVAL) {
-        requestAnimationFrame(() => flushToState());
-        return;
+      if (delegationsToFlush.length >= DELEGATIONS_FLUSH_TO_STATE_INTERVAL || ignoreInterval) {
+        const delegations = get().staking.delegationsByAccount.get(addressIndex.account) ?? [];
+
+        const sortedDelegations = [...delegations, ...delegationsToFlush].sort(
+          byBalanceAndVotingPower,
+        );
+
+        set(state => {
+          state.staking.delegationsByAccount.set(addressIndex.account, sortedDelegations);
+        });
+
+        delegationsToFlush = [];
       }
-      const delegations = get().staking.delegationsByAccount.get(addressIndex.account) ?? [];
-
-      const sortedDelegations = [...delegations, ...delegationsToFlush].sort(
-        byBalanceAndVotingPower,
-      );
-
-      delegationsToFlush = [];
-
-      set(state => {
-        state.staking.delegationsByAccount.set(addressIndex.account, sortedDelegations);
-      });
 
       requestAnimationFrame(() => flushToState());
     };
@@ -208,7 +223,8 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       }
     }
 
-    // One last flush
+    // One last flush, in case the number of remaining delegations is less than
+    // `FLUSH_INTERVAL`.
     flushToState(true);
     allDelegationsLoaded = true;
 
