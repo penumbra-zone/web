@@ -17,15 +17,15 @@ export const ApproveDeny = ({
   useEffect(startCountdown, [startCountdown]);
 
   return (
-    <div className='fixed inset-x-0 bottom-0 flex flex-col gap-4 bg-black px-6 py-4 shadow-lg'>
-      <Button size='lg' variant='default' onClick={approve} disabled={!!count}>
+    <div className='fixed inset-x-0 bottom-0 flex flex-row flex-wrap justify-center gap-4 bg-black p-4 shadow-lg'>
+      <Button className='w-full' size='lg' variant='default' onClick={approve} disabled={!!count}>
         Approve {count !== 0 && `(${count})`}
       </Button>
-      <Button size='lg' variant='destructive' onClick={deny}>
+      <Button className='min-w-[50%] grow' size='lg' variant='destructive' onClick={deny}>
         Deny
       </Button>
       {ignore && (
-        <Button size='lg' variant='destructive' className='bg-black' onClick={ignore}>
+        <Button className='w-1/3 bg-black' size='lg' variant='destructive' onClick={ignore}>
           Ignore Site
         </Button>
       )}
