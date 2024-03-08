@@ -53,13 +53,13 @@ export const OriginApproval = () => {
               )}
             >
               <div className='flex flex-col items-center gap-2'>
-                <div className='flex h-11 max-w-full items-center rounded-lg border bg-background p-2 text-muted-foreground'>
+                <div className='flex h-11 max-w-full items-center rounded-lg border bg-black p-2 text-muted-foreground [z-index:30]'>
                   {!!favIconUrl && (
                     <div
                       className={cn(
+                        '-ml-3',
                         'relative',
-                        '-left-3',
-                        'rounded-[1em]',
+                        'rounded-full',
                         'border-[1px]',
                         'border-transparent',
                         '[background:linear-gradient(var(--charcoal),var(--charcoal))_padding-box,_linear-gradient(to_top_right,rgb(139,228,217),rgb(255,144,47))_border-box]',
@@ -68,11 +68,11 @@ export const OriginApproval = () => {
                       <img
                         src={favIconUrl}
                         alt='requesting website icon'
-                        className='size-20 min-w-20 rounded-[1em]'
+                        className='size-20 min-w-20 rounded-full'
                       />
                     </div>
                   )}
-                  <div className='truncate p-2 font-headline text-lg'>
+                  <div className='-ml-3 w-full truncate p-2 pl-6 font-headline text-lg'>
                     {title ? (
                       <span className='text-primary-foreground'>{title}</span>
                     ) : (
@@ -82,7 +82,7 @@ export const OriginApproval = () => {
                     )}
                   </div>
                 </div>
-                <div className='z-30 flex h-11 w-full items-center overflow-x-scroll rounded-lg border bg-background p-2 [scrollbar-color:red_red]'>
+                <div className='z-30 flex h-11 w-full items-center overflow-x-scroll rounded-lg border bg-background p-2 text-muted-foreground [scrollbar-color:red_red]'>
                   <div className='mx-auto items-center p-2 text-center leading-[0.8em] [background-clip:content-box] [background-image:repeating-linear-gradient(45deg,red,black_15px)] first-line:[background-color:black]'>
                     <DisplayOriginURL url={new URL(requestOrigin)} />
                   </div>
@@ -100,7 +100,13 @@ export const OriginApproval = () => {
             </div>
           </div>
         </div>
-        <ApproveDeny approve={approve} deny={deny} ignore={lastRequest && ignore} wait={3} />
+        <ApproveDeny
+          variants={['gradient']}
+          approve={approve}
+          deny={deny}
+          ignore={lastRequest && ignore}
+          wait={3}
+        />
       </div>
     </FadeTransition>
   );
