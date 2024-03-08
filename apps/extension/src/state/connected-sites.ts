@@ -10,6 +10,7 @@ export interface ConnectedSitesSlice {
   approvedSites: OriginRecord[];
   deniedSites: OriginRecord[];
   ignoredSites: OriginRecord[];
+  noFilterMatch?: boolean;
   loadKnownSites: () => Promise<void>;
   setFilter: (search?: string) => void;
   discardKnownSite: (originRecord: OriginRecord) => Promise<void>;
@@ -19,6 +20,7 @@ export const createConnectedSitesSlice =
   (local: ExtensionStorage<LocalStorageState>): SliceCreator<ConnectedSitesSlice> =>
   (set, get) => ({
     filter: undefined,
+    noFilterMatch: undefined,
     knownSites: [],
     approvedSites: [],
     deniedSites: [],
@@ -45,11 +47,17 @@ export const createConnectedSitesSlice =
         ({ choice }) => choice,
       );
 
+      const approvedSites = filteredSites.get(UserChoice.Approved) ?? [];
+      const deniedSites = filteredSites.get(UserChoice.Denied) ?? [];
+      const ignoredSites = filteredSites.get(UserChoice.Ignored) ?? [];
+      const noFilterMatch = !(approvedSites.length || deniedSites.length || ignoredSites.length);
+
       set(state => {
         state.connectedSites.filter = filter;
-        state.connectedSites.approvedSites = filteredSites.get(UserChoice.Approved) ?? [];
-        state.connectedSites.deniedSites = filteredSites.get(UserChoice.Denied) ?? [];
-        state.connectedSites.ignoredSites = filteredSites.get(UserChoice.Ignored) ?? [];
+        state.connectedSites.noFilterMatch = noFilterMatch;
+        state.connectedSites.approvedSites = approvedSites;
+        state.connectedSites.deniedSites = deniedSites;
+        state.connectedSites.ignoredSites = ignoredSites;
       });
     },
 

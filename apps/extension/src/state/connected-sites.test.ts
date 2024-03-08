@@ -57,6 +57,7 @@ describe('Connected Sites Slice', () => {
         expect(useStore.getState().connectedSites.approvedSites).toMatchObject(
           localDefaults.knownSites,
         );
+        expect(useStore.getState().connectedSites.noFilterMatch).toBe(false);
       });
 
       test('setting filter removes properly', () => {
@@ -67,6 +68,7 @@ describe('Connected Sites Slice', () => {
           localDefaults.knownSites,
         );
         expect(useStore.getState().connectedSites.approvedSites).toMatchObject([]);
+        expect(useStore.getState().connectedSites.noFilterMatch).toBe(true);
       });
     });
 

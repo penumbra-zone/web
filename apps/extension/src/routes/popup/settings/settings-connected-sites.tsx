@@ -1,5 +1,5 @@
 import { Link1Icon, LinkBreak1Icon, MagnifyingGlassIcon, TrashIcon } from '@radix-ui/react-icons';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { Button, FadeTransition, Input } from '@penumbra-zone/ui';
 import { LinkGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
@@ -16,17 +16,13 @@ export const SettingsConnectedSites = () => {
     approvedSites,
     deniedSites,
     ignoredSites,
+    noFilterMatch,
     setFilter,
     discardKnownSite,
     loadKnownSites,
   } = useStore(connectedSitesSelector);
 
   useEffect(() => void loadKnownSites(), [loadKnownSites]);
-
-  const noFilterMatch = useMemo(
-    () => !approvedSites.length && !deniedSites.length && !ignoredSites.length,
-    [approvedSites, deniedSites, ignoredSites],
-  );
 
   const discard = (site: OriginRecord) => void discardKnownSite(site);
 
