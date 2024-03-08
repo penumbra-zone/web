@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { StoreApi, UseBoundStore, create } from 'zustand';
-import { AllSlices, initializeStore } from '.';
+import { AllSlices, initializeStore } from '..';
 import {
   ValidatorInfo,
   ValidatorInfoResponse,
@@ -15,7 +15,7 @@ import {
   AddressView,
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { accountsSelector } from './staking';
+import { accountsSelector } from '.';
 
 const validator1IdentityKey = new IdentityKey({ ik: new Uint8Array([1, 2, 3]) });
 const validator1Bech32IdentityKey = bech32IdentityKey(validator1IdentityKey);

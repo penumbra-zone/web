@@ -1,16 +1,13 @@
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { AllSlices, SliceCreator } from '.';
-import { getDelegationsForAccount } from '../fetchers/staking';
+import { AllSlices, SliceCreator } from '..';
+import { getDelegationsForAccount } from '../../fetchers/staking';
 import {
-  asIdentityKey,
   getAmount,
   getAssetIdFromValueView,
   getDisplayDenomExponent,
   getDisplayDenomExponentFromValueView,
   getDisplayDenomFromView,
   getRateData,
-  getStartEpochIndexFromValueView,
-  getValidatorIdentityKeyAsBech32StringFromValueView,
   getValidatorInfoFromValueView,
   getVotingPowerFromValidatorInfo,
 } from '@penumbra-zone/getters';
@@ -23,7 +20,7 @@ import {
   splitLoHi,
 } from '@penumbra-zone/types';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { BalancesByAccount, getBalancesByAccount } from '../fetchers/balances/by-account';
+import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
 import {
   localAssets,
   STAKING_TOKEN,
@@ -32,13 +29,10 @@ import {
 } from '@penumbra-zone/constants';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { TransactionToast } from '@penumbra-zone/ui';
-import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from './helpers';
-import {
-  TransactionPlannerRequest,
-  TransactionPlannerRequest_UndelegateClaim,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from '../helpers';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
-import { sctClient, stakeClient, viewClient } from '../clients';
+import { assembleUndelegateClaimRequest } from './assemble-undelegate-claim-request';
 
 const STAKING_TOKEN_DISPLAY_DENOM_EXPONENT = (() => {
   const stakingAsset = localAssets.find(asset => asset.display === STAKING_TOKEN);
@@ -402,47 +396,6 @@ const assembleUndelegateRequest = ({
         },
       },
     ],
-    source: { account },
-  });
-};
-
-const getUndelegateClaimPlannerRequest =
-  (endEpochIndex: bigint) => async (unbondingToken: ValueView) => {
-    const startEpochIndex = getStartEpochIndexFromValueView(unbondingToken);
-    const validatorIdentityKeyAsBech32String =
-      getValidatorIdentityKeyAsBech32StringFromValueView(unbondingToken);
-    const identityKey = asIdentityKey(validatorIdentityKeyAsBech32String);
-
-    const { penalty } = await stakeClient.validatorPenalty({
-      startEpochIndex,
-      endEpochIndex,
-      identityKey,
-    });
-
-    return new TransactionPlannerRequest_UndelegateClaim({
-      validatorIdentity: identityKey,
-      startEpochIndex,
-      penalty,
-      unbondingAmount: getAmount(unbondingToken),
-    });
-  };
-
-const assembleUndelegateClaimRequest = async ({
-  account,
-  unbondingTokens,
-}: {
-  account: number;
-  unbondingTokens: ValueView[];
-}) => {
-  const { fullSyncHeight } = await viewClient.status({});
-  const { epoch } = await sctClient.epochByHeight({ height: fullSyncHeight });
-  const endEpochIndex = epoch?.index;
-  if (!endEpochIndex) return;
-
-  return new TransactionPlannerRequest({
-    undelegationClaims: await Promise.all(
-      unbondingTokens.map(getUndelegateClaimPlannerRequest(endEpochIndex)),
-    ),
     source: { account },
   });
 };
