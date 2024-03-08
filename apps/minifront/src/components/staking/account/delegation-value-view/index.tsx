@@ -31,13 +31,13 @@ export const DelegationValueView = memo(
      */
     unstakedTokens?: ValueView;
   }) => {
-    const validatorInfoFromValueView = getValidatorInfoFromValueView(valueView);
+    const validatorInfo = getValidatorInfoFromValueView(valueView);
 
     return (
       <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-8'>
         <div className='min-w-0 shrink grow'>
           <ValidatorInfoComponent
-            validatorInfo={validatorInfoFromValueView}
+            validatorInfo={validatorInfo}
             votingPowerAsIntegerPercentage={votingPowerAsIntegerPercentage}
           />
         </div>
@@ -47,7 +47,7 @@ export const DelegationValueView = memo(
         </div>
 
         <StakingActions
-          validatorInfo={validatorInfoFromValueView}
+          validatorInfo={validatorInfo}
           delegationTokens={valueView}
           unstakedTokens={unstakedTokens}
         />
