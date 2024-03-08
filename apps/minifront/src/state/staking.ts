@@ -406,6 +406,27 @@ const assembleUndelegateRequest = ({
   });
 };
 
+const getUndelegateClaimPlannerRequest =
+  (endEpochIndex: bigint) => async (unbondingToken: ValueView) => {
+    const startEpochIndex = getStartEpochIndexFromValueView(unbondingToken);
+    const validatorIdentityKeyAsBech32String =
+      getValidatorIdentityKeyAsBech32StringFromValueView(unbondingToken);
+    const identityKey = asIdentityKey(validatorIdentityKeyAsBech32String);
+
+    const { penalty } = await stakeClient.validatorPenalty({
+      startEpochIndex,
+      endEpochIndex,
+      identityKey,
+    });
+
+    return new TransactionPlannerRequest_UndelegateClaim({
+      validatorIdentity: identityKey,
+      startEpochIndex,
+      penalty,
+      unbondingAmount: getAmount(unbondingToken),
+    });
+  };
+
 const assembleUndelegateClaimRequest = async ({
   account,
   unbondingTokens,
@@ -420,25 +441,7 @@ const assembleUndelegateClaimRequest = async ({
 
   return new TransactionPlannerRequest({
     undelegationClaims: await Promise.all(
-      unbondingTokens.map(async unbondingToken => {
-        const startEpochIndex = getStartEpochIndexFromValueView(unbondingToken);
-        const validatorIdentityKeyAsBech32String =
-          getValidatorIdentityKeyAsBech32StringFromValueView(unbondingToken);
-        const identityKey = asIdentityKey(validatorIdentityKeyAsBech32String);
-
-        const { penalty } = await stakeClient.validatorPenalty({
-          startEpochIndex,
-          endEpochIndex,
-          identityKey,
-        });
-
-        return new TransactionPlannerRequest_UndelegateClaim({
-          validatorIdentity: identityKey,
-          startEpochIndex,
-          penalty,
-          unbondingAmount: getAmount(unbondingToken),
-        });
-      }),
+      unbondingTokens.map(getUndelegateClaimPlannerRequest(endEpochIndex)),
     ),
     source: { account },
   });
