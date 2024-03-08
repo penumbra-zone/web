@@ -38,7 +38,7 @@ export const approveOrigin = async ({
       return true;
     case UserChoice.Ignored:
       return false;
-    case UserChoice.Denied: // TODO: cooldown on re-request
+    case UserChoice.Denied:
     default: {
       const res = await popup<OriginApproval>({
         type: PopupType.OriginApproval,
@@ -46,6 +46,7 @@ export const approveOrigin = async ({
           origin: urlOrigin,
           favIconUrl: tab.favIconUrl,
           title: tab.title,
+          lastRequest: existingRecord?.date,
         },
       });
 

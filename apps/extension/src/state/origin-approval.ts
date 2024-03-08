@@ -11,6 +11,7 @@ export interface OriginApprovalSlice {
   title?: string;
   requestOrigin?: string;
   choice?: UserChoice;
+  lastRequest?: Date;
 
   acceptRequest: (
     req: InternalRequest<OriginApproval>,
@@ -29,15 +30,18 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
     });
   },
 
-  acceptRequest: ({ request: { origin: requestOrigin, favIconUrl, title } }, responder) => {
+  acceptRequest: (
+    { request: { origin: requestOrigin, favIconUrl, title, lastRequest } },
+    responder,
+  ) => {
     const existing = get().originApproval;
-    if (existing.requestOrigin ?? existing.responder ?? existing.choice != null)
-      throw new Error('Another request is still pending');
+    if (existing.responder) throw new Error('Another request is still pending');
 
     set(state => {
       state.originApproval.favIconUrl = favIconUrl;
       state.originApproval.title = title && !title.startsWith(requestOrigin) ? title : undefined;
       state.originApproval.requestOrigin = requestOrigin;
+      state.originApproval.lastRequest = lastRequest ? new Date(lastRequest) : undefined;
       state.originApproval.responder = responder;
     });
   },
