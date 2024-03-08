@@ -8,18 +8,16 @@ import { useMemo } from 'react';
 import { AllSlices, useStore } from '../../../../../state';
 import { useShallow } from 'zustand/react/shallow';
 
-const stakingActionsSelector = (state: AllSlices) => {
-  return {
-    action: state.staking.action,
-    amount: state.staking.amount,
-    delegate: state.staking.delegate,
-    undelegate: state.staking.undelegate,
-    onClickActionButton: state.staking.onClickActionButton,
-    onClose: state.staking.onClose,
-    setAmount: state.staking.setAmount,
-    validatorInfo: state.staking.validatorInfo,
-  };
-};
+const stakingActionsSelector = (state: AllSlices) => ({
+  action: state.staking.action,
+  amount: state.staking.amount,
+  delegate: state.staking.delegate,
+  undelegate: state.staking.undelegate,
+  onClickActionButton: state.staking.onClickActionButton,
+  onClose: state.staking.onClose,
+  setAmount: state.staking.setAmount,
+  validatorInfo: state.staking.validatorInfo,
+});
 
 /**
  * Renders Delegate/Undelegate buttons for a validator, as well as a form inside
