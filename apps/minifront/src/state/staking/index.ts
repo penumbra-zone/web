@@ -135,7 +135,7 @@ const byBalanceAndVotingPower = (valueViewA: ValueView, valueViewB: ValueView): 
   return byVotingPower;
 };
 
-const FLUSH_INTERVAL = 20;
+const FLUSH_INTERVAL = 50;
 
 export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) => ({
   account: 0,
@@ -169,16 +169,17 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     set(state => {
       state.staking.delegationsByAccount.set(addressIndex.account, []);
       state.staking.votingPowerByValidatorInfo = {};
+      state.staking.loading = true;
     });
 
     let delegationsToFlush: ValueView[] = [];
     let allDelegationsLoaded = false;
 
-    const flushToState = () => {
+    const flushToState = (ignoreInterval = false) => {
       if (allDelegationsLoaded) return;
 
-      if (delegationsToFlush.length < FLUSH_INTERVAL) {
-        requestAnimationFrame(flushToState);
+      if (!ignoreInterval && delegationsToFlush.length < FLUSH_INTERVAL) {
+        requestAnimationFrame(() => flushToState());
         return;
       }
       const delegations = get().staking.delegationsByAccount.get(addressIndex.account) ?? [];
@@ -193,9 +194,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
         state.staking.delegationsByAccount.set(addressIndex.account, sortedDelegations);
       });
 
-      requestAnimationFrame(flushToState);
-
-      console.log('flushToState');
+      requestAnimationFrame(() => flushToState());
     };
 
     let isFirstDelegation = true;
@@ -204,11 +203,13 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       validatorInfos.push(getValidatorInfoFromValueView(delegation));
 
       if (isFirstDelegation) {
-        requestAnimationFrame(flushToState);
+        requestAnimationFrame(() => flushToState());
         isFirstDelegation = false;
       }
     }
 
+    // One last flush
+    flushToState(true);
     allDelegationsLoaded = true;
 
     /**
@@ -217,6 +218,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
      */
     set(state => {
       state.staking.votingPowerByValidatorInfo = getVotingPowerByValidatorInfo(validatorInfos);
+      state.staking.loading = false;
     });
   },
   loadUnstakedAndUnbondingTokensByAccount: async () => {
