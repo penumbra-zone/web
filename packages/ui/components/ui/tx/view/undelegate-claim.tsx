@@ -7,11 +7,7 @@ import {
 } from '@penumbra-zone/getters';
 import { ActionDetails } from './action-details';
 
-/**
- * Render an `UndelegateClaim` action.
- *
- * @todo: Make this nicer :)
- */
+/** Render an `UndelegateClaim` action. */
 export const UndelegateClaimComponent = ({ value }: { value: UndelegateClaim }) => {
   const validatorIdentity = getValidatorIdentityFromUndelegateClaim(value);
   const startEpochIndex = getStartEpochIndexFromUndelegateClaim(value);
