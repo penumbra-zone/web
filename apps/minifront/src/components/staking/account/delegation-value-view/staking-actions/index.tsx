@@ -1,12 +1,16 @@
 import { Button } from '@penumbra-zone/ui';
-import { useStore } from '../../../../../state';
-import { stakingSelector } from '../../../../../state/staking';
+import { StakingSlice } from '../../../../../state/staking';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { getAmount, getValidator } from '@penumbra-zone/getters';
 import { joinLoHiAmount } from '@penumbra-zone/types';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { FormDialog } from './form-dialog';
 import { useMemo } from 'react';
+
+type PropsFromState = Pick<
+  StakingSlice,
+  'action' | 'amount' | 'onClickActionButton' | 'delegate' | 'undelegate' | 'onClose' | 'setAmount'
+>;
 
 /**
  * Renders Delegate/Undelegate buttons for a validator, as well as a form inside
@@ -16,9 +20,20 @@ export const StakingActions = ({
   validatorInfo,
   delegationTokens,
   unstakedTokens,
-}: {
+
+  action,
+  amount,
+  onClickActionButton,
+  delegate,
+  undelegate,
+  onClose,
+  setAmount,
+  selectedValidatorInfo,
+}: PropsFromState & {
   /** The validator that these actions will apply to. */
   validatorInfo: ValidatorInfo;
+  /** The validator that the user has currently opened a form dialog for */
+  selectedValidatorInfo?: ValidatorInfo;
   /**
    * A `ValueView` representing the address's balance of delegation tokens. Used
    * to show the user how many tokens they have available to undelegate.
@@ -30,17 +45,6 @@ export const StakingActions = ({
    */
   unstakedTokens?: ValueView;
 }) => {
-  const {
-    action,
-    amount,
-    onClickActionButton,
-    delegate,
-    undelegate,
-    onClose,
-    setAmount,
-    validatorInfo: selectedValidatorInfo,
-  } = useStore(stakingSelector);
-
   const validator = getValidator(validatorInfo);
 
   const canDelegate = useMemo(

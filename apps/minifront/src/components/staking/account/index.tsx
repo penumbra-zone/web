@@ -13,8 +13,22 @@ const getVotingPowerAsIntegerPercentage = (
 ) => votingPowerByValidatorInfo[bech32IdentityKey(getIdentityKeyFromValueView(delegation))];
 
 export const Account = () => {
-  const { account, delegationsByAccount, unstakedTokensByAccount, votingPowerByValidatorInfo } =
-    useStore(stakingSelector);
+  const {
+    account,
+    delegationsByAccount,
+    unstakedTokensByAccount,
+    votingPowerByValidatorInfo,
+
+    action,
+    amount,
+    delegate,
+    loading,
+    onClickActionButton,
+    onClose,
+    setAmount,
+    undelegate,
+    validatorInfo,
+  } = useStore(stakingSelector);
   const unstakedTokens = unstakedTokensByAccount.get(account);
   const delegations = delegationsByAccount.get(account) ?? [];
 
@@ -38,6 +52,15 @@ export const Account = () => {
                     votingPowerByValidatorInfo,
                     delegation,
                   )}
+                  amount={amount}
+                  delegate={delegate}
+                  onClickActionButton={onClickActionButton}
+                  onClose={onClose}
+                  setAmount={setAmount}
+                  undelegate={undelegate}
+                  action={action}
+                  validatorInfo={validatorInfo}
+                  loading={loading}
                 />
               ))}
             </div>

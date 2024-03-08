@@ -17,9 +17,11 @@ import {
 export const ValidatorInfoComponent = ({
   validatorInfo,
   votingPowerAsIntegerPercentage,
+  showTooltips,
 }: {
   validatorInfo: ValidatorInfo;
   votingPowerAsIntegerPercentage?: number;
+  showTooltips: boolean;
 }) => {
   const validator = getValidator(validatorInfo);
   const identityKey = getIdentityKeyFromValidatorInfo(validatorInfo);
@@ -41,27 +43,34 @@ export const ValidatorInfoComponent = ({
           <div className='flex flex-col lg:flex-row lg:gap-8'>
             <span className='truncate font-bold'>{validator.name}</span>
 
-            {votingPowerAsIntegerPercentage !== undefined && (
-              <span>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <span className='underline decoration-dotted underline-offset-4'>VP:</span>
-                  </TooltipTrigger>
-                  <TooltipContent>Voting power</TooltipContent>
-                </Tooltip>{' '}
-                {votingPowerAsIntegerPercentage}%
-              </span>
-            )}
+            <>
+              {votingPowerAsIntegerPercentage !== undefined && (
+                <span>
+                  {showTooltips && (
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <span className='underline decoration-dotted underline-offset-4'>VP:</span>
+                      </TooltipTrigger>
+                      <TooltipContent>Voting power</TooltipContent>
+                    </Tooltip>
+                  )}
+                  {!showTooltips && <span>VP:</span>} {votingPowerAsIntegerPercentage}%
+                </span>
+              )}
 
-            <span>
-              <Tooltip>
-                <TooltipTrigger>
-                  <span className='underline decoration-dotted underline-offset-4'>Com:</span>
-                </TooltipTrigger>
-                <TooltipContent>Commission</TooltipContent>
-              </Tooltip>{' '}
-              {calculateCommissionAsPercentage(validatorInfo)}%
-            </span>
+              <span>
+                {showTooltips && (
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <span className='underline decoration-dotted underline-offset-4'>Com:</span>
+                    </TooltipTrigger>
+                    <TooltipContent>Commission</TooltipContent>
+                  </Tooltip>
+                )}
+                {!showTooltips && <span>Com:</span>}{' '}
+                {calculateCommissionAsPercentage(validatorInfo)}%
+              </span>
+            </>
           </div>
         </div>
       </div>
