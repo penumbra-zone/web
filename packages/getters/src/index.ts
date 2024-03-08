@@ -10,6 +10,8 @@ export * from './spendable-note-record';
 export * from './trading-pair';
 export * from './transaction';
 export * from './unclaimed-swaps-response';
+export * from './undelegate-claim';
+export * from './undelegate-claim-body';
 export * from './validator';
 export * from './validator-info';
 export * from './validator-info-response';
