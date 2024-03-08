@@ -45,34 +45,31 @@ export const ValidatorInfoComponent = ({
           <div className='flex flex-col lg:flex-row lg:gap-8'>
             <span className='truncate font-bold'>{validator.name}</span>
 
-            <>
-              {votingPowerAsIntegerPercentage !== undefined && (
-                <span>
-                  {showTooltips && (
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <span className='underline decoration-dotted underline-offset-4'>VP:</span>
-                      </TooltipTrigger>
-                      <TooltipContent>Voting power</TooltipContent>
-                    </Tooltip>
-                  )}
-                  {!showTooltips && <span>VP:</span>} {votingPowerAsIntegerPercentage}%
-                </span>
-              )}
-
+            {votingPowerAsIntegerPercentage !== undefined && (
               <span>
                 {showTooltips && (
                   <Tooltip>
                     <TooltipTrigger>
-                      <span className='underline decoration-dotted underline-offset-4'>Com:</span>
+                      <span className='underline decoration-dotted underline-offset-4'>VP:</span>
                     </TooltipTrigger>
-                    <TooltipContent>Commission</TooltipContent>
+                    <TooltipContent>Voting power</TooltipContent>
                   </Tooltip>
                 )}
-                {!showTooltips && <span>Com:</span>}{' '}
-                {calculateCommissionAsPercentage(validatorInfo)}%
+                {!showTooltips && <span>VP:</span>} {votingPowerAsIntegerPercentage}%
               </span>
-            </>
+            )}
+
+            <span>
+              {showTooltips && (
+                <Tooltip>
+                  <TooltipTrigger>
+                    <span className='underline decoration-dotted underline-offset-4'>Com:</span>
+                  </TooltipTrigger>
+                  <TooltipContent>Commission</TooltipContent>
+                </Tooltip>
+              )}
+              {!showTooltips && <span>Com:</span>} {calculateCommissionAsPercentage(validatorInfo)}%
+            </span>
           </div>
         </div>
       </div>
