@@ -59,6 +59,6 @@ export const buildActionParallel = async (
 const loadProvingKey = async (actionType: ActionType) => {
   const keyType = provingKeys[actionType];
   if (!keyType) return;
-  const keyBin = (await fetch(`bin/${actionType}_pk.bin`)).arrayBuffer();
+  const keyBin = (await fetch(`bin/${keyType}_pk.bin`)).arrayBuffer();
   load_proving_key(await keyBin, keyType);
 };
