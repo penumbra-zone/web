@@ -52,26 +52,38 @@ export const OriginApproval = () => {
                 '[background:linear-gradient(var(--charcoal),var(--charcoal))_padding-box,_linear-gradient(to_bottom_left,rgb(139,228,217),rgb(255,144,47))_border-box]',
               )}
             >
-              <div className='flex flex-col gap-2'>
-                <div className='flex h-11 w-full items-center rounded-lg border bg-background px-3 py-2 text-muted-foreground'>
-                  {favIconUrl ? (
+              <div className='flex flex-col items-center gap-2'>
+                <div className='flex h-11 max-w-full items-center rounded-lg border bg-background p-2 text-muted-foreground'>
+                  {!!favIconUrl && (
                     <div
                       className={cn(
+                        'relative',
+                        '-left-3',
                         'rounded-[1em]',
                         'border-[1px]',
                         'border-transparent',
                         '[background:linear-gradient(var(--charcoal),var(--charcoal))_padding-box,_linear-gradient(to_top_right,rgb(139,228,217),rgb(255,144,47))_border-box]',
                       )}
                     >
-                      <img src={favIconUrl} alt='website icon' className='h-20 rounded-[1em]' />
+                      <img
+                        src={favIconUrl}
+                        alt='requesting website icon'
+                        className='size-20 min-w-20 rounded-[1em]'
+                      />
                     </div>
-                  ) : null}
-                  <div className='p-2 font-headline text-base font-semibold text-white'>
-                    {title ? title : <div className='text-muted-foreground'>{'<no title>'}</div>}
+                  )}
+                  <div className='truncate p-2 font-headline text-lg'>
+                    {title ? (
+                      <span className='text-primary-foreground'>{title}</span>
+                    ) : (
+                      <span className='text-muted-foreground underline decoration-dotted decoration-2 underline-offset-4'>
+                        no title
+                      </span>
+                    )}
                   </div>
                 </div>
-                <div className='z-30 flex h-11 w-full items-center rounded-lg border bg-background px-3 py-2 text-muted-foreground'>
-                  <div className='w-full p-2 text-center'>
+                <div className='z-30 flex h-11 w-full items-center overflow-x-scroll rounded-lg border bg-background p-2 [scrollbar-color:red_red]'>
+                  <div className='mx-auto items-center p-2 text-center leading-[0.8em] [background-clip:content-box] [background-image:repeating-linear-gradient(45deg,red,black_15px)] first-line:[background-color:black]'>
                     <DisplayOriginURL url={new URL(requestOrigin)} />
                   </div>
                 </div>
