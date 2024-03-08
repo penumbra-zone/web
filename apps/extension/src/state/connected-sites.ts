@@ -54,9 +54,12 @@ export const createConnectedSitesSlice =
     },
 
     discardKnownSite: async (deletant: { origin: string }) => {
+      const existingFilter = get().connectedSites.filter;
       const knownSites = await local.get('knownSites');
       const withoutDeletant = knownSites.filter(known => known.origin !== deletant.origin);
       await local.set('knownSites', withoutDeletant);
+      await get().connectedSites.loadKnownSites();
+      get().connectedSites.setFilter(existingFilter);
     },
   });
 

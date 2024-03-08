@@ -77,11 +77,6 @@ describe('Connected Sites Slice', () => {
           useStore.getState().connectedSites.discardKnownSite(deletant),
         ).resolves.not.toThrow();
 
-        // no effect yet, we haven't reloaded
-        expect(useStore.getState().connectedSites.knownSites).toMatchObject(
-          localDefaults.knownSites,
-        );
-
         await expect(useStore.getState().connectedSites.loadKnownSites()).resolves.not.toThrow();
 
         expect(useStore.getState().connectedSites.knownSites).toMatchObject([]);

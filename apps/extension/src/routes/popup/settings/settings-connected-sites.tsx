@@ -28,16 +28,7 @@ export const SettingsConnectedSites = () => {
     [approvedSites, deniedSites, ignoredSites],
   );
 
-  const discard = useCallback(
-    (site: OriginRecord) => {
-      void (async () => {
-        await discardKnownSite(site);
-        await loadKnownSites();
-        setFilter(filter);
-      })();
-    },
-    [discardKnownSite, filter, loadKnownSites, setFilter],
-  );
+  const discard = (site: OriginRecord) => void discardKnownSite(site);
 
   return (
     <FadeTransition>
