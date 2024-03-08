@@ -1,4 +1,10 @@
-import { DashboardIcon, ExitIcon, LockClosedIcon, Share1Icon } from '@radix-ui/react-icons';
+import {
+  DashboardIcon,
+  ExitIcon,
+  Link1Icon,
+  LockClosedIcon,
+  Share1Icon,
+} from '@radix-ui/react-icons';
 import { CustomLink, SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
@@ -16,6 +22,11 @@ const links = [
     title: 'RPC',
     icon: <Share1Icon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_RPC,
+  },
+  {
+    title: 'Connected sites',
+    icon: <Link1Icon className='size-5 text-muted-foreground' />,
+    href: PopupPath.SETTINGS_CONNECTED_SITES,
   },
   {
     title: 'Advanced',

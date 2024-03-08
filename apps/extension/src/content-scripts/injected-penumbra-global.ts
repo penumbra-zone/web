@@ -60,9 +60,9 @@ const postRequest = () => {
 const requestResponseHandler = (msg: MessageEvent<unknown>) => {
   if (msg.origin === window.origin && isPraxRequestResponseMessageEvent(msg)) {
     // @ts-expect-error - ts can't understand the injected string
-    const attitude = msg.data[PRAX] as Prax.ApprovedConnection | Prax.DeniedConnection;
-    if (attitude === Prax.ApprovedConnection) requestPromise.resolve();
-    if (attitude === Prax.DeniedConnection) requestPromise.reject();
+    const choice = msg.data[PRAX] as Prax.ApprovedConnection | Prax.DeniedConnection;
+    if (choice === Prax.ApprovedConnection) requestPromise.resolve();
+    if (choice === Prax.DeniedConnection) requestPromise.reject();
     window.removeEventListener('message', requestResponseHandler);
   }
 };

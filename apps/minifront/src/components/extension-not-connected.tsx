@@ -14,26 +14,33 @@ export const ExtensionNotConnected = () => {
 
   useEffect(() => {
     if (approved === true) location.reload();
+    else document.title = 'Penumbra Minifront';
   }, [approved]);
 
   return (
     <>
       <HeadTag />
       <SplashPage title='Welcome to Penumbra'>
-        <div className='flex items-center justify-between gap-4'>
-          To get started, connect the Penumbra Chrome extension.
-          <Button
-            disabled={approved === false}
-            variant='gradient'
-            className='px-4 text-white'
-            onClick={request}
-          >
-            Connect
-          </Button>
+        <div className='flex items-center justify-between gap-[1em] text-lg'>
+          {approved !== false ? (
+            <>
+              <div>To get started, connect the Penumbra Chrome extension.</div>
+              <Button variant='gradient' className='px-4' onClick={request}>
+                Connect
+              </Button>
+            </>
+          ) : (
+            <>
+              <div>
+                <div className='text-destructive'>Connection failed - reload to try again.</div>
+                <div>You may need to un-ignore this site in your extension settings.</div>
+              </div>
+              <Button variant='gradient' className='px-4' onClick={() => location.reload()}>
+                Reload
+              </Button>
+            </>
+          )}
         </div>
-        {approved === false ? (
-          <div className='text-red-500'>Connection was denied - reload the page and try again.</div>
-        ) : null}
       </SplashPage>
     </>
   );

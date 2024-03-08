@@ -2,10 +2,11 @@ import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumb
 import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { createContextKey } from '@connectrpc/connect';
 import { PartialMessage } from '@bufbuild/protobuf';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 export type TxApprovalFn = (
   authorizeRequest: PartialMessage<AuthorizeRequest>,
   transactionView: PartialMessage<TransactionView>,
-) => Promise<boolean>;
+) => Promise<UserChoice>;
 
 export const approverCtx = createContextKey<TxApprovalFn | undefined>(undefined);

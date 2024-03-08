@@ -6,6 +6,7 @@ import type {
   InternalResponse,
 } from '@penumbra-zone/types/src/internal-msg/shared';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 export enum PopupType {
   TxApproval = 'TxApproval',
@@ -18,8 +19,8 @@ export type PopupResponse<T extends PopupMessage = PopupMessage> = InternalRespo
 
 export type OriginApproval = InternalMessage<
   PopupType.OriginApproval,
-  { origin: string; favIconUrl?: string; title?: string },
-  { origin: string; attitude: boolean }
+  { origin: string; favIconUrl?: string; title?: string; lastRequest?: number },
+  { origin: string; choice: UserChoice }
 >;
 
 export type TxApproval = InternalMessage<
@@ -31,7 +32,7 @@ export type TxApproval = InternalMessage<
   {
     authorizeRequest: Jsonified<AuthorizeRequest>;
     transactionView: Jsonified<TransactionView>;
-    attitude: boolean;
+    choice: UserChoice;
   }
 >;
 

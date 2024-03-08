@@ -4,13 +4,15 @@ import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 import { localExtStorage } from '@penumbra-zone/storage';
 import { OriginApproval, PopupType } from './message/popup';
 import { popup } from './popup';
+import Map from '@penumbra-zone/polyfills/Map.groupBy';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 export const originAlreadyApproved = async (url: string): Promise<boolean> => {
   // parses the origin and returns a consistent format
   const urlOrigin = new URL(url).origin;
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  const connectedSites = await localExtStorage.get('connectedSites');
-  return Boolean(connectedSites[urlOrigin]);
+  const knownSites = await localExtStorage.get('knownSites');
+  const existingRecord = knownSites.find(site => site.origin === urlOrigin);
+  return existingRecord?.choice === UserChoice.Approved;
 };
 
 export const approveOrigin = async ({
@@ -23,22 +25,45 @@ export const approveOrigin = async ({
 
   // parses the origin and returns a consistent format
   const urlOrigin = new URL(senderOrigin).origin;
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  const connectedSites = await localExtStorage.get('connectedSites');
-  if (typeof connectedSites[urlOrigin] === 'boolean') return Boolean(connectedSites[urlOrigin]);
+  const knownSites = await localExtStorage.get('knownSites');
 
-  const res = await popup<OriginApproval>({
-    type: PopupType.OriginApproval,
-    request: {
-      origin: urlOrigin,
-      favIconUrl: tab.favIconUrl,
-      title: tab.title,
-    },
-  });
-  if ('error' in res)
-    throw errorFromJson(res.error as JsonValue, undefined, ConnectError.from(res));
+  const siteRecords = Map.groupBy(knownSites, site => site.origin === urlOrigin);
+  const irrelevant = siteRecords.get(false) ?? []; // we need to handle these in order to write back to storage
+  const [existingRecord, ...extraRecords] = siteRecords.get(true) ?? [];
 
-  connectedSites[urlOrigin] = res.data.attitude;
-  void localExtStorage.set('connectedSites', connectedSites); // TODO: is there a race condition here?
-  return Boolean(connectedSites[urlOrigin]);
+  if (extraRecords.length) throw new Error('Multiple records for the same origin');
+
+  switch (existingRecord?.choice) {
+    case UserChoice.Approved:
+      return true;
+    case UserChoice.Ignored:
+      return false;
+    case UserChoice.Denied:
+    default: {
+      const res = await popup<OriginApproval>({
+        type: PopupType.OriginApproval,
+        request: {
+          origin: urlOrigin,
+          favIconUrl: tab.favIconUrl,
+          title: tab.title,
+          lastRequest: existingRecord?.date,
+        },
+      });
+
+      if ('error' in res)
+        throw errorFromJson(res.error as JsonValue, undefined, ConnectError.from(res));
+
+      // TODO: is there a race condition here?
+      // if something has written after our initial read, we'll clobber them
+      void localExtStorage.set('knownSites', [
+        {
+          ...res.data,
+          date: Date.now(),
+        },
+        ...irrelevant,
+      ]);
+
+      return Boolean(res.data.choice === UserChoice.Approved);
+    }
+  }
 };

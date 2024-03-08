@@ -32,5 +32,5 @@ export const approveTransaction = async (
   if (!authorizeRequest.equals(resAuthorizeRequest) || !transactionView.equals(resTransactionView))
     throw new Error('Invalid response from popup');
 
-  return res.data.attitude;
+  return res.data.choice;
 };
