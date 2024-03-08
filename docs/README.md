@@ -26,3 +26,4 @@
 - [Web Workers](web-workers.md)
 - [Protobufs](protobufs.md)
 - [Extension services](extension-services.md)
+- [Writing performant React components](writing-performant-react-components.md)
