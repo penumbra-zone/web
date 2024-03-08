@@ -1,16 +1,11 @@
 import { Button } from '@penumbra-zone/ui';
-import { StakingSlice } from '../../../../../state/staking';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { getAmount, getValidator } from '@penumbra-zone/getters';
 import { joinLoHiAmount } from '@penumbra-zone/types';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { FormDialog } from './form-dialog';
 import { useMemo } from 'react';
-
-type PropsFromState = Pick<
-  StakingSlice,
-  'action' | 'amount' | 'onClickActionButton' | 'delegate' | 'undelegate' | 'onClose' | 'setAmount'
->;
+import { useStore } from '../../../../../state';
 
 /**
  * Renders Delegate/Undelegate buttons for a validator, as well as a form inside
@@ -20,20 +15,9 @@ export const StakingActions = ({
   validatorInfo,
   delegationTokens,
   unstakedTokens,
-
-  action,
-  amount,
-  onClickActionButton,
-  delegate,
-  undelegate,
-  onClose,
-  setAmount,
-  selectedValidatorInfo,
-}: PropsFromState & {
+}: {
   /** The validator that these actions will apply to. */
   validatorInfo: ValidatorInfo;
-  /** The validator that the user has currently opened a form dialog for */
-  selectedValidatorInfo?: ValidatorInfo;
   /**
    * A `ValueView` representing the address's balance of delegation tokens. Used
    * to show the user how many tokens they have available to undelegate.
@@ -45,6 +29,14 @@ export const StakingActions = ({
    */
   unstakedTokens?: ValueView;
 }) => {
+  const action = useStore(state => state.staking.action);
+  const amount = useStore(state => state.staking.amount);
+  const onClickActionButton = useStore(state => state.staking.onClickActionButton);
+  const delegate = useStore(state => state.staking.delegate);
+  const undelegate = useStore(state => state.staking.undelegate);
+  const onClose = useStore(state => state.staking.onClose);
+  const setAmount = useStore(state => state.staking.setAmount);
+  const selectedValidatorInfo = useStore(state => state.staking.validatorInfo);
   const validator = getValidator(validatorInfo);
 
   const canDelegate = useMemo(

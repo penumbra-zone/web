@@ -1,9 +1,8 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { StakingActions } from '.';
 import { render } from '@testing-library/react';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { ComponentProps } from 'react';
 
 const nonZeroBalance = new ValueView({
   valueView: {
@@ -25,26 +24,13 @@ const zeroBalance = new ValueView({
 
 const validatorInfo = new ValidatorInfo({ validator: {} });
 
-const BASE_PROPS: Omit<
-  ComponentProps<typeof StakingActions>,
-  'delegationTokens' | 'unstakedTokens'
-> = {
-  amount: '',
-  delegate: vi.fn(),
-  undelegate: vi.fn(),
-  onClickActionButton: vi.fn(),
-  onClose: vi.fn(),
-  setAmount: vi.fn(),
-  validatorInfo,
-};
-
 describe('<StakingActions />', () => {
   it('renders an enabled Delegate button there is a non-zero balance of unstaked tokens', () => {
     const { getByText } = render(
       <StakingActions
         delegationTokens={zeroBalance}
         unstakedTokens={nonZeroBalance}
-        {...BASE_PROPS}
+        validatorInfo={validatorInfo}
       />,
     );
 
@@ -56,7 +42,7 @@ describe('<StakingActions />', () => {
       <StakingActions
         delegationTokens={nonZeroBalance}
         unstakedTokens={zeroBalance}
-        {...BASE_PROPS}
+        validatorInfo={validatorInfo}
       />,
     );
 
@@ -68,7 +54,7 @@ describe('<StakingActions />', () => {
       <StakingActions
         delegationTokens={nonZeroBalance}
         unstakedTokens={zeroBalance}
-        {...BASE_PROPS}
+        validatorInfo={validatorInfo}
       />,
     );
 
@@ -80,7 +66,7 @@ describe('<StakingActions />', () => {
       <StakingActions
         delegationTokens={nonZeroBalance}
         unstakedTokens={undefined}
-        {...BASE_PROPS}
+        validatorInfo={validatorInfo}
       />,
     );
 
@@ -92,7 +78,7 @@ describe('<StakingActions />', () => {
       <StakingActions
         delegationTokens={zeroBalance}
         unstakedTokens={nonZeroBalance}
-        {...BASE_PROPS}
+        validatorInfo={validatorInfo}
       />,
     );
 

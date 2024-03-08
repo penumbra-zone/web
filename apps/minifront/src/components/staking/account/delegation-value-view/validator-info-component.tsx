@@ -9,6 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@penumbra-zone/ui';
+import { useStore } from '../../../../state';
 
 /**
  * Renders a single `ValidatorInfo`: its name, bech32-encoded identity key,
@@ -17,12 +18,13 @@ import {
 export const ValidatorInfoComponent = ({
   validatorInfo,
   votingPowerAsIntegerPercentage,
-  showTooltips,
 }: {
   validatorInfo: ValidatorInfo;
   votingPowerAsIntegerPercentage?: number;
-  showTooltips: boolean;
 }) => {
+  // The tooltip component is a bit heavy to render, so we'll wait to render it
+  // until all loading completes.
+  const showTooltips = useStore(state => !state.staking.loading);
   const validator = getValidator(validatorInfo);
   const identityKey = getIdentityKeyFromValidatorInfo(validatorInfo);
 
