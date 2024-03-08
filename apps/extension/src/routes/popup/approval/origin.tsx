@@ -53,7 +53,7 @@ export const OriginApproval = () => {
               )}
             >
               <div className='flex flex-col items-center gap-2'>
-                <div className='flex h-11 max-w-full items-center rounded-lg border bg-black p-2 text-muted-foreground [z-index:30]'>
+                <div className='flex h-11 max-w-full items-center rounded-lg bg-black p-2 text-muted-foreground [z-index:30]'>
                   {!!favIconUrl && (
                     <div
                       className={cn(
@@ -82,7 +82,7 @@ export const OriginApproval = () => {
                     )}
                   </div>
                 </div>
-                <div className='z-30 flex h-11 w-full items-center overflow-x-scroll rounded-lg border bg-background p-2 text-muted-foreground [scrollbar-color:red_red]'>
+                <div className='z-30 flex h-11 w-full items-center overflow-x-scroll rounded-lg bg-background p-2 text-muted-foreground [scrollbar-color:red_red]'>
                   <div className='mx-auto items-center p-2 text-center leading-[0.8em] [background-clip:content-box] [background-image:repeating-linear-gradient(45deg,red,black_15px)] first-line:[background-color:black]'>
                     <DisplayOriginURL url={new URL(requestOrigin)} />
                   </div>
