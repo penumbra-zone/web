@@ -6,6 +6,7 @@ import { SwapViewComponent } from './swap';
 import { SwapClaimViewComponent } from './swap-claim';
 import { DelegateComponent } from './delegate';
 import { UndelegateComponent } from './undelegate';
+import { UndelegateClaimComponent } from './undelegate-claim';
 
 const CASE_TO_LABEL: Record<string, string> = {
   daoDeposit: 'DAO Deposit',
@@ -63,7 +64,7 @@ export const ActionViewComponent = ({ av: { actionView } }: { av: ActionView }) 
       return <UndelegateComponent value={actionView.value} />;
 
     case 'undelegateClaim':
-      return <ViewBox label='Undelegate Claim' />;
+      return <UndelegateClaimComponent value={actionView.value} />;
 
     case 'validatorDefinition':
       return <ViewBox label='Validator Definition' />;
