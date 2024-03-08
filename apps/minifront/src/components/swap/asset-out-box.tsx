@@ -58,7 +58,11 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
         ) : (
           <EstimateButton simulateFn={simulateSwap} />
         )}
-        <AssetOutSelector balances={balances} assetOut={assetOut} setAssetOut={setAssetOut} />
+        <AssetOutSelector
+          balances={balances}
+          assetOut={matchingBalance}
+          setAssetOut={setAssetOut}
+        />
       </div>
       <div className='mt-[6px] flex items-start justify-between'>
         <div />

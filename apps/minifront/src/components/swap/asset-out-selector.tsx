@@ -1,12 +1,16 @@
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTrigger } from '@penumbra-zone/ui';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {
+  Metadata,
+  ValueView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { localAssets } from '@penumbra-zone/constants';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 
 interface AssetOutSelectorProps {
   balances: BalancesResponse[];
-  assetOut: Metadata | undefined;
+  assetOut: ValueView | undefined;
   setAssetOut: (metadata: Metadata) => void;
 }
 
@@ -16,10 +20,7 @@ export const AssetOutSelector = ({ balances, setAssetOut, assetOut }: AssetOutSe
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
         <div className='flex h-9 min-w-[100px] max-w-[150px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
-          {assetOut?.display && <AssetIcon metadata={assetOut} />}
-          <p className='truncate font-bold text-light-grey md:text-sm xl:text-base'>
-            {assetOut?.display}
-          </p>
+          <ValueViewComponent view={assetOut} showValue={false} showEquivalent={false} />
         </div>
       </DialogTrigger>
       <DialogContent>
