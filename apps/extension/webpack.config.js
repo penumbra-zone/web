@@ -119,7 +119,7 @@ export default (env, argv) => {
         favicon: 'public/icon.png',
         title: 'Prax Welcome',
         template: 'react-root.html',
-        filename: 'page.html',
+        filename: 'onboarding.html',
         chunks: ['onboarding-root'],
       }),
       new HtmlWebpackPlugin({
