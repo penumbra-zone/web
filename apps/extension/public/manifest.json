@@ -27,7 +27,7 @@
     }
   ],
   "background": {
-    "page_listeners": "page-listeners.js"
+    "prax_listeners": "init-listeners.js"
   },
   "web_accessible_resources": [
     {
