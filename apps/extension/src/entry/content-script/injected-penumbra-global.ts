@@ -23,7 +23,7 @@ import {
   isPraxRequestResponseMessageEvent,
   PraxMessage,
 } from './message';
-import { Prax } from '../message/prax';
+import { Prax } from '../../message/prax';
 
 import '@penumbra-zone/polyfills/Promise.withResolvers';
 

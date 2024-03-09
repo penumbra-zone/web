@@ -1,5 +1,5 @@
 import { isPraxRequestConnectionMessageEvent } from './message';
-import { Prax } from '../message/prax';
+import { Prax } from '../../message/prax';
 
 const handleRequest = (ev: MessageEvent<unknown>) => {
   if (isPraxRequestConnectionMessageEvent(ev) && ev.origin === window.origin)

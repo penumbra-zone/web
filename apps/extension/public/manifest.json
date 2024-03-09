@@ -27,7 +27,7 @@
     }
   ],
   "background": {
-    "service_worker": "service-worker.js"
+    "page_listeners": "page-listeners.js"
   },
   "web_accessible_resources": [
     {

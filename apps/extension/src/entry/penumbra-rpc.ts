@@ -1,15 +1,11 @@
 /**
- * This file is the entrypoint for the main and only background service worker.
+ * This file is the entrypoint for the rpc services.
  *
  * It is responsible for initializing:
- * - listeners for chrome runtime events
- * - Services, with endpoint config and a wallet
- * - rpc services, router, and adapter
- * - session manager for rpc entry
+ * - prax 'Services', with endpoint config and a wallet
+ * - connectrpc impls, router, and adapter
+ * - session manager for adapter entry
  */
-
-// side-effectful import attaches transport init listeners
-import './listeners';
 
 // services
 import { Services } from '@penumbra-zone/services';
@@ -25,10 +21,10 @@ import { transportOptions } from '@penumbra-zone/types/registry';
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
 import { approverCtx, custodyCtx, servicesCtx } from '@penumbra-zone/router/src/ctx';
 import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
-import { approveTransaction } from './approve-transaction';
+import { approveTransaction } from '../approve-transaction';
 
 // all rpc implementations, local and proxy
-import { rpcImpls } from './impls';
+import { rpcImpls } from '../impls';
 
 const services = new Services({
   idbVersion: IDB_VERSION,

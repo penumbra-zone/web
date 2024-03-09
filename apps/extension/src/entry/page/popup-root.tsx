@@ -2,12 +2,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
-import { popupRouter } from '../routes/popup/router';
+import { popupRouter } from '../../routes/popup/router';
 
-import { isOriginApprovalRequest, isPopupRequest, isTxApprovalRequest } from '../message/popup';
-import { useStore } from '../state';
-import { originApprovalSelector } from '../state/origin-approval';
-import { txApprovalSelector } from '../state/tx-approval';
+import { isOriginApprovalRequest, isPopupRequest, isTxApprovalRequest } from '../../message/popup';
+import { useStore } from '../../state';
+import { originApprovalSelector } from '../../state/origin-approval';
+import { txApprovalSelector } from '../../state/tx-approval';
 
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import { ConnectError } from '@connectrpc/connect';

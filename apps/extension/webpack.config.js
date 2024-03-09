@@ -25,23 +25,22 @@ const definitions = {
 
 const __dirname = new URL('.', import.meta.url).pathname;
 const srcDir = path.join(__dirname, 'src');
-
 const entryDir = path.join(srcDir, 'entry');
-const injectDir = path.join(srcDir, 'content-scripts');
+const contentScripts = path.join(entryDir, 'content-script');
+const pageScripts = path.join(entryDir, 'page');
 
 export default (env, argv) => {
-  // types declared in prax.d.ts
-
   return {
     entry: {
-      'injected-connection-port': path.join(injectDir, 'injected-connection-port.ts'),
-      'injected-penumbra-global': path.join(injectDir, 'injected-penumbra-global.ts'),
-      'injected-request-listener': path.join(injectDir, 'injected-request-listener.ts'),
-      'offscreen-handler': path.join(entryDir, 'offscreen-handler.ts'),
-      'page-root': path.join(entryDir, 'page-root.tsx'),
-      'popup-root': path.join(entryDir, 'popup-root.tsx'),
-      'service-worker': path.join(srcDir, 'service-worker.ts'),
-      'wasm-build-action': path.join(srcDir, 'wasm-build-action.ts'),
+      'injected-connection-port': path.join(contentScripts, 'injected-connection-port.ts'),
+      'injected-penumbra-global': path.join(contentScripts, 'injected-penumbra-global.ts'),
+      'injected-request-listener': path.join(contentScripts, 'injected-request-listener.ts'),
+
+      'init-listeners': path.join(entryDir, 'init-listeners.ts'),
+      'penumbra-rpc': path.join(entryDir, 'penumbra-rpc.ts'),
+
+      'onboarding-root': path.join(pageScripts, 'onboarding-root.tsx'),
+      'popup-root': path.join(pageScripts, 'popup-root.tsx'),
     },
     output: {
       path: path.join(__dirname, 'dist'),
@@ -54,8 +53,9 @@ export default (env, argv) => {
             'injected-connection-port',
             'injected-penumbra-global',
             'injected-request-listner',
-            'service-worker',
-            'wasm-build-action',
+
+            'init-listeners',
+            'penumbra-rpc',
           ].includes(chunk.name),
       },
     },
@@ -117,22 +117,22 @@ export default (env, argv) => {
       // html entry points
       new HtmlWebpackPlugin({
         favicon: 'public/icon.png',
-        title: 'Penumbra Wallet',
+        title: 'Prax Welcome',
         template: 'react-root.html',
         filename: 'page.html',
-        chunks: ['page-root'],
+        chunks: ['onboarding-root'],
       }),
       new HtmlWebpackPlugin({
-        title: 'Penumbra Wallet',
+        title: 'Prax Wallet',
         template: 'react-root.html',
         rootId: 'popup-root',
         filename: 'popup.html',
         chunks: ['popup-root'],
       }),
       new HtmlWebpackPlugin({
-        title: 'Penumbra Offscreen',
-        filename: 'offscreen.html',
-        chunks: ['offscreen-handler'],
+        title: 'Prax Offscreen',
+        filename: 'penumbra-rpc.html',
+        chunks: ['penumbra-rpc'],
       }),
     ],
     experiments: {
