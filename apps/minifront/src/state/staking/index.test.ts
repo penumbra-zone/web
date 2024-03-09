@@ -80,7 +80,7 @@ const mockStakeClient = vi.hoisted(() => ({
   }),
 }));
 
-vi.mock('../fetchers/balances', () => ({
+vi.mock('../../fetchers/balances', () => ({
   getBalances: vi.fn(async () =>
     Promise.resolve([
       {
@@ -168,7 +168,7 @@ const mockViewClient = vi.hoisted(() => ({
   assetMetadataById: vi.fn(() => new Metadata()),
 }));
 
-vi.mock('../clients', () => ({
+vi.mock('../../clients', () => ({
   stakeClient: mockStakeClient,
   viewClient: mockViewClient,
 }));
