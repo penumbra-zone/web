@@ -1,24 +1,7 @@
 import { approveOrigin, originAlreadyApproved } from '../approve-origin';
 import { Prax, PraxResponder } from '../message/prax';
 import { JsonValue } from '@bufbuild/protobuf';
-
-const maybeStartRPC = async () => {
-  try {
-    const offscreenContexts = await chrome.runtime.getContexts({
-      contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
-    });
-    if (offscreenContexts.length === 0)
-      await chrome.offscreen.createDocument({
-        url: chrome.runtime.getURL('penumbra-rpc.html'),
-        reasons: [chrome.offscreen.Reason.WORKERS],
-        justification: 'Local Penumbra RPC services',
-      });
-  } catch (e) {
-    // failure is likely due to losing a creation race, which is ok.
-    // TODO: suppress?  anything else possible?
-    console.warn('Failed to create offscreen', e);
-  }
-};
+import { maybeStartRPC } from '../launch-offscreen';
 
 // init a session when a page on a connected site is loaded
 chrome.tabs.onUpdated.addListener((tabId, { status, discarded }, { url }) => {

@@ -57,8 +57,10 @@ export class CRSessionManager {
     private prefix: string,
     private handler: ChannelHandlerFn,
   ) {
+    console.log('session-manager constructor');
     if (CRSessionManager.singleton) throw new Error('Already constructed');
     chrome.runtime.onConnect.addListener(this.transportConnection);
+    console.log('session-manager constructed');
   }
 
   /**

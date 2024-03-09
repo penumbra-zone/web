@@ -3,7 +3,11 @@ import { RouterProvider } from 'react-router-dom';
 import { pageRouter } from '../../routes/page/router';
 import { StrictMode } from 'react';
 
+import { maybeStartRPC } from '../../launch-offscreen';
+
 import '@penumbra-zone/ui/styles/globals.css';
+
+void maybeStartRPC();
 
 const MainPage = () => {
   return (

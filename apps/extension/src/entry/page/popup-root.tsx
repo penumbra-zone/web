@@ -12,7 +12,11 @@ import { txApprovalSelector } from '../../state/tx-approval';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import { ConnectError } from '@connectrpc/connect';
 
+import { maybeStartRPC } from '../../launch-offscreen';
+
 import '@penumbra-zone/ui/styles/globals.css';
+
+void maybeStartRPC();
 
 chrome.runtime.onMessage.addListener(
   (req: unknown, _: chrome.runtime.MessageSender, responder: (x: unknown) => void) => {
