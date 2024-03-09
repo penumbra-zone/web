@@ -57,6 +57,6 @@ for ((i=$START_INDEX; i<=$END_INDEX; i++)); do
   DIRECTORY="$BASE_DIRECTORY/validator-$i"
 
   VALIDATOR_IDENTITY_KEY=$(sed -n -E 's/(.*^identity_key = "([^"]+)"$.*)/\2/p' $DIRECTORY/validator.toml)
-  echo "Delegating $DELEGATION_AMOUNT""penumbra to $VALIDATOR_IDENTITY_KEY"
-  pcli tx delegate --to $VALIDATOR_IDENTITY_KEY $DELEGATION_AMOUNT"penumbra" &
+  echo "Running pcli tx delegate --to $VALIDATOR_IDENTITY_KEY $DELEGATION_AMOUNT""penumbra"
+  pcli tx delegate --to $VALIDATOR_IDENTITY_KEY $DELEGATION_AMOUNT"penumbra"
 done
