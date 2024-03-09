@@ -326,9 +326,6 @@ importers:
       '@types/react-helmet':
         specifier: ^6.1.11
         version: 6.1.11
-      array-from-async:
-        specifier: ^3.0.0
-        version: 3.0.0
       autoprefixer:
         specifier: ^10.4.18
         version: 10.4.18(postcss@8.4.35)
@@ -6839,10 +6836,6 @@ packages:
 
   /array-flatten@3.0.0:
     resolution: {integrity: sha512-zPMVc3ZYlGLNk4mpK1NzP2wg0ml9t7fUgDsayR5Y5rSzxQilzR9FGu/EH2jQOcKSAeAfWeylyW8juy3OkWRvNA==}
-    dev: true
-
-  /array-from-async@3.0.0:
-    resolution: {integrity: sha512-gV8/L4y2QB5JTXL9DMdtspGyed2M3V6nMnSN+nNg8ejyUlAAbKAjRS6pfWWINjU/MuFJFMGWPazHPor7hThXQw==}
     dev: true
 
   /array-includes@3.1.7:
