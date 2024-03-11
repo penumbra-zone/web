@@ -235,7 +235,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         // pending broadcasts, and populate the transaction list.
         // - calls wasm for each relevant tx
         // - saves to idb
-        await this.saveTransactionInfos(compactBlock.height, relevantTx);
+        await this.saveTransactions(compactBlock.height, relevantTx);
       }
 
       // We only query Tendermint for the latest known block height once, when
@@ -346,7 +346,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  private async saveTransactionInfos(height: bigint, relevantTx: Map<TransactionId, Transaction>) {
+  private async saveTransactions(height: bigint, relevantTx: Map<TransactionId, Transaction>) {
     for (const [id, transaction] of relevantTx) {
       const { txp: perspective, txv: view } = await transactionInfo(
         this.fullViewingKey,
