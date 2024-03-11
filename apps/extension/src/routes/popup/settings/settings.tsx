@@ -41,7 +41,7 @@ export const Settings = () => {
 
   return (
     <FadeTransition>
-      <div className='flex min-h-[100vh] w-[100vw] flex-col justify-between gap-6'>
+      <div className='flex min-h-screen w-screen flex-col justify-between gap-6'>
         <SettingsHeader title='Settings' />
         <div className='flex flex-1 flex-col items-start gap-5 px-[30px]'>
           {links.map(i => (

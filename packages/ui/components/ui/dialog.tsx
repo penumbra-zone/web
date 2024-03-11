@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { cn } from '../../lib/utils';
-import { VariantProps, cva } from 'class-variance-authority';
+import { cva, VariantProps } from 'class-variance-authority';
 
 /**
  * @example
@@ -52,14 +52,14 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 const dialogContentVariants = cva(
   [
     'fixed',
-    'left-[50%]',
-    'top-[50%]',
+    'left-1/2',
+    'top-1/2',
     'z-50',
     'grid',
     'w-full',
     'max-h-screen',
-    'translate-x-[-50%]',
-    'translate-y-[-50%]',
+    '-translate-x-1/2',
+    '-translate-y-1/2',
     'gap-4',
     'rounded-lg',
     'bg-card-radial',

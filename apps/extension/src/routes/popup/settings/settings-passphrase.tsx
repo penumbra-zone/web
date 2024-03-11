@@ -29,7 +29,7 @@ export const SettingsPassphrase = () => {
 
   return (
     <FadeTransition>
-      <div className='flex min-h-[100vh] w-[100vw] flex-col gap-6'>
+      <div className='flex min-h-screen w-screen flex-col gap-6'>
         <SettingsHeader title='Recovery Passphrase' />
         <div className='mx-auto size-20'>
           <FileTextGradientIcon />

@@ -3,11 +3,11 @@ import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
 import {
   ExtensionStorage,
-  LocalStorageState,
-  OriginRecord,
   localDefaults,
+  LocalStorageState,
   mockLocalExtStorage,
   mockSessionExtStorage,
+  OriginRecord,
 } from '@penumbra-zone/storage';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 

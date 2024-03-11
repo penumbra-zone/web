@@ -9,8 +9,5 @@
     "@bufbuild/protobuf": "^1.7.2",
     "@connectrpc/connect": "^1.4.0",
     "@penumbra-zone/transport-dom": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/chrome": "0.0.262"
   }
 }

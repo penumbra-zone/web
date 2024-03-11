@@ -10,7 +10,7 @@ export const SettingsClearCache = () => {
   const navigate = usePopupNav();
   return (
     <FadeTransition>
-      <div className='flex min-h-[100vh] w-[100vw] flex-col gap-6'>
+      <div className='flex min-h-screen w-screen flex-col gap-6'>
         <SettingsHeader title='Clear cache' />
         <div className='mx-auto size-20'>
           <TrashGradientIcon />
