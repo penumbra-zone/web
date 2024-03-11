@@ -40,9 +40,7 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async function
 
   // Wait until DB records a new transaction with this id
   for await (const { value } of subscription) {
-    const transactionRecord = TransactionInfo.fromJson(value);
-    const detectionId = transactionRecord.id;
-    const detectionHeight = transactionRecord.height;
+    const { height: detectionHeight, id: detectionId } = TransactionInfo.fromJson(value);
     if (id.equals(detectionId)) {
       yield {
         status: {

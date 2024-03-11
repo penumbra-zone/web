@@ -13,6 +13,8 @@ export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, 
   } = await services.getWalletServices();
   if (!req.id) throw new ConnectError('Missing transaction ID in request', Code.InvalidArgument);
 
+  // Check database for transaction first
+  // if not in database, query tendermint for public info on the transaction
   const { transaction, height } =
     (await indexedDb.getTransaction(req.id)) ?? (await querier.tendermint.getTransaction(req.id));
 
@@ -23,6 +25,6 @@ export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, 
     transaction,
     indexedDb.constants(),
   );
-
-  return { txInfo: new TransactionInfo({ height, id: req.id, transaction, perspective, view }) };
+  const txInfo = new TransactionInfo({ height, id: req.id, transaction, perspective, view });
+  return { txInfo };
 };

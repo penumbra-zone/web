@@ -48,7 +48,9 @@ describe('BroadcastTransaction request handler', () => {
       },
     };
     mockServices = {
-      getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb })),
+      getWalletServices: vi.fn(() =>
+        Promise.resolve({ indexedDb: mockIndexedDb }),
+      ) as MockServices['getWalletServices'],
       querier: {
         tendermint: mockTendermint,
       },
@@ -81,17 +83,15 @@ describe('BroadcastTransaction request handler', () => {
 
   test('should successfully broadcastTransaction with await detection', async () => {
     const detectionHeight = 222n;
+    const txRecord = new TransactionInfo({
+      transaction: transactionData,
+      height: detectionHeight,
+      id: transactionIdData,
+    });
 
     mockTendermint.broadcastTx?.mockResolvedValue(transactionIdData);
     txSubNext.mockResolvedValueOnce({
-      value: {
-        value: new TransactionInfo({
-          id: transactionIdData,
-          height: detectionHeight,
-          transaction: transactionData,
-        }).toJson(),
-        table: 'TRANSACTIONS',
-      },
+      value: { value: txRecord.toJson(), table: 'TRANSACTIONS' },
     });
 
     broadcastTransactionRequest.awaitDetection = true;
