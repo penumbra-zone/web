@@ -6,18 +6,26 @@ import { createContextValues, createHandlerContext, HandlerContext } from '@conn
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import {
-  TransactionInfo,
   TransactionInfoRequest,
   TransactionInfoResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from '../test-utils';
+import { IndexedDbMock, MockServices, ViewServerMock } from '../test-utils';
 import { Services } from '@penumbra-zone/services';
 import { transactionInfo } from './transaction-info';
+import { TransactionRecord } from '@penumbra-zone/types';
+import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
+
+const mockTransactionInfo = vi.hoisted(() => vi.fn());
+vi.mock('@penumbra-zone/wasm', () => ({
+  generateTransactionInfo: mockTransactionInfo,
+}));
 
 describe('TransactionInfo request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
   let mockIndexedDb: IndexedDbMock;
+  let mockViewServer: ViewServerMock;
   let req: TransactionInfoRequest;
 
   beforeEach(() => {
@@ -29,11 +37,18 @@ describe('TransactionInfo request handler', () => {
     };
 
     mockIndexedDb = {
-      iterateTransactionInfo: () => mockIterateTransactionInfo,
+      iterateTransactions: () => mockIterateTransactionInfo,
+      constants: vi.fn(),
+    };
+
+    mockViewServer = {
+      fullViewingKey: vi.fn(),
     };
 
     mockServices = {
-      getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb })),
+      getWalletServices: vi.fn(() =>
+        Promise.resolve({ indexedDb: mockIndexedDb, viewServer: mockViewServer }),
+      ) as MockServices['getWalletServices'],
     };
 
     mockCtx = createHandlerContext({
@@ -43,6 +58,15 @@ describe('TransactionInfo request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
+    });
+
+    mockViewServer.fullViewingKey?.mockReturnValueOnce(
+      'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+    );
+
+    mockTransactionInfo.mockReturnValue({
+      txp: {},
+      txv: {},
     });
 
     for (const record of testData) {
@@ -93,29 +117,33 @@ describe('TransactionInfo request handler', () => {
   });
 });
 
-const testData: TransactionInfo[] = [
-  TransactionInfo.fromJson({
-    height: '222',
-    id: {
+const testData: TransactionRecord[] = [
+  {
+    height: 222n,
+    id: TransactionId.fromJson({
       inner: '1MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',
-    },
-  }),
-  TransactionInfo.fromJson({
-    height: '1000',
-    id: {
+    }),
+    transaction: Transaction.fromJson({}),
+  },
+  {
+    height: 1000n,
+    id: TransactionId.fromJson({
       inner: '2MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',
-    },
-  }),
-  TransactionInfo.fromJson({
-    height: '2525',
-    id: {
+    }),
+    transaction: Transaction.fromJson({}),
+  },
+  {
+    height: 2525n,
+    id: TransactionId.fromJson({
       inner: '3MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',
-    },
-  }),
-  TransactionInfo.fromJson({
-    height: '12255',
-    id: {
+    }),
+    transaction: Transaction.fromJson({}),
+  },
+  {
+    height: 12255n,
+    id: TransactionId.fromJson({
       inner: '4MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',
-    },
-  }),
+    }),
+    transaction: Transaction.fromJson({}),
+  },
 ];

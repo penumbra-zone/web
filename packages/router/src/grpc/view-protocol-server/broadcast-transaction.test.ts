@@ -43,7 +43,7 @@ describe('BroadcastTransaction request handler', () => {
 
     mockIndexedDb = {
       subscribe: (table: string) => {
-        if (table === 'TRANSACTION_INFO') return mockTransactionInfoSubscription;
+        if (table === 'TRANSACTIONS') return mockTransactionInfoSubscription;
         throw new Error('Table not supported');
       },
     };
@@ -81,15 +81,10 @@ describe('BroadcastTransaction request handler', () => {
 
   test('should successfully broadcastTransaction with await detection', async () => {
     const detectionHeight = 222n;
-    const txInfo = new TransactionInfo({
-      transaction: transactionData,
-      height: detectionHeight,
-      id: transactionIdData,
-    });
 
     mockTendermint.broadcastTx?.mockResolvedValue(transactionIdData);
     txSubNext.mockResolvedValueOnce({
-      value: { value: txInfo.toJson(), table: 'TRANSACTION_INFO' },
+      value: { value: {id: transactionIdData, height: detectionHeight, transaction: transactionData}, table: 'TRANSACTIONS' },
     });
 
     broadcastTransactionRequest.awaitDetection = true;

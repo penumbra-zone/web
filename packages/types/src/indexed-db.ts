@@ -124,7 +124,7 @@ export interface PenumbraDb extends DBSchema {
   };
   TRANSACTIONS: {
     key: string; // base64 TransactionRecord['id']['inner'];
-    value: TransactionRecord;
+    value: Jsonified<TransactionRecord>;
   };
   // ======= Json serialized values =======
   // Allows wasm crate to directly deserialize
@@ -178,11 +178,10 @@ export interface PositionRecord {
   position: Jsonified<Position>; // Position
 }
 
-// need to store TransactionId and Transaction in the same table
 export interface TransactionRecord {
-  id: Jsonified<TransactionId>; // TransactionId (must be JsonValue because ['id']['inner'] is a key )
-  height: bigint; // block height
-  tx: Jsonified<Transaction>; // Transaction
+  id: TransactionId;
+  height: bigint;
+  transaction: Transaction;
 }
 
 export type Tables = Record<string, StoreNames<PenumbraDb>>;
