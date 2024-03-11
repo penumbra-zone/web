@@ -12,7 +12,7 @@ const buttonVariants = cva(
         gradient:
           'background-size-200 bg-button-gradient transition-all duration-500 hover:bg-right-center',
         secondary:
-          'before:border-mask before:background-size-200 relative before:absolute before:inset-0 before:rounded-lg before:bg-button-gradient before:p-[1px] before:transition-all before:duration-500 before:content-[""] before:hover:bg-right-center',
+          'before:border-mask before:background-size-200 relative before:absolute before:inset-0 before:rounded-lg before:bg-button-gradient before:p-px before:transition-all before:duration-500 before:content-[""] before:hover:bg-right-center',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline:
           'rounded-none border-b border-border-secondary bg-background font-body font-bold text-muted-foreground hover:opacity-50',

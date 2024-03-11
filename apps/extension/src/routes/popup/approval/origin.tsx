@@ -34,7 +34,7 @@ export const OriginApproval = () => {
 
   return (
     <FadeTransition>
-      <div className='flex min-h-[100vh] w-[100vw] flex-col gap-6'>
+      <div className='flex min-h-screen w-screen flex-col gap-6'>
         <h1 className='flex h-[70px] items-center justify-center border-b border-border-secondary font-headline text-xl font-semibold leading-[30px]'>
           Connect
         </h1>
@@ -83,7 +83,7 @@ export const OriginApproval = () => {
                   </div>
                 </div>
                 <div className='z-30 flex h-11 w-full items-center overflow-x-scroll rounded-lg bg-background p-2 text-muted-foreground [scrollbar-color:red_red]'>
-                  <div className='mx-auto items-center p-2 text-center leading-[0.8em] [background-clip:content-box] [background-image:repeating-linear-gradient(45deg,red,black_15px)] first-line:[background-color:black]'>
+                  <div className='mx-auto items-center p-2 text-center'>
                     <DisplayOriginURL url={new URL(requestOrigin)} />
                   </div>
                 </div>
