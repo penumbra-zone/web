@@ -19,8 +19,6 @@ export * from './querier';
 export * from './amount';
 export * from './chain';
 export * from './jsonified';
-export * from './schemas';
-export * from './type-predicates';
 export * from './staking';
 export * from './identity-key';
 export * from './customize-symbol';

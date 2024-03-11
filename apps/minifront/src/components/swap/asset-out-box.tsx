@@ -1,5 +1,5 @@
 import { useStore } from '../../state';
-import { swapSelector } from '../../state/swap';
+import { SimulateSwapResult, swapSelector } from '../../state/swap';
 import {
   buttonVariants,
   Tooltip,
@@ -17,6 +17,8 @@ import { groupByAsset } from '../../fetchers/balances/by-asset';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { getAmount } from '@penumbra-zone/getters';
+import { isZero } from '@penumbra-zone/types';
 
 const findMatchingBalance = (
   metadata: Metadata | undefined,
@@ -43,7 +45,8 @@ interface AssetOutBoxProps {
 }
 
 export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
-  const { assetOut, setAssetOut, simulateSwap, simulateOutResult } = useStore(swapSelector);
+  const { assetOut, setAssetOut, simulateSwap, simulateOutLoading, simulateOutResult } =
+    useStore(swapSelector);
 
   const matchingBalance = findMatchingBalance(assetOut, balances);
 
@@ -54,9 +57,9 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
       </div>
       <div className='flex items-center justify-between gap-4'>
         {simulateOutResult ? (
-          <ValueViewComponent view={simulateOutResult} showDenom={false} showIcon={false} />
+          <Result result={simulateOutResult} />
         ) : (
-          <EstimateButton simulateFn={simulateSwap} />
+          <EstimateButton simulateFn={simulateSwap} loading={simulateOutLoading} />
         )}
         <AssetOutSelector
           balances={balances}
@@ -75,13 +78,44 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
   );
 };
 
-const EstimateButton = ({ simulateFn }: { simulateFn: () => Promise<void> }) => (
+const Result = ({ result: { output, unfilled } }: { result: SimulateSwapResult }) => {
+  // If no part unfilled, just show plain output amount (no label)
+  if (isZero(getAmount(unfilled))) {
+    return <ValueViewComponent view={output} showDenom={false} showIcon={false} />;
+  }
+
+  // Else is partially filled, show amounts with labels
+  return (
+    <div className='flex flex-col gap-2'>
+      <div className='flex flex-col items-center'>
+        <ValueViewComponent view={output} showIcon={false} />
+        <span className='font-mono text-[12px] italic text-gray-500'>Filled amount</span>
+      </div>
+      <div className='flex flex-col items-center'>
+        <ValueViewComponent view={unfilled} showIcon={false} />
+        <span className='font-mono text-[12px] italic text-gray-500'>Unfilled amount</span>
+      </div>
+    </div>
+  );
+};
+
+const EstimateButton = ({
+  simulateFn,
+  loading,
+}: {
+  simulateFn: () => Promise<void>;
+  loading: boolean;
+}) => (
   <TooltipProvider>
     <Tooltip>
       <TooltipTrigger>
         <div
           // Nested buttons are not allowed. Manually passing button classes.
-          className={cn(buttonVariants({ variant: 'secondary' }), 'w-32 md:h-9')}
+          className={cn(
+            buttonVariants({ variant: 'secondary' }),
+            'w-32 md:h-9',
+            loading ? 'animate-pulse duration-700' : undefined,
+          )}
           onClick={e => {
             e.preventDefault();
             void simulateFn();
