@@ -10,7 +10,6 @@ import {
   PenumbraDb,
   ScanBlockResult,
   StateCommitmentTree,
-  TransactionRecord,
   uint8ArrayToBase64,
   uint8ArrayToHex,
 } from '@penumbra-zone/types';
@@ -25,6 +24,7 @@ import {
   NotesForVotingResponse,
   SpendableNoteRecord,
   SwapRecord,
+  TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
   AssetId,
@@ -214,7 +214,7 @@ export class IndexedDb implements IndexedDbInterface {
       start: async cont => {
         let cursor = await this.db.transaction('TRANSACTIONS').store.openCursor();
         while (cursor) {
-          cont.enqueue(cursor.value);
+          cont.enqueue(TransactionInfo.fromJson(cursor.value));
           cursor = await cursor.continue();
         }
         cont.close();
@@ -222,23 +222,27 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
-  async saveTransaction(id: TransactionId, height: bigint, tx: Transaction): Promise<void> {
-    const txRecord: TransactionRecord = {
-      id: id.toJson() as Jsonified<TransactionId>,
-      height: height,
-      tx: tx.toJson() as Jsonified<Transaction>,
-    };
+  async saveTransaction(
+    id: TransactionId,
+    height: bigint,
+    transaction: Transaction,
+  ): Promise<void> {
+    const tx = new TransactionInfo({
+      id,
+      height,
+      transaction,
+    });
     await this.u.update({
       table: 'TRANSACTIONS',
-      value: txRecord,
+      value: tx.toJson() as Jsonified<TransactionInfo>,
     });
   }
 
-  async getTransaction(txId: TransactionId): Promise<TransactionRecord | undefined> {
+  async getTransaction(txId: TransactionId): Promise<TransactionInfo | undefined> {
     const key = uint8ArrayToBase64(txId.inner);
-    const transactionRecord = await this.db.get('TRANSACTIONS', key);
-    if (!transactionRecord) return undefined;
-    return transactionRecord;
+    const jsonRecord = await this.db.get('TRANSACTIONS', key);
+    if (!jsonRecord) return undefined;
+    return TransactionInfo.fromJson(jsonRecord);
   }
 
   async getFmdParams(): Promise<FmdParameters | undefined> {

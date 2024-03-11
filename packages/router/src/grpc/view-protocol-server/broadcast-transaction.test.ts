@@ -84,7 +84,14 @@ describe('BroadcastTransaction request handler', () => {
 
     mockTendermint.broadcastTx?.mockResolvedValue(transactionIdData);
     txSubNext.mockResolvedValueOnce({
-      value: { value: {id: transactionIdData, height: detectionHeight, transaction: transactionData}, table: 'TRANSACTIONS' },
+      value: {
+        value: new TransactionInfo({
+          id: transactionIdData,
+          height: detectionHeight,
+          transaction: transactionData,
+        }).toJson(),
+        table: 'TRANSACTIONS',
+      },
     });
 
     broadcastTransactionRequest.awaitDetection = true;

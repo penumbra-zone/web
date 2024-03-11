@@ -12,7 +12,11 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (req, ct
 
   for await (const txRecord of indexedDb.iterateTransactions()) {
     // filter transactions between startHeight and endHeight, inclusive
-    if (txRecord.height < req.startHeight || (req.endHeight && txRecord.height > req.endHeight))
+    if (
+      !txRecord.transaction ||
+      txRecord.height < req.startHeight ||
+      (req.endHeight && txRecord.height > req.endHeight)
+    )
       continue;
 
     const { txp: perspective, txv: view } = await generateTransactionInfo(

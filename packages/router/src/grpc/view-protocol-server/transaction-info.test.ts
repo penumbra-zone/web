@@ -6,15 +6,13 @@ import { createContextValues, createHandlerContext, HandlerContext } from '@conn
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import {
+  TransactionInfo,
   TransactionInfoRequest,
   TransactionInfoResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { IndexedDbMock, MockServices, ViewServerMock } from '../test-utils';
 import { Services } from '@penumbra-zone/services';
 import { transactionInfo } from './transaction-info';
-import { TransactionRecord } from '@penumbra-zone/types';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm', () => ({
@@ -117,33 +115,33 @@ describe('TransactionInfo request handler', () => {
   });
 });
 
-const testData: TransactionRecord[] = [
-  {
-    height: 222n,
-    id: TransactionId.fromJson({
+const testData: TransactionInfo[] = [
+  TransactionInfo.fromJson({
+    height: '222',
+    id: {
       inner: '1MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',
-    }),
-    transaction: Transaction.fromJson({}),
-  },
-  {
-    height: 1000n,
-    id: TransactionId.fromJson({
+    },
+    transaction: {},
+  }),
+  TransactionInfo.fromJson({
+    height: '1000',
+    id: {
       inner: '2MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',
-    }),
-    transaction: Transaction.fromJson({}),
-  },
-  {
-    height: 2525n,
-    id: TransactionId.fromJson({
+    },
+    transaction: {},
+  }),
+  TransactionInfo.fromJson({
+    height: '2525',
+    id: {
       inner: '3MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',
-    }),
-    transaction: Transaction.fromJson({}),
-  },
-  {
-    height: 12255n,
-    id: TransactionId.fromJson({
+    },
+    transaction: {},
+  }),
+  TransactionInfo.fromJson({
+    height: '12255',
+    id: {
       inner: '4MI8IG5D3MQj3s1j0MXTwCQtAaVbwTlPkW8Qdz1EVIo=',
-    }),
-    transaction: Transaction.fromJson({}),
-  },
+    },
+    transaction: {},
+  }),
 ];

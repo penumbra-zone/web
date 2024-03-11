@@ -7,6 +7,7 @@ import { ConnectError, Code } from '@connectrpc/connect';
 
 import { sha256Hash } from '@penumbra-zone/crypto-web';
 import { uint8ArrayToHex } from '@penumbra-zone/types';
+import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 export const broadcastTransaction: Impl['broadcastTransaction'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);
@@ -39,8 +40,9 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async function
 
   // Wait until DB records a new transaction with this id
   for await (const { value } of subscription) {
-    const detectionId = TransactionId.fromJson(value.id);
-    const detectionHeight = value.height;
+    const transactionRecord = TransactionInfo.fromJson(value);
+    const detectionId = transactionRecord.id;
+    const detectionHeight = transactionRecord.height;
     if (id.equals(detectionId)) {
       yield {
         status: {

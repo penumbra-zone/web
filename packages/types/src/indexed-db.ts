@@ -12,6 +12,7 @@ import {
   NotesForVotingResponse,
   SpendableNoteRecord,
   SwapRecord,
+  TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
   AssetId,
@@ -60,8 +61,8 @@ export interface IndexedDbInterface {
   saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
   iterateSpendableNotes(): AsyncGenerator<SpendableNoteRecord, void>;
   saveTransaction(id: TransactionId, height: bigint, tx: Transaction): Promise<void>;
-  getTransaction(txId: TransactionId): Promise<TransactionRecord | undefined>;
-  iterateTransactions(): AsyncGenerator<TransactionRecord, void>;
+  getTransaction(txId: TransactionId): Promise<TransactionInfo | undefined>;
+  iterateTransactions(): AsyncGenerator<TransactionInfo, void>;
   getAssetsMetadata(assetId: AssetId): Promise<Metadata | undefined>;
   saveAssetsMetadata(metadata: Metadata): Promise<void>;
   iterateAssetsMetadata(): AsyncGenerator<Metadata, void>;
@@ -123,8 +124,8 @@ export interface PenumbraDb extends DBSchema {
     value: Jsonified<FmdParameters>;
   };
   TRANSACTIONS: {
-    key: string; // base64 TransactionRecord['id']['inner'];
-    value: Jsonified<TransactionRecord>;
+    key: string; // base64 TransactionInfo['id']['inner'];
+    value: Jsonified<TransactionInfo>; // TransactionInfo with undefined view and perspective
   };
   // ======= Json serialized values =======
   // Allows wasm crate to directly deserialize
@@ -176,12 +177,6 @@ export interface PenumbraDb extends DBSchema {
 export interface PositionRecord {
   id: Jsonified<PositionId>; // PositionId (must be JsonValue because ['id']['inner'] is a key )
   position: Jsonified<Position>; // Position
-}
-
-export interface TransactionRecord {
-  id: TransactionId;
-  height: bigint;
-  transaction: Transaction;
 }
 
 export type Tables = Record<string, StoreNames<PenumbraDb>>;

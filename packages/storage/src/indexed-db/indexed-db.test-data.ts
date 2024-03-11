@@ -3,7 +3,6 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import {
   SpendableNoteRecord,
   SwapRecord,
-  TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
   Position,
@@ -717,5 +716,3 @@ export const epoch3 = new Epoch({
   index: 2n,
   startHeight: 200n,
 });
-
-export class transactionInfo {}

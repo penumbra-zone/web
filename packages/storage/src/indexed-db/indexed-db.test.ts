@@ -2,8 +2,9 @@ import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import {
   SpendableNoteRecord,
   SwapRecord,
+  TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IdbUpdate, PenumbraDb, TransactionRecord } from '@penumbra-zone/types';
+import { IdbUpdate, PenumbraDb } from '@penumbra-zone/types';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { IndexedDb } from '.';
 import {
@@ -41,7 +42,6 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { localAssets } from '@penumbra-zone/constants';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place
@@ -137,9 +137,9 @@ describe('IndexedDb', () => {
       expect(assets.length).toBe(1 + localAssets.length);
 
       await db.saveTransaction(transactionId, 1000n, transaction);
-      const txs: TransactionRecord[] = [];
+      const txs: TransactionInfo[] = [];
       for await (const tx of db.iterateTransactions()) {
-        txs.push(tx);
+        txs.push(tx as TransactionInfo);
       }
       expect(txs.length).toBe(1);
 
@@ -179,9 +179,9 @@ describe('IndexedDb', () => {
       }
       expect(assetsAfterClear.length).toBe(0);
 
-      const txsAfterClean: TransactionRecord[] = [];
+      const txsAfterClean: TransactionInfo[] = [];
       for await (const tx of db.iterateTransactions()) {
-        txsAfterClean.push(tx);
+        txsAfterClean.push(tx as TransactionInfo);
       }
       expect(txsAfterClean.length).toBe(0);
       expect(await db.getFullSyncHeight()).toBeUndefined();
@@ -314,19 +314,19 @@ describe('IndexedDb', () => {
       await db.saveTransaction(transactionId, 1000n, transaction);
 
       const savedTransaction = await db.getTransaction(transactionId);
-      expect(transaction.equals(Transaction.fromJson(savedTransaction?.tx!))).toBeTruthy();
+      expect(transaction.equals(savedTransaction?.transaction)).toBeTruthy();
     });
 
     it('should be able to set/get all', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
       await db.saveTransaction(transactionId, 1000n, transaction);
-      const savedTransactions: TransactionRecord[] = [];
+      const savedTransactions: TransactionInfo[] = [];
       for await (const tx of db.iterateTransactions()) {
-        savedTransactions.push(tx);
+        savedTransactions.push(tx as TransactionInfo);
       }
       expect(savedTransactions.length === 1).toBeTruthy();
-      expect(transaction.equals(Transaction.fromJson(savedTransactions[0]?.tx!))).toBeTruthy();
+      expect(transaction.equals(savedTransactions[0]?.transaction)).toBeTruthy();
     });
   });
 

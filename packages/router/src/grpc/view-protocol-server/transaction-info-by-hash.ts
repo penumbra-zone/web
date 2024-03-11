@@ -14,7 +14,10 @@ export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, 
   if (!req.id) throw new ConnectError('Missing transaction ID in request', Code.InvalidArgument);
 
   const { transaction, height } =
-    (await indexedDb.getTransaction(req.id)) || (await querier.tendermint.getTransaction(req.id));
+    (await indexedDb.getTransaction(req.id)) ?? (await querier.tendermint.getTransaction(req.id));
+
+  if (!transaction) throw new ConnectError('Transaction not available', Code.NotFound);
+
   const { txp: perspective, txv: view } = await generateTransactionInfo(
     fullViewingKey,
     transaction,
