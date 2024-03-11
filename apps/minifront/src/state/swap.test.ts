@@ -73,7 +73,7 @@ describe('Swap Slice', () => {
   test('changing assetIn clears simulation', () => {
     expect(useStore.getState().swap.simulateOutResult).toBeUndefined();
     useStore.setState(state => {
-      state.swap.simulateOutResult = new ValueView();
+      state.swap.simulateOutResult = { output: new ValueView(), unfilled: new ValueView() };
       return state;
     });
     expect(useStore.getState().swap.simulateOutResult).toBeDefined();
@@ -84,7 +84,7 @@ describe('Swap Slice', () => {
   test('changing assetOut clears simulation', () => {
     expect(useStore.getState().swap.simulateOutResult).toBeUndefined();
     useStore.setState(state => {
-      state.swap.simulateOutResult = new ValueView();
+      state.swap.simulateOutResult = { output: new ValueView(), unfilled: new ValueView() };
       return state;
     });
     expect(useStore.getState().swap.simulateOutResult).toBeDefined();
@@ -95,7 +95,7 @@ describe('Swap Slice', () => {
   test('changing amount clears simulation', () => {
     expect(useStore.getState().swap.simulateOutResult).toBeUndefined();
     useStore.setState(state => {
-      state.swap.simulateOutResult = new ValueView();
+      state.swap.simulateOutResult = { output: new ValueView(), unfilled: new ValueView() };
       return state;
     });
     expect(useStore.getState().swap.simulateOutResult).toBeDefined();

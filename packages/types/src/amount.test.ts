@@ -5,6 +5,7 @@ import {
   displayUsd,
   fromBaseUnitAmount,
   fromValueView,
+  isZero,
   joinLoHiAmount,
 } from './amount';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
@@ -166,5 +167,27 @@ describe('Formatting', () => {
       expect(displayUsd(-2001.12)).toBe('-2,001.12');
       expect(displayUsd(-2001.125)).toBe('-2,001.13'); // testing rounding
     });
+  });
+});
+
+describe('isZero', () => {
+  it('works with zero amount', () => {
+    const amount = new Amount({ lo: 0n, hi: 0n });
+    expect(isZero(amount)).toBeTruthy();
+  });
+
+  it('works with negatives', () => {
+    const amount = new Amount({ lo: -13n, hi: 1n });
+    expect(isZero(amount)).toBeFalsy();
+  });
+
+  it('detects hi number presence', () => {
+    const amount = new Amount({ lo: 0n, hi: 1n });
+    expect(isZero(amount)).toBeFalsy();
+  });
+
+  it('detects lo number presence', () => {
+    const amount = new Amount({ lo: 20n, hi: 0n });
+    expect(isZero(amount)).toBeFalsy();
   });
 });

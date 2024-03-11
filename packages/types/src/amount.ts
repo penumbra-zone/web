@@ -12,6 +12,10 @@ export const fromBaseUnitAmount = (amount: Amount, exponent = 0): BigNumber => {
   return fromBaseUnit(amount.lo, amount.hi, exponent);
 };
 
+export const isZero = (amount: Amount): boolean => {
+  return joinLoHi(amount.lo, amount.hi) === 0n;
+};
+
 export const fromValueView = ({ amount, metadata }: ValueView_KnownAssetId): BigNumber => {
   if (!amount) throw new Error('No amount in value view');
   if (!metadata) throw new Error('No denom in value view');

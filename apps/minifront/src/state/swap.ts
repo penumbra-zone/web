@@ -21,15 +21,22 @@ import {
   getAssetId,
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
+  getMetadata,
   getSwapCommitmentFromTx,
 } from '@penumbra-zone/getters';
-import { toBaseUnit } from '@penumbra-zone/types';
 import { BigNumber } from 'bignumber.js';
 import { getAddressByIndex } from '../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
-import { simulateSwapOutput } from '../fetchers/simulate';
 import { errorToast, TransactionToast } from '@penumbra-zone/ui';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import { toBaseUnit } from '@penumbra-zone/types';
+import { SimulateTradeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import { simulateClient } from '../clients';
+
+export interface SimulateSwapResult {
+  output: ValueView;
+  unfilled: ValueView;
+}
 
 export interface SwapSlice {
   assetIn: BalancesResponse | undefined;
@@ -41,7 +48,8 @@ export interface SwapSlice {
   initiateSwapTx: () => Promise<void>;
   txInProgress: boolean;
   simulateSwap: () => Promise<void>;
-  simulateOutResult: ValueView | undefined;
+  simulateOutResult: SimulateSwapResult | undefined;
+  simulateOutLoading: boolean;
 }
 
 export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
@@ -69,8 +77,13 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
     },
     txInProgress: false,
     simulateOutResult: undefined,
+    simulateOutLoading: false,
     simulateSwap: async () => {
       try {
+        set(({ swap }) => {
+          swap.simulateOutLoading = true;
+        });
+
         const assetIn = get().swap.assetIn;
         const assetOut = get().swap.assetOut;
         if (!assetIn || !assetOut) throw new Error('Both asset in and out need to be set');
@@ -82,13 +95,41 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
             getDisplayDenomExponentFromValueView(assetIn.balanceView),
           ),
         });
+        const req = new SimulateTradeRequest({
+          input: swapInValue,
+          output: getAssetId(assetOut),
+        });
+        const res = await simulateClient.simulateTrade(req);
 
-        const outputVal = await simulateSwapOutput(swapInValue, assetOut);
+        const output = new ValueView({
+          valueView: {
+            case: 'knownAssetId',
+            value: {
+              amount: res.output?.output?.amount,
+              metadata: assetOut,
+            },
+          },
+        });
+
+        const unfilled = new ValueView({
+          valueView: {
+            case: 'knownAssetId',
+            value: {
+              amount: res.unfilled?.amount,
+              metadata: getMetadata(assetIn.balanceView),
+            },
+          },
+        });
+
         set(({ swap }) => {
-          swap.simulateOutResult = outputVal;
+          swap.simulateOutResult = { output, unfilled };
         });
       } catch (e) {
         errorToast(e, 'Error estimating swap').render();
+      } finally {
+        set(({ swap }) => {
+          swap.simulateOutLoading = false;
+        });
       }
     },
     initiateSwapTx: async () => {
