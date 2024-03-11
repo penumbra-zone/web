@@ -85,7 +85,6 @@ export class Services implements ServicesInterface {
     });
 
     const blockProcessor = new BlockProcessor({
-      fullViewingKey,
       viewServer,
       querier: this.querier,
       indexedDb,

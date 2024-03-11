@@ -10,6 +10,7 @@ import {
   PenumbraDb,
   ScanBlockResult,
   StateCommitmentTree,
+  TransactionRecord,
   uint8ArrayToBase64,
   uint8ArrayToHex,
 } from '@penumbra-zone/types';
@@ -24,7 +25,6 @@ import {
   NotesForVotingResponse,
   SpendableNoteRecord,
   SwapRecord,
-  TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
   AssetId,
@@ -50,6 +50,7 @@ import { IdbCursorSource } from './stream';
 import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters';
+import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -81,7 +82,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('SPENDABLE_NOTES', {
           keyPath: 'noteCommitment.inner',
         }).createIndex('nullifier', 'nullifier.inner');
-        db.createObjectStore('TRANSACTION_INFO', { keyPath: 'id.inner' });
+        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.inner' });
         db.createObjectStore('TREE_LAST_POSITION');
         db.createObjectStore('TREE_LAST_FORGOTTEN');
         db.createObjectStore('TREE_COMMITMENTS', { keyPath: 'commitment.inner' });
@@ -208,27 +209,36 @@ export class IndexedDb implements IndexedDbInterface {
     );
   }
 
-  async *iterateTransactionInfo() {
-    yield* new ReadableStream(
-      new IdbCursorSource(
-        this.db.transaction('TRANSACTION_INFO').store.openCursor(),
-        TransactionInfo,
-      ),
-    );
-  }
-
-  async saveTransactionInfo(tx: TransactionInfo): Promise<void> {
-    await this.u.update({
-      table: 'TRANSACTION_INFO',
-      value: tx.toJson() as Jsonified<TransactionInfo>,
+  async *iterateTransactions() {
+    yield* new ReadableStream({
+      start: async cont => {
+        let cursor = await this.db.transaction('TRANSACTIONS').store.openCursor();
+        while (cursor) {
+          cont.enqueue(cursor.value);
+          cursor = await cursor.continue();
+        }
+        cont.close();
+      },
     });
   }
 
-  async getTransactionInfo(txId: TransactionId): Promise<TransactionInfo | undefined> {
+  async saveTransaction(id: TransactionId, height: bigint, tx: Transaction): Promise<void> {
+    const txRecord: TransactionRecord = {
+      id: id.toJson() as Jsonified<TransactionId>,
+      height: height,
+      tx: tx.toJson() as Jsonified<Transaction>,
+    };
+    await this.u.update({
+      table: 'TRANSACTIONS',
+      value: txRecord,
+    });
+  }
+
+  async getTransaction(txId: TransactionId): Promise<TransactionRecord | undefined> {
     const key = uint8ArrayToBase64(txId.inner);
-    const json = await this.db.get('TRANSACTION_INFO', key);
-    if (!json) return undefined;
-    return TransactionInfo.fromJson(json);
+    const transactionRecord = await this.db.get('TRANSACTIONS', key);
+    if (!transactionRecord) return undefined;
+    return transactionRecord;
   }
 
   async getFmdParams(): Promise<FmdParameters | undefined> {

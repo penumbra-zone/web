@@ -12,7 +12,6 @@ import {
   NotesForVotingResponse,
   SpendableNoteRecord,
   SwapRecord,
-  TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
   AssetId,
@@ -39,6 +38,7 @@ import {
 import { Jsonified } from './jsonified';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -59,9 +59,9 @@ export interface IndexedDbInterface {
   ): Promise<SpendableNoteRecord | undefined>;
   saveSpendableNote(note: SpendableNoteRecord): Promise<void>;
   iterateSpendableNotes(): AsyncGenerator<SpendableNoteRecord, void>;
-  saveTransactionInfo(tx: TransactionInfo): Promise<void>;
-  getTransactionInfo(txId: TransactionId): Promise<TransactionInfo | undefined>;
-  iterateTransactionInfo(): AsyncGenerator<TransactionInfo, void>;
+  saveTransaction(id: TransactionId, height: bigint, tx: Transaction): Promise<void>;
+  getTransaction(txId: TransactionId): Promise<TransactionRecord | undefined>;
+  iterateTransactions(): AsyncGenerator<TransactionRecord, void>;
   getAssetsMetadata(assetId: AssetId): Promise<Metadata | undefined>;
   saveAssetsMetadata(metadata: Metadata): Promise<void>;
   iterateAssetsMetadata(): AsyncGenerator<Metadata, void>;
@@ -122,9 +122,9 @@ export interface PenumbraDb extends DBSchema {
     key: 'params';
     value: Jsonified<FmdParameters>;
   };
-  TRANSACTION_INFO: {
-    key: Jsonified<Required<TransactionInfo>['id']['inner']>; // base64
-    value: Jsonified<TransactionInfo>;
+  TRANSACTIONS: {
+    key: string; // base64 TransactionRecord['id']['inner'];
+    value: TransactionRecord;
   };
   // ======= Json serialized values =======
   // Allows wasm crate to directly deserialize
@@ -176,6 +176,13 @@ export interface PenumbraDb extends DBSchema {
 export interface PositionRecord {
   id: Jsonified<PositionId>; // PositionId (must be JsonValue because ['id']['inner'] is a key )
   position: Jsonified<Position>; // Position
+}
+
+// need to store TransactionId and Transaction in the same table
+export interface TransactionRecord {
+  id: Jsonified<TransactionId>; // TransactionId (must be JsonValue because ['id']['inner'] is a key )
+  height: bigint; // block height
+  tx: Jsonified<Transaction>; // Transaction
 }
 
 export type Tables = Record<string, StoreNames<PenumbraDb>>;

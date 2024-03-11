@@ -6,7 +6,7 @@ import {
   TransactionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
-export const transactionInfo = async (
+export const generateTransactionInfo = async (
   fullViewingKey: string,
   tx: Transaction,
   idbConstants: IdbConstants,
