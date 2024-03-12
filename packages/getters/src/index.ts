@@ -1,5 +1,6 @@
 export * from './asset';
 export * from './address-view';
+export * from './delegations-by-address-index-response';
 export * from './funding-stream';
 export * from './metadata';
 export * from './rate-data';
