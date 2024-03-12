@@ -37,23 +37,6 @@ const isDelegationBalance = (balance: BalancesResponse, identityKey: IdentityKey
 const getDelegationTokenBaseDenom = (validatorInfo: ValidatorInfo) =>
   `udelegation_${bech32IdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo))}`;
 
-/**
- * Given an `AddressIndex`, yields `ValueView`s of the given address's balance
- * of delegation tokens. Each `ValueView` has an `extendedMetadata` property
- * containing the `ValidatorInfo` for the validator the delegation token is
- * staked in.
- *
- * Note that one `ValueView` will be returned for each validator, even if the
- * given address holds no tokens for that validator. (When there are no tokens
- * for a given validators, the `ValueView` will have an amount of zero.) This
- * ensures that you can display all validators by iterating over the response
- * from this method, rather than having to call one method to get validators the
- * user has stake in, and another for validators the user doesn't have stake in.
- *
- * @todo: Make this an RPC method, rather than doing it in the webapp.
- * @todo: Make `showInactive` configurable via UI filters.
- */
-
 export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = async function* (
   req,
   ctx,
