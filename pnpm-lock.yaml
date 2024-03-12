@@ -177,6 +177,9 @@ importers:
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
+      exponential-backoff:
+        specifier: ^3.1.1
+        version: 3.1.1
       framer-motion:
         specifier: ^11.0.8
         version: 11.0.8(react-dom@18.2.0)(react@18.2.0)

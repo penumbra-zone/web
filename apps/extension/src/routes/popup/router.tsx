@@ -1,6 +1,6 @@
 import { createHashRouter, RouteObject } from 'react-router-dom';
 import { PopupIndex, popupIndexLoader } from './home';
-import { Login } from './login';
+import { Login, popupLoginLoader } from './login';
 import { PopupPath } from './paths';
 import { PopupLayout } from './popup-layout';
 import { Settings } from './settings';
@@ -20,6 +20,7 @@ export const popupRoutes: RouteObject[] = [
       {
         path: PopupPath.LOGIN,
         element: <Login />,
+        loader: popupLoginLoader,
       },
       {
         path: PopupPath.SETTINGS,

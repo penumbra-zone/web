@@ -6,6 +6,9 @@ import { useStore } from '../../state';
 import { passwordSelector } from '../../state/password';
 import { FormEvent, useState } from 'react';
 import { PopupPath } from './paths';
+import { needsOnboard } from './popup-needs';
+
+export const popupLoginLoader = () => needsOnboard();
 
 export const Login = () => {
   const navigate = usePopupNav();

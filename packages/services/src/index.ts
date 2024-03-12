@@ -11,7 +11,8 @@ import type { JsonValue } from '@bufbuild/protobuf';
 export interface ServicesConfig {
   grpcEndpoint: string;
   idbVersion: number;
-  getWallet(): Promise<{ walletId: string; fullViewingKey: string }>;
+  walletId: string;
+  fullViewingKey: string;
 }
 
 export class Services implements ServicesInterface {
@@ -61,7 +62,7 @@ export class Services implements ServicesInterface {
   }
 
   private async initializeWalletServices(): Promise<WalletServices> {
-    const { walletId, fullViewingKey } = await this.config.getWallet();
+    const { walletId, fullViewingKey } = this.config;
     const params = await this.querier.app.appParams();
     if (!params.sctParams?.epochDuration) throw new Error('Epoch duration unknown');
     const {
