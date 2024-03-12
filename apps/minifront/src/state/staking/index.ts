@@ -136,6 +136,12 @@ const byBalanceAndVotingPower = (valueViewA: ValueView, valueViewB: ValueView): 
   return byVotingPower;
 };
 
+/**
+ * Tuned to give optimal performance when throttling the rendering delegation
+ * tokens.
+ */
+export const THROTTLE_MS = 200;
+
 export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) => ({
   account: 0,
   setAccount: (account: number) =>
@@ -199,7 +205,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
 
       delegationsToFlush = [];
     };
-    const throttledFlushToState = throttle(flushToState, 200, { trailing: true });
+    const throttledFlushToState = throttle(flushToState, THROTTLE_MS, { trailing: true });
 
     for await (const delegation of getDelegationsForAccount(addressIndex)) {
       delegationsToFlush.push(delegation);
