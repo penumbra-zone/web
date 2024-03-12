@@ -24,6 +24,7 @@ export const asPublicActionView: Translator<ActionView> = actionView => {
 
     case 'delegate':
     case 'undelegate':
+    case 'undelegateClaim':
       return actionView;
 
     default:

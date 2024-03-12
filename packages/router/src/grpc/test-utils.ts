@@ -36,11 +36,16 @@ export interface ShieldedPoolMock {
 export interface ViewServerMock {
   fullViewingKey?: Mock;
 }
+
+export interface StakingMock {
+  validatorPenalty?: Mock;
+}
 export interface MockServices {
-  getWalletServices: Mock<[], Promise<{ indexedDb?: IndexedDbMock; viewServer?: ViewServerMock }>>;
+  getWalletServices?: Mock<[], Promise<{ indexedDb?: IndexedDbMock; viewServer?: ViewServerMock }>>;
   querier?: {
     tendermint?: TendermintMock;
     shieldedPool?: ShieldedPoolMock;
+    staking?: StakingMock;
   };
 }
 

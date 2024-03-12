@@ -3,7 +3,7 @@ use std::str::FromStr;
 
 use anyhow::anyhow;
 use ark_ff::UniformRand;
-use decaf377::Fq;
+use decaf377::{Fq, Fr};
 use penumbra_asset::{asset, Balance, Value};
 use penumbra_dex::swap_claim::SwapClaimPlan;
 use penumbra_dex::{
@@ -22,6 +22,7 @@ use penumbra_proto::view::v1::{
 use penumbra_sct::params::SctParameters;
 use penumbra_shielded_pool::{fmd, OutputPlan, SpendPlan};
 use penumbra_stake::rate::RateData;
+use penumbra_stake::{IdentityKey, Penalty, UndelegateClaimPlan};
 use penumbra_transaction::gas::GasCost;
 use penumbra_transaction::memo::MemoPlaintext;
 use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters, TransactionPlan};
@@ -314,11 +315,35 @@ pub async fn plan_transaction(
         actions.push(rate_data.build_undelegate(value.amount).into());
     }
 
-    /*
-    for tpr::UndelegateClaim { .. } in request.undelegation_claims {
-        // need to wait for a new release of monorepo
+    for tpr::UndelegateClaim {
+        validator_identity,
+        start_epoch_index,
+        penalty,
+        unbonding_amount,
+    } in request.undelegation_claims
+    {
+        let validator_identity: IdentityKey = validator_identity
+            .ok_or_else(|| anyhow!("missing validator identity in undelegation claim"))?
+            .try_into()?;
+        let penalty: Penalty = penalty
+            .ok_or_else(|| anyhow!("missing penalty in undelegation claim"))?
+            .try_into()?;
+        let unbonding_amount: Amount = unbonding_amount
+            .ok_or_else(|| anyhow!("missing unbonding amount in undelegation claim"))?
+            .try_into()?;
+
+        let undelegate_claim_plan = UndelegateClaimPlan {
+            validator_identity,
+            start_epoch_index,
+            penalty,
+            unbonding_amount,
+            balance_blinding: Fr::rand(&mut OsRng),
+            proof_blinding_r: Fq::rand(&mut OsRng),
+            proof_blinding_s: Fq::rand(&mut OsRng),
+        };
+
+        actions.push(ActionPlan::UndelegateClaim(undelegate_claim_plan));
     }
-     */
 
     #[allow(clippy::never_loop)]
     for ibc::v1::IbcRelay { .. } in request.ibc_relay_actions {

@@ -288,6 +288,35 @@ describe('classifyTransaction()', () => {
     expect(classifyTransaction(transactionView)).toBe('undelegate');
   });
 
+  it('returns `undelegateClaim` for transactions with an `undelegateClaim` action', () => {
+    const transactionView = new TransactionView({
+      bodyView: {
+        actionViews: [
+          {
+            actionView: {
+              case: 'undelegateClaim',
+              value: {},
+            },
+          },
+          {
+            actionView: {
+              case: 'spend',
+              value: {},
+            },
+          },
+          {
+            actionView: {
+              case: 'output',
+              value: {},
+            },
+          },
+        ],
+      },
+    });
+
+    expect(classifyTransaction(transactionView)).toBe('undelegateClaim');
+  });
+
   it("returns `unknown` for transactions that don't fit the above categories", () => {
     const transactionView = new TransactionView({
       bodyView: {

@@ -11,6 +11,8 @@ export const classifyTransaction = (txv?: TransactionView): TransactionClassific
   if (txv.bodyView?.actionViews.some(a => a.actionView.case === 'swapClaim')) return 'swapClaim';
   if (txv.bodyView?.actionViews.some(a => a.actionView.case === 'delegate')) return 'delegate';
   if (txv.bodyView?.actionViews.some(a => a.actionView.case === 'undelegate')) return 'undelegate';
+  if (txv.bodyView?.actionViews.some(a => a.actionView.case === 'undelegateClaim'))
+    return 'undelegateClaim';
 
   const hasOpaqueSpend = txv.bodyView?.actionViews.some(
     a => a.actionView.case === 'spend' && a.actionView.value.spendView.case === 'opaque',
@@ -82,6 +84,7 @@ export const TRANSACTION_LABEL_BY_CLASSIFICATION: Record<TransactionClassificati
   swapClaim: 'Swap Claim',
   delegate: 'Delegate',
   undelegate: 'Undelegate',
+  undelegateClaim: 'Undelegate Claim',
 };
 
 export const getTransactionClassificationLabel = (txv?: TransactionView): string =>

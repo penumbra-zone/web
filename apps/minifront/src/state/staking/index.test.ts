@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { StoreApi, UseBoundStore, create } from 'zustand';
-import { AllSlices, initializeStore } from '.';
+import { AllSlices, initializeStore } from '..';
 import {
   ValidatorInfo,
   ValidatorInfoResponse,
@@ -15,7 +15,7 @@ import {
   AddressView,
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { accountsSelector } from './staking';
+import { accountsSelector } from '.';
 
 const validator1IdentityKey = new IdentityKey({ ik: new Uint8Array([1, 2, 3]) });
 const validator1Bech32IdentityKey = bech32IdentityKey(validator1IdentityKey);
@@ -80,7 +80,7 @@ const mockStakeClient = vi.hoisted(() => ({
   }),
 }));
 
-vi.mock('../fetchers/balances', () => ({
+vi.mock('../../fetchers/balances', () => ({
   getBalances: vi.fn(async () =>
     Promise.resolve([
       {
@@ -168,7 +168,7 @@ const mockViewClient = vi.hoisted(() => ({
   assetMetadataById: vi.fn(() => new Metadata()),
 }));
 
-vi.mock('../clients', () => ({
+vi.mock('../../clients', () => ({
   stakeClient: mockStakeClient,
   viewClient: mockViewClient,
 }));
@@ -194,6 +194,7 @@ describe('Staking Slice', () => {
       loadUnstakedAndUnbondingTokensByAccount: expect.any(Function) as unknown,
       delegate: expect.any(Function) as unknown,
       undelegate: expect.any(Function) as unknown,
+      undelegateClaim: expect.any(Function) as unknown,
       onClickActionButton: expect.any(Function) as unknown,
       onClose: expect.any(Function) as unknown,
       setAmount: expect.any(Function) as unknown,

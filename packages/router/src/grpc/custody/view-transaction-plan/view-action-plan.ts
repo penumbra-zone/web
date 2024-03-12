@@ -220,6 +220,16 @@ export const viewActionPlan =
       case 'undelegate':
         return new ActionView({ actionView: actionPlan.action });
 
+      case 'undelegateClaim':
+        return new ActionView({
+          actionView: {
+            case: 'undelegateClaim',
+            value: {
+              body: actionPlan.action.value,
+            },
+          },
+        });
+
       case undefined:
         throw new Error('No action case in action plan');
       default:

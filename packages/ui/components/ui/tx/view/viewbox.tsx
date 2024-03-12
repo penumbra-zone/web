@@ -13,7 +13,7 @@ export const ViewBox = ({ label, visibleContent }: ViewBoxProps) => {
   return (
     <div
       className={cn(
-        'bg-background px-4 pt-3 pb-4 rounded-lg border flex flex-col gap-1 break-all',
+        'bg-background px-4 pt-3 pb-4 rounded-lg border flex flex-col gap-1 break-all overflow-hidden',
         !visibleContent ? 'cursor-not-allowed' : '',
       )}
     >
