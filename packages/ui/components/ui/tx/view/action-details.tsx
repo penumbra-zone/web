@@ -17,7 +17,7 @@ export const ActionDetails = ({ children }: { children: ReactNode }) => {
 };
 
 const Separator = () => (
-  <div className='mx-2 h-[1px] min-w-8 grow border-b-[1px] border-dotted border-light-brown' />
+  <div className='mx-2 h-px min-w-8 grow border-b-DEFAULT border-dotted border-light-brown' />
 );
 
 const ActionDetailsRow = ({ label, children }: { label: string; children: ReactNode }) => {
