@@ -26,6 +26,10 @@
       "run_at": "document_start"
     }
   ],
+  "options_ui": {
+    "page": "page.html",
+    "open_in_tab": true
+  },
   "background": {
     "service_worker": "service-worker.js"
   },

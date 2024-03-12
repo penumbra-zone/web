@@ -35,18 +35,35 @@ import { approveTransaction } from './approve-transaction';
 
 // all rpc implementations, local and proxy
 import { rpcImpls } from './impls';
+import { backOff } from 'exponential-backoff';
 
-const services = new Services({
-  idbVersion: IDB_VERSION,
-  grpcEndpoint: await localExtStorage.get('grpcEndpoint'),
-  getWallet: async () => {
-    const wallets = await localExtStorage.get('wallets');
-    if (!wallets[0]) throw new Error('No wallets connected');
-    const { fullViewingKey, id } = wallets[0];
-    return { walletId: id, fullViewingKey };
+// prevent spamming the focus-stealing openOptionsPage
+let openOptionsOnce: undefined | Promise<void>;
+const startServices = async () => {
+  const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+  const { id: walletId, fullViewingKey } = await localExtStorage.get('wallets').then(wallets => {
+    if (wallets[0]) return wallets[0];
+    else openOptionsOnce ??= chrome.runtime.openOptionsPage();
+    throw Error('No wallets found');
+  });
+
+  const services = new Services({
+    idbVersion: IDB_VERSION,
+    grpcEndpoint,
+    walletId,
+    fullViewingKey,
+  });
+  void services.initialize();
+  return services;
+};
+
+const services = await backOff(startServices, {
+  retry: (e, attemptNumber) => {
+    if (process.env['NODE_ENV'] === 'development')
+      console.warn("Prax couldn't start ", attemptNumber, e);
+    return true;
   },
 });
-await services.initialize();
 
 let custodyClient: PromiseClient<typeof CustodyService> | undefined;
 let stakingClient: PromiseClient<typeof StakingService> | undefined;
