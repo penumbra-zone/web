@@ -33,6 +33,7 @@ import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } f
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { assembleUndelegateClaimRequest } from './assemble-undelegate-claim-request';
+import throttle from 'lodash/throttle';
 
 const STAKING_TOKEN_DISPLAY_DENOM_EXPONENT = (() => {
   const stakingAsset = localAssets.find(asset => asset.display === STAKING_TOKEN);
@@ -135,13 +136,6 @@ const byBalanceAndVotingPower = (valueViewA: ValueView, valueViewB: ValueView): 
   return byVotingPower;
 };
 
-/**
- * To optimize performance while streaming potentially hundreds of
- * delegations/validators in rapid succession, we only "flush" to state at a
- * fixed interval, so as to prevent React from having to re-render too often.
- */
-const DELEGATIONS_FLUSH_TO_STATE_INTERVAL = 5;
-
 export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) => ({
   account: 0,
   setAccount: (account: number) =>
@@ -178,7 +172,6 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     });
 
     let delegationsToFlush: ValueView[] = [];
-    let allDelegationsLoaded = false;
 
     /**
      * Per the RPC call, we get delegations in a stream, one-by-one. If we push
@@ -189,44 +182,31 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
      * delegations as soon as we receive them.
      *
      * To resolve this performance issue, we instead queue up a number of
-     * delegations (up to `DELEGATIONS_FLUSH_TO_STATE_INTERVAL`), and then flush
-     * them to state in batches.
+     * delegations and then flush them to state in batches.
      */
-    const flushToState = (ignoreInterval = false) => {
-      if (allDelegationsLoaded) return;
+    const flushToState = () => {
+      if (!delegationsToFlush.length) return;
 
-      if (delegationsToFlush.length >= DELEGATIONS_FLUSH_TO_STATE_INTERVAL || ignoreInterval) {
-        const delegations = get().staking.delegationsByAccount.get(addressIndex.account) ?? [];
+      const delegations = get().staking.delegationsByAccount.get(addressIndex.account) ?? [];
 
-        const sortedDelegations = [...delegations, ...delegationsToFlush].sort(
-          byBalanceAndVotingPower,
-        );
+      const sortedDelegations = [...delegations, ...delegationsToFlush].sort(
+        byBalanceAndVotingPower,
+      );
 
-        set(state => {
-          state.staking.delegationsByAccount.set(addressIndex.account, sortedDelegations);
-        });
+      set(state => {
+        state.staking.delegationsByAccount.set(addressIndex.account, sortedDelegations);
+      });
 
-        delegationsToFlush = [];
-      }
-
-      requestAnimationFrame(() => flushToState());
+      delegationsToFlush = [];
     };
+    const throttledFlushToState = throttle(flushToState, 200, { trailing: true });
 
-    let isFirstDelegation = true;
     for await (const delegation of getDelegationsForAccount(addressIndex)) {
       delegationsToFlush.push(delegation);
       validatorInfos.push(getValidatorInfoFromValueView(delegation));
 
-      if (isFirstDelegation) {
-        requestAnimationFrame(() => flushToState());
-        isFirstDelegation = false;
-      }
+      throttledFlushToState();
     }
-
-    // One last flush, in case the number of remaining delegations is less than
-    // `FLUSH_INTERVAL`.
-    flushToState(true);
-    allDelegationsLoaded = true;
 
     /**
      * We can only calculate _each_ validator's percentage voting power once
