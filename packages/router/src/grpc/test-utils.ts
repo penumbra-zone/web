@@ -22,6 +22,7 @@ export interface IndexedDbMock {
   subscribe?: (table: string) => Partial<AsyncIterable<Mock>>;
   getSwapByCommitment?: Mock;
   getEpochByHeight?: Mock;
+  saveAssetsMetadata?: Mock;
 }
 export interface TendermintMock {
   broadcastTx?: Mock;

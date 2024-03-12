@@ -26,6 +26,7 @@ describe('AssetMetadataById request handler', () => {
 
     mockIndexedDb = {
       getAssetsMetadata: vi.fn(),
+      saveAssetsMetadata: vi.fn(),
     };
     mockShieldedPool = {
       assetMetadata: vi.fn(),
