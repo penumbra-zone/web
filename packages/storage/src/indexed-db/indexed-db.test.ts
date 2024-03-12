@@ -30,10 +30,10 @@ import {
   scanResultWithNewSwaps,
   scanResultWithSctUpdates,
   tradingPairGmGn,
-  transactionInfo,
+  transaction,
+  transactionId,
 } from './indexed-db.test-data';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import {
   PositionId,
@@ -136,16 +136,9 @@ describe('IndexedDb', () => {
       }
       expect(assets.length).toBe(1 + localAssets.length);
 
-      await db.saveTransactionInfo(
-        TransactionInfo.fromJson({
-          height: '1000',
-          id: {
-            inner: 'tx-hash',
-          },
-        }),
-      );
+      await db.saveTransaction(transactionId, 1000n, transaction);
       const txs: TransactionInfo[] = [];
-      for await (const tx of db.iterateTransactionInfo()) {
+      for await (const tx of db.iterateTransactions()) {
         txs.push(tx);
       }
       expect(txs.length).toBe(1);
@@ -187,7 +180,7 @@ describe('IndexedDb', () => {
       expect(assetsAfterClear.length).toBe(0);
 
       const txsAfterClean: TransactionInfo[] = [];
-      for await (const tx of db.iterateTransactionInfo()) {
+      for await (const tx of db.iterateTransactions()) {
         txsAfterClean.push(tx);
       }
       expect(txsAfterClean.length).toBe(0);
@@ -318,26 +311,22 @@ describe('IndexedDb', () => {
   describe('transactions', () => {
     it('should be able to set/get by note source', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
+      await db.saveTransaction(transactionId, 1000n, transaction);
 
-      await db.saveTransactionInfo(transactionInfo);
-
-      const savedTransaction = await db.getTransactionInfo(
-        new TransactionId({ inner: transactionInfo.id!.inner }),
-      );
-
-      expect(transactionInfo.equals(savedTransaction)).toBeTruthy();
+      const savedTransaction = await db.getTransaction(transactionId);
+      expect(transaction.equals(savedTransaction?.transaction)).toBeTruthy();
     });
 
     it('should be able to set/get all', async () => {
       const db = await IndexedDb.initialize({ ...generateInitialProps() });
 
-      await db.saveTransactionInfo(transactionInfo);
+      await db.saveTransaction(transactionId, 1000n, transaction);
       const savedTransactions: TransactionInfo[] = [];
-      for await (const tx of db.iterateTransactionInfo()) {
+      for await (const tx of db.iterateTransactions()) {
         savedTransactions.push(tx);
       }
       expect(savedTransactions.length === 1).toBeTruthy();
-      expect(transactionInfo.equals(savedTransactions[0])).toBeTruthy();
+      expect(transaction.equals(savedTransactions[0]?.transaction)).toBeTruthy();
     });
   });
 

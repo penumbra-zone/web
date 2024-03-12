@@ -7,7 +7,7 @@ import {
   IndexedDbInterface,
   ViewServerInterface,
 } from '@penumbra-zone/types';
-import { computePositionId, decodeSctRoot, transactionInfo } from '@penumbra-zone/wasm';
+import { computePositionId, decodeSctRoot } from '@penumbra-zone/wasm';
 import {
   PositionState,
   PositionState_PositionStateEnum,
@@ -22,12 +22,10 @@ import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import {
   SpendableNoteRecord,
   SwapRecord,
-  TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { backOff } from 'exponential-backoff';
 
 interface QueryClientProps {
-  fullViewingKey: string;
   querier: RootQuerier;
   indexedDb: IndexedDbInterface;
   viewServer: ViewServerInterface;
@@ -38,15 +36,13 @@ const blankTxSource = new CommitmentSource({
 });
 
 export class BlockProcessor implements BlockProcessorInterface {
-  private readonly fullViewingKey: string;
   private readonly querier: RootQuerier;
   private readonly indexedDb: IndexedDbInterface;
   private readonly viewServer: ViewServerInterface;
   private readonly abortController: AbortController = new AbortController();
   private syncPromise: Promise<void> | undefined;
 
-  constructor({ indexedDb, viewServer, querier, fullViewingKey }: QueryClientProps) {
-    this.fullViewingKey = fullViewingKey;
+  constructor({ indexedDb, viewServer, querier }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
     this.querier = querier;
@@ -235,7 +231,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         // pending broadcasts, and populate the transaction list.
         // - calls wasm for each relevant tx
         // - saves to idb
-        await this.saveTransactionInfos(compactBlock.height, relevantTx);
+        await this.saveTransactions(compactBlock.height, relevantTx);
       }
 
       // We only query Tendermint for the latest known block height once, when
@@ -346,22 +342,9 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  private async saveTransactionInfos(height: bigint, relevantTx: Map<TransactionId, Transaction>) {
+  private async saveTransactions(height: bigint, relevantTx: Map<TransactionId, Transaction>) {
     for (const [id, transaction] of relevantTx) {
-      const { txp: perspective, txv: view } = await transactionInfo(
-        this.fullViewingKey,
-        transaction,
-        this.indexedDb.constants(),
-      );
-      await this.indexedDb.saveTransactionInfo(
-        new TransactionInfo({
-          height,
-          id,
-          transaction,
-          perspective,
-          view,
-        }),
-      );
+      await this.indexedDb.saveTransaction(id, height, transaction);
     }
   }
 

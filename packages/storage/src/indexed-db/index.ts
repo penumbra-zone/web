@@ -50,6 +50,7 @@ import { IdbCursorSource } from './stream';
 import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters';
+import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -81,7 +82,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('SPENDABLE_NOTES', {
           keyPath: 'noteCommitment.inner',
         }).createIndex('nullifier', 'nullifier.inner');
-        db.createObjectStore('TRANSACTION_INFO', { keyPath: 'id.inner' });
+        db.createObjectStore('TRANSACTIONS', { keyPath: 'id.inner' });
         db.createObjectStore('TREE_LAST_POSITION');
         db.createObjectStore('TREE_LAST_FORGOTTEN');
         db.createObjectStore('TREE_COMMITMENTS', { keyPath: 'commitment.inner' });
@@ -208,27 +209,29 @@ export class IndexedDb implements IndexedDbInterface {
     );
   }
 
-  async *iterateTransactionInfo() {
+  async *iterateTransactions() {
     yield* new ReadableStream(
-      new IdbCursorSource(
-        this.db.transaction('TRANSACTION_INFO').store.openCursor(),
-        TransactionInfo,
-      ),
+      new IdbCursorSource(this.db.transaction('TRANSACTIONS').store.openCursor(), TransactionInfo),
     );
   }
 
-  async saveTransactionInfo(tx: TransactionInfo): Promise<void> {
+  async saveTransaction(
+    id: TransactionId,
+    height: bigint,
+    transaction: Transaction,
+  ): Promise<void> {
+    const tx = new TransactionInfo({ id, height, transaction });
     await this.u.update({
-      table: 'TRANSACTION_INFO',
+      table: 'TRANSACTIONS',
       value: tx.toJson() as Jsonified<TransactionInfo>,
     });
   }
 
-  async getTransactionInfo(txId: TransactionId): Promise<TransactionInfo | undefined> {
+  async getTransaction(txId: TransactionId): Promise<TransactionInfo | undefined> {
     const key = uint8ArrayToBase64(txId.inner);
-    const json = await this.db.get('TRANSACTION_INFO', key);
-    if (!json) return undefined;
-    return TransactionInfo.fromJson(json);
+    const jsonRecord = await this.db.get('TRANSACTIONS', key);
+    if (!jsonRecord) return undefined;
+    return TransactionInfo.fromJson(jsonRecord);
   }
 
   async getFmdParams(): Promise<FmdParameters | undefined> {
