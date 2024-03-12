@@ -3,14 +3,7 @@ import {
   BalancesResponse,
   TransactionPlannerRequest,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import {
-  authWitnessBuild,
-  broadcast,
-  getTxHash,
-  plan,
-  userDeniedTransaction,
-  witnessBuild,
-} from './helpers';
+import { planBuildBroadcast } from './helpers';
 import {
   Metadata,
   Value,
@@ -27,8 +20,7 @@ import {
 import { BigNumber } from 'bignumber.js';
 import { getAddressByIndex } from '../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
-import { errorToast, TransactionToast } from '@penumbra-zone/ui';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import { errorToast } from '@penumbra-zone/ui';
 import { toBaseUnit } from '@penumbra-zone/types';
 import { SimulateTradeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { simulateClient } from '../clients';
@@ -138,9 +130,11 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
       });
 
       try {
-        const swapTx = await issueSwap(get().swap);
+        const swapReq = await assembleSwapRequest(get().swap);
+        const swapTx = await planBuildBroadcast('swap', swapReq);
         const swapCommitment = getSwapCommitmentFromTx(swapTx);
         await issueSwapClaim(swapCommitment);
+
         set(state => {
           state.swap.amount = '';
         });
@@ -185,56 +179,12 @@ const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => 
   });
 };
 
-export const issueSwap = async (swapSlice: SwapSlice): Promise<Transaction | undefined> => {
-  const swapToast = new TransactionToast('swap');
-  swapToast.onStart();
-
-  try {
-    const swapReq = await assembleSwapRequest(swapSlice);
-    const swapPlan = await plan(swapReq);
-    const swapTx = await authWitnessBuild({ transactionPlan: swapPlan }, status =>
-      swapToast.onBuildStatus(status),
-    );
-    const swapTxHash = await getTxHash(swapTx);
-    swapToast.txHash(swapTxHash);
-    await broadcast({ awaitDetection: true, transaction: swapTx }, status =>
-      swapToast.onBroadcastStatus(status),
-    );
-    swapToast.onSuccess();
-    return swapTx;
-  } catch (e) {
-    if (userDeniedTransaction(e)) {
-      swapToast.onDenied();
-      return undefined;
-    } else {
-      swapToast.onFailure(e);
-      return undefined;
-    }
-  }
-};
-
 // Swap claims don't need authenticationData, so `witnessAndBuild` is used.
 // This way it won't trigger a second, unnecessary approval popup.
 // @see https://protocol.penumbra.zone/main/zswap/swap.html#claiming-swap-outputs
 export const issueSwapClaim = async (swapCommitment: StateCommitment) => {
-  const toast = new TransactionToast('swapClaim');
-  toast.onStart();
-
-  try {
-    const swapClaimReq = new TransactionPlannerRequest({ swapClaims: [{ swapCommitment }] });
-    const transactionPlan = await plan(swapClaimReq);
-    const transaction = await witnessBuild({ transactionPlan }, status =>
-      toast.onBuildStatus(status),
-    );
-    const txHash = await getTxHash(transaction);
-    toast.txHash(txHash);
-    const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
-      toast.onBroadcastStatus(status),
-    );
-    toast.onSuccess(detectionHeight);
-  } catch (e) {
-    toast.onFailure(e);
-  }
+  const req = new TransactionPlannerRequest({ swapClaims: [{ swapCommitment }] });
+  await planBuildBroadcast('swapClaim', req, { skipAuth: true });
 };
 
 export const swapSelector = (state: AllSlices) => state.swap;
