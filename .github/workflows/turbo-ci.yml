@@ -30,7 +30,7 @@ jobs:
 
   turbo-lint:
     name: Lint
-    runs-on: buildjet-2vcpu-ubuntu-2204
+    runs-on: buildjet-4vcpu-ubuntu-2204
     needs: turbo-compile
     steps:
       - uses: actions/checkout@v4
