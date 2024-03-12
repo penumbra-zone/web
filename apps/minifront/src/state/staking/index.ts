@@ -1,6 +1,5 @@
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { AllSlices, SliceCreator } from '..';
-import { getDelegationsForAccount } from '../../fetchers/staking';
 import {
   getAmount,
   getAssetIdFromValueView,
@@ -9,6 +8,7 @@ import {
   getDisplayDenomFromView,
   getRateData,
   getValidatorInfoFromValueView,
+  getValueView,
   getVotingPowerFromValidatorInfo,
 } from '@penumbra-zone/getters';
 import {
@@ -34,6 +34,7 @@ import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_
 import { BigNumber } from 'bignumber.js';
 import { assembleUndelegateClaimRequest } from './assemble-undelegate-claim-request';
 import throttle from 'lodash/throttle';
+import { viewClient } from '../../clients';
 
 const STAKING_TOKEN_DISPLAY_DENOM_EXPONENT = (() => {
   const stakingAsset = localAssets.find(asset => asset.display === STAKING_TOKEN);
@@ -215,12 +216,13 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     };
     const throttledFlushToState = throttle(flushToState, THROTTLE_MS, { trailing: true });
 
-    for await (const delegation of getDelegationsForAccount(addressIndex)) {
+    for await (const response of viewClient.delegationsByAddressIndex({ addressIndex })) {
       if (newAbortController.signal.aborted) {
         throttledFlushToState.cancel();
         return;
       }
 
+      const delegation = getValueView(response);
       delegationsToFlush.push(delegation);
       validatorInfos.push(getValidatorInfoFromValueView(delegation));
 
