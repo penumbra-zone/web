@@ -139,7 +139,7 @@ describe('IndexedDb', () => {
       await db.saveTransaction(transactionId, 1000n, transaction);
       const txs: TransactionInfo[] = [];
       for await (const tx of db.iterateTransactions()) {
-        txs.push(tx as TransactionInfo);
+        txs.push(tx);
       }
       expect(txs.length).toBe(1);
 
@@ -181,7 +181,7 @@ describe('IndexedDb', () => {
 
       const txsAfterClean: TransactionInfo[] = [];
       for await (const tx of db.iterateTransactions()) {
-        txsAfterClean.push(tx as TransactionInfo);
+        txsAfterClean.push(tx);
       }
       expect(txsAfterClean.length).toBe(0);
       expect(await db.getFullSyncHeight()).toBeUndefined();
@@ -323,7 +323,7 @@ describe('IndexedDb', () => {
       await db.saveTransaction(transactionId, 1000n, transaction);
       const savedTransactions: TransactionInfo[] = [];
       for await (const tx of db.iterateTransactions()) {
-        savedTransactions.push(tx as TransactionInfo);
+        savedTransactions.push(tx);
       }
       expect(savedTransactions.length === 1).toBeTruthy();
       expect(transaction.equals(savedTransactions[0]?.transaction)).toBeTruthy();

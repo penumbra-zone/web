@@ -210,16 +210,9 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async *iterateTransactions() {
-    yield* new ReadableStream({
-      start: async cont => {
-        let cursor = await this.db.transaction('TRANSACTIONS').store.openCursor();
-        while (cursor) {
-          cont.enqueue(TransactionInfo.fromJson(cursor.value));
-          cursor = await cursor.continue();
-        }
-        cont.close();
-      },
-    });
+    yield* new ReadableStream(
+      new IdbCursorSource(this.db.transaction('TRANSACTIONS').store.openCursor(), TransactionInfo),
+    );
   }
 
   async saveTransaction(
@@ -227,11 +220,7 @@ export class IndexedDb implements IndexedDbInterface {
     height: bigint,
     transaction: Transaction,
   ): Promise<void> {
-    const tx = new TransactionInfo({
-      id,
-      height,
-      transaction,
-    });
+    const tx = new TransactionInfo({ id, height, transaction });
     await this.u.update({
       table: 'TRANSACTIONS',
       value: tx.toJson() as Jsonified<TransactionInfo>,
