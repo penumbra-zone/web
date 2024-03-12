@@ -7,8 +7,6 @@ import { BigNumber } from 'bignumber.js';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { ibcClient, viewClient } from '../clients';
-import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from './helpers';
-import { TransactionToast } from '@penumbra-zone/ui';
 import { Chain } from '@penumbra-zone/constants/src/chains';
 import {
   getDisplayDenomExponentFromValueView,
@@ -17,6 +15,7 @@ import {
 import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
+import { planBuildBroadcast } from './helpers';
 
 export interface IbcSendSlice {
   selection: BalancesResponse | undefined;
@@ -63,32 +62,14 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
         state.send.txInProgress = true;
       });
 
-      const toast = new TransactionToast('unknown');
-      toast.onStart();
-
       try {
-        const transactionPlan = await plan(await getPlanRequest(get().ibc));
-        const transaction = await authWitnessBuild({ transactionPlan }, status =>
-          toast.onBuildStatus(status),
-        );
-        const txHash = await getTxHash(transaction);
-        toast.txHash(txHash);
-        const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
-          toast.onBroadcastStatus(status),
-        );
-
-        toast.onSuccess(detectionHeight);
+        const req = await getPlanRequest(get().ibc);
+        await planBuildBroadcast('unknown', req);
 
         // Reset form
         set(state => {
           state.ibc.amount = '';
         });
-      } catch (e) {
-        if (userDeniedTransaction(e)) {
-          toast.onDenied();
-        } else {
-          toast.onFailure(e);
-        }
       } finally {
         set(state => {
           state.ibc.txInProgress = false;

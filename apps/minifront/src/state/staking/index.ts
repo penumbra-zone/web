@@ -11,7 +11,7 @@ import {
 } from '@penumbra-zone/constants/src/assets';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { TransactionToast } from '@penumbra-zone/ui';
-import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from '../helpers';
+import { planBuildBroadcast } from '../helpers';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { assembleUndelegateClaimRequest } from './assemble-undelegate-claim-request';
@@ -255,11 +255,8 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     });
   },
   delegate: async () => {
-    const toast = new TransactionToast('delegate');
-    toast.onStart();
-
     try {
-      const transactionPlan = await plan(assembleDelegateRequest(get().staking));
+      const req = assembleDelegateRequest(get().staking);
 
       // Reset form _after_ building the transaction planner request, since it depends on
       // the state.
@@ -268,26 +265,12 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
         state.staking.validatorInfo = undefined;
       });
 
-      const transaction = await authWitnessBuild({ transactionPlan }, status =>
-        toast.onBuildStatus(status),
-      );
-      const txHash = await getTxHash(transaction);
-      toast.txHash(txHash);
-      const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
-        toast.onBroadcastStatus(status),
-      );
-      toast.onSuccess(detectionHeight);
+      await planBuildBroadcast('delegate', req);
 
       // Reload delegation tokens and unstaked tokens to reflect their updated
       // balances.
       void get().staking.loadDelegationsForCurrentAccount();
       void get().staking.loadUnstakedAndUnbondingTokensByAccount();
-    } catch (e) {
-      if (userDeniedTransaction(e)) {
-        toast.onDenied();
-      } else {
-        toast.onFailure(e);
-      }
     } finally {
       set(state => {
         state.staking.amount = '';
@@ -295,11 +278,8 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     }
   },
   undelegate: async () => {
-    const toast = new TransactionToast('undelegate');
-    toast.onStart();
-
     try {
-      const transactionPlan = await plan(assembleUndelegateRequest(get().staking));
+      const req = assembleUndelegateRequest(get().staking);
 
       // Reset form _after_ assembling the transaction planner request, since it
       // depends on the state.
@@ -308,26 +288,12 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
         state.staking.validatorInfo = undefined;
       });
 
-      const transaction = await authWitnessBuild({ transactionPlan }, status =>
-        toast.onBuildStatus(status),
-      );
-      const txHash = await getTxHash(transaction);
-      toast.txHash(txHash);
-      const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
-        toast.onBroadcastStatus(status),
-      );
-      toast.onSuccess(detectionHeight);
+      await planBuildBroadcast('undelegate', req);
 
       // Reload delegation tokens and unstaked tokens to reflect their updated
       // balances.
       void get().staking.loadDelegationsForCurrentAccount();
       void get().staking.loadUnstakedAndUnbondingTokensByAccount();
-    } catch (e) {
-      if (userDeniedTransaction(e)) {
-        toast.onDenied();
-      } else {
-        toast.onFailure(e);
-      }
     } finally {
       set(state => {
         state.staking.amount = '';
@@ -338,13 +304,12 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     const { account, unbondingTokensByAccount } = get().staking;
     const unbondingTokens = unbondingTokensByAccount.get(account)?.tokens;
     if (!unbondingTokens) return;
-    const toast = new TransactionToast('undelegateClaim');
-    toast.onStart();
 
     try {
       const req = await assembleUndelegateClaimRequest({ account, unbondingTokens });
       if (!req) return;
-      const transactionPlan = await plan(req);
+
+      await planBuildBroadcast('undelegateClaim', req);
 
       // Reset form _after_ assembling the transaction planner request, since it
       // depends on the state.
@@ -353,25 +318,9 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
         state.staking.validatorInfo = undefined;
       });
 
-      const transaction = await authWitnessBuild({ transactionPlan }, status =>
-        toast.onBuildStatus(status),
-      );
-      const txHash = await getTxHash(transaction);
-      toast.txHash(txHash);
-      const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
-        toast.onBroadcastStatus(status),
-      );
-      toast.onSuccess(detectionHeight);
-
       // Reload unbonding tokens and unstaked tokens to reflect their updated
       // balances.
       void get().staking.loadUnstakedAndUnbondingTokensByAccount();
-    } catch (e) {
-      if (userDeniedTransaction(e)) {
-        toast.onDenied();
-      } else {
-        toast.onFailure(e);
-      }
     } finally {
       set(state => {
         state.staking.amount = '';

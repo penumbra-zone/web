@@ -6,13 +6,12 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { MemoPlaintext } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from './helpers';
+import { plan, planBuildBroadcast } from './helpers';
 
 import {
   Fee,
   FeeTier_Tier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
-import { TransactionToast } from '@penumbra-zone/ui';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
@@ -96,31 +95,13 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
         state.send.txInProgress = true;
       });
 
-      const toast = new TransactionToast('send');
-      toast.onStart();
-
       try {
-        const transactionPlan = await plan(assembleRequest(get().send));
-        const transaction = await authWitnessBuild({ transactionPlan }, status =>
-          toast.onBuildStatus(status),
-        );
-        const txHash = await getTxHash(transaction);
-        toast.txHash(txHash);
-        const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
-          toast.onBroadcastStatus(status),
-        );
-        toast.onSuccess(detectionHeight);
+        const req = assembleRequest(get().send);
+        await planBuildBroadcast('send', req);
 
-        // Reset form
         set(state => {
           state.send.amount = '';
         });
-      } catch (e) {
-        if (userDeniedTransaction(e)) {
-          toast.onDenied();
-        } else {
-          toast.onFailure(e);
-        }
       } finally {
         set(state => {
           state.send.txInProgress = false;
