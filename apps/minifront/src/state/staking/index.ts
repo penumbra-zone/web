@@ -70,6 +70,7 @@ export interface StakingSlice {
    * `delegationsByAccount`. Should be called each time `account` is changed.
    */
   loadDelegationsForCurrentAccount: () => Promise<void>;
+  loadDelegationsForCurrentAccountAbortController?: AbortController;
   /**
    * Build and submit the Delegate transaction.
    */
@@ -168,6 +169,13 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
   unstakedTokensByAccount: new Map(),
   unbondingTokensByAccount: new Map(),
   loadDelegationsForCurrentAccount: async () => {
+    const existingAbortController = get().staking.loadDelegationsForCurrentAccountAbortController;
+    if (existingAbortController) existingAbortController.abort();
+    const newAbortController = new AbortController();
+    set(state => {
+      state.staking.loadDelegationsForCurrentAccountAbortController = newAbortController;
+    });
+
     const addressIndex = new AddressIndex({ account: get().staking.account });
     const validatorInfos: ValidatorInfo[] = [];
 
@@ -208,6 +216,11 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     const throttledFlushToState = throttle(flushToState, THROTTLE_MS, { trailing: true });
 
     for await (const delegation of getDelegationsForAccount(addressIndex)) {
+      if (newAbortController.signal.aborted) {
+        throttledFlushToState.cancel();
+        return;
+      }
+
       delegationsToFlush.push(delegation);
       validatorInfos.push(getValidatorInfoFromValueView(delegation));
 
