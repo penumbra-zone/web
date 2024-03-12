@@ -10,7 +10,6 @@ import {
   STAKING_TOKEN_METADATA,
 } from '@penumbra-zone/constants/src/assets';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { TransactionToast } from '@penumbra-zone/ui';
 import { planBuildBroadcast } from '../helpers';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
