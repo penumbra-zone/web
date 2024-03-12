@@ -5,8 +5,8 @@ import { joinLoHiAmount } from '@penumbra-zone/types';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { FormDialog } from './form-dialog';
 import { useMemo } from 'react';
-import { AllSlices, useStore } from '../../../../../state';
-import { useShallow } from 'zustand/react/shallow';
+import { AllSlices } from '../../../../../state';
+import { useStoreShallow } from '../../../../../utils/use-store-shallow';
 
 const stakingActionsSelector = (state: AllSlices) => ({
   action: state.staking.action,
@@ -41,7 +41,7 @@ export const StakingActions = ({
    */
   unstakedTokens?: ValueView;
 }) => {
-  const state = useStore(useShallow(stakingActionsSelector));
+  const state = useStoreShallow(stakingActionsSelector);
   const validator = getValidator(validatorInfo);
 
   const canDelegate = useMemo(

@@ -1,9 +1,9 @@
 import { getIdentityKeyFromValueView } from '@penumbra-zone/getters';
 import { VotingPowerAsIntegerPercentage, bech32IdentityKey } from '@penumbra-zone/types';
-import { AllSlices, useStore } from '../../../state';
+import { AllSlices } from '../../../state';
 import { DelegationValueView } from './delegation-value-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { useShallow } from 'zustand/react/shallow';
+import { useStoreShallow } from '../../../utils/use-store-shallow';
 
 const getVotingPowerAsIntegerPercentage = (
   votingPowerByValidatorInfo: Record<string, VotingPowerAsIntegerPercentage>,
@@ -17,9 +17,8 @@ const delegationsSelector = (state: AllSlices) => ({
 });
 
 export const Delegations = () => {
-  const { delegations, unstakedTokens, votingPowerByValidatorInfo } = useStore(
-    useShallow(delegationsSelector),
-  );
+  const { delegations, unstakedTokens, votingPowerByValidatorInfo } =
+    useStoreShallow(delegationsSelector);
 
   return (
     <div className='mt-8 flex flex-col gap-8'>

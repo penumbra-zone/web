@@ -53,4 +53,19 @@ const MyComponent = () => {
 };
 ```
 
-For maintainability, these selectors should be colocated with the component rather than being exported from the slice file.
+Then, since this is such a common use case, we've defined a `useStoreShallow` hook that combines `useStore` and `useShallow`. So you can rewrite the above as:
+
+```tsx
+import { useStoreShallow } from '../utils/use-store-shallow';
+
+const myComponentSelector = (state: AllSlices) => ({
+  prop1: state.mySlice.prop1,
+  prop2: state.mySlice.prop2,
+});
+
+const MyComponent = () => {
+  const state = useStoreShallow(myComponentSelector);
+};
+```
+
+For maintainability, selectors should be colocated with the component rather than being exported from the slice file.
