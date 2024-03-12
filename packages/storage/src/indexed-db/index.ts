@@ -49,7 +49,7 @@ import { IdbCursorSource } from './stream';
 
 import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters';
+import { bech32AssetId, getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 interface IndexedDbProps {
@@ -177,11 +177,41 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
+  /**
+   * Gets metadata by asset ID.
+   *
+   * If possible, pass an `AssetId` with a populated `inner` property, as that
+   * is by far the fastest way to retrieve metadata. However, you can also pass
+   * an `AssetId` with either the `altBaseDenom` or `altBech32m` properties
+   * populated. In those cases, `getAssetsMetadata` will iterate over every
+   * metadata in the `ASSETS` table until it finds a match.
+   */
   async getAssetsMetadata(assetId: AssetId): Promise<Metadata | undefined> {
-    const key = uint8ArrayToBase64(assetId.inner);
-    const json = await this.db.get('ASSETS', key);
-    if (!json) return undefined;
-    return Metadata.fromJson(json);
+    if (!assetId.inner.length && !assetId.altBaseDenom && !assetId.altBech32m) return undefined;
+
+    if (assetId.inner.length) {
+      const key = uint8ArrayToBase64(assetId.inner);
+      const json = await this.db.get('ASSETS', key);
+      if (!json) return undefined;
+      return Metadata.fromJson(json);
+    }
+
+    if (assetId.altBaseDenom || assetId.altBech32m) {
+      for await (const cursor of this.db.transaction('ASSETS').store) {
+        const metadata = Metadata.fromJson(cursor.value);
+
+        if (metadata.base === assetId.altBaseDenom) return metadata;
+
+        if (
+          metadata.penumbraAssetId &&
+          bech32AssetId(metadata.penumbraAssetId) === assetId.altBech32m
+        ) {
+          return metadata;
+        }
+      }
+    }
+
+    return undefined;
   }
 
   async *iterateAssetsMetadata() {

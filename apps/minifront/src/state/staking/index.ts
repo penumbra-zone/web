@@ -33,6 +33,7 @@ import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } f
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BigNumber } from 'bignumber.js';
 import { assembleUndelegateClaimRequest } from './assemble-undelegate-claim-request';
+import throttle from 'lodash/throttle';
 
 const STAKING_TOKEN_DISPLAY_DENOM_EXPONENT = (() => {
   const stakingAsset = localAssets.find(asset => asset.display === STAKING_TOKEN);
@@ -135,6 +136,12 @@ const byBalanceAndVotingPower = (valueViewA: ValueView, valueViewB: ValueView): 
   return byVotingPower;
 };
 
+/**
+ * Tuned to give optimal performance when throttling the rendering delegation
+ * tokens.
+ */
+export const THROTTLE_MS = 200;
+
 export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) => ({
   account: 0,
   setAccount: (account: number) =>
@@ -167,18 +174,44 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     set(state => {
       state.staking.delegationsByAccount.set(addressIndex.account, []);
       state.staking.votingPowerByValidatorInfo = {};
+      state.staking.loading = true;
     });
 
-    for await (const delegation of getDelegationsForAccount(addressIndex)) {
+    let delegationsToFlush: ValueView[] = [];
+
+    /**
+     * Per the RPC call, we get delegations in a stream, one-by-one. If we push
+     * them to state as we receive them, React has to re-render super
+     * frequently. Rendering happens synchronously, which means that the `for`
+     * loop below has to wait until rendering is done before moving on to the
+     * next delegation. Thus, the staking page loads super slowly if we render
+     * delegations as soon as we receive them.
+     *
+     * To resolve this performance issue, we instead queue up a number of
+     * delegations and then flush them to state in batches.
+     */
+    const flushToState = () => {
+      if (!delegationsToFlush.length) return;
+
       const delegations = get().staking.delegationsByAccount.get(addressIndex.account) ?? [];
 
-      const sortedDelegations = [...delegations, delegation].sort(byBalanceAndVotingPower);
+      const sortedDelegations = [...delegations, ...delegationsToFlush].sort(
+        byBalanceAndVotingPower,
+      );
 
       set(state => {
         state.staking.delegationsByAccount.set(addressIndex.account, sortedDelegations);
       });
 
+      delegationsToFlush = [];
+    };
+    const throttledFlushToState = throttle(flushToState, THROTTLE_MS, { trailing: true });
+
+    for await (const delegation of getDelegationsForAccount(addressIndex)) {
+      delegationsToFlush.push(delegation);
       validatorInfos.push(getValidatorInfoFromValueView(delegation));
+
+      throttledFlushToState();
     }
 
     /**
@@ -187,6 +220,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
      */
     set(state => {
       state.staking.votingPowerByValidatorInfo = getVotingPowerByValidatorInfo(validatorInfos);
+      state.staking.loading = false;
     });
   },
   loadUnstakedAndUnbondingTokensByAccount: async () => {

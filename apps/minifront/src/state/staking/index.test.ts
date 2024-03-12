@@ -15,7 +15,7 @@ import {
   AddressView,
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { accountsSelector } from '.';
+import { THROTTLE_MS, accountsSelector } from '.';
 
 const validator1IdentityKey = new IdentityKey({ ik: new Uint8Array([1, 2, 3]) });
 const validator1Bech32IdentityKey = bech32IdentityKey(validator1IdentityKey);
@@ -178,6 +178,7 @@ describe('Staking Slice', () => {
 
   beforeEach(() => {
     useStore = create<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
+    vi.useFakeTimers();
   });
 
   it('has correct initial state', () => {
@@ -208,6 +209,7 @@ describe('Staking Slice', () => {
     const { getState } = useStore;
 
     await getState().staking.loadDelegationsForCurrentAccount();
+    vi.advanceTimersByTime(THROTTLE_MS);
 
     const delegations = getState().staking.delegationsByAccount.get(0)!;
 

@@ -1,12 +1,23 @@
 import { Button } from '@penumbra-zone/ui';
-import { useStore } from '../../../../../state';
-import { stakingSelector } from '../../../../../state/staking';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { getAmount, getValidator } from '@penumbra-zone/getters';
 import { joinLoHiAmount } from '@penumbra-zone/types';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { FormDialog } from './form-dialog';
 import { useMemo } from 'react';
+import { AllSlices } from '../../../../../state';
+import { useStoreShallow } from '../../../../../utils/use-store-shallow';
+
+const stakingActionsSelector = (state: AllSlices) => ({
+  action: state.staking.action,
+  amount: state.staking.amount,
+  delegate: state.staking.delegate,
+  undelegate: state.staking.undelegate,
+  onClickActionButton: state.staking.onClickActionButton,
+  onClose: state.staking.onClose,
+  setAmount: state.staking.setAmount,
+  validatorInfo: state.staking.validatorInfo,
+});
 
 /**
  * Renders Delegate/Undelegate buttons for a validator, as well as a form inside
@@ -30,17 +41,7 @@ export const StakingActions = ({
    */
   unstakedTokens?: ValueView;
 }) => {
-  const {
-    action,
-    amount,
-    onClickActionButton,
-    delegate,
-    undelegate,
-    onClose,
-    setAmount,
-    validatorInfo: selectedValidatorInfo,
-  } = useStore(stakingSelector);
-
+  const state = useStoreShallow(stakingActionsSelector);
   const validator = getValidator(validatorInfo);
 
   const canDelegate = useMemo(
@@ -53,8 +54,8 @@ export const StakingActions = ({
   );
 
   const handleSubmit = () => {
-    if (action === 'delegate') void delegate();
-    else void undelegate();
+    if (state.action === 'delegate') void state.delegate();
+    else void state.undelegate();
   };
 
   return (
@@ -64,7 +65,7 @@ export const StakingActions = ({
           <Button
             className='px-4'
             disabled={!canDelegate}
-            onClick={() => onClickActionButton('delegate', validatorInfo)}
+            onClick={() => state.onClickActionButton('delegate', validatorInfo)}
           >
             Delegate
           </Button>
@@ -72,7 +73,7 @@ export const StakingActions = ({
             variant='secondary'
             className='px-4'
             disabled={!canUndelegate}
-            onClick={() => onClickActionButton('undelegate', validatorInfo)}
+            onClick={() => state.onClickActionButton('undelegate', validatorInfo)}
           >
             Undelegate
           </Button>
@@ -80,14 +81,14 @@ export const StakingActions = ({
       </div>
 
       <FormDialog
-        action={action}
-        open={!!action && validator.equals(getValidator(selectedValidatorInfo))}
+        action={state.action}
+        open={!!state.action && validator.equals(getValidator(state.validatorInfo))}
         validator={validator}
-        amount={amount}
+        amount={state.amount}
         delegationTokens={delegationTokens}
         unstakedTokens={unstakedTokens}
-        onChangeAmount={setAmount}
-        onClose={onClose}
+        onChangeAmount={state.setAmount}
+        onClose={state.onClose}
         onSubmit={handleSubmit}
       />
     </>

@@ -9,6 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@penumbra-zone/ui';
+import { useStore } from '../../../../state';
 
 /**
  * Renders a single `ValidatorInfo`: its name, bech32-encoded identity key,
@@ -21,6 +22,9 @@ export const ValidatorInfoComponent = ({
   validatorInfo: ValidatorInfo;
   votingPowerAsIntegerPercentage?: number;
 }) => {
+  // The tooltip component is a bit heavy to render, so we'll wait to render it
+  // until all loading completes.
+  const showTooltips = useStore(state => !state.staking.loading);
   const validator = getValidator(validatorInfo);
   const identityKey = getIdentityKeyFromValidatorInfo(validatorInfo);
 
@@ -43,24 +47,28 @@ export const ValidatorInfoComponent = ({
 
             {votingPowerAsIntegerPercentage !== undefined && (
               <span>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <span className='underline decoration-dotted underline-offset-4'>VP:</span>
-                  </TooltipTrigger>
-                  <TooltipContent>Voting power</TooltipContent>
-                </Tooltip>{' '}
-                {votingPowerAsIntegerPercentage}%
+                {showTooltips && (
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <span className='underline decoration-dotted underline-offset-4'>VP:</span>
+                    </TooltipTrigger>
+                    <TooltipContent>Voting power</TooltipContent>
+                  </Tooltip>
+                )}
+                {!showTooltips && <span>VP:</span>} {votingPowerAsIntegerPercentage}%
               </span>
             )}
 
             <span>
-              <Tooltip>
-                <TooltipTrigger>
-                  <span className='underline decoration-dotted underline-offset-4'>Com:</span>
-                </TooltipTrigger>
-                <TooltipContent>Commission</TooltipContent>
-              </Tooltip>{' '}
-              {calculateCommissionAsPercentage(validatorInfo)}%
+              {showTooltips && (
+                <Tooltip>
+                  <TooltipTrigger>
+                    <span className='underline decoration-dotted underline-offset-4'>Com:</span>
+                  </TooltipTrigger>
+                  <TooltipContent>Commission</TooltipContent>
+                </Tooltip>
+              )}
+              {!showTooltips && <span>Com:</span>} {calculateCommissionAsPercentage(validatorInfo)}%
             </span>
           </div>
         </div>
