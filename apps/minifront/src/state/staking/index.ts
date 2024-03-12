@@ -140,7 +140,7 @@ const byBalanceAndVotingPower = (valueViewA: ValueView, valueViewB: ValueView): 
  * delegations/validators in rapid succession, we only "flush" to state at a
  * fixed interval, so as to prevent React from having to re-render too often.
  */
-const DELEGATIONS_FLUSH_TO_STATE_INTERVAL = 50;
+const DELEGATIONS_FLUSH_TO_STATE_INTERVAL = 5;
 
 export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) => ({
   account: 0,
