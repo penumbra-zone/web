@@ -1,9 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { validatorInfo } from './validator-info';
 import { IndexedDbMock, MockServices } from '../test-utils';
-import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
-import { ServicesInterface } from '@penumbra-zone/types';
 import { servicesCtx } from '../../ctx';
 import {
   ValidatorInfoRequest,
@@ -11,6 +10,7 @@ import {
   ValidatorState_ValidatorStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
+import type { ServicesInterface } from '@penumbra-zone/types/src/services';
 
 describe('ValidatorInfo request handler', () => {
   let mockServices: MockServices;

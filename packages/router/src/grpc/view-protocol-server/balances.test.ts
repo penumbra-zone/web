@@ -11,9 +11,6 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { base64ToUint8Array } from '@penumbra-zone/types';
-import { getAddressIndex, getAssetIdFromValueView, getMetadata } from '@penumbra-zone/getters';
-
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { Services } from '@penumbra-zone/services';
 import { IndexedDbMock, MockServices } from '../test-utils';
@@ -21,6 +18,9 @@ import {
   AssetId,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { getAssetIdFromValueView, getMetadata } from '@penumbra-zone/getters/src/value-view';
+import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
+import { base64ToUint8Array } from '@penumbra-zone/types/src/base64';
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {
   const account0Res = responses.filter(
@@ -62,6 +62,7 @@ describe('Balances request handler', () => {
     };
 
     mockServices = {
+      // @ts-expect-error TODO: Improve mocking types
       getWalletServices: vi.fn(() =>
         Promise.resolve({
           indexedDb: mockIndexedDb,
@@ -70,7 +71,7 @@ describe('Balances request handler', () => {
             shieldedPool: mockShieldedPool,
           },
         }),
-      ),
+      ) as MockServices['getWalletServices'],
     };
 
     mockCtx = createHandlerContext({

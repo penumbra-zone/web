@@ -5,9 +5,9 @@ import { LinkGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
 import { OriginRecord } from '@penumbra-zone/storage';
 import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
-import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import { useStore } from '../../../state';
 import { connectedSitesSelector } from '../../../state/connected-sites';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 export const SettingsConnectedSites = () => {
   const {

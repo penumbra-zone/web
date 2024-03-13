@@ -1,11 +1,11 @@
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getAddressView } from './get-address-view';
-import { Jsonified } from '@penumbra-zone/types';
 import {
   TransactionPlan,
   TransactionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { viewActionPlan } from './view-action-plan';
+import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 
 /**
  * Given a `TransactionPlan`, returns a `TransactionView` that can be passed to

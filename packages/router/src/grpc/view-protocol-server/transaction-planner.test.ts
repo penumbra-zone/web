@@ -40,7 +40,7 @@ describe('TransactionPlanner request handler', () => {
           indexedDb: mockIndexedDb,
           viewServer: mockViewServer,
         }),
-      ),
+      ) as MockServices['getWalletServices'],
     };
 
     mockCtx = createHandlerContext({

@@ -1,15 +1,16 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
-  TransactionPlannerRequest_UndelegateClaim,
   TransactionPlannerRequest,
+  TransactionPlannerRequest_UndelegateClaim,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+
+import { sctClient, stakeClient, viewClient } from '../../clients';
 import {
+  getAmount,
   getStartEpochIndexFromValueView,
   getValidatorIdentityKeyAsBech32StringFromValueView,
-  asIdentityKey,
-  getAmount,
-} from '@penumbra-zone/getters';
-import { stakeClient, viewClient, sctClient } from '../../clients';
+} from '@penumbra-zone/getters/src/value-view';
+import { asIdentityKey } from '@penumbra-zone/getters/src/string';
 
 const getUndelegateClaimPlannerRequest =
   (endEpochIndex: bigint) => async (unbondingToken: ValueView) => {

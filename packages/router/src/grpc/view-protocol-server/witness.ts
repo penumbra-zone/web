@@ -3,7 +3,7 @@ import { servicesCtx } from '../../ctx';
 
 import { getWitness } from '@penumbra-zone/wasm';
 
-import { ConnectError, Code } from '@connectrpc/connect';
+import { Code, ConnectError } from '@connectrpc/connect';
 
 export const witness: Impl['witness'] = async (req, ctx) => {
   const services = ctx.values.get(servicesCtx);

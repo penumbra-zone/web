@@ -4,7 +4,6 @@ import { AllSlices, initializeStore } from '.';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { sendValidationErrors } from './send';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32ToUint8Array, stringToUint8Array } from '@penumbra-zone/types';
 import {
   Metadata,
   ValueView,
@@ -16,6 +15,8 @@ import {
   TransactionPlannerResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
+import { stringToUint8Array } from '@penumbra-zone/types/src/string';
+import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
 
 vi.mock('../fetchers/address', () => ({
   getAddressByIndex: vi.fn(),

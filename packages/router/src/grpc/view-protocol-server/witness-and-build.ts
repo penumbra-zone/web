@@ -5,7 +5,7 @@ import { optimisticBuild } from './util/build-tx';
 
 import { getWitness } from '@penumbra-zone/wasm';
 
-import { ConnectError, Code } from '@connectrpc/connect';
+import { Code, ConnectError } from '@connectrpc/connect';
 import { AuthorizationData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 export const witnessAndBuild: Impl['witnessAndBuild'] = async function* (

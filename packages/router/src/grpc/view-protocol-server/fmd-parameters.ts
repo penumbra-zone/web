@@ -1,7 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 
-import { ConnectError, Code } from '@connectrpc/connect';
+import { Code, ConnectError } from '@connectrpc/connect';
 
 export const fMDParameters: Impl['fMDParameters'] = async (_, ctx) => {
   const services = ctx.values.get(servicesCtx);

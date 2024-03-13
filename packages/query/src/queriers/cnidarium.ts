@@ -6,7 +6,7 @@ import {
   KeyValueRequest,
   KeyValueResponse_Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/cnidarium/v1/cnidarium_pb';
-import { CnidariumQuerierInterface } from '@penumbra-zone/types';
+import { CnidariumQuerierInterface } from '@penumbra-zone/types/src/querier';
 
 export class CnidariumQuerier implements CnidariumQuerierInterface {
   private readonly client: PromiseClient<typeof CnidariumQueryService>;

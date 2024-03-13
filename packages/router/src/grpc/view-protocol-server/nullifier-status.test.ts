@@ -5,7 +5,6 @@ import { servicesCtx } from '../../ctx';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import type { Services } from '@penumbra-zone/services';
-import { stringToUint8Array } from '@penumbra-zone/types';
 
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 
@@ -16,6 +15,7 @@ import {
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { IndexedDbMock, MockServices } from '../test-utils';
+import { stringToUint8Array } from '@penumbra-zone/types/src/string';
 
 describe('nullifierStatus', () => {
   let mockServices: MockServices;
@@ -49,7 +49,9 @@ describe('nullifierStatus', () => {
       },
     };
     mockServices = {
-      getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb })),
+      getWalletServices: vi.fn(() =>
+        Promise.resolve({ indexedDb: mockIndexedDb }),
+      ) as MockServices['getWalletServices'],
     };
 
     mockCtx = createHandlerContext({

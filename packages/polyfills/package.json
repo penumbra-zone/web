@@ -1,12 +1,24 @@
 {
   "name": "@penumbra-zone/polyfills",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./src/Array.fromAsync": "./dist/Array.fromAsync.js",
+    "./src/Map.groupBy": "./dist/Map.groupBy.js",
+    "./src/Promise.withResolvers": "./dist/Promise.withResolvers.js",
+    "./src/ReadableStream.from": "./dist/ReadableStream.from.js",
+    "./src/ReadableStream[Symbol.asyncIterator]": {
+      "import": "./dist/ReadableStream_Symbol.asyncIterator_.js",
+      "types": "./dist/ReadableStream[Symbol.asyncIterator].d.ts"
+    }
+  },
   "scripts": {
+    "build": "tsc && vite build",
+    "clean": "rm -rfv dist",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
-  },
-  "devDependencies": {
-    "tsconfig": "workspace:*"
   }
 }

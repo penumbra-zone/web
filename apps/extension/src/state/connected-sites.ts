@@ -1,7 +1,7 @@
 import { ExtensionStorage, LocalStorageState, OriginRecord } from '@penumbra-zone/storage';
 import { AllSlices, SliceCreator } from '.';
 
-import Map from '@penumbra-zone/polyfills/Map.groupBy';
+import Map from '@penumbra-zone/polyfills/src/Map.groupBy';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 export interface ConnectedSitesSlice {

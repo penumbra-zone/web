@@ -1,8 +1,9 @@
 import { AddressComponent } from './address-component';
 import { describe, expect, test } from 'vitest';
 import { render } from '@testing-library/react';
-import { bech32ToUint8Array, shortenAddress } from '@penumbra-zone/types';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
+import { shortenAddress } from '@penumbra-zone/types/src/string';
 
 describe('<AddressComponent />', () => {
   const address =

@@ -17,7 +17,7 @@
  * other content scripts could interfere or intercept connections.
  */
 
-import { PenumbraSymbol, PenumbraProvider } from '@penumbra-zone/client/global';
+import { PenumbraProvider, PenumbraSymbol } from '@penumbra-zone/client/src/global';
 import {
   isPraxConnectionPortMessageEvent,
   isPraxRequestResponseMessageEvent,
@@ -25,7 +25,7 @@ import {
 } from './message';
 import { Prax } from '../message/prax';
 
-import '@penumbra-zone/polyfills/Promise.withResolvers';
+import '@penumbra-zone/polyfills/src/Promise.withResolvers';
 
 const requestMessage: PraxMessage<Prax.RequestConnection> = { [PRAX]: Prax.RequestConnection };
 
@@ -76,8 +76,9 @@ const praxProvider: PenumbraProvider = Object.freeze({
 });
 
 // if the global isn't present, create it.
-if (!window[PenumbraSymbol])
-  Object.defineProperty(window, PenumbraSymbol, { value: new Object(), writable: false });
+if (!window[PenumbraSymbol]) {
+  Object.defineProperty(window, PenumbraSymbol, { value: {}, writable: false });
+}
 
 // reveal
 Object.defineProperty(window[PenumbraSymbol], PRAX_ORIGIN, {

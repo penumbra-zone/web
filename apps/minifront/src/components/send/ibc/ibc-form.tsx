@@ -8,7 +8,7 @@ import { validateAmount } from '../../../state/send';
 import { useMemo } from 'react';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { getBalances } from '../../../fetchers/balances';
-import { testnetIbcChains } from '@penumbra-zone/constants';
+import { testnetIbcChains } from '@penumbra-zone/constants/src/chains';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 export const IbcAssetBalanceLoader: LoaderFunction = async (): Promise<BalancesResponse[]> => {

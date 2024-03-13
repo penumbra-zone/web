@@ -11,7 +11,7 @@ export const STAKING_TOKEN_METADATA = localAssets.find(
   metadata => metadata.display === STAKING_TOKEN,
 )!;
 
-export interface AssetPattens {
+export interface AssetPatterns {
   lpNft: RegExp;
   delegationToken: RegExp;
   proposalNft: RegExp;
@@ -46,7 +46,7 @@ export interface UnbondingCaptureGroups {
  * Source of truth for regex patterns:
  * https://github.com/penumbra-zone/penumbra/blob/main/crates/core/asset/src/asset/registry.rs
  */
-export const assetPatterns: AssetPattens = {
+export const assetPatterns: AssetPatterns = {
   lpNft: new RegExp(/^lpnft_/),
   delegationToken: new RegExp(
     /^delegation_(?<bech32IdentityKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,

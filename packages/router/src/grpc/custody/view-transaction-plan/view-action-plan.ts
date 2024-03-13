@@ -2,7 +2,6 @@ import {
   ActionPlan,
   ActionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { bech32AssetId } from '@penumbra-zone/getters';
 import {
   Metadata,
   Value,
@@ -17,13 +16,14 @@ import {
   SpendPlan,
   SpendView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
-import { Jsonified } from '@penumbra-zone/types';
 import {
   SwapClaimPlan,
   SwapClaimView,
   SwapPlan,
   SwapView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import { bech32AssetId } from '@penumbra-zone/getters/src/asset';
+import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 
 const getValueView = (
   value: Value | undefined,

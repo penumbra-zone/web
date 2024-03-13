@@ -1,15 +1,15 @@
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
+import { ChannelLabel, nameConnection, parseConnectionName } from './channel-names';
+import { isTransportInitChannel, TransportInitChannel } from './message';
+import { PortStreamSink, PortStreamSource } from './stream';
+import { ChannelHandlerFn } from '@penumbra-zone/transport-dom/src/adapter';
 import {
+  isTransportMessage,
   TransportEvent,
   TransportMessage,
   TransportStream,
-  isTransportMessage,
-} from '@penumbra-zone/transport-dom/messages';
-import { ChannelLabel, nameConnection, parseConnectionName } from './channel-names';
-import { TransportInitChannel, isTransportInitChannel } from './message';
-import { PortStreamSink, PortStreamSource } from './stream';
+} from '@penumbra-zone/transport-dom/src/messages';
 
 interface CRSession {
   clientId: string;
@@ -44,6 +44,14 @@ export class CRSessionManager {
   private static singleton?: CRSessionManager;
   private sessions = new Map<string, CRSession>();
 
+  private constructor(
+    private prefix: string,
+    private handler: ChannelHandlerFn,
+  ) {
+    if (CRSessionManager.singleton) throw new Error('Already constructed');
+    chrome.runtime.onConnect.addListener(this.transportConnection);
+  }
+
   /**
    *
    * @param prefix a string containing no spaces, matching the prefix used in your content script
@@ -52,14 +60,6 @@ export class CRSessionManager {
   public static init = (prefix: string, handler: ChannelHandlerFn) => {
     CRSessionManager.singleton ??= new CRSessionManager(prefix, handler);
   };
-
-  private constructor(
-    private prefix: string,
-    private handler: ChannelHandlerFn,
-  ) {
-    if (CRSessionManager.singleton) throw new Error('Already constructed');
-    chrome.runtime.onConnect.addListener(this.transportConnection);
-  }
 
   /**
    * This handler is called when a new connection is opened from any document

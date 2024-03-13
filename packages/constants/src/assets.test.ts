@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assetPatterns } from '.';
+import { assetPatterns } from './assets';
 
 describe('assetPatterns', () => {
   describe('lpNftPattern', () => {

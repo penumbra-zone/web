@@ -1,6 +1,7 @@
 {
   "name": "chrome-extension",
-  "version": "1.0.0",
+  "version": "4.2.0",
+  "private": true,
   "description": "chrome-extension",
   "type": "module",
   "scripts": {
@@ -21,6 +22,7 @@
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/transport-chrome": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/ui": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*",
     "@tanstack/react-query": "^5.25.0",

@@ -1,4 +1,4 @@
-import { createPraxClient } from '@penumbra-zone/client/prax';
+import { createPraxClient } from '@penumbra-zone/client';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { SimulationService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/dex/v1/dex_connect';
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';

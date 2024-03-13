@@ -34,7 +34,9 @@ describe('Authorize request handler', () => {
     };
 
     mockServices = {
-      getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb })),
+      getWalletServices: vi.fn(() =>
+        Promise.resolve({ indexedDb: mockIndexedDb }),
+      ) as MockServices['getWalletServices'],
     };
 
     mockExtLocalCtx = {

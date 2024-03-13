@@ -12,7 +12,7 @@ import { QueryService as StakeService } from '@buf/penumbra-zone_penumbra.connec
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
 import { TendermintProxyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/util/tendermint_proxy/v1/tendermint_proxy_connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
-import { createRegistry } from '@bufbuild/protobuf';
+import { createRegistry, IMessageTypeRegistry } from '@bufbuild/protobuf';
 
 /**
  * This type registry is for JSON serialization of protobuf messages.
@@ -26,7 +26,7 @@ import { createRegistry } from '@bufbuild/protobuf';
  * extension, and should be able to resolve any message type encountered.
  */
 
-export const typeRegistry = createRegistry(
+export const typeRegistry: IMessageTypeRegistry = createRegistry(
   CustodyService,
   ViewService,
 

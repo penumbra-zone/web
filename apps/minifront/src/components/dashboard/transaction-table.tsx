@@ -1,8 +1,8 @@
-import { shorten } from '@penumbra-zone/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
 import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
 import { getAllTransactions, TransactionSummary } from '../../fetchers/transactions';
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
+import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
+import { shorten } from '@penumbra-zone/types/src/string';
 
 export const TxsLoader: LoaderFunction = async (): Promise<TransactionSummary[]> => {
   await throwIfPraxNotConnectedTimeout();

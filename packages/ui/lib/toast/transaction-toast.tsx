@@ -1,8 +1,3 @@
-import {
-  shorten,
-  TRANSACTION_LABEL_BY_CLASSIFICATION,
-  TransactionClassification,
-} from '@penumbra-zone/types';
 import { Toast } from './toast';
 import {
   AuthorizeAndBuildResponse,
@@ -12,6 +7,11 @@ import {
 import { Link } from 'react-router-dom';
 import { Progress } from '../../components/ui/progress';
 import { ReactNode } from 'react';
+import {
+  TRANSACTION_LABEL_BY_CLASSIFICATION,
+  TransactionClassification,
+} from '@penumbra-zone/types/src/transaction';
+import { shorten } from '@penumbra-zone/types/src/string';
 
 type BroadcastStatus = BroadcastTransactionResponse['status'];
 type BuildStatus = (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'];

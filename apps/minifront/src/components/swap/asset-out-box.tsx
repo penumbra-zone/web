@@ -17,8 +17,9 @@ import { groupByAsset } from '../../fetchers/balances/by-asset';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { getAmount } from '@penumbra-zone/getters';
-import { isZero } from '@penumbra-zone/types';
+
+import { isZero } from '@penumbra-zone/types/src/amount';
+import { getAmount } from '@penumbra-zone/getters/src/value-view';
 
 const findMatchingBalance = (
   metadata: Metadata | undefined,

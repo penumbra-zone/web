@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { delegationsByAddressIndex } from './delegations-by-address-index';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import {
-  HandlerContext,
-  createHandlerContext,
   createContextValues,
+  createHandlerContext,
+  HandlerContext,
   PromiseClient,
 } from '@connectrpc/connect';
 import { stakingClientCtx } from '../../ctx';
@@ -16,13 +16,14 @@ import {
   DelegationsByAddressIndexRequest_Filter,
   DelegationsByAddressIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants';
+import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import {
   ValidatorInfoRequest,
   ValidatorInfoResponse,
   ValidatorState_ValidatorStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { asIdentityKey, getAmount, getValidatorInfoFromValueView } from '@penumbra-zone/getters';
+import { getAmount, getValidatorInfoFromValueView } from '@penumbra-zone/getters/src/value-view';
+import { asIdentityKey } from '@penumbra-zone/getters/src/string';
 import { PartialMessage } from '@bufbuild/protobuf';
 import {
   Metadata,

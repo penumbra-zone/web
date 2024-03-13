@@ -1,6 +1,7 @@
 import { Undelegate } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { ViewBox } from './viewbox';
-import { bech32IdentityKey, joinLoHiAmount } from '@penumbra-zone/types';
+import { joinLoHiAmount } from '@penumbra-zone/types/src/amount';
+import { bech32IdentityKey } from '@penumbra-zone/types/src/identity-key';
 
 /**
  * Render an `Undelegate` action.

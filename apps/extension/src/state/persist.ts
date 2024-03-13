@@ -9,7 +9,7 @@ import {
   SessionStorageState,
   StorageItem,
 } from '@penumbra-zone/storage';
-import { walletsFromJson } from '@penumbra-zone/types';
+import { walletsFromJson } from '@penumbra-zone/types/src/wallet';
 
 export type Middleware = <
   T,

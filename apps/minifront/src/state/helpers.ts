@@ -1,14 +1,13 @@
 import {
   AuthorizeAndBuildRequest,
+  AuthorizeAndBuildResponse,
   BroadcastTransactionRequest,
+  BroadcastTransactionResponse,
   TransactionPlannerRequest,
   WitnessAndBuildRequest,
   WitnessAndBuildResponse,
-  AuthorizeAndBuildResponse,
-  BroadcastTransactionResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { viewClient } from '../clients';
-import { uint8ArrayToHex } from '@penumbra-zone/types';
 import { sha256Hash } from '@penumbra-zone/crypto-web';
 import {
   Transaction,
@@ -17,6 +16,7 @@ import {
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
+import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
 
 export const plan = async (
   req: PartialMessage<TransactionPlannerRequest>,

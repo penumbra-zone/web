@@ -1,5 +1,5 @@
-import { isPenumbraAddr } from '@penumbra-zone/types';
 import { Validation } from '../shared/validation-result';
+import { isPenumbraAddr } from '@penumbra-zone/types/src/address';
 
 export const penumbraAddrValidation = (): Validation => {
   return {

@@ -16,9 +16,6 @@ import {
   ValueView_KnownAssetId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { Jsonified } from '@penumbra-zone/types';
-import { bech32AssetId } from '@penumbra-zone/getters/src/asset';
-import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
 import {
   BatchSwapOutputData,
   SwapPlaintext,
@@ -28,6 +25,9 @@ import {
   Delegate,
   Undelegate,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import { bech32AssetId } from '@penumbra-zone/getters/src/asset';
+import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
+import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 
 describe('viewActionPlan()', () => {
   const addressAsBech32 =

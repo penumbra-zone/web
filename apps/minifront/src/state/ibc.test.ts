@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { bech32ToUint8Array, Chain } from '@penumbra-zone/types';
+import { Chain } from '@penumbra-zone/constants/src/chains';
 import {
   Metadata,
   ValueView,
@@ -11,6 +11,7 @@ import { sendValidationErrors } from './send';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { produce } from 'immer';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
 
 // TODO: Revisit tests when re-implementing ibc form
 

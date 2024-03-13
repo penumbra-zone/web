@@ -1,11 +1,5 @@
 import { AllSlices, SliceCreator } from '.';
-import {
-  getAddress,
-  getAddressIndex,
-  getAssetIdFromValueView,
-  getDisplayDenomExponentFromValueView,
-} from '@penumbra-zone/getters';
-import { fromValueView, isPenumbraAddr, toBaseUnit } from '@penumbra-zone/types';
+
 import {
   BalancesResponse,
   TransactionPlannerRequest,
@@ -19,6 +13,14 @@ import {
   FeeTier_Tier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { TransactionToast } from '@penumbra-zone/ui';
+import {
+  getAssetIdFromValueView,
+  getDisplayDenomExponentFromValueView,
+} from '@penumbra-zone/getters/src/value-view';
+import { getAddress, getAddressIndex } from '@penumbra-zone/getters/src/address-view';
+import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
+import { fromValueView } from '@penumbra-zone/types/src/amount';
+import { isPenumbraAddr } from '@penumbra-zone/types/src/address';
 
 export interface SendSlice {
   selection: BalancesResponse | undefined;

@@ -2,10 +2,10 @@ import { CompactBlockQuerier } from './queriers/compact-block';
 import { AppQuerier } from './queriers/app';
 import { TendermintQuerier } from './queriers/tendermint';
 import { ShieldedPoolQuerier } from './queriers/shielded-pool';
-import { RootQuerierInterface } from '@penumbra-zone/types';
 import { IbcClientQuerier } from './queriers/ibc-client';
 import { CnidariumQuerier } from './queriers/cnidarium';
 import { StakingQuerier } from './queriers/staking';
+import type { RootQuerierInterface } from '@penumbra-zone/types/src/querier';
 
 // Given the amount of query services, this root querier aggregates them all
 // to make it easier for consumers

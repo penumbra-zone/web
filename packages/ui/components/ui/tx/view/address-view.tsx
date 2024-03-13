@@ -1,8 +1,8 @@
 import { AddressIcon } from '../../address-icon';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32Address } from '@penumbra-zone/types';
 import { CopyToClipboardIconButton } from '../../copy-to-clipboard-icon-button';
 import { AddressComponent } from '../../address-component';
+import { bech32Address } from '@penumbra-zone/types/src/address';
 
 interface AddressViewProps {
   view: AddressView | undefined;

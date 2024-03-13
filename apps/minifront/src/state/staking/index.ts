@@ -1,32 +1,14 @@
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { AllSlices, SliceCreator } from '..';
-import {
-  getAmount,
-  getAssetIdFromValueView,
-  getDisplayDenomExponent,
-  getDisplayDenomExponentFromValueView,
-  getDisplayDenomFromView,
-  getRateData,
-  getValidatorInfoFromValueView,
-  getValueView,
-  getVotingPowerFromValidatorInfo,
-} from '@penumbra-zone/getters';
-import {
-  VotingPowerAsIntegerPercentage,
-  getVotingPowerByValidatorInfo,
-  isDelegationTokenForValidator,
-  joinLoHiAmount,
-  toBaseUnit,
-  splitLoHi,
-} from '@penumbra-zone/types';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/src/metadata';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
 import {
+  assetPatterns,
   localAssets,
   STAKING_TOKEN,
   STAKING_TOKEN_METADATA,
-  assetPatterns,
-} from '@penumbra-zone/constants';
+} from '@penumbra-zone/constants/src/assets';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { TransactionToast } from '@penumbra-zone/ui';
 import { authWitnessBuild, broadcast, getTxHash, plan, userDeniedTransaction } from '../helpers';
@@ -34,7 +16,26 @@ import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_
 import { BigNumber } from 'bignumber.js';
 import { assembleUndelegateClaimRequest } from './assemble-undelegate-claim-request';
 import throttle from 'lodash/throttle';
+import {
+  getAmount,
+  getAssetIdFromValueView,
+  getDisplayDenomExponentFromValueView,
+  getDisplayDenomFromView,
+  getValidatorInfoFromValueView,
+} from '@penumbra-zone/getters/src/value-view';
+import {
+  getRateData,
+  getVotingPowerFromValidatorInfo,
+} from '@penumbra-zone/getters/src/validator-info';
+import {
+  getVotingPowerByValidatorInfo,
+  isDelegationTokenForValidator,
+  VotingPowerAsIntegerPercentage,
+} from '@penumbra-zone/types/src/staking';
+import { joinLoHiAmount } from '@penumbra-zone/types/src/amount';
+import { splitLoHi, toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 import { viewClient } from '../../clients';
+import { getValueView } from '@penumbra-zone/getters/src/delegations-by-address-index-response';
 
 const STAKING_TOKEN_DISPLAY_DENOM_EXPONENT = (() => {
   const stakingAsset = localAssets.find(asset => asset.display === STAKING_TOKEN);

@@ -1,5 +1,10 @@
 // Canonical data source: https://github.com/cosmos/chain-registry/tree/master
-import { Chain } from '@penumbra-zone/types';
+export interface Chain {
+  displayName: string;
+  chainId: string;
+  ibcChannel: string;
+  iconUrl: string;
+}
 
 export const testnetIbcChains: Chain[] = [
   {

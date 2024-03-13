@@ -3,7 +3,6 @@ import {
   AssetMetadataByIdRequest,
   AssetMetadataByIdResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { ServicesInterface } from '@penumbra-zone/types';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { servicesCtx } from '../../ctx';
@@ -13,6 +12,7 @@ import {
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { assetMetadataById } from './asset-metadata-by-id';
+import type { ServicesInterface } from '@penumbra-zone/types/src/services';
 
 describe('AssetMetadataById request handler', () => {
   let mockServices: MockServices;
@@ -39,7 +39,7 @@ describe('AssetMetadataById request handler', () => {
             shieldedPool: mockShieldedPool,
           },
         }),
-      ),
+      ) as MockServices['getWalletServices'],
     };
     mockCtx = createHandlerContext({
       service: ViewService,

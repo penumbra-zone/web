@@ -1,9 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
-
-import { addLoHi, Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types';
-import { getAmount, getAssetIdFromRecord } from '@penumbra-zone/getters';
-
+import { getAmount } from '@penumbra-zone/getters/src/value-view';
+import { getAssetIdFromRecord } from '@penumbra-zone/getters/src/spendable-note-record';
 import {
   AssetId,
   ValueView,
@@ -23,6 +21,8 @@ import { HandlerContext } from '@connectrpc/connect';
 import { assetMetadataById } from './asset-metadata-by-id';
 import { addressByIndex } from './address-by-index';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
+import { addLoHi } from '@penumbra-zone/types/src/lo-hi';
 
 // Handles aggregating amounts and filtering by account number/asset id
 export const balances: Impl['balances'] = async function* (req, ctx) {

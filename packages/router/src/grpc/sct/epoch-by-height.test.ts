@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { epochByHeight } from './epoch-by-height';
 import { IndexedDbMock, MockServices } from '../test-utils';
-import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { QueryService as SctService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/sct/v1/sct_connect';
-import { ServicesInterface } from '@penumbra-zone/types';
 import { servicesCtx } from '../../ctx';
 import {
   Epoch,
   EpochByHeightRequest,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
+import type { ServicesInterface } from '@penumbra-zone/types/src/services';
 
 describe('EpochByHeight request handler', () => {
   let mockServices: MockServices;

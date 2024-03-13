@@ -1,4 +1,4 @@
-import { expect, describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { createChannelTransport } from './create';
 import { ElizaService } from '@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect';
@@ -10,8 +10,8 @@ import {
 import { createRegistry } from '@bufbuild/protobuf';
 import { TransportMessage } from './messages';
 
-import ReadableStream from '@penumbra-zone/polyfills/ReadableStream.from';
-import Array from '@penumbra-zone/polyfills/Array.fromAsync';
+import ReadableStream from '@penumbra-zone/polyfills/src/ReadableStream.from';
+import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
 
 const typeRegistry = createRegistry(ElizaService);
 

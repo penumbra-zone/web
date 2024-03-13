@@ -1,6 +1,6 @@
-import { ServiceImpl, createPromiseClient } from '@connectrpc/connect';
+import { createPromiseClient, ServiceImpl } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
-import { createProxyImpl } from '@penumbra-zone/transport-dom/proxy';
+import { createProxyImpl } from '@penumbra-zone/transport-dom/src/proxy';
 import { rethrowImplErrors } from './utils/rethrow-impl-errors';
 import { Query as IbcProxy } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
 import { QueryService as AppService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/app/v1/app_connect';
@@ -23,6 +23,7 @@ import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
 
 import { localExtStorage } from '@penumbra-zone/storage';
 import { ServiceType } from '@bufbuild/protobuf';
+
 const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 
 type RpcImplTuple<T extends ServiceType> = [T, Partial<ServiceImpl<T>>];

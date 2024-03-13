@@ -1,6 +1,7 @@
 {
   "name": "@penumbra-zone/crypto-web",
   "version": "1.0.0",
+  "private": true,
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -9,7 +10,8 @@
   },
   "dependencies": {
     "bip39": "^3.1.0",
-    "crypto-js": "^4.2.0"
+    "crypto-js": "^4.2.0",
+    "@penumbra-zone/types": "workspace:*"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2"

@@ -1,5 +1,5 @@
 import { useRouteError } from 'react-router-dom';
-import { PraxNotConnectedError } from '@penumbra-zone/client/prax';
+import { PraxNotConnectedError } from '@penumbra-zone/client';
 import { ExtensionNotConnected } from '../extension-not-connected';
 
 export const ErrorBoundary = () => {

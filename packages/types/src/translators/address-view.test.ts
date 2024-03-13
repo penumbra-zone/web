@@ -9,7 +9,7 @@ describe('asOpaqueAddressView()', () => {
   describe('when the address view is visible', () => {
     const addressView = new AddressView({
       addressView: {
-        case: 'visible',
+        case: 'decoded',
         value: {
           address: {
             inner: Uint8Array.from([0, 1, 2, 3]),

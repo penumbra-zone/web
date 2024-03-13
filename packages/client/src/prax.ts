@@ -4,21 +4,25 @@
  * additional conveniences.
  */
 
-const prax_id = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe' as const;
-const prax_origin = `chrome-extension://${prax_id}`;
-
 import type { JsonValue, ServiceType } from '@bufbuild/protobuf';
 import type { Transport } from '@connectrpc/connect';
 import { createPromiseClient } from '@connectrpc/connect';
-import { createChannelTransport } from '@penumbra-zone/transport-dom/create';
-import { jsonOptions } from '@penumbra-zone/types/registry';
+import { createChannelTransport } from '@penumbra-zone/transport-dom/src/create';
 import { PenumbraSymbol } from './global';
+import { jsonOptions } from '@penumbra-zone/types/src/registry';
+
+const prax_id = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe' as const;
+const prax_origin = `chrome-extension://${prax_id}`;
 
 export class PraxNotAvailableError extends Error {}
 export class PraxNotConnectedError extends Error {}
 export class PraxManifestError extends Error {}
 
-export const getPraxPort = async () => window[PenumbraSymbol]?.[prax_origin]?.connect()!;
+export const getPraxPort = async () => {
+  const provider = window[PenumbraSymbol]?.[prax_origin];
+  if (!provider) throw new Error('Prax not installed');
+  return provider.connect();
+};
 
 export const requestPraxConnection = async () => window[PenumbraSymbol]?.[prax_origin]?.request();
 
@@ -41,7 +45,7 @@ export const isPraxConnectedTimeout = (timeout: number) =>
     }, timeout);
   });
 
-export const throwIfPraxNotConnectedTimeout = async (timeout: number = 500) => {
+export const throwIfPraxNotConnectedTimeout = async (timeout = 500) => {
   const isConnected = await isPraxConnectedTimeout(timeout);
   if (!isConnected) throw new PraxNotConnectedError('Prax not connected');
 };
@@ -60,8 +64,9 @@ export const getPraxManifest = async () => {
   const manifestHref = window[PenumbraSymbol]?.[prax_origin]?.manifest;
   if (manifestHref !== `${prax_origin}/manifest.json`)
     throw new PraxManifestError('Incorrect Prax manifest href');
-  const manifest = await (await fetch(manifestHref)).json();
-  return manifest as JsonValue;
+
+  const response = await fetch(manifestHref);
+  return (await response.json()) as JsonValue;
 };
 
 let praxTransport: Transport | undefined;
