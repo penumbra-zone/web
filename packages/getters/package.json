@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/getters",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Convenience getters for the deeply nested optionals of Penumbra's protobuf types",
   "type": "module",
   "files": [
@@ -30,7 +30,7 @@
     "./src/value-view": "./dist/value-view.js"
   },
   "scripts": {
-    "build": "pnpm clean && tsc && vite build",
+    "build": "tsc && vite build",
     "clean": "rm -rfv dist",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"

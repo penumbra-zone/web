@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/types",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "type": "module",
   "files": [
@@ -36,7 +36,7 @@
     "./src/internal-msg/shared": "./dist/internal-msg-shared.js"
   },
   "scripts": {
-    "build": "pnpm clean && tsc && vite build",
+    "build": "tsc && vite build",
     "clean": "rm -rfv dist",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"

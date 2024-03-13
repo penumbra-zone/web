@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/transport-dom",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "MIT",
   "type": "module",
   "files": [
@@ -16,7 +16,7 @@
     "./src/stream": "./dist/stream.js"
   },
   "scripts": {
-    "build": "pnpm clean && tsc && vite build",
+    "build": "tsc && vite build",
     "clean": "rm -rfv dist",
     "lint": "eslint \"**/*.ts*\""
   },
