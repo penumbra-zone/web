@@ -16,7 +16,6 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
-import { ConnectError } from '@connectrpc/connect';
 
 export const plan = async (
   req: PartialMessage<TransactionPlannerRequest>,
@@ -124,4 +123,4 @@ export const getTxId = (tx: Transaction | PartialMessage<Transaction>) =>
  * Code.PermissionDenied`.
  */
 export const userDeniedTransaction = (e: unknown): boolean =>
-  e instanceof ConnectError && e.message.includes('[permission_denied]');
+  typeof e === 'string' && e.includes('[permission_denied]');
