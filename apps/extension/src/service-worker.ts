@@ -23,7 +23,13 @@ import { transportOptions } from '@penumbra-zone/types/registry';
 
 // context
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
-import { approverCtx, custodyCtx, servicesCtx } from '@penumbra-zone/router/src/ctx';
+import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
+import {
+  approverCtx,
+  custodyCtx,
+  servicesCtx,
+  stakingClientCtx,
+} from '@penumbra-zone/router/src/ctx';
 import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
 import { approveTransaction } from './approve-transaction';
 
@@ -43,6 +49,7 @@ const services = new Services({
 await services.initialize();
 
 let custodyClient: PromiseClient<typeof CustodyService> | undefined;
+let stakingClient: PromiseClient<typeof StakingService> | undefined;
 const handler = connectChannelAdapter({
   // jsonOptions contains typeRegistry providing ser/de
   jsonOptions: transportOptions.jsonOptions,
@@ -55,10 +62,12 @@ const handler = connectChannelAdapter({
   createRequestContext: req => {
     const contextValues = req.contextValues ?? createContextValues();
 
-    // dynamically initialize custodyClient, or reuse if it's already available
+    // dynamically initialize clients, or reuse if already available
     custodyClient ??= createDirectClient(CustodyService, handler, transportOptions);
+    stakingClient ??= createDirectClient(StakingService, handler, transportOptions);
 
     contextValues.set(custodyCtx, custodyClient);
+    contextValues.set(stakingClientCtx, stakingClient);
     contextValues.set(servicesCtx, services);
     contextValues.set(approverCtx, approveTransaction);
 

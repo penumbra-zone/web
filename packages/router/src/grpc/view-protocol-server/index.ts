@@ -3,11 +3,12 @@ import type { ServiceImpl } from '@connectrpc/connect';
 
 import { addressByIndex } from './address-by-index';
 import { appParameters } from './app-parameters';
+import { assetMetadataById } from './asset-metadata-by-id';
 import { assets } from './assets';
 import { authorizeAndBuild } from './authorize-and-build';
 import { balances } from './balances';
 import { broadcastTransaction } from './broadcast-transaction';
-import { assetMetadataById } from './asset-metadata-by-id';
+import { delegationsByAddressIndex } from './delegations-by-address-index';
 import { ephemeralAddress } from './ephemeral-address';
 import { fMDParameters } from './fmd-parameters';
 import { gasPrices } from './gas-prices';
@@ -33,11 +34,12 @@ export type Impl = ServiceImpl<typeof ViewService>;
 export const viewImpl: Impl = {
   addressByIndex,
   appParameters,
+  assetMetadataById,
   assets,
   authorizeAndBuild,
   balances,
   broadcastTransaction,
-  assetMetadataById,
+  delegationsByAddressIndex,
   ephemeralAddress,
   fMDParameters,
   gasPrices,

@@ -1,4 +1,9 @@
-import { TransportEvent, TransportMessage, isTransportMessage } from './messages';
+import {
+  TransportEvent,
+  TransportMessage,
+  isTransportMessage,
+  isTransportStream,
+} from './messages';
 import { ConnectError, createPromiseClient } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import { ChannelHandlerFn } from './adapter';
@@ -33,7 +38,10 @@ const directGetPort =
           error: errorToJson(ConnectError.from(error), jsonOptions),
         }),
       );
-      servicePort.postMessage(transportResponse);
+      servicePort.postMessage(
+        transportResponse,
+        isTransportStream(transportResponse) ? [transportResponse.stream] : [],
+      );
     };
 
     // TODO: this only supports unary requests

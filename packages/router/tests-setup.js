@@ -1,4 +1,7 @@
+import fromAsync from 'array-from-async';
 import { vi } from 'vitest';
+
+Array.fromAsync = fromAsync;
 
 // chrome.storage persistence middleware is run upon importing from `state/index.ts`.
 // For tests, this is problematic as it uses globals. This mocks those out.
