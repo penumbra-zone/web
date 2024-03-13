@@ -18,7 +18,7 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
   const wallets = await localExtStorage.get('wallets');
 
   if (!wallets.length) {
-    await chrome.tabs.create({ url: chrome.runtime.getURL(`page.html`) });
+    await chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
     window.close();
   }
 

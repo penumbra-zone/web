@@ -5,8 +5,8 @@ import {
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { StateCommitmentTree } from '@penumbra-zone/types';
-import { JsonValue } from '@bufbuild/protobuf';
+import type { StateCommitmentTree } from '@penumbra-zone/types';
+import type { JsonValue } from '@bufbuild/protobuf';
 import { authorize, build_action, build_parallel, load_proving_key, witness } from '../wasm';
 import { ActionType, provingKeys } from './proving-keys';
 
@@ -20,7 +20,7 @@ export const getWitness = (txPlan: TransactionPlan, sct: StateCommitmentTree): W
   return WitnessData.fromJsonString(JSON.stringify(result));
 };
 
-export const buildParallel = (
+export const buildTransaction = (
   batchActions: Action[],
   txPlan: TransactionPlan,
   witnessData: WitnessData,
@@ -35,7 +35,7 @@ export const buildParallel = (
   return Transaction.fromJson(result as JsonValue);
 };
 
-export const buildActionParallel = async (
+export const buildAction = async (
   txPlan: TransactionPlan,
   witnessData: WitnessData,
   fullViewingKey: string,

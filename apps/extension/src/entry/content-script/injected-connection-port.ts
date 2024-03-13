@@ -1,4 +1,4 @@
-import { Prax } from '../message/prax';
+import { Prax } from '../../message/prax';
 import { PraxConnectionPort } from './message';
 import { CRSessionClient } from '@penumbra-zone/transport-chrome/session-client';
 

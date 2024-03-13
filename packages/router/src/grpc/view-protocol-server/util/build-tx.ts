@@ -3,15 +3,17 @@ import {
   WitnessData,
   AuthorizationData,
   Transaction,
+  Action,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { buildParallel } from '@penumbra-zone/wasm';
-import { offscreenClient } from '../../offscreen-client';
+import { buildTransaction } from '@penumbra-zone/wasm';
 import {
   AuthorizeAndBuildResponse,
   WitnessAndBuildResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { PartialMessage } from '@bufbuild/protobuf';
+import type { JsonObject, PartialMessage } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
+import type { ActionBuildRequest } from './worker-message';
+import type { Jsonified } from '@penumbra-zone/types';
 
 import '@penumbra-zone/polyfills/Promise.withResolvers';
 
@@ -31,14 +33,24 @@ export const optimisticBuild = async function* (
   );
 
   // kick off the parallel actions build
-  const offscreenTasks = offscreenClient.buildActions(transactionPlan, witnessData, fvk, cancel);
+  const actionBuildRequest: Omit<ActionBuildRequest, 'actionPlanIndex'> = {
+    transactionPlan: transactionPlan.toJson() as Jsonified<TransactionPlan>,
+    witness: witnessData.toJson() as Jsonified<WitnessData>,
+    fullViewingKey: fvk,
+  };
+  const buildTasks = transactionPlan.actions.map((_, actionPlanIndex) =>
+    actionBuild(cancel, {
+      ...actionBuildRequest,
+      actionPlanIndex,
+    } satisfies ActionBuildRequest),
+  );
 
   // status updates
-  yield* progressStream(offscreenTasks, cancel);
+  yield* progressStream(buildTasks, cancel);
 
   // final build is synchronous
-  const transaction: Transaction = buildParallel(
-    await Promise.all(offscreenTasks),
+  const transaction: Transaction = buildTransaction(
+    await Promise.all(buildTasks),
     transactionPlan,
     witnessData,
     await authorizationRequest,
@@ -72,4 +84,31 @@ const progressStream = async function* <T>(tasks: PromiseLike<T>[], cancel: Prom
       // TODO: satisfies type parameter?
     } satisfies PartialMessage<AuthorizeAndBuildResponse | WitnessAndBuildResponse>;
   }
+};
+
+const actionBuild = (cancel: Promise<never>, req: ActionBuildRequest): Promise<Action> => {
+  const actionWorker = new Worker(new URL('./wasm-build-action.ts', import.meta.url), {
+    type: 'module',
+  });
+
+  const { promise: actionJson, resolve, reject } = Promise.withResolvers<Jsonified<Action>>();
+  const listenMessage = (e: MessageEvent<unknown>) => resolve(e.data as JsonObject);
+  const listenMessageError = (ev: MessageEvent<unknown>) => {
+    console.error('Error receiving message from worker', ev);
+    reject(ConnectError.from(ev));
+  };
+  const listenError = (ev: ErrorEvent) => {
+    const { filename, lineno, colno, message } = ev;
+    console.warn(`Worker ErrorEvent ${filename}:${lineno}:${colno} ${message}`, ev);
+    reject(ConnectError.from(ev.error ?? ev.message));
+  };
+
+  actionWorker.addEventListener('message', listenMessage, { once: true });
+  actionWorker.addEventListener('messageerror', listenMessageError, { once: true });
+  actionWorker.addEventListener('error', listenError, { once: true });
+  actionWorker.postMessage(req);
+
+  return Promise.race([cancel, actionJson])
+    .then(j => Action.fromJson(j))
+    .finally(() => actionWorker.terminate());
 };

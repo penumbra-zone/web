@@ -47,10 +47,12 @@ export class CRSessionClient {
   ) {
     if (CRSessionClient.singleton) throw new Error('Already constructed');
 
+    console.log('session-client chrome.runtime.connect');
     this.servicePort = chrome.runtime.connect({
       includeTlsChannelId: true,
       name: nameConnection(prefix, ChannelLabel.TRANSPORT),
     });
+    console.log('session-client succeeded');
 
     this.servicePort.onMessage.addListener(this.serviceListener);
     this.servicePort.onDisconnect.addListener(this.disconnect);

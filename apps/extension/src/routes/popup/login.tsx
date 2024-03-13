@@ -66,7 +66,7 @@ export const Login = () => {
             onClick={() =>
               void (async function () {
                 await chrome.tabs.create({
-                  url: `${chrome.runtime.getURL('page.html')}#${PagePath.RESTORE_PASSWORD}`,
+                  url: `${chrome.runtime.getURL('onboarding.html')}#${PagePath.RESTORE_PASSWORD}`,
                 });
               })()
             }
