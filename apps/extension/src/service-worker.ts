@@ -41,19 +41,17 @@ import { backOff } from 'exponential-backoff';
 let openOptionsOnce: undefined | Promise<void>;
 const startServices = async () => {
   const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
-  const { id: walletId, fullViewingKey } = await localExtStorage.get('wallets').then(wallets => {
-    if (wallets[0]) return wallets[0];
-    else openOptionsOnce ??= chrome.runtime.openOptionsPage();
-    throw Error('No wallets found');
-  });
+
+  const wallet0 = (await localExtStorage.get('wallets'))[0];
+  if (!wallet0) openOptionsOnce ??= chrome.runtime.openOptionsPage();
 
   const services = new Services({
     idbVersion: IDB_VERSION,
     grpcEndpoint,
-    walletId,
-    fullViewingKey,
+    walletId: wallet0?.id,
+    fullViewingKey: wallet0?.fullViewingKey,
   });
-  void services.initialize();
+  await services.initialize();
   return services;
 };
 

@@ -1,5 +1,5 @@
 import { BlockProcessor, RootQuerier } from '@penumbra-zone/query';
-import { IndexedDb, syncLastBlockWithLocal } from '@penumbra-zone/storage';
+import { IndexedDb, localExtStorage, syncLastBlockWithLocal } from '@penumbra-zone/storage';
 import { ViewServer } from '@penumbra-zone/wasm';
 import {
   ServicesInterface,
@@ -7,27 +7,47 @@ import {
   WalletServices,
 } from '@penumbra-zone/types/src/services';
 import type { JsonValue } from '@bufbuild/protobuf';
+import '@penumbra-zone/polyfills/Promise.withResolvers';
 
 export interface ServicesConfig {
-  grpcEndpoint: string;
-  idbVersion: number;
-  walletId: string;
-  fullViewingKey: string;
+  readonly idbVersion: number;
+  readonly grpcEndpoint?: string;
+  readonly walletId?: string;
+  readonly fullViewingKey?: string;
 }
+
+const isCompleteServicesConfig = (c: Partial<ServicesConfig>): c is Required<ServicesConfig> =>
+  c.grpcEndpoint != null && c.idbVersion != null && c.walletId != null && c.fullViewingKey != null;
 
 export class Services implements ServicesInterface {
   private walletServicesPromise: Promise<WalletServices> | undefined;
+  private config: Promise<Required<ServicesConfig>>;
 
-  constructor(private readonly config: ServicesConfig) {
+  constructor(initConfig: ServicesConfig) {
+    const {
+      promise: completeConfig,
+      resolve: resolveConfig,
+      reject: rejectConfig,
+    } = Promise.withResolvers<Required<ServicesConfig>>();
+    this.config = completeConfig;
+
+    if (isCompleteServicesConfig(initConfig)) resolveConfig(initConfig);
+
     // Attach a listener to allow extension documents to control services.
     // Note that you can't activate this handler from another part of the background script.
-    chrome.runtime.onMessage.addListener((req: JsonValue, sender, respond) => {
+    chrome.runtime.onMessage.addListener((req: JsonValue, sender, respond: () => void) => {
+      const emptyResponse = () => respond();
       if (sender.origin !== origin || typeof req !== 'string') return false;
       switch (req in ServicesMessage && (req as ServicesMessage)) {
         case false:
           return false;
         case ServicesMessage.ClearCache:
-          void this.clearCache().then(() => respond());
+          void this.clearCache().then(emptyResponse);
+          return true;
+        case ServicesMessage.OnboardComplete:
+          void this.completeConfig(initConfig)
+            .then(resolveConfig, rejectConfig)
+            .then(emptyResponse);
           return true;
       }
     });
@@ -41,7 +61,8 @@ export class Services implements ServicesInterface {
   }
 
   public async initialize(): Promise<void> {
-    this._querier = new RootQuerier({ grpcEndpoint: this.config.grpcEndpoint });
+    const { grpcEndpoint } = await this.config;
+    this._querier = new RootQuerier({ grpcEndpoint });
 
     // initialize walletServices separately without exponential backoff to bubble up errors immediately
     await this.getWalletServices();
@@ -62,7 +83,7 @@ export class Services implements ServicesInterface {
   }
 
   private async initializeWalletServices(): Promise<WalletServices> {
-    const { walletId, fullViewingKey } = this.config;
+    const { walletId, fullViewingKey, idbVersion: dbVersion } = await this.config;
     const params = await this.querier.app.appParams();
     if (!params.sctParams?.epochDuration) throw new Error('Epoch duration unknown');
     const {
@@ -72,7 +93,7 @@ export class Services implements ServicesInterface {
 
     const indexedDb = await IndexedDb.initialize({
       chainId,
-      dbVersion: this.config.idbVersion,
+      dbVersion,
       walletId,
     });
 
@@ -92,6 +113,19 @@ export class Services implements ServicesInterface {
     });
 
     return { viewServer, blockProcessor, indexedDb, querier: this.querier };
+  }
+
+  private async completeConfig(initConfig: ServicesConfig): Promise<Required<ServicesConfig>> {
+    const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+    const wallet0 = (await localExtStorage.get('wallets'))[0];
+    if (!wallet0) throw Error('No wallets found');
+    const { id: walletId, fullViewingKey } = wallet0;
+    return {
+      ...initConfig,
+      grpcEndpoint,
+      walletId,
+      fullViewingKey,
+    };
   }
 
   private async clearCache() {
