@@ -200,6 +200,23 @@ describe('TransactionToast', () => {
     });
   });
 
+  describe('.onUnauthenticated()', () => {
+    it('updates the toast to show the error', () => {
+      const toast = new TransactionToast('send');
+      toast.onStart();
+      toast.onUnauthenticated();
+
+      expect(mockToastFn.warning).toHaveBeenCalledWith(
+        'Not logged in',
+        expect.objectContaining({
+          duration: 5_000,
+          description: 'Please log into the extension to continue.',
+          id: MOCK_TOAST_ID,
+        }),
+      );
+    });
+  });
+
   describe('.onDenied()', () => {
     it('updates the toast to indicate that the transaction was canceled', () => {
       const toast = new TransactionToast('send');
