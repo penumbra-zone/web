@@ -66,7 +66,8 @@ export class CRSessionClient {
         this.clientPort.postMessage({ requestId, error: 'Connection closed' });
       }
     });
-    this.clientPort.postMessage({ error: { code: 'unavailable', message: 'Connection closed' } });
+    const jsonifiedConnectError = { error: { code: 'unavailable', message: 'Connection closed' } };
+    this.clientPort.postMessage(jsonifiedConnectError);
   };
 
   private clientListener = (ev: MessageEvent<unknown>) => {
