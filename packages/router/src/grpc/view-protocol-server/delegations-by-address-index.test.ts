@@ -325,6 +325,23 @@ describe('DelegationsByAddressIndex request handler', () => {
   });
 
   describe('when the `ALL` filter option is passed', () => {
-    it.todo('returns one `ValueView` for each validator, including inactive ones');
+    it('returns one `ValueView` for each validator, including inactive ones', async () => {
+      const results: (
+        | DelegationsByAddressIndexResponse
+        | PartialMessage<DelegationsByAddressIndexResponse>
+      )[] = [];
+
+      for await (const result of delegationsByAddressIndex(
+        new DelegationsByAddressIndexRequest({
+          addressIndex: { account: 0 },
+          filter: DelegationsByAddressIndexRequest_Filter.ALL,
+        }),
+        mockCtx,
+      )) {
+        results.push(result);
+      }
+
+      expect(results.length).toBe(4);
+    });
   });
 });

@@ -59,7 +59,9 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
     balances(new BalancesRequest({ accountFilter: addressIndex }), ctx),
   );
 
-  for await (const validatorInfoResponse of stakingClient.validatorInfo({ showInactive: false })) {
+  for await (const validatorInfoResponse of stakingClient.validatorInfo({
+    showInactive: req.filter === DelegationsByAddressIndexRequest_Filter.ALL,
+  })) {
     const validatorInfo = getValidatorInfo(validatorInfoResponse);
     const extendedMetadata = new Any({
       typeUrl: ValidatorInfo.typeName,
