@@ -5,6 +5,7 @@ import type {
 } from '@penumbra-zone/types/src/internal-msg/shared';
 import { PopupMessage, PopupRequest, PopupResponse, PopupType } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
+import { Code, ConnectError } from '@connectrpc/connect';
 
 export const popup = async <M extends PopupMessage>(
   req: PopupRequest<M>,
@@ -58,7 +59,7 @@ const spawnPopup = async (pop: PopupType) => {
   if (!loggedIn) {
     popUrl.hash = PopupPath.LOGIN;
     void spawnExtensionPopup(popUrl.href);
-    throw Error('User must login to extension');
+    throw new ConnectError('User must login to extension', Code.Unauthenticated);
   }
 
   switch (pop) {

@@ -62,6 +62,8 @@ export const planBuildBroadcast = async (
   } catch (e) {
     if (userDeniedTransaction(e)) {
       toast.onDenied();
+    } else if (unauthenticated(e)) {
+      toast.onUnauthenticated();
     } else {
       toast.onFailure(e);
       throw e;
@@ -159,3 +161,6 @@ const getTxId = (tx: Transaction | PartialMessage<Transaction>) =>
  */
 export const userDeniedTransaction = (e: unknown): boolean =>
   e instanceof ConnectError && e.message.includes('[permission_denied]');
+
+export const unauthenticated = (e: unknown): boolean =>
+  typeof e === 'string' && e.includes('[unauthenticated]');

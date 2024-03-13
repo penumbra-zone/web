@@ -150,8 +150,18 @@ export class TransactionToast {
       .render();
   }
 
+  onUnauthenticated(): void {
+    this.toast
+      .warning()
+      .message('Not logged in')
+      .description('Please log into the extension to continue.')
+      .duration(5_000)
+      .render();
+  }
+
   /**
-   * Updates the toast to show that the user denied the transaction.
+   * Updates the toast to show that the user denied the transaction, or closed
+   * the approval popup without approving.
    */
   onDenied(): void {
     this.toast
