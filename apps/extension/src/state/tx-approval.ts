@@ -102,6 +102,7 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
       choice,
       transactionView: transactionViewString,
       authorizeRequest: authorizeRequestString,
+      handleCloseWindow,
     } = get().txApproval;
 
     if (!responder) throw new Error('No responder');
@@ -143,6 +144,8 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
         state.txApproval.asPublic = undefined;
         state.txApproval.transactionClassification = undefined;
       });
+
+      if (window.onbeforeunload === handleCloseWindow) window.onbeforeunload = null;
     }
   },
 });
