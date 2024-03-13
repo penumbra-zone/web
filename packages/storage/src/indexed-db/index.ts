@@ -281,7 +281,9 @@ export class IndexedDb implements IndexedDbInterface {
   async getAppParams(): Promise<AppParameters | undefined> {
     const json = await this.db.get('APP_PARAMETERS', 'params');
     if (!json) return undefined;
-    return AppParameters.fromJson(json);
+    const appParams = AppParameters.fromJson(json);
+    if (!appParams.chainId) return undefined;
+    return appParams;
   }
 
   async saveAppParams(app: AppParameters): Promise<void> {

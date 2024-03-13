@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { Mock, beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   AppParametersRequest,
   AppParametersResponse,
@@ -15,15 +15,30 @@ describe('AppParameters request handler', () => {
   let mockServices: MockServices;
   let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
+  let apSubNext: Mock;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
+    apSubNext = vi.fn();
+
+    const mockAppParametersSubscription = {
+      next: apSubNext,
+      [Symbol.asyncIterator]: () => mockAppParametersSubscription,
+    };
+
     mockIndexedDb = {
       getAppParams: vi.fn(),
+      subscribe: (table: string) => {
+        if (table === 'APP_PARAMETERS') return mockAppParametersSubscription;
+        throw new Error('Table not supported');
+      },
     };
+
     mockServices = {
-      getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb })),
+      getWalletServices: vi.fn(() =>
+        Promise.resolve({ indexedDb: mockIndexedDb }),
+      ) as MockServices['getWalletServices'],
     };
     mockCtx = createHandlerContext({
       service: ViewService,
@@ -46,9 +61,12 @@ describe('AppParameters request handler', () => {
     expect(appParameterResponse.parameters?.equals(testData)).toBeTruthy();
   });
 
-  test('should fail to get appParameters when idb has none', async () => {
+  test('should wait for appParameters when idb has none', async () => {
     mockIndexedDb.getAppParams?.mockResolvedValue(undefined);
-    await expect(appParameters(new AppParametersRequest(), mockCtx)).rejects.toThrow();
+    apSubNext.mockResolvedValueOnce({
+      value: { value: new AppParametersRequest(), table: 'APP_PARAMETERS' },
+    });
+    await expect(appParameters(new AppParametersRequest(), mockCtx)).resolves.toBeTruthy();
   });
 });
 
