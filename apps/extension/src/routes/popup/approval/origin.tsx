@@ -82,8 +82,8 @@ export const OriginApproval = () => {
                     )}
                   </div>
                 </div>
-                <div className='z-30 flex h-11 w-full items-center overflow-x-scroll rounded-lg bg-background p-2 text-muted-foreground [scrollbar-color:red_red]'>
-                  <div className='mx-auto items-center p-2 text-center leading-[0.8em] [background-clip:content-box] [background-image:repeating-linear-gradient(45deg,red,black_15px)] first-line:[background-color:black]'>
+                <div className='z-30 flex min-h-11 w-full items-center overflow-x-scroll rounded-lg bg-background p-2 text-muted-foreground [scrollbar-color:red_red]'>
+                  <div className='mx-auto items-center p-2 text-center leading-[0.8em]'>
                     <DisplayOriginURL url={new URL(requestOrigin)} />
                   </div>
                 </div>
