@@ -16,7 +16,6 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
-import { ConnectError } from '@connectrpc/connect';
 import { TransactionToast } from '@penumbra-zone/ui';
 
 /**
