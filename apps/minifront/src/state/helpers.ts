@@ -42,10 +42,12 @@ export const planBuildBroadcast = async (
   const toast = new TransactionToast(transactionClassification);
   toast.onStart();
 
+  const rpcMethod = options?.skipAuth ? viewClient.witnessAndBuild : viewClient.authorizeAndBuild;
+
   try {
     const transactionPlan = await plan(req);
 
-    const transaction = await build({ transactionPlan }, !!options?.skipAuth, status =>
+    const transaction = await build({ transactionPlan }, rpcMethod, status =>
       toast.onBuildStatus(status),
     );
 
@@ -82,14 +84,12 @@ export const plan = async (
 
 const build = async (
   req: PartialMessage<AuthorizeAndBuildRequest> | PartialMessage<WitnessAndBuildRequest>,
-  skipAuth: boolean,
+  buildFn: (typeof viewClient)['authorizeAndBuild' | 'witnessAndBuild'],
   onStatusUpdate: (
     status?: (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'],
   ) => void,
 ) => {
-  const buildFn = skipAuth ? 'witnessAndBuild' : 'authorizeAndBuild';
-
-  for await (const { status } of viewClient[buildFn](req)) {
+  for await (const { status } of buildFn(req)) {
     onStatusUpdate(status);
 
     switch (status.case) {
@@ -99,7 +99,7 @@ const build = async (
       case 'complete':
         return status.value.transaction!;
       default:
-        console.warn(`unknown ${buildFn} status`, status);
+        console.warn(`unknown ${buildFn.name} status`, status);
     }
   }
   throw new Error('did not build transaction');
