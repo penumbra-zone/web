@@ -17,5 +17,6 @@ export interface ServicesInterface {
 }
 
 export enum ServicesMessage {
+  OnboardComplete = 'OnboardComplete',
   ClearCache = 'ClearCache',
 }

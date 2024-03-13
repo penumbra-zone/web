@@ -19,6 +19,6 @@ export const useOnboardingSave = () => {
     await setPassword(plaintextPassword);
 
     await addWallet({ label: 'Wallet #1', seedPhrase });
-    void chrome.runtime.sendMessage(ServicesMessage.ClearCache);
+    void chrome.runtime.sendMessage(ServicesMessage.OnboardComplete);
   };
 };

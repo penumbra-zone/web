@@ -12,5 +12,8 @@
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*",
     "exponential-backoff": "^3.1.1"
+  },
+  "devDependencies": {
+    "@penumbra-zone/polyfills": "workspace:*"
   }
 }
