@@ -17,10 +17,11 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants';
 import {
+  ValidatorInfoRequest,
   ValidatorInfoResponse,
   ValidatorState_ValidatorStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { asIdentityKey, getAmount } from '@penumbra-zone/getters';
+import { asIdentityKey, getAmount, getValidatorInfoFromValueView } from '@penumbra-zone/getters';
 import { PartialMessage } from '@bufbuild/protobuf';
 import {
   Metadata,
@@ -93,12 +94,14 @@ const inactiveValidator2InfoResponse = new ValidatorInfoResponse({
   },
 });
 
-const MOCK_VALIDATOR_INFOS = [
+const MOCK_ALL_VALIDATOR_INFOS = [
   activeValidatorInfoResponse,
   activeValidator2InfoResponse,
   inactiveValidatorInfoResponse,
   inactiveValidator2InfoResponse,
 ];
+
+const MOCK_ACTIVE_VALIDATOR_INFOS = [activeValidatorInfoResponse, activeValidator2InfoResponse];
 
 const penumbraBalancesResponse = new BalancesResponse({
   accountAddress: {
@@ -178,26 +181,40 @@ describe('DelegationsByAddressIndex request handler', () => {
   };
   let mockCtx: HandlerContext;
 
+  const mockBalancesResponse = {
+    next: vi.fn(),
+    [Symbol.asyncIterator]: () => mockBalancesResponse,
+  };
+
+  const mockAllValidatorInfosResponse = {
+    next: vi.fn(),
+    [Symbol.asyncIterator]: () => mockAllValidatorInfosResponse,
+  };
+
+  const mockActiveValidatorInfosResponse = {
+    next: vi.fn(),
+    [Symbol.asyncIterator]: () => mockActiveValidatorInfosResponse,
+  };
+
   beforeEach(() => {
     vi.resetAllMocks();
-
-    const mockBalancesResponse = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockBalancesResponse,
-    };
     mockBalances.mockReturnValue(mockBalancesResponse);
     MOCK_BALANCES.forEach(value => mockBalancesResponse.next.mockResolvedValueOnce({ value }));
     mockBalancesResponse.next.mockResolvedValueOnce({ done: true });
 
-    const mockValidatorInfoResponse = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockValidatorInfoResponse,
-    };
-    mockStakingClient.validatorInfo.mockReturnValue(mockValidatorInfoResponse);
-    MOCK_VALIDATOR_INFOS.forEach(value =>
-      mockValidatorInfoResponse.next.mockResolvedValueOnce({ value }),
+    // Miniature mock staking client that actually switches what response it
+    // gives based on `req.showInactive`.
+    mockStakingClient.validatorInfo.mockImplementation((req: ValidatorInfoRequest) =>
+      req.showInactive ? mockAllValidatorInfosResponse : mockActiveValidatorInfosResponse,
     );
-    mockValidatorInfoResponse.next.mockResolvedValueOnce({ done: true });
+    MOCK_ALL_VALIDATOR_INFOS.forEach(value =>
+      mockAllValidatorInfosResponse.next.mockResolvedValueOnce({ value }),
+    );
+    mockAllValidatorInfosResponse.next.mockResolvedValueOnce({ done: true });
+    MOCK_ACTIVE_VALIDATOR_INFOS.forEach(value =>
+      mockActiveValidatorInfosResponse.next.mockResolvedValueOnce({ value }),
+    );
+    mockActiveValidatorInfosResponse.next.mockResolvedValueOnce({ done: true });
 
     mockCtx = createHandlerContext({
       service: ViewService,
@@ -225,15 +242,64 @@ describe('DelegationsByAddressIndex request handler', () => {
       results.push(result);
     }
 
-    expect(getAmount(new ValueView(results[0]!.valueView))).toEqual({ hi: 0n, lo: 2n });
+    const firstValueView = new ValueView(results[0]!.valueView);
+
+    expect(getAmount(firstValueView)).toEqual({ hi: 0n, lo: 2n });
   });
 
-  it.todo("includes `ValidatorInfo` in the `ValueView`'s `extendedMetadata` property");
+  it("includes `ValidatorInfo` in the `ValueView`'s `extendedMetadata` property", async () => {
+    const results: (
+      | DelegationsByAddressIndexResponse
+      | PartialMessage<DelegationsByAddressIndexResponse>
+    )[] = [];
+
+    for await (const result of delegationsByAddressIndex(
+      new DelegationsByAddressIndexRequest({ addressIndex: { account: 0 } }),
+      mockCtx,
+    )) {
+      results.push(result);
+    }
+
+    const firstValueView = new ValueView(results[0]!.valueView);
+    const validatorInfo = getValidatorInfoFromValueView(firstValueView);
+
+    expect(validatorInfo.toJson()).toEqual(activeValidatorInfoResponse.validatorInfo!.toJson());
+  });
 
   describe('when no filter option is passed', () => {
-    it.todo('returns one `ValueView` for each active validator');
+    it('returns one `ValueView` for each active validator', async () => {
+      const results: (
+        | DelegationsByAddressIndexResponse
+        | PartialMessage<DelegationsByAddressIndexResponse>
+      )[] = [];
 
-    it.todo('returns a zero-balance `ValueView` for validators the address has no tokens for');
+      for await (const result of delegationsByAddressIndex(
+        new DelegationsByAddressIndexRequest({ addressIndex: { account: 0 } }),
+        mockCtx,
+      )) {
+        results.push(result);
+      }
+
+      expect(results.length).toBe(2);
+    });
+
+    it('returns a zero-balance `ValueView` for validators the address has no tokens for', async () => {
+      const results: (
+        | DelegationsByAddressIndexResponse
+        | PartialMessage<DelegationsByAddressIndexResponse>
+      )[] = [];
+
+      for await (const result of delegationsByAddressIndex(
+        new DelegationsByAddressIndexRequest({ addressIndex: { account: 0 } }),
+        mockCtx,
+      )) {
+        results.push(result);
+      }
+
+      const secondValueView = new ValueView(results[1]!.valueView);
+
+      expect(getAmount(secondValueView)).toEqual({ hi: 0n, lo: 0n });
+    });
   });
 
   describe('when the nonzero balances filter option is passed', () => {
