@@ -15,8 +15,65 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
-import { ConnectError } from '@connectrpc/connect';
+import { TransactionToast } from '@penumbra-zone/ui';
+import { TransactionClassification } from '@penumbra-zone/types/src/transaction';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
+
+/**
+ * Handles the common use case of planning, building, and broadcasting a
+ * transaction, along with the appropriate toasts. Throws if there is an
+ * unhandled error (i.e., any error other than the user denying authorization
+ * for the transaction) so that consuming code can take different actions based
+ * on whether the transaction succeeded or failed.
+ */
+export const planBuildBroadcast = async (
+  transactionClassification: TransactionClassification,
+  req: PartialMessage<TransactionPlannerRequest>,
+  options?: {
+    /**
+     * If set to `true`, the `ViewService#witnessAndBuild` method will be used,
+     * which does not prompt the user to authorize the transaction. If `false`,
+     * the `ViewService#authorizeAndBuild` method will be used, which _does_
+     * prompt the user to authorize the transaction. (This is required in the
+     * case of most transactions.) Default: `false`
+     */
+    skipAuth?: boolean;
+  },
+): Promise<Transaction | undefined> => {
+  const toast = new TransactionToast(transactionClassification);
+  toast.onStart();
+
+  const rpcMethod = options?.skipAuth ? viewClient.witnessAndBuild : viewClient.authorizeAndBuild;
+
+  try {
+    const transactionPlan = await plan(req);
+
+    const transaction = await build({ transactionPlan }, rpcMethod, status =>
+      toast.onBuildStatus(status),
+    );
+
+    const txHash = await getTxHash(transaction);
+    toast.txHash(txHash);
+
+    const { detectionHeight } = await broadcast({ transaction, awaitDetection: true }, status =>
+      toast.onBroadcastStatus(status),
+    );
+    toast.onSuccess(detectionHeight);
+
+    return transaction;
+  } catch (e) {
+    if (userDeniedTransaction(e)) {
+      toast.onDenied();
+    } else if (unauthenticated(e)) {
+      toast.onUnauthenticated();
+    } else {
+      toast.onFailure(e);
+      throw e;
+    }
+  }
+
+  return undefined;
+};
 
 export const plan = async (
   req: PartialMessage<TransactionPlannerRequest>,
@@ -26,35 +83,16 @@ export const plan = async (
   return plan;
 };
 
-export const authWitnessBuild = async (
-  req: PartialMessage<AuthorizeAndBuildRequest>,
-  onStatusUpdate?: (
-    status?: (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'],
-  ) => void,
-) => {
-  for await (const { status } of viewClient.authorizeAndBuild(req)) {
-    if (onStatusUpdate) onStatusUpdate(status);
-    switch (status.case) {
-      case undefined:
-      case 'buildProgress':
-        break;
-      case 'complete':
-        return status.value.transaction!;
-      default:
-        console.warn('unknown authorizeAndBuild status', status);
-    }
-  }
-  throw new Error('did not build transaction');
-};
-
-export const witnessBuild = async (
-  req: PartialMessage<WitnessAndBuildRequest>,
+const build = async (
+  req: PartialMessage<AuthorizeAndBuildRequest> | PartialMessage<WitnessAndBuildRequest>,
+  buildFn: (typeof viewClient)['authorizeAndBuild' | 'witnessAndBuild'],
   onStatusUpdate: (
     status?: (AuthorizeAndBuildResponse | WitnessAndBuildResponse)['status'],
   ) => void,
 ) => {
-  for await (const { status } of viewClient.witnessAndBuild(req)) {
+  for await (const { status } of buildFn(req)) {
     onStatusUpdate(status);
+
     switch (status.case) {
       case undefined:
       case 'buildProgress':
@@ -62,13 +100,13 @@ export const witnessBuild = async (
       case 'complete':
         return status.value.transaction!;
       default:
-        console.warn('unknown witnessAndBuild status', status);
+        console.warn(`unknown ${buildFn.name} status`, status);
     }
   }
   throw new Error('did not build transaction');
 };
 
-export const broadcast = async (
+const broadcast = async (
   req: PartialMessage<BroadcastTransactionRequest>,
   onStatusUpdate: (status?: BroadcastTransactionResponse['status']) => void,
 ): Promise<{ txHash: string; detectionHeight?: bigint }> => {
@@ -94,9 +132,7 @@ export const broadcast = async (
   throw new Error('did not broadcast transaction');
 };
 
-export const getTxHash = <
-  T extends Required<PartialMessage<TransactionId>> | PartialMessage<Transaction>,
->(
+const getTxHash = <T extends Required<PartialMessage<TransactionId>> | PartialMessage<Transaction>>(
   t: T,
 ): T extends Required<PartialMessage<TransactionId>> ? string : Promise<string> =>
   'inner' in t && t.inner instanceof Uint8Array
@@ -107,7 +143,7 @@ export const getTxHash = <
         uint8ArrayToHex(inner),
       ) as T extends Required<PartialMessage<TransactionId>> ? never : Promise<string>);
 
-export const getTxId = (tx: Transaction | PartialMessage<Transaction>) =>
+const getTxId = (tx: Transaction | PartialMessage<Transaction>) =>
   sha256Hash(tx instanceof Transaction ? tx.toBinary() : new Transaction(tx).toBinary()).then(
     inner => new TransactionId({ inner }),
   );
@@ -116,12 +152,14 @@ export const getTxId = (tx: Transaction | PartialMessage<Transaction>) =>
  * @todo: The error flow between extension <-> webapp needs to be refactored a
  * bit. Right now, if we throw a `ConnectError` with `Code.PermissionDenied` (as
  * we do in the approver), it gets swallowed by ConnectRPC's internals and
- * rethrown via `ConnectError.from()`.  This means that the original code is
- * lost, although the stringified error message still contains
- * `[permission_denied]`. So we'll (somewhat hackily) check the stringified
- * error message for now; but in the future, we need ot get the error flow
- * working properly so that we can actually check `e.code ===
- * Code.PermissionDenied`.
+ * rethrown as a string.  This means that the original code is lost, although
+ * the stringified error message still contains `[permission_denied]`. So we'll
+ * (somewhat hackily) check the stringified error message for now; but in the
+ * future, we need ot get the error flow working properly so that we can
+ * actually check `e.code === Code.PermissionDenied`.
  */
 export const userDeniedTransaction = (e: unknown): boolean =>
-  e instanceof ConnectError && e.message.includes('[permission_denied]');
+  typeof e === 'string' && e.includes('[permission_denied]');
+
+export const unauthenticated = (e: unknown): boolean =>
+  typeof e === 'string' && e.includes('[unauthenticated]');

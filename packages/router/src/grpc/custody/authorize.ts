@@ -44,7 +44,7 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!approveReq) throw new ConnectError('Approver not found', Code.Unavailable);
 
   const passwordKey = await sess.get('passwordKey');
-  if (!passwordKey) throw new ConnectError('User must login to extension', Code.Unavailable);
+  if (!passwordKey) throw new ConnectError('User must login to extension', Code.Unauthenticated);
 
   const wallets = await local.get('wallets');
   const {
