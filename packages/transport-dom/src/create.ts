@@ -59,7 +59,7 @@ export const createChannelTransport = ({
   const pending = new Map<string, (response: TransportEvent) => void>();
 
   // this is used to recover errors that couldn't be thrown at a caller
-  let listenerError: ConnectError | undefined;
+  const listenerError = Promise.withResolvers<never>();
 
   // port returned by the penumbra global
   let port: MessagePort | undefined;
@@ -98,14 +98,10 @@ export const createChannelTransport = ({
       const respond = pending.get(data.requestId);
       if (respond) respond(data);
     } else if (isTransportError(data)) {
-      listenerError ??= errorFromJson(
-        data.error,
-        data.metadata,
-        new ConnectError('Response failed'),
+      listenerError.reject(
+        errorFromJson(data.error, data.metadata, new ConnectError('Response failed')),
       );
-    } else listenerError ??= ConnectError.from(data);
-
-    if (listenerError) console.warn(listenerError);
+    } else listenerError.reject(ConnectError.from(data));
   };
 
   return {
@@ -117,7 +113,6 @@ export const createChannelTransport = ({
       header: HeadersInit | undefined,
       input: PartialMessage<I>,
     ): Promise<UnaryResponse<I, O>> {
-      if (listenerError) throw listenerError;
       port ??= await connect();
 
       const requestId = crypto.randomUUID();
@@ -132,13 +127,15 @@ export const createChannelTransport = ({
       const message = Any.pack(new method.I(input)).toJson(jsonOptions);
       port.postMessage({ requestId, message, header });
 
+      const result = await Promise.race([response, listenerError.promise]);
+
       return {
         service,
         method,
         stream: false,
-        header: new Headers((await response).header),
-        trailer: new Headers((await response).trailer),
-        message: method.O.fromJson((await response).message, jsonOptions),
+        header: new Headers(result.header),
+        trailer: new Headers(result.trailer),
+        message: method.O.fromJson(result.message, jsonOptions),
       };
     },
 
@@ -150,7 +147,6 @@ export const createChannelTransport = ({
       header: HeadersInit | undefined,
       input: AsyncIterable<PartialMessage<I>>,
     ): Promise<StreamResponse<I, O>> {
-      if (listenerError) throw listenerError;
       port ??= await connect();
 
       const requestId = crypto.randomUUID();
@@ -161,6 +157,8 @@ export const createChannelTransport = ({
           reject(errorFromJson(tev.error, tev.metadata, new ConnectError('Stream failed')));
         else reject(ConnectError.from(tev));
       });
+
+      /** @todo: Race `response` against `listenerError`, like in `unary` */
 
       if (method.kind === MethodKind.ServerStreaming) {
         const iter = input[Symbol.asyncIterator]();

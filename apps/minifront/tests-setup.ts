@@ -1,7 +1,10 @@
 import { afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
+import withResolvers from 'promise.withresolvers';
 
 import '@testing-library/jest-dom/vitest';
+
+withResolvers.shim();
 
 vi.mock('zustand');
 
