@@ -1,11 +1,8 @@
 import { ViewBox } from './viewbox';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import {
-  bech32Address,
-  fromBaseUnitAmount,
-  joinLoHiAmount,
-  uint8ArrayToBase64,
-} from '@penumbra-zone/types';
+import { bech32Address } from '@penumbra-zone/types/src/address';
+import { fromBaseUnitAmount, joinLoHiAmount } from '@penumbra-zone/types/src/amount';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 
 export const SwapViewComponent = ({ value }: { value: SwapView }) => {
   if (value.swapView.case === 'visible') {

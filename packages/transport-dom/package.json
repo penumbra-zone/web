@@ -1,9 +1,23 @@
 {
   "name": "@penumbra-zone/transport-dom",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "license": "MIT",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./src/adapter": "./dist/adapter.js",
+    "./src/impl": "./dist/any-impl.js",
+    "./src/create": "./dist/create.js",
+    "./src/direct": "./dist/direct.js",
+    "./src/messages": "./dist/messages.js",
+    "./src/proxy": "./dist/proxy.js",
+    "./src/stream": "./dist/stream.js"
+  },
   "scripts": {
+    "build": "pnpm clean && tsc && vite build",
+    "clean": "rm -rfv dist",
     "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {

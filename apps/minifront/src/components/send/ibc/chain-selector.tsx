@@ -3,7 +3,7 @@ import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useState } from 'react';
 import { useStore } from '../../../state';
 import { ibcSelector } from '../../../state/ibc';
-import { testnetIbcChains } from '@penumbra-zone/constants';
+import { testnetIbcChains } from '@penumbra-zone/constants/src/chains';
 
 export const ChainSelector = () => {
   const { chain, setChain } = useStore(ibcSelector);

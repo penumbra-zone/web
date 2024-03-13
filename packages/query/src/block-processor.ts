@@ -1,12 +1,6 @@
 import { RootQuerier } from './root-querier';
 
 import { sha256Hash } from '@penumbra-zone/crypto-web';
-import {
-  BlockProcessorInterface,
-  customizeSymbol,
-  IndexedDbInterface,
-  ViewServerInterface,
-} from '@penumbra-zone/types';
 import { computePositionId, decodeSctRoot } from '@penumbra-zone/wasm';
 import {
   PositionState,
@@ -24,6 +18,10 @@ import {
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { backOff } from 'exponential-backoff';
+import type { BlockProcessorInterface } from '@penumbra-zone/types/src/block-processor';
+import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
+import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
+import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
 
 interface QueryClientProps {
   querier: RootQuerier;

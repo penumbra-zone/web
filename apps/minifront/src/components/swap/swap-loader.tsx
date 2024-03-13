@@ -1,7 +1,7 @@
 import { LoaderFunction } from 'react-router-dom';
 import { getBalances } from '../../fetchers/balances';
 import { useStore } from '../../state';
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
+import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
 import {
   BalancesResponse,
   SwapRecord,
@@ -9,9 +9,10 @@ import {
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { fetchUnclaimedSwaps } from '../../fetchers/unclaimed-swaps';
 import { viewClient } from '../../clients';
-import { getDisplayDenomFromView, getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types';
-import { assetPatterns, localAssets } from '@penumbra-zone/constants';
+import { assetPatterns, localAssets } from '@penumbra-zone/constants/src/assets';
+import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
+import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/src/swap-record';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 
 export interface UnclaimedSwapsWithMetadata {
   swap: SwapRecord;

@@ -4,7 +4,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { SegmentedPicker, SegmentedPickerOption } from '@penumbra-zone/ui';
 import { InputBlock } from './input-block';
-import { localAssets } from '@penumbra-zone/constants';
+import { localAssets } from '@penumbra-zone/constants/src/assets';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 

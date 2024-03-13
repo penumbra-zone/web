@@ -16,10 +16,11 @@ import { Services } from '@penumbra-zone/services';
 import { localExtStorage } from '@penumbra-zone/storage';
 
 // adapter
-import { ConnectRouter, PromiseClient, createContextValues } from '@connectrpc/connect';
+import { ConnectRouter, createContextValues, PromiseClient } from '@connectrpc/connect';
 import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
-import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
-import { transportOptions } from '@penumbra-zone/types/registry';
+import { createDirectClient } from '@penumbra-zone/transport-dom/src/direct';
+import { connectChannelAdapter } from '@penumbra-zone/transport-dom/src/adapter';
+import { transportOptions } from '@penumbra-zone/types/src/registry';
 
 // context
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
@@ -30,7 +31,6 @@ import {
   servicesCtx,
   stakingClientCtx,
 } from '@penumbra-zone/router/src/ctx';
-import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
 import { approveTransaction } from './approve-transaction';
 
 // all rpc implementations, local and proxy

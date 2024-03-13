@@ -1,11 +1,11 @@
 import { UndelegateClaim } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { ViewBox } from './viewbox';
 import { IdentityKeyComponent } from '../../identity-key-component';
+import { ActionDetails } from './action-details';
 import {
   getStartEpochIndexFromUndelegateClaim,
   getValidatorIdentityFromUndelegateClaim,
-} from '@penumbra-zone/getters';
-import { ActionDetails } from './action-details';
+} from '@penumbra-zone/getters/src/undelegate-claim';
 
 /** Render an `UndelegateClaim` action. */
 export const UndelegateClaimComponent = ({ value }: { value: UndelegateClaim }) => {

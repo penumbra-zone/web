@@ -7,8 +7,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tool
 import { useEffect, useState } from 'react';
 import { AddressComponent } from './address-component';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32Address } from '@penumbra-zone/types';
 import { AccountSwitcher } from './account-switcher';
+import { bech32Address } from '@penumbra-zone/types/src/address';
 
 interface SelectAccountProps {
   getAddrByIndex: (index: number, ephemeral: boolean) => Promise<Address> | Address;

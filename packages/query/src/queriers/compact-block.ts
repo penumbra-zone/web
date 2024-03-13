@@ -5,7 +5,10 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
 import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/compact_block/v1/compact_block_connect';
 import { createClient } from './utils';
-import { CompactBlockQuerierInterface, CompactBlockRangeParams } from '@penumbra-zone/types';
+import type {
+  CompactBlockQuerierInterface,
+  CompactBlockRangeParams,
+} from '@penumbra-zone/types/src/querier';
 
 export class CompactBlockQuerier implements CompactBlockQuerierInterface {
   private readonly client: PromiseClient<typeof QueryService>;

@@ -2,7 +2,7 @@ import { BalancesRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { viewClient } from '../../clients';
-import Array from '@penumbra-zone/polyfills/Array.fromAsync';
+import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
 
 interface BalancesProps {
   accountFilter?: AddressIndex;

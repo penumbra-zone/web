@@ -16,22 +16,22 @@ import {
   Value,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import {
-  getAddressIndex,
-  getAssetId,
-  getAssetIdFromValueView,
-  getDisplayDenomExponentFromValueView,
-  getMetadata,
-  getSwapCommitmentFromTx,
-} from '@penumbra-zone/getters';
 import { BigNumber } from 'bignumber.js';
 import { getAddressByIndex } from '../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { errorToast, TransactionToast } from '@penumbra-zone/ui';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { toBaseUnit } from '@penumbra-zone/types';
 import { SimulateTradeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { simulateClient } from '../clients';
+import {
+  getAssetIdFromValueView,
+  getDisplayDenomExponentFromValueView,
+  getMetadata,
+} from '@penumbra-zone/getters/src/value-view';
+import { getAssetId } from '@penumbra-zone/getters/src/metadata';
+import { getSwapCommitmentFromTx } from '@penumbra-zone/getters/src/transaction';
+import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
+import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 
 export interface SimulateSwapResult {
   output: ValueView;

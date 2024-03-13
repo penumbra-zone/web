@@ -6,10 +6,10 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { bech32ToUint8Array } from '@penumbra-zone/types';
-import { localAssets } from '@penumbra-zone/constants';
+import { localAssets } from '@penumbra-zone/constants/src/assets';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
 
 describe('Swap Slice', () => {
   const selectionExample = new BalancesResponse({

@@ -1,11 +1,11 @@
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32ToUint8Array } from '@penumbra-zone/types';
 import { describe, expect, test } from 'vitest';
 import { viewTransactionPlan } from '.';
 import {
   MemoView_Visible,
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
 
 describe('viewTransactionPlan()', () => {
   const returnAddressAsBech32 =

@@ -2,8 +2,8 @@ import {
   Address,
   AddressView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32Address } from '@penumbra-zone/types';
 import { isControlledAddress } from '@penumbra-zone/wasm';
+import { bech32Address } from '@penumbra-zone/types/src/address';
 
 export const getAddressView = (address: Address, fullViewingKey: string): AddressView => {
   const index = isControlledAddress(fullViewingKey, bech32Address(address));

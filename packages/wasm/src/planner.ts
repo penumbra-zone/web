@@ -1,9 +1,8 @@
 import { TransactionPlan } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { JsonValue } from '@bufbuild/protobuf';
-import { IdbConstants } from '@penumbra-zone/types';
-
 import { plan_transaction } from '../wasm';
+import type { IdbConstants } from '@penumbra-zone/types/src/indexed-db';
 
 export const planTransaction = async (
   idbConstants: IdbConstants,

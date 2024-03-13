@@ -1,9 +1,37 @@
 {
   "name": "@penumbra-zone/getters",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Convenience getters for the deeply nested optionals of Penumbra's protobuf types",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./src/asset": "./dist/asset.js",
+    "./src/address-view": "./dist/address-view.js",
+    "./src/delegations-by-address-index-response": "./dist/delegations-by-address-index-response.js",
+    "./src/funding-stream": "./dist/funding-stream.js",
+    "./src/metadata": "./dist/metadata.js",
+    "./src/rate-data": "./dist/rate-data.js",
+    "./src/string": "./dist/string.js",
+    "./src/swap": "./dist/swap.js",
+    "./src/swap-record": "./dist/swap-record.js",
+    "./src/spendable-note-record": "./dist/spendable-note-record.js",
+    "./src/trading-pair": "./dist/trading-pair.js",
+    "./src/transaction": "./dist/transaction.js",
+    "./src/unclaimed-swaps-response": "./dist/unclaimed-swaps-response.js",
+    "./src/undelegate-claim": "./dist/undelegate-claim.js",
+    "./src/undelegate-claim-body": "./dist/undelegate-claim-body.js",
+    "./src/validator": "./dist/validator.js",
+    "./src/validator-info": "./dist/validator-info.js",
+    "./src/validator-info-response": "./dist/validator-info-response.js",
+    "./src/validator-state": "./dist/validator-state.js",
+    "./src/validator-status": "./dist/validator-status.js",
+    "./src/value-view": "./dist/value-view.js"
+  },
   "scripts": {
+    "build": "pnpm clean && tsc && vite build",
+    "clean": "rm -rfv dist",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },

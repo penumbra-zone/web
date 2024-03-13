@@ -4,13 +4,13 @@ import {
   SwapByCommitmentResponse,
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { ServicesInterface } from '@penumbra-zone/types';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { servicesCtx } from '../../ctx';
 import { IndexedDbMock, MockServices } from '../test-utils';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { swapByCommitment } from './swap-by-commitment';
+import type { ServicesInterface } from '@penumbra-zone/types/src/services';
 
 describe('SwapByCommitment request handler', () => {
   let mockServices: MockServices;
@@ -33,7 +33,9 @@ describe('SwapByCommitment request handler', () => {
       subscribe: () => mockSwapSubscription,
     };
     mockServices = {
-      getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb })),
+      getWalletServices: vi.fn(() =>
+        Promise.resolve({ indexedDb: mockIndexedDb }),
+      ) as MockServices['getWalletServices'],
     };
     mockCtx = createHandlerContext({
       service: ViewService,

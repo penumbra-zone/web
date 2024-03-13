@@ -1,12 +1,4 @@
 import { ViewServer as WasmViewServer } from '../wasm';
-import {
-  IdbConstants,
-  ScanBlockResult,
-  SctUpdatesSchema,
-  StateCommitmentTree,
-  validateSchema,
-  ViewServerInterface,
-} from '@penumbra-zone/types';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
 import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
@@ -19,6 +11,14 @@ import {
   SpendableNoteRecord,
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import {
+  ScanBlockResult,
+  SctUpdatesSchema,
+  StateCommitmentTree,
+} from '@penumbra-zone/types/src/state-commitment-tree';
+import type { IdbConstants } from '@penumbra-zone/types/src/indexed-db';
+import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
+import { validateSchema } from '@penumbra-zone/types/src/validation';
 
 interface ViewServerProps {
   fullViewingKey: string;

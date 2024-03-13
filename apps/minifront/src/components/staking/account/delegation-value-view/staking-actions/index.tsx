@@ -1,12 +1,13 @@
 import { Button } from '@penumbra-zone/ui';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { getAmount, getValidator } from '@penumbra-zone/getters';
-import { joinLoHiAmount } from '@penumbra-zone/types';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { FormDialog } from './form-dialog';
 import { useMemo } from 'react';
 import { AllSlices } from '../../../../../state';
 import { useStoreShallow } from '../../../../../utils/use-store-shallow';
+import { getValidator } from '@penumbra-zone/getters/src/validator-info';
+import { getAmount } from '@penumbra-zone/getters/src/value-view';
+import { joinLoHiAmount } from '@penumbra-zone/types/src/amount';
 
 const stakingActionsSelector = (state: AllSlices) => ({
   action: state.staking.action,

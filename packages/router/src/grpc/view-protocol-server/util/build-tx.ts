@@ -1,8 +1,8 @@
 import {
-  TransactionPlan,
-  WitnessData,
   AuthorizationData,
   Transaction,
+  TransactionPlan,
+  WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { buildParallel } from '@penumbra-zone/wasm';
 import { offscreenClient } from '../../offscreen-client';
@@ -13,7 +13,7 @@ import {
 import { PartialMessage } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 
-import '@penumbra-zone/polyfills/Promise.withResolvers';
+import '@penumbra-zone/polyfills/src/Promise.withResolvers';
 
 export const optimisticBuild = async function* (
   transactionPlan: TransactionPlan,

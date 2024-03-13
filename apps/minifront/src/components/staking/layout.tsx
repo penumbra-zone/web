@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useStore } from '../../state';
 import { stakingSelector } from '../../state/staking';
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
+import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
 import { Account } from './account';
 
 export const StakingLoader = async () => {

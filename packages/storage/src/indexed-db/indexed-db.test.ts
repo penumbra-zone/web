@@ -4,7 +4,6 @@ import {
   SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IdbUpdate, PenumbraDb } from '@penumbra-zone/types';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { IndexedDb } from '.';
 import {
@@ -41,7 +40,8 @@ import {
   PositionState_PositionStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { localAssets } from '@penumbra-zone/constants';
+import { localAssets } from '@penumbra-zone/constants/src/assets';
+import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/src/indexed-db';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place

@@ -8,8 +8,8 @@ import {
 } from '@penumbra-zone/wasm';
 import { Key } from '@penumbra-zone/crypto-web';
 import { ExtensionStorage, LocalStorageState } from '@penumbra-zone/storage';
-import { Wallet, WalletCreate } from '@penumbra-zone/types';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { Wallet, WalletCreate } from '@penumbra-zone/types/src/wallet';
 
 export interface WalletsSlice {
   all: Wallet[];

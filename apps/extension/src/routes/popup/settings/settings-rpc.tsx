@@ -8,9 +8,9 @@ import { ShareGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { networkSelector } from '../../../state/network';
-import { ServicesMessage } from '@penumbra-zone/types/src/services';
-import '@penumbra-zone/polyfills/Promise.withResolvers';
+import '@penumbra-zone/polyfills/src/Promise.withResolvers';
 import { TrashIcon } from '@radix-ui/react-icons';
+import { ServicesMessage } from '@penumbra-zone/types/src/services';
 
 export const SettingsRPC = () => {
   const { chainId: currentChainId } = useChainIdQuery();

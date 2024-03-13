@@ -1,4 +1,3 @@
-import { ScanBlockResult } from '@penumbra-zone/types';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   SpendableNoteRecord,
@@ -12,6 +11,7 @@ import {
 import { Epoch } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import type { ScanBlockResult } from '@penumbra-zone/types/src/state-commitment-tree';
 
 export const emptyScanResult: ScanBlockResult = {
   height: 1092n,

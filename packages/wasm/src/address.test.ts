@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { generateSpendKey, getAddressByIndex, getFullViewingKey } from './keys';
 import { isControlledAddress } from './address';
-import { bech32Address } from '@penumbra-zone/types';
+import { bech32Address } from '@penumbra-zone/types/src/address';
 
 describe('address', () => {
   const seedPhrase =

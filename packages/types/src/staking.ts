@@ -5,17 +5,17 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import {
   getBondingStateEnumFromValidatorInfo,
-  getDisplayDenomFromView,
   getFundingStreamsFromValidatorInfo,
   getIdentityKeyFromValidatorInfo,
-  getRateBpsFromFundingStream,
   getStateEnumFromValidatorInfo,
   getVotingPowerFromValidatorInfo,
-} from '@penumbra-zone/getters';
+} from '@penumbra-zone/getters/src/validator-info';
+import { getRateBpsFromFundingStream } from '@penumbra-zone/getters/src/funding-stream';
 import { joinLoHiAmount } from './amount';
 import { bech32IdentityKey } from './identity-key';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { DelegationCaptureGroups, assetPatterns } from '@penumbra-zone/constants';
+import { assetPatterns, DelegationCaptureGroups } from '@penumbra-zone/constants/src/assets';
+import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
 
 export const getStateLabel = (validatorInfo: ValidatorInfo): string =>
   ValidatorState_ValidatorStateEnum[getStateEnumFromValidatorInfo(validatorInfo)];

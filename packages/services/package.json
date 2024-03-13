@@ -1,6 +1,7 @@
 {
   "name": "@penumbra-zone/services",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "private": true,
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -10,6 +11,7 @@
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/query": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*",
     "exponential-backoff": "^3.1.1"
   },

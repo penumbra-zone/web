@@ -1,20 +1,20 @@
-import { getDisplayDenomFromView } from '@penumbra-zone/getters';
 import {
+  Button,
   Card,
   CardContent,
-  TooltipProvider,
   Tooltip,
-  TooltipTrigger,
   TooltipContent,
-  Button,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@penumbra-zone/ui';
 import { AccountSwitcher } from '@penumbra-zone/ui/components/ui/account-switcher';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { Stat } from './stat';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants';
+import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { accountsSelector, stakingSelector } from '../../../../state/staking';
 import { useStore } from '../../../../state';
+import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
 
 /**
  * A default `ValueView` to render when we don't have any balance data for a

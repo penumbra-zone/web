@@ -15,32 +15,20 @@
  */
 
 import {
-  TransportStream,
   isTransportError,
   isTransportEvent,
   isTransportMessage,
   isTransportStream,
-} from '@penumbra-zone/transport-dom/messages';
+  TransportStream,
+} from '@penumbra-zone/transport-dom/src/messages';
 import { ChannelLabel, nameConnection } from './channel-names';
-import { TransportInitChannel, isTransportInitChannel } from './message';
+import { isTransportInitChannel, TransportInitChannel } from './message';
 import { PortStreamSink, PortStreamSource } from './stream';
 
 export class CRSessionClient {
   private static singleton?: CRSessionClient;
-
-  /**
-   * Establishes a new connection from this document to the extension.
-   *
-   * @param prefix a string containing no spaces
-   * @returns a `MessagePort` that can be provided to DOM channel transports
-   */
-  public static init(prefix: string): MessagePort {
-    const { port1, port2 } = new MessageChannel();
-    CRSessionClient.singleton ??= new CRSessionClient(prefix, port1);
-    return port2;
-  }
-
   private servicePort: chrome.runtime.Port;
+
   private constructor(
     private prefix: string,
     private clientPort: MessagePort,
@@ -56,6 +44,18 @@ export class CRSessionClient {
     this.servicePort.onDisconnect.addListener(this.disconnect);
     this.clientPort.addEventListener('message', this.clientListener);
     this.clientPort.start();
+  }
+
+  /**
+   * Establishes a new connection from this document to the extension.
+   *
+   * @param prefix a string containing no spaces
+   * @returns a `MessagePort` that can be provided to DOM channel transports
+   */
+  public static init(prefix: string): MessagePort {
+    const { port1, port2 } = new MessageChannel();
+    CRSessionClient.singleton ??= new CRSessionClient(prefix, port1);
+    return port2;
   }
 
   private disconnect = () => {

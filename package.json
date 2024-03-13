@@ -17,7 +17,9 @@
     "format-check": "prettier --check .",
     "format-check:rust": "turbo run format-check:rust",
     "playwright-install": "playwright install",
-    "all-check": "pnpm install && pnpm compile && pnpm format-check && pnpm lint && pnpm test && pnpm download-keys && pnpm build && pnpm format-check:rust && pnpm lint:rust && pnpm test:rust"
+    "changeset": "changeset",
+    "changeset:publish": "changeset publish",
+    "all-check": "pnpm install && pnpm clean && pnpm compile && pnpm format-check && pnpm lint && pnpm test && pnpm download-keys && pnpm build && pnpm format-check:rust && pnpm lint:rust"
   },
   "dependencies": {
     "@buf/cosmos_ibc.bufbuild_es": "1.7.2-20240215124455-b32ecf3ebbcb.1",
@@ -31,7 +33,7 @@
     "@penumbra-zone/tailwind-config": "workspace:*"
   },
   "devDependencies": {
-    "@penumbra-zone/types": "workspace:*",
+    "@changesets/cli": "^2.27.1",
     "@penumbra-zone/wasm": "workspace:*",
     "@storybook/react-vite": "8.0.0-beta.4",
     "@turbo/gen": "^1.12.5",
@@ -61,6 +63,8 @@
     "turbo": "^1.12.5",
     "typescript": "^5.4.2",
     "vite": "^5.1.6",
+    "vite-plugin-dts": "^3.7.3",
+    "vite-plugin-node-polyfills": "0.21.0",
     "vite-plugin-top-level-await": "^1.4.1",
     "vite-plugin-wasm": "^3.3.0",
     "vitest": "^1.3.1"

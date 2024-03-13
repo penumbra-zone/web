@@ -4,7 +4,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { getBalances } from '.';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { getAddress, getAddressIndex } from '@penumbra-zone/getters';
+import { getAddress, getAddressIndex } from '@penumbra-zone/getters/src/address-view';
 
 export interface BalancesByAccount {
   index: AddressIndex;

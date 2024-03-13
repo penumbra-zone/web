@@ -38,16 +38,25 @@ export interface ViewServerMock {
   fullViewingKey?: Mock;
 }
 
+interface MockQuerier {
+  tendermint?: TendermintMock;
+  shieldedPool?: ShieldedPoolMock;
+  staking?: StakingMock;
+}
+
 export interface StakingMock {
   validatorPenalty?: Mock;
 }
+
+interface MockServicesInner {
+  indexedDb?: IndexedDbMock;
+  viewServer?: ViewServerMock;
+  querier?: MockQuerier;
+}
+
 export interface MockServices {
-  getWalletServices?: Mock<[], Promise<{ indexedDb?: IndexedDbMock; viewServer?: ViewServerMock }>>;
-  querier?: {
-    tendermint?: TendermintMock;
-    shieldedPool?: ShieldedPoolMock;
-    staking?: StakingMock;
-  };
+  getWalletServices?: Mock<[], Promise<MockServicesInner>>;
+  querier?: MockQuerier;
 }
 
 export interface MockExtLocalCtx {

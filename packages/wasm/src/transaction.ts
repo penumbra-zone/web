@@ -1,10 +1,10 @@
-import { IdbConstants } from '@penumbra-zone/types';
 import { transaction_info } from '../wasm';
 import {
   Transaction,
   TransactionPerspective,
   TransactionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import type { IdbConstants } from '@penumbra-zone/types/src/indexed-db';
 
 export const generateTransactionInfo = async (
   fullViewingKey: string,

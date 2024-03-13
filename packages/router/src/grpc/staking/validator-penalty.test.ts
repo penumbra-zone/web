@@ -1,14 +1,14 @@
-import { Mock, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { validatorPenalty } from './validator-penalty';
 import { MockServices } from '../test-utils';
-import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
-import { ServicesInterface } from '@penumbra-zone/types';
 import { servicesCtx } from '../../ctx';
 import {
   ValidatorPenaltyRequest,
   ValidatorPenaltyResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import type { ServicesInterface } from '@penumbra-zone/types/src/services';
 
 describe('ValidatorPenalty request handler', () => {
   let mockServices: MockServices;

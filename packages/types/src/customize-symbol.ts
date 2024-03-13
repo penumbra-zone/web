@@ -3,7 +3,7 @@ import {
   assetPatterns,
   DelegationCaptureGroups,
   UnbondingCaptureGroups,
-} from '@penumbra-zone/constants';
+} from '@penumbra-zone/constants/src/assets';
 
 const SHORTENED_ID_LENGTH = 8;
 

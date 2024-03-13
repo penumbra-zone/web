@@ -1,19 +1,24 @@
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
-import type { Jsonified, Stringified, TransactionClassification } from '@penumbra-zone/types';
 import { AllSlices, SliceCreator } from '.';
-import { InternalRequest, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
 import { PopupType, TxApproval } from '../message/popup';
 import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { viewClient } from '../clients';
-
+import { ConnectError } from '@connectrpc/connect';
+import { errorToJson } from '@connectrpc/connect/protocol-connect';
+import type {
+  InternalRequest,
+  InternalResponse,
+} from '@penumbra-zone/types/src/internal-msg/shared';
+import type { Jsonified, Stringified } from '@penumbra-zone/types/src/jsonified';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import {
+  classifyTransaction,
+  TransactionClassification,
+} from '@penumbra-zone/types/src/transaction';
 import {
   asPublicTransactionView,
   asReceiverTransactionView,
-  classifyTransaction,
-} from '@penumbra-zone/types';
-import { ConnectError } from '@connectrpc/connect';
-import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+} from '@penumbra-zone/types/src/translators';
 
 export interface TxApprovalSlice {
   /**

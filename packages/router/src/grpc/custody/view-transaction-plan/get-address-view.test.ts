@@ -5,7 +5,7 @@ import {
   AddressIndex,
   AddressView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32ToUint8Array } from '@penumbra-zone/types';
+import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
 
 const mockIsControlledAddress = vi.hoisted(() => vi.fn());
 

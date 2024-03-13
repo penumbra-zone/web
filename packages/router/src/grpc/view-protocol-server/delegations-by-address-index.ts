@@ -1,15 +1,11 @@
-import { Impl } from '.';
-
 import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32IdentityKey, customizeSymbol } from '@penumbra-zone/types';
-import Array from '@penumbra-zone/polyfills/Array.fromAsync';
-import {
-  getDisplayDenomFromView,
-  getIdentityKeyFromValidatorInfo,
-  getValidatorInfo,
-} from '@penumbra-zone/getters';
-import { DelegationCaptureGroups, assetPatterns } from '@penumbra-zone/constants';
+import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
+import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
+import { bech32IdentityKey } from '@penumbra-zone/types/src/identity-key';
+import { assetPatterns, DelegationCaptureGroups } from '@penumbra-zone/constants/src/assets';
 import { Any, PartialMessage } from '@bufbuild/protobuf';
+import { getValidatorInfo } from '@penumbra-zone/getters/src/validator-info-response';
+import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/src/validator-info';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import {
   AssetMetadataByIdRequest,
@@ -25,6 +21,8 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { assetMetadataById } from './asset-metadata-by-id';
+import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
+import { Impl } from '.';
 
 const isDelegationBalance = (balance: BalancesResponse, identityKey: IdentityKey) => {
   const match = assetPatterns.delegationToken.exec(getDisplayDenomFromView(balance.balanceView));

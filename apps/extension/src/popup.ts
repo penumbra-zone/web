@@ -1,10 +1,10 @@
 import { sessionExtStorage } from '@penumbra-zone/storage';
+import { PopupMessage, PopupRequest, PopupResponse, PopupType } from './message/popup';
+import { PopupPath } from './routes/popup/paths';
 import type {
   InternalRequest,
   InternalResponse,
 } from '@penumbra-zone/types/src/internal-msg/shared';
-import { PopupMessage, PopupRequest, PopupResponse, PopupType } from './message/popup';
-import { PopupPath } from './routes/popup/paths';
 
 export const popup = async <M extends PopupMessage>(
   req: PopupRequest<M>,

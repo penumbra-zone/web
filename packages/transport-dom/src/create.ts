@@ -10,26 +10,26 @@ import {
   ServiceType,
 } from '@bufbuild/protobuf';
 import {
-  ConnectError,
   Code as ConnectErrorCode,
+  ConnectError,
   StreamResponse,
   UnaryResponse,
 } from '@connectrpc/connect';
 import { CommonTransportOptions } from '@connectrpc/connect/protocol';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 import {
-  TransportEvent,
-  TransportMessage,
-  TransportStream,
   isTransportError,
   isTransportEvent,
   isTransportMessage,
   isTransportStream,
+  TransportEvent,
+  TransportMessage,
+  TransportStream,
 } from './messages';
 
-import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
-import ReadableStream from '@penumbra-zone/polyfills/ReadableStream.from';
-import '@penumbra-zone/polyfills/Promise.withResolvers';
+import '@penumbra-zone/polyfills/src/ReadableStream[Symbol.asyncIterator]';
+import ReadableStream from '@penumbra-zone/polyfills/src/ReadableStream.from';
+import '@penumbra-zone/polyfills/src/Promise.withResolvers';
 
 const forceTransportOptions = {
   httpClient: null as never,

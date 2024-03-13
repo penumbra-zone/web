@@ -3,12 +3,12 @@ import {
   NotesForVotingRequest,
   NotesForVotingResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { ServicesInterface } from '@penumbra-zone/types';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { servicesCtx } from '../../ctx';
 import { IndexedDbMock, MockServices } from '../test-utils';
 import { notesForVoting } from './notes-for-voting';
+import type { ServicesInterface } from '@penumbra-zone/types/src/services';
 
 describe('NotesForVoting request handler', () => {
   let mockServices: MockServices;
@@ -22,7 +22,9 @@ describe('NotesForVoting request handler', () => {
       getNotesForVoting: vi.fn(),
     };
     mockServices = {
-      getWalletServices: vi.fn(() => Promise.resolve({ indexedDb: mockIndexedDb })),
+      getWalletServices: vi.fn(() =>
+        Promise.resolve({ indexedDb: mockIndexedDb }),
+      ) as MockServices['getWalletServices'],
     };
     mockCtx = createHandlerContext({
       service: ViewService,

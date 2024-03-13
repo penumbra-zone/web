@@ -1,5 +1,6 @@
-import { bech32Address, shortenAddress } from '@penumbra-zone/types';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { bech32Address } from '@penumbra-zone/types/src/address';
+import { shortenAddress } from '@penumbra-zone/types/src/string';
 
 interface AddressComponentProps {
   address: Address;

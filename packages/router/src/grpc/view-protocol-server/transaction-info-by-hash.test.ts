@@ -48,7 +48,7 @@ describe('TransactionInfoByHash request handler', () => {
             tendermint: mockTendermint,
           },
         }),
-      ),
+      ) as MockServices['getWalletServices'],
     };
 
     mockCtx = createHandlerContext({

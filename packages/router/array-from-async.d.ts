@@ -1,3 +1,3 @@
 declare module 'array-from-async' {
-  export { default } from '@penumbra-zone/polyfills/Array.fromAsync';
+  export { default } from '@penumbra-zone/polyfills/src/Array.fromAsync';
 }

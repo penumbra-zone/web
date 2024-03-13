@@ -1,18 +1,4 @@
 import { IDBPDatabase, openDB, StoreNames } from 'idb';
-import {
-  bech32IdentityKey,
-  bech32ToUint8Array,
-  IDB_TABLES,
-  IdbConstants,
-  IdbUpdate,
-  IndexedDbInterface,
-  Jsonified,
-  PenumbraDb,
-  ScanBlockResult,
-  StateCommitmentTree,
-  uint8ArrayToBase64,
-  uint8ArrayToHex,
-} from '@penumbra-zone/types';
 import { IbdUpdater, IbdUpdates } from './updater';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
@@ -36,7 +22,11 @@ import {
   AddressIndex,
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { assetPatterns, DelegationCaptureGroups, localAssets } from '@penumbra-zone/constants';
+import {
+  assetPatterns,
+  DelegationCaptureGroups,
+  localAssets,
+} from '@penumbra-zone/constants/src/assets';
 import {
   Position,
   PositionId,
@@ -47,10 +37,27 @@ import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 
 import { IdbCursorSource } from './stream';
 
-import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
+import '@penumbra-zone/polyfills/src/ReadableStream[Symbol.asyncIterator]';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { bech32AssetId, getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import { bech32AssetId } from '@penumbra-zone/getters/src/asset';
+import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/src/validator-info';
+import {
+  IDB_TABLES,
+  IdbConstants,
+  IdbUpdate,
+  IndexedDbInterface,
+  PenumbraDb,
+} from '@penumbra-zone/types/src/indexed-db';
+import type {
+  ScanBlockResult,
+  StateCommitmentTree,
+} from '@penumbra-zone/types/src/state-commitment-tree';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
+import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
+import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
+import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
+import { bech32IdentityKey } from '@penumbra-zone/types/src/identity-key';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes

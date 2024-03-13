@@ -1,9 +1,9 @@
-import { Base64Str, base64ToUint8Array, Box, uint8ArrayToBase64 } from '@penumbra-zone/types';
-
 /**
  * ==== Internal ====
  * Under-the-hood inner workings of hashing/encryption
  */
+import { Base64Str, base64ToUint8Array, uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
+import { Box } from '@penumbra-zone/types/src/box';
 
 // Hash a password with PBKDF2 using a provided salt
 // Meant to hinder brute force or dictionary attacks

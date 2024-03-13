@@ -1,11 +1,12 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { fromBaseUnitAmount } from '@penumbra-zone/types';
-import { getDisplayDenomExponent, getDisplayDenomFromView } from '@penumbra-zone/getters';
+import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/src/metadata';
 import { CopyToClipboard } from '../../copy-to-clipboard';
 import { AssetIcon } from './asset-icon';
 import { CopyIcon } from '@radix-ui/react-icons';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { cn } from '../../../../lib/utils';
+import { fromBaseUnitAmount } from '@penumbra-zone/types/src/amount';
 
 interface ValueViewProps {
   view: ValueView | undefined;

@@ -1,17 +1,17 @@
-import { getIdentityKey } from '@penumbra-zone/getters';
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogHeader,
   IdentityKeyComponent,
   Input,
-  Button,
 } from '@penumbra-zone/ui';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { InputBlock } from '../../../../shared/input-block';
 import { Validator } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { FormEvent } from 'react';
+import { getIdentityKey } from '@penumbra-zone/getters/src/validator';
 
 const getCapitalizedAction = (action: 'delegate' | 'undelegate') =>
   action.replace(/^./, firstCharacter => firstCharacter.toLocaleUpperCase());
