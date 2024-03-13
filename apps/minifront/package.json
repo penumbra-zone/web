@@ -45,6 +45,7 @@
     "@types/react-helmet": "^6.1.11",
     "autoprefixer": "^10.4.18",
     "firebase-tools": "^13.4.1",
-    "postcss": "^8.4.35"
+    "postcss": "^8.4.35",
+    "promise.withresolvers": "^1.0.2"
   }
 }
