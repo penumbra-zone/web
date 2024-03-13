@@ -36,8 +36,7 @@ describe('createChannelClient', () => {
     const transportOptions = {
       getPort: () => Promise.resolve(port2),
       defaultTimeoutMs: 5000,
-      //jsonOptions: { typeRegistry },
-      jsonOptions: { typeRegistry, ignoreUnknownFields: true }, // TODO: fix this?
+      jsonOptions: { typeRegistry },
     };
 
     const transport = createChannelTransport(transportOptions);

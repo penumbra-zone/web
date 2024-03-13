@@ -127,15 +127,19 @@ export const createChannelTransport = ({
       const message = Any.pack(new method.I(input)).toJson(jsonOptions);
       port.postMessage({ requestId, message, header });
 
-      const result = await Promise.race([response, listenerError.promise]);
+      const success = Promise.race([response, listenerError.promise]);
 
       return {
         service,
         method,
         stream: false,
-        header: new Headers(result.header),
-        trailer: new Headers(result.trailer),
-        message: method.O.fromJson(result.message, jsonOptions),
+        header: new Headers((await success).header),
+        trailer: new Headers((await success).trailer),
+        message: await success.then(({ message }) => {
+          const o = new method.O();
+          Any.fromJson(message, jsonOptions).unpackTo(o);
+          return o;
+        }),
       };
     },
 
@@ -157,8 +161,6 @@ export const createChannelTransport = ({
           reject(errorFromJson(tev.error, tev.metadata, new ConnectError('Stream failed')));
         else reject(ConnectError.from(tev));
       });
-
-      /** @todo: Race `response` against `listenerError`, like in `unary` */
 
       if (method.kind === MethodKind.ServerStreaming) {
         const iter = input[Symbol.asyncIterator]();
@@ -183,13 +185,15 @@ export const createChannelTransport = ({
         port.postMessage({ requestId, stream, header } satisfies TransportStream, [stream]);
       }
 
+      const success = await Promise.race([response, listenerError.promise]);
+
       return {
         service,
         method,
         stream: true,
-        header: new Headers((await response).header),
-        trailer: new Headers((await response).trailer),
-        message: (await response).stream.pipeThrough(
+        header: new Headers(success.header),
+        trailer: new Headers(success.trailer),
+        message: success.stream.pipeThrough(
           new TransformStream({
             transform: (chunk, cont) => {
               const o = new method.O();
