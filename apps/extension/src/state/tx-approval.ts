@@ -37,6 +37,7 @@ export interface TxApprovalSlice {
     req: InternalRequest<TxApproval>,
     responder: (m: InternalResponse<TxApproval>) => void,
   ) => Promise<void>;
+  handleCloseWindow: () => void;
 
   setChoice: (choice: UserChoice) => void;
 
@@ -78,6 +79,15 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
 
       state.txApproval.choice = undefined;
     });
+
+    window.onbeforeunload = get().txApproval.handleCloseWindow;
+  },
+
+  handleCloseWindow: () => {
+    set(state => {
+      state.txApproval.choice = UserChoice.Ignored;
+    });
+    get().txApproval.sendResponse();
   },
 
   setChoice: choice => {
