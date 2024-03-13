@@ -9,12 +9,13 @@ import {
   getValidatorInfo,
 } from '@penumbra-zone/getters';
 import { DelegationCaptureGroups, assetPatterns } from '@penumbra-zone/constants';
-import { Any } from '@bufbuild/protobuf';
+import { Any, PartialMessage } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import {
   AssetMetadataByIdRequest,
   BalancesRequest,
   BalancesResponse,
+  DelegationsByAddressIndexRequest_Filter,
   DelegationsByAddressIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { stakingClientCtx } from '../../ctx';
@@ -36,6 +37,11 @@ const isDelegationBalance = (balance: BalancesResponse, identityKey: IdentityKey
 
 const getDelegationTokenBaseDenom = (validatorInfo: ValidatorInfo) =>
   `udelegation_${bech32IdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo))}`;
+
+const addressHasDelegationTokens = (
+  delegation?: PartialMessage<BalancesResponse>,
+): delegation is PartialMessage<BalancesResponse> & { balanceView: ValueView } =>
+  delegation?.balanceView instanceof ValueView;
 
 export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = async function* (
   req,
@@ -67,7 +73,7 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
       isDelegationBalance(new BalancesResponse(balance), identityKey),
     );
 
-    if (delegation?.balanceView instanceof ValueView) {
+    if (addressHasDelegationTokens(delegation)) {
       const withValidatorInfo = delegation.balanceView.clone();
 
       if (withValidatorInfo.valueView.case !== 'knownAssetId')
@@ -77,6 +83,10 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
 
       yield new DelegationsByAddressIndexResponse({ valueView: withValidatorInfo });
     } else {
+      if (req.filter === DelegationsByAddressIndexRequest_Filter.ALL_ACTIVE_WITH_NONZERO_BALANCES) {
+        continue;
+      }
+
       const { denomMetadata } = await assetMetadataById(
         new AssetMetadataByIdRequest({
           assetId: { altBaseDenom: getDelegationTokenBaseDenom(validatorInfo) },

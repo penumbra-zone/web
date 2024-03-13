@@ -13,6 +13,7 @@ import {
   AssetMetadataByIdResponse,
   BalancesResponse,
   DelegationsByAddressIndexRequest,
+  DelegationsByAddressIndexRequest_Filter,
   DelegationsByAddressIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants';
@@ -303,9 +304,24 @@ describe('DelegationsByAddressIndex request handler', () => {
   });
 
   describe('when the nonzero balances filter option is passed', () => {
-    it.todo('returns one `ValueView` for each validator the address has tokens for');
+    it('returns one `ValueView` for each validator the address has tokens for', async () => {
+      const results: (
+        | DelegationsByAddressIndexResponse
+        | PartialMessage<DelegationsByAddressIndexResponse>
+      )[] = [];
 
-    it.todo('excludes validators the address has no tokens for');
+      for await (const result of delegationsByAddressIndex(
+        new DelegationsByAddressIndexRequest({
+          addressIndex: { account: 0 },
+          filter: DelegationsByAddressIndexRequest_Filter.ALL_ACTIVE_WITH_NONZERO_BALANCES,
+        }),
+        mockCtx,
+      )) {
+        results.push(result);
+      }
+
+      expect(results.length).toBe(1);
+    });
   });
 
   describe('when the `ALL` filter option is passed', () => {
