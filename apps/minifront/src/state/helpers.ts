@@ -160,7 +160,7 @@ const getTxId = (tx: Transaction | PartialMessage<Transaction>) =>
  * Code.PermissionDenied`.
  */
 export const userDeniedTransaction = (e: unknown): boolean =>
-  e instanceof ConnectError && e.message.includes('[permission_denied]');
+  typeof e === 'string' && e.includes('[permission_denied]');
 
 export const unauthenticated = (e: unknown): boolean =>
   typeof e === 'string' && e.includes('[unauthenticated]');
