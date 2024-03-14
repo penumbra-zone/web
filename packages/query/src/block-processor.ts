@@ -300,10 +300,10 @@ export class BlockProcessor implements BlockProcessorInterface {
       PositionState_PositionStateEnum.OPENED,
       PositionState_PositionStateEnum.CLOSED,
       PositionState_PositionStateEnum.WITHDRAWN,
-      PositionState_PositionStateEnum.CLAIMED,
     ];
 
     for (const tx of txs) {
+      console.log(tx)
       for (const { action } of tx.body?.actions ?? []) {
         if (action.case === 'positionOpen' && action.value.position) {
           for (const state of positionStates) {
@@ -328,12 +328,6 @@ export class BlockProcessor implements BlockProcessorInterface {
           await this.indexedDb.updatePosition(
             action.value.positionId,
             new PositionState({ state: PositionState_PositionStateEnum.WITHDRAWN }),
-          );
-        }
-        if (action.case === 'positionRewardClaim' && action.value.positionId) {
-          await this.indexedDb.updatePosition(
-            action.value.positionId,
-            new PositionState({ state: PositionState_PositionStateEnum.CLAIMED }),
           );
         }
       }
