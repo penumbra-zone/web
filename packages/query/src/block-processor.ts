@@ -324,7 +324,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         }
         if (action.case === 'positionWithdraw' && action.value.positionId) {
           // Record the LPNFT for the current sequence number.
-          let positionState = new PositionState({
+          const positionState = new PositionState({
             state: PositionState_PositionStateEnum.WITHDRAWN,
             sequence: action.value.sequence,
           });
