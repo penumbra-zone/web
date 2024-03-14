@@ -99,7 +99,7 @@ export class CRSessionClient {
     const sinkListener = (p: chrome.runtime.Port) => {
       if (p.name !== channel) return;
       chrome.runtime.onConnect.removeListener(sinkListener);
-      void stream.pipeTo(new WritableStream(new PortStreamSink(p)));
+      void stream.pipeTo(new WritableStream(new PortStreamSink(p))).catch(() => null);
     };
     chrome.runtime.onConnect.addListener(sinkListener);
     return { requestId, channel } satisfies TransportInitChannel;

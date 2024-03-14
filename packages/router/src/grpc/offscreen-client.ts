@@ -76,7 +76,15 @@ const buildActions = (
     if ('error' in buildRes) throw ConnectError.from(buildRes.error);
     return Action.fromJson(buildRes.data);
   });
-  void Promise.race([Promise.all(buildTasks), cancel]).finally(() => void releaseOffscreen());
+
+  void Promise.race([Promise.all(buildTasks), cancel])
+    .catch(
+      // if we don't suppress this, we log errors when a user denies approval.
+      // real failures are already conveyed by the individual promises.
+      () => null,
+    )
+    .finally(() => void releaseOffscreen());
+
   return buildTasks;
 };
 
