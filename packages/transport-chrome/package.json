@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/transport-chrome",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Tools for adapting `@penumbra-zone/transport` to Chrome's extension runtime messaging API",
   "scripts": {
