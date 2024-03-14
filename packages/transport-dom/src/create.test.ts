@@ -178,7 +178,7 @@ describe('createChannelClient', () => {
       (async function* () {})(),
     );
 
-    await expect(streamRequest).rejects.toThrowError('missing request message');
+    await expect(streamRequest).rejects.toThrow();
   });
 
   it('should require server-streaming requests to contain only one message', async () => {

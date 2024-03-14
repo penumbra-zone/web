@@ -8,20 +8,21 @@ import {
 } from '@penumbra-zone/types/src/internal-msg/offscreen';
 
 chrome.runtime.onMessage.addListener((req, _sender, respond) => {
-  if (isOffscreenRequest(req)) {
-    const { type, request } = req;
-    if (isActionBuildRequest(request)) {
-      void spawnActionBuildWorker(request)
-        .then(
-          data => ({ type, data }),
-          e => ({
-            type,
-            error: errorToJson(ConnectError.from(e), undefined),
-          }),
-        )
-        .then(respond);
-      return true;
-    }
+  if (!isOffscreenRequest(req)) return false;
+  const { type, request } = req;
+  if (isActionBuildRequest(request)) {
+    void (async () => {
+      try {
+        const data = await spawnActionBuildWorker(request);
+        respond({ type, data });
+      } catch (e) {
+        respond({
+          type,
+          error: errorToJson(ConnectError.from(e), undefined),
+        });
+      }
+    })();
+    return true;
   }
   return false;
 });
@@ -29,29 +30,20 @@ chrome.runtime.onMessage.addListener((req, _sender, respond) => {
 const spawnActionBuildWorker = (req: ActionBuildRequest) => {
   const worker = new Worker(new URL('../wasm-build-action.ts', import.meta.url));
   return new Promise<ActionBuildResponse>((resolve, reject) => {
-    worker.addEventListener(
-      'message',
-      (e: MessageEvent) => resolve(e.data as ActionBuildResponse),
-      { once: true },
-    );
+    const onWorkerMessage = (e: MessageEvent) => resolve(e.data as ActionBuildResponse);
 
-    worker.addEventListener(
-      'error',
-      ({ error, filename, lineno, colno, message }: ErrorEvent) =>
-        reject(
-          error instanceof Error
-            ? error
-            : new Error(`Worker ErrorEvent ${filename}:${lineno}:${colno} ${message}`),
-        ),
-      { once: true },
-    );
+    const onWorkerError = ({ error, filename, lineno, colno, message }: ErrorEvent) =>
+      reject(
+        error instanceof Error
+          ? error
+          : new Error(`Worker ErrorEvent ${filename}:${lineno}:${colno} ${message}`),
+      );
 
-    worker.addEventListener(
-      'messageerror',
-      (ev: MessageEvent) => reject(ConnectError.from(ev.data ?? ev)),
+    const onWorkerMessageError = (ev: MessageEvent) => reject(ConnectError.from(ev.data ?? ev));
 
-      { once: true },
-    );
+    worker.addEventListener('message', onWorkerMessage, { once: true });
+    worker.addEventListener('error', onWorkerError, { once: true });
+    worker.addEventListener('messageerror', onWorkerMessageError, { once: true });
 
     // Send data to web worker
     worker.postMessage(req);

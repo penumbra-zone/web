@@ -6,7 +6,7 @@ import type {
   InternalResponse,
 } from '@penumbra-zone/types/src/internal-msg/shared';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { isChromeResponderDroppedError } from '@penumbra-zone/transport-chrome/chrome-error';
+import { isChromeResponderDroppedError } from '@penumbra-zone/types/src/internal-msg/chrome-error';
 
 export const popup = async <M extends PopupMessage>(
   req: PopupRequest<M>,

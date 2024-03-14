@@ -1,6 +1,5 @@
 import {
   Action,
-  ActionPlan,
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
@@ -11,9 +10,7 @@ import {
 } from '@penumbra-zone/types/src/internal-msg/offscreen';
 import { InternalRequest, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
 import { ConnectError } from '@connectrpc/connect';
-import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
-import type { JsonValue } from '@bufbuild/protobuf';
 
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
@@ -50,22 +47,7 @@ const releaseOffscreen = async () => {
 const sendOffscreenMessage = async <T extends OffscreenMessage>(
   req: InternalRequest<T>,
 ): Promise<InternalResponse<T>> =>
-  chrome.runtime.sendMessage<InternalRequest<T>, InternalResponse<T>>(req).catch(e => ({
-    type: req.type,
-    error: errorToJson(ConnectError.from(e), undefined),
-  }));
-
-type JsonifiedTransactionPlanWithActions = Jsonified<TransactionPlan> & {
-  actions: Jsonified<ActionPlan>[];
-};
-
-const isSuccessfulResponse = <T extends OffscreenMessage>(
-  r: InternalResponse<T> | null,
-): r is InternalResponse<T> & { data: T['response'] } => r != null && 'data' in r;
-
-const isErrorResponse = <T extends OffscreenMessage>(
-  r: InternalResponse<T> | null,
-): r is InternalResponse<T> & { error: JsonValue } => r != null && 'error' in r;
+  chrome.runtime.sendMessage<InternalRequest<T>, InternalResponse<T>>(req);
 
 /**
  * Build actions in parallel, in an offscreen window where we can run wasm.
@@ -82,23 +64,19 @@ const buildActions = (
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   const buildTasks = transactionPlan.actions.map(async (_, actionPlanIndex) => {
     await active;
-    const buildRes = await Promise.race([
-      cancel,
-      sendOffscreenMessage<ActionBuildMessage>({
-        type: 'BUILD_ACTION',
-        request: {
-          transactionPlan: transactionPlan.toJson() as JsonifiedTransactionPlanWithActions,
-          witness: witness.toJson() as Jsonified<WitnessData>,
-          fullViewingKey,
-          actionPlanIndex,
-        } satisfies ActionBuildRequest,
-      }),
-    ]);
-    if (isSuccessfulResponse(buildRes)) return Action.fromJson(buildRes.data);
-    else if (isErrorResponse(buildRes)) throw ConnectError.from(buildRes.error);
-    else throw ConnectError.from(buildRes);
+    const buildRes = await sendOffscreenMessage<ActionBuildMessage>({
+      type: 'BUILD_ACTION',
+      request: {
+        transactionPlan: transactionPlan.toJson() as Jsonified<TransactionPlan>,
+        witness: witness.toJson() as Jsonified<WitnessData>,
+        fullViewingKey,
+        actionPlanIndex,
+      } satisfies ActionBuildRequest,
+    });
+    if ('error' in buildRes) throw ConnectError.from(buildRes.error);
+    return Action.fromJson(buildRes.data);
   });
-  void Promise.all(buildTasks).finally(() => void releaseOffscreen());
+  void Promise.race([Promise.all(buildTasks), cancel]).finally(() => void releaseOffscreen());
   return buildTasks;
 };
 

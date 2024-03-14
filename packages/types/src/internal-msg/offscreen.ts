@@ -17,9 +17,7 @@ export type OffscreenRequest = InternalRequest<OffscreenMessage>;
 export type OffscreenResponse = InternalResponse<OffscreenMessage>;
 
 export interface ActionBuildRequest {
-  transactionPlan: Jsonified<TransactionPlan> & {
-    actions: Jsonified<TransactionPlan['actions']>;
-  };
+  transactionPlan: Jsonified<TransactionPlan>;
   witness: Jsonified<WitnessData>;
   fullViewingKey: string;
   actionPlanIndex: number;
