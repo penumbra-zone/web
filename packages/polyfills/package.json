@@ -2,9 +2,6 @@
   "name": "@penumbra-zone/polyfills",
   "version": "1.0.4",
   "type": "module",
-  "exports": {
-    "./src/*": "./src/*.ts"
-  },
   "publishConfig": {
     "files": [
       "dist"

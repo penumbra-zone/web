@@ -3,9 +3,6 @@
   "version": "1.0.3",
   "license": "MIT",
   "type": "module",
-  "exports": {
-    "./src/*": "./src/*.ts"
-  },
   "publishConfig": {
     "files": [
       "dist"
