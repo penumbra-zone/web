@@ -68,7 +68,7 @@ export class IndexerQuerier {
       e.block_id, 
       e.tx_id,
       e.type,
-      jsonb_object_agg(additional_attributes.key, additional_attributes.value) AS attributes,
+      jsonb_object_agg(additional_attributes.key, additional_attributes.value) AS lpevent_attributes,
       tr.tx_hash,
       tr.created_at,
       tr.index,
