@@ -7,7 +7,7 @@ export const ErrorBoundary = () => {
   console.error('ErrorBoundary caught error:', error);
 
   return (
-    <SplashPage title='Uh-oh!' description='Looks like there was an error.'>
+    <SplashPage title='Error' description='Something went wrong while loading this page.'>
       {String(error)}
     </SplashPage>
   );
