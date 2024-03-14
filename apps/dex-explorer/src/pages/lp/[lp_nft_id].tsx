@@ -14,6 +14,10 @@ import CurrentLPStatus from "../../components/liquidityPositions/currentStatus";
 import OriginalLPStatus from "../../components/liquidityPositions/originalStatus";
 import { VStack, Text, Spinner, Center, Box, HStack } from "@chakra-ui/react";
 import { LoadingSpinner } from "../../components/util/loadingSpinner";
+import {
+  LiquidityPositionEvent,
+  PositionExecutionEvent,
+} from "@/utils/indexer/types/lps";
 
 export default function LP() {
   const router = useRouter();
@@ -21,6 +25,7 @@ export default function LP() {
   const [liquidityPosition, setLiquidityPosition] = useState<Position | null>(
     null
   );
+  const [LPData, setLPData] = useState<LiquidityPositionEvent[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -39,17 +44,32 @@ export default function LP() {
         .then((res) => {
           if (!res) {
             console.error("Error fetching liquidity position: no response");
-            setIsLoading(false);
             return;
           }
 
           setLiquidityPosition(res);
-          setIsLoading(false);
         })
         .catch((error) => {
           console.error("Error fetching liquidity position:", error);
-          setIsLoading(false);
         });
+
+      // Fetch liquidity position events
+      fetch(`/api/lp/${lp_nft_id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data) {
+            console.error(
+              "Error fetching liquidity position events: no response"
+            );
+            return;
+          }
+          setLPData(data as LiquidityPositionEvent[]);
+        })
+        .catch((error) => {
+          console.error("Error fetching liquidity position events:", error);
+        });
+
+      setIsLoading(false);
     }
   }, [lp_nft_id]); // Runs when lp_nft_id changes, important as this isnt always grabbed immediately on page load.
 
@@ -57,7 +77,11 @@ export default function LP() {
 
   useEffect(() => {
     // TODO: Fetch timeline trade data from indexer
-    setTradeTimelineData([1, 2,]);
+    setTradeTimelineData(
+      Array.from({ length: 3 }, (_, i) => ({
+        event_id: i + 1000,
+      }))
+    );
   }, [lp_nft_id]);
 
   const currentStatusRef = useRef<HTMLDivElement>(null);
@@ -75,7 +99,35 @@ export default function LP() {
       setLineHeight(height + 100);
       setLineTop(top + firstBoxRect.bottom + 50);
     }
-  }, [currentStatusRef, originalStatusRef, liquidityPosition, tradeTimelineData, isLoading, lp_nft_id]);
+  }, [
+    currentStatusRef,
+    originalStatusRef,
+    liquidityPosition,
+    tradeTimelineData,
+    isLoading,
+    lp_nft_id,
+  ]);
+
+  // Note: Needs to be ordered by event id
+  const [timelineData, setTimelineData] = useState<LiquidityPositionEvent | PositionExecutionEvent[]>([]); 
+  useEffect(() => {
+    // Return if no data
+    if (LPData.length === 0) {
+      return;
+    }
+
+    // Create large list of all events ordered by event_id
+    const allEvents = LPData.concat(tradeTimelineData);
+
+    // Sort in descending order,
+    allEvents.sort((a, b) => {
+      return a.event_id - b.event_id;
+    });
+
+    console.log(allEvents)
+
+    setTimelineData(allEvents);
+  }, [LPData, tradeTimelineData]);
 
   return (
     <Layout pageTitle={`LP - ${lp_nft_id}`}>
@@ -142,7 +194,6 @@ export default function LP() {
                       </VStack>
                     ))}
                   </VStack>
-
                   <Box
                     paddingTop={"4em"}
                     paddingBottom={"5em"}
@@ -164,9 +215,16 @@ export default function LP() {
               backgroundColor="var(--complimentary-background)"
               id="vertical-line"
             />
+            <Text>
+              {/*LPData.map((event, index) => (
+                <p key={index}>{JSON.stringify(event)}</p>
+              ))*/}
+            </Text>
           </>
         ) : (
-          <p>No liquidity position found.</p>
+          <VStack height={"100%"} width={"100%"}>
+            <Text paddingTop={"20%"}>Liquidity position not found.</Text>
+          </VStack>
         )}
       </main>
     </Layout>
