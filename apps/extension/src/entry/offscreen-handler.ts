@@ -1,53 +1,59 @@
-import type { JsonValue } from '@bufbuild/protobuf';
+import { ConnectError } from '@connectrpc/connect';
+import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import {
   ActionBuildRequest,
+  ActionBuildResponse,
   isActionBuildRequest,
   isOffscreenRequest,
 } from '@penumbra-zone/types/src/internal-msg/offscreen';
 
 chrome.runtime.onMessage.addListener((req, _sender, respond) => {
-  if (!isOffscreenRequest(req)) return false;
-  if (isActionBuildRequest(req.request)) {
+  if (isOffscreenRequest(req)) {
     const { type, request } = req;
-    void (async () => {
-      const response = spawnWorker(request);
-      const res = await response
-        .then(data => ({ type, data }))
-        .catch((e: Error) => ({
-          type,
-          error: `Offscreen: ${e.message}`,
-        }));
-      respond(res);
-    })();
+    if (isActionBuildRequest(request)) {
+      void spawnActionBuildWorker(request)
+        .then(
+          data => ({ type, data }),
+          e => ({
+            type,
+            error: errorToJson(ConnectError.from(e), undefined),
+          }),
+        )
+        .then(respond);
+      return true;
+    }
   }
-  return true;
+  return false;
 });
 
-const spawnWorker = (req: ActionBuildRequest): Promise<JsonValue> => {
-  return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL('../wasm-build-action.ts', import.meta.url));
+const spawnActionBuildWorker = (req: ActionBuildRequest) => {
+  const worker = new Worker(new URL('../wasm-build-action.ts', import.meta.url));
+  return new Promise<ActionBuildResponse>((resolve, reject) => {
+    worker.addEventListener(
+      'message',
+      (e: MessageEvent) => resolve(e.data as ActionBuildResponse),
+      { once: true },
+    );
 
-    const onWorkerMessage = (e: MessageEvent) => {
-      resolve(e.data as JsonValue);
-      worker.removeEventListener('error', onWorkerError);
-      worker.terminate();
-    };
+    worker.addEventListener(
+      'error',
+      ({ error, filename, lineno, colno, message }: ErrorEvent) =>
+        reject(
+          error instanceof Error
+            ? error
+            : new Error(`Worker ErrorEvent ${filename}:${lineno}:${colno} ${message}`),
+        ),
+      { once: true },
+    );
 
-    const onWorkerError = (ev: ErrorEvent) => {
-      const { filename, lineno, colno, message } = ev;
-      reject(
-        ev.error instanceof Error
-          ? ev.error
-          : new Error(`Worker ErrorEvent ${filename}:${lineno}:${colno} ${message}`),
-      );
-      worker.removeEventListener('message', onWorkerMessage);
-      worker.terminate();
-    };
+    worker.addEventListener(
+      'messageerror',
+      (ev: MessageEvent) => reject(ConnectError.from(ev.data ?? ev)),
 
-    worker.addEventListener('message', onWorkerMessage, { once: true });
-    worker.addEventListener('error', onWorkerError, { once: true });
+      { once: true },
+    );
 
     // Send data to web worker
     worker.postMessage(req);
-  });
+  }).finally(() => worker.terminate());
 };
