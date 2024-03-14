@@ -3,17 +3,12 @@
   "version": "1.0.3",
   "license": "MIT",
   "type": "module",
-  "exports": {
-    "./src/assets": "./src/assets.ts",
-    "./src/chains": "./src/chains.ts"
-  },
   "publishConfig": {
     "files": [
       "dist"
     ],
     "exports": {
-      "./src/assets": "./dist/assets.js",
-      "./src/chains": "./dist/chains.js"
+      "./src/*": "./dist/*.js"
     }
   },
   "scripts": {

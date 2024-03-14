@@ -5,9 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/prax.ts",
-    "./global": "./src/global.ts",
     "./src/global": "./src/global.ts",
-    "./get-port": "./src/get-port.ts"
+    "./src/get-port": "./src/get-port.ts"
   },
   "publishConfig": {
     "files": [
@@ -16,7 +15,6 @@
     "exports": {
       ".": "./dist/prax.js",
       "./global": "./dist/global.js",
-      "./src/global": "./dist/global.js",
       "./get-port": "./dist/get-port.js"
     }
   },

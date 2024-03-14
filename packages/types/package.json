@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/types",
-  "version": "2.0.0",
+  "version": "1.0.2",
   "license": "MIT",
   "type": "module",
   "exports": {
@@ -16,8 +16,8 @@
     "exports": {
       "./src/*": "./dist/*.js",
       "./src/internal-msg/*": "./dist/internal-msg/*.js",
-      "./src/transaction": "./dist/transaction/index.js",
-      "./src/translators": "./dist/translators/index.js"
+      "./src/transaction": "./dist/transaction.js",
+      "./src/translators": "./dist/translators.js"
     }
   },
   "scripts": {
