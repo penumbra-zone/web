@@ -19,6 +19,8 @@ import { tokenConfigMapOnInner, Token } from "../../constants/tokenConstants";
 import { fetchToken } from "../../utils/token/tokenFetch";
 import BigNumber from "bignumber.js";
 import { LiquidityPositionEvent } from "@/utils/indexer/types/lps";
+import CopiedTxToClipboard from "../copiedTx";
+import LPAssetView from "../lpAssetView";
 
 interface OpenPositionStatusProps {
   nftId: string;
@@ -26,7 +28,26 @@ interface OpenPositionStatusProps {
 }
 
 const OpenPositionStatus = ({ nftId, lp_event }: OpenPositionStatusProps) => {
-  return <Text>Open Status here</Text>;
+  return (
+    <>
+      <VStack align={"left"} spacing={2}>
+        <Text fontSize={"large"} fontWeight={"bold"} paddingBottom=".2em">
+          Position Opened
+        </Text>
+        <HStack align={"center"} spacing={2}>
+          <Text fontSize={"small"} fontFamily={"monospace"}>
+            Tx{" "}
+          </Text>
+
+          <CopiedTxToClipboard
+            txHash={lp_event.tx_hash}
+            clipboardPopupText={"Tx hash copied"}
+          />
+        </HStack>
+        <LPAssetView sectionTitle={"Initial Reserves"} lp_event={lp_event} />
+      </VStack>
+    </>
+  );
 };
 
 export default OpenPositionStatus;
