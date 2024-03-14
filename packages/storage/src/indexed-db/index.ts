@@ -104,6 +104,8 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
         db.createObjectStore('EPOCHS', { autoIncrement: true });
         db.createObjectStore('VALIDATOR_INFOS');
+        db.createObjectStore('PRICES',     {keyPath: ['pricedAsset.inner', 'numeraire.inner']});
+
       },
     });
     const constants = {

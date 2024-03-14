@@ -15,7 +15,7 @@ import {
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
-  AssetId,
+  AssetId, EstimatedPrice,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
@@ -171,7 +171,12 @@ export interface PenumbraDb extends DBSchema {
     key: string; // bech32-encoded validator identity key
     value: Jsonified<ValidatorInfo>;
   };
+  PRICES: {
+    key: string[]; // composite key [base64 EstimatedPrice['priced_asset'][inner'], base64 EstimatedPrice['numeraire']['inner']]
+    value: Jsonified<EstimatedPrice>;
+  };
 }
+
 
 // need to store PositionId and Position in the same table
 export interface PositionRecord {
