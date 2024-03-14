@@ -90,7 +90,7 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
 
   handleCloseWindow: () => {
     set(state => {
-      state.txApproval.choice = UserChoice.Ignored;
+      state.txApproval.choice = UserChoice.Denied;
     });
     get().txApproval.sendResponse();
   },
