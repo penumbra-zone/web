@@ -1,8 +1,6 @@
 import { viewClient } from '../clients';
 
-export const getChainId = async (): Promise<string> => {
+export const getChainId = async (): Promise<string | undefined> => {
   const { parameters } = await viewClient.appParameters({});
-  if (!parameters?.chainId) throw new Error('No chainId in response');
-
-  return parameters.chainId;
+  return parameters?.chainId;
 };
