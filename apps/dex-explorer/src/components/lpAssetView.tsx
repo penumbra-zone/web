@@ -16,13 +16,31 @@ interface LPAssetViewProps {
 
 const LPAssetView: FC<LPAssetViewProps> = ({ sectionTitle, lp_event }) => {
   // States for tokens
-  const [asset1Token, setAsset1Token] = useState<Token | undefined>();
-  const [asset2Token, setAsset2Token] = useState<Token | undefined>();
+  const [asset1Token, setAsset1Token] = useState<Token>(
+    {
+      symbol: "UNKNOWN",
+      decimals: 0,
+      inner: "UNKNOWN",
+      imagePath: "UNKNOWN",
+    }
+  );
+  const [asset2Token, setAsset2Token] = useState<Token>(
+    {
+      symbol: "UNKNOWN",
+      decimals: 0,
+      inner: "UNKNOWN",
+      imagePath: "UNKNOWN",
+    }
+  );
   const [assetError, setAssetError] = useState<string | undefined>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [reserves1, setReserves1] = useState<number>(0);
+  const [reserves2, setReserves2] = useState<number>(0);
 
   useEffect(() => {
     // Function to fetch tokens asynchronously
     const fetchTokens = async () => {
+      setIsLoading(true);
       try {
         const asset1 = base64ToUint8Array(
           lp_event.lpevent_attributes.tradingPair!.asset1.inner
@@ -51,28 +69,33 @@ const LPAssetView: FC<LPAssetViewProps> = ({ sectionTitle, lp_event }) => {
       } catch (error) {
         console.error(error);
       }
+      setIsLoading(false);
     };
 
     fetchTokens();
   }, [lp_event]);
 
-  if (!asset1Token || !asset2Token) {
+  if (!isLoading  && (!asset1Token || !asset2Token)) {
     return <div>{`LP exists, but ${assetError}.`}</div>;
   }
 
-  // number to bigint
-  // if undefined, default to 0
-  const reserves1 = fromBaseUnit(
-    BigInt(lp_event.lpevent_attributes.reserves1?.lo ?? 0),
-    BigInt(lp_event.lpevent_attributes.reserves1?.hi ?? 0),
-    asset1Token.decimals
-  );
+  useEffect(() => {
+    // number to bigint
+    // if undefined, default to 0
+    const reserves1 = fromBaseUnit(
+      BigInt(lp_event.lpevent_attributes.reserves1?.lo ?? 0),
+      BigInt(lp_event.lpevent_attributes.reserves1?.hi ?? 0),
+      asset1Token.decimals 
+    );
 
-  const reserves2 = fromBaseUnit(
-    BigInt(lp_event.lpevent_attributes.reserves2?.lo ?? 0),
-    BigInt(lp_event.lpevent_attributes.reserves2?.hi ?? 0),
-    asset2Token.decimals
-  );
+    const reserves2 = fromBaseUnit(
+      BigInt(lp_event.lpevent_attributes.reserves2?.lo ?? 0),
+      BigInt(lp_event.lpevent_attributes.reserves2?.hi ?? 0),
+      asset2Token.decimals
+    );
+    setReserves1(Number.parseFloat(reserves1.toFixed(6)));
+    setReserves2(Number.parseFloat(reserves2.toFixed(6)));
+  } , [lp_event, asset1Token, asset2Token]);
 
   return (
     <>
