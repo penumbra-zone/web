@@ -6,14 +6,22 @@ import type {
   InternalResponse,
 } from '@penumbra-zone/types/src/internal-msg/shared';
 import { Code, ConnectError } from '@connectrpc/connect';
+import { isChromeResponderDroppedError } from '@penumbra-zone/transport-chrome/chrome-error';
 
 export const popup = async <M extends PopupMessage>(
   req: PopupRequest<M>,
 ): Promise<PopupResponse<M>> => {
   await spawnPopup(req.type);
   // We have to wait for React to bootup, navigate to the page, and render the components
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return chrome.runtime.sendMessage<InternalRequest<M>, InternalResponse<M>>(req);
+  await new Promise(resolve => setTimeout(resolve, 800));
+  return chrome.runtime.sendMessage<InternalRequest<M>, InternalResponse<M>>(req).catch(e => {
+    if (isChromeResponderDroppedError(e))
+      return {
+        type: req.type,
+        data: null,
+      };
+    else throw e;
+  });
 };
 
 const spawnExtensionPopup = async (path: string) => {
@@ -45,7 +53,9 @@ const spawnDetachedPopup = async (path: string) => {
 const throwIfAlreadyOpen = (path: string) =>
   chrome.runtime
     .getContexts({
-      documentUrls: [chrome.runtime.getURL(path)],
+      documentUrls: [
+        path.startsWith(chrome.runtime.getURL('')) ? path : chrome.runtime.getURL(path),
+      ],
     })
     .then(popupContexts => {
       if (popupContexts.length) throw Error('Popup already open');

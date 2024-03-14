@@ -42,7 +42,6 @@ export interface TxApprovalSlice {
     req: InternalRequest<TxApproval>,
     responder: (m: InternalResponse<TxApproval>) => void,
   ) => Promise<void>;
-  handleCloseWindow: () => void;
 
   setChoice: (choice: UserChoice) => void;
 
@@ -84,15 +83,6 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
 
       state.txApproval.choice = undefined;
     });
-
-    window.onbeforeunload = get().txApproval.handleCloseWindow;
-  },
-
-  handleCloseWindow: () => {
-    set(state => {
-      state.txApproval.choice = UserChoice.Ignored;
-    });
-    get().txApproval.sendResponse();
   },
 
   setChoice: choice => {
@@ -107,7 +97,6 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
       choice,
       transactionView: transactionViewString,
       authorizeRequest: authorizeRequestString,
-      handleCloseWindow,
     } = get().txApproval;
 
     if (!responder) throw new Error('No responder');
@@ -149,8 +138,6 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
         state.txApproval.asPublic = undefined;
         state.txApproval.transactionClassification = undefined;
       });
-
-      if (window.onbeforeunload === handleCloseWindow) window.onbeforeunload = null;
     }
   },
 });

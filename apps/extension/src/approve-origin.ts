@@ -52,18 +52,19 @@ export const approveOrigin = async ({
 
       if ('error' in res)
         throw errorFromJson(res.error as JsonValue, undefined, ConnectError.from(res));
+      else if (res.data != null) {
+        // TODO: is there a race condition here?
+        // if something has written after our initial read, we'll clobber them
+        void localExtStorage.set('knownSites', [
+          {
+            ...res.data,
+            date: Date.now(),
+          },
+          ...irrelevant,
+        ]);
+      }
 
-      // TODO: is there a race condition here?
-      // if something has written after our initial read, we'll clobber them
-      void localExtStorage.set('knownSites', [
-        {
-          ...res.data,
-          date: Date.now(),
-        },
-        ...irrelevant,
-      ]);
-
-      return Boolean(res.data.choice === UserChoice.Approved);
+      return Boolean(res.data?.choice === UserChoice.Approved);
     }
   }
 };
