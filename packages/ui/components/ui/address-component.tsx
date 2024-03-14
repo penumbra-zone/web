@@ -15,9 +15,7 @@ export const AddressComponent = ({ address, ephemeral }: AddressComponentProps) 
 
   return (
     <span
-      className={
-        'font-mono' + (ephemeral ? ' text-[#8D5728]' : ' text-muted-foreground truncate max-w-full')
-      }
+      className={'font-mono' + (ephemeral ? ' text-[#8D5728]' : ' text-muted-foreground truncate')}
     >
       {bech32Addr}
     </span>
