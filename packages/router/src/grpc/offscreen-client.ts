@@ -9,6 +9,8 @@ import {
   OffscreenMessage,
 } from '@penumbra-zone/types/src/internal-msg/offscreen';
 import { InternalRequest, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
+import { ConnectError } from '@connectrpc/connect';
+import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
@@ -44,7 +46,7 @@ const releaseOffscreen = async () => {
 
 const sendOffscreenMessage = async <T extends OffscreenMessage>(
   req: InternalRequest<T>,
-): Promise<InternalResponse<ActionBuildMessage>> =>
+): Promise<InternalResponse<T>> =>
   chrome.runtime.sendMessage<InternalRequest<T>, InternalResponse<T>>(req);
 
 /**
@@ -62,22 +64,27 @@ const buildActions = (
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   const buildTasks = transactionPlan.actions.map(async (_, actionPlanIndex) => {
     await active;
-    const buildRes = await Promise.race([
-      cancel,
-      sendOffscreenMessage<ActionBuildMessage>({
-        type: 'BUILD_ACTION',
-        request: {
-          transactionPlan: transactionPlan.toJson(),
-          witness: witness.toJson(),
-          fullViewingKey,
-          actionPlanIndex,
-        } as ActionBuildRequest,
-      }),
-    ]);
-    if ('error' in buildRes) throw new Error(String(buildRes.error));
+    const buildRes = await sendOffscreenMessage<ActionBuildMessage>({
+      type: 'BUILD_ACTION',
+      request: {
+        transactionPlan: transactionPlan.toJson() as Jsonified<TransactionPlan>,
+        witness: witness.toJson() as Jsonified<WitnessData>,
+        fullViewingKey,
+        actionPlanIndex,
+      } satisfies ActionBuildRequest,
+    });
+    if ('error' in buildRes) throw ConnectError.from(buildRes.error);
     return Action.fromJson(buildRes.data);
   });
-  void Promise.all(buildTasks).finally(() => void releaseOffscreen());
+
+  void Promise.race([Promise.all(buildTasks), cancel])
+    .catch(
+      // if we don't suppress this, we log errors when a user denies approval.
+      // real failures are already conveyed by the individual promises.
+      () => null,
+    )
+    .finally(() => void releaseOffscreen());
+
   return buildTasks;
 };
 

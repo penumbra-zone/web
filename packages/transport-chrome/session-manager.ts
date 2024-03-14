@@ -154,7 +154,7 @@ export class CRSessionManager {
     const sinkListener = (p: chrome.runtime.Port) => {
       if (p.name !== channel) return;
       chrome.runtime.onConnect.removeListener(sinkListener);
-      stream.pipeTo(new WritableStream(new PortStreamSink(p)), { signal }).catch(() => null);
+      void stream.pipeTo(new WritableStream(new PortStreamSink(p)), { signal }).catch(() => null);
     };
     chrome.runtime.onConnect.addListener(sinkListener);
     return { requestId, channel };

@@ -157,4 +157,51 @@ describe('createChannelClient', () => {
     const res = Array.fromAsync(streamResponse);
     await expect(res).resolves.toBeTruthy();
   });
+
+  it('should require streaming requests to contain at least one message', async () => {
+    const { port2 } = new MessageChannel();
+    const transportOptions = {
+      getPort: () => Promise.resolve(port2),
+      defaultTimeoutMs: 5000,
+      jsonOptions: { typeRegistry },
+    };
+
+    const transport = createChannelTransport(transportOptions);
+
+    const streamRequest = transport.stream(
+      ElizaService,
+      ElizaService.methods.introduce,
+      undefined,
+      undefined,
+      undefined,
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      (async function* () {})(),
+    );
+
+    await expect(streamRequest).rejects.toThrow();
+  });
+
+  it('should require server-streaming requests to contain only one message', async () => {
+    const { port2 } = new MessageChannel();
+    const transportOptions = {
+      getPort: () => Promise.resolve(port2),
+      defaultTimeoutMs: 5000,
+      jsonOptions: { typeRegistry },
+    };
+
+    const transport = createChannelTransport(transportOptions);
+
+    const input = new IntroduceRequest({ name: 'Prax' });
+
+    const streamRequest = transport.stream(
+      ElizaService,
+      ElizaService.methods.introduce,
+      undefined,
+      undefined,
+      undefined,
+      ReadableStream.from([input, input]),
+    );
+
+    await expect(streamRequest).rejects.toThrow();
+  });
 });

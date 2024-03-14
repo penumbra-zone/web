@@ -20,7 +20,7 @@ export type PopupResponse<T extends PopupMessage = PopupMessage> = InternalRespo
 export type OriginApproval = InternalMessage<
   PopupType.OriginApproval,
   { origin: string; favIconUrl?: string; title?: string; lastRequest?: number },
-  { origin: string; choice: UserChoice }
+  null | { origin: string; choice: UserChoice }
 >;
 
 export type TxApproval = InternalMessage<
@@ -29,7 +29,7 @@ export type TxApproval = InternalMessage<
     authorizeRequest: Jsonified<AuthorizeRequest>;
     transactionView: Jsonified<TransactionView>;
   },
-  {
+  null | {
     authorizeRequest: Jsonified<AuthorizeRequest>;
     transactionView: Jsonified<TransactionView>;
     choice: UserChoice;

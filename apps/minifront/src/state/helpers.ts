@@ -148,18 +148,11 @@ const getTxId = (tx: Transaction | PartialMessage<Transaction>) =>
     inner => new TransactionId({ inner }),
   );
 
-/**
- * @todo: The error flow between extension <-> webapp needs to be refactored a
- * bit. Right now, if we throw a `ConnectError` with `Code.PermissionDenied` (as
- * we do in the approver), it gets swallowed by ConnectRPC's internals and
- * rethrown as a string.  This means that the original code is lost, although
- * the stringified error message still contains `[permission_denied]`. So we'll
- * (somewhat hackily) check the stringified error message for now; but in the
- * future, we need ot get the error flow working properly so that we can
- * actually check `e.code === Code.PermissionDenied`.
- */
+// We don't have ConnectError in this scope, so we only detect standard Error.
+// Any ConnectError code is named at the beginning of the message value.
+
 export const userDeniedTransaction = (e: unknown): boolean =>
-  typeof e === 'string' && e.includes('[permission_denied]');
+  e instanceof Error && e.message.startsWith('[permission_denied]');
 
 export const unauthenticated = (e: unknown): boolean =>
-  typeof e === 'string' && e.includes('[unauthenticated]');
+  e instanceof Error && e.message.startsWith('[unauthenticated]');

@@ -23,14 +23,19 @@ export const approveTransaction = async (
       transactionView: new TransactionView(transactionView).toJson() as Jsonified<TransactionView>,
     },
   });
+
   if ('error' in res)
     throw errorFromJson(res.error as JsonValue, undefined, ConnectError.from(res));
+  else if (res.data != null) {
+    const resAuthorizeRequest = AuthorizeRequest.fromJson(res.data.authorizeRequest);
+    const resTransactionView = TransactionView.fromJson(res.data.transactionView);
 
-  const resAuthorizeRequest = AuthorizeRequest.fromJson(res.data.authorizeRequest);
-  const resTransactionView = TransactionView.fromJson(res.data.transactionView);
+    if (
+      !authorizeRequest.equals(resAuthorizeRequest) ||
+      !transactionView.equals(resTransactionView)
+    )
+      throw new Error('Invalid response from popup');
+  }
 
-  if (!authorizeRequest.equals(resAuthorizeRequest) || !transactionView.equals(resTransactionView))
-    throw new Error('Invalid response from popup');
-
-  return res.data.choice;
+  return res.data?.choice;
 };
