@@ -4,6 +4,7 @@ import { ExtensionNotConnected } from '../extension-not-connected';
 import { NotFound } from '../not-found';
 import { ExtensionUnavailable } from '../extension-unavailable';
 import { Code, ConnectError } from '@connectrpc/connect';
+import { SplashPage } from '@penumbra-zone/ui';
 
 export const ErrorBoundary = () => {
   const error = useRouteError();
@@ -16,8 +17,8 @@ export const ErrorBoundary = () => {
   console.error('ErrorBoundary caught error:', error);
 
   return (
-    <div className='text-red'>
-      <h1 className='text-xl'>{String(error)}</h1>
-    </div>
+    <SplashPage title='Uh-oh!' description='Looks like there was an error.'>
+      {String(error)}
+    </SplashPage>
   );
 };
