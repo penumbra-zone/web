@@ -24,6 +24,8 @@ import {
 import { ChannelLabel, nameConnection } from './channel-names';
 import { isTransportInitChannel, TransportInitChannel } from './message';
 import { PortStreamSink, PortStreamSource } from './stream';
+import { Code, ConnectError } from '@connectrpc/connect';
+import { errorFromJson, errorToJson } from '@connectrpc/connect/protocol-connect';
 
 export class CRSessionClient {
   private static singleton?: CRSessionClient;
@@ -66,7 +68,9 @@ export class CRSessionClient {
         this.clientPort.postMessage({ requestId, error: 'Connection closed' });
       }
     });
-    this.clientPort.postMessage({ error: { code: 'unavailable', message: 'Connection closed' } });
+    this.clientPort.postMessage({
+      error: errorToJson(new ConnectError('Connection closed', Code.Unavailable), undefined),
+    });
   };
 
   private clientListener = (ev: MessageEvent<unknown>) => {
@@ -76,7 +80,7 @@ export class CRSessionClient {
         this.servicePort.postMessage(this.requestChannelStream(ev.data));
       else console.warn('Unknown item from client', ev.data);
     } catch (e) {
-      this.clientPort.postMessage({ error: { code: 'unknown', message: String(e) } });
+      this.clientPort.postMessage({ error: errorToJson(ConnectError.from(e), undefined) });
     }
   };
 
@@ -87,12 +91,16 @@ export class CRSessionClient {
         this.clientPort.postMessage(...this.acceptChannelStreamResponse(m));
       else console.warn('Unknown item from service', m);
     } catch (e) {
-      this.clientPort.postMessage({ error: { code: 'unknown', message: String(e) } });
+      this.clientPort.postMessage({ error: errorToJson(ConnectError.from(e), undefined) });
     }
   };
 
   private acceptChannelStreamResponse = ({ requestId, channel: name }: TransportInitChannel) => {
-    const stream = new ReadableStream(new PortStreamSource(chrome.runtime.connect({ name })));
+    const stream = new ReadableStream(
+      new PortStreamSource(chrome.runtime.connect({ name }), r =>
+        errorFromJson(r, undefined, ConnectError.from(r)),
+      ),
+    );
     return [{ requestId, stream }, [stream]] satisfies [TransportStream, [Transferable]];
   };
 
@@ -101,7 +109,13 @@ export class CRSessionClient {
     const sinkListener = (p: chrome.runtime.Port) => {
       if (p.name !== channel) return;
       chrome.runtime.onConnect.removeListener(sinkListener);
-      stream.pipeTo(new WritableStream(new PortStreamSink(p))).catch(() => null);
+      stream
+        .pipeTo(
+          new WritableStream(
+            new PortStreamSink(p, r => errorToJson(ConnectError.from(r), undefined)),
+          ),
+        )
+        .catch(() => null);
     };
     chrome.runtime.onConnect.addListener(sinkListener);
     return { requestId, channel } satisfies TransportInitChannel;

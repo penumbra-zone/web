@@ -7,13 +7,16 @@
 import type { JsonValue } from '@bufbuild/protobuf';
 
 export class PortStreamSource implements UnderlyingDefaultSource<JsonValue> {
-  constructor(private incoming: chrome.runtime.Port) {}
+  constructor(
+    private incoming: chrome.runtime.Port,
+    private jsonToReason = (r: JsonValue) => r as unknown,
+  ) {}
 
   // A port can't pull like a normal source, so handlers are attached at start
   start(cont: ReadableStreamDefaultController<JsonValue>) {
     this.incoming.onDisconnect.addListener(() => cont.error('Disconnect'));
     this.incoming.onMessage.addListener(chunk => {
-      if (isStreamAbort(chunk)) cont.error(chunk.abort);
+      if (isStreamAbort(chunk)) cont.error(this.jsonToReason(chunk.abort));
       else if (isStreamValue(chunk)) cont.enqueue(chunk.value);
       else if (isStreamEnd(chunk)) {
         this.incoming.disconnect();
