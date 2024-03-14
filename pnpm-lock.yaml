@@ -512,6 +512,9 @@ importers:
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../crypto
+      '@penumbra-zone/getters':
+        specifier: workspace:*
+        version: link:../getters
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types

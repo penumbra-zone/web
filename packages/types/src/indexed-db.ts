@@ -92,6 +92,7 @@ export interface IndexedDbInterface {
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
   iterateValidatorInfos(): AsyncGenerator<ValidatorInfo, void>;
+  updatePrice(pricedAsset: AssetId, numeraire: AssetId, numerairePerUnit: number, height: bigint): Promise<void>;
 }
 
 export interface PenumbraDb extends DBSchema {

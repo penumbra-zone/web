@@ -3,6 +3,7 @@ import { RootQuerier } from './root-querier';
 import { sha256Hash } from '@penumbra-zone/crypto-web';
 import { computePositionId, decodeSctRoot, getLpNftMetadata } from '@penumbra-zone/wasm';
 import {
+  type BatchSwapOutputData,
   PositionState,
   PositionState_PositionStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
@@ -22,6 +23,15 @@ import type { BlockProcessorInterface } from '@penumbra-zone/types/src/block-pro
 import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
 import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
+import { NUMERAIRE_TOKEN_METADATA } from '../../constants/src/assets';
+import {
+  getDelta1Amount,
+  getLambda2Amount,
+  getSwapAsset1,
+  getSwapAsset2
+} from "@penumbra-zone/getters/src/batch-swap-output-data";
+import { divideAmounts } from '@penumbra-zone/types/src/amount';
+
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -232,6 +242,9 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.saveTransactions(compactBlock.height, relevantTx);
       }
 
+      if (compactBlock.swapOutputs.length)
+        await this.updatePrices(compactBlock.swapOutputs, compactBlock.height);
+
       // We only query Tendermint for the latest known block height once, when
       // the block processor starts running. Once we're caught up, though, the
       // chain will of course continue adding blocks, and we'll keep processing
@@ -240,6 +253,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (compactBlock.height > latestKnownBlockHeight) {
         latestKnownBlockHeight = compactBlock.height;
       }
+
 
       const isLastBlockOfEpoch = !!compactBlock.epochRoot;
       if (isLastBlockOfEpoch) {
@@ -387,5 +401,16 @@ export class BlockProcessor implements BlockProcessorInterface {
       // validator infos have been upserted.
       await this.indexedDb.upsertValidatorInfo(validatorInfoResponse.validatorInfo);
     }
+  }
+
+  private async  updatePrices(swapOutputs: BatchSwapOutputData[], height: bigint) {
+    console.log("Update prices BP", swapOutputs)
+    for (const swapOutput of swapOutputs) {
+      if (getSwapAsset2(swapOutput).equals(NUMERAIRE_TOKEN_METADATA.penumbraAssetId)) {
+        const numerairePerUnit  = divideAmounts(getDelta1Amount(swapOutput), getLambda2Amount(swapOutput)).toNumber();
+        await this.indexedDb.updatePrice(getSwapAsset1(swapOutput),getSwapAsset2(swapOutput),numerairePerUnit, height);
+      }
+    }
+
   }
 }

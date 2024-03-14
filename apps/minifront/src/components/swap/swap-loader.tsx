@@ -45,7 +45,7 @@ const getAndSetDefaultAssetBalances = async () => {
 
 const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapsWithMetadata> => {
   const assetId1 = getSwapAsset1(swap);
-  const assetId2 = getSwapAsset2(swap);
+  const assetId2 =  getSwapAsset2(swap);
 
   const [{ denomMetadata: asset1Metadata }, { denomMetadata: asset2Metadata }] = await Promise.all([
     viewClient.assetMetadataById({ assetId: assetId1 }),

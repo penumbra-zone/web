@@ -13,7 +13,7 @@ import {
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
-  AssetId,
+  AssetId, EstimatedPrice,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
@@ -536,6 +536,22 @@ export class IndexedDb implements IndexedDbInterface {
     yield* new ReadableStream(
       new IdbCursorSource(this.db.transaction('VALIDATOR_INFOS').store.openCursor(), ValidatorInfo),
     );
+  }
+
+  async updatePrice(pricedAsset: AssetId, numeraire: AssetId, numerairePerUnit: number, height: bigint) {
+    let estimatedPrice = new EstimatedPrice({
+      pricedAsset,
+      numeraire,
+      numerairePerUnit,
+      asOfHeight: height
+    });
+
+    console.log("Update prices IDB", estimatedPrice)
+
+    await this.u.update({
+      table: 'PRICES',
+      value: estimatedPrice.toJson() as Jsonified<EstimatedPrice>,
+    });
   }
 
   private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanBlockResult['sctUpdates']): void {
