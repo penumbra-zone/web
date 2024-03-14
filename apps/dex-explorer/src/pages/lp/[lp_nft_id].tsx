@@ -11,7 +11,7 @@ import {
 } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import Layout from "../../components/layout";
 import CurrentLPStatus from "../../components/liquidityPositions/currentStatus";
-import OriginalLPStatus from "../../components/liquidityPositions/originalStatus";
+import OpenPositionStatus from "../../components/liquidityPositions/openStatus";
 import { VStack, Text, Spinner, Center, Box, HStack } from "@chakra-ui/react";
 import { LoadingSpinner } from "../../components/util/loadingSpinner";
 import {
@@ -241,11 +241,12 @@ export default function LP() {
                   </VStack>
         */}
                   <Box
-                    paddingTop={"4em"}
+                    
+                    paddingTop={"2em"}
                     paddingBottom={"5em"}
                     ref={originalStatusRef}
                   >
-                    <OriginalLPStatus nftId={lp_nft_id} />
+                    <OpenPositionStatus nftId={lp_nft_id} />
                   </Box>
                 </VStack>
               </VStack>
