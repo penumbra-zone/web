@@ -1,11 +1,6 @@
 import { ViewServer as WasmViewServer } from '../wasm';
 import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
 import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import {
-  Position,
-  PositionState,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { JsonObject, JsonValue } from '@bufbuild/protobuf';
 import {
   SpendableNoteRecord,
@@ -95,13 +90,5 @@ export class ViewServer implements ViewServerInterface {
       newNotes: wasmJson.new_notes.map(n => SpendableNoteRecord.fromJsonString(n)),
       newSwaps: wasmJson.new_swaps.map(s => SwapRecord.fromJsonString(s)),
     };
-  }
-
-  getLpNftMetadata(position: Position, positionState: PositionState): Metadata {
-    const result = this.wasmViewServer.get_lpnft_asset(
-      position.toJson(),
-      positionState.toJson(),
-    ) as JsonValue;
-    return Metadata.fromJsonString(JSON.stringify(result));
   }
 }

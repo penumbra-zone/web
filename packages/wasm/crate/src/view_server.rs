@@ -1,23 +1,20 @@
 use std::convert::TryInto;
 use std::{collections::BTreeMap, str::FromStr};
 
-use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::Error;
-use serde_wasm_bindgen::Serializer;
-use wasm_bindgen::prelude::wasm_bindgen;
-use wasm_bindgen::JsValue;
-
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_compact_block::{CompactBlock, StatePayload};
-use penumbra_dex::lp::position::Position;
-use penumbra_dex::lp::LpNft;
 use penumbra_keys::FullViewingKey;
 use penumbra_sct::Nullifier;
 use penumbra_shielded_pool::note;
 use penumbra_tct as tct;
 use penumbra_tct::Witness::*;
+use serde::{Deserialize, Serialize};
+use serde_wasm_bindgen::Error;
+use serde_wasm_bindgen::Serializer;
 use tct::storage::{StoreCommitment, StoreHash, StoredPosition, Updates};
 use tct::{Forgotten, Tree};
+use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::JsValue;
 
 use crate::error::WasmResult;
 use crate::note_record::SpendableNoteRecord;
@@ -303,26 +300,6 @@ impl ViewServer {
 
         let root = self.sct.root();
         serde_wasm_bindgen::to_value(&root)
-    }
-
-    /// get LP NFT asset
-    /// Arguments:
-    ///     position_value: `lp::position::Position`
-    ///     position_state_value: `lp::position::State`
-    /// Returns: `DenomMetadata`
-    #[wasm_bindgen]
-    pub fn get_lpnft_asset(
-        &mut self,
-        position_value: JsValue,
-        position_state_value: JsValue,
-    ) -> Result<JsValue, Error> {
-        utils::set_panic_hook();
-
-        let position: Position = serde_wasm_bindgen::from_value(position_value)?;
-        let position_state = serde_wasm_bindgen::from_value(position_state_value)?;
-        let lp_nft = LpNft::new(position.id(), position_state);
-        let denom = lp_nft.denom();
-        serde_wasm_bindgen::to_value(&denom)
     }
 }
 

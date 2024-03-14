@@ -1,7 +1,7 @@
 import { RootQuerier } from './root-querier';
 
 import { sha256Hash } from '@penumbra-zone/crypto-web';
-import { computePositionId, decodeSctRoot } from '@penumbra-zone/wasm';
+import { computePositionId, decodeSctRoot, getLpNftMetadata } from '@penumbra-zone/wasm';
 import {
   PositionState,
   PositionState_PositionStateEnum,
@@ -296,19 +296,17 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async identifyLpNftPositions(txs: Transaction[]) {
-    const positionStates = [
-      PositionState_PositionStateEnum.OPENED,
-      PositionState_PositionStateEnum.CLOSED,
-      PositionState_PositionStateEnum.WITHDRAWN,
-      PositionState_PositionStateEnum.CLAIMED,
+    const positionStates: PositionState[] = [
+      new PositionState({ state: PositionState_PositionStateEnum.OPENED }),
+      new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+      new PositionState({ state: PositionState_PositionStateEnum.WITHDRAWN, sequence: 0n }),
     ];
 
     for (const tx of txs) {
       for (const { action } of tx.body?.actions ?? []) {
         if (action.case === 'positionOpen' && action.value.position) {
           for (const state of positionStates) {
-            const positionState = new PositionState({ state });
-            const metadata = this.viewServer.getLpNftMetadata(action.value.position, positionState);
+            const metadata = getLpNftMetadata(computePositionId(action.value.position), state);
             await this.indexedDb.saveAssetsMetadata(metadata);
           }
           // to optimize on-chain storage PositionId is not written in the positionOpen action,
@@ -325,16 +323,15 @@ export class BlockProcessor implements BlockProcessorInterface {
           );
         }
         if (action.case === 'positionWithdraw' && action.value.positionId) {
-          await this.indexedDb.updatePosition(
-            action.value.positionId,
-            new PositionState({ state: PositionState_PositionStateEnum.WITHDRAWN }),
-          );
-        }
-        if (action.case === 'positionRewardClaim' && action.value.positionId) {
-          await this.indexedDb.updatePosition(
-            action.value.positionId,
-            new PositionState({ state: PositionState_PositionStateEnum.CLAIMED }),
-          );
+          // Record the LPNFT for the current sequence number.
+          const positionState = new PositionState({
+            state: PositionState_PositionStateEnum.WITHDRAWN,
+            sequence: action.value.sequence,
+          });
+          const metadata = getLpNftMetadata(action.value.positionId, positionState);
+          await this.indexedDb.saveAssetsMetadata(metadata);
+
+          await this.indexedDb.updatePosition(action.value.positionId, positionState);
         }
       }
     }
