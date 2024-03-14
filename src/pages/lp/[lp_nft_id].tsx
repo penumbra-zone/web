@@ -116,17 +116,20 @@ export default function LP() {
   const [lineHeight, setLineHeight] = useState(0);
   const [lineTop, setLineTop] = useState(0);
 
-  useEffect(() => {
-    if (currentStatusRef.current && originalStatusRef.current) {
-      const firstBoxRect = currentStatusRef.current.getBoundingClientRect();
-      const lastBoxRect = originalStatusRef.current.getBoundingClientRect();
-      const height = lastBoxRect.top - firstBoxRect.bottom;
-      const top = firstBoxRect.top;
+useEffect(() => {
+  if (currentStatusRef.current && originalStatusRef.current) {
+    const firstBoxRect = currentStatusRef.current.getBoundingClientRect();
+    const lastBoxRect = originalStatusRef.current.getBoundingClientRect();
 
-      setLineHeight(height + 150);
-      setLineTop(top + firstBoxRect.bottom + 50);
-    }
-  }, [timelineData]);
+    // Calculate the new height of the line to stretch from the bottom of the first box to the top of the last box.
+    const newLineHeight = lastBoxRect.top - firstBoxRect.top;
+    // Set the top of the line to align with the bottom of the first box.
+    const newLineTop = firstBoxRect.bottom - firstBoxRect.top;
+
+    setLineHeight(newLineHeight - 50);
+    setLineTop(newLineTop);
+  }
+}, [timelineData, currentStatusRef, originalStatusRef]);
 
   return (
     <Layout pageTitle={`LP - ${lp_nft_id}`}>

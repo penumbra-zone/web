@@ -26,6 +26,7 @@ interface CurrentLPStatusProps {
 }
 
 const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isCopied, setIsCopied] = useState<boolean>(false);
 
   const handleCopy = () => {
@@ -69,8 +70,22 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
   const asset2 = position!.phi!.pair!.asset2;
 
   // States for tokens
-  const [asset1Token, setAsset1Token] = useState<Token | undefined>();
-  const [asset2Token, setAsset2Token] = useState<Token | undefined>();
+  const [asset1Token, setAsset1Token] = useState<Token>(
+    {
+      symbol: "UNKNOWN",
+      decimals: 0,
+      inner: "UNKNOWN",
+      imagePath: "UNKNOWN",
+    }
+  );
+  const [asset2Token, setAsset2Token] = useState<Token>(
+    {
+      symbol: "UNKNOWN",
+      decimals: 0,
+      inner: "UNKNOWN",
+      imagePath: "UNKNOWN",
+    }
+  );
   const [assetError, setAssetError] = useState<string | undefined>();
 
   useEffect(() => {
@@ -105,7 +120,7 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
     fetchTokens();
   }, [position]);
 
-  if (!asset1Token || !asset2Token) {
+  if (!isLoading && (!asset1Token || !asset2Token)) {
     return <div>{`LP exists, but ${assetError}.`}</div>;
   }
 
