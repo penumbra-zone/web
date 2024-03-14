@@ -1,9 +1,3 @@
-# Publishes extension to chrome web store when a release is made in github.
-
-# `maniftest.json` should already be updated to the desired version before release.
-# make sure download-proving-keys contains the correct version tag.
-
-# https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe
 name: Test Publish flow
 
 # Temp for testing
@@ -11,6 +5,9 @@ on:
   workflow_call:
   workflow_dispatch:
   pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
   turbo-compile:
@@ -18,17 +15,16 @@ jobs:
     uses: ./.github/workflows/compile-wasm.yml
 
   publish:
-    name: Publish extension
-    runs-on: buildjet-16vcpu-ubuntu-2204
+    name: Build
+    runs-on: buildjet-2vcpu-ubuntu-2204
     needs: turbo-compile
-
     steps:
       - uses: actions/checkout@v4
-      - id: ext:publish
+      - id: built
         uses: buildjet/cache@v3
         with:
           path: .turbo
-          key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-ext:publish
+          key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-built
           restore-keys: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
       - uses: pnpm/action-setup@v2
       - uses: buildjet/setup-node@v4
