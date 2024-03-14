@@ -18,6 +18,7 @@ import {
   LiquidityPositionEvent,
   PositionExecutionEvent,
 } from "@/utils/indexer/types/lps";
+import TimelinePosition from "@/components/liquidityPositions/timelinePosition";
 
 export default function LP() {
   const router = useRouter();
@@ -122,10 +123,10 @@ export default function LP() {
       const height = lastBoxRect.top - firstBoxRect.bottom;
       const top = firstBoxRect.top;
 
-      setLineHeight(height + 100);
+      setLineHeight(height + 150);
       setLineTop(top + firstBoxRect.bottom + 50);
     }
-  }, [timelineData, tradeTimelineData, LPData, liquidityPosition]);
+  }, [timelineData]);
 
   return (
     <Layout pageTitle={`LP - ${lp_nft_id}`}>
@@ -154,7 +155,7 @@ export default function LP() {
                     >
                       Position Status
                     </Text>
-                    <Box ref={currentStatusRef}>
+                    <Box className="neon-box" padding={30} ref={currentStatusRef} width={"40em"}>
                       <CurrentLPStatus
                         nftId={lp_nft_id}
                         position={liquidityPosition}
@@ -180,18 +181,11 @@ export default function LP() {
                           align={"flex-start"}
                           paddingTop={index === 0 ? "0" : "3em"}
                         >
-                          <VStack key={index}>
-                            <Box
-                              key={index}
-                              className="neon-box"
-                              width={"20em"}
-                              height={"5em"}
-                              padding="2em"
-                            >
-                              <Text textAlign={"center"}>
-                                LP Event {dataItem.event_id}
-                              </Text>
-                            </Box>
+                          <VStack key={index} ref={originalStatusRef}>
+                            <TimelinePosition
+                              nftId={lp_nft_id}
+                              lp_event={dataItem}
+                            />
                           </VStack>
                         </VStack>
                       ) : (
@@ -204,7 +198,7 @@ export default function LP() {
                             <Box
                               key={index}
                               className="neon-box"
-                              width={"20em"}
+                              width={"25em"}
                               height={"5em"}
                               padding="2em"
                             >
@@ -217,37 +211,6 @@ export default function LP() {
                       )}
                     </>
                   ))}
-
-                  {/*
-                  <VStack align={"flex-end"}>
-                    {tradeTimelineData.map((dataItem, index) => (
-                      <VStack
-                        key={index}
-                        paddingTop={index === 0 ? "0" : "3em"}
-                      >
-                        <Box
-                          key={index}
-                          className="neon-box"
-                          width={"20em"}
-                          height={"5em"}
-                          padding="2em"
-                        >
-                          <Text textAlign={"center"}>
-                            Example Trade {index}
-                          </Text>
-                        </Box>
-                      </VStack>
-                    ))}
-                  </VStack>
-        */}
-                  <Box
-                    
-                    paddingTop={"2em"}
-                    paddingBottom={"5em"}
-                    ref={originalStatusRef}
-                  >
-                    <OpenPositionStatus nftId={lp_nft_id} />
-                  </Box>
                 </VStack>
               </VStack>
             </Box>
@@ -267,6 +230,7 @@ export default function LP() {
                 <p key={index}>{JSON.stringify(event)}</p>
               ))*/}
             </Text>
+            <HStack paddingBottom="5em"></HStack>
           </>
         ) : (
           <VStack height={"100%"} width={"100%"}>
