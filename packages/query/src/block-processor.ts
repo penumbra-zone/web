@@ -299,7 +299,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     const positionStates: PositionState[] = [
       new PositionState({ state: PositionState_PositionStateEnum.OPENED }),
       new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
-      new PositionState({ state: PositionState_PositionStateEnum.CLOSED, sequence: 0n }),
+      new PositionState({ state: PositionState_PositionStateEnum.WITHDRAWN, sequence: 0n }),
     ];
 
     for (const tx of txs) {
