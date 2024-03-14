@@ -1,5 +1,3 @@
-// components/OriginalLPStatus.js
-
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -21,26 +19,14 @@ import { tokenConfigMapOnInner, Token } from "../../constants/tokenConstants";
 import { fetchToken } from "../../utils/token/tokenFetch";
 import BigNumber from "bignumber.js";
 
-interface OriginalLPStatusProps {
+interface ClosedPositionStatusProps {
   nftId: string;
 }
 
-const OriginalLPStatus = ({ nftId }: OriginalLPStatusProps) => {
+const ClosedPositionStatus = ({ nftId }: ClosedPositionStatusProps) => {
   return (
-    <Box className="neon-box" padding={15}>
-      <Text>
-        Original Status here pending{" "}
-        <a
-          href="https://github.com/penumbra-zone/penumbra/issues/3844"
-          style={{ color: "var(--light-grey)", textDecoration: "underline" }}
-          target="_blank"
-          rel="noreferrer"
-        >
-          issue completion
-        </a>
-      </Text>
-    </Box>
+      <Text>Closed Status here</Text>
   );
 };
 
-export default OriginalLPStatus;
+export default ClosedPositionStatus;

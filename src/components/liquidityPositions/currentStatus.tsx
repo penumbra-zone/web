@@ -1,5 +1,3 @@
-// components/CurrentLPStatus.js
-
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -149,9 +147,9 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
               borderRadius="50%"
             />
             <Text>
-              {`Sell ${Number.parseFloat(reserves1.toFixed(18))} ${
+              {`Sell ${Number.parseFloat(reserves1.toFixed(6))} ${
                 asset1Token.symbol
-              } @ ${Number.parseFloat(p.div(q).toFixed(18))} ${
+              } @ ${Number.parseFloat(p.div(q).toFixed(6))} ${
                 asset2Token.symbol
               } / ${asset1Token.symbol} `}
             </Text>
@@ -180,9 +178,9 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
               borderRadius="50%"
             />
             <Text>
-              {`Sell ${Number.parseFloat(reserves2.toFixed(18))} ${
+              {`Sell ${Number.parseFloat(reserves2.toFixed(6))} ${
                 asset2Token.symbol
-              } @ ${Number.parseFloat(q.div(p).toFixed(18))} ${
+              } @ ${Number.parseFloat(q.div(p).toFixed(6))} ${
                 asset1Token.symbol
               } / ${asset2Token.symbol} `}
             </Text>
