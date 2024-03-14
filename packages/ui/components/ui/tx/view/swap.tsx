@@ -1,56 +1,51 @@
 import { ViewBox } from './viewbox';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { bech32Address } from '@penumbra-zone/types/src/address';
 import { fromBaseUnitAmount, joinLoHiAmount } from '@penumbra-zone/types/src/amount';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
+import { ActionDetails } from './action-details';
+import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { AddressViewComponent } from './address-view';
 
 export const SwapViewComponent = ({ value }: { value: SwapView }) => {
   if (value.swapView.case === 'visible') {
     const { tradingPair, delta1I, delta2I, claimFee, claimAddress } =
       value.swapView.value.swapPlaintext!;
 
-    const encodedAddress = bech32Address(claimAddress!);
+    const addressView = new AddressView({
+      addressView: { case: 'decoded', value: { address: claimAddress } },
+    });
 
     return (
       <ViewBox
         label='Swap'
         visibleContent={
-          <div className='flex flex-col gap-2'>
-            <div>
-              <b>Asset 1:</b>
-              <div className='ml-5'>
-                <b>ID: </b>
+          <div className='flex flex-col gap-8'>
+            <ActionDetails label='Asset 1'>
+              <ActionDetails.Row label='ID'>
                 {uint8ArrayToBase64(tradingPair!.asset1!.inner)}
-              </div>
-              <div className='ml-5'>
-                <b>Amount: </b>
-                <span className='font-mono'>{joinLoHiAmount(delta1I!).toString()}</span>
-              </div>
-            </div>
-            <div>
-              <b>Asset 2:</b>
-              <div className='ml-5'>
-                <b>ID: </b>
+              </ActionDetails.Row>
+              <ActionDetails.Row label='Amount'>
+                {joinLoHiAmount(delta1I!).toString()}
+              </ActionDetails.Row>
+            </ActionDetails>
+
+            <ActionDetails label='Asset 2'>
+              <ActionDetails.Row label='ID'>
                 {uint8ArrayToBase64(tradingPair!.asset2!.inner)}
-              </div>
-              <div className='ml-5'>
-                <b>Amount: </b>
-                <span className='font-mono'>{joinLoHiAmount(delta2I!).toString()}</span>
-              </div>
-            </div>
-            <div>
-              <b>Claim:</b>
-              <div className='ml-5'>
-                <b>Address: </b>
-                {encodedAddress}
-              </div>
-              <div className='ml-5'>
-                <b>Fee: </b>
-                <span className='font-mono'>
-                  {fromBaseUnitAmount(claimFee!.amount!, 0).toFormat()} upenumbra
-                </span>
-              </div>
-            </div>
+              </ActionDetails.Row>
+              <ActionDetails.Row label='Amount'>
+                {joinLoHiAmount(delta2I!).toString()}
+              </ActionDetails.Row>
+            </ActionDetails>
+
+            <ActionDetails label='Claim'>
+              <ActionDetails.Row label='Address'>
+                <AddressViewComponent view={addressView} />
+              </ActionDetails.Row>
+              <ActionDetails.Row label='Fee'>
+                {fromBaseUnitAmount(claimFee!.amount!, 0).toFormat()} upenumbra
+              </ActionDetails.Row>
+            </ActionDetails>
           </div>
         }
       />
