@@ -64,7 +64,7 @@ export const approveOrigin = async ({
         ]);
       }
 
-      return Boolean(res.data?.choice === UserChoice.Approved);
+      return res.data?.choice === UserChoice.Approved;
     }
   }
 };
