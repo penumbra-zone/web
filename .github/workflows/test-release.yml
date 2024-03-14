@@ -1,5 +1,9 @@
 name: Test Publish flow
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 # Temp for testing
 on:
   workflow_call:
