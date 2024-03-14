@@ -76,7 +76,7 @@ export class CRSessionClient {
         this.servicePort.postMessage(this.requestChannelStream(ev.data));
       else console.warn('Unknown item from client', ev.data);
     } catch (e) {
-      this.clientPort.postMessage({ error: String(e) });
+      this.clientPort.postMessage({ error: { code: 'unknown', message: String(e) } });
     }
   };
 
@@ -87,7 +87,7 @@ export class CRSessionClient {
         this.clientPort.postMessage(...this.acceptChannelStreamResponse(m));
       else console.warn('Unknown item from service', m);
     } catch (e) {
-      this.clientPort.postMessage({ error: String(e) });
+      this.clientPort.postMessage({ error: { code: 'unknown', message: String(e) } });
     }
   };
 
