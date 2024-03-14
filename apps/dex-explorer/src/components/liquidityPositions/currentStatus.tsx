@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
   VStack,
   Text,
-  Divider,
   Badge,
   HStack,
   Image,
@@ -11,7 +9,6 @@ import {
 } from "@chakra-ui/react";
 import {
   Position,
-  PositionState,
 } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import { fromBaseUnit } from "../../utils/math/hiLo";
 import { uint8ArrayToBase64 } from "../../utils/math/base64";
@@ -201,7 +198,7 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
               size="sm"
               borderRadius="50%"
             />
-            <Text>
+            <Text fontFamily={"monospace"}>
               {`Sell ${Number.parseFloat(reserves1.toFixed(6))} ${
                 asset1Token.symbol
               } @ ${Number.parseFloat(p.div(q).toFixed(6))} ${
@@ -232,7 +229,7 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
               size="sm"
               borderRadius="50%"
             />
-            <Text>
+            <Text fontFamily={"monospace"}>
               {`Sell ${Number.parseFloat(reserves2.toFixed(6))} ${
                 asset2Token.symbol
               } @ ${Number.parseFloat(q.div(p).toFixed(6))} ${
