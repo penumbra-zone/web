@@ -1,50 +1,43 @@
 name: Packages Release
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   workflow_call:
   workflow_dispatch:
-
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+  pull_request: #    Delete after
+  push:
+    branches:
+      - main
 
 jobs:
-  turbo-all:
-    name: Compile, lint, test, & build
-    uses: ./.github/workflows/turbo-ci.yml
+  turbo-compile:
+    name: Compile
+    uses: ./.github/workflows/compile-wasm.yml
 
-  packages-release:
+  publish:
     name: Packages Release
-    environment: labs-approval
-    runs-on: buildjet-2vcpu-ubuntu-2204
-    needs: turbo-all
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v4
+    runs-on: buildjet-4vcpu-ubuntu-2204
+    needs: turbo-compile
 
-      - name: Access build cache
-        id: built
+    steps:
+      - uses: actions/checkout@v4
+      - id: built
         uses: buildjet/cache@v3
         with:
           path: .turbo
           key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-built
           restore-keys: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-
-      - name: Setup Node.js 21.x
-        uses: buildjet/setup-node@v4
+      - uses: pnpm/action-setup@v2
+      - uses: buildjet/setup-node@v4
         with:
           node-version: '21'
           cache: 'pnpm'
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Disable telemetry
-        run: pnpm turbo telemetry disable
-
-      - name: Build packages
-        run: pnpm turbo build --cache-dir=.turbo
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo telemetry disable
+      - run: pnpm turbo build --cache-dir=.turbo
 
       # If there are changesets, this action will create a PR on the repo to version packages
       # If there are none, it will publish newer-versioned public packages to npm
