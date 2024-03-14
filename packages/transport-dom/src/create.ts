@@ -9,12 +9,7 @@ import {
   PartialMessage,
   ServiceType,
 } from '@bufbuild/protobuf';
-import {
-  Code as ConnectErrorCode,
-  ConnectError,
-  StreamResponse,
-  UnaryResponse,
-} from '@connectrpc/connect';
+import { Code, ConnectError, StreamResponse, UnaryResponse } from '@connectrpc/connect';
 import { CommonTransportOptions } from '@connectrpc/connect/protocol';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 import {
@@ -81,7 +76,7 @@ export const createChannelTransport = ({
         setTimeout(
           reject,
           defaultTimeoutMs,
-          new ConnectError('Channel connection request timed out', ConnectErrorCode.Unavailable),
+          new ConnectError('Channel connection request timed out', Code.Unavailable),
         ),
     );
 
@@ -95,13 +90,28 @@ export const createChannelTransport = ({
 
   const transportListener = ({ data }: MessageEvent<unknown>) => {
     if (isTransportEvent(data)) {
+      // this is a response to a specific request.  the port may be shared, so it
+      // may contain a requestId we don't know about.  the response may be
+      // successful, or contain an error conveyed only to the caller.
       const respond = pending.get(data.requestId);
       if (respond) respond(data);
     } else if (isTransportError(data)) {
+      // this is a channel-level error, corresponding to no specific request.
+      // this will fail this transport, and every client using this transport.
+      // every transport sharing this port will fail independently.
       listenerError.reject(
-        errorFromJson(data.error, data.metadata, new ConnectError('Response failed')),
+        errorFromJson(data.error, data.metadata, new ConnectError('Transport failed')),
       );
-    } else listenerError.reject(ConnectError.from(data));
+    } else
+      listenerError.reject(
+        new ConnectError(
+          'Unknown item in transport',
+          Code.Unimplemented,
+          undefined,
+          undefined,
+          data,
+        ),
+      );
   };
 
   return {
@@ -164,17 +174,15 @@ export const createChannelTransport = ({
 
       if (method.kind === MethodKind.ServerStreaming) {
         const iter = input[Symbol.asyncIterator]();
-        const [{ value }, { done }] = [
-          (await iter.next()) as IteratorYieldResult<PartialMessage<I>>,
-          await iter.next(),
-        ];
-        if (!done)
+        const [{ value } = { value: null }, { done }] = [await iter.next(), await iter.next()];
+        if (done && typeof value === 'object' && value != null) {
+          const message = Any.pack(new method.I(value as object)).toJson(jsonOptions);
+          port.postMessage({ requestId, message, header } satisfies TransportMessage);
+        } else
           throw new ConnectError(
             'MethodKind.ServerStreaming expects a single request message',
-            ConnectErrorCode.OutOfRange,
+            Code.OutOfRange,
           );
-        const message = Any.pack(new method.I(value)).toJson(jsonOptions);
-        port.postMessage({ requestId, message, header } satisfies TransportMessage);
       } else {
         const stream = ReadableStream.from(input).pipeThrough(
           new TransformStream({

@@ -1,5 +1,5 @@
 import { ConnectError } from '@connectrpc/connect';
-import { errorFromJson, errorToJson } from '@connectrpc/connect/protocol-connect';
+import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import { ChannelLabel, nameConnection, parseConnectionName } from './channel-names';
 import { isTransportInitChannel, TransportInitChannel } from './message';
 import { PortStreamSink, PortStreamSource } from './stream';
@@ -154,14 +154,7 @@ export class CRSessionManager {
     const sinkListener = (p: chrome.runtime.Port) => {
       if (p.name !== channel) return;
       chrome.runtime.onConnect.removeListener(sinkListener);
-      stream
-        .pipeTo(
-          new WritableStream(
-            new PortStreamSink(p, r => errorToJson(ConnectError.from(r), undefined)),
-          ),
-          { signal },
-        )
-        .catch(() => null);
+      void stream.pipeTo(new WritableStream(new PortStreamSink(p)), { signal });
     };
     chrome.runtime.onConnect.addListener(sinkListener);
     return { requestId, channel };
@@ -172,10 +165,6 @@ export class CRSessionManager {
     channel: name,
   }: TransportInitChannel): TransportStream => ({
     requestId,
-    stream: new ReadableStream(
-      new PortStreamSource(chrome.runtime.connect({ name }), r =>
-        errorFromJson(r, undefined, ConnectError.from(r)),
-      ),
-    ),
+    stream: new ReadableStream(new PortStreamSource(chrome.runtime.connect({ name }))),
   });
 }

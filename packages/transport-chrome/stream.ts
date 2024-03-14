@@ -5,23 +5,34 @@
  */
 
 import type { JsonValue } from '@bufbuild/protobuf';
+import { Code, ConnectError } from '@connectrpc/connect';
+import { errorFromJson, errorToJson } from '@connectrpc/connect/protocol-connect';
 
 export class PortStreamSource implements UnderlyingDefaultSource<JsonValue> {
-  constructor(
-    private incoming: chrome.runtime.Port,
-    private jsonToReason = (r: JsonValue) => r as unknown,
-  ) {}
+  constructor(private incoming: chrome.runtime.Port) {}
 
   // A port can't pull like a normal source, so handlers are attached at start
   start(cont: ReadableStreamDefaultController<JsonValue>) {
-    this.incoming.onDisconnect.addListener(() => cont.error('Disconnect'));
+    this.incoming.onDisconnect.addListener(port =>
+      cont.error(new ConnectError('Source disconnected', Code.Aborted, undefined, undefined, port)),
+    );
     this.incoming.onMessage.addListener(chunk => {
-      if (isStreamAbort(chunk)) cont.error(this.jsonToReason(chunk.abort));
+      if (isStreamAbort(chunk))
+        cont.error(errorFromJson(chunk.abort, undefined, ConnectError.from(chunk.abort)));
       else if (isStreamValue(chunk)) cont.enqueue(chunk.value);
       else if (isStreamEnd(chunk)) {
         this.incoming.disconnect();
         cont.close();
-      } else cont.error('Unexpected subchannel transport');
+      } else
+        cont.error(
+          new ConnectError(
+            'Unexpected subchannel transport',
+            Code.Unimplemented,
+            undefined,
+            undefined,
+            chunk,
+          ),
+        );
     });
   }
 
@@ -35,10 +46,7 @@ export class PortStreamSink implements UnderlyingSink<JsonValue> {
    * @param outgoing port to write to
    * @param reasonToJson abort reason to jsonifiable
    */
-  constructor(
-    private outgoing: chrome.runtime.Port,
-    private reasonToJson = (r: unknown): JsonValue => String(r),
-  ) {}
+  constructor(private outgoing: chrome.runtime.Port) {}
 
   write(chunk: JsonValue) {
     this.outgoing.postMessage({
@@ -54,10 +62,9 @@ export class PortStreamSink implements UnderlyingSink<JsonValue> {
   }
 
   abort(reason?: unknown) {
-    if (reason !== 'Disconnect')
-      this.outgoing.postMessage({
-        abort: this.reasonToJson(reason),
-      } satisfies StreamAbort);
+    this.outgoing.postMessage({
+      abort: errorToJson(ConnectError.from(reason), undefined),
+    } satisfies StreamAbort);
     this.outgoing.disconnect();
   }
 }

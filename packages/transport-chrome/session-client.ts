@@ -16,7 +16,6 @@
 
 import {
   isTransportError,
-  isTransportEvent,
   isTransportMessage,
   isTransportStream,
   TransportStream,
@@ -25,7 +24,7 @@ import { ChannelLabel, nameConnection } from './channel-names';
 import { isTransportInitChannel, TransportInitChannel } from './message';
 import { PortStreamSink, PortStreamSource } from './stream';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { errorFromJson, errorToJson } from '@connectrpc/connect/protocol-connect';
+import { errorToJson } from '@connectrpc/connect/protocol-connect';
 
 export class CRSessionClient {
   private static singleton?: CRSessionClient;
@@ -62,15 +61,10 @@ export class CRSessionClient {
 
   private disconnect = () => {
     this.clientPort.removeEventListener('message', this.clientListener);
-    this.clientPort.addEventListener('message', (ev: MessageEvent<unknown>) => {
-      if (isTransportEvent(ev.data)) {
-        const { requestId } = ev.data;
-        this.clientPort.postMessage({ requestId, error: 'Connection closed' });
-      }
-    });
     this.clientPort.postMessage({
       error: errorToJson(new ConnectError('Connection closed', Code.Unavailable), undefined),
     });
+    this.clientPort.close();
   };
 
   private clientListener = (ev: MessageEvent<unknown>) => {
@@ -96,11 +90,7 @@ export class CRSessionClient {
   };
 
   private acceptChannelStreamResponse = ({ requestId, channel: name }: TransportInitChannel) => {
-    const stream = new ReadableStream(
-      new PortStreamSource(chrome.runtime.connect({ name }), r =>
-        errorFromJson(r, undefined, ConnectError.from(r)),
-      ),
-    );
+    const stream = new ReadableStream(new PortStreamSource(chrome.runtime.connect({ name })));
     return [{ requestId, stream }, [stream]] satisfies [TransportStream, [Transferable]];
   };
 
@@ -109,13 +99,7 @@ export class CRSessionClient {
     const sinkListener = (p: chrome.runtime.Port) => {
       if (p.name !== channel) return;
       chrome.runtime.onConnect.removeListener(sinkListener);
-      stream
-        .pipeTo(
-          new WritableStream(
-            new PortStreamSink(p, r => errorToJson(ConnectError.from(r), undefined)),
-          ),
-        )
-        .catch(() => null);
+      void stream.pipeTo(new WritableStream(new PortStreamSink(p)));
     };
     chrome.runtime.onConnect.addListener(sinkListener);
     return { requestId, channel } satisfies TransportInitChannel;
