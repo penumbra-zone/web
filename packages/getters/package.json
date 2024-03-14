@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/getters",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Convenience getters for the deeply nested optionals of Penumbra's protobuf types",
   "type": "module",
   "publishConfig": {
