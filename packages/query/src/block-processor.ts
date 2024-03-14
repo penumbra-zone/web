@@ -23,15 +23,14 @@ import type { BlockProcessorInterface } from '@penumbra-zone/types/src/block-pro
 import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
 import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
-import { NUMERAIRE_TOKEN_METADATA } from '../../constants/src/assets';
+import { NUMERAIRE_TOKEN_METADATA } from "@penumbra-zone/constants/src/assets";
 import {
   getDelta1Amount,
   getLambda2Amount,
   getSwapAsset1,
-  getSwapAsset2
-} from "@penumbra-zone/getters/src/batch-swap-output-data";
+  getSwapAsset2,
+} from '@penumbra-zone/getters/src/batch-swap-output-data';
 import { divideAmounts } from '@penumbra-zone/types/src/amount';
-
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -254,7 +253,6 @@ export class BlockProcessor implements BlockProcessorInterface {
         latestKnownBlockHeight = compactBlock.height;
       }
 
-
       const isLastBlockOfEpoch = !!compactBlock.epochRoot;
       if (isLastBlockOfEpoch) {
         void this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
@@ -403,14 +401,21 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  private async  updatePrices(swapOutputs: BatchSwapOutputData[], height: bigint) {
-    console.log("Update prices BP", swapOutputs)
+  private async updatePrices(swapOutputs: BatchSwapOutputData[], height: bigint) {
+    console.log('Update prices BP', swapOutputs);
     for (const swapOutput of swapOutputs) {
       if (getSwapAsset2(swapOutput).equals(NUMERAIRE_TOKEN_METADATA.penumbraAssetId)) {
-        const numerairePerUnit  = divideAmounts(getDelta1Amount(swapOutput), getLambda2Amount(swapOutput)).toNumber();
-        await this.indexedDb.updatePrice(getSwapAsset1(swapOutput),getSwapAsset2(swapOutput),numerairePerUnit, height);
+        const numerairePerUnit = divideAmounts(
+          getDelta1Amount(swapOutput),
+          getLambda2Amount(swapOutput),
+        ).toNumber();
+        await this.indexedDb.updatePrice(
+          getSwapAsset1(swapOutput),
+          getSwapAsset2(swapOutput),
+          numerairePerUnit,
+          height,
+        );
       }
     }
-
   }
 }

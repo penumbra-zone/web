@@ -29,9 +29,8 @@ export const addAmounts = (a: Amount, b: Amount): Amount => {
   return new Amount({ lo, hi });
 };
 
-export const divideAmounts  = (dividend: Amount, divider: Amount): BigNumber => {
-  if (isZero(divider))
-    throw new Error("Division by zero");
+export const divideAmounts = (dividend: Amount, divider: Amount): BigNumber => {
+  if (isZero(divider)) throw new Error('Division by zero');
 
   const joinedDividend = new BigNumber(joinLoHiAmount(dividend).toString());
   const joinedDivider = new BigNumber(joinLoHiAmount(divider).toString());

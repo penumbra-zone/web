@@ -13,7 +13,8 @@ import {
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
-  AssetId, EstimatedPrice,
+  AssetId,
+  EstimatedPrice,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
@@ -104,8 +105,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
         db.createObjectStore('EPOCHS', { autoIncrement: true });
         db.createObjectStore('VALIDATOR_INFOS');
-        db.createObjectStore('PRICES',     {keyPath: ['pricedAsset.inner', 'numeraire.inner']});
-
+        db.createObjectStore('PRICES', { keyPath: ['pricedAsset.inner', 'numeraire.inner'] });
       },
     });
     const constants = {
@@ -538,15 +538,20 @@ export class IndexedDb implements IndexedDbInterface {
     );
   }
 
-  async updatePrice(pricedAsset: AssetId, numeraire: AssetId, numerairePerUnit: number, height: bigint) {
-    let estimatedPrice = new EstimatedPrice({
+  async updatePrice(
+    pricedAsset: AssetId,
+    numeraire: AssetId,
+    numerairePerUnit: number,
+    height: bigint,
+  ) {
+    const estimatedPrice = new EstimatedPrice({
       pricedAsset,
       numeraire,
       numerairePerUnit,
-      asOfHeight: height
+      asOfHeight: height,
     });
 
-    console.log("Update prices IDB", estimatedPrice)
+    console.log('Update prices IDB', estimatedPrice);
 
     await this.u.update({
       table: 'PRICES',

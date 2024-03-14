@@ -15,7 +15,8 @@ import {
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
-  AssetId, EstimatedPrice,
+  AssetId,
+  EstimatedPrice,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
@@ -92,7 +93,12 @@ export interface IndexedDbInterface {
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
   iterateValidatorInfos(): AsyncGenerator<ValidatorInfo, void>;
-  updatePrice(pricedAsset: AssetId, numeraire: AssetId, numerairePerUnit: number, height: bigint): Promise<void>;
+  updatePrice(
+    pricedAsset: AssetId,
+    numeraire: AssetId,
+    numerairePerUnit: number,
+    height: bigint,
+  ): Promise<void>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -177,7 +183,6 @@ export interface PenumbraDb extends DBSchema {
     value: Jsonified<EstimatedPrice>;
   };
 }
-
 
 // need to store PositionId and Position in the same table
 export interface PositionRecord {

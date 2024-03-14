@@ -13,9 +13,8 @@ export const STAKING_TOKEN_METADATA = localAssets.find(
 
 export const NUMERAIRE_TOKEN = 'test_usd';
 export const NUMERAIRE_TOKEN_METADATA = localAssets.find(
-    metadata => metadata.display === NUMERAIRE_TOKEN,
+  metadata => metadata.display === NUMERAIRE_TOKEN,
 )!;
-
 
 export interface AssetPatterns {
   lpNft: RegExp;
