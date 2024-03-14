@@ -296,10 +296,10 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async identifyLpNftPositions(txs: Transaction[]) {
-    const positionStates = [
-      PositionState_PositionStateEnum.OPENED,
-      PositionState_PositionStateEnum.CLOSED,
-      PositionState_PositionStateEnum.WITHDRAWN,
+    const positionStates: PositionState[] = [
+      new PositionState({state: PositionState_PositionStateEnum.OPENED}),
+      new PositionState({state: PositionState_PositionStateEnum.CLOSED}),
+      new PositionState({state: PositionState_PositionStateEnum.CLOSED, sequence: 0n}),
     ];
 
     for (const tx of txs) {
@@ -307,8 +307,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       for (const { action } of tx.body?.actions ?? []) {
         if (action.case === 'positionOpen' && action.value.position) {
           for (const state of positionStates) {
-            const positionState = new PositionState({ state });
-            const metadata = this.viewServer.getLpNftMetadata(action.value.position, positionState);
+            const metadata = this.viewServer.getLpNftMetadata(action.value.position, state);
             await this.indexedDb.saveAssetsMetadata(metadata);
           }
           // to optimize on-chain storage PositionId is not written in the positionOpen action,
@@ -325,9 +324,14 @@ export class BlockProcessor implements BlockProcessorInterface {
           );
         }
         if (action.case === 'positionWithdraw' && action.value.positionId) {
+          // Record the LPNFT for the current sequence number.
+          let positionState = new PositionState({ state: PositionState_PositionStateEnum.WITHDRAWN, sequence: action.value.sequence});
+          const metadata = this.viewServer.getLpNftMetadata(action.value.position, positionState);
+
+
           await this.indexedDb.updatePosition(
             action.value.positionId,
-            new PositionState({ state: PositionState_PositionStateEnum.WITHDRAWN }),
+            positionState,
           );
         }
       }
