@@ -3,17 +3,28 @@
   "version": "1.0.3",
   "license": "MIT",
   "type": "module",
-  "files": [
-    "dist"
-  ],
   "exports": {
-    "./src/adapter": "./dist/adapter.js",
-    "./src/impl": "./dist/any-impl.js",
-    "./src/create": "./dist/create.js",
-    "./src/direct": "./dist/direct.js",
-    "./src/messages": "./dist/messages.js",
-    "./src/proxy": "./dist/proxy.js",
-    "./src/stream": "./dist/stream.js"
+    "./src/adapter": "./src/adapter.ts",
+    "./src/impl": "./src/any-impl.ts",
+    "./src/create": "./src/create.ts",
+    "./src/direct": "./src/direct.ts",
+    "./src/messages": "./src/messages.ts",
+    "./src/proxy": "./src/proxy.ts",
+    "./src/stream": "./src/stream.ts"
+  },
+  "publishConfig": {
+    "files": [
+      "dist"
+    ],
+    "exports": {
+      "./src/adapter": "./dist/adapter.js",
+      "./src/impl": "./dist/any-impl.js",
+      "./src/create": "./dist/create.js",
+      "./src/direct": "./dist/direct.js",
+      "./src/messages": "./dist/messages.js",
+      "./src/proxy": "./dist/proxy.js",
+      "./src/stream": "./dist/stream.js"
+    }
   },
   "scripts": {
     "build": "tsc && vite build",
