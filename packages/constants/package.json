@@ -3,12 +3,13 @@
   "version": "1.0.3",
   "license": "MIT",
   "type": "module",
-  "files": [
-    "dist"
-  ],
-  "exports": {
-    "./src/assets": "./dist/assets.js",
-    "./src/chains": "./dist/chains.js"
+  "publishConfig": {
+    "files": [
+      "dist"
+    ],
+    "exports": {
+      "./src/*": "./dist/*.js"
+    }
   },
   "scripts": {
     "build": "tsc && vite build",

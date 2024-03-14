@@ -3,14 +3,20 @@
   "version": "1.0.17",
   "description": "Package for connecting to Prax extension",
   "type": "module",
-  "files": [
-    "dist"
-  ],
   "exports": {
-    ".": "./dist/prax.js",
-    "./global": "./dist/global.js",
-    "./src/global": "./dist/global.js",
-    "./get-port": "./dist/get-port.js"
+    ".": "./src/prax.ts",
+    "./src/global": "./src/global.ts",
+    "./src/get-port": "./src/get-port.ts"
+  },
+  "publishConfig": {
+    "files": [
+      "dist"
+    ],
+    "exports": {
+      ".": "./dist/prax.js",
+      "./global": "./dist/global.js",
+      "./get-port": "./dist/get-port.js"
+    }
   },
   "scripts": {
     "build": "tsc && vite build",

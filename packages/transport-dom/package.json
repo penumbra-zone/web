@@ -3,17 +3,13 @@
   "version": "1.0.3",
   "license": "MIT",
   "type": "module",
-  "files": [
-    "dist"
-  ],
-  "exports": {
-    "./src/adapter": "./dist/adapter.js",
-    "./src/impl": "./dist/any-impl.js",
-    "./src/create": "./dist/create.js",
-    "./src/direct": "./dist/direct.js",
-    "./src/messages": "./dist/messages.js",
-    "./src/proxy": "./dist/proxy.js",
-    "./src/stream": "./dist/stream.js"
+  "publishConfig": {
+    "files": [
+      "dist"
+    ],
+    "exports": {
+      "./src/*": "./dist/*.js"
+    }
   },
   "scripts": {
     "build": "tsc && vite build",
