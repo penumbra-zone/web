@@ -3,6 +3,8 @@ name: Packages Release
 on:
   workflow_call:
   workflow_dispatch:
+  #temp
+  pull_request:
   push:
     branches:
       - main
