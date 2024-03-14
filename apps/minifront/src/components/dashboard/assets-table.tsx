@@ -33,12 +33,17 @@ export default function AssetsTable() {
       {data.map((a, index) => (
         <div key={index} className='flex flex-col gap-4'>
           <div className='flex flex-col items-center justify-center'>
-            <div className='flex flex-col items-center justify-center gap-2 md:flex-row'>
-              <div className='flex items-center gap-2'>
+            <div className='flex max-w-full flex-col justify-center gap-2 md:flex-row'>
+              <div className='flex items-center justify-center gap-2'>
                 <AddressIcon address={a.address} size={20} />
-                <h2 className='font-bold md:text-base xl:text-xl'>Account #{a.index.account}</h2>
+                <h2 className='whitespace-nowrap font-bold md:text-base xl:text-xl'>
+                  Account #{a.index.account}
+                </h2>
               </div>
-              <AddressComponent address={a.address} />
+
+              <div className='max-w-72 truncate'>
+                <AddressComponent address={a.address} />
+              </div>
             </div>
           </div>
 

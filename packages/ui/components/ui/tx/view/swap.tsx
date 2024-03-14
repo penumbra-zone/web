@@ -21,7 +21,7 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
         visibleContent={
           <div className='flex flex-col gap-8'>
             <ActionDetails label='Asset 1'>
-              <ActionDetails.Row label='ID'>
+              <ActionDetails.Row label='ID' truncate>
                 {uint8ArrayToBase64(tradingPair!.asset1!.inner)}
               </ActionDetails.Row>
               <ActionDetails.Row label='Amount'>
@@ -30,7 +30,7 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
             </ActionDetails>
 
             <ActionDetails label='Asset 2'>
-              <ActionDetails.Row label='ID'>
+              <ActionDetails.Row label='ID' truncate>
                 {uint8ArrayToBase64(tradingPair!.asset2!.inner)}
               </ActionDetails.Row>
               <ActionDetails.Row label='Amount'>

@@ -28,7 +28,7 @@ export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps
   copyable = isOneTimeAddress ? false : copyable;
 
   return (
-    <div className='flex items-center gap-2'>
+    <div className='flex items-center gap-2 overflow-hidden'>
       {accountIndex !== undefined ? (
         <>
           <AddressIcon address={view.addressView.value.address} size={14} />
