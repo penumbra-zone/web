@@ -9,8 +9,9 @@ import { SplashPage } from '@penumbra-zone/ui';
 export const ErrorBoundary = () => {
   const error = useRouteError();
 
-  if (error instanceof ConnectError && error.code === Code.Unavailable)
+  if (error instanceof ConnectError && error.code === Code.Unavailable) {
     return <ExtensionUnavailable />;
+  }
   if (error instanceof PraxNotConnectedError) return <ExtensionNotConnected />;
   if (isRouteErrorResponse(error) && error.status === 404) return <NotFound />;
 
