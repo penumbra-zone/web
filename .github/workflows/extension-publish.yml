@@ -12,21 +12,26 @@ on:
       - '*-?v[0-9]+*'
   workflow_call:
   workflow_dispatch:
+#    Temp remove
+  pull_request:
 
 jobs:
-  compile:
+  turbo-compile:
+    name: Compile
     uses: ./.github/workflows/compile-wasm.yml
 
   publish:
-    environment: ext-publish
-    runs-on: buildjet-16vcpu-ubuntu-2204
-    needs: compile
-
+#    environment: ext-publish
+    name: Publish extension
+    runs-on: buildjet-4vcpu-ubuntu-2204
+    needs: turbo-compile
     steps:
       - uses: actions/checkout@v4
-      - uses: buildjet/cache@v3
+      - id: built
+        uses: buildjet/cache@v3
         with:
           path: .turbo
+          key: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-built
           restore-keys: ${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.ref }}-${{ github.sha }}-compiled
       - uses: pnpm/action-setup@v2
       - uses: buildjet/setup-node@v4
@@ -35,15 +40,16 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm turbo telemetry disable
-      - run: pnpm turbo download-keys --force --cache-dir=.turbo
       - run: pnpm turbo build --cache-dir=.turbo
+
       - name: Package up extension
         run: zip -r dist.zip apps/extension/dist
-      - name: Upload & release
-        uses: penumbra-zone/chrome-extension-upload@v1
-        with:
-          file-path: dist.zip
-          extension-id: lkpmkhpnhknhmibgnmmhdhgdilepfghe
-          client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
-          client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          refresh-token: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+#
+#      - name: Upload & release
+#        uses: penumbra-zone/chrome-extension-upload@v1
+#        with:
+#          file-path: dist.zip
+#          extension-id: lkpmkhpnhknhmibgnmmhdhgdilepfghe
+#          client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
+#          client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+#          refresh-token: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
