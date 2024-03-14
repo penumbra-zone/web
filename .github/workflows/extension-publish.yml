@@ -12,8 +12,6 @@ on:
       - '*-?v[0-9]+*'
   workflow_call:
   workflow_dispatch:
-#    Temp remove
-  pull_request:
 
 jobs:
   turbo-compile:
@@ -21,10 +19,11 @@ jobs:
     uses: ./.github/workflows/compile-wasm.yml
 
   publish:
-#    environment: ext-publish
+    environment: ext-publish
     name: Publish extension
     runs-on: buildjet-4vcpu-ubuntu-2204
     needs: turbo-compile
+
     steps:
       - uses: actions/checkout@v4
       - id: built
@@ -44,12 +43,12 @@ jobs:
 
       - name: Package up extension
         run: zip -r dist.zip apps/extension/dist
-#
-#      - name: Upload & release
-#        uses: penumbra-zone/chrome-extension-upload@v1
-#        with:
-#          file-path: dist.zip
-#          extension-id: lkpmkhpnhknhmibgnmmhdhgdilepfghe
-#          client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
-#          client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-#          refresh-token: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+
+      - name: Upload & release
+        uses: penumbra-zone/chrome-extension-upload@v1
+        with:
+          file-path: dist.zip
+          extension-id: lkpmkhpnhknhmibgnmmhdhgdilepfghe
+          client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
+          client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
