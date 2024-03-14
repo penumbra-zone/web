@@ -17,5 +17,5 @@ export const getLpNftMetadata = (
   positionState: PositionState,
 ): Metadata => {
   const result = get_lpnft_asset(positionId.toJson(), positionState.toJson()) as JsonValue;
-  return Metadata.fromJsonString(JSON.stringify(result));
+  return Metadata.fromJson(result);
 };
