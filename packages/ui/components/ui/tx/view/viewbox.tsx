@@ -9,6 +9,8 @@ export interface ViewBoxProps {
   visibleContent?: React.ReactElement;
 }
 
+const Label = ({ label }: { label: string }) => <span className='text-lg'>{label}</span>;
+
 export const ViewBox = ({ label, visibleContent }: ViewBoxProps) => {
   return (
     <div
@@ -19,11 +21,11 @@ export const ViewBox = ({ label, visibleContent }: ViewBoxProps) => {
     >
       <div className='flex items-center gap-2 self-start'>
         <span className={cn('text-base font-bold', !visibleContent ? 'text-gray-600' : '')}>
-          {visibleContent && label}
+          {visibleContent && <Label label={label} />}
           {!visibleContent && (
             <div className='flex gap-2'>
               <IncognitoIcon fill='#4b5563' />
-              <span>{label}</span>
+              <Label label={label} />
             </div>
           )}
         </span>

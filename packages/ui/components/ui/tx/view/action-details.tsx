@@ -12,8 +12,14 @@ import { ReactNode } from 'react';
  * </ActionDetails>
  * ```
  */
-export const ActionDetails = ({ children }: { children: ReactNode }) => {
-  return <div className='flex flex-col gap-2'>{children}</div>;
+export const ActionDetails = ({ children, label }: { children: ReactNode; label?: string }) => {
+  return (
+    <div className='flex flex-col gap-2'>
+      {!!label && <div className='font-bold'>{label}</div>}
+
+      {children}
+    </div>
+  );
 };
 
 const Separator = () => (
