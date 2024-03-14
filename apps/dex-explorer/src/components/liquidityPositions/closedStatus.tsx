@@ -18,12 +18,14 @@ import { uint8ArrayToBase64 } from "../../utils/math/base64";
 import { tokenConfigMapOnInner, Token } from "../../constants/tokenConstants";
 import { fetchToken } from "../../utils/token/tokenFetch";
 import BigNumber from "bignumber.js";
+import { LiquidityPositionEvent } from "@/utils/indexer/types/lps";
 
 interface ClosedPositionStatusProps {
   nftId: string;
+  lp_event: LiquidityPositionEvent;
 }
 
-const ClosedPositionStatus = ({ nftId }: ClosedPositionStatusProps) => {
+const ClosedPositionStatus = ({ nftId, lp_event }: ClosedPositionStatusProps) => {
   return (
       <Text>Closed Status here</Text>
   );

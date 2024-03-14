@@ -18,6 +18,7 @@ import { uint8ArrayToBase64 } from "../../utils/math/base64";
 import { tokenConfigMapOnInner, Token } from "../../constants/tokenConstants";
 import { fetchToken } from "../../utils/token/tokenFetch";
 import BigNumber from "bignumber.js";
+import { CopyIcon } from "@radix-ui/react-icons";
 
 interface CurrentLPStatusProps {
   nftId: string;
@@ -25,6 +26,15 @@ interface CurrentLPStatusProps {
 }
 
 const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
+  const [isCopied, setIsCopied] = useState<boolean>(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(nftId).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 1500); // Hide popup after 1.5 seconds
+    });
+  };
+
   // First process position to human readable pieces
 
   // Get status
@@ -123,9 +133,39 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
   );
 
   return (
-    <Box className="neon-box" padding={15} >
+    <>
       <VStack width={"100%"}>
-        <Text>{nftId}</Text>
+        <HStack >
+          <Text fontFamily={"monospace"}>{nftId}</Text>
+
+          <div style={{ position: "relative", display: "inline-block" }}>
+            <CopyIcon onClick={handleCopy} style={{ cursor: "pointer" }} />
+            {isCopied && (
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "100%", // Align bottom of popup with top of the button
+                  left: "50%",
+                  transform: "translateX(-50%) translateY(-8px)", // Adjust Y translation for spacing
+                  padding: "8px",
+                  backgroundColor: "#4A5568", // Dark grayish-blue
+                  color: "white",
+                  borderRadius: "6px",
+                  fontSize: "14px",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Soft shadow
+                  zIndex: 1, // Ensure the popup is above other elements
+                  transition: "opacity 0.3s, transform 0.3s", // Smooth transition for both opacity and position
+                  opacity: 0.9, // Slightly transparent
+                  width: "10em",
+                  textAlign: "center",
+                  border: "3px solid #2D3748",
+                }}
+              >
+                {`LP ID copied`}
+              </div>
+            )}
+          </div>
+        </HStack>
         <HStack width={"100%"} justifyContent={"center"} paddingTop={"1em"}>
           <HStack>
             <Badge colorScheme="blue">Status:</Badge>
@@ -187,7 +227,7 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
           </HStack>
         </VStack>
       </VStack>
-    </Box>
+    </>
   );
 };
 
