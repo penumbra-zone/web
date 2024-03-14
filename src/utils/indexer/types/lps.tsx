@@ -1,5 +1,3 @@
-import BigNumber from "bignumber.js";
-
 export type LiquidityPositionEvent = {
   block_height: number;
   event_id: number; //! Needed for sorting
@@ -9,7 +7,7 @@ export type LiquidityPositionEvent = {
   tx_hash: string;
   created_at: string;
   index: number;
-  attributes: {
+  lpevent_attributes: {
     positionId: {
       inner: string;
     };
@@ -39,3 +37,4 @@ export type PositionExecutionEvent = {
   event_id: number; //! Needed for sorting
   // TODO:
 };
+

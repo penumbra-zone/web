@@ -31,45 +31,50 @@ export default function LP() {
   useEffect(() => {
     if (lp_nft_id) {
       setIsLoading(true);
-      const lp_querier = new LiquidityPositionQuerier({
-        grpcEndpoint: testnetConstants.grpcEndpoint,
-      });
 
-      const positionId = new PositionId({
-        altBech32m: lp_nft_id,
-      });
-
-      lp_querier
-        .liquidityPositionById(positionId)
-        .then((res) => {
-          if (!res) {
-            console.error("Error fetching liquidity position: no response");
-            return;
-          }
-
-          setLiquidityPosition(res);
-        })
-        .catch((error) => {
-          console.error("Error fetching liquidity position:", error);
+      try {
+        const lp_querier = new LiquidityPositionQuerier({
+          grpcEndpoint: testnetConstants.grpcEndpoint,
         });
 
-      // Fetch liquidity position events
-      fetch(`/api/lp/${lp_nft_id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (!data) {
-            console.error(
-              "Error fetching liquidity position events: no response"
-            );
-            return;
-          }
-          setLPData(data as LiquidityPositionEvent[]);
-        })
-        .catch((error) => {
-          console.error("Error fetching liquidity position events:", error);
+        const positionId = new PositionId({
+          altBech32m: lp_nft_id,
         });
 
-      setIsLoading(false);
+        lp_querier
+          .liquidityPositionById(positionId)
+          .then((res) => {
+            if (!res) {
+              console.error("Error fetching liquidity position: no response");
+              return;
+            }
+
+            setLiquidityPosition(res);
+          })
+          .catch((error) => {
+            console.error("Error fetching liquidity position:", error);
+          });
+
+        // Fetch liquidity position events
+        fetch(`/api/lp/${lp_nft_id}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data) {
+              console.error(
+                "Error fetching liquidity position events: no response"
+              );
+              return;
+            }
+            setLPData(data as LiquidityPositionEvent[]);
+          })
+          .catch((error) => {
+            console.error("Error fetching liquidity position events:", error);
+          });
+      } catch (error) {
+        console.error("Error fetching liquidity position:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   }, [lp_nft_id]); // Runs when lp_nft_id changes, important as this isnt always grabbed immediately on page load.
 
@@ -83,6 +88,27 @@ export default function LP() {
       }))
     );
   }, [lp_nft_id]);
+
+  // Note: Needs to be ordered by event id
+  const [timelineData, setTimelineData] = useState<
+    (LiquidityPositionEvent | PositionExecutionEvent)[]
+  >([]);
+  useEffect(() => {
+    // Return if no data
+    if (LPData.length === 0) {
+      return;
+    }
+
+    // Create large list of all events ordered by event_id
+    const allEvents = LPData.concat(tradeTimelineData);
+
+    // Sort by event_id (descending order)
+    allEvents.sort((a, b) => {
+      return b.event_id - a.event_id;
+    });
+
+    setTimelineData(allEvents);
+  }, [LPData, tradeTimelineData]);
 
   const currentStatusRef = useRef<HTMLDivElement>(null);
   const originalStatusRef = useRef<HTMLDivElement>(null);
@@ -99,40 +125,12 @@ export default function LP() {
       setLineHeight(height + 100);
       setLineTop(top + firstBoxRect.bottom + 50);
     }
-  }, [
-    currentStatusRef,
-    originalStatusRef,
-    liquidityPosition,
-    tradeTimelineData,
-    isLoading,
-    lp_nft_id,
-  ]);
-
-  // Note: Needs to be ordered by event id
-  const [timelineData, setTimelineData] = useState<LiquidityPositionEvent | PositionExecutionEvent[]>([]); 
-  useEffect(() => {
-    // Return if no data
-    if (LPData.length === 0) {
-      return;
-    }
-
-    // Create large list of all events ordered by event_id
-    const allEvents = LPData.concat(tradeTimelineData);
-
-    // Sort in descending order,
-    allEvents.sort((a, b) => {
-      return a.event_id - b.event_id;
-    });
-
-    console.log(allEvents)
-
-    setTimelineData(allEvents);
-  }, [LPData, tradeTimelineData]);
+  }, [timelineData, tradeTimelineData, LPData, liquidityPosition]);
 
   return (
     <Layout pageTitle={`LP - ${lp_nft_id}`}>
       <main className={styles.main}>
-        {isLoading ? (
+        {isLoading || !timelineData.length ? (
           <LoadingSpinner />
         ) : liquidityPosition ? (
           <>
@@ -174,6 +172,53 @@ export default function LP() {
                   >
                     Timeline
                   </Text>
+                  {timelineData.map((dataItem, index) => (
+                    <>
+                      {"lpevent_attributes" in dataItem ? (
+                        // ! User/LP Events
+                        <VStack
+                          align={"flex-start"}
+                          paddingTop={index === 0 ? "0" : "3em"}
+                        >
+                          <VStack key={index}>
+                            <Box
+                              key={index}
+                              className="neon-box"
+                              width={"20em"}
+                              height={"5em"}
+                              padding="2em"
+                            >
+                              <Text textAlign={"center"}>
+                                LP Event {dataItem.event_id}
+                              </Text>
+                            </Box>
+                          </VStack>
+                        </VStack>
+                      ) : (
+                        //! Trade Events
+                        <VStack
+                          align={"flex-end"}
+                          paddingTop={index === 0 ? "0" : "3em"}
+                        >
+                          <VStack key={index}>
+                            <Box
+                              key={index}
+                              className="neon-box"
+                              width={"20em"}
+                              height={"5em"}
+                              padding="2em"
+                            >
+                              <Text textAlign={"center"}>
+                                Example Trade {dataItem.event_id}
+                              </Text>
+                            </Box>
+                          </VStack>
+                        </VStack>
+                      )}
+                    </>
+                  ))}
+
+                  {/*
                   <VStack align={"flex-end"}>
                     {tradeTimelineData.map((dataItem, index) => (
                       <VStack
@@ -194,6 +239,7 @@ export default function LP() {
                       </VStack>
                     ))}
                   </VStack>
+        */}
                   <Box
                     paddingTop={"4em"}
                     paddingBottom={"5em"}
