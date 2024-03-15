@@ -12,9 +12,9 @@ interface TimelinePositionProps {
   lp_event: LiquidityPositionEvent;
 }
 
-const POSITION_OPEN_EVENT = "EventPositionOpen";
-const POSITION_CLOSE_EVENT = "EventPositionClose";
-const POSITION_WITHDRAW_EVENT = "EventPositionWithdraw";
+export const POSITION_OPEN_EVENT = "EventPositionOpen";
+export const POSITION_CLOSE_EVENT = "EventPositionClose";
+export const POSITION_WITHDRAW_EVENT = "EventPositionWithdraw";
 
 const TimelinePosition = ({ nftId, lp_event }: TimelinePositionProps) => {
   console.log(lp_event);

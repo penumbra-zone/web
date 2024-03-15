@@ -33,8 +33,34 @@ export type LiquidityPositionEvent = {
 
 export type PositionExecutionEvent = {
   block_height: number;
-  tx_hash: string;
   event_id: number; //! Needed for sorting
-  // TODO:
+  block_id: number;
+  tx_id: number;
+  type: string;
+  tx_hash: string;
+  created_at: string;
+  index: number;
+  execution_event_attributes: {
+    positionId: {
+      inner: string;
+    };
+    reserves1?: {
+      hi?: number;
+      lo?: number;
+    };
+    reserves2?: {
+      hi?: number;
+      lo?: number;
+    };
+    tradingFee?: number;
+    tradingPair?: {
+      asset1: {
+        inner: string;
+      };
+      asset2: {
+        inner: string;
+      };
+    };
+  };
 };
 

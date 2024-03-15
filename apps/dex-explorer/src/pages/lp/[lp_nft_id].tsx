@@ -19,6 +19,8 @@ import {
   PositionExecutionEvent,
 } from "@/utils/indexer/types/lps";
 import TimelinePosition from "@/components/liquidityPositions/timelinePosition";
+import ExecutionEvent from "@/components/liquidityPositions/executionEvent";
+import { POSITION_OPEN_EVENT } from "@/components/liquidityPositions/timelinePosition";
 
 // TODO: Once all components are fleshed out merge all of the 'useEffect' calls into one.
 
@@ -81,16 +83,39 @@ export default function LP() {
     }
   }, [lp_nft_id]); // Runs when lp_nft_id changes, important as this isnt always grabbed immediately on page load.
 
-  const [tradeTimelineData, setTradeTimelineData] = useState<any[]>([]);
+  const [tradeTimelineData, setTradeTimelineData] = useState<
+    PositionExecutionEvent[]
+  >([]);
 
   useEffect(() => {
-    // TODO: Fetch timeline trade data from indexer
-    setTradeTimelineData(
-      Array.from({ length: 3 }, (_, i) => ({
-        event_id: i + 1000,
-      }))
-    );
+    if (lp_nft_id) {
+      setIsLoading(true);
+
+      // Fetch liquidity position execution events
+      fetch(`/api/lp/${lp_nft_id}/trades`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data) {
+            console.error(
+              "Error fetching liquidity position executuion trade events: no response"
+            );
+            return;
+          }
+          setTradeTimelineData(data as PositionExecutionEvent[]);
+        })
+        .catch((error) => {
+          console.error(
+            "Error fetching liquidity position trade events:",
+            error
+          );
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
   }, [lp_nft_id]);
+
+  type AbstractLPEvent = LiquidityPositionEvent | PositionExecutionEvent;
 
   // Note: Needs to be ordered by event id
   const [timelineData, setTimelineData] = useState<
@@ -105,14 +130,24 @@ export default function LP() {
     }
 
     // Create large list of all events ordered by event_id
-    const allEvents = LPData.concat(tradeTimelineData);
+    const allEvents: AbstractLPEvent[] = [...LPData, ...tradeTimelineData];
 
-    // Sort by event_id (descending order)
+    // Sort primarily by event_id (descending order), then the index id if there are multiple events with the same event_id
+    // HOWEVER, If the blocks are the same, put the LP event(s) in the block first
     allEvents.sort((a, b) => {
-      return b.event_id - a.event_id;
+      if (a.block_height === b.block_height) {
+        if ("lpevent_attributes" in a) {
+          return 1;
+        } else {
+          return -1;
+        }
+      }
+      if (a.block_height === b.block_height) {
+        return  b.event_id - a.event_id;
+      }
+      return  b.block_height - a.block_height;
     });
-
-    setTimelineData(allEvents);
+setTimelineData(allEvents);
     setIsLoading(false);
   }, [LPData, tradeTimelineData]);
 
@@ -121,22 +156,22 @@ export default function LP() {
   const [lineHeight, setLineHeight] = useState(0);
   const [lineTop, setLineTop] = useState(0);
 
-useEffect(() => {
-  setIsLoading(true);
-  if (currentStatusRef.current && originalStatusRef.current) {
-    const firstBoxRect = currentStatusRef.current.getBoundingClientRect();
-    const lastBoxRect = originalStatusRef.current.getBoundingClientRect();
+  useEffect(() => {
+    setIsLoading(true);
+    if (currentStatusRef.current && originalStatusRef.current) {
+      const firstBoxRect = currentStatusRef.current.getBoundingClientRect();
+      const lastBoxRect = originalStatusRef.current.getBoundingClientRect();
 
-    // Calculate the new height of the line to stretch from the bottom of the first box to the top of the last box.
-    const newLineHeight = lastBoxRect.top - firstBoxRect.top;
-    // Set the top of the line to align with the bottom of the first box.
-    const newLineTop = firstBoxRect.bottom - firstBoxRect.top;
+      // Calculate the new height of the line to stretch from the bottom of the first box to the top of the last box.
+      const newLineHeight = lastBoxRect.top - firstBoxRect.top;
+      // Set the top of the line to align with the bottom of the first box.
+      const newLineTop = firstBoxRect.bottom - firstBoxRect.top;
 
-    setLineHeight(newLineHeight - 50);
-    setLineTop(newLineTop);
-  }
-  setIsLoading(false);
-}, [timelineData, currentStatusRef, originalStatusRef]);
+      setLineHeight(newLineHeight - 50);
+      setLineTop(newLineTop);
+    }
+    setIsLoading(false);
+  }, [timelineData, currentStatusRef, originalStatusRef]);
 
   return (
     <Layout pageTitle={`LP - ${lp_nft_id}`}>
@@ -165,7 +200,12 @@ useEffect(() => {
                     >
                       Position Status
                     </Text>
-                    <Box className="neon-box" padding={30} ref={currentStatusRef} width={"40em"}>
+                    <Box
+                      className="neon-box"
+                      padding={30}
+                      ref={currentStatusRef}
+                      width={"40em"}
+                    >
                       <CurrentLPStatus
                         nftId={lp_nft_id}
                         position={liquidityPosition}
@@ -205,17 +245,10 @@ useEffect(() => {
                           paddingTop={index === 0 ? "0" : "3em"}
                         >
                           <VStack key={index}>
-                            <Box
-                              key={index}
-                              className="neon-box"
-                              width={"25em"}
-                              height={"5em"}
-                              padding="2em"
-                            >
-                              <Text textAlign={"center"}>
-                                Example Trade {dataItem.event_id}
-                              </Text>
-                            </Box>
+                            <ExecutionEvent
+                              nftId={lp_nft_id}
+                              lp_event={dataItem}
+                            />
                           </VStack>
                         </VStack>
                       )}
