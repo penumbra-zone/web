@@ -19,8 +19,5 @@
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
-  },
-  "devDependencies": {
-    "array-from-async": "^3.0.0"
   }
 }

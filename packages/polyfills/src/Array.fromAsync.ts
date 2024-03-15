@@ -1,12 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// just a type declaration for chrome's existing Array.fromAsync
+import fromAsync from 'array-from-async';
 
-type ArrayWithAsync = typeof Array & {
-  fromAsync<T, U = T>(
-    arrayLike: ArrayLike<T> | AsyncIterable<T>,
-    mapfn?: (v: T, k: number) => U,
-    thisArg?: any,
-  ): Promise<U[]>;
-};
+type FromAsync = <T, U = T>(
+  arrayLike: ArrayLike<T> | AsyncIterable<T>,
+  mapfn?: (v: T, k: number) => U,
+  thisArg?: unknown,
+) => Promise<U[]>;
 
-export default Array as ArrayWithAsync;
+type ArrayWithFromAsync = typeof Array & { fromAsync: FromAsync };
+
+if (!('fromAsync' in Array)) {
+  Object.assign(Array, { fromAsync: fromAsync as FromAsync });
+}
+
+export default Array as ArrayWithFromAsync;
