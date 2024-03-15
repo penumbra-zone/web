@@ -41,10 +41,12 @@ export const SelectAccount = ({ getAddrByIndex }: SelectAccountProps) => {
           <AccountSwitcher account={index} onChange={setIndex} />
 
           <div className='mt-4 flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
-            <div className='flex items-center gap-[6px]'>
-              <AddressIcon address={address} size={24} />
+            <div className='flex items-center gap-[6px] overflow-hidden'>
+              <div className='shrink-0'>
+                <AddressIcon address={address} size={24} />
+              </div>
 
-              <p className='text-sm'>
+              <p className='truncate text-sm'>
                 <AddressComponent address={address} ephemeral={ephemeral} />
               </p>
             </div>
