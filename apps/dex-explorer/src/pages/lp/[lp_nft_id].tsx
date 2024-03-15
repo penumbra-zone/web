@@ -95,6 +95,7 @@ export default function LP() {
     (LiquidityPositionEvent | PositionExecutionEvent)[]
   >([]);
   useEffect(() => {
+    setIsLoading(true);
     // Return if no data
     if (LPData.length === 0) {
       return;
@@ -109,6 +110,7 @@ export default function LP() {
     });
 
     setTimelineData(allEvents);
+    setIsLoading(false);
   }, [LPData, tradeTimelineData]);
 
   const currentStatusRef = useRef<HTMLDivElement>(null);
@@ -117,6 +119,7 @@ export default function LP() {
   const [lineTop, setLineTop] = useState(0);
 
 useEffect(() => {
+  setIsLoading(true);
   if (currentStatusRef.current && originalStatusRef.current) {
     const firstBoxRect = currentStatusRef.current.getBoundingClientRect();
     const lastBoxRect = originalStatusRef.current.getBoundingClientRect();
@@ -129,6 +132,7 @@ useEffect(() => {
     setLineHeight(newLineHeight - 50);
     setLineTop(newLineTop);
   }
+  setIsLoading(false);
 }, [timelineData, currentStatusRef, originalStatusRef]);
 
   return (
