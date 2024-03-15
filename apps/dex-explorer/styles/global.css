@@ -23,6 +23,9 @@
   --text-secondary: 0, 0%, 100%;
   --charcoal: #1d1d1d;
   --charcoal-secondary: #141010;
+  --charcoal-tertiary: #2d2d2d;
+  --charcoal-tertiary-blended: rgba(89, 89, 89, 0.9);
+
   --teal: #629994;
   --sand: #847a5b;
   --rust: #8d5728;
