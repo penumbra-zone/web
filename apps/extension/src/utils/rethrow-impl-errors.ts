@@ -1,15 +1,12 @@
 import { AnyMessage, MethodKind, ServiceType } from '@bufbuild/protobuf';
-import { ConnectError, ServiceImpl } from '@connectrpc/connect';
-import {
-  BiDiStreamingImpl,
-  ClientStreamingImpl,
-  HandlerContext,
-  ServerStreamingImpl,
-  UnaryImpl,
-} from '@connectrpc/connect/dist/cjs/implementation';
+import { ConnectError, HandlerContext, MethodImplSpec, ServiceImpl } from '@connectrpc/connect';
+
+type Implementation<K extends MethodKind> = (MethodImplSpec & {
+  kind: K;
+})['impl'];
 
 const wrapUnaryImpl =
-  (methodImplementation: UnaryImpl<AnyMessage, AnyMessage>) =>
+  (methodImplementation: Implementation<MethodKind.Unary>) =>
   (req: AnyMessage, ctx: HandlerContext) => {
     try {
       const result = methodImplementation(req, ctx);
@@ -24,7 +21,7 @@ const wrapUnaryImpl =
   };
 
 const wrapServerStreamingImpl = (
-  methodImplementation: ServerStreamingImpl<AnyMessage, AnyMessage>,
+  methodImplementation: Implementation<MethodKind.ServerStreaming>,
 ) =>
   async function* (req: AnyMessage, ctx: HandlerContext) {
     try {
@@ -38,9 +35,7 @@ const wrapServerStreamingImpl = (
 
 const wrapUnhandledImpl =
   (
-    methodImplementation:
-      | ClientStreamingImpl<AnyMessage, AnyMessage>
-      | BiDiStreamingImpl<AnyMessage, AnyMessage>,
+    methodImplementation: Implementation<MethodKind.ClientStreaming | MethodKind.BiDiStreaming>,
     kind: MethodKind,
   ) =>
   (req: AsyncIterable<AnyMessage>, ctx: HandlerContext) => {
@@ -55,7 +50,7 @@ const isUnaryMethodKind = (
   methodImplementation:
     | ((req: AsyncIterable<AnyMessage>, ctx: HandlerContext) => unknown)
     | ((req: AnyMessage, ctx: HandlerContext) => unknown),
-): methodImplementation is UnaryImpl<AnyMessage, AnyMessage> => {
+): methodImplementation is Implementation<MethodKind.Unary> => {
   methodImplementation;
   return methodKind === MethodKind.Unary;
 };
@@ -65,7 +60,7 @@ const isServerStreamingMethodKind = (
   methodImplementation:
     | ((req: AsyncIterable<AnyMessage>, ctx: HandlerContext) => unknown)
     | ((req: AnyMessage, ctx: HandlerContext) => unknown),
-): methodImplementation is ServerStreamingImpl<AnyMessage, AnyMessage> => {
+): methodImplementation is Implementation<MethodKind.ServerStreaming> => {
   methodImplementation;
   return methodKind === MethodKind.ServerStreaming;
 };
