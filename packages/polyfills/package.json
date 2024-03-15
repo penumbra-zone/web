@@ -19,5 +19,8 @@
     "clean": "rm -rfv dist",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
+  },
+  "dependencies": {
+    "array-from-async": "^3.0.0"
   }
 }
