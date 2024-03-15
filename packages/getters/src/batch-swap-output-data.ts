@@ -10,3 +10,5 @@ export const getDelta1Amount = createGetter((b?: BatchSwapOutputData) => b?.delt
 export const getDelta2Amount = createGetter((b?: BatchSwapOutputData) => b?.delta2);
 export const getLambda1Amount = createGetter((b?: BatchSwapOutputData) => b?.lambda1);
 export const getLambda2Amount = createGetter((b?: BatchSwapOutputData) => b?.lambda2);
+export const getUnfilled1Amount = createGetter((b?: BatchSwapOutputData) => b?.unfilled1);
+export const getUnfilled2Amount = createGetter((b?: BatchSwapOutputData) => b?.unfilled2);

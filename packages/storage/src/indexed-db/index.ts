@@ -551,8 +551,6 @@ export class IndexedDb implements IndexedDbInterface {
       asOfHeight: height,
     });
 
-    console.log('Update prices IDB', estimatedPrice);
-
     await this.u.update({
       table: 'PRICES',
       value: estimatedPrice.toJson() as Jsonified<EstimatedPrice>,

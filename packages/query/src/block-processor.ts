@@ -23,14 +23,20 @@ import type { BlockProcessorInterface } from '@penumbra-zone/types/src/block-pro
 import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
 import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
-import { NUMERAIRE_TOKEN_METADATA } from "@penumbra-zone/constants/src/assets";
+import { NUMERAIRE_TOKEN_ID } from '@penumbra-zone/constants/src/assets';
 import {
   getDelta1Amount,
+  getDelta2Amount,
+  getLambda1Amount,
   getLambda2Amount,
   getSwapAsset1,
   getSwapAsset2,
+  getUnfilled1Amount,
+  getUnfilled2Amount,
 } from '@penumbra-zone/getters/src/batch-swap-output-data';
-import { divideAmounts } from '@penumbra-zone/types/src/amount';
+import { divideAmounts, isZero, subtractAmounts } from '@penumbra-zone/types/src/amount';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -241,6 +247,9 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.saveTransactions(compactBlock.height, relevantTx);
       }
 
+      // we can't use third-party price oracles for privacy reasons,
+      // so we have to get asset prices from swap results during block scans
+      // and store them locally in indexed-db.
       if (compactBlock.swapOutputs.length)
         await this.updatePrices(compactBlock.swapOutputs, compactBlock.height);
 
@@ -402,20 +411,44 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async updatePrices(swapOutputs: BatchSwapOutputData[], height: bigint) {
-    console.log('Update prices BP', swapOutputs);
     for (const swapOutput of swapOutputs) {
-      if (getSwapAsset2(swapOutput).equals(NUMERAIRE_TOKEN_METADATA.penumbraAssetId)) {
-        const numerairePerUnit = divideAmounts(
+      const swapAsset1 = getSwapAsset1(swapOutput);
+      const swapAsset2 = getSwapAsset2(swapOutput);
+
+      let numerairePerUnit = 0;
+      let pricedAsset: AssetId | undefined = undefined;
+
+      // case for trading pair <pricedAsset,numéraire>
+      if (swapAsset2.equals(NUMERAIRE_TOKEN_ID)) {
+        pricedAsset = swapAsset1;
+        // numerairePerUnit = lambda2/(delta1-unfilled1)
+        numerairePerUnit = calculatePrice(
           getDelta1Amount(swapOutput),
+          getUnfilled1Amount(swapOutput),
           getLambda2Amount(swapOutput),
-        ).toNumber();
-        await this.indexedDb.updatePrice(
-          getSwapAsset1(swapOutput),
-          getSwapAsset2(swapOutput),
-          numerairePerUnit,
-          height,
         );
       }
+      // case for trading pair <numéraire,pricedAsset>
+      else if (swapAsset1.equals(NUMERAIRE_TOKEN_ID)) {
+        pricedAsset = swapAsset2;
+        // numerairePerUnit = lambda1/(delta2-unfilled2)
+        numerairePerUnit = calculatePrice(
+          getDelta2Amount(swapOutput),
+          getUnfilled2Amount(swapOutput),
+          getLambda1Amount(swapOutput),
+        );
+      }
+
+      if (pricedAsset === undefined || numerairePerUnit === 0) continue;
+
+      await this.indexedDb.updatePrice(pricedAsset, NUMERAIRE_TOKEN_ID, numerairePerUnit, height);
     }
   }
 }
+
+const calculatePrice = (delta: Amount, unfilled: Amount, lambda: Amount): number => {
+  const filledAmount = subtractAmounts(delta, unfilled);
+  return isZero(delta) || isZero(lambda) || isZero(filledAmount)
+    ? 0
+    : divideAmounts(lambda, filledAmount).toNumber();
+};
