@@ -12,7 +12,7 @@ import {
 import Layout from "../../components/layout";
 import CurrentLPStatus from "../../components/liquidityPositions/currentStatus";
 import OpenPositionStatus from "../../components/liquidityPositions/openStatus";
-import { VStack, Text, Spinner, Center, Box, HStack } from "@chakra-ui/react";
+import { VStack, Text, Spinner, Center, Box, HStack, IconButton } from "@chakra-ui/react";
 import { LoadingSpinner } from "../../components/util/loadingSpinner";
 import {
   LiquidityPositionEvent,
@@ -21,6 +21,7 @@ import {
 import TimelinePosition from "@/components/liquidityPositions/timelinePosition";
 import ExecutionEvent from "@/components/liquidityPositions/executionEvent";
 import { POSITION_OPEN_EVENT } from "@/components/liquidityPositions/timelinePosition";
+import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons"; 
 
 // TODO: Once all components are fleshed out merge all of the 'useEffect' calls into one.
 
@@ -32,6 +33,11 @@ export default function LP() {
   );
   const [LPData, setLPData] = useState<LiquidityPositionEvent[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [showAllTradeEvents, setShowAllTradeEvents] = useState(false);
+  const numberOfTradeEventsToShow = 2; // Basically n, if there are more than 2^N trade events, show n on each side, else show all
+  const [showExpandButton, setShowExpandButton] = useState(false);
+  const EXPAND_BUTTON_TYPE_FLAG = "ExpandButton";
+  const [hiddenEventCount, setHiddenEventCount] = useState(0);
 
   useEffect(() => {
     if (lp_nft_id) {
@@ -143,13 +149,70 @@ export default function LP() {
         }
       }
       if (a.block_height === b.block_height) {
-        return  b.event_id - a.event_id;
+        return b.event_id - a.event_id;
       }
-      return  b.block_height - a.block_height;
+      return b.block_height - a.block_height;
     });
-setTimelineData(allEvents);
+
+    // if showAllTradeEvents, dont do anything, however if its false, remove all but the first and last n trade events
+    if (!showAllTradeEvents) {
+      // Find the first and last trade events
+      //! In theory they always have to be sandwiched between LP events
+      let firstTradeIndex = allEvents.findIndex(
+        (event) => "lpevent_attributes" in event
+      );
+      let lastTradeIndex = allEvents
+        .slice()
+        .reverse()
+        .findIndex((event) => "lpevent_attributes" in event);
+
+      // If there are no trade events, return
+      console.log(firstTradeIndex, lastTradeIndex)
+      if (firstTradeIndex === -1 || lastTradeIndex === -1 || firstTradeIndex === lastTradeIndex) {
+        setTimelineData(allEvents);
+        setIsLoading(false);
+        return;
+      }
+
+      // If there are more than 2^N trade events, show n on each side, else show all
+      if (firstTradeIndex - lastTradeIndex > 2 ** numberOfTradeEventsToShow) {
+        firstTradeIndex = lastTradeIndex + numberOfTradeEventsToShow;
+        lastTradeIndex = firstTradeIndex + 1;
+      }
+
+      setShowExpandButton(true);
+      setHiddenEventCount(
+        allEvents.length - firstTradeIndex - lastTradeIndex 
+      );
+
+      // Remove all but the first and last n trade events
+      allEvents.splice(
+        firstTradeIndex,
+        allEvents.length - firstTradeIndex - lastTradeIndex,
+        // put in expand button placeholder
+        {
+          event_id: -1,
+          block_height: -1,
+          created_at: "",
+          type: EXPAND_BUTTON_TYPE_FLAG,
+          block_id: -1,
+          tx_id: -1,
+          tx_hash: "",
+          index: -1,
+          execution_event_attributes: {
+            positionId: {
+              inner: "",
+            },
+          },
+        }
+      );
+    } else {
+      setShowExpandButton(false);
+    }
+
+    setTimelineData(allEvents);
     setIsLoading(false);
-  }, [LPData, tradeTimelineData]);
+  }, [LPData, tradeTimelineData, showAllTradeEvents]);
 
   const currentStatusRef = useRef<HTMLDivElement>(null);
   const originalStatusRef = useRef<HTMLDivElement>(null);
@@ -239,16 +302,62 @@ setTimelineData(allEvents);
                           </VStack>
                         </VStack>
                       ) : (
-                        //! Trade Events
+                        //! Trade Events and expand button if applicable
                         <VStack
                           align={"flex-end"}
                           paddingTop={index === 0 ? "0" : "3em"}
                         >
                           <VStack key={index}>
-                            <ExecutionEvent
-                              nftId={lp_nft_id}
-                              lp_event={dataItem}
-                            />
+                            {dataItem.type != EXPAND_BUTTON_TYPE_FLAG ? (
+                              <ExecutionEvent
+                                nftId={lp_nft_id}
+                                lp_event={dataItem}
+                              />
+                            ) : (
+                              //! Expand hidden events button
+                              <>
+                                {showExpandButton ? (
+                                  <HStack
+                                    spacing="1em"
+                                    align="center"
+                                    paddingTop="1em"
+                                    justifyContent="center" // Center the button horizontally
+                                  >
+                                    <Text
+                                      fontWeight="bold"
+                                      fontSize="1.2em"
+                                      color="var(--complimentary-background)"
+                                      cursor="pointer"
+                                      onClick={() =>
+                                        setShowAllTradeEvents(
+                                          !showAllTradeEvents
+                                        )
+                                      }
+                                    >
+                                      {`+${hiddenEventCount} Hidden`}
+                                    </Text>
+                                    <IconButton
+                                      icon={<ChevronDownIcon />}
+                                      onClick={() =>
+                                        setShowAllTradeEvents(
+                                          !showAllTradeEvents
+                                        )
+                                      }
+                                      aria-label={"Expand"}
+                                      size="md"
+                                      colorScheme="var(--complimentary-background)"
+                                      color="var(--complimentary-background)"
+                                      variant="outline"
+                                      _hover={{
+                                        backgroundColor: "var(--purple-emphasis)",
+                                      }}
+                                    />
+                                  </HStack>
+                                ) : (
+                                  <></>
+                                )}
+                              </>
+                            )}
                           </VStack>
                         </VStack>
                       )}

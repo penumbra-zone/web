@@ -12,10 +12,12 @@ export const fetchToken = async (
     tokenConfigMapOnInner[uint8ArrayToBase64(tokenInner)];
 
   if (!token) {
+    /*
     console.info(
       "Token not found in tokenConfigMapOnInner, querying chain",
       tokenInner
     );
+    */
 
     const pool_querier = new ShieldedPoolQuerier({
       grpcEndpoint: testnetConstants.grpcEndpoint,
