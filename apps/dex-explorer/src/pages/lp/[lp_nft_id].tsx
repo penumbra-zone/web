@@ -20,6 +20,8 @@ import {
 } from "@/utils/indexer/types/lps";
 import TimelinePosition from "@/components/liquidityPositions/timelinePosition";
 
+// TODO: Once all components are fleshed out merge all of the 'useEffect' calls into one.
+
 export default function LP() {
   const router = useRouter();
   const { lp_nft_id } = router.query as { lp_nft_id: string };
@@ -98,6 +100,7 @@ export default function LP() {
     setIsLoading(true);
     // Return if no data
     if (LPData.length === 0) {
+      setIsLoading(false);
       return;
     }
 
@@ -138,7 +141,7 @@ useEffect(() => {
   return (
     <Layout pageTitle={`LP - ${lp_nft_id}`}>
       <main className={styles.main}>
-        {isLoading || !timelineData.length ? (
+        {isLoading ? (
           <LoadingSpinner />
         ) : liquidityPosition ? (
           <>
