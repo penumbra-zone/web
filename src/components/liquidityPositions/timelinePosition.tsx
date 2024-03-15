@@ -17,7 +17,7 @@ export const POSITION_CLOSE_EVENT = "EventPositionClose";
 export const POSITION_WITHDRAW_EVENT = "EventPositionWithdraw";
 
 const TimelinePosition = ({ nftId, lp_event }: TimelinePositionProps) => {
-  console.log(lp_event);
+  //console.log(lp_event);
   return (
     <>
       <HStack spacing={"2em"}>
