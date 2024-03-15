@@ -12,7 +12,15 @@ import {
 import Layout from "../../components/layout";
 import CurrentLPStatus from "../../components/liquidityPositions/currentStatus";
 import OpenPositionStatus from "../../components/liquidityPositions/openStatus";
-import { VStack, Text, Spinner, Center, Box, HStack, IconButton } from "@chakra-ui/react";
+import {
+  VStack,
+  Text,
+  Spinner,
+  Center,
+  Box,
+  HStack,
+  IconButton,
+} from "@chakra-ui/react";
 import { LoadingSpinner } from "../../components/util/loadingSpinner";
 import {
   LiquidityPositionEvent,
@@ -21,117 +29,102 @@ import {
 import TimelinePosition from "@/components/liquidityPositions/timelinePosition";
 import ExecutionEvent from "@/components/liquidityPositions/executionEvent";
 import { POSITION_OPEN_EVENT } from "@/components/liquidityPositions/timelinePosition";
-import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons"; 
+import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 
 // TODO: Once all components are fleshed out merge all of the 'useEffect' calls into one.
 
 export default function LP() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isTimelineLoading, setIsTimelineLoading] = useState(true);
+  const [isLineLoading, setIsLineLoading] = useState(true);
+
+  const EXPAND_BUTTON_TYPE_FLAG = "ExpandButton";
+
   const router = useRouter();
   const { lp_nft_id } = router.query as { lp_nft_id: string };
   const [liquidityPosition, setLiquidityPosition] = useState<Position | null>(
     null
   );
   const [LPData, setLPData] = useState<LiquidityPositionEvent[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [showAllTradeEvents, setShowAllTradeEvents] = useState(false);
   const numberOfTradeEventsToShow = 2; // Basically n, if there are more than 2^N trade events, show n on each side, else show all
   const [showExpandButton, setShowExpandButton] = useState(false);
-  const EXPAND_BUTTON_TYPE_FLAG = "ExpandButton";
   const [hiddenEventCount, setHiddenEventCount] = useState(0);
-
-  useEffect(() => {
-    if (lp_nft_id) {
-      setIsLoading(true);
-
-      try {
-        const lp_querier = new LiquidityPositionQuerier({
-          grpcEndpoint: testnetConstants.grpcEndpoint,
-        });
-
-        const positionId = new PositionId({
-          altBech32m: lp_nft_id,
-        });
-
-        lp_querier
-          .liquidityPositionById(positionId)
-          .then((res) => {
-            if (!res) {
-              console.error("Error fetching liquidity position: no response");
-              return;
-            }
-
-            setLiquidityPosition(res);
-          })
-          .catch((error) => {
-            console.error("Error fetching liquidity position:", error);
-          });
-
-        // Fetch liquidity position events
-        fetch(`/api/lp/${lp_nft_id}`)
-          .then((res) => res.json())
-          .then((data) => {
-            if (!data) {
-              console.error(
-                "Error fetching liquidity position events: no response"
-              );
-              return;
-            }
-            setLPData(data as LiquidityPositionEvent[]);
-          })
-          .catch((error) => {
-            console.error("Error fetching liquidity position events:", error);
-          });
-      } catch (error) {
-        console.error("Error fetching liquidity position:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  }, [lp_nft_id]); // Runs when lp_nft_id changes, important as this isnt always grabbed immediately on page load.
-
   const [tradeTimelineData, setTradeTimelineData] = useState<
     PositionExecutionEvent[]
   >([]);
-
-  useEffect(() => {
-    if (lp_nft_id) {
-      setIsLoading(true);
-
-      // Fetch liquidity position execution events
-      fetch(`/api/lp/${lp_nft_id}/trades`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (!data) {
-            console.error(
-              "Error fetching liquidity position executuion trade events: no response"
-            );
-            return;
-          }
-          setTradeTimelineData(data as PositionExecutionEvent[]);
-        })
-        .catch((error) => {
-          console.error(
-            "Error fetching liquidity position trade events:",
-            error
-          );
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    }
-  }, [lp_nft_id]);
-
   type AbstractLPEvent = LiquidityPositionEvent | PositionExecutionEvent;
-
   // Note: Needs to be ordered by event id
   const [timelineData, setTimelineData] = useState<
     (LiquidityPositionEvent | PositionExecutionEvent)[]
   >([]);
+  const [error, setError] = useState<string>("");
+
   useEffect(() => {
     setIsLoading(true);
+    if (lp_nft_id) {
+      const lp_querier = new LiquidityPositionQuerier({
+        grpcEndpoint: testnetConstants.grpcEndpoint,
+      });
+
+      const positionId = new PositionId({
+        altBech32m: lp_nft_id,
+      });
+
+      const liquidityPositionPromise =
+        lp_querier.liquidityPositionById(positionId);
+      const lpEventsPromise = fetch(`/api/lp/${lp_nft_id}`).then((res) =>
+        res.json()
+      );
+      const lpTradesPromise = fetch(`/api/lp/${lp_nft_id}/trades`).then((res) =>
+        res.json()
+      );
+
+      Promise.all([liquidityPositionPromise, lpEventsPromise, lpTradesPromise])
+        .then(([liquidityPositionResponse, lpEventsData, lpTradesData]) => {
+          if (!liquidityPositionResponse) {
+            console.error("Error fetching liquidity position: no response");
+            setError("Error fetching liquidity position: no response");
+            return;
+          }
+
+          setLiquidityPosition(liquidityPositionResponse);
+
+          if (!lpEventsData) {
+            console.error(
+              "Error fetching liquidity position events: no response"
+            );
+            setError("Error fetching liquidity position events: no response");
+            return;
+          }
+          setLPData(lpEventsData as LiquidityPositionEvent[]);
+
+          if (!lpTradesData) {
+            console.error(
+              "Error fetching liquidity position execution trade events: no response"
+            );
+            setError(
+              "Error fetching liquidity position execution trade events: no response"
+            );
+            return;
+          }
+          setTradeTimelineData(lpTradesData as PositionExecutionEvent[]);
+        })
+        .catch((error) => {
+          console.error("Error fetching liquidity position data:", error);
+          setError("An error occurred while fetching liquidity position data.");
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } 
+  }, [lp_nft_id]);
+
+  useEffect(() => {
+    setIsTimelineLoading(true);
     // Return if no data
-    if (LPData.length === 0) {
-      setIsLoading(false);
+    if (LPData.length === 0 && !isLoading) {
+      setIsTimelineLoading(false);
       return;
     }
 
@@ -167,10 +160,13 @@ export default function LP() {
         .findIndex((event) => "lpevent_attributes" in event);
 
       // If there are no trade events, return
-      console.log(firstTradeIndex, lastTradeIndex)
-      if (firstTradeIndex === -1 || lastTradeIndex === -1 || firstTradeIndex === lastTradeIndex) {
+      if (
+        firstTradeIndex === -1 ||
+        lastTradeIndex === -1 ||
+        firstTradeIndex === lastTradeIndex
+      ) {
         setTimelineData(allEvents);
-        setIsLoading(false);
+        setIsTimelineLoading(false);
         return;
       }
 
@@ -181,9 +177,7 @@ export default function LP() {
       }
 
       setShowExpandButton(true);
-      setHiddenEventCount(
-        allEvents.length - firstTradeIndex - lastTradeIndex 
-      );
+      setHiddenEventCount(allEvents.length - firstTradeIndex - lastTradeIndex);
 
       // Remove all but the first and last n trade events
       allEvents.splice(
@@ -211,7 +205,7 @@ export default function LP() {
     }
 
     setTimelineData(allEvents);
-    setIsLoading(false);
+    setIsTimelineLoading(false);
   }, [LPData, tradeTimelineData, showAllTradeEvents]);
 
   const currentStatusRef = useRef<HTMLDivElement>(null);
@@ -220,7 +214,7 @@ export default function LP() {
   const [lineTop, setLineTop] = useState(0);
 
   useEffect(() => {
-    setIsLoading(true);
+    setIsLineLoading(true);
     if (currentStatusRef.current && originalStatusRef.current) {
       const firstBoxRect = currentStatusRef.current.getBoundingClientRect();
       const lastBoxRect = originalStatusRef.current.getBoundingClientRect();
@@ -233,13 +227,13 @@ export default function LP() {
       setLineHeight(newLineHeight - 50);
       setLineTop(newLineTop);
     }
-    setIsLoading(false);
+    setIsLineLoading(false);
   }, [timelineData, currentStatusRef, originalStatusRef]);
 
   return (
     <Layout pageTitle={`LP - ${lp_nft_id}`}>
       <main className={styles.main}>
-        {isLoading ? (
+        {isLoading || isTimelineLoading || isLineLoading ? (
           <LoadingSpinner />
         ) : liquidityPosition ? (
           <>
@@ -349,7 +343,8 @@ export default function LP() {
                                       color="var(--complimentary-background)"
                                       variant="outline"
                                       _hover={{
-                                        backgroundColor: "var(--purple-emphasis)",
+                                        backgroundColor:
+                                          "var(--purple-emphasis)",
                                       }}
                                     />
                                   </HStack>
@@ -384,11 +379,11 @@ export default function LP() {
             </Text>
             <HStack paddingBottom="5em"></HStack>
           </>
-        ) : (
+        ) : !isLoading && !liquidityPosition && !isLineLoading && !isTimelineLoading ? ( // Explicitly check all loading states
           <VStack height={"100%"} width={"100%"}>
             <Text paddingTop={"20%"}>Liquidity position not found.</Text>
           </VStack>
-        )}
+        ) : null}
       </main>
     </Layout>
   );
