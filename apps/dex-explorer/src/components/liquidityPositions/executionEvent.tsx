@@ -53,7 +53,7 @@ const ExecutionEvent = ({ nftId, lp_event }: ExecutionEventProps) => {
               Fill
             </Text>
             <HStack align={"center"} spacing={2}>
-              <LPAssetView sectionTitle={"New Reserves"} lp_event={lp_event} />
+              <LPAssetView sectionTitle={"Updated Reserves"} lp_event={lp_event} />
             </HStack>
           </HStack>
         </Box>
