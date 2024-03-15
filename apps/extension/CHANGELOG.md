@@ -1,5 +1,11 @@
 # chrome-extension
 
+## 5.0.1
+
+### Patch Changes
+
+- newtab override fix
+
 ## 5.0.0
 
 ### Major Changes
