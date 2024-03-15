@@ -78,7 +78,7 @@ export class IndexerQuerier {
     INNER JOIN tx_results tr ON tr.block_id = e.block_id
     INNER JOIN block_events b ON e.block_id = b.block_id and b.key = 'height'
     LEFT JOIN attributes additional_attributes ON additional_attributes.event_id = a.event_id
-    WHERE a.value = $1
+    WHERE a.value = $1 and a.composite_key not like '%EventPositionExecution%' 
     GROUP BY a.event_id, e.block_id, e.tx_id, e.type, tr.tx_hash, tr.created_at, tr.index, b.height;
   `;
 
