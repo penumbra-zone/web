@@ -16,7 +16,7 @@ export class ShieldedPoolQuerier implements ShieldedPoolQuerierInterface {
 
   async assetMetadata(assetId: AssetId): Promise<Metadata | undefined> {
     const res = await this.client.assetMetadataById({ assetId });
-    console.info(res)
+    //console.info(res)
     return res.denomMetadata;
   }
 }
