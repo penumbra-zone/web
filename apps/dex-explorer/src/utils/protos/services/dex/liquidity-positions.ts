@@ -17,7 +17,7 @@ export class LiquidityPositionQuerier implements LiquidityPositionQuerierInterfa
   async liquidityPositionById(
     positionId: PositionId
   ): Promise<Position | undefined> {
-    console.log('liquidityPositionById', positionId)
+    //console.log('liquidityPositionById', positionId)
     const res = await this.client.liquidityPositionById({ positionId });
     return res.data;
   }
