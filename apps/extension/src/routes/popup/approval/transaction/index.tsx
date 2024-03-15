@@ -8,6 +8,12 @@ import { ViewTabs } from './view-tabs';
 import { ApproveDeny } from '../approve-deny';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
+import { needsLogin } from '../../popup-needs';
+import { PopupPath } from '../../paths';
+
+export const transactionApprovalLoader = async (): Promise<Response | null> => {
+  return await needsLogin(PopupPath.TRANSACTION_APPROVAL);
+};
 
 export const TransactionApproval = () => {
   const { authorizeRequest: authReqString, setChoice, sendResponse } = useStore(txApprovalSelector);

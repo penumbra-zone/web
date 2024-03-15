@@ -1,12 +1,13 @@
 import { redirect } from 'react-router-dom';
-import { PopupPath } from './paths';
 import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
+import { PopupPath } from './paths';
+import { REDIRECT_PARAM_KEY } from './login';
 
-export const needsLogin = async (): Promise<Response | null> => {
+export const needsLogin = async (path: PopupPath): Promise<Response | null> => {
   const password = await sessionExtStorage.get('passwordKey');
   if (password) return null;
 
-  return redirect(PopupPath.LOGIN);
+  return redirect(`${PopupPath.LOGIN}?${REDIRECT_PARAM_KEY}=${path}`);
 };
 
 export const needsOnboard = async () => {

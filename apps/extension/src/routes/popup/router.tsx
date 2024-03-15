@@ -5,8 +5,8 @@ import { PopupPath } from './paths';
 import { PopupLayout } from './popup-layout';
 import { Settings } from './settings';
 import { settingsRoutes } from './settings/routes';
-import { TransactionApproval } from './approval/transaction';
-import { OriginApproval } from './approval/origin';
+import { TransactionApproval, transactionApprovalLoader } from './approval/transaction';
+import { OriginApproval, originApprovalLoader } from './approval/origin';
 
 export const popupRoutes: RouteObject[] = [
   {
@@ -30,10 +30,12 @@ export const popupRoutes: RouteObject[] = [
       {
         path: PopupPath.TRANSACTION_APPROVAL,
         element: <TransactionApproval />,
+        loader: transactionApprovalLoader,
       },
       {
         path: PopupPath.ORIGIN_APPROVAL,
         element: <OriginApproval />,
+        loader: originApprovalLoader,
       },
     ],
   },

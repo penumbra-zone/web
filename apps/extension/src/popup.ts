@@ -1,11 +1,9 @@
-import { sessionExtStorage } from '@penumbra-zone/storage';
 import { PopupMessage, PopupRequest, PopupResponse, PopupType } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
 import type {
   InternalRequest,
   InternalResponse,
 } from '@penumbra-zone/types/src/internal-msg/shared';
-import { Code, ConnectError } from '@connectrpc/connect';
 import { isChromeResponderDroppedError } from '@penumbra-zone/types/src/internal-msg/chrome-error';
 
 export const popup = async <M extends PopupMessage>(
@@ -22,16 +20,6 @@ export const popup = async <M extends PopupMessage>(
       };
     else throw e;
   });
-};
-
-const spawnExtensionPopup = async (path: string) => {
-  try {
-    await throwIfAlreadyOpen(path);
-    await chrome.action.setPopup({ popup: path });
-    await chrome.action.openPopup({});
-  } finally {
-    void chrome.action.setPopup({ popup: 'popup.html' });
-  }
 };
 
 const spawnDetachedPopup = async (path: string) => {
@@ -64,13 +52,13 @@ const throwIfAlreadyOpen = (path: string) =>
 const spawnPopup = async (pop: PopupType) => {
   const popUrl = new URL(chrome.runtime.getURL('popup.html'));
 
-  const loggedIn = Boolean(await sessionExtStorage.get('passwordKey'));
-
-  if (!loggedIn) {
-    popUrl.hash = PopupPath.LOGIN;
-    void spawnExtensionPopup(popUrl.href);
-    throw new ConnectError('User must login to extension', Code.Unauthenticated);
-  }
+  // const loggedIn = Boolean(await sessionExtStorage.get('passwordKey'));
+  //
+  // if (!loggedIn) {
+  //   popUrl.hash = PopupPath.LOGIN;
+  //   void spawnExtensionPopup(popUrl.href);
+  //   throw new ConnectError('User must login to extension', Code.Unauthenticated);
+  // }
 
   switch (pop) {
     case PopupType.OriginApproval:

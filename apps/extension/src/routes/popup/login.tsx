@@ -7,11 +7,19 @@ import { passwordSelector } from '../../state/password';
 import { FormEvent, useState } from 'react';
 import { PopupPath } from './paths';
 import { needsOnboard } from './popup-needs';
+import { useSearchParams } from 'react-router-dom';
+
+export const REDIRECT_PARAM_KEY = 'redirect';
 
 export const popupLoginLoader = () => needsOnboard();
 
 export const Login = () => {
   const navigate = usePopupNav();
+  const [params] = useSearchParams();
+
+  // Optional query param informing the path navigated to after login
+  // If none, go to popup index
+  const redirectPath = (params.get(REDIRECT_PARAM_KEY) as PopupPath | undefined) ?? PopupPath.INDEX;
 
   const { isPassword, setSessionPassword } = useStore(passwordSelector);
   const [input, setInputValue] = useState('');
@@ -23,7 +31,7 @@ export const Login = () => {
     void (async function () {
       if (await isPassword(input)) {
         await setSessionPassword(input); // saves to session state
-        navigate(PopupPath.INDEX);
+        navigate(redirectPath);
       } else {
         setEnteredIncorrect(true);
       }

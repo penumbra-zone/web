@@ -7,6 +7,12 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import { needsLogin } from '../popup-needs';
+import { PopupPath } from '../paths';
+
+export const originApprovalLoader = async (): Promise<Response | null> => {
+  return await needsLogin(PopupPath.ORIGIN_APPROVAL);
+};
 
 export const OriginApproval = () => {
   const { requestOrigin, favIconUrl, title, lastRequest, setChoice, sendResponse } =
