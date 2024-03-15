@@ -37,19 +37,17 @@ import { approveTransaction } from './approve-transaction';
 import { rpcImpls } from './impls';
 import { backOff } from 'exponential-backoff';
 
-// prevent spamming the focus-stealing openOptionsPage
-let openOptionsOnce: undefined | Promise<void>;
 const startServices = async () => {
   const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 
   const wallet0 = (await localExtStorage.get('wallets'))[0];
-  if (!wallet0) openOptionsOnce ??= chrome.runtime.openOptionsPage();
+  if (!wallet0) throw new Error('No wallet found');
 
   const services = new Services({
     idbVersion: IDB_VERSION,
     grpcEndpoint,
-    walletId: wallet0?.id,
-    fullViewingKey: wallet0?.fullViewingKey,
+    walletId: wallet0.id,
+    fullViewingKey: wallet0.fullViewingKey,
   });
   await services.initialize();
   return services;
