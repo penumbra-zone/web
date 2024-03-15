@@ -2,44 +2,38 @@ import { Delegate } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { ViewBox } from './viewbox';
 import { joinLoHiAmount } from '@penumbra-zone/types/src/amount';
 import { bech32IdentityKey } from '@penumbra-zone/types/src/identity-key';
+import { ActionDetails } from './action-details';
 
 /**
  * Render a `Delegate` action.
- *
- * @todo: Make this nicer :)
  */
 export const DelegateComponent = ({ value }: { value: Delegate }) => {
   return (
     <ViewBox
       label='Delegate'
       visibleContent={
-        <div className='flex flex-col gap-2'>
-          <div>
-            <span className='font-bold'>Epoch index:</span> {value.epochIndex.toString()}
-          </div>
+        <ActionDetails>
+          <ActionDetails.Row label='Epoch index'>{value.epochIndex.toString()}</ActionDetails.Row>
 
           {!!value.delegationAmount && (
-            <div>
-              <span className='font-bold'>Delegation amount:</span>{' '}
+            <ActionDetails.Row label='Delegation amount'>
               {joinLoHiAmount(value.delegationAmount).toString()}
-            </div>
+            </ActionDetails.Row>
           )}
 
           {!!value.unbondedAmount && (
-            <div>
-              <span className='font-bold'>Unbonded amount:</span>{' '}
+            <ActionDetails.Row label='Unbonded amount'>
               {joinLoHiAmount(value.unbondedAmount).toString()}
-            </div>
+            </ActionDetails.Row>
           )}
 
           {/** @todo: Render validator name/etc. after fetching? */}
           {!!value.validatorIdentity && (
-            <div>
-              <span className='font-bold'>Validator identity:</span>{' '}
+            <ActionDetails.Row label='Validator identity' truncate>
               {bech32IdentityKey(value.validatorIdentity)}
-            </div>
+            </ActionDetails.Row>
           )}
-        </div>
+        </ActionDetails>
       }
     />
   );

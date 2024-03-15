@@ -1,6 +1,5 @@
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { bech32Address } from '@penumbra-zone/types/src/address';
-import { shortenAddress } from '@penumbra-zone/types/src/string';
 
 interface AddressComponentProps {
   address: Address;
@@ -15,8 +14,10 @@ export const AddressComponent = ({ address, ephemeral }: AddressComponentProps) 
   const bech32Addr = bech32Address(address);
 
   return (
-    <span className={'font-mono' + (ephemeral ? ' text-[#8D5728]' : ' text-muted-foreground')}>
-      {shortenAddress(bech32Addr)}
+    <span
+      className={'font-mono' + (ephemeral ? ' text-[#8D5728]' : ' text-muted-foreground truncate')}
+    >
+      {bech32Addr}
     </span>
   );
 };
