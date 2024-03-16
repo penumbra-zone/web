@@ -136,18 +136,18 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
   const p: BigNumber = fromBaseUnit(
     position!.phi!.component!.p!.lo,
     position!.phi!.component!.p!.hi,
-    asset1Token.decimals
+    asset2Token.decimals
   );
   const q: BigNumber = fromBaseUnit(
     position!.phi!.component!.q!.lo,
     position!.phi!.component!.q!.hi,
-    asset2Token.decimals
+    asset1Token.decimals
   );
 
   return (
     <>
       <VStack width={"100%"}>
-        <HStack >
+        <HStack>
           <Text fontFamily={"monospace"}>{nftId}</Text>
 
           <div style={{ position: "relative", display: "inline-block" }}>
