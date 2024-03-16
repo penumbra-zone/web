@@ -1,6 +1,8 @@
 import Head from "next/head";
 import styles from "@/Home.module.css";
 
+export const routes = [{ path: "/lp/utils" }, { path: "/lp/<NFT_ID>" }];
+
 export default function Home() {
   return (
     <div className={styles.container}>
@@ -11,6 +13,24 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1>Penumbra Dex Explorer</h1>
+        <ul>
+          {routes.map((route, index) => (
+            <li key={index}>
+              <a
+                href={route.path}
+                style={{
+                  textDecoration: "underline",
+                  color: "var(--complimentary-background)",
+                  display: "flex",
+                  fontSize: "small",
+                  fontFamily: "monospace",
+                }}
+              >
+                {route.path}
+              </a>
+            </li>
+          ))}
+        </ul>
       </main>
     </div>
   );

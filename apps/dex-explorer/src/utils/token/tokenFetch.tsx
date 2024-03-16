@@ -4,6 +4,7 @@ import { ShieldedPoolQuerier } from "../protos/services/app/shielded-pool";
 import { testnetConstants } from "../../constants/configConstants";
 import { AssetId } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb";
 
+// TODO: Eventually this should read from a penumbra asset registry/repo
 export const fetchToken = async (
   tokenInner: Uint8Array
 ): Promise<Token | undefined> => {
@@ -11,10 +12,12 @@ export const fetchToken = async (
     tokenConfigMapOnInner[uint8ArrayToBase64(tokenInner)];
 
   if (!token) {
+    /*
     console.info(
       "Token not found in tokenConfigMapOnInner, querying chain",
       tokenInner
     );
+    */
 
     const pool_querier = new ShieldedPoolQuerier({
       grpcEndpoint: testnetConstants.grpcEndpoint,

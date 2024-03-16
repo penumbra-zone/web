@@ -1,11 +1,7 @@
-// components/CurrentLPStatus.js
-
 import React, { useEffect, useState } from "react";
 import {
-  Box,
   VStack,
   Text,
-  Divider,
   Badge,
   HStack,
   Image,
@@ -13,13 +9,13 @@ import {
 } from "@chakra-ui/react";
 import {
   Position,
-  PositionState,
 } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import { fromBaseUnit } from "../../utils/math/hiLo";
 import { uint8ArrayToBase64 } from "../../utils/math/base64";
 import { tokenConfigMapOnInner, Token } from "../../constants/tokenConstants";
 import { fetchToken } from "../../utils/token/tokenFetch";
 import BigNumber from "bignumber.js";
+import { CopyIcon } from "@radix-ui/react-icons";
 
 interface CurrentLPStatusProps {
   nftId: string;
@@ -27,6 +23,16 @@ interface CurrentLPStatusProps {
 }
 
 const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isCopied, setIsCopied] = useState<boolean>(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(nftId).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 1500); // Hide popup after 1.5 seconds
+    });
+  };
+
   // First process position to human readable pieces
 
   // Get status
@@ -61,8 +67,22 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
   const asset2 = position!.phi!.pair!.asset2;
 
   // States for tokens
-  const [asset1Token, setAsset1Token] = useState<Token | undefined>();
-  const [asset2Token, setAsset2Token] = useState<Token | undefined>();
+  const [asset1Token, setAsset1Token] = useState<Token>(
+    {
+      symbol: "UNKNOWN",
+      decimals: 0,
+      inner: "UNKNOWN",
+      imagePath: "UNKNOWN",
+    }
+  );
+  const [asset2Token, setAsset2Token] = useState<Token>(
+    {
+      symbol: "UNKNOWN",
+      decimals: 0,
+      inner: "UNKNOWN",
+      imagePath: "UNKNOWN",
+    }
+  );
   const [assetError, setAssetError] = useState<string | undefined>();
 
   useEffect(() => {
@@ -97,7 +117,7 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
     fetchTokens();
   }, [position]);
 
-  if (!asset1Token || !asset2Token) {
+  if (!isLoading && (!asset1Token || !asset2Token)) {
     return <div>{`LP exists, but ${assetError}.`}</div>;
   }
 
@@ -125,9 +145,39 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
   );
 
   return (
-    <Box className="neon-box" padding={15} >
+    <>
       <VStack width={"100%"}>
-        <Text>{nftId}</Text>
+        <HStack >
+          <Text fontFamily={"monospace"}>{nftId}</Text>
+
+          <div style={{ position: "relative", display: "inline-block" }}>
+            <CopyIcon onClick={handleCopy} style={{ cursor: "pointer" }} />
+            {isCopied && (
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: "100%", // Align bottom of popup with top of the button
+                  left: "50%",
+                  transform: "translateX(-50%) translateY(-8px)", // Adjust Y translation for spacing
+                  padding: "8px",
+                  backgroundColor: "#4A5568", // Dark grayish-blue
+                  color: "white",
+                  borderRadius: "6px",
+                  fontSize: "14px",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Soft shadow
+                  zIndex: 1, // Ensure the popup is above other elements
+                  transition: "opacity 0.3s, transform 0.3s", // Smooth transition for both opacity and position
+                  opacity: 0.9, // Slightly transparent
+                  width: "10em",
+                  textAlign: "center",
+                  border: "3px solid #2D3748",
+                }}
+              >
+                {`LP ID copied`}
+              </div>
+            )}
+          </div>
+        </HStack>
         <HStack width={"100%"} justifyContent={"center"} paddingTop={"1em"}>
           <HStack>
             <Badge colorScheme="blue">Status:</Badge>
@@ -148,10 +198,10 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
               size="sm"
               borderRadius="50%"
             />
-            <Text>
-              {`Sell ${Number.parseFloat(reserves1.toFixed(18))} ${
+            <Text fontFamily={"monospace"}>
+              {`Sell ${Number.parseFloat(reserves1.toFixed(6))} ${
                 asset1Token.symbol
-              } @ ${Number.parseFloat(p.div(q).toFixed(18))} ${
+              } @ ${Number.parseFloat(p.div(q).toFixed(6))} ${
                 asset2Token.symbol
               } / ${asset1Token.symbol} `}
             </Text>
@@ -179,17 +229,17 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
               size="sm"
               borderRadius="50%"
             />
-            <Text>
-              {`Sell ${Number.parseFloat(reserves2.toFixed(18))} ${
+            <Text fontFamily={"monospace"}>
+              {`Sell ${Number.parseFloat(reserves2.toFixed(6))} ${
                 asset2Token.symbol
-              } @ ${Number.parseFloat(q.div(p).toFixed(18))} ${
+              } @ ${Number.parseFloat(q.div(p).toFixed(6))} ${
                 asset1Token.symbol
               } / ${asset2Token.symbol} `}
             </Text>
           </HStack>
         </VStack>
       </VStack>
-    </Box>
+    </>
   );
 };
 
