@@ -23,6 +23,8 @@
   --text-secondary: 0, 0%, 100%;
   --charcoal: #1d1d1d;
   --charcoal-secondary: #141010;
+  --charcoal-tertiary: #2d2d2d;
+  --charcoal-tertiary-blended: rgba(89, 89, 89, 0.9);
   --teal: #629994;
   --sand: #847a5b;
   --rust: #8d5728;
@@ -37,6 +39,8 @@
   --red: #af4545;
   --light-brown: #363434;
   --light-grey: #e3e3e3;
+  --light-grey: #e3e3e3;
+  --purple-emphasis: rgba(227, 192, 255, 0.975);
   --brown: rgba(29, 29, 29, 0.7);
   --background-gradient: linear-gradient(
     90deg,
