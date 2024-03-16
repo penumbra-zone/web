@@ -3,7 +3,7 @@ import { DelegationValueView } from './delegation-value-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getIdentityKeyFromValueView } from '@penumbra-zone/getters/src/value-view';
-import { bech32IdentityKey } from '@penumbra-zone/types/src/identity-key';
+import { bech32IdentityKey } from '@penumbra-zone/bech32';
 import { VotingPowerAsIntegerPercentage } from '@penumbra-zone/types/src/staking';
 
 const getVotingPowerAsIntegerPercentage = (

@@ -5,7 +5,7 @@ import {
   AddressIndex,
   AddressView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
+import { bech32ToAddress } from '@penumbra-zone/bech32';
 
 const mockIsControlledAddress = vi.hoisted(() => vi.fn());
 
@@ -16,7 +16,7 @@ vi.mock('@penumbra-zone/wasm', () => ({
 describe('getAddressView()', () => {
   const addressAsBech32 =
     'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
-  const address = new Address({ inner: bech32ToUint8Array(addressAsBech32) });
+  const address = new Address({ inner: bech32ToAddress(addressAsBech32) });
 
   beforeEach(() => {
     mockIsControlledAddress.mockReset();

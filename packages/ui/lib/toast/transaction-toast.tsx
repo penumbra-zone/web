@@ -10,7 +10,7 @@ import { ReactNode } from 'react';
 import {
   TRANSACTION_LABEL_BY_CLASSIFICATION,
   TransactionClassification,
-} from '@penumbra-zone/types/src/transaction';
+} from '@penumbra-zone/perspective/transaction';
 import { shorten } from '@penumbra-zone/types/src/string';
 
 type BroadcastStatus = BroadcastTransactionResponse['status'];

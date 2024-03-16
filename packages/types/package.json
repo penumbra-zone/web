@@ -5,9 +5,7 @@
   "type": "module",
   "exports": {
     "./src/*": "./src/*.ts",
-    "./src/internal-msg/*": "./src/internal-msg/*.ts",
-    "./src/transaction": "./src/transaction/index.ts",
-    "./src/translators": "./src/translators/index.ts"
+    "./src/internal-msg/*": "./src/internal-msg/*.ts"
   },
   "publishConfig": {
     "files": [
@@ -15,9 +13,7 @@
     ],
     "exports": {
       "./src/*": "./dist/*.js",
-      "./src/internal-msg/*": "./dist/internal-msg/*.js",
-      "./src/transaction": "./dist/transaction.js",
-      "./src/translators": "./dist/translators.js"
+      "./src/internal-msg/*": "./dist/internal-msg/*.js"
     }
   },
   "scripts": {
@@ -29,7 +25,7 @@
   "dependencies": {
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
-    "bech32": "^2.0.0",
+    "@penumbra-zone/bech32": "workspace:*",
     "bignumber.js": "^9.1.2",
     "idb": "^8.0.0",
     "zod": "^3.22.4"

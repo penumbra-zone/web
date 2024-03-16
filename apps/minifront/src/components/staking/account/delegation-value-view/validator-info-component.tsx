@@ -12,7 +12,7 @@ import {
   getIdentityKeyFromValidatorInfo,
   getValidator,
 } from '@penumbra-zone/getters/src/validator-info';
-import { bech32IdentityKey } from '@penumbra-zone/types/src/identity-key';
+import { bech32IdentityKey } from '@penumbra-zone/bech32';
 import { calculateCommissionAsPercentage } from '@penumbra-zone/types/src/staking';
 
 /**

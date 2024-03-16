@@ -5,7 +5,6 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        asset: './src/asset.ts',
         'address-view': './src/address-view.ts',
         'delegations-by-address-index-response': './src/delegations-by-address-index-response.ts',
         'funding-stream': './src/funding-stream.ts',

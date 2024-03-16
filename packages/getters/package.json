@@ -19,6 +19,6 @@
   },
   "dependencies": {
     "@penumbra-zone/constants": "workspace:*",
-    "bech32": "^2.0.0"
+    "@penumbra-zone/bech32": "workspace:*"
   }
 }

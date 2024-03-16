@@ -40,7 +40,7 @@ import { IdbCursorSource } from './stream';
 import '@penumbra-zone/polyfills/src/ReadableStream[Symbol.asyncIterator]';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { bech32AssetId } from '@penumbra-zone/getters/src/asset';
+import { bech32AssetId, bech32IdentityKey, bech32ToIdentityKey } from '@penumbra-zone/bech32';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/src/validator-info';
 import {
   IDB_TABLES,
@@ -56,8 +56,6 @@ import type {
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
-import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
-import { bech32IdentityKey } from '@penumbra-zone/types/src/identity-key';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -404,7 +402,7 @@ export class IndexedDb implements IndexedDbInterface {
         notesForVoting.push(
           new NotesForVotingResponse({
             noteRecord: note,
-            identityKey: new IdentityKey({ ik: bech32ToUint8Array(bech32IdentityKey) }),
+            identityKey: new IdentityKey({ ik: bech32ToIdentityKey(bech32IdentityKey) }),
           }),
         );
       }

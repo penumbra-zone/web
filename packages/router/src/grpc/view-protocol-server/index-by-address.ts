@@ -4,7 +4,7 @@ import { servicesCtx } from '../../ctx';
 import { isControlledAddress } from '@penumbra-zone/wasm';
 
 import { Code, ConnectError } from '@connectrpc/connect';
-import { bech32Address } from '@penumbra-zone/types/src/address';
+import { bech32Address } from '@penumbra-zone/bech32';
 
 export const indexByAddress: Impl['indexByAddress'] = async (req, ctx) => {
   if (!req.address) throw new ConnectError('no address given in request', Code.InvalidArgument);
