@@ -31,8 +31,6 @@ import ExecutionEvent from "@/components/liquidityPositions/executionEvent";
 import { POSITION_OPEN_EVENT } from "@/components/liquidityPositions/timelinePosition";
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 
-// TODO: Once all components are fleshed out merge all of the 'useEffect' calls into one.
-
 export default function LP() {
   const [isLoading, setIsLoading] = useState(true);
   const [isTimelineLoading, setIsTimelineLoading] = useState(true);
@@ -174,6 +172,10 @@ export default function LP() {
       if (firstTradeIndex - lastTradeIndex > 2 ** numberOfTradeEventsToShow) {
         firstTradeIndex = lastTradeIndex + numberOfTradeEventsToShow;
         lastTradeIndex = firstTradeIndex + 1;
+      } else {
+        setTimelineData(allEvents);
+        setIsTimelineLoading(false);
+        return
       }
 
       setShowExpandButton(true);
