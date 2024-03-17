@@ -26,7 +26,8 @@ import { LoadingSpinner } from "../../components/util/loadingSpinner";
 import { Token, tokenConfigMapOnSymbol } from "@/constants/tokenConstants";
 import { base64ToUint8Array } from "@/utils/math/base64";
 import { joinLoHi, splitLoHi } from "@/utils/math/hiLo";
-import { set } from "zod";
+
+// ! Important note: 'sell' side here refers to selling asset1 for asset2, so its really DEMAND for buying asset 1, anc vice versa for 'buy' side
 
 export default function TradingPairs() {
   const [isLoading, setIsLoading] = useState(true);
@@ -41,6 +42,7 @@ export default function TradingPairs() {
   const [asset1Token, setAsset1Token] = useState<Token | undefined>();
   const [asset2Token, setAsset2Token] = useState<Token | undefined>();
 
+  // Sell Side
   const [
     simulatedSingleHopAsset1SellData,
     setSimulatedSingleHopAsset1SellData,
@@ -48,7 +50,15 @@ export default function TradingPairs() {
   const [simulatedMultiHopAsset1SellData, setSimulatedMultiHopAsset1SellData] =
     useState<SwapExecution | undefined>(undefined);
 
+  // Buy Side
+  const [simulatedSingleHopAsset1BuyData, setSimulatedSingleHopAsset1BuyData] =
+    useState<SwapExecution | undefined>(undefined);
+  const [simulatedMultiHopAsset1BuyData, setSimulatedMultiHopAsset1BuyData] =
+    useState<SwapExecution | undefined>(undefined);
+
   // Depth chart data points, x is price, y is liquidity
+
+  // Sell Side
   const [
     depthChartMultiHopAsset1SellPoints,
     setDepthChartMultiHopAsset1SellPoints,
@@ -63,16 +73,41 @@ export default function TradingPairs() {
     setDepthChartSingleHopAsset1SellPoints,
   ] = useState<{ x: number; y: number }[]>([]);
 
+  // Buy Side
+  const [
+    depthChartMultiHopAsset1BuyPoints,
+    setDepthChartMultiHopAsset1BuyPoints,
+  ] = useState<
+    {
+      x: number;
+      y: number;
+    }[]
+  >([]);
+  const [
+    depthChartSingleHopAsset1BuyPoints,
+    setDepthChartSingleHopAsset1BuyPoints,
+  ] = useState<{ x: number; y: number }[]>([]);
+
   // ! Note this needs to be kind of extreme for now due to limited 'real' liquidity
   // TODO: Maybe make this configurable, for now it will only show 30% of depth chart past best sell/buy prices
   const bestPriceDeviationPercent = 30; // 30%,
+
+  // Sell Side
   const [bestAsset1SellPriceMultiHop, setBestAsset1SellPriceMultiHop] =
     useState<number | undefined>(undefined);
   const [bestAsset1SellPriceSingleHop, setBestAsset1SellPriceSingleHop] =
     useState<number | undefined>(undefined);
 
+  // Buy Side
+  const [bestAsset1BuyPriceMultiHop, setBestAsset1BuyPriceMultiHop] = useState<
+    number | undefined
+  >(undefined);
+  const [bestAsset1BuyPriceSingleHop, setBestAsset1BuyPriceSingleHop] =
+    useState<number | undefined>(undefined);
+
   // TODO: Decide how to set this more intelligently/dynamically
-  const unitsToSimulateSelling = 10000; // 1 million units
+  const unitsToSimulateSelling = 100000; // 10k units
+  const unitsToSimulateBuying = 100000; // 10k units
 
   useEffect(() => {
     setIsLoading(true);
@@ -92,18 +127,19 @@ export default function TradingPairs() {
       grpcEndpoint: testnetConstants.grpcEndpoint,
     });
 
-    const amt = splitLoHi(
+    const sellAmt = splitLoHi(
       BigInt(unitsToSimulateSelling * 10 ** asset1Token.decimals)
     );
 
-    const simRequestMultiHop = new SimulateTradeRequest({
+    //! Sell side
+    const simSellRequestMultiHop = new SimulateTradeRequest({
       input: {
         assetId: {
           inner: base64ToUint8Array(asset1Token.inner),
         },
         amount: {
-          lo: amt.lo,
-          hi: amt.hi,
+          lo: sellAmt.lo,
+          hi: sellAmt.hi,
         },
       },
       output: {
@@ -112,14 +148,14 @@ export default function TradingPairs() {
     });
 
     // Same as above but set routing
-    const simRequestSingleHop = new SimulateTradeRequest({
+    const simSellRequestSingleHop = new SimulateTradeRequest({
       input: {
         assetId: {
           inner: base64ToUint8Array(asset1Token.inner),
         },
         amount: {
-          lo: amt.lo,
-          hi: amt.hi,
+          lo: sellAmt.lo,
+          hi: sellAmt.hi,
         },
       },
       output: {
@@ -133,25 +169,82 @@ export default function TradingPairs() {
       },
     });
 
-    const simQueryMultiHopAsset1SellResponse =
-      sim_querier.simulateTrade(simRequestMultiHop);
-    const simQuerySingleHopAsset1SellResponse =
-      sim_querier.simulateTrade(simRequestSingleHop);
+    const buyAmt = splitLoHi(
+      BigInt(unitsToSimulateBuying * 10 ** asset2Token.decimals)
+    );
+    //! Buy side
+    const simBuyRequestMultiHop = new SimulateTradeRequest({
+      input: {
+        assetId: {
+          inner: base64ToUint8Array(asset2Token.inner),
+        },
+        amount: {
+          lo: buyAmt.lo,
+          hi: buyAmt.hi,
+        },
+      },
+      output: {
+        inner: base64ToUint8Array(asset1Token.inner),
+      },
+    });
+
+    // Same as above but set routing
+    const simBuyRequestSingleHop = new SimulateTradeRequest({
+      input: {
+        assetId: {
+          inner: base64ToUint8Array(asset2Token.inner),
+        },
+        amount: {
+          lo: buyAmt.lo,
+          hi: buyAmt.hi,
+        },
+      },
+      output: {
+        inner: base64ToUint8Array(asset1Token.inner),
+      },
+      routing: {
+        setting: {
+          case: "singleHop",
+          value: SimulateTradeRequest_Routing_SingleHop,
+        },
+      },
+    });
+
+    const simQueryMultiHopAsset1SellResponse = sim_querier.simulateTrade(
+      simSellRequestMultiHop
+    );
+    const simQuerySingleHopAsset1SellResponse = sim_querier.simulateTrade(
+      simSellRequestSingleHop
+    );
+    const simQueryMultiHopAsset1BuyResponse = sim_querier.simulateTrade(
+      simBuyRequestMultiHop
+    );
+    const simQuerySingleHopAsset1BuyResponse = sim_querier.simulateTrade(
+      simBuyRequestSingleHop
+    );
 
     Promise.all([
       simQueryMultiHopAsset1SellResponse,
       simQuerySingleHopAsset1SellResponse,
+      simQueryMultiHopAsset1BuyResponse,
+      simQuerySingleHopAsset1BuyResponse,
     ])
       .then(
         ([
           simQueryMultiHopAsset1SellResponse,
           simQuerySingleHopAsset1SellResponse,
+          simQueryMultiHopAsset1BuyResponse,
+          simQuerySingleHopAsset1BuyResponse,
         ]) => {
           setSimulatedMultiHopAsset1SellData(
             simQueryMultiHopAsset1SellResponse
           );
           setSimulatedSingleHopAsset1SellData(
             simQuerySingleHopAsset1SellResponse
+          );
+          setSimulatedMultiHopAsset1BuyData(simQueryMultiHopAsset1BuyResponse);
+          setSimulatedSingleHopAsset1BuyData(
+            simQuerySingleHopAsset1BuyResponse
           );
           console.log(
             "simQueryMultiHopAsset1SellResponse",
@@ -160,6 +253,14 @@ export default function TradingPairs() {
           console.log(
             "simQuerySingleHopAsset1SellResponse",
             simQuerySingleHopAsset1SellResponse
+          );
+          console.log(
+            "simQueryMultiHopAsset1BuyResponse",
+            simQueryMultiHopAsset1BuyResponse
+          );
+          console.log(
+            "simQuerySingleHopAsset1BuyResponse",
+            simQuerySingleHopAsset1BuyResponse
           );
         }
       )
@@ -174,12 +275,18 @@ export default function TradingPairs() {
   useEffect(() => {
     setIsLoading(true);
 
-    if (!simulatedMultiHopAsset1SellData || !simulatedSingleHopAsset1SellData || !asset1Token || !asset2Token) {
+    if (
+      !simulatedMultiHopAsset1SellData ||
+      !simulatedSingleHopAsset1SellData ||
+      !asset1Token ||
+      !asset2Token ||
+      !simulatedMultiHopAsset1BuyData ||
+      !simulatedSingleHopAsset1BuyData
+    ) {
       return;
     }
     let bestAsset1SellPriceMultiHop: number | undefined;
     let bestAsset1SellPriceSingleHop: number | undefined;
-
 
     // Clear depth chart data
     setDepthChartMultiHopAsset1SellPoints([]);
@@ -209,7 +316,7 @@ export default function TradingPairs() {
 
       // If price is within % of best price, add to depth chart, else ignore
       if (
-        price <=
+        price >=
         bestAsset1SellPriceMultiHop! * (1 - bestPriceDeviationPercent / 100)
       ) {
         depthChartMultiHopAsset1SellPoints.push({
@@ -219,13 +326,13 @@ export default function TradingPairs() {
       } else {
         /*
         console.log(
-          `Price not within ${bestPriceDeviationPercent}% of worst price, ignoring`,
+          `Price not within ${bestPriceDeviationPercent}% of best price, ignoring`,
           price
         );
         */
-        
+
         // break the loop
-        return
+        return;
       }
     });
 
@@ -253,7 +360,7 @@ export default function TradingPairs() {
 
       // If price is within % of best price, add to depth chart, else ignore
       if (
-        price <=
+        price >=
         bestAsset1SellPriceSingleHop! * (1 - bestPriceDeviationPercent / 100)
       ) {
         depthChartSingleHopAsset1SellPoints.push({
@@ -263,12 +370,110 @@ export default function TradingPairs() {
       } else {
         /*
         console.log(
-          `Price not within ${bestPriceDeviationPercent}% of worst price, ignoring`,
+          `Price not within ${bestPriceDeviationPercent}% of best price, ignoring`,
           price
         );*/
 
         // break the loop
-        return
+        return;
+      }
+    });
+
+    // Do it all again for the buy side :) 
+    //! Maybe theres a way to refactor this to be more concise
+    let bestAsset1BuyPriceMultiHop: number | undefined;
+    let bestAsset1BuyPriceSingleHop: number | undefined;
+
+    // Clear depth chart data
+    setDepthChartMultiHopAsset1BuyPoints([]);
+    setDepthChartSingleHopAsset1BuyPoints([]);
+
+    // Set single and multi hop depth chart data
+    simulatedMultiHopAsset1BuyData!.traces.forEach((trace) => {
+      // First item is the input, last item is the output
+      const input = trace.value.at(0);
+      const output = trace.value.at(trace.value.length - 1);
+
+      const inputValue =
+        Number(joinLoHi(input!.amount!.lo!, input!.amount!.hi)) /
+        Number(10 ** asset2Token.decimals);
+      const outputValue =
+        Number(joinLoHi(output!.amount!.lo, output!.amount!.hi)) /
+        Number(BigInt(10 ** asset1Token.decimals));
+
+      // ! Important to note that the price is inverted here, so we do input/output instead of output/input
+      const price: number = inputValue/ outputValue ;
+
+      // First trace will have best price, so set only on first iteration
+      if (trace === simulatedMultiHopAsset1BuyData!.traces[0]) {
+        console.log("Best Asset1 Buy Price for multi hop", price);
+        setBestAsset1BuyPriceMultiHop(Number(price));
+        bestAsset1BuyPriceMultiHop = price;
+      }
+
+      // If price is within % of best price, add to depth chart, else ignore
+      if (
+        price <=
+        bestAsset1BuyPriceMultiHop! * (1 + bestPriceDeviationPercent / 100)
+      ) {
+        depthChartMultiHopAsset1BuyPoints.push({
+          x: Number(price),
+          y: Number(outputValue),
+        });
+      } else {
+        /*
+        console.log(
+          `Price not within ${bestPriceDeviationPercent}% of best price, ignoring`,
+          price
+        );
+        */
+
+        // break the loop
+        return;
+      }
+    });
+
+    // Similar logic for single hop
+    simulatedSingleHopAsset1BuyData!.traces.forEach((trace) => {
+      // First item is the input, last item is the output
+      const input = trace.value.at(0);
+      const output = trace.value.at(1); // If this isnt 1 then something is wrong
+
+      const inputValue =
+        Number(joinLoHi(input!.amount!.lo!, input!.amount!.hi)) /
+        Number(10 ** asset2Token.decimals);
+      const outputValue =
+        Number(joinLoHi(output!.amount!.lo, output!.amount!.hi)) /
+        Number(BigInt(10 ** asset1Token.decimals));
+
+      // ! Important to note that the price is inverted here, so we do input/output instead of output/input
+      const price: number = inputValue / outputValue;
+
+      // First trace will have best price, so set only on first iteration
+      if (trace === simulatedSingleHopAsset1BuyData!.traces[0]) {
+        console.log("Best Asset1 Buy Price for single hop", price);
+        setBestAsset1BuyPriceSingleHop(Number(price));
+        bestAsset1BuyPriceSingleHop = price;
+      }
+
+      // If price is within % of best price, add to depth chart, else ignore
+      if (
+        price <=
+        bestAsset1BuyPriceSingleHop! * (1 + bestPriceDeviationPercent / 100)
+      ) {
+        depthChartSingleHopAsset1BuyPoints.push({
+          x: Number(price),
+          y: Number(outputValue),
+        });
+      } else {
+        /*
+        console.log(
+          `Price not within ${bestPriceDeviationPercent}% of best price, ignoring`,
+          price
+        );*/
+
+        // break the loop
+        return;
       }
     });
 
@@ -281,8 +486,23 @@ export default function TradingPairs() {
       "depthChartSingleHopAsset1SellPoints",
       depthChartSingleHopAsset1SellPoints
     );
+
+    console.log(
+      "depthChartMultiHopAsset1BuyPoints",
+      depthChartMultiHopAsset1BuyPoints
+    );
+    console.log(
+      "depthChartSingleHopAsset1BuyPoints",
+      depthChartSingleHopAsset1BuyPoints
+    );
+
     setIsLoading(false);
-  }, [simulatedMultiHopAsset1SellData, simulatedSingleHopAsset1SellData, asset1Token, asset2Token]);
+  }, [
+    simulatedMultiHopAsset1SellData,
+    simulatedSingleHopAsset1SellData,
+    asset1Token,
+    asset2Token,
+  ]);
 
   return (
     <Layout pageTitle={`${token1Symbol}/${token2Symbol}`}>
@@ -291,7 +511,9 @@ export default function TradingPairs() {
           <LoadingSpinner />
         </Center>
       ) : simulatedMultiHopAsset1SellData &&
-        simulatedSingleHopAsset1SellData ? (
+        simulatedSingleHopAsset1SellData &&
+        simulatedMultiHopAsset1BuyData &&
+        simulatedSingleHopAsset1BuyData ? (
         <Center height="100vh">
           <Box className="neon-box" padding={"3em"}>
             {/* Liqudity Price Graph */}
