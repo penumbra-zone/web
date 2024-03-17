@@ -1,5 +1,5 @@
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
-import { cn } from '../util';
+import { cn } from '../utils';
 import { Button } from './button';
 import { Input } from './input';
 import { useMemo, useState } from 'react';

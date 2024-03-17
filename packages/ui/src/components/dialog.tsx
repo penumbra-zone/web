@@ -3,7 +3,7 @@
 import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
-import { cn } from '../util';
+import { cn } from '../utils';
 import { cva, VariantProps } from 'class-variance-authority';
 
 /**

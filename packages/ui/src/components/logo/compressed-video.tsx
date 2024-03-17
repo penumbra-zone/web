@@ -2,7 +2,7 @@ import * as React from 'react';
 import { type VariantProps } from 'class-variance-authority';
 import RayCompressed from './ray-compressed.mp4';
 import { Logo, logoVariants } from './static';
-import { cn } from '../../util';
+import { cn } from '../../utils';
 
 export interface VideoLogoProps
   extends React.HTMLAttributes<HTMLDivElement>,

@@ -25,7 +25,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        util: 'src/util/index.ts',
+        utils: 'src/utils/index.ts',
         ...components,
       },
       formats: ['es'],
@@ -47,6 +47,7 @@ export default defineConfig({
         ...Object.keys(workspacePkg.dependencies),
         ...Object.keys(workspacePkg.devDependencies),
       ],
+      except: ['@penumbra-zone/tailwind-config'],
     }),
   ],
 });

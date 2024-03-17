@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '../../util';
+import { cn } from '../../utils';
 
 const logoVariants = cva('inline-flex items-center justify-center', {
   variants: {

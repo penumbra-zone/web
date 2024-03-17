@@ -1,4 +1,4 @@
-import { cn } from '../util';
+import { cn } from '../utils';
 
 export interface SegmentedPickerOption<ValueType> {
   /**

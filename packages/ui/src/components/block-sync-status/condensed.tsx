@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useNewBlockDelay, useSyncProgress } from './hooks';
 import { Progress } from '../progress';
 import { BlockSyncProps, SyncingStateProps } from './shared';
-import { cn } from '../../util';
+import { cn } from '../../utils';
 
 export const CondensedBlockSyncStatus = ({
   latestKnownBlockHeight,

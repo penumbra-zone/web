@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import React from 'react';
-import { cn } from '../util';
+import { cn } from '../utils';
 
 const FadeTransition = ({
   children,

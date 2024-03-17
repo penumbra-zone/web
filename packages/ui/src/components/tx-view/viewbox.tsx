@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { cn } from '../../util';
+import { cn } from '../../utils';
 import { IncognitoIcon } from '../icons/incognito';
 
 export interface ViewBoxProps {

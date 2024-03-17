@@ -5,15 +5,29 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    "./components/*": "./src/components/*",
-    "./components/tx-view/*": "./src/components/tx-view/*",
-    "./util": "./src/util/index.ts"
+    ".": "./src/index.ts",
+    "./components/*": "./src/components/*.tsx",
+    "./components/tx-view/*": "./src/components/tx-view/*.tsx",
+    "./utils": "./src/utils/index.ts",
+    "./postcss.config.js": "./postcss.config.js",
+    "./styles/*": "./styles/*",
+    "./fonts/*": "./fonts/*"
   },
   "publishConfig": {
+    "files": [
+      "dist",
+      "styles",
+      "fonts",
+      "postcss.config.js",
+      "tailwind.config.js"
+    ],
     "exports": {
       "./components/*": "./dist/components/*",
       "./components/tx-view/*": "./src/components/tx-view/*",
-      "./util": "./dist/util/index.js"
+      "./utils": "./dist/utils/index.js",
+      "./postcss.config.js": "./p p.config.js",
+      "./styles/*": "./styles/*",
+      "./fonts/*": "./fonts/*"
     }
   },
   "scripts": {

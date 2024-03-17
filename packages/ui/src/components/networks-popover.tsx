@@ -1,7 +1,7 @@
 'use client';
 
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
-import { cn } from '../util';
+import { cn } from '../utils';
 
 export interface NetworksPopoverProps {
   triggerClassName?: string;
