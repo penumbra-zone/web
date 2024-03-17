@@ -1,7 +1,14 @@
-import React from "react";
-import { Chart as ChartJS, ChartOptions, registerables } from "chart.js";
+import React, { useRef, useEffect, useState } from "react";
+import {
+  ChartEvent,
+  Chart as ChartJS,
+  ChartOptions,
+  registerables,
+} from "chart.js";
 import { Line } from "react-chartjs-2";
-import annotationPlugin from "chartjs-plugin-annotation";
+import annotationPlugin, { AnnotationOptions } from "chartjs-plugin-annotation";
+import { throttle } from "lodash";
+import { Chart } from "chart.js/auto";
 
 // Register the necessary components from chart.js
 ChartJS.register(...registerables, annotationPlugin);
@@ -11,24 +18,26 @@ interface DepthChartProps {
   sellSideData: { x: number; y: number }[];
 }
 
-// TODO: hide horizontal grid lines, only vertical ones, and lighter color
-// TODO: space out the x-axis labels at a fixed interval
 // TODO Fix midpoint line
 // TODO: Add second y axis on right side
 // TODO: Put units in
 
 const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
-    // Mid point is the middle of the price between the lowest sell and highest buy
-    const midMarketPrice = (sellSideData[0].x + buySideData[0].x) / 2;
-    
-    console.log(buySideData, sellSideData, midMarketPrice)
-    const data = {
-      datasets: [
-        {
-          label: "Sell",
-        data: sellSideData.map((point) => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) })),
+  // Mid point is the middle of the price between the lowest sell and highest buy
+  const midMarketPrice = (sellSideData[0].x + buySideData[0].x) / 2;
+  const chartRef = useRef<any>();
+
+  console.log(buySideData, sellSideData, midMarketPrice);
+  const data = {
+    datasets: [
+      {
+        label: "Sell",
+        data: sellSideData.map((point) => ({
+          x: point.x.toFixed(6),
+          y: point.y.toFixed(6),
+        })),
         // Red
-        borderColor: "rgba(255, 99, 132, 0.5)", 
+        borderColor: "rgba(255, 99, 132, 0.5)",
         backgroundColor: "rgba(255, 99, 132, 0.5)",
         fill: "origin",
         stepped: true,
@@ -39,14 +48,63 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
           .map((point) => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) }))
           .reverse(),
         // Green
-        borderColor: "rgba(0, 255, 99, 0.5)", 
+        borderColor: "rgba(0, 255, 99, 0.5)",
         backgroundColor: "rgba(0, 255, 99, 0.5)",
         fill: "origin",
         stepped: true,
       },
     ],
   };
-  console.log(data)
+
+  const [hoverAnnotation, setHoverAnnotation] = useState<AnnotationOptions>({
+    type: "line",
+    scaleID: "x-axis-0",
+    value: 0,
+    borderColor: "rgba(255, 255, 255, 0.8)",
+    borderWidth: 1,
+    yMin: 0,
+    yMax: 1,
+    xMin: midMarketPrice,
+    xMax: midMarketPrice,
+  });
+  const updateHoverLine = throttle(
+    (chart, xValue) => {
+      // Directly access and manipulate the chart instance
+      if (chart) {
+        // Check if the annotation needs an update to prevent unnecessary changes
+        const annotations = chart.options.plugins.annotation.annotations;
+        const currentXMin = annotations.hoverLine?.xMin;
+
+        if (currentXMin !== xValue) {
+          // Prevent update if the value hasn't changed
+          annotations.hoverLine = {
+            ...annotations.hoverLine,
+            xMin: xValue,
+            xMax: xValue,
+            yMin: 0,
+            yMax: Math.max(
+              ...sellSideData.map((p) => p.y),
+              ...buySideData.map((p) => p.y)
+            ),
+          };
+          chart.update("none"); // Update without animation
+        }
+      }
+    },
+    100,
+    { leading: true, trailing: false }
+  );
+
+  // Set step size for x-axis based on the range of the data
+  const totalTicks = 10;
+  const tickStepSize: number = +(
+    (Math.max(...buySideData.map((d) => d.x), ...sellSideData.map((d) => d.x)) -
+      Math.min(
+        ...buySideData.map((d) => d.x),
+        ...sellSideData.map((d) => d.x)
+      )) /
+    totalTicks
+  ).toPrecision(6);
 
   const options: ChartOptions<"line"> = {
     scales: {
@@ -54,6 +112,10 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
         title: {
           display: true,
           text: "Price",
+        },
+        grid: {
+          display: true, // Display vertical grid lines
+          color: "#363434", // Lighter color for vertical grid lines
         },
         type: "linear",
         position: "bottom",
@@ -70,17 +132,57 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
           // Customize x-axis ticks to show more decimals
           callback: function (val, index) {
             // Convert the value to a number and format it
-            return Number(val).toFixed(6);
+            return Number(val).toFixed(3);
           },
+          stepSize: tickStepSize,
         },
       },
       y: {
+        grid: {
+          display: false,
+        },
         beginAtZero: true,
       },
     },
+    onHover: (event: ChartEvent, chartElement: any, chart: any) => {
+      if (!event.native) return;
+
+      const nativeEvent = event.native as MouseEvent;
+      // Convert the mouse's pixel position to the corresponding value on the chart's x-axis.
+      const mouseXValue = chart.scales.x.getValueForPixel(nativeEvent.offsetX);
+
+      // Find the nearest data point to the cursor.
+      let nearestXValue: number | null = null; // Initialize as null to later check if found any point.
+      let minDistance = Infinity;
+
+      chart.data.datasets.forEach(
+        (dataset: { data: { x: number; y: number }[] }) => {
+          dataset.data.forEach((dataPoint) => {
+            const pointXValue =
+              typeof dataPoint === "object" ? dataPoint.x : dataPoint;
+            // Calculate the distance between the cursor and the data point.
+            const distance = Math.abs(mouseXValue - pointXValue);
+            // Check if this data point is closer than the previous closest one.
+            if (distance < minDistance) {
+              nearestXValue = pointXValue;
+              minDistance = distance;
+            }
+          });
+        }
+      );
+
+      if (nearestXValue !== null) {
+        // Update the hover line position.
+        updateHoverLine(chart, nearestXValue);
+      }
+    },
+
     plugins: {
       tooltip: {
         enabled: true,
+        mode: "nearest",
+        intersect: false,
+        axis: "x",
         callbacks: {
           // Customize tooltip labels to show precise values
           label: function (context) {
@@ -123,6 +225,7 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
               position: "start",
             },
           },
+          hoverLine: hoverAnnotation,
         },
       },
     },
@@ -139,7 +242,7 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
 
   return (
     <div style={{ height: "500px", width: "50em" }}>
-      <Line data={data} options={options} />
+      <Line ref={chartRef} data={data} options={options} />
     </div>
   );
 };
