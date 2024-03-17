@@ -51,3 +51,5 @@ lerna-debug.log*
 *.sln
 *.sw?
 *.pem
+
+./**/vitest.config.ts.timestamp-*.mjs

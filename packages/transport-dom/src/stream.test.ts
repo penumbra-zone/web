@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { JsonToMessage, MessageToJson } from './stream';
-import { createRegistry, Message, proto3 } from '@bufbuild/protobuf';
+import { createRegistry, JsonValue, Message, proto3 } from '@bufbuild/protobuf';
 
 import ReadableStream from '@penumbra-zone/polyfills/src/ReadableStream.from';
 
@@ -111,7 +111,10 @@ describe('Stream Transformers', () => {
   describe('MessageToJson', () => {
     test('transforms Message to JSON value', async () => {
       const jsonOptions = { typeRegistry };
-      const messageToJson = new MessageToJson(jsonOptions);
+      const messageToJson = new MessageToJson(jsonOptions) as unknown as ReadableWritablePair<
+        JsonValue,
+        SayRequest
+      >;
 
       const sayReqs = [
         new SayRequest({ sentence: "Let's see" }),
