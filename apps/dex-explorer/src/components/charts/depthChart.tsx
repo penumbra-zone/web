@@ -9,6 +9,8 @@ import { Line } from "react-chartjs-2";
 import annotationPlugin, { AnnotationOptions } from "chartjs-plugin-annotation";
 import { throttle } from "lodash";
 import { Chart } from "chart.js/auto";
+import { Text, VStack } from "@chakra-ui/react";
+import { Token } from "@/constants/tokenConstants";
 
 // Register the necessary components from chart.js
 ChartJS.register(...registerables, annotationPlugin);
@@ -16,14 +18,13 @@ ChartJS.register(...registerables, annotationPlugin);
 interface DepthChartProps {
   buySideData: { x: number; y: number }[];
   sellSideData: { x: number; y: number }[];
+  asset1Token: Token;
+  asset2Token: Token;
 }
 
-// TODO Fix midpoint line
-// TODO: Add second y axis on right side
-// TODO: Put units in
-
-const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
+const DepthChart = ({ buySideData, sellSideData, asset1Token, asset2Token }: DepthChartProps) => {
   const [isMouseOverChart, setIsMouseOverChart] = useState(false);
+  console.log(asset1Token, asset2Token)
 
   // Update hover line visibility based on mouse interaction
   const handleMouseOverChart = () => {
@@ -39,33 +40,36 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
   const chartRef = useRef<any>();
 
   console.log(buySideData, sellSideData, midMarketPrice);
-  const data = {
-    datasets: [
-      {
-        label: "Sell",
-        data: sellSideData.map((point) => ({
-          x: point.x.toFixed(6),
-          y: point.y.toFixed(6),
-        })),
-        // Red
-        borderColor: "rgba(255, 99, 132, 0.5)",
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
-        fill: "origin",
-        stepped: true,
-      },
-      {
-        label: "Buy",
-        data: buySideData
-          .map((point) => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) }))
-          .reverse(),
-        // Green
-        borderColor: "rgba(0, 255, 99, 0.5)",
-        backgroundColor: "rgba(0, 255, 99, 0.5)",
-        fill: "origin",
-        stepped: true,
-      },
-    ],
-  };
+    const data = {
+      datasets: [
+        {
+          label: "Sell",
+          data: sellSideData.map((point) => ({
+            x: point.x.toFixed(6),
+            y: point.y.toFixed(6),
+          })),
+          borderColor: "rgba(255, 73, 108, 0.6)", // Neon Red
+          backgroundColor: "rgba(255, 73, 108, 0.6)",
+          fill: "origin",
+          stepped: true,
+          yAxisID: "left-y",
+        },
+        {
+          label: "Buy",
+          data: buySideData
+            .map((point) => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) }))
+            .reverse(),
+          borderColor: "rgba(51, 255, 87, 0.6)", // Neon Green
+          backgroundColor: "rgba(51, 255, 87, 0.6)",
+          fill: "origin",
+          stepped: true,
+          yAxisID: "right-y",
+        },
+      ],
+    };
+
+
+
 
   /*
   const [hoverAnnotation, setHoverAnnotation] = useState<AnnotationOptions>({
@@ -124,7 +128,8 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
       x: {
         title: {
           display: true,
-          text: "Price",
+          text: `Price (${asset2Token.symbol})`,
+          padding: { top: 10 },
         },
         grid: {
           display: true, // Display vertical grid lines
@@ -150,11 +155,26 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
           stepSize: tickStepSize,
         },
       },
-      y: {
+      "left-y": {
+        type: "linear",
         grid: {
           display: false,
         },
         beginAtZero: true,
+        position: "left",
+      },
+      "right-y": {
+        type: "linear",
+        grid: {
+          display: false,
+        },
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: `${asset1Token.symbol}`,
+          padding: { bottom: 10 },
+        },
+        position: "right",
       },
     },
     // ! This line works but its not perfect
@@ -239,11 +259,12 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
             xMin: midMarketPrice,
             xMax: midMarketPrice,
             borderColor: "black",
-            borderWidth: 2,
+            borderWidth: 0,
             label: {
               display: true,
               content: `Mid Market Price: ${midMarketPrice.toFixed(6)}`,
-              position: "start",
+              position: "end",
+              backgroundColor: "#6e6eb8",
             },
           },
           //hoverLine: hoverAnnotation,
@@ -262,13 +283,17 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
   };
 
   return (
-    <div
-      style={{ height: "500px", width: "50em" }}
-      onMouseOver={handleMouseOverChart}
-      onMouseOut={handleMouseOutChart}
-    >
-      <Line ref={chartRef} data={data} options={options} />
-    </div>
+    <>
+      <VStack>
+        <div
+          style={{ height: "500px", width: "60em" }}
+          onMouseOver={handleMouseOverChart}
+          onMouseOut={handleMouseOutChart}
+        >
+          <Line ref={chartRef} data={data} options={options} />
+        </div>
+      </VStack>
+    </>
   );
 };
 
