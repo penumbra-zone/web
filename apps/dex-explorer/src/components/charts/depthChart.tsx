@@ -1,100 +1,143 @@
 import React from "react";
+import { Chart as ChartJS, ChartOptions, registerables } from "chart.js";
 import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Filler,
-  Legend,
-} from "chart.js";
+import annotationPlugin from "chartjs-plugin-annotation";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Filler,
-  Legend
-);
+// Register the necessary components from chart.js
+ChartJS.register(...registerables, annotationPlugin);
 
 interface DepthChartProps {
-  buySideData: {
-    x: number;
-    y: number;
-  }[];
-  sellSideData: {
-    x: number;
-    y: number;
-  }[];
+  buySideData: { x: number; y: number }[];
+  sellSideData: { x: number; y: number }[];
 }
 
 const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
-  console.log("chartData", buySideData, sellSideData);
+  // Trim down labels to be the same length based off of the shorter array
+  const minLength = Math.min(sellSideData.length, buySideData.length);
+  sellSideData = sellSideData.slice(0, minLength);
+  buySideData = buySideData.slice(0, minLength);
 
+  // Mid point is the middle of the price between the lowest sell and highest buy
+  const midMarketPrice = (sellSideData[0].x + buySideData[0].x) / 2;
+
+  console.log(buySideData, sellSideData, midMarketPrice)
   const data = {
-    labels: sellSideData
-      .map((point) => point.x.toFixed(2))
-      .concat(buySideData.map((point) => point.x.toFixed(2))),
     datasets: [
       {
-        label: "Sell Side",
-        data: sellSideData
-          .map((point) => point.y)
-          .concat(new Array(buySideData.length).fill(null)),
-        borderColor: "rgb(255, 99, 132)",
+        label: "Sell",
+        data: sellSideData.map((point) => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) })),
+        // Red
+        borderColor: "rgba(255, 99, 132, 0.5)", 
         backgroundColor: "rgba(255, 99, 132, 0.5)",
+        fill: "origin",
+        stepped: true,
       },
       {
-        label: "Buy Side",
-        data: new Array(sellSideData.length)
-          .fill(null)
-          .concat(buySideData.map((point) => point.y)),
-        borderColor: "rgb(54, 162, 235)",
-        backgroundColor: "rgba(54, 162, 235, 0.5)",
+        label: "Buy",
+        data: buySideData
+          .map((point) => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) }))
+          .reverse(),
+        // Green
+        borderColor: "rgba(0, 255, 99, 0.5)", 
+        backgroundColor: "rgba(0, 255, 99, 0.5)",
+        fill: "origin",
+        stepped: true,
       },
     ],
   };
+  console.log(data)
 
-  const options = {
+  const options: ChartOptions<"line"> = {
     scales: {
       x: {
         title: {
           display: true,
           text: "Price",
         },
+        type: "linear",
+        position: "bottom",
+        beginAtZero: false,
+        min: Math.min(
+          ...buySideData.map((d) => d.x),
+          ...sellSideData.map((d) => d.x)
+        ), // Ensure no whitespace on the left
+        max: Math.max(
+          ...buySideData.map((d) => d.x),
+          ...sellSideData.map((d) => d.x)
+        ), // Ensure no whitespace on the right
+        ticks: {
+          // Customize x-axis ticks to show more decimals
+          callback: function (val, index) {
+            // Convert the value to a number and format it
+            return Number(val).toFixed(6);
+          },
+        },
       },
       y: {
-        title: {
-          display: true,
-          text: "Liquidity",
-        },
         beginAtZero: true,
       },
     },
     plugins: {
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          // Customize tooltip labels to show precise values
+          label: function (context) {
+            let label = context.dataset.label || "";
+            if (label) {
+              label += ": ";
+            }
+            if (context.parsed.y !== null) {
+              label += context.parsed.y.toFixed(6); // Adjust for y value
+            }
+            if (context.parsed.x !== null) {
+              label += " at " + context.parsed.x.toFixed(6); // Adjust for x value
+            }
+            return label;
+          },
+          title: function (context) {
+            return `Price: ${context[0].parsed.x.toFixed(6)}`;
+          },
+        },
+      },
       legend: {
-        display: true,
+        display: false,
+      },
+      annotation: {
+        annotations: {
+          line1: {
+            type: "line",
+            yMin: 0,
+            yMax: Math.max(
+              ...sellSideData.map((p) => p.y),
+              ...buySideData.map((p) => p.y)
+            ),
+            xMin: midMarketPrice,
+            xMax: midMarketPrice,
+            borderColor: "black",
+            borderWidth: 2,
+            label: {
+              display: true,
+              content: `Mid Market Price: ${midMarketPrice.toFixed(6)}`,
+              position: "start",
+            },
+          },
+        },
       },
     },
     elements: {
-      line: {
-        tension: 0.3, // Reduces the curve of the line
-      },
       point: {
-        radius: 0, // Reduces the size of the point marker
+        radius: 1, // Keep the small radius for points
+      },
+      line: {
+        tension: 0, // Straight lines
       },
     },
     maintainAspectRatio: false,
   };
 
   return (
-    <div style={{ height: "300px", width: "600px" }}>
+    <div style={{ height: "500px", width: "50em" }}>
       <Line data={data} options={options} />
     </div>
   );
