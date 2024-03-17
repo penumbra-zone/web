@@ -549,7 +549,7 @@ export default function TradingPairs() {
                     fontFamily="monospace"
                     paddingBottom={"1em"}
                     fontSize={"md"}
-                  >{`${asset1Token!.symbol} / ${asset2Token!.symbol} Synthetic Liquidity`}</Text>
+                  >{`${asset1Token!.symbol} / ${asset2Token!.symbol}`}</Text>
                   {/* Note the reversal of names here since buy and sell side is inverted at this stage (i.e. sell side == buy demand side) */}
                   <DepthChart
                     buySideData={depthChartMultiHopAsset1SellPoints}
@@ -565,7 +565,7 @@ export default function TradingPairs() {
                     fontFamily="monospace"
                     paddingBottom={"1em"}
                     fontSize={"md"}
-                  >{`${asset1Token!.symbol} / ${asset2Token!.symbol} Direct Liquidity`}</Text>
+                  >{`${asset1Token!.symbol} / ${asset2Token!.symbol}`}</Text>
                   <DepthChart
                     buySideData={depthChartSingleHopAsset1SellPoints}
                     sellSideData={depthChartSingleHopAsset1BuyPoints}
