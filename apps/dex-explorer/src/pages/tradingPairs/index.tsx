@@ -44,6 +44,13 @@ export default function TradingPairs() {
 
   const [asset1Token, setAsset1Token] = useState<Token | undefined>();
   const [asset2Token, setAsset2Token] = useState<Token | undefined>();
+  const [singleHop, setSingleHop] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (searchParams.get("singleHop") !== null) {
+      setSingleHop(true);
+    }
+  }, [searchParams]);
 
   // Sell Side
   const [
@@ -382,7 +389,7 @@ export default function TradingPairs() {
       }
     });
 
-    // Do it all again for the buy side :) 
+    // Do it all again for the buy side :)
     //! Maybe theres a way to refactor this to be more concise
     let bestAsset1BuyPriceMultiHop: number | undefined;
     let bestAsset1BuyPriceSingleHop: number | undefined;
@@ -405,7 +412,7 @@ export default function TradingPairs() {
         Number(BigInt(10 ** asset1Token.decimals));
 
       // ! Important to note that the price is inverted here, so we do input/output instead of output/input
-      const price: number = inputValue/ outputValue ;
+      const price: number = inputValue / outputValue;
 
       // First trace will have best price, so set only on first iteration
       if (trace === simulatedMultiHopAsset1BuyData!.traces[0]) {
@@ -535,18 +542,39 @@ export default function TradingPairs() {
         <Center height="100vh">
           <Box className="neon-box" padding={"3em"}>
             <VStack>
-              <Text
-                fontFamily="monospace"
-                paddingBottom={"1em"}
-                fontSize={"md"}
-              >{`${asset1Token!.symbol} / ${asset2Token!.symbol}`}</Text>
-              {/* Note the reversal of names here since buy and sell side is inverted at this stage (i.e. sell side == buy demand side) */}
-              <DepthChart
-                buySideData={depthChartMultiHopAsset1SellPoints}
-                sellSideData={depthChartMultiHopAsset1BuyPoints}
-                asset1Token={asset1Token!}
-                asset2Token={asset2Token!}
-              />
+              {/* Check if singleHop flag is present */}
+              {!singleHop ? (
+                <>
+                  <Text
+                    fontFamily="monospace"
+                    paddingBottom={"1em"}
+                    fontSize={"md"}
+                  >{`${asset1Token!.symbol} / ${asset2Token!.symbol} Synthetic Liquidity`}</Text>
+                  {/* Note the reversal of names here since buy and sell side is inverted at this stage (i.e. sell side == buy demand side) */}
+                  <DepthChart
+                    buySideData={depthChartMultiHopAsset1SellPoints}
+                    sellSideData={depthChartMultiHopAsset1BuyPoints}
+                    asset1Token={asset1Token!}
+                    asset2Token={asset2Token!}
+                  />
+                </>
+              ) : 
+              (
+                <>
+                  <Text
+                    fontFamily="monospace"
+                    paddingBottom={"1em"}
+                    fontSize={"md"}
+                  >{`${asset1Token!.symbol} / ${asset2Token!.symbol} Direct Liquidity`}</Text>
+                  <DepthChart
+                    buySideData={depthChartSingleHopAsset1SellPoints}
+                    sellSideData={depthChartSingleHopAsset1BuyPoints}
+                    asset1Token={asset1Token!}
+                    asset2Token={asset2Token!}
+                  />
+                </>
+              )
+              }
             </VStack>
           </Box>
         </Center>
