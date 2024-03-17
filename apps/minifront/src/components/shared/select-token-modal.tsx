@@ -8,8 +8,8 @@ import {
   DialogTrigger,
   Input,
 } from '@penumbra-zone/ui';
-import { cn } from '@penumbra-zone/ui/lib/utils';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { cn } from '@penumbra-zone/ui/utils';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/tx-view/value';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
 

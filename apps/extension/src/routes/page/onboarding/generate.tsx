@@ -12,7 +12,7 @@ import {
   FadeTransition,
   Input,
 } from '@penumbra-zone/ui';
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/utils';
 import { useCountdown } from 'usehooks-ts';
 import { useStore } from '../../../state';
 import { generateSelector } from '../../../state/seed-phrase/generate';

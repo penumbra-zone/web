@@ -1,4 +1,4 @@
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/utils';
 import { headerLinks } from './constants';
 import { Link } from 'react-router-dom';
 import { usePagePath } from '../../fetchers/page-path';

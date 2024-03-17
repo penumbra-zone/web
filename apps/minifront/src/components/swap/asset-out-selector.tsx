@@ -1,12 +1,12 @@
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTrigger } from '@penumbra-zone/ui';
-import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
+import { AssetIcon } from '@penumbra-zone/ui/components/tx-view/asset-icon';
 import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { localAssets } from '@penumbra-zone/constants/src/assets';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/tx-view/value';
 
 interface AssetOutSelectorProps {
   balances: BalancesResponse[];
