@@ -23,6 +23,17 @@ interface DepthChartProps {
 // TODO: Put units in
 
 const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
+  const [isMouseOverChart, setIsMouseOverChart] = useState(false);
+
+  // Update hover line visibility based on mouse interaction
+  const handleMouseOverChart = () => {
+    setIsMouseOverChart(true);
+  };
+
+  const handleMouseOutChart = () => {
+    setIsMouseOverChart(false);
+  };
+
   // Mid point is the middle of the price between the lowest sell and highest buy
   const midMarketPrice = (sellSideData[0].x + buySideData[0].x) / 2;
   const chartRef = useRef<any>();
@@ -56,6 +67,7 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
     ],
   };
 
+  /*
   const [hoverAnnotation, setHoverAnnotation] = useState<AnnotationOptions>({
     type: "line",
     scaleID: "x-axis-0",
@@ -94,6 +106,7 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
     100,
     { leading: true, trailing: false }
   );
+  */
 
   // Set step size for x-axis based on the range of the data
   const totalTicks = 10;
@@ -144,12 +157,20 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
         beginAtZero: true,
       },
     },
+    // ! This line works but its not perfect
+    /*
     onHover: (event: ChartEvent, chartElement: any, chart: any) => {
       if (!event.native) return;
 
       const nativeEvent = event.native as MouseEvent;
       // Convert the mouse's pixel position to the corresponding value on the chart's x-axis.
       const mouseXValue = chart.scales.x.getValueForPixel(nativeEvent.offsetX);
+
+      // Hide the hover line if the mouse is not over the chart
+      if (!isMouseOverChart) {
+        updateHoverLine(chart, null);
+        return;
+      }
 
       // Find the nearest data point to the cursor.
       let nearestXValue: number | null = null; // Initialize as null to later check if found any point.
@@ -176,7 +197,7 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
         updateHoverLine(chart, nearestXValue);
       }
     },
-
+    */
     plugins: {
       tooltip: {
         enabled: true,
@@ -191,7 +212,7 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
               label += ": ";
             }
             if (context.parsed.y !== null) {
-              label += context.parsed.y.toFixed(6); // Adjust for y value
+              label += context.parsed.y.toFixed(3); // Adjust for y value
             }
             if (context.parsed.x !== null) {
               label += " at " + context.parsed.x.toFixed(6); // Adjust for x value
@@ -225,7 +246,7 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
               position: "start",
             },
           },
-          hoverLine: hoverAnnotation,
+          //hoverLine: hoverAnnotation,
         },
       },
     },
@@ -241,7 +262,11 @@ const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
   };
 
   return (
-    <div style={{ height: "500px", width: "50em" }}>
+    <div
+      style={{ height: "500px", width: "50em" }}
+      onMouseOver={handleMouseOverChart}
+      onMouseOut={handleMouseOutChart}
+    >
       <Line ref={chartRef} data={data} options={options} />
     </div>
   );
