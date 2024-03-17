@@ -26,6 +26,7 @@ import { LoadingSpinner } from "../../components/util/loadingSpinner";
 import { Token, tokenConfigMapOnSymbol } from "@/constants/tokenConstants";
 import { base64ToUint8Array } from "@/utils/math/base64";
 import { joinLoHi, splitLoHi } from "@/utils/math/hiLo";
+import DepthChart from "@/components/charts/depthChart";
 
 // ! Important note: 'sell' side here refers to selling asset1 for asset2, so its really DEMAND for buying asset 1, anc vice versa for 'buy' side
 
@@ -516,7 +517,11 @@ export default function TradingPairs() {
         simulatedSingleHopAsset1BuyData ? (
         <Center height="100vh">
           <Box className="neon-box" padding={"3em"}>
-            {/* Liqudity Price Graph */}
+            {/* Note the reversal of names here since buy and sell side is inverted at this stage (i.e. sell side == buy demand side) */}
+            <DepthChart
+              buySideData={depthChartMultiHopAsset1SellPoints}
+              sellSideData={depthChartMultiHopAsset1BuyPoints}
+            />
           </Box>
         </Center>
       ) : (!isLoading && token1Symbol !== "unknown") ||
