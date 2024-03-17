@@ -11,15 +11,21 @@ interface DepthChartProps {
   sellSideData: { x: number; y: number }[];
 }
 
-const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
-  // Mid point is the middle of the price between the lowest sell and highest buy
-  const midMarketPrice = (sellSideData[0].x + buySideData[0].x) / 2;
+// TODO: hide horizontal grid lines, only vertical ones, and lighter color
+// TODO: space out the x-axis labels at a fixed interval
+// TODO Fix midpoint line
+// TODO: Add second y axis on right side
+// TODO: Put units in
 
-  console.log(buySideData, sellSideData, midMarketPrice)
-  const data = {
-    datasets: [
-      {
-        label: "Sell",
+const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
+    // Mid point is the middle of the price between the lowest sell and highest buy
+    const midMarketPrice = (sellSideData[0].x + buySideData[0].x) / 2;
+    
+    console.log(buySideData, sellSideData, midMarketPrice)
+    const data = {
+      datasets: [
+        {
+          label: "Sell",
         data: sellSideData.map((point) => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) })),
         // Red
         borderColor: "rgba(255, 99, 132, 0.5)", 
