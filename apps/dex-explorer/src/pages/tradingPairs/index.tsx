@@ -39,9 +39,9 @@ export default function TradingPairs() {
   const searchParams = useSearchParams();
 
   const token1Symbol =
-    searchParams.get("tokenIn")?.toLocaleLowerCase() || "unknown";
+    searchParams.get("baseToken")?.toLocaleLowerCase() || "unknown";
   const token2Symbol =
-    searchParams.get("tokenOut")?.toLocaleLowerCase() || "unknown";
+    searchParams.get("quoteToken")?.toLocaleLowerCase() || "unknown";
 
   const [asset1Token, setAsset1Token] = useState<Token | undefined>();
   const [asset2Token, setAsset2Token] = useState<Token | undefined>();
@@ -93,8 +93,8 @@ export default function TradingPairs() {
   ] = useState<{ x: number; y: number }[]>([]);
 
   // ! Note this needs to be kind of extreme for now due to limited 'real' liquidity
-  // TODO: Maybe make this configurable, for now it will only show 30% of depth chart past best sell/buy prices
-  const bestPriceDeviationPercent = 30; // 30%,
+  // TODO: Maybe make this configurable, for now it will only show 50% of depth chart past best sell/buy prices
+  const bestPriceDeviationPercent = 50; // 50%,
 
   // Sell Side
   const [bestAsset1SellPriceMultiHop, setBestAsset1SellPriceMultiHop] =
