@@ -12,11 +12,6 @@ interface DepthChartProps {
 }
 
 const DepthChart = ({ buySideData, sellSideData }: DepthChartProps) => {
-  // Trim down labels to be the same length based off of the shorter array
-  const minLength = Math.min(sellSideData.length, buySideData.length);
-  sellSideData = sellSideData.slice(0, minLength);
-  buySideData = buySideData.slice(0, minLength);
-
   // Mid point is the middle of the price between the lowest sell and highest buy
   const midMarketPrice = (sellSideData[0].x + buySideData[0].x) / 2;
 
