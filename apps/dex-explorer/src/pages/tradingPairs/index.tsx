@@ -501,12 +501,14 @@ export default function TradingPairs() {
   }, [
     simulatedMultiHopAsset1SellData,
     simulatedSingleHopAsset1SellData,
+    simulatedMultiHopAsset1BuyData,
+    simulatedSingleHopAsset1BuyData,
     asset1Token,
     asset2Token,
   ]);
 
   return (
-    <Layout pageTitle={`${token1Symbol}/${token2Symbol}`}>
+    <Layout pageTitle={`Trading View`}>
       {isLoading ? (
         <Center height="100vh">
           <LoadingSpinner />
