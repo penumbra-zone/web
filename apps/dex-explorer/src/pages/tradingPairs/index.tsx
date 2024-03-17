@@ -28,10 +28,13 @@ import { base64ToUint8Array } from "@/utils/math/base64";
 import { joinLoHi, splitLoHi } from "@/utils/math/hiLo";
 import DepthChart from "@/components/charts/depthChart";
 
-// ! Important note: 'sell' side here refers to selling asset1 for asset2, so its really DEMAND for buying asset 1, anc vice versa for 'buy' side
+// TODO: Graph
+// TODO: Better parameter check
 
+// ! Important note: 'sell' side here refers to selling asset1 for asset2, so its really DEMAND for buying asset 1, anc vice versa for 'buy' side
 export default function TradingPairs() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isChartLoading, setIsChartLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
   const searchParams = useSearchParams();
 
@@ -107,8 +110,8 @@ export default function TradingPairs() {
     useState<number | undefined>(undefined);
 
   // TODO: Decide how to set this more intelligently/dynamically
-  const unitsToSimulateSelling = 100000; // 10k units
-  const unitsToSimulateBuying = 100000; // 10k units
+  const unitsToSimulateSelling = 1000000; // 1M units
+  const unitsToSimulateBuying = 1000000; // 1M units
 
   useEffect(() => {
     setIsLoading(true);
@@ -274,7 +277,7 @@ export default function TradingPairs() {
   }, [token1Symbol, token2Symbol]);
 
   useEffect(() => {
-    setIsLoading(true);
+    setIsChartLoading(true);
 
     if (
       !simulatedMultiHopAsset1SellData ||
@@ -478,6 +481,12 @@ export default function TradingPairs() {
       }
     });
 
+    // Set all of the stateful data
+    setDepthChartMultiHopAsset1SellPoints(depthChartMultiHopAsset1SellPoints);
+    setDepthChartSingleHopAsset1SellPoints(depthChartSingleHopAsset1SellPoints);
+    setDepthChartMultiHopAsset1BuyPoints(depthChartMultiHopAsset1BuyPoints);
+    setDepthChartSingleHopAsset1BuyPoints(depthChartSingleHopAsset1BuyPoints);
+
     // print to debug
     console.log(
       "depthChartMultiHopAsset1SellPoints",
@@ -497,7 +506,14 @@ export default function TradingPairs() {
       depthChartSingleHopAsset1BuyPoints
     );
 
-    setIsLoading(false);
+    if (
+      depthChartMultiHopAsset1SellPoints.length > 0 &&
+      depthChartSingleHopAsset1SellPoints.length > 0 &&
+      depthChartMultiHopAsset1BuyPoints.length > 0 &&
+      depthChartSingleHopAsset1BuyPoints.length > 0
+    ) {
+      setIsChartLoading(false);
+    }
   }, [
     simulatedMultiHopAsset1SellData,
     simulatedSingleHopAsset1SellData,
@@ -509,7 +525,7 @@ export default function TradingPairs() {
 
   return (
     <Layout pageTitle={`Trading View`}>
-      {isLoading ? (
+      {isLoading || isChartLoading ? (
         <Center height="100vh">
           <LoadingSpinner />
         </Center>
