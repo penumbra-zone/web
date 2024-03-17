@@ -577,7 +577,7 @@ export default function TradingPairs() {
                     fontFamily="monospace"
                     paddingBottom={"1em"}
                   >
-                    Synthetic Liquidity
+                    Direct Liquidity
                   </Text>
                   <DepthChart
                     buySideData={depthChartSingleHopAsset1SellPoints}
