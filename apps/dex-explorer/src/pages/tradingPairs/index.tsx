@@ -488,6 +488,25 @@ export default function TradingPairs() {
     });
 
     // Set all of the stateful data
+    // ! First update depth and sell charts to show CUMULTAIVE liquidity (y) of all points before them
+    for (let i = 1; i < depthChartMultiHopAsset1SellPoints.length; i++) {
+      depthChartMultiHopAsset1SellPoints[i].y +=
+        depthChartMultiHopAsset1SellPoints[i - 1].y;
+    }
+    for (let i = 1; i < depthChartSingleHopAsset1SellPoints.length; i++) {
+      depthChartSingleHopAsset1SellPoints[i].y +=
+        depthChartSingleHopAsset1SellPoints[i - 1].y;
+    }
+    for (let i = 1; i < depthChartMultiHopAsset1BuyPoints.length; i++) {
+      depthChartMultiHopAsset1BuyPoints[i].y +=
+        depthChartMultiHopAsset1BuyPoints[i - 1].y;
+    }
+    for (let i = 1; i < depthChartSingleHopAsset1BuyPoints.length; i++) {
+      depthChartSingleHopAsset1BuyPoints[i].y +=
+        depthChartSingleHopAsset1BuyPoints[i - 1].y;
+    }
+
+
     setDepthChartMultiHopAsset1SellPoints(depthChartMultiHopAsset1SellPoints);
     setDepthChartSingleHopAsset1SellPoints(depthChartSingleHopAsset1SellPoints);
     setDepthChartMultiHopAsset1BuyPoints(depthChartMultiHopAsset1BuyPoints);
