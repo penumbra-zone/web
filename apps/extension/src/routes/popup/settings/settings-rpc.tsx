@@ -7,7 +7,7 @@ import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition'
 import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { useChainIdQuery } from '../../../hooks/chain-id';
 import { ShareGradientIcon } from '../../../icons';
-import { SettingsHeader } from '../../../shared';
+import { SettingsHeader } from '../../../shared/components/settings-header';
 import { useStore } from '../../../state';
 import { networkSelector } from '../../../state/network';
 import '@penumbra-zone/polyfills/src/Promise.withResolvers';

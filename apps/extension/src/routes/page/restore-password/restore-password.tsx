@@ -12,7 +12,7 @@ import { useStore } from '../../../state';
 import { importSelector } from '../../../state/seed-phrase/import';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { ImportForm } from '../../../shared';
+import { ImportForm } from '../../../shared/containers/import-form';
 
 export const RestorePassword = () => {
   const navigate = usePageNav();

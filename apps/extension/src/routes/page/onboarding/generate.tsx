@@ -18,7 +18,7 @@ import { useStore } from '../../../state';
 import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { WordLengthToogles } from '../../../shared';
+import { WordLengthToogles } from '../../../shared/containers/word-length-toogles';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();

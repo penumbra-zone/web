@@ -1,5 +1,6 @@
 import { TrashIcon } from '@radix-ui/react-icons';
-import { CustomLink, SettingsHeader } from '../../../shared';
+import { CustomLink } from '../../../shared/components/link';
+import { SettingsHeader } from '../../../shared/components/settings-header';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
 import { DashboardGradientIcon } from '../../../icons';

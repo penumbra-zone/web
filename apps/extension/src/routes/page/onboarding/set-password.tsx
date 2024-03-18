@@ -14,7 +14,7 @@ import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition'
 import { useOnboardingSave } from '../../../hooks/onboarding';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { PasswordInput } from '../../../shared';
+import { PasswordInput } from '../../../shared/components/password-input';
 
 export const SetPassword = () => {
   const navigate = usePageNav();
