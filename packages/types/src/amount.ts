@@ -33,7 +33,7 @@ export const subtractAmounts = (minuend: Amount, subtrahend: Amount): Amount => 
   const joinedMinuend = joinLoHiAmount(minuend);
   const joinedSubtrahend = joinLoHiAmount(subtrahend);
 
-  if (joinedSubtrahend > joinedMinuend) throw new Error('Amount cannot be negative ');
+  if (joinedSubtrahend > joinedMinuend) throw new Error('Amount cannot be negative');
 
   const joined = joinedMinuend - joinedSubtrahend;
   const { lo, hi } = splitLoHi(joined);
@@ -46,9 +46,7 @@ export const divideAmounts = (dividend: Amount, divider: Amount): BigNumber => {
   const joinedDividend = new BigNumber(joinLoHiAmount(dividend).toString());
   const joinedDivider = new BigNumber(joinLoHiAmount(divider).toString());
 
-  const bigNumber = joinedDividend.dividedBy(joinedDivider);
-  console.log(bigNumber);
-  return bigNumber;
+  return joinedDividend.dividedBy(joinedDivider);
 };
 
 // This function takes a number and formats it in a display-friendly way (en-US locale)
