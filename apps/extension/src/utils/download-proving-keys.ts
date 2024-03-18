@@ -16,6 +16,13 @@ const main = () => {
   const downloads = Object.values(provingKeys).map(async name => {
     const file = `${name}_pk.bin`;
     const outputPath = path.join(binDir, file);
+
+    // Check if the file already exists
+    if (fs.existsSync(outputPath)) {
+      console.log(`${file} already downloaded.`);
+      return;
+    }
+
     const downloadPath = new URL(`${githubSourceDir}${file}`);
 
     const response = await fetch(downloadPath);
