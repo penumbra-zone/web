@@ -114,9 +114,14 @@ export default (env, argv) => {
       new CopyPlugin({
         patterns: [
           { from: 'public', to: '.' },
-          { from: 'bin', to: 'bin', context: path.resolve(__dirname, '../../packages/wasm'), noErrorOnMissing: true },
+          {
+            from: 'bin',
+            to: 'bin',
+            context: path.resolve(__dirname, '../../packages/wasm'),
+            noErrorOnMissing: true,
+          },
         ],
-      }),      
+      }),
       // html entry points
       new HtmlWebpackPlugin({
         favicon: 'public/icon.png',
