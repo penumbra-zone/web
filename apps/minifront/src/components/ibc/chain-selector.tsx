@@ -1,9 +1,9 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@penumbra-zone/ui';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useState } from 'react';
-import { useStore } from '../../../state';
-import { ibcSelector } from '../../../state/ibc';
 import { testnetIbcChains } from '@penumbra-zone/constants/src/chains';
+import { useStore } from '../../state';
+import { ibcSelector } from '../../state/ibc';
 
 export const ChainSelector = () => {
   const { chain, setChain } = useStore(ibcSelector);
@@ -34,7 +34,7 @@ export const ChainSelector = () => {
               key={index}
               value={i.displayName}
               className={cn(
-                'hover:bg-brown ',
+                'hover:bg-brown',
                 chain?.displayName === i.displayName && 'bg-charcoal-secondary',
               )}
             >
