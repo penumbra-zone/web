@@ -22,9 +22,14 @@ interface DepthChartProps {
   asset2Token: Token;
 }
 
-const DepthChart = ({ buySideData, sellSideData, asset1Token, asset2Token }: DepthChartProps) => {
+const DepthChart = ({
+  buySideData,
+  sellSideData,
+  asset1Token,
+  asset2Token,
+}: DepthChartProps) => {
   const [isMouseOverChart, setIsMouseOverChart] = useState(false);
-  console.log(asset1Token, asset2Token)
+  console.log(asset1Token, asset2Token);
 
   // Update hover line visibility based on mouse interaction
   const handleMouseOverChart = () => {
@@ -39,35 +44,61 @@ const DepthChart = ({ buySideData, sellSideData, asset1Token, asset2Token }: Dep
   const midMarketPrice = (sellSideData[0].x + buySideData[0].x) / 2;
   const chartRef = useRef<any>();
 
+  // Add an extra data point at the end of the buy dataset
+  const lastBuyPoint = buySideData[buySideData.length - 1];
+  const extendedBuySideData = [
+    ...buySideData,
+    {
+      x:
+        lastBuyPoint.x +
+        (lastBuyPoint.x - buySideData[0].x),
+      y: lastBuyPoint.y,
+    },
+  ];
+
+  // Add an extra data point at the end of the sell dataset
+  const lastSellPoint = sellSideData[sellSideData.length - 1];
+  const extendedSellSideData = [
+    ...sellSideData,
+    {
+      x:
+        lastSellPoint.x +
+        (lastSellPoint.x - sellSideData[0].x),
+      y: lastSellPoint.y,
+    },
+  ];
+
   console.log(buySideData, sellSideData, midMarketPrice);
-    const data: any = {
-      datasets: [
-        {
-          label: "Sell",
-          data: sellSideData.map((point) => ({
-            x: point.x.toFixed(6),
-            y: point.y.toFixed(6),
-          })),
-          borderColor: "rgba(255, 73, 108, 0.6)", // Neon Red
-          backgroundColor: "rgba(255, 73, 108, 0.6)",
-          fill: "origin",
-          stepped: "before",
-          yAxisID: "left-y",
-        },
-        {
-          label: "Buy",
-          data: buySideData
-            .map((point) => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) }))
-            .reverse(),
-          borderColor: "rgba(51, 255, 87, 0.6)", // Neon Green
-          backgroundColor: "rgba(51, 255, 87, 0.6)",
-          fill: "origin",
-          // horizontal lines on buy side need to start at point on right and continue to the left
-          stepped: "after",
-          yAxisID: "right-y",
-        },
-      ],
-    };
+  const data: any = {
+    datasets: [
+      {
+        label: "Sell",
+        data: extendedSellSideData.map((point) => ({
+          x: point.x.toFixed(6),
+          y: point.y.toFixed(6),
+        })),
+        borderColor: "rgba(255, 73, 108, 0.6)", // Neon Red
+        backgroundColor: "rgba(255, 73, 108, 0.6)",
+        fill: "origin",
+        stepped: "before",
+        yAxisID: "left-y",
+        clip: true,
+      },
+      {
+        label: "Buy",
+        data: extendedBuySideData
+          .map((point) => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) }))
+          .reverse(),
+        borderColor: "rgba(51, 255, 87, 0.6)", // Neon Green
+        backgroundColor: "rgba(51, 255, 87, 0.6)",
+        fill: "origin",
+        // horizontal lines on buy side need to start at point on right and continue to the left
+        stepped: "after",
+        yAxisID: "right-y",
+        clip: true,
+      },
+    ],
+  };
 
   /*
   const [hoverAnnotation, setHoverAnnotation] = useState<AnnotationOptions>({
@@ -161,6 +192,14 @@ const DepthChart = ({ buySideData, sellSideData, asset1Token, asset2Token }: Dep
   }
 
   const maxY = calculateMaxY(maxLiquidity);
+  const xValues = [
+    ...buySideData.map((d) => d.x),
+    ...sellSideData.map((d) => d.x),
+  ];
+  const minXValue = Math.min(...xValues);
+  const maxXValue = Math.max(...xValues);
+  const xRange = maxXValue - minXValue;
+  const padding = xRange * 0.05;
 
   const options: ChartOptions<"line"> = {
     scales: {
@@ -177,14 +216,8 @@ const DepthChart = ({ buySideData, sellSideData, asset1Token, asset2Token }: Dep
         type: "linear",
         position: "bottom",
         beginAtZero: false,
-        min: Math.min(
-          ...buySideData.map((d) => d.x),
-          ...sellSideData.map((d) => d.x)
-        ), // Ensure no whitespace on the left
-        max: Math.max(
-          ...buySideData.map((d) => d.x),
-          ...sellSideData.map((d) => d.x)
-        ), // Ensure no whitespace on the right
+        min: minXValue - padding,
+        max: maxXValue + padding,
         ticks: {
           // Customize x-axis ticks to show more decimals
           callback: function (val, index) {
@@ -215,7 +248,7 @@ const DepthChart = ({ buySideData, sellSideData, asset1Token, asset2Token }: Dep
           padding: { bottom: 10 },
         },
         position: "right",
-        max: maxY
+        max: maxY,
       },
     },
     // ! This line works but its not perfect
