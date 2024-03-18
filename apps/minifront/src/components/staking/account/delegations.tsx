@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import { AllSlices } from '../../../state';
 import { DelegationValueView } from './delegation-value-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
@@ -23,17 +24,24 @@ export const Delegations = () => {
 
   return (
     <div className='mt-8 flex flex-col gap-8'>
-      {delegations.map(delegation => (
-        <DelegationValueView
-          key={bech32IdentityKey(getIdentityKeyFromValueView(delegation))}
-          valueView={delegation}
-          unstakedTokens={unstakedTokens}
-          votingPowerAsIntegerPercentage={getVotingPowerAsIntegerPercentage(
-            votingPowerByValidatorInfo,
-            delegation,
-          )}
-        />
-      ))}
+      <AnimatePresence>
+        {delegations.map(delegation => (
+          <motion.div
+            key={bech32IdentityKey(getIdentityKeyFromValueView(delegation))}
+            layout
+            className='bg-charcoal'
+          >
+            <DelegationValueView
+              valueView={delegation}
+              unstakedTokens={unstakedTokens}
+              votingPowerAsIntegerPercentage={getVotingPowerAsIntegerPercentage(
+                votingPowerByValidatorInfo,
+                delegation,
+              )}
+            />
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 };
