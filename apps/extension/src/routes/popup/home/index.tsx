@@ -1,4 +1,4 @@
-import { SelectAccount } from '@penumbra-zone/ui';
+import { SelectAccount } from '@penumbra-zone/ui/components/ui/select-account';
 import { IndexHeader } from './index-header';
 import { useStore } from '../../../state';
 import { BlockSync } from './block-sync';

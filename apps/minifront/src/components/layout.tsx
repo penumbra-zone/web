@@ -2,7 +2,7 @@ import { LoaderFunction, Outlet, useLoaderData } from 'react-router-dom';
 import { getChainId } from '../fetchers/chain-id';
 import { HeadTag } from './metadata/head-tag';
 import { Header } from './header/header';
-import { Toaster } from '@penumbra-zone/ui';
+import { Toaster } from '@penumbra-zone/ui/components/ui/toaster';
 import '@penumbra-zone/ui/styles/globals.css';
 import { ExtensionNotConnected } from './extension-not-connected';
 import { ExtensionNotInstalled } from './extension-not-installed';

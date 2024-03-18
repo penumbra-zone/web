@@ -1,4 +1,4 @@
-import { Sheet, SheetContent, SheetHeader, SheetTrigger } from '@penumbra-zone/ui';
+import { Sheet, SheetContent, SheetHeader, SheetTrigger } from '@penumbra-zone/ui/components/ui/sheet';
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { headerLinks } from './constants';
 import { Link } from 'react-router-dom';

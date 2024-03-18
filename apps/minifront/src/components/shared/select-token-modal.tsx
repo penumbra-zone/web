@@ -1,13 +1,13 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
+import { Input } from '@penumbra-zone/ui/components/ui/input';
 import {
   Dialog,
   DialogClose,
   DialogContent,
   DialogHeader,
-  DialogTrigger,
-  Input,
-} from '@penumbra-zone/ui';
+  DialogTrigger
+} from '@penumbra-zone/ui/components/ui/dialog';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';

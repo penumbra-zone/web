@@ -1,4 +1,4 @@
-import { FadeTransition } from '@penumbra-zone/ui';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { EyeGradientIcon, FileTextIcon } from '../../../icons';
 import { CustomLink, SettingsHeader } from '../../../shared';
 import { usePopupNav } from '../../../utils/navigate';

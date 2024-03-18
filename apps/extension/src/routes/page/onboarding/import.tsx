@@ -1,13 +1,13 @@
+import { BackIcon } from '@penumbra-zone/ui/components/ui/back-icon';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import {
-  BackIcon,
-  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  FadeTransition,
-} from '@penumbra-zone/ui';
+} from '@penumbra-zone/ui/components/ui/card';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useStore } from '../../../state';
 import { importSelector } from '../../../state/seed-phrase/import';

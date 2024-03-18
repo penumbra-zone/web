@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui/components/ui/table';
 import { Oval } from 'react-loader-spinner';
 import { ValidatorInfoRow } from './validator-info-row';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';

@@ -1,4 +1,4 @@
-import { Button } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { useEffect } from 'react';
 import { useCountdown } from 'usehooks-ts';
 

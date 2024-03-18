@@ -1,13 +1,13 @@
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  CompressedVideoLogo,
-  FadeTransition,
-} from '@penumbra-zone/ui';
+} from '@penumbra-zone/ui/components/ui/card';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
+import { CompressedVideoLogo } from '@penumbra-zone/ui/components/ui/logo/compressed-video';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 

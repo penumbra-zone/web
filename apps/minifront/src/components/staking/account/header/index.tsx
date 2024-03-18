@@ -1,12 +1,14 @@
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import {
-  Button,
   Card,
-  CardContent,
+  CardContent
+} from '@penumbra-zone/ui/components/ui/card';
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@penumbra-zone/ui';
+} from '@penumbra-zone/ui/components/ui/tooltip';
 import { AccountSwitcher } from '@penumbra-zone/ui/components/ui/account-switcher';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { Stat } from './stat';

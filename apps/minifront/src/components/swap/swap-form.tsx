@@ -1,4 +1,4 @@
-import { Button } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import InputToken from '../shared/input-token';
 import { useLoaderData } from 'react-router-dom';
 import { useStore } from '../../state';

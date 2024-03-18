@@ -6,7 +6,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from '@penumbra-zone/ui';
+} from '@penumbra-zone/ui/components/ui/navigation-menu';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { headerLinks, transactionLink } from './constants';

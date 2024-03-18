@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@penumbra-zone/ui/components/ui/table';
 import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
 import { getAllTransactions, TransactionSummary } from '../../fetchers/transactions';
 import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';

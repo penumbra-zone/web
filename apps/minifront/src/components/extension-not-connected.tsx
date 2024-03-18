@@ -1,4 +1,5 @@
-import { Button, SplashPage } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
 import { HeadTag } from './metadata/head-tag';
 
 import { requestPraxConnection } from '@penumbra-zone/client';

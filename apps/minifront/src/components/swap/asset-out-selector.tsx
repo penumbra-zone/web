@@ -1,4 +1,4 @@
-import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTrigger } from '@penumbra-zone/ui';
+import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTrigger } from '@penumbra-zone/ui/components/ui/dialog';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 import {
   Metadata,

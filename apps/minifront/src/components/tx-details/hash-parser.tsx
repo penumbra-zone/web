@@ -1,11 +1,11 @@
 import {
-  JsonViewer,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-  TransactionViewComponent,
-} from '@penumbra-zone/ui';
+} from '@penumbra-zone/ui/components/ui/tabs';
+import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
+import { TransactionViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/transaction';
 import { TxDetailsLoaderResult } from '.';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';

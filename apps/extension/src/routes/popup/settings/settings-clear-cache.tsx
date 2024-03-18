@@ -1,5 +1,6 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { Button, FadeTransition } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { SettingsHeader } from '../../../shared';
 import { TrashGradientIcon } from '../../../icons';
 import { ServicesMessage } from '@penumbra-zone/types/src/services';

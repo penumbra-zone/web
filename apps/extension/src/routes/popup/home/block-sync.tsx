@@ -1,4 +1,4 @@
-import { LargeBlockSyncStatus } from '@penumbra-zone/ui';
+import { LargeBlockSyncStatus } from '@penumbra-zone/ui/components/ui/block-sync-status';
 import { useSyncProgress } from '../../../hooks/full-sync-height';
 
 export const BlockSync = () => {

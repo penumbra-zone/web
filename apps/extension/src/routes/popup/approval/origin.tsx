@@ -1,4 +1,4 @@
-import { FadeTransition } from '@penumbra-zone/ui';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { useStore } from '../../../state';
 import { originApprovalSelector } from '../../../state/origin-approval';
 import { ApproveDeny } from './approve-deny';

@@ -1,12 +1,12 @@
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import { Identicon } from '@penumbra-zone/ui/components/ui/identicon';
+import { IdentityKeyComponent } from '@penumbra-zone/ui/components/ui/identity-key-component';
 import {
-  Identicon,
-  IdentityKeyComponent,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@penumbra-zone/ui';
+} from '@penumbra-zone/ui/components/ui/tooltip';
 import { useStore } from '../../../../state';
 import {
   getIdentityKeyFromValidatorInfo,

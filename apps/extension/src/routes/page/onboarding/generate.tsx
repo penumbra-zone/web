@@ -1,17 +1,17 @@
 import { ExclamationTriangleIcon, LockClosedIcon } from '@radix-ui/react-icons';
 import { SeedPhraseLength } from '@penumbra-zone/crypto-web/src/mnemonic';
 import { useEffect, useState } from 'react';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { BackIcon } from '@penumbra-zone/ui/components/ui/back-icon';
 import {
-  BackIcon,
-  Button,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CopyToClipboard,
-  FadeTransition,
-  Input,
-} from '@penumbra-zone/ui';
+} from '@penumbra-zone/ui/components/ui/card';
+import { CopyToClipboard } from '@penumbra-zone/ui/components/ui/copy-to-clipboard';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
+import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useCountdown } from 'usehooks-ts';
 import { useStore } from '../../../state';

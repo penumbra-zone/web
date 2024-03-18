@@ -10,7 +10,7 @@ import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
-import { FadeTransition } from '@penumbra-zone/ui';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 
 const links = [
   {

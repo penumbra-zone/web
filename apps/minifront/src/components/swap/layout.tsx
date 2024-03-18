@@ -1,4 +1,4 @@
-import { Card } from '@penumbra-zone/ui';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
 import { EduPanel } from '../shared/edu-panels/content';
 import { SwapForm } from './swap-form';

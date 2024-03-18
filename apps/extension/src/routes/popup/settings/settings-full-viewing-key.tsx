@@ -1,6 +1,8 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { useState } from 'react';
-import { Button, CopyToClipboard, FadeTransition } from '@penumbra-zone/ui';
+import { SetStateAction, useState } from 'react';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
+import { CopyToClipboard } from '@penumbra-zone/ui/components/ui/copy-to-clipboard';
 import { PasswordInput, SettingsHeader } from '../../../shared';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
@@ -45,7 +47,7 @@ export const SettingsFullViewingKey = () => {
                 label={
                   <p className='font-headline font-semibold text-muted-foreground'>Password</p>
                 }
-                onChange={e => {
+                onChange={(e: { target: { value: SetStateAction<string>; }; }) => {
                   setPassword(e.target.value);
                   setEnteredIncorrect(false);
                 }}

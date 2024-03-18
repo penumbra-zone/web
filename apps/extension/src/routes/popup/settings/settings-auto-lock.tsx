@@ -1,4 +1,6 @@
-import { Button, FadeTransition, Input } from '@penumbra-zone/ui';
+import { Button} from '@penumbra-zone/ui/components/ui/button';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
+import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { SettingsHeader } from '../../../shared';
 import { TimerGradientIcon } from '../../../icons';
 

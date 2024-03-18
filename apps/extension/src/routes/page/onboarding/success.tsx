@@ -1,4 +1,5 @@
-import { Button, SplashPage } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
 
 export const OnboardingSuccess = () => {
   return (

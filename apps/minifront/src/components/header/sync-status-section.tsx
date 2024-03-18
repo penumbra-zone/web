@@ -1,7 +1,7 @@
 import { useStream } from '../../fetchers/stream';
 import { useMemo } from 'react';
 import { viewClient } from '../../clients';
-import { CondensedBlockSyncStatus } from '@penumbra-zone/ui';
+import { CondensedBlockSyncStatus } from '@penumbra-zone/ui/components/ui/block-sync-status';
 
 export const SyncStatusSection = () => {
   const syncStream = useMemo(() => viewClient.statusStream({}), []);
