@@ -1,9 +1,5 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader
-} from '@penumbra-zone/ui/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader } from '@penumbra-zone/ui/components/ui/dialog';
 import { IdentityKeyComponent } from '@penumbra-zone/ui/components/ui/identity-key-component';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';

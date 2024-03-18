@@ -48,7 +48,7 @@ export const SettingsFullViewingKey = () => {
                 label={
                   <p className='font-headline font-semibold text-muted-foreground'>Password</p>
                 }
-                onChange={(e: { target: { value: SetStateAction<string>; }; }) => {
+                onChange={(e: { target: { value: SetStateAction<string> } }) => {
                   setPassword(e.target.value);
                   setEnteredIncorrect(false);
                 }}

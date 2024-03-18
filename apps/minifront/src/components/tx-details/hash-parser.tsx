@@ -1,9 +1,4 @@
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@penumbra-zone/ui/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@penumbra-zone/ui/components/ui/tabs';
 import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
 import { TransactionViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/transaction';
 import { TxDetailsLoaderResult } from '.';

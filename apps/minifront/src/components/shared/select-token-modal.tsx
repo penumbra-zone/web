@@ -6,7 +6,7 @@ import {
   DialogClose,
   DialogContent,
   DialogHeader,
-  DialogTrigger
+  DialogTrigger,
 } from '@penumbra-zone/ui/components/ui/dialog';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';

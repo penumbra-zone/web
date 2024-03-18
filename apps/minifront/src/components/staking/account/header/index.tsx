@@ -1,8 +1,5 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
-import {
-  Card,
-  CardContent
-} from '@penumbra-zone/ui/components/ui/card';
+import { Card, CardContent } from '@penumbra-zone/ui/components/ui/card';
 import {
   Tooltip,
   TooltipContent,

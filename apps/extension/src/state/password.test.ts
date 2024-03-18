@@ -7,7 +7,7 @@ import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/local';
 import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
 import {
   mockLocalExtStorage,
-  mockSessionExtStorage 
+  mockSessionExtStorage,
 } from '@penumbra-zone/storage/src/chrome/test-utils/mock';
 import { SessionStorageState } from '@penumbra-zone/storage/src/chrome/session';
 
