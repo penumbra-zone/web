@@ -2,7 +2,7 @@ import { Button} from '@penumbra-zone/ui/components/ui/button';
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { SettingsHeader } from '../../../shared/components/settings-header';
-import { TimerGradientIcon } from '../../../icons';
+import { TimerGradientIcon } from '../../../icons/time-gradient';
 
 export const SettingsAutoLock = () => {
   return (

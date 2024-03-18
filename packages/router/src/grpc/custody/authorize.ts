@@ -3,7 +3,7 @@ import { approverCtx } from '../../ctx/approver';
 import { extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx/prax';
 import { generateSpendKey } from '@penumbra-zone/wasm/src/keys';
 import { authorizePlan } from '@penumbra-zone/wasm/src/build';
-import { Key } from '@penumbra-zone/crypto-web';
+import { Key } from '@penumbra-zone/crypto-web/src/encryption';
 import { Code, ConnectError, HandlerContext } from '@connectrpc/connect';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { viewTransactionPlan } from './view-transaction-plan';

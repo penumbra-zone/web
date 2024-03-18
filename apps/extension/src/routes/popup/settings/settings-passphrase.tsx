@@ -3,7 +3,7 @@ import { SetStateAction, useState } from 'react';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { CopyToClipboard } from '@penumbra-zone/ui/components/ui/copy-to-clipboard';
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
-import { FileTextGradientIcon } from '../../../icons';
+import { FileTextGradientIcon } from '../../../icons/file-text-gradient';
 import { PasswordInput } from '../../../shared/components/password-input';
 import { SettingsHeader } from '../../../shared/components/settings-header';
 import { useStore } from '../../../state';

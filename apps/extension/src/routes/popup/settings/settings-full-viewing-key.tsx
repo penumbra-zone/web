@@ -7,7 +7,7 @@ import { SettingsHeader } from '../../../shared/components/settings-header';
 import { PasswordInput } from '../../../shared/components/password-input';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
-import { KeyGradientIcon } from '../../../icons';
+import { KeyGradientIcon } from '../../../icons/key-gradient';
 import { walletsSelector } from '../../../state/wallets';
 
 export const SettingsFullViewingKey = () => {

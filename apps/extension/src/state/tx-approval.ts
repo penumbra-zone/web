@@ -11,10 +11,8 @@ import type {
 } from '@penumbra-zone/types/src/internal-msg/shared';
 import type { Jsonified, Stringified } from '@penumbra-zone/types/src/jsonified';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
-import {
-  classifyTransaction,
-  TransactionClassification,
-} from '@penumbra-zone/types/src/transaction';
+import { classifyTransaction } from '@penumbra-zone/types/src/transaction/classify';
+import { TransactionClassification } from '@penumbra-zone/types/src/transaction/classification';
 import {
   asPublicTransactionView,
   asReceiverTransactionView,

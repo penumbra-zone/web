@@ -1,5 +1,6 @@
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
-import { EyeGradientIcon, FileTextIcon } from '../../../icons';
+import { EyeGradientIcon } from '../../../icons/eye-gradient';
+import { FileTextIcon } from '../../../icons/file-text';
 import { SettingsHeader } from '../../../shared/components/settings-header';
 import { CustomLink } from '../../../shared/components/link';
 import { usePopupNav } from '../../../utils/navigate';

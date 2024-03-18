@@ -3,7 +3,7 @@ import { CustomLink } from '../../../shared/components/link';
 import { SettingsHeader } from '../../../shared/components/settings-header';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
-import { DashboardGradientIcon } from '../../../icons';
+import { DashboardGradientIcon } from '../../../icons/dashboard-gradient';
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 
 const links = [

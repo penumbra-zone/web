@@ -1,5 +1,6 @@
 import { PagePath } from '../metadata/paths';
-import { BoxIcon, SwapIcon } from '../../icons';
+import { BoxIcon } from '../../icons/box';
+import { SwapIcon } from '../../icons/swap';
 import { ReactElement } from 'react';
 import { ArrowTopRightIcon, MixerHorizontalIcon, TextAlignLeftIcon } from '@radix-ui/react-icons';
 
