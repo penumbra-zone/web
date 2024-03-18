@@ -141,4 +141,5 @@ jobs:
         with:
           version: 'latest'
       - uses: browser-actions/setup-firefox@v1
+      - run: pnpm precompile --cache-dir=.turbo
       - run: pnpm turbo test:rust --cache-dir=.turbo
