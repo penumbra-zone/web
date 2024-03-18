@@ -6,8 +6,16 @@
   "exports": {
     "./src/*": "./src/*.ts",
     "./src/internal-msg/*": "./src/internal-msg/*.ts",
-    "./src/transaction": "./src/transaction/index.ts",
-    "./src/translators": "./src/translators/index.ts"
+    "./transaction/classification": "./src/transaction/classification.ts",
+    "./transaction/classify": "./src/transaction/classify.ts",
+    "./transaction/perspective": "./src/transaction/perspective.ts",
+    "./translators/action-view": "./src/translators/action-view.ts",
+    "./translators/address-view": "./src/translators/address-view.ts",
+    "./translators/memo-view": "./src/translators/memo-view.ts",
+    "./translators/output-view": "./src/translators/output-view.ts",
+    "./translators/spend-view": "./src/translators/spend-view.ts",
+    "./translators/transaction-view": "./src/translators/transaction-view.ts",
+    "./translators/types": "./src/translators/types.ts"
   },
   "publishConfig": {
     "files": [
@@ -16,8 +24,16 @@
     "exports": {
       "./src/*": "./dist/*.js",
       "./src/internal-msg/*": "./dist/internal-msg/*.js",
-      "./src/transaction": "./dist/transaction.js",
-      "./src/translators": "./dist/translators.js"
+      "./transaction/classification": "./dist/transaction/classification.js",
+      "./transaction/classify": "./dist/transaction/classify.js",
+      "./transaction/perspective": "./dist/transaction/perspective.js",
+      "./translators/action-view": "./dist/transaction/action-view.js",
+      "./translators/address-view": "./dist/transaction/address-view.js",
+      "./translators/memo-view": "./dist/transaction/memo-view.js",
+      "./translators/output-view": "./dist/transaction/output-view.js",
+      "./translators/spend-view": "./dist/transaction/spend-view.js",
+      "./translators/transaction-view": "./dist/transaction/transaction-view.js",
+      "./translators/types": "./dist/transaction/types.js"
     }
   },
   "scripts": {
