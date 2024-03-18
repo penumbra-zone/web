@@ -6,7 +6,6 @@
     "build": "turbo run build",
     "compile": "turbo run compile",
     "dev": "turbo run dev  --concurrency 20",
-    "download-keys": "turbo run download-keys",
     "lint": "turbo run lint -- --max-warnings=0",
     "lint:rust": "turbo run lint:rust",
     "lint:fix": "turbo run lint -- --fix",
