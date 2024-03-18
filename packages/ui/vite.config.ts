@@ -4,6 +4,7 @@ import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 import { externalizeDeps } from 'vite-plugin-externalize-deps';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import libAssetsPlugin from '@laynezh/vite-plugin-lib-assets';
 
 // eslint-disable-next-line import/no-relative-packages
 import workspacePkg from '../../package.json';
@@ -21,7 +22,6 @@ const components = Object.fromEntries(
 );
 
 export default defineConfig({
-  base: './',
   build: {
     lib: {
       entry: {
@@ -35,8 +35,8 @@ export default defineConfig({
     preserveSymlinks: true,
   },
   plugins: [
+    libAssetsPlugin({}),
     tsconfigPaths(),
-    dts(),
     externalizeDeps({
       deps: true,
       devDeps: true,
@@ -49,5 +49,6 @@ export default defineConfig({
       ],
       except: ['@penumbra-zone/tailwind-config'],
     }),
+    dts({ rollupTypes: true }),
   ],
 });

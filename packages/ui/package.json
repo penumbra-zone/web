@@ -22,9 +22,18 @@
       "tailwind.config.js"
     ],
     "exports": {
-      "./components/*": "./dist/components/*",
-      "./components/tx-view/*": "./src/components/tx-view/*",
-      "./utils": "./dist/utils/index.js",
+      "./components/*": {
+        "import": "./dist/components/*.js",
+        "types": "./dist/components/*.d.ts"
+      },
+      "./components/tx-view/*": {
+        "import": "./src/components/tx-view/*.js",
+        "types": "./src/components/tx-view/*.d.ts"
+      },
+      "./utils": {
+        "import": "./dist/utils.js",
+        "types": "./dist/utils.d.js"
+      },
       "./postcss.config.js": "./p p.config.js",
       "./styles/*": "./styles/*",
       "./fonts/*": "./fonts/*"
@@ -55,7 +64,6 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-toggle": "^1.0.3",
     "@radix-ui/react-tooltip": "^1.0.7",
-    "@rollup/plugin-typescript": "^11.1.6",
     "@testing-library/jest-dom": "^6.4.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
