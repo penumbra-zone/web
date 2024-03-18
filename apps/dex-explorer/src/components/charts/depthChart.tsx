@@ -40,7 +40,7 @@ const DepthChart = ({ buySideData, sellSideData, asset1Token, asset2Token }: Dep
   const chartRef = useRef<any>();
 
   console.log(buySideData, sellSideData, midMarketPrice);
-    const data = {
+    const data: any = {
       datasets: [
         {
           label: "Sell",
@@ -51,7 +51,7 @@ const DepthChart = ({ buySideData, sellSideData, asset1Token, asset2Token }: Dep
           borderColor: "rgba(255, 73, 108, 0.6)", // Neon Red
           backgroundColor: "rgba(255, 73, 108, 0.6)",
           fill: "origin",
-          stepped: true,
+          stepped: "before",
           yAxisID: "left-y",
         },
         {
@@ -62,7 +62,8 @@ const DepthChart = ({ buySideData, sellSideData, asset1Token, asset2Token }: Dep
           borderColor: "rgba(51, 255, 87, 0.6)", // Neon Green
           backgroundColor: "rgba(51, 255, 87, 0.6)",
           fill: "origin",
-          stepped: true,
+          // horizontal lines on buy side need to start at point on right and continue to the left
+          stepped: "after",
           yAxisID: "right-y",
         },
       ],
