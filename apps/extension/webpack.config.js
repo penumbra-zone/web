@@ -112,8 +112,11 @@ export default (env, argv) => {
       }),
       new webpack.DefinePlugin(definitions),
       new CopyPlugin({
-        patterns: ['public', { from: 'bin', to: 'bin' }],
-      }),
+        patterns: [
+          { from: 'public', to: '.' },
+          { from: 'bin', to: 'bin', context: path.resolve(__dirname, '../../packages/wasm'), noErrorOnMissing: true },
+        ],
+      }),      
       // html entry points
       new HtmlWebpackPlugin({
         favicon: 'public/icon.png',

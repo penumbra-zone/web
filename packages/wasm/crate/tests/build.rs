@@ -46,14 +46,14 @@ mod tests {
         // that are based on constructing objects according to protobuf definitions.
 
         // Load the proving key parameters as byte arrays.
-        let spend_key: &[u8] = include_bytes!("../../../../apps/extension/bin/spend_pk.bin");
-        let output_key: &[u8] = include_bytes!("../../../../apps/extension/bin/output_pk.bin");
+        let spend_key: &[u8] = include_bytes!("../../bin/spend_pk.bin");
+        let output_key: &[u8] = include_bytes!("../../bin/output_pk.bin");
         let delegator_vote_key: &[u8] =
-            include_bytes!("../../../../apps/extension/bin/delegator_vote_pk.bin");
-        let swap_key: &[u8] = include_bytes!("../../../../apps/extension/bin/swap_pk.bin");
+            include_bytes!("../../bin/delegator_vote_pk.bin");
+        let swap_key: &[u8] = include_bytes!("../../bin/swap_pk.bin");
         let swapclaim_key: &[u8] =
-            include_bytes!("../../../../apps/extension/bin/swapclaim_pk.bin");
-        let convert_key: &[u8] = include_bytes!("../../../../apps/extension/bin/convert_pk.bin");
+            include_bytes!("../../bin/swapclaim_pk.bin");
+        let convert_key: &[u8] = include_bytes!("../../bin/convert_pk.bin");
 
         // Serialize &[u8] to JsValue.
         let spend_key_js: JsValue = serde_wasm_bindgen::to_value(&spend_key).unwrap();
