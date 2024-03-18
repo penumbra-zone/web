@@ -113,7 +113,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-      - run: pnpm turbo download-keys --cache-dir=.turbo
       - run: pnpm turbo format-check:rust --cache-dir=.turbo
       - run: pnpm turbo lint:rust --cache-dir=.turbo
 
@@ -142,5 +141,4 @@ jobs:
         with:
           version: 'latest'
       - uses: browser-actions/setup-firefox@v1
-      - run: pnpm turbo download-keys --cache-dir=.turbo
       - run: pnpm turbo test:rust --cache-dir=.turbo
