@@ -2,12 +2,12 @@ import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { webcrypto } from 'crypto';
+import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
+import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/local';
 import {
-  ExtensionStorage,
-  LocalStorageState,
   mockLocalExtStorage,
   mockSessionExtStorage,
-} from '@penumbra-zone/storage';
+} from '@penumbra-zone/storage/src/chrome/test-utils/mock';
 import type { WalletCreate } from '@penumbra-zone/types/src/wallet';
 
 vi.stubGlobal('crypto', webcrypto);

@@ -2,7 +2,7 @@ import { SelectAccount } from '@penumbra-zone/ui/components/ui/select-account';
 import { IndexHeader } from './index-header';
 import { useStore } from '../../../state';
 import { BlockSync } from './block-sync';
-import { localExtStorage } from '@penumbra-zone/storage';
+import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
 import { addrByIndexSelector } from '../../../state/wallets';
 import { needsLogin } from '../popup-needs';
 

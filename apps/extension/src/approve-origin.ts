@@ -1,7 +1,7 @@
 import { JsonValue } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
-import { localExtStorage } from '@penumbra-zone/storage';
+import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
 import { OriginApproval, PopupType } from './message/popup';
 import { popup } from './popup';
 import Map from '@penumbra-zone/polyfills/src/Map.groupBy';

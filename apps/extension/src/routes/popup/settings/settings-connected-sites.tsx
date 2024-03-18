@@ -5,7 +5,7 @@ import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition'
 import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { LinkGradientIcon } from '../../../icons';
 import { SettingsHeader } from '../../../shared';
-import { OriginRecord } from '@penumbra-zone/storage';
+import { OriginRecord } from '@penumbra-zone/storage/src/chrome/local';
 import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
 import { useStore } from '../../../state';
 import { connectedSitesSelector } from '../../../state/connected-sites';

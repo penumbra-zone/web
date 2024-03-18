@@ -4,11 +4,13 @@ import { produce } from 'immer';
 
 import {
   localExtStorage,
-  LocalStorageState,
+  LocalStorageState
+} from '@penumbra-zone/storage/src/chrome/local';
+import {
   sessionExtStorage,
   SessionStorageState,
-  StorageItem,
-} from '@penumbra-zone/storage';
+} from '@penumbra-zone/storage/src/chrome/session';
+import { StorageItem } from '@penumbra-zone/storage/src/chrome/base';
 import { walletsFromJson } from '@penumbra-zone/types/src/wallet';
 
 export type Middleware = <

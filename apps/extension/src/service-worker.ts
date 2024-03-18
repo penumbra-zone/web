@@ -13,7 +13,7 @@ import './listeners';
 
 // services
 import { Services } from '@penumbra-zone/services';
-import { localExtStorage } from '@penumbra-zone/storage';
+import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
 
 // adapter
 import { ConnectRouter, createContextValues, PromiseClient } from '@connectrpc/connect';

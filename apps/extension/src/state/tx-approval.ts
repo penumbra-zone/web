@@ -18,7 +18,7 @@ import {
 import {
   asPublicTransactionView,
   asReceiverTransactionView,
-} from '@penumbra-zone/types/src/translators';
+} from '@penumbra-zone/types/src/translators/transaction-view';
 
 export interface TxApprovalSlice {
   /**

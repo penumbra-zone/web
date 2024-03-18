@@ -2,13 +2,15 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
 import {
-  ExtensionStorage,
   localDefaults,
   LocalStorageState,
+  OriginRecord,
+} from '@penumbra-zone/storage/src/chrome/local';
+import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
+import {
   mockLocalExtStorage,
   mockSessionExtStorage,
-  OriginRecord,
-} from '@penumbra-zone/storage';
+} from '@penumbra-zone/storage/src/chrome/test-utils/mock';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 describe('Connected Sites Slice', () => {
