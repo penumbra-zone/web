@@ -18,7 +18,7 @@ export default defineConfig({
         'output-view': './translators/output-view.ts',
         'spend-view': './translators/spend-view.ts',
         'get-address-view': './plan/get-address-view.ts',
-        'index': './plan/index.ts',
+        index: './plan/index.ts',
         'view-action-plan': './plan/view-action-plan.ts',
       },
       formats: ['es'],
