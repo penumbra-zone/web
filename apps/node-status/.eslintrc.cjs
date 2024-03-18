@@ -1,8 +1,9 @@
 module.exports = {
   root: true,
-  extends: ['custom'],
+  env: { browser: true, es2022: true },
+  extends: ['../../.eslintrc.cjs'],
   parserOptions: {
-    project: true,
+    project: ['./tsconfig.json'],
     tsconfigRootDir: __dirname,
   },
 };

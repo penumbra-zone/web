@@ -1,8 +1,8 @@
 module.exports = {
   root: true,
-  extends: ['custom', 'plugin:storybook/recommended'],
+  extends: ['../../.eslintrc.cjs', 'plugin:storybook/recommended'],
   parserOptions: {
-    project: true,
+    project: ['./tsconfig.json'],
     tsconfigRootDir: __dirname,
   },
 };
