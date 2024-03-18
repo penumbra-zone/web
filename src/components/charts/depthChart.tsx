@@ -68,9 +68,6 @@ const DepthChart = ({ buySideData, sellSideData, asset1Token, asset2Token }: Dep
       ],
     };
 
-
-
-
   /*
   const [hoverAnnotation, setHoverAnnotation] = useState<AnnotationOptions>({
     type: "line",
@@ -123,6 +120,47 @@ const DepthChart = ({ buySideData, sellSideData, asset1Token, asset2Token }: Dep
     totalTicks
   ).toPrecision(6);
 
+  const maxLiquidity = Math.max(
+    ...sellSideData.map((p) => p.y),
+    ...buySideData.map((p) => p.y)
+  );
+
+  /*
+  function roundToNextBigNumber(number: number) {
+    if (number <= 10) return 10; // For numbers less than or equal to 10, round up to 10
+
+    // Calculate the order of magnitude of the number
+    const orderOfMagnitude = Math.floor(Math.log10(number));
+    const divisor = Math.pow(10, orderOfMagnitude);
+
+    // Determine the first digit of the number
+    const firstDigit = Math.floor(number / divisor);
+
+    // Calculate the rounded up number based on the first digit
+    const roundedNumber = (firstDigit + 1) * divisor;
+
+    return roundedNumber;
+  }
+  */
+
+  // Round to nearest upper 10^n and then the nearest next lowest 10^n
+  //const maxY = roundToNextBigNumber(maxLiquidity);
+  function calculateMaxY(maxLiquidity: number) {
+    if (maxLiquidity < 10) return 10; // If less than 10, round up to 10
+
+    const maxLiquidityExponent = Math.floor(Math.log10(maxLiquidity));
+    const magnitude = 10 ** maxLiquidityExponent;
+    const significantFigure = Math.floor(maxLiquidity / magnitude);
+    const nextSignificantFigure = significantFigure + 1;
+    const maxY = nextSignificantFigure * magnitude;
+
+    // If the significant figure is a 1, it means we're closer to the lower end of the magnitude.
+    // We should round to the halfway point instead of the next magnitude.
+    return significantFigure === 1 ? 1.5 * magnitude : maxY;
+  }
+
+  const maxY = calculateMaxY(maxLiquidity);
+
   const options: ChartOptions<"line"> = {
     scales: {
       x: {
@@ -162,6 +200,7 @@ const DepthChart = ({ buySideData, sellSideData, asset1Token, asset2Token }: Dep
         },
         beginAtZero: true,
         position: "left",
+        max: maxY,
       },
       "right-y": {
         type: "linear",
@@ -175,6 +214,7 @@ const DepthChart = ({ buySideData, sellSideData, asset1Token, asset2Token }: Dep
           padding: { bottom: 10 },
         },
         position: "right",
+        max: maxY
       },
     },
     // ! This line works but its not perfect
