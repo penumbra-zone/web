@@ -1,5 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@penumbra-zone/ui';
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/utils';
 import { useState } from 'react';
 import { useStore } from '../../../state';
 import { ibcSelector } from '../../../state/ibc';

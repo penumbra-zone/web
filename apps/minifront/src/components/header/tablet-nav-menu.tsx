@@ -7,7 +7,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@penumbra-zone/ui';
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/utils';
 import { useNavigate } from 'react-router-dom';
 import { headerLinks, transactionLink } from './constants';
 import { usePagePath } from '../../fetchers/page-path';

@@ -10,8 +10,7 @@
     "incremental": true,
     "jsx": "preserve",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "esnext",
-    "noEmit": true
+    "module": "esnext"
   },
   "include": ["src", "next-env.d.ts"],
   "exclude": ["node_modules"]

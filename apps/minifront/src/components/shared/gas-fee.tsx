@@ -5,7 +5,7 @@ import {
 import { SegmentedPicker, SegmentedPickerOption } from '@penumbra-zone/ui';
 import { InputBlock } from './input-block';
 import { localAssets } from '@penumbra-zone/constants/src/assets';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/tx-view/value';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 const PENUMBRA_DENOM_METADATA = localAssets.find(asset => asset.display === 'penumbra')!;

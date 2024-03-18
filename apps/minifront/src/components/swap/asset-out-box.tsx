@@ -12,9 +12,9 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/tx-view/value';
 import { groupByAsset } from '../../fetchers/balances/by-asset';
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/utils';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 

@@ -1,5 +1,5 @@
 import { Card } from '@penumbra-zone/ui';
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/utils';
 import { EduPanel, eduPanelContent } from './content';
 
 interface HelperCardProps {

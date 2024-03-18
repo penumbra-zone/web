@@ -1,4 +1,4 @@
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/utils';
 import { Validation, validationResult } from './validation-result';
 import { ReactNode } from 'react';
 

@@ -7,8 +7,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@penumbra-zone/ui';
-import { AccountSwitcher } from '@penumbra-zone/ui/components/ui/account-switcher';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { AccountSwitcher } from '@penumbra-zone/ui/components/account-switcher';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/tx-view/value';
 import { Stat } from './stat';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';

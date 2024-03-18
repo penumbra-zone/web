@@ -5,7 +5,7 @@ import { ApproveDeny } from './approve-deny';
 import { LinkGradientIcon } from '../../../icons';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/utils';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 export const OriginApproval = () => {

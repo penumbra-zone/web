@@ -3,15 +3,13 @@
   "display": "Vite",
   "extends": "./base.json",
   "compilerOptions": {
-    "useDefineForClassFields": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
+    "types": ["vite/client"],
+    "lib": ["es2022", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
+    "declaration": true,
     "declarationMap": false,
-    "declaration": false
+    "isolatedModules": true,
+    "useDefineForClassFields": true,
+    "skipLibCheck": true
   }
 }

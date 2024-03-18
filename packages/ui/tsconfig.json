@@ -1,5 +1,9 @@
 {
-  "extends": "tsconfig/react-library.json",
-  "include": [".", "./tests-setup.ts"],
-  "exclude": ["dist", "build", "node_modules"]
+  "extends": "tsconfig/vite.json",
+  "include": ["./src", "./*.ts"],
+  "exclude": ["dist", "node_modules"],
+  "compilerOptions": {
+    "declaration": true,
+    "outDir": "dist"
+  }
 }
