@@ -179,7 +179,10 @@ export interface PenumbraDb extends DBSchema {
     value: Jsonified<ValidatorInfo>;
   };
   PRICES: {
-    key: string[]; // composite key [base64 EstimatedPrice['priced_asset'][inner'], base64 EstimatedPrice['numeraire']['inner']]
+    key: [
+      Jsonified<Required<EstimatedPrice>['pricedAsset']['inner']>,
+      Jsonified<Required<EstimatedPrice>['numeraire']['inner']>,
+    ]; // composite key
     value: Jsonified<EstimatedPrice>;
   };
 }

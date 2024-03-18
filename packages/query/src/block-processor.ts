@@ -250,8 +250,9 @@ export class BlockProcessor implements BlockProcessorInterface {
       // we can't use third-party price oracles for privacy reasons,
       // so we have to get asset prices from swap results during block scans
       // and store them locally in indexed-db.
-      if (compactBlock.swapOutputs.length)
+      if (compactBlock.swapOutputs.length) {
         await this.updatePrices(compactBlock.swapOutputs, compactBlock.height);
+      }
 
       // We only query Tendermint for the latest known block height once, when
       // the block processor starts running. Once we're caught up, though, the
