@@ -5,11 +5,11 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 import { IndexedDbMock, MockServices, TendermintMock, ViewServerMock } from '../test-utils';
 import { transactionInfoByHash } from './transaction-info-by-hash';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
-import type { Services } from '@penumbra-zone/services';
+import type { Services } from '@penumbra-zone/services/src/index';
 import {
   Transaction,
   TransactionPerspective,

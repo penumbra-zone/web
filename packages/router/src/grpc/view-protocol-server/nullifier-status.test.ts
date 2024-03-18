@@ -1,10 +1,10 @@
 import { nullifierStatus } from './nullifier-status';
 
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import type { Services } from '@penumbra-zone/services';
+import type { Services } from '@penumbra-zone/services/src/index';
 
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 

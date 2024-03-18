@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { approverCtx, extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx';
+import { approverCtx} from '../../ctx/approver';
+import { extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx/prax';
 import { IndexedDbMock, MockExtLocalCtx, MockExtSessionCtx, MockServices } from '../test-utils';
 import { authorize } from './authorize';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
@@ -9,7 +10,7 @@ import {
   AuthorizationData,
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { Services } from '@penumbra-zone/services';
+import { Services } from '@penumbra-zone/services/src/index';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 

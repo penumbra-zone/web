@@ -3,7 +3,7 @@ import {
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { HandlerContext, ConnectError, Code } from '@connectrpc/connect';
-import { custodyCtx } from '../../../ctx';
+import { custodyCtx } from '../../../ctx/custody';
 
 export const custodyAuthorize = async (
   ctx: HandlerContext,

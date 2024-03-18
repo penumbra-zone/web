@@ -1,5 +1,5 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { addAmounts, joinLoHiAmount } from '@penumbra-zone/types/src/amount';

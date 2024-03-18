@@ -1,5 +1,6 @@
 import type { Impl } from '.';
-import { approverCtx, extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx';
+import { approverCtx } from '../../ctx/approver';
+import { extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx/prax';
 import { generateSpendKey } from '@penumbra-zone/wasm/src/keys';
 import { authorizePlan } from '@penumbra-zone/wasm/src/build';
 import { Key } from '@penumbra-zone/crypto-web';

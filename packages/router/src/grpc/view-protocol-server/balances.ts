@@ -1,5 +1,5 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 import { getAmount } from '@penumbra-zone/getters/src/value-view';
 import { getAssetIdFromRecord } from '@penumbra-zone/getters/src/spendable-note-record';
 import {

@@ -1,7 +1,7 @@
 import { notes } from './notes';
 
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 
@@ -15,7 +15,7 @@ import {
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { IndexedDbMock, MockServices } from '../test-utils';
-import { Services } from '@penumbra-zone/services';
+import { Services } from '@penumbra-zone/services/src/index';
 
 describe('Notes request handler', () => {
   let mockServices: MockServices;

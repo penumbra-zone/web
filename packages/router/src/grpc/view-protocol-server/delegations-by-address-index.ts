@@ -14,7 +14,7 @@ import {
   DelegationsByAddressIndexRequest_Filter,
   DelegationsByAddressIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { stakingClientCtx } from '../../ctx';
+import { stakingClientCtx } from '../../ctx/staking-client';
 import { balances } from './balances';
 import {
   Metadata,

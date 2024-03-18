@@ -3,7 +3,7 @@ import { validatorInfo } from './validator-info';
 import { IndexedDbMock, MockServices } from '../test-utils';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 import {
   ValidatorInfoRequest,
   ValidatorInfoResponse,
