@@ -1,9 +1,14 @@
 {
-  "extends": "tsconfig/extension.json",
+  "display": "Extension",
+  "extends": "../../tsconfig.json",
   "include": ["src/**/*.ts", "src/**/*.tsx", "*.ts"],
   "compilerOptions": {
     "outDir": "./dist",
     "declaration": false,
-    "declarationMap": false
+    "declarationMap": false,
+    "jsx": "react-jsx",
+    "lib": ["DOM", "ESNext", "WebWorker"],
+    "module": "ESNext",
+    "types": ["chrome", "firefox-webext-browser"]
   }
 }

@@ -3,7 +3,7 @@
 ### All code should be typesafe
 
 That means there should be _almost zero_ use of `any` within the repo.
-The most important step is ensuring `strict: true` is enabled in [tsconfig.json](../packages/tsconfig/base.json).
+The most important step is ensuring `strict: true` is enabled in the top-level [tsconfig.json](../tsconfig.json).
 There should be no condition on which that is switched off. This will help
 future developers from being able to easily add/change code given the whole system
 will have type safety guarantees. This, plus extensive testing, will make our code
