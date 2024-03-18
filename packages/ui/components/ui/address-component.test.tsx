@@ -1,13 +1,13 @@
 import { AddressComponent } from './address-component';
 import { describe, expect, test } from 'vitest';
 import { render } from '@testing-library/react';
+import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
 
 describe('<AddressComponent />', () => {
   const address =
     'penumbra1u7dk4qw6fz3vlwyjl88vlj6gqv4hcmz2vesm87t7rm0lvwmgqqkrp3zrdmfg6et86ggv4nwmnc8vy39uxyacwm8g7trk77ad0c8n4qt76ncvuukx6xlj8mskhyjpn4twkpwwl2';
-  const pbAddress = new Address({ inner: bech32ToUint8Array(address) });
+  const pbAddress = new Address({ inner: bech32ToAddress(address) });
 
   test('renders the address', () => {
     const { baseElement } = render(<AddressComponent address={pbAddress} />);

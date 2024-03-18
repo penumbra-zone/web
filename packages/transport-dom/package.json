@@ -17,10 +17,8 @@
     "lint": "eslint \"**/*.ts*\""
   },
   "devDependencies": {
-    "@buf/connectrpc_eliza.bufbuild_es": "1.7.2-20230913231627-233fca715f49.1",
+    "@buf/connectrpc_eliza.bufbuild_es": "1.8.0-20230913231627-233fca715f49.1",
     "@buf/connectrpc_eliza.connectrpc_es": "1.4.0-20230913231627-233fca715f49.1",
-    "@penumbra-zone/polyfills": "workspace:*",
-    "@types/core-js": "^2.5.8",
-    "core-js": "^3.36.0"
+    "@penumbra-zone/polyfills": "workspace:*"
   }
 }

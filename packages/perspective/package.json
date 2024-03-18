@@ -1,0 +1,54 @@
+{
+  "name": "@penumbra-zone/perspective",
+  "version": "0.0.1",
+  "description": "Tools for assuming different perspectives of Penumbra transactions",
+  "type": "module",
+  "exports": {
+    "./classification": "./transaction/classification.ts",
+    "./classify": "./transaction/classify.ts",
+    "./perspective": "./transaction/perspective.ts",
+    "./action-view": "./translators/action-view.ts",
+    "./address-view": "./translators/address-view.ts",
+    "./memo-view": "./translators/memo-view.ts",
+    "./output-view": "./translators/output-view.ts",
+    "./spend-view": "./translators/spend-view.ts",
+    "./transaction-view": "./translators/transaction-view.ts",
+    "./types": "./translators/types.ts",
+    "./get-address-view": "./plan/get-address-view.ts",
+    "./index": "./plan/index.ts",
+    "./view-action-plan": "./plan/view-action-plan.ts"
+  },
+  "publishConfig": {
+    "files": [
+      "./dist"
+    ],
+    "exports": {
+      "./*": {
+        "./classification": "./dist/transaction/classification.js",
+        "./classify": "./dist/transaction/classify.js",
+        "./perspective": "./dist/transaction/perspective.js",
+        "./action-view": "./dist/transaction/action-view.js",
+        "./address-view": "./dist/transaction/address-view.js",
+        "./memo-view": "./dist/transaction/memo-view.js",
+        "./output-view": "./dist/transaction/output-view.js",
+        "./spend-view": "./dist/transaction/spend-view.js",
+        "./transaction-view": "./dist/transaction/transaction-view.js",
+        "./types": "./dist/transaction/types.js",
+        "./get-address-view": "./dist/plan/get-address-view.js",
+        "./index": "./dist/plan/index.js",
+        "./view-action-plan": "./dist/plan/view-action-plan.js"
+      }
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "clean": "rm -rfv dist",
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "dependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240313211643-35db357c277d.1",
+    "@penumbra-zone/bech32": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
+    "@penumbra-zone/wasm": "workspace:*"
+  }
+}

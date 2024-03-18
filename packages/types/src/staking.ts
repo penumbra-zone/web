@@ -12,7 +12,7 @@ import {
 } from '@penumbra-zone/getters/src/validator-info';
 import { getRateBpsFromFundingStream } from '@penumbra-zone/getters/src/funding-stream';
 import { joinLoHiAmount } from './amount';
-import { bech32IdentityKey } from './identity-key';
+import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { assetPatterns, DelegationCaptureGroups } from '@penumbra-zone/constants/src/assets';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';

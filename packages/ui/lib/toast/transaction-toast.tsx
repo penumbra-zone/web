@@ -7,8 +7,8 @@ import {
 import { Link } from 'react-router-dom';
 import { Progress } from '../../components/ui/progress';
 import { ReactNode } from 'react';
-import { TransactionClassification } from '@penumbra-zone/types/src/transaction/classification';
-import { TRANSACTION_LABEL_BY_CLASSIFICATION } from '@penumbra-zone/types/src/transaction/classify';
+import { TransactionClassification } from '@penumbra-zone/perspective/classification';
+import { TRANSACTION_LABEL_BY_CLASSIFICATION } from '@penumbra-zone/perspective/classify';
 import { shorten } from '@penumbra-zone/types/src/string';
 
 type BroadcastStatus = BroadcastTransactionResponse['status'];

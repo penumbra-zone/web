@@ -1,4 +1,4 @@
-import { BECH32_PREFIX } from './address';
+import { PENUMBRA_BECH32_ADDRESS_PREFIX } from '@penumbra-zone/bech32/src/penumbra-bech32';
 
 const encoder = new TextEncoder();
 export const stringToUint8Array = (str: string): Uint8Array => {
@@ -20,5 +20,5 @@ export const shorten = (str: string, endsLength = 4) => {
 
 export const shortenAddress = (str: string) => {
   const charsToDisplay = 24;
-  return str.slice(0, BECH32_PREFIX.length + 1 + charsToDisplay) + '…';
+  return str.slice(0, PENUMBRA_BECH32_ADDRESS_PREFIX.length + 1 + charsToDisplay) + '…';
 };

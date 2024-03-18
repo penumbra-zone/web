@@ -1,0 +1,28 @@
+{
+  "name": "@penumbra-zone/bech32",
+  "version": "1.0.0",
+  "description": "Tools for manipulating Penumbra bech32 strings",
+  "type": "module",
+  "exports": {
+    "./src/*": "./dist/*.js"
+  },
+  "publishConfig": {
+    "files": [
+      "./dist"
+    ],
+    "exports": {
+      ".": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      }
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "clean": "rm -rfv dist",
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "dependencies": {
+    "bech32": "^2.0.0"
+  }
+}

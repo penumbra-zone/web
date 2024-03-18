@@ -9,7 +9,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { localAssets } from '@penumbra-zone/constants/src/assets';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
+import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
 
 describe('Swap Slice', () => {
   const selectionExample = new BalancesResponse({
@@ -30,7 +30,7 @@ describe('Swap Slice', () => {
         case: 'opaque',
         value: {
           address: {
-            inner: bech32ToUint8Array(
+            inner: bech32ToAddress(
               'penumbra1e8k5cyds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uu0rgkvtjpxy3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd4',
             ),
           },
