@@ -17,7 +17,11 @@
  * other content scripts could interfere or intercept connections.
  */
 
-import { PenumbraProvider, PenumbraSymbol } from '@penumbra-zone/client/src/global';
+import {
+  PenumbraProvider,
+  PenumbraSymbol,
+  PraxConnectionRes,
+} from '@penumbra-zone/client/src/global';
 import {
   isPraxConnectionPortMessageEvent,
   isPraxRequestResponseMessageEvent,
@@ -25,7 +29,7 @@ import {
 } from './message';
 
 import '@penumbra-zone/polyfills/src/Promise.withResolvers';
-import { PraxConnectionReq, PraxConnectionRes } from '../message/prax';
+import { PraxConnectionReq } from '../message/prax';
 
 const requestMessage: PraxMessage<PraxConnectionReq.Request> = {
   [PRAX]: PraxConnectionReq.Request,
@@ -48,7 +52,7 @@ const connectionListener = (msg: MessageEvent<unknown>) => {
 };
 window.addEventListener('message', connectionListener);
 
-const requestPromise = Promise.withResolvers();
+const requestPromise = Promise.withResolvers<PraxConnectionRes>();
 requestPromise.promise.catch(e => connection.reject(e));
 
 // Called to request a connection to the extension.
@@ -62,10 +66,8 @@ const postRequest = () => {
 const requestResponseHandler = (msg: MessageEvent<unknown>) => {
   if (msg.origin === window.origin && isPraxRequestResponseMessageEvent(msg)) {
     // @ts-expect-error - ts can't understand the injected string
-    const choice = msg.data[PRAX] as PraxConnectionRes;
-    if (choice === PraxConnectionRes.Approved) requestPromise.resolve();
-    if (choice === PraxConnectionRes.Denied) requestPromise.reject('connection was denied');
-    if (choice === PraxConnectionRes.NotLoggedIn) requestPromise.reject('user not logged in');
+    const result = msg.data[PRAX] as PraxConnectionRes;
+    requestPromise.resolve(result);
     window.removeEventListener('message', requestResponseHandler);
   }
 };

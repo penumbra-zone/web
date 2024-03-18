@@ -1,49 +1,67 @@
-import { Button, SplashPage } from '@penumbra-zone/ui';
+import { Button, errorToast, SplashPage, Toaster, warningToast } from '@penumbra-zone/ui';
 import { HeadTag } from './metadata/head-tag';
 
 import { requestPraxConnection } from '@penumbra-zone/client';
 import { useState } from 'react';
+import { PraxConnectionRes } from '@penumbra-zone/client/src/global';
 
 const useExtConnector = () => {
-  const [err, setErr] = useState<string>();
+  const [result, setResult] = useState<boolean>();
 
   const request = async () => {
     try {
-      await requestPraxConnection();
-      location.reload();
+      const res = await requestPraxConnection();
+      switch (res) {
+        case PraxConnectionRes.Approved: {
+          location.reload();
+          break;
+        }
+        case PraxConnectionRes.Denied: {
+          errorToast(
+            'You may need to un-ignore this site in your extension settings.',
+            'Connection denied',
+          ).render();
+          break;
+        }
+        case PraxConnectionRes.NotLoggedIn: {
+          warningToast(
+            'Not logged in',
+            'Please login into the extension and reload the page',
+          ).render();
+          break;
+        }
+        case undefined: {
+          throw new Error('Penumbra extension not installed');
+        }
+      }
     } catch (e) {
-      setErr(String(e));
+      errorToast(e, 'Connection failure').render();
+    } finally {
+      setResult(true);
     }
   };
 
-  return { request, err };
+  return { request, result };
 };
 
 export const ExtensionNotConnected = () => {
-  const { request, err } = useExtConnector();
+  const { request, result } = useExtConnector();
 
   return (
     <>
       <HeadTag />
+      <Toaster />
       <SplashPage title='Welcome to Penumbra'>
         <div className='flex items-center justify-between gap-[1em] text-lg'>
-          {!err ? (
-            <>
-              <div>To get started, connect the Penumbra Chrome extension.</div>
-              <Button variant='gradient' onClick={() => void request()} className='px-4'>
-                Connect
-              </Button>
-            </>
+          <div>To get started, connect the Penumbra Chrome extension.</div>
+          {!result ? (
+            <Button variant='gradient' onClick={() => void request()} className='px-4'>
+              Connect
+            </Button>
           ) : (
-            <>
-              <div>
-                <div className='italic text-destructive'>Error: {err}</div>
-                <div>You may need to un-ignore this site in your extension settings.</div>
-              </div>
-              <Button variant='gradient' className='px-4' onClick={() => location.reload()}>
-                Reload
-              </Button>
-            </>
+            <Button variant='gradient' className='px-4' onClick={() => location.reload()}>
+              Reload
+            </Button>
           )}
         </div>
       </SplashPage>

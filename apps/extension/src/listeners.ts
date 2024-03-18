@@ -1,6 +1,7 @@
 import { approveOrigin, originAlreadyApproved } from './approve-origin';
-import { PraxConnectionReq, PraxConnectionRes } from './message/prax';
+import { PraxConnectionReq } from './message/prax';
 import { JsonValue } from '@bufbuild/protobuf';
+import { PraxConnectionRes } from '@penumbra-zone/client/src/global';
 
 // trigger injected-connection-port to init when a known page is loaded.
 chrome.tabs.onUpdated.addListener(

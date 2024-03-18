@@ -16,3 +16,6 @@ export const errorToast = (error: unknown, message = 'An error occurred') =>
     // inspect the error.
     .duration(Infinity)
     .closeButton();
+
+export const warningToast = (title: string, subtitle: string) =>
+  new Toast().warning().message(title).description(subtitle).duration(5_000);

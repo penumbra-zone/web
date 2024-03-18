@@ -1,5 +1,6 @@
 import { isPraxRequestConnectionMessageEvent } from './message';
-import { PraxConnectionReq, PraxConnectionRes } from '../message/prax';
+import { PraxConnectionReq } from '../message/prax';
+import { PraxConnectionRes } from '@penumbra-zone/client/src/global';
 
 const handleRequest = (ev: MessageEvent<unknown>) => {
   if (isPraxRequestConnectionMessageEvent(ev) && ev.origin === window.origin)

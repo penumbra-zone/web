@@ -6,7 +6,7 @@ import { OriginApproval, PopupType } from './message/popup';
 import { popup } from './popup';
 import Map from '@penumbra-zone/polyfills/src/Map.groupBy';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
-import { PraxConnectionRes } from './message/prax';
+import { PraxConnectionRes } from '@penumbra-zone/client/src/global';
 
 export const originAlreadyApproved = async (url: string): Promise<boolean> => {
   // parses the origin and returns a consistent format

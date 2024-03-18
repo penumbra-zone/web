@@ -1,4 +1,5 @@
-import { PraxConnectionReq, PraxConnectionRes } from '../message/prax';
+import { PraxConnectionReq } from '../message/prax';
+import { PraxConnectionRes } from '@penumbra-zone/client/src/global';
 
 // @ts-expect-error - ts can't understand the injected string
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
