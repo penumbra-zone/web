@@ -14,11 +14,11 @@ import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import {
   classifyTransaction,
   TransactionClassification,
-} from '@penumbra-zone/types/src/transaction';
+} from '@penumbra-zone/perspective/transaction';
 import {
   asPublicTransactionView,
   asReceiverTransactionView,
-} from '@penumbra-zone/types/src/translators';
+} from '@penumbra-zone/perspective/translators';
 
 export interface TxApprovalSlice {
   /**

@@ -1,5 +1,5 @@
 import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { TransactionClassification as TransactionClassification } from './classification';
+import { TransactionClassification } from './classification';
 
 export const classifyTransaction = (txv?: TransactionView): TransactionClassification => {
   // Check if 'txv' is undefined and return "Unknown" if it is.

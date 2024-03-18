@@ -12,6 +12,7 @@
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/bech32": "workspace:*",
     "idb": "^8.0.0"
   },
   "devDependencies": {

@@ -1,0 +1,31 @@
+{
+  "name": "@penumbra-zone/perspective",
+  "version": "0.0.1",
+  "description": "Tools for assuming different perspectives of Penumbra transactions",
+  "type": "module",
+  "exports": {
+    "./*": "./*/index.ts"
+  },
+  "publishConfig": {
+    "files": [
+      "./dist"
+    ],
+    "exports": {
+      "./*": {
+        "import": "./dist/*.js",
+        "types": "./dist/*.d.ts"
+      }
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "clean": "rm -rfv dist",
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "dependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240313211643-35db357c277d.1",
+    "@penumbra-zone/bech32": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
+    "@penumbra-zone/wasm": "workspace:*"
+  }
+}

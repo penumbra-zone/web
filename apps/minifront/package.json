@@ -16,6 +16,8 @@
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/bech32": "workspace:*",
+    "@penumbra-zone/perspective": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/ui": "workspace:*",

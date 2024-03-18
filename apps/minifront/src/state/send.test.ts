@@ -16,7 +16,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { stringToUint8Array } from '@penumbra-zone/types/src/string';
-import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
+import { bech32ToAddress } from '@penumbra-zone/bech32';
 
 vi.mock('../fetchers/address', () => ({
   getAddressByIndex: vi.fn(),
@@ -45,7 +45,7 @@ describe('Send Slice', () => {
         case: 'decoded',
         value: {
           address: {
-            inner: bech32ToUint8Array(
+            inner: bech32ToAddress(
               'penumbra1e8k5cyds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uu0rgkvtjpxy3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd4',
             ),
           },

@@ -2,7 +2,7 @@ import { AddressIcon } from '../../address-icon';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { CopyToClipboardIconButton } from '../../copy-to-clipboard-icon-button';
 import { AddressComponent } from '../../address-component';
-import { bech32Address } from '@penumbra-zone/types/src/address';
+import { bech32Address } from '@penumbra-zone/bech32';
 
 interface AddressViewProps {
   view: AddressView | undefined;
