@@ -1,7 +1,8 @@
 import { RootQuerier } from './root-querier';
 
 import { sha256Hash } from '@penumbra-zone/crypto-web';
-import { computePositionId, decodeSctRoot, getLpNftMetadata } from '@penumbra-zone/wasm';
+import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/src/dex';
+import { decodeSctRoot } from '@penumbra-zone/wasm/src/sct';
 import {
   PositionState,
   PositionState_PositionStateEnum,

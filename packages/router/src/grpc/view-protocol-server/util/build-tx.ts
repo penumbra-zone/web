@@ -4,7 +4,7 @@ import {
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { buildParallel } from '@penumbra-zone/wasm';
+import { buildParallel } from '@penumbra-zone/wasm/src/build';
 import { offscreenClient } from '../../offscreen-client';
 import {
   AuthorizeAndBuildResponse,

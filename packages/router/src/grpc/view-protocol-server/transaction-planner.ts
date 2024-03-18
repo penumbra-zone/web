@@ -1,6 +1,6 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
-import { planTransaction } from '@penumbra-zone/wasm';
+import { planTransaction } from '@penumbra-zone/wasm/src/planner';
 import { Code, ConnectError } from '@connectrpc/connect';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {

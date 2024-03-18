@@ -5,7 +5,7 @@ import {
   getEphemeralByIndex,
   getFullViewingKey,
   getWalletId,
-} from '@penumbra-zone/wasm';
+} from '@penumbra-zone/wasm/src/keys';
 import { Key } from '@penumbra-zone/crypto-web';
 import { ExtensionStorage, LocalStorageState } from '@penumbra-zone/storage';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';

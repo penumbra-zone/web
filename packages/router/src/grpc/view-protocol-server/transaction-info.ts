@@ -1,7 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../../ctx';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { generateTransactionInfo } from '@penumbra-zone/wasm';
+import { generateTransactionInfo } from '@penumbra-zone/wasm/src/transaction';
 
 export const transactionInfo: Impl['transactionInfo'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);

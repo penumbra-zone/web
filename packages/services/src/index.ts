@@ -1,6 +1,6 @@
 import { BlockProcessor, RootQuerier } from '@penumbra-zone/query';
 import { IndexedDb, localExtStorage, syncLastBlockWithLocal } from '@penumbra-zone/storage';
-import { ViewServer } from '@penumbra-zone/wasm';
+import { ViewServer } from '@penumbra-zone/wasm/src/view-server';
 import {
   ServicesInterface,
   ServicesMessage,
