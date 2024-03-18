@@ -1,5 +1,5 @@
 import { approveOrigin, originAlreadyApproved } from './approve-origin';
-import { Prax, PraxResponder } from './message/prax';
+import { PraxConnectionReq, PraxConnectionRes } from './message/prax';
 import { JsonValue } from '@bufbuild/protobuf';
 
 // trigger injected-connection-port to init when a known page is loaded.
@@ -12,7 +12,7 @@ chrome.tabs.onUpdated.addListener(
         url?.startsWith('https://') &&
         (await originAlreadyApproved(url))
       )
-        void chrome.tabs.sendMessage(tabId, Prax.InitConnection);
+        void chrome.tabs.sendMessage(tabId, PraxConnectionReq.Init);
     })(),
 );
 
@@ -20,19 +20,22 @@ chrome.tabs.onUpdated.addListener(
 // this is the only message we handle from an unapproved content script.
 chrome.runtime.onMessage.addListener(
   (
-    req: Prax.RequestConnection | JsonValue,
+    req: PraxConnectionReq.Request | JsonValue,
     sender,
-    respond: PraxResponder<Prax.RequestConnection>,
+    respond: (arg: PraxConnectionRes) => void,
   ) => {
-    if (req !== Prax.RequestConnection) return false; // instruct chrome we will not respond
+    if (req !== PraxConnectionReq.Request) return false; // instruct chrome we will not respond
 
     void approveOrigin(sender).then(
-      approval => {
+      status => {
         // user made a choice
-        respond(approval ? Prax.ApprovedConnection : Prax.DeniedConnection);
-        if (approval) void chrome.tabs.sendMessage(sender.tab!.id!, Prax.InitConnection);
+        respond(status);
+
+        if (status === PraxConnectionRes.Approved) {
+          void chrome.tabs.sendMessage(sender.tab!.id!, PraxConnectionReq.Init);
+        }
       },
-      () => respond(),
+      () => respond(PraxConnectionRes.Denied),
     );
 
     return true; // instruct chrome to wait for the response

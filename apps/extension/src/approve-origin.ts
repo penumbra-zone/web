@@ -1,11 +1,12 @@
 import { JsonValue } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
-import { localExtStorage } from '@penumbra-zone/storage';
+import { localExtStorage, sessionExtStorage } from '@penumbra-zone/storage';
 import { OriginApproval, PopupType } from './message/popup';
 import { popup } from './popup';
 import Map from '@penumbra-zone/polyfills/src/Map.groupBy';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import { PraxConnectionRes } from './message/prax';
 
 export const originAlreadyApproved = async (url: string): Promise<boolean> => {
   // parses the origin and returns a consistent format
@@ -19,9 +20,15 @@ export const approveOrigin = async ({
   origin: senderOrigin,
   tab,
   frameId,
-}: chrome.runtime.MessageSender): Promise<boolean> => {
-  if (!senderOrigin?.startsWith('https://') || !tab?.id || frameId)
+}: chrome.runtime.MessageSender): Promise<PraxConnectionRes> => {
+  if (!senderOrigin?.startsWith('https://') || !tab?.id || frameId) {
     throw new Error('Unsupported sender');
+  }
+
+  const loggedIn = await sessionExtStorage.get('passwordKey');
+  if (!loggedIn) {
+    return PraxConnectionRes.NotLoggedIn;
+  }
 
   // parses the origin and returns a consistent format
   const urlOrigin = new URL(senderOrigin).origin;
@@ -35,9 +42,9 @@ export const approveOrigin = async ({
 
   switch (existingRecord?.choice) {
     case UserChoice.Approved:
-      return true;
+      return PraxConnectionRes.Approved;
     case UserChoice.Ignored:
-      return false;
+      return PraxConnectionRes.Denied;
     case UserChoice.Denied:
     default: {
       const res = await popup<OriginApproval>({
@@ -50,9 +57,9 @@ export const approveOrigin = async ({
         },
       });
 
-      if ('error' in res)
+      if ('error' in res) {
         throw errorFromJson(res.error as JsonValue, undefined, ConnectError.from(res));
-      else if (res.data != null) {
+      } else if (res.data != null) {
         // TODO: is there a race condition here?
         // if something has written after our initial read, we'll clobber them
         void localExtStorage.set('knownSites', [
@@ -64,7 +71,9 @@ export const approveOrigin = async ({
         ]);
       }
 
-      return res.data?.choice === UserChoice.Approved;
+      return res.data?.choice === UserChoice.Approved
+        ? PraxConnectionRes.Approved
+        : PraxConnectionRes.Denied;
     }
   }
 };

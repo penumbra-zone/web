@@ -23,11 +23,13 @@ import {
   isPraxRequestResponseMessageEvent,
   PraxMessage,
 } from './message';
-import { Prax } from '../message/prax';
 
 import '@penumbra-zone/polyfills/src/Promise.withResolvers';
+import { PraxConnectionReq, PraxConnectionRes } from '../message/prax';
 
-const requestMessage: PraxMessage<Prax.RequestConnection> = { [PRAX]: Prax.RequestConnection };
+const requestMessage: PraxMessage<PraxConnectionReq.Request> = {
+  [PRAX]: PraxConnectionReq.Request,
+};
 
 // this is just withResolvers, plus a sync-queryable state attribute
 const connection = Object.assign(Promise.withResolvers<MessagePort>(), { state: false });
@@ -47,7 +49,7 @@ const connectionListener = (msg: MessageEvent<unknown>) => {
 window.addEventListener('message', connectionListener);
 
 const requestPromise = Promise.withResolvers();
-requestPromise.promise.catch(() => connection.reject());
+requestPromise.promise.catch(e => connection.reject(e));
 
 // Called to request a connection to the extension.
 const postRequest = () => {
@@ -60,9 +62,10 @@ const postRequest = () => {
 const requestResponseHandler = (msg: MessageEvent<unknown>) => {
   if (msg.origin === window.origin && isPraxRequestResponseMessageEvent(msg)) {
     // @ts-expect-error - ts can't understand the injected string
-    const choice = msg.data[PRAX] as Prax.ApprovedConnection | Prax.DeniedConnection;
-    if (choice === Prax.ApprovedConnection) requestPromise.resolve();
-    if (choice === Prax.DeniedConnection) requestPromise.reject();
+    const choice = msg.data[PRAX] as PraxConnectionRes;
+    if (choice === PraxConnectionRes.Approved) requestPromise.resolve();
+    if (choice === PraxConnectionRes.Denied) requestPromise.reject('connection was denied');
+    if (choice === PraxConnectionRes.NotLoggedIn) requestPromise.reject('user not logged in');
     window.removeEventListener('message', requestResponseHandler);
   }
 };

@@ -1,10 +1,10 @@
-import { Prax } from '../message/prax';
+import { PraxConnectionReq, PraxConnectionRes } from '../message/prax';
 
 // @ts-expect-error - ts can't understand the injected string
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type PraxMessage<T = unknown> = { [PRAX]: T };
 
-export type PraxRequestConnection = PraxMessage<Prax.RequestConnection>;
+export type PraxRequestConnection = PraxMessage<PraxConnectionReq.Request>;
 export type PraxConnectionPort = PraxMessage<MessagePort>;
 
 export const isPraxMessageEvent = (ev: MessageEvent<unknown>): ev is MessageEvent<PraxMessage> =>
@@ -17,14 +17,20 @@ export const isPraxRequestConnectionMessageEvent = (
   ev: MessageEvent<unknown>,
 ): ev is MessageEvent<PraxRequestConnection> =>
   // @ts-expect-error - ts can't understand the injected string
-  isPraxMessageEventData(ev.data) && ev.data[PRAX] === Prax.RequestConnection;
+  isPraxMessageEventData(ev.data) && ev.data[PRAX] === PraxConnectionReq.Request;
 
 export const isPraxRequestResponseMessageEvent = (
   ev: MessageEvent<unknown>,
-): ev is MessageEvent<Prax.ApprovedConnection | Prax.DeniedConnection> =>
-  isPraxMessageEventData(ev.data) &&
+): ev is MessageEvent => {
+  if (!isPraxMessageEventData(ev.data)) return false;
   // @ts-expect-error - ts can't understand the injected string
-  (ev.data[PRAX] === Prax.ApprovedConnection || ev.data[PRAX] === Prax.DeniedConnection);
+  const status: unknown = ev.data[PRAX];
+  return (
+    status === PraxConnectionRes.Approved ||
+    status === PraxConnectionRes.Denied ||
+    status === PraxConnectionRes.NotLoggedIn
+  );
+};
 
 export const isPraxConnectionPortMessageEvent = (
   ev: MessageEvent<unknown>,

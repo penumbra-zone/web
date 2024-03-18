@@ -1,10 +1,10 @@
-export enum Prax {
-  InitConnection = 'InitConnection',
-  RequestConnection = 'RequestConnection',
-  ApprovedConnection = 'ApprovedConnection',
-  DeniedConnection = 'DeniedConnection',
+export enum PraxConnectionReq {
+  Init = 'Init',
+  Request = 'Request',
 }
 
-export type PraxResponder<T extends Prax> = T extends Prax.RequestConnection
-  ? (r?: Prax.ApprovedConnection | Prax.DeniedConnection) => void
-  : never;
+export enum PraxConnectionRes {
+  Approved = 'Approved',
+  Denied = 'Denied',
+  NotLoggedIn = 'NotLoggedIn',
+}
