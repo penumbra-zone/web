@@ -41,7 +41,7 @@ export const headerLinks: HeaderLink[] = [
   {
     href: PagePath.IBC,
     label: 'IBC',
-    active: true,
+    active: false,
     mobileIcon: <MixerHorizontalIcon className='size-5 text-muted-foreground' />,
   },
 ];

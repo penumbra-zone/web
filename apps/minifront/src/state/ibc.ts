@@ -21,6 +21,7 @@ import { IbcLoaderResponse } from '../components/ibc/ibc-loader';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { bech32IsValid } from '@penumbra-zone/bech32';
+import { errorToast } from '@penumbra-zone/ui';
 
 export interface IbcSendSlice {
   selection: BalancesResponse | undefined;
@@ -69,12 +70,14 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
 
       try {
         const req = await getPlanRequest(get().ibc);
-        await planBuildBroadcast('unknown', req);
+        await planBuildBroadcast('ics20Withdrawal', req);
 
         // Reset form
         set(state => {
           state.ibc.amount = '';
         });
+      } catch (e) {
+        errorToast(e, 'Ics20 withdrawal error').render();
       } finally {
         set(state => {
           state.ibc.txInProgress = false;
