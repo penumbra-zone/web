@@ -2,14 +2,17 @@ import { updatePrices } from './price-indexer';
 import { BatchSwapOutputData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
-import { NUMERAIRE_TOKEN_ID } from '@penumbra-zone/constants/dist/assets';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { base64ToUint8Array } from '@penumbra-zone/types/src/base64';
 
 describe('update prices', () => {
   let indexedDbMock: IndexedDbInterface;
   const updatePriceMock: Mock = vi.fn();
   const height = 123n;
-
+  const numeraireAssetId = 'reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg=';
+  const numeraireAsset: AssetId = new AssetId({
+    inner: base64ToUint8Array(numeraireAssetId),
+  });
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -24,7 +27,7 @@ describe('update prices', () => {
       new BatchSwapOutputData({
         tradingPair: {
           asset1: asset1,
-          asset2: NUMERAIRE_TOKEN_ID,
+          asset2: numeraireAsset,
         },
         delta1: { lo: 250n },
         lambda2: { lo: 1200n },
@@ -32,9 +35,9 @@ describe('update prices', () => {
       }),
     ];
 
-    await updatePrices(indexedDbMock, swapOutputs, height);
+    await updatePrices(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(1);
-    expect(updatePriceMock).toBeCalledWith(asset1, NUMERAIRE_TOKEN_ID, 4.8, height);
+    expect(updatePriceMock).toBeCalledWith(asset1, numeraireAsset, 4.8, height);
   });
 
   it('should update prices correctly for a swapOutput with NUMERAIRE as swapAsset1', async () => {
@@ -42,7 +45,7 @@ describe('update prices', () => {
     const swapOutputs: BatchSwapOutputData[] = [
       new BatchSwapOutputData({
         tradingPair: {
-          asset1: NUMERAIRE_TOKEN_ID,
+          asset1: numeraireAsset,
           asset2: asset1,
         },
         delta2: { lo: 40n },
@@ -51,9 +54,9 @@ describe('update prices', () => {
       }),
     ];
 
-    await updatePrices(indexedDbMock, swapOutputs, height);
+    await updatePrices(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(1);
-    expect(updatePriceMock).toBeCalledWith(asset1, NUMERAIRE_TOKEN_ID, 318.5, height);
+    expect(updatePriceMock).toBeCalledWith(asset1, numeraireAsset, 318.5, height);
   });
 
   it('should not update prices if delta is zero', async () => {
@@ -61,7 +64,7 @@ describe('update prices', () => {
     const swapOutputs: BatchSwapOutputData[] = [
       new BatchSwapOutputData({
         tradingPair: {
-          asset1: NUMERAIRE_TOKEN_ID,
+          asset1: numeraireAsset,
           asset2: asset1,
         },
         delta2: { lo: 0n },
@@ -70,7 +73,7 @@ describe('update prices', () => {
       }),
     ];
 
-    await updatePrices(indexedDbMock, swapOutputs, height);
+    await updatePrices(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(0);
   });
 
@@ -80,16 +83,16 @@ describe('update prices', () => {
       new BatchSwapOutputData({
         tradingPair: {
           asset1: asset1,
-          asset2: NUMERAIRE_TOKEN_ID,
+          asset2: numeraireAsset,
         },
         delta1: { lo: 250n },
         lambda2: { lo: 1200n },
         unfilled1: { lo: 100n },
       }),
     ];
-    await updatePrices(indexedDbMock, swapOutputs, height);
+    await updatePrices(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(1);
-    expect(updatePriceMock).toBeCalledWith(asset1, NUMERAIRE_TOKEN_ID, 8, height);
+    expect(updatePriceMock).toBeCalledWith(asset1, numeraireAsset, 8, height);
   });
 
   it('should not update prices if swap is fully unfilled', async () => {
@@ -97,7 +100,7 @@ describe('update prices', () => {
     const swapOutputs: BatchSwapOutputData[] = [
       new BatchSwapOutputData({
         tradingPair: {
-          asset1: NUMERAIRE_TOKEN_ID,
+          asset1: numeraireAsset,
           asset2: asset1,
         },
         delta2: { lo: 100n },
@@ -106,7 +109,7 @@ describe('update prices', () => {
       }),
     ];
 
-    await updatePrices(indexedDbMock, swapOutputs, height);
+    await updatePrices(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(0);
   });
 });

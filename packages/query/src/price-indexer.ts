@@ -3,7 +3,6 @@ import { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import { divideAmounts, isZero, subtractAmounts } from '@penumbra-zone/types/src/amount';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { NUMERAIRE_TOKEN_ID } from '@penumbra-zone/constants/src/assets';
 import {
   getDelta1Amount,
   getDelta2Amount,
@@ -14,6 +13,7 @@ import {
   getUnfilled1Amount,
   getUnfilled2Amount,
 } from '@penumbra-zone/getters/src/batch-swap-output-data';
+import { base64ToUint8Array } from '@penumbra-zone/types/src/base64';
 
 /**
  *
@@ -48,9 +48,14 @@ export const calculatePrice = (delta: Amount, unfilled: Amount, lambda: Amount):
  */
 export const updatePrices = async (
   indexedDb: IndexedDbInterface,
+  numeraireAssetId: string,
   swapOutputs: BatchSwapOutputData[],
   height: bigint,
 ) => {
+  const numeraireAsset: AssetId = new AssetId({
+    inner: base64ToUint8Array(numeraireAssetId),
+  });
+
   for (const swapOutput of swapOutputs) {
     const swapAsset1 = getSwapAsset1(swapOutput);
     const swapAsset2 = getSwapAsset2(swapOutput);
@@ -59,7 +64,7 @@ export const updatePrices = async (
     let pricedAsset: AssetId | undefined = undefined;
 
     // case for trading pair <pricedAsset,numéraire>
-    if (swapAsset2.equals(NUMERAIRE_TOKEN_ID)) {
+    if (swapAsset2.equals(numeraireAsset)) {
       pricedAsset = swapAsset1;
       // numerairePerUnit = lambda2/(delta1-unfilled1)
       numerairePerUnit = calculatePrice(
@@ -69,7 +74,7 @@ export const updatePrices = async (
       );
     }
     // case for trading pair <numéraire,pricedAsset>
-    else if (swapAsset1.equals(NUMERAIRE_TOKEN_ID)) {
+    else if (swapAsset1.equals(numeraireAsset)) {
       pricedAsset = swapAsset2;
       // numerairePerUnit = lambda1/(delta2-unfilled2)
       numerairePerUnit = calculatePrice(
@@ -81,6 +86,6 @@ export const updatePrices = async (
 
     if (pricedAsset === undefined || numerairePerUnit === 0) continue;
 
-    await indexedDb.updatePrice(pricedAsset, NUMERAIRE_TOKEN_ID, numerairePerUnit, height);
+    await indexedDb.updatePrice(pricedAsset, numeraireAsset, numerairePerUnit, height);
   }
 };
