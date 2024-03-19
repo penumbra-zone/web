@@ -14,7 +14,7 @@
       "outputs": ["bin/**"]
     },
     "compile": {
-      "inputs": ["crate/src/**"],
+      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock"],
       "outputs": ["wasm/**"]
     },
     "host": {
@@ -32,8 +32,14 @@
       "cache": false
     },
     "test": { "dependsOn": ["compile", "//#playwright-install"], "cache": false },
-    "test:rust": { "dependsOn": ["download-keys", "compile"] },
-    "lint:rust": { "dependsOn": ["download-keys", "compile"] },
+    "test:rust": {
+      "dependsOn": ["download-keys", "compile"],
+      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
+    },
+    "lint:rust": {
+      "dependsOn": ["download-keys", "compile"],
+      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
+    },
     "format-check:rust": { "dependsOn": ["download-keys", "compile"] },
     "//#playwright-install": { "cache": false },
     "clean": {
