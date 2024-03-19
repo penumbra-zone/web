@@ -5,8 +5,10 @@ use std::str::FromStr;
 use anyhow::anyhow;
 use penumbra_keys::keys::SpendKey;
 use penumbra_keys::FullViewingKey;
+use penumbra_proto::core::component::sct::v1::commitment_source::Source;
 use penumbra_proto::core::transaction::v1 as pb;
 use penumbra_proto::core::transaction::v1::{TransactionPerspective, TransactionView};
+use penumbra_proto::core::txhash::v1::TransactionId;
 use penumbra_proto::DomainType;
 use penumbra_tct::{Proof, StateCommitment};
 use penumbra_transaction::plan::TransactionPlan;
@@ -274,6 +276,24 @@ pub async fn transaction_info_inner(
                 }
             }
             Action::SwapClaim(claim) => {
+                let nullifier = claim.body.nullifier;
+
+                storage
+                    .get_swap_by_nullifier(&nullifier)
+                    .await?
+                    .and_then(|swap_record| swap_record.source)
+                    .and_then(|source| {
+                        if let Some(Source::Transaction(transaction)) = source.source {
+                            txp.transaction_ids_by_nullifier.insert(
+                                nullifier.to_string(),
+                                TransactionId {
+                                    inner: transaction.id,
+                                },
+                            );
+                        }
+                        Some(())
+                    });
+
                 let output_1_record = storage
                     .get_note(&claim.body.output_1_commitment)
                     .await?
