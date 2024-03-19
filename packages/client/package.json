@@ -21,7 +21,8 @@
   "scripts": {
     "build": "tsc && vite build",
     "clean": "rm -rfv dist",
-    "lint": "eslint \"**/*.ts*\""
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
   },
   "dependencies": {
     "@penumbra-zone/transport-dom": "workspace:*",

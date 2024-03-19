@@ -31,7 +31,7 @@
       "persistent": true,
       "cache": false
     },
-    "test": { "dependsOn": ["compile", "//#playwright-install"] },
+    "test": { "dependsOn": ["compile", "//#playwright-install"], "cache": false },
     "test:rust": { "dependsOn": ["download-keys", "compile"] },
     "lint:rust": { "dependsOn": ["download-keys", "compile"] },
     "format-check:rust": { "dependsOn": ["download-keys", "compile"] },
