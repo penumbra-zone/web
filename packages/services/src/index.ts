@@ -115,7 +115,7 @@ export class Services implements ServicesInterface {
       viewServer,
       querier: this.querier,
       indexedDb,
-      numeraireAssetId: numeraireAssetId,
+      numeraireAssetId,
     });
 
     return { viewServer, blockProcessor, indexedDb, querier: this.querier };
