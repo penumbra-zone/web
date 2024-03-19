@@ -1,30 +1,11 @@
 import { Button, Card, Input } from '@penumbra-zone/ui';
 import { ChainSelector } from './chain-selector';
-import { useMemo } from 'react';
 import { useLoaderData } from 'react-router-dom';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { useStore } from '../../state';
-import { ibcSelector } from '../../state/ibc';
+import { filterBalancesPerChain, ibcSelector, ibcValidationErrors } from '../../state/ibc';
 import InputToken from '../shared/input-token';
 import { InputBlock } from '../shared/input-block';
-import { validateAmount } from '../../state/send';
 import { IbcLoaderResponse } from './ibc-loader';
-
-interface IbcValidationFields {
-  recipientErr: boolean;
-  amountErr: boolean;
-}
-
-const ibcValidationErrors = (
-  asset: BalancesResponse | undefined,
-  amount: string,
-  recipient: string,
-): IbcValidationFields => {
-  return {
-    recipientErr: !recipient, // TODO: validate recipient addr matches chain
-    amountErr: !asset ? false : validateAmount(asset, amount),
-  };
-};
 
 export const IbcOutForm = () => {
   const assetBalances = useLoaderData() as IbcLoaderResponse;
@@ -36,11 +17,10 @@ export const IbcOutForm = () => {
     setAmount,
     selection,
     setSelection,
+    chain,
   } = useStore(ibcSelector);
-
-  const validationErrors = useMemo(() => {
-    return ibcValidationErrors(selection, amount, destinationChainAddress);
-  }, [selection, amount, destinationChainAddress]);
+  const filteredBalances = filterBalancesPerChain(assetBalances, chain);
+  const validationErrors = useStore(ibcValidationErrors);
 
   return (
     <Card gradient className='md:p-5'>
@@ -51,6 +31,7 @@ export const IbcOutForm = () => {
           void sendIbcWithdraw();
         }}
       >
+        <ChainSelector />
         <InputToken
           label='Amount to send'
           placeholder='Enter an amount'
@@ -69,14 +50,19 @@ export const IbcOutForm = () => {
               checkFn: () => validationErrors.amountErr,
             },
           ]}
-          balances={assetBalances}
+          balances={filteredBalances}
         />
-        <ChainSelector />
         <InputBlock
           label='Recipient on destination chain'
           className='mb-1'
           value={destinationChainAddress}
-          validations={[]}
+          validations={[
+            {
+              type: 'error',
+              issue: 'address not valid',
+              checkFn: () => validationErrors.recipientErr,
+            },
+          ]}
         >
           <Input
             variant='transparent'

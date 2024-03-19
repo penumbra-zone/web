@@ -16,6 +16,11 @@ import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 import { planBuildBroadcast } from './helpers';
+import { validateAmount } from './send';
+import { IbcLoaderResponse } from '../components/ibc/ibc-loader';
+import { getAssetId } from '@penumbra-zone/getters/src/metadata';
+import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
+import { bech32IsValid } from '@penumbra-zone/bech32';
 
 export interface IbcSendSlice {
   selection: BalancesResponse | undefined;
@@ -141,3 +146,39 @@ const getPlanRequest = async ({
 };
 
 export const ibcSelector = (state: AllSlices) => state.ibc;
+
+export const ibcValidationErrors = (state: AllSlices) => {
+  return {
+    recipientErr: !state.ibc.destinationChainAddress
+      ? false
+      : !validateAddress(state.ibc.chain, state.ibc.destinationChainAddress),
+    amountErr: !state.ibc.selection ? false : validateAmount(state.ibc.selection, state.ibc.amount),
+  };
+};
+
+const validateAddress = (chain: Chain | undefined, address: string): boolean => {
+  if (!chain || address === '') return false;
+  return bech32IsValid(address, chain.addressPrefix);
+};
+
+/**
+ * Filters the given IBC loader response balances by checking if any of the assets
+ * in the balance view match the staking token's asset ID or any of the native assets
+ * of the specified chain.
+ *
+ * Until unwind support is implemented (https://github.com/penumbra-zone/web/issues/344),
+ * we need to ensure only native assets are sent out.
+ */
+export const filterBalancesPerChain = (
+  allBalances: IbcLoaderResponse,
+  chain: Chain | undefined,
+): BalancesResponse[] => {
+  const penumbraAssetId = getAssetId(STAKING_TOKEN_METADATA);
+  const remoteChainNativeAssets = chain?.nativeAssets ?? [];
+  const assetIdsToCheck = [penumbraAssetId, ...remoteChainNativeAssets];
+
+  return allBalances.filter(({ balanceView }) => {
+    const metadata = getMetadata(balanceView);
+    return assetIdsToCheck.some(assetId => assetId.equals(metadata.penumbraAssetId));
+  });
+};
