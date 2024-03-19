@@ -16,6 +16,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
   AssetId,
+  EstimatedPrice,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
@@ -92,6 +93,12 @@ export interface IndexedDbInterface {
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
   iterateValidatorInfos(): AsyncGenerator<ValidatorInfo, void>;
+  updatePrice(
+    pricedAsset: AssetId,
+    numeraire: AssetId,
+    numerairePerUnit: number,
+    height: bigint,
+  ): Promise<void>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -170,6 +177,13 @@ export interface PenumbraDb extends DBSchema {
   VALIDATOR_INFOS: {
     key: string; // bech32-encoded validator identity key
     value: Jsonified<ValidatorInfo>;
+  };
+  PRICES: {
+    key: [
+      Jsonified<Required<EstimatedPrice>['pricedAsset']['inner']>,
+      Jsonified<Required<EstimatedPrice>['numeraire']['inner']>,
+    ]; // composite key
+    value: Jsonified<EstimatedPrice>;
   };
 }
 
