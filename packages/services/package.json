@@ -5,8 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest run"
+    "lint": "eslint \"**/*.ts*\""
   },
   "dependencies": {
     "@penumbra-zone/constants": "workspace:*",
