@@ -269,6 +269,25 @@ impl IndexedDBStorage {
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)
     }
+
+    pub async fn get_swap_by_nullifier(
+        &self,
+        nullifier: &Nullifier,
+    ) -> WasmResult<Option<SwapRecord>> {
+        let tx = self.db.transaction_on_one(&self.constants.tables.swaps)?;
+        let store = tx.object_store(&self.constants.tables.swaps)?;
+
+        Ok(store
+            .index("nullifier")?
+            .get_owned(base64::Engine::encode(
+                &base64::engine::general_purpose::STANDARD,
+                &nullifier.to_proto().inner,
+            ))?
+            .await?
+            .map(serde_wasm_bindgen::from_value)
+            .transpose()?)
+    }
+
     pub async fn get_fmd_params(&self) -> WasmResult<Option<fmd::Parameters>> {
         let tx = self
             .db
