@@ -1,8 +1,6 @@
 import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
-import { JsonValue, PartialMessage } from '@bufbuild/protobuf';
-import { ConnectError } from '@connectrpc/connect';
-import { errorFromJson } from '@connectrpc/connect/protocol-connect';
+import { PartialMessage } from '@bufbuild/protobuf';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 import { PopupType, TxApproval } from './message/popup';
 import { popup } from './popup';
@@ -14,7 +12,7 @@ export const approveTransaction = async (
   const authorizeRequest = new AuthorizeRequest(partialAuthorizeRequest);
   const transactionView = new TransactionView(partialTransactionView);
 
-  const res = await popup<TxApproval>({
+  const popupResponse = await popup<TxApproval>({
     type: PopupType.TxApproval,
     request: {
       authorizeRequest: new AuthorizeRequest(
@@ -24,11 +22,9 @@ export const approveTransaction = async (
     },
   });
 
-  if ('error' in res)
-    throw errorFromJson(res.error as JsonValue, undefined, ConnectError.from(res));
-  else if (res.data != null) {
-    const resAuthorizeRequest = AuthorizeRequest.fromJson(res.data.authorizeRequest);
-    const resTransactionView = TransactionView.fromJson(res.data.transactionView);
+  if (popupResponse) {
+    const resAuthorizeRequest = AuthorizeRequest.fromJson(popupResponse.authorizeRequest);
+    const resTransactionView = TransactionView.fromJson(popupResponse.transactionView);
 
     if (
       !authorizeRequest.equals(resAuthorizeRequest) ||
@@ -37,5 +33,5 @@ export const approveTransaction = async (
       throw new Error('Invalid response from popup');
   }
 
-  return res.data?.choice;
+  return popupResponse?.choice;
 };

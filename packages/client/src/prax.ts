@@ -13,9 +13,11 @@ import { jsonOptions } from '@penumbra-zone/types/src/registry';
 
 const prax_id = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe' as const;
 const prax_origin = `chrome-extension://${prax_id}`;
+const prax_manifest = `chrome-extension://${prax_id}/manifest.json`;
 
 export class PraxNotAvailableError extends Error {}
 export class PraxNotConnectedError extends Error {}
+export class PraxNotInstalledError extends Error {}
 export class PraxManifestError extends Error {}
 
 export const getPraxPort = async () => {
@@ -24,7 +26,11 @@ export const getPraxPort = async () => {
   return provider.connect();
 };
 
-export const requestPraxConnection = async () => window[PenumbraSymbol]?.[prax_origin]?.request();
+export const requestPraxConnection = async () => {
+  if (window[PenumbraSymbol]?.[prax_origin]?.manifest !== prax_manifest)
+    throw new PraxManifestError('Incorrect Prax manifest href');
+  return window[PenumbraSymbol][prax_origin]?.request();
+};
 
 export const isPraxConnected = () => Boolean(window[PenumbraSymbol]?.[prax_origin]?.isConnected());
 
@@ -50,10 +56,10 @@ export const throwIfPraxNotConnectedTimeout = async (timeout = 500) => {
   if (!isConnected) throw new PraxNotConnectedError('Prax not connected');
 };
 
-export const isPraxInstalled = () => Boolean(window[PenumbraSymbol]?.[prax_origin]);
+export const isPraxAvailable = () => Boolean(window[PenumbraSymbol]?.[prax_origin]);
 
 export const throwIfPraxNotAvailable = () => {
-  if (!isPraxInstalled()) throw new PraxNotAvailableError('Prax not available');
+  if (!isPraxAvailable()) throw new PraxNotAvailableError('Prax not available');
 };
 
 export const throwIfPraxNotConnected = () => {
@@ -61,12 +67,18 @@ export const throwIfPraxNotConnected = () => {
 };
 
 export const getPraxManifest = async () => {
-  const manifestHref = window[PenumbraSymbol]?.[prax_origin]?.manifest;
-  if (manifestHref !== `${prax_origin}/manifest.json`)
-    throw new PraxManifestError('Incorrect Prax manifest href');
-
-  const response = await fetch(manifestHref);
+  const response = await fetch(prax_manifest);
   return (await response.json()) as JsonValue;
+};
+
+export const isPraxInstalled = () =>
+  getPraxManifest().then(
+    () => true,
+    () => false,
+  );
+
+export const throwIfPraxNotInstalled = async () => {
+  if (!(await isPraxInstalled())) throw new PraxNotInstalledError('Prax not installed');
 };
 
 let praxTransport: Transport | undefined;

@@ -1,12 +1,8 @@
-import { PraxConnectionReq } from '../message/prax';
-import { PraxConnectionRes } from '@penumbra-zone/client/src/global';
+import { PraxConnection } from '../message/prax';
 
 // @ts-expect-error - ts can't understand the injected string
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type PraxMessage<T = unknown> = { [PRAX]: T };
-
-export type PraxRequestConnection = PraxMessage<PraxConnectionReq.Request>;
-export type PraxConnectionPort = PraxMessage<MessagePort>;
 
 export const isPraxMessageEvent = (ev: MessageEvent<unknown>): ev is MessageEvent<PraxMessage> =>
   isPraxMessageEventData(ev.data);
@@ -14,27 +10,23 @@ export const isPraxMessageEvent = (ev: MessageEvent<unknown>): ev is MessageEven
 const isPraxMessageEventData = (p: unknown): p is PraxMessage =>
   typeof p === 'object' && p != null && PRAX in p;
 
-export const isPraxRequestConnectionMessageEvent = (
+export const isPraxRequestMessageEvent = (
   ev: MessageEvent<unknown>,
-): ev is MessageEvent<PraxRequestConnection> =>
+): ev is MessageEvent<PraxMessage<PraxConnection.Request>> =>
   // @ts-expect-error - ts can't understand the injected string
-  isPraxMessageEventData(ev.data) && ev.data[PRAX] === PraxConnectionReq.Request;
+  isPraxMessageEventData(ev.data) && ev.data[PRAX] === PraxConnection.Request;
 
-export const isPraxRequestResponseMessageEvent = (
+export const isPraxFailureMessageEvent = (
   ev: MessageEvent<unknown>,
-): ev is MessageEvent => {
+): ev is MessageEvent<PraxMessage<PraxConnection.Denied | PraxConnection.NeedsLogin>> => {
   if (!isPraxMessageEventData(ev.data)) return false;
   // @ts-expect-error - ts can't understand the injected string
-  const status: unknown = ev.data[PRAX];
-  return (
-    status === PraxConnectionRes.Approved ||
-    status === PraxConnectionRes.Denied ||
-    status === PraxConnectionRes.NotLoggedIn
-  );
+  const status = ev.data[PRAX] as unknown;
+  return status === PraxConnection.Denied || status === PraxConnection.NeedsLogin;
 };
 
-export const isPraxConnectionPortMessageEvent = (
+export const isPraxPortMessageEvent = (
   ev: MessageEvent<unknown>,
-): ev is MessageEvent<PraxConnectionPort> =>
+): ev is MessageEvent<PraxMessage<MessagePort>> =>
   // @ts-expect-error - ts can't understand the injected string
   isPraxMessageEventData(ev.data) && ev.data[PRAX] instanceof MessagePort;

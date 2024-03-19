@@ -1,41 +1,44 @@
 import { Button, errorToast, SplashPage, Toaster, warningToast } from '@penumbra-zone/ui';
 import { HeadTag } from './metadata/head-tag';
 
-import { requestPraxConnection } from '@penumbra-zone/client';
+import {
+  requestPraxConnection,
+  throwIfPraxNotAvailable,
+  throwIfPraxNotInstalled,
+} from '@penumbra-zone/client';
 import { useState } from 'react';
-import { PraxConnectionRes } from '@penumbra-zone/client/src/global';
+import { PenumbraRequestFailure } from '@penumbra-zone/client/src/global';
 
 const useExtConnector = () => {
   const [result, setResult] = useState<boolean>();
 
   const request = async () => {
     try {
-      const res = await requestPraxConnection();
-      switch (res) {
-        case PraxConnectionRes.Approved: {
-          location.reload();
-          break;
-        }
-        case PraxConnectionRes.Denied: {
-          errorToast(
-            'You may need to un-ignore this site in your extension settings.',
-            'Connection denied',
-          ).render();
-          break;
-        }
-        case PraxConnectionRes.NotLoggedIn: {
-          warningToast(
-            'Not logged in',
-            'Please login into the extension and reload the page',
-          ).render();
-          break;
-        }
-        case undefined: {
-          throw new Error('Penumbra extension not installed');
-        }
-      }
+      throwIfPraxNotAvailable();
+      await throwIfPraxNotInstalled();
+      await requestPraxConnection();
     } catch (e) {
-      errorToast(e, 'Connection failure').render();
+      if (e instanceof Error && e.cause)
+        switch (e.cause) {
+          case PenumbraRequestFailure.Denied:
+            errorToast(
+              'You may need to un-ignore this site in your extension settings.',
+              'Connection denied',
+            ).render();
+            break;
+          case PenumbraRequestFailure.NeedsLogin:
+            warningToast(
+              'Not logged in',
+              'Please login into the extension and reload the page',
+            ).render();
+            break;
+          default:
+            errorToast(e, 'Connection error').render();
+        }
+      else {
+        console.warn('Unknown connection failure', e);
+        errorToast(e, 'Unknown connection failure').render();
+      }
     } finally {
       setResult(true);
     }

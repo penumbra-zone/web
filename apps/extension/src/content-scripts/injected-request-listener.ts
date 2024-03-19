@@ -1,15 +1,24 @@
-import { isPraxRequestConnectionMessageEvent } from './message';
-import { PraxConnectionReq } from '../message/prax';
-import { PraxConnectionRes } from '@penumbra-zone/client/src/global';
+import { PraxMessage, isPraxRequestMessageEvent } from './message-event';
+import { PraxConnection } from '../message/prax';
 
 const handleRequest = (ev: MessageEvent<unknown>) => {
-  if (isPraxRequestConnectionMessageEvent(ev) && ev.origin === window.origin)
+  if (ev.origin === window.origin && isPraxRequestMessageEvent(ev)) {
     void (async () => {
-      const result = await chrome.runtime.sendMessage<PraxConnectionReq, PraxConnectionRes>(
-        PraxConnectionReq.Request,
-      );
-      window.postMessage({ [PRAX]: result }, '/');
+      window.removeEventListener('message', handleRequest);
+      const result = await chrome.runtime.sendMessage<
+        PraxConnection,
+        Exclude<PraxConnection, PraxConnection.Request>
+      >(PraxConnection.Request);
+      // init is handled by injected-connection-port
+      if (result !== PraxConnection.Init)
+        window.postMessage(
+          { [PRAX]: result } satisfies PraxMessage<
+            PraxConnection.Denied | PraxConnection.NeedsLogin
+          >,
+          '/',
+        );
     })();
+  }
 };
 
 window.addEventListener('message', handleRequest);

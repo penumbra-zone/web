@@ -1,14 +1,13 @@
-export enum PraxConnectionRes {
-  Approved = 'Approved',
+export enum PenumbraRequestFailure {
   Denied = 'Denied',
-  NotLoggedIn = 'NotLoggedIn',
+  NeedsLogin = 'NeedsLogin',
 }
 
 export const PenumbraSymbol = Symbol.for('penumbra');
 
 export interface PenumbraProvider {
   readonly connect: () => Promise<MessagePort>;
-  readonly request: () => Promise<PraxConnectionRes>;
+  readonly request: () => Promise<void>;
   readonly isConnected: () => boolean | undefined;
   readonly manifest: string;
 }

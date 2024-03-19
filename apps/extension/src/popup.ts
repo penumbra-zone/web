@@ -1,4 +1,4 @@
-import { PopupMessage, PopupRequest, PopupResponse, PopupType } from './message/popup';
+import { PopupMessage, PopupRequest, PopupType } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
 import type {
   InternalRequest,
@@ -7,26 +7,24 @@ import type {
 import { isChromeResponderDroppedError } from '@penumbra-zone/types/src/internal-msg/chrome-error';
 import { sessionExtStorage } from '@penumbra-zone/storage';
 import { Code, ConnectError } from '@connectrpc/connect';
+import { errorFromJson } from '@connectrpc/connect/protocol-connect';
+import { JsonValue } from '@bufbuild/protobuf';
 
 export const popup = async <M extends PopupMessage>(
   req: PopupRequest<M>,
-): Promise<PopupResponse<M>> => {
-  const loggedIn = await sessionExtStorage.get('passwordKey');
-  if (!loggedIn) {
-    throw new ConnectError('User must login to extension', Code.Unauthenticated);
-  }
-
+): Promise<M['response']> => {
   await spawnPopup(req.type);
   // We have to wait for React to bootup, navigate to the page, and render the components
   await new Promise(resolve => setTimeout(resolve, 800));
-  return chrome.runtime.sendMessage<InternalRequest<M>, InternalResponse<M>>(req).catch(e => {
-    if (isChromeResponderDroppedError(e))
-      return {
-        type: req.type,
-        data: null,
-      };
-    else throw e;
-  });
+  const response = await chrome.runtime
+    .sendMessage<InternalRequest<M>, InternalResponse<M>>(req)
+    .catch(e => {
+      if (isChromeResponderDroppedError(e)) return null;
+      else throw e;
+    });
+  if (response && 'error' in response)
+    throw errorFromJson(response.error as JsonValue, undefined, ConnectError.from(response));
+  else return response && response.data;
 };
 
 const spawnDetachedPopup = async (path: string) => {
@@ -56,14 +54,21 @@ const throwIfAlreadyOpen = (path: string) =>
       if (popupContexts.length) throw Error('Popup already open');
     });
 
+const throwIfNeedsLogin = async () => {
+  const loggedIn = await sessionExtStorage.get('passwordKey');
+  if (!loggedIn) throw new ConnectError('User must login to extension', Code.Unauthenticated);
+};
+
 const spawnPopup = async (pop: PopupType) => {
   const popUrl = new URL(chrome.runtime.getURL('popup.html'));
 
   switch (pop) {
     case PopupType.OriginApproval:
+      await throwIfNeedsLogin();
       popUrl.hash = PopupPath.ORIGIN_APPROVAL;
       return spawnDetachedPopup(popUrl.href);
     case PopupType.TxApproval:
+      await throwIfNeedsLogin();
       popUrl.hash = PopupPath.TRANSACTION_APPROVAL;
       return spawnDetachedPopup(popUrl.href);
     default:

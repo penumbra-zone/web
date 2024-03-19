@@ -19,57 +19,78 @@
 
 import {
   PenumbraProvider,
+  PenumbraRequestFailure,
   PenumbraSymbol,
-  PraxConnectionRes,
 } from '@penumbra-zone/client/src/global';
-import {
-  isPraxConnectionPortMessageEvent,
-  isPraxRequestResponseMessageEvent,
-  PraxMessage,
-} from './message';
+import { PraxMessage, isPraxFailureMessageEvent, isPraxPortMessageEvent } from './message-event';
 
 import '@penumbra-zone/polyfills/src/Promise.withResolvers';
-import { PraxConnectionReq } from '../message/prax';
+import { PraxConnection } from '../message/prax';
 
-const requestMessage: PraxMessage<PraxConnectionReq.Request> = {
-  [PRAX]: PraxConnectionReq.Request,
-};
+const request = Promise.withResolvers();
 
 // this is just withResolvers, plus a sync-queryable state attribute
 const connection = Object.assign(Promise.withResolvers<MessagePort>(), { state: false });
-void connection.promise.then(
-  () => (connection.state = true),
-  () => (connection.state = false),
+connection.promise.then(
+  () => {
+    connection.state = true;
+    request.resolve();
+  },
+  () => {
+    connection.state = false;
+    request.reject();
+  },
 );
 
 // this resolves the connection promise when the isolated port script indicates
 const connectionListener = (msg: MessageEvent<unknown>) => {
-  if (isPraxConnectionPortMessageEvent(msg) && msg.origin === window.origin) {
+  if (isPraxPortMessageEvent(msg) && msg.origin === window.origin) {
     // @ts-expect-error - ts can't understand the injected string
-    connection.resolve(msg.data[PRAX] as MessagePort);
-    window.removeEventListener('message', connectionListener);
+    const praxPort: unknown = msg.data[PRAX];
+    if (praxPort instanceof MessagePort) connection.resolve(praxPort);
   }
 };
 window.addEventListener('message', connectionListener);
+void connection.promise.finally(() => window.removeEventListener('message', connectionListener));
 
-const requestPromise = Promise.withResolvers<PraxConnectionRes>();
-requestPromise.promise.catch(e => connection.reject(e));
+// declared outside of postRequest to prevent attaching multiple identical listeners
+const requestResponseListener = (msg: MessageEvent<unknown>) => {
+  if (msg.origin === window.origin) {
+    if (isPraxFailureMessageEvent(msg)) {
+      // @ts-expect-error - ts can't understand the injected string
+      const status = msg.data[PRAX] as PraxConnection;
+      const failure = new Error('Connection request failed');
+      switch (status) {
+        case PraxConnection.Denied:
+          failure.cause = PenumbraRequestFailure.Denied;
+          break;
+        case PraxConnection.NeedsLogin:
+          failure.cause = PenumbraRequestFailure.NeedsLogin;
+          break;
+        default:
+          failure.cause = 'Unknown';
+          break;
+      }
+      request.reject(failure);
+    }
+  }
+};
 
 // Called to request a connection to the extension.
 const postRequest = () => {
-  window.addEventListener('message', requestResponseHandler);
-  window.postMessage(requestMessage, window.origin);
-  return requestPromise.promise;
-};
-
-// declared outside of postRequest to prevent attaching multiple identical listeners
-const requestResponseHandler = (msg: MessageEvent<unknown>) => {
-  if (msg.origin === window.origin && isPraxRequestResponseMessageEvent(msg)) {
-    // @ts-expect-error - ts can't understand the injected string
-    const result = msg.data[PRAX] as PraxConnectionRes;
-    requestPromise.resolve(result);
-    window.removeEventListener('message', requestResponseHandler);
+  if (!connection.state) {
+    window.addEventListener('message', requestResponseListener);
+    window.postMessage(
+      {
+        [PRAX]: PraxConnection.Request,
+      } satisfies PraxMessage<PraxConnection.Request>,
+      window.origin,
+    );
+    request.promise
+      .catch(e => connection.reject(e))
+      .finally(() => window.removeEventListener('message', requestResponseListener));
   }
+  return request.promise;
 };
 
 // the actual object we attach to the global record, frozen
