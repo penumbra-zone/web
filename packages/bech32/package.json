@@ -20,7 +20,8 @@
   "scripts": {
     "build": "vite build",
     "clean": "rm -rfv dist",
-    "lint": "eslint \"**/*.ts*\""
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
   },
   "dependencies": {
     "bech32": "^2.0.0"
