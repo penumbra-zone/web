@@ -1,10 +1,13 @@
 import { useEffect } from 'react';
 import { AllSlices, useStore } from '../../state';
 import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
-import { Account } from './account';
+import { Card, CardContent, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
+import { Header } from './account/header';
+import { Delegations } from './account/delegations';
+import { LoaderFunction } from 'react-router-dom';
 import { useStoreShallow } from '../../utils/use-store-shallow';
 
-export const StakingLoader = async () => {
+export const StakingLoader: LoaderFunction = async () => {
   await throwIfPraxNotConnectedTimeout();
   // Await to avoid screen flicker.
   await useStore.getState().staking.loadAndReduceBalances();
@@ -28,5 +31,19 @@ export const StakingLayout = () => {
     void loadUnbondingTokensForCurrentAccount();
   }, [account, loadDelegationsForCurrentAccount, loadUnbondingTokensForCurrentAccount]);
 
-  return <Account />;
+  return (
+    <div className='mx-auto max-w-[1276px]'>
+      <div className='flex flex-col gap-4'>
+        <Header />
+        <Card>
+          <CardHeader>
+            <CardTitle>Delegation tokens</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Delegations />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
 };
