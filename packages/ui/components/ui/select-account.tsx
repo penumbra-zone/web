@@ -33,52 +33,43 @@ export const SelectAccount = ({ getAddrByIndex }: SelectAccountProps) => {
   }, [index, ephemeral]);
 
   return (
-    <>
-      {!address ? (
-        <></>
-      ) : (
-        <div className='flex w-full flex-col'>
-          <AccountSwitcher account={index} onChange={setIndex} />
+    address && (
+      <>
+        <AccountSwitcher account={index} onChange={setIndex} />
 
-          <div className='mt-4 flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
-            <div className='flex items-center gap-[6px] overflow-hidden'>
-              <div className='shrink-0'>
-                <AddressIcon address={address} size={24} />
-              </div>
-
-              <p className='truncate text-sm'>
-                <AddressComponent address={address} ephemeral={ephemeral} />
-              </p>
-            </div>
-            <CopyToClipboardIconButton text={bech32Address(address)} />
+        <div className='mt-4 flex items-center justify-between gap-1 rounded-lg border bg-background px-3 py-4'>
+          <AddressIcon address={address} size={24} />
+          <div className='w-full text-muted-foreground'>
+            <AddressComponent address={address} ephemeral={ephemeral} />
           </div>
-          <div className='mt-2 flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <IncognitoIcon fill='#BDB8B8' />
-              <p className='mt-1 font-bold'>IBC Deposit Address</p>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <InfoIcon className='size-4 cursor-pointer text-muted-foreground hover:text-[#8D5728]' />
-                  </TooltipTrigger>
-                  <TooltipContent className='w-[250px]'>
-                    <p>
-                      IBC transfers into Penumbra post the destination address in public on the
-                      source chain. Use this randomized IBC deposit address to preserve privacy when
-                      transferring funds into Penumbra.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <Switch
-              id='address-mode'
-              checked={ephemeral}
-              onCheckedChange={checked => setEphemeral(checked)}
-            />
-          </div>
+          <CopyToClipboardIconButton text={bech32Address(address)} />
         </div>
-      )}
-    </>
+        <div className='mt-2 flex items-center justify-between'>
+          <div className='flex items-center gap-2'>
+            <IncognitoIcon fill='#BDB8B8' />
+            <p className='mt-1 font-bold'>IBC Deposit Address</p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <InfoIcon className='size-4 cursor-pointer text-muted-foreground hover:text-[#8D5728]' />
+                </TooltipTrigger>
+                <TooltipContent className='w-[250px]'>
+                  <p>
+                    IBC transfers into Penumbra post the destination address in public on the source
+                    chain. Use this randomized IBC deposit address to preserve privacy when
+                    transferring funds into Penumbra.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <Switch
+            id='address-mode'
+            checked={ephemeral}
+            onCheckedChange={checked => setEphemeral(checked)}
+          />
+        </div>
+      </>
+    )
   );
 };

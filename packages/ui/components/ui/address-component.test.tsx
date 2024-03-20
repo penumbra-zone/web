@@ -15,15 +15,17 @@ describe('<AddressComponent />', () => {
     expect(baseElement).toHaveTextContent(address);
   });
 
-  test('uses text-muted-foreground for non-ephemeral addresses', () => {
-    const { getByText } = render(<AddressComponent address={pbAddress} />);
-
-    expect(getByText(address)).toHaveClass('text-muted-foreground');
-  });
-
-  test('uses colored text for ephemeral addresses', () => {
+  test('uses default ephemeralClassName for ephemeral addresses', () => {
     const { getByText } = render(<AddressComponent address={pbAddress} ephemeral />);
 
-    expect(getByText(address)).toHaveClass('text-[#8D5728]');
+    expect(getByText(address)).toHaveClass('text-rust');
+  });
+
+  test('uses custom ephemeralClassName for ephemeral addresses', () => {
+    const { getByText } = render(
+      <AddressComponent address={pbAddress} ephemeral ephemeralClassName='bg-green' />,
+    );
+
+    expect(getByText(address)).toHaveClass('bg-green');
   });
 });
