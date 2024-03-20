@@ -61,6 +61,7 @@ export const createOriginApprovalSlice = (): SliceCreator<OriginApprovalSlice> =
         data: {
           choice,
           origin: requestOrigin,
+          date: Date.now(),
         },
       });
     } catch (e) {

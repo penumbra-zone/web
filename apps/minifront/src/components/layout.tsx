@@ -7,7 +7,7 @@ import '@penumbra-zone/ui/styles/globals.css';
 import { ExtensionNotConnected } from './extension-not-connected';
 import { ExtensionNotInstalled } from './extension-not-installed';
 import { Footer } from './footer';
-import { isPraxConnected, isPraxConnectedTimeout, isPraxInstalled } from '@penumbra-zone/client';
+import { isPraxConnected, isPraxConnectedTimeout, isPraxAvailable } from '@penumbra-zone/client';
 
 export type LayoutLoaderResult =
   | { isInstalled: boolean; isConnected: boolean }
@@ -18,7 +18,7 @@ export type LayoutLoaderResult =
     };
 
 export const LayoutLoader: LoaderFunction = async (): Promise<LayoutLoaderResult> => {
-  const isInstalled = isPraxInstalled();
+  const isInstalled = isPraxAvailable();
   if (!isInstalled) return { isInstalled, isConnected: false };
   const isConnected = isPraxConnected() || (await isPraxConnectedTimeout(1000));
   if (!isConnected) return { isInstalled, isConnected };

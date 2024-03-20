@@ -1,15 +1,24 @@
-import { isPraxRequestConnectionMessageEvent } from './message';
-import { Prax } from '../message/prax';
+import { PraxMessage, isPraxRequestMessageEvent } from './message-event';
+import { PraxConnection } from '../message/prax';
 
 const handleRequest = (ev: MessageEvent<unknown>) => {
-  if (isPraxRequestConnectionMessageEvent(ev) && ev.origin === window.origin)
+  if (ev.origin === window.origin && isPraxRequestMessageEvent(ev)) {
     void (async () => {
+      window.removeEventListener('message', handleRequest);
       const result = await chrome.runtime.sendMessage<
-        Prax.RequestConnection,
-        Prax.ApprovedConnection | Prax.DeniedConnection
-      >(Prax.RequestConnection);
-      window.postMessage({ [PRAX]: result }, '/');
+        PraxConnection,
+        Exclude<PraxConnection, PraxConnection.Request>
+      >(PraxConnection.Request);
+      // init is handled by injected-connection-port
+      if (result !== PraxConnection.Init)
+        window.postMessage(
+          { [PRAX]: result } satisfies PraxMessage<
+            PraxConnection.Denied | PraxConnection.NeedsLogin
+          >,
+          '/',
+        );
     })();
+  }
 };
 
 window.addEventListener('message', handleRequest);
