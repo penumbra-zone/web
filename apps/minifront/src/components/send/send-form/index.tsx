@@ -16,6 +16,9 @@ export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<Balances
   await throwIfPraxNotConnectedTimeout();
   const assetBalances = await getBalances();
 
+  for (const assetBalance of assetBalances) {
+    console.log(assetBalance);
+  }
   if (assetBalances[0]) {
     // set initial account if accounts exist and asset if account has asset list
     useStore.setState(state => {
