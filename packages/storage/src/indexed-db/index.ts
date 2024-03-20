@@ -23,11 +23,7 @@ import {
   AddressIndex,
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import {
-  assetPatterns,
-  DelegationCaptureGroups,
-  localAssets,
-} from '@penumbra-zone/constants/src/assets';
+import { assetPatterns, localAssets } from '@penumbra-zone/constants/src/assets';
 import {
   Position,
   PositionId,
@@ -361,7 +357,7 @@ export class IndexedDb implements IndexedDbInterface {
     for await (const assetCursor of this.db.transaction('ASSETS').store) {
       const denomMetadata = Metadata.fromJson(assetCursor.value);
       if (
-        assetPatterns.delegationToken.test(denomMetadata.display) &&
+        assetPatterns.delegationToken.matches(denomMetadata.display) &&
         denomMetadata.penumbraAssetId
       ) {
         delegationAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId.inner), denomMetadata);
@@ -396,15 +392,15 @@ export class IndexedDb implements IndexedDbInterface {
         // delegation asset denom consists of prefix 'delegation_' and validator identity key in bech32m encoding
         // For example, in denom 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqqas55kkpyf6lhsqs2w0zar'
         // 'penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar' is  validator identity key.
-        const regexResult = assetPatterns.delegationToken.exec(asset?.display ?? '');
+        const regexResult = assetPatterns.delegationToken.capture(asset?.display ?? '');
         if (!regexResult) throw new Error('expected delegation token identity key not present');
-
-        const { bech32IdentityKey } = regexResult.groups as unknown as DelegationCaptureGroups;
 
         notesForVoting.push(
           new NotesForVotingResponse({
             noteRecord: note,
-            identityKey: new IdentityKey({ ik: bech32ToIdentityKey(bech32IdentityKey) }),
+            identityKey: new IdentityKey({
+              ik: bech32ToIdentityKey(regexResult.bech32IdentityKey),
+            }),
           }),
         );
       }

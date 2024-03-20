@@ -21,7 +21,6 @@ import { IbcLoaderResponse } from '../components/ibc/ibc-loader';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 import {
   assetPatterns,
-  IbcCaptureGroups,
   localAssets,
   STAKING_TOKEN_METADATA,
 } from '@penumbra-zone/constants/src/assets';
@@ -183,11 +182,9 @@ export const filterBalancesPerChain = (
   const penumbraAssetId = getAssetId(STAKING_TOKEN_METADATA);
   const assetsWithMatchingChannel = localAssets
     .filter(a => {
-      const ibcAsset = assetPatterns.ibc.exec(a.base);
-      if (!ibcAsset) return false;
-
-      const { channel } = ibcAsset.groups as unknown as IbcCaptureGroups;
-      return chain?.ibcChannel === channel;
+      const match = assetPatterns.ibc.capture(a.base);
+      if (!match) return false;
+      return chain?.ibcChannel === match.channel;
     })
     .map(m => m.penumbraAssetId!);
 
