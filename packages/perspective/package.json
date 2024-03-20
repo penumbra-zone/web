@@ -4,19 +4,7 @@
   "description": "Tools for assuming different perspectives of Penumbra transactions",
   "type": "module",
   "exports": {
-    "./classification": "./transaction/classification.ts",
-    "./classify": "./transaction/classify.ts",
-    "./perspective": "./transaction/perspective.ts",
-    "./action-view": "./translators/action-view.ts",
-    "./address-view": "./translators/address-view.ts",
-    "./memo-view": "./translators/memo-view.ts",
-    "./output-view": "./translators/output-view.ts",
-    "./spend-view": "./translators/spend-view.ts",
-    "./transaction-view": "./translators/transaction-view.ts",
-    "./types": "./translators/types.ts",
-    "./get-address-view": "./plan/get-address-view.ts",
-    "./index": "./plan/index.ts",
-    "./view-action-plan": "./plan/view-action-plan.ts"
+    "./*": "./*.ts"
   },
   "publishConfig": {
     "files": [

@@ -11,12 +11,12 @@ import type {
 } from '@penumbra-zone/types/src/internal-msg/shared';
 import type { Jsonified, Stringified } from '@penumbra-zone/types/src/jsonified';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
-import { classifyTransaction } from '@penumbra-zone/perspective/classify';
-import { TransactionClassification } from '@penumbra-zone/perspective/classification';
+import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
+import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
 import {
   asPublicTransactionView,
   asReceiverTransactionView,
-} from '@penumbra-zone/perspective/transaction-view';
+} from '@penumbra-zone/perspective/translators/transaction-view';
 
 export interface TxApprovalSlice {
   /**

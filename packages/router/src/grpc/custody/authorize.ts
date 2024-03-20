@@ -6,7 +6,7 @@ import { authorizePlan } from '@penumbra-zone/wasm/src/build';
 import { Key } from '@penumbra-zone/crypto-web/src/encryption';
 import { Code, ConnectError, HandlerContext } from '@connectrpc/connect';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { viewTransactionPlan } from '@penumbra-zone/perspective/index';
+import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/index';
 import { bech32AssetId } from '@penumbra-zone/bech32/asset';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 import { Box } from '@penumbra-zone/types/src/box';

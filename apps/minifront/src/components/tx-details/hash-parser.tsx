@@ -4,7 +4,7 @@ import { TransactionViewComponent } from '@penumbra-zone/ui/components/ui/tx/vie
 import { TxDetailsLoaderResult } from '.';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
-import { viewFromEmptyPerspective } from '@penumbra-zone/perspective/perspective';
+import { viewFromEmptyPerspective } from '@penumbra-zone/perspective/transaction/perspective';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
