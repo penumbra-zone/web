@@ -15,7 +15,7 @@ import { Services } from '@penumbra-zone/services/src/index';
 import { transactionInfo } from './transaction-info';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
-vi.mock('@penumbra-zone/wasm', () => ({
+vi.mock('@penumbra-zone/wasm/src/transaction', () => ({
   generateTransactionInfo: mockTransactionInfo,
 }));
 

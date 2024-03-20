@@ -16,7 +16,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
-vi.mock('@penumbra-zone/wasm', () => ({
+vi.mock('@penumbra-zone/wasm/src/transaction', () => ({
   generateTransactionInfo: mockTransactionInfo,
 }));
 describe('TransactionInfoByHash request handler', () => {

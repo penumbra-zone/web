@@ -12,7 +12,7 @@ import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { transactionPlanner } from './transaction-planner';
 
 const mockPlanTransaction = vi.hoisted(() => vi.fn());
-vi.mock('@penumbra-zone/wasm', () => ({
+vi.mock('@penumbra-zone/wasm/src/planner', () => ({
   planTransaction: mockPlanTransaction,
 }));
 describe('TransactionPlanner request handler', () => {

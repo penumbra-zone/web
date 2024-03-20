@@ -14,7 +14,7 @@ import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils';
 
 const mockSha256 = vi.hoisted(() => vi.fn());
-vi.mock('@penumbra-zone/crypto-web', () => ({
+vi.mock('@penumbra-zone/crypto-web/src/sha256', () => ({
   sha256Hash: mockSha256,
 }));
 
