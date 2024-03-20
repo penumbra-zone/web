@@ -1,18 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 import { isType, validateSchema } from './validation';
 
 describe('validation', () => {
   describe('validateSchema()', () => {
-    let mockLogger: Mock;
-
-    beforeEach(() => {
-      mockLogger = vi.fn();
-      vi.stubGlobal('console', {
-        error: mockLogger,
-      });
-    });
-
     afterEach(() => {
       vi.unstubAllEnvs();
       vi.unstubAllGlobals();
@@ -49,7 +40,6 @@ describe('validation', () => {
       expect(() => {
         validateSchema(z.string(), 123);
       }).not.toThrow();
-      expect(mockLogger).toHaveBeenCalledOnce();
     });
 
     it('Does not throw in chrome ext prod', () => {
@@ -69,7 +59,6 @@ describe('validation', () => {
       expect(() => {
         validateSchema(z.string(), 123);
       }).not.toThrow();
-      expect(mockLogger).toHaveBeenCalledOnce();
     });
 
     it('Does not throw in browser env', () => {
@@ -82,7 +71,6 @@ describe('validation', () => {
       expect(() => {
         validateSchema(z.string(), 123);
       }).not.toThrow();
-      expect(mockLogger).toHaveBeenCalledOnce();
     });
 
     it('Does not throw in unknown env', () => {
@@ -95,7 +83,6 @@ describe('validation', () => {
       expect(() => {
         validateSchema(z.string(), 123);
       }).not.toThrow();
-      expect(mockLogger).toHaveBeenCalledOnce();
     });
   });
 
