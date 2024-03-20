@@ -22,11 +22,13 @@ import type { BlockProcessorInterface } from '@penumbra-zone/types/src/block-pro
 import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
 import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
+import { updatePrices } from './price-indexer';
 
 interface QueryClientProps {
   querier: RootQuerier;
   indexedDb: IndexedDbInterface;
   viewServer: ViewServerInterface;
+  numeraireAssetId: string;
 }
 
 const blankTxSource = new CommitmentSource({
@@ -38,12 +40,14 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly indexedDb: IndexedDbInterface;
   private readonly viewServer: ViewServerInterface;
   private readonly abortController: AbortController = new AbortController();
+  private readonly numeraireAssetId: string;
   private syncPromise: Promise<void> | undefined;
 
-  constructor({ indexedDb, viewServer, querier }: QueryClientProps) {
+  constructor({ indexedDb, viewServer, querier, numeraireAssetId }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
     this.querier = querier;
+    this.numeraireAssetId = numeraireAssetId;
   }
 
   // If syncBlocks() is called multiple times concurrently, they'll all wait for
@@ -230,6 +234,18 @@ export class BlockProcessor implements BlockProcessorInterface {
         // - calls wasm for each relevant tx
         // - saves to idb
         await this.saveTransactions(compactBlock.height, relevantTx);
+      }
+
+      // we can't use third-party price oracles for privacy reasons,
+      // so we have to get asset prices from swap results during block scans
+      // and store them locally in indexed-db.
+      if (compactBlock.swapOutputs.length) {
+        await updatePrices(
+          this.indexedDb,
+          this.numeraireAssetId,
+          compactBlock.swapOutputs,
+          compactBlock.height,
+        );
       }
 
       // We only query Tendermint for the latest known block height once, when

@@ -1,10 +1,6 @@
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { createGetter } from './utils/create-getter';
-import {
-  assetPatterns,
-  DelegationCaptureGroups,
-  UnbondingCaptureGroups,
-} from '@penumbra-zone/constants/src/assets';
+import { assetPatterns } from '@penumbra-zone/constants/src/assets';
 
 export const getAssetId = createGetter((metadata?: Metadata) => metadata?.penumbraAssetId);
 
@@ -35,11 +31,10 @@ export const getDisplayDenomExponent = createGetter(
 export const getStartEpochIndex = createGetter((metadata?: Metadata) => {
   if (!metadata) return undefined;
 
-  const unbondingMatch = assetPatterns.unbondingToken.exec(metadata.display);
+  const unbondingMatch = assetPatterns.unbondingToken.capture(metadata.display);
 
   if (unbondingMatch) {
-    const { epoch } = unbondingMatch.groups as unknown as UnbondingCaptureGroups;
-
+    const { epoch } = unbondingMatch;
     if (epoch) return BigInt(epoch);
   }
 
@@ -55,16 +50,14 @@ export const getStartEpochIndex = createGetter((metadata?: Metadata) => {
 export const getValidatorIdentityKeyAsBech32String = createGetter((metadata?: Metadata) => {
   if (!metadata) return undefined;
 
-  const delegationMatch = assetPatterns.delegationToken.exec(metadata.display);
+  const delegationMatch = assetPatterns.delegationToken.capture(metadata.display);
   if (delegationMatch) {
-    const { bech32IdentityKey } = delegationMatch.groups as unknown as DelegationCaptureGroups;
-    return bech32IdentityKey;
+    return delegationMatch.bech32IdentityKey;
   }
 
-  const unbondingMatch = assetPatterns.unbondingToken.exec(metadata.display);
+  const unbondingMatch = assetPatterns.unbondingToken.capture(metadata.display);
   if (unbondingMatch) {
-    const { bech32IdentityKey } = unbondingMatch.groups as unknown as UnbondingCaptureGroups;
-    return bech32IdentityKey;
+    return unbondingMatch.bech32IdentityKey;
   }
 
   return undefined;

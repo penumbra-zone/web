@@ -12,9 +12,9 @@ import {
 } from '@penumbra-zone/getters/src/validator-info';
 import { getRateBpsFromFundingStream } from '@penumbra-zone/getters/src/funding-stream';
 import { joinLoHiAmount } from './amount';
-import { bech32IdentityKey } from './identity-key';
+import { bech32IdentityKey } from '@penumbra-zone/bech32';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { assetPatterns, DelegationCaptureGroups } from '@penumbra-zone/constants/src/assets';
+import { assetPatterns } from '@penumbra-zone/constants/src/assets';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
 
 export const getStateLabel = (validatorInfo: ValidatorInfo): string =>
@@ -35,13 +35,13 @@ export const isDelegationTokenForValidator = (
   delegation: ValueView,
   validatorInfo: ValidatorInfo,
 ): boolean => {
-  const delegationMatch = assetPatterns.delegationToken.exec(getDisplayDenomFromView(delegation));
+  const delegationMatch = assetPatterns.delegationToken.capture(
+    getDisplayDenomFromView(delegation),
+  );
   if (!delegationMatch) return false;
 
-  const matchGroups = delegationMatch.groups as unknown as DelegationCaptureGroups;
-
   return (
-    matchGroups.bech32IdentityKey ===
+    delegationMatch.bech32IdentityKey ===
     bech32IdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo))
   );
 };

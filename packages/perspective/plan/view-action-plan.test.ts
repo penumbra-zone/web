@@ -25,14 +25,13 @@ import {
   Delegate,
   Undelegate,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { bech32AssetId } from '@penumbra-zone/getters/src/asset';
-import { bech32ToUint8Array } from '@penumbra-zone/types/src/address';
+import { bech32AssetId, bech32ToAddress } from '@penumbra-zone/bech32';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 
 describe('viewActionPlan()', () => {
   const addressAsBech32 =
     'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
-  const address = { inner: bech32ToUint8Array(addressAsBech32) };
+  const address = new Address({ inner: bech32ToAddress(addressAsBech32) });
   const assetId = new AssetId({ inner: new Uint8Array() });
   const assetIdAsString = bech32AssetId(assetId);
   const metadata = new Metadata({ penumbraAssetId: assetId });
@@ -126,7 +125,7 @@ describe('viewActionPlan()', () => {
   describe('`output` action', () => {
     const addressAsBech32 =
       'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
-    const destAddress = new Address({ inner: bech32ToUint8Array(addressAsBech32) });
+    const destAddress = new Address({ inner: bech32ToAddress(addressAsBech32) });
     const validOutputActionPlan = new ActionPlan({
       action: {
         case: 'output',
@@ -428,7 +427,7 @@ describe('viewActionPlan()', () => {
   });
 
   describe('`withdrawal` action', () => {
-    test('returns an action view with the `ics20Withdrawal` case and no value', () => {
+    test('returns an action view with the `ics20Withdrawal` case as-is', () => {
       const actionPlan = new ActionPlan({
         action: {
           case: 'ics20Withdrawal',
@@ -443,7 +442,7 @@ describe('viewActionPlan()', () => {
           new ActionView({
             actionView: {
               case: 'ics20Withdrawal',
-              value: {},
+              value: { amount: { hi: 1n, lo: 0n } },
             },
           }),
         ),

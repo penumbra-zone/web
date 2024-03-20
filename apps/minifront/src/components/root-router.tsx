@@ -7,12 +7,13 @@ import { DashboardLayout } from './dashboard/layout';
 import { TxDetails, TxDetailsErrorBoundary, TxDetailsLoader } from './tx-details';
 import { SendLayout } from './send/layout';
 import { SendAssetBalanceLoader, SendForm } from './send/send-form';
-import IbcForm, { IbcAssetBalanceLoader } from './send/ibc/ibc-form';
 import { Receive } from './send/receive';
 import { ErrorBoundary } from './shared/error-boundary';
 import { SwapLayout } from './swap/layout';
 import { SwapLoader } from './swap/swap-loader';
 import { StakingLayout, StakingLoader } from './staking/layout';
+import { IbcLoader } from './ibc/ibc-loader';
+import { IbcLayout } from './ibc/layout';
 
 export const rootRouter = createHashRouter([
   {
@@ -53,11 +54,6 @@ export const rootRouter = createHashRouter([
             path: PagePath.RECEIVE,
             element: <Receive />,
           },
-          {
-            path: PagePath.IBC,
-            loader: IbcAssetBalanceLoader,
-            element: <IbcForm />,
-          },
         ],
       },
       {
@@ -75,6 +71,11 @@ export const rootRouter = createHashRouter([
         path: PagePath.STAKING,
         loader: StakingLoader,
         element: <StakingLayout />,
+      },
+      {
+        path: PagePath.IBC,
+        loader: IbcLoader,
+        element: <IbcLayout />,
       },
     ],
   },

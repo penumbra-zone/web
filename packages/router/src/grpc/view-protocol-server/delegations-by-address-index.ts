@@ -1,8 +1,8 @@
 import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
 import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
-import { bech32IdentityKey } from '@penumbra-zone/types/src/identity-key';
-import { assetPatterns, DelegationCaptureGroups } from '@penumbra-zone/constants/src/assets';
+import { bech32IdentityKey } from '@penumbra-zone/bech32';
+import { assetPatterns } from '@penumbra-zone/constants/src/assets';
 import { Any, PartialMessage } from '@bufbuild/protobuf';
 import { getValidatorInfo } from '@penumbra-zone/getters/src/validator-info-response';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/src/validator-info';
@@ -25,12 +25,10 @@ import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
 import { Impl } from '.';
 
 const isDelegationBalance = (balance: BalancesResponse, identityKey: IdentityKey) => {
-  const match = assetPatterns.delegationToken.exec(getDisplayDenomFromView(balance.balanceView));
+  const match = assetPatterns.delegationToken.capture(getDisplayDenomFromView(balance.balanceView));
   if (!match) return false;
 
-  const matchGroups = match.groups as unknown as DelegationCaptureGroups;
-
-  return bech32IdentityKey(identityKey) === matchGroups.bech32IdentityKey;
+  return bech32IdentityKey(identityKey) === match.bech32IdentityKey;
 };
 
 const getDelegationTokenBaseDenom = (validatorInfo: ValidatorInfo) =>

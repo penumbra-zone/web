@@ -18,4 +18,6 @@ export type TransactionClassification =
   /** The transaction contains an `undelegate` action. */
   | 'undelegate'
   /** The transaction contains an `undelegateClaim` action. */
-  | 'undelegateClaim';
+  | 'undelegateClaim'
+  /** The transaction contains an `ics20Withdrawal` action. */
+  | 'ics20Withdrawal';

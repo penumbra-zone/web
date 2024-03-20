@@ -31,7 +31,7 @@ const getAndSetDefaultAssetBalances = async () => {
   // filter assets that are not available for swap
   const filteredAssetBalances = assetBalances.filter(b =>
     [assetPatterns.lpNft, assetPatterns.proposalNft, assetPatterns.votingReceipt].every(
-      pattern => !pattern.test(getDisplayDenomFromView(b.balanceView)),
+      pattern => !pattern.matches(getDisplayDenomFromView(b.balanceView)),
     ),
   );
   // set initial denom in if there is an available balance
