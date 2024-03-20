@@ -11,15 +11,6 @@ export const STAKING_TOKEN_METADATA = localAssets.find(
   metadata => metadata.display === STAKING_TOKEN,
 )!;
 
-export interface AssetPatterns {
-  lpNft: RegExp;
-  delegationToken: RegExp;
-  proposalNft: RegExp;
-  unbondingToken: RegExp;
-  votingReceipt: RegExp;
-  ibc: RegExp;
-}
-
 export interface IbcCaptureGroups {
   channel: string;
   denom: string;
@@ -36,8 +27,32 @@ export interface UnbondingCaptureGroups {
   bech32IdentityKey: string;
 }
 
+export interface AssetPatterns {
+  lpNft: RegexMatcher;
+  delegationToken: RegexMatcher<DelegationCaptureGroups>;
+  proposalNft: RegexMatcher;
+  unbondingToken: RegexMatcher<UnbondingCaptureGroups>;
+  votingReceipt: RegexMatcher;
+  ibc: RegexMatcher<IbcCaptureGroups>;
+}
+
+export class RegexMatcher<T = never> {
+  constructor(private readonly regex: RegExp) {}
+
+  matches(str: string): boolean {
+    return this.regex.exec(str) !== null;
+  }
+
+  capture(str: string): T | undefined {
+    const match = this.regex.exec(str);
+    if (!match) return undefined;
+    return match.groups as unknown as T;
+  }
+}
+
 /**
- * Call `.test()` on these RegExp patterns to test whether a token is of a given type.
+ * Call `.matches()` on these RegExp patterns to test whether a token is of a given type.
+ * Call `.capture()` to grab the content by its capture groups (if present)
  *
  * NOTE - SECURITY IMPLICATIONS: These RegExps each assert that the given prefix
  * is at the _beginning_ of the string. This ensures that they are
@@ -53,18 +68,18 @@ export interface UnbondingCaptureGroups {
  * https://github.com/penumbra-zone/penumbra/blob/main/crates/core/asset/src/asset/registry.rs
  */
 export const assetPatterns: AssetPatterns = {
-  lpNft: new RegExp(/^lpnft_/),
-  delegationToken: new RegExp(
+  lpNft: new RegexMatcher(/^lpnft_/),
+  delegationToken: new RegexMatcher(
     /^delegation_(?<bech32IdentityKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
   ),
-  proposalNft: new RegExp(/^proposal_/),
+  proposalNft: new RegexMatcher(/^proposal_/),
   /**
    * Unbonding tokens have only one denom unit, which is the base denom. Hence
    * the extra `u` at the beginning.
    */
-  unbondingToken: new RegExp(
+  unbondingToken: new RegexMatcher(
     /^uunbonding_epoch_(?<epoch>[0-9]+)_(?<bech32IdentityKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
   ),
-  votingReceipt: new RegExp(/^voted_on_/),
-  ibc: new RegExp(/transfer\/(?<channel>channel-\d+)\/(?<denom>.*)/),
+  votingReceipt: new RegexMatcher(/^voted_on_/),
+  ibc: new RegexMatcher(/^transfer\/(?<channel>channel-\d+)\/(?<denom>.*)/),
 };
