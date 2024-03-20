@@ -16,7 +16,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { stringToUint8Array } from '@penumbra-zone/types/src/string';
-import { bech32ToAddress } from '@penumbra-zone/bech32/address';
+import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
 
 vi.mock('../fetchers/address', () => ({
   getAddressByIndex: vi.fn(),

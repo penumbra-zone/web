@@ -24,7 +24,7 @@ import {
   localAssets,
   STAKING_TOKEN_METADATA,
 } from '@penumbra-zone/constants/src/assets';
-import { bech32IsValid } from '@penumbra-zone/bech32/validate';
+import { bech32IsValid } from '@penumbra-zone/bech32/src/validate';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 
 export interface IbcSendSlice {

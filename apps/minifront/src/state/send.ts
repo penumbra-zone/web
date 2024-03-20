@@ -19,7 +19,7 @@ import {
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/src/address-view';
 import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 import { fromValueView } from '@penumbra-zone/types/src/amount';
-import { isPenumbraAddr } from '@penumbra-zone/bech32/address';
+import { isPenumbraAddr } from '@penumbra-zone/bech32/src/address';
 
 export interface SendSlice {
   selection: BalancesResponse | undefined;

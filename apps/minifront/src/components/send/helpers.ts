@@ -1,5 +1,5 @@
 import { Validation } from '../shared/validation-result';
-import { isPenumbraAddr } from '@penumbra-zone/bech32/address';
+import { isPenumbraAddr } from '@penumbra-zone/bech32/src/address';
 
 export const penumbraAddrValidation = (): Validation => {
   return {

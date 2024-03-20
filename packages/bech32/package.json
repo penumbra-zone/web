@@ -4,11 +4,7 @@
   "description": "Tools for manipulating Penumbra bech32 strings",
   "type": "module",
   "exports": {
-    "./address": "./src/address.ts",
-    "./asset": "./src/asset.ts",
-    "./identity-key": "./src/identity-key.ts",
-    "./penumbra-bech32": "./src/penumbra-bech32.ts",
-    "./validate": "./src/validate.ts"
+    "./*": "./*.ts"
   },
   "publishConfig": {
     "files": [

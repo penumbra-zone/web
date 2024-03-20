@@ -9,7 +9,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { localAssets } from '@penumbra-zone/constants/src/assets';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { bech32ToAddress } from '@penumbra-zone/bech32/address';
+import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
 
 describe('Swap Slice', () => {
   const selectionExample = new BalancesResponse({

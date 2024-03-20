@@ -6,7 +6,7 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { bech32IdentityKey } from '@penumbra-zone/bech32/identity-key';
+import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
 import { getValidatorInfoFromValueView } from '@penumbra-zone/getters/src/value-view';
 import {
   AddressView,

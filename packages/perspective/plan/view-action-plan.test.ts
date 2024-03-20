@@ -25,8 +25,8 @@ import {
   Delegate,
   Undelegate,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { bech32AssetId } from '@penumbra-zone/bech32/asset';
-import { bech32ToAddress } from '@penumbra-zone/bech32/address';
+import { bech32AssetId } from '@penumbra-zone/bech32/src/asset';
+import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 
 describe('viewActionPlan()', () => {
