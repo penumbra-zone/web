@@ -11,21 +11,9 @@
       "./dist"
     ],
     "exports": {
-      "./*": {
-        "./classification": "./dist/transaction/classification.js",
-        "./classify": "./dist/transaction/classify.js",
-        "./perspective": "./dist/transaction/perspective.js",
-        "./action-view": "./dist/transaction/action-view.js",
-        "./address-view": "./dist/transaction/address-view.js",
-        "./memo-view": "./dist/transaction/memo-view.js",
-        "./output-view": "./dist/transaction/output-view.js",
-        "./spend-view": "./dist/transaction/spend-view.js",
-        "./transaction-view": "./dist/transaction/transaction-view.js",
-        "./types": "./dist/transaction/types.js",
-        "./get-address-view": "./dist/plan/get-address-view.js",
-        "./index": "./dist/plan/index.js",
-        "./view-action-plan": "./dist/plan/view-action-plan.js"
-      }
+      "./plan/*": "./dist/plan/*.js",
+      "./transaction/*": "./dist/transaction/*.js",
+      "./translators/*": "./dist/translators/*.js"
     }
   },
   "scripts": {

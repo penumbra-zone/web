@@ -11,12 +11,25 @@
       "./dist"
     ],
     "exports": {
-      "./*": {
-        "./address": "./dist/src/address.js",
-        "./asset": "./dist/src/asset.js",
-        "./identity-key": "./dist/src/identity-key.js",
-        "./penumbra-bech32": "./dist/src/penumbra-bech32.js",
-        "./validate": "./dist/src/validate.js"
+      "./address": {
+        "import": "./dist/address.js",
+        "types": "./dist/address.d.ts"
+      },
+      "./asset": {
+        "import": "./dist/asset.js",
+        "types": "./dist/asset.d.ts"
+      },
+      "./identity-key": {
+        "import": "./dist/identity-key.js",
+        "types": "./dist/identity-key.d.ts"
+      },
+      "./penumbra-bech32": {
+        "import": "./dist/penumbra-bech32.js",
+        "types": "./dist/penumbra-bech32.d.ts"
+      },
+      "./validate": {
+        "import": "./dist/validate.js",
+        "types": "./dist/validate.d.ts"
       }
     }
   },
