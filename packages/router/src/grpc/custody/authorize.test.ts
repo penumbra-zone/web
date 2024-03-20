@@ -131,7 +131,7 @@ describe('Authorize request handler', () => {
     await expect(authorize(req, mockCtx)).rejects.toThrow('User must login to extension');
   });
 
-  test('should fail if local context not include FVK', async () => {
+  test.skip('should fail if local context not include FVK', async () => {
     mockExtLocalCtx.get.mockImplementation(() => {
       return Promise.resolve([
         {

@@ -1,4 +1,3 @@
-import type { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import type { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
 import type {
   InternalMessage,
@@ -28,11 +27,9 @@ export type TxApproval = InternalMessage<
   PopupType.TxApproval,
   {
     authorizeRequest: Jsonified<AuthorizeRequest>;
-    transactionView: Jsonified<TransactionView>;
   },
   null | {
     authorizeRequest: Jsonified<AuthorizeRequest>;
-    transactionView: Jsonified<TransactionView>;
     choice: UserChoice;
   }
 >;

@@ -3,6 +3,7 @@ import {
   ActionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import {
+  AssetId,
   Metadata,
   Value,
   ValueView,
@@ -22,33 +23,29 @@ import {
   SwapPlan,
   SwapView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { bech32AssetId } from '@penumbra-zone/bech32';
-import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 
-const getValueView = (
+const getValueView = async (
   value: Value | undefined,
-  denomMetadataByAssetId: Record<string, Jsonified<Metadata>>,
-): ValueView => {
+  denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
+): Promise<ValueView> => {
   if (!value) throw new Error('No value to view');
   if (!value.assetId) throw new Error('No asset ID in value');
   if (!value.amount) throw new Error('No amount in value');
-
-  const denomMetadata = denomMetadataByAssetId[bech32AssetId(value.assetId)];
 
   return new ValueView({
     valueView: {
       case: 'knownAssetId',
       value: {
         amount: value.amount,
-        metadata: denomMetadata ? Metadata.fromJson(denomMetadata) : undefined,
+        metadata: await denomMetadataByAssetId(value.assetId),
       },
     },
   });
 };
 
-const getNoteView = (
+const getNoteView = async (
   note: Note | undefined,
-  denomMetadataByAssetId: Record<string, Jsonified<Metadata>>,
+  denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
   fullViewingKey: string,
 ) => {
   if (!note) throw new Error('No note to view');
@@ -57,32 +54,32 @@ const getNoteView = (
 
   return new NoteView({
     address: getAddressView(note.address, fullViewingKey),
-    value: getValueView(note.value, denomMetadataByAssetId),
+    value: await getValueView(note.value, denomMetadataByAssetId),
   });
 };
 
-const getSpendView = (
+const getSpendView = async (
   spendPlan: SpendPlan,
-  denomMetadataByAssetId: Record<string, Jsonified<Metadata>>,
+  denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
   fullViewingKey: string,
-): SpendView => {
+): Promise<SpendView> => {
   if (!spendPlan.note?.address) throw new Error('No address in spend plan');
 
   return new SpendView({
     spendView: {
       case: 'visible',
       value: {
-        note: getNoteView(spendPlan.note, denomMetadataByAssetId, fullViewingKey),
+        note: await getNoteView(spendPlan.note, denomMetadataByAssetId, fullViewingKey),
       },
     },
   });
 };
 
-const getOutputView = (
+const getOutputView = async (
   outputPlan: OutputPlan,
-  denomMetadataByAssetId: Record<string, Jsonified<Metadata>>,
+  denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
   fullViewingKey: string,
-): OutputView => {
+): Promise<OutputView> => {
   if (!outputPlan.destAddress) throw new Error('No destAddress in output plan');
 
   return new OutputView({
@@ -91,7 +88,7 @@ const getOutputView = (
 
       value: {
         note: {
-          value: getValueView(outputPlan.value, denomMetadataByAssetId),
+          value: await getValueView(outputPlan.value, denomMetadataByAssetId),
           address: getAddressView(outputPlan.destAddress, fullViewingKey),
         },
       },
@@ -117,11 +114,11 @@ const getSwapView = (swapPlan: SwapPlan): SwapView => {
   });
 };
 
-const getSwapClaimView = (
+const getSwapClaimView = async (
   swapClaimPlan: SwapClaimPlan,
-  denomMetadataByAssetId: Record<string, Jsonified<Metadata>>,
+  denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
   fullViewingKey: string,
-): SwapClaimView => {
+): Promise<SwapClaimView> => {
   return new SwapClaimView({
     swapClaimView: {
       case: 'visible',
@@ -131,7 +128,7 @@ const getSwapClaimView = (
             ? getAddressView(swapClaimPlan.swapPlaintext.claimAddress, fullViewingKey)
             : undefined,
           value: swapClaimPlan.outputData?.lambda1
-            ? getValueView(
+            ? await getValueView(
                 new Value({
                   amount: swapClaimPlan.outputData.lambda1,
                   assetId: swapClaimPlan.outputData.tradingPair?.asset1,
@@ -145,7 +142,7 @@ const getSwapClaimView = (
             ? getAddressView(swapClaimPlan.swapPlaintext.claimAddress, fullViewingKey)
             : undefined,
           value: swapClaimPlan.outputData?.lambda2
-            ? getValueView(
+            ? await getValueView(
                 new Value({
                   amount: swapClaimPlan.outputData.lambda2,
                   assetId: swapClaimPlan.outputData.tradingPair?.asset2,
@@ -167,21 +164,29 @@ const getSwapClaimView = (
 };
 
 export const viewActionPlan =
-  (denomMetadataByAssetId: Record<string, Jsonified<Metadata>>, fullViewingKey: string) =>
-  (actionPlan: ActionPlan): ActionView => {
+  (denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>, fullViewingKey: string) =>
+  async (actionPlan: ActionPlan): Promise<ActionView> => {
     switch (actionPlan.action.case) {
       case 'spend':
         return new ActionView({
           actionView: {
             case: 'spend',
-            value: getSpendView(actionPlan.action.value, denomMetadataByAssetId, fullViewingKey),
+            value: await getSpendView(
+              actionPlan.action.value,
+              denomMetadataByAssetId,
+              fullViewingKey,
+            ),
           },
         });
       case 'output':
         return new ActionView({
           actionView: {
             case: 'output',
-            value: getOutputView(actionPlan.action.value, denomMetadataByAssetId, fullViewingKey),
+            value: await getOutputView(
+              actionPlan.action.value,
+              denomMetadataByAssetId,
+              fullViewingKey,
+            ),
           },
         });
       case 'swap':
@@ -195,7 +200,7 @@ export const viewActionPlan =
         return new ActionView({
           actionView: {
             case: 'swapClaim',
-            value: getSwapClaimView(
+            value: await getSwapClaimView(
               actionPlan.action.value,
               denomMetadataByAssetId,
               fullViewingKey,

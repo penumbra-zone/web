@@ -1,11 +1,12 @@
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { viewTransactionPlan } from '.';
 import {
   MemoView_Visible,
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { bech32ToAddress } from '@penumbra-zone/bech32';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 describe('viewTransactionPlan()', () => {
   const returnAddressAsBech32 =
@@ -13,6 +14,7 @@ describe('viewTransactionPlan()', () => {
   const returnAddress = new Address({ inner: bech32ToAddress(returnAddressAsBech32) });
   const chainId = 'testnet';
   const expiryHeight = 100n;
+  const metadataByAssetId = vi.fn(() => Promise.resolve(new Metadata()));
   const mockFvk =
     'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09';
 
@@ -30,8 +32,8 @@ describe('viewTransactionPlan()', () => {
     },
   });
 
-  test('includes the return address if it exists', () => {
-    const txnView = viewTransactionPlan(validTxnPlan, {}, mockFvk);
+  test('includes the return address if it exists', async () => {
+    const txnView = await viewTransactionPlan(validTxnPlan, metadataByAssetId, mockFvk);
     const memoViewValue = txnView.bodyView!.memoView!.memoView.value! as MemoView_Visible;
 
     expect(
@@ -39,31 +41,34 @@ describe('viewTransactionPlan()', () => {
     ).toBe(true);
   });
 
-  test('leaves out the return address when it does not exist', () => {
-    const txnPlan = new TransactionPlan({
-      transactionParameters: {
-        fee: {
-          amount: {
-            hi: 1n,
-            lo: 0n,
+  test('leaves out the return address when it does not exist', async () => {
+    const view = viewTransactionPlan(
+      new TransactionPlan({
+        transactionParameters: {
+          fee: {
+            amount: {
+              hi: 1n,
+              lo: 0n,
+            },
           },
         },
-      },
-    });
-    const txnView = viewTransactionPlan(txnPlan, {}, mockFvk);
-    const memoViewValue = txnView.bodyView!.memoView!.memoView.value! as MemoView_Visible;
-
-    expect(memoViewValue.plaintext?.returnAddress).toBeUndefined();
+      }),
+      metadataByAssetId,
+      mockFvk,
+    );
+    await expect(view).resolves.toHaveProperty('bodyView.memoView.memoView.value.plaintext.text');
+    await expect(view).resolves.not.toHaveProperty(
+      'bodyView.memoView.memoView.value.plaintext.returnAddress',
+    );
   });
 
-  test('includes the fee', () => {
+  test('includes the fee', async () =>
+    expect(viewTransactionPlan(validTxnPlan, metadataByAssetId, mockFvk)).resolves.toMatchObject({
+      bodyView: { transactionParameters: { fee: validTxnPlan.transactionParameters!.fee } },
+    }));
+
+  test('throws when there is no fee', () =>
     expect(
-      viewTransactionPlan(validTxnPlan, {}, mockFvk).bodyView!.transactionParameters!.fee,
-    ).toBe(validTxnPlan.transactionParameters!.fee);
-  });
-
-  test('throws when there is no fee', () => {
-    expect(() =>
       viewTransactionPlan(
         new TransactionPlan({
           memo: {
@@ -77,24 +82,24 @@ describe('viewTransactionPlan()', () => {
             expiryHeight,
           },
         }),
-        {},
+        metadataByAssetId,
         mockFvk,
       ),
-    ).toThrow('No fee found in transaction plan');
-  });
+    ).rejects.toThrow('No fee found in transaction plan'));
 
-  test('includes the memo', () => {
-    const txnView = viewTransactionPlan(validTxnPlan, {}, mockFvk);
-    const memoViewValue = txnView.bodyView!.memoView!.memoView.value! as MemoView_Visible;
+  test('includes the memo', async () =>
+    expect(viewTransactionPlan(validTxnPlan, metadataByAssetId, mockFvk)).resolves.toMatchObject({
+      bodyView: { memoView: { memoView: { value: { plaintext: { text: 'Memo text here' } } } } },
+    }));
 
-    expect(memoViewValue.plaintext!.text).toBe('Memo text here');
-  });
-
-  test('includes the transaction parameters', () => {
-    expect(viewTransactionPlan(validTxnPlan, {}, mockFvk).bodyView!.transactionParameters).toEqual({
-      fee: validTxnPlan.transactionParameters!.fee,
-      chainId,
-      expiryHeight,
-    });
-  });
+  test('includes the transaction parameters', () =>
+    expect(viewTransactionPlan(validTxnPlan, metadataByAssetId, mockFvk)).resolves.toMatchObject({
+      bodyView: {
+        transactionParameters: {
+          fee: validTxnPlan.transactionParameters!.fee,
+          chainId,
+          expiryHeight,
+        },
+      },
+    }));
 });
