@@ -1,7 +1,10 @@
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
 import { AllSlices, SliceCreator } from '.';
 import { PopupType, TxApproval } from '../message/popup';
-import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import {
+  TransactionPlan,
+  TransactionView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { viewClient } from '../clients';
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
@@ -19,6 +22,12 @@ import {
   asPublicTransactionView,
   asReceiverTransactionView,
 } from '@penumbra-zone/perspective/translators';
+import { localExtStorage } from '@penumbra-zone/storage';
+import {
+  AssetId,
+  Metadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { viewTransactionPlan } from '@penumbra-zone/perspective/plan';
 
 export interface TxApprovalSlice {
   /**
@@ -49,16 +58,22 @@ export interface TxApprovalSlice {
 }
 
 export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, get) => ({
-  acceptRequest: async (
-    { request: { authorizeRequest: authReqJson, transactionView: txViewJson } },
-    responder,
-  ) => {
+  acceptRequest: async ({ request: { authorizeRequest: authReqJson } }, responder) => {
     const existing = get().txApproval;
-    if (existing.authorizeRequest ?? existing.transactionView ?? existing.responder)
-      throw new Error('Another request is still pending');
+    if (existing.responder) throw new Error('Another request is still pending');
 
     const authorizeRequest = AuthorizeRequest.fromJson(authReqJson);
-    const transactionView = TransactionView.fromJson(txViewJson);
+
+    const getMetadata = async (assetId: AssetId) => {
+      const { denomMetadata } = await viewClient.assetMetadataById({ assetId });
+      return denomMetadata ?? new Metadata();
+    };
+
+    const transactionView = await viewTransactionPlan(
+      authorizeRequest.plan ?? new TransactionPlan(),
+      getMetadata,
+      (await localExtStorage.get('wallets'))[0]?.fullViewingKey ?? '',
+    );
 
     // pregenerate views from various perspectives.
     // TODO: should this be done in the component?
@@ -106,9 +121,6 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
         throw new Error('Missing response data');
 
       // zustand doesn't like jsonvalue so stringify
-      const transactionView = TransactionView.fromJsonString(
-        transactionViewString,
-      ).toJson() as Jsonified<TransactionView>;
       const authorizeRequest = AuthorizeRequest.fromJsonString(
         authorizeRequestString,
       ).toJson() as Jsonified<AuthorizeRequest>;
@@ -117,7 +129,6 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
         type: PopupType.TxApproval,
         data: {
           choice,
-          transactionView,
           authorizeRequest,
         },
       });
