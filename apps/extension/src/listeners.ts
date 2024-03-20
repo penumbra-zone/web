@@ -30,14 +30,19 @@ chrome.runtime.onMessage.addListener(
         if (status === UserChoice.Approved) {
           respond(PraxConnection.Init);
           void chrome.tabs.sendMessage(sender.tab!.id!, PraxConnection.Init);
-        } else respond(PraxConnection.Denied);
+        } else {
+          respond(PraxConnection.Denied);
+        }
       },
       e => {
-        if (process.env['NODE_ENV'] === 'development')
+        if (process.env['NODE_ENV'] === 'development') {
           console.warn('Connection request listener failed:', e);
-        if (e instanceof ConnectError && e.code === Code.Unauthenticated)
+        }
+        if (e instanceof ConnectError && e.code === Code.Unauthenticated) {
           respond(PraxConnection.NeedsLogin);
-        else respond(PraxConnection.Denied);
+        } else {
+          respond(PraxConnection.Denied);
+        }
       },
     );
     return true; // instruct chrome to wait for the response

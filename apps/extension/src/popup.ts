@@ -22,9 +22,11 @@ export const popup = async <M extends PopupMessage>(
       if (isChromeResponderDroppedError(e)) return null;
       else throw e;
     });
-  if (response && 'error' in response)
+  if (response && 'error' in response) {
     throw errorFromJson(response.error as JsonValue, undefined, ConnectError.from(response));
-  else return response && response.data;
+  } else {
+    return response && response.data;
+  }
 };
 
 const spawnDetachedPopup = async (path: string) => {
@@ -56,19 +58,21 @@ const throwIfAlreadyOpen = (path: string) =>
 
 const throwIfNeedsLogin = async () => {
   const loggedIn = await sessionExtStorage.get('passwordKey');
-  if (!loggedIn) throw new ConnectError('User must login to extension', Code.Unauthenticated);
+  if (!loggedIn) {
+    throw new ConnectError('User must login to extension', Code.Unauthenticated);
+  }
 };
 
 const spawnPopup = async (pop: PopupType) => {
   const popUrl = new URL(chrome.runtime.getURL('popup.html'));
 
+  await throwIfNeedsLogin();
+
   switch (pop) {
     case PopupType.OriginApproval:
-      await throwIfNeedsLogin();
       popUrl.hash = PopupPath.ORIGIN_APPROVAL;
       return spawnDetachedPopup(popUrl.href);
     case PopupType.TxApproval:
-      await throwIfNeedsLogin();
       popUrl.hash = PopupPath.TRANSACTION_APPROVAL;
       return spawnDetachedPopup(popUrl.href);
     default:

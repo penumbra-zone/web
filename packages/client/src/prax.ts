@@ -27,8 +27,9 @@ export const getPraxPort = async () => {
 };
 
 export const requestPraxConnection = async () => {
-  if (window[PenumbraSymbol]?.[prax_origin]?.manifest !== prax_manifest)
+  if (window[PenumbraSymbol]?.[prax_origin]?.manifest !== prax_manifest) {
     throw new PraxManifestError('Incorrect Prax manifest href');
+  }
   return window[PenumbraSymbol][prax_origin]?.request();
 };
 
@@ -78,7 +79,8 @@ export const isPraxInstalled = () =>
   );
 
 export const throwIfPraxNotInstalled = async () => {
-  if (!(await isPraxInstalled())) throw new PraxNotInstalledError('Prax not installed');
+  const isInstalled = await isPraxInstalled();
+  if (!isInstalled) throw new PraxNotInstalledError('Prax not installed');
 };
 
 let praxTransport: Transport | undefined;

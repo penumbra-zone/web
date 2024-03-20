@@ -9,6 +9,30 @@ import {
 import { useState } from 'react';
 import { PenumbraRequestFailure } from '@penumbra-zone/client/src/global';
 
+const handleErr = (e: unknown) => {
+  if (e instanceof Error && e.cause) {
+    switch (e.cause) {
+      case PenumbraRequestFailure.Denied:
+        errorToast(
+          'You may need to un-ignore this site in your extension settings.',
+          'Connection denied',
+        ).render();
+        break;
+      case PenumbraRequestFailure.NeedsLogin:
+        warningToast(
+          'Not logged in',
+          'Please login into the extension and reload the page',
+        ).render();
+        break;
+      default:
+        errorToast(e, 'Connection error').render();
+    }
+  } else {
+    console.warn('Unknown connection failure', e);
+    errorToast(e, 'Unknown connection failure').render();
+  }
+};
+
 const useExtConnector = () => {
   const [result, setResult] = useState<boolean>();
 
@@ -17,28 +41,9 @@ const useExtConnector = () => {
       throwIfPraxNotAvailable();
       await throwIfPraxNotInstalled();
       await requestPraxConnection();
+      location.reload();
     } catch (e) {
-      if (e instanceof Error && e.cause)
-        switch (e.cause) {
-          case PenumbraRequestFailure.Denied:
-            errorToast(
-              'You may need to un-ignore this site in your extension settings.',
-              'Connection denied',
-            ).render();
-            break;
-          case PenumbraRequestFailure.NeedsLogin:
-            warningToast(
-              'Not logged in',
-              'Please login into the extension and reload the page',
-            ).render();
-            break;
-          default:
-            errorToast(e, 'Connection error').render();
-        }
-      else {
-        console.warn('Unknown connection failure', e);
-        errorToast(e, 'Unknown connection failure').render();
-      }
+      handleErr(e);
     } finally {
       setResult(true);
     }

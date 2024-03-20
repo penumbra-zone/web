@@ -30,30 +30,33 @@ export const approveOrigin = async ({
 
   if (extraRecords.length) throw new Error('Multiple records for the same origin');
 
-  let choice = existingRecord?.choice;
-  if (!choice || choice === UserChoice.Denied) {
-    // first ask, or asking again
-    const popupResponse = await popup<OriginApproval>({
-      type: PopupType.OriginApproval,
-      request: {
-        origin: urlOrigin,
-        favIconUrl: tab.favIconUrl,
-        title: tab.title,
-        lastRequest: existingRecord?.date,
-      },
-    });
+  const choice = existingRecord?.choice;
 
-    if (popupResponse)
-      void localExtStorage.set(
-        // user interacted with popup, update record
-        // TODO: is there a race condition here?  if this object has been
-        // written after our initial read, we'll clobber them
-        'knownSites',
-        [popupResponse, ...irrelevant],
-      );
-
-    choice = popupResponse?.choice;
+  // Choice already made
+  if (choice === UserChoice.Approved || choice === UserChoice.Ignored) {
+    return choice;
   }
 
-  return choice ?? UserChoice.Denied;
+  // It's the first or repeat ask
+  const popupResponse = await popup<OriginApproval>({
+    type: PopupType.OriginApproval,
+    request: {
+      origin: urlOrigin,
+      favIconUrl: tab.favIconUrl,
+      title: tab.title,
+      lastRequest: existingRecord?.date,
+    },
+  });
+
+  if (popupResponse) {
+    void localExtStorage.set(
+      // user interacted with popup, update record
+      // TODO: is there a race condition here?  if this object has been
+      //       written after our initial read, we'll clobber them
+      'knownSites',
+      [popupResponse, ...irrelevant],
+    );
+  }
+
+  return popupResponse?.choice ?? UserChoice.Denied;
 };
