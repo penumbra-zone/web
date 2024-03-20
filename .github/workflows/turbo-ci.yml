@@ -142,5 +142,5 @@ jobs:
         with:
           version: 'latest'
       - uses: browser-actions/setup-firefox@v1
-      - run: pnpm run compile 
+      - run: pnpm run compile
       - run: pnpm turbo test:rust --cache-dir=.turbo
