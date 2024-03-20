@@ -65,4 +65,25 @@ describe('assetPatterns', () => {
       );
     });
   });
+
+  describe('ibc', () => {
+    it('matches when a string follows the pattern transfer/<channel>/<denom>', () => {
+      expect(assetPatterns.ibc.test('transfer/channel-141/uosmo')).toBeTruthy();
+      expect(assetPatterns.ibc.test('transfer/channel-0/upenumbra')).toBeTruthy();
+      expect(assetPatterns.ibc.test('transfer/channel-0/upenumbra/moo/test')).toBeTruthy();
+      expect(assetPatterns.ibc.test('x/channel-0/upenumbra')).toBeFalsy();
+    });
+
+    it('captures channel and denom correctly', () => {
+      const match = 'transfer/channel-141/uosmo'.match(assetPatterns.ibc);
+      expect(match?.groups?.['channel']).toBe('channel-141');
+      expect(match?.groups?.['denom']).toBe('uosmo');
+    });
+
+    it('captures multi-hops', () => {
+      const match = 'transfer/channel-141/channel-42/uosmo'.match(assetPatterns.ibc);
+      expect(match?.groups?.['channel']).toBe('channel-141');
+      expect(match?.groups?.['denom']).toBe('channel-42/uosmo');
+    });
+  });
 });

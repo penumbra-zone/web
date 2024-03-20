@@ -92,7 +92,6 @@ describe.skip('IBC Slice', () => {
         chainId: 'osmosis-test-5',
         ibcChannel: 'channel-0',
         iconUrl: '/test.svg',
-        nativeAssets: [],
         addressPrefix: 'osmo',
       } satisfies Chain;
 

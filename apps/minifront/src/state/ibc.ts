@@ -19,7 +19,12 @@ import { planBuildBroadcast } from './helpers';
 import { validateAmount } from './send';
 import { IbcLoaderResponse } from '../components/ibc/ibc-loader';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
-import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
+import {
+  assetPatterns,
+  IbcCaptureGroups,
+  localAssets,
+  STAKING_TOKEN_METADATA,
+} from '@penumbra-zone/constants/src/assets';
 import { bech32IsValid } from '@penumbra-zone/bech32';
 import { errorToast } from '@penumbra-zone/ui';
 
@@ -166,19 +171,27 @@ const validateAddress = (chain: Chain | undefined, address: string): boolean => 
 
 /**
  * Filters the given IBC loader response balances by checking if any of the assets
- * in the balance view match the staking token's asset ID or any of the native assets
- * of the specified chain.
+ * in the balance view match the staking token's asset ID or are of the same ibc channel.
  *
  * Until unwind support is implemented (https://github.com/penumbra-zone/web/issues/344),
- * we need to ensure only native assets are sent out.
+ * we need to ensure ics20 withdraws match these conditions.
  */
 export const filterBalancesPerChain = (
   allBalances: IbcLoaderResponse,
   chain: Chain | undefined,
 ): BalancesResponse[] => {
   const penumbraAssetId = getAssetId(STAKING_TOKEN_METADATA);
-  const remoteChainNativeAssets = chain?.nativeAssets ?? [];
-  const assetIdsToCheck = [penumbraAssetId, ...remoteChainNativeAssets];
+  const assetsWithMatchingChannel = localAssets
+    .filter(a => {
+      const ibcAsset = assetPatterns.ibc.exec(a.base);
+      if (!ibcAsset) return false;
+
+      const { channel } = ibcAsset.groups as unknown as IbcCaptureGroups;
+      return chain?.ibcChannel === channel;
+    })
+    .map(m => m.penumbraAssetId!);
+
+  const assetIdsToCheck = [penumbraAssetId, ...assetsWithMatchingChannel];
 
   return allBalances.filter(({ balanceView }) => {
     const metadata = getMetadata(balanceView);
