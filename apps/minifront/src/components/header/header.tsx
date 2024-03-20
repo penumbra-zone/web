@@ -3,7 +3,7 @@ import { SyncStatusSection } from './sync-status-section';
 
 export const Header = () => {
   return (
-    <header>
+    <header className='bg-background'>
       <SyncStatusSection />
       <TopRow />
     </header>

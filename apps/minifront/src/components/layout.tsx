@@ -35,7 +35,10 @@ export const Layout = () => {
   return (
     <>
       <HeadTag />
-      <div className='relative flex min-h-screen flex-col bg-background text-muted'>
+      <div
+        className='relative flex min-h-screen flex-col bg-background text-muted'
+        style={{ zIndex: -2 }}
+      >
         <Header />
         <main className='mx-auto w-full flex-1 px-6 pb-4 pt-5 md:px-[88px] md:pb-0 xl:max-w-[1276px] xl:px-12'>
           <Outlet />

@@ -3,15 +3,18 @@ import { cn } from '../../lib/utils';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   gradient?: boolean;
+  light?: boolean;
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, gradient, children, ...props }, ref) => {
-    const baseClasses = 'bg-charcoal rounded-lg shadow-sm p-[30px] overflow-hidden';
+  ({ className, gradient, children, light, ...props }, ref) => {
+    const baseClasses = 'rounded-lg shadow-sm p-[30px] overflow-hidden';
+    const bgClasses = light ? 'bg-sky-200' : 'bg-charcoal';
+    console.log(light, bgClasses);
     return (
       <div
         ref={ref}
-        className={cn(baseClasses, !!gradient && 'bg-card-radial', className)}
+        className={cn(baseClasses, bgClasses, !!gradient && 'bg-card-radial', className)}
         {...props}
       >
         {children}

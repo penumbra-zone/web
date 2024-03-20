@@ -6,7 +6,7 @@ export const Footer = () => {
   const formattedDate = format(dateObj, "MMM dd yyyy HH:mm:ss 'GMT'x");
 
   return (
-    <div className='my-4 flex justify-center'>
+    <div className='py-4 flex justify-center bg-background'>
       <div className='flex flex-col text-center text-stone-700'>
         <div className='font-bold'>This software runs entirely on your device.</div>
         <div>
