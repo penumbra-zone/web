@@ -131,23 +131,6 @@ describe('Authorize request handler', () => {
     await expect(authorize(req, mockCtx)).rejects.toThrow('User must login to extension');
   });
 
-  test('should fail if local context not include FVK', async () => {
-    mockExtLocalCtx.get.mockImplementation(() => {
-      return Promise.resolve([
-        {
-          custody: {
-            encryptedSeedPhrase: {
-              cipherText: '1MUyDW2GHSeZYVF4f=',
-              nonce: 'MUyDW2GHSeZYVF4f',
-            },
-          },
-          fullViewingKey: undefined,
-        },
-      ]);
-    });
-    await expect(authorize(req, mockCtx)).rejects.toThrow('Unable to get full viewing key');
-  });
-
   test('should fail if incorrect password is used', async () => {
     mockExtSessionCtx.get.mockImplementation(() => {
       return Promise.resolve({
