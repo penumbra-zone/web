@@ -6,20 +6,20 @@ import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumb
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/src/address-view';
 
 export interface BalancesByAccount {
-  index: number;
+  account: number;
   address: Address;
   balances: BalancesResponse[];
 }
 
 const groupByAccount = (acc: BalancesByAccount[], curr: BalancesResponse): BalancesByAccount[] => {
   const index = getAddressIndex(curr.accountAddress);
-  const grouping = acc.find(a => a.index === index.account);
+  const grouping = acc.find(a => a.account === index.account);
 
   if (grouping) {
     grouping.balances.push(curr);
   } else {
     acc.push({
-      index: index.account,
+      account: index.account,
       address: getAddress(curr.accountAddress),
       balances: [curr],
     });
