@@ -102,11 +102,13 @@ export class CRSessionManager {
     port.onMessage.addListener((i, p) => {
       void (async () => {
         try {
-          if (isTransportMessage(i))
+          if (isTransportMessage(i)) {
             p.postMessage(await this.clientMessageHandler(session.acont.signal, i));
-          else if (isTransportInitChannel(i))
+          } else if (isTransportInitChannel(i)) {
             console.warn('Client streaming unimplemented', this.acceptChannelStreamRequest(i));
-          else console.warn('Unknown item in transport', i);
+          } else {
+            console.warn('Unknown item in transport', i);
+          }
         } catch (e) {
           session.acont.abort(e);
         }

@@ -5,11 +5,13 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "lint": "eslint \"**/*.ts*\""
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
   },
   "dependencies": {
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/constants": "workspace:*",
+    "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "exponential-backoff": "^3.1.1"

@@ -1,6 +1,6 @@
 import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { createGetter } from './utils/create-getter';
-import { bech32ToIdentityKey } from '@penumbra-zone/bech32/src/identity-key';
+import { bech32ToIdentityKey } from '@penumbra-zone/bech32/identity-key';
 
 /**
  * Given a bech32 representation of a validator's identity key, returns an

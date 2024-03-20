@@ -4,23 +4,31 @@
   "description": "Tools for manipulating Penumbra bech32 strings",
   "type": "module",
   "exports": {
-    "./src/*": "./dist/*.js"
+    "./address": "./src/address.ts",
+    "./asset": "./src/asset.ts",
+    "./identity-key": "./src/identity-key.ts",
+    "./penumbra-bech32": "./src/penumbra-bech32.ts",
+    "./validate": "./src/validate.ts"
   },
   "publishConfig": {
     "files": [
       "./dist"
     ],
     "exports": {
-      ".": {
-        "import": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+      "./*": {
+        "./address": "./dist/src/address.js",
+        "./asset": "./dist/src/asset.js",
+        "./identity-key": "./dist/src/identity-key.js",
+        "./penumbra-bech32": "./dist/src/penumbra-bech32.js",
+        "./validate": "./dist/src/validate.js"
       }
     }
   },
   "scripts": {
     "build": "vite build",
     "clean": "rm -rfv dist",
-    "lint": "eslint \"**/*.ts*\""
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
   },
   "dependencies": {
     "bech32": "^2.0.0"

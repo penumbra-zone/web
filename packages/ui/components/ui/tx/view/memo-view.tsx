@@ -10,8 +10,12 @@ export const MemoViewComponent = ({ memo: { memoView } }: { memo: MemoView }) =>
           <ViewBox
             label='Memo Text'
             visibleContent={
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-              <div>{memoView.value.plaintext?.text || '&nbsp;'}</div>
+              <div>
+                {/* eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing */}
+                {memoView.value.plaintext?.text || (
+                  <span className='italic text-gray-600'>== none ==</span>
+                )}
+              </div>
             }
           />
           <ViewBox

@@ -14,6 +14,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
   AssetId,
+  EstimatedPrice,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
@@ -22,11 +23,7 @@ import {
   AddressIndex,
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import {
-  assetPatterns,
-  DelegationCaptureGroups,
-  localAssets,
-} from '@penumbra-zone/constants/src/assets';
+import { assetPatterns, localAssets } from '@penumbra-zone/constants/src/assets';
 import {
   Position,
   PositionId,
@@ -40,8 +37,8 @@ import { IdbCursorSource } from './stream';
 import '@penumbra-zone/polyfills/src/ReadableStream[Symbol.asyncIterator]';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { bech32AssetId } from '@penumbra-zone/bech32/src/asset';
-import { bech32IdentityKey, bech32ToIdentityKey } from '@penumbra-zone/bech32/src/identity-key';
+import { bech32AssetId } from '@penumbra-zone/bech32/asset';
+import { bech32IdentityKey, bech32ToIdentityKey } from '@penumbra-zone/bech32/identity-key';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/src/validator-info';
 import {
   IDB_TABLES,
@@ -105,6 +102,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
         db.createObjectStore('EPOCHS', { autoIncrement: true });
         db.createObjectStore('VALIDATOR_INFOS');
+        db.createObjectStore('PRICES', { keyPath: ['pricedAsset.inner', 'numeraire.inner'] });
       },
     });
     const constants = {
@@ -360,7 +358,7 @@ export class IndexedDb implements IndexedDbInterface {
     for await (const assetCursor of this.db.transaction('ASSETS').store) {
       const denomMetadata = Metadata.fromJson(assetCursor.value);
       if (
-        assetPatterns.delegationToken.test(denomMetadata.display) &&
+        assetPatterns.delegationToken.matches(denomMetadata.display) &&
         denomMetadata.penumbraAssetId
       ) {
         delegationAssets.set(uint8ArrayToHex(denomMetadata.penumbraAssetId.inner), denomMetadata);
@@ -395,15 +393,15 @@ export class IndexedDb implements IndexedDbInterface {
         // delegation asset denom consists of prefix 'delegation_' and validator identity key in bech32m encoding
         // For example, in denom 'delegation_penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqqas55kkpyf6lhsqs2w0zar'
         // 'penumbravalid12s9lanucncnyasrsqgy6z532q7nwsw3aqzzeqas55kkpyf6lhsqs2w0zar' is  validator identity key.
-        const regexResult = assetPatterns.delegationToken.exec(asset?.display ?? '');
+        const regexResult = assetPatterns.delegationToken.capture(asset?.display ?? '');
         if (!regexResult) throw new Error('expected delegation token identity key not present');
-
-        const { bech32IdentityKey } = regexResult.groups as unknown as DelegationCaptureGroups;
 
         notesForVoting.push(
           new NotesForVotingResponse({
             noteRecord: note,
-            identityKey: new IdentityKey({ ik: bech32ToIdentityKey(bech32IdentityKey) }),
+            identityKey: new IdentityKey({
+              ik: bech32ToIdentityKey(regexResult.bech32IdentityKey),
+            }),
           }),
         );
       }
@@ -535,6 +533,25 @@ export class IndexedDb implements IndexedDbInterface {
     yield* new ReadableStream(
       new IdbCursorSource(this.db.transaction('VALIDATOR_INFOS').store.openCursor(), ValidatorInfo),
     );
+  }
+
+  async updatePrice(
+    pricedAsset: AssetId,
+    numeraire: AssetId,
+    numerairePerUnit: number,
+    height: bigint,
+  ) {
+    const estimatedPrice = new EstimatedPrice({
+      pricedAsset,
+      numeraire,
+      numerairePerUnit,
+      asOfHeight: height,
+    });
+
+    await this.u.update({
+      table: 'PRICES',
+      value: estimatedPrice.toJson() as Jsonified<EstimatedPrice>,
+    });
   }
 
   private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanBlockResult['sctUpdates']): void {

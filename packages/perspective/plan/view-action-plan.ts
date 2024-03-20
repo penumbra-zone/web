@@ -22,7 +22,7 @@ import {
   SwapPlan,
   SwapView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { bech32AssetId } from '@penumbra-zone/bech32/src/asset';
+import { bech32AssetId } from '@penumbra-zone/bech32/asset';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 
 const getValueView = (
@@ -213,7 +213,7 @@ export const viewActionPlan =
         return new ActionView({
           actionView: {
             case: 'ics20Withdrawal',
-            value: {},
+            value: actionPlan.action.value,
           },
         });
       case 'delegate':

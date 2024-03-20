@@ -1,6 +1,6 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { createGetter } from './utils/create-getter';
-import { bech32AssetId } from '@penumbra-zone/bech32/src/asset';
+import { bech32AssetId } from '@penumbra-zone/bech32/asset';
 import {
   getDisplayDenomExponent,
   getStartEpochIndex,

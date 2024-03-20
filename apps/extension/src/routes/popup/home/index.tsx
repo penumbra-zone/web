@@ -3,7 +3,7 @@ import { IndexHeader } from './index-header';
 import { useStore } from '../../../state';
 import { BlockSync } from './block-sync';
 import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
-import { addrByIndexSelector } from '../../../state/wallets';
+import { addrByIndexSelector, getActiveWallet } from '../../../state/wallets';
 import { needsLogin } from '../popup-needs';
 
 export interface PopupLoaderData {
@@ -17,13 +17,14 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
   (await needsLogin()) ?? { fullSyncHeight: await localExtStorage.get('fullSyncHeight') };
 
 export const PopupIndex = () => {
+  const activeWallet = useStore(getActiveWallet);
   const getAddrByIndex = useStore(addrByIndexSelector);
 
   return (
     <div className='flex h-full grow flex-col items-stretch justify-start bg-logo bg-left-bottom px-[30px]'>
       <IndexHeader />
       <div className='my-32'>
-        <SelectAccount getAddrByIndex={getAddrByIndex} />
+        {activeWallet && <SelectAccount getAddrByIndex={getAddrByIndex} />}
       </div>
       <BlockSync />
     </div>

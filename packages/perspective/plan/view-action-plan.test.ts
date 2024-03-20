@@ -25,8 +25,8 @@ import {
   Delegate,
   Undelegate,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { bech32AssetId } from '@penumbra-zone/bech32/src/asset';
-import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
+import { bech32AssetId } from '@penumbra-zone/bech32/asset';
+import { bech32ToAddress } from '@penumbra-zone/bech32/address';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 
 describe('viewActionPlan()', () => {
@@ -428,7 +428,7 @@ describe('viewActionPlan()', () => {
   });
 
   describe('`withdrawal` action', () => {
-    test('returns an action view with the `ics20Withdrawal` case and no value', () => {
+    test('returns an action view with the `ics20Withdrawal` case as-is', () => {
       const actionPlan = new ActionPlan({
         action: {
           case: 'ics20Withdrawal',
@@ -443,7 +443,7 @@ describe('viewActionPlan()', () => {
           new ActionView({
             actionView: {
               case: 'ics20Withdrawal',
-              value: {},
+              value: { amount: { hi: 1n, lo: 0n } },
             },
           }),
         ),

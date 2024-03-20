@@ -179,15 +179,15 @@
         "exponent": 6
       },
       {
-        "denom": "transfer/channel-3/uosmo",
+        "denom": "transfer/channel-0/uosmo",
         "exponent": 0
       }
     ],
-    "base": "transfer/channel-3/uosmo",
+    "base": "transfer/channel-0/uosmo",
     "display": "osmo",
     "symbol": "OSMO",
     "penumbraAssetId": {
-      "inner": "fLgjA/jT2EN7SFFeKUgZkL8UePmcz5qvNO/CyDBSwQE="
+      "inner": "jIowYEpoMr+LQYqjDVEnQO6hyzb9raVxbO1GLyDxlhI="
     },
     "images": [
       {

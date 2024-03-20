@@ -23,7 +23,6 @@ export const JsonViewer = ({ jsonObj }: { jsonObj: JsonObject | JsonValue[] }) =
           expandIcon:
             'text-teal-200 text-[10px] mr-1.5 select-none cursor-pointer after:content-["▶"]',
           collapsedContent: 'text-amber-600 mr-1.5 after:content-["..."] after:text-xs',
-          noQuotesForStringValues: false,
         }}
       />
     </div>

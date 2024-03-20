@@ -426,7 +426,7 @@ const toUnbondingTokensByAccount = (
 ) => {
   const unbondingTokens = curr.balances
     .filter(({ balanceView }) =>
-      assetPatterns.unbondingToken.test(getDisplayDenomFromView(balanceView)),
+      assetPatterns.unbondingToken.matches(getDisplayDenomFromView(balanceView)),
     )
     .map(({ balanceView }) => balanceView!);
 

@@ -2,7 +2,7 @@ import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { useStore } from '../../../state';
 import { ibcSelector } from '../../../state/ibc';
-import { ChainSelector } from './chain-selector';
+import { ChainSelector } from '../../ibc/chain-selector';
 import { InputBlock } from '../../shared/input-block';
 import InputToken from '../../shared/input-token';
 import { validateAmount } from '../../../state/send';

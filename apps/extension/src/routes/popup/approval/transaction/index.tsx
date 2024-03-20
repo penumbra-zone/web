@@ -33,8 +33,8 @@ export const TransactionApproval = () => {
 
   return (
     <div className='flex h-screen flex-col justify-between'>
-      <div className='grow overflow-auto p-[30px] pt-10'>
-        <p className='bg-text-linear bg-clip-text font-headline text-2xl font-bold text-transparent'>
+      <div className='grow overflow-auto p-[30px] pb-44 pt-10'>
+        <p className='bg-text-linear bg-clip-text pb-2 font-headline text-2xl font-bold text-transparent'>
           Confirm transaction
         </p>
 

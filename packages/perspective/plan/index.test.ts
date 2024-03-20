@@ -5,7 +5,7 @@ import {
   MemoView_Visible,
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
+import { bech32ToAddress } from '@penumbra-zone/bech32/address';
 
 describe('viewTransactionPlan()', () => {
   const returnAddressAsBech32 =

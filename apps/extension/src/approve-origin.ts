@@ -1,6 +1,3 @@
-import { JsonValue } from '@bufbuild/protobuf';
-import { ConnectError } from '@connectrpc/connect';
-import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
 import { OriginApproval, PopupType } from './message/popup';
 import { popup } from './popup';
@@ -19,7 +16,7 @@ export const approveOrigin = async ({
   origin: senderOrigin,
   tab,
   frameId,
-}: chrome.runtime.MessageSender): Promise<boolean> => {
+}: chrome.runtime.MessageSender): Promise<UserChoice> => {
   if (!senderOrigin?.startsWith('https://') || !tab?.id || frameId)
     throw new Error('Unsupported sender');
 
@@ -33,38 +30,33 @@ export const approveOrigin = async ({
 
   if (extraRecords.length) throw new Error('Multiple records for the same origin');
 
-  switch (existingRecord?.choice) {
-    case UserChoice.Approved:
-      return true;
-    case UserChoice.Ignored:
-      return false;
-    case UserChoice.Denied:
-    default: {
-      const res = await popup<OriginApproval>({
-        type: PopupType.OriginApproval,
-        request: {
-          origin: urlOrigin,
-          favIconUrl: tab.favIconUrl,
-          title: tab.title,
-          lastRequest: existingRecord?.date,
-        },
-      });
+  const choice = existingRecord?.choice;
 
-      if ('error' in res)
-        throw errorFromJson(res.error as JsonValue, undefined, ConnectError.from(res));
-      else if (res.data != null) {
-        // TODO: is there a race condition here?
-        // if something has written after our initial read, we'll clobber them
-        void localExtStorage.set('knownSites', [
-          {
-            ...res.data,
-            date: Date.now(),
-          },
-          ...irrelevant,
-        ]);
-      }
-
-      return res.data?.choice === UserChoice.Approved;
-    }
+  // Choice already made
+  if (choice === UserChoice.Approved || choice === UserChoice.Ignored) {
+    return choice;
   }
+
+  // It's the first or repeat ask
+  const popupResponse = await popup<OriginApproval>({
+    type: PopupType.OriginApproval,
+    request: {
+      origin: urlOrigin,
+      favIconUrl: tab.favIconUrl,
+      title: tab.title,
+      lastRequest: existingRecord?.date,
+    },
+  });
+
+  if (popupResponse) {
+    void localExtStorage.set(
+      // user interacted with popup, update record
+      // TODO: is there a race condition here?  if this object has been
+      //       written after our initial read, we'll clobber them
+      'knownSites',
+      [popupResponse, ...irrelevant],
+    );
+  }
+
+  return popupResponse?.choice ?? UserChoice.Denied;
 };

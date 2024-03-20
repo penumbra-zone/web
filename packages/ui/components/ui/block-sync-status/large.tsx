@@ -104,7 +104,7 @@ const FullySyncedState = ({ latestKnownBlockHeight, fullSyncHeight }: SyncingSta
             width='50'
             color='var(--teal)'
             wrapperClass={cn(
-              'transition-all duration-300 absolute bottom-0 right-3',
+              'transition-all duration-300 absolute bottom-0 -left-7',
               showLoader ? 'opacity-100' : 'opacity-0',
             )}
           />

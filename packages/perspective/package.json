@@ -43,7 +43,8 @@
   "scripts": {
     "build": "vite build",
     "clean": "rm -rfv dist",
-    "lint": "eslint \"**/*.ts*\""
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
   },
   "dependencies": {
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240313211643-35db357c277d.1",

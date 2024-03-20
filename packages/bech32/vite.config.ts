@@ -13,6 +13,7 @@ export default defineConfig({
         asset: './src/asset.ts',
         'identity-key': './src/identity-key.ts',
         'penumbra-bech32': './src/penumbra-bech32.ts',
+        validate: './src/validate.ts',
       },
       formats: ['es'],
     },

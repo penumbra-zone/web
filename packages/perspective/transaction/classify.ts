@@ -13,6 +13,8 @@ export const classifyTransaction = (txv?: TransactionView): TransactionClassific
   if (txv.bodyView?.actionViews.some(a => a.actionView.case === 'undelegate')) return 'undelegate';
   if (txv.bodyView?.actionViews.some(a => a.actionView.case === 'undelegateClaim'))
     return 'undelegateClaim';
+  if (txv.bodyView?.actionViews.some(a => a.actionView.case === 'ics20Withdrawal'))
+    return 'ics20Withdrawal';
 
   const hasOpaqueSpend = txv.bodyView?.actionViews.some(
     a => a.actionView.case === 'spend' && a.actionView.value.spendView.case === 'opaque',
@@ -85,6 +87,7 @@ export const TRANSACTION_LABEL_BY_CLASSIFICATION: Record<TransactionClassificati
   delegate: 'Delegate',
   undelegate: 'Undelegate',
   undelegateClaim: 'Undelegate Claim',
+  ics20Withdrawal: 'Ics20 Withdrawal',
 };
 
 export const getTransactionClassificationLabel = (txv?: TransactionView): string =>

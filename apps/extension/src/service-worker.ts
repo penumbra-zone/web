@@ -46,6 +46,7 @@ const startServices = async () => {
     grpcEndpoint,
     walletId: wallet0.id,
     fullViewingKey: wallet0.fullViewingKey,
+    numeraireAssetId: USDC_ASSET_ID,
   });
   await services.initialize();
   return services;

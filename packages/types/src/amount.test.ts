@@ -3,10 +3,12 @@ import {
   addAmounts,
   displayAmount,
   displayUsd,
+  divideAmounts,
   fromBaseUnitAmount,
   fromValueView,
   isZero,
   joinLoHiAmount,
+  subtractAmounts,
 } from './amount';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import {
@@ -111,6 +113,68 @@ describe('addAmounts', () => {
 
     expect(result.lo).toBe(18446744073709551614n); // max value for a 64-bit integer - 1
     expect(result.hi).toBe(36893488147419103231n); // 2*max value for a 64-bit integer + 1
+  });
+});
+
+describe('subtractAmounts', () => {
+  it('should return an Amount with lo and hi equal to 0 when both inputs are 0', () => {
+    const a = new Amount({ lo: 0n, hi: 0n });
+    const b = new Amount({ lo: 0n, hi: 0n });
+
+    const result = subtractAmounts(a, b);
+
+    expect(result.lo).toBe(0n);
+    expect(result.hi).toBe(0n);
+  });
+
+  it('should correctly subtract two Amounts', () => {
+    const a = new Amount({ lo: 2n, hi: 2n });
+    const b = new Amount({ lo: 1n, hi: 1n });
+
+    const result = subtractAmounts(a, b);
+
+    expect(result.lo).toBe(1n);
+    expect(result.hi).toBe(1n);
+  });
+
+  it('should throw an error if minuend is less than subtrahend', () => {
+    const a = new Amount({ lo: 1n, hi: 1n });
+    const b = new Amount({ lo: 2n, hi: 2n });
+
+    expect(() => subtractAmounts(a, b)).toThrow('Amount cannot be negative');
+  });
+});
+
+describe('divideAmounts', () => {
+  it('should throw an error when dividing by zero', () => {
+    const a = new Amount({ lo: 1n, hi: 1n });
+    const b = new Amount({ lo: 0n, hi: 0n });
+
+    expect(() => divideAmounts(a, b)).toThrow('Division by zero');
+  });
+
+  it('should return 0n if dividend is zero', () => {
+    const a = new Amount({ lo: 0n, hi: 0n });
+    const b = new Amount({ lo: 18446744073709551615n, hi: 1n });
+    const result = divideAmounts(a, b);
+
+    expect(result.isZero()).toBeTruthy();
+  });
+
+  it('should return a number without fractions when dividing without remainder', () => {
+    const a = new Amount({ lo: 6n, hi: 0n });
+    const b = new Amount({ lo: 2n, hi: 0n });
+    const result = divideAmounts(a, b);
+
+    expect(result.toNumber()).toBe(3);
+  });
+
+  it('should return a number with specified precision', () => {
+    const a = new Amount({ lo: 10n, hi: 0n });
+    const b = new Amount({ lo: 3n, hi: 0n });
+    const result = divideAmounts(a, b);
+
+    expect(result.toFixed(3)).toEqual('3.333');
   });
 });
 
