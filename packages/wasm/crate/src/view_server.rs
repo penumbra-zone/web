@@ -18,7 +18,7 @@ use wasm_bindgen::JsValue;
 
 use crate::error::WasmResult;
 use crate::note_record::SpendableNoteRecord;
-use crate::storage::{IndexedDBStorage, IndexedDbConstants};
+use crate::storage::IndexedDBStorage;
 use crate::swap_record::SwapRecord;
 use crate::utils;
 
@@ -90,7 +90,7 @@ impl ViewServer {
         let fvk = FullViewingKey::from_str(full_viewing_key)?;
         let stored_tree: StoredTree = serde_wasm_bindgen::from_value(stored_tree)?;
         let tree = load_tree(stored_tree);
-        let constants: IndexedDbConstants = serde_wasm_bindgen::from_value(idb_constants)?;
+        let constants = serde_wasm_bindgen::from_value(idb_constants)?;
         let view_server = Self {
             latest_height: u64::MAX,
             fvk,
