@@ -4,13 +4,25 @@ import { useState } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { rootRouter } from './components/root-router';
 
+import { ChainProvider } from '@cosmos-kit/react';
+import { chains, assets } from 'chain-registry';
+import { wallets } from '@cosmos-kit/keplr';
+
+const osmoTest5Chain = chains.find(({ chain_id }) => chain_id === 'osmo-test-5')!;
+
+const osmoTest5Assets = assets.find(({ chain_name }) => chain_name === osmoTest5Chain.chain_name)!;
+
 const Main = () => {
   const [queryClient] = useState(() => new QueryClient());
 
+  console.log('chain osmosis', { osmoTest5Chain, osmoTest5Assets });
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={rootRouter} />
-    </QueryClientProvider>
+    <ChainProvider chains={[osmoTest5Chain]} assetLists={[osmoTest5Assets]} wallets={wallets}>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={rootRouter} />
+      </QueryClientProvider>
+    </ChainProvider>
   );
 };
 

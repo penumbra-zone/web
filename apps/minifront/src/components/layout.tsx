@@ -37,7 +37,7 @@ export const Layout = () => {
       <HeadTag />
       <div className='relative flex min-h-screen flex-col bg-background text-muted'>
         <Header />
-        <main className='mx-auto w-full flex-1 px-6 pb-4 pt-5 md:px-[88px] md:pb-0 xl:max-w-[1276px] xl:px-12'>
+        <main className='mx-auto w-full flex-1 px-6 pb-4 pt-5 [background-clip:border-box] [background-image:url(./penumbra-logo.svg)] [background-position:left_center] [background-size:200vh] md:px-[88px] md:pb-0 lg:[background-position:left_200%_center] xl:max-w-[1276px] xl:px-12'>
           <Outlet />
         </main>
         <Footer />

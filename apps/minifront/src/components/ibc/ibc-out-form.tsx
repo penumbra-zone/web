@@ -8,8 +8,13 @@ import { filterBalancesPerChain, ibcSelector, ibcValidationErrors } from '../../
 import InputToken from '../shared/input-token';
 import { InputBlock } from '../shared/input-block';
 import { IbcLoaderResponse } from './ibc-loader';
+import { useEffect } from 'react';
 
-export const IbcOutForm = () => {
+export const IbcOutForm = ({
+  prefillDestination: prefillDestinationChainAddress,
+}: {
+  prefillDestination?: string;
+}) => {
   const assetBalances = useLoaderData() as IbcLoaderResponse;
   const {
     sendIbcWithdraw,
@@ -24,8 +29,13 @@ export const IbcOutForm = () => {
   const filteredBalances = filterBalancesPerChain(assetBalances, chain);
   const validationErrors = useStore(ibcValidationErrors);
 
+  useEffect(() => {
+    if (prefillDestinationChainAddress) setDestinationChainAddress(prefillDestinationChainAddress);
+  }, [prefillDestinationChainAddress, setDestinationChainAddress]);
+
   return (
     <Card gradient className='md:p-5'>
+      <h1 className='font-headline text-xl'>Exit Penumbra</h1>
       <form
         className='flex flex-col gap-4'
         onSubmit={e => {

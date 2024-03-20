@@ -6,7 +6,7 @@ export const JsonViewer = ({ jsonObj }: { jsonObj: JsonObject | JsonValue[] }) =
     <div className='mt-5 rounded bg-black p-5'>
       <JsonView
         data={jsonObj}
-        shouldExpandNode={level => level < 2}
+        shouldExpandNode={() => true}
         style={{
           container: 'bg-black whitespace-pre-wrap break-words font-mono -mx-4',
           basicChildStyle: 'mx-4 py-[2px]',
