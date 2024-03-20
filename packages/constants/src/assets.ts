@@ -17,6 +17,12 @@ export interface AssetPatterns {
   proposalNft: RegExp;
   unbondingToken: RegExp;
   votingReceipt: RegExp;
+  ibc: RegExp;
+}
+
+export interface IbcCaptureGroups {
+  channel: string;
+  denom: string;
 }
 
 export interface DelegationCaptureGroups {
@@ -60,4 +66,5 @@ export const assetPatterns: AssetPatterns = {
     /^uunbonding_epoch_(?<epoch>[0-9]+)_(?<bech32IdentityKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
   ),
   votingReceipt: new RegExp(/^voted_on_/),
+  ibc: new RegExp(/transfer\/(?<channel>channel-\d+)\/(?<denom>.*)/),
 };

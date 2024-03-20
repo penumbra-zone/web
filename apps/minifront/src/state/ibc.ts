@@ -16,6 +16,17 @@ import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 import { planBuildBroadcast } from './helpers';
+import { validateAmount } from './send';
+import { IbcLoaderResponse } from '../components/ibc/ibc-loader';
+import { getAssetId } from '@penumbra-zone/getters/src/metadata';
+import {
+  assetPatterns,
+  IbcCaptureGroups,
+  localAssets,
+  STAKING_TOKEN_METADATA,
+} from '@penumbra-zone/constants/src/assets';
+import { bech32IsValid } from '@penumbra-zone/bech32';
+import { errorToast } from '@penumbra-zone/ui';
 
 export interface IbcSendSlice {
   selection: BalancesResponse | undefined;
@@ -64,12 +75,14 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
 
       try {
         const req = await getPlanRequest(get().ibc);
-        await planBuildBroadcast('unknown', req);
+        await planBuildBroadcast('ics20Withdrawal', req);
 
         // Reset form
         set(state => {
           state.ibc.amount = '';
         });
+      } catch (e) {
+        errorToast(e, 'Ics20 withdrawal error').render();
       } finally {
         set(state => {
           state.ibc.txInProgress = false;
@@ -141,3 +154,47 @@ const getPlanRequest = async ({
 };
 
 export const ibcSelector = (state: AllSlices) => state.ibc;
+
+export const ibcValidationErrors = (state: AllSlices) => {
+  return {
+    recipientErr: !state.ibc.destinationChainAddress
+      ? false
+      : !validateAddress(state.ibc.chain, state.ibc.destinationChainAddress),
+    amountErr: !state.ibc.selection ? false : validateAmount(state.ibc.selection, state.ibc.amount),
+  };
+};
+
+const validateAddress = (chain: Chain | undefined, address: string): boolean => {
+  if (!chain || address === '') return false;
+  return bech32IsValid(address, chain.addressPrefix);
+};
+
+/**
+ * Filters the given IBC loader response balances by checking if any of the assets
+ * in the balance view match the staking token's asset ID or are of the same ibc channel.
+ *
+ * Until unwind support is implemented (https://github.com/penumbra-zone/web/issues/344),
+ * we need to ensure ics20 withdraws match these conditions.
+ */
+export const filterBalancesPerChain = (
+  allBalances: IbcLoaderResponse,
+  chain: Chain | undefined,
+): BalancesResponse[] => {
+  const penumbraAssetId = getAssetId(STAKING_TOKEN_METADATA);
+  const assetsWithMatchingChannel = localAssets
+    .filter(a => {
+      const ibcAsset = assetPatterns.ibc.exec(a.base);
+      if (!ibcAsset) return false;
+
+      const { channel } = ibcAsset.groups as unknown as IbcCaptureGroups;
+      return chain?.ibcChannel === channel;
+    })
+    .map(m => m.penumbraAssetId!);
+
+  const assetIdsToCheck = [penumbraAssetId, ...assetsWithMatchingChannel];
+
+  return allBalances.filter(({ balanceView }) => {
+    const metadata = getMetadata(balanceView);
+    return assetIdsToCheck.some(assetId => assetId.equals(metadata.penumbraAssetId));
+  });
+};

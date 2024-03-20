@@ -427,7 +427,7 @@ describe('viewActionPlan()', () => {
   });
 
   describe('`withdrawal` action', () => {
-    test('returns an action view with the `ics20Withdrawal` case and no value', () => {
+    test('returns an action view with the `ics20Withdrawal` case as-is', () => {
       const actionPlan = new ActionPlan({
         action: {
           case: 'ics20Withdrawal',
@@ -442,7 +442,7 @@ describe('viewActionPlan()', () => {
           new ActionView({
             actionView: {
               case: 'ics20Withdrawal',
-              value: {},
+              value: { amount: { hi: 1n, lo: 0n } },
             },
           }),
         ),

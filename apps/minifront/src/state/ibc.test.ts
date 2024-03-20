@@ -13,8 +13,6 @@ import { produce } from 'immer';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { bech32ToAddress } from '@penumbra-zone/bech32';
 
-// TODO: Revisit tests when re-implementing ibc form
-
 describe.skip('IBC Slice', () => {
   const selectionExample = new BalancesResponse({
     balanceView: new ValueView({
@@ -94,6 +92,7 @@ describe.skip('IBC Slice', () => {
         chainId: 'osmosis-test-5',
         ibcChannel: 'channel-0',
         iconUrl: '/test.svg',
+        addressPrefix: 'osmo',
       } satisfies Chain;
 
       useStore.getState().ibc.setChain(chain);

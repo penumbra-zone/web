@@ -77,6 +77,7 @@ export const viewActionFromEmptyPerspective = (action: Action): ActionView | und
           }),
         },
       });
+    case 'ics20Withdrawal':
     case 'delegate':
     case 'undelegate':
       return new ActionView({

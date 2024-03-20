@@ -7,6 +7,7 @@ import { SwapClaimViewComponent } from './swap-claim';
 import { DelegateComponent } from './delegate';
 import { UndelegateComponent } from './undelegate';
 import { UndelegateClaimComponent } from './undelegate-claim';
+import { Ics20WithdrawalComponent } from './isc20-withdrawal';
 
 const CASE_TO_LABEL: Record<string, string> = {
   daoDeposit: 'DAO Deposit',
@@ -55,7 +56,7 @@ export const ActionViewComponent = ({ av: { actionView } }: { av: ActionView }) 
       return <SwapClaimViewComponent value={actionView.value} />;
 
     case 'ics20Withdrawal':
-      return <ViewBox label='ICS20 Withdrawal' />;
+      return <Ics20WithdrawalComponent value={actionView.value} />;
 
     case 'delegate':
       return <DelegateComponent value={actionView.value} />;

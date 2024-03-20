@@ -213,7 +213,7 @@ export const viewActionPlan =
         return new ActionView({
           actionView: {
             case: 'ics20Withdrawal',
-            value: {},
+            value: actionPlan.action.value,
           },
         });
       case 'delegate':
