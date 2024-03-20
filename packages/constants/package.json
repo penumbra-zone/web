@@ -16,5 +16,8 @@
     "clean": "rm -rfv dist",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
+  },
+  "dependencies": {
+    "chain-registry": "^1.33.25"
   }
 }

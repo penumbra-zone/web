@@ -1,25 +1,26 @@
 import { LoaderFunction } from 'react-router-dom';
-import { testnetIbcChains } from '@penumbra-zone/constants/src/chains';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { testnetIbcChains, getChainMetadataByName } from '@penumbra-zone/constants/src/chains';
 import { getBalances } from '../../fetchers/balances';
 import { useStore } from '../../state';
-import { filterBalancesPerChain } from '../../state/ibc';
+import { getEphemeralAddress } from '../../fetchers/address';
+import { getCosmosChainByName } from '@penumbra-zone/constants/src/cosmos';
+import { filterBalancesPerChain } from '../../state/filter-balances-per-chain';
+import { toPlainMessage } from '@bufbuild/protobuf';
 
-export type IbcLoaderResponse = BalancesResponse[];
-
-export const IbcLoader: LoaderFunction = async (): Promise<IbcLoaderResponse> => {
+export const IbcLoader: LoaderFunction = async () => {
   const assetBalances = await getBalances();
+  const initialAddress = await getEphemeralAddress(0);
+  const chainName = testnetIbcChains[0]!.chainName;
+  const penumbraChain = getChainMetadataByName(chainName)!;
+  const cosmosChain = getCosmosChainByName(chainName)!;
 
-  if (assetBalances[0]) {
-    const initialChain = testnetIbcChains[0];
-    const initialSelection = filterBalancesPerChain(assetBalances, initialChain)[0];
+  useStore.setState(state => {
+    state.ibc.assetBalances = assetBalances.map(toPlainMessage);
+    state.ibc.penumbra.address = initialAddress;
+    state.ibc.penumbraChain = penumbraChain;
+    state.ibc.cosmosChain = cosmosChain;
+    state.ibc.penumbra.unshield = filterBalancesPerChain(assetBalances, penumbraChain)[0];
+  });
 
-    // set initial account if accounts exist and asset if account has asset list
-    useStore.setState(state => {
-      state.ibc.selection = initialSelection;
-      state.ibc.chain = initialChain;
-    });
-  }
-
-  return assetBalances;
+  return null;
 };

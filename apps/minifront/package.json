@@ -12,6 +12,12 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@cosmos-kit/core": "^2.8.9",
+    "@cosmos-kit/cosmostation": "^2.6.10",
+    "@cosmos-kit/keplr": "^2.6.9",
+    "@cosmos-kit/leap": "^2.6.12",
+    "@cosmos-kit/react": "^2.10.11",
+    "@interchain-ui/react": "^1.22.4",
     "@penumbra-zone/bech32": "workspace:*",
     "@penumbra-zone/client": "workspace:*",
     "@penumbra-zone/constants": "workspace:*",

@@ -75,6 +75,7 @@ export const rootRouter = createHashRouter([
         path: PagePath.IBC,
         loader: IbcLoader,
         element: <IbcLayout />,
+        errorElement: <ErrorBoundary />,
       },
     ],
   },

@@ -2,7 +2,7 @@ import { create, StateCreator } from 'zustand';
 import { enableMapSet } from 'immer';
 import { immer } from 'zustand/middleware/immer';
 import { createSwapSlice, SwapSlice } from './swap';
-import { createIbcSendSlice, IbcSendSlice } from './ibc';
+import { createIbcSlice, IbcSlice } from './ibc';
 import { createSendSlice, SendSlice } from './send';
 import { createStakingSlice, StakingSlice } from './staking';
 import { createUnclaimedSwapsSlice, UnclaimedSwapsSlice } from './unclaimed-swaps';
@@ -16,7 +16,7 @@ import { createTransactionsSlice, TransactionsSlice } from './transactions';
 enableMapSet();
 
 export interface AllSlices {
-  ibc: IbcSendSlice;
+  ibc: IbcSlice;
   send: SendSlice;
   staking: StakingSlice;
   swap: SwapSlice;
@@ -33,7 +33,7 @@ export type SliceCreator<SliceInterface> = StateCreator<
 
 export const initializeStore = () => {
   return immer((setState, getState: () => AllSlices, store) => ({
-    ibc: createIbcSendSlice()(setState, getState, store),
+    ibc: createIbcSlice()(setState, getState, store),
     send: createSendSlice()(setState, getState, store),
     staking: createStakingSlice()(setState, getState, store),
     swap: createSwapSlice()(setState, getState, store),

@@ -1,88 +1,64 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
-import { ChainSelector } from './chain-selector';
-import { useLoaderData } from 'react-router-dom';
 import { useStore } from '../../state';
-import { filterBalancesPerChain, ibcSelector, ibcValidationErrors } from '../../state/ibc';
-import InputToken from '../shared/input-token';
+import { ibcCosmosSelector, ibcPenumbraSelector, ibcSelector } from '../../state/ibc';
 import { InputBlock } from '../shared/input-block';
-import { IbcLoaderResponse } from './ibc-loader';
+import InputToken from '../shared/input-token';
+import { joinLoHi, splitLoHi } from '@penumbra-zone/types/src/lo-hi';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { filterBalancesPerChain } from '../../state/filter-balances-per-chain';
+import { useLoaderData } from 'react-router-dom';
+import { useChain } from '@cosmos-kit/react';
 
 export const IbcOutForm = () => {
-  const assetBalances = useLoaderData() as IbcLoaderResponse;
-  const {
-    sendIbcWithdraw,
-    destinationChainAddress,
-    setDestinationChainAddress,
-    amount,
-    setAmount,
-    selection,
-    setSelection,
-    chain,
-  } = useStore(ibcSelector);
-  const filteredBalances = filterBalancesPerChain(assetBalances, chain);
-  const validationErrors = useStore(ibcValidationErrors);
+  useLoaderData();
+  const { penumbraChain, assetBalances } = useStore(ibcSelector);
+  console.log('ibc-out-form', penumbraChain?.chainName);
+  const chainContext = useChain(penumbraChain!.chainName);
+  const { customDestination, setCustomDestination } = useStore(ibcCosmosSelector);
+  const { unshield, setUnshield } = useStore(ibcPenumbraSelector);
+  const { lo, hi } = unshield?.balanceView?.valueView.value?.amount ?? { lo: 0n, hi: 0n };
+  const unshieldAmount = joinLoHi(lo, hi);
+  const filteredBalances = filterBalancesPerChain(
+    assetBalances!.map(b => new BalancesResponse(b)),
+    penumbraChain,
+  );
 
   return (
-    <form
-      className='flex flex-col gap-4'
-      onSubmit={e => {
-        e.preventDefault();
-        void sendIbcWithdraw();
-      }}
-    >
-      <ChainSelector />
+    <form className='flex flex-col gap-4' onSubmit={e => e.preventDefault()}>
+      <h1 className='font-headline text-xl'>Reveal</h1>
       <InputToken
         label='Amount to send'
         placeholder='Enter an amount'
         className='mb-1'
-        selection={selection}
-        setSelection={setSelection}
-        value={amount}
+        selection={new BalancesResponse(unshield)}
+        setSelection={setUnshield}
+        value={unshieldAmount.toString()}
         onChange={e => {
           if (Number(e.target.value) < 0) return;
-          setAmount(e.target.value);
+          const newUnshield = new BalancesResponse(unshield);
+          newUnshield.balanceView!.valueView.value!.amount = new Amount(
+            splitLoHi(BigInt(e.target.value)),
+          );
+          setUnshield(newUnshield);
         }}
-        validations={[
-          {
-            type: 'error',
-            issue: 'insufficient funds',
-            checkFn: () => validationErrors.amountErr,
-          },
-        ]}
         balances={filteredBalances}
       />
       <InputBlock
         label='Recipient on destination chain'
         className='mb-1'
-        value={destinationChainAddress}
-        validations={[
-          {
-            type: 'error',
-            issue: 'address not valid',
-            checkFn: () => validationErrors.recipientErr,
-          },
-        ]}
+        value={customDestination ?? chainContext.address}
       >
         <Input
           variant='transparent'
           placeholder='Enter the address'
-          value={destinationChainAddress}
-          onChange={e => setDestinationChainAddress(e.target.value)}
+          value={customDestination ?? chainContext.address}
+          onChange={e => setCustomDestination(e.target.value)}
         />
       </InputBlock>
-      <Button
-        type='submit'
-        variant='gradient'
-        className='mt-9'
-        disabled={
-          !Number(amount) ||
-          !destinationChainAddress ||
-          !!Object.values(validationErrors).find(Boolean) ||
-          !selection
-        }
-      >
-        Send
+      <Button disabled type='submit' variant='gradient' className='mt-9'>
+        Reveal
       </Button>
     </form>
   );

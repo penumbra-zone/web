@@ -12,24 +12,24 @@ import { useStore } from '../../state';
 import { ibcSelector } from '../../state/ibc';
 
 export const ChainSelector = () => {
-  const { chain, setChain } = useStore(ibcSelector);
-  const [openSelect, setOpenSelect] = useState(false);
+  const [open, onOpenChange] = useState(false);
+  const { penumbraChain, setChainById } = useStore(ibcSelector);
 
   return (
     <div className='flex flex-col gap-3 rounded-lg border bg-background px-4 pb-5 pt-3'>
       <p className='text-base font-bold'>Chain</p>
       <Select
-        value={chain?.displayName ?? ''}
-        onValueChange={v => setChain(testnetIbcChains.find(i => i.displayName === v))}
-        open={openSelect}
-        onOpenChange={open => setOpenSelect(open)}
+        value={penumbraChain?.chainId}
+        onValueChange={v => setChainById(v)}
+        open={open}
+        onOpenChange={onOpenChange}
       >
-        <SelectTrigger open={openSelect}>
+        <SelectTrigger open={open}>
           <SelectValue placeholder='Select chain'>
-            {chain && (
+            {penumbraChain && (
               <div className='flex gap-2'>
-                <img src={chain.iconUrl} alt='Chain' className='size-5' />
-                <p className='mt-[2px] text-muted-foreground'>{chain.displayName}</p>
+                <img src={penumbraChain.iconUrl} alt='Chain' className='size-5' />
+                <p className='mt-[2px] text-muted-foreground'>{penumbraChain.displayName}</p>
               </div>
             )}
           </SelectValue>
@@ -41,7 +41,7 @@ export const ChainSelector = () => {
               value={i.displayName}
               className={cn(
                 'hover:bg-brown',
-                chain?.displayName === i.displayName && 'bg-charcoal-secondary',
+                penumbraChain?.displayName === i.displayName && 'bg-charcoal-secondary',
               )}
             >
               <div className='flex gap-2'>
