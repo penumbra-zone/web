@@ -1,5 +1,5 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { SetStateAction, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { CopyToClipboard } from '@penumbra-zone/ui/components/ui/copy-to-clipboard';
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
@@ -48,7 +48,7 @@ export const SettingsSpendKey = () => {
                 label={
                   <p className='font-headline font-semibold text-muted-foreground'>Password</p>
                 }
-                onChange={(e: { target: { value: SetStateAction<string> } }) => {
+                onChange={e => {
                   setPassword(e.target.value);
                   setEnteredIncorrect(false);
                 }}
