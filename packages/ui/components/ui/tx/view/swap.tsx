@@ -5,6 +5,8 @@ import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 import { ActionDetails } from './action-details';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { AddressViewComponent } from './address-view';
+import { TransactionIdComponent } from './transaction-id';
+import { SquareArrowRight } from 'lucide-react';
 
 export const SwapViewComponent = ({ value }: { value: SwapView }) => {
   if (value.swapView.case === 'visible') {
@@ -15,11 +17,27 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
       addressView: { case: 'decoded', value: { address: claimAddress } },
     });
 
+    const swapClaimTxId = value.swapView.value.claimTx;
+
     return (
       <ViewBox
         label='Swap'
         visibleContent={
           <div className='flex flex-col gap-8'>
+            {swapClaimTxId && (
+              <div>
+                <TransactionIdComponent
+                  prefix={
+                    <>
+                      Swap claim
+                      <SquareArrowRight size={16} className='ml-1' />
+                    </>
+                  }
+                  transactionId={swapClaimTxId}
+                  shaClassName='font-mono ml-1'
+                />
+              </div>
+            )}
             <ActionDetails label='Asset 1'>
               <ActionDetails.Row label='ID' truncate>
                 {uint8ArrayToBase64(tradingPair!.asset1!.inner)}
