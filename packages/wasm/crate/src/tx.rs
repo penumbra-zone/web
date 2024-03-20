@@ -9,7 +9,7 @@ use penumbra_proto::core::component::sct::v1::commitment_source::Source;
 use penumbra_proto::core::transaction::v1 as pb;
 use penumbra_proto::core::transaction::v1::{TransactionPerspective, TransactionView};
 use penumbra_proto::core::txhash::v1::TransactionId;
-use penumbra_proto::{DomainType, Message};
+use penumbra_proto::DomainType;
 use penumbra_sct::Nullifier;
 use penumbra_tct::{Position, Proof, StateCommitment};
 use penumbra_transaction::plan::TransactionPlan;
@@ -285,42 +285,47 @@ pub async fn transaction_info_inner(
                     .map(|swap_record| Position::from(swap_record.position));
 
                 if let Some(swap_position) = swap_position_option {
-                    let swap_nullifier =
+                    let derived_nullifier_from_swap =
                         Nullifier::derive(fvk.nullifier_key(), swap_position, &commitment);
 
                     let transaction_infos = storage.get_transaction_infos().await?;
 
                     for transaction_info in transaction_infos {
-                        let transaction_matches = transaction_info
+                        transaction_info
                             .transaction
                             .and_then(|transaction| transaction.body)
-                            .and_then(|body| Some(body.actions.iter().any(|action|
-                                action.action.as_ref().and_then(|action_action| {
-                                    if let penumbra_proto::core::transaction::v1::action::Action::SwapClaim(swap_claim) = action_action {
-                                        Some(swap_claim)
-                                    } else {
-                                        None
-                                    }
-                                }).and_then(|swap_claim| {
-                                    swap_claim.body.as_ref()
-                                }).and_then(|body| {
-                                    body.nullifier.as_ref().map(|swap_claim_nullifier|
-                                        swap_claim_nullifier.encode_to_vec() == swap_nullifier.encode_to_vec()
-                                    )
-                                }).unwrap_or(false))
-                            )).unwrap();
+                            .map(|body| {
+                                for action in body.actions.iter() {
+                                    let mut should_break = false;
 
-                        if transaction_matches {
-                            if let Some(transaction_id) = transaction_info.id {
-                                txp.transaction_ids_by_commitment.insert(
-                                    commitment.to_string(),
-                                    TransactionId {
-                                        inner: transaction_id.inner,
-                                    },
-                                );
-                                break;
-                            }
-                        }
+                                    action.action.as_ref().and_then(|action_action| {
+                                        if let penumbra_proto::core::transaction::v1::action::Action::SwapClaim(swap_claim) = action_action {
+                                            Some(swap_claim)
+                                        } else {
+                                            None
+                                        }
+                                    }).and_then(|swap_claim| {
+                                        swap_claim.body.as_ref()
+                                    }).map(|body|
+                                        body.nullifier.as_ref().map(|swap_claim_nullifier| {
+                                            if *swap_claim_nullifier == derived_nullifier_from_swap.to_proto() {
+                                                should_break = true;
+
+                                                transaction_info.id.clone().and_then(|id| {
+                                                    txp.transaction_ids_by_commitment.insert(
+                                                        commitment.to_string(),
+                                                        TransactionId { inner: id.inner},
+                                                    )
+                                                });
+                                            }
+                                        })
+                                    );
+
+                                    if should_break {
+                                        break;
+                                    }
+                                }
+                            });
                     }
                 }
             }
