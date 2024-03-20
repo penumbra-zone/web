@@ -282,7 +282,7 @@ pub async fn transaction_info_inner(
                 let swap_position_option = storage
                     .get_swap_by_commitment(commitment.into())
                     .await?
-                    .and_then(|swap_record| Some(Position::from(swap_record.position)));
+                    .map(|swap_record| Position::from(swap_record.position));
 
                 // Find the claim transaction
                 if let Some(swap_position) = swap_position_option {
@@ -290,38 +290,30 @@ pub async fn transaction_info_inner(
                         Nullifier::derive(fvk.nullifier_key(), swap_position, &commitment);
 
                     let transaction_infos = storage.get_transaction_infos().await?;
+
                     for transaction_info in transaction_infos {
                         if let Some(body) = transaction_info
                             .transaction
                             .and_then(|transaction| transaction.body)
                         {
                             let transaction_matches = body.actions.iter().any(|action| {
-                                return match &action.action {
-                                    Some(action_action) => {
+                                action.action.as_ref().and_then(|action_action| {
                                     if let penumbra_proto::core::transaction::v1::action::Action::SwapClaim(swap_claim) = action_action {
-                                        return match &swap_claim.body {
-                                            Some(swap_claim_body) => {
-                                                let result = match &swap_claim_body.nullifier {
-                                                    Some(swap_claim_body_nullifier) =>{
-                                                        swap_claim_body_nullifier.encode_to_vec() == nullifier.encode_to_vec()
-                                                    },
-                                                    None => false,
-                                                };
-                                                return result;
-                                            },
-                                            None => false,
-                                        }
+                                        Some(swap_claim)
+                                    } else {
+                                        None
                                     }
-                                    return false;
-
-                                    },
-                                    None => false,
-                                };
+                                }).and_then(|swap_claim| {
+                                    swap_claim.body.as_ref()
+                                }).and_then(|body| {
+                                    body.nullifier.as_ref().map(|swap_claim_nullifier|
+                                        swap_claim_nullifier.encode_to_vec() == nullifier.encode_to_vec()
+                                    )
+                                }).unwrap_or(false)
                             });
 
                             if transaction_matches {
                                 if let Some(transaction_id) = transaction_info.id {
-                                    // let foo: Transaction = transaction.into();
                                     txp.transaction_ids_by_commitment.insert(
                                         commitment.to_string(),
                                         TransactionId {
@@ -342,7 +334,7 @@ pub async fn transaction_info_inner(
                     .get_swap_by_nullifier(&nullifier)
                     .await?
                     .and_then(|swap_record| swap_record.source)
-                    .and_then(|source| {
+                    .map(|source| {
                         if let Some(Source::Transaction(transaction)) = source.source {
                             txp.transaction_ids_by_nullifier.insert(
                                 nullifier.to_string(),
@@ -351,7 +343,6 @@ pub async fn transaction_info_inner(
                                 },
                             );
                         }
-                        Some(())
                     });
 
                 let output_1_record = storage
