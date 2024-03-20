@@ -284,19 +284,17 @@ pub async fn transaction_info_inner(
                     .await?
                     .map(|swap_record| Position::from(swap_record.position));
 
-                // Find the claim transaction
                 if let Some(swap_position) = swap_position_option {
-                    let nullifier =
+                    let swap_nullifier =
                         Nullifier::derive(fvk.nullifier_key(), swap_position, &commitment);
 
                     let transaction_infos = storage.get_transaction_infos().await?;
 
                     for transaction_info in transaction_infos {
-                        if let Some(body) = transaction_info
+                        let transaction_matches = transaction_info
                             .transaction
                             .and_then(|transaction| transaction.body)
-                        {
-                            let transaction_matches = body.actions.iter().any(|action| {
+                            .and_then(|body| Some(body.actions.iter().any(|action|
                                 action.action.as_ref().and_then(|action_action| {
                                     if let penumbra_proto::core::transaction::v1::action::Action::SwapClaim(swap_claim) = action_action {
                                         Some(swap_claim)
@@ -307,21 +305,20 @@ pub async fn transaction_info_inner(
                                     swap_claim.body.as_ref()
                                 }).and_then(|body| {
                                     body.nullifier.as_ref().map(|swap_claim_nullifier|
-                                        swap_claim_nullifier.encode_to_vec() == nullifier.encode_to_vec()
+                                        swap_claim_nullifier.encode_to_vec() == swap_nullifier.encode_to_vec()
                                     )
-                                }).unwrap_or(false)
-                            });
+                                }).unwrap_or(false))
+                            )).unwrap();
 
-                            if transaction_matches {
-                                if let Some(transaction_id) = transaction_info.id {
-                                    txp.transaction_ids_by_commitment.insert(
-                                        commitment.to_string(),
-                                        TransactionId {
-                                            inner: transaction_id.inner,
-                                        },
-                                    );
-                                    break;
-                                }
+                        if transaction_matches {
+                            if let Some(transaction_id) = transaction_info.id {
+                                txp.transaction_ids_by_commitment.insert(
+                                    commitment.to_string(),
+                                    TransactionId {
+                                        inner: transaction_id.inner,
+                                    },
+                                );
+                                break;
                             }
                         }
                     }
