@@ -9,8 +9,9 @@ use penumbra_proto::core::component::sct::v1::commitment_source::Source;
 use penumbra_proto::core::transaction::v1 as pb;
 use penumbra_proto::core::transaction::v1::{TransactionPerspective, TransactionView};
 use penumbra_proto::core::txhash::v1::TransactionId;
-use penumbra_proto::DomainType;
-use penumbra_tct::{Proof, StateCommitment};
+use penumbra_proto::{DomainType, Message};
+use penumbra_sct::Nullifier;
+use penumbra_tct::{Position, Proof, StateCommitment};
 use penumbra_transaction::plan::TransactionPlan;
 use penumbra_transaction::Action;
 use penumbra_transaction::{AuthorizationData, Transaction, WitnessData};
@@ -273,6 +274,65 @@ pub async fn transaction_info_inner(
                 {
                     txp.spend_nullifiers
                         .insert(nullifier, spendable_note_record.note.clone());
+                }
+            }
+            Action::Swap(swap) => {
+                let commitment = swap.body.payload.commitment;
+
+                let swap_position_option = storage
+                    .get_swap_by_commitment(commitment.into())
+                    .await?
+                    .and_then(|swap_record| Some(Position::from(swap_record.position)));
+
+                // Find the claim transaction
+                if let Some(swap_position) = swap_position_option {
+                    let nullifier =
+                        Nullifier::derive(fvk.nullifier_key(), swap_position, &commitment);
+
+                    let transaction_infos = storage.get_transaction_infos().await?;
+                    for transaction_info in transaction_infos {
+                        if let Some(body) = transaction_info
+                            .transaction
+                            .and_then(|transaction| transaction.body)
+                        {
+                            let transaction_matches = body.actions.iter().any(|action| {
+                                return match &action.action {
+                                    Some(action_action) => {
+                                    if let penumbra_proto::core::transaction::v1::action::Action::SwapClaim(swap_claim) = action_action {
+                                        return match &swap_claim.body {
+                                            Some(swap_claim_body) => {
+                                                let result = match &swap_claim_body.nullifier {
+                                                    Some(swap_claim_body_nullifier) =>{
+                                                        swap_claim_body_nullifier.encode_to_vec() == nullifier.encode_to_vec()
+                                                    },
+                                                    None => false,
+                                                };
+                                                return result;
+                                            },
+                                            None => false,
+                                        }
+                                    }
+                                    return false;
+
+                                    },
+                                    None => false,
+                                };
+                            });
+
+                            if transaction_matches {
+                                if let Some(transaction_id) = transaction_info.id {
+                                    // let foo: Transaction = transaction.into();
+                                    txp.transaction_ids_by_commitment.insert(
+                                        commitment.to_string(),
+                                        TransactionId {
+                                            inner: transaction_id.inner,
+                                        },
+                                    );
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
             }
             Action::SwapClaim(claim) => {

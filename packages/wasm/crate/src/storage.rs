@@ -10,8 +10,9 @@ use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
 use penumbra_proto::core::{app::v1::AppParameters, component::sct::v1::Epoch};
 use penumbra_proto::{
+    core::app::v1::AppParameters,
     crypto::tct::v1::StateCommitment,
-    view::v1::{NotesRequest, SwapRecord},
+    view::v1::{NotesRequest, SwapRecord, TransactionInfo},
     DomainType,
 };
 use penumbra_sct::Nullifier;
@@ -40,6 +41,7 @@ pub struct Tables {
     pub app_parameters: String,
     pub gas_prices: String,
     pub epochs: String,
+    pub transactions: String,
 }
 
 pub struct IndexedDBStorage {
@@ -334,5 +336,22 @@ impl IndexedDBStorage {
             .open_cursor_with_direction(web_sys::IdbCursorDirection::Prev)?
             .await?
             .and_then(|cursor| serde_wasm_bindgen::from_value(cursor.value()).ok()))
+    }
+
+    pub async fn get_transaction_infos(&self) -> WasmResult<Vec<TransactionInfo>> {
+        let tx = self
+            .db
+            .transaction_on_one(&self.constants.tables.transactions)?;
+        let store = tx.object_store(&self.constants.tables.transactions)?;
+
+        let mut records = Vec::new();
+        let raw_values = store.get_all()?.await?;
+
+        for raw_value in raw_values {
+            let record: TransactionInfo = serde_wasm_bindgen::from_value(raw_value)?;
+            records.push(record);
+        }
+
+        Ok(records)
     }
 }
