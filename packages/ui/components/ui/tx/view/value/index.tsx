@@ -40,6 +40,7 @@ export const ValueViewComponent = ({
       .replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
     const symbol = metadata.symbol || 'Unknown Asset';
 
+    /** @todo: Refactor to use `<Pill />` component */
     return (
       <Pill variant={variant === 'default' ? 'default' : 'dashed'}>
         <div className='flex min-w-0 items-center gap-1'>
