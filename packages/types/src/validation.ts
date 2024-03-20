@@ -1,21 +1,13 @@
 import { z, ZodTypeAny } from 'zod';
 import { isDevEnv } from './environment';
 
-// In production, we do not want to throw validation errors, but log them.
-// Given the extension update cycle, we want to opt for grace degradation.
-// In our CI/CD, we'll throw validation errors so they can be fixed at build time.
+// Given performance critical nature of some features (like syncing),
+// we only validate in dev mode in attempts to catch any schema variance
 export const validateSchema = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
-  const result = schema.safeParse(data);
-
-  if (result.success) {
-    return result.data;
+  if (isDevEnv()) {
+    return schema.parse(data);
   } else {
-    if (isDevEnv()) {
-      throw result.error;
-    } else {
-      console.error(result.error);
-      return data as T;
-    }
+    return data as T;
   }
 };
 
