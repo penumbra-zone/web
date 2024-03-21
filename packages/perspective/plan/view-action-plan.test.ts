@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { viewActionPlan } from './view-action-plan';
 import {
   ActionPlan,
@@ -13,32 +13,25 @@ import {
 import {
   AssetId,
   Metadata,
-  ValueView_KnownAssetId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import {
-  BatchSwapOutputData,
   SwapPlaintext,
+  BatchSwapOutputData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { JsonObject } from '@bufbuild/protobuf';
 import {
   Delegate,
   Undelegate,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { bech32AssetId } from '@penumbra-zone/bech32/src/asset';
 import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
-import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 
 describe('viewActionPlan()', () => {
   const addressAsBech32 =
     'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
   const address = new Address({ inner: bech32ToAddress(addressAsBech32) });
   const assetId = new AssetId({ inner: new Uint8Array() });
-  const assetIdAsString = bech32AssetId(assetId);
   const metadata = new Metadata({ penumbraAssetId: assetId });
-  const metadataByAssetId = {
-    [assetIdAsString]: metadata.toJson() as Jsonified<Metadata>,
-  };
+  const metadataByAssetId = vi.fn(() => Promise.resolve(metadata));
   const mockFvk =
     'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09';
 
@@ -58,7 +51,7 @@ describe('viewActionPlan()', () => {
       },
     });
 
-    test('throws if the address is missing', () => {
+    test('throws if the address is missing', async () => {
       const actionPlan = new ActionPlan({
         action: {
           case: 'spend',
@@ -68,11 +61,13 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow('No address in spend plan');
+      await expect(viewActionPlan(metadataByAssetId, mockFvk)(actionPlan)).rejects.toThrow(
+        'No address in spend plan',
+      );
     });
 
-    test('includes the amount', () => {
-      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(validSpendActionPlan);
+    test('includes the amount', async () => {
+      const actionView = await viewActionPlan(metadataByAssetId, mockFvk)(validSpendActionPlan);
       const spendView = actionView.actionView.value as SpendView;
       const spendViewVisible = spendView.spendView.value as SpendView_Visible;
 
@@ -82,7 +77,7 @@ describe('viewActionPlan()', () => {
       });
     });
 
-    test('throws if the amount is missing', () => {
+    test('throws if the amount is missing', async () => {
       const actionPlan = new ActionPlan({
         action: {
           case: 'spend',
@@ -94,19 +89,20 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow('No value in note');
+      await expect(viewActionPlan(metadataByAssetId, mockFvk)(actionPlan)).rejects.toThrow(
+        'No value in note',
+      );
     });
 
-    test('includes the denom metadata', () => {
-      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(validSpendActionPlan);
-      const spendView = actionView.actionView.value as SpendView;
-      const spendViewVisible = spendView.spendView.value as SpendView_Visible;
-      const valueView = spendViewVisible.note!.value?.valueView.value as ValueView_KnownAssetId;
+    test('includes the denom metadata', () =>
+      expect(
+        viewActionPlan(metadataByAssetId, mockFvk)(validSpendActionPlan),
+      ).resolves.toHaveProperty(
+        'actionView.value.spendView.value.note.value.valueView.value.metadata',
+        metadata,
+      ));
 
-      expect(valueView.metadata?.toJson()).toEqual(metadata.toJson());
-    });
-
-    test('throws if the asset ID is missing', () => {
+    test('throws if the asset ID is missing', async () => {
       const actionPlan = new ActionPlan({
         action: {
           case: 'spend',
@@ -119,7 +115,9 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow('No asset ID in value');
+      await expect(viewActionPlan(metadataByAssetId, mockFvk)(actionPlan)).rejects.toThrow(
+        'No asset ID in value',
+      );
     });
   });
 
@@ -140,15 +138,15 @@ describe('viewActionPlan()', () => {
       },
     });
 
-    test('includes the destAddress', () => {
-      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(validOutputActionPlan);
+    test('includes the destAddress', async () => {
+      const actionView = await viewActionPlan(metadataByAssetId, mockFvk)(validOutputActionPlan);
       const outputView = actionView.actionView.value as OutputView;
       const outputViewVisible = outputView.outputView.value as OutputView_Visible;
 
       expect(outputViewVisible.note?.address?.addressView.value?.address).toEqual(destAddress);
     });
 
-    test('throws if the destAddress is missing', () => {
+    test('throws if the destAddress is missing', async () => {
       const actionPlan = new ActionPlan({
         action: {
           case: 'output',
@@ -161,13 +159,13 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow(
+      await expect(viewActionPlan(metadataByAssetId, mockFvk)(actionPlan)).rejects.toThrow(
         'No destAddress in output plan',
       );
     });
 
-    test('includes the amount', () => {
-      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(validOutputActionPlan);
+    test('includes the amount', async () => {
+      const actionView = await viewActionPlan(metadataByAssetId, mockFvk)(validOutputActionPlan);
       const outputView = actionView.actionView.value as OutputView;
       const outputViewVisible = outputView.outputView.value as OutputView_Visible;
 
@@ -177,7 +175,7 @@ describe('viewActionPlan()', () => {
       });
     });
 
-    test('throws if the amount is missing', () => {
+    test('throws if the amount is missing', async () => {
       const actionPlan = new ActionPlan({
         action: {
           case: 'output',
@@ -187,19 +185,20 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow('No value to view');
+      await expect(viewActionPlan(metadataByAssetId, mockFvk)(actionPlan)).rejects.toThrow(
+        'No value to view',
+      );
     });
 
-    test('includes the denom metadata', () => {
-      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(validOutputActionPlan);
-      const outputView = actionView.actionView.value as OutputView;
-      const outputViewVisible = outputView.outputView.value as OutputView_Visible;
-      const valueView = outputViewVisible.note!.value?.valueView.value as ValueView_KnownAssetId;
+    test('includes the denom metadata', () =>
+      expect(
+        viewActionPlan(metadataByAssetId, mockFvk)(validOutputActionPlan),
+      ).resolves.toHaveProperty(
+        'actionView.value.outputView.value.note.value.valueView.value.metadata',
+        metadata,
+      ));
 
-      expect(valueView.metadata?.toJson()).toEqual(metadata.toJson());
-    });
-
-    test('throws if the asset ID is missing', () => {
+    test('throws if the asset ID is missing', async () => {
       const actionPlan = new ActionPlan({
         action: {
           case: 'output',
@@ -212,12 +211,14 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      expect(() => viewActionPlan({}, mockFvk)(actionPlan)).toThrow('No asset ID in value');
+      await expect(viewActionPlan(metadataByAssetId, mockFvk)(actionPlan)).rejects.toThrow(
+        'No asset ID in value',
+      );
     });
   });
 
   describe('`swap` action', () => {
-    test('returns an action view with the `swap` case', () => {
+    test('returns an action view with the `swap` case', async () => {
       const swapPlaintext = new SwapPlaintext({
         claimAddress: {
           inner: new Uint8Array([0, 1, 2, 3]),
@@ -262,7 +263,7 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      const actionView = viewActionPlan({}, mockFvk)(actionPlan);
+      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
 
       const expected = new ActionView({
         actionView: {
@@ -285,20 +286,17 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      expect(actionView.equals(expected)).toBe(true);
+      await expect(actionView).resolves.toEqual(expected);
     });
   });
 
   describe('`swapClaim` action', () => {
-    test('returns an action view with the `swapClaim` case', () => {
+    test('returns an action view with the `swapClaim` case', async () => {
       const asset1Id = new AssetId({ inner: new Uint8Array([0, 1, 2, 3]) });
       const asset2Id = new AssetId({ inner: new Uint8Array([4, 5, 6, 7]) });
-      const asset1IdAsString = bech32AssetId(asset1Id);
-      const asset2IdAsString = bech32AssetId(asset2Id);
-      const metadataByAssetId = {
-        [asset1IdAsString]: new Metadata({ penumbraAssetId: asset1Id }).toJson() as JsonObject,
-        [asset2IdAsString]: new Metadata({ penumbraAssetId: asset2Id }).toJson() as JsonObject,
-      };
+      const metadataByAssetId = vi.fn((id: AssetId) =>
+        Promise.resolve(new Metadata({ penumbraAssetId: id })),
+      );
 
       const swapPlaintext = new SwapPlaintext({
         claimAddress: address,
@@ -358,7 +356,7 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
+      const actionView = await viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
 
       const expected = new ActionView({
         actionView: {
@@ -382,7 +380,7 @@ describe('viewActionPlan()', () => {
                       case: 'knownAssetId',
                       value: {
                         amount: outputData.lambda1,
-                        metadata: Metadata.fromJson(metadataByAssetId[asset1IdAsString]!),
+                        metadata: await metadataByAssetId(asset1Id),
                       },
                     },
                   },
@@ -402,7 +400,7 @@ describe('viewActionPlan()', () => {
                       case: 'knownAssetId',
                       value: {
                         amount: outputData.lambda2,
-                        metadata: Metadata.fromJson(metadataByAssetId[asset2IdAsString]!),
+                        metadata: await metadataByAssetId(asset2Id),
                       },
                     },
                   },
@@ -428,7 +426,7 @@ describe('viewActionPlan()', () => {
   });
 
   describe('`withdrawal` action', () => {
-    test('returns an action view with the `ics20Withdrawal` case as-is', () => {
+    test('returns an action view with the `ics20Withdrawal` case as-is', async () => {
       const actionPlan = new ActionPlan({
         action: {
           case: 'ics20Withdrawal',
@@ -436,23 +434,21 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      const actionView = viewActionPlan({}, mockFvk)(actionPlan);
+      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
 
-      expect(
-        actionView.equals(
-          new ActionView({
-            actionView: {
-              case: 'ics20Withdrawal',
-              value: { amount: { hi: 1n, lo: 0n } },
-            },
-          }),
-        ),
-      ).toBe(true);
+      await expect(actionView).resolves.toEqual(
+        new ActionView({
+          actionView: {
+            case: 'ics20Withdrawal',
+            value: { amount: { hi: 1n, lo: 0n } },
+          },
+        }),
+      );
     });
   });
 
   describe('`delegate` action', () => {
-    test('returns an action view with the action as-is', () => {
+    test('returns an action view with the action as-is', async () => {
       const delegate = new Delegate({
         epochIndex: 0n,
         delegationAmount: { hi: 123n, lo: 456n },
@@ -464,23 +460,21 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      const actionView = viewActionPlan({}, mockFvk)(actionPlan);
+      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
 
-      expect(
-        actionView.equals(
-          new ActionView({
-            actionView: {
-              case: 'delegate',
-              value: delegate,
-            },
-          }),
-        ),
-      ).toBe(true);
+      await expect(actionView).resolves.toEqual(
+        new ActionView({
+          actionView: {
+            case: 'delegate',
+            value: delegate,
+          },
+        }),
+      );
     });
   });
 
   describe('`undelegate` action', () => {
-    test('returns an action view with the action as-is', () => {
+    test('returns an action view with the action as-is', async () => {
       const undelegate = new Undelegate({
         startEpochIndex: 0n,
         delegationAmount: { hi: 123n, lo: 456n },
@@ -492,23 +486,21 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      const actionView = viewActionPlan({}, mockFvk)(actionPlan);
+      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
 
-      expect(
-        actionView.equals(
-          new ActionView({
-            actionView: {
-              case: 'undelegate',
-              value: undelegate,
-            },
-          }),
-        ),
-      ).toBe(true);
+      await expect(actionView).resolves.toEqual(
+        new ActionView({
+          actionView: {
+            case: 'undelegate',
+            value: undelegate,
+          },
+        }),
+      );
     });
   });
 
   describe('all other action cases', () => {
-    test('returns an action view with the case but no value', () => {
+    test('returns an action view with the case but no value', async () => {
       const actionPlan = new ActionPlan({
         action: {
           case: 'proposalSubmit',
@@ -516,18 +508,16 @@ describe('viewActionPlan()', () => {
         },
       });
 
-      const actionView = viewActionPlan({}, mockFvk)(actionPlan);
+      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
 
-      expect(
-        actionView.equals(
-          new ActionView({
-            actionView: {
-              case: 'proposalSubmit',
-              value: {},
-            },
-          }),
-        ),
-      ).toBe(true);
+      await expect(actionView).resolves.toEqual(
+        new ActionView({
+          actionView: {
+            case: 'proposalSubmit',
+            value: {},
+          },
+        }),
+      );
     });
   });
 });

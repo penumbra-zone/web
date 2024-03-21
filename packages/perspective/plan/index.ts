@@ -1,11 +1,13 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {
+  AssetId,
+  Metadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getAddressView } from './get-address-view';
 import {
   TransactionPlan,
   TransactionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { viewActionPlan } from './view-action-plan';
-import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 
 /**
  * Given a `TransactionPlan`, returns a `TransactionView` that can be passed to
@@ -17,18 +19,20 @@ import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
  * properties. Its main purpose is to be able to render the transaction plan,
  * not to be exhaustive.
  */
-export const viewTransactionPlan = (
+export const viewTransactionPlan = async (
   txPlan: TransactionPlan,
-  metadataByAssetId: Record<string, Jsonified<Metadata>>,
+  metadataByAssetId: (id: AssetId) => Promise<Metadata>,
   fullViewingKey: string,
-): TransactionView => {
+): Promise<TransactionView> => {
   const returnAddress = txPlan.memo?.plaintext?.returnAddress;
   const transactionParameters = txPlan.transactionParameters;
   if (!transactionParameters?.fee) throw new Error('No fee found in transaction plan');
 
   return new TransactionView({
     bodyView: {
-      actionViews: txPlan.actions.map(viewActionPlan(metadataByAssetId, fullViewingKey)),
+      actionViews: await Promise.all(
+        txPlan.actions.map(viewActionPlan(metadataByAssetId, fullViewingKey)),
+      ),
       memoView: {
         memoView: {
           case: 'visible',

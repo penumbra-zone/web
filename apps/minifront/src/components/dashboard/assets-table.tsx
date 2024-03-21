@@ -37,7 +37,7 @@ export default function AssetsTable() {
               <div className='flex items-center justify-center gap-2'>
                 <AddressIcon address={a.address} size={20} />
                 <h2 className='whitespace-nowrap font-bold md:text-base xl:text-xl'>
-                  Account #{a.index.account}
+                  Account #{a.account}
                 </h2>
               </div>
 
