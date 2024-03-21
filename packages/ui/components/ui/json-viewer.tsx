@@ -21,7 +21,7 @@ export const JsonViewer = ({ jsonObj }: { jsonObj: JsonObject | JsonValue[] }) =
     (level: number, value: JsonValue, field?: string) => {
       if (expandAll) return true;
       if (
-        // exmpand empty, so they can be collapsed by css
+        // expand empty, so they can be collapsed by css
         objectLength(value) === 0 ||
         objectDepth(value) === 0 ||
         // expand arrays
