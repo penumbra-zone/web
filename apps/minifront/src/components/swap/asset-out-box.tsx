@@ -1,12 +1,12 @@
 import { useStore } from '../../state';
 import { SimulateSwapResult, swapSelector } from '../../state/swap';
 import {
-  buttonVariants,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@penumbra-zone/ui';
+} from '@penumbra-zone/ui/components/ui/tooltip';
+import { buttonVariants } from '@penumbra-zone/ui/components/ui/button';
 import { AssetOutSelector } from './asset-out-selector';
 import {
   Metadata,

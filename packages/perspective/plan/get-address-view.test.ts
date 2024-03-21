@@ -5,11 +5,11 @@ import {
   AddressIndex,
   AddressView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32ToAddress } from '@penumbra-zone/bech32';
+import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
 
 const mockIsControlledAddress = vi.hoisted(() => vi.fn());
 
-vi.mock('@penumbra-zone/wasm', () => ({
+vi.mock('@penumbra-zone/wasm/src/address', () => ({
   isControlledAddress: mockIsControlledAddress,
 }));
 

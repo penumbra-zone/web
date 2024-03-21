@@ -8,7 +8,13 @@ import workspaceRoot from '../../package.json';
 export default defineConfig({
   build: {
     lib: {
-      entry: ['./src/index.ts'],
+      entry: {
+        address: './src/address.ts',
+        asset: './src/asset.ts',
+        'identity-key': './src/identity-key.ts',
+        'penumbra-bech32': './src/penumbra-bech32.ts',
+        validate: './src/validate.ts',
+      },
       formats: ['es'],
     },
   },

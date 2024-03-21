@@ -1,18 +1,18 @@
 import { useState } from 'react';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { BackIcon } from '@penumbra-zone/ui/components/ui/back-icon';
 import {
-  BackIcon,
-  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  FadeTransition,
-} from '@penumbra-zone/ui';
+} from '@penumbra-zone/ui/components/ui/card';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { useOnboardingSave } from '../../../hooks/onboarding';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { PasswordInput } from '../../../shared';
+import { PasswordInput } from '../../../shared/components/password-input';
 
 export const SetPassword = () => {
   const navigate = usePageNav();

@@ -1,4 +1,4 @@
-import { Button } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { PagePath } from '../metadata/paths';
 import { useNavigate } from 'react-router-dom';

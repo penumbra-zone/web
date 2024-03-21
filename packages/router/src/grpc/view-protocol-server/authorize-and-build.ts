@@ -1,8 +1,8 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 import { optimisticBuild } from './util/build-tx';
 import { custodyAuthorize } from './util/custody-authorize';
-import { getWitness } from '@penumbra-zone/wasm';
+import { getWitness } from '@penumbra-zone/wasm/src/build';
 import { Code, ConnectError } from '@connectrpc/connect';
 
 export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (

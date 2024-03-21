@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { Button } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 
 interface LinkProps {
   icon: ReactElement;

@@ -1,6 +1,6 @@
 import { SeedPhraseLength } from '@penumbra-zone/crypto-web/src/mnemonic';
 import { useEffect } from 'react';
-import { Input } from '@penumbra-zone/ui';
+import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useStore } from '../../state';
 import { generateSelector } from '../../state/seed-phrase/generate';

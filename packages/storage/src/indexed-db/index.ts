@@ -37,7 +37,8 @@ import { IdbCursorSource } from './stream';
 import '@penumbra-zone/polyfills/src/ReadableStream[Symbol.asyncIterator]';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { bech32AssetId, bech32IdentityKey, bech32ToIdentityKey } from '@penumbra-zone/bech32';
+import { bech32AssetId } from '@penumbra-zone/bech32/src/asset';
+import { bech32IdentityKey, bech32ToIdentityKey } from '@penumbra-zone/bech32/src/identity-key';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/src/validator-info';
 import {
   IDB_TABLES,

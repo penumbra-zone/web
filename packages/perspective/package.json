@@ -4,17 +4,16 @@
   "description": "Tools for assuming different perspectives of Penumbra transactions",
   "type": "module",
   "exports": {
-    "./*": "./*/index.ts"
+    "./*": "./*.ts"
   },
   "publishConfig": {
     "files": [
       "./dist"
     ],
     "exports": {
-      "./*": {
-        "import": "./dist/*.js",
-        "types": "./dist/*.d.ts"
-      }
+      "./plan/*": "./dist/plan/*.js",
+      "./transaction/*": "./dist/transaction/*.js",
+      "./translators/*": "./dist/translators/*.js"
     }
   },
   "scripts": {

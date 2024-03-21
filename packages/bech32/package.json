@@ -4,16 +4,32 @@
   "description": "Tools for manipulating Penumbra bech32 strings",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    "./*": "./*.ts"
   },
   "publishConfig": {
     "files": [
       "./dist"
     ],
     "exports": {
-      ".": {
-        "import": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+      "./address": {
+        "import": "./dist/address.js",
+        "types": "./dist/address.d.ts"
+      },
+      "./asset": {
+        "import": "./dist/asset.js",
+        "types": "./dist/asset.d.ts"
+      },
+      "./identity-key": {
+        "import": "./dist/identity-key.js",
+        "types": "./dist/identity-key.d.ts"
+      },
+      "./penumbra-bech32": {
+        "import": "./dist/penumbra-bech32.js",
+        "types": "./dist/penumbra-bech32.d.ts"
+      },
+      "./validate": {
+        "import": "./dist/validate.js",
+        "types": "./dist/validate.d.ts"
       }
     }
   },

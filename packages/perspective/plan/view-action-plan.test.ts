@@ -23,7 +23,7 @@ import {
   Delegate,
   Undelegate,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { bech32ToAddress } from '@penumbra-zone/bech32';
+import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
 
 describe('viewActionPlan()', () => {
   const addressAsBech32 =

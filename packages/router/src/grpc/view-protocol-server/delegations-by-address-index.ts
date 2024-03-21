@@ -1,7 +1,7 @@
 import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
 import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
-import { bech32IdentityKey } from '@penumbra-zone/bech32';
+import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
 import { assetPatterns } from '@penumbra-zone/constants/src/assets';
 import { Any, PartialMessage } from '@bufbuild/protobuf';
 import { getValidatorInfo } from '@penumbra-zone/getters/src/validator-info-response';
@@ -14,7 +14,7 @@ import {
   DelegationsByAddressIndexRequest_Filter,
   DelegationsByAddressIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { stakingClientCtx } from '../../ctx';
+import { stakingClientCtx } from '../../ctx/staking-client';
 import { balances } from './balances';
 import {
   Metadata,

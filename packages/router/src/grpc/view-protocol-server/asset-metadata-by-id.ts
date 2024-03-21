@@ -1,5 +1,5 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 import { getAssetMetadata } from './helpers';
 
 export const assetMetadataById: Impl['assetMetadataById'] = async (req, ctx) => {

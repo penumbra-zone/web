@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 import { IndexedDbMock, MockServices, ViewServerMock } from '../test-utils';
-import type { Services } from '@penumbra-zone/services';
+import type { Services } from '@penumbra-zone/services/src/index';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import { SctParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
@@ -12,7 +12,7 @@ import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { transactionPlanner } from './transaction-planner';
 
 const mockPlanTransaction = vi.hoisted(() => vi.fn());
-vi.mock('@penumbra-zone/wasm', () => ({
+vi.mock('@penumbra-zone/wasm/src/planner', () => ({
   planTransaction: mockPlanTransaction,
 }));
 describe('TransactionPlanner request handler', () => {

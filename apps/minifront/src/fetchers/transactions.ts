@@ -1,6 +1,6 @@
 import { viewClient } from '../clients';
 import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
-import { getTransactionClassificationLabel } from '@penumbra-zone/perspective/transaction';
+import { getTransactionClassificationLabel } from '@penumbra-zone/perspective/transaction/classify';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
 
 export interface TransactionSummary {

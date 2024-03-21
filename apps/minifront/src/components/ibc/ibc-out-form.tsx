@@ -1,4 +1,6 @@
-import { Button, Card, Input } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
+import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { ChainSelector } from './chain-selector';
 import { useLoaderData } from 'react-router-dom';
 import { useStore } from '../../state';

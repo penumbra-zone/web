@@ -1,9 +1,10 @@
 import { TrashIcon } from '@radix-ui/react-icons';
-import { CustomLink, SettingsHeader } from '../../../shared';
+import { CustomLink } from '../../../shared/components/link';
+import { SettingsHeader } from '../../../shared/components/settings-header';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
-import { DashboardGradientIcon } from '../../../icons';
-import { FadeTransition } from '@penumbra-zone/ui';
+import { DashboardGradientIcon } from '../../../icons/dashboard-gradient';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 
 const links = [
   // TODO: Enable when ready

@@ -5,12 +5,13 @@ import {
   LockClosedIcon,
   Share1Icon,
 } from '@radix-ui/react-icons';
-import { CustomLink, SettingsHeader } from '../../../shared';
+import { CustomLink } from '../../../shared/components/link';
+import { SettingsHeader } from '../../../shared/components/settings-header';
 import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
-import { FadeTransition } from '@penumbra-zone/ui';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 
 const links = [
   {

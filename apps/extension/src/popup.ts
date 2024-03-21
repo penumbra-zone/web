@@ -1,3 +1,4 @@
+import { sessionExtStorage } from '@penumbra-zone/storage/src/chrome/session';
 import { PopupMessage, PopupRequest, PopupType } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
 import type {
@@ -5,7 +6,6 @@ import type {
   InternalResponse,
 } from '@penumbra-zone/types/src/internal-msg/shared';
 import { isChromeResponderDroppedError } from '@penumbra-zone/types/src/internal-msg/chrome-error';
-import { sessionExtStorage } from '@penumbra-zone/storage';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 import { JsonValue } from '@bufbuild/protobuf';

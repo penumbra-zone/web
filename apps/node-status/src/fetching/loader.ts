@@ -1,6 +1,6 @@
 import { LoaderFunction } from 'react-router-dom';
 import { GetStatusResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/util/tendermint_proxy/v1/tendermint_proxy_pb';
-import { sha256HashStr } from '@penumbra-zone/crypto-web';
+import { sha256HashStr } from '@penumbra-zone/crypto-web/src/sha256';
 import { tendermintClient } from '../clients/grpc';
 
 export interface IndexLoaderResponse {

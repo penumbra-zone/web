@@ -12,7 +12,7 @@ import {
 import { BigNumber } from 'bignumber.js';
 import { getAddressByIndex } from '../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
-import { errorToast } from '@penumbra-zone/ui';
+import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { SimulateTradeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { simulateClient } from '../clients';
 import {

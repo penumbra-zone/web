@@ -1,9 +1,9 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 
 import { optimisticBuild } from './util/build-tx';
 
-import { getWitness } from '@penumbra-zone/wasm';
+import { getWitness } from '@penumbra-zone/wasm/src/build';
 
 import { Code, ConnectError } from '@connectrpc/connect';
 import { AuthorizationData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';

@@ -1,4 +1,10 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@penumbra-zone/ui';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@penumbra-zone/ui/components/ui/select';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useState } from 'react';
 import { testnetIbcChains } from '@penumbra-zone/constants/src/chains';

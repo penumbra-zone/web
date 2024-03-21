@@ -1,5 +1,5 @@
 import type { Impl } from '.';
-import { extLocalCtx } from '../../ctx';
+import { extLocalCtx } from '../../ctx/prax';
 import { WalletId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { stringToUint8Array } from '@penumbra-zone/types/src/string';

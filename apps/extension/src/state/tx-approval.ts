@@ -14,20 +14,18 @@ import type {
 } from '@penumbra-zone/types/src/internal-msg/shared';
 import type { Jsonified, Stringified } from '@penumbra-zone/types/src/jsonified';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
-import {
-  classifyTransaction,
-  TransactionClassification,
-} from '@penumbra-zone/perspective/transaction';
+import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
+import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
 import {
   asPublicTransactionView,
   asReceiverTransactionView,
-} from '@penumbra-zone/perspective/translators';
-import { localExtStorage } from '@penumbra-zone/storage';
+} from '@penumbra-zone/perspective/translators/transaction-view';
+import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
 import {
   AssetId,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { viewTransactionPlan } from '@penumbra-zone/perspective/plan';
+import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/index';
 
 export interface TxApprovalSlice {
   /**

@@ -9,9 +9,17 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        transaction: './transaction/index.ts',
-        plan: './plan/index.ts',
-        translators: './translators/index.ts',
+        classification: './transaction/classification.ts',
+        classify: './transaction/classify.ts',
+        perspective: './transaction/perspective.ts',
+        'action-view': './translators/action-view.ts',
+        'address-view': './translators/address-view.ts',
+        'memo-view': './translators/memo-view.ts',
+        'output-view': './translators/output-view.ts',
+        'spend-view': './translators/spend-view.ts',
+        'get-address-view': './plan/get-address-view.ts',
+        index: './plan/index.ts',
+        'view-action-plan': './plan/view-action-plan.ts',
       },
       formats: ['es'],
     },

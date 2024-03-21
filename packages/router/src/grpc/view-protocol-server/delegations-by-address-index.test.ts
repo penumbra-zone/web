@@ -7,7 +7,7 @@ import {
   HandlerContext,
   PromiseClient,
 } from '@connectrpc/connect';
-import { stakingClientCtx } from '../../ctx';
+import { stakingClientCtx } from '../../ctx/staking-client';
 import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
 import {
   AssetMetadataByIdResponse,

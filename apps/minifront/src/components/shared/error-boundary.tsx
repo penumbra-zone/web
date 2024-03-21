@@ -4,7 +4,7 @@ import { ExtensionNotConnected } from '../extension-not-connected';
 import { NotFound } from '../not-found';
 import { ExtensionUnavailable } from '../extension-unavailable';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { SplashPage } from '@penumbra-zone/ui';
+import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
 
 export const ErrorBoundary = () => {
   const error = useRouteError();

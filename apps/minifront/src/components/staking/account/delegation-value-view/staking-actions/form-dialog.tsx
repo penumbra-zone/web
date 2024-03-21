@@ -1,11 +1,7 @@
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  IdentityKeyComponent,
-  Input,
-} from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Dialog, DialogContent, DialogHeader } from '@penumbra-zone/ui/components/ui/dialog';
+import { IdentityKeyComponent } from '@penumbra-zone/ui/components/ui/identity-key-component';
+import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { InputBlock } from '../../../../shared/input-block';
 import { Validator } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';

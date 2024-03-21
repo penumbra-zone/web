@@ -1,4 +1,4 @@
-import { TransactionViewComponent } from '@penumbra-zone/ui';
+import { TransactionViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/transaction';
 import { useStore } from '../../../../state';
 import { txApprovalSelector } from '../../../../state/tx-approval';
 import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
