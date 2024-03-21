@@ -141,7 +141,7 @@ impl IndexedDBStorage {
             }
 
             // Planner should omit the address index randomizer and compare only the account index
-            if let Some(ref ai) = address_index {
+            if let Some(ai) = address_index {
                 if record.address_index.account != ai.account {
                     continue;
                 }

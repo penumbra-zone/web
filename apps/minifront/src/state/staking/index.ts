@@ -410,8 +410,9 @@ const toUnstakedTokensByAccount = (
     ({ balanceView }) => getDisplayDenomFromView(balanceView) === STAKING_TOKEN,
   );
 
-  if (stakingTokenBalance?.balanceView)
+  if (stakingTokenBalance?.balanceView) {
     unstakedTokensByAccount.set(curr.account, stakingTokenBalance.balanceView);
+  }
 
   return unstakedTokensByAccount;
 };
