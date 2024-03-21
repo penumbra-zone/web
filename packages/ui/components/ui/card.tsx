@@ -10,7 +10,6 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, gradient, children, light, ...props }, ref) => {
     const baseClasses = 'rounded-lg shadow-sm p-[30px] overflow-hidden';
     const bgClasses = light ? 'bg-sky-200' : 'bg-charcoal';
-    console.log(light, bgClasses);
     return (
       <div
         ref={ref}

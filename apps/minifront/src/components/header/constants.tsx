@@ -33,7 +33,7 @@ export const headerLinks: HeaderLink[] = [
   },
   {
     href: PagePath.STAKING,
-    label: 'Staking',
+    label: 'Stake',
     active: true,
     mobileIcon: <TextAlignLeftIcon className='size-5 text-muted-foreground' />,
   },
