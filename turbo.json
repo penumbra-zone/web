@@ -29,11 +29,11 @@
     },
     "test": { "dependsOn": ["compile", "//#playwright-install"], "cache": false },
     "test:rust": {
-      "dependsOn": ["compile"],
+      "dependsOn": ["download-proving-keys", "compile"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     },
     "lint:rust": {
-      "dependsOn": ["compile"],
+      "dependsOn": ["download-proving-keys", "compile"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     },
     "format-check:rust": { "dependsOn": ["compile"] },

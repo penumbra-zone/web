@@ -5,7 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "precompile": "tsx ../../apps/extension/src/utils/download-proving-keys.ts",
+    "download-proving-keys": "tsx ../../apps/extension/src/utils/download-proving-keys.ts",
+    "precompile": "pnpm turbo run download-proving-keys",
     "clean": "rm -rfv dist wasm ; cargo clean --manifest-path ./crate/Cargo.toml",
     "dev": "cargo watch -C ./crate --postpone -- pnpm turbo run compile",
     "compile": "cd crate ; wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",
