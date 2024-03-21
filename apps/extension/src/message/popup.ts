@@ -46,7 +46,4 @@ export const isOriginApprovalRequest = (req: unknown): req is InternalRequest<Or
   isPopupRequest(req) && req.type === PopupType.OriginApproval && 'origin' in req.request;
 
 export const isTxApprovalRequest = (req: unknown): req is InternalRequest<TxApproval> =>
-  isPopupRequest(req) &&
-  req.type === PopupType.TxApproval &&
-  'authorizeRequest' in req.request &&
-  'transactionView' in req.request;
+  isPopupRequest(req) && req.type === PopupType.TxApproval && 'authorizeRequest' in req.request;

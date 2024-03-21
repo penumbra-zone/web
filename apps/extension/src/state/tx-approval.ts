@@ -69,10 +69,13 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
       return denomMetadata ?? new Metadata();
     };
 
+    const wallets = await localExtStorage.get('wallets');
+    const activeWalletFvk = wallets[0]?.fullViewingKey ?? '';
+
     const transactionView = await viewTransactionPlan(
       authorizeRequest.plan ?? new TransactionPlan(),
       getMetadata,
-      (await localExtStorage.get('wallets'))[0]?.fullViewingKey ?? '',
+      activeWalletFvk,
     );
 
     // pregenerate views from various perspectives.
