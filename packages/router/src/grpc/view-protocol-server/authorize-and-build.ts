@@ -25,7 +25,7 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   // Native JSON conversion
   const startTime = performance.now(); 
   for (let i = 0; i < 10000; i++) {
-    compact_block!.toJson();
+    JSON.stringify(compact_block!);
   }
   const endTime = performance.now();
   const executionTime = endTime - startTime; 
@@ -38,7 +38,7 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   }
   const endTime2 = performance.now();
   const executionTime2 = endTime2 - startTime2; 
-  console.log(`Connect JSON conversion execution time: ${executionTime2} milliseconds`);
+  console.log(`pb JSON conversion execution time: ${executionTime2} milliseconds`);
 
   const sct = await indexedDb.getStateCommitmentTree();
   const witnessData = getWitness(transactionPlan, sct);
