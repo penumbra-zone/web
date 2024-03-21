@@ -9,6 +9,10 @@
       "dependsOn": ["compile", "^build"],
       "outputs": ["dist/**"]
     },
+    "download-keys": {
+      "inputs": ["../../apps/extension/src/utils/download-proving-keys.ts"],
+      "outputs": ["bin/**"]
+    },
     "compile": {
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock"],
       "outputs": ["wasm/**"]
@@ -29,11 +33,11 @@
     },
     "test": { "dependsOn": ["compile", "//#playwright-install"], "cache": false },
     "test:rust": {
-      "dependsOn": ["download-proving-keys", "compile"],
+      "dependsOn": ["compile"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     },
     "lint:rust": {
-      "dependsOn": ["download-proving-keys", "compile"],
+      "dependsOn": ["compile"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     },
     "format-check:rust": { "dependsOn": ["compile"] },

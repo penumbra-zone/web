@@ -18,6 +18,7 @@
     "playwright-install": "playwright install",
     "changeset": "changeset",
     "changeset:publish": "changeset publish",
+    "download-keys": "turbo run download-keys",
     "all-check": "pnpm install && pnpm compile && pnpm format-check && pnpm lint && pnpm test && pnpm build && pnpm format-check:rust && pnpm lint:rust && pnpm test:rust"
   },
   "dependencies": {
