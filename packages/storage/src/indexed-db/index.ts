@@ -536,16 +536,32 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async updatePrice(
+    /**
+     * The asset to save the price for in terms of the numeraire.
+     */
     pricedAsset: AssetId,
+    /**
+     * The numeraire is a standard against which to measure the value of the
+     * priced asset.
+     */
     numeraire: AssetId,
+    /**
+     * Multiply units of the priced asset by this value to get the value in the
+     * numeraire.
+     *
+     * This is a floating-point number since the price is approximate.
+     */
     numerairePerUnit: number,
-    height: bigint,
+    /**
+     * If set, gives some idea of when the price was estimated.
+     */
+    asOfHeight: bigint,
   ) {
     const estimatedPrice = new EstimatedPrice({
       pricedAsset,
       numeraire,
       numerairePerUnit,
-      asOfHeight: height,
+      asOfHeight,
     });
 
     await this.u.update({
