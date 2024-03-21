@@ -506,6 +506,9 @@ importers:
 
   packages/query:
     dependencies:
+      '@penumbra-zone/bech32':
+        specifier: workspace:*
+        version: link:../bech32
       '@penumbra-zone/constants':
         specifier: workspace:*
         version: link:../constants
@@ -515,6 +518,9 @@ importers:
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
+      '@penumbra-zone/polyfills':
+        specifier: workspace:*
+        version: link:../polyfills
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
