@@ -23,6 +23,7 @@ import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
 import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
 import { updatePrices } from './price-indexer';
+import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -36,7 +37,7 @@ const blankTxSource = new CommitmentSource({
 });
 
 export class BlockProcessor implements BlockProcessorInterface {
-  private readonly querier: RootQuerier;
+  public querier: RootQuerier;
   private readonly indexedDb: IndexedDbInterface;
   private readonly viewServer: ViewServerInterface;
   private readonly abortController: AbortController = new AbortController();
@@ -48,6 +49,18 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.viewServer = viewServer;
     this.querier = querier;
     this.numeraireAssetId = numeraireAssetId;
+  }
+
+  public async retrieveCompactBlock(startHeight: bigint): Promise<CompactBlock | null> {
+    for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
+      startHeight: startHeight,
+      keepAlive: false,
+      abortSignal: this.abortController.signal,
+    })) {
+      return compactBlock;
+    }
+    // Return null if compact block's payload is empty
+    return null;
   }
 
   // If syncBlocks() is called multiple times concurrently, they'll all wait for
