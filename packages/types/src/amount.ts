@@ -82,3 +82,26 @@ export const displayUsd = (number: number): string => {
     maximumFractionDigits: 2,
   }).format(number);
 };
+
+const BASIS_POINTS_DENOMINATOR = new BigNumber(100 * 100);
+
+/**
+ * Given an amount expressing basis points, returns a decimal representation of
+ * the basis points. This makes it easy to multiply by basis points.
+ *
+ * For example, 325 basis points = 3.25%. Thus,
+ * `toBasisPointsAsDecimal(amount)`, where `amount` is an `Amount` totaling
+ * `325n`, will return `0.0325`.
+ */
+export const toBasisPointsAsDecimal = (
+  /**
+   * An amount expressing basis points -- i.e., one hundredth of one percent.
+   *
+   * @see https://en.wikipedia.org/wiki/Basis_point
+   */
+  amount: Amount,
+) => {
+  const joinedDividend = new BigNumber(joinLoHiAmount(amount).toString());
+
+  return joinedDividend.dividedBy(BASIS_POINTS_DENOMINATOR).toNumber();
+};

@@ -9,6 +9,7 @@ import {
   isZero,
   joinLoHiAmount,
   subtractAmounts,
+  toBasisPointsAsDecimal,
 } from './amount';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import {
@@ -253,5 +254,12 @@ describe('isZero', () => {
   it('detects lo number presence', () => {
     const amount = new Amount({ lo: 20n, hi: 0n });
     expect(isZero(amount)).toBeFalsy();
+  });
+});
+
+describe('toBasisPointsAsDecimal()', () => {
+  it('correctly expresses the basis points as a decimal', () => {
+    const amount = new Amount({ hi: 0n, lo: 325n });
+    expect(toBasisPointsAsDecimal(amount)).toBe(0.0325);
   });
 });
