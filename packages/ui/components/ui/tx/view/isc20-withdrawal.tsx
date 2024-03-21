@@ -42,7 +42,7 @@ export const Ics20WithdrawalComponent = ({ value }: { value: Ics20Withdrawal }) 
           )}
 
           <ActionDetails.Row label='Timeout Time'>
-            {new Date(Number(value.timeoutTime)).toString()}
+            {new Date(Number(BigInt(value.timeoutTime) / 1_000_000n)).toString()}
           </ActionDetails.Row>
         </ActionDetails>
       }

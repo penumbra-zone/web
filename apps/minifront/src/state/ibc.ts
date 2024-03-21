@@ -94,8 +94,12 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
 const getTimeout = async (
   chain: Chain,
 ): Promise<{ timeoutTime: bigint; timeoutHeight: Height }> => {
-  const twoDaysInMilliseconds = 2 * 24 * 60 * 60 * 1000; // 2 days * 24 hours/day * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds/second
-  const timeoutTime = BigInt(Date.now() + twoDaysInMilliseconds);
+  // timeout 2 days from now, in nanoseconds since epoch
+  const twoDaysMs = BigInt(2 * 24 * 60 * 60 * 1000); // 2 days * 24 hours/day * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds per second
+  // truncate resolution at seconds, to obfuscate clock skew
+  const lowPrecisionNowMs = BigInt(Math.floor(Date.now() / 1000) * 1000); // ms/1000 to second, floor, second*1000 to ms
+  // (now + two days) as nanoseconds
+  const timeoutTime = (lowPrecisionNowMs + twoDaysMs) * 1_000_000n; // 1 million nanoseconds per millisecond
 
   const { clientStates } = await ibcClient.clientStates({});
   const unpacked = clientStates
