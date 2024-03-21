@@ -276,15 +276,22 @@ export class BlockProcessor implements BlockProcessorInterface {
       const assetId = n.note?.value?.assetId;
       if (!assetId) continue;
 
-      const metadataInDb = await this.indexedDb.getAssetsMetadata(assetId);
-      if (metadataInDb) continue;
-
-      const metadataFromNode = await this.querier.shieldedPool.assetMetadata(assetId);
-
-      if (metadataFromNode) {
-        await this.indexedDb.saveAssetsMetadata(customizeSymbol(metadataFromNode));
-      }
+      await this.saveAndReturnMetadata(assetId);
     }
+  }
+
+  private async saveAndReturnMetadata(assetId: AssetId): Promise<Metadata | undefined> {
+    const metadataAlreadyInDb = await this.indexedDb.getAssetsMetadata(assetId);
+    if (metadataAlreadyInDb) return metadataAlreadyInDb;
+
+    const metadataFromNode = await this.querier.shieldedPool.assetMetadataById(assetId);
+
+    if (metadataFromNode) {
+      await this.indexedDb.saveAssetsMetadata(customizeSymbol(metadataFromNode));
+      return metadataFromNode;
+    }
+
+    return undefined;
   }
 
   // Nullifier is published in network when a note is spent or swap is claimed.
