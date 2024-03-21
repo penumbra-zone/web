@@ -1,5 +1,4 @@
 import { PagePath } from '../metadata/paths';
-import { BoxIcon } from '../../icons/box';
 import { SwapIcon } from '../../icons/swap';
 import { ReactElement } from 'react';
 import { ArrowTopRightIcon, MixerHorizontalIcon, TextAlignLeftIcon } from '@radix-ui/react-icons';
@@ -14,11 +13,10 @@ export interface HeaderLink {
 
 export const headerLinks: HeaderLink[] = [
   {
-    href: PagePath.DASHBOARD,
-    label: 'Dashboard',
+    href: PagePath.IBC,
+    label: 'Shield Funds',
     active: true,
-    subLinks: [PagePath.TRANSACTIONS, PagePath.NFTS],
-    mobileIcon: <BoxIcon />,
+    mobileIcon: <MixerHorizontalIcon className='size-5 text-muted-foreground' />,
   },
   {
     href: PagePath.SEND,
@@ -38,12 +36,6 @@ export const headerLinks: HeaderLink[] = [
     label: 'Staking',
     active: true,
     mobileIcon: <TextAlignLeftIcon className='size-5 text-muted-foreground' />,
-  },
-  {
-    href: PagePath.IBC,
-    label: 'IBC',
-    active: false,
-    mobileIcon: <MixerHorizontalIcon className='size-5 text-muted-foreground' />,
   },
 ];
 
