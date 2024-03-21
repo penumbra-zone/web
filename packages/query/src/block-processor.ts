@@ -51,6 +51,9 @@ const blankTxSource = new CommitmentSource({
   source: { case: 'transaction', value: { id: new Uint8Array() } },
 });
 
+const getExchangeRateFromValidatorInfoResponse = getValidatorInfo
+  .pipe(getRateData)
+  .pipe(getValidatorExchangeRate);
 export class BlockProcessor implements BlockProcessorInterface {
   private readonly querier: RootQuerier;
   private readonly indexedDb: IndexedDbInterface;
@@ -438,9 +441,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (metadata) {
         const assetId = getAssetId(metadata);
         const stakingAssetId = getAssetId(STAKING_TOKEN_METADATA);
-        const exchangeRate = getValidatorInfo.pipe(getRateData).pipe(getValidatorExchangeRate)(
-          validatorInfoResponse,
-        );
+        const exchangeRate = getExchangeRateFromValidatorInfoResponse(validatorInfoResponse);
 
         void this.indexedDb.updatePrice(
           assetId,
