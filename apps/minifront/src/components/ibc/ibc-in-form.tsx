@@ -5,9 +5,12 @@ import { getAddrByIndex } from '../../fetchers/address';
 import { useChain } from '@cosmos-kit/react';
 import type { BroadcastMode } from '@cosmos-kit/core';
 import { ChainSelector } from './chain-selector';
+import { useStore } from '../../state';
+import { ibcSelector } from '../../state/ibc';
 
 export const IbcInForm = () => {
-  const chainContext = useChain('osmosistestnet');
+  const { chain } = useStore(ibcSelector);
+  const chainContext = useChain(chain?.chainName ?? '');
   return (
     <Card gradient className='md:p-5'>
       <h1 className='font-headline text-xl'>Enter Penumbra</h1>

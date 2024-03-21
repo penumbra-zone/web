@@ -9,12 +9,9 @@ import InputToken from '../shared/input-token';
 import { InputBlock } from '../shared/input-block';
 import { IbcLoaderResponse } from './ibc-loader';
 import { useEffect } from 'react';
+import { useChain } from '@cosmos-kit/react';
 
-export const IbcOutForm = ({
-  prefillDestination: prefillDestinationChainAddress,
-}: {
-  prefillDestination?: string;
-}) => {
+export const IbcOutForm = () => {
   const assetBalances = useLoaderData() as IbcLoaderResponse;
   const {
     sendIbcWithdraw,
@@ -26,12 +23,17 @@ export const IbcOutForm = ({
     setSelection,
     chain,
   } = useStore(ibcSelector);
-  const filteredBalances = filterBalancesPerChain(assetBalances, chain);
-  const validationErrors = useStore(ibcValidationErrors);
+
+  const chainContext = useChain(chain?.chainName ?? '');
 
   useEffect(() => {
-    if (prefillDestinationChainAddress) setDestinationChainAddress(prefillDestinationChainAddress);
-  }, [prefillDestinationChainAddress, setDestinationChainAddress]);
+    if (chainContext.isWalletConnected) {
+      setDestinationChainAddress((destinationChainAddress || chainContext.address) ?? '');
+    }
+  }, [destinationChainAddress, setDestinationChainAddress, chainContext]);
+
+  const filteredBalances = filterBalancesPerChain(assetBalances, chain);
+  const validationErrors = useStore(ibcValidationErrors);
 
   return (
     <Card gradient className='md:p-5'>
