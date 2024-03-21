@@ -22,7 +22,7 @@ import type { BlockProcessorInterface } from '@penumbra-zone/types/src/block-pro
 import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
 import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
-import { updatePrices } from './price-indexer';
+import { updatePricesFromSwaps } from './price-indexer';
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -240,7 +240,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       // so we have to get asset prices from swap results during block scans
       // and store them locally in indexed-db.
       if (compactBlock.swapOutputs.length) {
-        await updatePrices(
+        await updatePricesFromSwaps(
           this.indexedDb,
           this.numeraireAssetId,
           compactBlock.swapOutputs,
