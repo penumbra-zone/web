@@ -19,9 +19,9 @@ export const JsonViewer = ({ jsonObj }: { jsonObj: JsonObject | JsonValue[] }) =
           otherValue: 'text-blue-600',
           punctuation: 'text-gray-500 mr-1.5',
           collapseIcon:
-            'text-teal-200 text-[10px] mr-1.5 select-none cursor-pointer after:content-["▼"]',
+            'text-teal-200 text-[16px] p-1 mr-1.5 select-none cursor-pointer after:content-["▼"]',
           expandIcon:
-            'text-teal-200 text-[10px] mr-1.5 select-none cursor-pointer after:content-["▶"]',
+            'text-teal-200 text-[16px] p-1 mr-1.5 select-none cursor-pointer after:content-["▶"]',
           collapsedContent: 'text-amber-600 mr-1.5 after:content-["..."] after:text-xs',
         }}
       />
