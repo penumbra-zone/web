@@ -171,7 +171,11 @@ pub async fn plan_transaction(
         .unwrap_or_default();
 
     let fvk = FullViewingKey::from_str(bech32_full_viewing_key)?;
-    let (change_address, _) = fvk.incoming().payment_address(source_address_index);
+
+    // should ignore the randomizer for change_address, there is no point using ephemeral address
+    let (change_address, _) = fvk
+        .incoming()
+        .payment_address(source_address_index.account.into());
 
     let storage = IndexedDBStorage::new(serde_wasm_bindgen::from_value(idb_constants)?).await?;
 

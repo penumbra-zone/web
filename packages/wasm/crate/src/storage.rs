@@ -140,8 +140,11 @@ impl IndexedDBStorage {
                 continue;
             }
 
-            if Some(record.address_index) != address_index {
-                continue;
+            // Planner should omit the address index randomizer and compare only the account index
+            if let Some(ai) = address_index {
+                if record.address_index.account != ai.account {
+                    continue;
+                }
             }
 
             total += record.note.amount();

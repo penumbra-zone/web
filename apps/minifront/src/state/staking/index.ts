@@ -410,8 +410,9 @@ const toUnstakedTokensByAccount = (
     ({ balanceView }) => getDisplayDenomFromView(balanceView) === STAKING_TOKEN,
   );
 
-  if (stakingTokenBalance?.balanceView)
-    unstakedTokensByAccount.set(curr.index.account, stakingTokenBalance.balanceView);
+  if (stakingTokenBalance?.balanceView) {
+    unstakedTokensByAccount.set(curr.account, stakingTokenBalance.balanceView);
+  }
 
   return unstakedTokensByAccount;
 };
@@ -446,7 +447,7 @@ const toUnbondingTokensByAccount = (
       },
     });
 
-    unbondingTokensByAccount.set(curr.index.account, {
+    unbondingTokensByAccount.set(curr.account, {
       tokens: unbondingTokens,
       total: unbondingTotal,
     });
