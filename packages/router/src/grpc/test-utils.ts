@@ -31,7 +31,7 @@ export interface TendermintMock {
 }
 
 export interface ShieldedPoolMock {
-  assetMetadata: Mock;
+  assetMetadataById: Mock;
 }
 
 export interface ViewServerMock {
