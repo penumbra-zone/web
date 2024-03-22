@@ -41,7 +41,6 @@ import type { Jsonified } from './jsonified';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { PartialMessage } from '@bufbuild/protobuf';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -95,8 +94,8 @@ export interface IndexedDbInterface {
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
   iterateValidatorInfos(): AsyncGenerator<ValidatorInfo, void>;
   updatePrice(
-    pricedAsset: PartialMessage<AssetId>,
-    numeraire: PartialMessage<AssetId>,
+    pricedAsset: AssetId,
+    numeraire: AssetId,
     numerairePerUnit: number,
     height: bigint,
   ): Promise<void>;
