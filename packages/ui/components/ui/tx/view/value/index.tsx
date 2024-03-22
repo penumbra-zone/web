@@ -8,7 +8,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { fromBaseUnitAmount } from '@penumbra-zone/types/src/amount';
 import { Pill } from '../../../pill';
 import { ConditionalWrap } from '../../../conditional-wrap';
-import { EquivalentValues } from './equivalent-values';
+import { asValueView } from '@penumbra-zone/getters/src/equivalent-value';
 
 interface ValueViewProps {
   view: ValueView | undefined;
@@ -16,6 +16,7 @@ interface ValueViewProps {
   showValue?: boolean;
   showIcon?: boolean;
   showEquivalent?: boolean;
+  showPill?: boolean;
 }
 
 export const ValueViewComponent = ({
@@ -24,6 +25,7 @@ export const ValueViewComponent = ({
   showValue = true,
   showIcon = true,
   showEquivalent = true,
+  showPill = true,
 }: ValueViewProps) => {
   if (!view) return <></>;
 
@@ -39,25 +41,29 @@ export const ValueViewComponent = ({
     const symbol = metadata.symbol || 'Unknown Asset';
 
     return (
-      <ConditionalWrap
-        condition={showEquivalent && value.equivalentValues.length > 0}
-        wrap={children => (
-          <EquivalentValues equivalentValues={value.equivalentValues}>{children}</EquivalentValues>
-        )}
-      >
-        <Pill>
-          <div className='flex items-center gap-1'>
-            {showIcon && (
-              <div className='-ml-2 mr-1 flex size-6 items-center justify-center rounded-full'>
-                <AssetIcon metadata={metadata} />
+      <ConditionalWrap condition={showPill} wrap={children => <Pill>{children}</Pill>}>
+        <div className='flex min-w-0 items-center gap-1'>
+          {showIcon && (
+            <div className='-ml-2 mr-1 flex size-6 items-center justify-center rounded-full'>
+              <AssetIcon metadata={metadata} />
+            </div>
+          )}
+          {showDenom && (
+            <span className='truncate font-mono text-xs text-muted-foreground -mr-1'>{symbol}</span>
+          )}
+          {showValue && <span className='leading-[15px]'>{formattedAmount}</span>}
+          {showEquivalent &&
+            value.equivalentValues.map(equivalentValue => (
+              <div className='ml-1' key={getDisplayDenomFromView(asValueView(equivalentValue))}>
+                <ValueViewComponent
+                  view={asValueView(equivalentValue)}
+                  showIcon={false}
+                  showEquivalent={false}
+                  showPill={false}
+                />
               </div>
-            )}
-            {showValue && <span className='leading-[15px]'>{formattedAmount}</span>}
-            {showDenom && (
-              <span className='truncate font-mono text-xs text-muted-foreground'>{symbol}</span>
-            )}
-          </div>
-        </Pill>
+            ))}
+        </div>
       </ConditionalWrap>
     );
   }
