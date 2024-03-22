@@ -30,6 +30,7 @@ penumbra-shielded-pool = { git = "https://github.com/penumbra-zone/penumbra.git"
 penumbra-stake         = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.68.3", package = "penumbra-stake", default-features = false }
 penumbra-tct           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.68.3", package = "penumbra-tct" }
 penumbra-transaction   = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.68.3", package = "penumbra-transaction", default-features = false }
+decaf377-ka            = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.68.3", package = "decaf377-ka", default-features = false }
 
 anyhow                   = "1.0.80"
 ark-ff                   = { version = "0.4.2", features = ["std"] }

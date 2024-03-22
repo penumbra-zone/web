@@ -3,9 +3,10 @@ use std::{collections::BTreeMap, str::FromStr};
 
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_compact_block::{CompactBlock, StatePayload};
+use penumbra_dex::swap::{SwapCiphertext, SwapPayload};
 use penumbra_keys::FullViewingKey;
 use penumbra_sct::Nullifier;
-use penumbra_shielded_pool::note;
+use penumbra_shielded_pool::{note, NoteCiphertext, NotePayload};
 use penumbra_tct as tct;
 use penumbra_tct::Witness::*;
 use serde::{Deserialize, Serialize};
@@ -21,6 +22,8 @@ use crate::note_record::SpendableNoteRecord;
 use crate::storage::IndexedDBStorage;
 use crate::swap_record::SwapRecord;
 use crate::utils;
+
+use decaf377_ka as ka;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct StoredTree {
@@ -104,6 +107,35 @@ impl ViewServer {
             last_forgotten: None,
         };
         Ok(view_server)
+    }
+
+    pub fn can_trial_decrypt(
+        &mut self,
+        commitment_vec: Vec<u8>,
+        encrypted_vec: Vec<u8>,
+        ephemeral_key_vec: Option<Vec<u8>>,
+    ) -> Result<bool, Error> {
+        let commitment_bytes: [u8; 32] = commitment_vec.try_into().unwrap();
+
+        match ephemeral_key_vec {
+            Some(ephemeral_key_vec) => {
+                let encrypted_bytes: [u8; 176] = encrypted_vec.try_into().unwrap();
+                let note_payload = NotePayload {
+                    note_commitment: commitment_bytes.try_into().unwrap(),
+                    encrypted_note: NoteCiphertext(encrypted_bytes),
+                    ephemeral_key: ka::Public::try_from(ephemeral_key_vec.as_slice()).unwrap(),
+                };
+                return Ok(note_payload.trial_decrypt(&self.fvk).is_some());
+            }
+            None => {
+                let encrypted_bytes: [u8; 272] = encrypted_vec.try_into().unwrap();
+                let swap_payload = SwapPayload {
+                    commitment: commitment_bytes.try_into().unwrap(),
+                    encrypted_swap: SwapCiphertext(encrypted_bytes),
+                };
+                return Ok(swap_payload.trial_decrypt(&self.fvk).is_some());
+            }
+        }
     }
 
     /// Scans block for notes, swaps

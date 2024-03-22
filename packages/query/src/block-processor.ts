@@ -23,6 +23,7 @@ import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
 import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
 import { updatePrices } from './price-indexer';
+import { toPlainMessage } from '@bufbuild/protobuf';
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -68,7 +69,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.abortController.abort(`Sync abort ${r}`);
   }
 
-  async identifyTransactions(
+  private async identifyTransactions(
     spentNullifiers: Set<Nullifier>,
     commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
     blockTx: Transaction[],
@@ -146,6 +147,46 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
+      // test out canTrialDecrypt
+      for (const statePayload of compactBlock.statePayloads) {
+        console.log('state payload', statePayload);
+        switch (statePayload.statePayload.case) {
+          case 'note': {
+            const {
+              noteCommitment: { inner: commitmentVec } = { inner: undefined },
+              ephemeralKey: ephemeralKeyVec,
+              encryptedNote: { inner: encryptedNoteVec } = { inner: undefined },
+            } = statePayload.statePayload.value.note!;
+            console.log({ commitmentVec, encryptedNoteVec, ephemeralKeyVec });
+            const trial = this.viewServer.canTrialDecrypt(
+              commitmentVec!,
+              encryptedNoteVec!,
+              ephemeralKeyVec,
+            );
+            console.log('canTrialDecrypt', trial);
+            break;
+          }
+          case 'swap': {
+            const {
+              commitment: { inner: commitmentVec } = { inner: undefined },
+              encryptedSwap: encryptedSwapVec,
+            } = statePayload.statePayload.value.swap!;
+            console.log({ commitmentVec, encryptedSwapVec });
+            const trial = this.viewServer.canTrialDecrypt(commitmentVec!, encryptedSwapVec);
+            console.log('canTrialDecrypt', trial);
+            break;
+          }
+          case 'rolledUp': {
+            console.warn('rolledup');
+            break;
+          }
+          default: {
+            console.warn('fuck');
+            break;
+          }
+        }
+      }
+
       if (compactBlock.appParametersUpdated) {
         await this.indexedDb.saveAppParams(await this.querier.app.appParams());
       }

@@ -8,4 +8,9 @@ export interface ViewServerInterface {
   flushUpdates(): ScanBlockResult;
   resetTreeToStored(): Promise<void>;
   getSctRoot(): MerkleRoot;
+  canTrialDecrypt(
+    commitment: Uint8Array,
+    encrypted: Uint8Array,
+    ephemeralKey?: Uint8Array,
+  ): boolean;
 }

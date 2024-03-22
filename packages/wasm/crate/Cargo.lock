@@ -2731,6 +2731,7 @@ dependencies = [
  "base64 0.22.0",
  "console_error_panic_hook",
  "decaf377 0.5.0",
+ "decaf377-ka",
  "hex",
  "indexed_db_futures",
  "penumbra-asset",

@@ -54,6 +54,14 @@ export class ViewServer implements ViewServerInterface {
     return this.wasmViewServer.scan_block(res);
   }
 
+  canTrialDecrypt(
+    commitment_vec: Uint8Array,
+    encrypted_vec: Uint8Array,
+    ephemeral_key_vec?: Uint8Array,
+  ) {
+    return this.wasmViewServer.can_trial_decrypt(commitment_vec, encrypted_vec, ephemeral_key_vec);
+  }
+
   // Resets the state of the wasmViewServer to the one set in storage
   async resetTreeToStored() {
     this.wasmViewServer = await WasmViewServer.new(
