@@ -1,27 +1,14 @@
-import {
-  EquivalentValue,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValidatorInfoComponent } from './validator-info-component';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { StakingActions } from './staking-actions';
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import {
   getDisplayDenomFromView,
   getEquivalentValues,
   getValidatorInfoFromValueView,
 } from '@penumbra-zone/getters/src/value-view';
-
-const asValueView = (equivalentValue: EquivalentValue) =>
-  new ValueView({
-    valueView: {
-      case: 'knownAssetId',
-      value: {
-        amount: equivalentValue.equivalentAmount,
-        metadata: equivalentValue.numeraire,
-      },
-    },
-  });
+import { asValueView } from '@penumbra-zone/getters/src/equivalent-value';
 
 /**
  * Renders a `ValueView` that contains a delegation token, along with the
@@ -50,10 +37,7 @@ export const DelegationValueView = memo(
     unstakedTokens?: ValueView;
   }) => {
     const validatorInfo = getValidatorInfoFromValueView(valueView);
-    const equivalentValuesAsValueViews: ValueView[] = useMemo(
-      () => getEquivalentValues(valueView).map(asValueView),
-      [valueView],
-    );
+    const equivalentValuesAsValueViews = getEquivalentValues(valueView).map(asValueView);
 
     return (
       <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-8'>
