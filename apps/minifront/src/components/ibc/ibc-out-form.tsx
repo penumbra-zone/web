@@ -8,6 +8,8 @@ import { filterBalancesPerChain, ibcSelector, ibcValidationErrors } from '../../
 import InputToken from '../shared/input-token';
 import { InputBlock } from '../shared/input-block';
 import { IbcLoaderResponse } from './ibc-loader';
+import { useEffect } from 'react';
+import { useChain } from '@cosmos-kit/react';
 
 export const IbcOutForm = () => {
   const assetBalances = useLoaderData() as IbcLoaderResponse;
@@ -21,11 +23,21 @@ export const IbcOutForm = () => {
     setSelection,
     chain,
   } = useStore(ibcSelector);
+
+  const chainContext = useChain(chain?.chainName ?? '');
+
+  useEffect(() => {
+    if (chainContext.isWalletConnected) {
+      setDestinationChainAddress((destinationChainAddress || chainContext.address) ?? '');
+    }
+  }, [destinationChainAddress, setDestinationChainAddress, chainContext]);
+
   const filteredBalances = filterBalancesPerChain(assetBalances, chain);
   const validationErrors = useStore(ibcValidationErrors);
 
   return (
     <Card gradient className='md:p-5'>
+      <h1 className='font-headline text-xl'>Exit Penumbra</h1>
       <form
         className='flex flex-col gap-4'
         onSubmit={e => {
