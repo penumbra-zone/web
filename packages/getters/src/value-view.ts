@@ -20,6 +20,12 @@ export const getExtendedMetadata = createGetter((valueView?: ValueView) =>
     : undefined,
 );
 
+export const getEquivalentValues = createGetter((valueView?: ValueView) =>
+  valueView?.valueView.case === 'knownAssetId'
+    ? valueView.valueView.value.equivalentValues
+    : undefined,
+);
+
 const getValidatorInfo = createGetter((any?: Any) =>
   any ? ValidatorInfo.fromBinary(any.value) : undefined,
 );
