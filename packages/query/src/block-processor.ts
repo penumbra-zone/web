@@ -39,6 +39,7 @@ import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { getValidatorExchangeRate } from '@penumbra-zone/getters/src/rate-data';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/src/amount';
+import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -429,27 +430,37 @@ export class BlockProcessor implements BlockProcessorInterface {
       // validator infos have been upserted.
       await this.indexedDb.upsertValidatorInfo(validatorInfoResponse.validatorInfo);
 
-      const identityKey = getValidatorInfo.pipe(getIdentityKeyFromValidatorInfo)(
+      await this.updatePriceForValidatorDelegationToken(
         validatorInfoResponse,
+        nextEpochStartHeight,
       );
-      const delegationTokenAssetId = new AssetId({
-        altBaseDenom: `udelegation_${bech32IdentityKey(identityKey)}`,
-      });
+    }
+  }
 
-      const metadata = await this.saveAndReturnMetadata(delegationTokenAssetId);
+  private async updatePriceForValidatorDelegationToken(
+    validatorInfoResponse: ValidatorInfoResponse,
+    nextEpochStartHeight: bigint,
+  ) {
+    const identityKey = getValidatorInfo.pipe(getIdentityKeyFromValidatorInfo)(
+      validatorInfoResponse,
+    );
+    const delegationTokenAssetId = new AssetId({
+      altBaseDenom: `udelegation_${bech32IdentityKey(identityKey)}`,
+    });
 
-      if (metadata) {
-        const assetId = getAssetId(metadata);
-        const stakingAssetId = getAssetId(STAKING_TOKEN_METADATA);
-        const exchangeRate = getExchangeRateFromValidatorInfoResponse(validatorInfoResponse);
+    const metadata = await this.saveAndReturnMetadata(delegationTokenAssetId);
 
-        void this.indexedDb.updatePrice(
-          assetId,
-          stakingAssetId,
-          toDecimalExchangeRate(exchangeRate),
-          nextEpochStartHeight,
-        );
-      }
+    if (metadata) {
+      const assetId = getAssetId(metadata);
+      const stakingAssetId = getAssetId(STAKING_TOKEN_METADATA);
+      const exchangeRate = getExchangeRateFromValidatorInfoResponse(validatorInfoResponse);
+
+      await this.indexedDb.updatePrice(
+        assetId,
+        stakingAssetId,
+        toDecimalExchangeRate(exchangeRate),
+        nextEpochStartHeight,
+      );
     }
   }
 }
