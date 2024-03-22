@@ -19,26 +19,39 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   } = await services.getWalletServices();
 
   // Retrieve a specific compact block and benchmark serialization costs
-  let compact_block = await blockProcessor.retrieveCompactBlock(210745n)
+  let compact_block = (await blockProcessor.retrieveCompactBlock(210745n))!;
   console.log("compact block is: ", compact_block)
 
   // Native JSON conversion
-  const startTime = performance.now(); 
+  const startTime = performance.now();
   for (let i = 0; i < 10000; i++) {
-    JSON.stringify(compact_block!);
+    JSON.stringify(compact_block);
   }
   const endTime = performance.now();
-  const executionTime = endTime - startTime; 
+  const executionTime = endTime - startTime;
   console.log(`Native JSON conversion execution time: ${executionTime} milliseconds`);
 
   // Connect JSON conversion
-  const startTime2 = performance.now(); 
+  const startTime2 = performance.now();
   for (let i = 0; i < 10000; i++) {
-    compact_block!.toJson();
+    compact_block.toJson();
   }
   const endTime2 = performance.now();
-  const executionTime2 = endTime2 - startTime2; 
+  const executionTime2 = endTime2 - startTime2;
   console.log(`pb JSON conversion execution time: ${executionTime2} milliseconds`);
+
+  // Make a "clean" object without any connect tainting in its definitions
+  let cbj = JSON.stringify(compact_block);
+  let cb2 = JSON.parse(cbj);
+  console.log("cb2 is: ", cb2)
+
+  const startTime3 = performance.now();
+  for (let i = 0; i < 10000; i++) {
+    JSON.stringify(cb2);
+  }
+  const endTime3 = performance.now();
+  const executionTime3 = endTime3 - startTime3;
+  console.log(`cb2 JSON conversion execution time: ${executionTime3} milliseconds`);
 
   const sct = await indexedDb.getStateCommitmentTree();
   const witnessData = getWitness(transactionPlan, sct);
