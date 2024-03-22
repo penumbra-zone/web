@@ -6,6 +6,7 @@ import {
   AssetId,
   EquivalentValue,
   EstimatedPrice,
+  Metadata,
   ValueView,
   ValueView_KnownAssetId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
@@ -174,7 +175,7 @@ class BalancesAggregator {
     } else {
       const equivalentValues: EquivalentValue[] = [];
 
-      const assetId = getAssetId.optional()(denomMetadata);
+      const assetId = getAssetId.optional()(new Metadata(denomMetadata));
       if (assetId?.inner && !this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)]) {
         const prices = await this.indexedDb.getPricesForAsset(new AssetId(assetId));
         this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)] = prices;

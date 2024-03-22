@@ -162,7 +162,7 @@ describe('Balances request handler', () => {
     expect(responses.length).toBe(0);
   });
 
-  test.only('equivalent values', async () => {
+  test('equivalent values', async () => {
     expect.assertions(3);
 
     const numeraire = new AssetId({ inner: new Uint8Array([1, 2, 3, 4]) });
