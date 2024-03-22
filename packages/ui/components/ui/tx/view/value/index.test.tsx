@@ -54,7 +54,7 @@ describe('<ValueViewComponent />', () => {
     test('renders the amount in the display denom unit', () => {
       const { container } = render(<ValueViewComponent view={valueView} />);
 
-      expect(container).toHaveTextContent('123.456789UM');
+      expect(container).toHaveTextContent('UM123.456789');
     });
   });
 
