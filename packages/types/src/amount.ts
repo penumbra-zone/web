@@ -40,6 +40,14 @@ export const subtractAmounts = (minuend: Amount, subtrahend: Amount): Amount => 
   return new Amount({ lo, hi });
 };
 
+export const multiplyAmountByNumber = (amount: Amount, multiplier: number): Amount => {
+  const amountAsBigNumber = new BigNumber(joinLoHiAmount(amount).toString());
+  const result = amountAsBigNumber.multipliedBy(multiplier).decimalPlaces(0).toString(10);
+  const loHi = splitLoHi(BigInt(result));
+
+  return new Amount(loHi);
+};
+
 export const divideAmounts = (dividend: Amount, divider: Amount): BigNumber => {
   if (isZero(divider)) throw new Error('Division by zero');
 
@@ -83,17 +91,23 @@ export const displayUsd = (number: number): string => {
   }).format(number);
 };
 
-const BASIS_POINTS_DENOMINATOR = new BigNumber(100 * 100);
+/**
+ * Exchange rates in core are expressed as whole numbers on the order of 10 to
+ * the power of 8, so they need to be divided by 10e8 to turn into a decimal.
+ *
+ * @see https://github.com/penumbra-zone/penumbra/blob/839f978/crates/bin/pcli/src/command/view/staked.rs#L90-L93
+ */
+const EXCHANGE_RATE_DENOMINATOR = 1e8;
 
 /**
- * Given an amount expressing basis points, returns a decimal representation of
- * the basis points. This makes it easy to multiply by basis points.
+ * Given an amount expressing an exchange rate, returns a decimal representation of
+ * that exchange rate. This makes it easy to multiply by exchange rates.
  *
- * For example, 325 basis points = 3.25%. Thus,
+ * For example, an exchange rate of 150_000_000 is 1.5. Thus,
  * `toBasisPointsAsDecimal(amount)`, where `amount` is an `Amount` totaling
- * `325n`, will return `0.0325`.
+ * `150_000_000n`, will return `1.5`.
  */
-export const toBasisPointsAsDecimal = (
+export const toDecimalExchangeRate = (
   /**
    * An amount expressing basis points -- i.e., one hundredth of one percent.
    *
@@ -103,5 +117,5 @@ export const toBasisPointsAsDecimal = (
 ) => {
   const joinedDividend = new BigNumber(joinLoHiAmount(amount).toString());
 
-  return joinedDividend.dividedBy(BASIS_POINTS_DENOMINATOR).toNumber();
+  return joinedDividend.dividedBy(EXCHANGE_RATE_DENOMINATOR).toNumber();
 };
