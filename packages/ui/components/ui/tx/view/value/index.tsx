@@ -7,14 +7,12 @@ import { CopyIcon } from '@radix-ui/react-icons';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { fromBaseUnitAmount } from '@penumbra-zone/types/src/amount';
 import { Pill } from '../../../pill';
-import { ConditionalWrap } from '../../../conditional-wrap';
 
 interface ValueViewProps {
   view: ValueView | undefined;
   showDenom?: boolean;
   showValue?: boolean;
   showIcon?: boolean;
-  showPill?: boolean;
 }
 
 export const ValueViewComponent = ({
@@ -22,7 +20,6 @@ export const ValueViewComponent = ({
   showDenom = true,
   showValue = true,
   showIcon = true,
-  showPill = true,
 }: ValueViewProps) => {
   if (!view) return <></>;
 
@@ -38,7 +35,7 @@ export const ValueViewComponent = ({
     const symbol = metadata.symbol || 'Unknown Asset';
 
     return (
-      <ConditionalWrap condition={showPill} wrap={children => <Pill>{children}</Pill>}>
+      <Pill>
         <div className='flex min-w-0 items-center gap-1'>
           {showIcon && (
             <div className='-ml-2 mr-1 flex size-6 items-center justify-center rounded-full'>
@@ -50,7 +47,7 @@ export const ValueViewComponent = ({
           )}
           {showValue && <span className='leading-[15px]'>{formattedAmount}</span>}
         </div>
-      </ConditionalWrap>
+      </Pill>
     );
   }
 
