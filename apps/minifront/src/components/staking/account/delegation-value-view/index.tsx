@@ -49,7 +49,7 @@ export const DelegationValueView = memo(
         </div>
 
         <div className='w-[200px] shrink-0'>
-          <ValueViewComponent view={valueView} showEquivalent={false} />
+          <ValueViewComponent view={valueView} />
 
           {equivalentValuesAsValueViews.map(valueView => (
             <ValueViewComponent key={getDisplayDenomFromView(valueView)} view={valueView} />

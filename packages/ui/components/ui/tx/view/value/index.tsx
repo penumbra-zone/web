@@ -8,14 +8,12 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { fromBaseUnitAmount } from '@penumbra-zone/types/src/amount';
 import { Pill } from '../../../pill';
 import { ConditionalWrap } from '../../../conditional-wrap';
-import { asValueView } from '@penumbra-zone/getters/src/equivalent-value';
 
 interface ValueViewProps {
   view: ValueView | undefined;
   showDenom?: boolean;
   showValue?: boolean;
   showIcon?: boolean;
-  showEquivalent?: boolean;
   showPill?: boolean;
 }
 
@@ -24,7 +22,6 @@ export const ValueViewComponent = ({
   showDenom = true,
   showValue = true,
   showIcon = true,
-  showEquivalent = true,
   showPill = true,
 }: ValueViewProps) => {
   if (!view) return <></>;
@@ -39,9 +36,6 @@ export const ValueViewComponent = ({
       .toFormat(6)
       .replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
     const symbol = metadata.symbol || 'Unknown Asset';
-    const equivalentValuesAsValueViews = showEquivalent
-      ? view.valueView.value.equivalentValues.map(asValueView)
-      : [];
 
     return (
       <ConditionalWrap condition={showPill} wrap={children => <Pill>{children}</Pill>}>
@@ -55,17 +49,6 @@ export const ValueViewComponent = ({
             <span className='-mr-1 truncate font-mono text-xs text-muted-foreground'>{symbol}</span>
           )}
           {showValue && <span className='leading-[15px]'>{formattedAmount}</span>}
-          {showEquivalent &&
-            equivalentValuesAsValueViews.map(equivalentValueAsValueView => (
-              <div className='ml-1' key={getDisplayDenomFromView(equivalentValueAsValueView)}>
-                <ValueViewComponent
-                  view={equivalentValueAsValueView}
-                  showIcon={false}
-                  showEquivalent={false}
-                  showPill={false}
-                />
-              </div>
-            ))}
         </div>
       </ConditionalWrap>
     );
