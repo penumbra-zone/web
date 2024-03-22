@@ -99,6 +99,7 @@ export interface IndexedDbInterface {
     numerairePerUnit: number,
     height: bigint,
   ): Promise<void>;
+  getPricesForAsset(assetId: AssetId): Promise<EstimatedPrice[]>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -184,6 +185,9 @@ export interface PenumbraDb extends DBSchema {
       Jsonified<Required<EstimatedPrice>['numeraire']['inner']>,
     ]; // composite key
     value: Jsonified<EstimatedPrice>;
+    indexes: {
+      pricedAsset: Jsonified<Required<EstimatedPrice>['pricedAsset']['inner']>;
+    };
   };
 }
 
@@ -212,5 +216,6 @@ export const IDB_TABLES: Tables = {
   app_parameters: 'APP_PARAMETERS',
   gas_prices: 'GAS_PRICES',
   epochs: 'EPOCHS',
+  prices: 'PRICES',
   validator_infos: 'VALIDATOR_INFOS',
 };

@@ -102,7 +102,9 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
         db.createObjectStore('EPOCHS', { autoIncrement: true });
         db.createObjectStore('VALIDATOR_INFOS');
-        db.createObjectStore('PRICES', { keyPath: ['pricedAsset.inner', 'numeraire.inner'] });
+        db.createObjectStore('PRICES', {
+          keyPath: ['pricedAsset.inner', 'numeraire.inner'],
+        }).createIndex('pricedAsset', 'pricedAsset.inner');
       },
     });
     const constants = {
@@ -568,6 +570,13 @@ export class IndexedDb implements IndexedDbInterface {
       table: 'PRICES',
       value: estimatedPrice.toJson() as Jsonified<EstimatedPrice>,
     });
+  }
+
+  async getPricesForAsset(assetId: AssetId): Promise<EstimatedPrice[]> {
+    const base64AssetId = uint8ArrayToBase64(assetId.inner);
+    const results = await this.db.getAllFromIndex('PRICES', 'pricedAsset', base64AssetId);
+
+    return results.map(price => EstimatedPrice.fromJson(price));
   }
 
   private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanBlockResult['sctUpdates']): void {
