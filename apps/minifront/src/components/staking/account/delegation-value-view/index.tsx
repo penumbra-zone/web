@@ -48,7 +48,7 @@ export const DelegationValueView = memo(
           />
         </div>
 
-        <div className='shrink lg:max-w-[200px]'>
+        <div className='w-[200px] shrink-0'>
           <ValueViewComponent view={valueView} showEquivalent={false} />
 
           {equivalentValuesAsValueViews.map(valueView => (
