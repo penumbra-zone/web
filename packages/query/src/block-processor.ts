@@ -38,7 +38,7 @@ import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { getValidatorExchangeRate } from '@penumbra-zone/getters/src/rate-data';
-import { toBasisPointsAsDecimal } from '@penumbra-zone/types/src/amount';
+import { toDecimalExchangeRate } from '@penumbra-zone/types/src/amount';
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -446,7 +446,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         void this.indexedDb.updatePrice(
           assetId,
           stakingAssetId,
-          toBasisPointsAsDecimal(exchangeRate),
+          toDecimalExchangeRate(exchangeRate),
           nextEpochStartHeight,
         );
       }
