@@ -560,6 +560,8 @@ describe('IndexedDb', () => {
     });
 
     it('saves and gets a price in the database', async () => {
+      // This effectively tests both the save and the get, since we saved via
+      // `updatePrice()` in the `beforeEach` above.
       await expect(db.getPricesForAsset(pricedAssetId)).resolves.toEqual([
         new EstimatedPrice({
           pricedAsset: pricedAssetId,
