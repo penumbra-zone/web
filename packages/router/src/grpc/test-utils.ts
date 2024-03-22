@@ -23,6 +23,7 @@ export interface IndexedDbMock {
   getSwapByCommitment?: Mock;
   getEpochByHeight?: Mock;
   saveAssetsMetadata?: Mock;
+  getPricesForAsset?: Mock;
 }
 export interface TendermintMock {
   broadcastTx?: Mock;
