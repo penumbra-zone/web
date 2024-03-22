@@ -259,7 +259,7 @@ describe('isZero', () => {
 });
 
 describe('toDecimalExchangeRate()', () => {
-  it('correctly expresses the basis points as a decimal', () => {
+  it('correctly expresses the exchange rate as a decimal', () => {
     const amount = new Amount({ hi: 0n, lo: 325_000_000n });
     expect(toDecimalExchangeRate(amount)).toBe(3.25);
   });
