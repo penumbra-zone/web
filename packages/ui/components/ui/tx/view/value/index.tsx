@@ -39,6 +39,9 @@ export const ValueViewComponent = ({
       .toFormat(6)
       .replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
     const symbol = metadata.symbol || 'Unknown Asset';
+    const equivalentValuesAsValueViews = showEquivalent
+      ? view.valueView.value.equivalentValues.map(asValueView)
+      : [];
 
     return (
       <ConditionalWrap condition={showPill} wrap={children => <Pill>{children}</Pill>}>
@@ -49,14 +52,14 @@ export const ValueViewComponent = ({
             </div>
           )}
           {showDenom && (
-            <span className='truncate font-mono text-xs text-muted-foreground -mr-1'>{symbol}</span>
+            <span className='-mr-1 truncate font-mono text-xs text-muted-foreground'>{symbol}</span>
           )}
           {showValue && <span className='leading-[15px]'>{formattedAmount}</span>}
           {showEquivalent &&
-            value.equivalentValues.map(equivalentValue => (
-              <div className='ml-1' key={getDisplayDenomFromView(asValueView(equivalentValue))}>
+            equivalentValuesAsValueViews.map(equivalentValueAsValueView => (
+              <div className='ml-1' key={getDisplayDenomFromView(equivalentValueAsValueView)}>
                 <ValueViewComponent
-                  view={asValueView(equivalentValue)}
+                  view={equivalentValueAsValueView}
                   showIcon={false}
                   showEquivalent={false}
                   showPill={false}
