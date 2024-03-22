@@ -53,6 +53,19 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   const executionTime3 = endTime3 - startTime3;
   console.log(`cb2 JSON conversion execution time: ${executionTime3} milliseconds`);
 
+  // Make a "clean" object without any connect tainting in its definitions
+  let cbpj = JSON.stringify(compact_block.toJson());
+  let cb3 = JSON.parse(cbpj);
+  console.log("cb3 is: ", cb3)
+
+  const startTime4 = performance.now();
+  for (let i = 0; i < 10000; i++) {
+    JSON.stringify(cb3);
+  }
+  const endTime4 = performance.now();
+  const executionTime4 = endTime4 - startTime4;
+  console.log(`cb3 JSON conversion execution time: ${executionTime4} milliseconds`);
+
   const sct = await indexedDb.getStateCommitmentTree();
   const witnessData = getWitness(transactionPlan, sct);
 
