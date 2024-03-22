@@ -55,6 +55,11 @@ const blankTxSource = new CommitmentSource({
 const getExchangeRateFromValidatorInfoResponse = getValidatorInfo
   .pipe(getRateData)
   .pipe(getValidatorExchangeRate);
+
+const getIdentityKeyFromValidatorInfoResponse = getValidatorInfo.pipe(
+  getIdentityKeyFromValidatorInfo,
+);
+
 export class BlockProcessor implements BlockProcessorInterface {
   private readonly querier: RootQuerier;
   private readonly indexedDb: IndexedDbInterface;
@@ -441,9 +446,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     validatorInfoResponse: ValidatorInfoResponse,
     nextEpochStartHeight: bigint,
   ) {
-    const identityKey = getValidatorInfo.pipe(getIdentityKeyFromValidatorInfo)(
-      validatorInfoResponse,
-    );
+    const identityKey = getIdentityKeyFromValidatorInfoResponse(validatorInfoResponse);
     const delegationTokenAssetId = new AssetId({
       altBaseDenom: `udelegation_${bech32IdentityKey(identityKey)}`,
     });
