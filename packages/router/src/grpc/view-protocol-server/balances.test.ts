@@ -188,7 +188,6 @@ describe('Balances request handler', () => {
     for await (const res of balances(req, mockCtx)) {
       const response = new BalancesResponse(res);
       const amount = getAmount(response.balanceView);
-      console.log('amount and numeraire', amount, mockNumerairePerUnit);
       const equivalentAmount = multiplyAmountByNumber(amount, mockNumerairePerUnit);
 
       expect(getEquivalentValues(response.balanceView)).toEqual([
