@@ -42,10 +42,10 @@ export const ValueViewComponent = ({
               <AssetIcon metadata={metadata} />
             </div>
           )}
-          {showDenom && (
-            <span className='-mr-1 truncate font-mono text-xs text-muted-foreground'>{symbol}</span>
-          )}
           {showValue && <span className='leading-[15px]'>{formattedAmount}</span>}
+          {showDenom && (
+            <span className='truncate font-mono text-xs text-muted-foreground'>{symbol}</span>
+          )}
         </div>
       </Pill>
     );
