@@ -173,8 +173,6 @@ class BalancesAggregator {
         valueView: { case: 'unknownAssetId', value: { assetId, amount: new Amount() } },
       });
     } else {
-      const equivalentValues: EquivalentValue[] = [];
-
       const assetId = getAssetId.optional()(new Metadata(denomMetadata));
       if (assetId?.inner && !this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)]) {
         const prices = await this.indexedDb.getPricesForAsset(new AssetId(assetId));
@@ -187,7 +185,6 @@ class BalancesAggregator {
           value: {
             metadata: denomMetadata,
             amount: new Amount(),
-            equivalentValues,
           },
         },
       });
