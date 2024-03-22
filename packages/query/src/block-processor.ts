@@ -435,10 +435,9 @@ export class BlockProcessor implements BlockProcessorInterface {
       // validator infos have been upserted.
       await this.indexedDb.upsertValidatorInfo(validatorInfoResponse.validatorInfo);
 
-      await this.updatePriceForValidatorDelegationToken(
-        validatorInfoResponse,
-        nextEpochStartHeight,
-      );
+      // Don't await this, though -- price equivalents for delegation tokens are
+      // non-critical, and shouldn't block the rest of the block processor.
+      void this.updatePriceForValidatorDelegationToken(validatorInfoResponse, nextEpochStartHeight);
     }
   }
 
