@@ -1,12 +1,15 @@
-import type { Impl } from '.';
-import { extLocalCtx, extSessionCtx } from '../../ctx/prax';
-import { approverCtx } from '../../ctx/approver';
+import type { Impl } from '..';
+import { extLocalCtx, extSessionCtx, servicesCtx } from '../../../ctx/prax';
+import { approverCtx } from '../../../ctx/approver';
 import { generateSpendKey } from '@penumbra-zone/wasm/src/keys';
 import { authorizePlan } from '@penumbra-zone/wasm/src/build';
 import { Key } from '@penumbra-zone/crypto-web/src/encryption';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { Box } from '@penumbra-zone/types/src/box';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import { assertValidSwaps } from './assert-valid-swaps';
+import { isControlledAddress } from '@penumbra-zone/wasm/src/address';
+import { bech32Address } from '@penumbra-zone/bech32/src/address';
 
 export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) throw new ConnectError('No plan included in request', Code.InvalidArgument);
@@ -14,6 +17,12 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   const approveReq = ctx.values.get(approverCtx);
   const sess = ctx.values.get(extSessionCtx);
   const local = ctx.values.get(extLocalCtx);
+  const services = ctx.values.get(servicesCtx);
+
+  const { fullViewingKey } = (await services.getWalletServices()).viewServer;
+  assertValidSwaps(req.plan, address =>
+    address ? Boolean(isControlledAddress(fullViewingKey, bech32Address(address))) : false,
+  );
 
   if (!approveReq) throw new ConnectError('Approver not found', Code.Unavailable);
 
