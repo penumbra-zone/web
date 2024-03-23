@@ -16,3 +16,6 @@ export const getAddressIndexByAddress = (
   const res = is_controlled_address(fullViewingKey, bech32Address(address)) as JsonValue;
   return res ? AddressIndex.fromJson(res) : undefined;
 };
+
+export const isControlledAddress = (fullViewingKey: string, address?: Address): boolean =>
+  address ? Boolean(is_controlled_address(fullViewingKey, bech32Address(address))) : false;
