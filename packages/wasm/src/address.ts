@@ -5,10 +5,10 @@ import { JsonValue } from '@bufbuild/protobuf';
 export const getShortAddressByIndex = (fullViewingKey: string, index: number) =>
   get_short_address_by_index(fullViewingKey, index) as string;
 
-export const isControlledAddress = (
+export const getAddressIndexByAddress = (
   fullViewingKey: string,
-  address: string,
+  bech32Address: string,
 ): AddressIndex | undefined => {
-  const res = is_controlled_address(fullViewingKey, address) as JsonValue;
+  const res = is_controlled_address(fullViewingKey, bech32Address) as JsonValue;
   return res ? AddressIndex.fromJson(res) : undefined;
 };
