@@ -8,7 +8,7 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { Box } from '@penumbra-zone/types/src/box';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import { assertValidSwaps } from './assert-valid-swaps';
-import { getAddressIndexByAddress } from '@penumbra-zone/wasm/src/address';
+import { isControlledAddress } from '@penumbra-zone/wasm/src/address';
 
 export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) throw new ConnectError('No plan included in request', Code.InvalidArgument);
@@ -19,9 +19,7 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   const services = ctx.values.get(servicesCtx);
 
   const { fullViewingKey } = (await services.getWalletServices()).viewServer;
-  assertValidSwaps(req.plan, address =>
-    address ? Boolean(getAddressIndexByAddress(fullViewingKey, address)) : false,
-  );
+  assertValidSwaps(req.plan, address => isControlledAddress(fullViewingKey, address));
 
   if (!approveReq) throw new ConnectError('Approver not found', Code.Unavailable);
 
