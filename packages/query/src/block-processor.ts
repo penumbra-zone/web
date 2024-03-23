@@ -68,64 +68,6 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.abortController.abort(`Sync abort ${r}`);
   }
 
-  private async identifyTransactions(
-    spentNullifiers: Set<Nullifier>,
-    commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
-    blockTx: Transaction[],
-  ) {
-    const relevantTx = new Map<TransactionId, Transaction>();
-    const recordsWithSources = new Array<SpendableNoteRecord | SwapRecord>();
-    for (const tx of blockTx) {
-      let txId: TransactionId | undefined;
-
-      const txCommitments = (tx.body?.actions ?? []).flatMap(({ action }) => {
-        switch (action.case) {
-          case 'output':
-            return action.value.body?.notePayload?.noteCommitment;
-          case 'swap':
-            return action.value.body?.payload?.commitment;
-          case 'swapClaim':
-            return [action.value.body?.output1Commitment, action.value.body?.output2Commitment];
-          default: // TODO: what other actions have commitments?
-            return;
-        }
-      });
-
-      const txNullifiers = (tx.body?.actions ?? []).map(({ action }) => {
-        switch (action.case) {
-          case 'spend':
-          case 'swapClaim':
-            return action.value.body?.nullifier;
-          default: // TODO: what other actions have nullifiers?
-            return;
-        }
-      });
-
-      for (const spentNf of spentNullifiers) {
-        if (txNullifiers.some(txNf => spentNf.equals(txNf))) {
-          txId = new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
-          relevantTx.set(txId, tx);
-          spentNullifiers.delete(spentNf);
-        }
-      }
-
-      for (const [recCom, record] of commitmentRecords) {
-        if (txCommitments.some(txCom => recCom.equals(txCom))) {
-          txId ??= new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
-          relevantTx.set(txId, tx);
-          if (blankTxSource.equals(record.source)) {
-            record.source = new CommitmentSource({
-              source: { case: 'transaction', value: { id: txId.inner } },
-            });
-            recordsWithSources.push(record);
-          }
-          commitmentRecords.delete(recCom);
-        }
-      }
-    }
-    return { relevantTx, recordsWithSources };
-  }
-
   private async syncAndStore() {
     const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
     const startHeight = fullSyncHeight ? fullSyncHeight + 1n : 0n;
@@ -373,6 +315,64 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
 
     return spentNullifiers;
+  }
+
+  private async identifyTransactions(
+    spentNullifiers: Set<Nullifier>,
+    commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
+    blockTx: Transaction[],
+  ) {
+    const relevantTx = new Map<TransactionId, Transaction>();
+    const recordsWithSources = new Array<SpendableNoteRecord | SwapRecord>();
+    for (const tx of blockTx) {
+      let txId: TransactionId | undefined;
+
+      const txCommitments = (tx.body?.actions ?? []).flatMap(({ action }) => {
+        switch (action.case) {
+          case 'output':
+            return action.value.body?.notePayload?.noteCommitment;
+          case 'swap':
+            return action.value.body?.payload?.commitment;
+          case 'swapClaim':
+            return [action.value.body?.output1Commitment, action.value.body?.output2Commitment];
+          default: // TODO: what other actions have commitments?
+            return;
+        }
+      });
+
+      const txNullifiers = (tx.body?.actions ?? []).map(({ action }) => {
+        switch (action.case) {
+          case 'spend':
+          case 'swapClaim':
+            return action.value.body?.nullifier;
+          default: // TODO: what other actions have nullifiers?
+            return;
+        }
+      });
+
+      for (const spentNf of spentNullifiers) {
+        if (txNullifiers.some(txNf => spentNf.equals(txNf))) {
+          txId = new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
+          relevantTx.set(txId, tx);
+          spentNullifiers.delete(spentNf);
+        }
+      }
+
+      for (const [recCom, record] of commitmentRecords) {
+        if (txCommitments.some(txCom => recCom.equals(txCom))) {
+          txId ??= new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
+          relevantTx.set(txId, tx);
+          if (blankTxSource.equals(record.source)) {
+            record.source = new CommitmentSource({
+              source: { case: 'transaction', value: { id: txId.inner } },
+            });
+            recordsWithSources.push(record);
+          }
+          commitmentRecords.delete(recCom);
+        }
+      }
+    }
+    return { relevantTx, recordsWithSources };
   }
 
   private async identifyLpNftPositions(txs: Transaction[]) {
