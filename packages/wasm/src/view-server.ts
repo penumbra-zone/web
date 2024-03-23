@@ -54,12 +54,20 @@ export class ViewServer implements ViewServerInterface {
     return this.wasmViewServer.scan_block(res);
   }
 
-  canTrialDecrypt(
+  canDecrypt(
     commitment_vec: Uint8Array,
     encrypted_vec: Uint8Array,
     ephemeral_key_vec?: Uint8Array,
   ) {
-    return this.wasmViewServer.can_trial_decrypt(commitment_vec, encrypted_vec, ephemeral_key_vec);
+    return this.wasmViewServer.can_decrypt(commitment_vec, encrypted_vec, ephemeral_key_vec);
+  }
+
+  forgetCommitment(commitment_vec: Uint8Array) {
+    this.wasmViewServer.forget_commitment(commitment_vec);
+  }
+
+  dontScanBlock(height: bigint) {
+    this.wasmViewServer.dont_scan_block(height);
   }
 
   // Resets the state of the wasmViewServer to the one set in storage

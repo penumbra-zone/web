@@ -1,6 +1,9 @@
 import { IDBPDatabase, openDB, StoreNames } from 'idb';
 import { IbdUpdater, IbdUpdates } from './updater';
-import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import {
+  FmdParameters,
+  Note,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
   Epoch,
   Nullifier,
@@ -124,6 +127,13 @@ export class IndexedDb implements IndexedDbInterface {
     table: StoreName,
   ): AsyncGenerator<IdbUpdate<DBTypes, StoreName>, void> {
     return this.u.subscribe(table);
+  }
+
+  public async readAdvice(commitment: StateCommitment): Promise<Note | undefined> {
+    const key = uint8ArrayToBase64(commitment.inner);
+    const json = await this.db.get('NOTES', key);
+    if (!json) return undefined;
+    return Note.fromJson(json);
   }
 
   public async getStateCommitmentTree(): Promise<StateCommitmentTree> {

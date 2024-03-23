@@ -23,7 +23,6 @@ import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
 import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
 import { updatePrices } from './price-indexer';
-import { toPlainMessage } from '@bufbuild/protobuf';
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -147,44 +146,63 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
-      // test out canTrialDecrypt
-      for (const statePayload of compactBlock.statePayloads) {
-        console.log('state payload', statePayload);
-        switch (statePayload.statePayload.case) {
-          case 'note': {
-            const {
-              noteCommitment: { inner: commitmentVec } = { inner: undefined },
-              ephemeralKey: ephemeralKeyVec,
-              encryptedNote: { inner: encryptedNoteVec } = { inner: undefined },
-            } = statePayload.statePayload.value.note!;
-            console.log({ commitmentVec, encryptedNoteVec, ephemeralKeyVec });
-            const trial = this.viewServer.canTrialDecrypt(
-              commitmentVec!,
-              encryptedNoteVec!,
-              ephemeralKeyVec,
-            );
-            console.log('canTrialDecrypt', trial);
-            break;
-          }
-          case 'swap': {
-            const {
-              commitment: { inner: commitmentVec } = { inner: undefined },
-              encryptedSwap: encryptedSwapVec,
-            } = statePayload.statePayload.value.swap!;
-            console.log({ commitmentVec, encryptedSwapVec });
-            const trial = this.viewServer.canTrialDecrypt(commitmentVec!, encryptedSwapVec);
-            console.log('canTrialDecrypt', trial);
-            break;
-          }
-          case 'rolledUp': {
-            console.warn('rolledup');
-            break;
-          }
-          default: {
-            console.warn('fuck');
-            break;
+      let trial: undefined | string;
+      let epoch = false;
+
+      trialDecrypt: {
+        if (compactBlock.epochRoot) {
+          epoch = true;
+          break trialDecrypt;
+        }
+
+        const forgettable = new Array<Uint8Array>();
+        for (const statePayload of compactBlock.statePayloads) {
+          //console.log('state payload', statePayload);
+          switch (statePayload.statePayload.case) {
+            case 'note': {
+              const {
+                noteCommitment: { inner: commitmentVec } = { inner: undefined },
+                ephemeralKey: ephemeralKeyVec,
+                encryptedNote: { inner: encryptedNoteVec } = { inner: undefined },
+              } = statePayload.statePayload.value.note!;
+              //console.log({ commitmentVec, encryptedNoteVec, ephemeralKeyVec });
+              if (this.viewServer.canDecrypt(commitmentVec!, encryptedNoteVec!, ephemeralKeyVec)) {
+                trial = 'note';
+                break trialDecrypt;
+              } else forgettable.push(commitmentVec!);
+              break;
+            }
+            case 'swap': {
+              const {
+                commitment: { inner: commitmentVec } = { inner: undefined },
+                encryptedSwap: encryptedSwapVec,
+              } = statePayload.statePayload.value.swap!;
+              //console.log({ commitmentVec, encryptedSwapVec });
+              if (this.viewServer.canDecrypt(commitmentVec!, encryptedSwapVec)) {
+                trial = 'swap';
+                break trialDecrypt;
+              } else forgettable.push(commitmentVec!);
+              break;
+            }
+            case 'rolledUp': {
+              const commitment = statePayload.statePayload.value.commitment!;
+              const advice = await this.indexedDb.readAdvice(commitment);
+              if (advice) {
+                console.warn('readAdvice', advice);
+                trial = 'advice';
+                break trialDecrypt;
+              } else forgettable.push(commitment.inner);
+              break;
+            }
+            default: {
+              throw new Error('unknown state payload');
+            }
           }
         }
+
+        // didn't find anything. time to forget all of that
+        forgettable.map(commitment => this.viewServer.forgetCommitment(commitment));
+        this.viewServer.dontScanBlock(compactBlock.height);
       }
 
       if (compactBlock.appParametersUpdated) {
@@ -197,11 +215,15 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
       }
 
+      const wantsScan = Boolean(trial) || epoch;
+      if (wantsScan)
+        console.log('wants scan', compactBlock.height, trial, epoch ? 'epoch' : undefined);
+
       // wasm view server scan
       // - decrypts new notes
       // - decrypts new swaps
       // - updates idb with advice
-      const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock);
+      const scannerWantsFlush = wantsScan && (await this.viewServer.scanBlock(compactBlock));
 
       // flushing is slow, avoid it until
       // - wasm says
@@ -216,6 +238,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
       if (Object.values(flushReasons).some(Boolean)) {
         const flush = this.viewServer.flushUpdates();
+        console.log('flush', flush);
 
         // in an atomic query, this
         // - saves 'sctUpdates'

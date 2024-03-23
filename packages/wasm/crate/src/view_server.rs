@@ -109,7 +109,7 @@ impl ViewServer {
         Ok(view_server)
     }
 
-    pub fn can_trial_decrypt(
+    pub fn can_decrypt(
         &mut self,
         commitment_vec: Vec<u8>,
         encrypted_vec: Vec<u8>,
@@ -136,6 +136,20 @@ impl ViewServer {
                 return Ok(swap_payload.trial_decrypt(&self.fvk).is_some());
             }
         }
+    }
+
+    pub fn forget_commitment(&mut self, commitment_vec: Vec<u8>) -> () {
+        let commitment_bytes: [u8; 32] = commitment_vec.try_into().unwrap();
+        self.sct
+            .insert(Forget, commitment_bytes.try_into().unwrap())
+            .unwrap();
+        return ();
+    }
+
+    pub fn dont_scan_block(&mut self, height: u64) {
+        self.sct.end_block().unwrap();
+        self.latest_height = height;
+        return ();
     }
 
     /// Scans block for notes, swaps

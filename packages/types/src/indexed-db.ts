@@ -54,6 +54,7 @@ export interface IndexedDbInterface {
   ): AsyncGenerator<IdbUpdate<DBTypes, StoreName>, void>;
   constants(): IdbConstants;
   clear(): Promise<void>;
+  readAdvice(commitment: StateCommitment): Promise<Note | undefined>;
   getFullSyncHeight(): Promise<bigint | undefined>;
   getSpendableNoteByNullifier(nullifier: Nullifier): Promise<SpendableNoteRecord | undefined>;
   getSpendableNoteByCommitment(
