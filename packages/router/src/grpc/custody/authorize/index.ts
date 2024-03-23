@@ -9,7 +9,6 @@ import { Box } from '@penumbra-zone/types/src/box';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import { assertValidSwaps } from './assert-valid-swaps';
 import { getAddressIndexByAddress } from '@penumbra-zone/wasm/src/address';
-import { bech32Address } from '@penumbra-zone/bech32/src/address';
 
 export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) throw new ConnectError('No plan included in request', Code.InvalidArgument);
@@ -21,7 +20,7 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
 
   const { fullViewingKey } = (await services.getWalletServices()).viewServer;
   assertValidSwaps(req.plan, address =>
-    address ? Boolean(getAddressIndexByAddress(fullViewingKey, bech32Address(address))) : false,
+    address ? Boolean(getAddressIndexByAddress(fullViewingKey, address)) : false,
   );
 
   if (!approveReq) throw new ConnectError('Approver not found', Code.Unavailable);
