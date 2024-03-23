@@ -12,7 +12,6 @@ import {
   StateCommitmentTree,
 } from '@penumbra-zone/types/src/state-commitment-tree';
 import type { IdbConstants } from '@penumbra-zone/types/src/indexed-db';
-import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
 import { validateSchema } from '@penumbra-zone/types/src/validation';
 
 interface ViewServerProps {
@@ -22,9 +21,9 @@ interface ViewServerProps {
   idbConstants: IdbConstants;
 }
 
-export class ViewServer implements ViewServerInterface {
+export class ViewServer {
   private constructor(
-    private wasmViewServer: WasmViewServer,
+    public wasmViewServer: WasmViewServer,
     public readonly fullViewingKey: string,
     private readonly epochDuration: bigint,
     private readonly getStoredTree: () => Promise<StateCommitmentTree>,
@@ -52,22 +51,6 @@ export class ViewServer implements ViewServerInterface {
   async scanBlock(compactBlock: CompactBlock): Promise<boolean> {
     const res = compactBlock.toJson();
     return this.wasmViewServer.scan_block(res);
-  }
-
-  canDecrypt(
-    commitment_vec: Uint8Array,
-    encrypted_vec: Uint8Array,
-    ephemeral_key_vec?: Uint8Array,
-  ) {
-    return this.wasmViewServer.can_decrypt(commitment_vec, encrypted_vec, ephemeral_key_vec);
-  }
-
-  forgetCommitment(commitment_vec: Uint8Array) {
-    this.wasmViewServer.forget_commitment(commitment_vec);
-  }
-
-  dontScanBlock(height: bigint) {
-    this.wasmViewServer.dont_scan_block(height);
   }
 
   // Resets the state of the wasmViewServer to the one set in storage

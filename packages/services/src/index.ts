@@ -57,6 +57,9 @@ export class Services implements ServicesInterface {
             .then(resolveConfig, rejectConfig)
             .then(emptyResponse);
           return true;
+        case ServicesMessage.TimeChain:
+          void this.timeChain().then(emptyResponse);
+          return true;
       }
     });
   }
@@ -137,10 +140,20 @@ export class Services implements ServicesInterface {
     };
   }
 
-  private async clearCache() {
+  public async clearCache() {
     const ws = await this.getWalletServices();
 
     ws.blockProcessor.stop('clearCache');
+    await ws.indexedDb.clear();
+    this.walletServicesPromise = undefined;
+    await this.initialize();
+  }
+
+  private async timeChain() {
+    const ws = await this.getWalletServices();
+
+    ws.blockProcessor.stop('timeChain');
+    void ws.blockProcessor.timeChain();
     await ws.indexedDb.clear();
     this.walletServicesPromise = undefined;
     await this.initialize();

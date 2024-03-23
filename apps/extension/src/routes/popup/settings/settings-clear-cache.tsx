@@ -38,6 +38,17 @@ export const SettingsClearCache = () => {
           >
             Confirm
           </Button>
+          <Button
+            variant='gradient'
+            size='lg'
+            className='w-full'
+            onClick={() => {
+              void chrome.runtime.sendMessage(ServicesMessage.TimeChain);
+              navigate(PopupPath.INDEX);
+            }}
+          >
+            Time Chain
+          </Button>
         </div>
       </div>
     </FadeTransition>

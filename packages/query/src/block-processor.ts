@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { RootQuerier } from './root-querier';
 import { sha256Hash } from '@penumbra-zone/crypto-web/src/sha256';
 import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/src/dex';
@@ -20,14 +21,15 @@ import {
 import { backOff } from 'exponential-backoff';
 import type { BlockProcessorInterface } from '@penumbra-zone/types/src/block-processor';
 import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
-import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
 import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
 import { updatePrices } from './price-indexer';
+
+import type { ViewServer } from '@penumbra-zone/wasm/src/view-server';
 
 interface QueryClientProps {
   querier: RootQuerier;
   indexedDb: IndexedDbInterface;
-  viewServer: ViewServerInterface;
+  viewServer: ViewServer;
   numeraireAssetId: string;
 }
 
@@ -38,7 +40,7 @@ const blankTxSource = new CommitmentSource({
 export class BlockProcessor implements BlockProcessorInterface {
   private readonly querier: RootQuerier;
   private readonly indexedDb: IndexedDbInterface;
-  private readonly viewServer: ViewServerInterface;
+  private readonly viewServer: ViewServer;
   private readonly abortController: AbortController = new AbortController();
   private readonly numeraireAssetId: string;
   private syncPromise: Promise<void> | undefined;
@@ -68,6 +70,25 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.abortController.abort(`Sync abort ${r}`);
   }
 
+  public async timeChain() {
+    const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
+
+    const { signal } = new AbortController();
+
+    console.log(performance.mark('begin chain'));
+    for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
+      startHeight: 0n,
+      keepAlive: true,
+      abortSignal: signal,
+    })) {
+      if (compactBlock.height % 1000n === 0n) console.log(compactBlock.height);
+      if (compactBlock.height === fullSyncHeight) {
+        console.log(performance.measure('chain complete', 'begin chain'));
+        break;
+      }
+    }
+  }
+
   private async syncAndStore() {
     const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
     const startHeight = fullSyncHeight ? fullSyncHeight + 1n : 0n;
@@ -88,8 +109,13 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
+      if (!compactBlock.height) console.log(performance.mark('begin sync'));
+      else if (startHeight === compactBlock.height) console.log(performance.mark('retrying sync'));
+      // eslint-disable-next-line prefer-const
       let trial: undefined | string;
+      // eslint-disable-next-line prefer-const
       let epoch = false;
+      const thous = compactBlock.height % 1000n === 0n;
 
       trialDecrypt: {
         if (compactBlock.epochRoot) {
@@ -98,6 +124,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         }
 
         const forgettable = new Array<Uint8Array>();
+        if (thous) performance.mark(`trial decrypt ${compactBlock.height}`);
         for (const statePayload of compactBlock.statePayloads) {
           //console.log('state payload', statePayload);
           switch (statePayload.statePayload.case) {
@@ -108,7 +135,13 @@ export class BlockProcessor implements BlockProcessorInterface {
                 encryptedNote: { inner: encryptedNoteVec } = { inner: undefined },
               } = statePayload.statePayload.value.note!;
               //console.log({ commitmentVec, encryptedNoteVec, ephemeralKeyVec });
-              if (this.viewServer.canDecrypt(commitmentVec!, encryptedNoteVec!, ephemeralKeyVec)) {
+              if (
+                this.viewServer.wasmViewServer.can_decrypt(
+                  commitmentVec!,
+                  encryptedNoteVec!,
+                  ephemeralKeyVec,
+                )
+              ) {
                 trial = 'note';
                 break trialDecrypt;
               } else forgettable.push(commitmentVec!);
@@ -120,7 +153,7 @@ export class BlockProcessor implements BlockProcessorInterface {
                 encryptedSwap: encryptedSwapVec,
               } = statePayload.statePayload.value.swap!;
               //console.log({ commitmentVec, encryptedSwapVec });
-              if (this.viewServer.canDecrypt(commitmentVec!, encryptedSwapVec)) {
+              if (this.viewServer.wasmViewServer.can_decrypt(commitmentVec!, encryptedSwapVec)) {
                 trial = 'swap';
                 break trialDecrypt;
               } else forgettable.push(commitmentVec!);
@@ -141,10 +174,15 @@ export class BlockProcessor implements BlockProcessorInterface {
             }
           }
         }
+        if (thous) performance.measure(`trial decrypt ${compactBlock.height}`);
 
+        if (thous) performance.mark(`forget ${compactBlock.height}`);
         // didn't find anything. time to forget all of that
-        forgettable.map(commitment => this.viewServer.forgetCommitment(commitment));
-        this.viewServer.dontScanBlock(compactBlock.height);
+        forgettable.map(commitment => this.viewServer.wasmViewServer.forget_commitment(commitment));
+        if (thous) performance.measure(`forget ${compactBlock.height}`);
+        if (thous) performance.mark(`dontScan ${compactBlock.height}`);
+        this.viewServer.wasmViewServer.dont_scan_block(compactBlock.height);
+        if (thous) performance.measure(`dontScan ${compactBlock.height}`);
       }
 
       if (compactBlock.appParametersUpdated) {
@@ -157,15 +195,25 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
       }
 
-      const wantsScan = Boolean(trial) || epoch;
-      if (wantsScan)
-        console.log('wants scan', compactBlock.height, trial, epoch ? 'epoch' : undefined);
+      if (compactBlock.height % 1000n === 0n) console.log(compactBlock.height);
+
+      const forceScan = false;
+      const wantsScan = forceScan || Boolean(trial) || epoch;
+      if (wantsScan && !forceScan)
+        console.log('wants scan', compactBlock.height, epoch ? 'epoch' : trial);
 
       // wasm view server scan
       // - decrypts new notes
       // - decrypts new swaps
       // - updates idb with advice
       const scannerWantsFlush = wantsScan && (await this.viewServer.scanBlock(compactBlock));
+
+      if (compactBlock.height === latestKnownBlockHeight)
+        console.log(compactBlock.height, performance.measure('sync complete', 'begin sync'));
+      else if (compactBlock.height >= 10_000n) {
+        console.log(compactBlock.height, performance.measure('SYNC TO 10_000', 'begin sync'));
+        throw new Error('done');
+      }
 
       // flushing is slow, avoid it until
       // - wasm says

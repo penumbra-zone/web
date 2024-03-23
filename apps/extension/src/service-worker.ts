@@ -49,6 +49,7 @@ const startServices = async () => {
     numeraireAssetId: USDC_ASSET_ID,
   });
   await services.initialize();
+  void services.clearCache();
   return services;
 };
 
