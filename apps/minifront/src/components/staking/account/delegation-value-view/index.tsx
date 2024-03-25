@@ -2,8 +2,14 @@ import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { ValidatorInfoComponent } from './validator-info-component';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { StakingActions } from './staking-actions';
-import { memo } from 'react';
-import { getValidatorInfoFromValueView } from '@penumbra-zone/getters/src/value-view';
+import { memo, useMemo } from 'react';
+import {
+  getDisplayDenomFromView,
+  getEquivalentValues,
+  getValidatorInfoFromValueView,
+} from '@penumbra-zone/getters/src/value-view';
+import { asValueView } from '@penumbra-zone/getters/src/equivalent-value';
+import { STAKING_TOKEN } from '@penumbra-zone/constants/src/assets';
 
 /**
  * Renders a `ValueView` that contains a delegation token, along with the
@@ -33,6 +39,15 @@ export const DelegationValueView = memo(
   }) => {
     const validatorInfo = getValidatorInfoFromValueView(valueView);
 
+    const equivalentValueOfStakingToken = useMemo(() => {
+      const equivalentValue = getEquivalentValues(valueView).find(
+        equivalentValue => equivalentValue.numeraire?.display === STAKING_TOKEN,
+      );
+
+      if (equivalentValue) return asValueView(equivalentValue);
+      return undefined;
+    }, [valueView]);
+
     return (
       <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-8'>
         <div className='min-w-0 shrink grow'>
@@ -42,8 +57,16 @@ export const DelegationValueView = memo(
           />
         </div>
 
-        <div className='shrink lg:max-w-[200px]'>
+        <div className='w-[200px] shrink-0'>
           <ValueViewComponent view={valueView} />
+
+          {equivalentValueOfStakingToken && (
+            <ValueViewComponent
+              key={getDisplayDenomFromView(equivalentValueOfStakingToken)}
+              view={equivalentValueOfStakingToken}
+              variant='equivalent'
+            />
+          )}
         </div>
 
         <StakingActions

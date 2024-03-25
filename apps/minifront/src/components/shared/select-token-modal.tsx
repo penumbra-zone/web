@@ -30,11 +30,7 @@ export default function SelectTokenModal({
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
         <div className='flex h-9 min-w-[100px] max-w-[200px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
-          <ValueViewComponent
-            view={selection?.balanceView}
-            showValue={false}
-            showEquivalent={false}
-          />
+          <ValueViewComponent view={selection?.balanceView} showValue={false} />
         </div>
       </DialogTrigger>
       <DialogContent>

@@ -4,7 +4,11 @@ import { getAmount } from '@penumbra-zone/getters/src/value-view';
 import { getAssetIdFromRecord } from '@penumbra-zone/getters/src/spendable-note-record';
 import {
   AssetId,
+  EquivalentValue,
+  EstimatedPrice,
+  Metadata,
   ValueView,
+  ValueView_KnownAssetId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   AddressIndex,
@@ -23,13 +27,17 @@ import { addressByIndex } from './address-by-index';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 import { addLoHi } from '@penumbra-zone/types/src/lo-hi';
+import { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
+import { getAssetId } from '@penumbra-zone/getters/src/metadata';
+import { multiplyAmountByNumber } from '@penumbra-zone/types/src/amount';
+import { Stringified } from '@penumbra-zone/types/src/jsonified';
 
 // Handles aggregating amounts and filtering by account number/asset id
 export const balances: Impl['balances'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
 
-  const aggregator = new BalancesAggregator(ctx);
+  const aggregator = new BalancesAggregator(ctx, indexedDb);
 
   for await (const noteRecord of indexedDb.iterateSpendableNotes()) {
     if (noteRecord.heightSpent !== 0n) continue;
@@ -56,8 +64,15 @@ type AccountMap = Record<AddressIndex['account'], BalancesMap>;
 
 class BalancesAggregator {
   readonly accounts: AccountMap = {};
+  private readonly estimatedPriceByPricedAsset: Record<
+    Stringified<AssetId['inner']>,
+    EstimatedPrice[]
+  > = {};
 
-  constructor(readonly ctx: HandlerContext) {}
+  constructor(
+    private readonly ctx: HandlerContext,
+    private readonly indexedDb: IndexedDbInterface,
+  ) {}
 
   async add(n: SpendableNoteRecord) {
     const accountNumber = n.addressIndex?.account ?? 0;
@@ -76,9 +91,9 @@ class BalancesAggregator {
     }
 
     // Many type overrides, but initialization above guarantees presence
-    const valueView = this.accounts[accountNumber]![assetIdBase64]!.balanceView;
-    const currentAmount = getAmount(valueView);
-    this.aggregateAmount(currentAmount, n);
+    const valueView = this.accounts[accountNumber]![assetIdBase64]!.balanceView!;
+    this.aggregateAmount(valueView, n);
+    await this.aggregateEquivalentValues(valueView, n);
   }
 
   filteredResponses({ assetIdFilter, accountFilter }: BalancesRequest) {
@@ -99,7 +114,8 @@ class BalancesAggregator {
       );
   }
 
-  private aggregateAmount(currentAmount: Amount, toAdd: SpendableNoteRecord) {
+  private aggregateAmount(valueView: ValueView, toAdd: SpendableNoteRecord) {
+    const currentAmount = getAmount(valueView);
     const newAmount = addLoHi(
       { lo: currentAmount.lo, hi: currentAmount.hi },
       {
@@ -109,6 +125,41 @@ class BalancesAggregator {
     );
     currentAmount.lo = newAmount.lo;
     currentAmount.hi = newAmount.hi;
+  }
+
+  /**
+   * Attach equivalent values to the `ValueView`, based on the estimated price
+   * of the equivalent value and the `amount` of the `ValueView`.
+   */
+  private async aggregateEquivalentValues(valueView: ValueView, toAdd: SpendableNoteRecord) {
+    const assetId = getAssetIdFromRecord.optional()(toAdd);
+    if (!assetId?.inner) return;
+
+    const amount = getAmount(valueView);
+
+    const equivalentValues: EquivalentValue[] = [];
+
+    for (const price of this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)] ?? []) {
+      if (!price.numeraire) continue;
+
+      const numeraire = await assetMetadataById(
+        new AssetMetadataByIdRequest({ assetId: price.numeraire }),
+        this.ctx,
+      );
+      if (!numeraire.denomMetadata) continue;
+
+      const equivalentAmount = multiplyAmountByNumber(amount, price.numerairePerUnit);
+
+      equivalentValues.push(
+        new EquivalentValue({
+          asOfHeight: price.asOfHeight,
+          numeraire: numeraire.denomMetadata,
+          equivalentAmount,
+        }),
+      );
+    }
+
+    (valueView.valueView.value as ValueView_KnownAssetId).equivalentValues = equivalentValues;
   }
 
   private async initializeBalResponse(n: SpendableNoteRecord) {
@@ -129,10 +180,19 @@ class BalancesAggregator {
         valueView: { case: 'unknownAssetId', value: { assetId, amount: new Amount() } },
       });
     } else {
+      const assetId = getAssetId.optional()(new Metadata(denomMetadata));
+      if (assetId?.inner && !this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)]) {
+        const prices = await this.indexedDb.getPricesForAsset(new AssetId(assetId));
+        this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)] = prices;
+      }
+
       return new ValueView({
         valueView: {
           case: 'knownAssetId',
-          value: { metadata: denomMetadata, amount: new Amount() },
+          value: {
+            metadata: denomMetadata,
+            amount: new Amount(),
+          },
         },
       });
     }

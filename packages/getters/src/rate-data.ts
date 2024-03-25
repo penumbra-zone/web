@@ -4,3 +4,7 @@ import { createGetter } from './utils/create-getter';
 export const getValidatorRewardRate = createGetter(
   (rateData?: RateData) => rateData?.validatorRewardRate,
 );
+
+export const getValidatorExchangeRate = createGetter(
+  (rateData?: RateData) => rateData?.validatorExchangeRate,
+);

@@ -26,7 +26,7 @@ export const AssetOutSelector = ({ balances, setAssetOut, assetOut }: AssetOutSe
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
         <div className='flex h-9 min-w-[100px] max-w-[150px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
-          <ValueViewComponent view={assetOut} showValue={false} showEquivalent={false} />
+          <ValueViewComponent view={assetOut} showValue={false} />
         </div>
       </DialogTrigger>
       <DialogContent>

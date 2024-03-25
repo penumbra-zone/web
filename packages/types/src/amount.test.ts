@@ -8,7 +8,9 @@ import {
   fromValueView,
   isZero,
   joinLoHiAmount,
+  multiplyAmountByNumber,
   subtractAmounts,
+  toDecimalExchangeRate,
 } from './amount';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import {
@@ -253,5 +255,36 @@ describe('isZero', () => {
   it('detects lo number presence', () => {
     const amount = new Amount({ lo: 20n, hi: 0n });
     expect(isZero(amount)).toBeFalsy();
+  });
+});
+
+describe('toDecimalExchangeRate()', () => {
+  it('correctly expresses the exchange rate as a decimal', () => {
+    const amount = new Amount({ hi: 0n, lo: 325_000_000n });
+    expect(toDecimalExchangeRate(amount)).toBe(3.25);
+  });
+});
+
+describe('multiplyAmountByNumber()', () => {
+  it('correctly multiplies an amount by a number', () => {
+    const amount = new Amount({ hi: 0n, lo: 100n });
+
+    expect(multiplyAmountByNumber(amount, 1.5)).toEqual(
+      new Amount({
+        hi: 0n,
+        lo: 150n,
+      }),
+    );
+  });
+
+  it('rounds when needed, to avoid trying to convert a decimal to a BigInt', () => {
+    const amount = new Amount({ hi: 0n, lo: 100n });
+
+    expect(multiplyAmountByNumber(amount, 1.111111111)).toEqual(
+      new Amount({
+        hi: 0n,
+        lo: 111n,
+      }),
+    );
   });
 });

@@ -50,7 +50,7 @@ export interface TendermintQuerierInterface {
 }
 
 export interface ShieldedPoolQuerierInterface {
-  assetMetadata(assetId: AssetId): Promise<Metadata | undefined>;
+  assetMetadataById(assetId: AssetId): Promise<Metadata | undefined>;
 }
 
 export interface IbcClientQuerierInterface {

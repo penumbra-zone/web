@@ -1,11 +1,11 @@
-import { updatePrices } from './price-indexer';
+import { updatePricesFromSwaps } from './price-indexer';
 import { BatchSwapOutputData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { base64ToUint8Array } from '@penumbra-zone/types/src/base64';
 
-describe('update prices', () => {
+describe('updatePricesFromSwaps()', () => {
   let indexedDbMock: IndexedDbInterface;
   const updatePriceMock: Mock = vi.fn();
   const height = 123n;
@@ -35,7 +35,7 @@ describe('update prices', () => {
       }),
     ];
 
-    await updatePrices(indexedDbMock, numeraireAssetId, swapOutputs, height);
+    await updatePricesFromSwaps(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(1);
     expect(updatePriceMock).toBeCalledWith(asset1, numeraireAsset, 4.8, height);
   });
@@ -54,7 +54,7 @@ describe('update prices', () => {
       }),
     ];
 
-    await updatePrices(indexedDbMock, numeraireAssetId, swapOutputs, height);
+    await updatePricesFromSwaps(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(1);
     expect(updatePriceMock).toBeCalledWith(asset1, numeraireAsset, 318.5, height);
   });
@@ -73,7 +73,7 @@ describe('update prices', () => {
       }),
     ];
 
-    await updatePrices(indexedDbMock, numeraireAssetId, swapOutputs, height);
+    await updatePricesFromSwaps(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(0);
   });
 
@@ -90,7 +90,7 @@ describe('update prices', () => {
         unfilled1: { lo: 100n },
       }),
     ];
-    await updatePrices(indexedDbMock, numeraireAssetId, swapOutputs, height);
+    await updatePricesFromSwaps(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(1);
     expect(updatePriceMock).toBeCalledWith(asset1, numeraireAsset, 8, height);
   });
@@ -109,7 +109,7 @@ describe('update prices', () => {
       }),
     ];
 
-    await updatePrices(indexedDbMock, numeraireAssetId, swapOutputs, height);
+    await updatePricesFromSwaps(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(0);
   });
 });
