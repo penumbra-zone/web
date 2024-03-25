@@ -2,7 +2,7 @@ import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/k
 import { TransactionPlan } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 
-export const assertValidSwaps = (
+export const assertSwapClaimAddressesBelongToCurrentUser = (
   plan: TransactionPlan,
   isControlledAddress: (address?: Address) => boolean,
 ): void => {

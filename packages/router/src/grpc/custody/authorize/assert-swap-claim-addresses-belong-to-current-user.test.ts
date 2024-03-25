@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assertValidSwaps } from './assert-valid-swaps';
+import { assertSwapClaimAddressesBelongToCurrentUser } from './assert-swap-claim-addresses-belong-to-current-user';
 import {
   ActionPlan,
   TransactionPlan,
@@ -64,10 +64,12 @@ const swapWithUndefinedAddress = new ActionPlan({
 const mockIsControlledAddress = (address?: Address) =>
   !!address && [currentUserAddress1, currentUserAddress2].includes(address);
 
-describe('assertValidSwaps()', () => {
+describe('assertSwapClaimAddressesBelongToCurrentUser()', () => {
   describe('when the transaction plan has no swaps', () => {
     it('does not throw', () => {
-      expect(() => assertValidSwaps(new TransactionPlan(), mockIsControlledAddress)).not.toThrow();
+      expect(() =>
+        assertSwapClaimAddressesBelongToCurrentUser(new TransactionPlan(), mockIsControlledAddress),
+      ).not.toThrow();
     });
   });
 
@@ -78,7 +80,9 @@ describe('assertValidSwaps()', () => {
           actions: [swapWithCurrentUserAddress1, swapWithCurrentUserAddress2],
         });
 
-        expect(() => assertValidSwaps(plan, mockIsControlledAddress)).not.toThrow();
+        expect(() =>
+          assertSwapClaimAddressesBelongToCurrentUser(plan, mockIsControlledAddress),
+        ).not.toThrow();
       });
     });
 
@@ -91,7 +95,7 @@ describe('assertValidSwaps()', () => {
         expect.assertions(2);
 
         try {
-          assertValidSwaps(plan, mockIsControlledAddress);
+          assertSwapClaimAddressesBelongToCurrentUser(plan, mockIsControlledAddress);
         } catch (error) {
           expect(error).toBeInstanceOf(ConnectError);
           expect((error as ConnectError).code).toBe(Code.PermissionDenied);
@@ -108,7 +112,7 @@ describe('assertValidSwaps()', () => {
         expect.assertions(2);
 
         try {
-          assertValidSwaps(plan, mockIsControlledAddress);
+          assertSwapClaimAddressesBelongToCurrentUser(plan, mockIsControlledAddress);
         } catch (error) {
           expect(error).toBeInstanceOf(ConnectError);
           expect((error as ConnectError).code).toBe(Code.PermissionDenied);

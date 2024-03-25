@@ -7,7 +7,7 @@ import { Key } from '@penumbra-zone/crypto-web/src/encryption';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { Box } from '@penumbra-zone/types/src/box';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
-import { assertValidSwaps } from './assert-valid-swaps';
+import { assertSwapClaimAddressesBelongToCurrentUser } from './assert-swap-claim-addresses-belong-to-current-user';
 import { isControlledAddress } from '@penumbra-zone/wasm/src/address';
 
 export const authorize: Impl['authorize'] = async (req, ctx) => {
@@ -19,7 +19,9 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   const walletServices = await ctx.values.get(servicesCtx).getWalletServices();
 
   const { fullViewingKey } = walletServices.viewServer;
-  assertValidSwaps(req.plan, address => isControlledAddress(fullViewingKey, address));
+  assertSwapClaimAddressesBelongToCurrentUser(req.plan, address =>
+    isControlledAddress(fullViewingKey, address),
+  );
 
   if (!approveReq) throw new ConnectError('Approver not found', Code.Unavailable);
 
