@@ -30,6 +30,7 @@ import { addLoHi } from '@penumbra-zone/types/src/lo-hi';
 import { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 import { multiplyAmountByNumber } from '@penumbra-zone/types/src/amount';
+import { Stringified } from '@penumbra-zone/types/src/jsonified';
 
 // Handles aggregating amounts and filtering by account number/asset id
 export const balances: Impl['balances'] = async function* (req, ctx) {
@@ -63,7 +64,10 @@ type AccountMap = Record<AddressIndex['account'], BalancesMap>;
 
 class BalancesAggregator {
   readonly accounts: AccountMap = {};
-  private readonly estimatedPriceByPricedAsset: Record<string, EstimatedPrice[]> = {};
+  private readonly estimatedPriceByPricedAsset: Record<
+    Stringified<AssetId['inner']>,
+    EstimatedPrice[]
+  > = {};
 
   constructor(
     private readonly ctx: HandlerContext,
