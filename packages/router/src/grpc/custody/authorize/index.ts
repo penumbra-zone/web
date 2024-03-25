@@ -16,9 +16,9 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   const approveReq = ctx.values.get(approverCtx);
   const sess = ctx.values.get(extSessionCtx);
   const local = ctx.values.get(extLocalCtx);
-  const services = ctx.values.get(servicesCtx);
+  const walletServices = await ctx.values.get(servicesCtx).getWalletServices();
 
-  const { fullViewingKey } = (await services.getWalletServices()).viewServer;
+  const { fullViewingKey } = walletServices.viewServer;
   assertValidSwaps(req.plan, address => isControlledAddress(fullViewingKey, address));
 
   if (!approveReq) throw new ConnectError('Approver not found', Code.Unavailable);
