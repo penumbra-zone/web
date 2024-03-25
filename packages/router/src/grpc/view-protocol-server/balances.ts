@@ -128,6 +128,10 @@ class BalancesAggregator {
     await this.aggregateEquivalentValues(valueView, toAdd);
   }
 
+  /**
+   * Attach equivalent values to the `ValueView`, based on the estimated price
+   * of the equivalent value and the `amount` of the `ValueView`.
+   */
   private async aggregateEquivalentValues(valueView: ValueView, toAdd: SpendableNoteRecord) {
     const assetId = getAssetIdFromRecord.optional()(toAdd);
     if (!assetId?.inner) return;
