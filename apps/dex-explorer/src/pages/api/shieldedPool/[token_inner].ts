@@ -26,6 +26,6 @@ export default async function assetMetadataHandler(req: any, res: any) {
     res.status(200).json(data as Metadata);
   } catch (error) {
     console.error("Error fetching asset metadata grpc data:", error);
-    res.status(500).json({"error": "Error fetching asset metadata grpc data"});
+    res.status(500).json({"error": `Error fetching asset metadata grpc data: ${error}`});
   }
 }
