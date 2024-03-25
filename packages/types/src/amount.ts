@@ -57,38 +57,17 @@ export const divideAmounts = (dividend: Amount, divisor: Amount): BigNumber => {
   return joinedDividend.dividedBy(joinedDivisor);
 };
 
-// This function takes a number and formats it in a display-friendly way (en-US locale)
-// Examples:
-//    2000        -> 2,000
-//    2001.1      -> 2,000.1
-//    2001.124125 -> 2,001.124
-//    0.000012    -> 0.000012
-export const displayAmount = (num: number): string => {
-  const split = num.toString().split('.');
-  const integer = parseInt(split[0]!);
-  let decimal = split[1];
+interface FormatOptions {
+  precision: number;
+}
 
-  const formattedInt = new Intl.NumberFormat('en-US').format(integer);
+export const formatNumber = (number: number, options: FormatOptions): string => {
+  const { precision } = options;
 
-  if (!decimal) return formattedInt;
-
-  if (Math.abs(num) >= 1) {
-    decimal = decimal.slice(0, 3);
-  }
-
-  return `${formattedInt}.${decimal}`;
-};
-
-// Takes a number and represents it as a formatted $usd value
-//    2000        -> 2,000
-//    2001.1      -> 2,000.10
-//    2001.124125 -> 2,001.12
-//    0.000012    -> 0.00
-export const displayUsd = (number: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(number);
+  // Use toFixed to set the precision and then remove unnecessary trailing zeros
+  return precision === 0
+    ? number.toFixed(precision)
+    : parseFloat(number.toFixed(precision)).toString();
 };
 
 /**

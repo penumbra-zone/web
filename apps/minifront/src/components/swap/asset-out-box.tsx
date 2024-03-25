@@ -18,7 +18,7 @@ import { cn } from '@penumbra-zone/ui/lib/utils';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 
-import { isZero } from '@penumbra-zone/types/src/amount';
+import { formatNumber, isZero } from '@penumbra-zone/types/src/amount';
 import { getAmount } from '@penumbra-zone/getters/src/value-view';
 
 const findMatchingBalance = (
@@ -56,7 +56,7 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
       <div className='mb-2 flex items-center justify-between gap-1 md:gap-2'>
         <p className='text-sm font-bold md:text-base'>Swap into</p>
       </div>
-      <div className='flex flex-col gap-4'>
+      <div className='flex justify-between gap-4'>
         <div className='flex items-start justify-start'>
           {simulateOutResult ? (
             <Result result={simulateOutResult} />
@@ -64,12 +64,10 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
             <EstimateButton simulateFn={simulateSwap} loading={simulateOutLoading} />
           )}
         </div>
-        <div>
-          <AssetOutSelector
-            balances={balances}
-            assetOut={matchingBalance}
-            setAssetOut={setAssetOut}
-          />
+        <div className='flex flex-col'>
+          <div className='ml-auto w-auto shrink-0'>
+            <AssetOutSelector assetOut={matchingBalance} setAssetOut={setAssetOut} />
+          </div>
           <div className='mt-[6px] flex items-start justify-between'>
             <div />
             <div className='flex items-start gap-1'>
@@ -84,14 +82,12 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
 };
 
 // The price hit the user takes as a consequence of moving the market with the size of their trade
-const PriceImpact = ({ amount }: { amount?: number }) => {
-  if (!amount) return <></>;
-
+const PriceImpact = ({ amount = 0 }: { amount?: number }) => {
   // e.g .041234245245 becomes 4.123
-  const percent = (amount * 100).toFixed(3);
+  const percent = formatNumber(amount * 100, { precision: 3 });
 
   return (
-    <div className={cn('flex flex-col text-gray-500', amount < -0.1 && 'text-orange-400')}>
+    <div className={cn('flex flex-col text-gray-500 text-sm', amount < -0.1 && 'text-orange-400')}>
       <div>Price impact:</div>
       <div>{percent}%</div>
     </div>
@@ -103,7 +99,9 @@ const Result = ({ result: { output, unfilled, priceImpact } }: { result: Simulat
   if (isZero(getAmount(unfilled))) {
     return (
       <div className='flex flex-col gap-2'>
-        <ValueViewComponent view={output} showDenom={false} showIcon={false} />
+        <div>
+          <ValueViewComponent view={output} showDenom={false} showIcon={false} />
+        </div>
         <PriceImpact amount={priceImpact} />
       </div>
     );

@@ -31,6 +31,7 @@ import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 import { getAmountFromValue, getAssetIdFromValue } from '@penumbra-zone/getters/src/value';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { divideAmounts } from '@penumbra-zone/types/src/amount';
+import { amountMoreThanBalance } from './send';
 
 export interface SimulateSwapResult {
   output: ValueView;
@@ -233,6 +234,14 @@ const getMatchingAmount = (values: Value[], toMatch: AssetId): Amount => {
   if (!match?.amount) throw new Error('No match in values array found');
 
   return match.amount;
+};
+
+export const swapValidationErrors = ({ swap }: AllSlices) => {
+  return {
+    assetInErr: !swap.assetIn,
+    assetOutErr: !swap.assetOut,
+    amountErr: (swap.assetIn && amountMoreThanBalance(swap.assetIn, swap.amount)) ?? false,
+  };
 };
 
 export const swapSelector = (state: AllSlices) => state.swap;
