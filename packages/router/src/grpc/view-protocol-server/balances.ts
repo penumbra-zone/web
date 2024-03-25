@@ -92,7 +92,8 @@ class BalancesAggregator {
 
     // Many type overrides, but initialization above guarantees presence
     const valueView = this.accounts[accountNumber]![assetIdBase64]!.balanceView!;
-    await this.aggregateAmount(valueView, n);
+    this.aggregateAmount(valueView, n);
+    await this.aggregateEquivalentValues(valueView, n);
   }
 
   filteredResponses({ assetIdFilter, accountFilter }: BalancesRequest) {
@@ -113,7 +114,7 @@ class BalancesAggregator {
       );
   }
 
-  private async aggregateAmount(valueView: ValueView, toAdd: SpendableNoteRecord) {
+  private aggregateAmount(valueView: ValueView, toAdd: SpendableNoteRecord) {
     const currentAmount = getAmount(valueView);
     const newAmount = addLoHi(
       { lo: currentAmount.lo, hi: currentAmount.hi },
@@ -124,8 +125,6 @@ class BalancesAggregator {
     );
     currentAmount.lo = newAmount.lo;
     currentAmount.hi = newAmount.hi;
-
-    await this.aggregateEquivalentValues(valueView, toAdd);
   }
 
   /**
