@@ -3,11 +3,10 @@ import { sha256Hash } from '@penumbra-zone/crypto-web/src/sha256';
 import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/src/dex';
 import { decodeSctRoot } from '@penumbra-zone/wasm/src/sct';
 
-import { getValidatorInfo } from '@penumbra-zone/getters/src/validator-info-response';
 import {
-  getIdentityKeyFromValidatorInfo,
-  getRateData,
-} from '@penumbra-zone/getters/src/validator-info';
+  getExchangeRateFromValidatorInfoResponse,
+  getIdentityKeyFromValidatorInfoResponse,
+} from '@penumbra-zone/getters/src/validator-info-response';
 import {
   PositionState,
   PositionState_PositionStateEnum,
@@ -36,7 +35,6 @@ import {
 import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
-import { getValidatorExchangeRate } from '@penumbra-zone/getters/src/rate-data';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/src/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
@@ -50,14 +48,6 @@ interface QueryClientProps {
 const blankTxSource = new CommitmentSource({
   source: { case: 'transaction', value: { id: new Uint8Array() } },
 });
-
-const getExchangeRateFromValidatorInfoResponse = getValidatorInfo
-  .pipe(getRateData)
-  .pipe(getValidatorExchangeRate);
-
-const getIdentityKeyFromValidatorInfoResponse = getValidatorInfo.pipe(
-  getIdentityKeyFromValidatorInfo,
-);
 
 export class BlockProcessor implements BlockProcessorInterface {
   private readonly querier: RootQuerier;
