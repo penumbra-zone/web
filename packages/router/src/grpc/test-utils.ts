@@ -36,7 +36,7 @@ export interface ShieldedPoolMock {
 }
 
 export interface ViewServerMock {
-  fullViewingKey?: Mock;
+  fullViewingKey?: string;
 }
 
 interface MockQuerier {
