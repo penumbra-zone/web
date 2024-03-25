@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { CopyIcon } from "@radix-ui/react-icons";
 import { Avatar, HStack, VStack } from "@chakra-ui/react";
-import { testnetConstants } from "@/constants/configConstants";
 import { Text } from "@chakra-ui/react";
 import {
   LiquidityPositionEvent,
