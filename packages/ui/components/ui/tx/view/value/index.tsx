@@ -10,6 +10,11 @@ import { Pill } from '../../../pill';
 
 interface ValueViewProps {
   view: ValueView | undefined;
+  /**
+   * When rendering an equivalent value, use the `equivalent` variant to
+   * visually distinguish it as an equivalent value.
+   */
+  variant?: 'default' | 'equivalent';
   showDenom?: boolean;
   showValue?: boolean;
   showIcon?: boolean;
@@ -17,6 +22,7 @@ interface ValueViewProps {
 
 export const ValueViewComponent = ({
   view,
+  variant = 'default',
   showDenom = true,
   showValue = true,
   showIcon = true,
@@ -35,14 +41,19 @@ export const ValueViewComponent = ({
     const symbol = metadata.symbol || 'Unknown Asset';
 
     return (
-      <Pill>
+      <Pill variant={variant === 'default' ? 'default' : 'dashed'}>
         <div className='flex min-w-0 items-center gap-1'>
           {showIcon && (
             <div className='-ml-2 mr-1 flex size-6 items-center justify-center rounded-full'>
               <AssetIcon metadata={metadata} />
             </div>
           )}
-          {showValue && <span className='leading-[15px]'>{formattedAmount}</span>}
+          {showValue && (
+            <span className='leading-[15px]'>
+              {variant === 'equivalent' && <>~ </>}
+              {formattedAmount}
+            </span>
+          )}
           {showDenom && (
             <span className='truncate font-mono text-xs text-muted-foreground'>{symbol}</span>
           )}

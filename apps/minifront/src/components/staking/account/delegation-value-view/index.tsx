@@ -64,6 +64,7 @@ export const DelegationValueView = memo(
             <ValueViewComponent
               key={getDisplayDenomFromView(equivalentValueOfStakingToken)}
               view={equivalentValueOfStakingToken}
+              variant='equivalent'
             />
           )}
         </div>
