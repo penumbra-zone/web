@@ -61,16 +61,10 @@ export default function LP() {
   useEffect(() => {
     setIsLoading(true);
     if (lp_nft_id) {
-      const lp_querier = new LiquidityPositionQuerier({
-        grpcEndpoint: testnetConstants.grpcEndpoint,
-      });
+      const liquidityPositionPromise = fetch(
+        `/api/lp/${lp_nft_id}/position`
+      ).then((res) => res.json());
 
-      const positionId = new PositionId({
-        altBech32m: lp_nft_id,
-      });
-
-      const liquidityPositionPromise =
-        lp_querier.liquidityPositionById(positionId);
       const lpEventsPromise = fetch(`/api/lp/${lp_nft_id}`).then((res) =>
         res.json()
       );
@@ -80,14 +74,13 @@ export default function LP() {
 
       Promise.all([liquidityPositionPromise, lpEventsPromise, lpTradesPromise])
         .then(([liquidityPositionResponse, lpEventsData, lpTradesData]) => {
-          if (!liquidityPositionResponse) {
+          if (!liquidityPositionResponse || liquidityPositionResponse.error) {
             console.error("Error fetching liquidity position: no response");
             setError("Error fetching liquidity position: no response");
             return;
           }
 
-          setLiquidityPosition(liquidityPositionResponse);
-
+          setLiquidityPosition(liquidityPositionResponse as Position);
           if (!lpEventsData) {
             console.error(
               "Error fetching liquidity position events: no response"
@@ -115,7 +108,7 @@ export default function LP() {
         .finally(() => {
           setIsLoading(false);
         });
-    } 
+    }
   }, [lp_nft_id]);
 
   useEffect(() => {
@@ -175,7 +168,7 @@ export default function LP() {
       } else {
         setTimelineData(allEvents);
         setIsTimelineLoading(false);
-        return
+        return;
       }
 
       setShowExpandButton(true);
@@ -381,7 +374,10 @@ export default function LP() {
             </Text>
             <HStack paddingBottom="5em"></HStack>
           </>
-        ) : !isLoading && !liquidityPosition && !isLineLoading && !isTimelineLoading ? ( // Explicitly check all loading states
+        ) : !isLoading &&
+          !liquidityPosition &&
+          !isLineLoading &&
+          !isTimelineLoading ? ( // Explicitly check all loading states
           <VStack height={"100%"} width={"100%"}>
             <Text paddingTop={"20%"}>Liquidity position not found.</Text>
           </VStack>

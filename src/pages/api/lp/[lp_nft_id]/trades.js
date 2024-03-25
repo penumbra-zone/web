@@ -1,4 +1,4 @@
-// pages/api/lp/[lp_nft_id].js
+// pages/api/lp/[lp_nft_id]/trades.js
 import { IndexerQuerier } from "../../../../utils/indexer/connector";
 import { testnetConstants } from "../../../../constants/configConstants";
 

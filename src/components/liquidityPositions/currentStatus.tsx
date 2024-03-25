@@ -1,15 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  VStack,
-  Text,
-  Badge,
-  HStack,
-  Image,
-  Avatar,
-} from "@chakra-ui/react";
-import {
-  Position,
-} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+import { VStack, Text, Badge, HStack, Image, Avatar } from "@chakra-ui/react";
+import { Position, PositionState } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import { fromBaseUnit } from "../../utils/math/hiLo";
 import { uint8ArrayToBase64 } from "../../utils/math/base64";
 import { tokenConfigMapOnInner, Token } from "../../constants/tokenConstants";
@@ -36,24 +27,25 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
   // First process position to human readable pieces
 
   // Get status
-  const status = position.state;
+  const status = (position.state as PositionState).state.toString();
 
   // https://buf.build/penumbra-zone/penumbra/docs/main:penumbra.core.component.dex.v1#penumbra.core.component.dex.v1.PositionState.PositionStateEnum
   let statusText = "";
-  switch (status?.state) {
-    case 0:
+
+  switch (status) {
+    case "POSITION_STATE_ENUM_UNSPECIFIED":
       statusText = "Unspecified";
       break;
-    case 1:
+    case "POSITION_STATE_ENUM_OPENED":
       statusText = "Open";
       break;
-    case 2:
+    case "POSITION_STATE_ENUM_CLOSED":
       statusText = "Closed";
       break;
-    case 3:
+    case "POSITION_STATE_ENUM_WITHDRAWN":
       statusText = "Withdrawn";
       break;
-    case 4:
+    case "POSITION_STATE_ENUM_CLAIMED":
       statusText = "Claimed";
       break;
     default:
@@ -61,28 +53,24 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
   }
 
   // Get fee tier
-  const feeTier = position!.phi!.component!.fee;
+  const feeTier = Number(position!.phi!.component!.fee);
 
   const asset1 = position!.phi!.pair!.asset1;
   const asset2 = position!.phi!.pair!.asset2;
 
   // States for tokens
-  const [asset1Token, setAsset1Token] = useState<Token>(
-    {
-      symbol: "UNKNOWN",
-      decimals: 0,
-      inner: "UNKNOWN",
-      imagePath: "UNKNOWN",
-    }
-  );
-  const [asset2Token, setAsset2Token] = useState<Token>(
-    {
-      symbol: "UNKNOWN",
-      decimals: 0,
-      inner: "UNKNOWN",
-      imagePath: "UNKNOWN",
-    }
-  );
+  const [asset1Token, setAsset1Token] = useState<Token>({
+    symbol: "UNKNOWN",
+    decimals: 0,
+    inner: "UNKNOWN",
+    imagePath: "UNKNOWN",
+  });
+  const [asset2Token, setAsset2Token] = useState<Token>({
+    symbol: "UNKNOWN",
+    decimals: 0,
+    inner: "UNKNOWN",
+    imagePath: "UNKNOWN",
+  });
   const [assetError, setAssetError] = useState<string | undefined>();
 
   useEffect(() => {
@@ -122,25 +110,25 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
   }
 
   const reserves1 = fromBaseUnit(
-    position!.reserves!.r1?.lo,
-    position!.reserves!.r1?.hi,
+    BigInt(position!.reserves!.r1?.lo || 0),
+    BigInt(position!.reserves!.r1?.hi || 0),
     asset1Token.decimals
   );
 
   const reserves2 = fromBaseUnit(
-    position!.reserves!.r2?.lo,
-    position!.reserves!.r2?.hi,
+    BigInt(position!.reserves!.r2?.lo || 0),
+    BigInt(position!.reserves!.r2?.hi || 0),
     asset2Token.decimals
   );
 
   const p: BigNumber = fromBaseUnit(
-    position!.phi!.component!.p!.lo,
-    position!.phi!.component!.p!.hi,
+    BigInt(position!.phi!.component!.p!.lo || 0),
+    BigInt(position!.phi!.component!.p!.hi || 0),
     asset2Token.decimals
   );
   const q: BigNumber = fromBaseUnit(
-    position!.phi!.component!.q!.lo,
-    position!.phi!.component!.q!.hi,
+    BigInt(position!.phi!.component!.q!.lo || 0),
+    BigInt(position!.phi!.component!.q!.hi || 0),
     asset1Token.decimals
   );
 

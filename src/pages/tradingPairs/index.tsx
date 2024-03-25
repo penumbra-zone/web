@@ -14,14 +14,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { useSearchParams } from "next/navigation";
-import { testnetConstants } from "@/constants/configConstants";
-import { SimulationQuerier } from "@/utils/protos/services/dex/simulated-trades";
-import {
-  SimulateTradeRequest,
-  SimulateTradeRequest_Routing_SingleHop,
-  SimulateTradeResponse,
-  SwapExecution,
-} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+import { SwapExecution } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import { LoadingSpinner } from "../../components/util/loadingSpinner";
 import { Token, tokenConfigMapOnSymbol } from "@/constants/tokenConstants";
 import { base64ToUint8Array } from "@/utils/math/base64";
@@ -133,111 +126,24 @@ export default function TradingPairs() {
     setAsset1Token(asset1Token);
     setAsset2Token(asset2Token);
 
-    const sim_querier = new SimulationQuerier({
-      grpcEndpoint: testnetConstants.grpcEndpoint,
-    });
-
-    const sellAmt = splitLoHi(
-      BigInt(unitsToSimulateSelling * 10 ** asset1Token.decimals)
-    );
-
-    //! Sell side
-    const simSellRequestMultiHop = new SimulateTradeRequest({
-      input: {
-        assetId: {
-          inner: base64ToUint8Array(asset1Token.inner),
-        },
-        amount: {
-          lo: sellAmt.lo,
-          hi: sellAmt.hi,
-        },
-      },
-      output: {
-        inner: base64ToUint8Array(asset2Token.inner),
-      },
-    });
-
-    // Same as above but set routing
-    const simSellRequestSingleHop = new SimulateTradeRequest({
-      input: {
-        assetId: {
-          inner: base64ToUint8Array(asset1Token.inner),
-        },
-        amount: {
-          lo: sellAmt.lo,
-          hi: sellAmt.hi,
-        },
-      },
-      output: {
-        inner: base64ToUint8Array(asset2Token.inner),
-      },
-      routing: {
-        setting: {
-          case: "singleHop",
-          value: SimulateTradeRequest_Routing_SingleHop,
-        },
-      },
-    });
-
-    const buyAmt = splitLoHi(
-      BigInt(unitsToSimulateBuying * 10 ** asset2Token.decimals)
-    );
-    //! Buy side
-    const simBuyRequestMultiHop = new SimulateTradeRequest({
-      input: {
-        assetId: {
-          inner: base64ToUint8Array(asset2Token.inner),
-        },
-        amount: {
-          lo: buyAmt.lo,
-          hi: buyAmt.hi,
-        },
-      },
-      output: {
-        inner: base64ToUint8Array(asset1Token.inner),
-      },
-    });
-
-    // Same as above but set routing
-    const simBuyRequestSingleHop = new SimulateTradeRequest({
-      input: {
-        assetId: {
-          inner: base64ToUint8Array(asset2Token.inner),
-        },
-        amount: {
-          lo: buyAmt.lo,
-          hi: buyAmt.hi,
-        },
-      },
-      output: {
-        inner: base64ToUint8Array(asset1Token.inner),
-      },
-      routing: {
-        setting: {
-          case: "singleHop",
-          value: SimulateTradeRequest_Routing_SingleHop,
-        },
-      },
-    });
-
-    const simQueryMultiHopAsset1SellResponse = sim_querier.simulateTrade(
-      simSellRequestMultiHop
-    );
-    const simQuerySingleHopAsset1SellResponse = sim_querier.simulateTrade(
-      simSellRequestSingleHop
-    );
-    const simQueryMultiHopAsset1BuyResponse = sim_querier.simulateTrade(
-      simBuyRequestMultiHop
-    );
-    const simQuerySingleHopAsset1BuyResponse = sim_querier.simulateTrade(
-      simBuyRequestSingleHop
-    );
+    const simSellMultiHopPromise = fetch(
+      `/api/simulations/${asset1Token.symbol}/${asset2Token.symbol}/${unitsToSimulateSelling}`
+    ).then((res) => res.json());
+    const simSellSingleHopPromise = fetch(
+      `/api/simulations/${asset1Token.symbol}/${asset2Token.symbol}/${unitsToSimulateSelling}/singleHop`
+    ).then((res) => res.json());
+    const simBuyMultiHopPromise = fetch(
+      `/api/simulations/${asset2Token.symbol}/${asset1Token.symbol}/${unitsToSimulateBuying}`
+    ).then((res) => res.json());
+    const simBuySingleHopPromise = fetch(
+      `/api/simulations/${asset2Token.symbol}/${asset1Token.symbol}/${unitsToSimulateBuying}/singleHop`
+    ).then((res) => res.json());
 
     Promise.all([
-      simQueryMultiHopAsset1SellResponse,
-      simQuerySingleHopAsset1SellResponse,
-      simQueryMultiHopAsset1BuyResponse,
-      simQuerySingleHopAsset1BuyResponse,
+      simSellMultiHopPromise,
+      simSellSingleHopPromise,
+      simBuyMultiHopPromise,
+      simBuySingleHopPromise,
     ])
       .then(
         ([
@@ -246,15 +152,31 @@ export default function TradingPairs() {
           simQueryMultiHopAsset1BuyResponse,
           simQuerySingleHopAsset1BuyResponse,
         ]) => {
+          if (
+            !simQueryMultiHopAsset1SellResponse ||
+            simQueryMultiHopAsset1SellResponse.error ||
+            !simQuerySingleHopAsset1SellResponse ||
+            simQuerySingleHopAsset1SellResponse.error ||
+            !simQueryMultiHopAsset1BuyResponse ||
+            simQueryMultiHopAsset1BuyResponse.error ||
+            !simQuerySingleHopAsset1BuyResponse ||
+            simQuerySingleHopAsset1BuyResponse.error
+          ) {
+            console.error("Error querying simulated trades");
+            setError("Error querying simulated trades");
+          }
+
           setSimulatedMultiHopAsset1SellData(
-            simQueryMultiHopAsset1SellResponse
+            simQueryMultiHopAsset1SellResponse as SwapExecution
           );
           setSimulatedSingleHopAsset1SellData(
-            simQuerySingleHopAsset1SellResponse
+            simQuerySingleHopAsset1SellResponse as SwapExecution
           );
-          setSimulatedMultiHopAsset1BuyData(simQueryMultiHopAsset1BuyResponse);
+          setSimulatedMultiHopAsset1BuyData(
+            simQueryMultiHopAsset1BuyResponse as SwapExecution
+          );
           setSimulatedSingleHopAsset1BuyData(
-            simQuerySingleHopAsset1BuyResponse
+            simQuerySingleHopAsset1BuyResponse as SwapExecution
           );
           console.log(
             "simQueryMultiHopAsset1SellResponse",
@@ -309,11 +231,13 @@ export default function TradingPairs() {
       const output = trace.value.at(trace.value.length - 1);
 
       const inputValue =
-        Number(joinLoHi(input!.amount!.lo!, input!.amount!.hi)) /
-        Number(10 ** asset1Token.decimals);
+        Number(
+          joinLoHi(BigInt(input!.amount!.lo!), BigInt(input!.amount!.hi))
+        ) / Number(10 ** asset1Token.decimals);
       const outputValue =
-        Number(joinLoHi(output!.amount!.lo, output!.amount!.hi)) /
-        Number(BigInt(10 ** asset2Token.decimals));
+        Number(
+          joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))
+        ) / Number(BigInt(10 ** asset2Token.decimals));
 
       const price: number = outputValue / inputValue;
 
@@ -353,11 +277,13 @@ export default function TradingPairs() {
       const output = trace.value.at(1); // If this isnt 1 then something is wrong
 
       const inputValue =
-        Number(joinLoHi(input!.amount!.lo!, input!.amount!.hi)) /
-        Number(10 ** asset1Token.decimals);
+        Number(
+          joinLoHi(BigInt(input!.amount!.lo!), BigInt(input!.amount!.hi))
+        ) / Number(10 ** asset1Token.decimals);
       const outputValue =
-        Number(joinLoHi(output!.amount!.lo, output!.amount!.hi)) /
-        Number(BigInt(10 ** asset2Token.decimals));
+        Number(
+          joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))
+        ) / Number(BigInt(10 ** asset2Token.decimals));
 
       const price: number = outputValue / inputValue;
 
@@ -405,11 +331,13 @@ export default function TradingPairs() {
       const output = trace.value.at(trace.value.length - 1);
 
       const inputValue =
-        Number(joinLoHi(input!.amount!.lo!, input!.amount!.hi)) /
-        Number(10 ** asset2Token.decimals);
+        Number(
+          joinLoHi(BigInt(input!.amount!.lo!), BigInt(input!.amount!.hi))
+        ) / Number(10 ** asset2Token.decimals);
       const outputValue =
-        Number(joinLoHi(output!.amount!.lo, output!.amount!.hi)) /
-        Number(BigInt(10 ** asset1Token.decimals));
+        Number(
+          joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))
+        ) / Number(BigInt(10 ** asset1Token.decimals));
 
       // ! Important to note that the price is inverted here, so we do input/output instead of output/input
       const price: number = inputValue / outputValue;
@@ -450,11 +378,13 @@ export default function TradingPairs() {
       const output = trace.value.at(1); // If this isnt 1 then something is wrong
 
       const inputValue =
-        Number(joinLoHi(input!.amount!.lo!, input!.amount!.hi)) /
-        Number(10 ** asset2Token.decimals);
+        Number(
+          joinLoHi(BigInt(input!.amount!.lo!), BigInt(input!.amount!.hi))
+        ) / Number(10 ** asset2Token.decimals);
       const outputValue =
-        Number(joinLoHi(output!.amount!.lo, output!.amount!.hi)) /
-        Number(BigInt(10 ** asset1Token.decimals));
+        Number(
+          joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))
+        ) / Number(BigInt(10 ** asset1Token.decimals));
 
       // ! Important to note that the price is inverted here, so we do input/output instead of output/input
       const price: number = inputValue / outputValue;
@@ -505,7 +435,6 @@ export default function TradingPairs() {
       depthChartSingleHopAsset1BuyPoints[i].y +=
         depthChartSingleHopAsset1BuyPoints[i - 1].y;
     }
-
 
     setDepthChartMultiHopAsset1SellPoints(depthChartMultiHopAsset1SellPoints);
     setDepthChartSingleHopAsset1SellPoints(depthChartSingleHopAsset1SellPoints);
