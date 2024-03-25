@@ -3,7 +3,6 @@ import { sha256Hash } from '@penumbra-zone/crypto-web/src/sha256';
 import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/src/dex';
 import { decodeSctRoot } from '@penumbra-zone/wasm/src/sct';
 
-import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
 import { getValidatorInfo } from '@penumbra-zone/getters/src/validator-info-response';
 import {
   getIdentityKeyFromValidatorInfo,
