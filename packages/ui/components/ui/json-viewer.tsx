@@ -6,8 +6,6 @@ import { DoubleArrowDownIcon, DoubleArrowUpIcon } from '@radix-ui/react-icons';
 import { Button } from './button';
 import { useCallback, useState } from 'react';
 
-const collapseLevel = 3;
-
 const objectDepth = (o: JsonValue): number =>
   o && typeof o === 'object' ? 1 + Math.max(-1, ...Object.values(o).map(objectDepth)) : 0;
 
@@ -19,9 +17,10 @@ export const JsonViewer = ({ jsonObj }: { jsonObj: JsonObject | JsonValue[] }) =
 
   const shouldExpandNode = useCallback(
     (level: number, value: JsonValue, field?: string) => {
+      const collapseLevel = 3;
       if (expandAll) return true;
       if (
-        // expand empty, so they can be collapsed by css
+        // expand all empty, they render small
         objectLength(value) === 0 ||
         objectDepth(value) === 0 ||
         // expand arrays
