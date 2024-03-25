@@ -48,13 +48,13 @@ export const multiplyAmountByNumber = (amount: Amount, multiplier: number): Amou
   return new Amount(loHi);
 };
 
-export const divideAmounts = (dividend: Amount, divider: Amount): BigNumber => {
-  if (isZero(divider)) throw new Error('Division by zero');
+export const divideAmounts = (dividend: Amount, divisor: Amount): BigNumber => {
+  if (isZero(divisor)) throw new Error('Division by zero');
 
   const joinedDividend = new BigNumber(joinLoHiAmount(dividend).toString());
-  const joinedDivider = new BigNumber(joinLoHiAmount(divider).toString());
+  const joinedDivisor = new BigNumber(joinLoHiAmount(divisor).toString());
 
-  return joinedDividend.dividedBy(joinedDivider);
+  return joinedDividend.dividedBy(joinedDivisor);
 };
 
 // This function takes a number and formats it in a display-friendly way (en-US locale)

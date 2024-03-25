@@ -56,33 +56,57 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
       <div className='mb-2 flex items-center justify-between gap-1 md:gap-2'>
         <p className='text-sm font-bold md:text-base'>Swap into</p>
       </div>
-      <div className='flex items-center justify-between gap-4'>
-        {simulateOutResult ? (
-          <Result result={simulateOutResult} />
-        ) : (
-          <EstimateButton simulateFn={simulateSwap} loading={simulateOutLoading} />
-        )}
-        <AssetOutSelector
-          balances={balances}
-          assetOut={matchingBalance}
-          setAssetOut={setAssetOut}
-        />
-      </div>
-      <div className='mt-[6px] flex items-start justify-between'>
-        <div />
-        <div className='flex items-start gap-1'>
-          <img src='./wallet.svg' alt='Wallet' className='size-5' />
-          <ValueViewComponent view={matchingBalance} showIcon={false} />
+      <div className='flex flex-col gap-4'>
+        <div className='flex items-start justify-start'>
+          {simulateOutResult ? (
+            <Result result={simulateOutResult} />
+          ) : (
+            <EstimateButton simulateFn={simulateSwap} loading={simulateOutLoading} />
+          )}
+        </div>
+        <div>
+          <AssetOutSelector
+            balances={balances}
+            assetOut={matchingBalance}
+            setAssetOut={setAssetOut}
+          />
+          <div className='mt-[6px] flex items-start justify-between'>
+            <div />
+            <div className='flex items-start gap-1'>
+              <img src='./wallet.svg' alt='Wallet' className='size-5' />
+              <ValueViewComponent view={matchingBalance} showIcon={false} />
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-const Result = ({ result: { output, unfilled } }: { result: SimulateSwapResult }) => {
+// The price hit the user takes as a consequence of moving the market with the size of their trade
+const PriceImpact = ({ amount }: { amount?: number }) => {
+  if (!amount) return <></>;
+
+  // e.g .041234245245 becomes 4.123
+  const percent = (amount * 100).toFixed(3);
+
+  return (
+    <div className={cn('flex flex-col text-gray-500', amount < -0.1 && 'text-orange-400')}>
+      <div>Price impact:</div>
+      <div>{percent}%</div>
+    </div>
+  );
+};
+
+const Result = ({ result: { output, unfilled, priceImpact } }: { result: SimulateSwapResult }) => {
   // If no part unfilled, just show plain output amount (no label)
   if (isZero(getAmount(unfilled))) {
-    return <ValueViewComponent view={output} showDenom={false} showIcon={false} />;
+    return (
+      <div className='flex flex-col gap-2'>
+        <ValueViewComponent view={output} showDenom={false} showIcon={false} />
+        <PriceImpact amount={priceImpact} />
+      </div>
+    );
   }
 
   // Else is partially filled, show amounts with labels
@@ -96,6 +120,7 @@ const Result = ({ result: { output, unfilled } }: { result: SimulateSwapResult }
         <ValueViewComponent view={unfilled} showIcon={false} />
         <span className='font-mono text-[12px] italic text-gray-500'>Unfilled amount</span>
       </div>
+      <PriceImpact amount={priceImpact} />
     </div>
   );
 };

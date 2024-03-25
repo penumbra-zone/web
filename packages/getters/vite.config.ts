@@ -24,6 +24,7 @@ export default defineConfig({
         'validator-info-response': './src/validator-info-response.ts',
         'validator-state': './src/validator-state.ts',
         'validator-status': './src/validator-status.ts',
+        value: './src/value.ts',
         'value-view': './src/value-view.ts',
       },
       formats: ['es'],
