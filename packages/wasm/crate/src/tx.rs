@@ -311,12 +311,12 @@ pub async fn transaction_info_inner(
                                             if *swap_claim_nullifier == derived_nullifier_from_swap.to_proto() {
                                                 should_break = true;
 
-                                                transaction_info.id.clone().and_then(|id| {
-                                                    txp.transaction_ids_by_commitment.insert(
-                                                        commitment.to_string(),
-                                                        TransactionId { inner: id.inner},
-                                                    )
-                                                });
+                                                // transaction_info.id.clone().and_then(|id| {
+                                                //     txp.nullification_transaction_ids_by_commitment.push() insert(
+                                                //         commitment.to_string(),
+                                                //         TransactionId { inner: id.inner},
+                                                //     )
+                                                // });
                                             }
                                         })
                                     );
@@ -338,12 +338,12 @@ pub async fn transaction_info_inner(
                     .and_then(|swap_record| swap_record.source)
                     .map(|source| {
                         if let Some(Source::Transaction(transaction)) = source.source {
-                            txp.transaction_ids_by_nullifier.insert(
-                                nullifier.to_string(),
-                                TransactionId {
-                                    inner: transaction.id,
-                                },
-                            );
+                            // txp.nullification_transaction_ids_by_commitment.insert(
+                            //     nullifier.to_string(),
+                            //     TransactionId {
+                            //         inner: transaction.id,
+                            //     },
+                            // );
                         }
                     });
 
