@@ -5,10 +5,13 @@ use std::str::FromStr;
 use anyhow::anyhow;
 use penumbra_keys::keys::SpendKey;
 use penumbra_keys::FullViewingKey;
+use penumbra_proto::core::component::sct::v1::commitment_source::Source;
 use penumbra_proto::core::transaction::v1 as pb;
 use penumbra_proto::core::transaction::v1::{TransactionPerspective, TransactionView};
+use penumbra_proto::core::txhash::v1::TransactionId;
 use penumbra_proto::DomainType;
-use penumbra_tct::{Proof, StateCommitment};
+use penumbra_sct::Nullifier;
+use penumbra_tct::{Position, Proof, StateCommitment};
 use penumbra_transaction::plan::TransactionPlan;
 use penumbra_transaction::Action;
 use penumbra_transaction::{AuthorizationData, Transaction, WitnessData};
@@ -273,7 +276,77 @@ pub async fn transaction_info_inner(
                         .insert(nullifier, spendable_note_record.note.clone());
                 }
             }
+            Action::Swap(swap) => {
+                let commitment = swap.body.payload.commitment;
+
+                let swap_position_option = storage
+                    .get_swap_by_commitment(commitment.into())
+                    .await?
+                    .map(|swap_record| Position::from(swap_record.position));
+
+                if let Some(swap_position) = swap_position_option {
+                    let derived_nullifier_from_swap =
+                        Nullifier::derive(fvk.nullifier_key(), swap_position, &commitment);
+
+                    let transaction_infos = storage.get_transaction_infos().await?;
+
+                    for transaction_info in transaction_infos {
+                        transaction_info
+                            .transaction
+                            .and_then(|transaction| transaction.body)
+                            .map(|body| {
+                                for action in body.actions.iter() {
+                                    let mut should_break = false;
+
+                                    action.action.as_ref().and_then(|action_action| {
+                                        if let penumbra_proto::core::transaction::v1::action::Action::SwapClaim(swap_claim) = action_action {
+                                            Some(swap_claim)
+                                        } else {
+                                            None
+                                        }
+                                    }).and_then(|swap_claim| {
+                                        swap_claim.body.as_ref()
+                                    }).map(|body|
+                                        body.nullifier.as_ref().map(|swap_claim_nullifier| {
+                                            if *swap_claim_nullifier == derived_nullifier_from_swap.to_proto() {
+                                                should_break = true;
+
+                                                // transaction_info.id.clone().and_then(|id| {
+                                                //     txp.nullification_transaction_ids_by_commitment.push() insert(
+                                                //         commitment.to_string(),
+                                                //         TransactionId { inner: id.inner},
+                                                //     )
+                                                // });
+                                            }
+                                        })
+                                    );
+
+                                    if should_break {
+                                        break;
+                                    }
+                                }
+                            });
+                    }
+                }
+            }
             Action::SwapClaim(claim) => {
+                let nullifier = claim.body.nullifier;
+
+                storage
+                    .get_swap_by_nullifier(&nullifier)
+                    .await?
+                    .and_then(|swap_record| swap_record.source)
+                    .map(|source| {
+                        if let Some(Source::Transaction(transaction)) = source.source {
+                            // txp.nullification_transaction_ids_by_commitment.insert(
+                            //     nullifier.to_string(),
+                            //     TransactionId {
+                            //         inner: transaction.id,
+                            //     },
+                            // );
+                        }
+                    });
+
                 let output_1_record = storage
                     .get_note(&claim.body.output_1_commitment)
                     .await?
