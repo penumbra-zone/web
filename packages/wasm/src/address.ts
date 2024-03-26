@@ -1,4 +1,4 @@
-import { get_short_address_by_index, is_controlled_address } from '../wasm';
+import { get_index_by_address, get_short_address_by_index } from '../wasm';
 import {
   Address,
   AddressIndex,
@@ -13,9 +13,14 @@ export const getAddressIndexByAddress = (
   fullViewingKey: string,
   address: Address,
 ): AddressIndex | undefined => {
-  const res = is_controlled_address(fullViewingKey, bech32Address(address)) as JsonValue;
+  const res = get_index_by_address(fullViewingKey, bech32Address(address)) as JsonValue;
   return res ? AddressIndex.fromJson(res) : undefined;
 };
 
-export const isControlledAddress = (fullViewingKey: string, address?: Address): boolean =>
-  address ? Boolean(is_controlled_address(fullViewingKey, bech32Address(address))) : false;
+// Only an address controlled by the FVK can view its index
+export const isControlledAddress = (fullViewingKey: string, address?: Address): boolean => {
+  if (!address) return false;
+
+  const viewableIndex = get_index_by_address(fullViewingKey, bech32Address(address)) as JsonValue;
+  return Boolean(viewableIndex);
+};
