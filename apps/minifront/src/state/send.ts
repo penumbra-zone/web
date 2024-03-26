@@ -144,7 +144,7 @@ const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSl
   });
 };
 
-export const validateAmount = (
+export const amountMoreThanBalance = (
   asset: BalancesResponse,
   /**
    * The amount that a user types into the interface will always be in the
@@ -173,7 +173,7 @@ export const sendValidationErrors = (
 ): SendValidationFields => {
   return {
     recipientErr: Boolean(recipient) && !isPenumbraAddr(recipient),
-    amountErr: !asset ? false : validateAmount(asset, amount),
+    amountErr: !asset ? false : amountMoreThanBalance(asset, amount),
     // The memo cannot exceed 512 bytes
     // return address uses 80 bytes
     // so 512-80=432 bytes for memo text

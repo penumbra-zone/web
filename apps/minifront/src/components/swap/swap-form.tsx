@@ -2,7 +2,7 @@ import { Button } from '@penumbra-zone/ui/components/ui/button';
 import InputToken from '../shared/input-token';
 import { useLoaderData } from 'react-router-dom';
 import { useStore } from '../../state';
-import { swapSelector } from '../../state/swap';
+import { swapSelector, swapValidationErrors } from '../../state/swap';
 import { AssetOutBox } from './asset-out-box';
 import { SwapLoaderResponse } from './swap-loader';
 
@@ -10,6 +10,7 @@ export const SwapForm = () => {
   const { assetBalances } = useLoaderData() as SwapLoaderResponse;
   const { assetIn, setAssetIn, amount, setAmount, initiateSwapTx, txInProgress } =
     useStore(swapSelector);
+  const validationErrs = useStore(swapValidationErrors);
 
   return (
     <form
@@ -30,11 +31,23 @@ export const SwapForm = () => {
           if (Number(e.target.value) < 0) return;
           setAmount(e.target.value);
         }}
-        validations={[]}
+        validations={[
+          {
+            type: 'error',
+            issue: 'insufficient funds',
+            checkFn: () => validationErrs.amountErr,
+          },
+        ]}
         balances={assetBalances}
       />
       <AssetOutBox balances={assetBalances} />
-      <Button type='submit' variant='gradient' className='mt-3' size='lg' disabled={txInProgress}>
+      <Button
+        type='submit'
+        variant='gradient'
+        className='mt-3'
+        size='lg'
+        disabled={txInProgress || Object.values(validationErrs).find(Boolean)}
+      >
         Swap
       </Button>
     </form>
