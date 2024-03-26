@@ -39,6 +39,7 @@ pub struct Tables {
     pub fmd_parameters: String,
     pub app_parameters: String,
     pub gas_prices: String,
+    pub epochs: String,
 }
 
 pub struct IndexedDBStorage {
