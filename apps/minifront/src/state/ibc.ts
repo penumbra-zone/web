@@ -16,7 +16,7 @@ import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 import { planBuildBroadcast } from './helpers';
-import { validateAmount } from './send';
+import { amountMoreThanBalance } from './send';
 import { IbcLoaderResponse } from '../components/ibc/ibc-loader';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 import {
@@ -163,7 +163,9 @@ export const ibcValidationErrors = (state: AllSlices) => {
     recipientErr: !state.ibc.destinationChainAddress
       ? false
       : !validateAddress(state.ibc.chain, state.ibc.destinationChainAddress),
-    amountErr: !state.ibc.selection ? false : validateAmount(state.ibc.selection, state.ibc.amount),
+    amountErr: !state.ibc.selection
+      ? false
+      : amountMoreThanBalance(state.ibc.selection, state.ibc.amount),
   };
 };
 

@@ -11,20 +11,18 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { localAssets } from '@penumbra-zone/constants/src/assets';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 
 interface AssetOutSelectorProps {
-  balances: BalancesResponse[];
   assetOut: ValueView | undefined;
   setAssetOut: (metadata: Metadata) => void;
 }
 
 /** @todo Refactor to use `SelectTokenModal` */
-export const AssetOutSelector = ({ balances, setAssetOut, assetOut }: AssetOutSelectorProps) => {
+export const AssetOutSelector = ({ setAssetOut, assetOut }: AssetOutSelectorProps) => {
   return (
     <Dialog>
-      <DialogTrigger disabled={!balances.length}>
+      <DialogTrigger>
         <div className='flex h-9 min-w-[100px] max-w-[150px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
           <ValueViewComponent view={assetOut} showValue={false} />
         </div>

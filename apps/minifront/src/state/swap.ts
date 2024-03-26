@@ -5,6 +5,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { planBuildBroadcast } from './helpers';
 import {
+  AssetId,
   Metadata,
   Value,
   ValueView,
@@ -13,7 +14,10 @@ import { BigNumber } from 'bignumber.js';
 import { getAddressByIndex } from '../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
-import { SimulateTradeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import {
+  SimulateTradeRequest,
+  SwapExecution,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { simulateClient } from '../clients';
 import {
   getAssetIdFromValueView,
@@ -24,10 +28,15 @@ import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 import { getSwapCommitmentFromTx } from '@penumbra-zone/getters/src/transaction';
 import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
 import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
+import { getAmountFromValue, getAssetIdFromValue } from '@penumbra-zone/getters/src/value';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { divideAmounts } from '@penumbra-zone/types/src/amount';
+import { amountMoreThanBalance } from './send';
 
 export interface SimulateSwapResult {
   output: ValueView;
   unfilled: ValueView;
+  priceImpact: number | undefined;
 }
 
 export interface SwapSlice {
@@ -114,7 +123,11 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         });
 
         set(({ swap }) => {
-          swap.simulateOutResult = { output, unfilled };
+          swap.simulateOutResult = {
+            output,
+            unfilled,
+            priceImpact: calculatePriceImpact(res.output),
+          };
         });
       } catch (e) {
         errorToast(e, 'Error estimating swap').render();
@@ -185,6 +198,50 @@ const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => 
 export const issueSwapClaim = async (swapCommitment: StateCommitment) => {
   const req = new TransactionPlannerRequest({ swapClaims: [{ swapCommitment }] });
   await planBuildBroadcast('swapClaim', req, { skipAuth: true });
+};
+
+/*
+  Price impact is the change in price as a consequence of the trade's size. In SwapExecution, the \
+  first trace in the array is the best execution for the swap. To calculate price impact, take
+  the price of the trade and see the % diff off the best execution trace.
+ */
+const calculatePriceImpact = (swapExec?: SwapExecution): number | undefined => {
+  if (!swapExec?.traces.length || !swapExec.output || !swapExec.input) return undefined;
+
+  // Get the price of the estimate for the swap total
+  const inputAmount = getAmountFromValue(swapExec.input);
+  const outputAmount = getAmountFromValue(swapExec.output);
+  const swapEstimatePrice = divideAmounts(outputAmount, inputAmount);
+
+  // Get the price in the best execution trace
+  const inputAssetId = getAssetIdFromValue(swapExec.input);
+  const outputAssetId = getAssetIdFromValue(swapExec.output);
+  const bestTrace = swapExec.traces[0]!;
+  const bestInputAmount = getMatchingAmount(bestTrace.value, inputAssetId);
+  const bestOutputAmount = getMatchingAmount(bestTrace.value, outputAssetId);
+  const bestTraceEstimatedPrice = divideAmounts(bestOutputAmount, bestInputAmount);
+
+  // Difference = (priceB - priceA) / priceA
+  const percentDifference = swapEstimatePrice
+    .minus(bestTraceEstimatedPrice)
+    .div(bestTraceEstimatedPrice);
+
+  return percentDifference.toNumber();
+};
+
+const getMatchingAmount = (values: Value[], toMatch: AssetId): Amount => {
+  const match = values.find(v => toMatch.equals(v.assetId));
+  if (!match?.amount) throw new Error('No match in values array found');
+
+  return match.amount;
+};
+
+export const swapValidationErrors = ({ swap }: AllSlices) => {
+  return {
+    assetInErr: !swap.assetIn,
+    assetOutErr: !swap.assetOut,
+    amountErr: (swap.assetIn && amountMoreThanBalance(swap.assetIn, swap.amount)) ?? false,
+  };
 };
 
 export const swapSelector = (state: AllSlices) => state.swap;
