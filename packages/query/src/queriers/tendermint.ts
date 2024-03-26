@@ -12,6 +12,7 @@ const knownTendermintErrors = [
   'is not a valid SCT root',
   'cannot claim unbonding tokens before the end epoch',
   'undelegation was prepared for next epoch',
+  'delegation was prepared for epoch',
 ];
 
 export class TendermintQuerier implements TendermintQuerierInterface {
