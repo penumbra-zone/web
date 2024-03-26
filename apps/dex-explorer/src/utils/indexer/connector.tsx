@@ -95,7 +95,7 @@ export class IndexerQuerier {
     bech32: string
   ): Promise<LiquidityPositionEvent[]> {
     // TODO: Refractor once more events are emitted around trades
-    // This basically pops off the first
+    // This basically pops off the first instance of a trade event for each event_id assuming that was the EventPositionExecution event for opening a position
     const queryText = `
     WITH RankedTrades AS (
       SELECT 
