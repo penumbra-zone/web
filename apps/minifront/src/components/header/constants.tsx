@@ -14,7 +14,13 @@ export interface HeaderLink {
 export const headerLinks: HeaderLink[] = [
   {
     href: PagePath.IBC,
-    label: 'Shield Funds',
+    label: 'Shield',
+    active: true,
+    mobileIcon: <MixerHorizontalIcon className='size-5 text-muted-foreground' />,
+  },
+  {
+    href: PagePath.DASHBOARD,
+    label: 'Assets',
     active: true,
     mobileIcon: <MixerHorizontalIcon className='size-5 text-muted-foreground' />,
   },

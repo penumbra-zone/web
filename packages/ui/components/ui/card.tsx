@@ -7,13 +7,17 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, gradient, children, light, ...props }, ref) => {
+  ({ className, gradient, light, children, ...props }, ref) => {
     const baseClasses = 'rounded-lg shadow-sm p-[30px] overflow-hidden';
-    const bgClasses = light ? 'bg-sky-200' : 'bg-charcoal';
     return (
       <div
         ref={ref}
-        className={cn(baseClasses, bgClasses, !!gradient && 'bg-card-radial', className)}
+        className={cn(
+          baseClasses,
+          !!light && 'bg-card-light text-secondary',
+          !!gradient && 'bg-card-radial',
+          className,
+        )}
         {...props}
       >
         {children}

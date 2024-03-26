@@ -3,31 +3,16 @@ import { IbcOutForm } from './ibc-out-form';
 
 export const IbcLayout = () => {
   return (
-    <div className='my-5 grid grid-cols-3 gap-5' style={{ gridTemplateRows: '8em auto 8em' }}>
-      <div className='col-span-1 row-span-2'>
-        <IbcInForm />
+    <>
+      <div className='fixed inset-0 z-[-100] size-full bg-logo-page bg-[length:160vmax] bg-fixed bg-[top_50%_left_25vw] bg-no-repeat'></div>
+      <div className='flex grow flex-col place-content-between gap-6 md:flex-row'>
+        <div className='basis-2/5 md:self-start'>
+          <IbcInForm />
+        </div>
+        <div className='basis-2/5 md:self-end'>
+          <IbcOutForm />
+        </div>
       </div>
-      <div className='col-span-2 row-span-1'>{/*→*/}</div>
-      <div
-        className='col-span-1 self-center overflow-visible'
-        style={{ height: 0, marginBottom: 'auto' }}
-      >
-        <img
-          src='./penumbra-logo.svg'
-          alt='Penumbra logo'
-          style={{
-            maxWidth: 'none',
-            width: '400%',
-            position: 'relative',
-            transform: 'translateY(-40%)',
-            zIndex: -1,
-          }}
-        />
-      </div>
-      <div className='col-span-1 row-span-2 col-start-3'>
-        <IbcOutForm />
-      </div>
-      <div className='col-span-2 row-span-1'>{/* ← */}</div>
-    </div>
+    </>
   );
 };

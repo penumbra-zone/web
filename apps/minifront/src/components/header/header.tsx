@@ -1,11 +1,9 @@
 import { TopRow } from './top-row';
 import { SyncStatusSection } from './sync-status-section';
 
-export const Header = () => {
-  return (
-    <header className='bg-background'>
-      <SyncStatusSection />
-      <TopRow />
-    </header>
-  );
-};
+export const Header = () => (
+  <header className='w-full bg-gradient-to-t from-transparent to-black to-40% pb-[3em]'>
+    <SyncStatusSection />
+    <TopRow />
+  </header>
+);

@@ -130,16 +130,21 @@ export default {
           },
         },
       },
+      backgroundColor: {
+        'card-radial': 'var(--charcoal)',
+        'radial-blur': 'rgb(from var(--charcoal) r g b / 0.6)',
+        'card-light': 'var(--teal)',
+      },
       backgroundImage: {
-        // The final `linear-gradient` is just to make a solid charcoal
-        // background color for the radial gradients to sit on top of. If
-        // there's a way to make a solid background color without
-        // `linear-gradient`, feel free to update this.
+        'radial-blur': `
+          radial-gradient(33% 50% at 15% 44%, color-mix(in srgb, var(--rust) 20%, transparent), transparent),
+          radial-gradient(33% 40% at 105% 42%, color-mix(in srgb, var(--teal) 20%, transparent), transparent),
+          radial-gradient(33% 80% at 85% 124%, color-mix(in srgb, var(--teal) 20%, transparent), transparent)
+        `,
         'card-radial': `
           radial-gradient(33% 50% at 15% 44%, color-mix(in srgb, var(--rust) 20%, transparent), transparent),
           radial-gradient(33% 40% at 105% 42%, color-mix(in srgb, var(--teal) 20%, transparent), transparent),
-          radial-gradient(33% 80% at 85% 124%, color-mix(in srgb, var(--teal) 20%, transparent), transparent),
-          linear-gradient(to right, var(--charcoal), var(--charcoal))
+          radial-gradient(33% 80% at 85% 124%, color-mix(in srgb, var(--teal) 20%, transparent), transparent)
         `,
         'button-gradient':
           'linear-gradient(90deg, var(--teal-700) 0%, var(--sand-700) 25%, var(--rust-600) 50%, var(--rust-600) 50%, var(--sand-700) 75%, var(--teal-700) 100%)',
@@ -153,9 +158,7 @@ export default {
           ),
           url('penumbra-logo.svg')
         `,
-      },
-      backgroundPosition: {
-        'right-center': 'right center',
+        'logo-page': `url('penumbra-logo.svg')`,
       },
     },
   },

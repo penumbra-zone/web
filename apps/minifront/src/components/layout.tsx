@@ -2,12 +2,12 @@ import { LoaderFunction, Outlet, useLoaderData } from 'react-router-dom';
 import { getChainId } from '../fetchers/chain-id';
 import { HeadTag } from './metadata/head-tag';
 import { Header } from './header/header';
+import { Footer } from './footer/footer';
 import { Toaster } from '@penumbra-zone/ui/components/ui/toaster';
-import '@penumbra-zone/ui/styles/globals.css';
 import { ExtensionNotConnected } from './extension-not-connected';
 import { ExtensionNotInstalled } from './extension-not-installed';
-import { Footer } from './footer';
-import { isPraxConnected, isPraxConnectedTimeout, isPraxAvailable } from '@penumbra-zone/client';
+import { isPraxAvailable, isPraxConnected, isPraxConnectedTimeout } from '@penumbra-zone/client';
+import '@penumbra-zone/ui/styles/globals.css';
 
 export type LayoutLoaderResult =
   | { isInstalled: boolean; isConnected: boolean }
@@ -32,12 +32,14 @@ export const Layout = () => {
   if (!isInstalled) return <ExtensionNotInstalled />;
   if (!isConnected) return <ExtensionNotConnected />;
 
+  // bg-logo-page bg-[length:160vmax] bg-fixed bg-[top_50%_left_25vw] bg-no-repeat'
+
   return (
     <>
       <HeadTag />
-      <div className='relative flex min-h-screen flex-col text-muted'>
+      <div className='flex min-h-screen flex-col'>
         <Header />
-        <main className='mx-auto w-full flex-1 px-6 pb-4 pt-5 md:px-[88px] md:pb-0 xl:max-w-[1276px] xl:px-12'>
+        <main className='mx-auto flex grow px-6 pb-4 pt-5 md:px-[88px] md:pb-0 xl:max-w-[1276px] xl:px-12'>
           <Outlet />
         </main>
         <Footer />
