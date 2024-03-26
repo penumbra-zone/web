@@ -75,8 +75,9 @@ export class IndexerQuerier {
       b.height as block_height
     FROM attributes a
     INNER JOIN events e ON a.event_id = e.rowid
-    INNER JOIN tx_results tr ON tr.block_id = e.block_id
-    INNER JOIN block_events b ON e.block_id = b.block_id and b.key = 'height'
+    INNER JOIN tx_events te ON a.value = te.value and te.composite_key = a.composite_key
+    INNER JOIN tx_results tr ON e.block_id = tr.block_id and te.index = tr.index
+    INNER JOIN block_events b ON e.block_id = b.block_id and b.key = 'height' and b.type = 'block'
     LEFT JOIN attributes additional_attributes ON additional_attributes.event_id = a.event_id
     WHERE a.value = $1 and a.composite_key not like '%EventPositionExecution%' 
     GROUP BY a.event_id, e.block_id, e.tx_id, e.type, tr.tx_hash, tr.created_at, tr.index, b.height;
