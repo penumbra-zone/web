@@ -94,24 +94,43 @@ export class IndexerQuerier {
   public async fetchLiquidityPositionExecutionEventsOnBech32(
     bech32: string
   ): Promise<LiquidityPositionEvent[]> {
+    // TODO: Refractor once more events are emitted around trades
+    // This basically pops off the first
     const queryText = `
-    SELECT 
-      a.event_id,
-      e.block_id, 
-      e.tx_id,
-      e.type,
-      jsonb_object_agg(additional_attributes.key, additional_attributes.value) AS execution_event_attributes,
-      tr.tx_hash,
-      tr.created_at,
-      tr.index,
-      b.height as block_height
-    FROM attributes a
-    INNER JOIN events e ON a.event_id = e.rowid
-    INNER JOIN tx_results tr ON tr.block_id = e.block_id
-    INNER JOIN block_events b ON e.block_id = b.block_id and b.key = 'height'
-    LEFT JOIN attributes additional_attributes ON additional_attributes.event_id = a.event_id
-    WHERE a.value = $1 and a.composite_key like '%EventPositionExecution%' 
-    GROUP BY a.event_id, e.block_id, e.tx_id, e.type, tr.tx_hash, tr.created_at, tr.index, b.height;
+    WITH RankedTrades AS (
+      SELECT 
+          a.event_id,
+          e.block_id, 
+          e.tx_id,
+          e.type,
+          jsonb_object_agg(additional_attributes.key, additional_attributes.value) AS execution_event_attributes,
+          tr.tx_hash,
+          tr.created_at,
+          tr.index,
+          b.height as block_height,
+          ROW_NUMBER() OVER(PARTITION BY a.event_id ORDER BY tr.index ASC) AS rn,
+          COUNT(*) OVER(PARTITION BY a.event_id) AS cnt
+      FROM attributes a
+      INNER JOIN events e ON a.event_id = e.rowid
+      INNER JOIN block_events b ON e.block_id = b.block_id AND b.key = 'height'
+      INNER JOIN tx_results tr ON tr.block_id = e.block_id
+      LEFT JOIN attributes additional_attributes ON additional_attributes.event_id = a.event_id
+      WHERE a.value = $1 AND a.composite_key LIKE '%EventPositionExecution%' 
+      GROUP BY a.event_id, e.block_id, e.tx_id, e.type, tr.tx_hash, tr.created_at, tr.index, b.height
+  )
+  SELECT 
+      event_id,
+      block_id, 
+      tx_id,
+      type,
+      execution_event_attributes,
+      tx_hash,
+      created_at,
+      index,
+      block_height
+  FROM RankedTrades
+  WHERE 
+      cnt = 1 OR rn > 1; -- Exclude the lowest tr.index when there are duplicates for an event_id
   `;
 
     const inner = bech32ToInner(bech32);
