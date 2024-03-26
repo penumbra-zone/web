@@ -1,9 +1,6 @@
 use std::str::FromStr;
 
 use anyhow;
-use rand_core::OsRng;
-use wasm_bindgen::prelude::*;
-
 use penumbra_keys::keys::{Bip44Path, SeedPhrase, SpendKey};
 use penumbra_keys::{Address, FullViewingKey};
 use penumbra_proof_params::{
@@ -11,6 +8,8 @@ use penumbra_proof_params::{
     SPEND_PROOF_PROVING_KEY, SWAPCLAIM_PROOF_PROVING_KEY, SWAP_PROOF_PROVING_KEY,
 };
 use penumbra_proto::{core::keys::v1 as pb, serializers::bech32str, DomainType};
+use rand_core::OsRng;
+use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::js_sys::Uint8Array;
 
 use crate::error::WasmResult;
@@ -47,7 +46,7 @@ pub fn load_proving_key(parameters: JsValue, key_type: &str) -> WasmResult<()> {
 ///     seed_phrase: `string`
 /// Returns: `bech32 string`
 #[wasm_bindgen]
-pub fn generate_spend_key(seed_phrase: &str) -> WasmResult<JsValue> {
+pub fn generate_spend_key(seed_phrase: &str) -> WasmResult<String> {
     utils::set_panic_hook();
 
     let seed = SeedPhrase::from_str(seed_phrase)?;
@@ -62,7 +61,7 @@ pub fn generate_spend_key(seed_phrase: &str) -> WasmResult<JsValue> {
         bech32str::Bech32m,
     );
 
-    Ok(JsValue::from_str(&spend_key_str))
+    Ok(spend_key_str)
 }
 
 /// get full viewing key from spend key
@@ -70,7 +69,7 @@ pub fn generate_spend_key(seed_phrase: &str) -> WasmResult<JsValue> {
 ///     spend_key_str: `bech32 string`
 /// Returns: `bech32 string`
 #[wasm_bindgen]
-pub fn get_full_viewing_key(spend_key: &str) -> WasmResult<JsValue> {
+pub fn get_full_viewing_key(spend_key: &str) -> WasmResult<String> {
     utils::set_panic_hook();
 
     let spend_key = SpendKey::from_str(spend_key)?;
@@ -84,7 +83,7 @@ pub fn get_full_viewing_key(spend_key: &str) -> WasmResult<JsValue> {
         bech32str::full_viewing_key::BECH32_PREFIX,
         bech32str::Bech32m,
     );
-    Ok(JsValue::from_str(&fvk_bech32))
+    Ok(fvk_bech32)
 }
 
 /// Wallet id: the hash of a full viewing key, used as an account identifier
@@ -156,11 +155,11 @@ pub fn is_controlled_address(full_viewing_key: &str, address: &str) -> WasmResul
 ///     index: `u32`
 /// Returns: `String`
 #[wasm_bindgen]
-pub fn get_short_address_by_index(full_viewing_key: &str, index: u32) -> WasmResult<JsValue> {
+pub fn get_short_address_by_index(full_viewing_key: &str, index: u32) -> WasmResult<String> {
     utils::set_panic_hook();
 
     let fvk = FullViewingKey::from_str(full_viewing_key)?;
     let (address, _dtk) = fvk.incoming().payment_address(index.into());
     let short_address = address.display_short_form();
-    Ok(JsValue::from_str(&short_address))
+    Ok(short_address)
 }

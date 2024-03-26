@@ -8,9 +8,9 @@ import {
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { JsonValue } from '@bufbuild/protobuf';
 
-export const generateSpendKey = (seedPhrase: string) => generate_spend_key(seedPhrase) as string;
+export const generateSpendKey = (seedPhrase: string) => generate_spend_key(seedPhrase);
 
-export const getFullViewingKey = (spendKey: string) => get_full_viewing_key(spendKey) as string;
+export const getFullViewingKey = (spendKey: string) => get_full_viewing_key(spendKey);
 
 export const getAddressByIndex = (fullViewingKey: string, index: number) =>
   Address.fromJson(get_address_by_index(fullViewingKey, index) as JsonValue);

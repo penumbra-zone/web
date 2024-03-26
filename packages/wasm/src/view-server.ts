@@ -22,6 +22,13 @@ interface ViewServerProps {
   idbConstants: IdbConstants;
 }
 
+interface FlushResult {
+  height?: string | number | bigint;
+  sct_updates?: JsonObject;
+  new_notes?: JsonValue[];
+  new_swaps?: JsonValue[];
+}
+
 export class ViewServer implements ViewServerInterface {
   private constructor(
     private wasmViewServer: WasmViewServer,
@@ -73,22 +80,13 @@ export class ViewServer implements ViewServerInterface {
   // As blocks are scanned, the internal wasmViewServer tree is being updated.
   // Flush updates clears the state and returns all the updates since the last checkpoint.
   flushUpdates(): ScanBlockResult {
-    const raw = this.wasmViewServer.flush_updates() as JsonValue;
-    const { height, sct_updates, new_notes, new_swaps } = raw as {
-      height?: string | number | bigint | undefined;
-      sct_updates?: JsonObject | undefined;
-      new_notes?: JsonValue[] | undefined;
-      new_swaps?: JsonValue[] | undefined;
-    };
-    const wasmJson = {
-      new_notes: (new_notes ?? []).map(n => JSON.stringify(n)),
-      new_swaps: (new_swaps ?? []).map(s => JSON.stringify(s)),
-    };
+    const result = this.wasmViewServer.flush_updates() as FlushResult;
+    const { height, sct_updates, new_notes, new_swaps } = result;
     return {
-      height: BigInt(height ?? false),
+      height: BigInt(height ?? 0),
       sctUpdates: validateSchema(SctUpdatesSchema, sct_updates),
-      newNotes: wasmJson.new_notes.map(n => SpendableNoteRecord.fromJsonString(n)),
-      newSwaps: wasmJson.new_swaps.map(s => SwapRecord.fromJsonString(s)),
+      newNotes: (new_notes ?? []).map(n => SpendableNoteRecord.fromJson(n)),
+      newSwaps: (new_swaps ?? []).map(s => SwapRecord.fromJson(s)),
     };
   }
 }

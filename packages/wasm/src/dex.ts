@@ -8,8 +8,8 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { JsonValue } from '@bufbuild/protobuf';
 
 export const computePositionId = (position: Position): PositionId => {
-  const result = compute_position_id(position.toJson()) as unknown;
-  return PositionId.fromJsonString(JSON.stringify(result));
+  const result = compute_position_id(position.toJson()) as JsonValue;
+  return PositionId.fromJson(result);
 };
 
 export const getLpNftMetadata = (

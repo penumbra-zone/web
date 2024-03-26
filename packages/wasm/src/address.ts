@@ -7,7 +7,7 @@ import { JsonValue } from '@bufbuild/protobuf';
 import { bech32Address } from '@penumbra-zone/bech32/src/address';
 
 export const getShortAddressByIndex = (fullViewingKey: string, index: number) =>
-  get_short_address_by_index(fullViewingKey, index) as string;
+  get_short_address_by_index(fullViewingKey, index);
 
 export const getAddressIndexByAddress = (
   fullViewingKey: string,
