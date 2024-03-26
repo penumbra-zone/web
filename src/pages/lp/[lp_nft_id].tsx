@@ -11,7 +11,6 @@ import {
 } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import Layout from "../../components/layout";
 import CurrentLPStatus from "../../components/liquidityPositions/currentStatus";
-import OpenPositionStatus from "../../components/liquidityPositions/openStatus";
 import {
   VStack,
   Text,
