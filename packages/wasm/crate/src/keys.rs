@@ -135,16 +135,15 @@ pub fn get_ephemeral_address(full_viewing_key: &str, index: u32) -> WasmResult<J
 /// If it is not controlled by the FVK, it returns a `None`
 /// Arguments:
 ///     full_viewing_key: `bech32 String`
-///     address: `bech32 String`
+///     address: `Address`
 /// Returns: `Option<pb::AddressIndex>`
 #[wasm_bindgen]
-pub fn get_index_by_address(full_viewing_key: &str, address: &str) -> WasmResult<JsValue> {
+pub fn get_index_by_address(full_viewing_key: &str, address: JsValue) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
+    let address: Address = serde_wasm_bindgen::from_value(address)?;
     let fvk = FullViewingKey::from_str(full_viewing_key)?;
-    let index: Option<pb::AddressIndex> = fvk
-        .address_index(&Address::from_str(address)?)
-        .map(Into::into);
+    let index: Option<pb::AddressIndex> = fvk.address_index(&address).map(Into::into);
     let result = serde_wasm_bindgen::to_value(&index)?;
     Ok(result)
 }
