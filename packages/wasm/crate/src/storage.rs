@@ -20,7 +20,7 @@ use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsValue;
 use web_sys::IdbTransactionMode::Readwrite;
 
-use crate::error::{WasmError, WasmResult};
+use crate::error::WasmResult;
 use crate::note_record::SpendableNoteRecord;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

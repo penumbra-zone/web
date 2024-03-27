@@ -7,27 +7,28 @@ import {
 import { sctClient, stakeClient, viewClient } from '../../clients';
 import {
   getAmount,
-  getStartEpochIndexFromValueView,
+  getUnbondingStartHeightFromValueView,
   getValidatorIdentityKeyAsBech32StringFromValueView,
 } from '@penumbra-zone/getters/src/value-view';
 import { asIdentityKey } from '@penumbra-zone/getters/src/string';
 
 const getUndelegateClaimPlannerRequest =
   (endEpochIndex: bigint) => async (unbondingToken: ValueView) => {
-    const startEpochIndex = getStartEpochIndexFromValueView(unbondingToken);
+    const unbondingStartHeight = getUnbondingStartHeightFromValueView(unbondingToken);
     const validatorIdentityKeyAsBech32String =
       getValidatorIdentityKeyAsBech32StringFromValueView(unbondingToken);
     const identityKey = asIdentityKey(validatorIdentityKeyAsBech32String);
+    const startEpochIndex = await sctClient.epochByHeight({ height: unbondingStartHeight });
 
     const { penalty } = await stakeClient.validatorPenalty({
-      startEpochIndex,
+      startEpochIndex: startEpochIndex.epoch?.index,
       endEpochIndex,
       identityKey,
     });
 
     return new TransactionPlannerRequest_UndelegateClaim({
       validatorIdentity: identityKey,
-      startEpochIndex,
+      unbondingStartHeight,
       penalty,
       unbondingAmount: getAmount(unbondingToken),
     });

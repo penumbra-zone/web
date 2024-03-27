@@ -327,9 +327,10 @@ pub async fn plan_transaction(
 
     for tpr::UndelegateClaim {
         validator_identity,
-        start_epoch_index,
+        unbonding_start_height,
         penalty,
         unbonding_amount,
+        ..
     } in request.undelegation_claims
     {
         let validator_identity: IdentityKey = validator_identity
@@ -344,7 +345,7 @@ pub async fn plan_transaction(
 
         let undelegate_claim_plan = UndelegateClaimPlan {
             validator_identity,
-            start_epoch_index,
+            unbonding_start_height,
             penalty,
             unbonding_amount,
             balance_blinding: Fr::rand(&mut OsRng),
