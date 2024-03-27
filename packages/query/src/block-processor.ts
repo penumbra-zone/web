@@ -1,7 +1,7 @@
 import { RootQuerier } from './root-querier';
 import { sha256Hash } from '@penumbra-zone/crypto-web/src/sha256';
 import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/src/dex';
-import { decodeSctRoot } from '@penumbra-zone/wasm/src/sct';
+import { validSctRoot as validSctRoot } from '@penumbra-zone/wasm/src/sct';
 
 import {
   getExchangeRateFromValidatorInfoResponse,
@@ -384,14 +384,16 @@ export class BlockProcessor implements BlockProcessorInterface {
   // This is expensive to do every block, so should only be done in development.
   // @ts-expect-error Only used ad-hoc in dev
   private async assertRootValid(blockHeight: bigint): Promise<void> {
-    const sourceOfTruth = await this.querier.cnidarium.keyValue(`sct/anchor/${blockHeight}`);
+    const sourceOfTruth: Uint8Array = await this.querier.cnidarium.keyValue(
+      `sct/anchor/${blockHeight}`,
+    );
     const inMemoryRoot = this.viewServer.getSctRoot();
-
-    if (!decodeSctRoot(sourceOfTruth).equals(inMemoryRoot)) {
-      throw new Error(
-        `Block height: ${blockHeight}. Wasm root does not match remote source of truth. Programmer error.`,
-      );
-    }
+    if (!validSctRoot({ inner: sourceOfTruth }))
+      throw new Error(`Block height: ${blockHeight}. Remote cnidarium provided invalid SCT root.`);
+    if (!validSctRoot(inMemoryRoot))
+      throw new Error(`Block height: ${blockHeight}. Invalid local SCT root.`);
+    if (!inMemoryRoot.equals({ inner: sourceOfTruth }))
+      throw new Error(`Block height: ${blockHeight}. Local SCT root does not match remote.`);
   }
 
   private async handleEpochTransition(

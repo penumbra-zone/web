@@ -10,6 +10,7 @@ pub mod error;
 pub mod keys;
 pub mod note_record;
 pub mod planner;
+pub mod sct;
 pub mod storage;
 pub mod swap_record;
 pub mod tx;
