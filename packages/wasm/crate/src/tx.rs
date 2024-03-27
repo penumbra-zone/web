@@ -153,14 +153,14 @@ pub fn witness(transaction_plan: JsValue, stored_tree: JsValue) -> WasmResult<Js
 /// Building a transaction may take some time,
 /// depending on CPU performance and number of actions in transaction_plan
 /// Arguments:
-///     full_viewing_key: `bech32m String`
+///     full_viewing_key: `FullViewingKey`
 ///     transaction_plan: `pb::TransactionPlan`
 ///     witness_data: `pb::WitnessData`
 ///     auth_data: `pb::AuthorizationData`
 /// Returns: `pb::Transaction`
 #[wasm_bindgen]
 pub fn build(
-    full_viewing_key: &str,
+    full_viewing_key: JsValue,
     transaction_plan: JsValue,
     witness_data: JsValue,
     auth_data: JsValue,
@@ -171,7 +171,7 @@ pub fn build(
     let witness_data_proto: pb::WitnessData = serde_wasm_bindgen::from_value(witness_data)?;
     let auth_data_proto: pb::AuthorizationData = serde_wasm_bindgen::from_value(auth_data)?;
 
-    let fvk = FullViewingKey::from_str(full_viewing_key)?;
+    let fvk: FullViewingKey = serde_wasm_bindgen::from_value(full_viewing_key)?;
 
     let plan: TransactionPlan = plan_proto.try_into()?;
 
@@ -227,13 +227,13 @@ pub fn build_parallel(
 
 /// Get transaction view, transaction perspective
 /// Arguments:
-///     full_viewing_key: `bech32 String`
+///     full_viewing_key: `FullViewingKey`
 ///     tx: `pbt::Transaction`
 ///     idb_constants: IndexedDbConstants
 /// Returns: `TxInfoResponse`
 #[wasm_bindgen]
 pub async fn transaction_info(
-    full_viewing_key: &str,
+    full_viewing_key: JsValue,
     tx: JsValue,
     idb_constants: JsValue,
 ) -> Result<JsValue, Error> {
@@ -241,19 +241,18 @@ pub async fn transaction_info(
 
     let transaction = serde_wasm_bindgen::from_value(tx)?;
     let constants = serde_wasm_bindgen::from_value(idb_constants)?;
-    let response = transaction_info_inner(full_viewing_key, transaction, constants).await?;
+    let fvk: FullViewingKey = serde_wasm_bindgen::from_value(full_viewing_key)?;
+    let response = transaction_info_inner(fvk, transaction, constants).await?;
 
     serde_wasm_bindgen::to_value(&response)
 }
 
 pub async fn transaction_info_inner(
-    full_viewing_key: &str,
+    fvk: FullViewingKey,
     tx: Transaction,
     idb_constants: IndexedDbConstants,
 ) -> WasmResult<TxInfoResponse> {
     let storage = IndexedDBStorage::new(idb_constants).await?;
-
-    let fvk = FullViewingKey::from_str(full_viewing_key)?;
 
     // First, create a TxP with the payload keys visible to our FVK and no other data.
     let mut txp = penumbra_transaction::TransactionPerspective {

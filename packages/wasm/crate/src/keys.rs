@@ -7,7 +7,7 @@ use penumbra_proof_params::{
     CONVERT_PROOF_PROVING_KEY, DELEGATOR_VOTE_PROOF_PROVING_KEY, OUTPUT_PROOF_PROVING_KEY,
     SPEND_PROOF_PROVING_KEY, SWAPCLAIM_PROOF_PROVING_KEY, SWAP_PROOF_PROVING_KEY,
 };
-use penumbra_proto::{core::keys::v1 as pb, serializers::bech32str, DomainType};
+use penumbra_proto::core::keys::v1 as pb;
 use rand_core::OsRng;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::js_sys::Uint8Array;
@@ -44,7 +44,7 @@ pub fn load_proving_key(parameters: JsValue, key_type: &str) -> WasmResult<()> {
 /// generate a spend key from a seed phrase
 /// Arguments:
 ///     seed_phrase: `string`
-/// Returns: `bech32 string`
+/// Returns: `SpendKey`
 #[wasm_bindgen]
 pub fn generate_spend_key(seed_phrase: &str) -> WasmResult<JsValue> {
     utils::set_panic_hook();
@@ -53,113 +53,81 @@ pub fn generate_spend_key(seed_phrase: &str) -> WasmResult<JsValue> {
     let path = Bip44Path::new(0);
     let spend_key = SpendKey::from_seed_phrase_bip44(seed, &path);
 
-    let proto = spend_key.to_proto();
-
-    let spend_key_str = bech32str::encode(
-        &proto.inner,
-        bech32str::spend_key::BECH32_PREFIX,
-        bech32str::Bech32m,
-    );
-
-    Ok(JsValue::from_str(&spend_key_str))
+    let result = serde_wasm_bindgen::to_value(&spend_key)?;
+    Ok(result)
 }
 
 /// get full viewing key from spend key
 /// Arguments:
-///     spend_key_str: `bech32 string`
-/// Returns: `bech32 string`
+///     spend_key: `SpendKey`
+/// Returns: `FullViewingKey`
 #[wasm_bindgen]
-pub fn get_full_viewing_key(spend_key: &str) -> WasmResult<JsValue> {
+pub fn get_full_viewing_key(spend_key: JsValue) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
-    let spend_key = SpendKey::from_str(spend_key)?;
-
+    let spend_key: SpendKey = serde_wasm_bindgen::from_value(spend_key)?;
     let fvk: &FullViewingKey = spend_key.full_viewing_key();
-
-    let proto = fvk.to_proto();
-
-    let fvk_bech32 = bech32str::encode(
-        &proto.inner,
-        bech32str::full_viewing_key::BECH32_PREFIX,
-        bech32str::Bech32m,
-    );
-    Ok(JsValue::from_str(&fvk_bech32))
+    let result = serde_wasm_bindgen::to_value(&fvk)?;
+    Ok(result)
 }
 
 /// Wallet id: the hash of a full viewing key, used as an account identifier
 /// Arguments:
-///     full_viewing_key: `bech32 string`
-/// Returns: `bech32 string`
+///     full_viewing_key: `FullViewingKey`
+/// Returns: `WalletId`
 #[wasm_bindgen]
-pub fn get_wallet_id(full_viewing_key: &str) -> WasmResult<String> {
+pub fn get_wallet_id(full_viewing_key: JsValue) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
-    let fvk = FullViewingKey::from_str(full_viewing_key)?;
-    Ok(fvk.wallet_id().to_string())
+    let fvk: FullViewingKey = serde_wasm_bindgen::from_value(full_viewing_key)?;
+    let result = serde_wasm_bindgen::to_value(&fvk.wallet_id())?;
+    Ok(result)
 }
 
 /// get address by index using FVK
 /// Arguments:
-///     full_viewing_key: `bech32 string`
+///     full_viewing_key: `FullViewingKey`
 ///     index: `u32`
-/// Returns: `pb::Address`
+/// Returns: `Address`
 #[wasm_bindgen]
-pub fn get_address_by_index(full_viewing_key: &str, index: u32) -> WasmResult<JsValue> {
+pub fn get_address_by_index(full_viewing_key: JsValue, index: u32) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
-    let fvk = FullViewingKey::from_str(full_viewing_key)?;
+    let fvk: FullViewingKey = serde_wasm_bindgen::from_value(full_viewing_key)?;
     let (address, _dtk) = fvk.incoming().payment_address(index.into());
-    let proto = address.to_proto();
-    let result = serde_wasm_bindgen::to_value(&proto)?;
+    let result = serde_wasm_bindgen::to_value(&address)?;
     Ok(result)
 }
 
 /// get ephemeral (randomizer) address using FVK
 /// The derivation tree is like "spend key / address index / ephemeral address" so we must also pass index as an argument
 /// Arguments:
-///     full_viewing_key: `bech32 string`
+///     full_viewing_key: `FullViewingKey`
 ///     index: `u32`
-/// Returns: `pb::Address`
+/// Returns: `Address`
 #[wasm_bindgen]
-pub fn get_ephemeral_address(full_viewing_key: &str, index: u32) -> WasmResult<JsValue> {
+pub fn get_ephemeral_address(full_viewing_key: JsValue, index: u32) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
-    let fvk = FullViewingKey::from_str(full_viewing_key)?;
+    let fvk: FullViewingKey = serde_wasm_bindgen::from_value(full_viewing_key)?;
     let (address, _dtk) = fvk.ephemeral_address(OsRng, index.into());
-    let proto = address.to_proto();
-    let result = serde_wasm_bindgen::to_value(&proto)?;
+    let result = serde_wasm_bindgen::to_value(&address)?;
     Ok(result)
 }
 
 /// Returns the AddressIndex of an address.
 /// If it is not controlled by the FVK, it returns a `None`
 /// Arguments:
-///     full_viewing_key: `bech32 String`
+///     full_viewing_key: `FullViewingKey`
 ///     address: `Address`
-/// Returns: `Option<pb::AddressIndex>`
+/// Returns: `Option<AddressIndex>`
 #[wasm_bindgen]
-pub fn get_index_by_address(full_viewing_key: &str, address: JsValue) -> WasmResult<JsValue> {
+pub fn get_index_by_address(full_viewing_key: JsValue, address: JsValue) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
     let address: Address = serde_wasm_bindgen::from_value(address)?;
-    let fvk = FullViewingKey::from_str(full_viewing_key)?;
+    let fvk: FullViewingKey = serde_wasm_bindgen::from_value(full_viewing_key)?;
     let index: Option<pb::AddressIndex> = fvk.address_index(&address).map(Into::into);
     let result = serde_wasm_bindgen::to_value(&index)?;
     Ok(result)
-}
-
-/// Get canonical short form address by index
-/// This feature is probably redundant and will be removed from wasm in the future
-/// Arguments:
-///     full_viewing_key: `bech32 string`
-///     index: `u32`
-/// Returns: `String`
-#[wasm_bindgen]
-pub fn get_short_address_by_index(full_viewing_key: &str, index: u32) -> WasmResult<JsValue> {
-    utils::set_panic_hook();
-
-    let fvk = FullViewingKey::from_str(full_viewing_key)?;
-    let (address, _dtk) = fvk.incoming().payment_address(index.into());
-    let short_address = address.display_short_form();
-    Ok(JsValue::from_str(&short_address))
 }
