@@ -11,7 +11,7 @@ const wrapUnaryImpl =
     try {
       const result = methodImplementation(req, ctx);
       if (result instanceof Promise)
-        return result.catch(e => {
+        return result.catch((e: unknown) => {
           throw ConnectError.from(e);
         });
       return result;

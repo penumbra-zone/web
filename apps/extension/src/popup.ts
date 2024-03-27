@@ -8,7 +8,6 @@ import type {
 import { isChromeResponderDroppedError } from '@penumbra-zone/types/src/internal-msg/chrome-error';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
-import { JsonValue } from '@bufbuild/protobuf';
 
 export const popup = async <M extends PopupMessage>(
   req: PopupRequest<M>,
@@ -18,12 +17,12 @@ export const popup = async <M extends PopupMessage>(
   await new Promise(resolve => setTimeout(resolve, 800));
   const response = await chrome.runtime
     .sendMessage<InternalRequest<M>, InternalResponse<M>>(req)
-    .catch(e => {
+    .catch((e: unknown) => {
       if (isChromeResponderDroppedError(e)) return null;
       else throw e;
     });
   if (response && 'error' in response) {
-    throw errorFromJson(response.error as JsonValue, undefined, ConnectError.from(response));
+    throw errorFromJson(response.error, undefined, ConnectError.from(response));
   } else {
     return response && response.data;
   }

@@ -23,7 +23,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240313211643-35db357c277d.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240326223351-a25fff24022e.2",
     "@penumbra-zone/bech32": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
