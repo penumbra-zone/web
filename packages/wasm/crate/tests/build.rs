@@ -211,10 +211,10 @@ mod tests {
                 "lo": "1",
                 "hi": "0"
             },
-            "asset_id": { 
-                "inner": "nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=", 
-                "alt_bech32m": "", 
-                "alt_base_denom": "" 
+            "asset_id": {
+                "inner": "nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=",
+                "alt_bech32m": "",
+                "alt_base_denom": ""
             }
         }
         "#;
@@ -394,6 +394,7 @@ mod tests {
 
         // -------------- 1. Query transaction plan performing a spend --------------
 
+        #[allow(deprecated)] // Remove if/when `epoch_index` is removed
         let planner_request = TransactionPlannerRequest {
             epoch: None,
             epoch_index: 0,
