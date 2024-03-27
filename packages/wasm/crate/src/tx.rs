@@ -8,11 +8,11 @@ use penumbra_keys::FullViewingKey;
 use penumbra_proto::core::component::sct::v1::commitment_source::Source;
 use penumbra_proto::core::transaction::v1 as pb;
 use penumbra_proto::core::transaction::v1::{TransactionPerspective, TransactionView};
-use penumbra_proto::core::txhash::v1::TransactionId;
 use penumbra_proto::DomainType;
 use penumbra_sct::Nullifier;
 use penumbra_tct::{Position, Proof, StateCommitment};
 use penumbra_transaction::plan::TransactionPlan;
+use penumbra_transaction::txhash::TransactionId;
 use penumbra_transaction::Action;
 use penumbra_transaction::{AuthorizationData, Transaction, WitnessData};
 use rand_core::OsRng;
@@ -311,12 +311,20 @@ pub async fn transaction_info_inner(
                                             if *swap_claim_nullifier == derived_nullifier_from_swap.to_proto() {
                                                 should_break = true;
 
-                                                transaction_info.id.clone().and_then(|id| {
-                                                    txp.transaction_ids_by_commitment.insert(
-                                                        commitment.to_string(),
-                                                        TransactionId { inner: id.inner},
-                                                    )
-                                                });
+                                                transaction_info.id.clone()
+                                                    .and_then(|id| {
+                                                        let result = TransactionId::try_from(id);
+                                                        if result.is_ok() {
+                                                            Some(result.unwrap())
+                                                        } else {
+                                                            None
+                                                        }
+                                                    }).and_then(|id| {
+                                                        txp.nullification_transaction_ids_by_commitment.insert(
+                                                            commitment,
+                                                            id,
+                                                        )
+                                                    });
                                             }
                                         })
                                     );
@@ -338,12 +346,11 @@ pub async fn transaction_info_inner(
                     .and_then(|swap_record| swap_record.source)
                     .map(|source| {
                         if let Some(Source::Transaction(transaction)) = source.source {
-                            txp.transaction_ids_by_nullifier.insert(
-                                nullifier.to_string(),
-                                TransactionId {
-                                    inner: transaction.id,
-                                },
-                            );
+                            let id: Result<[u8; 32], Vec<u8>> = transaction.id.try_into();
+                            if id.is_ok() {
+                                txp.creation_transaction_ids_by_nullifier
+                                    .insert(nullifier, TransactionId { 0: id.unwrap() });
+                            }
                         }
                     });
 
