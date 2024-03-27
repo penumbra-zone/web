@@ -4,12 +4,6 @@ import { authorize } from './authorize';
 
 export type Impl = ServiceImpl<typeof CustodyService>;
 
-export const custodyImpl: Omit<
-  Impl,
-  | 'confirmAddress'
-  | 'exportFullViewingKey'
-  | 'authorizeValidatorVote'
-  | 'authorizeValidatorDefinition'
-> = {
+export const custodyImpl: Pick<Impl, 'authorize'> = {
   authorize,
 };
