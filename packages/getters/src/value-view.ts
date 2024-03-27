@@ -72,9 +72,10 @@ export const getAmount = createGetter(
 );
 
 /**
- * For a `ValueView` containing an unbonding token, gets the start epoch index.
+ * For a `ValueView` containing an unbonding token, gets the unbonding start
+ * height.
  */
-export const getStartEpochIndexFromValueView = getMetadata.pipe(getUnbondingStartHeight);
+export const getUnbondingStartHeightFromValueView = getMetadata.pipe(getUnbondingStartHeight);
 
 export const getDisplayDenomFromView = createGetter((view?: ValueView) => {
   if (view?.valueView.case === 'unknownAssetId') {
