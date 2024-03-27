@@ -1,5 +1,4 @@
 use wasm_bindgen::prelude::wasm_bindgen;
-use wasm_bindgen::JsValue;
 
 use penumbra_proto::DomainType;
 
@@ -19,14 +18,11 @@ pub fn set_panic_hook() {
 
 /// decode SCT root
 /// Arguments:
-///     tx_bytes: `HEX string`
-/// Returns: `penumbra_tct::Root`
+///     txId: `Uint8Array representing the hash of a transaction (TransactionId)`
+/// Returns: `Uint8Array representing a penumbra_tct::Root`
 #[wasm_bindgen]
-pub fn decode_sct_root(tx_bytes: &str) -> WasmResult<JsValue> {
+pub fn decode_sct_root(tx: Vec<u8>) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();
-
-    let tx_vec: Vec<u8> = hex::decode(tx_bytes)?;
-    let root = penumbra_tct::Root::decode(tx_vec.as_slice())?;
-    let result = serde_wasm_bindgen::to_value(&root)?;
-    Ok(result)
+    let root = penumbra_tct::Root::decode(tx.as_slice())?;
+    Ok(root.encode_to_vec())
 }

@@ -55,23 +55,14 @@ mod tests {
             include_bytes!("../../../../apps/extension/bin/swapclaim_pk.bin");
         let convert_key: &[u8] = include_bytes!("../../../../apps/extension/bin/convert_pk.bin");
 
-        // Serialize &[u8] to JsValue.
-        let spend_key_js: JsValue = serde_wasm_bindgen::to_value(&spend_key).unwrap();
-        let output_key_js: JsValue = serde_wasm_bindgen::to_value(&output_key).unwrap();
-        let delegator_vote_key_js: JsValue =
-            serde_wasm_bindgen::to_value(&delegator_vote_key).unwrap();
-        let swap_key_js: JsValue = serde_wasm_bindgen::to_value(&swap_key).unwrap();
-        let swapclaim_key_js: JsValue = serde_wasm_bindgen::to_value(&swapclaim_key).unwrap();
-        let convert_key_js: JsValue = serde_wasm_bindgen::to_value(&convert_key).unwrap();
-
         // Dynamically load the proving keys at runtime for each key type.
-        load_proving_key(spend_key_js, "spend").expect("can load spend key");
-        load_proving_key(output_key_js, "output").expect("can load output key");
-        load_proving_key(delegator_vote_key_js, "delegator_vote")
+        load_proving_key(spend_key.to_vec(), "spend").expect("can load spend key");
+        load_proving_key(output_key.to_vec(), "output").expect("can load output key");
+        load_proving_key(delegator_vote_key.to_vec(), "delegator_vote")
             .expect("can load delegator vote key");
-        load_proving_key(swap_key_js, "swap").expect("can load swap key");
-        load_proving_key(swapclaim_key_js, "swapclaim").expect("can load swapclaim key");
-        load_proving_key(convert_key_js, "convert").expect("can load convert key");
+        load_proving_key(swap_key.to_vec(), "swap").expect("can load swap key");
+        load_proving_key(swapclaim_key.to_vec(), "swapclaim").expect("can load swapclaim key");
+        load_proving_key(convert_key.to_vec(), "convert").expect("can load convert key");
 
         // Define database parameters.
         #[derive(Clone, Debug, Serialize, Deserialize)]

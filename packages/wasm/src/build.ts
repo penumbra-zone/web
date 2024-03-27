@@ -61,6 +61,6 @@ const loadProvingKey = async (actionType: ActionType) => {
   if (!keyType) return;
 
   const res = await fetch(`bin/${keyType}_pk.bin`);
-  const keyBin = await res.arrayBuffer();
+  const keyBin = new Uint8Array(await res.arrayBuffer());
   load_proving_key(keyBin, keyType);
 };

@@ -10,7 +10,6 @@ use penumbra_proof_params::{
 use penumbra_proto::{core::keys::v1 as pb, serializers::bech32str, DomainType};
 use rand_core::OsRng;
 use wasm_bindgen::prelude::*;
-use wasm_bindgen_futures::js_sys::Uint8Array;
 
 use crate::error::WasmResult;
 use crate::utils;
@@ -21,10 +20,7 @@ use crate::utils;
 /// function will additionally require downloading the proving key parameter `.bin`
 /// file for each key type.
 #[wasm_bindgen]
-pub fn load_proving_key(parameters: JsValue, key_type: &str) -> WasmResult<()> {
-    // Deserialize JsValue into Vec<u8>.
-    let parameters_bytes: Vec<u8> = Uint8Array::new(&parameters).to_vec();
-
+pub fn load_proving_key(key: Vec<u8>, key_type: &str) -> WasmResult<()> {
     // Map key type with proving keys.
     let proving_key_map = match key_type {
         "spend" => &SPEND_PROOF_PROVING_KEY,
@@ -37,7 +33,7 @@ pub fn load_proving_key(parameters: JsValue, key_type: &str) -> WasmResult<()> {
     };
 
     // Load proving key.
-    proving_key_map.try_load_unchecked(&parameters_bytes)?;
+    proving_key_map.try_load_unchecked(&key)?;
     Ok(())
 }
 
