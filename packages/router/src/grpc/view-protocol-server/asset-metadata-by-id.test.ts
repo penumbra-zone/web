@@ -75,10 +75,11 @@ describe('AssetMetadataById request handler', () => {
     expect(metadataByIdResponse.denomMetadata?.equals(metadataFromNode)).toBeTruthy();
   });
 
-  test('should fail to get metadata when metadata not found in idb and node', async () => {
+  test('should return an empty response when metadata not found in idb and node', async () => {
     mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
     mockShieldedPool.assetMetadataById.mockResolvedValueOnce(undefined);
-    await expect(assetMetadataById(request, mockCtx)).rejects.toThrow();
+    const response = new AssetMetadataByIdResponse(await assetMetadataById(request, mockCtx));
+    expect(response.equals(new AssetMetadataByIdResponse())).toBeTruthy();
   });
 
   test('should fail if assetId is missing in request', async () => {
