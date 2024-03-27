@@ -6,6 +6,7 @@ mod tests {
     use indexed_db_futures::prelude::{
         IdbDatabase, IdbObjectStore, IdbQuerySource, IdbTransaction, IdbTransactionMode,
     };
+    use penumbra_dex::DexParameters;
     use penumbra_proto::core::app::v1::AppParameters;
     use penumbra_proto::core::component::fee::v1::GasPrices;
     use penumbra_proto::view::v1::transaction_planner_request::Output;
@@ -114,8 +115,14 @@ mod tests {
         let sct_params = SctParameters {
             epoch_duration: 5u64,
         };
+        let dex_params = DexParameters {
+            fixed_candidates: Vec::new(),
+            is_enabled: true,
+            max_hops: 5u32,
+        };
 
         let app_params = AppParameters {
+            dex_params: Some(dex_params.to_proto()),
             chain_id,
             sct_params: Some(sct_params.to_proto()),
             community_pool_params: None,
@@ -388,6 +395,8 @@ mod tests {
         // -------------- 1. Query transaction plan performing a spend --------------
 
         let planner_request = TransactionPlannerRequest {
+            epoch: None,
+            epoch_index: 0,
             expiry_height: 0,
             memo: Some(memo),
             source: None,
