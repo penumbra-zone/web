@@ -22,7 +22,7 @@ export interface DelegationCaptureGroups {
 }
 
 export interface UnbondingCaptureGroups {
-  epoch: string;
+  startAt: string;
   id: string;
   bech32IdentityKey: string;
 }
@@ -78,7 +78,7 @@ export const assetPatterns: AssetPatterns = {
    * the extra `u` at the beginning.
    */
   unbondingToken: new RegexMatcher(
-    /^uunbonding_epoch_(?<epoch>[0-9]+)_(?<bech32IdentityKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
+    /^uunbonding_start_at_(?<startAt>[0-9]+)_(?<bech32IdentityKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
   ),
   votingReceipt: new RegexMatcher(/^voted_on_/),
   ibc: new RegexMatcher(/^transfer\/(?<channel>channel-\d+)\/(?<denom>.*)/),

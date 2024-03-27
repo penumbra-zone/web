@@ -40,15 +40,22 @@ describe('assetPatterns', () => {
 
   describe('unbondingTokenPattern', () => {
     it('matches when a string is a valid unbonding token name', () => {
-      expect(assetPatterns.unbondingToken.matches('uunbonding_epoch_1_penumbravalid1abc123')).toBe(
-        true,
+      expect(
+        assetPatterns.unbondingToken.matches('uunbonding_start_at_1_penumbravalid1abc123'),
+      ).toBe(true);
+    });
+
+    it('captures the unbonding start height', () => {
+      const match = assetPatterns.unbondingToken.capture(
+        'uunbonding_start_at_1_penumbravalid1abc123',
       );
+      expect(match?.startAt).toBe('1');
     });
 
     it('does not match when a string contains, but does not begin with, a valid unbonding token name', () => {
       expect(
         assetPatterns.unbondingToken.matches(
-          'ibc-transfer/channel-1234/uunbonding_epoch_1_penumbravalid1abc123',
+          'ibc-transfer/channel-1234/uunbonding_start_at_1_penumbravalid1abc123',
         ),
       ).toBe(false);
     });

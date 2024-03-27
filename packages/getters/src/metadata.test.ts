@@ -2,7 +2,7 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { describe, expect, it } from 'vitest';
 import {
   getDisplayDenomExponent,
-  getStartEpochIndex,
+  getUnbondingStartHeight,
   getValidatorIdentityKeyAsBech32String,
 } from './metadata';
 
@@ -30,21 +30,21 @@ describe('getDisplayDenomExponent()', () => {
   });
 });
 
-describe('getStartEpochIndex()', () => {
-  it("gets the epoch index, coerced to a `BigInt`, from an unbonding token's asset ID", () => {
-    const metadata = new Metadata({ display: 'uunbonding_epoch_123_penumbravalid1abc123' });
+describe('getUnbondingStartHeight()', () => {
+  it("gets the unbonding start height, coerced to a `BigInt`, from an unbonding token's asset ID", () => {
+    const metadata = new Metadata({ display: 'uunbonding_start_at_123_penumbravalid1abc123' });
 
-    expect(getStartEpochIndex(metadata)).toBe(123n);
+    expect(getUnbondingStartHeight(metadata)).toBe(123n);
   });
 
   it("returns `undefined` for a non-unbonding token's metadata", () => {
     const metadata = new Metadata({ display: 'penumbra' });
 
-    expect(getStartEpochIndex.optional()(metadata)).toBeUndefined();
+    expect(getUnbondingStartHeight.optional()(metadata)).toBeUndefined();
   });
 
   it('returns `undefined` for undefined metadata', () => {
-    expect(getStartEpochIndex.optional()(undefined)).toBeUndefined();
+    expect(getUnbondingStartHeight.optional()(undefined)).toBeUndefined();
   });
 });
 
@@ -58,7 +58,7 @@ describe('getValidatorIdentityKeyAsBech32String()', () => {
   });
 
   describe('when passed metadata of an unbonding token', () => {
-    const metadata = new Metadata({ display: 'uunbonding_epoch_123_penumbravalid1abc123' });
+    const metadata = new Metadata({ display: 'uunbonding_start_at_123_penumbravalid1abc123' });
 
     it("returns the bech32 representation of the validator's identity key", () => {
       expect(getValidatorIdentityKeyAsBech32String(metadata)).toBe('penumbravalid1abc123');

@@ -3,7 +3,7 @@ import { createGetter } from './utils/create-getter';
 import { bech32AssetId } from '@penumbra-zone/bech32/src/asset';
 import {
   getDisplayDenomExponent,
-  getStartEpochIndex,
+  getUnbondingStartHeight,
   getValidatorIdentityKeyAsBech32String,
 } from './metadata';
 import { Any } from '@bufbuild/protobuf';
@@ -74,7 +74,7 @@ export const getAmount = createGetter(
 /**
  * For a `ValueView` containing an unbonding token, gets the start epoch index.
  */
-export const getStartEpochIndexFromValueView = getMetadata.pipe(getStartEpochIndex);
+export const getStartEpochIndexFromValueView = getMetadata.pipe(getUnbondingStartHeight);
 
 export const getDisplayDenomFromView = createGetter((view?: ValueView) => {
   if (view?.valueView.case === 'unknownAssetId') {
