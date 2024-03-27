@@ -5,16 +5,6 @@ import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import type { TendermintQuerierInterface } from '@penumbra-zone/types/src/querier';
 
-// Should add more errors as we discover them
-const knownTendermintErrors = [
-  'proof did not verify',
-  'is not a valid field element',
-  'is not a valid SCT root',
-  'cannot claim unbonding tokens before the end epoch',
-  'undelegation was prepared for next epoch',
-  'delegation was prepared for epoch',
-];
-
 export class TendermintQuerier implements TendermintQuerierInterface {
   private readonly client: PromiseClient<typeof TendermintProxyService>;
 
@@ -31,15 +21,12 @@ export class TendermintQuerier implements TendermintQuerierInterface {
     const params = tx.toBinary();
     // Note that "synchronous" here means "wait for the tx to be accepted by
     // the fullnode", not "wait for the tx to be included on chain.
-    const { hash, log } = await this.client.broadcastTxSync({ params });
+    const { hash, log, code } = await this.client.broadcastTxSync({ params });
 
-    if (log) {
-      if (knownTendermintErrors.some(e => log.includes(e))) {
-        throw new Error(`Tendermint: ${log}`);
-      } else {
-        console.warn(log);
-      }
+    if (code !== 0n) {
+      throw new Error(`Tendermint error ${code.toString()}: ${log}`);
     }
+
     return new TransactionId({ inner: hash });
   }
 
