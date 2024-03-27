@@ -10,10 +10,10 @@ export const getBody = createGetter((undelegateClaim?: UndelegateClaim) => undel
 export const getValidatorIdentityFromUndelegateClaim = getBody.pipe(getValidatorIdentity);
 
 export const getUnbondingStartHeightFromUndelegateClaim = getBody.pipe(
-  // Defining this inline rather than exporting `getStartEpochIndex` from
-  // `undelegate-claim-body.ts`, since `getStartEpochIndex` is already defined
-  // elsewhere and thus would result in a naming conflict in the exports from
-  // this package.
+  // Defining this inline rather than exporting `getUnbondingStartHeight` from
+  // `undelegate-claim-body.ts`, since `getUnbondingStartHeight` is already
+  // defined elsewhere and thus would result in a naming conflict in the exports
+  // from this package.
   createGetter(
     (undelegateClaimBody?: UndelegateClaimBody) => undelegateClaimBody?.unbondingStartHeight,
   ),
