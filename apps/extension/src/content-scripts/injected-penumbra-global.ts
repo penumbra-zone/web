@@ -22,7 +22,7 @@ import {
   PenumbraRequestFailure,
   PenumbraSymbol,
 } from '@penumbra-zone/client/src/global';
-import { PraxMessage, isPraxFailureMessageEvent, isPraxPortMessageEvent } from './message-event';
+import { isPraxFailureMessageEvent, isPraxPortMessageEvent, PraxMessage } from './message-event';
 
 import '@penumbra-zone/polyfills/src/Promise.withResolvers';
 import { PraxConnection } from '../message/prax';
@@ -87,7 +87,7 @@ const postRequest = () => {
       window.origin,
     );
     request.promise
-      .catch(e => connection.reject(e))
+      .catch((e: unknown) => connection.reject(e))
       .finally(() => window.removeEventListener('message', requestResponseListener));
   }
   return request.promise;

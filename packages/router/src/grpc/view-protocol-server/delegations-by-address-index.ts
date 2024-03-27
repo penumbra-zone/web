@@ -2,7 +2,7 @@ import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/co
 import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
 import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
 import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
-import { STAKING_TOKEN_METADATA, assetPatterns } from '@penumbra-zone/constants/src/assets';
+import { assetPatterns, STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { Any, PartialMessage } from '@bufbuild/protobuf';
 import { getValidatorInfo } from '@penumbra-zone/getters/src/validator-info-response';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/src/validator-info';
@@ -55,9 +55,11 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
     balances(new BalancesRequest({ accountFilter: addressIndex }), ctx),
   );
 
-  for await (const validatorInfoResponse of stakingClient.validatorInfo({
-    showInactive: req.filter === DelegationsByAddressIndexRequest_Filter.ALL,
-  })) {
+  // Strangely not recognizing enums are the same type
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+  const showInactive = req.filter === DelegationsByAddressIndexRequest_Filter.ALL;
+
+  for await (const validatorInfoResponse of stakingClient.validatorInfo({ showInactive })) {
     const validatorInfo = getValidatorInfo(validatorInfoResponse);
     const extendedMetadata = new Any({
       typeUrl: ValidatorInfo.typeName,
@@ -81,6 +83,8 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
 
       yield new DelegationsByAddressIndexResponse({ valueView: withValidatorInfo });
     } else {
+      // Strangely not recognizing enums are the same type
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       if (req.filter === DelegationsByAddressIndexRequest_Filter.ALL_ACTIVE_WITH_NONZERO_BALANCES) {
         continue;
       }

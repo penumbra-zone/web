@@ -80,7 +80,7 @@ export class Services implements ServicesInterface {
   // they'll all wait for the same promise rather than each starting their own initialization process.
   public async getWalletServices(): Promise<WalletServices> {
     if (!this.walletServicesPromise) {
-      this.walletServicesPromise = this.initializeWalletServices().catch(e => {
+      this.walletServicesPromise = this.initializeWalletServices().catch((e: unknown) => {
         // If promise rejected, reset promise to `undefined` so next caller can try again
         this.walletServicesPromise = undefined;
         throw e;
