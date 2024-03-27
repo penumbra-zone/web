@@ -15,6 +15,7 @@ default = ["console_error_panic_hook"]
 mock-database = []
 
 [dependencies]
+penumbra-proto_v2      = { path = "../../../../penumbra/crates/proto", features = ["rpc", "box-grpc"], package = "penumbra-proto" }
 penumbra-asset         = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.68.3", package = "penumbra-asset" }
 penumbra-compact-block = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.68.3", package = "penumbra-compact-block", default-features = false }
 penumbra-dex           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.68.3", package = "penumbra-dex", default-features = false }
@@ -42,6 +43,7 @@ rand_core                = { version = "0.6.4", features = ["getrandom"] }
 serde                    = { version = "1.0.197", features = ["derive"] }
 serde-wasm-bindgen       = "0.6.5"
 thiserror                = "1.0"
+tonic-web-wasm-client    = "0.5.1"
 wasm-bindgen             = "0.2.92"
 wasm-bindgen-futures     = "0.4.42"
 web-sys                  = { version = "0.3.69", features = ["console"] }
