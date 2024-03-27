@@ -8,7 +8,7 @@ use indexed_db_futures::{
 use penumbra_asset::asset::{self, Id, Metadata};
 use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
-use penumbra_proto::core::app::v1::AppParameters;
+use penumbra_proto::core::{app::v1::AppParameters, component::sct::v1::Epoch};
 use penumbra_proto::{
     crypto::tct::v1::StateCommitment,
     view::v1::{NotesRequest, SwapRecord},
@@ -20,7 +20,7 @@ use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsValue;
 use web_sys::IdbTransactionMode::Readwrite;
 
-use crate::error::WasmResult;
+use crate::error::{WasmError, WasmResult};
 use crate::note_record::SpendableNoteRecord;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -305,5 +305,21 @@ impl IndexedDBStorage {
         // TODO GasPrices is missing domain type impl, requiring this
         // .map(serde_wasm_bindgen::from_value)
         // .transpose()?)
+    }
+
+    pub async fn get_latest_known_epoch(&self) -> WasmResult<Option<Epoch>> {
+        let tx = self.db.transaction_on_one(&self.constants.tables.epochs)?;
+        let store = tx.object_store(&self.constants.tables.epochs)?;
+
+        if let Some(cursor) = store
+            .open_cursor_with_direction(web_sys::IdbCursorDirection::Prev)?
+            .await?
+        {
+            // Return the first epoch index, since we're cursoring from the end.
+            let epoch: Epoch = serde_wasm_bindgen::from_value(cursor.value())?;
+            return Ok(Some(epoch));
+        }
+
+        Ok(None)
     }
 }
