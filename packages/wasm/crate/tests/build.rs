@@ -91,6 +91,7 @@ mod tests {
             fmd_parameters: String,
             app_parameters: String,
             gas_prices: String,
+            epochs: String,
         }
 
         // Define `IndexDB` table parameters and constants.
@@ -102,6 +103,7 @@ mod tests {
             fmd_parameters: "FMD_PARAMETERS".to_string(),
             app_parameters: "APP_PARAMETERS".to_string(),
             gas_prices: "GAS_PRICES".to_string(),
+            epochs: "EPOCHS".to_string(),
         };
 
         let constants: IndexedDbConstants = IndexedDbConstants {
