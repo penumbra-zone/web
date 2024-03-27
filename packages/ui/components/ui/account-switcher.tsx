@@ -1,8 +1,8 @@
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { cn } from '../../lib/utils';
 import { Button } from './button';
 import { Input } from './input';
-import { useMemo, useState } from 'react';
 
 const MAX_INDEX = 2 ** 32;
 
@@ -27,21 +27,26 @@ export const AccountSwitcher = ({
 
   const sortedFilter = useMemo(() => (filter ? [...filter].sort() : undefined), [filter]);
 
+  const handleChange = (value: number) => {
+    onChange(value);
+    setInputCharWidth(String(value).length);
+  };
+
   const handleClickPrevious = () => {
     if (sortedFilter) {
       const previousAccount = sortedFilter[sortedFilter.indexOf(account) - 1];
-      if (previousAccount !== undefined) onChange(previousAccount);
+      if (previousAccount !== undefined) handleChange(previousAccount);
     } else {
-      onChange(account - 1);
+      handleChange(account - 1);
     }
   };
 
   const handleClickNext = () => {
     if (sortedFilter) {
       const nextAccount = sortedFilter[sortedFilter.indexOf(account) + 1];
-      if (nextAccount !== undefined) onChange(nextAccount);
+      if (nextAccount !== undefined) handleChange(nextAccount);
     } else {
-      onChange(account + 1);
+      handleChange(account + 1);
     }
   };
 
@@ -51,17 +56,12 @@ export const AccountSwitcher = ({
     account !== MAX_INDEX &&
     (!sortedFilter || sortedFilter.indexOf(account) < sortedFilter.length - 1);
 
-  const handleChange = (value: number) => {
-    onChange(value);
-    setInputCharWidth(String(value).length);
-  };
-
   return (
     <div className='flex items-center justify-between'>
       {shouldShowPreviousButton ? (
         <Button
           variant='ghost'
-          className={cn('hover:bg-inherit', account === 0 && 'cursor-default')}
+          className={cn('hover:bg-inherit hover:text-slate-400', account === 0 && 'cursor-default')}
         >
           <ArrowLeftIcon
             aria-label='Previous account'
@@ -103,7 +103,7 @@ export const AccountSwitcher = ({
                   handleChange(value);
                 }}
                 style={{ width: `${inputCharWidth}ch` }}
-                value={account ? account.toString().replace(/^0+/, '') : '0'}
+                value={account ? account.toString().replace(/^0+/, '') : '0'} // Removes leading zeros (e.g. 00123 -> 123
               />
             </div>
           </div>
@@ -112,7 +112,10 @@ export const AccountSwitcher = ({
       {shouldShowNextButton ? (
         <Button
           variant='ghost'
-          className={cn('hover:bg-inherit', account === MAX_INDEX && 'cursor-default')}
+          className={cn(
+            'hover:bg-inherit hover:text-slate-400',
+            account === MAX_INDEX && 'cursor-default',
+          )}
         >
           <ArrowRightIcon
             aria-label='Next account'
