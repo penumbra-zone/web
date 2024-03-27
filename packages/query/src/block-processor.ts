@@ -145,13 +145,18 @@ export class BlockProcessor implements BlockProcessorInterface {
     const startHeight = fullSyncHeight ? fullSyncHeight + 1n : 0n;
     let latestKnownBlockHeight = await this.querier.tendermint.latestBlockHeight();
 
-    // In the `for` loop below, we only update validator infos once we've
-    // reached the latest known epoch. This means that, if a user is syncing for
-    // the first time, they could experience a broken UI until the latest known
-    // epoch is reached, since they may have delegation tokens but no validator
-    // info to go with them. So we'll update validator infos at the beginning of
-    // sync as well, and force the rest of sync to wait until it's done.
-    if (startHeight === 0n) await this.updateValidatorInfos(0n);
+    if (startHeight === 0n) {
+      // In the `for` loop below, we only update validator infos once we've
+      // reached the latest known epoch. This means that, if a user is syncing
+      // for the first time, they could experience a broken UI until the latest
+      // known epoch is reached, since they may have delegation tokens but no
+      // validator info to go with them. So we'll update validator infos at the
+      // beginning of sync as well, and force the rest of sync to wait until
+      // it's done.
+      await this.updateValidatorInfos(0n);
+
+      await this.indexedDb.addEpoch(0n);
+    }
 
     // this is an indefinite stream of the (compact) chain from the network
     // intended to run continuously
@@ -273,7 +278,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       const isLastBlockOfEpoch = !!compactBlock.epochRoot;
       if (isLastBlockOfEpoch) {
-        void this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
+        await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
       }
     }
   }

@@ -458,12 +458,14 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
-  async addEpoch(startHeight: bigint, index?: bigint): Promise<void> {
-    if (index === undefined) {
-      const cursor = await this.db.transaction('EPOCHS', 'readonly').store.openCursor(null, 'prev');
-      const previousEpoch = cursor?.value ? Epoch.fromJson(cursor.value) : undefined;
-      index = previousEpoch?.index !== undefined ? previousEpoch.index + 1n : 0n;
-    }
+  /**
+   * Adds a new epoch with the given start height. Automatically sets the epoch
+   * index by finding the previous epoch index, and adding 1n.
+   */
+  async addEpoch(startHeight: bigint): Promise<void> {
+    const cursor = await this.db.transaction('EPOCHS', 'readonly').store.openCursor(null, 'prev');
+    const previousEpoch = cursor?.value ? Epoch.fromJson(cursor.value) : undefined;
+    const index = previousEpoch?.index !== undefined ? previousEpoch.index + 1n : 0n;
 
     const newEpoch = {
       startHeight: startHeight.toString(),
