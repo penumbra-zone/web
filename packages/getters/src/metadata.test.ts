@@ -32,7 +32,7 @@ describe('getDisplayDenomExponent()', () => {
 
 describe('getUnbondingStartHeight()', () => {
   it("gets the unbonding start height, coerced to a `BigInt`, from an unbonding token's asset ID", () => {
-    const metadata = new Metadata({ display: 'uunbonding_start_at_123_penumbravalid1abc123' });
+    const metadata = new Metadata({ display: 'unbonding_start_at_123_penumbravalid1abc123' });
 
     expect(getUnbondingStartHeight(metadata)).toBe(123n);
   });
@@ -58,7 +58,7 @@ describe('getValidatorIdentityKeyAsBech32String()', () => {
   });
 
   describe('when passed metadata of an unbonding token', () => {
-    const metadata = new Metadata({ display: 'uunbonding_start_at_123_penumbravalid1abc123' });
+    const metadata = new Metadata({ display: 'unbonding_start_at_123_penumbravalid1abc123' });
 
     it("returns the bech32 representation of the validator's identity key", () => {
       expect(getValidatorIdentityKeyAsBech32String(metadata)).toBe('penumbravalid1abc123');
