@@ -18,10 +18,10 @@ const getUndelegateClaimPlannerRequest =
     const validatorIdentityKeyAsBech32String =
       getValidatorIdentityKeyAsBech32StringFromValueView(unbondingToken);
     const identityKey = asIdentityKey(validatorIdentityKeyAsBech32String);
-    const startEpochIndex = await sctClient.epochByHeight({ height: unbondingStartHeight });
+    const { epoch: startEpoch } = await sctClient.epochByHeight({ height: unbondingStartHeight });
 
     const { penalty } = await stakeClient.validatorPenalty({
-      startEpochIndex: startEpochIndex.epoch?.index,
+      startEpochIndex: startEpoch?.index,
       endEpochIndex,
       identityKey,
     });
