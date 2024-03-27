@@ -9,7 +9,7 @@ export const customTheme: NamedColorspace = {
   base01: '#ffffff',
   base02: '#212121', // Nested section border color
   base03: '#ffffff',
-  base04: '#464646', // Item count Color
+  base04: '#626262', // Item count Color
   base05: '#ffffff',
   base06: '#ffffff',
   base07: '#ffffff',
