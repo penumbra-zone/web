@@ -1,5 +1,4 @@
 use std::collections::BTreeMap;
-use std::str::FromStr;
 
 use anyhow::anyhow;
 use ark_ff::UniformRand;
@@ -158,7 +157,7 @@ fn prioritize_and_filter_spendable_notes(
 pub async fn plan_transaction(
     idb_constants: JsValue,
     request: JsValue,
-    bech32_full_viewing_key: &str,
+    full_viewing_key: JsValue,
 ) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
@@ -170,7 +169,7 @@ pub async fn plan_transaction(
         .transpose()?
         .unwrap_or_default();
 
-    let fvk = FullViewingKey::from_str(bech32_full_viewing_key)?;
+    let fvk: FullViewingKey = serde_wasm_bindgen::from_value(full_viewing_key)?;
 
     // should ignore the randomizer for change_address, there is no point using ephemeral address
     let (change_address, _) = fvk

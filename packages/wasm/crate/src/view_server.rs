@@ -1,5 +1,5 @@
+use std::collections::BTreeMap;
 use std::convert::TryInto;
-use std::{collections::BTreeMap, str::FromStr};
 
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_compact_block::{CompactBlock, StatePayload};
@@ -73,21 +73,21 @@ impl ViewServer {
     /// Create new instances of `ViewServer`
     /// Function opens a connection to indexedDb
     /// Arguments:
-    ///     full_viewing_key: `bech32 string`
+    ///     full_viewing_key: `FullViewingKey`
     ///     epoch_duration: `u64`
     ///     stored_tree: `StoredTree`
     ///     idb_constants: `IndexedDbConstants`
     /// Returns: `ViewServer`
     #[wasm_bindgen]
     pub async fn new(
-        full_viewing_key: &str,
+        full_viewing_key: JsValue,
         epoch_duration: u64,
         stored_tree: JsValue,
         idb_constants: JsValue,
     ) -> WasmResult<ViewServer> {
         utils::set_panic_hook();
 
-        let fvk = FullViewingKey::from_str(full_viewing_key)?;
+        let fvk: FullViewingKey = serde_wasm_bindgen::from_value(full_viewing_key)?;
         let stored_tree: StoredTree = serde_wasm_bindgen::from_value(stored_tree)?;
         let tree = load_tree(stored_tree);
         let constants = serde_wasm_bindgen::from_value(idb_constants)?;
