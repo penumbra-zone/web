@@ -73,12 +73,8 @@ export const assetPatterns: AssetPatterns = {
     /^delegation_(?<bech32IdentityKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
   ),
   proposalNft: new RegexMatcher(/^proposal_/),
-  /**
-   * Unbonding tokens have only one denom unit, which is the base denom. Hence
-   * the extra `u` at the beginning.
-   */
   unbondingToken: new RegexMatcher(
-    /^uunbonding_start_at_(?<startAt>[0-9]+)_(?<bech32IdentityKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
+    /^unbonding_start_at_(?<startAt>[0-9]+)_(?<bech32IdentityKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
   ),
   votingReceipt: new RegexMatcher(/^voted_on_/),
   ibc: new RegexMatcher(/^transfer\/(?<channel>channel-\d+)\/(?<denom>.*)/),

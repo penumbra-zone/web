@@ -15,7 +15,7 @@ describe('Customizing metadata', () => {
   test('should work for unbonding token', () => {
     const metadata = new Metadata({
       display:
-        'uunbonding_start_at_29_penumbravalid1fjuj67ayaqueqxg03d65ps5aah6m39u39qeacu3zv2cw3dzxssyq3yrcez',
+        'unbonding_start_at_29_penumbravalid1fjuj67ayaqueqxg03d65ps5aah6m39u39qeacu3zv2cw3dzxssyq3yrcez',
     });
 
     expect(customizeSymbol(metadata).symbol).toBe('unbondUMat29(fjuj67ay…)');
