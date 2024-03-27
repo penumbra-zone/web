@@ -33,7 +33,7 @@ export const ValueViewComponent = ({
     const value = view.valueView.value;
     const metadata = view.valueView.value.metadata;
     const amount = value.amount ?? new Amount();
-    const exponent = getDisplayDenomExponent(metadata);
+    const exponent = getDisplayDenomExponent.optional()(metadata);
     // The regex trims trailing zeros which toFormat adds in
     const formattedAmount = fromBaseUnitAmount(amount, exponent)
       .toFormat(6)
