@@ -384,9 +384,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   // This is expensive to do every block, so should only be done in development.
   // @ts-expect-error Only used ad-hoc in dev
   private async assertRootValid(blockHeight: bigint): Promise<void> {
-    const sourceOfTruth: Uint8Array = await this.querier.cnidarium.keyValue(
-      `sct/anchor/${blockHeight}`,
-    );
+    const sourceOfTruth = await this.querier.cnidarium.keyValue(`sct/anchor/${blockHeight}`);
     const inMemoryRoot = this.viewServer.getSctRoot();
     if (!validSctRoot({ inner: sourceOfTruth }))
       throw new Error(`Block height: ${blockHeight}. Remote cnidarium provided invalid SCT root.`);
