@@ -18,6 +18,7 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
     });
 
     const swapClaimTxId = value.swapView.value.claimTx;
+    console.log('SwapViewComponent', value.swapView.value);
 
     return (
       <ViewBox
