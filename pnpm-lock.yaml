@@ -15,11 +15,11 @@ importers:
         specifier: 1.4.0-20240327103030-e2006674271c.2
         version: 1.4.0-20240327103030-e2006674271c.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0)
       '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.8.0-20240327192233-658f3904024e.2
-        version: 1.8.0-20240327192233-658f3904024e.2(@bufbuild/protobuf@1.8.0)
+        specifier: 1.8.0-20240327223130-72af6abcb670.2
+        version: 1.8.0-20240327223130-72af6abcb670.2(@bufbuild/protobuf@1.8.0)
       '@buf/penumbra-zone_penumbra.connectrpc_es':
-        specifier: 1.4.0-20240327192233-658f3904024e.2
-        version: 1.4.0-20240327192233-658f3904024e.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0)
+        specifier: 1.4.0-20240327223130-72af6abcb670.2
+        version: 1.4.0-20240327223130-72af6abcb670.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0)
       '@buf/tendermint_tendermint.bufbuild_es':
         specifier: 1.8.0-20231117195010-33ed361a9051.2
         version: 1.8.0-20231117195010-33ed361a9051.2(@bufbuild/protobuf@1.8.0)
@@ -98,7 +98,7 @@ importers:
         version: 0.4.6(eslint@8.57.0)
       eslint-plugin-tailwindcss:
         specifier: ^3.15.1
-        version: 3.15.1(tailwindcss@3.4.2)
+        version: 3.15.1(tailwindcss@3.4.3)
       eslint-plugin-turbo:
         specifier: ^1.13.0
         version: 1.13.0(eslint@8.57.0)
@@ -2552,8 +2552,8 @@ packages:
       - '@bufbuild/protobuf'
     dev: false
 
-  /@buf/penumbra-zone_penumbra.bufbuild_es@1.7.2-20240327192233-658f3904024e.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.7.2-20240327192233-658f3904024e.1.tgz}
+  /@buf/penumbra-zone_penumbra.bufbuild_es@1.7.2-20240327223130-72af6abcb670.1(@bufbuild/protobuf@1.8.0):
+    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.7.2-20240327223130-72af6abcb670.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2580,8 +2580,8 @@ packages:
       '@bufbuild/protobuf': 1.8.0
     dev: false
 
-  /@buf/penumbra-zone_penumbra.bufbuild_es@1.8.0-20240327192233-658f3904024e.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.8.0-20240327192233-658f3904024e.2.tgz}
+  /@buf/penumbra-zone_penumbra.bufbuild_es@1.8.0-20240327223130-72af6abcb670.2(@bufbuild/protobuf@1.8.0):
+    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.8.0-20240327223130-72af6abcb670.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2594,8 +2594,8 @@ packages:
       '@bufbuild/protobuf': 1.8.0
     dev: false
 
-  /@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240327192233-658f3904024e.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.connectrpc_es/-/penumbra-zone_penumbra.connectrpc_es-1.4.0-20240327192233-658f3904024e.2.tgz}
+  /@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240327223130-72af6abcb670.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
+    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.connectrpc_es/-/penumbra-zone_penumbra.connectrpc_es-1.4.0-20240327223130-72af6abcb670.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2605,7 +2605,7 @@ packages:
       '@buf/cosmos_ibc.connectrpc_es': 1.4.0-20230913112312-7ab44ae956a0.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0)
       '@buf/cosmos_ics23.connectrpc_es': 1.4.0-20221207100654-55085f7c710a.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0)
       '@buf/googleapis_googleapis.connectrpc_es': 1.4.0-20221214150216-75b4300737fb.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0)
-      '@buf/penumbra-zone_penumbra.bufbuild_es': 1.7.2-20240327192233-658f3904024e.1(@bufbuild/protobuf@1.8.0)
+      '@buf/penumbra-zone_penumbra.bufbuild_es': 1.7.2-20240327223130-72af6abcb670.1(@bufbuild/protobuf@1.8.0)
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.8.0)
     transitivePeerDependencies:
       - '@bufbuild/protobuf'
@@ -9143,7 +9143,7 @@ packages:
       - typescript
     dev: true
 
-  /eslint-plugin-tailwindcss@3.15.1(tailwindcss@3.4.2):
+  /eslint-plugin-tailwindcss@3.15.1(tailwindcss@3.4.3):
     resolution: {integrity: sha512-4RXRMIaMG07C2TBEW1k0VM4+dDazz1kxcZhkK4zirvmHGZTA4jnlSO2kq5mamuSPi+Wo17dh2SlC8IyFBuCd7Q==}
     engines: {node: '>=12.13.0'}
     peerDependencies:
@@ -9151,7 +9151,7 @@ packages:
     dependencies:
       fast-glob: 3.3.2
       postcss: 8.4.38
-      tailwindcss: 3.4.2
+      tailwindcss: 3.4.3
     dev: true
 
   /eslint-plugin-turbo@1.13.0(eslint@8.57.0):
@@ -14850,8 +14850,8 @@ packages:
     transitivePeerDependencies:
       - ts-node
 
-  /tailwindcss@3.4.2:
-    resolution: {integrity: sha512-1kIzVecynNKMhhX8mPTOwTkkVHupUTMbEvk4n1ByxdM8sQTJ8fE41Y4TdORG6GmiVXHhfZ/++0hiIFJFwfadsA==}
+  /tailwindcss@3.4.3:
+    resolution: {integrity: sha512-U7sxQk/n397Bmx4JHbJx/iSOOv5G+II3f1kpLpY2QeUv5DcPdcTsYLlusZfq1NthHS1c1cZoyFmmkex1rzke0A==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
