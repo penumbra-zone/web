@@ -9,9 +9,13 @@ import type { StateCommitmentTree } from '@penumbra-zone/types/src/state-commitm
 import { JsonValue } from '@bufbuild/protobuf';
 import { authorize, build_action, build_parallel, load_proving_key, witness } from '../wasm';
 import { ActionType, provingKeys } from './proving-keys';
+import {
+  FullViewingKey,
+  SpendKey,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
-export const authorizePlan = (spendKey: string, txPlan: TransactionPlan): AuthorizationData => {
-  const result = authorize(spendKey, txPlan.toJson()) as unknown;
+export const authorizePlan = (spendKey: SpendKey, txPlan: TransactionPlan): AuthorizationData => {
+  const result = authorize(spendKey.toBinary(), txPlan.toJson()) as unknown;
   return AuthorizationData.fromJsonString(JSON.stringify(result));
 };
 
@@ -38,7 +42,7 @@ export const buildParallel = (
 export const buildActionParallel = async (
   txPlan: TransactionPlan,
   witnessData: WitnessData,
-  fullViewingKey: string,
+  fullViewingKey: FullViewingKey,
   actionId: number,
 ): Promise<Action> => {
   // Conditionally read proving keys from disk and load keys into WASM binary
@@ -49,7 +53,7 @@ export const buildActionParallel = async (
   const result = build_action(
     txPlan.toJson(),
     txPlan.actions[actionId]?.toJson(),
-    fullViewingKey,
+    fullViewingKey.toBinary(),
     witnessData.toJson(),
   ) as unknown;
 

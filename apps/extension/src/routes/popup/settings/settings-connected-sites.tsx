@@ -5,11 +5,11 @@ import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition'
 import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { LinkGradientIcon } from '../../../icons/link-gradient';
 import { SettingsHeader } from '../../../shared/components/settings-header';
-import { OriginRecord } from '@penumbra-zone/storage/src/chrome/local';
 import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
 import { useStore } from '../../../state';
 import { connectedSitesSelector } from '../../../state/connected-sites';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import { OriginRecord } from '@penumbra-zone/types/src/local-storage';
 
 export const SettingsConnectedSites = () => {
   const {

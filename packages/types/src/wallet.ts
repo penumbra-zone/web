@@ -1,4 +1,9 @@
 import { Box, BoxJson } from './box';
+import {
+  FullViewingKey,
+  WalletId,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { Stringified } from './jsonified';
 
 export interface WalletCreate {
   label: string;
@@ -8,8 +13,8 @@ export interface WalletCreate {
 // Stored in chrome.local.storage
 export interface WalletJson {
   label: string;
-  id: string;
-  fullViewingKey: string;
+  id: Stringified<WalletId>;
+  fullViewingKey: Stringified<FullViewingKey>;
   custody: { encryptedSeedPhrase: BoxJson };
 }
 
@@ -23,8 +28,8 @@ export type Custody = HotWallet; // Later on, could have different types (like l
 export class Wallet {
   constructor(
     readonly label: string,
-    readonly id: string,
-    readonly fullViewingKey: string,
+    readonly id: Stringified<WalletId>,
+    readonly fullViewingKey: Stringified<FullViewingKey>,
     readonly custody: Custody,
   ) {}
 

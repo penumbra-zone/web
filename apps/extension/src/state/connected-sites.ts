@@ -1,9 +1,9 @@
 import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
-import { LocalStorageState, OriginRecord } from '@penumbra-zone/storage/src/chrome/local';
 import { AllSlices, SliceCreator } from '.';
 
 import Map from '@penumbra-zone/polyfills/src/Map.groupBy';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import { LocalStorageState, OriginRecord } from '@penumbra-zone/types/src/local-storage';
 
 export interface ConnectedSitesSlice {
   filter?: string;
