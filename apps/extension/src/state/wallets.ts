@@ -91,7 +91,7 @@ export const addrByIndexSelector =
     const active = getActiveWallet(state);
     if (!active) throw new Error('No active wallet');
 
-    let fullViewingKey = FullViewingKey.fromJsonString(active.fullViewingKey);
+    const fullViewingKey = FullViewingKey.fromJsonString(active.fullViewingKey);
     return ephemeral
       ? getEphemeralByIndex(fullViewingKey, index)
       : getAddressByIndex(fullViewingKey, index);
