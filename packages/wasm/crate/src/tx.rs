@@ -314,8 +314,8 @@ pub async fn transaction_info_inner(
                                                 transaction_info.id.clone()
                                                     .and_then(|id| {
                                                         let result = TransactionId::try_from(id);
-                                                        if result.is_ok() {
-                                                            Some(result.unwrap())
+                                                        if let Ok(transaction_id) = result {
+                                                            Some(transaction_id)
                                                         } else {
                                                             None
                                                         }
@@ -332,7 +332,10 @@ pub async fn transaction_info_inner(
                                     if should_break {
                                         break;
                                     }
+
                                 }
+
+                                None::<()>
                             });
                     }
                 }
@@ -347,11 +350,13 @@ pub async fn transaction_info_inner(
                     .map(|source| {
                         if let Some(Source::Transaction(transaction)) = source.source {
                             let id: Result<[u8; 32], Vec<u8>> = transaction.id.try_into();
-                            if id.is_ok() {
+                            if let Ok(id_inner) = id {
                                 txp.creation_transaction_ids_by_nullifier
-                                    .insert(nullifier, TransactionId { 0: id.unwrap() });
+                                    .insert(nullifier, TransactionId(id_inner));
                             }
                         }
+
+                        None::<()>
                     });
 
                 let output_1_record = storage
