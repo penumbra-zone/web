@@ -32,7 +32,6 @@ export class ExtensionStorage<T> {
       | Record<K, StorageItem<T[K]>>
       | EmptyObject;
 
-    console.log(key);
     if (isEmptyObj(result)) return this.defaults[key];
     else return await this.migrateIfNeeded(key, result[key]);
   }
@@ -51,9 +50,6 @@ export class ExtensionStorage<T> {
   }
 
   private async migrateIfNeeded<K extends keyof T>(key: K, item: StorageItem<T[K]>): Promise<T[K]> {
-    console.log(item.version + ' != ' + this.version);
-    console.log(key);
-    console.log(item);
     if (item.version !== this.version) {
       const migrationFn = this.migrations[key]?.[item.version];
       if (migrationFn) {
