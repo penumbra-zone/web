@@ -4,7 +4,7 @@ import * as path from 'path';
 import { provingKeys } from '@penumbra-zone/wasm/src/proving-keys';
 
 const main = () => {
-  const VERSION_TAG = 'v0.68.0';
+  const VERSION_TAG = 'v0.70.3';
 
   const githubSourceDir = `https://github.com/penumbra-zone/penumbra/raw/${VERSION_TAG}/crates/crypto/proof-params/src/gen/`;
 
