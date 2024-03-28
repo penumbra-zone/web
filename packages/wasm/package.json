@@ -17,6 +17,9 @@
     "test": "vitest run",
     "test:rust": "cd crate ; wasm-pack test --headless --firefox -- --test build --target wasm32-unknown-unknown --release --features 'mock-database'"
   },
+  "bin": {
+    "download-proving-keys": "./bin/download-proving-keys.js"
+  },
   "dependencies": {
     "@penumbra-zone/types": "workspace:*",
     "zod": "^3.22.4",
