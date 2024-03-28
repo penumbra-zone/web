@@ -38,7 +38,9 @@ export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps
           </span>
         </>
       ) : (
-        <AddressComponent address={view.addressView.value.address} />
+        <div className='text-muted-foreground'>
+          <AddressComponent address={view.addressView.value.address} />
+        </div>
       )}
 
       {copyable && <CopyToClipboardIconButton text={encodedAddress} />}

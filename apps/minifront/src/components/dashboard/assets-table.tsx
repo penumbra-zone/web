@@ -41,7 +41,7 @@ export default function AssetsTable() {
                 </h2>
               </div>
 
-              <div className='max-w-72 truncate'>
+              <div className='max-w-72 text-muted-foreground'>
                 <AddressComponent address={a.address} />
               </div>
             </div>
