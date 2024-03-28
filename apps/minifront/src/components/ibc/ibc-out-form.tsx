@@ -31,11 +31,12 @@ export const IbcOutForm = () => {
         void sendIbcWithdraw();
       }}
     >
-      <ChainSelector />
+      <ChainSelector light />
       <InputToken
-        label='Amount to send'
+        label='Amount to unshield'
         placeholder='Enter an amount'
-        className='mb-1'
+        className='mb-1 bg-teal text-secondary-foreground'
+        inputClassName='placeholder:text-secondary'
         selection={selection}
         setSelection={setSelection}
         value={amount}
@@ -54,7 +55,7 @@ export const IbcOutForm = () => {
       />
       <InputBlock
         label='Recipient on destination chain'
-        className='mb-1'
+        className='mb-1 bg-teal text-secondary-foreground placeholder:text-secondary'
         value={destinationChainAddress}
         validations={[
           {
@@ -73,16 +74,16 @@ export const IbcOutForm = () => {
       </InputBlock>
       <Button
         type='submit'
-        variant='gradient'
-        className='mt-9'
         disabled={
-          !Number(amount) ||
-          !destinationChainAddress ||
-          !!Object.values(validationErrors).find(Boolean) ||
-          !selection
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          false && // testing
+          (!Number(amount) ||
+            !destinationChainAddress ||
+            !!Object.values(validationErrors).find(Boolean) ||
+            !selection)
         }
       >
-        Send
+        Unshield
       </Button>
     </form>
   );

@@ -14,10 +14,15 @@ export interface HeaderLink {
 
 export const headerLinks: HeaderLink[] = [
   {
-    href: PagePath.DASHBOARD,
-    label: 'Dashboard',
+    href: PagePath.IBC,
+    label: 'Shield',
     active: true,
-    subLinks: [PagePath.TRANSACTIONS, PagePath.NFTS],
+    mobileIcon: <MixerHorizontalIcon className='size-5 text-muted-foreground' />,
+  },
+  {
+    href: PagePath.DASHBOARD,
+    label: 'Assets',
+    active: true,
     mobileIcon: <BoxIcon />,
   },
   {
@@ -35,15 +40,9 @@ export const headerLinks: HeaderLink[] = [
   },
   {
     href: PagePath.STAKING,
-    label: 'Staking',
+    label: 'Stake',
     active: true,
     mobileIcon: <TextAlignLeftIcon className='size-5 text-muted-foreground' />,
-  },
-  {
-    href: PagePath.IBC,
-    label: 'IBC',
-    active: false,
-    mobileIcon: <MixerHorizontalIcon className='size-5 text-muted-foreground' />,
   },
 ];
 
