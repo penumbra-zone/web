@@ -16,7 +16,7 @@ import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
 import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 import { planBuildBroadcast } from './helpers';
-import { validateAmount } from './send';
+import { amountMoreThanBalance } from './send';
 import { IbcLoaderResponse } from '../components/ibc/ibc-loader';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 import {
@@ -24,8 +24,8 @@ import {
   localAssets,
   STAKING_TOKEN_METADATA,
 } from '@penumbra-zone/constants/src/assets';
-import { bech32IsValid } from '@penumbra-zone/bech32';
-import { errorToast } from '@penumbra-zone/ui';
+import { bech32IsValid } from '@penumbra-zone/bech32/src/validate';
+import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 
 export interface IbcSendSlice {
   selection: BalancesResponse | undefined;
@@ -94,8 +94,12 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
 const getTimeout = async (
   chain: Chain,
 ): Promise<{ timeoutTime: bigint; timeoutHeight: Height }> => {
-  const twoDaysInMilliseconds = 2 * 24 * 60 * 60 * 1000; // 2 days * 24 hours/day * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds/second
-  const timeoutTime = BigInt(Date.now() + twoDaysInMilliseconds);
+  // timeout 2 days from now, in nanoseconds since epoch
+  const twoDaysMs = BigInt(2 * 24 * 60 * 60 * 1000); // 2 days * 24 hours/day * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds per second
+  // truncate resolution at seconds, to obfuscate clock skew
+  const lowPrecisionNowMs = BigInt(Math.floor(Date.now() / 1000) * 1000); // ms/1000 to second, floor, second*1000 to ms
+  // (now + two days) as nanoseconds
+  const timeoutTime = (lowPrecisionNowMs + twoDaysMs) * 1_000_000n; // 1 million nanoseconds per millisecond
 
   const { clientStates } = await ibcClient.clientStates({});
   const unpacked = clientStates
@@ -159,7 +163,9 @@ export const ibcValidationErrors = (state: AllSlices) => {
     recipientErr: !state.ibc.destinationChainAddress
       ? false
       : !validateAddress(state.ibc.chain, state.ibc.destinationChainAddress),
-    amountErr: !state.ibc.selection ? false : validateAmount(state.ibc.selection, state.ibc.amount),
+    amountErr: !state.ibc.selection
+      ? false
+      : amountMoreThanBalance(state.ibc.selection, state.ibc.amount),
   };
 };
 

@@ -1,27 +1,31 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/src/metadata';
-import { CopyToClipboard } from '../../copy-to-clipboard';
-import { AssetIcon } from './asset-icon';
+import { CopyToClipboard } from '../../../copy-to-clipboard';
+import { AssetIcon } from '../asset-icon';
 import { CopyIcon } from '@radix-ui/react-icons';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { cn } from '../../../../lib/utils';
 import { fromBaseUnitAmount } from '@penumbra-zone/types/src/amount';
+import { Pill } from '../../../pill';
 
 interface ValueViewProps {
   view: ValueView | undefined;
+  /**
+   * When rendering an equivalent value, use the `equivalent` variant to
+   * visually distinguish it as an equivalent value.
+   */
+  variant?: 'default' | 'equivalent';
   showDenom?: boolean;
   showValue?: boolean;
   showIcon?: boolean;
-  showEquivalent?: boolean;
 }
 
 export const ValueViewComponent = ({
   view,
+  variant = 'default',
   showDenom = true,
   showValue = true,
   showIcon = true,
-  showEquivalent = true,
 }: ValueViewProps) => {
   if (!view) return <></>;
 
@@ -37,48 +41,24 @@ export const ValueViewComponent = ({
     const symbol = metadata.symbol || 'Unknown Asset';
 
     return (
-      <div
-        className={cn(
-          'inline-flex min-w-0 max-w-full items-center gap-1 rounded-full bg-light-brown py-1 pl-1 pr-3 text-sm hover:bg-brown',
-          showIcon && 'pl-1',
-          !showIcon && 'pl-3',
-        )}
-      >
-        {showIcon && (
-          <div className='mr-1 flex size-6 items-center justify-center rounded-full'>
-            <AssetIcon metadata={metadata} />
-          </div>
-        )}
-        {showValue && <span className='leading-[15px]'>{formattedAmount}</span>}
-        {showDenom && (
-          <span className='truncate font-mono text-xs text-muted-foreground'>{symbol}</span>
-        )}
-        {
-          // TODO: this will need refinement once we actually hand out
-          // equivalent values to the frontend. it would be nice to have
-          // another parameter that controls whether the valueview should
-          // fill width or not (with value to the left, equiv values to the right)
-        }
-        {showEquivalent &&
-          value.equivalentValues.map((equivalentValue, index) => {
-            const exponent = getDisplayDenomExponent(equivalentValue.numeraire);
-            const formattedEquivalent = fromBaseUnitAmount(
-              equivalentValue.equivalentAmount ?? new Amount(),
-              exponent,
-            )
-              .toFormat(6)
-              .replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
-            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-            const symbol = equivalentValue.numeraire?.symbol || 'Unknown Asset';
-            return (
-              <div key={index} className='flex'>
-                <AssetIcon metadata={equivalentValue.numeraire} />
-                <span>{formattedEquivalent}</span>
-                <span>{symbol}</span>
-              </div>
-            );
-          })}
-      </div>
+      <Pill variant={variant === 'default' ? 'default' : 'dashed'}>
+        <div className='flex min-w-0 items-center gap-1'>
+          {showIcon && (
+            <div className='-ml-2 mr-1 flex size-6 items-center justify-center rounded-full'>
+              <AssetIcon metadata={metadata} />
+            </div>
+          )}
+          {showValue && (
+            <span className='leading-[15px]'>
+              {variant === 'equivalent' && <>~ </>}
+              {formattedAmount}
+            </span>
+          )}
+          {showDenom && (
+            <span className='truncate font-mono text-xs text-muted-foreground'>{symbol}</span>
+          )}
+        </div>
+      </Pill>
     );
   }
 

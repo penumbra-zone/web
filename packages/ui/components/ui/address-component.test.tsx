@@ -1,7 +1,7 @@
 import { AddressComponent } from './address-component';
 import { describe, expect, test } from 'vitest';
 import { render } from '@testing-library/react';
-import { bech32ToAddress } from '@penumbra-zone/bech32';
+import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 describe('<AddressComponent />', () => {

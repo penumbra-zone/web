@@ -1,18 +1,18 @@
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import { Identicon } from '@penumbra-zone/ui/components/ui/identicon';
+import { IdentityKeyComponent } from '@penumbra-zone/ui/components/ui/identity-key-component';
 import {
-  Identicon,
-  IdentityKeyComponent,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@penumbra-zone/ui';
+} from '@penumbra-zone/ui/components/ui/tooltip';
 import { useStore } from '../../../../state';
 import {
   getIdentityKeyFromValidatorInfo,
   getValidator,
 } from '@penumbra-zone/getters/src/validator-info';
-import { bech32IdentityKey } from '@penumbra-zone/bech32';
+import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
 import { calculateCommissionAsPercentage } from '@penumbra-zone/types/src/staking';
 
 /**

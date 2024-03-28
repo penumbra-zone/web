@@ -1,15 +1,16 @@
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { approverCtx, extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx';
-import { IndexedDbMock, MockExtLocalCtx, MockExtSessionCtx, MockServices } from '../test-utils';
-import { authorize } from './authorize';
+import { approverCtx } from '../../../ctx/approver';
+import { extLocalCtx, extSessionCtx, servicesCtx } from '../../../ctx/prax';
+import { IndexedDbMock, MockExtLocalCtx, MockExtSessionCtx, MockServices } from '../../test-utils';
+import { authorize } from '.';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
 import {
   AuthorizationData,
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { Services } from '@penumbra-zone/services';
+import { Services } from '@penumbra-zone/services/src/index';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
@@ -35,7 +36,7 @@ describe('Authorize request handler', () => {
 
     mockServices = {
       getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
+        Promise.resolve({ indexedDb: mockIndexedDb, viewServer: { fullViewingKey: 'fvk' } }),
       ) as MockServices['getWalletServices'],
     };
 
@@ -129,23 +130,6 @@ describe('Authorize request handler', () => {
       return Promise.resolve(undefined);
     });
     await expect(authorize(req, mockCtx)).rejects.toThrow('User must login to extension');
-  });
-
-  test('should fail if local context not include FVK', async () => {
-    mockExtLocalCtx.get.mockImplementation(() => {
-      return Promise.resolve([
-        {
-          custody: {
-            encryptedSeedPhrase: {
-              cipherText: '1MUyDW2GHSeZYVF4f=',
-              nonce: 'MUyDW2GHSeZYVF4f',
-            },
-          },
-          fullViewingKey: undefined,
-        },
-      ]);
-    });
-    await expect(authorize(req, mockCtx)).rejects.toThrow('Unable to get full viewing key');
   });
 
   test('should fail if incorrect password is used', async () => {

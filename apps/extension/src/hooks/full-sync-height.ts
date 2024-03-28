@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { TendermintQuerier } from '@penumbra-zone/query';
+import { TendermintQuerier } from '@penumbra-zone/query/src/queriers/tendermint';
 import { PopupLoaderData } from '../routes/popup/home';
 import { useStore } from '../state';
 import { networkSelector } from '../state/network';

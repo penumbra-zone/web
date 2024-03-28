@@ -2,7 +2,7 @@ import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { AddressIcon } from '@penumbra-zone/ui/components/ui/address-icon';
 import { AddressComponent } from '@penumbra-zone/ui/components/ui/address-component';
 import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
-import { Table, TableBody, TableCell, TableRow } from '@penumbra-zone/ui';
+import { Table, TableBody, TableCell, TableRow } from '@penumbra-zone/ui/components/ui/table';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
 
@@ -37,7 +37,7 @@ export default function AssetsTable() {
               <div className='flex items-center justify-center gap-2'>
                 <AddressIcon address={a.address} size={20} />
                 <h2 className='whitespace-nowrap font-bold md:text-base xl:text-xl'>
-                  Account #{a.index.account}
+                  Account #{a.account}
                 </h2>
               </div>
 

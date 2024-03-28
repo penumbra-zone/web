@@ -2,10 +2,12 @@ import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { createPromiseClient } from '@connectrpc/connect';
 import { FormEvent, useState } from 'react';
-import { Button, FadeTransition, Input } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
+import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { useChainIdQuery } from '../../../hooks/chain-id';
-import { ShareGradientIcon } from '../../../icons';
-import { SettingsHeader } from '../../../shared';
+import { ShareGradientIcon } from '../../../icons/share-gradient';
+import { SettingsHeader } from '../../../shared/components/settings-header';
 import { useStore } from '../../../state';
 import { networkSelector } from '../../../state/network';
 import '@penumbra-zone/polyfills/src/Promise.withResolvers';

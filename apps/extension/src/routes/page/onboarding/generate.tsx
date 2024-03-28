@@ -1,24 +1,19 @@
 import { ExclamationTriangleIcon, LockClosedIcon } from '@radix-ui/react-icons';
 import { SeedPhraseLength } from '@penumbra-zone/crypto-web/src/mnemonic';
 import { useEffect, useState } from 'react';
-import {
-  BackIcon,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CopyToClipboard,
-  FadeTransition,
-  Input,
-} from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { BackIcon } from '@penumbra-zone/ui/components/ui/back-icon';
+import { Card, CardContent, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
+import { CopyToClipboard } from '@penumbra-zone/ui/components/ui/copy-to-clipboard';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
+import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useCountdown } from 'usehooks-ts';
 import { useStore } from '../../../state';
 import { generateSelector } from '../../../state/seed-phrase/generate';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { WordLengthToogles } from '../../../shared';
+import { WordLengthToogles } from '../../../shared/containers/word-length-toogles';
 
 export const GenerateSeedPhrase = () => {
   const navigate = usePageNav();

@@ -5,9 +5,10 @@ import {
   getEphemeralByIndex,
   getFullViewingKey,
   getWalletId,
-} from '@penumbra-zone/wasm';
-import { Key } from '@penumbra-zone/crypto-web';
-import { ExtensionStorage, LocalStorageState } from '@penumbra-zone/storage';
+} from '@penumbra-zone/wasm/src/keys';
+import { Key } from '@penumbra-zone/crypto-web/src/encryption';
+import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
+import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/local';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { Wallet, WalletCreate } from '@penumbra-zone/types/src/wallet';
 

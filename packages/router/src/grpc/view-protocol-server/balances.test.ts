@@ -1,4 +1,4 @@
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 import { balances } from './balances';
 
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
@@ -12,15 +12,23 @@ import {
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { Services } from '@penumbra-zone/services';
+import { Services } from '@penumbra-zone/services/src/index';
 import { IndexedDbMock, MockServices } from '../test-utils';
 import {
   AssetId,
+  EquivalentValue,
+  EstimatedPrice,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { getAssetIdFromValueView, getMetadata } from '@penumbra-zone/getters/src/value-view';
+import {
+  getAmount,
+  getAssetIdFromValueView,
+  getEquivalentValues,
+  getMetadata,
+} from '@penumbra-zone/getters/src/value-view';
 import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
 import { base64ToUint8Array } from '@penumbra-zone/types/src/base64';
+import { multiplyAmountByNumber } from '@penumbra-zone/types/src/amount';
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {
   const account0Res = responses.filter(
@@ -38,6 +46,7 @@ describe('Balances request handler', () => {
   let req: BalancesRequest;
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
+  let mockIndexedDb: IndexedDbMock;
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -47,8 +56,9 @@ describe('Balances request handler', () => {
       [Symbol.asyncIterator]: () => mockIterateSpendableNotes,
     };
 
-    const mockIndexedDb: IndexedDbMock = {
+    mockIndexedDb = {
       getAssetsMetadata: vi.fn(),
+      getPricesForAsset: vi.fn(),
       iterateSpendableNotes: () => mockIterateSpendableNotes,
     };
 
@@ -99,6 +109,8 @@ describe('Balances request handler', () => {
         }),
       );
     });
+
+    mockIndexedDb.getPricesForAsset?.mockImplementation(() => Promise.resolve([]));
     req = new BalancesRequest();
   });
 
@@ -148,6 +160,44 @@ describe('Balances request handler', () => {
       responses.push(new BalancesResponse(res));
     }
     expect(responses.length).toBe(0);
+  });
+
+  test('equivalent values', async () => {
+    expect.assertions(3);
+
+    const numeraire = new AssetId({ inner: new Uint8Array([1, 2, 3, 4]) });
+    const pricedAsset = new AssetId({ inner: new Uint8Array([5, 6, 7, 8]) });
+    const mockNumerairePerUnit = 2.5;
+
+    // We'll just mock the same response for every call -- we're just testing
+    // that the equivalent prices get included in the RPC response.
+    mockIndexedDb.getPricesForAsset?.mockResolvedValue([
+      new EstimatedPrice({
+        asOfHeight: 123n,
+        numerairePerUnit: mockNumerairePerUnit,
+        numeraire,
+        pricedAsset,
+      }),
+    ]);
+
+    const assetId = new AssetId({
+      inner: base64ToUint8Array('KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA='),
+    });
+    req.assetIdFilter = assetId;
+
+    for await (const res of balances(req, mockCtx)) {
+      const response = new BalancesResponse(res);
+      const amount = getAmount(response.balanceView);
+      const equivalentAmount = multiplyAmountByNumber(amount, mockNumerairePerUnit);
+
+      expect(getEquivalentValues(response.balanceView)).toEqual([
+        new EquivalentValue({
+          asOfHeight: 123n,
+          numeraire: { penumbraAssetId: numeraire },
+          equivalentAmount,
+        }),
+      ]);
+    }
   });
 });
 

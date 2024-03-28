@@ -1,6 +1,6 @@
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { viewClient } from '../clients';
-import { bech32Address } from '@penumbra-zone/bech32';
+import { bech32Address } from '@penumbra-zone/bech32/src/address';
 
 type Index = number;
 type Bech32Address = string;

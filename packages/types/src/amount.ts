@@ -40,45 +40,61 @@ export const subtractAmounts = (minuend: Amount, subtrahend: Amount): Amount => 
   return new Amount({ lo, hi });
 };
 
-export const divideAmounts = (dividend: Amount, divider: Amount): BigNumber => {
-  if (isZero(divider)) throw new Error('Division by zero');
+export const multiplyAmountByNumber = (amount: Amount, multiplier: number): Amount => {
+  const amountAsBigNumber = new BigNumber(joinLoHiAmount(amount).toString());
+  const result = amountAsBigNumber.multipliedBy(multiplier).decimalPlaces(0).toString(10);
+  const loHi = splitLoHi(BigInt(result));
+
+  return new Amount(loHi);
+};
+
+export const divideAmounts = (dividend: Amount, divisor: Amount): BigNumber => {
+  if (isZero(divisor)) throw new Error('Division by zero');
 
   const joinedDividend = new BigNumber(joinLoHiAmount(dividend).toString());
-  const joinedDivider = new BigNumber(joinLoHiAmount(divider).toString());
+  const joinedDivisor = new BigNumber(joinLoHiAmount(divisor).toString());
 
-  return joinedDividend.dividedBy(joinedDivider);
+  return joinedDividend.dividedBy(joinedDivisor);
 };
 
-// This function takes a number and formats it in a display-friendly way (en-US locale)
-// Examples:
-//    2000        -> 2,000
-//    2001.1      -> 2,000.1
-//    2001.124125 -> 2,001.124
-//    0.000012    -> 0.000012
-export const displayAmount = (num: number): string => {
-  const split = num.toString().split('.');
-  const integer = parseInt(split[0]!);
-  let decimal = split[1];
+interface FormatOptions {
+  precision: number;
+}
 
-  const formattedInt = new Intl.NumberFormat('en-US').format(integer);
+export const formatNumber = (number: number, options: FormatOptions): string => {
+  const { precision } = options;
 
-  if (!decimal) return formattedInt;
-
-  if (Math.abs(num) >= 1) {
-    decimal = decimal.slice(0, 3);
-  }
-
-  return `${formattedInt}.${decimal}`;
+  // Use toFixed to set the precision and then remove unnecessary trailing zeros
+  return precision === 0
+    ? number.toFixed(precision)
+    : parseFloat(number.toFixed(precision)).toString();
 };
 
-// Takes a number and represents it as a formatted $usd value
-//    2000        -> 2,000
-//    2001.1      -> 2,000.10
-//    2001.124125 -> 2,001.12
-//    0.000012    -> 0.00
-export const displayUsd = (number: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(number);
+/**
+ * Exchange rates in core are expressed as whole numbers on the order of 10 to
+ * the power of 8, so they need to be divided by 10e8 to turn into a decimal.
+ *
+ * @see https://github.com/penumbra-zone/penumbra/blob/839f978/crates/bin/pcli/src/command/view/staked.rs#L90-L93
+ */
+const EXCHANGE_RATE_DENOMINATOR = 1e8;
+
+/**
+ * Given an amount expressing an exchange rate, returns a decimal representation of
+ * that exchange rate. This makes it easy to multiply by exchange rates.
+ *
+ * For example, an exchange rate of 150_000_000 is 1.5. Thus,
+ * `toBasisPointsAsDecimal(amount)`, where `amount` is an `Amount` totaling
+ * `150_000_000n`, will return `1.5`.
+ */
+export const toDecimalExchangeRate = (
+  /**
+   * An amount expressing basis points -- i.e., one hundredth of one percent.
+   *
+   * @see https://en.wikipedia.org/wiki/Basis_point
+   */
+  amount: Amount,
+) => {
+  const joinedDividend = new BigNumber(joinLoHiAmount(amount).toString());
+
+  return joinedDividend.dividedBy(EXCHANGE_RATE_DENOMINATOR).toNumber();
 };

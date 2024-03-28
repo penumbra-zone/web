@@ -1,4 +1,4 @@
-import { Tabs, TabsList, TabsTrigger } from '@penumbra-zone/ui';
+import { Tabs, TabsList, TabsTrigger } from '@penumbra-zone/ui/components/ui/tabs';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { TransactionViewTab } from './types';
 import { useStore } from '../../../../state';

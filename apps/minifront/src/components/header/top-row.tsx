@@ -3,12 +3,12 @@ import { MessageWarningIcon } from '../../icons/message-warning';
 import { MobileNavMenu } from './mobile-nav-menu';
 import { Navbar } from './navbar';
 import {
-  NetworksPopover,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@penumbra-zone/ui';
+} from '@penumbra-zone/ui/components/ui/tooltip';
+import { NetworksPopover } from '@penumbra-zone/ui/components/ui/networks-popover';
 import { PagePath } from '../metadata/paths';
 import { TabletNavMenu } from './tablet-nav-menu';
 import { LayoutLoaderResult } from '../layout';

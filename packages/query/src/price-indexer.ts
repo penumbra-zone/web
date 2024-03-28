@@ -46,8 +46,9 @@ export const calculatePrice = (delta: Amount, unfilled: Amount, lambda: Amount):
  * This function processes only (1) price and ignores (2) price
  * We can get a BSOD with zero deltas(inputs), and we shouldn't save the price in that case
  */
-export const updatePrices = async (
+export const updatePricesFromSwaps = async (
   indexedDb: IndexedDbInterface,
+  /** base64-encoded asset ID of the numeraire */
   numeraireAssetId: string,
   swapOutputs: BatchSwapOutputData[],
   height: bigint,

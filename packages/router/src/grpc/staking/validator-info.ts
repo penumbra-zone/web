@@ -1,5 +1,5 @@
 import { Impl } from '.';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 import {
   ValidatorInfoResponse,
   ValidatorState_ValidatorStateEnum,

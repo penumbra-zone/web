@@ -1,13 +1,13 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useState } from 'react';
+import { Input } from '@penumbra-zone/ui/components/ui/input';
 import {
   Dialog,
   DialogClose,
   DialogContent,
   DialogHeader,
   DialogTrigger,
-  Input,
-} from '@penumbra-zone/ui';
+} from '@penumbra-zone/ui/components/ui/dialog';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
@@ -30,11 +30,7 @@ export default function SelectTokenModal({
     <Dialog>
       <DialogTrigger disabled={!balances.length}>
         <div className='flex h-9 min-w-[100px] max-w-[200px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
-          <ValueViewComponent
-            view={selection?.balanceView}
-            showValue={false}
-            showEquivalent={false}
-          />
+          <ValueViewComponent view={selection?.balanceView} showValue={false} />
         </div>
       </DialogTrigger>
       <DialogContent>

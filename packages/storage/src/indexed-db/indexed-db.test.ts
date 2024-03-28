@@ -39,7 +39,11 @@ import {
   PositionState,
   PositionState_PositionStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {
+  AssetId,
+  EstimatedPrice,
+  Metadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { localAssets } from '@penumbra-zone/constants/src/assets';
 import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/src/indexed-db';
 
@@ -541,6 +545,31 @@ describe('IndexedDb', () => {
         expect(result2?.toJson()).toEqual(epoch2.toJson());
         expect(result3?.toJson()).toEqual(epoch3.toJson());
       });
+    });
+  });
+
+  describe('prices', () => {
+    let db: IndexedDb;
+
+    const pricedAssetId = new AssetId({ inner: new Uint8Array([1, 2, 3, 4]) });
+    const numeraireAssetId = new AssetId({ inner: new Uint8Array([5, 6, 7, 8]) });
+
+    beforeEach(async () => {
+      db = await IndexedDb.initialize({ ...generateInitialProps() });
+      await db.updatePrice(pricedAssetId, numeraireAssetId, 1.23, 50n);
+    });
+
+    it('saves and gets a price in the database', async () => {
+      // This effectively tests both the save and the get, since we saved via
+      // `updatePrice()` in the `beforeEach` above.
+      await expect(db.getPricesForAsset(pricedAssetId)).resolves.toEqual([
+        new EstimatedPrice({
+          pricedAsset: pricedAssetId,
+          numeraire: numeraireAssetId,
+          numerairePerUnit: 1.23,
+          asOfHeight: 50n,
+        }),
+      ]);
     });
   });
 });

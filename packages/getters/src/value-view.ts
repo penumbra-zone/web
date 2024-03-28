@@ -1,6 +1,6 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { createGetter } from './utils/create-getter';
-import { bech32AssetId } from '@penumbra-zone/bech32';
+import { bech32AssetId } from '@penumbra-zone/bech32/src/asset';
 import {
   getDisplayDenomExponent,
   getStartEpochIndex,
@@ -17,6 +17,12 @@ export const getMetadata = createGetter((valueView?: ValueView) =>
 export const getExtendedMetadata = createGetter((valueView?: ValueView) =>
   valueView?.valueView.case === 'knownAssetId'
     ? valueView.valueView.value.extendedMetadata
+    : undefined,
+);
+
+export const getEquivalentValues = createGetter((valueView?: ValueView) =>
+  valueView?.valueView.case === 'knownAssetId'
+    ? valueView.valueView.value.equivalentValues
     : undefined,
 );
 

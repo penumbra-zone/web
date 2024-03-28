@@ -1,5 +1,5 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 
 export const statusStream: Impl['statusStream'] = async function* (_, ctx) {
   const services = ctx.values.get(servicesCtx);

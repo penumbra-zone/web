@@ -14,9 +14,9 @@ export const Navbar = () => {
             key={link.href}
             to={link.href}
             className={cn(
-              'font-bold py-[10px] select-none',
+              'font-bold py-[10px] px-[30px] select-none rounded-lg',
               (link.href === pathname || link.subLinks?.includes(pathname)) &&
-                'bg-button-gradient-secondary px-[30px] rounded-lg',
+                'bg-button-gradient-secondary',
             )}
           >
             {link.label}
@@ -24,7 +24,7 @@ export const Navbar = () => {
         ) : (
           <div
             key={link.href}
-            className='cursor-not-allowed select-none py-[10px] font-bold text-gray-600'
+            className='cursor-not-allowed select-none rounded-lg px-[30px] py-[10px] font-bold text-gray-600'
           >
             {link.label}
           </div>

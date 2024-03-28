@@ -5,18 +5,18 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 import { IndexedDbMock, MockServices, TendermintMock, ViewServerMock } from '../test-utils';
 import { transactionInfoByHash } from './transaction-info-by-hash';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
-import type { Services } from '@penumbra-zone/services';
+import type { Services } from '@penumbra-zone/services/src/index';
 import {
   Transaction,
   TransactionPerspective,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
-vi.mock('@penumbra-zone/wasm', () => ({
+vi.mock('@penumbra-zone/wasm/src/transaction', () => ({
   generateTransactionInfo: mockTransactionInfo,
 }));
 describe('TransactionInfoByHash request handler', () => {
@@ -34,7 +34,8 @@ describe('TransactionInfoByHash request handler', () => {
       constants: vi.fn(),
     };
     mockViewServer = {
-      fullViewingKey: vi.fn(),
+      fullViewingKey:
+        'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
     };
     mockTendermint = {
       getTransaction: vi.fn(),
@@ -59,9 +60,6 @@ describe('TransactionInfoByHash request handler', () => {
       url: '/mock',
       contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
     });
-    mockViewServer.fullViewingKey?.mockReturnValueOnce(
-      'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
-    );
     mockTransactionInfo.mockReturnValueOnce({
       txp: transactionPerspective,
       txv: {},

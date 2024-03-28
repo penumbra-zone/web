@@ -37,7 +37,8 @@ import { IdbCursorSource } from './stream';
 import '@penumbra-zone/polyfills/src/ReadableStream[Symbol.asyncIterator]';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { bech32AssetId, bech32IdentityKey, bech32ToIdentityKey } from '@penumbra-zone/bech32';
+import { bech32AssetId } from '@penumbra-zone/bech32/src/asset';
+import { bech32IdentityKey, bech32ToIdentityKey } from '@penumbra-zone/bech32/src/identity-key';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/src/validator-info';
 import {
   IDB_TABLES,
@@ -101,7 +102,9 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('POSITIONS', { keyPath: 'id.inner' });
         db.createObjectStore('EPOCHS', { autoIncrement: true });
         db.createObjectStore('VALIDATOR_INFOS');
-        db.createObjectStore('PRICES', { keyPath: ['pricedAsset.inner', 'numeraire.inner'] });
+        db.createObjectStore('PRICES', {
+          keyPath: ['pricedAsset.inner', 'numeraire.inner'],
+        }).createIndex('pricedAsset', 'pricedAsset.inner');
       },
     });
     const constants = {
@@ -535,22 +538,45 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async updatePrice(
+    /**
+     * The asset to save the price for in terms of the numeraire.
+     */
     pricedAsset: AssetId,
+    /**
+     * The numeraire is a standard against which to measure the value of the
+     * priced asset.
+     */
     numeraire: AssetId,
+    /**
+     * Multiply units of the priced asset by this value to get the value in the
+     * numeraire.
+     *
+     * This is a floating-point number since the price is approximate.
+     */
     numerairePerUnit: number,
-    height: bigint,
+    /**
+     * If set, gives some idea of when the price was estimated.
+     */
+    asOfHeight: bigint,
   ) {
     const estimatedPrice = new EstimatedPrice({
       pricedAsset,
       numeraire,
       numerairePerUnit,
-      asOfHeight: height,
+      asOfHeight,
     });
 
     await this.u.update({
       table: 'PRICES',
       value: estimatedPrice.toJson() as Jsonified<EstimatedPrice>,
     });
+  }
+
+  async getPricesForAsset(assetId: AssetId): Promise<EstimatedPrice[]> {
+    const base64AssetId = uint8ArrayToBase64(assetId.inner);
+    const results = await this.db.getAllFromIndex('PRICES', 'pricedAsset', base64AssetId);
+
+    return results.map(price => EstimatedPrice.fromJson(price));
   }
 
   private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanBlockResult['sctUpdates']): void {

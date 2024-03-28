@@ -1,4 +1,4 @@
-import { PENUMBRA_BECH32_ADDRESS_PREFIX } from '@penumbra-zone/bech32';
+import { PENUMBRA_BECH32_ADDRESS_PREFIX } from '@penumbra-zone/bech32/src/penumbra-bech32';
 
 const encoder = new TextEncoder();
 export const stringToUint8Array = (str: string): Uint8Array => {

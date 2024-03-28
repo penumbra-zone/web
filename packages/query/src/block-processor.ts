@@ -1,7 +1,12 @@
 import { RootQuerier } from './root-querier';
+import { sha256Hash } from '@penumbra-zone/crypto-web/src/sha256';
+import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/src/dex';
+import { decodeSctRoot } from '@penumbra-zone/wasm/src/sct';
 
-import { sha256Hash } from '@penumbra-zone/crypto-web';
-import { computePositionId, decodeSctRoot, getLpNftMetadata } from '@penumbra-zone/wasm';
+import {
+  getExchangeRateFromValidatorInfoResponse,
+  getIdentityKeyFromValidatorInfoResponse,
+} from '@penumbra-zone/getters/src/validator-info-response';
 import {
   PositionState,
   PositionState_PositionStateEnum,
@@ -22,7 +27,16 @@ import type { BlockProcessorInterface } from '@penumbra-zone/types/src/block-pro
 import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
 import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
-import { updatePrices } from './price-indexer';
+import { updatePricesFromSwaps } from './price-indexer';
+import {
+  AssetId,
+  Metadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
+import { getAssetId } from '@penumbra-zone/getters/src/metadata';
+import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
+import { toDecimalExchangeRate } from '@penumbra-zone/types/src/amount';
+import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -137,7 +151,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     // epoch is reached, since they may have delegation tokens but no validator
     // info to go with them. So we'll update validator infos at the beginning of
     // sync as well, and force the rest of sync to wait until it's done.
-    if (startHeight === 0n) await this.updateValidatorInfos();
+    if (startHeight === 0n) await this.updateValidatorInfos(0n);
 
     // this is an indefinite stream of the (compact) chain from the network
     // intended to run continuously
@@ -240,7 +254,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       // so we have to get asset prices from swap results during block scans
       // and store them locally in indexed-db.
       if (compactBlock.swapOutputs.length) {
-        await updatePrices(
+        await updatePricesFromSwaps(
           this.indexedDb,
           this.numeraireAssetId,
           compactBlock.swapOutputs,
@@ -276,15 +290,22 @@ export class BlockProcessor implements BlockProcessorInterface {
       const assetId = n.note?.value?.assetId;
       if (!assetId) continue;
 
-      const metadataInDb = await this.indexedDb.getAssetsMetadata(assetId);
-      if (metadataInDb) continue;
-
-      const metadataFromNode = await this.querier.shieldedPool.assetMetadata(assetId);
-
-      if (metadataFromNode) {
-        await this.indexedDb.saveAssetsMetadata(customizeSymbol(metadataFromNode));
-      }
+      await this.saveAndReturnMetadata(assetId);
     }
+  }
+
+  private async saveAndReturnMetadata(assetId: AssetId): Promise<Metadata | undefined> {
+    const metadataAlreadyInDb = await this.indexedDb.getAssetsMetadata(assetId);
+    if (metadataAlreadyInDb) return metadataAlreadyInDb;
+
+    const metadataFromNode = await this.querier.shieldedPool.assetMetadataById(assetId);
+
+    if (metadataFromNode) {
+      await this.indexedDb.saveAssetsMetadata(customizeSymbol(metadataFromNode));
+      return metadataFromNode;
+    }
+
+    return undefined;
   }
 
   // Nullifier is published in network when a note is spent or swap is claimed.
@@ -391,10 +412,10 @@ export class BlockProcessor implements BlockProcessorInterface {
     // unnecessary calls to the RPC node for validator infos. Instead, we'll
     // only get updated validator infos once we're within the latest known
     // epoch.
-    if (nextEpochIsLatestKnownEpoch) void this.updateValidatorInfos();
+    if (nextEpochIsLatestKnownEpoch) void this.updateValidatorInfos(nextEpochStartHeight);
   }
 
-  private async updateValidatorInfos(): Promise<void> {
+  private async updateValidatorInfos(nextEpochStartHeight: bigint): Promise<void> {
     for await (const validatorInfoResponse of this.querier.staking.allValidatorInfos()) {
       if (!validatorInfoResponse.validatorInfo) continue;
 
@@ -402,6 +423,35 @@ export class BlockProcessor implements BlockProcessorInterface {
       // await the entire method, if they want to block all other code until all
       // validator infos have been upserted.
       await this.indexedDb.upsertValidatorInfo(validatorInfoResponse.validatorInfo);
+
+      // Don't await this, though -- price equivalents for delegation tokens are
+      // non-critical, and shouldn't block the rest of the block processor.
+      void this.updatePriceForValidatorDelegationToken(validatorInfoResponse, nextEpochStartHeight);
+    }
+  }
+
+  private async updatePriceForValidatorDelegationToken(
+    validatorInfoResponse: ValidatorInfoResponse,
+    nextEpochStartHeight: bigint,
+  ) {
+    const identityKey = getIdentityKeyFromValidatorInfoResponse(validatorInfoResponse);
+    const delegationTokenAssetId = new AssetId({
+      altBaseDenom: `udelegation_${bech32IdentityKey(identityKey)}`,
+    });
+
+    const metadata = await this.saveAndReturnMetadata(delegationTokenAssetId);
+
+    if (metadata) {
+      const assetId = getAssetId(metadata);
+      const stakingAssetId = getAssetId(STAKING_TOKEN_METADATA);
+      const exchangeRate = getExchangeRateFromValidatorInfoResponse(validatorInfoResponse);
+
+      await this.indexedDb.updatePrice(
+        assetId,
+        stakingAssetId,
+        toDecimalExchangeRate(exchangeRate),
+        nextEpochStartHeight,
+      );
     }
   }
 }

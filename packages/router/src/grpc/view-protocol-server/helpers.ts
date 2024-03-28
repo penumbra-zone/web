@@ -13,7 +13,7 @@ export const getAssetMetadata = async (
 
   // If not available locally, query the metadata from the node and save it to
   // the internal database.
-  const nodeMetadata = await querier.shieldedPool.assetMetadata(targetAsset);
+  const nodeMetadata = await querier.shieldedPool.assetMetadataById(targetAsset);
   if (nodeMetadata) {
     /**
      * @todo: If possible, save asset metadata proactively if we might need it

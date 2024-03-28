@@ -1,6 +1,6 @@
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import type { Impl } from '.';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 
 export const appParameters: Impl['appParameters'] = async (_, ctx) => {
   const services = ctx.values.get(servicesCtx);

@@ -1,5 +1,5 @@
 import { ExtensionStorage } from './base';
-import { KeyPrintJson } from '@penumbra-zone/crypto-web';
+import { KeyPrintJson } from '@penumbra-zone/crypto-web/src/encryption';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import type { WalletJson } from '@penumbra-zone/types/src/wallet';
 

@@ -1,4 +1,4 @@
-import { Card } from '@penumbra-zone/ui';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { EduPanel, eduPanelContent } from './content';
 

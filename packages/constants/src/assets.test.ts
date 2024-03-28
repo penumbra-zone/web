@@ -81,9 +81,9 @@ describe('assetPatterns', () => {
     });
 
     it('captures multi-hops', () => {
-      const match = assetPatterns.ibc.capture('transfer/channel-141/channel-42/uosmo');
+      const match = assetPatterns.ibc.capture('transfer/channel-141/transfer/channel-42/uosmo');
       expect(match?.channel).toBe('channel-141');
-      expect(match?.denom).toBe('channel-42/uosmo');
+      expect(match?.denom).toBe('transfer/channel-42/uosmo');
     });
   });
 });

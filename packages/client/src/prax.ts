@@ -11,7 +11,7 @@ import { createChannelTransport } from '@penumbra-zone/transport-dom/src/create'
 import { PenumbraSymbol } from './global';
 import { jsonOptions } from '@penumbra-zone/types/src/registry';
 
-const prax_id = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe' as const;
+const prax_id = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe';
 const prax_origin = `chrome-extension://${prax_id}`;
 const prax_manifest = `chrome-extension://${prax_id}/manifest.json`;
 
@@ -30,7 +30,7 @@ export const requestPraxConnection = async () => {
   if (window[PenumbraSymbol]?.[prax_origin]?.manifest !== prax_manifest) {
     throw new PraxManifestError('Incorrect Prax manifest href');
   }
-  return window[PenumbraSymbol][prax_origin]?.request();
+  return window[PenumbraSymbol][prax_origin].request();
 };
 
 export const isPraxConnected = () => Boolean(window[PenumbraSymbol]?.[prax_origin]?.isConnected());

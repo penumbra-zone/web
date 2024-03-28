@@ -7,7 +7,7 @@ import {
   HandlerContext,
   PromiseClient,
 } from '@connectrpc/connect';
-import { stakingClientCtx } from '../../ctx';
+import { stakingClientCtx } from '../../ctx/staking-client';
 import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
 import {
   AssetMetadataByIdResponse,
@@ -22,7 +22,11 @@ import {
   ValidatorInfoResponse,
   ValidatorState_ValidatorStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { getAmount, getValidatorInfoFromValueView } from '@penumbra-zone/getters/src/value-view';
+import {
+  getAmount,
+  getEquivalentValues,
+  getValidatorInfoFromValueView,
+} from '@penumbra-zone/getters/src/value-view';
 import { asIdentityKey } from '@penumbra-zone/getters/src/string';
 import { PartialMessage } from '@bufbuild/protobuf';
 import {
@@ -301,6 +305,7 @@ describe('DelegationsByAddressIndex request handler', () => {
       const secondValueView = new ValueView(results[1]!.valueView);
 
       expect(getAmount(secondValueView)).toEqual({ hi: 0n, lo: 0n });
+      expect(getEquivalentValues(secondValueView)[0]!.equivalentAmount).toEqual({ hi: 0n, lo: 0n });
     });
   });
 

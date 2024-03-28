@@ -1,9 +1,6 @@
 use std::str::FromStr;
 
 use anyhow;
-use rand_core::OsRng;
-use wasm_bindgen::prelude::*;
-
 use penumbra_keys::keys::{Bip44Path, SeedPhrase, SpendKey};
 use penumbra_keys::{Address, FullViewingKey};
 use penumbra_proof_params::{
@@ -11,6 +8,8 @@ use penumbra_proof_params::{
     SPEND_PROOF_PROVING_KEY, SWAPCLAIM_PROOF_PROVING_KEY, SWAP_PROOF_PROVING_KEY,
 };
 use penumbra_proto::{core::keys::v1 as pb, serializers::bech32str, DomainType};
+use rand_core::OsRng;
+use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::js_sys::Uint8Array;
 
 use crate::error::WasmResult;
@@ -132,19 +131,19 @@ pub fn get_ephemeral_address(full_viewing_key: &str, index: u32) -> WasmResult<J
     Ok(result)
 }
 
-/// Check if the address is FVK controlled
+/// Returns the AddressIndex of an address.
+/// If it is not controlled by the FVK, it returns a `None`
 /// Arguments:
 ///     full_viewing_key: `bech32 String`
-///     address: `bech32 String`
+///     address: `Address`
 /// Returns: `Option<pb::AddressIndex>`
 #[wasm_bindgen]
-pub fn is_controlled_address(full_viewing_key: &str, address: &str) -> WasmResult<JsValue> {
+pub fn get_index_by_address(full_viewing_key: &str, address: JsValue) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
+    let address: Address = serde_wasm_bindgen::from_value(address)?;
     let fvk = FullViewingKey::from_str(full_viewing_key)?;
-    let index: Option<pb::AddressIndex> = fvk
-        .address_index(&Address::from_str(address)?)
-        .map(Into::into);
+    let index: Option<pb::AddressIndex> = fvk.address_index(&address).map(Into::into);
     let result = serde_wasm_bindgen::to_value(&index)?;
     Ok(result)
 }

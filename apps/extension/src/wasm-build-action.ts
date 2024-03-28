@@ -44,7 +44,7 @@ async function executeWorker(
   actionPlanIndex: number,
 ): Promise<JsonValue> {
   // Dynamically load wasm module
-  const penumbraWasmModule = await import('@penumbra-zone/wasm');
+  const penumbraWasmModule = await import('@penumbra-zone/wasm/src/build');
 
   // Build action according to specification in `TransactionPlan`
   const action = await penumbraWasmModule.buildActionParallel(

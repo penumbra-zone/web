@@ -2,7 +2,7 @@ import { Ics20Withdrawal } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { ViewBox } from './viewbox';
 import { ActionDetails } from './action-details';
 import { joinLoHiAmount } from '@penumbra-zone/types/src/amount';
-import { bech32Address } from '@penumbra-zone/bech32';
+import { bech32Address } from '@penumbra-zone/bech32/src/address';
 
 export const Ics20WithdrawalComponent = ({ value }: { value: Ics20Withdrawal }) => {
   return (
@@ -42,7 +42,7 @@ export const Ics20WithdrawalComponent = ({ value }: { value: Ics20Withdrawal }) 
           )}
 
           <ActionDetails.Row label='Timeout Time'>
-            {new Date(Number(value.timeoutTime)).toString()}
+            {new Date(Number(BigInt(value.timeoutTime) / 1_000_000n)).toString()}
           </ActionDetails.Row>
         </ActionDetails>
       }

@@ -1,18 +1,18 @@
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  FadeTransition,
-} from '@penumbra-zone/ui';
+} from '@penumbra-zone/ui/components/ui/card';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useStore } from '../../../state';
 import { importSelector } from '../../../state/seed-phrase/import';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { ImportForm } from '../../../shared';
+import { ImportForm } from '../../../shared/containers/import-form';
 
 export const RestorePassword = () => {
   const navigate = usePageNav();

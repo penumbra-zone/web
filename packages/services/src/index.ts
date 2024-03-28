@@ -1,6 +1,9 @@
-import { BlockProcessor, RootQuerier } from '@penumbra-zone/query';
-import { IndexedDb, localExtStorage, syncLastBlockWithLocal } from '@penumbra-zone/storage';
-import { ViewServer } from '@penumbra-zone/wasm';
+import { BlockProcessor } from '@penumbra-zone/query/src/block-processor';
+import { RootQuerier } from '@penumbra-zone/query/src/root-querier';
+import { IndexedDb } from '@penumbra-zone/storage/src/indexed-db/index';
+import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
+import { syncLastBlockWithLocal } from '@penumbra-zone/storage/src/chrome/syncer';
+import { ViewServer } from '@penumbra-zone/wasm/src/view-server';
 import {
   ServicesInterface,
   ServicesMessage,
@@ -77,7 +80,7 @@ export class Services implements ServicesInterface {
   // they'll all wait for the same promise rather than each starting their own initialization process.
   public async getWalletServices(): Promise<WalletServices> {
     if (!this.walletServicesPromise) {
-      this.walletServicesPromise = this.initializeWalletServices().catch(e => {
+      this.walletServicesPromise = this.initializeWalletServices().catch((e: unknown) => {
         // If promise rejected, reset promise to `undefined` so next caller can try again
         this.walletServicesPromise = undefined;
         throw e;

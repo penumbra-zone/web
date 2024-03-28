@@ -1,4 +1,4 @@
-import { Input, InputProps } from '@penumbra-zone/ui';
+import { Input, InputProps } from '@penumbra-zone/ui/components/ui/input';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import SelectTokenModal from './select-token-modal';
 import { Validation } from './validation-result';

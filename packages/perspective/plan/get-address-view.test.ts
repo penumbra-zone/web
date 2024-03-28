@@ -5,12 +5,12 @@ import {
   AddressIndex,
   AddressView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32ToAddress } from '@penumbra-zone/bech32';
+import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
 
-const mockIsControlledAddress = vi.hoisted(() => vi.fn());
+const mockGetAddressIndexByAddress = vi.hoisted(() => vi.fn());
 
-vi.mock('@penumbra-zone/wasm', () => ({
-  isControlledAddress: mockIsControlledAddress,
+vi.mock('@penumbra-zone/wasm/src/address', () => ({
+  getAddressIndexByAddress: mockGetAddressIndexByAddress,
 }));
 
 describe('getAddressView()', () => {
@@ -19,12 +19,12 @@ describe('getAddressView()', () => {
   const address = new Address({ inner: bech32ToAddress(addressAsBech32) });
 
   beforeEach(() => {
-    mockIsControlledAddress.mockReset();
+    mockGetAddressIndexByAddress.mockReset();
   });
 
   describe('when the address is controlled by the user represented by the full viewing key', () => {
     beforeEach(() => {
-      mockIsControlledAddress.mockImplementation(() => new AddressIndex({ account: 123 }));
+      mockGetAddressIndexByAddress.mockImplementation(() => new AddressIndex({ account: 123 }));
     });
 
     test('returns a visible `AddressView`', () => {
@@ -46,7 +46,7 @@ describe('getAddressView()', () => {
 
   describe('when the address is not controlled by the user represented by the full viewing key', () => {
     beforeEach(() => {
-      mockIsControlledAddress.mockImplementation(() => undefined);
+      mockGetAddressIndexByAddress.mockImplementation(() => undefined);
     });
 
     test('returns an opaque `AddressView`', () => {

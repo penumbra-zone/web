@@ -1,10 +1,9 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 
-import { isControlledAddress } from '@penumbra-zone/wasm';
+import { getAddressIndexByAddress } from '@penumbra-zone/wasm/src/address';
 
 import { Code, ConnectError } from '@connectrpc/connect';
-import { bech32Address } from '@penumbra-zone/bech32';
 
 export const indexByAddress: Impl['indexByAddress'] = async (req, ctx) => {
   if (!req.address) throw new ConnectError('no address given in request', Code.InvalidArgument);
@@ -13,9 +12,7 @@ export const indexByAddress: Impl['indexByAddress'] = async (req, ctx) => {
     viewServer: { fullViewingKey },
   } = await services.getWalletServices();
 
-  const address = bech32Address(req.address);
-
-  const addressIndex = isControlledAddress(fullViewingKey, address);
+  const addressIndex = getAddressIndexByAddress(fullViewingKey, req.address);
 
   if (!addressIndex) return {};
 

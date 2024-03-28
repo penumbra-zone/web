@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
   addAmounts,
-  displayAmount,
-  displayUsd,
   divideAmounts,
+  formatNumber,
   fromBaseUnitAmount,
   fromValueView,
   isZero,
   joinLoHiAmount,
+  multiplyAmountByNumber,
   subtractAmounts,
+  toDecimalExchangeRate,
 } from './amount';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import {
@@ -178,62 +179,6 @@ describe('divideAmounts', () => {
   });
 });
 
-describe('Formatting', () => {
-  describe('displayAmount()', () => {
-    it('no decimals', () => {
-      expect(displayAmount(2000)).toBe('2,000');
-    });
-
-    it('one decimal place', () => {
-      expect(displayAmount(2001.1)).toBe('2,001.1');
-    });
-
-    it('many decimals, if above 1, rounds to three places', () => {
-      expect(displayAmount(2001.124125)).toBe('2,001.124');
-    });
-
-    it('many decimals, if less than 1, shows all places', () => {
-      expect(displayAmount(0.000012)).toBe('0.000012');
-    });
-
-    it('negative numbers work too', () => {
-      expect(displayAmount(-2001.124125)).toBe('-2,001.124');
-    });
-  });
-
-  describe('displayUsd()', () => {
-    it('should format numbers with no decimals', () => {
-      expect(displayUsd(2000)).toBe('2,000.00');
-    });
-
-    it('should format numbers with one decimal place', () => {
-      expect(displayUsd(2001.1)).toBe('2,001.10');
-    });
-
-    it('should format numbers with two decimal places', () => {
-      expect(displayUsd(2001.12)).toBe('2,001.12');
-    });
-
-    it('should round numbers with more than two decimal places', () => {
-      expect(displayUsd(2001.124)).toBe('2,001.12');
-      expect(displayUsd(2001.125)).toBe('2,001.13'); // testing rounding
-    });
-
-    it('should format numbers less than one', () => {
-      expect(displayUsd(0.1)).toBe('0.10');
-      expect(displayUsd(0.01)).toBe('0.01');
-      expect(displayUsd(0.001)).toBe('0.00'); // testing rounding
-    });
-
-    it('should format negative numbers', () => {
-      expect(displayUsd(-2001)).toBe('-2,001.00');
-      expect(displayUsd(-2001.1)).toBe('-2,001.10');
-      expect(displayUsd(-2001.12)).toBe('-2,001.12');
-      expect(displayUsd(-2001.125)).toBe('-2,001.13'); // testing rounding
-    });
-  });
-});
-
 describe('isZero', () => {
   it('works with zero amount', () => {
     const amount = new Amount({ lo: 0n, hi: 0n });
@@ -253,5 +198,58 @@ describe('isZero', () => {
   it('detects lo number presence', () => {
     const amount = new Amount({ lo: 20n, hi: 0n });
     expect(isZero(amount)).toBeFalsy();
+  });
+});
+
+describe('toDecimalExchangeRate()', () => {
+  it('correctly expresses the exchange rate as a decimal', () => {
+    const amount = new Amount({ hi: 0n, lo: 325_000_000n });
+    expect(toDecimalExchangeRate(amount)).toBe(3.25);
+  });
+});
+
+describe('multiplyAmountByNumber()', () => {
+  it('correctly multiplies an amount by a number', () => {
+    const amount = new Amount({ hi: 0n, lo: 100n });
+
+    expect(multiplyAmountByNumber(amount, 1.5)).toEqual(
+      new Amount({
+        hi: 0n,
+        lo: 150n,
+      }),
+    );
+  });
+
+  it('rounds when needed, to avoid trying to convert a decimal to a BigInt', () => {
+    const amount = new Amount({ hi: 0n, lo: 100n });
+
+    expect(multiplyAmountByNumber(amount, 1.111111111)).toEqual(
+      new Amount({
+        hi: 0n,
+        lo: 111n,
+      }),
+    );
+  });
+});
+
+describe('formatNumber', () => {
+  it('formats number with zero precision', () => {
+    expect(formatNumber(123.456, { precision: 0 })).toBe('123');
+  });
+
+  it('formats number with non-zero precision', () => {
+    expect(formatNumber(123.456, { precision: 2 })).toBe('123.46');
+  });
+
+  it('handles zero value with non-zero precision', () => {
+    expect(formatNumber(0, { precision: 2 })).toBe('0');
+  });
+
+  it('removes unnecessary trailing zeros', () => {
+    expect(formatNumber(123.4, { precision: 3 })).toBe('123.4');
+  });
+
+  it('formats negative number correctly', () => {
+    expect(formatNumber(-123.456, { precision: 2 })).toBe('-123.46');
   });
 });

@@ -19,7 +19,7 @@ export const testnetIbcChains: Chain[] = [
   {
     displayName: 'Noble',
     chainId: 'grand-1',
-    ibcChannel: 'channel-2',
+    ibcChannel: 'channel-3',
     iconUrl:
       'https://raw.githubusercontent.com/cosmos/chain-registry/2ca39d0e4eaf3431cca13991948e099801f02e46/noble/images/stake.svg',
     addressPrefix: 'noble',

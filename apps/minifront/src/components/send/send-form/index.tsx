@@ -1,4 +1,5 @@
-import { Button, Input } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { useStore } from '../../../state';
 import { sendSelector, sendValidationErrors } from '../../../state/send';
 import { InputBlock } from '../../shared/input-block';

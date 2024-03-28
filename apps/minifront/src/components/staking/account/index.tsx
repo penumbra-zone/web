@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@penumbra-zone/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
 import { Header } from './header';
 import { Delegations } from './delegations';
 

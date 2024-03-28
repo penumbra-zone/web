@@ -1,6 +1,6 @@
 import { Identicon } from './identicon';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32Address } from '@penumbra-zone/bech32';
+import { bech32Address } from '@penumbra-zone/bech32/src/address';
 
 interface AddressIconProps {
   address: Address;

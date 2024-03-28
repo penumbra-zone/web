@@ -5,7 +5,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
-import { extLocalCtx } from '../../ctx';
+import { extLocalCtx } from '../../ctx/prax';
 import { walletId } from './wallet-id';
 import { MockExtLocalCtx } from '../test-utils';
 

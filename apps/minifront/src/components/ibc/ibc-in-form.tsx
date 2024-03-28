@@ -1,4 +1,4 @@
-import { Card } from '@penumbra-zone/ui';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
 
 export const IbcInForm = () => {
   return (

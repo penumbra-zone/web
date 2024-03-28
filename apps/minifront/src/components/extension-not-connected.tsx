@@ -1,4 +1,7 @@
-import { Button, errorToast, SplashPage, Toaster, warningToast } from '@penumbra-zone/ui';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Toaster } from '@penumbra-zone/ui/components/ui/toaster';
+import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
+import { errorToast, warningToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { HeadTag } from './metadata/head-tag';
 
 import {

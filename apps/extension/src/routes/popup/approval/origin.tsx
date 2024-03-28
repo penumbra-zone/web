@@ -1,8 +1,8 @@
-import { FadeTransition } from '@penumbra-zone/ui';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { useStore } from '../../../state';
 import { originApprovalSelector } from '../../../state/origin-approval';
 import { ApproveDeny } from './approve-deny';
-import { LinkGradientIcon } from '../../../icons';
+import { LinkGradientIcon } from '../../../icons/link-gradient';
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
 import { cn } from '@penumbra-zone/ui/lib/utils';

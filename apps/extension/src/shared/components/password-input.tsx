@@ -1,6 +1,6 @@
 import { EyeClosedIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { ReactElement, useState } from 'react';
-import { Input, InputProps } from '@penumbra-zone/ui';
+import { Input, InputProps } from '@penumbra-zone/ui/components/ui/input';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { Validation } from '../../types/utility';
 import { useValidationResult } from '../../hooks/validation-result';

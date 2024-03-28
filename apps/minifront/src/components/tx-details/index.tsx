@@ -1,4 +1,5 @@
-import { Card, FadeTransition } from '@penumbra-zone/ui';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
+import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { TxViewer } from './hash-parser';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
 import { EduPanel } from '../shared/edu-panels/content';

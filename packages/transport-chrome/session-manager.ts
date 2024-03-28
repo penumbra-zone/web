@@ -134,7 +134,10 @@ export class CRSessionManager {
           ? this.responseChannelStream(signal, { requestId, stream: response })
           : { requestId, message: response },
       )
-      .catch(error => ({ requestId, error: errorToJson(ConnectError.from(error), undefined) }));
+      .catch((error: unknown) => ({
+        requestId,
+        error: errorToJson(ConnectError.from(error), undefined),
+      }));
   }
 
   /**

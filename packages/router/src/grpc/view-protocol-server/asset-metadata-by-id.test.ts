@@ -5,7 +5,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
-import { servicesCtx } from '../../ctx';
+import { servicesCtx } from '../../ctx/prax';
 import { IndexedDbMock, MockServices, ShieldedPoolMock } from '../test-utils';
 import {
   AssetId,
@@ -29,7 +29,7 @@ describe('AssetMetadataById request handler', () => {
       saveAssetsMetadata: vi.fn(),
     };
     mockShieldedPool = {
-      assetMetadata: vi.fn(),
+      assetMetadataById: vi.fn(),
     };
     mockServices = {
       getWalletServices: vi.fn(() =>
@@ -68,7 +68,7 @@ describe('AssetMetadataById request handler', () => {
 
   test('should successfully get metadata from node if record is not found in idb', async () => {
     mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
-    mockShieldedPool.assetMetadata.mockResolvedValueOnce(metadataFromNode);
+    mockShieldedPool.assetMetadataById.mockResolvedValueOnce(metadataFromNode);
     const metadataByIdResponse = new AssetMetadataByIdResponse(
       await assetMetadataById(request, mockCtx),
     );
@@ -77,7 +77,7 @@ describe('AssetMetadataById request handler', () => {
 
   test('should fail to get metadata when metadata not found in idb and node', async () => {
     mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
-    mockShieldedPool.assetMetadata.mockResolvedValueOnce(undefined);
+    mockShieldedPool.assetMetadataById.mockResolvedValueOnce(undefined);
     await expect(assetMetadataById(request, mockCtx)).rejects.toThrow();
   });
 

@@ -1,12 +1,12 @@
 import { useStore } from '../../state';
 import { SimulateSwapResult, swapSelector } from '../../state/swap';
 import {
-  buttonVariants,
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@penumbra-zone/ui';
+} from '@penumbra-zone/ui/components/ui/tooltip';
+import { buttonVariants } from '@penumbra-zone/ui/components/ui/button';
 import { AssetOutSelector } from './asset-out-selector';
 import {
   Metadata,
@@ -18,7 +18,7 @@ import { cn } from '@penumbra-zone/ui/lib/utils';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 
-import { isZero } from '@penumbra-zone/types/src/amount';
+import { formatNumber, isZero } from '@penumbra-zone/types/src/amount';
 import { getAmount } from '@penumbra-zone/getters/src/value-view';
 
 const findMatchingBalance = (
@@ -56,33 +56,55 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
       <div className='mb-2 flex items-center justify-between gap-1 md:gap-2'>
         <p className='text-sm font-bold md:text-base'>Swap into</p>
       </div>
-      <div className='flex items-center justify-between gap-4'>
-        {simulateOutResult ? (
-          <Result result={simulateOutResult} />
-        ) : (
-          <EstimateButton simulateFn={simulateSwap} loading={simulateOutLoading} />
-        )}
-        <AssetOutSelector
-          balances={balances}
-          assetOut={matchingBalance}
-          setAssetOut={setAssetOut}
-        />
-      </div>
-      <div className='mt-[6px] flex items-start justify-between'>
-        <div />
-        <div className='flex items-start gap-1'>
-          <img src='./wallet.svg' alt='Wallet' className='size-5' />
-          <ValueViewComponent view={matchingBalance} showIcon={false} />
+      <div className='flex justify-between gap-4'>
+        <div className='flex items-start justify-start'>
+          {simulateOutResult ? (
+            <Result result={simulateOutResult} />
+          ) : (
+            <EstimateButton simulateFn={simulateSwap} loading={simulateOutLoading} />
+          )}
+        </div>
+        <div className='flex flex-col'>
+          <div className='ml-auto w-auto shrink-0'>
+            <AssetOutSelector assetOut={matchingBalance} setAssetOut={setAssetOut} />
+          </div>
+          <div className='mt-[6px] flex items-start justify-between'>
+            <div />
+            <div className='flex items-start gap-1'>
+              <img src='./wallet.svg' alt='Wallet' className='size-5' />
+              <ValueViewComponent view={matchingBalance} showIcon={false} />
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-const Result = ({ result: { output, unfilled } }: { result: SimulateSwapResult }) => {
+// The price hit the user takes as a consequence of moving the market with the size of their trade
+const PriceImpact = ({ amount = 0 }: { amount?: number }) => {
+  // e.g .041234245245 becomes 4.123
+  const percent = formatNumber(amount * 100, { precision: 3 });
+
+  return (
+    <div className={cn('flex flex-col text-gray-500 text-sm', amount < -0.1 && 'text-orange-400')}>
+      <div>Price impact:</div>
+      <div>{percent}%</div>
+    </div>
+  );
+};
+
+const Result = ({ result: { output, unfilled, priceImpact } }: { result: SimulateSwapResult }) => {
   // If no part unfilled, just show plain output amount (no label)
   if (isZero(getAmount(unfilled))) {
-    return <ValueViewComponent view={output} showDenom={false} showIcon={false} />;
+    return (
+      <div className='flex flex-col gap-2'>
+        <div>
+          <ValueViewComponent view={output} showDenom={false} showIcon={false} />
+        </div>
+        <PriceImpact amount={priceImpact} />
+      </div>
+    );
   }
 
   // Else is partially filled, show amounts with labels
@@ -96,6 +118,7 @@ const Result = ({ result: { output, unfilled } }: { result: SimulateSwapResult }
         <ValueViewComponent view={unfilled} showIcon={false} />
         <span className='font-mono text-[12px] italic text-gray-500'>Unfilled amount</span>
       </div>
+      <PriceImpact amount={priceImpact} />
     </div>
   );
 };

@@ -23,6 +23,7 @@ export interface IndexedDbMock {
   getSwapByCommitment?: Mock;
   getEpochByHeight?: Mock;
   saveAssetsMetadata?: Mock;
+  getPricesForAsset?: Mock;
 }
 export interface TendermintMock {
   broadcastTx?: Mock;
@@ -31,11 +32,11 @@ export interface TendermintMock {
 }
 
 export interface ShieldedPoolMock {
-  assetMetadata: Mock;
+  assetMetadataById: Mock;
 }
 
 export interface ViewServerMock {
-  fullViewingKey?: Mock;
+  fullViewingKey?: string;
 }
 
 interface MockQuerier {
