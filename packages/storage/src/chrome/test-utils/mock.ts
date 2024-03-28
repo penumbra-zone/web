@@ -36,6 +36,7 @@ export class MockStorageArea implements IStorage {
 
 enum MockStorageVersion {
   V1 = 'V1',
+  V2 = 'V2',
 }
 
 export const mockSessionExtStorage = () =>
@@ -50,6 +51,6 @@ export const mockLocalExtStorage = () =>
   new ExtensionStorage<LocalStorageState>(
     new MockStorageArea(),
     localDefaults,
-    MockStorageVersion.V1,
+    MockStorageVersion.V2,
     {},
   );

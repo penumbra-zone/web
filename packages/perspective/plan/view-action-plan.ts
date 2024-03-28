@@ -23,6 +23,7 @@ import {
   SwapPlan,
   SwapView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 const getValueView = async (
   value: Value | undefined,
@@ -46,7 +47,7 @@ const getValueView = async (
 const getNoteView = async (
   note: Note | undefined,
   denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
-  fullViewingKey: string,
+  fullViewingKey: FullViewingKey,
 ) => {
   if (!note) throw new Error('No note to view');
   if (!note.address) throw new Error('No address in note');
@@ -61,7 +62,7 @@ const getNoteView = async (
 const getSpendView = async (
   spendPlan: SpendPlan,
   denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
-  fullViewingKey: string,
+  fullViewingKey: FullViewingKey,
 ): Promise<SpendView> => {
   if (!spendPlan.note?.address) throw new Error('No address in spend plan');
 
@@ -78,7 +79,7 @@ const getSpendView = async (
 const getOutputView = async (
   outputPlan: OutputPlan,
   denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
-  fullViewingKey: string,
+  fullViewingKey: FullViewingKey,
 ): Promise<OutputView> => {
   if (!outputPlan.destAddress) throw new Error('No destAddress in output plan');
 
@@ -117,7 +118,7 @@ const getSwapView = (swapPlan: SwapPlan): SwapView => {
 const getSwapClaimView = async (
   swapClaimPlan: SwapClaimPlan,
   denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
-  fullViewingKey: string,
+  fullViewingKey: FullViewingKey,
 ): Promise<SwapClaimView> => {
   return new SwapClaimView({
     swapClaimView: {
@@ -164,7 +165,7 @@ const getSwapClaimView = async (
 };
 
 export const viewActionPlan =
-  (denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>, fullViewingKey: string) =>
+  (denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>, fullViewingKey: FullViewingKey) =>
   async (actionPlan: ActionPlan): Promise<ActionView> => {
     switch (actionPlan.action.case) {
       case 'spend':

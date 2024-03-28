@@ -3,7 +3,7 @@ import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { servicesCtx } from '../../ctx/prax';
-import { IndexedDbMock, MockServices, ViewServerMock } from '../test-utils';
+import { IndexedDbMock, MockServices, testFullViewingKey, ViewServerMock } from '../test-utils';
 import type { Services } from '@penumbra-zone/services/src/index';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
@@ -32,8 +32,7 @@ describe('TransactionPlanner request handler', () => {
       constants: vi.fn(),
     };
     mockViewServer = {
-      fullViewingKey:
-        'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+      fullViewingKey: testFullViewingKey,
     };
     mockServices = {
       getWalletServices: vi.fn(() =>

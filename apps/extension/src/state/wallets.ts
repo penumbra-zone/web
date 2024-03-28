@@ -9,15 +9,19 @@ import {
 import { Key } from '@penumbra-zone/crypto-web/src/encryption';
 import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
 import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/local';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import {
+  Address,
+  FullViewingKey,
+  SpendKey,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { Wallet, WalletCreate } from '@penumbra-zone/types/src/wallet';
 
 export interface WalletsSlice {
   all: Wallet[];
   addWallet: (toAdd: WalletCreate) => Promise<Wallet>;
   getSeedPhrase: () => Promise<string[]>;
-  getSpendKey: () => Promise<string>;
-  getFullViewingKey: () => Promise<string>;
+  getSpendKey: () => Promise<SpendKey>;
+  getFullViewingKey: () => Promise<FullViewingKey>;
 }
 
 export const createWalletsSlice =

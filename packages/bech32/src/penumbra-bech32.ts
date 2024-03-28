@@ -6,3 +6,7 @@ export const PENUMBRA_BECH32_IDENTITY_LENGTH = PENUMBRA_BECH32_ADDRESS_LENGTH;
 export const PENUMBRA_BECH32_IDENTITY_PREFIX = 'penumbravalid';
 export const PENUMBRA_BECH32_FVK_PREFIX = 'penumbrafullviewingkey';
 export const PENUMBRA_BECH32_FVK_LENGTH = 132;
+export const PENUMBRA_BECH32_WALLET_ID_LENGTH = 75;
+export const PENUMBRA_BECH32_WALLET_ID_PREFIX = 'penumbrawalletid';
+export const PENUMBRA_BECH32_SPEND_KEY_LENGTH = 75;
+export const PENUMBRA_BECH32_SPEND_KEY_PREFIX = 'penumbraspendkey';

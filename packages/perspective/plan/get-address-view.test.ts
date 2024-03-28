@@ -4,6 +4,7 @@ import {
   Address,
   AddressIndex,
   AddressView,
+  FullViewingKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
 
@@ -40,7 +41,7 @@ describe('getAddressView()', () => {
         },
       });
 
-      expect(getAddressView(address, 'fvk').equals(expected)).toBe(true);
+      expect(getAddressView(address, new FullViewingKey()).equals(expected)).toBe(true);
     });
   });
 
@@ -59,7 +60,7 @@ describe('getAddressView()', () => {
         },
       });
 
-      expect(getAddressView(address, 'fvk').equals(expected)).toBe(true);
+      expect(getAddressView(address, new FullViewingKey()).equals(expected)).toBe(true);
     });
   });
 });

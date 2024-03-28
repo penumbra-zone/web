@@ -9,6 +9,7 @@ import { servicesCtx } from '../../ctx/prax';
 import { addressByIndex } from './address-by-index';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import type { ServicesInterface } from '@penumbra-zone/types/src/services';
+import { testFullViewingKey } from '../test-utils';
 
 describe('AddressByIndex request handler', () => {
   let mockServices: ServicesInterface;
@@ -19,8 +20,7 @@ describe('AddressByIndex request handler', () => {
       getWalletServices: () =>
         Promise.resolve({
           viewServer: {
-            fullViewingKey:
-              'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+            fullViewingKey: testFullViewingKey,
           },
         }),
     } as ServicesInterface;
