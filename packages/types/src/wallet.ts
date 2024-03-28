@@ -36,7 +36,7 @@ export class Wallet {
   static fromJson(obj: WalletJson): Wallet {
     return new Wallet(
       obj.label,
-      FullViewingKey.fromJsonString(obj.id),
+      WalletId.fromJsonString(obj.id),
       FullViewingKey.fromJsonString(obj.fullViewingKey),
       {
         encryptedSeedPhrase: Box.fromJson(obj.custody.encryptedSeedPhrase),
