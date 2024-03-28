@@ -3,7 +3,7 @@ import {
   FullViewingKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import {Stringified} from "./jsonified";
+import { Stringified } from './jsonified';
 
 export interface WalletCreate {
   label: string;
@@ -28,27 +28,22 @@ export type Custody = HotWallet; // Later on, could have different types (like l
 export class Wallet {
   constructor(
     readonly label: string,
-    readonly id: WalletId,
-    readonly fullViewingKey: FullViewingKey,
+    readonly id: Stringified<WalletId>,
+    readonly fullViewingKey: Stringified<FullViewingKey>,
     readonly custody: Custody,
   ) {}
 
   static fromJson(obj: WalletJson): Wallet {
-    return new Wallet(
-      obj.label,
-      WalletId.fromJsonString(obj.id),
-      FullViewingKey.fromJsonString(obj.fullViewingKey),
-      {
-        encryptedSeedPhrase: Box.fromJson(obj.custody.encryptedSeedPhrase),
-      },
-    );
+    return new Wallet(obj.label, obj.id, obj.fullViewingKey, {
+      encryptedSeedPhrase: Box.fromJson(obj.custody.encryptedSeedPhrase),
+    });
   }
 
   toJson(): WalletJson {
     return {
       label: this.label,
-      id: this.id.toJsonString(),
-      fullViewingKey: this.fullViewingKey.toJsonString(),
+      id: this.id,
+      fullViewingKey: this.fullViewingKey,
       custody: {
         encryptedSeedPhrase: this.custody.encryptedSeedPhrase.toJson(),
       },
