@@ -8,6 +8,7 @@ import {
   TransactionView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { viewActionPlan } from './view-action-plan';
+import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 /**
  * Given a `TransactionPlan`, returns a `TransactionView` that can be passed to
@@ -22,7 +23,7 @@ import { viewActionPlan } from './view-action-plan';
 export const viewTransactionPlan = async (
   txPlan: TransactionPlan,
   metadataByAssetId: (id: AssetId) => Promise<Metadata>,
-  fullViewingKey: string,
+  fullViewingKey: FullViewingKey,
 ): Promise<TransactionView> => {
   const returnAddress = txPlan.memo?.plaintext?.returnAddress;
   const transactionParameters = txPlan.transactionParameters;

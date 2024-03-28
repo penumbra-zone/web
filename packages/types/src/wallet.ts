@@ -1,5 +1,8 @@
 import { Box, BoxJson } from './box';
-import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import {
+  FullViewingKey,
+  WalletId,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export interface WalletCreate {
   label: string;
@@ -24,21 +27,26 @@ export type Custody = HotWallet; // Later on, could have different types (like l
 export class Wallet {
   constructor(
     readonly label: string,
-    readonly id: string,
+    readonly id: WalletId,
     readonly fullViewingKey: FullViewingKey,
     readonly custody: Custody,
   ) {}
 
   static fromJson(obj: WalletJson): Wallet {
-    return new Wallet(obj.label, obj.id, FullViewingKey.fromJsonString(obj.fullViewingKey), {
-      encryptedSeedPhrase: Box.fromJson(obj.custody.encryptedSeedPhrase),
-    });
+    return new Wallet(
+      obj.label,
+      FullViewingKey.fromJsonString(obj.id),
+      FullViewingKey.fromJsonString(obj.fullViewingKey),
+      {
+        encryptedSeedPhrase: Box.fromJson(obj.custody.encryptedSeedPhrase),
+      },
+    );
   }
 
   toJson(): WalletJson {
     return {
       label: this.label,
-      id: this.id,
+      id: this.id.toJsonString(),
       fullViewingKey: this.fullViewingKey.toJsonString(),
       custody: {
         encryptedSeedPhrase: this.custody.encryptedSeedPhrase.toJson(),

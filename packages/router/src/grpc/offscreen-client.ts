@@ -11,6 +11,7 @@ import {
 import { InternalRequest, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
 import { ConnectError } from '@connectrpc/connect';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
+import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
@@ -57,7 +58,7 @@ const sendOffscreenMessage = async <T extends OffscreenMessage>(
 const buildActions = (
   transactionPlan: TransactionPlan,
   witness: WitnessData,
-  fullViewingKey: string,
+  fullViewingKey: FullViewingKey,
   cancel: PromiseLike<never>,
 ): Promise<Action>[] => {
   const active = activateOffscreen();

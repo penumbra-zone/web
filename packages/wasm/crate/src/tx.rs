@@ -1,6 +1,5 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::convert::TryInto;
-use std::str::FromStr;
 
 use anyhow::anyhow;
 use penumbra_keys::keys::SpendKey;
@@ -68,15 +67,15 @@ pub fn decode_tx(tx_bytes: &str) -> WasmResult<JsValue> {
 
 /// authorize transaction (sign  transaction using  spend key)
 /// Arguments:
-///     spend_key_str: `bech32m String`
+///     spend_key: `SpendKey`
 ///     transaction_plan: `pb::TransactionPlan`
 /// Returns: `pb::AuthorizationData`
 #[wasm_bindgen]
-pub fn authorize(spend_key_str: &str, transaction_plan: JsValue) -> WasmResult<JsValue> {
+pub fn authorize(spend_key: JsValue, transaction_plan: JsValue) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
     let plan_proto: pb::TransactionPlan = serde_wasm_bindgen::from_value(transaction_plan)?;
-    let spend_key = SpendKey::from_str(spend_key_str)?;
+    let spend_key: SpendKey = serde_wasm_bindgen::from_value(spend_key)?;
     let plan: TransactionPlan = plan_proto.try_into()?;
 
     let auth_data: AuthorizationData = plan.authorize(OsRng, &spend_key)?;
