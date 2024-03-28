@@ -311,15 +311,10 @@ impl IndexedDBStorage {
         let tx = self.db.transaction_on_one(&self.constants.tables.epochs)?;
         let store = tx.object_store(&self.constants.tables.epochs)?;
 
-        if let Some(cursor) = store
+        Ok(store
             .open_cursor_with_direction(web_sys::IdbCursorDirection::Prev)?
             .await?
-        {
-            // Return the first epoch index, since we're cursoring from the end.
-            let epoch: Epoch = serde_wasm_bindgen::from_value(cursor.value())?;
-            return Ok(Some(epoch));
-        }
-
-        Ok(None)
+            .map(|cursor| serde_wasm_bindgen::from_value(cursor.value()).ok())
+            .flatten())
     }
 }
