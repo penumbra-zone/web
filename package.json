@@ -19,7 +19,7 @@
     "changeset": "changeset",
     "changeset:publish": "changeset publish",
     "download-keys": "turbo run download-keys",
-    "all-check": "pnpm install && pnpm compile && pnpm format-check && pnpm lint && pnpm test && pnpm build && pnpm format-check:rust && pnpm lint:rust && pnpm test:rust"
+    "all-check": "pnpm install && pnpm compile && pnpm format-check && pnpm lint && pnpm test && pnpm download-keys && pnpm build && pnpm format-check:rust && pnpm lint:rust && pnpm test:rust"
   },
   "dependencies": {
     "@buf/cosmos_ibc.bufbuild_es": "1.7.2-20240215124455-b32ecf3ebbcb.1",

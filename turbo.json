@@ -10,7 +10,7 @@
       "outputs": ["dist/**"]
     },
     "download-keys": {
-      "inputs": ["../../apps/extension/src/utils/download-proving-keys.ts"],
+      "inputs": ["./utils/download-proving-keys.ts"],
       "outputs": ["bin/**"]
     },
     "compile": {

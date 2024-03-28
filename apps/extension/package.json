@@ -31,7 +31,6 @@
     "exponential-backoff": "^3.1.1",
     "framer-motion": "^11.0.13",
     "immer": "^10.0.4",
-    "node-fetch": "^3.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",

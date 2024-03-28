@@ -201,9 +201,6 @@ importers:
       immer:
         specifier: ^10.0.4
         version: 10.0.4
-      node-fetch:
-        specifier: ^3.3.2
-        version: 3.3.2
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -832,6 +829,9 @@ importers:
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
+      node-fetch:
+        specifier: ^3.3.2
+        version: 3.3.2
       zod:
         specifier: ^3.22.4
         version: 3.22.4

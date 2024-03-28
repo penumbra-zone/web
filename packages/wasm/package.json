@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "download-keys": "tsx ../../apps/extension/src/utils/download-proving-keys.ts",
+    "download-keys": "tsx ./utils/download-proving-keys.ts",
     "precompile": "npm run download-keys",
     "clean": "rm -rfv dist wasm ; cargo clean --manifest-path ./crate/Cargo.toml",
     "dev": "cargo watch -C ./crate --postpone -- pnpm turbo run compile",
@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "@penumbra-zone/types": "workspace:*",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@penumbra-zone/bech32": "workspace:*",
