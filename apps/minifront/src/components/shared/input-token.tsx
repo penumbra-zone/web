@@ -5,6 +5,7 @@ import { Validation } from './validation-result';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { InputBlock } from './input-block';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { WalletIcon } from '@penumbra-zone/ui/components/ui/icons/wallet';
 
 interface InputTokenProps extends InputProps {
   label: string;
@@ -49,7 +50,7 @@ export default function InputToken({
 
       <div className='mt-[6px] flex items-center justify-between gap-2'>
         <div className='flex items-start gap-1 truncate'>
-          <img src='./wallet.svg' alt='Wallet' className='size-5' />
+          <WalletIcon className='size-5' />
           <ValueViewComponent view={selection?.balanceView} showIcon={false} />
         </div>
       </div>

@@ -8,6 +8,7 @@ import { Validator } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { FormEvent } from 'react';
 import { getIdentityKey } from '@penumbra-zone/getters/src/validator';
+import { WalletIcon } from '@penumbra-zone/ui/components/ui/icons/wallet';
 
 const getCapitalizedAction = (action: 'delegate' | 'undelegate') =>
   action.replace(/^./, firstCharacter => firstCharacter.toLocaleUpperCase());
@@ -90,7 +91,7 @@ export const FormDialog = ({
                 />
 
                 <div className='flex items-start gap-1 truncate text-muted-foreground'>
-                  <img src='./wallet.svg' alt='Wallet' className='size-5' />
+                  <WalletIcon className='size-5' />
                   <ValueViewComponent
                     view={action === 'delegate' ? unstakedTokens : delegationTokens}
                     showIcon={false}
