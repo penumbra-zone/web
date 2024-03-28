@@ -46,19 +46,19 @@ describe('migrate walletId and fullViewingKey from bech32 string to json stringi
       },
     ]);
     const v1Wallets = await v1ExtStorage.get('wallets');
-    expect(v1Wallets[0]?.id === bech32WalletId).toBeTruthy;
+    expect(v1Wallets[0]?.id === bech32WalletId).toBeTruthy();
     expect(v1Wallets[0]?.fullViewingKey === bech32FVK).toBeTruthy();
 
     const v2Wallets = await v2ExtStorage.get('wallets');
-    expect(WalletId.fromJsonString(v2Wallets[0]?.id!).inner).toEqual(
+    expect(WalletId.fromJsonString(v2Wallets[0]?.id ?? '').inner).toEqual(
       bech32ToWalletId(bech32WalletId).inner,
     );
-    expect(FullViewingKey.fromJsonString(v2Wallets[0]?.fullViewingKey!).inner).toEqual(
+    expect(FullViewingKey.fromJsonString(v2Wallets[0]?.fullViewingKey ?? '').inner).toEqual(
       bech32ToFullViewingKey(bech32FVK).inner,
     );
   });
 
-  test('should not migrate if its not needed ', async () => {
+  test('should not migrate if its not needed', async () => {
     await v2ExtStorage.set('wallets', [
       {
         fullViewingKey: bech32ToFullViewingKey(bech32FVK).toJsonString(),
@@ -69,10 +69,10 @@ describe('migrate walletId and fullViewingKey from bech32 string to json stringi
     ]);
 
     const v2Wallets = await v2ExtStorage.get('wallets');
-    expect(WalletId.fromJsonString(v2Wallets[0]?.id!).inner).toEqual(
+    expect(WalletId.fromJsonString(v2Wallets[0]?.id ?? '').inner).toEqual(
       bech32ToWalletId(bech32WalletId).inner,
     );
-    expect(FullViewingKey.fromJsonString(v2Wallets[0]?.fullViewingKey!).inner).toEqual(
+    expect(FullViewingKey.fromJsonString(v2Wallets[0]?.fullViewingKey ?? '').inner).toEqual(
       bech32ToFullViewingKey(bech32FVK).inner,
     );
   });
