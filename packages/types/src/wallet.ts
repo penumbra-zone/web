@@ -3,6 +3,7 @@ import {
   FullViewingKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import {Stringified} from "./jsonified";
 
 export interface WalletCreate {
   label: string;
@@ -12,8 +13,8 @@ export interface WalletCreate {
 // Stored in chrome.local.storage
 export interface WalletJson {
   label: string;
-  id: string;
-  fullViewingKey: string;
+  id: Stringified<WalletId>;
+  fullViewingKey: Stringified<FullViewingKey>;
   custody: { encryptedSeedPhrase: BoxJson };
 }
 

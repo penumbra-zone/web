@@ -72,6 +72,6 @@ const migrations: Migration = {
 export const localExtStorage = new ExtensionStorage<LocalStorageState>(
   chrome.storage.local,
   localDefaults,
-  LocalStorageVersion.V1,
+  LocalStorageVersion.V2,
   migrations,
 );
