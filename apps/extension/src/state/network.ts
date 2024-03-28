@@ -1,6 +1,6 @@
-import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/local';
 import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
 import { AllSlices, SliceCreator } from '.';
+import { LocalStorageState } from '@penumbra-zone/types/src/local-storage';
 
 export interface NetworkSlice {
   grpcEndpoint: string | undefined;

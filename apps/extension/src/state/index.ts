@@ -5,12 +5,13 @@ import { customPersist } from './persist';
 import { createPasswordSlice, PasswordSlice } from './password';
 import { createSeedPhraseSlice, SeedPhraseSlice } from './seed-phrase';
 import { createNetworkSlice, NetworkSlice } from './network';
-import { localExtStorage, LocalStorageState } from '@penumbra-zone/storage/src/chrome/local';
+import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
 import { sessionExtStorage, SessionStorageState } from '@penumbra-zone/storage/src/chrome/session';
 import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
 import { createTxApprovalSlice, TxApprovalSlice } from './tx-approval';
 import { createOriginApprovalSlice, OriginApprovalSlice } from './origin-approval';
 import { createConnectedSitesSlice, ConnectedSitesSlice } from './connected-sites';
+import { LocalStorageState } from '@penumbra-zone/types/src/local-storage';
 
 export interface AllSlices {
   wallets: WalletsSlice;

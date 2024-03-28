@@ -1,27 +1,7 @@
 import { ExtensionStorage } from './base';
-import { KeyPrintJson } from '@penumbra-zone/crypto-web/src/encryption';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
-import type { WalletJson } from '@penumbra-zone/types/src/wallet';
 import { v1Migrations } from './v1-migration';
-
-export enum LocalStorageVersion {
-  V1 = 'V1',
-  V2 = 'V2',
-}
-
-export interface OriginRecord {
-  origin: string;
-  choice: UserChoice;
-  date: number;
-}
-
-export interface LocalStorageState {
-  wallets: WalletJson[];
-  grpcEndpoint: string;
-  passwordKeyPrint?: KeyPrintJson;
-  fullSyncHeight: number;
-  knownSites: OriginRecord[];
-}
+import { LocalStorageState, LocalStorageVersion } from '@penumbra-zone/types/src/local-storage';
 
 // this will be injected by webpack build, but we don't have access to the
 // declaration in `apps/extension/prax.d.ts` because we are in an independent

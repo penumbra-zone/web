@@ -3,13 +3,13 @@ import { AllSlices, initializeStore } from '.';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { Key, KeyPrint } from '@penumbra-zone/crypto-web/src/encryption';
 import { webcrypto } from 'crypto';
-import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/local';
 import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
 import {
   mockLocalExtStorage,
   mockSessionExtStorage,
 } from '@penumbra-zone/storage/src/chrome/test-utils/mock';
 import { SessionStorageState } from '@penumbra-zone/storage/src/chrome/session';
+import { LocalStorageState } from '@penumbra-zone/types/src/local-storage';
 
 vi.stubGlobal('crypto', webcrypto);
 

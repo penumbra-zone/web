@@ -1,5 +1,6 @@
-import { Base64Str, base64ToUint8Array, uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
+import { base64ToUint8Array, uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 import { Box } from '@penumbra-zone/types/src/box';
+import { KeyPrintJson } from '@penumbra-zone/types/src/local-storage';
 
 /**
  * ==== Internal ====
@@ -57,12 +58,6 @@ const decrypt = async (
 /**
  * ==== External ====
  */
-
-// Public, stored representation of KeyPrint
-export interface KeyPrintJson {
-  hash: Base64Str;
-  salt: Base64Str;
-}
 
 // Used to recreate the original key material
 export class KeyPrint {
