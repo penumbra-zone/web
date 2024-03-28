@@ -6,6 +6,7 @@ mod tests {
     use indexed_db_futures::prelude::{
         IdbDatabase, IdbObjectStore, IdbQuerySource, IdbTransaction, IdbTransactionMode,
     };
+    use penumbra_dex::DexParameters;
     use penumbra_proto::core::app::v1::AppParameters;
     use penumbra_proto::core::component::fee::v1::GasPrices;
     use penumbra_proto::view::v1::transaction_planner_request::Output;
@@ -90,6 +91,7 @@ mod tests {
             fmd_parameters: String,
             app_parameters: String,
             gas_prices: String,
+            epochs: String,
         }
 
         // Define `IndexDB` table parameters and constants.
@@ -101,6 +103,7 @@ mod tests {
             fmd_parameters: "FMD_PARAMETERS".to_string(),
             app_parameters: "APP_PARAMETERS".to_string(),
             gas_prices: "GAS_PRICES".to_string(),
+            epochs: "EPOCHS".to_string(),
         };
 
         let constants: IndexedDbConstants = IndexedDbConstants {
@@ -114,8 +117,14 @@ mod tests {
         let sct_params = SctParameters {
             epoch_duration: 5u64,
         };
+        let dex_params = DexParameters {
+            fixed_candidates: Vec::new(),
+            is_enabled: true,
+            max_hops: 5u32,
+        };
 
         let app_params = AppParameters {
+            dex_params: Some(dex_params.to_proto()),
             chain_id,
             sct_params: Some(sct_params.to_proto()),
             community_pool_params: None,
@@ -204,10 +213,10 @@ mod tests {
                 "lo": "1",
                 "hi": "0"
             },
-            "asset_id": { 
-                "inner": "nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=", 
-                "alt_bech32m": "", 
-                "alt_base_denom": "" 
+            "asset_id": {
+                "inner": "nwPDkQq3OvLnBwGTD+nmv1Ifb2GEmFCgNHrU++9BsRE=",
+                "alt_bech32m": "",
+                "alt_base_denom": ""
             }
         }
         "#;
@@ -387,7 +396,10 @@ mod tests {
 
         // -------------- 1. Query transaction plan performing a spend --------------
 
+        #[allow(deprecated)] // Remove if/when `epoch_index` is removed
         let planner_request = TransactionPlannerRequest {
+            epoch: None,
+            epoch_index: 0,
             expiry_height: 0,
             memo: Some(memo),
             source: None,

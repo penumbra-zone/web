@@ -89,7 +89,7 @@ export interface IndexedDbInterface {
   ): AsyncGenerator<PositionId, void>;
   addPosition(positionId: PositionId, position: Position): Promise<void>;
   updatePosition(positionId: PositionId, newState: PositionState): Promise<void>;
-  addEpoch(startHeight: bigint, index?: bigint): Promise<void>;
+  addEpoch(startHeight: bigint): Promise<void>;
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
   iterateValidatorInfos(): AsyncGenerator<ValidatorInfo, void>;

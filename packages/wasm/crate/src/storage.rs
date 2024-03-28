@@ -8,7 +8,7 @@ use indexed_db_futures::{
 use penumbra_asset::asset::{self, Id, Metadata};
 use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
-use penumbra_proto::core::app::v1::AppParameters;
+use penumbra_proto::core::{app::v1::AppParameters, component::sct::v1::Epoch};
 use penumbra_proto::{
     crypto::tct::v1::StateCommitment,
     view::v1::{NotesRequest, SwapRecord},
@@ -39,6 +39,7 @@ pub struct Tables {
     pub fmd_parameters: String,
     pub app_parameters: String,
     pub gas_prices: String,
+    pub epochs: String,
 }
 
 pub struct IndexedDBStorage {
@@ -304,5 +305,15 @@ impl IndexedDBStorage {
         // TODO GasPrices is missing domain type impl, requiring this
         // .map(serde_wasm_bindgen::from_value)
         // .transpose()?)
+    }
+
+    pub async fn get_latest_known_epoch(&self) -> WasmResult<Option<Epoch>> {
+        let tx = self.db.transaction_on_one(&self.constants.tables.epochs)?;
+        let store = tx.object_store(&self.constants.tables.epochs)?;
+
+        Ok(store
+            .open_cursor_with_direction(web_sys::IdbCursorDirection::Prev)?
+            .await?
+            .and_then(|cursor| serde_wasm_bindgen::from_value(cursor.value()).ok()))
     }
 }

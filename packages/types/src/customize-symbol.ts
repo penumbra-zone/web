@@ -18,7 +18,7 @@ export const customizeSymbol = (metadata: Metadata) => {
   if (unbondingMatch) {
     const shortenedId = unbondingMatch.id.slice(0, SHORTENED_ID_LENGTH);
     const customized = metadata.clone();
-    customized.symbol = `unbondUMe${unbondingMatch.epoch}(${shortenedId}…)`;
+    customized.symbol = `unbondUMat${unbondingMatch.startAt}(${shortenedId}…)`;
     return customized;
   }
 

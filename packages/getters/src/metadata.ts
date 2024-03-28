@@ -23,19 +23,19 @@ export const getDisplayDenomExponent = createGetter(
 );
 
 /**
- * Get the start epoch index from the metadata of an unbonding token -- that is,
- * the epoch at which unbonding started.
+ * Get the unbonding start height index from the metadata of an unbonding token
+ * -- that is, the block height at which unbonding started.
  *
  * For metadata of a non-unbonding token, will return `undefined`.
  */
-export const getStartEpochIndex = createGetter((metadata?: Metadata) => {
+export const getUnbondingStartHeight = createGetter((metadata?: Metadata) => {
   if (!metadata) return undefined;
 
   const unbondingMatch = assetPatterns.unbondingToken.capture(metadata.display);
 
   if (unbondingMatch) {
-    const { epoch } = unbondingMatch;
-    if (epoch) return BigInt(epoch);
+    const { startAt } = unbondingMatch;
+    return BigInt(startAt);
   }
 
   return undefined;

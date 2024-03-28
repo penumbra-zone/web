@@ -3,14 +3,14 @@ import { ViewBox } from './viewbox';
 import { IdentityKeyComponent } from '../../identity-key-component';
 import { ActionDetails } from './action-details';
 import {
-  getStartEpochIndexFromUndelegateClaim,
+  getUnbondingStartHeightFromUndelegateClaim,
   getValidatorIdentityFromUndelegateClaim,
 } from '@penumbra-zone/getters/src/undelegate-claim';
 
 /** Render an `UndelegateClaim` action. */
 export const UndelegateClaimComponent = ({ value }: { value: UndelegateClaim }) => {
   const validatorIdentity = getValidatorIdentityFromUndelegateClaim(value);
-  const startEpochIndex = getStartEpochIndexFromUndelegateClaim(value);
+  const unbondingStartHeight = getUnbondingStartHeightFromUndelegateClaim(value);
 
   return (
     <ViewBox
@@ -21,8 +21,8 @@ export const UndelegateClaimComponent = ({ value }: { value: UndelegateClaim }) 
             <IdentityKeyComponent identityKey={validatorIdentity} />
           </ActionDetails.Row>
 
-          <ActionDetails.Row label='Unbonding start epoch'>
-            {startEpochIndex.toString()}
+          <ActionDetails.Row label='Unbonding start height'>
+            {unbondingStartHeight.toString()}
           </ActionDetails.Row>
         </ActionDetails>
       }

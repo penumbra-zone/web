@@ -300,30 +300,37 @@ pub async fn plan_transaction(
     }
 
     for tpr::Delegate { amount, rate_data } in request.delegations {
+        let epoch = storage.get_latest_known_epoch().await?.unwrap();
         let amount = amount
             .ok_or_else(|| anyhow!("missing amount in delegation"))?
             .try_into()?;
         let rate_data: RateData = rate_data
             .ok_or_else(|| anyhow!("missing rate data in delegation"))?
             .try_into()?;
-        actions.push(rate_data.build_delegate(amount).into());
+        actions.push(rate_data.build_delegate(epoch.into(), amount).into());
     }
 
     for tpr::Undelegate { value, rate_data } in request.undelegations {
+        let epoch = storage.get_latest_known_epoch().await?.unwrap();
         let value: Value = value
             .ok_or_else(|| anyhow!("missing value in undelegation"))?
             .try_into()?;
         let rate_data: RateData = rate_data
             .ok_or_else(|| anyhow!("missing rate data in undelegation"))?
             .try_into()?;
-        actions.push(rate_data.build_undelegate(value.amount).into());
+        actions.push(
+            rate_data
+                .build_undelegate(epoch.into(), value.amount)
+                .into(),
+        );
     }
 
     for tpr::UndelegateClaim {
         validator_identity,
-        start_epoch_index,
+        unbonding_start_height,
         penalty,
         unbonding_amount,
+        ..
     } in request.undelegation_claims
     {
         let validator_identity: IdentityKey = validator_identity
@@ -338,7 +345,7 @@ pub async fn plan_transaction(
 
         let undelegate_claim_plan = UndelegateClaimPlan {
             validator_identity,
-            start_epoch_index,
+            unbonding_start_height,
             penalty,
             unbonding_amount,
             balance_blinding: Fr::rand(&mut OsRng),
