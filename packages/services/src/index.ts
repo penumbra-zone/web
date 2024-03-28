@@ -137,8 +137,8 @@ export class Services implements ServicesInterface {
     return {
       ...initConfig,
       grpcEndpoint,
-      walletId,
-      fullViewingKey,
+      walletId: WalletId.fromJsonString(walletId),
+      fullViewingKey: FullViewingKey.fromJsonString(fullViewingKey),
     };
   }
 

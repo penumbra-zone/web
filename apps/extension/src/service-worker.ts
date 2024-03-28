@@ -34,7 +34,10 @@ import { approveTransaction } from './approve-transaction';
 // all rpc implementations, local and proxy
 import { rpcImpls } from './impls';
 import { backOff } from 'exponential-backoff';
-import {FullViewingKey, WalletId} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb";
+import {
+  FullViewingKey,
+  WalletId,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 const startServices = async () => {
   const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
