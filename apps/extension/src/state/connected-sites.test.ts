@@ -19,6 +19,7 @@ describe('Connected Sites Slice', () => {
 
   beforeEach(() => {
     localStorage = mockLocalExtStorage();
+    //
     useStore = create<AllSlices>()(initializeStore(mockSessionExtStorage(), localStorage));
   });
 
