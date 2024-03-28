@@ -1,6 +1,6 @@
-# @penumbra-zone/crypto-web
+# @penumbra-zone/perspective
 
-## 2.0.0
+## 1.0.0
 
 ### Major Changes
 
@@ -8,12 +8,8 @@
 
 ### Patch Changes
 
+- Updated dependencies [8933117]
 - Updated dependencies [929d278]
+  - @penumbra-zone/wasm@2.0.0
+  - @penumbra-zone/bech32@2.0.0
   - @penumbra-zone/types@2.0.0
-
-## 1.0.1
-
-### Patch Changes
-
-- Updated dependencies
-  - @penumbra-zone/types@1.1.0
