@@ -17,7 +17,7 @@ export const SettingsFullViewingKey = () => {
 
   const [password, setPassword] = useState('');
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
-  const [fullViewingKey, setFullViewingKey] = useState('');
+  const [fullViewingKey, setFullViewingKey] = useState<string>();
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

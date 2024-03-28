@@ -26,4 +26,4 @@ export const getEphemeralByIndex = (fullViewingKey: FullViewingKey, index: numbe
   Address.fromJson(get_ephemeral_address(fullViewingKey.toJson(), index) as JsonValue);
 
 export const getWalletId = (fullViewingKey: FullViewingKey) =>
-  WalletId.fromJson(get_wallet_id(fullViewingKey) as JsonValue);
+  WalletId.fromJson(get_wallet_id(fullViewingKey.toJson()) as JsonValue);

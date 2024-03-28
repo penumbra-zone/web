@@ -58,7 +58,7 @@ export class ViewServer implements ViewServerInterface {
   // Resets the state of the wasmViewServer to the one set in storage
   async resetTreeToStored() {
     this.wasmViewServer = await WasmViewServer.new(
-      this.fullViewingKey,
+      this.fullViewingKey.toJson(),
       this.epochDuration,
       await this.getStoredTree(),
       this.idbConstants,

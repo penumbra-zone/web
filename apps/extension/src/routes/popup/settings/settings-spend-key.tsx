@@ -17,7 +17,7 @@ export const SettingsSpendKey = () => {
 
   const [password, setPassword] = useState('');
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
-  const [spendKey, setSpendKey] = useState('');
+  const [spendKey, setSpendKey] = useState<string>();
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
