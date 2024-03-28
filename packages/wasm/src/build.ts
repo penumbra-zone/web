@@ -15,13 +15,13 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export const authorizePlan = (spendKey: SpendKey, txPlan: TransactionPlan): AuthorizationData => {
-  const result = authorize(spendKey.toBinary(), txPlan.toJson()) as unknown;
-  return AuthorizationData.fromJsonString(JSON.stringify(result));
+  const result = authorize(spendKey.toBinary(), txPlan.toJson()) as JsonValue;
+  return AuthorizationData.fromJson(result);
 };
 
 export const getWitness = (txPlan: TransactionPlan, sct: StateCommitmentTree): WitnessData => {
-  const result: unknown = witness(txPlan.toJson(), sct);
-  return WitnessData.fromJsonString(JSON.stringify(result));
+  const result = witness(txPlan.toJson(), sct) as JsonValue;
+  return WitnessData.fromJson(result);
 };
 
 export const buildParallel = (
@@ -30,13 +30,13 @@ export const buildParallel = (
   witnessData: WitnessData,
   authData: AuthorizationData,
 ): Transaction => {
-  const result: unknown = build_parallel(
+  const result = build_parallel(
     batchActions.map(action => action.toJson()),
     txPlan.toJson(),
     witnessData.toJson(),
     authData.toJson(),
-  );
-  return Transaction.fromJson(result as JsonValue);
+  ) as JsonValue;
+  return Transaction.fromJson(result);
 };
 
 export const buildActionParallel = async (
@@ -55,14 +55,17 @@ export const buildActionParallel = async (
     txPlan.actions[actionId]?.toJson(),
     fullViewingKey.toBinary(),
     witnessData.toJson(),
-  ) as unknown;
+  ) as JsonValue;
 
-  return Action.fromJson(result as JsonValue);
+  return Action.fromJson(result);
 };
 
 const loadProvingKey = async (actionType: ActionType) => {
   const keyType = provingKeys[actionType];
   if (!keyType) return;
-  const keyBin = (await fetch(`bin/${keyType}_pk.bin`)).arrayBuffer();
-  load_proving_key(await keyBin, keyType);
+
+  const res = await fetch(`bin/${keyType}_pk.bin`);
+  const buffer = await res.arrayBuffer();
+  const uint8Array = new Uint8Array(buffer);
+  load_proving_key(uint8Array, keyType);
 };

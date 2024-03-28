@@ -37,34 +37,6 @@ impl TxInfoResponse {
     }
 }
 
-/// encode transaction to bytes
-/// Arguments:
-///     transaction: `penumbra_transaction::Transaction`
-/// Returns: `<Vec<u8>`
-#[wasm_bindgen]
-pub fn encode_tx(transaction: JsValue) -> WasmResult<JsValue> {
-    utils::set_panic_hook();
-
-    let tx: Transaction = serde_wasm_bindgen::from_value(transaction)?;
-    let result = serde_wasm_bindgen::to_value::<Vec<u8>>(&tx.into())?;
-    Ok(result)
-}
-
-/// decode base64 bytes to transaction
-/// Arguments:
-///     tx_bytes: `base64 String`
-/// Returns: `penumbra_transaction::Transaction`
-#[wasm_bindgen]
-pub fn decode_tx(tx_bytes: &str) -> WasmResult<JsValue> {
-    utils::set_panic_hook();
-
-    let tx_vec: Vec<u8> =
-        base64::Engine::decode(&base64::engine::general_purpose::STANDARD, tx_bytes)?;
-    let transaction: Transaction = Transaction::try_from(tx_vec)?;
-    let result = serde_wasm_bindgen::to_value(&transaction)?;
-    Ok(result)
-}
-
 /// authorize transaction (sign  transaction using  spend key)
 /// Arguments:
 ///     spend_key: `byte representation inner SpendKey`

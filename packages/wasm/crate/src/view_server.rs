@@ -10,7 +10,6 @@ use penumbra_shielded_pool::note;
 use penumbra_tct as tct;
 use penumbra_tct::Witness::*;
 use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::Error;
 use serde_wasm_bindgen::Serializer;
 use tct::storage::{StoreCommitment, StoreHash, StoredPosition, Updates};
 use tct::{Forgotten, Tree};
@@ -292,15 +291,14 @@ impl ViewServer {
         Ok(result)
     }
 
-    /// get SCT root
     /// SCT root can be compared with the root obtained by GRPC and verify that there is no divergence
-    /// Returns: `Root`
+    /// Returns: `Uint8Array representing a Root`
     #[wasm_bindgen]
-    pub fn get_sct_root(&mut self) -> Result<JsValue, Error> {
+    pub fn get_sct_root(&mut self) -> WasmResult<Vec<u8>> {
         utils::set_panic_hook();
 
         let root = self.sct.root();
-        serde_wasm_bindgen::to_value(&root)
+        Ok(root.encode_to_vec())
     }
 }
 

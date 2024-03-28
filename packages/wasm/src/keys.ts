@@ -18,11 +18,15 @@ export const generateSpendKey = (seedPhrase: string) =>
 export const getFullViewingKey = (spendKey: SpendKey) =>
   FullViewingKey.fromBinary(get_full_viewing_key(spendKey.toBinary()));
 
-export const getAddressByIndex = (fullViewingKey: FullViewingKey, index: number) =>
-  Address.fromBinary(get_address_by_index(fullViewingKey.toBinary(), index));
+export const getAddressByIndex = (fullViewingKey: FullViewingKey, index: number) => {
+  const bytes = get_address_by_index(fullViewingKey.toBinary(), index);
+  return Address.fromBinary(bytes);
+};
 
-export const getEphemeralByIndex = (fullViewingKey: FullViewingKey, index: number) =>
-  Address.fromBinary(get_ephemeral_address(fullViewingKey.toBinary(), index));
+export const getEphemeralByIndex = (fullViewingKey: FullViewingKey, index: number) => {
+  const bytes = get_ephemeral_address(fullViewingKey.toBinary(), index);
+  return Address.fromBinary(bytes);
+};
 
 export const getWalletId = (fullViewingKey: FullViewingKey) =>
   WalletId.fromBinary(get_wallet_id(fullViewingKey.toBinary()));
