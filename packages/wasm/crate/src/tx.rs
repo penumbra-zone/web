@@ -2,6 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::convert::TryInto;
 
 use anyhow::anyhow;
+use penumbra_dex::BatchSwapOutputData;
 use penumbra_keys::keys::SpendKey;
 use penumbra_keys::FullViewingKey;
 use penumbra_proto::core::transaction::v1 as pb;
@@ -276,10 +277,22 @@ pub async fn transaction_info_inner(
             Action::Swap(swap) => {
                 let commitment = swap.body.payload.commitment;
 
-                let swap_position_option = storage
-                    .get_swap_by_commitment(commitment.into())
-                    .await?
+                let swap_record = storage.get_swap_by_commitment(commitment.into()).await?;
+
+                let swap_position_option = swap_record
+                    .clone()
                     .map(|swap_record| Position::from(swap_record.position));
+
+                swap_record
+                    .clone()
+                    .and_then(|swap_record| swap_record.output_data)
+                    .and_then(
+                        |output_data| match BatchSwapOutputData::try_from(output_data) {
+                            Ok(bsod) => Some(bsod),
+                            _ => None,
+                        },
+                    )
+                    .map(|bsod| txp.batch_swap_output_data.push(bsod));
 
                 if let Some(swap_position) = swap_position_option {
                     add_swap_info_to_perspective(
