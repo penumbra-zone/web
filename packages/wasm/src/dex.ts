@@ -5,17 +5,16 @@ import {
   PositionState,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { JsonValue } from '@bufbuild/protobuf';
 
 export const computePositionId = (position: Position): PositionId => {
-  const result = compute_position_id(position.toJson()) as unknown;
-  return PositionId.fromJsonString(JSON.stringify(result));
+  const bytes = compute_position_id(position.toBinary());
+  return PositionId.fromBinary(bytes);
 };
 
 export const getLpNftMetadata = (
   positionId: PositionId,
   positionState: PositionState,
 ): Metadata => {
-  const result = get_lpnft_asset(positionId.toJson(), positionState.toJson()) as JsonValue;
-  return Metadata.fromJson(result);
+  const result = get_lpnft_asset(positionId.toBinary(), positionState.toBinary());
+  return Metadata.fromBinary(result);
 };
