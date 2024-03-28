@@ -314,7 +314,6 @@ impl IndexedDBStorage {
         Ok(store
             .open_cursor_with_direction(web_sys::IdbCursorDirection::Prev)?
             .await?
-            .map(|cursor| serde_wasm_bindgen::from_value(cursor.value()).ok())
-            .flatten())
+            .and_then(|cursor| serde_wasm_bindgen::from_value(cursor.value()).ok()))
     }
 }
