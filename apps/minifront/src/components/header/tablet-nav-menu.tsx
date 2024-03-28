@@ -23,8 +23,9 @@ export const TabletNavMenu = () => {
           <NavigationMenuItem>
             <NavigationMenuTrigger className='w-[188px] rounded-lg border border-light-brown text-muted'>
               {
-                [...headerLinks, transactionLink].find(link => link.subLinks?.includes(pathname))
-                  ?.label
+                [...headerLinks, transactionLink].find(
+                  link => link.href === pathname || link.subLinks?.includes(pathname),
+                )?.label
               }
             </NavigationMenuTrigger>
             <NavigationMenuContent className='w-[188px]'>
