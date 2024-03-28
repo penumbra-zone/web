@@ -489,8 +489,6 @@ export class IndexedDb implements IndexedDbInterface {
      */
     height: bigint,
   ): Promise<Epoch | undefined> {
-    let cursor = await this.db.transaction('EPOCHS', 'readonly').store.openCursor();
-
     let epoch: Epoch | undefined;
 
     /**
@@ -504,13 +502,11 @@ export class IndexedDb implements IndexedDbInterface {
      * '11' is greater than the string '100', for example). For now, then, we
      * have to just iterate over all epochs to find the correct starting height.
      */
-    while (cursor) {
+    for await (const cursor of this.db.transaction('EPOCHS', 'readonly').store) {
       const currentEpoch = Epoch.fromJson(cursor.value);
 
       if (currentEpoch.startHeight <= height) epoch = currentEpoch;
       else if (currentEpoch.startHeight > height) break;
-
-      cursor = await cursor.continue();
     }
 
     return epoch;
