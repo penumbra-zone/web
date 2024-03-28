@@ -7,6 +7,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { bech32ToFullViewingKey } from '@penumbra-zone/bech32/src/full-viewing-key';
 
 describe('viewTransactionPlan()', () => {
   const returnAddressAsBech32 =
@@ -15,8 +16,9 @@ describe('viewTransactionPlan()', () => {
   const chainId = 'testnet';
   const expiryHeight = 100n;
   const metadataByAssetId = vi.fn(() => Promise.resolve(new Metadata()));
-  const mockFvk =
-    'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09';
+  const mockFvk = bech32ToFullViewingKey(
+    'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+  );
 
   const validTxnPlan = new TransactionPlan({
     memo: {

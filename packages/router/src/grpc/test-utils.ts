@@ -74,8 +74,6 @@ export interface MockExtSessionCtx {
   get: Mock;
 }
 
-export const testFullViewingKey = new FullViewingKey({
-  inner: bech32ToFullViewingKey(
-    'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
-  ),
-});
+export const testFullViewingKey = bech32ToFullViewingKey(
+  'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+);

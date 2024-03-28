@@ -46,6 +46,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { localAssets } from '@penumbra-zone/constants/src/assets';
 import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/src/indexed-db';
+import { bech32ToWalletId } from '@penumbra-zone/bech32/src/wallet-id';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place
@@ -53,7 +54,9 @@ describe('IndexedDb', () => {
     chainId: 'test',
     accountAddr: 'penumbra123xyz',
     dbVersion: 1,
-    walletId: `walletid${Math.random()}`,
+    walletId: bech32ToWalletId(
+      'penumbrawalletid15r7q7qsf3hhsgj0g530n7ng9acdacmmx9ajknjz38dyt90u9gcgsmjre75',
+    ),
   });
 
   describe('initializing', () => {
@@ -94,7 +97,9 @@ describe('IndexedDb', () => {
         chainId: 'test',
         accountAddr: 'penumbra123xyz',
         dbVersion: 2,
-        walletId: `walletid${Math.random()}`,
+        walletId: bech32ToWalletId(
+          'penumbrawalletid15r7q7qsf3hhsgj0g530n7ng9acdacmmx9ajknjz38dyt90u9gcgsmjre75',
+        ),
       };
 
       const dbB = await IndexedDb.initialize(version2Props);
