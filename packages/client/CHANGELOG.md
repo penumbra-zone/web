@@ -1,5 +1,18 @@
 # @penumbra-zone/client
 
+## 3.0.0
+
+### Major Changes
+
+- 7a1efed: isPraxInstalled -> isPraxAvailable renaming
+- 929d278: barrel imports to facilitate better tree shaking
+
+### Patch Changes
+
+- Updated dependencies [929d278]
+  - @penumbra-zone/types@2.0.0
+  - @penumbra-zone/transport-dom@2.0.0
+
 ## 2.0.0
 
 ### Major Changes
