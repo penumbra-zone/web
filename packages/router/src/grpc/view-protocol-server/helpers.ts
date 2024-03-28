@@ -25,5 +25,6 @@ export const getAssetMetadata = async (
     return nodeMetadata;
   }
 
-  return undefined;
+  // If the metadata is not found, throw an error with details about the asset.
+  throw new Error(`No denom metadata found for asset: ${JSON.stringify(targetAsset.toJson())}`);
 };

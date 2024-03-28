@@ -63,8 +63,12 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
     const authorizeRequest = AuthorizeRequest.fromJson(authReqJson);
 
     const getMetadata = async (assetId: AssetId) => {
-      const { denomMetadata } = await viewClient.assetMetadataById({ assetId });
-      return denomMetadata ?? new Metadata();
+      try {
+        const { denomMetadata } = await viewClient.assetMetadataById({ assetId });
+        return denomMetadata ?? new Metadata();
+      } catch {
+        return new Metadata();
+      }
     };
 
     const wallets = await localExtStorage.get('wallets');
