@@ -8,9 +8,8 @@ use indexed_db_futures::{
 use penumbra_asset::asset::{self, Id, Metadata};
 use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
-use penumbra_proto::core::{app::v1::AppParameters, component::sct::v1::Epoch};
 use penumbra_proto::{
-    core::app::v1::AppParameters,
+    core::{app::v1::AppParameters, component::sct::v1::Epoch},
     crypto::tct::v1::StateCommitment,
     view::v1::{NotesRequest, SwapRecord, TransactionInfo},
     DomainType,
