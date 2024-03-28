@@ -2,8 +2,7 @@ import { ExtensionStorage } from './base';
 import { KeyPrintJson } from '@penumbra-zone/crypto-web/src/encryption';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import type { WalletJson } from '@penumbra-zone/types/src/wallet';
-import { bech32ToFullViewingKey } from '@penumbra-zone/bech32/src/full-viewing-key';
-import { bech32ToWalletId } from '@penumbra-zone/bech32/src/wallet-id';
+import { v1Migrations } from './v1-migration';
 
 export enum LocalStorageVersion {
   V1 = 'V1',
@@ -38,32 +37,10 @@ export const localDefaults: LocalStorageState = {
   knownSites: [{ origin: MINIFRONT_URL, choice: UserChoice.Approved, date: Date.now() }],
 };
 
-interface Migration {
-  wallets: {
-    [LocalStorageVersion.V1]: (old: LocalStorageState['wallets']) => LocalStorageState['wallets'];
-  };
-}
-
-const migrations: Migration = {
-  wallets: {
-    [LocalStorageVersion.V1]: old =>
-      old.map(({ fullViewingKey, id, label, custody }) => {
-        const fvk = bech32ToFullViewingKey(fullViewingKey);
-        const walletId = bech32ToWalletId(id);
-        return {
-          fullViewingKey: fvk.toJsonString(),
-          id: walletId.toJsonString(),
-          label,
-          custody,
-        };
-      }),
-  },
-};
-
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.
 export const localExtStorage = new ExtensionStorage<LocalStorageState>(
   chrome.storage.local,
   localDefaults,
   LocalStorageVersion.V2,
-  migrations,
+  v1Migrations,
 );

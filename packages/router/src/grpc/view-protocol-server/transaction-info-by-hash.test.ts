@@ -14,6 +14,7 @@ import {
   Transaction,
   TransactionPerspective,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import { bech32ToFullViewingKey } from '@penumbra-zone/bech32/src/full-viewing-key';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/src/transaction', () => ({
@@ -34,8 +35,9 @@ describe('TransactionInfoByHash request handler', () => {
       constants: vi.fn(),
     };
     mockViewServer = {
-      fullViewingKey:
+      fullViewingKey: bech32ToFullViewingKey(
         'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+      ),
     };
     mockTendermint = {
       getTransaction: vi.fn(),
