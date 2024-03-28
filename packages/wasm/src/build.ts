@@ -15,7 +15,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export const authorizePlan = (spendKey: SpendKey, txPlan: TransactionPlan): AuthorizationData => {
-  const result = authorize(spendKey.toJson(), txPlan.toJson()) as unknown;
+  const result = authorize(spendKey.toBinary(), txPlan.toJson()) as unknown;
   return AuthorizationData.fromJsonString(JSON.stringify(result));
 };
 
@@ -53,7 +53,7 @@ export const buildActionParallel = async (
   const result = build_action(
     txPlan.toJson(),
     txPlan.actions[actionId]?.toJson(),
-    fullViewingKey.toJson(),
+    fullViewingKey.toBinary(),
     witnessData.toJson(),
   ) as unknown;
 

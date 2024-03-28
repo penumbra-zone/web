@@ -10,7 +10,7 @@ export const getAddressIndexByAddress = (
   fullViewingKey: FullViewingKey,
   address: Address,
 ): AddressIndex | undefined => {
-  const res = get_index_by_address(fullViewingKey.toJson(), address.toJson()) as JsonValue;
+  const res = get_index_by_address(fullViewingKey.toBinary(), address.toBinary()) as JsonValue;
   return res ? AddressIndex.fromJson(res) : undefined;
 };
 
@@ -18,9 +18,6 @@ export const getAddressIndexByAddress = (
 export const isControlledAddress = (fullViewingKey: FullViewingKey, address?: Address): boolean => {
   if (!address) return false;
 
-  const viewableIndex = get_index_by_address(
-    fullViewingKey.toJson(),
-    address.toJson(),
-  ) as JsonValue;
+  const viewableIndex = get_index_by_address(fullViewingKey.toBinary(), address.toBinary()) as JsonValue;
   return Boolean(viewableIndex);
 };

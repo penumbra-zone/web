@@ -13,7 +13,7 @@ export const planTransaction = async (
   const plan = (await plan_transaction(
     idbConstants,
     request.toJson(),
-    fullViewingKey.toJson(),
+    fullViewingKey.toBinary(),
   )) as JsonValue;
   return TransactionPlan.fromJson(plan);
 };
