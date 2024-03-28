@@ -14,16 +14,16 @@ import {
 import { JsonValue } from '@bufbuild/protobuf';
 
 export const generateSpendKey = (seedPhrase: string) =>
-  SpendKey.fromJson(generate_spend_key(seedPhrase) as JsonValue);
+  SpendKey.fromBinary(generate_spend_key(seedPhrase));
 
 export const getFullViewingKey = (spendKey: SpendKey) =>
-  FullViewingKey.fromJson(get_full_viewing_key(spendKey.toJson()) as JsonValue);
+  FullViewingKey.fromBinary(get_full_viewing_key(spendKey.toBinary()));
 
 export const getAddressByIndex = (fullViewingKey: FullViewingKey, index: number) =>
-  Address.fromJson(get_address_by_index(fullViewingKey.toJson(), index) as JsonValue);
+  Address.fromBinary(get_address_by_index(fullViewingKey.toBinary(), index));
 
 export const getEphemeralByIndex = (fullViewingKey: FullViewingKey, index: number) =>
-  Address.fromJson(get_ephemeral_address(fullViewingKey.toJson(), index) as JsonValue);
+  Address.fromBinary(get_ephemeral_address(fullViewingKey.toBinary(), index));
 
 export const getWalletId = (fullViewingKey: FullViewingKey) =>
-  WalletId.fromJson(get_wallet_id(fullViewingKey.toJson()) as JsonValue);
+  WalletId.fromJson(get_wallet_id(fullViewingKey.toBinary()) as JsonValue);

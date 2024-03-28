@@ -13,7 +13,7 @@ export const generateTransactionInfo = async (
   idbConstants: IdbConstants,
 ) => {
   const { txp, txv } = (await transaction_info(
-    fullViewingKey.toJson(),
+    fullViewingKey.toBinary(),
     tx.toJson(),
     idbConstants,
   )) as {

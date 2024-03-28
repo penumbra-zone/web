@@ -39,7 +39,7 @@ export class ViewServer implements ViewServerInterface {
     idbConstants,
   }: ViewServerProps): Promise<ViewServer> {
     const wvs = await WasmViewServer.new(
-      fullViewingKey.toJson(),
+      fullViewingKey.toBinary(),
       epochDuration,
       await getStoredTree(),
       idbConstants,
@@ -58,7 +58,7 @@ export class ViewServer implements ViewServerInterface {
   // Resets the state of the wasmViewServer to the one set in storage
   async resetTreeToStored() {
     this.wasmViewServer = await WasmViewServer.new(
-      this.fullViewingKey.toJson(),
+      this.fullViewingKey.toBinary(),
       this.epochDuration,
       await this.getStoredTree(),
       this.idbConstants,
