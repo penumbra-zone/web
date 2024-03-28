@@ -6,7 +6,6 @@
     "build": "turbo run build",
     "compile": "turbo run compile",
     "dev": "turbo run dev  --concurrency 20",
-    "download-keys": "turbo run download-keys",
     "lint": "turbo run lint -- --max-warnings=0",
     "lint:rust": "turbo run lint:rust",
     "lint:fix": "turbo run lint -- --fix",
@@ -19,6 +18,7 @@
     "playwright-install": "playwright install",
     "changeset": "changeset",
     "changeset:publish": "changeset publish",
+    "download-keys": "turbo run download-keys",
     "all-check": "pnpm install && pnpm compile && pnpm format-check && pnpm lint && pnpm test && pnpm download-keys && pnpm build && pnpm format-check:rust && pnpm lint:rust && pnpm test:rust"
   },
   "dependencies": {

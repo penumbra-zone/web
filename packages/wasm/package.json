@@ -5,6 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "download-keys": "tsx ./utils/download-proving-keys.ts",
+    "precompile": "npm run download-keys",
     "clean": "rm -rfv dist wasm ; cargo clean --manifest-path ./crate/Cargo.toml",
     "dev": "cargo watch -C ./crate --postpone -- pnpm turbo run compile",
     "compile": "cd crate ; wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",
@@ -15,9 +17,13 @@
     "test": "vitest run",
     "test:rust": "cd crate ; wasm-pack test --headless --firefox -- --test build --target wasm32-unknown-unknown --release --features 'mock-database'"
   },
+  "bin": {
+    "download-proving-keys": "./bin/download-proving-keys.js"
+  },
   "dependencies": {
     "@penumbra-zone/types": "workspace:*",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@penumbra-zone/bech32": "workspace:*",
