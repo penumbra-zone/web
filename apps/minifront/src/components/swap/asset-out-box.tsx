@@ -20,6 +20,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 
 import { formatNumber, isZero } from '@penumbra-zone/types/src/amount';
 import { getAmount } from '@penumbra-zone/getters/src/value-view';
+import { WalletIcon } from '@penumbra-zone/ui/components/ui/icons/wallet';
 
 const findMatchingBalance = (
   metadata: Metadata | undefined,
@@ -71,7 +72,7 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
           <div className='mt-[6px] flex items-start justify-between'>
             <div />
             <div className='flex items-start gap-1'>
-              <img src='./wallet.svg' alt='Wallet' className='size-5' />
+              <WalletIcon className='size-5' />
               <ValueViewComponent view={matchingBalance} showIcon={false} />
             </div>
           </div>
