@@ -1,24 +1,24 @@
 import { ViewBox } from '../viewbox';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { fromBaseUnitAmount, joinLoHiAmount } from '@penumbra-zone/types/src/amount';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
+import { fromBaseUnitAmount } from '@penumbra-zone/types/src/amount';
 import { ActionDetails } from '../action-details';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { AddressViewComponent } from '../address-view';
 import { TransactionIdComponent } from '../transaction-id';
 import { SquareArrowRight } from 'lucide-react';
-import { Outputs } from './outputs';
+import { isOneWaySwap } from '@penumbra-zone/types/src/swap';
+import { OneWaySwap } from './one-way-swap';
+import { TwoWaySwap } from './two-way-swap';
 
 export const SwapViewComponent = ({ value }: { value: SwapView }) => {
   if (value.swapView.case === 'visible') {
-    const { tradingPair, delta1I, delta2I, claimFee, claimAddress } =
-      value.swapView.value.swapPlaintext!;
+    const { claimFee, claimAddress } = value.swapView.value.swapPlaintext!;
 
     const addressView = new AddressView({
       addressView: { case: 'decoded', value: { address: claimAddress } },
     });
 
-    const { claimTx, output1, output2 } = value.swapView.value;
+    const { claimTx } = value.swapView.value;
 
     return (
       <ViewBox
@@ -40,25 +40,8 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
               </div>
             )}
 
-            <Outputs output1={output1} output2={output2} />
-
-            <ActionDetails label='Asset 1'>
-              <ActionDetails.Row label='ID' truncate>
-                {uint8ArrayToBase64(tradingPair!.asset1!.inner)}
-              </ActionDetails.Row>
-              <ActionDetails.Row label='Amount'>
-                {joinLoHiAmount(delta1I!).toString()}
-              </ActionDetails.Row>
-            </ActionDetails>
-
-            <ActionDetails label='Asset 2'>
-              <ActionDetails.Row label='ID' truncate>
-                {uint8ArrayToBase64(tradingPair!.asset2!.inner)}
-              </ActionDetails.Row>
-              <ActionDetails.Row label='Amount'>
-                {joinLoHiAmount(delta2I!).toString()}
-              </ActionDetails.Row>
-            </ActionDetails>
+            {isOneWaySwap(value) && <OneWaySwap swapView={value} />}
+            {!isOneWaySwap(value) && <TwoWaySwap swapView={value} />}
 
             <ActionDetails label='Claim'>
               <ActionDetails.Row label='Address'>
