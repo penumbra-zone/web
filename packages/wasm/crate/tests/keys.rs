@@ -1,10 +1,10 @@
 extern crate core;
 
-use std::str::FromStr;
-use penumbra_keys::FullViewingKey;
 use penumbra_keys::keys::WalletId;
+use penumbra_keys::FullViewingKey;
 use penumbra_proto::DomainType;
 use penumbra_wasm::keys::get_wallet_id;
+use std::str::FromStr;
 
 #[test]
 #[ignore]

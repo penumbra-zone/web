@@ -6,8 +6,9 @@ mod tests {
     use indexed_db_futures::prelude::{
         IdbDatabase, IdbObjectStore, IdbQuerySource, IdbTransaction, IdbTransactionMode,
     };
-    use penumbra_keys::FullViewingKey;
     use penumbra_dex::DexParameters;
+    use penumbra_keys::keys::SpendKey;
+    use penumbra_keys::FullViewingKey;
     use penumbra_proto::core::app::v1::AppParameters;
     use penumbra_proto::core::component::fee::v1::GasPrices;
     use penumbra_proto::view::v1::transaction_planner_request::Output;
@@ -30,7 +31,6 @@ mod tests {
     };
     use serde::{Deserialize, Serialize};
     use std::str::FromStr;
-    use penumbra_keys::keys::SpendKey;
     use wasm_bindgen::JsValue;
     use wasm_bindgen_test::*;
 
@@ -438,10 +438,16 @@ mod tests {
 
         // -------------- 2. Generate authorization data from spend key and transaction plan --------------
 
-        let spend_key =SpendKey::from_str(
-            "penumbraspendkey1qul0huewkcmemljd5m3vz3awqt7442tjg2dudahvzu6eyj9qf0eszrnguh").unwrap();
+        let spend_key = SpendKey::from_str(
+            "penumbraspendkey1qul0huewkcmemljd5m3vz3awqt7442tjg2dudahvzu6eyj9qf0eszrnguh",
+        )
+        .unwrap();
 
-        let authorization_data = authorize(spend_key.encode_to_vec().as_slice(), transaction_plan.clone()).unwrap();
+        let authorization_data = authorize(
+            spend_key.encode_to_vec().as_slice(),
+            transaction_plan.clone(),
+        )
+        .unwrap();
 
         // -------------- 3. Generate witness --------------
 

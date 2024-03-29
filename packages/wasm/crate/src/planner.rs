@@ -15,10 +15,10 @@ use penumbra_keys::{Address, FullViewingKey};
 use penumbra_num::Amount;
 use penumbra_proto::core::app::v1::AppParameters;
 use penumbra_proto::core::component::ibc;
-use penumbra_proto::DomainType;
 use penumbra_proto::view::v1::{
     transaction_planner_request as tpr, NotesRequest, TransactionPlannerRequest,
 };
+use penumbra_proto::DomainType;
 use penumbra_sct::params::SctParameters;
 use penumbra_shielded_pool::{fmd, OutputPlan, SpendPlan};
 use penumbra_stake::rate::RateData;
@@ -171,7 +171,6 @@ pub async fn plan_transaction(
         .unwrap_or_default();
 
     let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
-
 
     // should ignore the randomizer for change_address, there is no point using ephemeral address
     let (change_address, _) = fvk
