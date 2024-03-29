@@ -418,7 +418,7 @@ async fn add_swap_info_to_perspective(
     swap_position: Position,
 ) -> Result<(), WasmError> {
     let derived_nullifier_from_swap =
-        Nullifier::derive(fvk.nullifier_key(), swap_position, &commitment);
+        Nullifier::derive(fvk.nullifier_key(), swap_position, commitment);
 
     let transaction_infos = storage.get_transaction_infos().await?;
 
