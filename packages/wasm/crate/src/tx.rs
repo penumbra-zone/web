@@ -288,16 +288,14 @@ pub async fn transaction_info_inner(
                 swap_record
                     .clone()
                     .and_then(|swap_record| swap_record.output_data)
-                    .and_then(
-                        |output_data| match BatchSwapOutputData::try_from(output_data) {
-                            Ok(bsod) => Some(bsod),
-                            _ => None,
-                        },
-                    )
-                    .map(|bsod| txp.batch_swap_output_data.push(bsod));
+                    .map(|output_data| {
+                        if let Ok(bsod) = BatchSwapOutputData::try_from(output_data) {
+                            txp.batch_swap_output_data.push(bsod);
+                        }
+                    });
 
                 if let Some(swap_position) = swap_position_option {
-                    add_swap_info_to_perspective(
+                    add_swap_claim_txn_to_perspective(
                         &storage,
                         &fvk,
                         &mut txp,
@@ -423,7 +421,7 @@ pub async fn transaction_info_inner(
     Ok(response)
 }
 
-async fn add_swap_info_to_perspective(
+async fn add_swap_claim_txn_to_perspective(
     storage: &IndexedDBStorage,
     fvk: &FullViewingKey,
     txp: &mut penumbra_transaction::TransactionPerspective,
