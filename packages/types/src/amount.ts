@@ -13,7 +13,7 @@ export const fromBaseUnitAmount = (amount: Amount, exponent = 0): BigNumber => {
 };
 
 export const isZero = (amount: Amount): boolean => {
-  return joinLoHi(amount.lo, amount.hi) === 0n;
+  return joinLoHiAmount(amount) === 0n;
 };
 
 export const fromValueView = ({ amount, metadata }: ValueView_KnownAssetId): BigNumber => {
