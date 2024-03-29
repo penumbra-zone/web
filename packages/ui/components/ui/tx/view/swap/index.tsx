@@ -1,12 +1,13 @@
-import { ViewBox } from './viewbox';
+import { ViewBox } from '../viewbox';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { fromBaseUnitAmount, joinLoHiAmount } from '@penumbra-zone/types/src/amount';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
-import { ActionDetails } from './action-details';
+import { ActionDetails } from '../action-details';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { AddressViewComponent } from './address-view';
-import { TransactionIdComponent } from './transaction-id';
+import { AddressViewComponent } from '../address-view';
+import { TransactionIdComponent } from '../transaction-id';
 import { SquareArrowRight } from 'lucide-react';
+import { Outputs } from './outputs';
 
 export const SwapViewComponent = ({ value }: { value: SwapView }) => {
   if (value.swapView.case === 'visible') {
@@ -17,14 +18,14 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
       addressView: { case: 'decoded', value: { address: claimAddress } },
     });
 
-    const swapClaimTxId = value.swapView.value.claimTx;
+    const { claimTx, output1, output2 } = value.swapView.value;
 
     return (
       <ViewBox
         label='Swap'
         visibleContent={
           <div className='flex flex-col gap-8'>
-            {swapClaimTxId && (
+            {claimTx && (
               <div>
                 <TransactionIdComponent
                   prefix={
@@ -33,11 +34,14 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
                       <SquareArrowRight size={16} className='ml-1' />
                     </>
                   }
-                  transactionId={swapClaimTxId}
+                  transactionId={claimTx}
                   shaClassName='font-mono ml-1'
                 />
               </div>
             )}
+
+            <Outputs output1={output1} output2={output2} />
+
             <ActionDetails label='Asset 1'>
               <ActionDetails.Row label='ID' truncate>
                 {uint8ArrayToBase64(tradingPair!.asset1!.inner)}
