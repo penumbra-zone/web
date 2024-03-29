@@ -18,6 +18,9 @@ export const getAddressIndexByAddress = (
 export const isControlledAddress = (fullViewingKey: FullViewingKey, address?: Address): boolean => {
   if (!address) return false;
 
-  const viewableIndex = get_index_by_address(fullViewingKey.toBinary(), address.toBinary()) as JsonValue;
+  const viewableIndex = get_index_by_address(
+    fullViewingKey.toBinary(),
+    address.toBinary(),
+  ) as JsonValue;
   return Boolean(viewableIndex);
 };
