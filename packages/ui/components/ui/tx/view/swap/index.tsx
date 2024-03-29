@@ -40,8 +40,11 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
               </div>
             )}
 
-            {isOneWaySwap(value) && <OneWaySwap swapView={value} />}
-            {!isOneWaySwap(value) && <TwoWaySwap swapView={value} />}
+            {isOneWaySwap(value) ? (
+              <OneWaySwap swapView={value} />
+            ) : (
+              <TwoWaySwap swapView={value} />
+            )}
 
             <ActionDetails label='Claim'>
               <ActionDetails.Row label='Address'>
