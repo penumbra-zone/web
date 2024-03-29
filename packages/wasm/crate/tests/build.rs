@@ -92,6 +92,7 @@ mod tests {
             app_parameters: String,
             gas_prices: String,
             epochs: String,
+            transactions: String,
         }
 
         // Define `IndexDB` table parameters and constants.
@@ -104,6 +105,7 @@ mod tests {
             app_parameters: "APP_PARAMETERS".to_string(),
             gas_prices: "GAS_PRICES".to_string(),
             epochs: "EPOCHS".to_string(),
+            transactions: "TRANSACTIONS".to_string(),
         };
 
         let constants: IndexedDbConstants = IndexedDbConstants {

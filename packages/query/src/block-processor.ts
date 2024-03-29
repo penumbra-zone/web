@@ -84,7 +84,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   async identifyTransactions(
     spentNullifiers: Set<Nullifier>,
-    commitmentRecords: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
+    commitmentRecordsByStateCommitment: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
     blockTx: Transaction[],
   ) {
     const relevantTx = new Map<TransactionId, Transaction>();
@@ -115,25 +115,25 @@ export class BlockProcessor implements BlockProcessorInterface {
         }
       });
 
-      for (const spentNf of spentNullifiers) {
-        if (txNullifiers.some(txNf => spentNf.equals(txNf))) {
+      for (const spentNullifier of spentNullifiers) {
+        if (txNullifiers.some(txNullifier => spentNullifier.equals(txNullifier))) {
           txId = new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
           relevantTx.set(txId, tx);
-          spentNullifiers.delete(spentNf);
+          spentNullifiers.delete(spentNullifier);
         }
       }
 
-      for (const [recCom, record] of commitmentRecords) {
-        if (txCommitments.some(txCom => recCom.equals(txCom))) {
+      for (const [stateCommitment, spendableNoteRecord] of commitmentRecordsByStateCommitment) {
+        if (txCommitments.some(txCommitment => stateCommitment.equals(txCommitment))) {
           txId ??= new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
           relevantTx.set(txId, tx);
-          if (blankTxSource.equals(record.source)) {
-            record.source = new CommitmentSource({
+          if (blankTxSource.equals(spendableNoteRecord.source)) {
+            spendableNoteRecord.source = new CommitmentSource({
               source: { case: 'transaction', value: { id: txId.inner } },
             });
-            recordsWithSources.push(record);
+            recordsWithSources.push(spendableNoteRecord);
           }
-          commitmentRecords.delete(recCom);
+          commitmentRecordsByStateCommitment.delete(stateCommitment);
         }
       }
     }
@@ -208,8 +208,10 @@ export class BlockProcessor implements BlockProcessorInterface {
         // - update idb
         await this.identifyNewAssets(flush.newNotes);
 
-        for (const nr of flush.newNotes) recordsByCommitment.set(nr.noteCommitment!, nr);
-        for (const sr of flush.newSwaps) recordsByCommitment.set(sr.swapCommitment!, sr);
+        for (const spendableNoteRecord of flush.newNotes)
+          recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
+        for (const swapRecord of flush.newSwaps)
+          recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
       }
 
       // nullifiers on this block may match notes or swaps from db
@@ -290,9 +292,9 @@ export class BlockProcessor implements BlockProcessorInterface {
       else throw new Error('Unexpected record type');
   }
 
-  private async identifyNewAssets(newNotes: SpendableNoteRecord[]) {
-    for (const n of newNotes) {
-      const assetId = n.note?.value?.assetId;
+  private async identifyNewAssets(notes: SpendableNoteRecord[]) {
+    for (const note of notes) {
+      const assetId = note.note?.value?.assetId;
       if (!assetId) continue;
 
       await this.saveAndReturnMetadata(assetId);
@@ -317,13 +319,13 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async resolveNullifiers(nullifiers: Nullifier[], height: bigint) {
     const spentNullifiers = new Set<Nullifier>();
 
-    for (const nf of nullifiers) {
+    for (const nullifier of nullifiers) {
       const record =
-        (await this.indexedDb.getSpendableNoteByNullifier(nf)) ??
-        (await this.indexedDb.getSwapByNullifier(nf));
+        (await this.indexedDb.getSpendableNoteByNullifier(nullifier)) ??
+        (await this.indexedDb.getSwapByNullifier(nullifier));
       if (!record) continue;
 
-      spentNullifiers.add(nf);
+      spentNullifiers.add(nullifier);
 
       if (record instanceof SpendableNoteRecord) {
         record.heightSpent = height;

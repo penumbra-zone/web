@@ -218,4 +218,5 @@ export const IDB_TABLES: Tables = {
   epochs: 'EPOCHS',
   prices: 'PRICES',
   validator_infos: 'VALIDATOR_INFOS',
+  transactions: 'TRANSACTIONS',
 };
