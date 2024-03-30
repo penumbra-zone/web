@@ -16,6 +16,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.15.14",
     "@penumbra-zone/bech32": "workspace:*",
+    "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/perspective": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
