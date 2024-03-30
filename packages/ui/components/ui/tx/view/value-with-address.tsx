@@ -14,15 +14,17 @@ export const ValueWithAddress = ({
   /** What to display before the address. Typically a `ValueViewComponent`. */
   children: ReactNode;
   label: 'from' | 'to';
-  addressView: AddressView;
+  addressView?: AddressView;
 }) => (
-  <div className='flex flex-col justify-between gap-2 sm:flex-row sm:gap-0'>
+  <div className='flex flex-col justify-between gap-2 sm:flex-row'>
     {children}
 
-    <div className='flex items-center gap-2'>
-      <span className='font-mono text-sm italic text-foreground'>{label}</span>
+    {addressView && (
+      <div className='flex items-center gap-2 overflow-hidden'>
+        <span className='whitespace-nowrap font-mono text-sm italic text-foreground'>{label}</span>
 
-      <AddressViewComponent view={addressView} />
-    </div>
+        <AddressViewComponent view={addressView} />
+      </div>
+    )}
   </div>
 );

@@ -1,30 +1,56 @@
 import { ViewBox } from '../viewbox';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { fromBaseUnitAmount } from '@penumbra-zone/types/src/amount';
-import { ActionDetails } from '../action-details';
-import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { AddressViewComponent } from '../address-view';
 import { TransactionIdComponent } from '../transaction-id';
 import { SquareArrowRight } from 'lucide-react';
 import { isOneWaySwap } from '@penumbra-zone/types/src/swap';
 import { OneWaySwap } from './one-way-swap';
 import { TwoWaySwap } from './two-way-swap';
+import { ValueWithAddress } from '../value-with-address';
+import {
+  getAddressView,
+  getClaimFeeFromSwapView,
+  getClaimTx,
+} from '@penumbra-zone/getters/src/swap-view';
+import { ValueViewComponent } from '../value';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
+import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
+
+const getClaimFeeValueView = (claimFee: Fee) =>
+  new ValueView({
+    valueView: {
+      case: 'knownAssetId',
+      value: {
+        amount: claimFee.amount,
+        metadata: STAKING_TOKEN_METADATA,
+      },
+    },
+  });
 
 export const SwapViewComponent = ({ value }: { value: SwapView }) => {
   if (value.swapView.case === 'visible') {
-    const { claimFee, claimAddress } = value.swapView.value.swapPlaintext!;
-
-    const addressView = new AddressView({
-      addressView: { case: 'decoded', value: { address: claimAddress } },
-    });
-
-    const { claimTx } = value.swapView.value;
+    const claimFee = getClaimFeeFromSwapView(value);
+    const claimTx = getClaimTx.optional()(value);
+    const addressView = getAddressView.optional()(value);
+    const claimFeeValueView = getClaimFeeValueView(claimFee);
 
     return (
       <ViewBox
         label='Swap'
         visibleContent={
-          <div className='flex flex-col gap-8'>
+          <div className='flex flex-col gap-4'>
+            <ValueWithAddress addressView={addressView} label='to'>
+              {isOneWaySwap(value) ? (
+                <OneWaySwap swapView={value} />
+              ) : (
+                <TwoWaySwap swapView={value} />
+              )}
+            </ValueWithAddress>
+
+            <div className='flex items-center gap-2'>
+              Fee: <ValueViewComponent view={claimFeeValueView} />
+            </div>
+
             {claimTx && (
               <div>
                 <TransactionIdComponent
@@ -39,21 +65,6 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
                 />
               </div>
             )}
-
-            {isOneWaySwap(value) ? (
-              <OneWaySwap swapView={value} />
-            ) : (
-              <TwoWaySwap swapView={value} />
-            )}
-
-            <ActionDetails label='Claim'>
-              <ActionDetails.Row label='Address'>
-                <AddressViewComponent view={addressView} />
-              </ActionDetails.Row>
-              <ActionDetails.Row label='Fee'>
-                {fromBaseUnitAmount(claimFee!.amount!, 0).toFormat()} upenumbra
-              </ActionDetails.Row>
-            </ActionDetails>
           </div>
         }
       />
