@@ -43,7 +43,7 @@ describe('<SwapViewComponent />', () => {
     it('shows the correct fee in upenumbra', () => {
       const { container } = render(<SwapViewComponent value={swapView} />);
 
-      expect(container).toHaveTextContent('123 upenumbra');
+      expect(container).toHaveTextContent('123UM');
     });
   });
 });
