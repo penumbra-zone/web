@@ -1,7 +1,6 @@
-import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { ValueViewComponent } from '../value';
-import { getOneWaySwapValues } from '@penumbra-zone/types/src/swap';
 import { ArrowRight } from 'lucide-react';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 /**
  * Renders a one-way swap (which should be the only kind of swap that ever
@@ -9,9 +8,7 @@ import { ArrowRight } from 'lucide-react';
  *
  * 1.23INPUT -> 4.56OUTPUT (7.89 unfilled)
  */
-export const OneWaySwap = ({ swapView }: { swapView: SwapView }) => {
-  const { input, output, unfilled } = getOneWaySwapValues(swapView);
-
+export const OneWaySwap = ({ input, output }: { input: ValueView; output: ValueView }) => {
   return (
     <div className='flex items-center gap-2'>
       <ValueViewComponent view={input} />
@@ -19,12 +16,6 @@ export const OneWaySwap = ({ swapView }: { swapView: SwapView }) => {
       <ArrowRight />
 
       <ValueViewComponent view={output} />
-
-      {unfilled && (
-        <>
-          <ValueViewComponent view={unfilled} /> unfilled
-        </>
-      )}
     </div>
   );
 };

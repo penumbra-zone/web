@@ -1,7 +1,7 @@
 import { ViewBox } from '../viewbox';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { TransactionIdComponent } from '../transaction-id';
-import { isOneWaySwap } from '@penumbra-zone/types/src/swap';
+import { getOneWaySwapValues, isOneWaySwap } from '@penumbra-zone/types/src/swap';
 import { OneWaySwap } from './one-way-swap';
 import { TwoWaySwap } from './two-way-swap';
 import { ValueWithAddress } from '../value-with-address';
@@ -33,6 +33,7 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
     const claimTx = getClaimTx.optional()(value);
     const addressView = getAddressView.optional()(value);
     const claimFeeValueView = getClaimFeeValueView(claimFee);
+    const oneWaySwap = isOneWaySwap(value) ? getOneWaySwapValues(value) : undefined;
 
     return (
       <ViewBox
@@ -40,14 +41,20 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
         visibleContent={
           <div className='flex flex-col gap-4'>
             <ValueWithAddress addressView={addressView} label='to'>
-              {isOneWaySwap(value) ? (
-                <OneWaySwap swapView={value} />
+              {oneWaySwap ? (
+                <OneWaySwap input={oneWaySwap.input} output={oneWaySwap.output} />
               ) : (
                 <TwoWaySwap swapView={value} />
               )}
             </ValueWithAddress>
 
             <ActionDetails>
+              {oneWaySwap?.unfilled && (
+                <ActionDetails.Row label='Unfilled'>
+                  <ValueViewComponent view={oneWaySwap.unfilled} />
+                </ActionDetails.Row>
+              )}
+
               <ActionDetails.Row label='Fee'>
                 <ValueViewComponent view={claimFeeValueView} />
               </ActionDetails.Row>
