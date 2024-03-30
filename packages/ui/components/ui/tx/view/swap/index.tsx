@@ -53,8 +53,8 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
               </ActionDetails.Row>
 
               {claimTx && (
-                <ActionDetails.Row label='Swap claim'>
-                  <TransactionIdComponent transactionId={claimTx} shaClassName='font-mono ml-1' />
+                <ActionDetails.Row label='Swap claim transaction'>
+                  <TransactionIdComponent transactionId={claimTx} />
                 </ActionDetails.Row>
               )}
             </ActionDetails>
