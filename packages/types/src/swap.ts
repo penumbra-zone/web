@@ -88,7 +88,7 @@ export const getOneWaySwapValues = (
       valueView: {
         case: 'knownAssetId',
         value: {
-          metadata: isZero(delta2I) ? getAsset1Metadata(swapView) : getAsset2Metadata(swapView),
+          metadata: isZero(delta2I) ? getAsset2Metadata(swapView) : getAsset1Metadata(swapView),
         },
       },
     });
