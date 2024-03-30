@@ -21,6 +21,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { formatNumber, isZero } from '@penumbra-zone/types/src/amount';
 import { getAmount } from '@penumbra-zone/getters/src/value-view';
 import { WalletIcon } from '@penumbra-zone/ui/components/ui/icons/wallet';
+import { getAssetIdFromBalancesResponseOptional } from '@penumbra-zone/getters/src/balances-response';
 
 const findMatchingBalance = (
   metadata: Metadata | undefined,
@@ -47,10 +48,14 @@ interface AssetOutBoxProps {
 }
 
 export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
-  const { assetOut, setAssetOut, simulateSwap, simulateOutLoading, simulateOutResult } =
+  const { assetIn, assetOut, setAssetOut, simulateSwap, simulateOutLoading, simulateOutResult } =
     useStore(swapSelector);
 
   const matchingBalance = findMatchingBalance(assetOut, balances);
+  const assetInId = getAssetIdFromBalancesResponseOptional(assetIn);
+  const filter = assetInId
+    ? (metadata: Metadata) => !assetInId.equals(metadata.penumbraAssetId)
+    : undefined;
 
   return (
     <div className='flex flex-col rounded-lg border bg-background px-4 pb-5 pt-3'>
@@ -67,7 +72,11 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
         </div>
         <div className='flex flex-col'>
           <div className='ml-auto w-auto shrink-0'>
-            <AssetOutSelector assetOut={matchingBalance} setAssetOut={setAssetOut} />
+            <AssetOutSelector
+              assetOut={matchingBalance}
+              setAssetOut={setAssetOut}
+              filter={filter}
+            />
           </div>
           <div className='mt-[6px] flex items-start justify-between'>
             <div />
