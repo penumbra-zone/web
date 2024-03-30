@@ -290,6 +290,8 @@ pub async fn transaction_info_inner(
                         if let Ok(bsod) = BatchSwapOutputData::try_from(output_data) {
                             txp.batch_swap_output_data.push(bsod);
                         }
+
+                        Some(())
                     });
 
                 if let Some(swap_position) = swap_position_option {
