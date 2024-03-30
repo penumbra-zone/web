@@ -36,12 +36,14 @@ export const SwapClaimViewComponent = ({ value }: { value: SwapClaimView }) => {
         visibleContent={
           <ActionDetails>
             <ActionDetails.Row label={claimLabel}>
-              {output1Amount && !isZero(output1Amount) && (
-                <ValueViewComponent view={output1Value} />
-              )}
-              {output2Amount && !isZero(output2Amount) && (
-                <ValueViewComponent view={output2Value} />
-              )}
+              <div className='flex gap-2'>
+                {output1Amount && !isZero(output1Amount) && (
+                  <ValueViewComponent view={output1Value} />
+                )}
+                {output2Amount && !isZero(output2Amount) && (
+                  <ValueViewComponent view={output2Value} />
+                )}
+              </div>
             </ActionDetails.Row>
 
             {swapTxId && (
