@@ -690,6 +690,9 @@ importers:
       '@penumbra-zone/bech32':
         specifier: workspace:*
         version: link:../bech32
+      '@penumbra-zone/constants':
+        specifier: workspace:*
+        version: link:../constants
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
