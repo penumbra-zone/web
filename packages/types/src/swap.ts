@@ -28,6 +28,9 @@ export const isOneWaySwap = (swapView: SwapView) => {
   return isZero(delta1I) || isZero(delta2I);
 };
 
+/**
+ * Given a one-way swap, returns the amount that was unfilled, or `undefined`.
+ */
 const getUnfilledAmount = (swapView: SwapView): ValueView | undefined => {
   const delta1I = getDelta1IFromSwapView(swapView);
   const delta2I = getDelta2IFromSwapView(swapView);
