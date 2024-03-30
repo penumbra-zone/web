@@ -18,6 +18,8 @@ interface AssetOutSelectorProps {
   setAssetOut: (metadata: Metadata) => void;
 }
 
+const sortedAssets = [...localAssets].sort((a, b) => (a.symbol < b.symbol ? -1 : 1));
+
 /** @todo Refactor to use `SelectTokenModal` */
 export const AssetOutSelector = ({ setAssetOut, assetOut }: AssetOutSelectorProps) => {
   return (
@@ -30,7 +32,7 @@ export const AssetOutSelector = ({ setAssetOut, assetOut }: AssetOutSelectorProp
       <DialogContent>
         <DialogHeader>Select asset</DialogHeader>
         <div className='flex flex-col gap-2 overflow-hidden px-[30px]'>
-          {localAssets.map(d => (
+          {sortedAssets.map(d => (
             <div key={d.display} className='flex flex-col'>
               <DialogClose>
                 <div
@@ -40,7 +42,7 @@ export const AssetOutSelector = ({ setAssetOut, assetOut }: AssetOutSelectorProp
                   onClick={() => setAssetOut(d)}
                 >
                   <AssetIcon metadata={d} />
-                  <p className='truncate'>{d.display}</p>
+                  <p className='truncate'>{d.symbol}</p>
                 </div>
               </DialogClose>
             </div>

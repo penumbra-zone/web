@@ -10,7 +10,10 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { fetchUnclaimedSwaps } from '../../fetchers/unclaimed-swaps';
 import { viewClient } from '../../clients';
 import { assetPatterns, localAssets } from '@penumbra-zone/constants/src/assets';
-import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
+import {
+  getDisplayDenomFromView,
+  getSymbolFromValueView,
+} from '@penumbra-zone/getters/src/value-view';
 import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/src/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 
@@ -29,11 +32,18 @@ const getAndSetDefaultAssetBalances = async () => {
   const assetBalances = await getBalances();
 
   // filter assets that are not available for swap
-  const filteredAssetBalances = assetBalances.filter(b =>
-    [assetPatterns.lpNft, assetPatterns.proposalNft, assetPatterns.votingReceipt].every(
-      pattern => !pattern.matches(getDisplayDenomFromView(b.balanceView)),
-    ),
-  );
+  const filteredAssetBalances = assetBalances
+    .filter(b =>
+      [assetPatterns.lpNft, assetPatterns.proposalNft, assetPatterns.votingReceipt].every(
+        pattern => !pattern.matches(getDisplayDenomFromView(b.balanceView)),
+      ),
+    )
+    .sort((a, b) => {
+      const aSymbol = getSymbolFromValueView(a.balanceView);
+      const bSymbol = getSymbolFromValueView(b.balanceView);
+
+      return aSymbol < bSymbol ? -1 : 1;
+    });
   // set initial denom in if there is an available balance
   if (filteredAssetBalances[0]) {
     useStore.getState().swap.setAssetIn(filteredAssetBalances[0]);
