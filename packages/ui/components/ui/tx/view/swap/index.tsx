@@ -1,7 +1,6 @@
 import { ViewBox } from '../viewbox';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { TransactionIdComponent } from '../transaction-id';
-import { SquareArrowRight } from 'lucide-react';
 import { isOneWaySwap } from '@penumbra-zone/types/src/swap';
 import { OneWaySwap } from './one-way-swap';
 import { TwoWaySwap } from './two-way-swap';
@@ -15,6 +14,7 @@ import { ValueViewComponent } from '../value';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
+import { ActionDetails } from '../action-details';
 
 const getClaimFeeValueView = (claimFee: Fee) =>
   new ValueView({
@@ -47,24 +47,17 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
               )}
             </ValueWithAddress>
 
-            <div className='flex items-center gap-2'>
-              Fee: <ValueViewComponent view={claimFeeValueView} />
-            </div>
+            <ActionDetails>
+              <ActionDetails.Row label='Fee'>
+                <ValueViewComponent view={claimFeeValueView} />
+              </ActionDetails.Row>
 
-            {claimTx && (
-              <div>
-                <TransactionIdComponent
-                  prefix={
-                    <>
-                      Swap claim
-                      <SquareArrowRight size={16} className='ml-1' />
-                    </>
-                  }
-                  transactionId={claimTx}
-                  shaClassName='font-mono ml-1'
-                />
-              </div>
-            )}
+              {claimTx && (
+                <ActionDetails.Row label='Swap claim'>
+                  <TransactionIdComponent transactionId={claimTx} shaClassName='font-mono ml-1' />
+                </ActionDetails.Row>
+              )}
+            </ActionDetails>
           </div>
         }
       />
