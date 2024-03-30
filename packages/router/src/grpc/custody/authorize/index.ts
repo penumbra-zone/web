@@ -9,6 +9,7 @@ import { Box } from '@penumbra-zone/types/src/box';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import { assertSwapClaimAddressesBelongToCurrentUser } from './assert-swap-claim-addresses-belong-to-current-user';
 import { isControlledAddress } from '@penumbra-zone/wasm/src/address';
+import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
 
 export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) throw new ConnectError('No plan included in request', Code.InvalidArgument);
@@ -22,6 +23,7 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   assertSwapClaimAddressesBelongToCurrentUser(req.plan, address =>
     isControlledAddress(fullViewingKey, address),
   );
+  assertSwapAssetsAreNotTheSame(req.plan);
 
   if (!approveReq) throw new ConnectError('Approver not found', Code.Unavailable);
 
