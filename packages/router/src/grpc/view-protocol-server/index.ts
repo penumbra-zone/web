@@ -24,6 +24,7 @@ import { swapByCommitment } from './swap-by-commitment';
 import { transactionInfo } from './transaction-info';
 import { transactionInfoByHash } from './transaction-info-by-hash';
 import { transactionPlanner } from './transaction-planner';
+import { unbondingTokensByAddressIndex } from './unbonding-tokens-by-address-index';
 import { unclaimedSwaps } from './unclaimed-swaps';
 import { walletId } from './wallet-id';
 import { witness } from './witness';
@@ -55,6 +56,7 @@ export const viewImpl: Impl = {
   transactionInfo,
   transactionInfoByHash,
   transactionPlanner,
+  unbondingTokensByAddressIndex,
   unclaimedSwaps,
   walletId,
   witness,
