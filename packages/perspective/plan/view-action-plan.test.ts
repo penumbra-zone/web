@@ -280,6 +280,8 @@ describe('viewActionPlan()', () => {
                   },
                 },
                 swapPlaintext,
+                asset1Metadata: metadata,
+                asset2Metadata: metadata,
               },
             },
           },
