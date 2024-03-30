@@ -62,3 +62,5 @@ export const getValidatorIdentityKeyAsBech32String = createGetter((metadata?: Me
 
   return undefined;
 });
+
+export const getSymbol = createGetter((metadata?: Metadata) => metadata?.symbol);

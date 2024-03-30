@@ -3,6 +3,7 @@ import { createGetter } from './utils/create-getter';
 import { bech32AssetId } from '@penumbra-zone/bech32/src/asset';
 import {
   getDisplayDenomExponent,
+  getSymbol,
   getUnbondingStartHeight,
   getValidatorIdentityKeyAsBech32String,
 } from './metadata';
@@ -76,6 +77,8 @@ export const getAmount = createGetter(
  * height.
  */
 export const getUnbondingStartHeightFromValueView = getMetadata.pipe(getUnbondingStartHeight);
+
+export const getSymbolFromValueView = getMetadata.pipe(getSymbol);
 
 export const getDisplayDenomFromView = createGetter((view?: ValueView) => {
   if (view?.valueView.case === 'unknownAssetId') {
