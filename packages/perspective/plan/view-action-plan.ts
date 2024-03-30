@@ -97,7 +97,19 @@ const getOutputView = async (
   });
 };
 
-const getSwapView = (swapPlan: SwapPlan): SwapView => {
+const getSwapView = async (
+  swapPlan: SwapPlan,
+  denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
+): Promise<SwapView> => {
+  const [asset1Metadata, asset2Metadata] = await Promise.all([
+    swapPlan.swapPlaintext?.tradingPair?.asset1
+      ? await denomMetadataByAssetId(swapPlan.swapPlaintext.tradingPair.asset1)
+      : undefined,
+    swapPlan.swapPlaintext?.tradingPair?.asset2
+      ? await denomMetadataByAssetId(swapPlan.swapPlaintext.tradingPair.asset2)
+      : undefined,
+  ]);
+
   return new SwapView({
     swapView: {
       case: 'visible',
@@ -110,6 +122,8 @@ const getSwapView = (swapPlan: SwapPlan): SwapView => {
           },
         },
         swapPlaintext: swapPlan.swapPlaintext,
+        asset1Metadata,
+        asset2Metadata,
       },
     },
   });
@@ -194,7 +208,7 @@ export const viewActionPlan =
         return new ActionView({
           actionView: {
             case: 'swap',
-            value: getSwapView(actionPlan.action.value),
+            value: await getSwapView(actionPlan.action.value, denomMetadataByAssetId),
           },
         });
       case 'swapClaim':
