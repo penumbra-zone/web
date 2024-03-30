@@ -3,9 +3,7 @@ import {
   getAsset2Metadata,
   getDelta1IFromSwapView,
   getDelta2IFromSwapView,
-  getOutput1Value,
   getOutput1ValueOptional,
-  getOutput2Value,
   getOutput2ValueOptional,
 } from '@penumbra-zone/getters/src/swap-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
@@ -37,14 +35,14 @@ const getUnfilledAmount = (swapView: SwapView): ValueView | undefined => {
   const delta1I = getDelta1IFromSwapView(swapView);
   const delta2I = getDelta2IFromSwapView(swapView);
 
-  const output1Value = getOutput1Value(swapView);
-  const output2Value = getOutput2Value(swapView);
+  const output1Value = getOutput1ValueOptional(swapView);
+  const output2Value = getOutput2ValueOptional(swapView);
 
   const is1To2Swap = isZero(delta2I);
   const is2To1Swap = isZero(delta1I);
 
-  if (is1To2Swap && !isZero(getAmount(output1Value))) return output1Value;
-  if (is2To1Swap && !isZero(getAmount(output2Value))) return output2Value;
+  if (is1To2Swap && output1Value && !isZero(getAmount(output1Value))) return output1Value;
+  if (is2To1Swap && output2Value && !isZero(getAmount(output2Value))) return output2Value;
 
   return undefined;
 };
