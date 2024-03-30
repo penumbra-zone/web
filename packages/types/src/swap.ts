@@ -61,7 +61,6 @@ export const getOneWaySwapValues = (
   output: ValueView;
   unfilled?: ValueView;
 } => {
-  console.log('getOneWaySwapValues', swapView);
   if (!isOneWaySwap(swapView)) {
     throw new Error(
       'Attempted to get one-way swap values from a two-way swap. `getOneWaySwapValues()` should only be called with a `SwapView` containing a one-way swap -- that is, a swap with at least one `swapPlaintext.delta*` that has an amount equal to zero.',
