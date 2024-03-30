@@ -4,7 +4,9 @@ import {
   getDelta1IFromSwapView,
   getDelta2IFromSwapView,
   getOutput1Value,
+  getOutput1ValueOptional,
   getOutput2Value,
+  getOutput2ValueOptional,
 } from '@penumbra-zone/getters/src/swap-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
@@ -59,14 +61,15 @@ export const getOneWaySwapValues = (
   output: ValueView;
   unfilled?: ValueView;
 } => {
+  console.log('getOneWaySwapValues', swapView);
   if (!isOneWaySwap(swapView)) {
     throw new Error(
       'Attempted to get one-way swap values from a two-way swap. `getOneWaySwapValues()` should only be called with a `SwapView` containing a one-way swap -- that is, a swap with at least one `swapPlaintext.delta*` that has an amount equal to zero.',
     );
   }
 
-  const output1 = getOutput1Value(swapView);
-  const output2 = getOutput2Value(swapView);
+  const output1 = getOutput1ValueOptional(swapView);
+  const output2 = getOutput2ValueOptional(swapView);
 
   const delta1I = getDelta1IFromSwapView(swapView);
   const delta2I = getDelta2IFromSwapView(swapView);
@@ -81,7 +84,18 @@ export const getOneWaySwapValues = (
     },
   });
 
-  const output = isZero(delta2I) ? output2 : output1;
+  let output = isZero(delta2I) ? output2 : output1;
+
+  if (!output) {
+    output = new ValueView({
+      valueView: {
+        case: 'knownAssetId',
+        value: {
+          metadata: isZero(delta2I) ? getAsset1Metadata(swapView) : getAsset2Metadata(swapView),
+        },
+      },
+    });
+  }
 
   return {
     input,
