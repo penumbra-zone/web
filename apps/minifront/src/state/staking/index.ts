@@ -1,5 +1,5 @@
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { AllSlices, SliceCreator } from '..';
+import { SliceCreator } from '..';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/src/metadata';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
@@ -423,8 +423,6 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
   error: undefined,
   votingPowerByValidatorInfo: {},
 });
-
-export const stakingSelector = (state: AllSlices) => state.staking;
 
 const assembleDelegateRequest = ({ account, amount, validatorInfo }: StakingSlice) => {
   return new TransactionPlannerRequest({
