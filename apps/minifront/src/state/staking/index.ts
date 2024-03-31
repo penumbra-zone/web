@@ -40,6 +40,7 @@ import { viewClient } from '../../clients';
 import { getValueView as getValueViewFromDelegationsByAddressIndexResponse } from '@penumbra-zone/getters/src/delegations-by-address-index-response';
 import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse } from '@penumbra-zone/getters/src/unbonding-tokens-by-address-index-response';
 import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
+import { ZERO_BALANCE_UM } from '../../components/staking/account/header/constants';
 
 const STAKING_TOKEN_DISPLAY_DENOM_EXPONENT = (() => {
   const stakingAsset = localAssets.find(asset => asset.display === STAKING_TOKEN);
@@ -298,30 +299,8 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     const unbondingTokensForAccount = responses.reduce<UnbondingTokensForAccount>(
       toUnbondingTokensForAccount,
       {
-        claimable: {
-          total: new ValueView({
-            valueView: {
-              case: 'knownAssetId',
-              value: {
-                amount: { hi: 0n, lo: 0n },
-                metadata: STAKING_TOKEN_METADATA,
-              },
-            },
-          }),
-          tokens: [],
-        },
-        notYetClaimable: {
-          total: new ValueView({
-            valueView: {
-              case: 'knownAssetId',
-              value: {
-                amount: { hi: 0n, lo: 0n },
-                metadata: STAKING_TOKEN_METADATA,
-              },
-            },
-          }),
-          tokens: [],
-        },
+        claimable: { total: ZERO_BALANCE_UM, tokens: [] },
+        notYetClaimable: { total: ZERO_BALANCE_UM, tokens: [] },
       },
     );
 
