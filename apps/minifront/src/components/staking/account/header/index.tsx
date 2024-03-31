@@ -1,11 +1,5 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Card, CardContent } from '@penumbra-zone/ui/components/ui/card';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@penumbra-zone/ui/components/ui/tooltip';
 import { AccountSwitcher } from '@penumbra-zone/ui/components/ui/account-switcher';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { Stat } from './stat';
@@ -13,7 +7,7 @@ import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { accountsSelector, stakingSelector } from '../../../../state/staking';
 import { useStore } from '../../../../state';
-import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
+import { UnbondingTokens } from './unbonding-tokens';
 
 /**
  * A default `ValueView` to render when we don't have any balance data for a
@@ -57,35 +51,26 @@ export const Header = () => {
             </Stat>
 
             <Stat label='Unbonding amount'>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <ValueViewComponent view={unbondingTokens?.total ?? zeroBalanceUm} />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <div className='flex flex-col gap-4'>
-                      <div className='max-w-[250px]'>
-                        Total amount of UM you will receive when all your unbonding tokens are
-                        claimed, assuming no slashing.
-                      </div>
-                      {unbondingTokens?.tokens.length && (
-                        <>
-                          {unbondingTokens.tokens.map(token => (
-                            <ValueViewComponent key={getDisplayDenomFromView(token)} view={token} />
-                          ))}
+              <UnbondingTokens
+                tokens={unbondingTokens?.notYetClaimable.tokens}
+                total={unbondingTokens?.notYetClaimable.total}
+              />
+            </Stat>
 
-                          <Button
-                            className='self-end px-4 text-white'
-                            onClick={() => void undelegateClaim()}
-                          >
-                            Claim
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            <Stat label='Claimable amount'>
+              <UnbondingTokens
+                tokens={unbondingTokens?.claimable.tokens}
+                total={unbondingTokens?.claimable.total}
+              >
+                {!!unbondingTokens?.claimable.tokens.length && (
+                  <Button
+                    className='self-end px-4 text-white'
+                    onClick={() => void undelegateClaim()}
+                  >
+                    Claim
+                  </Button>
+                )}
+              </UnbondingTokens>
             </Stat>
           </div>
         </div>

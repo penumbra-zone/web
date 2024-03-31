@@ -7,19 +7,20 @@ import { Account } from './account';
 export const StakingLoader = async () => {
   await throwIfPraxNotConnectedTimeout();
   // Await to avoid screen flicker.
-  await useStore.getState().staking.loadUnstakedAndUnbondingTokensByAccount();
+  await useStore.getState().staking.loadUnstakedTokensByAccount();
 
   return null;
 };
 
 export const StakingLayout = () => {
-  const { account, loadDelegationsForCurrentAccount } = useStore(stakingSelector);
+  const { account, loadDelegationsForCurrentAccount, loadUnbondingTokensForCurrentAccount } =
+    useStore(stakingSelector);
 
   /** Load delegations every time the account changes. */
-  useEffect(
-    () => void loadDelegationsForCurrentAccount(),
-    [account, loadDelegationsForCurrentAccount],
-  );
+  useEffect(() => {
+    void loadDelegationsForCurrentAccount();
+    void loadUnbondingTokensForCurrentAccount();
+  }, [account, loadDelegationsForCurrentAccount, loadUnbondingTokensForCurrentAccount]);
 
   return <Account />;
 };
