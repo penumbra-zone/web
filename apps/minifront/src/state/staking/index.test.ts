@@ -238,7 +238,8 @@ describe('Staking Slice', () => {
       unbondingTokensByAccount: new Map(),
       setAccount: expect.any(Function) as unknown,
       loadDelegationsForCurrentAccount: expect.any(Function) as unknown,
-      loadUnstakedAndUnbondingTokensByAccount: expect.any(Function) as unknown,
+      loadUnbondingTokensForCurrentAccount: expect.any(Function) as unknown,
+      loadUnstakedTokensByAccount: expect.any(Function) as unknown,
       delegate: expect.any(Function) as unknown,
       undelegate: expect.any(Function) as unknown,
       undelegateClaim: expect.any(Function) as unknown,
@@ -304,8 +305,20 @@ describe('Staking Slice', () => {
 
           unbondingTokensByAccount: new Map([
             // Leave unsorted for the sake of the sorting test below.
-            [6, { total: new ValueView(), tokens: [new ValueView()] }],
-            [5, { total: new ValueView(), tokens: [new ValueView()] }],
+            [
+              6,
+              {
+                claimable: { total: new ValueView(), tokens: [new ValueView()] },
+                notYetClaimable: { total: new ValueView(), tokens: [] },
+              },
+            ],
+            [
+              5,
+              {
+                claimable: { total: new ValueView(), tokens: [new ValueView()] },
+                notYetClaimable: { total: new ValueView(), tokens: [] },
+              },
+            ],
           ]),
         },
       });
