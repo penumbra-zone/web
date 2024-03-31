@@ -15,6 +15,18 @@ export const isUnbondingTokenBalance = (balancesResponse: PartialMessage<Balance
     getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse)),
   );
 
+/**
+ * Given a `BalancesResponse`, resolves to a boolean indicating whether the
+ * value in the response is an unbonding token eligible for claiming.
+ *
+ * @todo This is currently a somewhat naive implementation -- it only takes into
+ * account whether the `unbondingDelay` from `AppParameters.stakeParams` has
+ * passed. This may mean that some users will have to wait longer than is
+ * strictly necessary to claim their unbonding tokens, since claiming of
+ * unbonding tokens can happen earlier in certain cases, like if a validator
+ * itself becomes unbonded. Once the core team has worked out the logic for
+ * earlier unbonding, this should be updated to account for those cases.
+ */
 export const getIsClaimable = async (
   balancesResponse: PartialMessage<BalancesResponse>,
   ctx: HandlerContext,
