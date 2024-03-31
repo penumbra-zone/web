@@ -1,5 +1,4 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
 import {
   TooltipProvider,
@@ -9,20 +8,7 @@ import {
 } from '@penumbra-zone/ui/components/ui/tooltip';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { ReactNode } from 'react';
-
-/**
- * A default `ValueView` to render when we don't have any balance data for a
- * particular token in the given account.
- */
-const zeroBalanceUm = new ValueView({
-  valueView: {
-    case: 'knownAssetId',
-    value: {
-      amount: { hi: 0n, lo: 0n },
-      metadata: STAKING_TOKEN_METADATA,
-    },
-  },
-});
+import { ZERO_BALANCE_UM } from './constants';
 
 export const UnbondingTokens = ({
   total,
@@ -39,7 +25,7 @@ export const UnbondingTokens = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger>
-          <ValueViewComponent view={total ?? zeroBalanceUm} />
+          <ValueViewComponent view={total ?? ZERO_BALANCE_UM} />
         </TooltipTrigger>
         <TooltipContent>
           <div className='flex flex-col gap-4'>

@@ -3,25 +3,10 @@ import { Card, CardContent } from '@penumbra-zone/ui/components/ui/card';
 import { AccountSwitcher } from '@penumbra-zone/ui/components/ui/account-switcher';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { Stat } from './stat';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { AllSlices } from '../../../../state';
 import { UnbondingTokens } from './unbonding-tokens';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
-
-/**
- * A default `ValueView` to render when we don't have any balance data for a
- * particular token in the given account.
- */
-const zeroBalanceUm = new ValueView({
-  valueView: {
-    case: 'knownAssetId',
-    value: {
-      amount: { hi: 0n, lo: 0n },
-      metadata: STAKING_TOKEN_METADATA,
-    },
-  },
-});
+import { ZERO_BALANCE_UM } from './constants';
 
 const headerSelector = (state: AllSlices) => ({
   account: state.staking.account,
@@ -56,7 +41,7 @@ export const Header = () => {
 
           <div className='flex items-start justify-center gap-8'>
             <Stat label='Available to delegate'>
-              <ValueViewComponent view={unstakedTokens ?? zeroBalanceUm} />
+              <ValueViewComponent view={unstakedTokens ?? ZERO_BALANCE_UM} />
             </Stat>
 
             <Stat label='Unbonding amount'>
