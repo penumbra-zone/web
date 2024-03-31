@@ -18,4 +18,6 @@ describe('Unbonding Tokens by Address Index handler', () => {
   describe('when filtering only for not-yet-claimable tokens', () => {
     it.todo('returns only not-yet-claimable unbonding tokens');
   });
+
+  it.todo("excludes any tokens that aren't unbonding tokens");
 });
