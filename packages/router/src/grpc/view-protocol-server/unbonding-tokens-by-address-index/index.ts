@@ -16,11 +16,15 @@ export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'
       if (!isUnbondingTokenBalance(balancesResponse)) continue;
       const claimable = await getIsClaimable(balancesResponse, ctx);
 
+      // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       if (req.filter === UnbondingTokensByAddressIndexRequest_Filter.CLAIMABLE && !claimable) {
         continue;
       }
 
       if (
+        // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         req.filter === UnbondingTokensByAddressIndexRequest_Filter.NOT_YET_CLAIMABLE &&
         claimable
       ) {
