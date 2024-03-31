@@ -15,11 +15,11 @@ importers:
         specifier: 1.4.0-20240327103030-e2006674271c.2
         version: 1.4.0-20240327103030-e2006674271c.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0)
       '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.8.0-20240330234407-3b0e90babafd.2
-        version: 1.8.0-20240330234407-3b0e90babafd.2(@bufbuild/protobuf@1.8.0)
+        specifier: 1.8.0-20240331004851-c3b058e666bc.2
+        version: 1.8.0-20240331004851-c3b058e666bc.2(@bufbuild/protobuf@1.8.0)
       '@buf/penumbra-zone_penumbra.connectrpc_es':
-        specifier: 1.4.0-20240330234407-3b0e90babafd.2
-        version: 1.4.0-20240330234407-3b0e90babafd.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0)
+        specifier: 1.4.0-20240331004851-c3b058e666bc.2
+        version: 1.4.0-20240331004851-c3b058e666bc.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0)
       '@buf/tendermint_tendermint.bufbuild_es':
         specifier: 1.8.0-20231117195010-33ed361a9051.2
         version: 1.8.0-20231117195010-33ed361a9051.2(@bufbuild/protobuf@1.8.0)
@@ -2555,8 +2555,8 @@ packages:
       - '@bufbuild/protobuf'
     dev: false
 
-  /@buf/penumbra-zone_penumbra.bufbuild_es@1.7.2-20240330234407-3b0e90babafd.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.7.2-20240330234407-3b0e90babafd.1.tgz}
+  /@buf/penumbra-zone_penumbra.bufbuild_es@1.7.2-20240331004851-c3b058e666bc.1(@bufbuild/protobuf@1.8.0):
+    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.7.2-20240331004851-c3b058e666bc.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2583,8 +2583,8 @@ packages:
       '@bufbuild/protobuf': 1.8.0
     dev: false
 
-  /@buf/penumbra-zone_penumbra.bufbuild_es@1.8.0-20240330234407-3b0e90babafd.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.8.0-20240330234407-3b0e90babafd.2.tgz}
+  /@buf/penumbra-zone_penumbra.bufbuild_es@1.8.0-20240331004851-c3b058e666bc.2(@bufbuild/protobuf@1.8.0):
+    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.8.0-20240331004851-c3b058e666bc.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2597,8 +2597,8 @@ packages:
       '@bufbuild/protobuf': 1.8.0
     dev: false
 
-  /@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240330234407-3b0e90babafd.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.connectrpc_es/-/penumbra-zone_penumbra.connectrpc_es-1.4.0-20240330234407-3b0e90babafd.2.tgz}
+  /@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240331004851-c3b058e666bc.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
+    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.connectrpc_es/-/penumbra-zone_penumbra.connectrpc_es-1.4.0-20240331004851-c3b058e666bc.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2608,7 +2608,7 @@ packages:
       '@buf/cosmos_ibc.connectrpc_es': 1.4.0-20230913112312-7ab44ae956a0.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0)
       '@buf/cosmos_ics23.connectrpc_es': 1.4.0-20221207100654-55085f7c710a.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0)
       '@buf/googleapis_googleapis.connectrpc_es': 1.4.0-20221214150216-75b4300737fb.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0)
-      '@buf/penumbra-zone_penumbra.bufbuild_es': 1.7.2-20240330234407-3b0e90babafd.1(@bufbuild/protobuf@1.8.0)
+      '@buf/penumbra-zone_penumbra.bufbuild_es': 1.7.2-20240331004851-c3b058e666bc.1(@bufbuild/protobuf@1.8.0)
       '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.8.0)
     transitivePeerDependencies:
       - '@bufbuild/protobuf'
