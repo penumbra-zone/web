@@ -5,8 +5,3 @@ export const getValueView = createGetter(
   (unbondingTokensByAddressIndexResponse?: UnbondingTokensByAddressIndexResponse) =>
     unbondingTokensByAddressIndexResponse?.valueView,
 );
-
-export const getClaimable = createGetter(
-  (unbondingTokensByAddressIndexResponse?: UnbondingTokensByAddressIndexResponse) =>
-    unbondingTokensByAddressIndexResponse?.claimable,
-);
