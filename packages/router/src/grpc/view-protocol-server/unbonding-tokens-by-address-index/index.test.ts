@@ -105,7 +105,15 @@ describe('Unbonding Tokens by Address Index handler', () => {
   });
 
   describe('when passed no filter', () => {
-    it.todo('returns all unbonding tokens, along with their claimable status');
+    it('returns all unbonding tokens, along with their claimable status', async () => {
+      const responses = await Array.fromAsync(
+        unbondingTokensByAddressIndex(new UnbondingTokensByAddressIndexRequest(), mockCtx),
+      );
+
+      expect(responses.length).toBe(2);
+      expect(responses[0]!.claimable).toBeTypeOf('boolean');
+      expect(responses[1]!.claimable).toBeTypeOf('boolean');
+    });
   });
 
   describe('when filtering only for claimable tokens', () => {
