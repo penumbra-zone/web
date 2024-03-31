@@ -363,6 +363,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       // balances.
       void get().staking.loadDelegationsForCurrentAccount();
       void get().staking.loadUnstakedTokensByAccount();
+      void get().staking.loadUnbondingTokensForCurrentAccount();
     } finally {
       set(state => {
         state.staking.amount = '';
@@ -390,6 +391,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       // Reload unbonding tokens and unstaked tokens to reflect their updated
       // balances.
       void get().staking.loadUnstakedTokensByAccount();
+      void get().staking.loadUnbondingTokensForCurrentAccount();
     } finally {
       set(state => {
         state.staking.amount = '';
