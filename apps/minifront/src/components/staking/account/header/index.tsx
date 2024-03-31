@@ -5,9 +5,9 @@ import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/valu
 import { Stat } from './stat';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
-import { accountsSelector, stakingSelector } from '../../../../state/staking';
-import { useStore } from '../../../../state';
+import { AllSlices } from '../../../../state';
 import { UnbondingTokens } from './unbonding-tokens';
+import { useStoreShallow } from '../../../../utils/use-store-shallow';
 
 /**
  * A default `ValueView` to render when we don't have any balance data for a
@@ -23,6 +23,15 @@ const zeroBalanceUm = new ValueView({
   },
 });
 
+const headerSelector = (state: AllSlices) => ({
+  account: state.staking.account,
+  setAccount: state.staking.setAccount,
+  accountSwitcherFilter: state.staking.accountSwitcherFilter,
+  unstakedTokensByAccount: state.staking.unstakedTokensByAccount,
+  unbondingTokensByAccount: state.staking.unbondingTokensByAccount,
+  undelegateClaim: state.staking.undelegateClaim,
+});
+
 /**
  * The header of the account view, with an account switcher and balances of
  * various token types related to staking.
@@ -31,13 +40,13 @@ export const Header = () => {
   const {
     account,
     setAccount,
+    accountSwitcherFilter,
     unstakedTokensByAccount,
     unbondingTokensByAccount,
     undelegateClaim,
-  } = useStore(stakingSelector);
+  } = useStoreShallow(headerSelector);
   const unstakedTokens = unstakedTokensByAccount.get(account);
   const unbondingTokens = unbondingTokensByAccount.get(account);
-  const accountSwitcherFilter = useStore(accountsSelector);
 
   return (
     <Card gradient>

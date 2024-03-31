@@ -7,7 +7,7 @@ import { Account } from './account';
 export const StakingLoader = async () => {
   await throwIfPraxNotConnectedTimeout();
   // Await to avoid screen flicker.
-  await useStore.getState().staking.loadUnstakedTokensByAccount();
+  await useStore.getState().staking.loadAndReduceBalances();
 
   return null;
 };

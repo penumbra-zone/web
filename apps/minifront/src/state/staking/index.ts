@@ -4,6 +4,7 @@ import { getDisplayDenomExponent } from '@penumbra-zone/getters/src/metadata';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
 import {
+  assetPatterns,
   localAssets,
   STAKING_TOKEN,
   STAKING_TOKEN_METADATA,
@@ -71,6 +72,14 @@ export interface StakingSlice {
   account: number;
   /** Switch to view a different account. */
   setAccount: (account: number) => void;
+  /**
+   * All accounts for which staking is relevant, to be passed to
+   * `<AccountSwitcher />` as the `filter` prop. This includes accounts with:
+   * - delegation tokens
+   * - unbonding tokens
+   * - staking (UM) tokens (since they can be delegated)
+   */
+  accountSwitcherFilter: number[];
   /** A map of numeric account indexes to delegations for that account. */
   delegationsByAccount: Map<number, ValueView[]>;
   /**
@@ -107,7 +116,12 @@ export interface StakingSlice {
    * Build and submit Undelegate Claim transaction(s).
    */
   undelegateClaim: () => Promise<void>;
-  loadUnstakedTokensByAccount: () => Promise<void>;
+  /**
+   * Loads all the user's balances and reduces them to:
+   * 1. The `unstakedTokensByAccount` property on the state.
+   * 2. The `accountSwitcherFilter` property on the state.
+   */
+  loadAndReduceBalances: () => Promise<void>;
   loading: boolean;
   error: unknown;
   votingPowerByValidatorInfo: Record<string, VotingPowerAsIntegerPercentage>;
@@ -169,6 +183,7 @@ export const THROTTLE_MS = 200;
 
 export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) => ({
   account: 0,
+  accountSwitcherFilter: [],
   setAccount: (account: number) =>
     set(state => {
       state.staking.account = account;
@@ -314,13 +329,19 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       state.staking.unbondingTokensByAccount.set(addressIndex.account, unbondingTokensForAccount);
     });
   },
-  loadUnstakedTokensByAccount: async () => {
+  loadAndReduceBalances: async () => {
     const balancesByAccount = await getBalancesByAccount();
 
+    // It's slightly inefficient to reduce over an array twice, rather than
+    // combining the reducers into one. But this is much more readable; and
+    // anyway, `balancesByAccount` will be a single-item array for the vast
+    // majority of users.
     const unstakedTokensByAccount = balancesByAccount.reduce(toUnstakedTokensByAccount, new Map());
+    const accountSwitcherFilter = balancesByAccount.reduce(toAccountSwitcherFilter, []);
 
     set(state => {
       state.staking.unstakedTokensByAccount = unstakedTokensByAccount;
+      state.staking.accountSwitcherFilter = accountSwitcherFilter;
     });
   },
   delegate: async () => {
@@ -339,7 +360,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       // Reload delegation tokens and unstaked tokens to reflect their updated
       // balances.
       void get().staking.loadDelegationsForCurrentAccount();
-      void get().staking.loadUnstakedTokensByAccount();
+      void get().staking.loadAndReduceBalances();
     } finally {
       set(state => {
         state.staking.amount = '';
@@ -362,7 +383,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       // Reload delegation tokens and unstaked tokens to reflect their updated
       // balances.
       void get().staking.loadDelegationsForCurrentAccount();
-      void get().staking.loadUnstakedTokensByAccount();
+      void get().staking.loadAndReduceBalances();
       void get().staking.loadUnbondingTokensForCurrentAccount();
     } finally {
       set(state => {
@@ -390,7 +411,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
 
       // Reload unbonding tokens and unstaked tokens to reflect their updated
       // balances.
-      void get().staking.loadUnstakedTokensByAccount();
+      void get().staking.loadAndReduceBalances();
       void get().staking.loadUnbondingTokensForCurrentAccount();
     } finally {
       set(state => {
@@ -404,40 +425,6 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
 });
 
 export const stakingSelector = (state: AllSlices) => state.staking;
-
-/**
- * Selector to get all accounts that are relevant to staking (in the form of
- * their numeric address index). This includes accounts that:
- * 1. have unstaked UM tokens.
- * 2. have delegation tokens.
- * 3. have unbonding tokens.
- */
-export const accountsSelector = (state: AllSlices): number[] => {
-  const accounts = new Set<number>();
-
-  for (const account of state.staking.unstakedTokensByAccount.keys()) {
-    if (state.staking.unstakedTokensByAccount.get(account)) accounts.add(account);
-  }
-
-  for (const account of state.staking.delegationsByAccount.keys()) {
-    const delegations = state.staking.delegationsByAccount.get(account);
-    if (delegations?.length) accounts.add(account);
-  }
-
-  for (const account of state.staking.unbondingTokensByAccount.keys()) {
-    const unbondingTokens = state.staking.unbondingTokensByAccount.get(account);
-
-    if (
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-      unbondingTokens?.claimable.tokens.length ||
-      unbondingTokens?.notYetClaimable.tokens.length
-    ) {
-      accounts.add(account);
-    }
-  }
-
-  return Array.from(accounts.values());
-};
 
 const assembleDelegateRequest = ({ account, amount, validatorInfo }: StakingSlice) => {
   return new TransactionPlannerRequest({
@@ -494,6 +481,25 @@ const toUnstakedTokensByAccount = (
   }
 
   return unstakedTokensByAccount;
+};
+
+/**
+ * Function to use with `reduce()` over an array of `BalancesByAccount` objects.
+ * Reduces to an array of accounts that have relevant balances for staking.
+ */
+const toAccountSwitcherFilter = (accountSwitcherFilter: number[], curr: BalancesByAccount) => {
+  const isRelevantAccount = curr.balances.some(({ balanceView }) => {
+    const displayDenom = getDisplayDenomFromView(balanceView);
+
+    return (
+      assetPatterns.delegationToken.matches(displayDenom) ||
+      assetPatterns.unbondingToken.matches(displayDenom) ||
+      displayDenom === STAKING_TOKEN
+    );
+  });
+
+  if (isRelevantAccount) return [...accountSwitcherFilter, curr.account];
+  return accountSwitcherFilter;
 };
 
 /**
