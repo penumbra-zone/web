@@ -52,6 +52,7 @@ export const Header = () => {
 
             <Stat label='Unbonding amount'>
               <UnbondingTokens
+                helpText='Total amount of UM you will receive, assuming no slashing, when you claim your unbonding tokens that are currently still in their unbonding period.'
                 tokens={unbondingTokens?.notYetClaimable.tokens}
                 total={unbondingTokens?.notYetClaimable.total}
               />
@@ -59,6 +60,7 @@ export const Header = () => {
 
             <Stat label='Claimable amount'>
               <UnbondingTokens
+                helpText='Total amount of UM you will receive, assuming no slashing, when you claim your unbonding tokens that are currently eligible for claiming.'
                 tokens={unbondingTokens?.claimable.tokens}
                 total={unbondingTokens?.claimable.total}
               >
@@ -67,7 +69,7 @@ export const Header = () => {
                     className='self-end px-4 text-white'
                     onClick={() => void undelegateClaim()}
                   >
-                    Claim
+                    Claim now
                   </Button>
                 )}
               </UnbondingTokens>

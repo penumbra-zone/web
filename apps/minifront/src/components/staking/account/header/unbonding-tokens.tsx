@@ -27,10 +27,12 @@ const zeroBalanceUm = new ValueView({
 export const UnbondingTokens = ({
   total,
   tokens,
+  helpText,
   children,
 }: {
   total?: ValueView;
   tokens?: ValueView[];
+  helpText: string;
   children?: ReactNode;
 }) => {
   return (
@@ -41,10 +43,7 @@ export const UnbondingTokens = ({
         </TooltipTrigger>
         <TooltipContent>
           <div className='flex flex-col gap-4'>
-            <div className='max-w-[250px]'>
-              Total amount of UM you will receive when all your unbonding tokens are claimed,
-              assuming no slashing.
-            </div>
+            <div className='max-w-[250px]'>{helpText}</div>
 
             {!!tokens?.length &&
               tokens.map(token => (
