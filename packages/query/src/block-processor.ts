@@ -155,7 +155,8 @@ export class BlockProcessor implements BlockProcessorInterface {
       // it's done.
       await this.updateValidatorInfos(0n);
 
-      await this.indexedDb.addEpoch(0n);
+      const existingStartEpoch = await this.indexedDb.getEpochByHeight(0n);
+      if (!existingStartEpoch) await this.indexedDb.addEpoch(0n);
     }
 
     // this is an indefinite stream of the (compact) chain from the network
