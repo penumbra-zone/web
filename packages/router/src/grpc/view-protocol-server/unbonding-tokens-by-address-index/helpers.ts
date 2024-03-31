@@ -15,7 +15,7 @@ export const isUnbondingTokenBalance = (balancesResponse: PartialMessage<Balance
     getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse)),
   );
 
-export const isClaimable = async (
+export const getIsClaimable = async (
   balancesResponse: PartialMessage<BalancesResponse>,
   ctx: HandlerContext,
 ): Promise<boolean> => {

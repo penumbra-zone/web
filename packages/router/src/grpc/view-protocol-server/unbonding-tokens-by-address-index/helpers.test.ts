@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { isClaimable } from './helpers';
+import { getIsClaimable } from './helpers';
 import {
   AppParametersResponse,
   BalancesResponse,
@@ -26,7 +26,7 @@ const mockCtx = createHandlerContext({
   url: '/mock',
 });
 
-describe('isClaimable()', () => {
+describe('getIsClaimable()', () => {
   it("returns `true` when we've passed the unbonding delay period", async () => {
     mockAppParameters.mockResolvedValue(
       new AppParametersResponse({
@@ -57,7 +57,7 @@ describe('isClaimable()', () => {
       },
     });
 
-    await expect(isClaimable(balancesResponse, mockCtx)).resolves.toBe(true);
+    await expect(getIsClaimable(balancesResponse, mockCtx)).resolves.toBe(true);
   });
 
   it("returns `false` when we haven't yet passed the unbonding delay period", async () => {
@@ -90,6 +90,6 @@ describe('isClaimable()', () => {
       },
     });
 
-    await expect(isClaimable(balancesResponse, mockCtx)).resolves.toBe(false);
+    await expect(getIsClaimable(balancesResponse, mockCtx)).resolves.toBe(false);
   });
 });
