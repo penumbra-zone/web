@@ -3,6 +3,7 @@ import {
   BalancesResponse,
   StatusResponse,
   UnbondingTokensByAddressIndexRequest,
+  UnbondingTokensByAddressIndexRequest_Filter,
   UnbondingTokensByAddressIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
@@ -117,11 +118,35 @@ describe('Unbonding Tokens by Address Index handler', () => {
   });
 
   describe('when filtering only for claimable tokens', () => {
-    it.todo('returns only claimable unbonding tokens');
+    it('returns only claimable unbonding tokens', async () => {
+      const responses = await Array.fromAsync(
+        unbondingTokensByAddressIndex(
+          new UnbondingTokensByAddressIndexRequest({
+            filter: UnbondingTokensByAddressIndexRequest_Filter.CLAIMABLE,
+          }),
+          mockCtx,
+        ),
+      );
+
+      expect(responses.length).toBe(1);
+      expect(responses[0]!.claimable).toBe(true);
+    });
   });
 
   describe('when filtering only for not-yet-claimable tokens', () => {
-    it.todo('returns only not-yet-claimable unbonding tokens');
+    it('returns only not-yet-claimable unbonding tokens', async () => {
+      const responses = await Array.fromAsync(
+        unbondingTokensByAddressIndex(
+          new UnbondingTokensByAddressIndexRequest({
+            filter: UnbondingTokensByAddressIndexRequest_Filter.NOT_YET_CLAIMABLE,
+          }),
+          mockCtx,
+        ),
+      );
+
+      expect(responses.length).toBe(1);
+      expect(responses[0]!.claimable).toBe(false);
+    });
   });
 
   it("excludes any tokens that aren't unbonding tokens", async () => {
