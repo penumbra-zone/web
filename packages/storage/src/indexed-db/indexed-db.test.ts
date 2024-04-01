@@ -514,31 +514,46 @@ describe('IndexedDb', () => {
 
     beforeEach(async () => {
       db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.addEpoch(epoch1.startHeight);
-      await db.addEpoch(epoch2.startHeight);
-      await db.addEpoch(epoch3.startHeight);
+    });
+
+    it('prepopulates the 0th epoch', async () => {
+      const epoch = await db.getEpochByHeight(0n);
+      expect(epoch?.index).toBe(0n);
+      expect(epoch?.startHeight).toBe(0n);
     });
 
     describe('addEpoch', () => {
-      it('auto-increments the epoch index if one is not provided', async () => {
+      beforeEach(async () => {
+        await db.addEpoch(epoch1.startHeight);
+        await db.addEpoch(epoch2.startHeight);
+        await db.addEpoch(epoch3.startHeight);
+      });
+
+      it('auto-increments the epoch index', async () => {
         const [result1, result2, result3] = await Promise.all([
-          db.getEpochByHeight(50n),
           db.getEpochByHeight(150n),
           db.getEpochByHeight(250n),
+          db.getEpochByHeight(350n),
         ]);
 
-        expect(result1?.index).toBe(0n);
-        expect(result2?.index).toBe(1n);
-        expect(result3?.index).toBe(2n);
+        expect(result1?.index).toBe(1n);
+        expect(result2?.index).toBe(2n);
+        expect(result3?.index).toBe(3n);
       });
     });
 
     describe('getEpochByHeight', () => {
+      beforeEach(async () => {
+        await db.addEpoch(epoch1.startHeight);
+        await db.addEpoch(epoch2.startHeight);
+        await db.addEpoch(epoch3.startHeight);
+      });
+
       it('returns the epoch containing the given block height', async () => {
         const [result1, result2, result3] = await Promise.all([
-          db.getEpochByHeight(50n),
           db.getEpochByHeight(150n),
           db.getEpochByHeight(250n),
+          db.getEpochByHeight(350n),
         ]);
 
         expect(result1?.toJson()).toEqual(epoch1.toJson());

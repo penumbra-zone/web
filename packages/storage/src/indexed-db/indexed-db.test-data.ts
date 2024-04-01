@@ -703,16 +703,16 @@ export const tradingPairGmGn = TradingPair.fromJson({
 });
 
 export const epoch1 = new Epoch({
-  index: 0n,
-  startHeight: 0n,
-});
-
-export const epoch2 = new Epoch({
   index: 1n,
   startHeight: 100n,
 });
 
-export const epoch3 = new Epoch({
+export const epoch2 = new Epoch({
   index: 2n,
   startHeight: 200n,
+});
+
+export const epoch3 = new Epoch({
+  index: 3n,
+  startHeight: 300n,
 });

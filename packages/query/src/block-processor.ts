@@ -154,8 +154,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       // beginning of sync as well, and force the rest of sync to wait until
       // it's done.
       await this.updateValidatorInfos(0n);
-
-      await this.indexedDb.addEpoch(0n);
     }
 
     // this is an indefinite stream of the (compact) chain from the network
