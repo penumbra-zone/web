@@ -33,7 +33,7 @@ import {
   transactionId,
 } from './indexed-db.test-data';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import {AddressIndex, WalletId} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import {
   PositionId,
   PositionState,
@@ -46,7 +46,6 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { localAssets } from '@penumbra-zone/constants/src/assets';
 import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/src/indexed-db';
-import { bech32ToWalletId } from '@penumbra-zone/bech32/src/wallet-id';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place
@@ -54,9 +53,9 @@ describe('IndexedDb', () => {
     chainId: 'test',
     accountAddr: 'penumbra123xyz',
     dbVersion: 1,
-    walletId: bech32ToWalletId(
-      'penumbrawalletid15r7q7qsf3hhsgj0g530n7ng9acdacmmx9ajknjz38dyt90u9gcgsmjre75',
-    ),
+    walletId: new WalletId({
+      inner: new Uint8Array(8)
+    }),
   });
 
   describe('initializing', () => {
@@ -97,9 +96,9 @@ describe('IndexedDb', () => {
         chainId: 'test',
         accountAddr: 'penumbra123xyz',
         dbVersion: 2,
-        walletId: bech32ToWalletId(
-          'penumbrawalletid15r7q7qsf3hhsgj0g530n7ng9acdacmmx9ajknjz38dyt90u9gcgsmjre75',
-        ),
+        walletId: new WalletId({
+          inner: new Uint8Array(10)
+        }),
       };
 
       const dbB = await IndexedDb.initialize(version2Props);

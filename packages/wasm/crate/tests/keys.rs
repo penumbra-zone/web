@@ -23,6 +23,6 @@ fn successfully_get_wallet_id() {
 // revise this test since we cannot call wasm-bindgen imported functions on non-wasm targets
 fn raises_if_fvk_invalid() {
     let fvk = FullViewingKey::from_str("penumbrafullviewingkey1sjeaceqzgaeye2ksnz8q73mp6rpx2ykdtzs8wurrnhwdn8vqwuxhxtjdndrjc74udjh0uch0tatnrd93q50wp9pfk86h3lgpew8lsqsz2a6la").unwrap();
-    let err = get_wallet_id(&fvk.encode_to_vec().as_slice()).unwrap_err();
+    let err = get_wallet_id(fvk.encode_to_vec().as_slice()).unwrap_err();
     assert_eq!("invalid length", err.to_string());
 }
