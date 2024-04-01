@@ -1,15 +1,12 @@
-import type { Impl } from '..';
-import { extLocalCtx, extSessionCtx, servicesCtx } from '../../../ctx/prax';
-import { approverCtx } from '../../../ctx/approver';
+import type { Impl } from '.';
+import { extLocalCtx, extSessionCtx } from '../../ctx/prax';
+import { approverCtx } from '../../ctx/approver';
 import { generateSpendKey } from '@penumbra-zone/wasm/src/keys';
 import { authorizePlan } from '@penumbra-zone/wasm/src/build';
 import { Key } from '@penumbra-zone/crypto-web/src/encryption';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { Box } from '@penumbra-zone/types/src/box';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
-import { assertSwapClaimAddressesBelongToCurrentUser } from './assert-swap-claim-addresses-belong-to-current-user';
-import { isControlledAddress } from '@penumbra-zone/wasm/src/address';
-import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
 
 export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) throw new ConnectError('No plan included in request', Code.InvalidArgument);
@@ -17,13 +14,6 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   const approveReq = ctx.values.get(approverCtx);
   const sess = ctx.values.get(extSessionCtx);
   const local = ctx.values.get(extLocalCtx);
-  const walletServices = await ctx.values.get(servicesCtx).getWalletServices();
-
-  const { fullViewingKey } = walletServices.viewServer;
-  assertSwapClaimAddressesBelongToCurrentUser(req.plan, address =>
-    isControlledAddress(fullViewingKey, address),
-  );
-  assertSwapAssetsAreNotTheSame(req.plan);
 
   if (!approveReq) throw new ConnectError('Approver not found', Code.Unavailable);
 
