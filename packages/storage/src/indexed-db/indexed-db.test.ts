@@ -33,7 +33,10 @@ import {
   transactionId,
 } from './indexed-db.test-data';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
-import {AddressIndex, WalletId} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import {
+  AddressIndex,
+  WalletId,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import {
   PositionId,
   PositionState,
@@ -54,7 +57,7 @@ describe('IndexedDb', () => {
     accountAddr: 'penumbra123xyz',
     dbVersion: 1,
     walletId: new WalletId({
-      inner: new Uint8Array(8)
+      inner: Uint8Array.from({ length: 8 }, () => Math.floor(Math.random() * 256)),
     }),
   });
 
@@ -97,7 +100,7 @@ describe('IndexedDb', () => {
         accountAddr: 'penumbra123xyz',
         dbVersion: 2,
         walletId: new WalletId({
-          inner: new Uint8Array(10)
+          inner: Uint8Array.from({ length: 8 }, () => Math.floor(Math.random() * 256)),
         }),
       };
 
