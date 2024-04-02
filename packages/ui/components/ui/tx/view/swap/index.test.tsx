@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SwapViewComponent } from './swap';
+import { SwapViewComponent } from '.';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { render } from '@testing-library/react';
 
@@ -43,7 +43,7 @@ describe('<SwapViewComponent />', () => {
     it('shows the correct fee in upenumbra', () => {
       const { container } = render(<SwapViewComponent value={swapView} />);
 
-      expect(container).toHaveTextContent('123 upenumbra');
+      expect(container).toHaveTextContent('123UM');
     });
   });
 });

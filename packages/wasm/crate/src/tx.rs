@@ -2,6 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::convert::TryInto;
 
 use anyhow::anyhow;
+use penumbra_dex::BatchSwapOutputData;
 use penumbra_keys::keys::SpendKey;
 use penumbra_keys::FullViewingKey;
 use penumbra_proto::core::transaction::v1 as pb;
@@ -275,14 +276,17 @@ pub async fn transaction_info_inner(
             }
             Action::Swap(swap) => {
                 let commitment = swap.body.payload.commitment;
+                if let Some(swap_record) = storage.get_swap_by_commitment(commitment.into()).await?
+                {
+                    // Add swap output to perspective
+                    if let Some(output_data) = swap_record.output_data {
+                        let bsod = BatchSwapOutputData::try_from(output_data)?;
+                        txp.batch_swap_output_data.push(bsod)
+                    }
 
-                let swap_position_option = storage
-                    .get_swap_by_commitment(commitment.into())
-                    .await?
-                    .map(|swap_record| Position::from(swap_record.position));
-
-                if let Some(swap_position) = swap_position_option {
-                    add_swap_info_to_perspective(
+                    // Add swap claim to perspective
+                    let swap_position = Position::from(swap_record.position);
+                    add_swap_claim_txn_to_perspective(
                         &storage,
                         &fvk,
                         &mut txp,
@@ -408,7 +412,7 @@ pub async fn transaction_info_inner(
     Ok(response)
 }
 
-async fn add_swap_info_to_perspective(
+async fn add_swap_claim_txn_to_perspective(
     storage: &IndexedDBStorage,
     fvk: &FullViewingKey,
     txp: &mut penumbra_transaction::TransactionPerspective,

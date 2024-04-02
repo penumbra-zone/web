@@ -1,22 +1,22 @@
 import { SpendView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { ViewBox } from './viewbox';
 import { ValueViewComponent } from './value';
-import { AddressViewComponent } from './address-view';
+import { ValueWithAddress } from './value-with-address';
+import { getNote } from '@penumbra-zone/getters/src/spend-view';
+import { getAddress } from '@penumbra-zone/getters/src/note-view';
 
 export const SpendViewComponent = ({ value }: { value: SpendView }) => {
   if (value.spendView.case === 'visible') {
-    const note = value.spendView.value.note!;
+    const note = getNote(value);
+    const address = getAddress(note);
+
     return (
       <ViewBox
         label='Spend'
         visibleContent={
-          <div className='flex flex-col justify-between gap-2 sm:flex-row sm:gap-0'>
+          <ValueWithAddress addressView={address} label='from'>
             <ValueViewComponent view={note.value} />
-            <div className='flex gap-2'>
-              <span className='font-mono text-sm italic text-foreground'>from</span>
-              <AddressViewComponent view={note.address} />
-            </div>
-          </div>
+          </ValueWithAddress>
         }
       />
     );
