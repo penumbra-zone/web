@@ -1,10 +1,8 @@
 import type { Impl } from '..';
 import { servicesCtx } from '../../../ctx/prax';
 import { planTransaction } from '@penumbra-zone/wasm/src/planner';
-import { Code, ConnectError, HandlerContext } from '@connectrpc/connect';
-import { assertSwapClaimAddressesBelongToCurrentUser } from './assert-swap-claim-addresses-belong-to-current-user';
+import { Code, ConnectError } from '@connectrpc/connect';
 import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
-import { isControlledAddress } from '@penumbra-zone/wasm/src/address';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
@@ -14,7 +12,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
     viewServer: { fullViewingKey },
   } = await services.getWalletServices();
 
-  await assertValidRequest(req, ctx);
+  assertValidRequest(req);
 
   const fmdParams = await indexedDb.getFmdParams();
   if (!fmdParams) throw new ConnectError('FmdParameters not available', Code.FailedPrecondition);
@@ -35,18 +33,16 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
  * throwing an error if any of them fail.
  *
  * Add more assertions to this function as needed.
+ *
+ * NOTE: Assertions related to security should NOT be run here, but rather in
+ * the `CustodyService#authorize` implementation. That's because websites don't
+ * actually have to call `ViewService#transactionPlanner`:
+ * `ViewService#transactionPlanner` is just a convenience method for web apps
+ * that don't want to build the transaction plan themselves. But a malicious
+ * website could skip this step, build a transaction plan themselves, and submit
+ * it for authorization. Thus, it is at the authorization stage we should catch
+ * those issues, since there is no way to avoid that stage.
  */
-const assertValidRequest = async (
-  req: TransactionPlannerRequest,
-  ctx: HandlerContext,
-): Promise<void> => {
-  const services = ctx.values.get(servicesCtx);
-  const {
-    viewServer: { fullViewingKey },
-  } = await services.getWalletServices();
-
-  assertSwapClaimAddressesBelongToCurrentUser(req, address =>
-    isControlledAddress(fullViewingKey, address),
-  );
+const assertValidRequest = (req: TransactionPlannerRequest): void => {
   assertSwapAssetsAreNotTheSame(req);
 };
