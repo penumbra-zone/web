@@ -12,14 +12,57 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { localAssets } from '@penumbra-zone/constants/src/assets';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { useEffect } from 'react';
+import { getMetadata } from '@penumbra-zone/getters/src/value-view';
 
 interface AssetOutSelectorProps {
   assetOut: ValueView | undefined;
   setAssetOut: (metadata: Metadata) => void;
+  /**
+   * If passed, this function will be called for every asset that
+   * `AssetOutSelector` plans to display. It should return `true` or `false`
+   * depending on whether that asset should be displayed.
+   */
+  filter?: (metadata: Metadata) => boolean;
 }
 
+const sortedAssets = [...localAssets].sort((a, b) => (a.symbol < b.symbol ? -1 : 1));
+
+/**
+ * If the `filter` rejects the currently selected `assetOut`, switch to a
+ * different `assetOut`.
+ */
+const switchAssetOutIfNecessary = ({
+  assetOut,
+  setAssetOut,
+  filter,
+  assets,
+}: AssetOutSelectorProps & { assets: Metadata[] }) => {
+  if (!filter) return;
+
+  const assetOutMetadata = getMetadata(assetOut);
+
+  if (!filter(assetOutMetadata)) {
+    const firstAssetThatPassesTheFilter = assets.find(filter);
+    if (firstAssetThatPassesTheFilter) setAssetOut(firstAssetThatPassesTheFilter);
+  }
+};
+
+const useFilteredAssets = ({ assetOut, setAssetOut, filter }: AssetOutSelectorProps) => {
+  const assets = filter ? sortedAssets.filter(filter) : sortedAssets;
+
+  useEffect(
+    () => switchAssetOutIfNecessary({ assetOut, setAssetOut, filter, assets }),
+    [filter, assetOut, assets, setAssetOut],
+  );
+
+  return assets;
+};
+
 /** @todo Refactor to use `SelectTokenModal` */
-export const AssetOutSelector = ({ setAssetOut, assetOut }: AssetOutSelectorProps) => {
+export const AssetOutSelector = ({ setAssetOut, assetOut, filter }: AssetOutSelectorProps) => {
+  const assets = useFilteredAssets({ assetOut, setAssetOut, filter });
+
   return (
     <Dialog>
       <DialogTrigger>
@@ -30,7 +73,7 @@ export const AssetOutSelector = ({ setAssetOut, assetOut }: AssetOutSelectorProp
       <DialogContent>
         <DialogHeader>Select asset</DialogHeader>
         <div className='flex flex-col gap-2 overflow-hidden px-[30px]'>
-          {localAssets.map(d => (
+          {assets.map(d => (
             <div key={d.display} className='flex flex-col'>
               <DialogClose>
                 <div
@@ -40,7 +83,7 @@ export const AssetOutSelector = ({ setAssetOut, assetOut }: AssetOutSelectorProp
                   onClick={() => setAssetOut(d)}
                 >
                   <AssetIcon metadata={d} />
-                  <p className='truncate'>{d.display}</p>
+                  <p className='truncate'>{d.symbol}</p>
                 </div>
               </DialogClose>
             </div>
