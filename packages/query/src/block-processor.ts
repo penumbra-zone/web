@@ -162,8 +162,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
-      void this.assertRootValid(compactBlock.height);
-
       if (compactBlock.appParametersUpdated) {
         await this.indexedDb.saveAppParams(await this.querier.app.appParams());
       }
@@ -255,8 +253,6 @@ export class BlockProcessor implements BlockProcessorInterface {
         // - calls wasm for each relevant tx
         // - saves to idb
         await this.saveTransactions(compactBlock.height, relevantTx);
-
-        void this.assertRootValid(compactBlock.height);
       }
 
       // we can't use third-party price oracles for privacy reasons,
@@ -284,6 +280,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (isLastBlockOfEpoch) {
         await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
       }
+      await this.assertRootValid(compactBlock.height);
     }
   }
 
