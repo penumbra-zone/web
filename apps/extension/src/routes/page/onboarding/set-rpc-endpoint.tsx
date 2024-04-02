@@ -1,7 +1,7 @@
 import { Card, CardDescription, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { RPC_ENDPOINTS } from '../../../shared/rpc-endpoints';
-import { FormEvent, useEffect, useMemo } from 'react';
+import { FormEvent, useEffect, useMemo, useRef } from 'react';
 import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { AllSlices } from '../../../state';
@@ -21,6 +21,8 @@ export const SetRpcEndpoint = () => {
   const navigate = usePageNav();
   const randomlySortedEndpoints = useMemo(() => [...RPC_ENDPOINTS].sort(randomSort), []);
   const { grpcEndpoint, setGRPCEndpoint } = useStoreShallow(setRpcEndpointSelector);
+  const customRpcEndpointInput = useRef<HTMLInputElement | null>(null);
+  const isCustomRpcEndpoint = !RPC_ENDPOINTS.some(({ url }) => url === grpcEndpoint);
 
   useEffect(
     () => void setGRPCEndpoint(randomlySortedEndpoints[0]!.url),
@@ -55,6 +57,25 @@ export const SetRpcEndpoint = () => {
                 isSelected={rpcEndpoint.url === grpcEndpoint}
               />
             ))}
+
+            <SelectList.Option
+              label='Custom RPC'
+              secondaryText={
+                <input
+                  type='url'
+                  ref={customRpcEndpointInput}
+                  value={isCustomRpcEndpoint ? grpcEndpoint : ''}
+                  onChange={e => void setGRPCEndpoint(e.target.value)}
+                  className='w-full bg-transparent'
+                />
+              }
+              onSelect={() => {
+                if (!isCustomRpcEndpoint) void setGRPCEndpoint('');
+                customRpcEndpointInput.current?.focus();
+              }}
+              isSelected={isCustomRpcEndpoint}
+              value={''}
+            />
           </SelectList>
 
           <Button variant='gradient' className='mt-2' type='submit'>

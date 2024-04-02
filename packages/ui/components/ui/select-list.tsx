@@ -19,7 +19,7 @@ const Option = <T,>({
   isSelected,
 }: {
   label: string;
-  secondaryText?: string;
+  secondaryText?: ReactNode;
   value: T;
   onSelect: (value: T) => void;
   isSelected: boolean;
