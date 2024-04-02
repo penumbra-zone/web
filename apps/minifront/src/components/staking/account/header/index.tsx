@@ -1,32 +1,20 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Card, CardContent } from '@penumbra-zone/ui/components/ui/card';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@penumbra-zone/ui/components/ui/tooltip';
 import { AccountSwitcher } from '@penumbra-zone/ui/components/ui/account-switcher';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { Stat } from './stat';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
-import { accountsSelector, stakingSelector } from '../../../../state/staking';
-import { useStore } from '../../../../state';
-import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
+import { AllSlices } from '../../../../state';
+import { UnbondingTokens } from './unbonding-tokens';
+import { useStoreShallow } from '../../../../utils/use-store-shallow';
+import { ZERO_BALANCE_UM } from './constants';
 
-/**
- * A default `ValueView` to render when we don't have any balance data for a
- * particular token in the given account.
- */
-const zeroBalanceUm = new ValueView({
-  valueView: {
-    case: 'knownAssetId',
-    value: {
-      amount: { hi: 0n, lo: 0n },
-      metadata: STAKING_TOKEN_METADATA,
-    },
-  },
+const headerSelector = (state: AllSlices) => ({
+  account: state.staking.account,
+  setAccount: state.staking.setAccount,
+  accountSwitcherFilter: state.staking.accountSwitcherFilter,
+  unstakedTokensByAccount: state.staking.unstakedTokensByAccount,
+  unbondingTokensByAccount: state.staking.unbondingTokensByAccount,
+  undelegateClaim: state.staking.undelegateClaim,
 });
 
 /**
@@ -37,13 +25,13 @@ export const Header = () => {
   const {
     account,
     setAccount,
+    accountSwitcherFilter,
     unstakedTokensByAccount,
     unbondingTokensByAccount,
     undelegateClaim,
-  } = useStore(stakingSelector);
+  } = useStoreShallow(headerSelector);
   const unstakedTokens = unstakedTokensByAccount.get(account);
   const unbondingTokens = unbondingTokensByAccount.get(account);
-  const accountSwitcherFilter = useStore(accountsSelector);
 
   return (
     <Card gradient>
@@ -53,39 +41,32 @@ export const Header = () => {
 
           <div className='flex items-start justify-center gap-8'>
             <Stat label='Available to delegate'>
-              <ValueViewComponent view={unstakedTokens ?? zeroBalanceUm} />
+              <ValueViewComponent view={unstakedTokens ?? ZERO_BALANCE_UM} />
             </Stat>
 
             <Stat label='Unbonding amount'>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <ValueViewComponent view={unbondingTokens?.total ?? zeroBalanceUm} />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <div className='flex flex-col gap-4'>
-                      <div className='max-w-[250px]'>
-                        Total amount of UM you will receive when all your unbonding tokens are
-                        claimed, assuming no slashing.
-                      </div>
-                      {unbondingTokens?.tokens.length && (
-                        <>
-                          {unbondingTokens.tokens.map(token => (
-                            <ValueViewComponent key={getDisplayDenomFromView(token)} view={token} />
-                          ))}
+              <UnbondingTokens
+                helpText='Total amount of UM you will receive, assuming no slashing, when you claim your unbonding tokens that are currently still in their unbonding period.'
+                tokens={unbondingTokens?.notYetClaimable.tokens}
+                total={unbondingTokens?.notYetClaimable.total}
+              />
+            </Stat>
 
-                          <Button
-                            className='self-end px-4 text-white'
-                            onClick={() => void undelegateClaim()}
-                          >
-                            Claim
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            <Stat label='Claimable amount'>
+              <UnbondingTokens
+                helpText='Total amount of UM you will receive, assuming no slashing, when you claim your unbonding tokens that are currently eligible for claiming.'
+                tokens={unbondingTokens?.claimable.tokens}
+                total={unbondingTokens?.claimable.total}
+              >
+                {!!unbondingTokens?.claimable.tokens.length && (
+                  <Button
+                    className='self-end px-4 text-white'
+                    onClick={() => void undelegateClaim()}
+                  >
+                    Claim now
+                  </Button>
+                )}
+              </UnbondingTokens>
             </Stat>
           </div>
         </div>

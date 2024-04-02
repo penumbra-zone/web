@@ -12,7 +12,7 @@ import {
   AddressView,
   IdentityKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { accountsSelector, THROTTLE_MS } from '.';
+import { THROTTLE_MS } from '.';
 import { DelegationsByAddressIndexResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 const validator1IdentityKey = new IdentityKey({ ik: new Uint8Array([1, 2, 3]) });
@@ -87,6 +87,7 @@ vi.mock('../../fetchers/balances', () => ({
               index: {
                 account: 0,
               },
+              address: {},
             },
           },
         }),
@@ -114,6 +115,7 @@ vi.mock('../../fetchers/balances', () => ({
               index: {
                 account: 0,
               },
+              address: {},
             },
           },
         }),
@@ -137,6 +139,7 @@ vi.mock('../../fetchers/balances', () => ({
               index: {
                 account: 0,
               },
+              address: {},
             },
           },
         }),
@@ -230,6 +233,7 @@ describe('Staking Slice', () => {
   it('has correct initial state', () => {
     expect(useStore.getState().staking).toEqual({
       account: 0,
+      accountSwitcherFilter: [],
       action: undefined,
       amount: '',
       validatorInfo: undefined,
@@ -238,7 +242,8 @@ describe('Staking Slice', () => {
       unbondingTokensByAccount: new Map(),
       setAccount: expect.any(Function) as unknown,
       loadDelegationsForCurrentAccount: expect.any(Function) as unknown,
-      loadUnstakedAndUnbondingTokensByAccount: expect.any(Function) as unknown,
+      loadUnbondingTokensForCurrentAccount: expect.any(Function) as unknown,
+      loadAndReduceBalances: expect.any(Function) as unknown,
       delegate: expect.any(Function) as unknown,
       undelegate: expect.any(Function) as unknown,
       undelegateClaim: expect.any(Function) as unknown,
@@ -279,66 +284,13 @@ describe('Staking Slice', () => {
     expect(Object.values(getState().staking.votingPowerByValidatorInfo).length).toBe(4);
   });
 
-  describe('accountsSelector return value', () => {
-    let result: number[];
-
-    beforeEach(() => {
-      const state = useStore.getState();
-
-      useStore.setState({
-        ...state,
-        staking: {
-          ...state.staking,
-          unstakedTokensByAccount: new Map([
-            // Leave unsorted for the sake of the sorting test below.
-            [1, new ValueView()],
-            [2, undefined],
-            [0, new ValueView()],
-          ]),
-
-          delegationsByAccount: new Map([
-            [3, []],
-            [4, [new ValueView()]],
-            [5, []],
-          ]),
-
-          unbondingTokensByAccount: new Map([
-            // Leave unsorted for the sake of the sorting test below.
-            [6, { total: new ValueView(), tokens: [new ValueView()] }],
-            [5, { total: new ValueView(), tokens: [new ValueView()] }],
-          ]),
-        },
-      });
-
-      result = accountsSelector(useStore.getState());
+  describe('loadAndReduceBalances()', () => {
+    beforeEach(async () => {
+      await useStore.getState().staking.loadAndReduceBalances();
     });
 
-    it('includes accounts that have only unstaked tokens', () => {
-      expect(result).toContain(0);
-    });
-
-    it('includes accounts that have only delegation tokens', () => {
-      expect(result).toContain(4);
-    });
-
-    it('includes accounts that have only unbonding tokens', () => {
-      expect(result).toContain(6);
-    });
-
-    it('includes accounts that have empty delegations but populated unbonding tokens', () => {
-      expect(result).toContain(5);
-    });
-
-    it('excludes accounts that only have undefined unstaked tokens', () => {
-      expect(result).not.toContain(2);
-    });
-
-    it('excludes accounts that only have empty delegation tokens', () => {
-      expect(result).not.toContain(3);
-    });
-
-    it('excludes accounts that have no relevant tokens', () => {
-      expect(result).not.toContain(7);
+    it('includes accounts with tokens relevant to staking', () => {
+      expect(useStore.getState().staking.accountSwitcherFilter).toEqual([0]);
     });
   });
 });
