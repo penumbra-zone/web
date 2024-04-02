@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { MockStorageArea } from './test-utils/mock';
 import { ExtensionStorage } from './base';
-import { LocalStorageState, LocalStorageVersion } from '@penumbra-zone/types/src/local-storage';
 import { v1Migrations } from './v1-migration';
 import { localDefaults } from './local';
 import {
@@ -10,6 +9,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { bech32ToWalletId } from '@penumbra-zone/bech32/src/wallet-id';
 import { bech32ToFullViewingKey } from '@penumbra-zone/bech32/src/full-viewing-key';
+import { LocalStorageState, LocalStorageVersion } from './types';
 
 describe('migrate walletId and fullViewingKey from bech32 string to json stringified', () => {
   const storageArea = new MockStorageArea();

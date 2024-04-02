@@ -1,7 +1,7 @@
 import { ExtensionStorage } from './base';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import { v1Migrations } from './v1-migration';
-import { LocalStorageState, LocalStorageVersion } from '@penumbra-zone/types/src/local-storage';
+import { LocalStorageState, LocalStorageVersion } from './types';
 
 // this will be injected by webpack build, but we don't have access to the
 // declaration in `apps/extension/prax.d.ts` because we are in an independent

@@ -1,6 +1,6 @@
 import { bech32ToFullViewingKey } from '@penumbra-zone/bech32/src/full-viewing-key';
 import { bech32ToWalletId } from '@penumbra-zone/bech32/src/wallet-id';
-import { LocalStorageState, LocalStorageVersion } from '@penumbra-zone/types/src/local-storage';
+import { LocalStorageState, LocalStorageVersion } from './types';
 
 export interface Migration {
   wallets: {

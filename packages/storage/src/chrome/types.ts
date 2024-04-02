@@ -1,6 +1,6 @@
-import { UserChoice } from './user-choice';
-import type { WalletJson } from './wallet';
-import { Base64Str } from './base64';
+import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import { WalletJson } from '@penumbra-zone/types/src/wallet';
+import { KeyPrintJson } from '@penumbra-zone/crypto-web/src/encryption';
 
 export enum LocalStorageVersion {
   V1 = 'V1',
@@ -19,9 +19,4 @@ export interface LocalStorageState {
   passwordKeyPrint?: KeyPrintJson;
   fullSyncHeight: number;
   knownSites: OriginRecord[];
-}
-
-export interface KeyPrintJson {
-  hash: Base64Str;
-  salt: Base64Str;
 }
