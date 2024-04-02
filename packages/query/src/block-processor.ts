@@ -186,7 +186,6 @@ export class BlockProcessor implements BlockProcessorInterface {
         scannerWantsFlush,
         interval: compactBlock.height % 1000n === 0n,
         new: compactBlock.height > latestKnownBlockHeight,
-        always: true,
       };
 
       const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
@@ -199,6 +198,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         // - saves new decrypted swaps
         // - updates last block synced
         await this.indexedDb.saveScanResult(flush);
+        await this.assertRootValid(compactBlock.height);
 
         // - detect unknown asset types
         // - shielded pool for asset metadata
@@ -280,7 +280,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (isLastBlockOfEpoch) {
         await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
       }
-      await this.assertRootValid(compactBlock.height);
     }
   }
 
