@@ -276,25 +276,16 @@ pub async fn transaction_info_inner(
             }
             Action::Swap(swap) => {
                 let commitment = swap.body.payload.commitment;
+                if let Some(swap_record) = storage.get_swap_by_commitment(commitment.into()).await?
+                {
+                    // Add swap output to perspective
+                    if let Some(output_data) = swap_record.output_data {
+                        let bsod = BatchSwapOutputData::try_from(output_data)?;
+                        txp.batch_swap_output_data.push(bsod)
+                    }
 
-                let swap_record = storage.get_swap_by_commitment(commitment.into()).await?;
-
-                let swap_position_option = swap_record
-                    .clone()
-                    .map(|swap_record| Position::from(swap_record.position));
-
-                swap_record
-                    .clone()
-                    .and_then(|swap_record| swap_record.output_data)
-                    .map(|output_data| {
-                        if let Ok(bsod) = BatchSwapOutputData::try_from(output_data) {
-                            txp.batch_swap_output_data.push(bsod);
-                        }
-
-                        Some(())
-                    });
-
-                if let Some(swap_position) = swap_position_option {
+                    // Add swap claim to perspective
+                    let swap_position = Position::from(swap_record.position);
                     add_swap_claim_txn_to_perspective(
                         &storage,
                         &fvk,
