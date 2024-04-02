@@ -1,17 +1,35 @@
 import { Card, CardDescription, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { RPC_ENDPOINTS } from '../../../shared/rpc-endpoints';
-import { useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo } from 'react';
 import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { AllSlices } from '../../../state';
+import { useStoreShallow } from '../../../utils/use-store-shallow';
+import { usePageNav } from '../../../utils/navigate';
+import { PagePath } from '../paths';
 
 const randomSort = () => (Math.random() >= 0.5 ? 1 : -1);
 
-export const SetRpcEndpoint = () => {
-  const randomlySortedEndpoints = useMemo(() => [...RPC_ENDPOINTS].sort(randomSort), []);
-  const [selectedEndpointUrl, setSelectedEndpointUrl] = useState(randomlySortedEndpoints[0]?.url);
+const setRpcEndpointSelector = (state: AllSlices) => ({
+  grpcEndpoint: state.network.grpcEndpoint,
+  setGRPCEndpoint: state.network.setGRPCEndpoint,
+});
 
-  const handleSubmit = () => {};
+export const SetRpcEndpoint = () => {
+  const navigate = usePageNav();
+  const randomlySortedEndpoints = useMemo(() => [...RPC_ENDPOINTS].sort(randomSort), []);
+  const { grpcEndpoint, setGRPCEndpoint } = useStoreShallow(setRpcEndpointSelector);
+
+  useEffect(
+    () => void setGRPCEndpoint(randomlySortedEndpoints[0]!.url),
+    [randomlySortedEndpoints, setGRPCEndpoint],
+  );
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    navigate(PagePath.ONBOARDING_SUCCESS);
+  };
 
   return (
     <FadeTransition>
@@ -23,21 +41,21 @@ export const SetRpcEndpoint = () => {
           </CardDescription>
         </CardHeader>
 
-        <form className='mt-6 flex flex-col gap-4'>
+        <form className='mt-6 flex flex-col gap-4' onSubmit={handleSubmit}>
           <SelectList>
             {randomlySortedEndpoints.map(rpcEndpoint => (
               <SelectList.Option
                 key={rpcEndpoint.url}
                 label={rpcEndpoint.name}
                 secondaryText={rpcEndpoint.url}
-                onSelect={setSelectedEndpointUrl}
+                onSelect={value => void setGRPCEndpoint(value)}
                 value={rpcEndpoint.url}
-                isSelected={rpcEndpoint.url === selectedEndpointUrl}
+                isSelected={rpcEndpoint.url === grpcEndpoint}
               />
             ))}
           </SelectList>
 
-          <Button variant='gradient' className='mt-2' onClick={handleSubmit}>
+          <Button variant='gradient' className='mt-2' type='submit'>
             Next
           </Button>
         </form>
