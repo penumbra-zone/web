@@ -201,6 +201,9 @@ importers:
       immer:
         specifier: ^10.0.4
         version: 10.0.4
+      lucide-react:
+        specifier: ^0.363.0
+        version: 0.363.0(react@18.2.0)
       node-fetch:
         specifier: ^3.3.2
         version: 3.3.2

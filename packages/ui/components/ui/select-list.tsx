@@ -17,24 +17,30 @@ const Option = <T,>({
   value,
   onSelect,
   isSelected,
+  image,
 }: {
   label: string;
   secondaryText?: ReactNode;
   value: T;
   onSelect: (value: T) => void;
   isSelected: boolean;
+  image?: ReactNode;
 }) => (
   <div
     className={cn(
-      'bg-charcoal border-[1px] border-solid border-border rounded-[6px] p-4 flex cursor-pointer flex-col gap-1 transition-colors',
+      'flex items-center cursor-pointer gap-2 rounded-[6px] border-[1px] border-DEFAULT border-solid border-border bg-charcoal p-4 transition-colors',
       isSelected && 'border-teal',
     )}
     role='button'
     onClick={() => onSelect(value)}
   >
-    <span>{label}</span>
+    <div className='flex size-10 shrink-0 items-center justify-center'>{image}</div>
 
-    {!!secondaryText && <span className='text-xs text-muted-foreground'>{secondaryText}</span>}
+    <div className='flex grow flex-col gap-1'>
+      <div>{label}</div>
+
+      {!!secondaryText && <span className='text-xs text-muted-foreground'>{secondaryText}</span>}
+    </div>
   </div>
 );
 

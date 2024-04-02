@@ -9,6 +9,7 @@ import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { ServicesMessage } from '@penumbra-zone/types/src/services';
+import { Network } from 'lucide-react';
 
 const randomSort = () => (Math.random() >= 0.5 ? 1 : -1);
 
@@ -55,6 +56,7 @@ export const SetRpcEndpoint = () => {
                 onSelect={value => void setGRPCEndpoint(value)}
                 value={rpcEndpoint.url}
                 isSelected={rpcEndpoint.url === grpcEndpoint}
+                image={!!rpcEndpoint.imageUrl && <img src={rpcEndpoint.imageUrl} />}
               />
             ))}
 
@@ -75,6 +77,7 @@ export const SetRpcEndpoint = () => {
               }}
               isSelected={isCustomRpcEndpoint}
               value={''}
+              image={<Network />}
             />
           </SelectList>
 
