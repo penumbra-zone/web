@@ -8,7 +8,7 @@ import {
   QueryClientStatesRequest,
   QueryClientStatesResponse,
 } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/query_pb';
-import { KeyValueResponse_Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/cnidarium/v1/cnidarium_pb';
+import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import {
@@ -63,5 +63,5 @@ export interface StakingQuerierInterface {
 }
 
 export interface CnidariumQuerierInterface {
-  keyValue(key: string): Promise<KeyValueResponse_Value['value']>;
+  fetchRemoteRoot(blockHeight: bigint): Promise<MerkleRoot | undefined>;
 }

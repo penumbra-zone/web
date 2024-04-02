@@ -65,9 +65,10 @@ export class ViewServer implements ViewServerInterface {
   }
 
   getSctRoot(): MerkleRoot {
-    const raw = this.wasmViewServer.get_sct_root() as JsonValue;
-    const res = MerkleRoot.fromJson(raw);
-    return res;
+    const sctRoot = this.wasmViewServer.get_sct_root();
+    console.log('getSctRoot', sctRoot);
+    //return MerkleRoot.fromBinary(sctRoot);
+    return new MerkleRoot({ inner: sctRoot });
   }
 
   // As blocks are scanned, the internal wasmViewServer tree is being updated.

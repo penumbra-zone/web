@@ -1,7 +1,6 @@
 import { RootQuerier } from './root-querier';
 import { sha256Hash } from '@penumbra-zone/crypto-web/src/sha256';
 import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/src/dex';
-import { decodeSctRoot } from '@penumbra-zone/wasm/src/sct';
 
 import {
   getExchangeRateFromValidatorInfoResponse,
@@ -163,6 +162,8 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
+      void this.assertRootValid(compactBlock.height);
+
       if (compactBlock.appParametersUpdated) {
         await this.indexedDb.saveAppParams(await this.querier.app.appParams());
       }
@@ -187,6 +188,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         scannerWantsFlush,
         interval: compactBlock.height % 1000n === 0n,
         new: compactBlock.height > latestKnownBlockHeight,
+        always: true,
       };
 
       const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
@@ -253,6 +255,8 @@ export class BlockProcessor implements BlockProcessorInterface {
         // - calls wasm for each relevant tx
         // - saves to idb
         await this.saveTransactions(compactBlock.height, relevantTx);
+
+        void this.assertRootValid(compactBlock.height);
       }
 
       // we can't use third-party price oracles for privacy reasons,
@@ -385,14 +389,16 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  // Compares the locally stored, filtered SCT root with the actual one on chain. They should match.
-  // This is expensive to do every block, so should only be done in development.
-  // @ts-expect-error Only used ad-hoc in dev
+  // Compares the locally stored, filtered TCT root with the actual one on chain. They should match.
+  // This is expensive to do every block, so should only be done in development for debugging purposes.
+  // Recommend putting it alongside a flush (when flushReasons are triggered).
   private async assertRootValid(blockHeight: bigint): Promise<void> {
-    const sourceOfTruth = await this.querier.cnidarium.keyValue(`sct/anchor/${blockHeight}`);
+    console.log('assertRootValid', blockHeight);
+    const remoteRoot = await this.querier.cnidarium.fetchRemoteRoot(blockHeight);
     const inMemoryRoot = this.viewServer.getSctRoot();
 
-    if (!decodeSctRoot(sourceOfTruth).equals(inMemoryRoot)) {
+    if (!remoteRoot?.equals(inMemoryRoot)) {
+      console.error('Root mismatch', { remote: remoteRoot?.inner, memory: inMemoryRoot.inner });
       throw new Error(
         `Block height: ${blockHeight}. Wasm root does not match remote source of truth. Programmer error.`,
       );
