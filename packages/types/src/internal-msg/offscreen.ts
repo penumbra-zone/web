@@ -20,7 +20,7 @@ export type OffscreenResponse = InternalResponse<OffscreenMessage>;
 export interface ActionBuildRequest {
   transactionPlan: Jsonified<TransactionPlan>;
   witness: Jsonified<WitnessData>;
-  fullViewingKey: FullViewingKey;
+  fullViewingKey: Jsonified<FullViewingKey>;
   actionPlanIndex: number;
 }
 export type ActionBuildResponse = Jsonified<Action>;
@@ -37,7 +37,7 @@ export const isActionBuildRequest = (req: unknown): req is ActionBuildRequest =>
   req.witness != null &&
   typeof req.witness === 'object' &&
   'fullViewingKey' in req &&
-  typeof req.fullViewingKey === 'string' &&
+  typeof req.fullViewingKey === 'object' &&
   'actionPlanIndex' in req &&
   typeof req.actionPlanIndex === 'number';
 

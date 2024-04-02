@@ -23,13 +23,14 @@ const workerListener = ({ data }: { data: ActionBuildRequest }) => {
   const {
     transactionPlan: transactionPlanJson,
     witness: witnessJson,
-    fullViewingKey,
+    fullViewingKey: fullViewingKeyJson,
     actionPlanIndex,
   } = data;
 
   // Deserialize payload
   const transactionPlan = TransactionPlan.fromJson(transactionPlanJson);
   const witness = WitnessData.fromJson(witnessJson);
+  const fullViewingKey = FullViewingKey.fromJson(fullViewingKeyJson);
 
   void executeWorker(transactionPlan, witness, fullViewingKey, actionPlanIndex).then(
     self.postMessage,

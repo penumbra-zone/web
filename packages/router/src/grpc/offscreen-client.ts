@@ -70,7 +70,7 @@ const buildActions = (
       request: {
         transactionPlan: transactionPlan.toJson() as Jsonified<TransactionPlan>,
         witness: witness.toJson() as Jsonified<WitnessData>,
-        fullViewingKey,
+        fullViewingKey: fullViewingKey.toJson() as Jsonified<FullViewingKey>,
         actionPlanIndex,
       } satisfies ActionBuildRequest,
     });
