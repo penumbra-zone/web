@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
  */
 export const Stat = ({ label, children }: { label: string; children: ReactNode }) => {
   return (
-    <div className='flex flex-col justify-center'>
+    <div className='flex flex-col items-start justify-center'>
       <span className='text-muted-foreground'>{label}</span>
       {children}
     </div>

@@ -55,7 +55,7 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
     balances(new BalancesRequest({ accountFilter: addressIndex }), ctx),
   );
 
-  // Strangely not recognizing enums are the same type
+  // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
   // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
   const showInactive = req.filter === DelegationsByAddressIndexRequest_Filter.ALL;
 
@@ -83,7 +83,7 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
 
       yield new DelegationsByAddressIndexResponse({ valueView: withValidatorInfo });
     } else {
-      // Strangely not recognizing enums are the same type
+      // See https://github.com/typescript-eslint/typescript-eslint/issues/7114
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
       if (req.filter === DelegationsByAddressIndexRequest_Filter.ALL_ACTIVE_WITH_NONZERO_BALANCES) {
         continue;
