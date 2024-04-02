@@ -75,10 +75,10 @@ pub fn get_full_viewing_key(spend_key: &[u8]) -> WasmResult<Vec<u8>> {
 ///     full_viewing_key: `byte representation inner FullViewingKey`
 /// Returns: `WalletId`
 #[wasm_bindgen]
-pub fn get_wallet_id(full_viewing_key: JsValue) -> WasmResult<Vec<u8>> {
+pub fn get_wallet_id(full_viewing_key: &[u8]) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();
 
-    let fvk: FullViewingKey = serde_wasm_bindgen::from_value(full_viewing_key)?;
+    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
     // Can do `fvk.wallet_id().encode_to_vec()` when Domain impl added to WalletId in core
     let wallet_id_proto = WalletId::from(fvk.wallet_id());
     Ok(wallet_id_proto.encode_to_vec())

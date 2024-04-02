@@ -11,7 +11,6 @@ import {
   SpendKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { JsonValue } from '@bufbuild/protobuf';
 
 export const generateSpendKey = (seedPhrase: string) =>
   SpendKey.fromBinary(generate_spend_key(seedPhrase));
@@ -26,4 +25,4 @@ export const getEphemeralByIndex = (fullViewingKey: FullViewingKey, index: numbe
   Address.fromBinary(get_ephemeral_address(fullViewingKey.toBinary(), index));
 
 export const getWalletId = (fullViewingKey: FullViewingKey) =>
-  WalletId.fromJson(get_wallet_id(fullViewingKey.toBinary()) as JsonValue);
+  WalletId.fromBinary(get_wallet_id(fullViewingKey.toBinary()));
