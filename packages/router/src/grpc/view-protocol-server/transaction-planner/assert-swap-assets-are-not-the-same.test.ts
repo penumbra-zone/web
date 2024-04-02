@@ -1,56 +1,42 @@
 import { describe, expect, it } from 'vitest';
 import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
 import {
-  ActionPlan,
-  TransactionPlan,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+  TransactionPlannerRequest,
+  TransactionPlannerRequest_Swap,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
-const swapWithSameAssets = new ActionPlan({
-  action: {
-    case: 'swap',
-    value: {
-      swapPlaintext: {
-        tradingPair: {
-          asset1: {
-            inner: new Uint8Array([0, 1, 2, 3]),
-          },
-          asset2: {
-            inner: new Uint8Array([0, 1, 2, 3]),
-          },
-        },
-      },
+const swapWithSameAssets = new TransactionPlannerRequest_Swap({
+  value: {
+    assetId: {
+      inner: new Uint8Array([0, 1, 2, 3]),
     },
+  },
+  targetAsset: {
+    inner: new Uint8Array([0, 1, 2, 3]),
   },
 });
 
-const swapWithDifferentAssets = new ActionPlan({
-  action: {
-    case: 'swap',
-    value: {
-      swapPlaintext: {
-        tradingPair: {
-          asset1: {
-            inner: new Uint8Array([0, 1, 2, 3]),
-          },
-          asset2: {
-            inner: new Uint8Array([4, 5, 6, 7]),
-          },
-        },
-      },
+const swapWithDifferentAssets = new TransactionPlannerRequest_Swap({
+  value: {
+    assetId: {
+      inner: new Uint8Array([0, 1, 2, 3]),
     },
+  },
+  targetAsset: {
+    inner: new Uint8Array([4, 5, 6, 7]),
   },
 });
 
-const transactionPlanContainingSwapWithSameAssets = new TransactionPlan({
-  actions: [swapWithSameAssets],
+const transactionPlanContainingSwapWithSameAssets = new TransactionPlannerRequest({
+  swaps: [swapWithSameAssets],
 });
 
-const transactionPlanContainingSwapWithDifferentAssets = new TransactionPlan({
-  actions: [swapWithDifferentAssets],
+const transactionPlanContainingSwapWithDifferentAssets = new TransactionPlannerRequest({
+  swaps: [swapWithDifferentAssets],
 });
 
-const transactionPlanContainingBothSwapTypes = new TransactionPlan({
-  actions: [swapWithDifferentAssets, swapWithSameAssets],
+const transactionPlanContainingBothSwapTypes = new TransactionPlannerRequest({
+  swaps: [swapWithDifferentAssets, swapWithSameAssets],
 });
 
 describe('assertSwapAssetsAreNotTheSame()', () => {

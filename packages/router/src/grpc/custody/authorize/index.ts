@@ -4,26 +4,21 @@ import { approverCtx } from '../../../ctx/approver';
 import { generateSpendKey } from '@penumbra-zone/wasm/src/keys';
 import { authorizePlan } from '@penumbra-zone/wasm/src/build';
 import { Key } from '@penumbra-zone/crypto-web/src/encryption';
-import { Code, ConnectError } from '@connectrpc/connect';
+import { Code, ConnectError, HandlerContext } from '@connectrpc/connect';
 import { Box } from '@penumbra-zone/types/src/box';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import { assertSwapClaimAddressesBelongToCurrentUser } from './assert-swap-claim-addresses-belong-to-current-user';
 import { isControlledAddress } from '@penumbra-zone/wasm/src/address';
-import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
+import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
 
 export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) throw new ConnectError('No plan included in request', Code.InvalidArgument);
 
+  await assertValidRequest(req, ctx);
+
   const approveReq = ctx.values.get(approverCtx);
   const sess = ctx.values.get(extSessionCtx);
   const local = ctx.values.get(extLocalCtx);
-  const walletServices = await ctx.values.get(servicesCtx).getWalletServices();
-
-  const { fullViewingKey } = walletServices.viewServer;
-  assertSwapClaimAddressesBelongToCurrentUser(req.plan, address =>
-    isControlledAddress(fullViewingKey, address),
-  );
-  assertSwapAssetsAreNotTheSame(req.plan);
 
   if (!approveReq) throw new ConnectError('Approver not found', Code.Unavailable);
 
@@ -49,4 +44,29 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
   const data = authorizePlan(spendKey, req.plan);
 
   return { data };
+};
+
+/**
+ * Makes a series of assertions that ensure the validity of the request,
+ * throwing an error if any of them fail.
+ *
+ * Assertions should be related to _security_ -- that is, this is the place to
+ * catch issues with the transaction that have security implications if left
+ * uncaught. For example, this is where to ensure that a swap transaction's
+ * claim address actually belongs to the current user. (If such an assertion
+ * were placed in e.g., the `transactionPlanner` implementation, malicious
+ * websites could get around it by planning the transaction themselves, rather
+ * than calling the `transactionPlanner` method. But there is no way for
+ * malicious websites to avoid calling `authorize`, so putting the assertion
+ * here is an absolute roadblock to such behavior.)
+ *
+ * Add more assertions to this function as needed.
+ */
+const assertValidRequest = async (req: AuthorizeRequest, ctx: HandlerContext): Promise<void> => {
+  const walletServices = await ctx.values.get(servicesCtx).getWalletServices();
+  const { fullViewingKey } = walletServices.viewServer;
+
+  assertSwapClaimAddressesBelongToCurrentUser(req.plan!, address =>
+    isControlledAddress(fullViewingKey, address),
+  );
 };
