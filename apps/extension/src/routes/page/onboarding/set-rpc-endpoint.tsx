@@ -66,8 +66,10 @@ export const SetRpcEndpoint = () => {
                 <input
                   type='url'
                   ref={customRpcEndpointInput}
-                  value={isCustomRpcEndpoint ? grpcEndpoint : ''}
-                  onChange={e => void setGRPCEndpoint(e.target.value)}
+                  value={isCustomRpcEndpoint && !!grpcEndpoint ? grpcEndpoint : ''}
+                  onChange={e => {
+                    void setGRPCEndpoint(e.target.value);
+                  }}
                   className='w-full bg-transparent'
                 />
               }
