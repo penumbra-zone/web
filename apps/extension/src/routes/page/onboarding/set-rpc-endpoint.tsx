@@ -1,11 +1,10 @@
 import { Card, CardDescription, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { RPC_ENDPOINTS } from '../../../shared/rpc-endpoints';
-import { FormEvent, useEffect, useMemo, useRef } from 'react';
+import { FormEvent, useMemo, useRef, useState } from 'react';
 import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { AllSlices } from '../../../state';
-import { useStoreShallow } from '../../../utils/use-store-shallow';
+import { useStore } from '../../../state';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 import { ServicesMessage } from '@penumbra-zone/types/src/services';
@@ -13,25 +12,17 @@ import { Network } from 'lucide-react';
 
 const randomSort = () => (Math.random() >= 0.5 ? 1 : -1);
 
-const setRpcEndpointSelector = (state: AllSlices) => ({
-  grpcEndpoint: state.network.grpcEndpoint,
-  setGRPCEndpoint: state.network.setGRPCEndpoint,
-});
-
 export const SetRpcEndpoint = () => {
   const navigate = usePageNav();
   const randomlySortedEndpoints = useMemo(() => [...RPC_ENDPOINTS].sort(randomSort), []);
-  const { grpcEndpoint, setGRPCEndpoint } = useStoreShallow(setRpcEndpointSelector);
+  const [grpcEndpoint, setGrpcEndpoint] = useState(randomlySortedEndpoints[0]!.url);
+  const setGrpcEndpointInZustand = useStore(state => state.network.setGRPCEndpoint);
   const customRpcEndpointInput = useRef<HTMLInputElement | null>(null);
   const isCustomRpcEndpoint = !RPC_ENDPOINTS.some(({ url }) => url === grpcEndpoint);
 
-  useEffect(
-    () => void setGRPCEndpoint(randomlySortedEndpoints[0]!.url),
-    [randomlySortedEndpoints, setGRPCEndpoint],
-  );
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    await setGrpcEndpointInZustand(grpcEndpoint);
     void chrome.runtime.sendMessage(ServicesMessage.OnboardComplete);
     navigate(PagePath.ONBOARDING_SUCCESS);
   };
@@ -46,14 +37,14 @@ export const SetRpcEndpoint = () => {
           </CardDescription>
         </CardHeader>
 
-        <form className='mt-6 flex flex-col gap-4' onSubmit={handleSubmit}>
+        <form className='mt-6 flex flex-col gap-4' onSubmit={e => void handleSubmit(e)}>
           <SelectList>
             {randomlySortedEndpoints.map(rpcEndpoint => (
               <SelectList.Option
                 key={rpcEndpoint.url}
                 label={rpcEndpoint.name}
                 secondaryText={rpcEndpoint.url}
-                onSelect={value => void setGRPCEndpoint(value)}
+                onSelect={setGrpcEndpoint}
                 value={rpcEndpoint.url}
                 isSelected={rpcEndpoint.url === grpcEndpoint}
                 image={!!rpcEndpoint.imageUrl && <img src={rpcEndpoint.imageUrl} />}
@@ -67,14 +58,12 @@ export const SetRpcEndpoint = () => {
                   type='url'
                   ref={customRpcEndpointInput}
                   value={isCustomRpcEndpoint && !!grpcEndpoint ? grpcEndpoint : ''}
-                  onChange={e => {
-                    void setGRPCEndpoint(e.target.value);
-                  }}
+                  onChange={e => setGrpcEndpoint(e.target.value)}
                   className='w-full bg-transparent'
                 />
               }
               onSelect={() => {
-                if (!isCustomRpcEndpoint) void setGRPCEndpoint('');
+                if (!isCustomRpcEndpoint) setGrpcEndpoint('');
                 customRpcEndpointInput.current?.focus();
               }}
               isSelected={isCustomRpcEndpoint}
