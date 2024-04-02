@@ -133,6 +133,7 @@ export class Services implements ServicesInterface {
     const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
     const wallet0 = (await localExtStorage.get('wallets'))[0];
     if (!wallet0) throw Error('No wallets found');
+    if (!grpcEndpoint) throw Error('No gRPC endpoint found');
     const { id: walletId, fullViewingKey } = Wallet.fromJson(wallet0);
     return {
       ...initConfig,
