@@ -1,5 +1,4 @@
 use std::collections::BTreeMap;
-use std::str::FromStr;
 
 use anyhow::anyhow;
 use ark_ff::UniformRand;
@@ -19,6 +18,7 @@ use penumbra_proto::core::component::ibc;
 use penumbra_proto::view::v1::{
     transaction_planner_request as tpr, NotesRequest, TransactionPlannerRequest,
 };
+use penumbra_proto::DomainType;
 use penumbra_sct::params::SctParameters;
 use penumbra_shielded_pool::{fmd, OutputPlan, SpendPlan};
 use penumbra_stake::rate::RateData;
@@ -158,7 +158,7 @@ fn prioritize_and_filter_spendable_notes(
 pub async fn plan_transaction(
     idb_constants: JsValue,
     request: JsValue,
-    bech32_full_viewing_key: &str,
+    full_viewing_key: &[u8],
 ) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
@@ -170,7 +170,7 @@ pub async fn plan_transaction(
         .transpose()?
         .unwrap_or_default();
 
-    let fvk = FullViewingKey::from_str(bech32_full_viewing_key)?;
+    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
 
     // should ignore the randomizer for change_address, there is no point using ephemeral address
     let (change_address, _) = fvk

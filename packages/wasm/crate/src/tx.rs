@@ -1,6 +1,5 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::convert::TryInto;
-use std::str::FromStr;
 
 use anyhow::anyhow;
 use penumbra_keys::keys::SpendKey;
@@ -16,7 +15,6 @@ use penumbra_transaction::Action;
 use penumbra_transaction::{AuthorizationData, Transaction, WitnessData};
 use rand_core::OsRng;
 use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::Error;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 
@@ -68,15 +66,15 @@ pub fn decode_tx(tx_bytes: &str) -> WasmResult<JsValue> {
 
 /// authorize transaction (sign  transaction using  spend key)
 /// Arguments:
-///     spend_key_str: `bech32m String`
+///     spend_key: `byte representation inner SpendKey`
 ///     transaction_plan: `pb::TransactionPlan`
 /// Returns: `pb::AuthorizationData`
 #[wasm_bindgen]
-pub fn authorize(spend_key_str: &str, transaction_plan: JsValue) -> WasmResult<JsValue> {
+pub fn authorize(spend_key: &[u8], transaction_plan: JsValue) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
     let plan_proto: pb::TransactionPlan = serde_wasm_bindgen::from_value(transaction_plan)?;
-    let spend_key = SpendKey::from_str(spend_key_str)?;
+    let spend_key: SpendKey = SpendKey::decode(spend_key)?;
     let plan: TransactionPlan = plan_proto.try_into()?;
 
     let auth_data: AuthorizationData = plan.authorize(OsRng, &spend_key)?;
@@ -153,14 +151,14 @@ pub fn witness(transaction_plan: JsValue, stored_tree: JsValue) -> WasmResult<Js
 /// Building a transaction may take some time,
 /// depending on CPU performance and number of actions in transaction_plan
 /// Arguments:
-///     full_viewing_key: `bech32m String`
+///     full_viewing_key: `byte representation inner FullViewingKey`
 ///     transaction_plan: `pb::TransactionPlan`
 ///     witness_data: `pb::WitnessData`
 ///     auth_data: `pb::AuthorizationData`
 /// Returns: `pb::Transaction`
 #[wasm_bindgen]
 pub fn build(
-    full_viewing_key: &str,
+    full_viewing_key: &[u8],
     transaction_plan: JsValue,
     witness_data: JsValue,
     auth_data: JsValue,
@@ -171,7 +169,7 @@ pub fn build(
     let witness_data_proto: pb::WitnessData = serde_wasm_bindgen::from_value(witness_data)?;
     let auth_data_proto: pb::AuthorizationData = serde_wasm_bindgen::from_value(auth_data)?;
 
-    let fvk = FullViewingKey::from_str(full_viewing_key)?;
+    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
 
     let plan: TransactionPlan = plan_proto.try_into()?;
 
@@ -227,33 +225,33 @@ pub fn build_parallel(
 
 /// Get transaction view, transaction perspective
 /// Arguments:
-///     full_viewing_key: `bech32 String`
+///     full_viewing_key: `byte representation inner FullViewingKey`
 ///     tx: `pbt::Transaction`
 ///     idb_constants: IndexedDbConstants
 /// Returns: `TxInfoResponse`
 #[wasm_bindgen]
 pub async fn transaction_info(
-    full_viewing_key: &str,
+    full_viewing_key: &[u8],
     tx: JsValue,
     idb_constants: JsValue,
-) -> Result<JsValue, Error> {
+) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
     let transaction = serde_wasm_bindgen::from_value(tx)?;
     let constants = serde_wasm_bindgen::from_value(idb_constants)?;
-    let response = transaction_info_inner(full_viewing_key, transaction, constants).await?;
+    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
+    let response = transaction_info_inner(fvk, transaction, constants).await?;
 
-    serde_wasm_bindgen::to_value(&response)
+    let result = serde_wasm_bindgen::to_value(&response)?;
+    Ok(result)
 }
 
 pub async fn transaction_info_inner(
-    full_viewing_key: &str,
+    fvk: FullViewingKey,
     tx: Transaction,
     idb_constants: IndexedDbConstants,
 ) -> WasmResult<TxInfoResponse> {
     let storage = IndexedDBStorage::new(idb_constants).await?;
-
-    let fvk = FullViewingKey::from_str(full_viewing_key)?;
 
     // First, create a TxP with the payload keys visible to our FVK and no other data.
     let mut txp = penumbra_transaction::TransactionPerspective {

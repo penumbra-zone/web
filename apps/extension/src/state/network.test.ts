@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/local';
+import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/types';
 import {
   mockLocalExtStorage,
   mockSessionExtStorage,

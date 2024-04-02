@@ -1,6 +1,6 @@
 import { BlockProcessor } from '@penumbra-zone/query/src/block-processor';
 import { RootQuerier } from '@penumbra-zone/query/src/root-querier';
-import { IndexedDb } from '@penumbra-zone/storage/src/indexed-db/index';
+import { IndexedDb } from '@penumbra-zone/storage/src/indexed-db';
 import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
 import { syncLastBlockWithLocal } from '@penumbra-zone/storage/src/chrome/syncer';
 import { ViewServer } from '@penumbra-zone/wasm/src/view-server';
@@ -11,12 +11,17 @@ import {
 } from '@penumbra-zone/types/src/services';
 import type { JsonValue } from '@bufbuild/protobuf';
 import '@penumbra-zone/polyfills/src/Promise.withResolvers';
+import {
+  FullViewingKey,
+  WalletId,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { Wallet } from '@penumbra-zone/types/src/wallet';
 
 export interface ServicesConfig {
   readonly idbVersion: number;
   readonly grpcEndpoint?: string;
-  readonly walletId?: string;
-  readonly fullViewingKey?: string;
+  readonly walletId?: WalletId;
+  readonly fullViewingKey?: FullViewingKey;
   readonly numeraireAssetId: string;
 }
 
@@ -128,12 +133,12 @@ export class Services implements ServicesInterface {
     const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
     const wallet0 = (await localExtStorage.get('wallets'))[0];
     if (!wallet0) throw Error('No wallets found');
-    const { id: walletId, fullViewingKey } = wallet0;
+    const { id: walletId, fullViewingKey } = Wallet.fromJson(wallet0);
     return {
       ...initConfig,
       grpcEndpoint,
-      walletId,
-      fullViewingKey,
+      walletId: WalletId.fromJsonString(walletId),
+      fullViewingKey: FullViewingKey.fromJsonString(fullViewingKey),
     };
   }
 

@@ -1,4 +1,4 @@
-import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/local';
+import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/types';
 import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
 import { AllSlices, SliceCreator } from '.';
 

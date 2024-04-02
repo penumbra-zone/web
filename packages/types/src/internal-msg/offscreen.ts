@@ -5,6 +5,7 @@ import type {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import type { Jsonified } from '../jsonified';
 import type { InternalMessage, InternalRequest, InternalResponse } from './shared';
+import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export type ActionBuildMessage = InternalMessage<
   'BUILD_ACTION',
@@ -19,7 +20,7 @@ export type OffscreenResponse = InternalResponse<OffscreenMessage>;
 export interface ActionBuildRequest {
   transactionPlan: Jsonified<TransactionPlan>;
   witness: Jsonified<WitnessData>;
-  fullViewingKey: string;
+  fullViewingKey: Jsonified<FullViewingKey>;
   actionPlanIndex: number;
 }
 export type ActionBuildResponse = Jsonified<Action>;
@@ -36,7 +37,7 @@ export const isActionBuildRequest = (req: unknown): req is ActionBuildRequest =>
   req.witness != null &&
   typeof req.witness === 'object' &&
   'fullViewingKey' in req &&
-  typeof req.fullViewingKey === 'string' &&
+  typeof req.fullViewingKey === 'object' &&
   'actionPlanIndex' in req &&
   typeof req.actionPlanIndex === 'number';
 

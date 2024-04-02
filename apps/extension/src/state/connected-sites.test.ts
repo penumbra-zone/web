@@ -1,11 +1,8 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import {
-  localDefaults,
-  LocalStorageState,
-  OriginRecord,
-} from '@penumbra-zone/storage/src/chrome/local';
+import { localDefaults } from '@penumbra-zone/storage/src/chrome/local';
+import { LocalStorageState, OriginRecord } from '@penumbra-zone/storage/src/chrome/types';
 import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
 import {
   mockLocalExtStorage,

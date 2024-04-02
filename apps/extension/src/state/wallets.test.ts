@@ -3,7 +3,7 @@ import { AllSlices, initializeStore } from '.';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { webcrypto } from 'crypto';
 import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
-import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/local';
+import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/types';
 import {
   mockLocalExtStorage,
   mockSessionExtStorage,

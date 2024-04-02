@@ -9,6 +9,7 @@ import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
 import { KeyGradientIcon } from '../../../icons/key-gradient';
 import { walletsSelector } from '../../../state/wallets';
+import { bech32FullViewingKey } from '@penumbra-zone/bech32/src/full-viewing-key';
 
 export const SettingsFullViewingKey = () => {
   const { isPassword } = useStore(passwordSelector);
@@ -16,14 +17,14 @@ export const SettingsFullViewingKey = () => {
 
   const [password, setPassword] = useState('');
   const [enteredIncorrect, setEnteredIncorrect] = useState(false);
-  const [fullViewingKey, setFullViewingKey] = useState('');
+  const [fullViewingKey, setFullViewingKey] = useState<string>();
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     void (async function () {
       if (await isPassword(password)) {
-        setFullViewingKey(await getFullViewingKey());
+        setFullViewingKey(bech32FullViewingKey(await getFullViewingKey()));
       } else {
         setEnteredIncorrect(true);
       }

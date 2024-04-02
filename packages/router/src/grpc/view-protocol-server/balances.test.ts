@@ -13,7 +13,7 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { Services } from '@penumbra-zone/services/src/index';
-import { IndexedDbMock, MockServices } from '../test-utils';
+import { IndexedDbMock, MockServices, testFullViewingKey } from '../test-utils';
 import {
   AssetId,
   EquivalentValue,
@@ -67,8 +67,7 @@ describe('Balances request handler', () => {
     };
 
     const mockViewServer = {
-      fullViewingKey:
-        'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+      fullViewingKey: testFullViewingKey,
     };
 
     mockServices = {

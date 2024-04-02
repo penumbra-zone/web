@@ -58,8 +58,7 @@ export class ExtensionStorage<T> {
         await this.set(key, transformedVal);
         return transformedVal;
       } else {
-        // Keep the value, but bump the version in storage
-        await this.set(key, item.value);
+        // If there's no migration function, handle it appropriately, possibly by just returning the current value
         return item.value;
       }
     }

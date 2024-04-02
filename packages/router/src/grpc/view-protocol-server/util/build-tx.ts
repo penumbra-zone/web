@@ -14,12 +14,13 @@ import { PartialMessage } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 
 import '@penumbra-zone/polyfills/src/Promise.withResolvers';
+import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export const optimisticBuild = async function* (
   transactionPlan: TransactionPlan,
   witnessData: WitnessData,
   authorizationRequest: PromiseLike<AuthorizationData>,
-  fvk: string,
+  fvk: FullViewingKey,
 ) {
   // a promise that rejects if auth denies. raced with build tasks to cancel.
   // if we raced auth directly, approval would complete the race.

@@ -14,9 +14,10 @@ import {
 import type { IdbConstants } from '@penumbra-zone/types/src/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
 import { validateSchema } from '@penumbra-zone/types/src/validation';
+import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 interface ViewServerProps {
-  fullViewingKey: string;
+  fullViewingKey: FullViewingKey;
   epochDuration: bigint;
   getStoredTree: () => Promise<StateCommitmentTree>;
   idbConstants: IdbConstants;
@@ -25,7 +26,7 @@ interface ViewServerProps {
 export class ViewServer implements ViewServerInterface {
   private constructor(
     private wasmViewServer: WasmViewServer,
-    public readonly fullViewingKey: string,
+    public readonly fullViewingKey: FullViewingKey,
     private readonly epochDuration: bigint,
     private readonly getStoredTree: () => Promise<StateCommitmentTree>,
     private readonly idbConstants: IdbConstants,
@@ -38,7 +39,7 @@ export class ViewServer implements ViewServerInterface {
     idbConstants,
   }: ViewServerProps): Promise<ViewServer> {
     const wvs = await WasmViewServer.new(
-      fullViewingKey,
+      fullViewingKey.toBinary(),
       epochDuration,
       await getStoredTree(),
       idbConstants,
@@ -57,7 +58,7 @@ export class ViewServer implements ViewServerInterface {
   // Resets the state of the wasmViewServer to the one set in storage
   async resetTreeToStored() {
     this.wasmViewServer = await WasmViewServer.new(
-      this.fullViewingKey,
+      this.fullViewingKey.toBinary(),
       this.epochDuration,
       await this.getStoredTree(),
       this.idbConstants,

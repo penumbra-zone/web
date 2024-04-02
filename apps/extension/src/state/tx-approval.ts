@@ -26,6 +26,7 @@ import {
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { viewTransactionPlan } from '@penumbra-zone/perspective/plan/index';
+import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export interface TxApprovalSlice {
   /**
@@ -72,12 +73,13 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
     };
 
     const wallets = await localExtStorage.get('wallets');
-    const activeWalletFvk = wallets[0]?.fullViewingKey ?? '';
-
+    if (!wallets[0]) {
+      throw new Error('No found wallet');
+    }
     const transactionView = await viewTransactionPlan(
       authorizeRequest.plan ?? new TransactionPlan(),
       getMetadata,
-      activeWalletFvk,
+      FullViewingKey.fromJsonString(wallets[0].fullViewingKey),
     );
 
     // pregenerate views from various perspectives.

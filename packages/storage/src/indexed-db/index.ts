@@ -22,6 +22,7 @@ import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import {
   AddressIndex,
   IdentityKey,
+  WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { assetPatterns, localAssets } from '@penumbra-zone/constants/src/assets';
 import {
@@ -54,11 +55,12 @@ import type {
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
+import { bech32WalletId } from '@penumbra-zone/bech32/src/wallet-id';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
   chainId: string;
-  walletId: string;
+  walletId: WalletId;
 }
 
 export class IndexedDb implements IndexedDbInterface {
@@ -70,7 +72,8 @@ export class IndexedDb implements IndexedDbInterface {
   ) {}
 
   static async initialize({ dbVersion, walletId, chainId }: IndexedDbProps): Promise<IndexedDb> {
-    const dbName = `viewdata/${chainId}/${walletId}`;
+    const bech32Id = bech32WalletId(walletId);
+    const dbName = `viewdata/${chainId}/${bech32Id}`;
 
     const db = await openDB<PenumbraDb>(dbName, dbVersion, {
       upgrade(db: IDBPDatabase<PenumbraDb>) {

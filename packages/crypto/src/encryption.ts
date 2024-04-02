@@ -58,7 +58,6 @@ const decrypt = async (
  * ==== External ====
  */
 
-// Public, stored representation of KeyPrint
 export interface KeyPrintJson {
   hash: Base64Str;
   salt: Base64Str;

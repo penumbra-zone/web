@@ -7,6 +7,8 @@ mod tests {
         IdbDatabase, IdbObjectStore, IdbQuerySource, IdbTransaction, IdbTransactionMode,
     };
     use penumbra_dex::DexParameters;
+    use penumbra_keys::keys::SpendKey;
+    use penumbra_keys::FullViewingKey;
     use penumbra_proto::core::app::v1::AppParameters;
     use penumbra_proto::core::component::fee::v1::GasPrices;
     use penumbra_proto::view::v1::transaction_planner_request::Output;
@@ -28,6 +30,7 @@ mod tests {
         Action, Transaction,
     };
     use serde::{Deserialize, Serialize};
+    use std::str::FromStr;
     use wasm_bindgen::JsValue;
     use wasm_bindgen_test::*;
 
@@ -423,23 +426,28 @@ mod tests {
         };
 
         // Viewing key to reveal asset balances and transactions.
-        let full_viewing_key = "penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2";
+        let full_viewing_key = FullViewingKey::from_str("penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2").unwrap();
 
         let transaction_plan: JsValue = plan_transaction(
             js_constants_params_value,
             serde_wasm_bindgen::to_value(&planner_request).unwrap(),
-            full_viewing_key,
+            full_viewing_key.encode_to_vec().as_slice(),
         )
         .await
         .unwrap();
 
         // -------------- 2. Generate authorization data from spend key and transaction plan --------------
 
-        let spend_key =
-            "penumbraspendkey1qul0huewkcmemljd5m3vz3awqt7442tjg2dudahvzu6eyj9qf0eszrnguh"
-                .to_string();
+        let spend_key = SpendKey::from_str(
+            "penumbraspendkey1qul0huewkcmemljd5m3vz3awqt7442tjg2dudahvzu6eyj9qf0eszrnguh",
+        )
+        .unwrap();
 
-        let authorization_data = authorize(&spend_key, transaction_plan.clone()).unwrap();
+        let authorization_data = authorize(
+            spend_key.encode_to_vec().as_slice(),
+            transaction_plan.clone(),
+        )
+        .unwrap();
 
         // -------------- 3. Generate witness --------------
 
@@ -514,7 +522,7 @@ mod tests {
                 let action = build_action(
                     transaction_plan.clone(),
                     action_deserialize,
-                    full_viewing_key,
+                    full_viewing_key.encode_to_vec().as_slice(),
                     witness_data.as_ref().unwrap().clone(),
                 )
                 .unwrap();
@@ -527,7 +535,7 @@ mod tests {
                 let action = build_action(
                     transaction_plan.clone(),
                     action_deserialize,
-                    full_viewing_key,
+                    full_viewing_key.encode_to_vec().as_slice(),
                     witness_data.as_ref().unwrap().clone(),
                 )
                 .unwrap();
@@ -552,7 +560,7 @@ mod tests {
 
         // Execute serial spend transaction and generate proof.
         let serial_transaction = build(
-            full_viewing_key,
+            full_viewing_key.encode_to_vec().as_slice(),
             transaction_plan.clone(),
             witness_data.as_ref().unwrap().clone(),
             authorization_data.clone(),

@@ -5,17 +5,24 @@ import {
   get_full_viewing_key,
   get_wallet_id,
 } from '../wasm';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { JsonValue } from '@bufbuild/protobuf';
+import {
+  Address,
+  FullViewingKey,
+  SpendKey,
+  WalletId,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
-export const generateSpendKey = (seedPhrase: string) => generate_spend_key(seedPhrase) as string;
+export const generateSpendKey = (seedPhrase: string) =>
+  SpendKey.fromBinary(generate_spend_key(seedPhrase));
 
-export const getFullViewingKey = (spendKey: string) => get_full_viewing_key(spendKey) as string;
+export const getFullViewingKey = (spendKey: SpendKey) =>
+  FullViewingKey.fromBinary(get_full_viewing_key(spendKey.toBinary()));
 
-export const getAddressByIndex = (fullViewingKey: string, index: number) =>
-  Address.fromJson(get_address_by_index(fullViewingKey, index) as JsonValue);
+export const getAddressByIndex = (fullViewingKey: FullViewingKey, index: number) =>
+  Address.fromBinary(get_address_by_index(fullViewingKey.toBinary(), index));
 
-export const getEphemeralByIndex = (fullViewingKey: string, index: number) =>
-  Address.fromJson(get_ephemeral_address(fullViewingKey, index) as JsonValue);
+export const getEphemeralByIndex = (fullViewingKey: FullViewingKey, index: number) =>
+  Address.fromBinary(get_ephemeral_address(fullViewingKey.toBinary(), index));
 
-export const getWalletId = (fullViewingKey: string) => get_wallet_id(fullViewingKey);
+export const getWalletId = (fullViewingKey: FullViewingKey) =>
+  WalletId.fromBinary(get_wallet_id(fullViewingKey.toBinary()));
