@@ -8,6 +8,7 @@ import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
+import { ServicesMessage } from '@penumbra-zone/types/src/services';
 
 const randomSort = () => (Math.random() >= 0.5 ? 1 : -1);
 
@@ -28,6 +29,7 @@ export const SetRpcEndpoint = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    void chrome.runtime.sendMessage(ServicesMessage.OnboardComplete);
     navigate(PagePath.ONBOARDING_SUCCESS);
   };
 
