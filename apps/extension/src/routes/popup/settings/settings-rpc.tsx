@@ -28,15 +28,8 @@ export const SettingsRPC = () => {
     chrome.runtime.reload();
   };
 
-  const {
-    onSubmit,
-    chainId,
-    grpcEndpoint,
-    rpcError,
-    setRpcError,
-    grpcEndpointInput,
-    setGrpcEndpointInput,
-  } = useGrpcEndpointForm();
+  const { onSubmit, chainId, grpcEndpoint, rpcError, grpcEndpointInput, setGrpcEndpointInput } =
+    useGrpcEndpointForm();
 
   const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
@@ -77,10 +70,7 @@ export const SettingsRPC = () => {
                     rpcError ? 'error' : grpcEndpointInput !== grpcEndpoint ? 'warn' : 'default'
                   }
                   value={grpcEndpointInput}
-                  onChange={evt => {
-                    setRpcError(undefined);
-                    setGrpcEndpointInput(evt.target.value);
-                  }}
+                  onChange={evt => setGrpcEndpointInput(evt.target.value)}
                   className='text-muted-foreground'
                 />
               </div>

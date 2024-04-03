@@ -1,12 +1,12 @@
 import { STAKING_TOKEN_METADATA } from './assets';
 
-interface RpcEndpoint {
+interface GrpcEndpoint {
   name: string;
   url: string;
   imageUrl?: string;
 }
 
-export const RPC_ENDPOINTS: RpcEndpoint[] = [
+export const GRPC_ENDPOINTS: GrpcEndpoint[] = [
   {
     name: 'Penumbra Labs Testnet RPC',
     url: 'https://grpc.testnet.penumbra.zone',
