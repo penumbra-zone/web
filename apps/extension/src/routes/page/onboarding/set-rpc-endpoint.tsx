@@ -47,7 +47,11 @@ export const SetRpcEndpoint = () => {
                 onSelect={setGrpcEndpoint}
                 value={rpcEndpoint.url}
                 isSelected={rpcEndpoint.url === grpcEndpoint}
-                image={!!rpcEndpoint.imageUrl && <img src={rpcEndpoint.imageUrl} />}
+                image={
+                  !!rpcEndpoint.imageUrl && (
+                    <img src={rpcEndpoint.imageUrl} className='size-full object-contain' />
+                  )
+                }
               />
             ))}
 
@@ -67,7 +71,7 @@ export const SetRpcEndpoint = () => {
                 customRpcEndpointInput.current?.focus();
               }}
               isSelected={isCustomRpcEndpoint}
-              image={<Network />}
+              image={<Network className='size-full' />}
             />
           </SelectList>
 
