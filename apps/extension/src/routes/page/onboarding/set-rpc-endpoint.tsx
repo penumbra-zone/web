@@ -1,6 +1,6 @@
 import { Card, CardDescription, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
-import { RPC_ENDPOINTS } from '../../../shared/rpc-endpoints';
+import { RPC_ENDPOINTS } from '@penumbra-zone/constants/src/rpc-endpoints';
 import { FormEvent, useMemo, useRef, useState } from 'react';
 import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
 import { Button } from '@penumbra-zone/ui/components/ui/button';

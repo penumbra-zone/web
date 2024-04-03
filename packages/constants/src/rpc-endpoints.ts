@@ -1,4 +1,4 @@
-import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
+import { STAKING_TOKEN_METADATA } from './assets';
 
 interface RpcEndpoint {
   name: string;
