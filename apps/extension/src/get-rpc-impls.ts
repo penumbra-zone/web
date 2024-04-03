@@ -43,7 +43,8 @@ export const getRpcImpls = async () => {
     serviceType =>
       [
         serviceType,
-        createProxyImpl(serviceType, () =>
+        createProxyImpl(
+          serviceType,
           createPromiseClient(serviceType, createGrpcWebTransport({ baseUrl: grpcEndpoint })),
         ),
       ] as const,
