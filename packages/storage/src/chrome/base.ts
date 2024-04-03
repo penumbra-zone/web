@@ -1,9 +1,15 @@
 import { EmptyObject, isEmptyObj } from '@penumbra-zone/types/src/utility';
 
+type Listener = (changes: Record<string, { oldValue?: unknown; newValue?: unknown }>) => void;
+
 export interface IStorage {
   get(key: string): Promise<Record<string, unknown>>;
   set(items: Record<string, unknown>): Promise<void>;
   remove(key: string): Promise<void>;
+  onChanged: {
+    addListener(listener: Listener): void;
+    removeListener(listener: Listener): void;
+  };
 }
 
 export interface StorageItem<T> {
@@ -47,6 +53,14 @@ export class ExtensionStorage<T> {
 
   async remove<K extends keyof T>(key: K): Promise<void> {
     await this.storage.remove(String(key));
+  }
+
+  addListener(listener: Listener) {
+    this.storage.onChanged.addListener(listener);
+  }
+
+  removeListener(listener: Listener) {
+    this.storage.onChanged.removeListener(listener);
   }
 
   private async migrateIfNeeded<K extends keyof T>(key: K, item: StorageItem<T[K]>): Promise<T[K]> {

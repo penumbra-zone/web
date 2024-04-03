@@ -16,7 +16,7 @@ import { PasswordInput } from '../../../shared/components/password-input';
 
 export const SetPassword = () => {
   const navigate = usePageNav();
-  const finalOnboardingSave = useOnboardingSave();
+  const onboardingSave = useOnboardingSave();
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
 
@@ -24,8 +24,8 @@ export const SetPassword = () => {
     event.preventDefault();
 
     void (async () => {
-      await finalOnboardingSave(password);
-      navigate(PagePath.ONBOARDING_SUCCESS);
+      await onboardingSave(password);
+      navigate(PagePath.SET_RPC_ENDPOINT);
     })();
   };
 

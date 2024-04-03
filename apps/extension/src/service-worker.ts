@@ -32,12 +32,36 @@ import { stakingClientCtx } from '@penumbra-zone/router/src/ctx/staking-client';
 import { approveTransaction } from './approve-transaction';
 
 // all rpc implementations, local and proxy
-import { rpcImpls } from './impls';
+import { getRpcImpls } from './get-rpc-impls';
 import { backOff } from 'exponential-backoff';
 import {
   FullViewingKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+
+/**
+ * When a user first onboards with the extension, they won't have chosen a gRPC
+ * endpoint yet. So we'll wait until they've chosen one to start trying to make
+ * requests against it.
+ */
+const waitUntilGrpcEndpointExists = async () => {
+  const grpcEndpointPromise = Promise.withResolvers();
+  const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+
+  if (grpcEndpoint) {
+    grpcEndpointPromise.resolve();
+  } else {
+    const listener = (changes: Record<string, { newValue?: unknown }>) => {
+      if (changes['grpcEndpoint']?.newValue) {
+        grpcEndpointPromise.resolve();
+        localExtStorage.removeListener(listener);
+      }
+    };
+    localExtStorage.addListener(listener);
+  }
+
+  return grpcEndpointPromise.promise;
+};
 
 const startServices = async () => {
   const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
@@ -56,41 +80,44 @@ const startServices = async () => {
   return services;
 };
 
-const services = await backOff(startServices, {
-  retry: (e, attemptNumber) => {
-    if (process.env['NODE_ENV'] === 'development')
-      console.warn("Prax couldn't start ", attemptNumber, e);
-    return true;
-  },
-});
+const getServiceHandler = async () => {
+  const services = await backOff(startServices, {
+    retry: (e, attemptNumber) => {
+      if (process.env['NODE_ENV'] === 'development')
+        console.warn("Prax couldn't start ", attemptNumber, e);
+      return true;
+    },
+  });
 
-let custodyClient: PromiseClient<typeof CustodyService> | undefined;
-let stakingClient: PromiseClient<typeof StakingService> | undefined;
-const handler = connectChannelAdapter({
-  // jsonOptions contains typeRegistry providing ser/de
-  jsonOptions: transportOptions.jsonOptions,
+  const rpcImpls = await getRpcImpls();
+  let custodyClient: PromiseClient<typeof CustodyService> | undefined;
+  let stakingClient: PromiseClient<typeof StakingService> | undefined;
+  return connectChannelAdapter({
+    // jsonOptions contains typeRegistry providing ser/de
+    jsonOptions: transportOptions.jsonOptions,
 
-  /** @see https://connectrpc.com/docs/node/implementing-services */
-  routes: (router: ConnectRouter) =>
-    rpcImpls.map(([serviceType, serviceImpl]) => router.service(serviceType, serviceImpl)),
+    /** @see https://connectrpc.com/docs/node/implementing-services */
+    routes: (router: ConnectRouter) =>
+      rpcImpls.map(([serviceType, serviceImpl]) => router.service(serviceType, serviceImpl)),
 
-  // context so impls can access storage, ui, other services, etc
-  createRequestContext: req => {
-    const contextValues = req.contextValues ?? createContextValues();
+    // context so impls can access storage, ui, other services, etc
+    createRequestContext: req => {
+      const contextValues = req.contextValues ?? createContextValues();
 
-    // dynamically initialize clients, or reuse if already available
-    custodyClient ??= createDirectClient(CustodyService, handler, transportOptions);
-    stakingClient ??= createDirectClient(StakingService, handler, transportOptions);
+      // dynamically initialize clients, or reuse if already available
+      custodyClient ??= createDirectClient(CustodyService, handler, transportOptions);
+      stakingClient ??= createDirectClient(StakingService, handler, transportOptions);
 
-    contextValues.set(custodyCtx, custodyClient);
-    contextValues.set(stakingClientCtx, stakingClient);
-    contextValues.set(servicesCtx, services);
-    contextValues.set(approverCtx, approveTransaction);
+      contextValues.set(custodyCtx, custodyClient);
+      contextValues.set(stakingClientCtx, stakingClient);
+      contextValues.set(servicesCtx, services);
+      contextValues.set(approverCtx, approveTransaction);
 
-    return Promise.resolve({ ...req, contextValues });
-  },
-});
+      return Promise.resolve({ ...req, contextValues });
+    },
+  });
+};
 
-// everything is ready to go.
-// session manager listens for page connections
+await waitUntilGrpcEndpointExists();
+const handler = await getServiceHandler();
 CRSessionManager.init(PRAX, handler);

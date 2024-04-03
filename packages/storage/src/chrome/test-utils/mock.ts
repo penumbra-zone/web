@@ -33,6 +33,15 @@ export class MockStorageArea implements IStorage {
       resolve();
     });
   }
+
+  onChanged = {
+    addListener() {
+      // no-op
+    },
+    removeListener() {
+      // no-op
+    },
+  };
 }
 
 enum MockStorageVersion {

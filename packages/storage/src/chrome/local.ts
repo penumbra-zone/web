@@ -7,12 +7,10 @@ import { LocalStorageState, LocalStorageVersion } from './types';
 // declaration in `apps/extension/prax.d.ts` because we are in an independent
 // package. we should probably move the localExtStorage declaration into the
 // extension app.
-declare const DEFAULT_GRPC_URL: string;
 declare const MINIFRONT_URL: string;
 
 export const localDefaults: LocalStorageState = {
   wallets: [],
-  grpcEndpoint: DEFAULT_GRPC_URL,
   fullSyncHeight: 0,
   knownSites: [{ origin: MINIFRONT_URL, choice: UserChoice.Approved, date: Date.now() }],
 };

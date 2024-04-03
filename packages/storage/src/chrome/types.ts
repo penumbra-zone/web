@@ -15,7 +15,7 @@ export interface OriginRecord {
 
 export interface LocalStorageState {
   wallets: WalletJson[];
-  grpcEndpoint: string;
+  grpcEndpoint?: string;
   passwordKeyPrint?: KeyPrintJson;
   fullSyncHeight: number;
   knownSites: OriginRecord[];
