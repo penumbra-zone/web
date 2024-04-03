@@ -20,8 +20,8 @@ pub fn compute_position_id(position: &[u8]) -> WasmResult<Vec<u8>> {
 
 /// get LP NFT asset
 /// Arguments:
-///     position_value: `lp::position::Position`
-///     position_state_value: `lp::position::State`
+///     position_value: `Uint8Array representing a lp::position::Position`
+///     position_state_value: `Uint8Array representing a lp::position::State`
 /// Returns: `Uint8Array representing a DenomMetadata`
 #[wasm_bindgen]
 pub fn get_lpnft_asset(
