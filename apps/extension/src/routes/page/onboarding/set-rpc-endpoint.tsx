@@ -83,7 +83,7 @@ export const SetRpcEndpoint = () => {
         </form>
 
         <a
-          href='https://github.com/penumbra-zone/web/blob/main/apps/extension/src/shared/rpc-endpoints.ts'
+          href='https://github.com/penumbra-zone/web/blob/main/packages/constants/src/grpc-endpoints.ts'
           target='_blank'
           rel='noreferrer'
           className='mt-6 block text-right text-xs text-muted-foreground'
