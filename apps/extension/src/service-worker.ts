@@ -32,7 +32,7 @@ import { stakingClientCtx } from '@penumbra-zone/router/src/ctx/staking-client';
 import { approveTransaction } from './approve-transaction';
 
 // all rpc implementations, local and proxy
-import { rpcImpls } from './impls';
+import { getRpcImpls } from './get-rpc-impls';
 import { backOff } from 'exponential-backoff';
 import {
   FullViewingKey,
@@ -56,6 +56,32 @@ const startServices = async () => {
   return services;
 };
 
+/**
+ * When a user first onboards with the extension, they won't have chosen a gRPC
+ * endpoint yet. So we'll wait until they've chosen one to start trying to make
+ * requests against it.
+ */
+const waitUntilGrpcEndpointExists = async () => {
+  const grpcEndpointPromise = Promise.withResolvers();
+  const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+
+  if (grpcEndpoint) {
+    grpcEndpointPromise.resolve();
+  } else {
+    const listener = (changes: Record<string, { newValue?: unknown }>) => {
+      if (changes['grpcEndpoint']?.newValue) {
+        grpcEndpointPromise.resolve();
+        localExtStorage.removeListener(listener);
+      }
+    };
+    localExtStorage.addListener(listener);
+  }
+
+  return grpcEndpointPromise.promise;
+};
+
+await waitUntilGrpcEndpointExists();
+
 const services = await backOff(startServices, {
   retry: (e, attemptNumber) => {
     if (process.env['NODE_ENV'] === 'development')
@@ -64,6 +90,7 @@ const services = await backOff(startServices, {
   },
 });
 
+const rpcImpls = await getRpcImpls();
 let custodyClient: PromiseClient<typeof CustodyService> | undefined;
 let stakingClient: PromiseClient<typeof StakingService> | undefined;
 const handler = connectChannelAdapter({

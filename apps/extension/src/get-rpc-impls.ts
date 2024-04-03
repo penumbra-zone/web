@@ -24,36 +24,40 @@ import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
 import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
 import { ServiceType } from '@bufbuild/protobuf';
 
-const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+export const getRpcImpls = async () => {
+  const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+  if (!grpcEndpoint) throw new Error('gRPC endpoint not set yet');
 
-type RpcImplTuple<T extends ServiceType> = [T, Partial<ServiceImpl<T>>];
+  type RpcImplTuple<T extends ServiceType> = [T, Partial<ServiceImpl<T>>];
 
-const penumbraProxies: RpcImplTuple<ServiceType>[] = [
-  AppService,
-  CompactBlockService,
-  DexService,
-  DexSimulationService,
-  GovernanceService,
-  IbcProxy,
-  ShieldedPoolService,
-  TendermintProxyService,
-].map(
-  serviceType =>
-    [
-      serviceType,
-      createProxyImpl(
+  const penumbraProxies: RpcImplTuple<ServiceType>[] = [
+    AppService,
+    CompactBlockService,
+    DexService,
+    DexSimulationService,
+    GovernanceService,
+    IbcProxy,
+    ShieldedPoolService,
+    TendermintProxyService,
+  ].map(
+    serviceType =>
+      [
         serviceType,
-        createPromiseClient(serviceType, createGrpcWebTransport({ baseUrl: grpcEndpoint })),
-      ),
-    ] as const,
-);
+        createProxyImpl(serviceType, () =>
+          createPromiseClient(serviceType, createGrpcWebTransport({ baseUrl: grpcEndpoint })),
+        ),
+      ] as const,
+  );
 
-export const rpcImpls: RpcImplTuple<ServiceType>[] = [
-  // rpc local implementations
-  [CustodyService, rethrowImplErrors(CustodyService, custodyImpl)],
-  [SctService, rethrowImplErrors(SctService, sctImpl)],
-  [StakingService, rethrowImplErrors(StakingService, stakingImpl)],
-  [ViewService, rethrowImplErrors(ViewService, viewImpl)],
-  // rpc remote proxies
-  ...penumbraProxies,
-] as const;
+  const rpcImpls: RpcImplTuple<ServiceType>[] = [
+    // rpc local implementations
+    [CustodyService, rethrowImplErrors(CustodyService, custodyImpl)],
+    [SctService, rethrowImplErrors(SctService, sctImpl)],
+    [StakingService, rethrowImplErrors(StakingService, stakingImpl)],
+    [ViewService, rethrowImplErrors(ViewService, viewImpl)],
+    // rpc remote proxies
+    ...penumbraProxies,
+  ] as const;
+
+  return rpcImpls;
+};
