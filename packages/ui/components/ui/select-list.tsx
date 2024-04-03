@@ -6,6 +6,45 @@ import { cn } from '../../lib/utils';
  * choose from. It's functionally identical to a series of radio buttons, but
  * presents options as clickable rectangular buttons, rather than circular radio
  * buttons.
+ *
+ * @example
+ * ```tsx
+ * <SelectList>
+ *   <SelectList.Option
+ *     label="Preexisting option 1"
+ *     secondary="Option 1 description"
+ *     onSelect={() => setOption(1)}
+ *     value={1}
+ *     isSelected={option === 1}
+ *     image={<Option1Icon className='size-full' />}
+ *   />
+ *   <SelectList.Option
+ *     label="Preexisting option 2"
+ *     secondary="Option 2 description"
+ *     onSelect={() => setOption(2)}
+ *     value={2}
+ *     isSelected={option === 2}
+ *     image={<Option2Icon className='size-full' />}
+ *   />
+ *   <SelectList.Option
+ *     label='Custom option'
+ *     secondary={
+ *       <input
+ *         type='url'
+ *         value={customOption}
+ *         ref={customOptionInput}
+ *         onChange={e => setCustomOption(e.target.value)}
+ *         className='w-full bg-transparent'
+ *       />
+ *     }
+ *     onSelect={() => {
+ *       customOptionInput.current?.focus();
+ *     }}
+ *     isSelected={option === customOption}
+ *     image={<CustomIcon className='size-full' />}
+ *   />
+ * </SelectList>
+ * ```
  */
 export const SelectList = ({ children }: { children: ReactNode }) => (
   <div className='flex flex-col gap-2'>{children}</div>
