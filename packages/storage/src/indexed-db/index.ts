@@ -121,6 +121,9 @@ export class IndexedDb implements IndexedDbInterface {
     await instance.addEpoch(0n); // Create first epoch
     return instance;
   }
+  close(): void {
+    this.db.close();
+  }
 
   constants(): IdbConstants {
     return this.c;
