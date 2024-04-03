@@ -11,35 +11,52 @@ export const SelectList = ({ children }: { children: ReactNode }) => (
   <div className='flex flex-col gap-2'>{children}</div>
 );
 
-const Option = <T,>({
-  label,
-  secondaryText,
-  value,
-  onSelect,
-  isSelected,
-  image,
-}: {
+interface BaseOptionProps {
   label: string;
-  secondaryText?: ReactNode;
+  secondary?: ReactNode;
+  isSelected?: boolean;
+  image?: ReactNode;
+}
+
+interface OptionPropsWithValue<T> extends BaseOptionProps {
   value: T;
   onSelect: (value: T) => void;
-  isSelected: boolean;
-  image?: ReactNode;
-}) => (
+}
+
+interface OptionPropsWithoutValue extends BaseOptionProps {
+  onSelect?: () => void;
+}
+
+type OptionProps<T = never> = OptionPropsWithValue<T> | OptionPropsWithoutValue;
+
+/**
+ * `SelectList.Option` can be used to render either a selectable option in a
+ * `SelectList`, or a bit of UI (via the `secondary` prop) for e.g., adding a
+ * custom item to a list.
+ *
+ * In the latter case, leave `value` undefined. `onSelect` is also optional, but
+ * you can define it if it's useful for, e.g., focusing on a text field on
+ * click.
+ */
+const Option = <T,>({ label, secondary, isSelected, image, ...rest }: OptionProps<T>) => (
   <div
     className={cn(
       'flex items-center cursor-pointer gap-2 rounded-[6px] border-[1px] border-DEFAULT border-solid border-border bg-charcoal p-4 transition-colors',
       isSelected && 'border-teal',
     )}
     role='button'
-    onClick={() => onSelect(value)}
+    aria-selected={isSelected}
+    onClick={() => {
+      if ('value' in rest && 'onSelect' in rest) rest.onSelect(rest.value);
+      else if (rest.onSelect) rest.onSelect();
+    }}
   >
     <div className='flex size-10 shrink-0 items-center justify-center'>{image}</div>
 
     <div className='flex grow flex-col gap-1'>
       <div>{label}</div>
 
-      {!!secondaryText && <span className='text-xs text-muted-foreground'>{secondaryText}</span>}
+      {!!secondary && <span className='text-xs text-muted-foreground'>{secondary}</span>}
     </div>
   </div>
 );

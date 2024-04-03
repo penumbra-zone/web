@@ -43,7 +43,7 @@ export const SetRpcEndpoint = () => {
               <SelectList.Option
                 key={rpcEndpoint.url}
                 label={rpcEndpoint.name}
-                secondaryText={rpcEndpoint.url}
+                secondary={rpcEndpoint.url}
                 onSelect={setGrpcEndpoint}
                 value={rpcEndpoint.url}
                 isSelected={rpcEndpoint.url === grpcEndpoint}
@@ -53,7 +53,7 @@ export const SetRpcEndpoint = () => {
 
             <SelectList.Option
               label='Custom RPC'
-              secondaryText={
+              secondary={
                 <input
                   type='url'
                   ref={customRpcEndpointInput}
@@ -67,7 +67,6 @@ export const SetRpcEndpoint = () => {
                 customRpcEndpointInput.current?.focus();
               }}
               isSelected={isCustomRpcEndpoint}
-              value={''}
               image={<Network />}
             />
           </SelectList>

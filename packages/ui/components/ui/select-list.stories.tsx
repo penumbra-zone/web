@@ -20,9 +20,9 @@ export const Basic: Story = {
     const onChange = (value: unknown) => updateArgs({ value });
 
     const options = [
-      { value: 'one', label: 'One', secondaryText: 'AKA, 1' },
-      { value: 'two', label: 'Two', secondaryText: 'AKA, 2' },
-      { value: 'three', label: 'Three', secondaryText: 'AKA, 3' },
+      { value: 'one', label: 'One', secondary: 'AKA, 1' },
+      { value: 'two', label: 'Two', secondary: 'AKA, 2' },
+      { value: 'three', label: 'Three', secondary: 'AKA, 3' },
     ];
 
     return (
@@ -32,8 +32,8 @@ export const Basic: Story = {
             key={option.value}
             value={option.value}
             label={option.label}
-            secondaryText={option.secondaryText}
-            isSelected={!args.value ? option.value === 'one' : args.value === option.value}
+            secondary={option.secondary}
+            isSelected={!('value' in args) ? option.value === 'one' : args.value === option.value}
             onSelect={onChange}
           />
         ))}
