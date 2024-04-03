@@ -8,8 +8,8 @@ use crate::utils;
 
 /// compute position id
 /// Arguments:
-///     position: `Position`
-/// Returns: `PositionId`
+///     position: `Uint8Array representing a Position`
+/// Returns: ` Uint8Array representing a PositionId`
 #[wasm_bindgen]
 pub fn compute_position_id(position: &[u8]) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();
