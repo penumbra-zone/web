@@ -15,6 +15,7 @@ import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { ActionDetails } from '../action-details';
+import { UnimplementedView } from '../unimplemented-view';
 
 const getClaimFeeValueView = (claimFee: Fee) =>
   new ValueView({
@@ -72,7 +73,7 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
   }
 
   if (value.swapView.case === 'opaque') {
-    return <ViewBox label='Swap' />;
+    return <UnimplementedView label='Swap' />;
   }
 
   return <div>Invalid SwapView</div>;
