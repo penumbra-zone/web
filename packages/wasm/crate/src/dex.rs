@@ -1,36 +1,34 @@
-use crate::utils;
-use penumbra_dex::lp::position::{Id, Position};
+use penumbra_dex::lp::position::{Id, Position, State};
 use penumbra_dex::lp::LpNft;
-use serde_wasm_bindgen::Error;
+use penumbra_proto::DomainType;
 use wasm_bindgen::prelude::wasm_bindgen;
-use wasm_bindgen::JsValue;
+
+use crate::error::WasmResult;
+use crate::utils;
 
 /// compute position id
 /// Arguments:
-///     position: `Position`
-/// Returns: `PositionId`
+///     position: `Uint8Array representing a Position`
+/// Returns: ` Uint8Array representing a PositionId`
 #[wasm_bindgen]
-pub fn compute_position_id(position: JsValue) -> Result<JsValue, Error> {
+pub fn compute_position_id(position: &[u8]) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();
 
-    let position: Position = serde_wasm_bindgen::from_value(position)?;
-    serde_wasm_bindgen::to_value(&position.id())
+    let position = Position::decode(position)?;
+    Ok(position.id().encode_to_vec())
 }
 
 /// get LP NFT asset
 /// Arguments:
 ///     position_value: `lp::position::Position`
-///     position_state_value: `lp::position::State`
-/// Returns: `DenomMetadata`
+///     position_state: `lp::position::State`
+/// Returns: `Uint8Array representing a DenomMetadata`
 #[wasm_bindgen]
-pub fn get_lpnft_asset(
-    position_id_value: JsValue,
-    position_state_value: JsValue,
-) -> Result<JsValue, Error> {
+pub fn get_lpnft_asset(position_id: &[u8], position_state: &[u8]) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();
-    let position_id: Id = serde_wasm_bindgen::from_value(position_id_value)?;
-    let position_state = serde_wasm_bindgen::from_value(position_state_value)?;
+    let position_id = Id::decode(position_id)?;
+    let position_state = State::decode(position_state)?;
     let lp_nft = LpNft::new(position_id, position_state);
     let denom = lp_nft.denom();
-    serde_wasm_bindgen::to_value(&denom)
+    Ok(denom.encode_to_vec())
 }

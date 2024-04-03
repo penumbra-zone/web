@@ -2,7 +2,8 @@ extern crate penumbra_wasm;
 
 #[cfg(test)]
 mod tests {
-    use anyhow::Result;
+    use std::str::FromStr;
+
     use indexed_db_futures::prelude::{
         IdbDatabase, IdbObjectStore, IdbQuerySource, IdbTransaction, IdbTransactionMode,
     };
@@ -11,14 +12,13 @@ mod tests {
     use penumbra_keys::FullViewingKey;
     use penumbra_proto::core::app::v1::AppParameters;
     use penumbra_proto::core::component::fee::v1::GasPrices;
+    use penumbra_proto::core::transaction::v1;
     use penumbra_proto::view::v1::transaction_planner_request::Output;
     use penumbra_proto::view::v1::TransactionPlannerRequest;
     use penumbra_proto::{
         core::{
-            asset::v1::Value,
-            component::shielded_pool::v1::FmdParameters,
-            keys::v1::Address,
-            transaction::v1::{MemoPlaintext, TransactionPlan as tp},
+            asset::v1::Value, component::shielded_pool::v1::FmdParameters, keys::v1::Address,
+            transaction::v1::MemoPlaintext,
         },
         view::v1::SpendableNoteRecord,
         DomainType,
@@ -29,15 +29,14 @@ mod tests {
         plan::{ActionPlan, TransactionPlan},
         Action, Transaction,
     };
+    use prost::Message;
     use serde::{Deserialize, Serialize};
-    use std::str::FromStr;
     use wasm_bindgen::JsValue;
     use wasm_bindgen_test::*;
 
     use penumbra_wasm::planner::plan_transaction;
     use penumbra_wasm::{
         build::build_action,
-        error::WasmError,
         keys::load_proving_key,
         storage::IndexedDBStorage,
         tx::{authorize, build, build_parallel, witness},
@@ -59,23 +58,14 @@ mod tests {
             include_bytes!("../../../../apps/extension/bin/swapclaim_pk.bin");
         let convert_key: &[u8] = include_bytes!("../../../../apps/extension/bin/convert_pk.bin");
 
-        // Serialize &[u8] to JsValue.
-        let spend_key_js: JsValue = serde_wasm_bindgen::to_value(&spend_key).unwrap();
-        let output_key_js: JsValue = serde_wasm_bindgen::to_value(&output_key).unwrap();
-        let delegator_vote_key_js: JsValue =
-            serde_wasm_bindgen::to_value(&delegator_vote_key).unwrap();
-        let swap_key_js: JsValue = serde_wasm_bindgen::to_value(&swap_key).unwrap();
-        let swapclaim_key_js: JsValue = serde_wasm_bindgen::to_value(&swapclaim_key).unwrap();
-        let convert_key_js: JsValue = serde_wasm_bindgen::to_value(&convert_key).unwrap();
-
         // Dynamically load the proving keys at runtime for each key type.
-        load_proving_key(spend_key_js, "spend").expect("can load spend key");
-        load_proving_key(output_key_js, "output").expect("can load output key");
-        load_proving_key(delegator_vote_key_js, "delegator_vote")
+        load_proving_key(spend_key, "spend").expect("can load spend key");
+        load_proving_key(output_key, "output").expect("can load output key");
+        load_proving_key(delegator_vote_key, "delegator_vote")
             .expect("can load delegator vote key");
-        load_proving_key(swap_key_js, "swap").expect("can load swap key");
-        load_proving_key(swapclaim_key_js, "swapclaim").expect("can load swapclaim key");
-        load_proving_key(convert_key_js, "convert").expect("can load convert key");
+        load_proving_key(swap_key, "swap").expect("can load swap key");
+        load_proving_key(swapclaim_key, "swapclaim").expect("can load swapclaim key");
+        load_proving_key(convert_key, "convert").expect("can load convert key");
 
         // Define database parameters.
         #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -428,13 +418,17 @@ mod tests {
         // Viewing key to reveal asset balances and transactions.
         let full_viewing_key = FullViewingKey::from_str("penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2").unwrap();
 
-        let transaction_plan: JsValue = plan_transaction(
+        let plan_js_value: JsValue = plan_transaction(
             js_constants_params_value,
-            serde_wasm_bindgen::to_value(&planner_request).unwrap(),
+            &planner_request.encode_to_vec(),
             full_viewing_key.encode_to_vec().as_slice(),
         )
         .await
         .unwrap();
+        let plan_proto: v1::TransactionPlan =
+            serde_wasm_bindgen::from_value(plan_js_value.clone()).unwrap();
+        let plan = TransactionPlan::try_from(plan_proto).unwrap();
+        let plan_slice = &*plan.encode_to_vec();
 
         // -------------- 2. Generate authorization data from spend key and transaction plan --------------
 
@@ -443,11 +437,8 @@ mod tests {
         )
         .unwrap();
 
-        let authorization_data = authorize(
-            spend_key.encode_to_vec().as_slice(),
-            transaction_plan.clone(),
-        )
-        .unwrap();
+        let authorization_data =
+            authorize(spend_key.encode_to_vec().as_slice(), plan_slice).unwrap();
 
         // -------------- 3. Generate witness --------------
 
@@ -504,44 +495,34 @@ mod tests {
         let sct_json = serde_wasm_bindgen::to_value(&sct).unwrap();
 
         // Generate witness data from SCT and specific transaction plan.
-        let witness_data: Result<JsValue, WasmError> = witness(transaction_plan.clone(), sct_json);
-
-        // Serialize transaction plan into `TransactionPlan`.
-        let transaction_plan_serialized: tp =
-            serde_wasm_bindgen::from_value(transaction_plan.clone()).unwrap();
-        let transaction_plan_conv: TransactionPlan =
-            transaction_plan_serialized.try_into().unwrap();
+        let witness_data = witness(plan_slice, sct_json).unwrap();
 
         // -------------- 4. Build the (1) Serial Transaction and (2) Parallel Transaction --------------
 
         let mut actions: Vec<Action> = Vec::new();
 
-        for i in transaction_plan_conv.actions.clone() {
+        for i in plan.actions.clone() {
             if let ActionPlan::Spend(ref _spend_plan) = i {
-                let action_deserialize = serde_wasm_bindgen::to_value(&i).unwrap();
-                let action = build_action(
-                    transaction_plan.clone(),
-                    action_deserialize,
+                let action_vec = build_action(
+                    plan_slice,
+                    i.encode_to_vec().as_slice(),
                     full_viewing_key.encode_to_vec().as_slice(),
-                    witness_data.as_ref().unwrap().clone(),
+                    &witness_data,
                 )
                 .unwrap();
-                let action_serialize: Action =
-                    serde_wasm_bindgen::from_value(action.clone()).unwrap();
-                actions.push(action_serialize);
+                let action = Action::decode(&*action_vec).unwrap();
+                actions.push(action);
             }
             if let ActionPlan::Output(ref _output_plan) = i {
-                let action_deserialize = serde_wasm_bindgen::to_value(&i).unwrap();
-                let action = build_action(
-                    transaction_plan.clone(),
-                    action_deserialize,
+                let action_vec = build_action(
+                    plan_slice,
+                    i.encode_to_vec().as_slice(),
                     full_viewing_key.encode_to_vec().as_slice(),
-                    witness_data.as_ref().unwrap().clone(),
+                    &witness_data,
                 )
                 .unwrap();
-                let action_serialize: Action =
-                    serde_wasm_bindgen::from_value(action.clone()).unwrap();
-                actions.push(action_serialize);
+                let action = Action::decode(&*action_vec).unwrap();
+                actions.push(action);
             }
         }
 
@@ -551,9 +532,9 @@ mod tests {
         // Execute parallel spend transaction and generate proof.
         let parallel_transaction = build_parallel(
             action_deserialized,
-            transaction_plan.clone(),
-            witness_data.as_ref().unwrap().clone(),
-            authorization_data.clone(),
+            plan_slice,
+            &witness_data,
+            &authorization_data,
         )
         .unwrap();
         console_log!("Parallel transaction is: {:?}", parallel_transaction);
@@ -561,18 +542,16 @@ mod tests {
         // Execute serial spend transaction and generate proof.
         let serial_transaction = build(
             full_viewing_key.encode_to_vec().as_slice(),
-            transaction_plan.clone(),
-            witness_data.as_ref().unwrap().clone(),
-            authorization_data.clone(),
+            plan_slice,
+            &witness_data,
+            &authorization_data,
         )
         .unwrap();
         console_log!("Serial transaction is: {:?}", serial_transaction);
 
         // Deserialize transactions and stringify actions in the transaction body into JSON
-        let serial_result: Transaction =
-            serde_wasm_bindgen::from_value(serial_transaction).unwrap();
-        let parallel_result: Transaction =
-            serde_wasm_bindgen::from_value(parallel_transaction).unwrap();
+        let serial_result = Transaction::decode(&*serial_transaction).unwrap();
+        let parallel_result = Transaction::decode(&*parallel_transaction).unwrap();
         let serial_json = serde_json::to_string(&serial_result.transaction_body.actions).unwrap();
         let parallel_json =
             serde_json::to_string(&parallel_result.transaction_body.actions).unwrap();

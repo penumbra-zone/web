@@ -26,6 +26,7 @@ use penumbra_stake::{IdentityKey, Penalty, UndelegateClaimPlan};
 use penumbra_transaction::gas::GasCost;
 use penumbra_transaction::memo::MemoPlaintext;
 use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters, TransactionPlan};
+use prost::Message;
 use rand_core::OsRng;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
@@ -157,12 +158,12 @@ fn prioritize_and_filter_spendable_notes(
 #[wasm_bindgen]
 pub async fn plan_transaction(
     idb_constants: JsValue,
-    request: JsValue,
+    request: &[u8],
     full_viewing_key: &[u8],
 ) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
-    let request: TransactionPlannerRequest = serde_wasm_bindgen::from_value(request)?;
+    let request = TransactionPlannerRequest::decode(request)?;
 
     let source_address_index: AddressIndex = request
         .source

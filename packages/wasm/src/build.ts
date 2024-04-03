@@ -6,7 +6,6 @@ import {
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import type { StateCommitmentTree } from '@penumbra-zone/types/src/state-commitment-tree';
-import { JsonValue } from '@bufbuild/protobuf';
 import { authorize, build_action, build_parallel, load_proving_key, witness } from '../wasm';
 import { ActionType, provingKeys } from './proving-keys';
 import {
@@ -15,13 +14,13 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export const authorizePlan = (spendKey: SpendKey, txPlan: TransactionPlan): AuthorizationData => {
-  const result = authorize(spendKey.toBinary(), txPlan.toJson()) as unknown;
-  return AuthorizationData.fromJsonString(JSON.stringify(result));
+  const result = authorize(spendKey.toBinary(), txPlan.toBinary());
+  return AuthorizationData.fromBinary(result);
 };
 
 export const getWitness = (txPlan: TransactionPlan, sct: StateCommitmentTree): WitnessData => {
-  const result: unknown = witness(txPlan.toJson(), sct);
-  return WitnessData.fromJsonString(JSON.stringify(result));
+  const result = witness(txPlan.toBinary(), sct);
+  return WitnessData.fromBinary(result);
 };
 
 export const buildParallel = (
@@ -30,13 +29,13 @@ export const buildParallel = (
   witnessData: WitnessData,
   authData: AuthorizationData,
 ): Transaction => {
-  const result: unknown = build_parallel(
+  const result = build_parallel(
     batchActions.map(action => action.toJson()),
-    txPlan.toJson(),
-    witnessData.toJson(),
-    authData.toJson(),
+    txPlan.toBinary(),
+    witnessData.toBinary(),
+    authData.toBinary(),
   );
-  return Transaction.fromJson(result as JsonValue);
+  return Transaction.fromBinary(result);
 };
 
 export const buildActionParallel = async (
@@ -46,23 +45,26 @@ export const buildActionParallel = async (
   actionId: number,
 ): Promise<Action> => {
   // Conditionally read proving keys from disk and load keys into WASM binary
-  const actionType = txPlan.actions[actionId]?.action.case;
-  if (!actionType) throw new Error('No action key provided');
-  await loadProvingKey(actionType);
+  const actionPlan = txPlan.actions[actionId];
+  if (!actionPlan?.action.case) throw new Error('No action key provided');
+  await loadProvingKey(actionPlan.action.case);
 
   const result = build_action(
-    txPlan.toJson(),
-    txPlan.actions[actionId]?.toJson(),
+    txPlan.toBinary(),
+    actionPlan.toBinary(),
     fullViewingKey.toBinary(),
-    witnessData.toJson(),
-  ) as unknown;
+    witnessData.toBinary(),
+  );
 
-  return Action.fromJson(result as JsonValue);
+  return Action.fromBinary(result);
 };
 
 const loadProvingKey = async (actionType: ActionType) => {
   const keyType = provingKeys[actionType];
   if (!keyType) return;
-  const keyBin = (await fetch(`bin/${keyType}_pk.bin`)).arrayBuffer();
-  load_proving_key(await keyBin, keyType);
+
+  const res = await fetch(`bin/${keyType}_pk.bin`);
+  const buffer = await res.arrayBuffer();
+  const uint8Array = new Uint8Array(buffer);
+  load_proving_key(uint8Array, keyType);
 };
