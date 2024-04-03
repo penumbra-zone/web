@@ -33,7 +33,9 @@ export const SetRpcEndpoint = () => {
         <CardHeader>
           <CardTitle>Select your preferred RPC endpoint</CardTitle>
           <CardDescription>
-            If you&apos;re unsure which one to choose, leave this option set to the default.
+            The requests you make may reveal your intentions about transactions you wish to make, so
+            select an RPC node that you trust. If you&apos;re unsure which one to choose, leave this
+            option set to the default.
           </CardDescription>
         </CardHeader>
 
