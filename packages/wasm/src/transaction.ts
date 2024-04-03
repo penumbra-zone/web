@@ -20,7 +20,7 @@ export const generateTransactionInfo = async (
 ) => {
   const { txp, txv } = (await transaction_info(
     fullViewingKey.toBinary(),
-    tx.toJson(),
+    tx.toBinary(),
     idbConstants,
   )) as TxInfoWasmResult;
   return {

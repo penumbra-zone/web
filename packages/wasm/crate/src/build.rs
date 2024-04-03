@@ -5,7 +5,6 @@ use penumbra_transaction::{
     WitnessData,
 };
 use wasm_bindgen::prelude::wasm_bindgen;
-use wasm_bindgen::JsValue;
 
 use crate::error::WasmResult;
 use crate::utils;
@@ -20,26 +19,19 @@ use crate::utils;
 /// Returns: `Action`
 #[wasm_bindgen]
 pub fn build_action(
-    transaction_plan: JsValue,
-    action_plan: JsValue,
+    transaction_plan: &[u8],
+    action_plan: &[u8],
     full_viewing_key: &[u8],
-    witness_data: JsValue,
-) -> WasmResult<JsValue> {
+    witness_data: &[u8],
+) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();
-
-    let transaction_plan: TransactionPlan =
-        serde_wasm_bindgen::from_value(transaction_plan.clone())?;
-
-    let witness: WitnessData = serde_wasm_bindgen::from_value(witness_data)?;
-
-    let action_plan: ActionPlan = serde_wasm_bindgen::from_value(action_plan)?;
-
+    let transaction_plan = TransactionPlan::decode(transaction_plan)?;
+    let witness = WitnessData::decode(witness_data)?;
+    let action_plan = ActionPlan::decode(action_plan)?;
     let full_viewing_key: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
 
     let memo_key = transaction_plan.memo.map(|memo_plan| memo_plan.key);
 
     let action = ActionPlan::build_unauth(action_plan, &full_viewing_key, &witness, memo_key)?;
-
-    let result = serde_wasm_bindgen::to_value(&action)?;
-    Ok(result)
+    Ok(action.encode_to_vec())
 }

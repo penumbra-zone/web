@@ -5,7 +5,6 @@ use anyhow::anyhow;
 use penumbra_dex::BatchSwapOutputData;
 use penumbra_keys::keys::SpendKey;
 use penumbra_keys::FullViewingKey;
-use penumbra_proto::core::transaction::v1 as pb;
 use penumbra_proto::core::transaction::v1::{TransactionPerspective, TransactionView};
 use penumbra_proto::DomainType;
 use penumbra_sct::{CommitmentSource, Nullifier};
@@ -43,16 +42,14 @@ impl TxInfoResponse {
 ///     transaction_plan: `pb::TransactionPlan`
 /// Returns: `pb::AuthorizationData`
 #[wasm_bindgen]
-pub fn authorize(spend_key: &[u8], transaction_plan: JsValue) -> WasmResult<JsValue> {
+pub fn authorize(spend_key: &[u8], transaction_plan: &[u8]) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();
 
-    let plan_proto: pb::TransactionPlan = serde_wasm_bindgen::from_value(transaction_plan)?;
     let spend_key: SpendKey = SpendKey::decode(spend_key)?;
-    let plan: TransactionPlan = plan_proto.try_into()?;
+    let plan = TransactionPlan::decode(transaction_plan)?;
 
     let auth_data: AuthorizationData = plan.authorize(OsRng, &spend_key)?;
-    let result = serde_wasm_bindgen::to_value(&auth_data.to_proto())?;
-    Ok(result)
+    Ok(auth_data.encode_to_vec())
 }
 
 /// Get witness data
@@ -62,15 +59,11 @@ pub fn authorize(spend_key: &[u8], transaction_plan: JsValue) -> WasmResult<JsVa
 ///     stored_tree: `StoredTree`
 /// Returns: `pb::WitnessData`
 #[wasm_bindgen]
-pub fn witness(transaction_plan: JsValue, stored_tree: JsValue) -> WasmResult<JsValue> {
+pub fn witness(transaction_plan: &[u8], stored_tree: JsValue) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();
 
-    let plan_proto: pb::TransactionPlan = serde_wasm_bindgen::from_value(transaction_plan)?;
-
-    let plan: TransactionPlan = plan_proto.try_into()?;
-
+    let plan = TransactionPlan::decode(transaction_plan)?;
     let stored_tree: StoredTree = serde_wasm_bindgen::from_value(stored_tree)?;
-
     let sct = load_tree(stored_tree);
 
     let note_commitments: Vec<StateCommitment> = plan
@@ -116,8 +109,7 @@ pub fn witness(transaction_plan: JsValue, stored_tree: JsValue) -> WasmResult<Js
         witness_data.add_proof(nc, Proof::dummy(&mut OsRng, nc));
     }
 
-    let result = serde_wasm_bindgen::to_value(&witness_data.to_proto())?;
-    Ok(result)
+    Ok(witness_data.encode_to_vec())
 }
 
 /// Build serial tx
@@ -132,29 +124,20 @@ pub fn witness(transaction_plan: JsValue, stored_tree: JsValue) -> WasmResult<Js
 #[wasm_bindgen]
 pub fn build(
     full_viewing_key: &[u8],
-    transaction_plan: JsValue,
-    witness_data: JsValue,
-    auth_data: JsValue,
-) -> WasmResult<JsValue> {
+    transaction_plan: &[u8],
+    witness_data: &[u8],
+    auth_data: &[u8],
+) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();
 
-    let plan_proto: pb::TransactionPlan = serde_wasm_bindgen::from_value(transaction_plan)?;
-    let witness_data_proto: pb::WitnessData = serde_wasm_bindgen::from_value(witness_data)?;
-    let auth_data_proto: pb::AuthorizationData = serde_wasm_bindgen::from_value(auth_data)?;
-
+    let plan = TransactionPlan::decode(transaction_plan)?;
+    let witness = WitnessData::decode(witness_data)?;
+    let auth = AuthorizationData::decode(auth_data)?;
     let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
 
-    let plan: TransactionPlan = plan_proto.try_into()?;
+    let tx: Transaction = plan.build(&fvk, &witness, &auth)?;
 
-    let tx: Transaction = plan.build(
-        &fvk,
-        &witness_data_proto.try_into()?,
-        &auth_data_proto.try_into()?,
-    )?;
-
-    let value = serde_wasm_bindgen::to_value(&tx.to_proto())?;
-
-    Ok(value)
+    Ok(tx.encode_to_vec())
 }
 
 /// Build parallel tx
@@ -169,31 +152,22 @@ pub fn build(
 #[wasm_bindgen]
 pub fn build_parallel(
     actions: JsValue,
-    transaction_plan: JsValue,
-    witness_data: JsValue,
-    auth_data: JsValue,
-) -> WasmResult<JsValue> {
+    transaction_plan: &[u8],
+    witness_data: &[u8],
+    auth_data: &[u8],
+) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();
 
-    let plan: TransactionPlan = serde_wasm_bindgen::from_value(transaction_plan.clone())?;
-
-    let witness_data_proto: pb::WitnessData = serde_wasm_bindgen::from_value(witness_data)?;
-    let witness_data: WitnessData = witness_data_proto.try_into()?;
-
-    let auth_data_proto: pb::AuthorizationData = serde_wasm_bindgen::from_value(auth_data)?;
-    let auth_data: AuthorizationData = auth_data_proto.try_into()?;
-
+    let plan = TransactionPlan::decode(transaction_plan)?;
+    let witness = WitnessData::decode(witness_data)?;
+    let auth = AuthorizationData::decode(auth_data)?;
     let actions: Vec<Action> = serde_wasm_bindgen::from_value(actions)?;
 
-    let transaction = plan
-        .clone()
-        .build_unauth_with_actions(actions, &witness_data)?;
+    let transaction = plan.clone().build_unauth_with_actions(actions, &witness)?;
 
-    let tx = plan.apply_auth_data(&auth_data, transaction)?;
+    let tx = plan.apply_auth_data(&auth, transaction)?;
 
-    let value = serde_wasm_bindgen::to_value(&tx.to_proto())?;
-
-    Ok(value)
+    Ok(tx.encode_to_vec())
 }
 
 /// Get transaction view, transaction perspective
@@ -205,14 +179,14 @@ pub fn build_parallel(
 #[wasm_bindgen]
 pub async fn transaction_info(
     full_viewing_key: &[u8],
-    tx: JsValue,
+    tx: &[u8],
     idb_constants: JsValue,
 ) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
-    let transaction = serde_wasm_bindgen::from_value(tx)?;
+    let transaction = Transaction::decode(tx)?;
     let constants = serde_wasm_bindgen::from_value(idb_constants)?;
-    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
+    let fvk = FullViewingKey::decode(full_viewing_key)?;
     let response = transaction_info_inner(fvk, transaction, constants).await?;
 
     let result = serde_wasm_bindgen::to_value(&response)?;

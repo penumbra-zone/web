@@ -1,13 +1,13 @@
 use std::convert::Infallible;
 
-use base64::DecodeError;
+use base64::DecodeError as Base64DecodeError;
 use hex::FromHexError;
+use penumbra_tct::error::{InsertBlockError, InsertEpochError, InsertError};
+use prost::DecodeError as ProstDecodeError;
 use serde_wasm_bindgen::Error;
 use thiserror::Error;
 use wasm_bindgen::{JsError, JsValue};
 use web_sys::DomException;
-
-use penumbra_tct::error::{InsertBlockError, InsertEpochError, InsertError};
 
 pub type WasmResult<T> = Result<T, WasmError>;
 
@@ -17,7 +17,7 @@ pub enum WasmError {
     Anyhow(#[from] anyhow::Error),
 
     #[error("{0}")]
-    DecodeError(#[from] DecodeError),
+    Base64DecodeError(#[from] Base64DecodeError),
 
     #[error("{0}")]
     Dom(#[from] DomError),
@@ -36,6 +36,9 @@ pub enum WasmError {
 
     #[error("{0}")]
     InsertError(#[from] InsertError),
+
+    #[error("Decode error: {0}")]
+    ProstDecodeError(#[from] ProstDecodeError),
 
     #[error("{0}")]
     Wasm(#[from] serde_wasm_bindgen::Error),
