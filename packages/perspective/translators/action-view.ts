@@ -22,21 +22,11 @@ export const asPublicActionView: Translator<ActionView> = actionView => {
         },
       });
 
-    case 'delegate':
-    case 'undelegate':
-    case 'undelegateClaim':
-    case 'ics20Withdrawal':
-      return actionView;
-
+    // Currently defaulting to displaying that all data is public as it's better
+    // to err on communicating private data as public than the other way around
+    // TODO: Do proper audit of what data for each action is public
     default:
-      return new ActionView({
-        actionView: actionView?.actionView.case
-          ? {
-              case: actionView.actionView.case,
-              value: {},
-            }
-          : { case: undefined },
-      });
+      return actionView!;
   }
 };
 

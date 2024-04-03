@@ -10,6 +10,7 @@ import { getAmount } from '@penumbra-zone/getters/src/value-view';
 import { isZero } from '@penumbra-zone/types/src/amount';
 import { ValueViewComponent } from './value';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { UnimplementedView } from './unimplemented-view';
 
 const getClaimLabel = (
   output1Amount?: Amount,
@@ -58,7 +59,7 @@ export const SwapClaimViewComponent = ({ value }: { value: SwapClaimView }) => {
   }
 
   if (value.swapClaimView.case === 'opaque') {
-    return <ViewBox label='Swap Claim' />;
+    return <UnimplementedView label='Swap Claim' />;
   }
 
   return <div>Invalid SpendView</div>;

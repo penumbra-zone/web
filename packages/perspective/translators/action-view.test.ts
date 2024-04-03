@@ -5,7 +5,7 @@ import { describe, expect, test, vi } from 'vitest';
 describe('asPublicActionView()', () => {
   describe('when passed `undefined`', () => {
     test('returns an empty action view', () => {
-      expect(asPublicActionView(undefined).equals(new ActionView())).toBe(true);
+      expect(asPublicActionView(undefined)).toBeUndefined();
     });
   });
 
@@ -208,7 +208,7 @@ describe('asReceiverActionView()', () => {
       const isControlledAddress = vi.fn();
       const result = await asReceiverActionView(undefined, { isControlledAddress });
 
-      expect(result.equals(new ActionView())).toBe(true);
+      expect(result).toBeUndefined();
     });
   });
 

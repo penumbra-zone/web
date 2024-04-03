@@ -1,13 +1,13 @@
-import { ViewBox } from './viewbox';
 import { SpendViewComponent } from './spend';
 import { OutputViewComponent } from './output';
 import { ActionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { SwapViewComponent } from './swap';
 import { SwapClaimViewComponent } from './swap-claim';
 import { DelegateComponent } from './delegate';
 import { UndelegateComponent } from './undelegate';
 import { UndelegateClaimComponent } from './undelegate-claim';
 import { Ics20WithdrawalComponent } from './isc20-withdrawal';
+import { UnimplementedView } from './unimplemented-view';
+import { SwapViewComponent } from './swap';
 
 const CASE_TO_LABEL: Record<string, string> = {
   daoDeposit: 'DAO Deposit',
@@ -68,48 +68,48 @@ export const ActionViewComponent = ({ av: { actionView } }: { av: ActionView }) 
       return <UndelegateClaimComponent value={actionView.value} />;
 
     case 'validatorDefinition':
-      return <ViewBox label='Validator Definition' />;
+      return <UnimplementedView label='Validator Definition' />;
 
     case 'ibcRelayAction':
-      return <ViewBox label='IBC Relay Action' />;
+      return <UnimplementedView label='IBC Relay Action' />;
 
     case 'proposalSubmit':
-      return <ViewBox label='Proposal Submit' />;
+      return <UnimplementedView label='Proposal Submit' />;
 
     case 'proposalWithdraw':
-      return <ViewBox label='Proposal Withdraw' />;
+      return <UnimplementedView label='Proposal Withdraw' />;
 
     case 'validatorVote':
-      return <ViewBox label='Validator Vote' />;
+      return <UnimplementedView label='Validator Vote' />;
 
     case 'delegatorVote':
-      return <ViewBox label='Delegator Vote' />;
+      return <UnimplementedView label='Delegator Vote' />;
 
     case 'proposalDepositClaim':
-      return <ViewBox label='Proposal Deposit Claim' />;
+      return <UnimplementedView label='Proposal Deposit Claim' />;
 
     case 'positionOpen':
-      return <ViewBox label='Position Open' />;
+      return <UnimplementedView label='Position Open' />;
 
     case 'positionClose':
-      return <ViewBox label='Position Close' />;
+      return <UnimplementedView label='Position Close' />;
 
     case 'positionWithdraw':
-      return <ViewBox label='Position Withdraw' />;
+      return <UnimplementedView label='Position Withdraw' />;
 
     case 'positionRewardClaim':
-      return <ViewBox label='Position Reward Claim' />;
+      return <UnimplementedView label='Position Reward Claim' />;
 
     case 'communityPoolSpend':
-      return <ViewBox label='Community Spend' />;
+      return <UnimplementedView label='Community Spend' />;
 
     case 'communityPoolOutput':
-      return <ViewBox label='Community Output' />;
+      return <UnimplementedView label='Community Output' />;
 
     case 'communityPoolDeposit':
-      return <ViewBox label='Community Deposit' />;
+      return <UnimplementedView label='Community Deposit' />;
 
     default:
-      return <ViewBox label={getLabelForActionCase(actionView.case)} />;
+      return <UnimplementedView label={getLabelForActionCase(actionView.case)} />;
   }
 };
