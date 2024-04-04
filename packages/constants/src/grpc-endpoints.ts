@@ -12,9 +12,4 @@ export const GRPC_ENDPOINTS: GrpcEndpoint[] = [
     url: 'https://grpc.testnet.penumbra.zone',
     imageUrl: STAKING_TOKEN_METADATA.images[0]?.svg,
   },
-  {
-    name: 'Penumbra Labs Testnet Preview RPC',
-    url: 'https://grpc.testnet-preview.penumbra.zone',
-    imageUrl: STAKING_TOKEN_METADATA.images[0]?.svg,
-  },
 ];
