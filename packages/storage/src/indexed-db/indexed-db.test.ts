@@ -94,16 +94,14 @@ describe('IndexedDb', () => {
       const version1Props = generateInitialProps();
       const dbA = await IndexedDb.initialize(version1Props);
       await dbA.saveAssetsMetadata(metadataA);
+      dbA.close();
 
       const version2Props = {
         chainId: 'test',
         accountAddr: 'penumbra123xyz',
         dbVersion: 2,
-        walletId: new WalletId({
-          inner: Uint8Array.from({ length: 8 }, () => Math.floor(Math.random() * 256)),
-        }),
+        walletId: version1Props.walletId,
       };
-
       const dbB = await IndexedDb.initialize(version2Props);
       expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId!))?.name).toBeUndefined();
     });
