@@ -13,7 +13,8 @@ labels: deployment
   - [ ] IBC
   - [ ] Tx details
   - [x] ~Do a full sync with with [assertRootValid()](https://github.com/penumbra-zone/web/blob/main/packages/query/src/block-processor.ts#L383-L395) enabled. Will throw if TCT roots are not correct.~ (Ignore for now.)
-- [ ] Merge changlist PR or manually run `pnpm changeset version`. Will publish updated npm packages.
+- [ ] If there is already a changelist PR (like [this one](https://github.com/penumbra-zone/web/pull/799)), merge it. Otherwise, manually run `pnpm changeset version`.
+  - This step will publish updated npm packages.
 - [ ] Update [npm package version](https://github.com/penumbra-zone/web/blob/main/package.json#L3)
 - [ ] Update [manifest version](https://github.com/penumbra-zone/web/blob/main/apps/extension/public/manifest.json#L4) based on the extension's newly updated [`package.json` version](https://github.com/penumbra-zone/web/blob/main/apps/extension/package.json) in the extension.
 - [ ] Create repo release with `vX.X.X` tag. Triggers approval to run chrome extension publishing.
