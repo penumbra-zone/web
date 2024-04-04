@@ -6,7 +6,7 @@ import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { ServicesMessage } from '@penumbra-zone/types/src/services';
 import { GRPC_ENDPOINTS } from '@penumbra-zone/constants/src/grpc-endpoints';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 
 const randomSort = () => (Math.random() >= 0.5 ? 1 : -1);
 
