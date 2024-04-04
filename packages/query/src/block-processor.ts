@@ -36,6 +36,13 @@ import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/src/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
+
+declare global {
+  // `var` required for global declaration (as let/const are block scoped)
+  // eslint-disable-next-line no-var
+  var ASSERT_ROOT_VALID: boolean | undefined;
+}
 
 interface QueryClientProps {
   querier: RootQuerier;
@@ -141,7 +148,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
   private async syncAndStore() {
     const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
-    const startHeight = fullSyncHeight ? fullSyncHeight + 1n : 0n;
+    const startHeight = fullSyncHeight !== undefined ? fullSyncHeight + 1n : 0n; // Must compare to undefined as 0n is falsy
     let latestKnownBlockHeight = await this.querier.tendermint.latestBlockHeight();
 
     if (startHeight === 0n) {
@@ -279,6 +286,10 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (isLastBlockOfEpoch) {
         await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
       }
+
+      if (globalThis.ASSERT_ROOT_VALID) {
+        await this.assertRootValid(compactBlock.height);
+      }
     }
   }
 
@@ -384,17 +395,26 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
-  // Compares the locally stored, filtered TCT root with the actual one on chain. They should match.
-  // This is expensive to do every block, so should only be done in development for debugging purposes.
-  // Recommend putting it alongside a flush (when flushReasons are triggered).
-  // @ts-expect-error Only used ad-hoc in dev
+  /*
+   * Compares the locally stored, filtered TCT root with the actual one on chain. They should match.
+   * This is expensive to do every block, so should only be done in development for debugging purposes.
+   * Note: In order for this to run, you must do this in the service worker console:
+   *       globalThis.ASSERT_ROOT_VALID = true
+   */
   private async assertRootValid(blockHeight: bigint): Promise<void> {
     const remoteRoot = await this.querier.cnidarium.fetchRemoteRoot(blockHeight);
     const inMemoryRoot = this.viewServer.getSctRoot();
 
-    if (!remoteRoot.equals(inMemoryRoot)) {
-      throw new Error(
-        `Block height: ${blockHeight}. Wasm root does not match remote source of truth. Programmer error.`,
+    if (remoteRoot.equals(inMemoryRoot)) {
+      console.log(
+        `Block height: ${blockHeight} root matches remote ✅ \n`,
+        `Hash: ${uint8ArrayToHex(inMemoryRoot.inner)}`,
+      );
+    } else {
+      console.log(
+        `Block height: ${blockHeight} root does not match remote ❌ \n`,
+        `Local hash: ${uint8ArrayToHex(inMemoryRoot.inner)} \n`,
+        `Remote hash: ${uint8ArrayToHex(remoteRoot.inner)}`,
       );
     }
   }
