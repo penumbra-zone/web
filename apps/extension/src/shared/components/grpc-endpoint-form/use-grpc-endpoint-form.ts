@@ -24,9 +24,6 @@ const isValidUrl = (url: string) => {
   }
 };
 
-/**
- * Provides everything needed for a gRPC endpoint picking form.
- */
 export const useGrpcEndpointForm = () => {
   const [originalChainId, setOriginalChainId] = useState<string | undefined>();
   const [chainId, setChainId] = useState<string>();
