@@ -6,7 +6,7 @@ import { ImportSeedPhrase } from './import';
 import { OnboardingSuccess } from './success';
 import { SetPassword } from './set-password';
 import { pageIndexLoader } from '..';
-import { SetRpcEndpoint } from './set-rpc-endpoint';
+import { SetGrpcEndpoint } from './set-grpc-endpoint';
 
 export const onboardingRoutes = [
   {
@@ -30,8 +30,8 @@ export const onboardingRoutes = [
     element: <SetPassword />,
   },
   {
-    path: PagePath.SET_RPC_ENDPOINT,
-    element: <SetRpcEndpoint />,
+    path: PagePath.SET_GRPC_ENDPOINT,
+    element: <SetGrpcEndpoint />,
   },
   {
     path: PagePath.ONBOARDING_SUCCESS,

@@ -2,8 +2,8 @@ import { Code, ConnectError, createPromiseClient } from '@connectrpc/connect';
 import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/app/v1/app_connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AllSlices } from '../state';
-import { useStoreShallow } from '../utils/use-store-shallow';
+import { AllSlices } from '../../../state';
+import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { ServicesMessage } from '@penumbra-zone/types/src/services';
 import { GRPC_ENDPOINTS } from '@penumbra-zone/constants/src/grpc-endpoints';
 import { debounce } from 'lodash';
@@ -91,12 +91,14 @@ export const useGrpcEndpointForm = () => {
 
   const onSubmit = async (
     /** Callback to run when the RPC endpoint successfully saves */
-    onSuccess?: () => unknown,
+    onSuccess: () => void | Promise<void>,
   ) => {
+    setIsSubmitButtonEnabled(false);
     await setGrpcEndpoint(grpcEndpointInput);
     // If the chain id has changed, our cache is invalid
     if (originalChainId !== chainId) void chrome.runtime.sendMessage(ServicesMessage.ClearCache);
-    if (onSuccess) onSuccess();
+    await onSuccess();
+    setIsSubmitButtonEnabled(true);
   };
 
   return {
