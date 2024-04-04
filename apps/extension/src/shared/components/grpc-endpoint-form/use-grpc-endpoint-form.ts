@@ -7,6 +7,7 @@ import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { ServicesMessage } from '@penumbra-zone/types/src/services';
 import { GRPC_ENDPOINTS } from '@penumbra-zone/constants/src/grpc-endpoints';
 import debounce from 'lodash/debounce';
+import { PromiseWithResolvers } from '@penumbra-zone/polyfills/src/Promise.withResolvers';
 
 const randomSort = () => (Math.random() >= 0.5 ? 1 : -1);
 
@@ -34,6 +35,10 @@ export const useGrpcEndpointForm = () => {
   );
   const [rpcError, setRpcError] = useState<string>();
   const [isSubmitButtonEnabled, setIsSubmitButtonEnabled] = useState(false);
+  const [confirmChangedChainIdPromise, setConfirmChangedChainIdPromise] = useState<
+    PromiseWithResolvers<void> | undefined
+  >();
+
   const isCustomGrpcEndpoint = !GRPC_ENDPOINTS.some(({ url }) => url === grpcEndpointInput);
 
   const setGrpcEndpointInputOnLoadFromState = useCallback(() => {
@@ -86,22 +91,53 @@ export const useGrpcEndpointForm = () => {
     [handleChangeGrpcEndpointInput, grpcEndpointInput],
   );
 
+  const chainIdChanged = !!originalChainId && !!chainId && originalChainId !== chainId;
+
   const onSubmit = async (
     /** Callback to run when the RPC endpoint successfully saves */
     onSuccess: () => void | Promise<void>,
   ) => {
     setIsSubmitButtonEnabled(false);
-    await setGrpcEndpoint(grpcEndpointInput);
+
     // If the chain id has changed, our cache is invalid
-    if (originalChainId !== chainId) void chrome.runtime.sendMessage(ServicesMessage.ClearCache);
+    if (chainIdChanged) {
+      const promiseWithResolvers = Promise.withResolvers();
+      setConfirmChangedChainIdPromise(promiseWithResolvers);
+
+      try {
+        await promiseWithResolvers.promise;
+      } catch {
+        setIsSubmitButtonEnabled(true);
+        return;
+      } finally {
+        setConfirmChangedChainIdPromise(undefined);
+      }
+
+      await setGrpcEndpoint(grpcEndpointInput);
+      void chrome.runtime.sendMessage(ServicesMessage.ClearCache);
+    } else {
+      await setGrpcEndpoint(grpcEndpointInput);
+    }
+
     await onSuccess();
     setIsSubmitButtonEnabled(true);
+    setOriginalChainId(chainId);
   };
 
   return {
     chainId,
-    /** The gRPC endpoint saved to local storage. */
-    grpcEndpoint,
+    originalChainId,
+    /**
+     * gRPC endpoints report which chain they represent via the `chainId`
+     * property returned by their `appParameters` RPC method. All endpoints for
+     * a given chain will have the same chain ID. If the chain ID changes when a
+     * user selects a different gRPC endpoint, that means that the new gRPC
+     * endpoint represents an entirely different chain than the user was
+     * previously using. This is significant, and should be surfaced to the
+     * user.
+     */
+    chainIdChanged,
+    confirmChangedChainIdPromise,
     /**
      * The gRPC endpoint entered into the text field, which may or may not be
      * the same as the one saved in local storage.

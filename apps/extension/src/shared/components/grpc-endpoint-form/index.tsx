@@ -3,7 +3,8 @@ import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Network } from 'lucide-react';
 import { useGrpcEndpointForm } from './use-grpc-endpoint-form';
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { ConfirmChangedChainIdDialog } from './confirm-changed-chain-id-dialog';
+import { ChainIdOrError } from './chain-id-or-error';
 
 /**
  * Renders all the parts of the gRPC endpoint form that are shared between the
@@ -18,6 +19,9 @@ export const GrpcEndpointForm = ({
 }) => {
   const {
     chainId,
+    chainIdChanged,
+    confirmChangedChainIdPromise,
+    originalChainId,
     grpcEndpoints,
     grpcEndpointInput,
     setGrpcEndpointInput,
@@ -34,69 +38,68 @@ export const GrpcEndpointForm = ({
   };
 
   return (
-    <div className='flex flex-col gap-2'>
-      <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-        <SelectList>
-          {grpcEndpoints.map(option => (
-            <SelectList.Option
-              key={option.url}
-              label={option.name}
-              secondary={option.url}
-              onSelect={setGrpcEndpointInput}
-              value={option.url}
-              isSelected={option.url === grpcEndpointInput}
-              image={
-                !!option.imageUrl && (
-                  <img src={option.imageUrl} className='size-full object-contain' />
-                )
-              }
-            />
-          ))}
-
-          <SelectList.Option
-            label='Custom RPC'
-            secondary={
-              <input
-                type='url'
-                ref={customGrpcEndpointInput}
-                value={isCustomGrpcEndpoint && !!grpcEndpointInput ? grpcEndpointInput : ''}
-                onChange={e => setGrpcEndpointInput(e.target.value)}
-                className='w-full bg-transparent'
+    <>
+      <div className='flex flex-col gap-2'>
+        <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+          <SelectList>
+            {grpcEndpoints.map(option => (
+              <SelectList.Option
+                key={option.url}
+                label={option.name}
+                secondary={option.url}
+                onSelect={setGrpcEndpointInput}
+                value={option.url}
+                isSelected={option.url === grpcEndpointInput}
+                image={
+                  !!option.imageUrl && (
+                    <img src={option.imageUrl} className='size-full object-contain' />
+                  )
+                }
               />
-            }
-            onSelect={() => {
-              if (!isCustomGrpcEndpoint) setGrpcEndpointInput('');
-              customGrpcEndpointInput.current?.focus();
-            }}
-            isSelected={isCustomGrpcEndpoint}
-            image={<Network className='size-full' />}
-          />
-        </SelectList>
+            ))}
 
-        <a
-          href='https://github.com/penumbra-zone/web/blob/main/packages/constants/src/grpc-endpoints.ts'
-          target='_blank'
-          rel='noreferrer'
-          className='block text-right text-xs text-muted-foreground'
-        >
-          Add to this list
-        </a>
+            <SelectList.Option
+              label='Custom RPC'
+              secondary={
+                <input
+                  type='url'
+                  ref={customGrpcEndpointInput}
+                  value={isCustomGrpcEndpoint && !!grpcEndpointInput ? grpcEndpointInput : ''}
+                  onChange={e => setGrpcEndpointInput(e.target.value)}
+                  className='w-full bg-transparent'
+                />
+              }
+              onSelect={() => {
+                if (!isCustomGrpcEndpoint) setGrpcEndpointInput('');
+                customGrpcEndpointInput.current?.focus();
+              }}
+              isSelected={isCustomGrpcEndpoint}
+              image={<Network className='size-full' />}
+            />
+          </SelectList>
 
-        <Button variant='gradient' type='submit' disabled={!isSubmitButtonEnabled}>
-          {submitButtonLabel}
-        </Button>
-      </form>
+          <a
+            href='https://github.com/penumbra-zone/web/blob/main/packages/constants/src/grpc-endpoints.ts'
+            target='_blank'
+            rel='noreferrer'
+            className='block text-right text-xs text-muted-foreground'
+          >
+            Add to this list
+          </a>
 
-      {(!!rpcError || !!chainId) && (
-        <div
-          className={cn(
-            'flex justify-center font-mono text-xs text-muted-foreground',
-            !!rpcError && 'text-red-400',
-          )}
-        >
-          {rpcError ? rpcError : chainId ? `Chain ID: ${chainId}` : null}
-        </div>
-      )}
-    </div>
+          <Button variant='gradient' type='submit' disabled={!isSubmitButtonEnabled}>
+            {submitButtonLabel}
+          </Button>
+        </form>
+
+        <ChainIdOrError chainId={chainId} chainIdChanged={chainIdChanged} error={rpcError} />
+      </div>
+
+      <ConfirmChangedChainIdDialog
+        chainId={chainId}
+        originalChainId={originalChainId}
+        promiseWithResolvers={confirmChangedChainIdPromise}
+      />
+    </>
   );
 };
