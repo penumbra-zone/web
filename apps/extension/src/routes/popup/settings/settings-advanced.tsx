@@ -1,10 +1,9 @@
 import { TrashIcon } from '@radix-ui/react-icons';
 import { CustomLink } from '../../../shared/components/link';
-import { SettingsHeader } from '../../../shared/components/settings-header';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
 import { DashboardGradientIcon } from '../../../icons/dashboard-gradient';
-import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
+import { SettingsScreen } from './settings-screen';
 
 const links = [
   // TODO: Enable when ready
@@ -24,23 +23,12 @@ export const SettingsAdvanced = () => {
   const navigate = usePopupNav();
 
   return (
-    <FadeTransition>
-      <div className='flex min-h-screen w-screen flex-col gap-6'>
-        <SettingsHeader title='Advanced' />
-        <div className='mx-auto size-20'>
-          <DashboardGradientIcon />
-        </div>
-        <div className='flex flex-1 flex-col items-start gap-2 px-[30px]'>
-          {links.map(i => (
-            <CustomLink
-              key={i.href}
-              title={i.title}
-              icon={i.icon}
-              onClick={() => navigate(i.href)}
-            />
-          ))}
-        </div>
+    <SettingsScreen title='Advanced' IconComponent={DashboardGradientIcon}>
+      <div className='flex flex-1 flex-col items-start gap-2'>
+        {links.map(i => (
+          <CustomLink key={i.href} title={i.title} icon={i.icon} onClick={() => navigate(i.href)} />
+        ))}
       </div>
-    </FadeTransition>
+    </SettingsScreen>
   );
 };
