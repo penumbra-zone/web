@@ -11,6 +11,7 @@ const progressVariants = cva('', {
       'in-progress': 'bg-sand',
       done: 'bg-teal',
       error: 'bg-red-900',
+      loading: 'bg-stone-500',
     },
     background: {
       black: 'bg-black',

@@ -12,7 +12,9 @@ export const LargeBlockSyncStatus = ({
   error,
 }: BlockSyncProps) => {
   if (error) return <BlockSyncErrorState error={error} />;
-  if (!latestKnownBlockHeight || !fullSyncHeight) return <div />;
+  if (!latestKnownBlockHeight || !fullSyncHeight) {
+    return <AwaitingState genesisSyncing={!fullSyncHeight} />;
+  }
 
   const isSyncing = latestKnownBlockHeight - fullSyncHeight > 10;
 
@@ -47,6 +49,38 @@ const BlockSyncErrorState = ({ error }: { error: unknown }) => {
   );
 };
 
+// Not having a fullSyncHeight indicates we are doing a fresh sync.
+// The genesis block is particularly large, so we have special text to indicate that.
+const AwaitingState = ({ genesisSyncing }: { genesisSyncing: boolean }) => {
+  return (
+    <motion.div
+      className='flex w-full flex-col gap-1'
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1, transition: { duration: 0.3, ease: 'easeOut', delay: 0.75 } }}
+    >
+      <div className='flex items-center justify-center'>
+        <div className='flex items-center'>
+          <p className='font-headline text-xl font-semibold text-stone-500'>
+            {genesisSyncing ? 'Genesis block syncing...' : 'Loading sync state...'}
+          </p>
+        </div>
+      </div>
+      <Progress status='loading' value={100} />
+      <div className='-ml-3 flex justify-center'>
+        <div className='relative'>
+          <LineWave
+            visible={true}
+            height='50'
+            width='50'
+            color='#71717a'
+            wrapperClass='transition-all duration-300 -mt-5 -mr-5 text-stone-500'
+          />
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 const SyncingState = ({ fullSyncHeight, latestKnownBlockHeight }: SyncingStateProps) => {
   const { formattedTimeRemaining, confident } = useSyncProgress(
     fullSyncHeight,
@@ -56,7 +90,7 @@ const SyncingState = ({ fullSyncHeight, latestKnownBlockHeight }: SyncingStatePr
   return (
     <motion.div
       className='flex w-full flex-col items-center gap-1'
-      initial={{ opacity: 1 }}
+      initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { duration: 0.3, ease: 'easeOut' } }}
     >
       <p className='font-headline text-xl font-semibold text-sand'>Syncing blocks...</p>

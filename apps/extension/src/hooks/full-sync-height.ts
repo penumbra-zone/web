@@ -5,33 +5,40 @@ import { useStore } from '../state';
 import { networkSelector } from '../state/network';
 import { useLoaderData } from 'react-router-dom';
 
+const tryGetMax = (a?: number, b?: number): number | undefined => {
+  // Height can be 0n which is falsy, so should compare to undefined state
+  if (a === undefined) return b;
+  if (b === undefined) return a;
+
+  return Math.max(a, b);
+};
+
 // There is a slight delay with Zustand loading up the last block synced.
 // To prevent the screen flicker, we use a loader to read it from chrome.storage.local.
-const useFullSyncHeight = (): number => {
-  const { fullSyncHeight: locallyStored } = useLoaderData() as PopupLoaderData;
-  const { fullSyncHeight: inMemory } = useStore(networkSelector);
-  return locallyStored > inMemory ? locallyStored : inMemory;
+const useFullSyncHeight = (): number | undefined => {
+  const { fullSyncHeight: localHeight } = useLoaderData() as PopupLoaderData;
+  const { fullSyncHeight: memoryHeight } = useStore(networkSelector);
+
+  return tryGetMax(localHeight, memoryHeight);
 };
 
 export const useSyncProgress = () => {
   const fullSyncHeight = useFullSyncHeight();
   const { grpcEndpoint } = useStore(networkSelector);
 
-  const { data, error } = useQuery({
+  const { data: queriedLatest, error } = useQuery({
     queryKey: ['latestBlockHeight'],
     queryFn: async () => {
       const querier = new TendermintQuerier({ grpcEndpoint: grpcEndpoint! });
-      return querier.latestBlockHeight();
+      const blockHeight = await querier.latestBlockHeight();
+      return Number(blockHeight);
     },
     enabled: Boolean(grpcEndpoint),
   });
 
-  // If the syncing is ahead of our block-height query, use the sync value instead
-  const latestBlockHeight = !data
-    ? undefined
-    : fullSyncHeight > Number(data)
-      ? fullSyncHeight
-      : Number(data);
+  // If we have a queried sync height and it's ahead of our block-height query,
+  // use the sync value instead
+  const latestBlockHeight = queriedLatest ? tryGetMax(queriedLatest, fullSyncHeight) : undefined;
 
   return { latestBlockHeight, fullSyncHeight, error };
 };
