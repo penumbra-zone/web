@@ -100,7 +100,7 @@ describe('IndexedDb', () => {
         chainId: 'test',
         accountAddr: 'penumbra123xyz',
         dbVersion: 2,
-        walletId: version1Props.walletId
+        walletId: version1Props.walletId,
       };
       const dbB = await IndexedDb.initialize(version2Props);
       expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId!))?.name).toBeUndefined();
