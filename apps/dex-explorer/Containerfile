@@ -3,8 +3,8 @@
 
 # Provide specific arg for setting the version of nodejs to use.
 # Should match what's in .nvmrc for development.
-ARG NODE_MAJOR_VERSION=18
-FROM node:${NODE_MAJOR_VERSION}-alpine AS base
+ARG NODE_MAJOR_VERSION=18.20
+FROM docker.io/node:${NODE_MAJOR_VERSION}-alpine AS base
 # Install dependencies only when needed
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
@@ -30,6 +30,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # Build the website as standalone output.
+RUN npm --version && node --version
 RUN npm run build
 
 # Production image, copy all the files and run next
