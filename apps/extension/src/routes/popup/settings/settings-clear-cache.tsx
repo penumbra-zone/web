@@ -6,9 +6,30 @@ import { TrashGradientIcon } from '../../../icons/trash-gradient';
 import { ServicesMessage } from '@penumbra-zone/types/src/services';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
+import { useStore } from '../../../state';
+import { useState } from 'react';
+
+const useCacheClear = () => {
+  const navigate = usePopupNav();
+  const [loading, setLoading] = useState(false);
+
+  const handleCacheClear = () => {
+    setLoading(true);
+
+    void (async function () {
+      await chrome.runtime.sendMessage(ServicesMessage.ClearCache);
+      useStore.setState(state => {
+        state.network.fullSyncHeight = undefined;
+      });
+      navigate(PopupPath.INDEX);
+    })();
+  };
+
+  return { handleCacheClear, loading };
+};
 
 export const SettingsClearCache = () => {
-  const navigate = usePopupNav();
+  const { handleCacheClear, loading } = useCacheClear();
   return (
     <FadeTransition>
       <div className='flex min-h-screen w-screen flex-col gap-6'>
@@ -28,15 +49,13 @@ export const SettingsClearCache = () => {
             </p>
           </div>
           <Button
+            disabled={loading}
             variant='gradient'
             size='lg'
             className='w-full'
-            onClick={() => {
-              void chrome.runtime.sendMessage(ServicesMessage.ClearCache);
-              navigate(PopupPath.INDEX);
-            }}
+            onClick={handleCacheClear}
           >
-            Confirm
+            {loading ? 'Clearing cache...' : 'Confirm'}
           </Button>
         </div>
       </div>

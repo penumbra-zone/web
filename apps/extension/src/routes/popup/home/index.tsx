@@ -7,14 +7,20 @@ import { addrByIndexSelector, getActiveWallet } from '../../../state/wallets';
 import { needsLogin } from '../popup-needs';
 
 export interface PopupLoaderData {
-  fullSyncHeight: number;
+  fullSyncHeight?: number;
 }
 
 // Because Zustand initializes default empty (prior to persisted storage synced),
 // We need to manually check storage for accounts & password in the loader.
 // Will redirect to onboarding or password check if necessary.
-export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
-  (await needsLogin()) ?? { fullSyncHeight: await localExtStorage.get('fullSyncHeight') };
+export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> => {
+  const redirect = await needsLogin();
+  if (redirect) return redirect;
+
+  return {
+    fullSyncHeight: await localExtStorage.get('fullSyncHeight'),
+  };
+};
 
 export const PopupIndex = () => {
   const activeWallet = useStore(getActiveWallet);

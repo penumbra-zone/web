@@ -11,7 +11,7 @@ declare const MINIFRONT_URL: string;
 
 export const localDefaults: LocalStorageState = {
   wallets: [],
-  fullSyncHeight: 0,
+  fullSyncHeight: undefined,
   knownSites: [{ origin: MINIFRONT_URL, choice: UserChoice.Approved, date: Date.now() }],
 };
 
