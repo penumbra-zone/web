@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { IncognitoIcon } from '../../icons/incognito';
 
 /**
  * Render key/value pairs inside a `<ViewBox />`.
@@ -31,18 +32,32 @@ const ActionDetailsRow = ({
   label,
   children,
   truncate,
+  isOpaque,
 }: {
   label: string;
-  children: ReactNode;
+  children?: ReactNode;
   /**
    * If `children` is a string, passing `truncate` will automatically truncate
    * the text if it doesn't fit in a single line.
    */
   truncate?: boolean;
+  /**
+   * If set to true, add styles indicating that the row's data is _not_ visible.
+   */
+  isOpaque?: boolean;
 }) => {
   return (
     <div className='flex items-center justify-between'>
-      <span className='whitespace-nowrap break-keep'>{label}</span>
+      {isOpaque ? (
+        <span className='flex items-center whitespace-nowrap text-gray-600'>
+          <span className='mx-2'>
+            <IncognitoIcon fill='#4b5563' />
+          </span>
+          <span>{label}</span>
+        </span>
+      ) : (
+        <span className='whitespace-nowrap break-keep'>{label}</span>
+      )}
 
       <Separator />
 
