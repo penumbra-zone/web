@@ -47,6 +47,10 @@ export const fetchToken = async (
           }
         });
 
+        if (typeof tokenInner !== "string") {
+          tokenInner = uint8ArrayToBase64(tokenInner);
+        }
+
         // Assign fetched token data
         token = {
           symbol: symbol,
