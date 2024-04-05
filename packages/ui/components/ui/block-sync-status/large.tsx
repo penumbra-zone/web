@@ -12,7 +12,7 @@ export const LargeBlockSyncStatus = ({
   error,
 }: BlockSyncProps) => {
   if (error) return <BlockSyncErrorState error={error} />;
-  if (!latestKnownBlockHeight || !fullSyncHeight) {
+  if (latestKnownBlockHeight === undefined || fullSyncHeight === undefined) {
     return <AwaitingState genesisSyncing={!fullSyncHeight} />;
   }
 
@@ -61,7 +61,7 @@ const AwaitingState = ({ genesisSyncing }: { genesisSyncing: boolean }) => {
       <div className='flex items-center justify-center'>
         <div className='flex items-center'>
           <p className='font-headline text-xl font-semibold text-stone-500'>
-            {genesisSyncing ? 'Genesis block syncing...' : 'Loading sync state...'}
+            {genesisSyncing ? 'Genesis state syncing...' : 'Loading sync state...'}
           </p>
         </div>
       </div>
