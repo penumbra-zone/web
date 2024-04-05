@@ -25,7 +25,7 @@ export const SetPassword = () => {
 
     void (async () => {
       await onboardingSave(password);
-      navigate(PagePath.SET_RPC_ENDPOINT);
+      navigate(PagePath.SET_GRPC_ENDPOINT);
     })();
   };
 

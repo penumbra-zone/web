@@ -7,6 +7,10 @@ import { cn } from '../../lib/utils';
 import { cva, VariantProps } from 'class-variance-authority';
 
 /**
+ * You can use a `<Dialog />` in two ways.
+ *
+ * 1) Letting it manage its own internal open vs. closed state.
+ *
  * @example
  * ```tsx
  * <Dialog>
@@ -14,6 +18,23 @@ import { cva, VariantProps } from 'class-variance-authority';
  *     <div>Clicking this will open the dialog.</div>
  *   </DialogTrigger>
  *
+ *   <DialogContent>
+ *     <DialogHeader>
+ *       Header here, which includes a built-in close button.
+ *     </DialogHeader>
+ *     <p>Content here</p>
+ *     <DialogClose>
+ *       <div>Clicking anything inside here will close the dialog.</div>
+ *     </DialogClose>
+ *   </DialogContent>
+ * </Dialog
+ * ```
+ *
+ * 2) Manage its own open vs. closed state from the parent component
+ *
+ * @example
+ * ```tsx
+ * <Dialog open={open} onOpenChange={handleOpenChange}>
  *   <DialogContent>
  *     <DialogHeader>
  *       Header here, which includes a built-in close button.
