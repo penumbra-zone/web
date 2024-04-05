@@ -7,6 +7,8 @@ import { CopyIcon } from '@radix-ui/react-icons';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { fromBaseUnitAmount } from '@penumbra-zone/types/src/amount';
 import { Pill } from '../../../pill';
+import { ConditionalWrap } from '../../../conditional-wrap';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../tooltip';
 
 interface ValueViewProps {
   view: ValueView | undefined;
@@ -41,24 +43,36 @@ export const ValueViewComponent = ({
     const symbol = metadata.symbol || 'Unknown Asset';
 
     return (
-      <Pill variant={variant === 'default' ? 'default' : 'dashed'}>
-        <div className='flex min-w-0 items-center gap-1'>
-          {showIcon && (
-            <div className='-ml-2 mr-1 flex size-6 items-center justify-center rounded-full'>
-              <AssetIcon metadata={metadata} />
-            </div>
-          )}
-          {showValue && (
-            <span className='leading-[15px]'>
-              {variant === 'equivalent' && <>~ </>}
-              {formattedAmount}
-            </span>
-          )}
-          {showDenom && (
-            <span className='truncate font-mono text-xs text-muted-foreground'>{symbol}</span>
-          )}
-        </div>
-      </Pill>
+      <ConditionalWrap
+        condition={variant === 'equivalent'}
+        wrap={children => (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>{children}</TooltipTrigger>
+              <TooltipContent>Estimated equivalent value</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      >
+        <Pill variant={variant === 'default' ? 'default' : 'dashed'}>
+          <div className='flex min-w-0 items-center gap-1'>
+            {showIcon && (
+              <div className='-ml-2 mr-1 flex size-6 items-center justify-center rounded-full'>
+                <AssetIcon metadata={metadata} />
+              </div>
+            )}
+            {showValue && (
+              <span className='leading-[15px]'>
+                {variant === 'equivalent' && <>~ </>}
+                {formattedAmount}
+              </span>
+            )}
+            {showDenom && (
+              <span className='truncate font-mono text-xs text-muted-foreground'>{symbol}</span>
+            )}
+          </div>
+        </Pill>
+      </ConditionalWrap>
     );
   }
 

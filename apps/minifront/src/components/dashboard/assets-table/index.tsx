@@ -1,10 +1,11 @@
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { AddressIcon } from '@penumbra-zone/ui/components/ui/address-icon';
 import { AddressComponent } from '@penumbra-zone/ui/components/ui/address-component';
-import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
+import { BalancesByAccount, getBalancesByAccount } from '../../../fetchers/balances/by-account';
 import { Table, TableBody, TableCell, TableRow } from '@penumbra-zone/ui/components/ui/table';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
+import { EquivalentValues } from './equivalent-values';
 
 export const AssetsLoader: LoaderFunction = async (): Promise<BalancesByAccount[]> => {
   await throwIfPraxNotConnectedTimeout();
@@ -52,7 +53,10 @@ export default function AssetsTable() {
               {a.balances.map((assetBalance, index) => (
                 <TableRow key={index}>
                   <TableCell>
-                    <ValueViewComponent view={assetBalance.balanceView} />
+                    <div className='flex flex-wrap gap-2'>
+                      <ValueViewComponent view={assetBalance.balanceView} />
+                      <EquivalentValues valueView={assetBalance.balanceView} />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
