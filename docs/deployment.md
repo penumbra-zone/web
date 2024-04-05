@@ -2,7 +2,7 @@
 
 ### Prax Chrome Extension
 
-Create a [github issue deployment issue](https://github.com/penumbra-zone/web/issues/new?template=deployment) to track deployment progress and steps.
+Create a [github issue deployment issue](https://github.com/penumbra-zone/web/issues/new?template=deployment.md&title=Publish+vX.X.X+extension+%2B+web+app) to track deployment progress and steps.
 
 Upon a new [git tag](https://github.com/penumbra-zone/web/releases/tag/v4.2.0) being pushed to the repo,
 a [workflow](../.github/workflows/extension-publish.yml) is kicked off. It then requests permission to
