@@ -28,3 +28,4 @@
 - [Extension services](extension-services.md)
 - [Writing performant React components](writing-performant-react-components.md)
 - [Deployment](deployment.md)
+- [Debugging](debugging.md)
