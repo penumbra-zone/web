@@ -1,41 +1,75 @@
-FROM docker.io/debian:bookworm-slim
-LABEL maintainer="team@penumbralabs.xyz"
+# Mostly boilerplate image spec, taken from nextjs docs:
+# https://nextjs.org/docs/pages/building-your-application/deploying#docker-image
 
-# Install curl and gnupg for Node.js installation
-RUN apt-get update && apt-get install -y curl gnupg
+# Provide specific arg for setting the version of nodejs to use.
+# Should match what's in .nvmrc for development.
+ARG NODE_MAJOR_VERSION=18
+FROM node:${NODE_MAJOR_VERSION}-alpine AS base
+# Install dependencies only when needed
+FROM base AS deps
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
 
-# Copy only the .nvmrc file to use the specified Node.js version
-COPY .nvmrc .
-
-# Use the version specified in .nvmrc to install Node.js
-RUN curl -sL https://deb.nodesource.com/setup_$(cat .nvmrc | xargs).x | bash - && \
-    apt-get install -y nodejs
-
-# Install Yarn
-RUN npm install -g yarn
-
-# Set the project directory
-WORKDIR /home/penumbra/dex-explorer
-
-# Copy the rest of the project files
-COPY . .
+# Install dependencies based on the preferred package manager
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 
 # Configure registry
 RUN npm config set @buf:registry  https://buf.build/gen/npm/v1/
-
 # Install dependencies
-RUN npm install
+RUN npm ci
 
-# Normal user settings
-ARG USERNAME=penumbra
-ARG UID=1000
-ARG GID=1000
-RUN groupadd --gid ${GID} ${USERNAME} && \
-    useradd -m -d /home/${USERNAME} -g ${GID} -u ${UID} ${USERNAME} && \
-    chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 
-USER ${USERNAME}
+# Next.js collects completely anonymous telemetry data about general usage.
+# Learn more here: https://nextjs.org/telemetry
+ENV NEXT_TELEMETRY_DISABLED 1
+
+# Build the website as standalone output.
+RUN npm run build
+
+# Production image, copy all the files and run next
+FROM base AS runner
+LABEL maintainer="team@penumbralabs.xyz"
+WORKDIR /app
+
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+
+# Create normal user for app
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+# Set the correct permission for prerender cache
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+COPY --from=builder /app/public ./public
+
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Hack to add a semblance of logging to the nextjs server-side node instance,
+# so that all route GETs are logged, which adds much-needed context when exceptions
+# are thrown. Exceptions still log a full stack trace, rather than a succinct
+# error message, but it's a start!
+#
+# Why this hack is necessary is beyond my ken. I assume it's an upsell attempt
+# at hosting on a sass platform like vercel. Source:
+# https://gist.github.com/x-yuri/f4a2f1363ae5c08981c257cc406e00ac
+RUN sed -Ei \
+    -e '/await requestHandler/iconst __start = new Date;' \
+    -e '/await requestHandler/aconsole.log(`-- [${__start.toISOString()}] ${((new Date - __start) / 1000).toFixed(3)} ${req.method} ${req.url}`);' \
+    node_modules/next/dist/server/lib/start-server.js
+
+USER nextjs
 EXPOSE 3000
+ENV PORT 3000
 
-# Start the app
-CMD ["yarn", "dev"]
+# server.js is created by next build from the standalone output
+# https://nextjs.org/docs/pages/api-reference/next-config-js/output
+CMD HOSTNAME="0.0.0.0" node server.js
