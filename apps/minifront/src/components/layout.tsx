@@ -3,11 +3,11 @@ import { getChainId } from '../fetchers/chain-id';
 import { HeadTag } from './metadata/head-tag';
 import { Header } from './header/header';
 import { Toaster } from '@penumbra-zone/ui/components/ui/toaster';
-import '@penumbra-zone/ui/styles/globals.css';
 import { ExtensionNotConnected } from './extension-not-connected';
 import { ExtensionNotInstalled } from './extension-not-installed';
-import { Footer } from './footer';
+import { Footer } from './footer/footer';
 import { isPraxConnected, isPraxConnectedTimeout, isPraxAvailable } from '@penumbra-zone/client';
+import '@penumbra-zone/ui/styles/globals.css';
 
 export type LayoutLoaderResult =
   | { isInstalled: boolean; isConnected: boolean }
@@ -35,9 +35,9 @@ export const Layout = () => {
   return (
     <>
       <HeadTag />
-      <div className='relative flex min-h-screen flex-col bg-background text-muted'>
+      <div className='flex min-h-screen w-screen flex-col'>
         <Header />
-        <main className='mx-auto w-full flex-1 px-6 pb-4 pt-5 md:px-[88px] md:pb-0 xl:max-w-[1276px] xl:px-12'>
+        <main className='flex size-full flex-1 px-4'>
           <Outlet />
         </main>
         <Footer />
