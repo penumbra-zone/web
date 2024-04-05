@@ -6,6 +6,7 @@ import { Header } from './account/header';
 import { Delegations } from './account/delegations';
 import { LoaderFunction } from 'react-router-dom';
 import { useStoreShallow } from '../../utils/use-store-shallow';
+import { RestrictMaxWidth } from '../shared/restrict-max-width';
 
 export const StakingLoader: LoaderFunction = async () => {
   await throwIfPraxNotConnectedTimeout();
@@ -32,7 +33,7 @@ export const StakingLayout = () => {
   }, [account, loadDelegationsForCurrentAccount, loadUnbondingTokensForCurrentAccount]);
 
   return (
-    <div className='mx-auto max-w-[1276px]'>
+    <RestrictMaxWidth>
       <div className='flex flex-col gap-4'>
         <Header />
         <Card>
@@ -44,6 +45,6 @@ export const StakingLayout = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </RestrictMaxWidth>
   );
 };

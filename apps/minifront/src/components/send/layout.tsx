@@ -5,12 +5,13 @@ import { usePagePath } from '../../fetchers/page-path';
 import { Tabs } from '../shared/tabs';
 import { Outlet } from 'react-router-dom';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
+import { RestrictMaxWidth } from '../shared/restrict-max-width';
 
 export const SendLayout = () => {
   const pathname = usePagePath<SendTab>();
 
   return (
-    <div className='mx-auto max-w-[1276px]'>
+    <RestrictMaxWidth>
       <div className='grid gap-6 md:grid-cols-2 md:gap-4 xl:grid-cols-3 xl:gap-5'>
         <div className='hidden xl:order-1 xl:block' />
         <Card
@@ -27,6 +28,6 @@ export const SendLayout = () => {
           content={sendTabsHelper[pathname].content}
         />
       </div>
-    </div>
+    </RestrictMaxWidth>
   );
 };

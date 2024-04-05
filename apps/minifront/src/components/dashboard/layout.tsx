@@ -5,12 +5,13 @@ import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
 import { Tabs } from '../shared/tabs';
 import { usePagePath } from '../../fetchers/page-path';
 import { DashboardTab } from './types';
+import { RestrictMaxWidth } from '../shared/restrict-max-width';
 
 export const DashboardLayout = () => {
   const pathname = usePagePath<DashboardTab>();
 
   return (
-    <div className='mx-auto max-w-[1276px]'>
+    <RestrictMaxWidth>
       <div className='grid gap-6 md:gap-4 lg:grid-cols-3 xl:gap-5'>
         <Card
           gradient
@@ -26,6 +27,6 @@ export const DashboardLayout = () => {
           content={dashboardTabsHelper[pathname].content}
         />
       </div>
-    </div>
+    </RestrictMaxWidth>
   );
 };
