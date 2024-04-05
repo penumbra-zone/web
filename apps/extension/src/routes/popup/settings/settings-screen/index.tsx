@@ -25,7 +25,7 @@ export const SettingsScreen = ({
           </div>
         )}
 
-        <div className='px-[30px] pb-[30px]'>{children}</div>
+        <div className='flex grow flex-col px-[30px] pb-[30px]'>{children}</div>
       </div>
     </FadeTransition>
   );

@@ -41,20 +41,28 @@ export const Settings = () => {
 
   return (
     <SettingsScreen title='Settings'>
-      <div className='flex flex-1 flex-col items-start gap-5'>
-        {links.map(i => (
-          <CustomLink key={i.href} title={i.title} icon={i.icon} onClick={() => navigate(i.href)} />
-        ))}
-      </div>
-      <div className='mt-5 border-t border-[rgba(75,75,75,0.50)] pt-5'>
-        <CustomLink
-          title='Lock Wallet'
-          icon={<ExitIcon className='size-5 text-muted-foreground' />}
-          onClick={() => {
-            clearSessionPassword();
-            navigate(PopupPath.LOGIN);
-          }}
-        />
+      <div className='flex grow flex-col justify-between'>
+        <div className='flex flex-1 flex-col items-start gap-5'>
+          {links.map(i => (
+            <CustomLink
+              key={i.href}
+              title={i.title}
+              icon={i.icon}
+              onClick={() => navigate(i.href)}
+            />
+          ))}
+        </div>
+
+        <div className='mx-[-30px] border-t border-[rgba(75,75,75,0.50)] p-[30px] pb-0'>
+          <CustomLink
+            title='Lock Wallet'
+            icon={<ExitIcon className='size-5 text-muted-foreground' />}
+            onClick={() => {
+              clearSessionPassword();
+              navigate(PopupPath.LOGIN);
+            }}
+          />
+        </div>
       </div>
     </SettingsScreen>
   );
