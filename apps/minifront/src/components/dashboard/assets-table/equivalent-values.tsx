@@ -11,11 +11,15 @@ export const EquivalentValues = ({ valueView }: { valueView?: ValueView }) => {
     asValueView,
   );
 
-  return equivalentValuesAsValueViews.map(equivalentValueAsValueView => (
-    <ValueViewComponent
-      key={getDisplayDenomFromView(equivalentValueAsValueView)}
-      view={equivalentValueAsValueView}
-      variant='equivalent'
-    />
-  ));
+  return (
+    <div className='flex flex-wrap gap-2'>
+      {equivalentValuesAsValueViews.map(equivalentValueAsValueView => (
+        <ValueViewComponent
+          key={getDisplayDenomFromView(equivalentValueAsValueView)}
+          view={equivalentValueAsValueView}
+          variant='equivalent'
+        />
+      ))}
+    </div>
+  );
 };
