@@ -325,7 +325,6 @@ pub async fn plan_transaction(
         let undelegate = rate_data.build_undelegate(epoch.into(), value.amount);
 
         let metadata = undelegate.unbonding_token().denom();
-
         if storage.get_asset(&metadata.id()).await?.is_none() {
             let metadata_proto = metadata.to_proto();
             let customized_metadata_proto = customize_symbol(metadata_proto);
