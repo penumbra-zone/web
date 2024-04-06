@@ -324,10 +324,14 @@ pub async fn plan_transaction(
 
         let undelegate = rate_data.build_undelegate(epoch.into(), value.amount);
 
-        let metadata_proto = undelegate.unbonding_token().denom().to_proto();
-        let customized_metadata_proto = customize_symbol(metadata_proto);
-        let customized_metadata = Metadata::try_from(customized_metadata_proto)?;
-        storage.add_asset(&customized_metadata).await?;
+        let metadata = undelegate.unbonding_token().denom();
+
+        if let None = storage.get_asset(&metadata.id()).await? {
+            let metadata_proto = metadata.to_proto();
+            let customized_metadata_proto = customize_symbol(metadata_proto);
+            let customized_metadata = Metadata::try_from(customized_metadata_proto)?;
+            storage.add_asset(&customized_metadata).await?;
+        }
 
         actions.push(undelegate.into());
     }
