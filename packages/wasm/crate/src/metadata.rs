@@ -11,36 +11,31 @@ pub fn customize_symbol(metadata: Metadata) -> Metadata {
         .expect("regex is valid")
         .captures(&metadata.base)
     {
-        let id_match = unbonding_match.name(&"id").unwrap().as_str();
+        let id_match = unbonding_match.name("id").unwrap().as_str();
         let shortened_id = id_match
             .chars()
             .take(SHORTENED_ID_LENGTH)
             .collect::<String>();
-        let start_match = unbonding_match.name(&"start").unwrap().as_str();
+        let start_match = unbonding_match.name("start").unwrap().as_str();
 
-        let customized = Metadata {
+        Metadata {
             symbol: format!("unbondUMat{start_match}({shortened_id}…)"),
             ..metadata
-        };
-
-        return customized;
+        }
     } else if let Some(delegation_match) = Regex::new(DELEGATION_TOKEN_REGEX)
         .expect("regex is valid")
         .captures(&metadata.base)
     {
-        let id_match = delegation_match.name(&"id").unwrap().as_str();
+        let id_match = delegation_match.name("id").unwrap().as_str();
         let shortened_id = id_match
             .chars()
             .take(SHORTENED_ID_LENGTH)
             .collect::<String>();
 
-        // let customized = metadata.clone();
-        let customized = Metadata {
+        Metadata {
             symbol: format!("delUM({shortened_id}…)"),
             ..metadata
-        };
-
-        return customized;
+        }
     } else {
         metadata
     }
