@@ -2750,6 +2750,7 @@ dependencies = [
  "penumbra-transaction",
  "prost",
  "rand_core",
+ "regex",
  "serde",
  "serde-wasm-bindgen",
  "serde_json",

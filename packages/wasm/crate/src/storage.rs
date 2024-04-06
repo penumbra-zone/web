@@ -41,6 +41,7 @@ pub struct Tables {
     pub gas_prices: String,
     pub epochs: String,
     pub transactions: String,
+    pub full_sync_height: String,
 }
 
 pub struct IndexedDBStorage {
@@ -171,6 +172,31 @@ impl IndexedDBStorage {
                 &base64::engine::general_purpose::STANDARD,
                 id.to_proto().inner,
             ))?
+            .await?
+            .map(serde_wasm_bindgen::from_value)
+            .transpose()?)
+    }
+
+    pub async fn add_asset(&self, metadata: &Metadata) -> WasmResult<()> {
+        let tx = self
+            .db
+            .transaction_on_one_with_mode(&self.constants.tables.assets, Readwrite)?;
+        let store = tx.object_store(&self.constants.tables.assets)?;
+        let metadata_js = serde_wasm_bindgen::to_value(&metadata.to_proto())?;
+
+        store.put_val_owned(&metadata_js)?;
+
+        Ok(())
+    }
+
+    pub async fn get_full_sync_height(&self) -> WasmResult<Option<u64>> {
+        let tx = self
+            .db
+            .transaction_on_one(&self.constants.tables.full_sync_height)?;
+        let store = tx.object_store(&self.constants.tables.full_sync_height)?;
+
+        Ok(store
+            .get_owned("height")?
             .await?
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)

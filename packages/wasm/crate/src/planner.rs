@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use anyhow::anyhow;
 use ark_ff::UniformRand;
 use decaf377::{Fq, Fr};
+use penumbra_asset::asset::Metadata;
 use penumbra_asset::{asset, Balance, Value};
 use penumbra_dex::swap_claim::SwapClaimPlan;
 use penumbra_dex::{
@@ -31,6 +32,7 @@ use rand_core::OsRng;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 
+use crate::metadata::customize_symbol;
 use crate::note_record::SpendableNoteRecord;
 use crate::storage::IndexedDBStorage;
 use crate::utils;
@@ -319,11 +321,15 @@ pub async fn plan_transaction(
         let rate_data: RateData = rate_data
             .ok_or_else(|| anyhow!("missing rate data in undelegation"))?
             .try_into()?;
-        actions.push(
-            rate_data
-                .build_undelegate(epoch.into(), value.amount)
-                .into(),
-        );
+
+        let undelegate = rate_data.build_undelegate(epoch.into(), value.amount);
+
+        let metadata_proto = undelegate.unbonding_token().denom().to_proto();
+        let customized_metadata_proto = customize_symbol(metadata_proto);
+        let customized_metadata = Metadata::try_from(customized_metadata_proto)?;
+        storage.add_asset(&customized_metadata).await?;
+
+        actions.push(undelegate.into());
     }
 
     for tpr::UndelegateClaim {

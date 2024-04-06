@@ -219,4 +219,5 @@ export const IDB_TABLES: Tables = {
   prices: 'PRICES',
   validator_infos: 'VALIDATOR_INFOS',
   transactions: 'TRANSACTIONS',
+  full_sync_height: 'FULL_SYNC_HEIGHT',
 };
