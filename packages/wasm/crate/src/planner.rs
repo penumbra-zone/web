@@ -23,7 +23,7 @@ use penumbra_proto::DomainType;
 use penumbra_sct::params::SctParameters;
 use penumbra_shielded_pool::{fmd, OutputPlan, SpendPlan};
 use penumbra_stake::rate::RateData;
-use penumbra_stake::{IdentityKey, Penalty, UndelegateClaimPlan};
+use penumbra_stake::{IdentityKey, Penalty, Undelegate, UndelegateClaimPlan};
 use penumbra_transaction::gas::GasCost;
 use penumbra_transaction::memo::MemoPlaintext;
 use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters, TransactionPlan};
@@ -324,13 +324,7 @@ pub async fn plan_transaction(
 
         let undelegate = rate_data.build_undelegate(epoch.into(), value.amount);
 
-        let metadata = undelegate.unbonding_token().denom();
-        if storage.get_asset(&metadata.id()).await?.is_none() {
-            let metadata_proto = metadata.to_proto();
-            let customized_metadata_proto = customize_symbol(metadata_proto);
-            let customized_metadata = Metadata::try_from(customized_metadata_proto)?;
-            storage.add_asset(&customized_metadata).await?;
-        }
+        save_unbonding_token_metadata_if_needed(&undelegate, &storage).await?;
 
         actions.push(undelegate.into());
     }
@@ -488,4 +482,26 @@ pub async fn plan_transaction(
     plan.populate_detection_data(&mut OsRng, fmd_params.precision_bits.into());
 
     Ok(serde_wasm_bindgen::to_value(&plan)?)
+}
+
+/// When planning an undelegate action, there may not be metadata yet in the
+/// IndexedDB database for the unbonding token that the transaction will output.
+/// That's because unbonding tokens are tied to a specific height. If unbonding
+/// tokens for a given validator and a given height don't exist yet, we'll
+/// generate them here and save them to the database, so that they can render
+/// correctly in the transaction approval dialog.
+async fn save_unbonding_token_metadata_if_needed(
+    undelegate: &Undelegate,
+    storage: &IndexedDBStorage,
+) -> WasmResult<()> {
+    let metadata = undelegate.unbonding_token().denom();
+
+    if storage.get_asset(&metadata.id()).await?.is_none() {
+        let metadata_proto = metadata.to_proto();
+        let customized_metadata_proto = customize_symbol(metadata_proto);
+        let customized_metadata = Metadata::try_from(customized_metadata_proto)?;
+        storage.add_asset(&customized_metadata).await
+    } else {
+        Ok(())
+    }
 }
