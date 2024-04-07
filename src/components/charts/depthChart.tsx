@@ -11,6 +11,7 @@ import { throttle } from "lodash";
 import { Chart } from "chart.js/auto";
 import { Text, VStack } from "@chakra-ui/react";
 import { Token } from "@/constants/tokenConstants";
+import zoomPlugin from "chartjs-plugin-zoom";
 
 // Register the necessary components from chart.js
 ChartJS.register(...registerables, annotationPlugin);
@@ -27,11 +28,18 @@ interface DepthChartProps {
 const DepthChart = ({
   buySideData,
   sellSideData,
-  buySideSingleHopData, 
+  buySideSingleHopData,
   sellSideSingleHopData,
   asset1Token,
   asset2Token,
 }: DepthChartProps) => {
+  useEffect(() => {
+    if (typeof window !== "undefined")
+      import("chartjs-plugin-zoom").then((plugin) => {
+        ChartJS.register(plugin.default);
+      });
+  }, []);
+
   const [isMouseOverChart, setIsMouseOverChart] = useState(false);
   console.log(asset1Token, asset2Token);
 
@@ -46,35 +54,55 @@ const DepthChart = ({
 
   // TODO these wont work if theres no data
   // Mid point is the middle of the price between the lowest sell and highest buy
-  const midMarketPrice = (sellSideData[0].x + buySideData[0].x) / 2;
+  let midMarketPrice = 0;
+
+  if (sellSideData.length > 0 && buySideData.length > 0) {
+    midMarketPrice = (sellSideData[0].x + buySideData[0].x) / 2;
+  } else if (sellSideSingleHopData.length > 0) {
+    midMarketPrice = sellSideSingleHopData[0].x;
+  } else {
+    midMarketPrice = buySideSingleHopData[0].x;
+  }
+
   const chartRef = useRef<any>();
 
   // Add an extra data point at the end of the buy dataset
+  // Set default value if data is empty
+  if (buySideData.length === 0) {
+    buySideData = [{ x: 0, y: 0 }];
+  }
+
   const lastBuyPoint = buySideData[buySideData.length - 1];
   const extendedBuySideData = [
     ...buySideData,
     {
-      x:
-        lastBuyPoint.x +
-        (lastBuyPoint.x - buySideData[0].x),
+      x: lastBuyPoint.x + (lastBuyPoint.x - buySideData[0].x),
       y: lastBuyPoint.y,
     },
   ];
 
   // Add an extra data point at the end of the sell dataset
+  // Set default value if data is empty
+  if (sellSideData.length === 0) {
+    sellSideData = [{ x: 0, y: 0 }];
+  }
+
   const lastSellPoint = sellSideData[sellSideData.length - 1];
   const extendedSellSideData = [
     ...sellSideData,
     {
-      x:
-        lastSellPoint.x +
-        (lastSellPoint.x - sellSideData[0].x),
+      x: lastSellPoint.x + (lastSellPoint.x - sellSideData[0].x),
       y: lastSellPoint.y,
     },
   ];
 
   // Repeat for single hop data
-  const lastBuySingleHopPoint = buySideSingleHopData[buySideSingleHopData.length - 1];
+  // Set default value if data is empty
+  if (buySideSingleHopData.length === 0) {
+    buySideSingleHopData = [{ x: 0, y: 0 }];
+  }
+  const lastBuySingleHopPoint =
+    buySideSingleHopData[buySideSingleHopData.length - 1];
   const extendedBuySideSingleHopData = [
     ...buySideSingleHopData,
     {
@@ -85,7 +113,12 @@ const DepthChart = ({
     },
   ];
 
-  const lastSellSingleHopPoint = sellSideSingleHopData[sellSideSingleHopData.length - 1];
+  // Set default value if data is empty
+  if (sellSideSingleHopData.length === 0) {
+    sellSideSingleHopData = [{ x: 0, y: 0 }];
+  }
+  const lastSellSingleHopPoint =
+    sellSideSingleHopData[sellSideSingleHopData.length - 1];
   const extendedSellSideSingleHopData = [
     ...sellSideSingleHopData,
     {
@@ -96,8 +129,8 @@ const DepthChart = ({
     },
   ];
 
-  console.log('multi', buySideData, sellSideData, midMarketPrice);
-  console.log('single', buySideSingleHopData, sellSideSingleHopData);
+  console.log("multi", buySideData, sellSideData, midMarketPrice);
+  console.log("single", buySideSingleHopData, sellSideSingleHopData);
   const data: any = {
     datasets: [
       {
