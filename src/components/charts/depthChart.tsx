@@ -76,7 +76,7 @@ const DepthChart = ({
   const extendedBuySideData = [
     ...buySideData,
     {
-      x: lastBuyPoint.x + (lastBuyPoint.x - buySideData[0].x),
+      x: lastBuyPoint.x + (lastBuyPoint.x - buySideData[0].x*2),
       y: lastBuyPoint.y,
     },
   ];
@@ -91,7 +91,7 @@ const DepthChart = ({
   const extendedSellSideData = [
     ...sellSideData,
     {
-      x: lastSellPoint.x + (lastSellPoint.x - sellSideData[0].x),
+      x: lastSellPoint.x + (lastSellPoint.x*2 - sellSideData[0].x),
       y: lastSellPoint.y,
     },
   ];
@@ -108,7 +108,7 @@ const DepthChart = ({
     {
       x:
         lastBuySingleHopPoint.x +
-        (lastBuySingleHopPoint.x - buySideSingleHopData[0].x),
+        (lastBuySingleHopPoint.x - buySideSingleHopData[0].x*2),
       y: lastBuySingleHopPoint.y,
     },
   ];
@@ -124,7 +124,7 @@ const DepthChart = ({
     {
       x:
         lastSellSingleHopPoint.x +
-        (lastSellSingleHopPoint.x - sellSideSingleHopData[0].x),
+        (lastSellSingleHopPoint.x*2 - sellSideSingleHopData[0].x),
       y: lastSellSingleHopPoint.y,
     },
   ];
@@ -134,7 +134,7 @@ const DepthChart = ({
   const data: any = {
     datasets: [
       {
-        label: "Synthetic Sell",
+        label: "Incl Synthetic Sell",
         data: extendedSellSideData.map((point) => ({
           x: point.x.toFixed(6),
           y: point.y.toFixed(6),
@@ -147,7 +147,7 @@ const DepthChart = ({
         clip: true,
       },
       {
-        label: "Synthetic Buy",
+        label: "Incl Synthetic Buy",
         data: extendedBuySideData
           .map((point) => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) }))
           .reverse(),
