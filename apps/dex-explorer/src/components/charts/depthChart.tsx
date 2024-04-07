@@ -18,6 +18,8 @@ ChartJS.register(...registerables, annotationPlugin);
 interface DepthChartProps {
   buySideData: { x: number; y: number }[];
   sellSideData: { x: number; y: number }[];
+  buySideSingleHopData: { x: number; y: number }[];
+  sellSideSingleHopData: { x: number; y: number }[];
   asset1Token: Token;
   asset2Token: Token;
 }
@@ -25,6 +27,8 @@ interface DepthChartProps {
 const DepthChart = ({
   buySideData,
   sellSideData,
+  buySideSingleHopData, 
+  sellSideSingleHopData,
   asset1Token,
   asset2Token,
 }: DepthChartProps) => {
@@ -40,6 +44,7 @@ const DepthChart = ({
     setIsMouseOverChart(false);
   };
 
+  // TODO these wont work if theres no data
   // Mid point is the middle of the price between the lowest sell and highest buy
   const midMarketPrice = (sellSideData[0].x + buySideData[0].x) / 2;
   const chartRef = useRef<any>();
@@ -68,11 +73,35 @@ const DepthChart = ({
     },
   ];
 
-  console.log(buySideData, sellSideData, midMarketPrice);
+  // Repeat for single hop data
+  const lastBuySingleHopPoint = buySideSingleHopData[buySideSingleHopData.length - 1];
+  const extendedBuySideSingleHopData = [
+    ...buySideSingleHopData,
+    {
+      x:
+        lastBuySingleHopPoint.x +
+        (lastBuySingleHopPoint.x - buySideSingleHopData[0].x),
+      y: lastBuySingleHopPoint.y,
+    },
+  ];
+
+  const lastSellSingleHopPoint = sellSideSingleHopData[sellSideSingleHopData.length - 1];
+  const extendedSellSideSingleHopData = [
+    ...sellSideSingleHopData,
+    {
+      x:
+        lastSellSingleHopPoint.x +
+        (lastSellSingleHopPoint.x - sellSideSingleHopData[0].x),
+      y: lastSellSingleHopPoint.y,
+    },
+  ];
+
+  console.log('multi', buySideData, sellSideData, midMarketPrice);
+  console.log('single', buySideSingleHopData, sellSideSingleHopData);
   const data: any = {
     datasets: [
       {
-        label: "Sell",
+        label: "Synthetic Sell",
         data: extendedSellSideData.map((point) => ({
           x: point.x.toFixed(6),
           y: point.y.toFixed(6),
@@ -85,12 +114,39 @@ const DepthChart = ({
         clip: true,
       },
       {
-        label: "Buy",
+        label: "Synthetic Buy",
         data: extendedBuySideData
           .map((point) => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) }))
           .reverse(),
         borderColor: "rgba(51, 255, 87, 0.6)", // Neon Green
         backgroundColor: "rgba(51, 255, 87, 0.6)",
+        fill: "origin",
+        // horizontal lines on buy side need to start at point on right and continue to the left
+        stepped: "after",
+        yAxisID: "right-y",
+        clip: true,
+      },
+      // Single hops darker data
+      {
+        label: "Direct Sell",
+        data: extendedSellSideSingleHopData.map((point) => ({
+          x: point.x.toFixed(6),
+          y: point.y.toFixed(6),
+        })),
+        borderColor: "rgba(255, 73, 255, .6)", // Neon Red
+        backgroundColor: "rgba(255, 73, 255, .6)",
+        fill: "origin",
+        stepped: "before",
+        yAxisID: "left-y",
+        clip: true,
+      },
+      {
+        label: "Direct Buy",
+        data: extendedBuySideSingleHopData
+          .map((point) => ({ x: point.x.toFixed(6), y: point.y.toFixed(6) }))
+          .reverse(),
+        borderColor: "rgba(255, 255, 87, .6)", // Neon Green
+        backgroundColor: "rgba(255, 255, 87, .6)",
         fill: "origin",
         // horizontal lines on buy side need to start at point on right and continue to the left
         stepped: "after",
@@ -347,7 +403,7 @@ const DepthChart = ({
     },
     elements: {
       point: {
-        radius: 1, // Keep the small radius for points
+        radius: 0, // Keep the small radius for points
       },
       line: {
         tension: 0, // Straight lines
