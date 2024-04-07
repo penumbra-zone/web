@@ -460,10 +460,11 @@ export default function TradingPairs() {
       depthChartSingleHopAsset1BuyPoints
     );
 
+    // TODO: these should really be &&s but theres no real market so sometimes they can be 0 (we should also handle this edgecase gracefully)
     if (
-      depthChartMultiHopAsset1SellPoints.length > 0 &&
-      depthChartSingleHopAsset1SellPoints.length > 0 &&
-      depthChartMultiHopAsset1BuyPoints.length > 0 &&
+      depthChartMultiHopAsset1SellPoints.length > 0 ||
+      depthChartSingleHopAsset1SellPoints.length > 0 ||
+      depthChartMultiHopAsset1BuyPoints.length > 0 ||
       depthChartSingleHopAsset1BuyPoints.length > 0
     ) {
       setIsChartLoading(false);
@@ -483,58 +484,35 @@ export default function TradingPairs() {
         <Center height="100vh">
           <LoadingSpinner />
         </Center>
-      ) : simulatedMultiHopAsset1SellData &&
-        simulatedSingleHopAsset1SellData &&
-        simulatedMultiHopAsset1BuyData &&
-        simulatedSingleHopAsset1BuyData ? (
+      ) : !isChartLoading ? (
         <Center height="100vh">
           <Box className="neon-box" padding={"3em"}>
             <VStack>
-              {/* Check if singleHop flag is present */}
-              {!singleHop ? (
-                <>
-                  <Text
-                    fontFamily="monospace"
-                    paddingBottom={"0em"}
-                    fontSize={"md"}
-                  >{`${asset1Token!.symbol} / ${asset2Token!.symbol}`}</Text>
-                  <Text
-                    fontSize={"sm"}
-                    fontFamily="monospace"
-                    paddingBottom={"1em"}
-                  >
-                    Synthetic Liquidity
-                  </Text>
-                  {/* Note the reversal of names here since buy and sell side is inverted at this stage (i.e. sell side == buy demand side) */}
-                  <DepthChart
-                    buySideData={depthChartMultiHopAsset1SellPoints}
-                    sellSideData={depthChartMultiHopAsset1BuyPoints}
-                    asset1Token={asset1Token!}
-                    asset2Token={asset2Token!}
-                  />
-                </>
-              ) : (
-                <>
-                  <Text
-                    fontFamily="monospace"
-                    paddingBottom={"0em"}
-                    fontSize={"md"}
-                  >{`${asset1Token!.symbol} / ${asset2Token!.symbol}`}</Text>
-                  <Text
-                    fontSize={"sm"}
-                    fontFamily="monospace"
-                    paddingBottom={"1em"}
-                  >
-                    Direct Liquidity
-                  </Text>
-                  <DepthChart
-                    buySideData={depthChartSingleHopAsset1SellPoints}
-                    sellSideData={depthChartSingleHopAsset1BuyPoints}
-                    asset1Token={asset1Token!}
-                    asset2Token={asset2Token!}
-                  />
-                </>
-              )}
+              <>
+                <Text
+                  fontFamily="monospace"
+                  paddingBottom={"0em"}
+                  fontSize={"md"}
+                >{`${asset1Token!.symbol} / ${asset2Token!.symbol}`}</Text>
+                {/*
+                <Text
+                  fontSize={"sm"}
+                  fontFamily="monospace"
+                  paddingBottom={"1em"}
+                >
+                  Liquidity
+                </Text>
+      */}
+                {/* Note the reversal of names here since buy and sell side is inverted at this stage (i.e. sell side == buy demand side) */}
+                <DepthChart
+                  buySideData={depthChartMultiHopAsset1SellPoints}
+                  sellSideData={depthChartMultiHopAsset1BuyPoints}
+                  buySideSingleHopData={depthChartSingleHopAsset1SellPoints}
+                  sellSideSingleHopData={depthChartSingleHopAsset1BuyPoints}
+                  asset1Token={asset1Token!}
+                  asset2Token={asset2Token!}
+                />
+              </>
             </VStack>
           </Box>
         </Center>
