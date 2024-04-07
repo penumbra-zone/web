@@ -93,7 +93,8 @@ export default function TradingPairs() {
 
   // ! Note this needs to be kind of extreme for now due to limited 'real' liquidity
   // TODO: Maybe make this configurable, for now it will only show 50% of depth chart past best sell/buy prices
-  const bestPriceDeviationPercent = 50; // 50%,
+  const bestPriceDeviationPercent = 75; // 75%, 
+  // TODO: ^ Override to 100% to show all liquidity
 
   // Sell Side
   const [bestAsset1SellPriceMultiHop, setBestAsset1SellPriceMultiHop] =
