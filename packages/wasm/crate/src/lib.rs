@@ -8,6 +8,7 @@ pub mod build;
 pub mod dex;
 pub mod error;
 pub mod keys;
+pub mod metadata;
 pub mod note_record;
 pub mod planner;
 pub mod storage;

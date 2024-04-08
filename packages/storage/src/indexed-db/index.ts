@@ -118,7 +118,10 @@ export class IndexedDb implements IndexedDbInterface {
 
     const instance = new this(db, new IbdUpdater(db), constants, chainId);
     await instance.saveLocalAssetsMetadata(); // Pre-load asset metadata
-    await instance.addEpoch(0n); // Create first epoch
+
+    const existing0thEpoch = await instance.getEpochByHeight(0n);
+    if (!existing0thEpoch) await instance.addEpoch(0n); // Create first epoch
+
     return instance;
   }
   close(): void {

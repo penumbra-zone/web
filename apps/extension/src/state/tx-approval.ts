@@ -66,9 +66,9 @@ export const createTxApprovalSlice = (): SliceCreator<TxApprovalSlice> => (set, 
     const getMetadata = async (assetId: AssetId) => {
       try {
         const { denomMetadata } = await viewClient.assetMetadataById({ assetId });
-        return denomMetadata ?? new Metadata();
+        return denomMetadata ?? new Metadata({ penumbraAssetId: assetId });
       } catch {
-        return new Metadata();
+        return new Metadata({ penumbraAssetId: assetId });
       }
     };
 
