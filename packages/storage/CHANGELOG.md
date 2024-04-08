@@ -1,5 +1,11 @@
 # @penumbra-zone/storage
 
+## 2.0.1
+
+### Patch Changes
+
+- 66c2407: v6.2.0 release
+
 ## 2.0.0
 
 ### Major Changes

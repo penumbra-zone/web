@@ -1,5 +1,22 @@
 # chrome-extension
 
+## 6.2.0
+
+### Minor Changes
+
+- 66c2407: v6.2.0 release
+
+### Patch Changes
+
+- Updated dependencies [66c2407]
+  - @penumbra-zone/wasm@3.0.0
+  - @penumbra-zone/storage@2.0.1
+  - @penumbra-zone/perspective@1.0.1
+  - @penumbra-zone/query@2.0.1
+  - @penumbra-zone/router@2.0.1
+  - @penumbra-zone/services@2.0.1
+  - @penumbra-zone/ui@2.0.1
+
 ## 6.0.0
 
 ### Major Changes
