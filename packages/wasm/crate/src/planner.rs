@@ -32,7 +32,7 @@ use rand_core::OsRng;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 
-use crate::metadata::customize_symbol;
+use crate::metadata::customize_symbol_inner;
 use crate::note_record::SpendableNoteRecord;
 use crate::storage::IndexedDBStorage;
 use crate::utils;
@@ -498,7 +498,7 @@ async fn save_unbonding_token_metadata_if_needed(
 
     if storage.get_asset(&metadata.id()).await?.is_none() {
         let metadata_proto = metadata.to_proto();
-        let customized_metadata_proto = customize_symbol(metadata_proto);
+        let customized_metadata_proto = customize_symbol_inner(metadata_proto)?;
         let customized_metadata = Metadata::try_from(customized_metadata_proto)?;
         storage.add_asset(&customized_metadata).await
     } else {

@@ -42,6 +42,9 @@ pub enum WasmError {
 
     #[error("{0}")]
     Wasm(#[from] serde_wasm_bindgen::Error),
+
+    #[error("{0}")]
+    RegexError(#[from] regex::Error),
 }
 
 impl From<WasmError> for serde_wasm_bindgen::Error {
