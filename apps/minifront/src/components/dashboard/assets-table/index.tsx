@@ -43,7 +43,7 @@ export default function AssetsTable() {
           <TableHeader key={account.account} className='group'>
             <TableRow>
               <TableHead colSpan={2}>
-                <div className='flex max-w-full flex-col justify-center gap-2 md:flex-row pt-8 group-[:first-of-type]:pt-0'>
+                <div className='flex max-w-full flex-col justify-center gap-2 pt-8 group-[:first-of-type]:pt-0 md:flex-row'>
                   <div className='flex items-center justify-center gap-2'>
                     <AddressIcon address={account.address} size={20} />
                     <h2 className='whitespace-nowrap font-bold md:text-base xl:text-xl'>

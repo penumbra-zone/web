@@ -35,7 +35,7 @@ export const Layout = () => {
   return (
     <>
       <HeadTag />
-      <div className='flex min-h-screen w-screen flex-col'>
+      <div className='flex min-h-screen w-full flex-col'>
         <Header />
         <main className='flex size-full flex-1 px-4'>
           <Outlet />
