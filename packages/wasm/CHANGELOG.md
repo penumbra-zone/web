@@ -1,5 +1,11 @@
 # @penumbra-zone/wasm
 
+## 3.0.0
+
+### Major Changes
+
+- 66c2407: v6.2.0 release
+
 ## 2.0.0
 
 ### Major Changes

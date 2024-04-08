@@ -1,5 +1,16 @@
 # minifront
 
+## 4.1.0
+
+### Minor Changes
+
+- 66c2407: v6.2.0 release
+
+### Patch Changes
+
+- @penumbra-zone/perspective@1.0.1
+- @penumbra-zone/ui@2.0.1
+
 ## 4.0.0
 
 ### Major Changes
