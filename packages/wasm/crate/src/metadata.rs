@@ -66,3 +66,63 @@ fn shorten_id(captures: &regex::Captures) -> WasmResult<String> {
         .take(SHORTENED_ID_LENGTH)
         .collect())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn get_metadata_base() -> Metadata {
+        Metadata {
+            base: String::from(""),
+            description: String::from(""),
+            denom_units: Vec::new(),
+            display: String::from(""),
+            images: Vec::new(),
+            name: String::from(""),
+            penumbra_asset_id: None,
+            symbol: String::from(""),
+        }
+    }
+
+    #[test]
+    fn it_returns_non_staking_metadata_as_is() {
+        let metadata = Metadata {
+            base: String::from("upenumbra"),
+            display: String::from("penumbra"),
+            name: String::from("Penumbra"),
+            symbol: String::from("UM"),
+            ..get_metadata_base()
+        };
+        let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
+
+        assert_eq!(metadata, customized_metadata);
+    }
+
+    #[test]
+    fn it_modifies_unbonding_token_symbol() {
+        let metadata = Metadata {
+            base: String::from("uunbonding_start_at_1234_penumbravalid1abcdef123456"),
+            display: String::from("unbonding_start_at_1234_penumbravalid1abcdef123456"),
+            name: String::from("Unbonding Token"),
+            symbol: String::from(""),
+            ..get_metadata_base()
+        };
+        let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
+
+        assert_eq!(customized_metadata.symbol, "unbondUMat1234(abcdef12...)");
+    }
+
+    #[test]
+    fn it_modifies_delegation_token_symbol() {
+        let metadata = Metadata {
+            base: String::from("udelegation_penumbravalid1abcdef123456"),
+            display: String::from("delegation_penumbravalid1abcdef123456"),
+            name: String::from("Delegation Token"),
+            symbol: String::from(""),
+            ..get_metadata_base()
+        };
+        let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
+
+        assert_eq!(customized_metadata.symbol, "delUM(abcdef12...)");
+    }
+}
