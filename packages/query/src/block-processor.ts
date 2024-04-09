@@ -423,7 +423,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     endHeightOfPreviousEpoch: bigint,
     latestKnownBlockHeight: bigint,
   ): Promise<void> {
-    const { sctParams } = await this.querier.app.appParams();
+    const { sctParams } = (await this.indexedDb.getAppParams()) ?? {};
     const nextEpochStartHeight = endHeightOfPreviousEpoch + 1n;
 
     await this.indexedDb.addEpoch(nextEpochStartHeight);
