@@ -34,6 +34,10 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
+vi.mock('@penumbra-zone/wasm/src/metadata', () => ({
+  customizeSymbol: (metadata: Metadata) => metadata,
+}));
+
 const mockBalances = vi.hoisted(() => vi.fn());
 vi.mock('./balances', () => ({
   balances: mockBalances,
