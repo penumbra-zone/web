@@ -8,7 +8,7 @@ use crate::{error::WasmResult, utils};
 
 pub static UNBONDING_TOKEN_REGEX: &str = "^uunbonding_(?P<data>start_at_(?P<start>[0-9]+)_(?P<validator>penumbravalid1(?P<id>[a-zA-HJ-NP-Z0-9]+)))$";
 pub static DELEGATION_TOKEN_REGEX: &str =
-    "^udelegation_(?P<data>penumbravalid1[a-zA-HJ-NP-Z0-9]+)$";
+    "^udelegation_(?P<data>penumbravalid1(?P<id>[a-zA-HJ-NP-Z0-9]+))$";
 pub static SHORTENED_ID_LENGTH: usize = 8;
 
 #[wasm_bindgen]
