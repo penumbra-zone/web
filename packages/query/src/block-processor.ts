@@ -33,7 +33,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
-import {NUMERAIRES, STAKING_TOKEN_METADATA} from '@penumbra-zone/constants/src/assets';
+import { NUMERAIRES, STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/src/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';

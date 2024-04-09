@@ -25,10 +25,7 @@ export interface ServicesConfig {
 }
 
 const isCompleteServicesConfig = (c: Partial<ServicesConfig>): c is Required<ServicesConfig> =>
-  c.grpcEndpoint != null &&
-  c.idbVersion != null &&
-  c.walletId != null &&
-  c.fullViewingKey != null;
+  c.grpcEndpoint != null && c.idbVersion != null && c.walletId != null && c.fullViewingKey != null;
 
 export class Services implements ServicesInterface {
   private walletServicesPromise: Promise<WalletServices> | undefined;

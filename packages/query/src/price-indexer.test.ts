@@ -1,20 +1,17 @@
-import { updatePricesFromSwaps } from './price-indexer';
+import { deriveAndSavePriceFromBSOD } from './price-indexer';
 import { BatchSwapOutputData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
-import {AssetId, Metadata} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { base64ToUint8Array } from '@penumbra-zone/types/src/base64';
 
 describe('updatePricesFromSwaps()', () => {
   let indexedDbMock: IndexedDbInterface;
   const updatePriceMock: Mock = vi.fn();
   const height = 123n;
-  const numeraireAssetId =   new AssetId({
+  const numeraireAssetId = new AssetId({
     inner: base64ToUint8Array('reum7wQmk/owgvGMWMZn/6RFPV24zIKq3W6In/WwZgg='),
-  })
-  const numeraires: Metadata [] = [ new Metadata({
-    penumbraAssetId: numeraireAssetId
-  })];
+  });
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -38,7 +35,7 @@ describe('updatePricesFromSwaps()', () => {
       }),
     ];
 
-    await updatePricesFromSwaps(indexedDbMock, numeraires, swapOutputs, height);
+    await deriveAndSavePriceFromBSOD(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(1);
     expect(updatePriceMock).toBeCalledWith(asset1, numeraireAssetId, 4.8, height);
   });
@@ -57,7 +54,7 @@ describe('updatePricesFromSwaps()', () => {
       }),
     ];
 
-    await updatePricesFromSwaps(indexedDbMock, numeraires, swapOutputs, height);
+    await deriveAndSavePriceFromBSOD(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(1);
     expect(updatePriceMock).toBeCalledWith(asset1, numeraireAssetId, 318.5, height);
   });
@@ -76,7 +73,7 @@ describe('updatePricesFromSwaps()', () => {
       }),
     ];
 
-    await updatePricesFromSwaps(indexedDbMock, numeraires, swapOutputs, height);
+    await deriveAndSavePriceFromBSOD(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(0);
   });
 
@@ -93,7 +90,7 @@ describe('updatePricesFromSwaps()', () => {
         unfilled1: { lo: 100n },
       }),
     ];
-    await updatePricesFromSwaps(indexedDbMock, numeraires, swapOutputs, height);
+    await deriveAndSavePriceFromBSOD(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(1);
     expect(updatePriceMock).toBeCalledWith(asset1, numeraireAssetId, 8, height);
   });
@@ -112,7 +109,7 @@ describe('updatePricesFromSwaps()', () => {
       }),
     ];
 
-    await updatePricesFromSwaps(indexedDbMock, numeraires, swapOutputs, height);
+    await deriveAndSavePriceFromBSOD(indexedDbMock, numeraireAssetId, swapOutputs, height);
     expect(updatePriceMock).toBeCalledTimes(0);
   });
 });

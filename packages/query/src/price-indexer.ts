@@ -1,7 +1,10 @@
 import { BatchSwapOutputData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import { divideAmounts, isZero, subtractAmounts } from '@penumbra-zone/types/src/amount';
-import {AssetId, Metadata} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {
+  AssetId,
+  Metadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import {
   getDelta1Amount,
@@ -48,7 +51,7 @@ export const calculatePrice = (delta: Amount, unfilled: Amount, lambda: Amount):
  */
 export const updatePricesFromSwaps = async (
   indexedDb: IndexedDbInterface,
-  numeraires: Metadata [],
+  numeraires: Metadata[],
   swapOutputs: BatchSwapOutputData[],
   height: bigint,
 ) => {
@@ -56,11 +59,14 @@ export const updatePricesFromSwaps = async (
     const numeraireAssetId = getAssetId(numeraireMetadata);
     await deriveAndSavePriceFromBSOD(indexedDb, numeraireAssetId, swapOutputs, height);
   }
-
 };
 
-const deriveAndSavePriceFromBSOD = async (indexedDb: IndexedDbInterface, numeraireAssetId: AssetId, swapOutputs: BatchSwapOutputData[], height:bigint) => {
-
+export const deriveAndSavePriceFromBSOD = async (
+  indexedDb: IndexedDbInterface,
+  numeraireAssetId: AssetId,
+  swapOutputs: BatchSwapOutputData[],
+  height: bigint,
+) => {
   for (const swapOutput of swapOutputs) {
     const swapAsset1 = getSwapAsset1(swapOutput);
     const swapAsset2 = getSwapAsset2(swapOutput);
@@ -73,9 +79,9 @@ const deriveAndSavePriceFromBSOD = async (indexedDb: IndexedDbInterface, numerai
       pricedAsset = swapAsset1;
       // numerairePerUnit = lambda2/(delta1-unfilled1)
       numerairePerUnit = calculatePrice(
-          getDelta1Amount(swapOutput),
-          getUnfilled1Amount(swapOutput),
-          getLambda2Amount(swapOutput),
+        getDelta1Amount(swapOutput),
+        getUnfilled1Amount(swapOutput),
+        getLambda2Amount(swapOutput),
       );
     }
     // case for trading pair <numéraire,pricedAsset>
@@ -83,9 +89,9 @@ const deriveAndSavePriceFromBSOD = async (indexedDb: IndexedDbInterface, numerai
       pricedAsset = swapAsset2;
       // numerairePerUnit = lambda1/(delta2-unfilled2)
       numerairePerUnit = calculatePrice(
-          getDelta2Amount(swapOutput),
-          getUnfilled2Amount(swapOutput),
-          getLambda1Amount(swapOutput),
+        getDelta2Amount(swapOutput),
+        getUnfilled2Amount(swapOutput),
+        getLambda1Amount(swapOutput),
       );
     }
 
@@ -93,4 +99,4 @@ const deriveAndSavePriceFromBSOD = async (indexedDb: IndexedDbInterface, numerai
 
     await indexedDb.updatePrice(pricedAsset, numeraireAssetId, numerairePerUnit, height);
   }
-}
+};
