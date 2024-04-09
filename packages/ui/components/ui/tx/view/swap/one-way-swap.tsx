@@ -7,7 +7,7 @@ import { getAmount, getSymbolFromValueView } from '@penumbra-zone/getters/src/va
  * Renders a one-way swap (which should be the only kind of swap that ever
  * happens) like this:
  *
- * 1.23INPUT -> 4.56OUTPUT (7.89 unfilled)
+ * 1.23INPUT -> 4.56OUTPUT
  */
 export const OneWaySwap = ({ input, output }: { input: ValueView; output: ValueView }) => {
   const outputAmount = getAmount.optional()(output);
