@@ -2,7 +2,7 @@ import type { Impl } from '.';
 import { servicesCtx } from '../../ctx/prax';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { sha256Hash } from '@penumbra-zone/crypto-web/src/sha256';
+import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
 

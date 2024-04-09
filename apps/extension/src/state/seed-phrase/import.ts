@@ -4,7 +4,7 @@ import {
   isInWordList,
   SeedPhraseLength,
   validateSeedPhrase,
-} from '@penumbra-zone/crypto-web/src/mnemonic';
+} from '@penumbra-zone/crypto-web/mnemonic';
 
 export interface ImportFields {
   phrase: string[];

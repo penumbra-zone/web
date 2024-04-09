@@ -1,5 +1,5 @@
 import { AllSlices, SliceCreator } from '.';
-import { Key, KeyJson, KeyPrint } from '@penumbra-zone/crypto-web/src/encryption';
+import { Key, KeyJson, KeyPrint } from '@penumbra-zone/crypto-web/encryption';
 import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
 import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/types';
 import { SessionStorageState } from '@penumbra-zone/storage/src/chrome/session';
