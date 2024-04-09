@@ -3,7 +3,6 @@ import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { TransactionIdComponent } from '../transaction-id';
 import { getOneWaySwapValues, isOneWaySwap } from '@penumbra-zone/types/src/swap';
 import { OneWaySwap } from './one-way-swap';
-import { TwoWaySwap } from './two-way-swap';
 import { ValueWithAddress } from '../value-with-address';
 import {
   getAddressView,
@@ -42,11 +41,8 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
         visibleContent={
           <div className='flex flex-col gap-4'>
             <ValueWithAddress addressView={addressView} label='to'>
-              {oneWaySwap ? (
-                <OneWaySwap input={oneWaySwap.input} output={oneWaySwap.output} />
-              ) : (
-                <TwoWaySwap swapView={value} />
-              )}
+              {oneWaySwap && <OneWaySwap input={oneWaySwap.input} output={oneWaySwap.output} />}
+              {!oneWaySwap && <>Two-way swaps are not supported in this UI.</>}
             </ValueWithAddress>
 
             <ActionDetails>
