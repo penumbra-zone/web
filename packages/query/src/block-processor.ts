@@ -25,7 +25,7 @@ import { backOff } from 'exponential-backoff';
 import type { BlockProcessorInterface } from '@penumbra-zone/types/src/block-processor';
 import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
-import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
+import { customizeSymbol } from '@penumbra-zone/wasm/src/metadata';
 import { updatePricesFromSwaps } from './price-indexer';
 import {
   AssetId,

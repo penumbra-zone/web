@@ -12,6 +12,9 @@ pub static DELEGATION_TOKEN_REGEX: &str =
 pub static SHORTENED_ID_LENGTH: usize = 8;
 
 #[wasm_bindgen]
+/// Given a binary-encoded `Metadata`, returns a new binary-encoded `Metadata`
+/// with the symbol customized if the token is one of several specific types
+/// that don't have built-in symbols.
 pub fn customize_symbol(metadata_bytes: &[u8]) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();
 
@@ -24,6 +27,8 @@ pub fn customize_symbol(metadata_bytes: &[u8]) -> WasmResult<Vec<u8>> {
     }
 }
 
+/// Given a `Metadata`, returns a new `Metadata` with the symbol customized if
+/// the token is one of several specific types that don't have built-in symbols.
 pub fn customize_symbol_inner(metadata: Metadata) -> WasmResult<Metadata> {
     let unbonding_re = Regex::new(UNBONDING_TOKEN_REGEX)?;
     let delegation_re = Regex::new(DELEGATION_TOKEN_REGEX)?;
