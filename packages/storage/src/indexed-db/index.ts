@@ -477,6 +477,9 @@ export class IndexedDb implements IndexedDbInterface {
     const previousEpoch = cursor?.value ? Epoch.fromJson(cursor.value) : undefined;
     const index = previousEpoch?.index !== undefined ? previousEpoch.index + 1n : 0n;
 
+    // avoid saving the same epoch twice
+    if (previousEpoch?.startHeight === startHeight) return;
+
     const newEpoch = {
       startHeight: startHeight.toString(),
       index: index.toString(),

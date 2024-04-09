@@ -545,6 +545,13 @@ describe('IndexedDb', () => {
         expect(result2?.index).toBe(2n);
         expect(result3?.index).toBe(3n);
       });
+
+      it('should not save the epoch with the same startHeight twice', async () => {
+        await db.addEpoch(epoch3.startHeight);
+
+        const result = await db.getEpochByHeight(350n);
+        expect(result?.index).toBe(3n);
+      });
     });
 
     describe('getEpochByHeight', () => {
