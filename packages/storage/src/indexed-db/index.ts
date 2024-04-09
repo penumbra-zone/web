@@ -60,7 +60,7 @@ import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
 import { bech32WalletId } from '@penumbra-zone/bech32/src/wallet-id';
-import { getAssetId } from '@penumbra-zone/getters/dist/metadata';
+import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
