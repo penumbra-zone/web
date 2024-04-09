@@ -39,16 +39,6 @@ export const calculatePrice = (delta: Amount, unfilled: Amount, lambda: Amount):
     : divideAmounts(lambda, filledAmount).toNumber();
 };
 
-/**
- * Each 'BatchSwapOutputData' (BSOD) can generate up to two prices
- * Each BSOD in block has a unique trading pair
- * Trading pair has a canonical ordering, there's only one trading pair per pair of assets
- * Each BSOD can generate up to two prices
- * 1. pricedAsset -> numeraire (selling price)
- * 2. numeraire -> pricedAsset (buying price)
- * This function processes only (1) price and ignores (2) price
- * We can get a BSOD with zero deltas(inputs), and we shouldn't save the price in that case
- */
 export const updatePricesFromSwaps = async (
   indexedDb: IndexedDbInterface,
   numeraires: Metadata[],
@@ -61,6 +51,16 @@ export const updatePricesFromSwaps = async (
   }
 };
 
+/**
+ * Each 'BatchSwapOutputData' (BSOD) can generate up to two prices
+ * Each BSOD in block has a unique trading pair
+ * Trading pair has a canonical ordering, there's only one trading pair per pair of assets
+ * Each BSOD can generate up to two prices
+ * 1. pricedAsset -> numeraire (selling price)
+ * 2. numeraire -> pricedAsset (buying price)
+ * This function processes only (1) price and ignores (2) price
+ * We can get a BSOD with zero deltas(inputs), and we shouldn't save the price in that case
+ */
 export const deriveAndSavePriceFromBSOD = async (
   indexedDb: IndexedDbInterface,
   numeraireAssetId: AssetId,

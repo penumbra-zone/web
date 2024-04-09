@@ -9,6 +9,11 @@ export const localAssets: Metadata[] = LocalAssetRegistry.map(a =>
 export const NUMERAIRE_DENOMS: string[] = ['test_usd', 'usdc'];
 export const NUMERAIRES: Metadata[] = localAssets.filter(m => NUMERAIRE_DENOMS.includes(m.display));
 
+export const PRICE_RELEVANCE_THRESHOLDS = {
+  delegationToken: 719,
+  default: 200,
+  // Додайте інші типи токенів та їх пороги тут
+};
 export const STAKING_TOKEN = 'penumbra';
 export const STAKING_TOKEN_METADATA = localAssets.find(
   metadata => metadata.display === STAKING_TOKEN,

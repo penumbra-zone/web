@@ -73,8 +73,8 @@ class BalancesAggregator {
   constructor(
     private readonly ctx: HandlerContext,
     private readonly indexedDb: IndexedDbInterface,
-    private readonly latestBlockHeight: bigint
-) {}
+    private readonly latestBlockHeight: bigint,
+  ) {}
 
   async add(n: SpendableNoteRecord) {
     const accountNumber = n.addressIndex?.account ?? 0;
@@ -183,8 +183,11 @@ class BalancesAggregator {
       });
     } else {
       const assetMetadata = new Metadata(denomMetadata);
-      if (assetId?.inner && !this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)]) {
-        const prices = await this.indexedDb.getPricesForAsset(assetMetadata, this.latestBlockHeight);
+      if (!this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)]) {
+        const prices = await this.indexedDb.getPricesForAsset(
+          assetMetadata,
+          this.latestBlockHeight,
+        );
         this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)] = prices;
       }
 

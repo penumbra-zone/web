@@ -24,7 +24,11 @@ import {
   IdentityKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { assetPatterns, localAssets } from '@penumbra-zone/constants/src/assets';
+import {
+  assetPatterns,
+  localAssets,
+  PRICE_RELEVANCE_THRESHOLDS,
+} from '@penumbra-zone/constants/src/assets';
 import {
   Position,
   PositionId,
@@ -56,7 +60,7 @@ import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
 import { bech32WalletId } from '@penumbra-zone/bech32/src/wallet-id';
-import {getAssetId} from "@penumbra-zone/getters/dist/metadata";
+import { getAssetId } from '@penumbra-zone/getters/dist/metadata';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -584,11 +588,26 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
-  async getPricesForAsset(assetMetadata: Metadata): Promise<EstimatedPrice[]> {
+  async getPricesForAsset(
+    assetMetadata: Metadata,
+    latestBlockHeight: bigint,
+  ): Promise<EstimatedPrice[]> {
     const base64AssetId = uint8ArrayToBase64(getAssetId(assetMetadata).inner);
     const results = await this.db.getAllFromIndex('PRICES', 'pricedAsset', base64AssetId);
 
-    return results.map(price => EstimatedPrice.fromJson(price));
+    const priceRelevanceThreshold = this.determinePriceRelevanceThresholdForAsset(assetMetadata);
+    const minHeight = latestBlockHeight - BigInt(priceRelevanceThreshold);
+
+    return results
+      .map(price => EstimatedPrice.fromJson(price))
+      .filter(price => price.asOfHeight >= minHeight);
+  }
+
+  private determinePriceRelevanceThresholdForAsset(assetMetadata: Metadata): number {
+    if (assetPatterns.delegationToken.capture(assetMetadata.display)) {
+      return PRICE_RELEVANCE_THRESHOLDS.delegationToken;
+    }
+    return PRICE_RELEVANCE_THRESHOLDS.default;
   }
 
   private addSctUpdates(txs: IbdUpdates, sctUpdates: ScanBlockResult['sctUpdates']): void {
