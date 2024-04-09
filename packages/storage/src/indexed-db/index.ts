@@ -56,6 +56,7 @@ import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
 import { bech32WalletId } from '@penumbra-zone/bech32/src/wallet-id';
+import {getAssetId} from "@penumbra-zone/getters/dist/metadata";
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -583,8 +584,8 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
-  async getPricesForAsset(assetId: AssetId): Promise<EstimatedPrice[]> {
-    const base64AssetId = uint8ArrayToBase64(assetId.inner);
+  async getPricesForAsset(assetMetadata: Metadata): Promise<EstimatedPrice[]> {
+    const base64AssetId = uint8ArrayToBase64(getAssetId(assetMetadata).inner);
     const results = await this.db.getAllFromIndex('PRICES', 'pricedAsset', base64AssetId);
 
     return results.map(price => EstimatedPrice.fromJson(price));

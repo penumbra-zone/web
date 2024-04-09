@@ -99,7 +99,7 @@ export interface IndexedDbInterface {
     numerairePerUnit: number,
     height: bigint,
   ): Promise<void>;
-  getPricesForAsset(assetId: AssetId): Promise<EstimatedPrice[]>;
+  getPricesForAsset(assetMetadata: Metadata, latestBlockHeight: bigint): Promise<EstimatedPrice[]>;
 }
 
 export interface PenumbraDb extends DBSchema {
