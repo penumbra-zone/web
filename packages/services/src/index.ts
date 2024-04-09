@@ -96,7 +96,7 @@ export class Services implements ServicesInterface {
   }
 
   private async initializeWalletServices(): Promise<WalletServices> {
-    const { walletId, fullViewingKey, idbVersion: dbVersion, numeraireAssetId } = await this.config;
+    const { walletId, fullViewingKey, idbVersion: dbVersion } = await this.config;
     const params = await this.querier.app.appParams();
     if (!params.sctParams?.epochDuration) throw new Error('Epoch duration unknown');
     const {
@@ -123,7 +123,6 @@ export class Services implements ServicesInterface {
       viewServer,
       querier: this.querier,
       indexedDb,
-      numeraireAssetId,
     });
 
     return { viewServer, blockProcessor, indexedDb, querier: this.querier };

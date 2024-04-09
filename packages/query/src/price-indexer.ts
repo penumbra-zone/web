@@ -53,8 +53,8 @@ export const updatePricesFromSwaps = async (
   height: bigint,
 ) => {
   for (const numeraireMetadata of numeraires) {
-    let numeraireAssetId = getAssetId(numeraireMetadata);
-    deriveAndSavePriceFromBSOD(indexedDb, numeraireAssetId, swapOutputs, height);
+    const numeraireAssetId = getAssetId(numeraireMetadata);
+    await deriveAndSavePriceFromBSOD(indexedDb, numeraireAssetId, swapOutputs, height);
   }
 
 };
