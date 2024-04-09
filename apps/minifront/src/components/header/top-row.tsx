@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@penumbra-zone/ui/components/ui/tooltip';
-import { NetworksPopover } from '@penumbra-zone/ui/components/ui/networks-popover';
+import { Network } from '@penumbra-zone/ui/components/ui/network';
 import { PagePath } from '../metadata/paths';
 import { TabletNavMenu } from './tablet-nav-menu';
 import { LayoutLoaderResult } from '../layout';
@@ -64,7 +64,7 @@ export const TopRow = () => {
 
         {'chainId' in result ? (
           <div className='order-2 flex grow justify-center md:order-none'>
-            <NetworksPopover name={result.chainId} />
+            <Network name={result.chainId} />
           </div>
         ) : null}
       </div>

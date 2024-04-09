@@ -1,7 +1,7 @@
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
-import { NetworksPopover } from '@penumbra-zone/ui/components/ui/networks-popover';
+import { Network } from '@penumbra-zone/ui/components/ui/network';
 import { useChainIdQuery } from '../../../hooks/chain-id';
 import { motion } from 'framer-motion';
 
@@ -21,7 +21,7 @@ export const IndexHeader = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }}
           >
-            <NetworksPopover name={chainId} connectIndicator={false} />
+            <Network name={chainId} connectIndicator={false} />
           </motion.div>
         ) : (
           <div className='m-[19px]' />
