@@ -1,8 +1,8 @@
 import { BlockProcessor } from '@penumbra-zone/query/src/block-processor';
 import { RootQuerier } from '@penumbra-zone/query/src/root-querier';
-import { IndexedDb } from '@penumbra-zone/storage/src/indexed-db';
-import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
-import { syncLastBlockWithLocal } from '@penumbra-zone/storage/src/chrome/syncer';
+import { IndexedDb } from '@penumbra-zone/storage/indexed-db';
+import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
+import { syncLastBlockWithLocal } from '@penumbra-zone/storage/chrome/syncer';
 import { ViewServer } from '@penumbra-zone/wasm/src/view-server';
 import {
   ServicesInterface,

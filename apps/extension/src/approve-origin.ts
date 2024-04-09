@@ -1,4 +1,4 @@
-import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
+import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 import { OriginApproval, PopupType } from './message/popup';
 import { popup } from './popup';
 import Map from '@penumbra-zone/polyfills/src/Map.groupBy';

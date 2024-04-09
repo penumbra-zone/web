@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { LinkGradientIcon } from '../../../icons/link-gradient';
-import { OriginRecord } from '@penumbra-zone/storage/src/chrome/types';
+import { OriginRecord } from '@penumbra-zone/storage/chrome/types';
 import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
 import { useStore } from '../../../state';
 import { connectedSitesSelector } from '../../../state/connected-sites';

@@ -5,7 +5,7 @@ import { SeedPhraseLength } from '@penumbra-zone/crypto-web/mnemonic';
 import {
   mockLocalExtStorage,
   mockSessionExtStorage,
-} from '@penumbra-zone/storage/src/chrome/test-utils/mock';
+} from '@penumbra-zone/storage/chrome/test-utils/mock';
 
 describe('Generate Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
