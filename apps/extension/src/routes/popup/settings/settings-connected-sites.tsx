@@ -1,43 +1,26 @@
 import { Link1Icon, LinkBreak1Icon, MagnifyingGlassIcon, TrashIcon } from '@radix-ui/react-icons';
-import { useEffect } from 'react';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { LinkGradientIcon } from '../../../icons/link-gradient';
 import { OriginRecord } from '@penumbra-zone/storage/src/chrome/types';
 import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
-import { AllSlices } from '../../../state';
+import { AllSlices, useStore } from '../../../state';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import { SettingsScreen } from './settings-screen';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
+import { noFilterMatchSelector, sitesSelector } from '../../../state/connected-sites';
 
 const settingsConnectedSitesSelector = (state: AllSlices) => ({
   filter: state.connectedSites.filter,
-  knownSites: state.connectedSites.knownSites,
-  approvedSites: state.connectedSites.approvedSites,
-  deniedSites: state.connectedSites.deniedSites,
-  ignoredSites: state.connectedSites.ignoredSites,
-  noFilterMatch: state.connectedSites.noFilterMatch,
   setFilter: state.connectedSites.setFilter,
   discardKnownSite: state.connectedSites.discardKnownSite,
   loadKnownSites: state.connectedSites.loadKnownSites,
 });
 
 export const SettingsConnectedSites = () => {
-  const {
-    filter,
-    knownSites,
-    approvedSites,
-    deniedSites,
-    ignoredSites,
-    noFilterMatch,
-    setFilter,
-    discardKnownSite,
-    loadKnownSites,
-  } = useStoreShallow(settingsConnectedSitesSelector);
-
-  useEffect(() => void loadKnownSites(), [loadKnownSites]);
-
-  const discard = (site: OriginRecord) => void discardKnownSite(site);
+  const { filter, setFilter, discardKnownSite } = useStoreShallow(settingsConnectedSitesSelector);
+  const { approvedSites, deniedSites, ignoredSites, knownSites } = useStoreShallow(sitesSelector);
+  const noFilterMatch = useStore(noFilterMatchSelector);
 
   return (
     <SettingsScreen title='Connected sites' IconComponent={LinkGradientIcon}>
@@ -67,7 +50,7 @@ export const SettingsConnectedSites = () => {
                 <div className='ml-4 font-headline'>Approved sites</div>
                 <div role='list'>
                   {approvedSites.map(site => (
-                    <SiteRecord key={site.origin} site={site} discard={discard} />
+                    <SiteRecord key={site.origin} site={site} discard={discardKnownSite} />
                   ))}
                 </div>
               </>
@@ -78,7 +61,7 @@ export const SettingsConnectedSites = () => {
                 <div className='ml-4 font-headline'>Denied sites</div>
                 <div role='list'>
                   {deniedSites.map(site => (
-                    <SiteRecord key={site.origin} site={site} discard={discard} />
+                    <SiteRecord key={site.origin} site={site} discard={discardKnownSite} />
                   ))}
                 </div>
               </>
@@ -89,7 +72,7 @@ export const SettingsConnectedSites = () => {
                 <div className='ml-4 font-headline'>Ignored sites</div>
                 <div role='list'>
                   {ignoredSites.map(site => (
-                    <SiteRecord key={site.origin} site={site} discard={discard} />
+                    <SiteRecord key={site.origin} site={site} discard={discardKnownSite} />
                   ))}
                 </div>
               </>
@@ -106,14 +89,14 @@ const SiteRecord = ({
   discard,
 }: {
   site: OriginRecord;
-  discard: (d: OriginRecord) => void;
+  discard: (d: OriginRecord) => Promise<void>;
 }) => (
   <div key={site.origin} role='listitem' className='relative my-1 w-full'>
     <div className='absolute inset-y-0 right-0 flex items-center'>
       <Button
         aria-description='Remove'
         className='group bg-transparent p-3'
-        onClick={() => discard(site)}
+        onClick={() => void discard(site)}
       >
         {site.choice === UserChoice.Approved && (
           <Link1Icon

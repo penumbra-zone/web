@@ -1,73 +1,59 @@
 import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
 import { LocalStorageState, OriginRecord } from '@penumbra-zone/storage/src/chrome/types';
-import { SliceCreator } from '.';
+import { AllSlices, SliceCreator } from '.';
 
 import Map from '@penumbra-zone/polyfills/src/Map.groupBy';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 export interface ConnectedSitesSlice {
   filter?: string;
-  knownSites: OriginRecord[];
-  approvedSites: OriginRecord[];
-  deniedSites: OriginRecord[];
-  ignoredSites: OriginRecord[];
-  noFilterMatch?: boolean;
-  loadKnownSites: () => Promise<void>;
   setFilter: (search?: string) => void;
+  knownSites: OriginRecord[];
+  loadKnownSites: () => Promise<void>;
   discardKnownSite: (originRecord: OriginRecord) => Promise<void>;
 }
 
 export const createConnectedSitesSlice =
   (local: ExtensionStorage<LocalStorageState>): SliceCreator<ConnectedSitesSlice> =>
   (set, get) => ({
-    filter: undefined,
-    noFilterMatch: undefined,
     knownSites: [],
-    approvedSites: [],
-    deniedSites: [],
-    ignoredSites: [],
+
+    filter: undefined,
+    setFilter: (search?: string) => {
+      set(state => {
+        state.connectedSites.filter = search;
+      });
+    },
 
     loadKnownSites: async () => {
       const knownSites = await local.get('knownSites');
-      const groupedSites = Map.groupBy(knownSites, ({ choice }) => choice);
 
       set(state => {
         state.connectedSites.knownSites = knownSites;
-        state.connectedSites.approvedSites = groupedSites.get(UserChoice.Approved) ?? [];
-        state.connectedSites.deniedSites = groupedSites.get(UserChoice.Denied) ?? [];
-        state.connectedSites.ignoredSites = groupedSites.get(UserChoice.Ignored) ?? [];
       });
     },
 
-    setFilter: (search?: string) => {
+    discardKnownSite: async (siteToDelete: { origin: string }) => {
       const knownSites = get().connectedSites.knownSites;
-      const filter = search ?? get().connectedSites.filter;
-
-      const filteredSites = Map.groupBy(
-        knownSites.filter(site => !search || site.origin.includes(search)),
-        ({ choice }) => choice,
-      );
-
-      const approvedSites = filteredSites.get(UserChoice.Approved) ?? [];
-      const deniedSites = filteredSites.get(UserChoice.Denied) ?? [];
-      const ignoredSites = filteredSites.get(UserChoice.Ignored) ?? [];
-      const noFilterMatch = !(approvedSites.length || deniedSites.length || ignoredSites.length);
-
-      set(state => {
-        state.connectedSites.filter = filter;
-        state.connectedSites.noFilterMatch = noFilterMatch;
-        state.connectedSites.approvedSites = approvedSites;
-        state.connectedSites.deniedSites = deniedSites;
-        state.connectedSites.ignoredSites = ignoredSites;
-      });
-    },
-
-    discardKnownSite: async (deletant: { origin: string }) => {
-      const existingFilter = get().connectedSites.filter;
-      const knownSites = await local.get('knownSites');
-      const withoutDeletant = knownSites.filter(known => known.origin !== deletant.origin);
-      await local.set('knownSites', withoutDeletant);
-      await get().connectedSites.loadKnownSites();
-      get().connectedSites.setFilter(existingFilter);
+      const withoutSiteToDelete = knownSites.filter(known => known.origin !== siteToDelete.origin);
+      await local.set('knownSites', withoutSiteToDelete);
     },
   });
+
+export const sitesSelector = (state: AllSlices) => {
+  const groupedSites = Map.groupBy(state.connectedSites.knownSites, ({ choice }) => choice);
+
+  return {
+    knownSites: state.connectedSites.knownSites,
+    approvedSites: groupedSites.get(UserChoice.Approved) ?? [],
+    deniedSites: groupedSites.get(UserChoice.Denied) ?? [],
+    ignoredSites: groupedSites.get(UserChoice.Ignored) ?? [],
+  };
+};
+
+export const noFilterMatchSelector = (state: AllSlices) => {
+  const { filter } = state.connectedSites;
+  if (!filter) return false;
+
+  return !state.connectedSites.knownSites.some(site => site.origin.includes(filter));
+};

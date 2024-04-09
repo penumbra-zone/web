@@ -21,10 +21,7 @@ describe('Connected Sites Slice', () => {
 
   test('the default is empty', () => {
     expect(useStore.getState().connectedSites.filter).toBeUndefined();
-    expect(useStore.getState().connectedSites.knownSites).toMatchObject([]);
-    expect(useStore.getState().connectedSites.approvedSites).toMatchObject([]);
-    expect(useStore.getState().connectedSites.deniedSites).toMatchObject([]);
-    expect(useStore.getState().connectedSites.ignoredSites).toMatchObject([]);
+    expect(useStore.getState().connectedSites.knownSites).toEqual([]);
   });
 
   describe('loadKnownSites', () => {
@@ -34,9 +31,6 @@ describe('Connected Sites Slice', () => {
 
     test('known sites are loaded', () => {
       expect(useStore.getState().connectedSites.knownSites).toMatchObject(localDefaults.knownSites);
-      expect(useStore.getState().connectedSites.approvedSites).toMatchObject(
-        localDefaults.knownSites,
-      );
     });
 
     describe('setFilter', () => {
