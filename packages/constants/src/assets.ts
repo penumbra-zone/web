@@ -6,6 +6,9 @@ export const localAssets: Metadata[] = LocalAssetRegistry.map(a =>
   Metadata.fromJson(a as JsonValue),
 );
 
+export const NUMERAIRE_DENOMS: string[] = ['test_usd', 'usdc'];
+export const NUMERAIRES: Metadata[] = localAssets.filter(m => NUMERAIRE_DENOMS.includes(m.display));
+
 export const STAKING_TOKEN = 'penumbra';
 export const STAKING_TOKEN_METADATA = localAssets.find(
   metadata => metadata.display === STAKING_TOKEN,
