@@ -1,6 +1,6 @@
 import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
 import { LocalStorageState, OriginRecord } from '@penumbra-zone/storage/src/chrome/types';
-import { AllSlices, SliceCreator } from '.';
+import { SliceCreator } from '.';
 
 import Map from '@penumbra-zone/polyfills/src/Map.groupBy';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
@@ -71,5 +71,3 @@ export const createConnectedSitesSlice =
       get().connectedSites.setFilter(existingFilter);
     },
   });
-
-export const connectedSitesSelector = (state: AllSlices) => state.connectedSites;

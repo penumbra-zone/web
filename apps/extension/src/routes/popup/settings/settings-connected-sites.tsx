@@ -5,10 +5,22 @@ import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { LinkGradientIcon } from '../../../icons/link-gradient';
 import { OriginRecord } from '@penumbra-zone/storage/src/chrome/types';
 import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
-import { useStore } from '../../../state';
-import { connectedSitesSelector } from '../../../state/connected-sites';
+import { AllSlices } from '../../../state';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import { SettingsScreen } from './settings-screen';
+import { useStoreShallow } from '../../../utils/use-store-shallow';
+
+const settingsConnectedSitesSelector = (state: AllSlices) => ({
+  filter: state.connectedSites.filter,
+  knownSites: state.connectedSites.knownSites,
+  approvedSites: state.connectedSites.approvedSites,
+  deniedSites: state.connectedSites.deniedSites,
+  ignoredSites: state.connectedSites.ignoredSites,
+  noFilterMatch: state.connectedSites.noFilterMatch,
+  setFilter: state.connectedSites.setFilter,
+  discardKnownSite: state.connectedSites.discardKnownSite,
+  loadKnownSites: state.connectedSites.loadKnownSites,
+});
 
 export const SettingsConnectedSites = () => {
   const {
@@ -21,7 +33,7 @@ export const SettingsConnectedSites = () => {
     setFilter,
     discardKnownSite,
     loadKnownSites,
-  } = useStore(connectedSitesSelector);
+  } = useStoreShallow(settingsConnectedSitesSelector);
 
   useEffect(() => void loadKnownSites(), [loadKnownSites]);
 
