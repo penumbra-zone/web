@@ -22,15 +22,13 @@ export interface ServicesConfig {
   readonly grpcEndpoint?: string;
   readonly walletId?: WalletId;
   readonly fullViewingKey?: FullViewingKey;
-  readonly numeraireAssetId: string;
 }
 
 const isCompleteServicesConfig = (c: Partial<ServicesConfig>): c is Required<ServicesConfig> =>
   c.grpcEndpoint != null &&
   c.idbVersion != null &&
   c.walletId != null &&
-  c.fullViewingKey != null &&
-  c.numeraireAssetId != null;
+  c.fullViewingKey != null;
 
 export class Services implements ServicesInterface {
   private walletServicesPromise: Promise<WalletServices> | undefined;
