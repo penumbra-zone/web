@@ -12,7 +12,6 @@ export const NUMERAIRES: Metadata[] = localAssets.filter(m => NUMERAIRE_DENOMS.i
 export const PRICE_RELEVANCE_THRESHOLDS = {
   delegationToken: 719,
   default: 200,
-  // Додайте інші типи токенів та їх пороги тут
 };
 export const STAKING_TOKEN = 'penumbra';
 export const STAKING_TOKEN_METADATA = localAssets.find(
