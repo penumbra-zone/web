@@ -16,7 +16,7 @@ import {
   getUnfilled1Amount,
   getUnfilled2Amount,
 } from '@penumbra-zone/getters/src/batch-swap-output-data';
-import { getAssetId } from '@penumbra-zone/getters/dist/metadata';
+import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 
 /**
  *
