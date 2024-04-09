@@ -42,17 +42,19 @@ export const createConnectedSitesSlice =
 
 export const sitesSelector = (state: AllSlices) => {
   const groupedSites = Map.groupBy(state.connectedSites.knownSites, ({ choice }) => choice);
+  const filter = state.connectedSites.filter;
+  const filterFn = (site: OriginRecord) => !filter || site.origin.includes(filter);
 
   return {
     knownSites: state.connectedSites.knownSites,
-    approvedSites: groupedSites.get(UserChoice.Approved) ?? [],
-    deniedSites: groupedSites.get(UserChoice.Denied) ?? [],
-    ignoredSites: groupedSites.get(UserChoice.Ignored) ?? [],
+    approvedSites: groupedSites.get(UserChoice.Approved)?.filter(filterFn) ?? [],
+    deniedSites: groupedSites.get(UserChoice.Denied)?.filter(filterFn) ?? [],
+    ignoredSites: groupedSites.get(UserChoice.Ignored)?.filter(filterFn) ?? [],
   };
 };
 
 export const noFilterMatchSelector = (state: AllSlices) => {
-  const { filter } = state.connectedSites;
+  const filter = state.connectedSites.filter;
   if (!filter) return false;
 
   return !state.connectedSites.knownSites.some(site => site.origin.includes(filter));
