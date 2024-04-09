@@ -588,6 +588,11 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
+  /**
+   * Uses priceRelevanceThreshold to return only actual prices
+   * If more than priceRelevanceThreshold blocks have passed since the price was saved, such price is not returned
+   * priceRelevanceThreshold depends on the type of assets, for example, for delegation tokens the relevance lasts longer
+   */
   async getPricesForAsset(
     assetMetadata: Metadata,
     latestBlockHeight: bigint,
