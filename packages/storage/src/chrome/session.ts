@@ -1,5 +1,5 @@
 import { ExtensionStorage } from './base';
-import { KeyJson } from '@penumbra-zone/crypto-web/src/encryption';
+import { KeyJson } from '@penumbra-zone/crypto-web/encryption';
 
 export enum SessionStorageVersion {
   V1 = 'V1',

@@ -1,5 +1,5 @@
 import { RootQuerier } from './root-querier';
-import { sha256Hash } from '@penumbra-zone/crypto-web/src/sha256';
+import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/src/dex';
 
 import {

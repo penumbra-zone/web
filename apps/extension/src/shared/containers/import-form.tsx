@@ -1,4 +1,4 @@
-import { SeedPhraseLength } from '@penumbra-zone/crypto-web/src/mnemonic';
+import { SeedPhraseLength } from '@penumbra-zone/crypto-web/mnemonic';
 import { useEffect } from 'react';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { cn } from '@penumbra-zone/ui/lib/utils';

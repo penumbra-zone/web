@@ -1,12 +1,21 @@
 {
   "name": "@penumbra-zone/crypto-web",
   "version": "2.0.0",
-  "private": true,
   "license": "MIT",
   "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
+  },
+  "files": [
+    "src/",
+    "*.md",
+    "!**/*.test.ts"
+  ],
+  "exports": {
+    "./mnemonic": "./src/mnemonic.ts",
+    "./encryption": "./src/encryption.ts",
+    "./sha256": "./src/sha256.ts"
   },
   "dependencies": {
     "bip39": "^3.1.0",
