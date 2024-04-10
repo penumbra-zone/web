@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
 import { localDefaults } from '@penumbra-zone/storage/src/chrome/local';
@@ -20,18 +20,21 @@ describe('Connected Sites Slice', () => {
     useStore = create<AllSlices>()(initializeStore(mockSessionExtStorage(), localStorage));
   });
 
-  test('the default is empty', () => {
+  test('the default is populated from local storage', () => {
     expect(useStore.getState().connectedSites.filter).toBeUndefined();
     expect(useStore.getState().connectedSites.knownSites).toEqual([]);
   });
 
-  describe('loadKnownSites', () => {
-    beforeEach(async () => {
-      await expect(useStore.getState().connectedSites.loadKnownSites()).resolves.not.toThrow();
-    });
-
-    test('known sites are loaded', () => {
-      expect(useStore.getState().connectedSites.knownSites).toMatchObject(localDefaults.knownSites);
+  describe('knownSites', () => {
+    beforeEach(() => {
+      useStore.setState(state => ({
+        ...state,
+        connectedSites: {
+          ...state.connectedSites,
+          knownSites: localDefaults.knownSites,
+          frontendUrl: localDefaults.frontendUrl,
+        },
+      }));
     });
 
     describe('setFilter', () => {
@@ -63,9 +66,7 @@ describe('Connected Sites Slice', () => {
           useStore.getState().connectedSites.discardKnownSite(deletant),
         ).resolves.not.toThrow();
 
-        await expect(useStore.getState().connectedSites.loadKnownSites()).resolves.not.toThrow();
-
-        expect(useStore.getState().connectedSites.knownSites).toMatchObject([]);
+        await expect(localStorage.get('knownSites')).resolves.toEqual([]);
       });
 
       test('discarding unknown site has no effect on storage', async () => {
@@ -79,12 +80,21 @@ describe('Connected Sites Slice', () => {
           useStore.getState().connectedSites.discardKnownSite(deletant),
         ).resolves.not.toThrow();
 
-        await expect(useStore.getState().connectedSites.loadKnownSites()).resolves.not.toThrow();
-
         expect(useStore.getState().connectedSites.knownSites).toMatchObject(
           localDefaults.knownSites,
         );
       });
+    });
+  });
+
+  describe('setFrontendUrl', () => {
+    test('updates the frontendUrl in storage', async () => {
+      const newFrontendUrl = 'https://example.com/test';
+      useStore.getState().connectedSites.setFrontendUrl(newFrontendUrl);
+
+      await vi.waitFor(() =>
+        expect(localStorage.get('frontendUrl')).resolves.toEqual(newFrontendUrl),
+      );
     });
   });
 });
