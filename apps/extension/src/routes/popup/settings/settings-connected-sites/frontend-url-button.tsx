@@ -6,7 +6,7 @@ import {
   TooltipContent,
 } from '@penumbra-zone/ui/components/ui/tooltip';
 import { Star } from 'lucide-react';
-import { RESOLVED_TAILWIND_CONFIG } from '../../../../shared/resolved-tailwind-config';
+import { RESOLVED_TAILWIND_CONFIG } from '@penumbra-zone/tailwind-config/resolved-tailwind-config';
 
 export const FrontendUrlButton = ({
   isSelected,
