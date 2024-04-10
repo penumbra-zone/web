@@ -39,6 +39,7 @@ export const createIbcSlice = (): SliceCreator<IbcSlice> => set => {
   return {
     txInProgress: false,
     setChainByName: (chainName: string) => {
+      console.log('setChainByName', chainName);
       if (!chainName) return;
       set(state => {
         state.ibc.penumbraChain = getChainMetadataByName(chainName)!;
@@ -46,6 +47,7 @@ export const createIbcSlice = (): SliceCreator<IbcSlice> => set => {
       });
     },
     setChainById: (chainId: string) => {
+      console.log('setChainById', chainId);
       if (!chainId) return;
       set(state => {
         state.ibc.penumbraChain = getChainMetadataById(chainId)!;

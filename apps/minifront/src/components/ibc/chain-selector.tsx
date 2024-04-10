@@ -38,7 +38,7 @@ export const ChainSelector = () => {
           {testnetIbcChains.map((i, index) => (
             <SelectItem
               key={index}
-              value={i.displayName}
+              value={i.chainId}
               className={cn(
                 'hover:bg-brown',
                 penumbraChain?.displayName === i.displayName && 'bg-charcoal-secondary',

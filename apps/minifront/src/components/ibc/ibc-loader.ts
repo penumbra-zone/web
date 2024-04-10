@@ -7,7 +7,11 @@ import { getCosmosChainByName } from '@penumbra-zone/constants/src/cosmos';
 import { filterBalancesPerChain } from '../../state/filter-balances-per-chain';
 import { toPlainMessage } from '@bufbuild/protobuf';
 
-export const IbcLoader: LoaderFunction = async () => {
+export interface IbcLoaderResponse {
+  initialChainName: string;
+}
+
+export const IbcLoader: LoaderFunction = async (): Promise<IbcLoaderResponse> => {
   const assetBalances = await getBalances();
   const initialAddress = await getEphemeralAddress(0);
   const chainName = testnetIbcChains[0]!.chainName;
@@ -22,5 +26,7 @@ export const IbcLoader: LoaderFunction = async () => {
     state.ibc.penumbra.unshield = filterBalancesPerChain(assetBalances, penumbraChain)[0];
   });
 
-  return null;
+  return {
+    initialChainName: chainName,
+  };
 };

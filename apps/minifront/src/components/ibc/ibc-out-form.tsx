@@ -10,12 +10,22 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { filterBalancesPerChain } from '../../state/filter-balances-per-chain';
 import { useLoaderData } from 'react-router-dom';
 import { useChain } from '@cosmos-kit/react';
+import { IbcLoaderResponse } from './ibc-loader';
+import { useEffect, useState } from 'react';
 
 export const IbcOutForm = () => {
-  useLoaderData();
+  const { initialChainName } = useLoaderData() as IbcLoaderResponse;
+  const [chainName, setChainName] = useState(initialChainName);
   const { penumbraChain, assetBalances } = useStore(ibcSelector);
-  console.log('ibc-out-form', penumbraChain?.chainName);
-  const chainContext = useChain(penumbraChain!.chainName);
+
+  useEffect(() => {
+    if (penumbraChain?.chainName && penumbraChain.chainName !== chainName)
+      setChainName(penumbraChain.chainName);
+  }, [penumbraChain, chainName, setChainName]);
+
+  console.log('ibc-out-form', chainName);
+  const chainContext = useChain(chainName);
+
   const { customDestination, setCustomDestination } = useStore(ibcCosmosSelector);
   const { unshield, setUnshield } = useStore(ibcPenumbraSelector);
   const { lo, hi } = unshield?.balanceView?.valueView.value?.amount ?? { lo: 0n, hi: 0n };

@@ -6,12 +6,24 @@ import { ibcPenumbraSelector, ibcSelector } from '../../state/ibc';
 import { AddressComponent } from '@penumbra-zone/ui/components/ui/address-component';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { useChain } from '@cosmos-kit/react';
+import { IbcLoaderResponse } from './ibc-loader';
+import { useLoaderData } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 export const IbcInForm = () => {
+  const { initialChainName } = useLoaderData() as IbcLoaderResponse;
+  const [chainName, setChainName] = useState(initialChainName);
   const { penumbraChain } = useStore(ibcSelector);
-  console.log('ibc-in-form', penumbraChain?.chainName);
+
+  useEffect(() => {
+    if (penumbraChain?.chainName && penumbraChain.chainName !== chainName)
+      setChainName(penumbraChain.chainName);
+  }, [penumbraChain, chainName, setChainName]);
+
+  console.log('ibc-in-form', chainName);
+  const chainContext = useChain(chainName);
+
   const { account, setAccount, address } = useStore(ibcPenumbraSelector);
-  const chainContext = useChain(penumbraChain!.chainName);
 
   return (
     <>
