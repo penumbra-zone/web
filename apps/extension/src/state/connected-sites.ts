@@ -37,7 +37,7 @@ export const createConnectedSitesSlice =
     },
   });
 
-export const noFilterMatchSelector = (state: AllSlices) => {
+export const allSitesFilteredOutSelector = (state: AllSlices) => {
   const filter = state.connectedSites.filter;
   if (!filter) return false;
 
