@@ -100,13 +100,7 @@ export const OriginApproval = () => {
             </div>
           </div>
         </div>
-        <ApproveDeny
-          variants={['gradient']}
-          approve={approve}
-          deny={deny}
-          ignore={lastRequest && ignore}
-          wait={3}
-        />
+        <ApproveDeny approve={approve} deny={deny} ignore={lastRequest && ignore} wait={3} />
       </div>
     </FadeTransition>
   );
