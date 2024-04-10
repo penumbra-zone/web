@@ -13,15 +13,16 @@ export const IndexHeader = () => {
 
   return (
     <header className='top-0 z-40 w-full'>
-      <div className='flex items-center justify-between pt-4'>
+      <div className='flex items-center justify-between gap-4 pt-4'>
         <HamburgerMenuIcon
           onClick={() => navigate(PopupPath.SETTINGS)}
-          className='size-6 cursor-pointer hover:opacity-50'
+          className='size-6 cursor-pointer hover:opacity-50 shrink-0'
         />
         {chainId ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }}
+            className='overflow-hidden'
           >
             <Network name={chainId} connectIndicator={false} href={frontendUrl} />
           </motion.div>
