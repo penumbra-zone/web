@@ -36,6 +36,8 @@ export const balances: Impl['balances'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);
   const { indexedDb, querier } = await services.getWalletServices();
 
+  // latestBlockHeight is needed to calculate the threshold of price relevance,
+  //it is better to use  rather than fullSyncHeight to avoid displaying old prices during the synchronization process
   const latestBlockHeight = await querier.tendermint.latestBlockHeight();
 
   const aggregator = new BalancesAggregator(ctx, indexedDb, latestBlockHeight);
@@ -182,10 +184,9 @@ class BalancesAggregator {
         valueView: { case: 'unknownAssetId', value: { assetId, amount: new Amount() } },
       });
     } else {
-      const assetMetadata = new Metadata(denomMetadata);
       if (!this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)]) {
         const prices = await this.indexedDb.getPricesForAsset(
-          assetMetadata,
+          denomMetadata as Metadata,
           this.latestBlockHeight,
         );
         this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)] = prices;
