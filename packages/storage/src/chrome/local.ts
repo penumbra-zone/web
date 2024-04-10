@@ -13,6 +13,7 @@ export const localDefaults: LocalStorageState = {
   wallets: [],
   fullSyncHeight: undefined,
   knownSites: [{ origin: MINIFRONT_URL, choice: UserChoice.Approved, date: Date.now() }],
+  frontendUrl: MINIFRONT_URL,
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.

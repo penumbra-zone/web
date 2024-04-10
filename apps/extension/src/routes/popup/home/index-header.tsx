@@ -4,10 +4,12 @@ import { PopupPath } from '../paths';
 import { Network } from '@penumbra-zone/ui/components/ui/network';
 import { useChainIdQuery } from '../../../hooks/chain-id';
 import { motion } from 'framer-motion';
+import { useStore } from '../../../state';
 
 export const IndexHeader = () => {
   const navigate = usePopupNav();
   const { chainId } = useChainIdQuery();
+  const frontendUrl = useStore(state => state.connectedSites.frontendUrl);
 
   return (
     <header className='top-0 z-40 w-full'>
@@ -21,7 +23,7 @@ export const IndexHeader = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }}
           >
-            <Network name={chainId} connectIndicator={false} />
+            <Network name={chainId} connectIndicator={false} href={frontendUrl} />
           </motion.div>
         ) : (
           <div className='m-[19px]' />

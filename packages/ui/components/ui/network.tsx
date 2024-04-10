@@ -1,3 +1,4 @@
+import { ExternalLink } from 'lucide-react';
 import { ConditionalWrap } from './conditional-wrap';
 
 export interface NetworkProps {
@@ -6,6 +7,10 @@ export interface NetworkProps {
   href?: string;
 }
 
+/**
+ * Displays the network (chain ID) we're connected to, as well as an optional
+ * connection indicator and a link to the frontend.
+ */
 export const Network = ({ name, href, connectIndicator = true }: NetworkProps) => {
   return (
     <ConditionalWrap
@@ -18,13 +23,15 @@ export const Network = ({ name, href, connectIndicator = true }: NetworkProps) =
     >
       <div
         className={
-          'flex items-center justify-between gap-4 rounded-lg border bg-background px-5 py-[7px] font-bold text-muted-foreground md:px-[25px] xl:px-[18px]'
+          'flex items-center gap-4 rounded-lg border bg-background px-5 py-[7px] font-bold text-muted-foreground md:px-[25px] xl:px-[18px]'
         }
       >
         {connectIndicator && (
-          <div className='-mx-1 h-4 w-1 rounded-sm bg-gradient-to-b from-cyan-400 to-emerald-400'></div>
+          <div className='h-4 w-1 rounded-sm bg-gradient-to-b from-cyan-400 to-emerald-400 shrink-0'></div>
         )}
-        <p className='whitespace-nowrap'>{name}</p>
+        <p className='whitespace-nowrap truncate grow'>{name}</p>
+
+        {href && <ExternalLink size={16} className='shrink-0' />}
       </div>
     </ConditionalWrap>
   );
