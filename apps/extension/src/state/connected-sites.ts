@@ -2,9 +2,6 @@ import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
 import { LocalStorageState, OriginRecord } from '@penumbra-zone/storage/src/chrome/types';
 import { AllSlices, SliceCreator } from '.';
 
-import Map from '@penumbra-zone/polyfills/src/Map.groupBy';
-import { UserChoice } from '@penumbra-zone/types/src/user-choice';
-
 export interface ConnectedSitesSlice {
   filter?: string;
   setFilter: (search?: string) => void;
@@ -39,19 +36,6 @@ export const createConnectedSitesSlice =
       await local.set('knownSites', withoutSiteToDelete);
     },
   });
-
-export const sitesSelector = (state: AllSlices) => {
-  const groupedSites = Map.groupBy(state.connectedSites.knownSites, ({ choice }) => choice);
-  const filter = state.connectedSites.filter;
-  const filterFn = (site: OriginRecord) => !filter || site.origin.includes(filter);
-
-  return {
-    knownSites: state.connectedSites.knownSites,
-    approvedSites: groupedSites.get(UserChoice.Approved)?.filter(filterFn) ?? [],
-    deniedSites: groupedSites.get(UserChoice.Denied)?.filter(filterFn) ?? [],
-    ignoredSites: groupedSites.get(UserChoice.Ignored)?.filter(filterFn) ?? [],
-  };
-};
 
 export const noFilterMatchSelector = (state: AllSlices) => {
   const filter = state.connectedSites.filter;

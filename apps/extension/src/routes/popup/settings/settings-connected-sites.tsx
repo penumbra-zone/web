@@ -8,19 +8,33 @@ import { AllSlices, useStore } from '../../../state';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import { SettingsScreen } from './settings-screen';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { noFilterMatchSelector, sitesSelector } from '../../../state/connected-sites';
+import { noFilterMatchSelector } from '../../../state/connected-sites';
+import Map from '@penumbra-zone/polyfills/src/Map.groupBy';
 
 const settingsConnectedSitesSelector = (state: AllSlices) => ({
   filter: state.connectedSites.filter,
   setFilter: state.connectedSites.setFilter,
+  knownSites: state.connectedSites.knownSites,
   discardKnownSite: state.connectedSites.discardKnownSite,
-  loadKnownSites: state.connectedSites.loadKnownSites,
 });
 
+const getGroupedSites = (knownSites: OriginRecord[], filter?: string) => {
+  const groupedSites = Map.groupBy(knownSites, ({ choice }) => choice);
+  const filterFn = (site: OriginRecord) => !filter || site.origin.includes(filter);
+
+  return {
+    approvedSites: groupedSites.get(UserChoice.Approved)?.filter(filterFn) ?? [],
+    deniedSites: groupedSites.get(UserChoice.Denied)?.filter(filterFn) ?? [],
+    ignoredSites: groupedSites.get(UserChoice.Ignored)?.filter(filterFn) ?? [],
+  };
+};
+
 export const SettingsConnectedSites = () => {
-  const { filter, setFilter, discardKnownSite } = useStoreShallow(settingsConnectedSitesSelector);
-  const { approvedSites, deniedSites, ignoredSites, knownSites } = useStoreShallow(sitesSelector);
+  const { filter, setFilter, knownSites, discardKnownSite } = useStoreShallow(
+    settingsConnectedSitesSelector,
+  );
   const noFilterMatch = useStore(noFilterMatchSelector);
+  const { approvedSites, deniedSites, ignoredSites } = getGroupedSites(knownSites, filter);
 
   return (
     <SettingsScreen title='Connected sites' IconComponent={LinkGradientIcon}>

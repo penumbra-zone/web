@@ -9,7 +9,7 @@ import {
   mockSessionExtStorage,
 } from '@penumbra-zone/storage/src/chrome/test-utils/mock';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
-import { noFilterMatchSelector, sitesSelector } from './connected-sites';
+import { noFilterMatchSelector } from './connected-sites';
 
 describe('Connected Sites Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
@@ -45,12 +45,6 @@ describe('Connected Sites Slice', () => {
         const testUrl = localDefaults.knownSites[0]!.origin;
         useStore.getState().connectedSites.setFilter(testUrl);
         expect(useStore.getState().connectedSites.filter).toBe(testUrl);
-        expect(useStore.getState().connectedSites.knownSites).toMatchObject(
-          localDefaults.knownSites,
-        );
-        expect(sitesSelector(useStore.getState()).approvedSites).toMatchObject(
-          localDefaults.knownSites,
-        );
         expect(noFilterMatchSelector(useStore.getState())).toBe(false);
       });
 
@@ -58,10 +52,6 @@ describe('Connected Sites Slice', () => {
         const testUrl = 'https://test';
         useStore.getState().connectedSites.setFilter(testUrl);
         expect(useStore.getState().connectedSites.filter).toBe(testUrl);
-        expect(useStore.getState().connectedSites.knownSites).toMatchObject(
-          localDefaults.knownSites,
-        );
-        expect(sitesSelector(useStore.getState()).approvedSites).toEqual([]);
         expect(noFilterMatchSelector(useStore.getState())).toBe(true);
       });
     });
