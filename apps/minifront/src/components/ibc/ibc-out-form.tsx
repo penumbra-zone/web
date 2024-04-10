@@ -12,21 +12,19 @@ import { useLoaderData } from 'react-router-dom';
 import { useChain } from '@cosmos-kit/react';
 import { IbcLoaderResponse } from './ibc-loader';
 import { useEffect, useState } from 'react';
+import { ChainSelector } from './chain-selector';
 
 export const IbcOutForm = () => {
   const { initialChainName } = useLoaderData() as IbcLoaderResponse;
   const [chainName, setChainName] = useState(initialChainName);
   const { penumbraChain, assetBalances } = useStore(ibcSelector);
 
-  useEffect(() => {
-    if (penumbraChain?.chainName && penumbraChain.chainName !== chainName)
-      setChainName(penumbraChain.chainName);
-  }, [penumbraChain, chainName, setChainName]);
+  const { destination, setDestination } = useStore(ibcCosmosSelector);
+  const [inputDestination, setInputDestination] = useState<string | undefined>();
 
   console.log('ibc-out-form', chainName);
   const chainContext = useChain(chainName);
 
-  const { customDestination, setCustomDestination } = useStore(ibcCosmosSelector);
   const { unshield, setUnshield } = useStore(ibcPenumbraSelector);
   const { lo, hi } = unshield?.balanceView?.valueView.value?.amount ?? { lo: 0n, hi: 0n };
   const unshieldAmount = joinLoHi(lo, hi);
@@ -35,9 +33,21 @@ export const IbcOutForm = () => {
     penumbraChain,
   );
 
+  useEffect(() => {
+    if (penumbraChain?.chainName && penumbraChain.chainName !== chainName)
+      setChainName(penumbraChain.chainName);
+  }, [penumbraChain, chainName, setChainName]);
+
+  useEffect(() => {
+    setDestination(inputDestination ?? chainContext.address);
+  }, [chainContext.address, inputDestination, setDestination]);
+
+  const customizedDestination = inputDestination !== chainContext.address;
+
   return (
     <form className='flex flex-col gap-4' onSubmit={e => e.preventDefault()}>
-      <h1 className='font-headline text-xl'>Reveal</h1>
+      <h1 className='font-headline text-xl'>Exit Penumbra</h1>
+      <ChainSelector />
       <InputToken
         label='Amount to send'
         placeholder='Enter an amount'
@@ -55,16 +65,12 @@ export const IbcOutForm = () => {
         }}
         balances={filteredBalances}
       />
-      <InputBlock
-        label='Recipient on destination chain'
-        className='mb-1'
-        value={customDestination ?? chainContext.address}
-      >
+      <InputBlock label='Recipient on destination chain' className='mb-1'>
         <Input
-          variant='transparent'
+          variant={customizedDestination ? 'warn' : 'transparent'}
           placeholder='Enter the address'
-          value={customDestination ?? chainContext.address}
-          onChange={e => setCustomDestination(e.target.value)}
+          value={destination}
+          onChange={e => setInputDestination(e.target.value || chainContext.address)}
         />
       </InputBlock>
       <Button disabled type='submit' variant='gradient' className='mt-9'>

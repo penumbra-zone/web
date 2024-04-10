@@ -20,7 +20,6 @@ export const IbcLayout = () => {
       setChainName(penumbraChain.chainName);
   }, [penumbraChain, chainName, setChainName]);
 
-  console.log('ibc-layout', chainName);
   const chainContext = useChain(chainName);
 
   useEffect(() => {
@@ -28,13 +27,15 @@ export const IbcLayout = () => {
   }, [chainContext.isWalletConnected, chainContext.connect, chainContext]);
 
   return (
-    <div className='flex flex-1 flex-col gap-4 md:flex-row md:place-content-around'>
-      <Card className='md:self-start'>
-        <IbcInForm />
-      </Card>
-      <Card className='md:self-end'>
-        <IbcOutForm />
-      </Card>
-    </div>
+    <>
+      <div className='flex flex-1 flex-col gap-4 md:flex-row md:place-content-around'>
+        <Card className='md:self-start'>
+          <IbcInForm />
+        </Card>
+        <Card className='md:self-end'>
+          <IbcOutForm />
+        </Card>
+      </div>
+    </>
   );
 };

@@ -18,12 +18,21 @@ export const IbcLoader: LoaderFunction = async (): Promise<IbcLoaderResponse> =>
   const penumbraChain = getChainMetadataByName(chainName)!;
   const cosmosChain = getCosmosChainByName(chainName)!;
 
+  const unshield = toPlainMessage(filterBalancesPerChain(assetBalances, penumbraChain)[0]!);
+  console.log('loader unshield valueView', unshield.balanceView?.valueView);
+  if (unshield.balanceView?.valueView.case === 'knownAssetId') {
+    unshield.balanceView.valueView.value.amount = {
+      lo: 0n,
+      hi: 0n,
+    };
+  }
+
   useStore.setState(state => {
     state.ibc.assetBalances = assetBalances.map(toPlainMessage);
     state.ibc.penumbra.address = initialAddress;
     state.ibc.penumbraChain = penumbraChain;
     state.ibc.cosmosChain = cosmosChain;
-    state.ibc.penumbra.unshield = filterBalancesPerChain(assetBalances, penumbraChain)[0];
+    state.ibc.penumbra.unshield = unshield;
   });
 
   return {

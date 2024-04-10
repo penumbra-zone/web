@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { rootRouter } from './components/root-router';
 
-import { wallets as keplrWallet } from '@cosmos-kit/keplr';
+import { wallets as keplrWallets } from '@cosmos-kit/keplr-extension';
 //import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation';
 //import { wallets as leapwallets } from '@cosmos-kit/leap';
 
 import { cosmosTestnets, cosmosTestnetAssets } from '@penumbra-zone/constants/src/cosmos';
 import { ChainProvider } from '@cosmos-kit/react';
+
+const noMobileWallets = keplrWallets;
 
 const Main = () => {
   const [queryClient] = useState(() => new QueryClient());
@@ -19,7 +21,7 @@ const Main = () => {
       <ChainProvider
         chains={cosmosTestnets}
         assetLists={cosmosTestnetAssets}
-        wallets={[...keplrWallet]}
+        wallets={noMobileWallets}
       >
         <RouterProvider router={rootRouter} />
       </ChainProvider>

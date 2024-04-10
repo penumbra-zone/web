@@ -30,28 +30,32 @@ export interface IbcSlice {
     setUnshield: (send: BalancesResponse) => void;
   };
   cosmos: {
-    customDestination?: string;
-    setCustomDestination: (address: string) => void;
+    destination?: string;
+    setDestination: (address?: string) => void;
   };
+  //sendUnshieldTx: () => Promise<void>;
+  //sendShieldTx: () => Promise<void>;
 }
 
 export const createIbcSlice = (): SliceCreator<IbcSlice> => set => {
   return {
     txInProgress: false,
     setChainByName: (chainName: string) => {
-      console.log('setChainByName', chainName);
       if (!chainName) return;
+      const penumbraChain = getChainMetadataByName(chainName);
+      const cosmosChain = getCosmosChainByName(chainName);
       set(state => {
-        state.ibc.penumbraChain = getChainMetadataByName(chainName)!;
-        state.ibc.cosmosChain = getCosmosChainByName(chainName)!;
+        state.ibc.penumbraChain = penumbraChain!;
+        state.ibc.cosmosChain = cosmosChain!;
       });
     },
     setChainById: (chainId: string) => {
-      console.log('setChainById', chainId);
       if (!chainId) return;
+      const penumbraChain = getChainMetadataById(chainId);
+      const cosmosChain = getCosmosChainById(chainId);
       set(state => {
-        state.ibc.penumbraChain = getChainMetadataById(chainId)!;
-        state.ibc.cosmosChain = getCosmosChainById(chainId)!;
+        state.ibc.penumbraChain = penumbraChain!;
+        state.ibc.cosmosChain = cosmosChain!;
       });
     },
     penumbra: {
@@ -71,11 +75,36 @@ export const createIbcSlice = (): SliceCreator<IbcSlice> => set => {
       },
     },
     cosmos: {
-      setCustomDestination: (address: string) => {
+      setDestination: (address?: string) => {
         set(state => {
-          state.ibc.cosmos.customDestination = address;
+          state.ibc.cosmos.destination = address;
         });
       },
+    },
+    // eslint-disable-next-line @typescript-eslint/require-await
+    sendUnshieldTx: async () => {
+      set(state => {
+        state.send.txInProgress = true;
+      });
+
+      /*
+      try {
+        const {} = get().ibc;
+        const req = await getPlanRequest();
+        await planBuildBroadcast('ics20Withdrawal', req);
+
+        // Reset form
+        set(state => {
+          state.ibc.amount = '';
+        });
+      } catch (e) {
+        errorToast(e, 'Ics20 withdrawal error').render();
+      } finally {
+        set(state => {
+          state.ibc.txInProgress = false;
+        });
+      }
+      */
     },
   };
 };
@@ -83,3 +112,70 @@ export const createIbcSlice = (): SliceCreator<IbcSlice> => set => {
 export const ibcPenumbraSelector = (state: AllSlices) => state.ibc.penumbra;
 export const ibcCosmosSelector = (state: AllSlices) => state.ibc.cosmos;
 export const ibcSelector = (state: AllSlices) => state.ibc;
+
+/*
+const getTimeout = async (
+  chain: PenumbraChain,
+): Promise<{ timeoutTime: bigint; timeoutHeight: Height }> => {
+  // timeout 2 days from now, in nanoseconds since epoch
+  const twoDaysMs = BigInt(2 * 24 * 60 * 60 * 1000); // 2 days * 24 hours/day * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds per second
+  // truncate resolution at seconds, to obfuscate clock skew
+  const lowPrecisionNowMs = BigInt(Math.floor(Date.now() / 1000) * 1000); // ms/1000 to second, floor, second*1000 to ms
+  // (now + two days) as nanoseconds
+  const timeoutTime = (lowPrecisionNowMs + twoDaysMs) * 1_000_000n; // 1 million nanoseconds per millisecond
+
+  const { clientStates } = await ibcClient.clientStates({});
+  const unpacked = clientStates
+    .map(cs => cs.clientState!.unpack(typeRegistry))
+    .filter(Boolean) as ClientState[];
+
+  const clientState = unpacked.find(cs => cs.chainId === chain.chainId);
+  if (!clientState) throw new Error('Could not find chain id client state');
+
+  // assuming a block time of 10s and adding ~1000 blocks (~3 hours)
+  const revisionHeight = clientState.latestHeight!.revisionHeight + 1000n;
+
+  return {
+    timeoutTime,
+    timeoutHeight: new Height({
+      revisionHeight,
+      revisionNumber: clientState.latestHeight!.revisionNumber,
+    }),
+  };
+};
+
+const getPlanRequest = async (
+  amount: bigint,
+  selection: BalancesResponse,
+  chain: PenumbraChain,
+  destinationChainAddress: string,
+): Promise<TransactionPlannerRequest> => {
+  if (!destinationChainAddress) throw new Error('no destination chain address set');
+  if (!chain) throw new Error('Chain not set');
+  if (!selection) throw new Error('No asset selected');
+
+  const addressIndex = getAddressIndex(selection.accountAddress);
+  const { address: returnAddress } = await viewClient.ephemeralAddress({ addressIndex });
+  if (!returnAddress) throw new Error('Error with generating IBC deposit address');
+
+  const { timeoutHeight, timeoutTime } = await getTimeout(chain);
+
+  return new TransactionPlannerRequest({
+    ics20Withdrawals: [
+      {
+        amount: toBaseUnit(
+          BigNumber(amount),
+          getDisplayDenomExponentFromValueView(selection.balanceView),
+        ),
+        denom: { denom: getMetadata(selection.balanceView).base },
+        destinationChainAddress,
+        returnAddress,
+        timeoutHeight,
+        timeoutTime,
+        sourceChannel: chain.ibcChannel,
+      },
+    ],
+    source: addressIndex,
+  });
+};
+*/
