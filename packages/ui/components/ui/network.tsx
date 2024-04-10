@@ -27,9 +27,9 @@ export const Network = ({ name, href, connectIndicator = true }: NetworkProps) =
         }
       >
         {connectIndicator && (
-          <div className='h-4 w-1 rounded-sm bg-gradient-to-b from-cyan-400 to-emerald-400 shrink-0'></div>
+          <div className='h-4 w-1 shrink-0 rounded-sm bg-gradient-to-b from-cyan-400 to-emerald-400'></div>
         )}
-        <p className='whitespace-nowrap truncate grow'>{name}</p>
+        <p className='grow truncate whitespace-nowrap'>{name}</p>
 
         {href && <ExternalLink size={16} className='shrink-0' />}
       </div>

@@ -25,7 +25,7 @@ export const createConnectedSitesSlice =
     },
 
     setFrontendUrl: (frontendUrl: string) => {
-      local.set('frontendUrl', frontendUrl);
+      void local.set('frontendUrl', frontendUrl);
     },
 
     loadKnownSites: async () => {
