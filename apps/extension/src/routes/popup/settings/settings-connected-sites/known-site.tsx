@@ -45,10 +45,12 @@ export const KnownSite = ({
       )}
 
       <div className='flex items-center gap-2'>
-        <FrontendUrlButton
-          isSelected={frontendUrl === site.origin}
-          onClick={() => setFrontendUrl(site.origin)}
-        />
+        {site.choice === UserChoice.Approved && (
+          <FrontendUrlButton
+            isSelected={frontendUrl === site.origin}
+            onClick={() => setFrontendUrl(site.origin)}
+          />
+        )}
 
         <Button
           aria-description='Remove'
