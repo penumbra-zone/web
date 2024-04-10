@@ -11,10 +11,10 @@ pub static DELEGATION_TOKEN_REGEX: &str =
     "^udelegation_(?P<data>penumbravalid1(?P<id>[a-zA-HJ-NP-Z0-9]+))$";
 pub static SHORTENED_ID_LENGTH: usize = 8;
 
-#[wasm_bindgen]
 /// Given a binary-encoded `Metadata`, returns a new binary-encoded `Metadata`
 /// with the symbol customized if the token is one of several specific types
 /// that don't have built-in symbols.
+#[wasm_bindgen]
 pub fn customize_symbol(metadata_bytes: &[u8]) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();
 
