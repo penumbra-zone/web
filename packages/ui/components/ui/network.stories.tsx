@@ -5,7 +5,6 @@ const meta: Meta<typeof Network> = {
   component: Network,
   title: 'Network',
   tags: ['autodocs'],
-  argTypes: {},
 };
 export default meta;
 
