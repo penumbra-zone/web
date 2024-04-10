@@ -30,6 +30,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
     const wallets = await localExtStorage.get('wallets');
     const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
     const knownSites = await localExtStorage.get('knownSites');
+    const frontendUrl = await localExtStorage.get('frontendUrl');
 
     set(
       produce((state: AllSlices) => {
@@ -37,6 +38,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
         state.wallets.all = walletsFromJson(wallets);
         state.network.grpcEndpoint = grpcEndpoint;
         state.connectedSites.knownSites = knownSites;
+        state.connectedSites.frontendUrl = frontendUrl;
       }),
     );
 
@@ -91,6 +93,17 @@ function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: S
     set(
       produce((state: AllSlices) => {
         state.connectedSites.knownSites = stored?.value ?? state.connectedSites.knownSites;
+      }),
+    );
+  }
+
+  if (changes['frontendUrl']) {
+    const stored = changes['frontendUrl'].newValue as
+      | StorageItem<LocalStorageState['frontendUrl']>
+      | undefined;
+    set(
+      produce((state: AllSlices) => {
+        state.connectedSites.frontendUrl = stored?.value ?? state.connectedSites.frontendUrl;
       }),
     );
   }

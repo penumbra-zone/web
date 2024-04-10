@@ -8,7 +8,7 @@ export const KnownSitesGroup = ({ label, sites }: { label: string; sites: Origin
   return (
     <div>
       <div className='font-headline'>{label}</div>
-      <div role='list'>
+      <div role='list' className='mt-1 flex flex-col gap-1'>
         {sites.map(site => (
           <KnownSite key={site.origin} site={site} discard={discardKnownSite} />
         ))}

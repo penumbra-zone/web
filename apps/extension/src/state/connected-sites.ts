@@ -8,6 +8,8 @@ export interface ConnectedSitesSlice {
   knownSites: OriginRecord[];
   loadKnownSites: () => Promise<void>;
   discardKnownSite: (originRecord: OriginRecord) => Promise<void>;
+  frontendUrl?: string;
+  setFrontendUrl: (frontendUrl: string) => void;
 }
 
 export const createConnectedSitesSlice =
@@ -20,6 +22,10 @@ export const createConnectedSitesSlice =
       set(state => {
         state.connectedSites.filter = search;
       });
+    },
+
+    setFrontendUrl: (frontendUrl: string) => {
+      local.set('frontendUrl', frontendUrl);
     },
 
     loadKnownSites: async () => {
