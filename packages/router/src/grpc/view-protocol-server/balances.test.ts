@@ -13,7 +13,7 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { Services } from '@penumbra-zone/services/src/index';
-import { IndexedDbMock, MockServices, testFullViewingKey } from '../test-utils';
+import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils';
 import {
   AssetId,
   EquivalentValue,
@@ -47,6 +47,7 @@ describe('Balances request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
   let mockIndexedDb: IndexedDbMock;
+  let mockTendermint: TendermintMock;
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -70,6 +71,10 @@ describe('Balances request handler', () => {
       fullViewingKey: testFullViewingKey,
     };
 
+    mockTendermint = {
+      latestBlockHeight: vi.fn(),
+    };
+
     mockServices = {
       // @ts-expect-error TODO: Improve mocking types
       getWalletServices: vi.fn(() =>
@@ -78,6 +83,7 @@ describe('Balances request handler', () => {
           viewServer: mockViewServer,
           querier: {
             shieldedPool: mockShieldedPool,
+            tendermint: mockTendermint,
           },
         }),
       ) as MockServices['getWalletServices'],

@@ -1,7 +1,10 @@
 import { BatchSwapOutputData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import { divideAmounts, isZero, subtractAmounts } from '@penumbra-zone/types/src/amount';
-import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {
+  AssetId,
+  Metadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import {
   getDelta1Amount,
@@ -13,7 +16,7 @@ import {
   getUnfilled1Amount,
   getUnfilled2Amount,
 } from '@penumbra-zone/getters/src/batch-swap-output-data';
-import { base64ToUint8Array } from '@penumbra-zone/types/src/base64';
+import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 
 /**
  *
@@ -30,10 +33,22 @@ import { base64ToUint8Array } from '@penumbra-zone/types/src/base64';
  */
 export const calculatePrice = (delta: Amount, unfilled: Amount, lambda: Amount): number => {
   const filledAmount = subtractAmounts(delta, unfilled);
-  //
+
   return isZero(delta) || isZero(lambda) || isZero(filledAmount)
     ? 0
     : divideAmounts(lambda, filledAmount).toNumber();
+};
+
+export const updatePricesFromSwaps = async (
+  indexedDb: IndexedDbInterface,
+  numeraires: Metadata[],
+  swapOutputs: BatchSwapOutputData[],
+  height: bigint,
+) => {
+  for (const numeraireMetadata of numeraires) {
+    const numeraireAssetId = getAssetId(numeraireMetadata);
+    await deriveAndSavePriceFromBSOD(indexedDb, numeraireAssetId, swapOutputs, height);
+  }
 };
 
 /**
@@ -46,17 +61,12 @@ export const calculatePrice = (delta: Amount, unfilled: Amount, lambda: Amount):
  * This function processes only (1) price and ignores (2) price
  * We can get a BSOD with zero deltas(inputs), and we shouldn't save the price in that case
  */
-export const updatePricesFromSwaps = async (
+export const deriveAndSavePriceFromBSOD = async (
   indexedDb: IndexedDbInterface,
-  /** base64-encoded asset ID of the numeraire */
-  numeraireAssetId: string,
+  numeraireAssetId: AssetId,
   swapOutputs: BatchSwapOutputData[],
   height: bigint,
 ) => {
-  const numeraireAsset: AssetId = new AssetId({
-    inner: base64ToUint8Array(numeraireAssetId),
-  });
-
   for (const swapOutput of swapOutputs) {
     const swapAsset1 = getSwapAsset1(swapOutput);
     const swapAsset2 = getSwapAsset2(swapOutput);
@@ -65,7 +75,7 @@ export const updatePricesFromSwaps = async (
     let pricedAsset: AssetId | undefined = undefined;
 
     // case for trading pair <pricedAsset,numéraire>
-    if (swapAsset2.equals(numeraireAsset)) {
+    if (swapAsset2.equals(numeraireAssetId)) {
       pricedAsset = swapAsset1;
       // numerairePerUnit = lambda2/(delta1-unfilled1)
       numerairePerUnit = calculatePrice(
@@ -75,7 +85,7 @@ export const updatePricesFromSwaps = async (
       );
     }
     // case for trading pair <numéraire,pricedAsset>
-    else if (swapAsset1.equals(numeraireAsset)) {
+    else if (swapAsset1.equals(numeraireAssetId)) {
       pricedAsset = swapAsset2;
       // numerairePerUnit = lambda1/(delta2-unfilled2)
       numerairePerUnit = calculatePrice(
@@ -87,6 +97,6 @@ export const updatePricesFromSwaps = async (
 
     if (pricedAsset === undefined || numerairePerUnit === 0) continue;
 
-    await indexedDb.updatePrice(pricedAsset, numeraireAsset, numerairePerUnit, height);
+    await indexedDb.updatePrice(pricedAsset, numeraireAssetId, numerairePerUnit, height);
   }
 };
