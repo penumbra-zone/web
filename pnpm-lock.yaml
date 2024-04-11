@@ -336,7 +336,7 @@ importers:
         version: 2.10.11(@interchain-ui/react@1.22.14)(react-dom@18.2.0)(react@18.2.0)
       '@interchain-ui/react':
         specifier: ^1.22.14
-        version: 1.22.14(@types/react@18.2.75)(react-dom@18.2.0)(react@18.2.0)
+        version: 1.22.14(@types/react@18.2.72)(react-dom@18.2.0)(react@18.2.0)
       '@penumbra-zone/bech32':
         specifier: workspace:*
         version: link:../../packages/bech32
@@ -368,8 +368,8 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0(react@18.2.0)
       '@tanstack/react-query':
-        specifier: ^5.29.0
-        version: 5.29.0(react@18.2.0)
+        specifier: ^5.28.9
+        version: 5.28.9(react@18.2.0)
       bignumber.js:
         specifier: ^9.1.2
         version: 9.1.2
@@ -377,8 +377,8 @@ importers:
         specifier: ^3.6.0
         version: 3.6.0
       framer-motion:
-        specifier: ^11.0.27
-        version: 11.0.27(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^11.0.22
+        version: 11.0.22(react-dom@18.2.0)(react@18.2.0)
       immer:
         specifier: ^10.0.4
         version: 10.0.4
@@ -407,17 +407,17 @@ importers:
         specifier: 1.4.3
         version: 1.4.3(react-dom@18.2.0)(react@18.2.0)
       tailwindcss:
-        specifier: ^3.4.3
-        version: 3.4.3
+        specifier: ^3.4.1
+        version: 3.4.1
       vite-plugin-node-stdlib-browser:
         specifier: ^0.2.1
-        version: 0.2.1(node-stdlib-browser@1.2.0)(rollup@4.14.3)(vite@4.5.3)
+        version: 0.2.1(node-stdlib-browser@1.2.0)(vite@4.5.3)
       zod:
         specifier: ^3.22.4
         version: 3.22.4
       zustand:
         specifier: ^4.5.2
-        version: 4.5.2(@types/react@18.2.75)(immer@10.0.4)(react@18.2.0)
+        version: 4.5.2(@types/react@18.2.72)(immer@10.0.4)(react@18.2.0)
     devDependencies:
       '@penumbra-zone/polyfills':
         specifier: workspace:*
@@ -426,17 +426,17 @@ importers:
         specifier: ^6.4.2
         version: 6.4.2(vitest@1.5.0)
       '@testing-library/react':
-        specifier: ^14.3.0
-        version: 14.3.0(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^14.2.2
+        version: 14.2.2(react-dom@18.2.0)(react@18.2.0)
       '@types/lodash':
         specifier: ^4.17.0
         version: 4.17.0
       '@types/react':
-        specifier: ^18.2.75
-        version: 18.2.75
+        specifier: ^18.2.72
+        version: 18.2.72
       '@types/react-dom':
-        specifier: ^18.2.24
-        version: 18.2.24
+        specifier: ^18.2.22
+        version: 18.2.22
       '@types/react-helmet':
         specifier: ^6.1.11
         version: 6.1.11
@@ -444,7 +444,7 @@ importers:
         specifier: ^10.4.19
         version: 10.4.19(postcss@8.4.38)
       firebase-tools:
-        specifier: ^13.7.1
+        specifier: ^13.6.0
         version: 13.7.1
       postcss:
         specifier: ^8.4.38
@@ -452,9 +452,6 @@ importers:
       promise.withresolvers:
         specifier: ^1.0.3
         version: 1.0.3
-      rollup-plugin-polyfill-node:
-        specifier: ^0.13.0
-        version: 0.13.0(rollup@4.14.3)
 
   apps/node-status:
     dependencies:
@@ -3703,7 +3700,7 @@ packages:
       '@chain-registry/types': 0.18.18
       '@cosmos-kit/core': 2.8.9
       '@cosmos-kit/react-lite': 2.6.9(react-dom@18.2.0)(react@18.2.0)
-      '@interchain-ui/react': 1.22.14(@types/react@18.2.75)(react-dom@18.2.0)(react@18.2.0)
+      '@interchain-ui/react': 1.22.14(@types/react@18.2.72)(react-dom@18.2.0)(react@18.2.0)
       '@react-icons/all-files': 4.1.0(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -4536,7 +4533,7 @@ packages:
     resolution: {integrity: sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==}
     dev: true
 
-  /@interchain-ui/react@1.22.14(@types/react@18.2.75)(react-dom@18.2.0)(react@18.2.0):
+  /@interchain-ui/react@1.22.14(@types/react@18.2.72)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-zGq95dJSCS/QO4YhM32w2AjnX/OVIMaeO6IVKo13vQiaYMMBnYciZTfDcR755FTbSAGZp7kGnRAzrs1g4HIBXg==}
     peerDependencies:
       react: ^18.x
@@ -4565,7 +4562,7 @@ packages:
       react-aria: 3.32.1(react-dom@18.2.0)(react@18.2.0)
       react-dom: 18.2.0(react@18.2.0)
       react-stately: 3.30.1(react@18.2.0)
-      zustand: 4.5.2(@types/react@18.2.75)(immer@10.0.4)(react@18.2.0)
+      zustand: 4.5.2(@types/react@18.2.72)(immer@10.0.4)(react@18.2.0)
     transitivePeerDependencies:
       - '@types/react'
     dev: false
@@ -7348,7 +7345,7 @@ packages:
     engines: {node: '>=14.0.0'}
     dev: false
 
-  /@rollup/plugin-inject@5.0.5(rollup@4.14.3):
+  /@rollup/plugin-inject@5.0.5:
     resolution: {integrity: sha512-2+DEJbNBoPROPkgTDNe8/1YXWcqxbN5DTjASVIOx8HS+pITXushyNiBV56RB08zuptzz8gT3YfkqriTBVycepg==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -7357,10 +7354,9 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.1.0(rollup@4.14.3)
+      '@rollup/pluginutils': 5.1.0
       estree-walker: 2.0.2
       magic-string: 0.30.9
-      rollup: 4.14.3
 
   /@rollup/plugin-virtual@3.0.2:
     resolution: {integrity: sha512-10monEYsBp3scM4/ND4LNH5Rxvh3e/cVeL3jWTgZ2SrQ+BmUoQcopVQvnaMcOnykb1VkxUFuDAN+0FnpTFRy2A==}
@@ -7372,7 +7368,7 @@ packages:
         optional: true
     dev: true
 
-  /@rollup/pluginutils@5.1.0(rollup@4.14.3):
+  /@rollup/pluginutils@5.1.0:
     resolution: {integrity: sha512-XTIWOPPcpvyKI6L1NHo0lFlCyznUEyPmPY1mc3KpPVDYulHSTvyeLNVW00QTLIAFNhR3kYnJTQHeGqU4M3n09g==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -7384,7 +7380,6 @@ packages:
       '@types/estree': 1.0.5
       estree-walker: 2.0.2
       picomatch: 2.3.1
-      rollup: 4.14.3
 
   /@rollup/rollup-android-arm-eabi@4.14.3:
     resolution: {integrity: sha512-X9alQ3XM6I9IlSlmC8ddAvMSyG1WuHk5oUnXGw+yUBs3BFoTizmG1La/Gr8fVJvDWAq+zlYTZ9DBgrlKRVY06g==}
@@ -8376,7 +8371,7 @@ packages:
       vite: ^4.0.0 || ^5.0.0
     dependencies:
       '@joshwooding/vite-plugin-react-docgen-typescript': 0.3.0(typescript@5.4.5)(vite@5.2.8)
-      '@rollup/pluginutils': 5.1.0(rollup@4.14.3)
+      '@rollup/pluginutils': 5.1.0
       '@storybook/builder-vite': 8.0.4(typescript@5.4.5)(vite@5.2.8)
       '@storybook/node-logger': 8.0.4
       '@storybook/react': 8.0.4(react-dom@18.2.0)(react@18.2.0)(typescript@5.4.5)
@@ -8773,25 +8768,12 @@ packages:
     resolution: {integrity: sha512-hNlfCiqZevr3GRVPXS3MhaGW5hjcxvCsIQ4q6ff7EPlvFwYZaS+0d9EIIgofnegDaU2BbCDlyURoYfRl5rmzow==}
     dev: false
 
-  /@tanstack/query-core@5.29.0:
-    resolution: {integrity: sha512-WgPTRs58hm9CMzEr5jpISe8HXa3qKQ8CxewdYZeVnA54JrPY9B1CZiwsCoLpLkf0dGRZq+LcX5OiJb0bEsOFww==}
-    dev: false
-
   /@tanstack/react-query@5.28.9(react@18.2.0):
     resolution: {integrity: sha512-vwifBkGXsydsLxFOBMe3+f8kvtDoqDRDwUNjPHVDDt+FoBetCbOWAUHgZn4k+CVeZgLmy7bx6aKeDbe3e8koOQ==}
     peerDependencies:
       react: ^18.0.0
     dependencies:
       '@tanstack/query-core': 5.28.9
-      react: 18.2.0
-    dev: false
-
-  /@tanstack/react-query@5.29.0(react@18.2.0):
-    resolution: {integrity: sha512-yxlhHB73jaBla6h5B6zPaGmQjokkzAhMHN4veotkPNiQ3Ac/mCxgABRZPsJJrgCTvhpcncBZcDBFxaR2B37vug==}
-    peerDependencies:
-      react: ^18.0.0
-    dependencies:
-      '@tanstack/query-core': 5.29.0
       react: 18.2.0
     dev: false
 
@@ -8847,23 +8829,9 @@ packages:
       react: ^18.0.0
       react-dom: ^18.0.0
     dependencies:
-      '@babel/runtime': 7.24.1
-      '@testing-library/dom': 9.3.4
-      '@types/react-dom': 18.2.25
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-    dev: true
-
-  /@testing-library/react@14.3.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-AYJGvNFMbCa5vt1UtDCa/dcaABrXq8gph6VN+cffIx0UeA0qiGqS+sT60+sb+Gjc8tGXdECWYQgaF0khf8b+Lg==}
-    engines: {node: '>=14'}
-    peerDependencies:
-      react: ^18.0.0
-      react-dom: ^18.0.0
-    dependencies:
       '@babel/runtime': 7.24.4
       '@testing-library/dom': 9.3.4
-      '@types/react-dom': 18.2.24
+      '@types/react-dom': 18.2.25
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: true
@@ -9257,13 +9225,7 @@ packages:
   /@types/react-dom@18.2.22:
     resolution: {integrity: sha512-fHkBXPeNtfvri6gdsMYyW+dW7RXFo6Ad09nLFK0VQWR7yGLai/Cyvyj696gbwYvBnhGtevUG9cET0pmUbMtoPQ==}
     dependencies:
-      '@types/react': 18.2.72
-
-  /@types/react-dom@18.2.24:
-    resolution: {integrity: sha512-cN6upcKd8zkGy4HU9F1+/s98Hrp6D4MOcippK4PoE8OZRngohHZpbJn1GsaDLz87MqvHNoT13nHvNqM9ocRHZg==}
-    dependencies:
-      '@types/react': 18.2.75
-    dev: true
+      '@types/react': 18.2.79
 
   /@types/react-dom@18.2.25:
     resolution: {integrity: sha512-o/V48vf4MQh7juIKZU2QGDfli6p1+OOi5oXx36Hffpc9adsHeXjVp8rHuPkjd8VT8sOJ2Zp05HR7CdpGTIUFUA==}
@@ -9274,7 +9236,7 @@ packages:
   /@types/react-helmet@6.1.11:
     resolution: {integrity: sha512-0QcdGLddTERotCXo3VFlUSWO3ztraw8nZ6e3zJSgG7apwV5xt+pJUS8ewPBqT4NYB1optGLprNQzFleIY84u/g==}
     dependencies:
-      '@types/react': 18.2.75
+      '@types/react': 18.2.79
     dev: true
 
   /@types/react-transition-group@4.4.10:
@@ -9285,12 +9247,6 @@ packages:
 
   /@types/react@18.2.72:
     resolution: {integrity: sha512-/e7GWxGzXQF7OJAua7UAYqYi/4VpXEfbGtmYQcAQwP3SjjjAXfybTf/JK5S+SaetB/ChXl8Y2g1hCsj7jDXxcg==}
-    dependencies:
-      '@types/prop-types': 15.7.12
-      csstype: 3.1.3
-
-  /@types/react@18.2.75:
-    resolution: {integrity: sha512-+DNnF7yc5y0bHkBTiLKqXFe+L4B3nvOphiMY3tuA5X10esmjqk7smyBZzbGTy2vsiy/Bnzj8yFIBL8xhRacoOg==}
     dependencies:
       '@types/prop-types': 15.7.12
       csstype: 3.1.3
@@ -13798,25 +13754,6 @@ packages:
 
   /framer-motion@11.0.22(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-kWyldNJLyKDvLWjPYFmgngQYLiU8973BtAeVBc83r2cnil/NBUQJb1ff/6/EweNQYb5BW3PaXFjZa4D3pn/W2Q==}
-    peerDependencies:
-      '@emotion/is-prop-valid': '*'
-      react: ^18.0.0
-      react-dom: ^18.0.0
-    peerDependenciesMeta:
-      '@emotion/is-prop-valid':
-        optional: true
-      react:
-        optional: true
-      react-dom:
-        optional: true
-    dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      tslib: 2.6.2
-    dev: false
-
-  /framer-motion@11.0.27(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-OmY1hnBXxUfvQTuoPqumAiXYPEt8jY31Fqbmihf/NR29XUL9BkRPHrqVqtJS7TLKriwRt+0pbwiO9tnziZTJzA==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^18.0.0
@@ -18566,15 +18503,6 @@ packages:
       hash-base: 3.1.0
       inherits: 2.0.4
 
-  /rollup-plugin-polyfill-node@0.13.0(rollup@4.14.3):
-    resolution: {integrity: sha512-FYEvpCaD5jGtyBuBFcQImEGmTxDTPbiHjJdrYIp+mFIwgXiXabxvKUK7ZT9P31ozu2Tqm9llYQMRWsfvTMTAOw==}
-    peerDependencies:
-      rollup: ^1.20.0 || ^2.0.0 || ^3.0.0 || ^4.0.0
-    dependencies:
-      '@rollup/plugin-inject': 5.0.5(rollup@4.14.3)
-      rollup: 4.14.3
-    dev: true
-
   /rollup@3.29.4:
     resolution: {integrity: sha512-oWzmBZwvYrU0iJHtDmhsm662rC15FRXmcjCk1xD771dFDx5jJ02ufAQQTn0etB2emNk4J9EZg/yWKpsn9BWGRw==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
@@ -19503,6 +19431,7 @@ packages:
       sucrase: 3.35.0
     transitivePeerDependencies:
       - ts-node
+    dev: true
 
   /tapable@2.2.1:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
@@ -20550,7 +20479,7 @@ packages:
         optional: true
     dependencies:
       '@microsoft/api-extractor': 7.43.0(@types/node@20.12.7)
-      '@rollup/pluginutils': 5.1.0(rollup@4.14.3)
+      '@rollup/pluginutils': 5.1.0
       '@vue/language-core': 1.8.27(typescript@5.4.5)
       debug: 4.3.4
       kolorist: 1.8.0
@@ -20577,20 +20506,20 @@ packages:
     peerDependencies:
       vite: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
     dependencies:
-      '@rollup/plugin-inject': 5.0.5(rollup@4.14.3)
+      '@rollup/plugin-inject': 5.0.5
       node-stdlib-browser: 1.2.0
       vite: 5.2.8(@types/node@20.12.7)
     transitivePeerDependencies:
       - rollup
     dev: true
 
-  /vite-plugin-node-stdlib-browser@0.2.1(node-stdlib-browser@1.2.0)(rollup@4.14.3)(vite@4.5.3):
+  /vite-plugin-node-stdlib-browser@0.2.1(node-stdlib-browser@1.2.0)(vite@4.5.3):
     resolution: {integrity: sha512-6u2i613Dkqj5KaTNIrnZvE6y3/awWAp0S5TjucTvGxdhetftB1Mgvblc+nwYzlw6sntPlac8UOC7ttXNh+LZKA==}
     peerDependencies:
       node-stdlib-browser: ^1.2.0
       vite: ^2.0.0 || ^3.0.0 || ^4.0.0
     dependencies:
-      '@rollup/plugin-inject': 5.0.5(rollup@4.14.3)
+      '@rollup/plugin-inject': 5.0.5
       node-stdlib-browser: 1.2.0
       vite: 4.5.3(@types/node@20.12.7)
     transitivePeerDependencies:
@@ -21296,27 +21225,6 @@ packages:
         optional: true
     dependencies:
       '@types/react': 18.2.72
-      immer: 10.0.4
-      react: 18.2.0
-      use-sync-external-store: 1.2.0(react@18.2.0)
-    dev: false
-
-  /zustand@4.5.2(@types/react@18.2.75)(immer@10.0.4)(react@18.2.0):
-    resolution: {integrity: sha512-2cN1tPkDVkwCy5ickKrI7vijSjPksFRfqS6237NzT0vqSsztTNnQdHw9mmN7uBdk3gceVXU0a+21jFzFzAc9+g==}
-    engines: {node: '>=12.7.0'}
-    peerDependencies:
-      '@types/react': '>=16.8'
-      immer: '>=9.0.6'
-      react: '>=16.8'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      immer:
-        optional: true
-      react:
-        optional: true
-    dependencies:
-      '@types/react': 18.2.75
       immer: 10.0.4
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
