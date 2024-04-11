@@ -144,11 +144,11 @@ export const ibcValidationErrors = (state: AllSlices) => {
   // bech32 byte length is definitely shorter than the bech32 string length
   const limit = state.ibc.cosmos.destination?.length;
 
-  let amountErr: boolean = false;
+  let amountErr: boolean;
   try {
     amountErr = amountMoreThanBalance(new BalancesResponse(availableBalance), inputAmount);
   } catch (e) {
-    /* noop */
+    amountErr = true;
   }
 
   return {
