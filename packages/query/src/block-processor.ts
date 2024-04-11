@@ -33,7 +33,11 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
-import { NUMERAIRES, STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
+import {
+  NUMERAIRES,
+  PRICE_RELEVANCE_THRESHOLDS,
+  STAKING_TOKEN_METADATA,
+} from '@penumbra-zone/constants/src/assets';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/src/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
@@ -258,10 +262,15 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.saveTransactions(compactBlock.height, relevantTx);
       }
 
+      // We do not store historical prices,
+      // so there is no point in saving prices that would already be considered obsolete at the time of saving
+      const blockInPriceRelevanceThreshold =
+        compactBlock.height >= latestKnownBlockHeight - BigInt(PRICE_RELEVANCE_THRESHOLDS.default);
+
       // we can't use third-party price oracles for privacy reasons,
       // so we have to get asset prices from swap results during block scans
       // and store them locally in indexed-db.
-      if (compactBlock.swapOutputs.length) {
+      if (blockInPriceRelevanceThreshold && compactBlock.swapOutputs.length) {
         await updatePricesFromSwaps(
           this.indexedDb,
           NUMERAIRES,
