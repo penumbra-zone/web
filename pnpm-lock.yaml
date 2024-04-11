@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@chain-registry/types': 0.18.18
+
 importers:
 
   .:
@@ -26,6 +29,9 @@ importers:
       '@bufbuild/protobuf':
         specifier: ^1.8.0
         version: 1.8.0
+      '@chain-registry/types':
+        specifier: ^0.18.18
+        version: 0.18.19
       '@connectrpc/connect':
         specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.8.0)
@@ -2749,7 +2755,7 @@ packages:
   /@chain-registry/client@1.28.0:
     resolution: {integrity: sha512-VdwH58DLnsLDmNA+XiZEuCHuuREowz2kHPorJb0noXJr6nMSLluOcCr0pjApX7GnAZ6P/VK9adzv8BrFUzSJhg==}
     dependencies:
-      '@chain-registry/types': 0.25.0
+      '@chain-registry/types': 0.18.18
       '@chain-registry/utils': 1.26.0
       bfs-path: 1.0.2
       cross-fetch: 3.1.8
@@ -2761,7 +2767,7 @@ packages:
     resolution: {integrity: sha512-MmjThpQ0U0EJF66UJzPy67iKC9hY7ljrpGtQOPfeYGB/lUlKZTsE/mgF2XkKGUf7wJK8LugOqU5Zul7C1/ZA4Q==}
     dependencies:
       '@babel/runtime': 7.24.4
-      '@chain-registry/types': 0.17.1
+      '@chain-registry/types': 0.18.18
       '@chain-registry/utils': 1.26.0
       '@cosmostation/extension-client': 0.1.15
     dev: false
@@ -2769,7 +2775,7 @@ packages:
   /@chain-registry/cosmostation@1.44.1:
     resolution: {integrity: sha512-SdYruBOQhL9zJP27JwZB7IWmsfjW6fkQ8+sXGjcRbQkvWYDlbYm7tYgp3vst6f+PDWhqJKsL+qscOPiM84outA==}
     dependencies:
-      '@chain-registry/types': 0.25.0
+      '@chain-registry/types': 0.18.18
       '@chain-registry/utils': 1.26.0
       '@cosmostation/extension-client': 0.1.15
     dev: false
@@ -2778,20 +2784,14 @@ packages:
     resolution: {integrity: sha512-MRAEgUpafyGLRDQc4SPB+R/If4CL2SREqdbxZMKHX9aeqzKXhJlEM5IPjJTZCWTbUP/eGXC9JNjxPNUYd92PqQ==}
     dependencies:
       '@babel/runtime': 7.24.4
-      '@chain-registry/types': 0.17.1
+      '@chain-registry/types': 0.18.18
       '@keplr-wallet/cosmos': 0.12.28
       '@keplr-wallet/crypto': 0.12.28
       semver: 7.6.0
     dev: false
 
-  /@chain-registry/types@0.17.0:
-    resolution: {integrity: sha512-lavACU4oDxioUy8lZOFZN0Vrr2qR+Dg2yEh/mkrPfOldcioavREXJou0elDyyXwq4pGLC5YQ+IISCtQ4Du0bdw==}
-    dependencies:
-      '@babel/runtime': 7.24.4
-    dev: false
-
-  /@chain-registry/types@0.17.1:
-    resolution: {integrity: sha512-O0CgrtJgIlqXvZm1CqDZe/7jZz068O/uuCIoyDXCegFHK03rdHacKcDGwEIUuI0MNUf8YV3jdE4xHQMSAX+79w==}
+  /@chain-registry/types@0.18.18:
+    resolution: {integrity: sha512-Hobj33zg/OhJGUd5PxSYj0cJHV3qoY8Ev60BeRnCsaBEbbQIUhT+rog/65rURFtKOWU3hGTCLP1hfm0XmcvbgQ==}
     dependencies:
       '@babel/runtime': 7.24.4
     dev: false
@@ -2802,14 +2802,10 @@ packages:
       '@babel/runtime': 7.24.4
     dev: false
 
-  /@chain-registry/types@0.25.0:
-    resolution: {integrity: sha512-bbP+aBT1NF+xKXCvT6VA+zLlnagKZqlTepx7qaszej86WBSTXpV7e540WXhk8qEWlUKubg8Y3prx7uoN1HAVPA==}
-    dev: false
-
   /@chain-registry/utils@1.26.0:
     resolution: {integrity: sha512-4Ui/AIAsBw67mv5vOF+KFJM4AjPp/t+V0u6hGOZ4IWeQgB7eXbplR7Hzj1ScMVuV8fBHlaTq14MFIIlRjph+LQ==}
     dependencies:
-      '@chain-registry/types': 0.25.0
+      '@chain-registry/types': 0.18.18
       bignumber.js: 9.1.1
       sha.js: 2.4.11
     dev: false
@@ -3319,7 +3315,7 @@ packages:
     resolution: {integrity: sha512-e0Fqbut9mqHlFS6QnLSbU8AFYPtXUcKVaMJsL1dKbfTotACsECgnAs4gzXaTFo3sTwEJrNZ6cq86qvqV85X6uw==}
     dependencies:
       '@chain-registry/client': 1.28.0
-      '@chain-registry/types': 0.17.0
+      '@chain-registry/types': 0.18.18
       '@cosmjs/amino': 0.32.3
       '@cosmjs/cosmwasm-stargate': 0.32.3
       '@cosmjs/proto-signing': 0.32.3
@@ -3666,7 +3662,7 @@ packages:
       react: ^18
       react-dom: ^18
     dependencies:
-      '@chain-registry/types': 0.17.0
+      '@chain-registry/types': 0.18.18
       '@cosmos-kit/core': 2.8.9
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -3698,7 +3694,7 @@ packages:
       react: ^18
       react-dom: ^18
     dependencies:
-      '@chain-registry/types': 0.17.0
+      '@chain-registry/types': 0.18.18
       '@cosmos-kit/core': 2.8.9
       '@cosmos-kit/react-lite': 2.6.9(react-dom@18.2.0)(react@18.2.0)
       '@interchain-ui/react': 1.22.14(@types/react@18.2.75)(react-dom@18.2.0)(react@18.2.0)
@@ -11078,7 +11074,7 @@ packages:
     resolution: {integrity: sha512-tPfeBZAFgYQgroTR5TpfS0GDUsUm0ShNKRvDzrHpiUokSK4BfPxq7lFsCxvobj1TbzyaZyv5Jtelc0FqpLfh9g==}
     dependencies:
       '@babel/runtime': 7.24.4
-      '@chain-registry/types': 0.18.19
+      '@chain-registry/types': 0.18.18
     dev: false
 
   /chalk@2.4.2:
