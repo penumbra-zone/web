@@ -7,22 +7,25 @@ import { IncognitoIcon } from '../../icons/incognito';
 export interface ViewBoxProps {
   label: string;
   visibleContent?: React.ReactElement;
+  isOpaque?: boolean;
 }
 
 const Label = ({ label }: { label: string }) => <span className='text-lg'>{label}</span>;
 
-export const ViewBox = ({ label, visibleContent }: ViewBoxProps) => {
+export const ViewBox = ({ label, visibleContent, isOpaque }: ViewBoxProps) => {
+  // if isOpaque is undefined, set it to !visibleContent
+  isOpaque = isOpaque ?? !visibleContent;
   return (
     <div
       className={cn(
         'bg-background px-4 pt-3 pb-4 rounded-lg border flex flex-col gap-1 break-all overflow-hidden',
-        !visibleContent ? 'cursor-not-allowed' : '',
+        isOpaque ? 'cursor-not-allowed' : '',
       )}
     >
       <div className='flex items-center gap-2 self-start'>
-        <span className={cn('text-base font-bold', !visibleContent ? 'text-gray-600' : '')}>
-          {visibleContent && <Label label={label} />}
-          {!visibleContent && (
+        <span className={cn('text-base font-bold', isOpaque ? 'text-gray-600' : '')}>
+          {!isOpaque && <Label label={label} />}
+          {isOpaque && (
             <div className='flex gap-2'>
               <IncognitoIcon fill='#4b5563' />
               <Label label={label} />
