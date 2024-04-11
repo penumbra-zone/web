@@ -2,7 +2,7 @@ import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { ChainSelector } from './chain-selector';
 import { useStore } from '../../state';
 import { AccountSwitcher } from '@penumbra-zone/ui/components/ui/account-switcher';
-import { ibcPenumbraSelector, ibcSelector } from '../../state/ibc';
+import { ibcCosmosSelector, ibcPenumbraSelector, ibcSelector } from '../../state/ibc';
 import { AddressComponent } from '@penumbra-zone/ui/components/ui/address-component';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { useChain } from '@cosmos-kit/react';
@@ -16,6 +16,9 @@ export const IbcInForm = () => {
   const { initialChainName } = useLoaderData() as IbcLoaderResponse;
   const [chainName, setChainName] = useState(initialChainName);
   const { penumbraChain } = useStore(ibcSelector);
+  const { rpcEndpoint, setChainContext } = useStore(ibcCosmosSelector);
+  const [cosmosClient, setCosmosClient] =
+    useState<Awaited<ReturnType<typeof cosmos.ClientFactory.createRPCQueryClient>>>();
 
   const chainContext = useChain(chainName);
 
@@ -27,30 +30,32 @@ export const IbcInForm = () => {
     }
   }, [penumbraChain, chainName, setChainName]);
 
+  useEffect(() => void setChainContext(chainContext), [chainContext, setChainContext]);
+
   useEffect(() => {
     void (async () => {
-      // get RPC client
-      // eslint-disable-next-line @typescript-eslint/no-array-constructor
-      console.log('useEffect cosmos');
+      if (rpcEndpoint) {
+        const client = await cosmos.ClientFactory.createRPCQueryClient({ rpcEndpoint });
+        setCosmosClient(client);
+      }
+    })();
+  }, [rpcEndpoint, setCosmosClient]);
+
+  useEffect(() => {
+    void (async () => {
       const { base: denom } = chainContext.assets?.assets[0] ?? {};
       const address = chainContext.address;
-      if (address && denom) {
-        const cosmosRpcConfig = {
-          rpcEndpoint: await chainContext
-            .getRpcEndpoint()
-            .then(ep => (typeof ep === 'string' ? ep : ep.url)),
-        };
-        const client = await cosmos.ClientFactory.createRPCQueryClient(cosmosRpcConfig);
-        console.log('cosmos client', client);
+      console.log('useEffect', { cosmosClient, address, denom });
+      if (cosmosClient && address && denom) {
         // fetch balance
-        const balance = await client.cosmos.bank.v1beta1.balance({
+        const balance = await cosmosClient.cosmos.bank.v1beta1.balance({
           address,
           denom,
         });
         console.log('balance', balance);
       }
     })();
-  }, [chainContext]);
+  }, [chainContext.address, chainContext.assets?.assets, cosmosClient]);
 
   void chainContext.getAccount().then(ibcAcct => {
     console.log('ibcAccount', ibcAcct);

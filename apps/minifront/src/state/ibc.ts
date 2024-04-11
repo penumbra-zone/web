@@ -14,6 +14,7 @@ import {
   getCosmosChainByName,
 } from '@penumbra-zone/constants/src/cosmos';
 import { PlainMessage, toPlainMessage } from '@bufbuild/protobuf';
+import { ChainContext } from '@cosmos-kit/core';
 
 export interface IbcSlice {
   txInProgress: boolean;
@@ -30,8 +31,10 @@ export interface IbcSlice {
     setUnshield: (send: BalancesResponse) => void;
   };
   cosmos: {
+    rpcEndpoint?: string;
     destination?: string;
-    setDestination: (address?: string) => void;
+    setChainContext: (ctx: ChainContext) => Promise<void>;
+    setDestination: (addr: string) => void;
   };
   //sendUnshieldTx: () => Promise<void>;
   //sendShieldTx: () => Promise<void>;
@@ -75,9 +78,18 @@ export const createIbcSlice = (): SliceCreator<IbcSlice> => set => {
       },
     },
     cosmos: {
-      setDestination: (address?: string) => {
+      setDestination: (addr: string) => {
         set(state => {
-          state.ibc.cosmos.destination = address;
+          state.ibc.cosmos.destination = addr;
+        });
+      },
+      setChainContext: async ({ getRpcEndpoint, address }: ChainContext) => {
+        const rpcEndpoint = await getRpcEndpoint().then(ep =>
+          typeof ep === 'string' ? ep : ep.url,
+        );
+        set(state => {
+          state.ibc.cosmos.destination ??= address;
+          state.ibc.cosmos.rpcEndpoint = rpcEndpoint;
         });
       },
     },
