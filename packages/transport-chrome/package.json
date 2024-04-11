@@ -6,6 +6,18 @@
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
+  "files": [
+    "src/",
+    "*.md",
+    "!**/*.test.ts"
+  ],
+  "exports": {
+    "./channel-names": "./src/channel-names.ts",
+    "./message": "./src/message.ts",
+    "./session-client": "./src/session-client.ts",
+    "./session-manager": "./src/session-manager.ts",
+    "./stream": "./src/stream.ts"
+  },
   "dependencies": {
     "@bufbuild/protobuf": "^1.8.0",
     "@connectrpc/connect": "^1.4.0",
