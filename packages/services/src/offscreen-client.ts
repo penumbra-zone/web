@@ -1,17 +1,17 @@
+import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import {
   Action,
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import { ConnectError } from '@connectrpc/connect';
+import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 import {
   ActionBuildMessage,
-  ActionBuildRequest,
   OffscreenMessage,
 } from '@penumbra-zone/types/src/internal-msg/offscreen';
 import { InternalRequest, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
-import { ConnectError } from '@connectrpc/connect';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
-import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
@@ -45,10 +45,11 @@ const releaseOffscreen = async () => {
   if (!--active) await chrome.offscreen.closeDocument();
 };
 
-const sendOffscreenMessage = async <T extends OffscreenMessage>(
-  req: InternalRequest<T>,
-): Promise<InternalResponse<T>> =>
-  chrome.runtime.sendMessage<InternalRequest<T>, InternalResponse<T>>(req);
+const sendOffscreenMessage = async <T extends OffscreenMessage>(req: InternalRequest<T>) =>
+  chrome.runtime.sendMessage<InternalRequest<T>, InternalResponse<T>>(req).then(res => {
+    if ('error' in res) throw errorFromJson(res.error, undefined, ConnectError.from(res));
+    return res.data;
+  });
 
 /**
  * Build actions in parallel, in an offscreen window where we can run wasm.
@@ -61,29 +62,35 @@ const buildActions = (
   fullViewingKey: FullViewingKey,
   cancel: PromiseLike<never>,
 ): Promise<Action>[] => {
-  const active = activateOffscreen();
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  const activation = activateOffscreen();
+
+  // this is a lot of binary -> base64 serialization, so just do it once and reuse
+  const partialRequest = {
+    transactionPlan: transactionPlan.toJson() as Jsonified<TransactionPlan>,
+    witness: witness.toJson() as Jsonified<WitnessData>,
+    fullViewingKey: fullViewingKey.toJson() as Jsonified<FullViewingKey>,
+  };
+
   const buildTasks = transactionPlan.actions.map(async (_, actionPlanIndex) => {
-    await active;
-    const buildRes = await sendOffscreenMessage<ActionBuildMessage>({
+    const buildReq: InternalRequest<ActionBuildMessage> = {
       type: 'BUILD_ACTION',
       request: {
-        transactionPlan: transactionPlan.toJson() as Jsonified<TransactionPlan>,
-        witness: witness.toJson() as Jsonified<WitnessData>,
-        fullViewingKey: fullViewingKey.toJson() as Jsonified<FullViewingKey>,
+        ...partialRequest,
         actionPlanIndex,
-      } satisfies ActionBuildRequest,
-    });
-    if ('error' in buildRes) throw ConnectError.from(buildRes.error);
-    return Action.fromJson(buildRes.data);
+      },
+    };
+
+    // wait for offscreen to finish standing up
+    await activation;
+
+    const buildRes = await sendOffscreenMessage(buildReq);
+    return Action.fromJson(buildRes);
   });
 
   void Promise.race([Promise.all(buildTasks), cancel])
-    .catch(
-      // if we don't suppress this, we log errors when a user denies approval.
-      // real failures are already conveyed by the individual promises.
-      () => null,
-    )
+    // suppress 'unhandled promise' logs - real failures are already conveyed by the individual promises.
+    .catch()
+    // this build is done with offscreen. it may shut down
     .finally(() => void releaseOffscreen());
 
   return buildTasks;
