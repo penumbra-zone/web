@@ -1,3 +1,3 @@
 ---
-"@penumbra-zone/transport-chrome": minor
+'@penumbra-zone/transport-chrome': minor
 ---
