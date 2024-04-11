@@ -49,7 +49,7 @@ export const ValueViewComponent = ({
             </div>
           )}
           {showValue && (
-            <span className='leading-[15px]'>
+            <span className='-mb-0.5 leading-[15px]'>
               {variant === 'equivalent' && <>~ </>}
               {formattedAmount}
             </span>
@@ -68,7 +68,7 @@ export const ValueViewComponent = ({
     const encodedAssetId = getDisplayDenomFromView(view);
     return (
       <div className='flex font-mono'>
-        <p className='truncate text-[15px] leading-[22px]'>
+        <p className='-mb-0.5 truncate text-[15px] leading-[22px]'>
           {fromBaseUnitAmount(amount, 0).toFormat()}
         </p>
         <span className='truncate font-mono text-sm italic text-foreground'>{encodedAssetId}</span>
