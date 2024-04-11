@@ -42,9 +42,11 @@ export const IbcOutForm = () => {
   );
 
   useEffect(() => {
-    if (penumbraChain?.chainName && penumbraChain.chainName !== chainName)
+    if (penumbraChain?.chainName && penumbraChain.chainName !== chainName) {
+      setInputDestination(undefined);
       setChainName(penumbraChain.chainName);
-  }, [penumbraChain, chainName, setChainName]);
+    }
+  }, [penumbraChain, chainName, setChainName, setInputDestination]);
 
   useEffect(() => {
     setDestination(inputDestination ?? chainContext.address);
