@@ -15,6 +15,9 @@ import {
 } from '@penumbra-zone/constants/src/cosmos';
 import { PlainMessage, toPlainMessage } from '@bufbuild/protobuf';
 import { ChainContext } from '@cosmos-kit/core';
+import { amountMoreThanBalance } from './send';
+import { bech32, bech32m } from 'bech32';
+import { joinLoHi } from '@penumbra-zone/types/src/lo-hi';
 
 export interface IbcSlice {
   txInProgress: boolean;
@@ -124,6 +127,42 @@ export const createIbcSlice = (): SliceCreator<IbcSlice> => set => {
 export const ibcPenumbraSelector = (state: AllSlices) => state.ibc.penumbra;
 export const ibcCosmosSelector = (state: AllSlices) => state.ibc.cosmos;
 export const ibcSelector = (state: AllSlices) => state.ibc;
+
+export const ibcValidationErrors = (state: AllSlices) => {
+  const inputBalance =
+    state.ibc.penumbra.unshield?.balanceView?.valueView.case === 'knownAssetId'
+      ? state.ibc.penumbra.unshield.balanceView.valueView.value
+      : undefined;
+  const availableBalance = state.ibc.assetBalances?.find(
+    ({ balanceView }) =>
+      balanceView?.valueView.case === 'knownAssetId' &&
+      balanceView.valueView.value.metadata?.penumbraAssetId ===
+        inputBalance?.metadata?.penumbraAssetId,
+  );
+  const inputAmount = joinLoHi(inputBalance?.amount?.lo, inputBalance?.amount?.hi).toString();
+
+  // bech32 byte length is definitely shorter than the bech32 string length
+  const limit = state.ibc.cosmos.destination?.length;
+
+  let amountErr: boolean = false;
+  try {
+    amountErr = amountMoreThanBalance(new BalancesResponse(availableBalance), inputAmount);
+  } catch (e) {
+    /* noop */
+  }
+
+  return {
+    destinationErr: Boolean(
+      state.ibc.cosmosChain &&
+        state.ibc.cosmos.destination &&
+        (bech32m.decodeUnsafe(state.ibc.cosmos.destination, limit) ??
+          bech32.decodeUnsafe(state.ibc.cosmos.destination, limit)),
+    ),
+    unshieldAmountErr: Boolean(
+      state.ibc.penumbra.unshield?.balanceView?.valueView.case === 'knownAssetId' && amountErr,
+    ),
+  };
+};
 
 /*
 const getTimeout = async (

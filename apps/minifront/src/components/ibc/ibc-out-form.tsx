@@ -1,7 +1,12 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { useStore } from '../../state';
-import { ibcCosmosSelector, ibcPenumbraSelector, ibcSelector } from '../../state/ibc';
+import {
+  ibcCosmosSelector,
+  ibcPenumbraSelector,
+  ibcSelector,
+  ibcValidationErrors,
+} from '../../state/ibc';
 import { InputBlock } from '../shared/input-block';
 import InputToken from '../shared/input-token';
 import { joinLoHi, splitLoHi } from '@penumbra-zone/types/src/lo-hi';
@@ -14,9 +19,12 @@ import { IbcLoaderResponse } from './ibc-loader';
 import { useEffect, useState } from 'react';
 import { ChainSelector } from './chain-selector';
 
+import { cn } from '@penumbra-zone/ui/lib/utils';
+
 export const IbcOutForm = () => {
   const { initialChainName } = useLoaderData() as IbcLoaderResponse;
   const [chainName, setChainName] = useState(initialChainName);
+  const validationErrors = useStore(ibcValidationErrors);
   const { penumbraChain, assetBalances } = useStore(ibcSelector);
 
   const { destination, setDestination } = useStore(ibcCosmosSelector);
@@ -42,7 +50,7 @@ export const IbcOutForm = () => {
     setDestination(inputDestination ?? chainContext.address);
   }, [chainContext.address, inputDestination, setDestination]);
 
-  const customizedDestination = inputDestination !== chainContext.address;
+  const manualDestination = inputDestination !== chainContext.address;
 
   return (
     <form className='flex flex-col gap-4' onSubmit={e => e.preventDefault()}>
@@ -64,10 +72,32 @@ export const IbcOutForm = () => {
           setUnshield(newUnshield);
         }}
         balances={filteredBalances}
+        validations={[
+          {
+            type: 'error',
+            issue: 'insufficient funds',
+            checkFn: () => validationErrors.unshieldAmountErr,
+          },
+        ]}
       />
-      <InputBlock label='Recipient on destination chain' className='mb-1'>
+      <InputBlock
+        label='Recipient on destination chain'
+        className='mb-1'
+        validations={[
+          {
+            type: 'error',
+            issue: 'invalid address',
+            checkFn: () => validationErrors.destinationErr,
+          },
+          {
+            type: 'warn',
+            issue: 'manually entered address',
+            checkFn: () => manualDestination,
+          },
+        ]}
+      >
         <Input
-          variant={customizedDestination ? 'warn' : 'transparent'}
+          className={cn(!manualDestination && 'border-green-300')}
           placeholder='Enter the address'
           value={destination}
           onChange={e => setInputDestination(e.target.value || chainContext.address)}
