@@ -34,7 +34,7 @@ export interface IbcSlice {
     rpcEndpoint?: string;
     destination?: string;
     setChainContext: (ctx: ChainContext) => Promise<void>;
-    setDestination: (addr: string) => void;
+    setDestination: (addr?: string) => void;
   };
   //sendUnshieldTx: () => Promise<void>;
   //sendShieldTx: () => Promise<void>;
@@ -78,9 +78,9 @@ export const createIbcSlice = (): SliceCreator<IbcSlice> => set => {
       },
     },
     cosmos: {
-      setDestination: (addr: string) => {
+      setDestination: (addr?: string) => {
         set(state => {
-          state.ibc.cosmos.destination = addr;
+          state.ibc.cosmos.destination = addr ?? '';
         });
       },
       setChainContext: async ({ getRpcEndpoint, address }: ChainContext) => {
