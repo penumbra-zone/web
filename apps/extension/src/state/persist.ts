@@ -2,10 +2,10 @@ import { StateCreator, StoreMutatorIdentifier } from 'zustand';
 import { AllSlices } from '.';
 import { produce } from 'immer';
 
-import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
-import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/types';
-import { sessionExtStorage, SessionStorageState } from '@penumbra-zone/storage/src/chrome/session';
-import { StorageItem } from '@penumbra-zone/storage/src/chrome/base';
+import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
+import { LocalStorageState } from '@penumbra-zone/storage/chrome/types';
+import { sessionExtStorage, SessionStorageState } from '@penumbra-zone/storage/chrome/session';
+import { StorageItem } from '@penumbra-zone/storage/chrome/base';
 import { walletsFromJson } from '@penumbra-zone/types/src/wallet';
 
 export type Middleware = <

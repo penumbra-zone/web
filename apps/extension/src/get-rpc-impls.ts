@@ -21,7 +21,7 @@ import { sctImpl } from '@penumbra-zone/router/src/grpc/sct';
 import { stakingImpl } from '@penumbra-zone/router/src/grpc/staking';
 import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
 
-import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
+import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 import { ServiceType } from '@bufbuild/protobuf';
 
 export const getRpcImpls = async () => {

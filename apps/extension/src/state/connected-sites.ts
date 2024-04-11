@@ -1,5 +1,5 @@
-import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
-import { LocalStorageState, OriginRecord } from '@penumbra-zone/storage/src/chrome/types';
+import { ExtensionStorage } from '@penumbra-zone/storage/chrome/base';
+import { LocalStorageState, OriginRecord } from '@penumbra-zone/storage/chrome/types';
 import { AllSlices, SliceCreator } from '.';
 
 import Map from '@penumbra-zone/polyfills/src/Map.groupBy';

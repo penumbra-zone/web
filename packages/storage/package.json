@@ -1,12 +1,22 @@
 {
   "name": "@penumbra-zone/storage",
   "version": "2.0.1",
-  "private": true,
   "license": "MIT",
   "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
+  },
+  "files": [
+    "src/",
+    "*.md",
+    "!**/*.test.ts",
+    "!src/chrome/test-utils/"
+  ],
+  "exports": {
+    "./chrome/*": "./src/chrome/*.ts",
+    "./indexed-db": "./src/indexed-db/index.ts",
+    "./indexed-db/*": "./src/indexed-db/*.ts"
   },
   "dependencies": {
     "@penumbra-zone/constants": "workspace:*",
