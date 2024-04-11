@@ -28,6 +28,11 @@ export const AssetIcon = ({
       ) : isDelegationToken ? (
         <DelegationTokenIcon displayDenom={display} className={className} />
       ) : isUnbondingToken ? (
+        /**
+         * @todo: Render a custom unbonding token for validators that have a
+         * logo -- e.g., with the validator ID superimposed over the validator
+         * logo.
+         */
         <UnbondingTokenIcon displayDenom={display} className={className} />
       ) : (
         <Identicon
