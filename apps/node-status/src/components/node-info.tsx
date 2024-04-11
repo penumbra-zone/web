@@ -15,12 +15,7 @@ export const NodeInfo = () => {
       <div className='mb-2 flex flex-col gap-1'>
         <strong>Network</strong>
         <div className='flex items-center gap-2'>
-          <Identicon
-            uniqueIdentifier={nodeInfo.network}
-            type='gradient'
-            className='rounded-full'
-            size={14}
-          />
+          <Identicon uniqueIdentifier={nodeInfo.network} type='gradient' size={14} />
           <span className='text-2xl font-bold'>{nodeInfo.network}</span>
         </div>
         <strong>Version</strong>

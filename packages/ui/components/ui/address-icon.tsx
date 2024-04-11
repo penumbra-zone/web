@@ -11,10 +11,5 @@ interface AddressIconProps {
  * A simple component to display a consistently styled icon for a given address.
  */
 export const AddressIcon = ({ address, size }: AddressIconProps) => (
-  <Identicon
-    uniqueIdentifier={bech32Address(address)}
-    size={size}
-    className='rounded-full'
-    type='gradient'
-  />
+  <Identicon uniqueIdentifier={bech32Address(address)} size={size} type='gradient' />
 );

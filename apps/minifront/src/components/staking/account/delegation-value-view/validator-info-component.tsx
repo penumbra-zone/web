@@ -1,5 +1,4 @@
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { Identicon } from '@penumbra-zone/ui/components/ui/identicon';
 import { IdentityKeyComponent } from '@penumbra-zone/ui/components/ui/identity-key-component';
 import {
   Tooltip,
@@ -12,8 +11,9 @@ import {
   getIdentityKeyFromValidatorInfo,
   getValidator,
 } from '@penumbra-zone/getters/src/validator-info';
-import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
 import { calculateCommissionAsPercentage } from '@penumbra-zone/types/src/staking';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 
 /**
  * Renders a single `ValidatorInfo`: its name, bech32-encoded identity key,
@@ -22,9 +22,11 @@ import { calculateCommissionAsPercentage } from '@penumbra-zone/types/src/stakin
 export const ValidatorInfoComponent = ({
   validatorInfo,
   votingPowerAsIntegerPercentage,
+  delegationTokenMetadata,
 }: {
   validatorInfo: ValidatorInfo;
   votingPowerAsIntegerPercentage?: number;
+  delegationTokenMetadata: Metadata;
 }) => {
   // The tooltip component is a bit heavy to render, so we'll wait to render it
   // until all loading completes.
@@ -36,12 +38,7 @@ export const ValidatorInfoComponent = ({
     <TooltipProvider>
       <div className='flex items-center gap-4'>
         <div className='shrink-0'>
-          <Identicon
-            uniqueIdentifier={bech32IdentityKey(identityKey)}
-            size={48}
-            className='rounded-full'
-            type='gradient'
-          />
+          <AssetIcon metadata={delegationTokenMetadata} size='lg' />
         </div>
 
         <div className='flex min-w-0 shrink flex-col gap-1'>

@@ -7,7 +7,7 @@ export const Identicon = ({ type, ...props }: IdenticonProps & { type: 'gradient
   return <IdenticonSolid {...props} />;
 };
 
-const IdenticonGradient = ({ uniqueIdentifier, size = 120, className }: IdenticonProps) => {
+const IdenticonGradient = ({ uniqueIdentifier, size = 120 }: IdenticonProps) => {
   const gradient = useMemo(() => generateGradient(uniqueIdentifier), [uniqueIdentifier]);
   const gradientId = useMemo(() => `gradient-${uniqueIdentifier}`, [uniqueIdentifier]);
 
@@ -18,7 +18,7 @@ const IdenticonGradient = ({ uniqueIdentifier, size = 120, className }: Identico
       viewBox={`0 0 ${size} ${size}`}
       version='1.1'
       xmlns='http://www.w3.org/2000/svg'
-      className={className}
+      className='overflow-hidden rounded-full'
     >
       <g>
         <defs>
@@ -33,7 +33,7 @@ const IdenticonGradient = ({ uniqueIdentifier, size = 120, className }: Identico
   );
 };
 
-const IdenticonSolid = ({ uniqueIdentifier, size = 120, className }: IdenticonProps) => {
+const IdenticonSolid = ({ uniqueIdentifier, size = 120 }: IdenticonProps) => {
   const color = useMemo(() => generateSolidColor(uniqueIdentifier), [uniqueIdentifier]);
 
   return (
@@ -43,7 +43,7 @@ const IdenticonSolid = ({ uniqueIdentifier, size = 120, className }: IdenticonPr
       viewBox={`0 0 ${size} ${size}`}
       version='1.1'
       xmlns='http://www.w3.org/2000/svg'
-      className={className}
+      className='overflow-hidden rounded-full'
     >
       <rect fill={color.bg} x='0' y='0' width={size} height={size} />
       <text
