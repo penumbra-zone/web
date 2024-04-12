@@ -6,6 +6,7 @@ import { memo, useMemo } from 'react';
 import {
   getDisplayDenomFromView,
   getEquivalentValues,
+  getMetadata,
   getValidatorInfoFromValueView,
 } from '@penumbra-zone/getters/src/value-view';
 import { asValueView } from '@penumbra-zone/getters/src/equivalent-value';
@@ -38,6 +39,7 @@ export const DelegationValueView = memo(
     unstakedTokens?: ValueView;
   }) => {
     const validatorInfo = getValidatorInfoFromValueView(valueView);
+    const metadata = getMetadata(valueView);
 
     const equivalentValueOfStakingToken = useMemo(() => {
       const equivalentValue = getEquivalentValues(valueView).find(
@@ -54,6 +56,7 @@ export const DelegationValueView = memo(
           <ValidatorInfoComponent
             validatorInfo={validatorInfo}
             votingPowerAsIntegerPercentage={votingPowerAsIntegerPercentage}
+            delegationTokenMetadata={metadata}
           />
         </div>
 

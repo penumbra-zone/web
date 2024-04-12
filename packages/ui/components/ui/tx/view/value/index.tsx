@@ -44,7 +44,7 @@ export const ValueViewComponent = ({
       <Pill variant={variant === 'default' ? 'default' : 'dashed'}>
         <div className='flex min-w-0 items-center gap-1'>
           {showIcon && (
-            <div className='-ml-2 mr-1 flex size-6 items-center justify-center rounded-full'>
+            <div className='-ml-2 mr-1 flex size-6 shrink-0 items-center justify-center rounded-full'>
               <AssetIcon metadata={metadata} />
             </div>
           )}
