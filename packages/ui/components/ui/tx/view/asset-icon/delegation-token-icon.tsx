@@ -57,6 +57,7 @@ export const DelegationTokenIcon = ({
         fill='#96d5d1'
         fontFamily="Iosevka-Term, 'Iosevka Term'"
         fontSize='11.06'
+        pointerEvents='none'
       >
         <tspan x='0' y='0'>
           {firstFour}

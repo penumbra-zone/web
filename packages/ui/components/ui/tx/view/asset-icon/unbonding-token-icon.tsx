@@ -57,6 +57,7 @@ export const UnbondingTokenIcon = ({
         fill='#f79036'
         fontFamily="Iosevka-Term, 'Iosevka Term'"
         fontSize='11.06'
+        pointerEvents='none'
       >
         <tspan x='0' y='0'>
           {firstFour}
