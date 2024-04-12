@@ -18,7 +18,7 @@ const IdenticonGradient = ({ uniqueIdentifier, size = 120 }: IdenticonProps) => 
       viewBox={`0 0 ${size} ${size}`}
       version='1.1'
       xmlns='http://www.w3.org/2000/svg'
-      className='overflow-hidden rounded-full'
+      className='rounded-full'
     >
       <g>
         <defs>
@@ -43,7 +43,7 @@ const IdenticonSolid = ({ uniqueIdentifier, size = 120 }: IdenticonProps) => {
       viewBox={`0 0 ${size} ${size}`}
       version='1.1'
       xmlns='http://www.w3.org/2000/svg'
-      className='overflow-hidden rounded-full'
+      className='rounded-full'
     >
       <rect fill={color.bg} x='0' y='0' width={size} height={size} />
       <text
