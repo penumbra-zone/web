@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { AddressIcon } from '@penumbra-zone/ui/components/ui/address-icon';
 import { AddressComponent } from '@penumbra-zone/ui/components/ui/address-component';
@@ -39,8 +40,8 @@ export default function AssetsTable() {
   return (
     <Table>
       {balancesByAccount.map(account => (
-        <>
-          <TableHeader key={account.account} className='group'>
+        <Fragment key={account.account}>
+          <TableHeader className='group'>
             <TableRow>
               <TableHead colSpan={2}>
                 <div className='flex max-w-full flex-col justify-center gap-2 pt-8 group-[:first-of-type]:pt-0 md:flex-row'>
@@ -74,7 +75,7 @@ export default function AssetsTable() {
               </TableRow>
             ))}
           </TableBody>
-        </>
+        </Fragment>
       ))}
     </Table>
   );
