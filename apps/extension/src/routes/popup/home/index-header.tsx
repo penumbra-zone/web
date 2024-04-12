@@ -9,7 +9,7 @@ import { useStore } from '../../../state';
 export const IndexHeader = () => {
   const navigate = usePopupNav();
   const { chainId } = useChainIdQuery();
-  const frontendUrl = useStore(state => state.connectedSites.frontendUrl);
+  const statusPageUrl = useStore(state => state.network.grpcEndpoint);
 
   return (
     <header className='top-0 z-40 w-full'>
@@ -24,7 +24,7 @@ export const IndexHeader = () => {
             animate={{ opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }}
             className='overflow-hidden'
           >
-            <Network name={chainId} connectIndicator={false} href={frontendUrl} />
+            <Network name={chainId} connectIndicator={false} href={statusPageUrl} />
           </motion.div>
         ) : (
           <div className='m-[19px]' />
