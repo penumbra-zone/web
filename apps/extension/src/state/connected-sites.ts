@@ -27,10 +27,16 @@ export const createConnectedSitesSlice =
       void local.set('frontendUrl', frontendUrl);
     },
 
-    discardKnownSite: async (siteToDelete: { origin: string }) => {
-      const knownSites = get().connectedSites.knownSites;
-      const withoutSiteToDelete = knownSites.filter(known => known.origin !== siteToDelete.origin);
-      await local.set('knownSites', withoutSiteToDelete);
+    discardKnownSite: async (siteToDiscard: { origin: string }) => {
+      const { knownSites, frontendUrl, setFrontendUrl } = get().connectedSites;
+      const knownSitesWithoutDiscardedSite = knownSites.filter(
+        known => known.origin !== siteToDiscard.origin,
+      );
+      await local.set('knownSites', knownSitesWithoutDiscardedSite);
+
+      if (frontendUrl === siteToDiscard.origin && knownSitesWithoutDiscardedSite[0]) {
+        setFrontendUrl(knownSitesWithoutDiscardedSite[0].origin);
+      }
     },
   });
 
