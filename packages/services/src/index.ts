@@ -1,8 +1,8 @@
 import { BlockProcessor } from '@penumbra-zone/query/src/block-processor';
 import { RootQuerier } from '@penumbra-zone/query/src/root-querier';
-import { IndexedDb } from '@penumbra-zone/storage/src/indexed-db';
-import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
-import { syncLastBlockWithLocal } from '@penumbra-zone/storage/src/chrome/syncer';
+import { IndexedDb } from '@penumbra-zone/storage/indexed-db';
+import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
+import { syncLastBlockWithLocal } from '@penumbra-zone/storage/chrome/syncer';
 import { ViewServer } from '@penumbra-zone/wasm/src/view-server';
 import {
   ServicesInterface,
@@ -22,15 +22,10 @@ export interface ServicesConfig {
   readonly grpcEndpoint?: string;
   readonly walletId?: WalletId;
   readonly fullViewingKey?: FullViewingKey;
-  readonly numeraireAssetId: string;
 }
 
 const isCompleteServicesConfig = (c: Partial<ServicesConfig>): c is Required<ServicesConfig> =>
-  c.grpcEndpoint != null &&
-  c.idbVersion != null &&
-  c.walletId != null &&
-  c.fullViewingKey != null &&
-  c.numeraireAssetId != null;
+  c.grpcEndpoint != null && c.idbVersion != null && c.walletId != null && c.fullViewingKey != null;
 
 export class Services implements ServicesInterface {
   private walletServicesPromise: Promise<WalletServices> | undefined;
@@ -96,7 +91,7 @@ export class Services implements ServicesInterface {
   }
 
   private async initializeWalletServices(): Promise<WalletServices> {
-    const { walletId, fullViewingKey, idbVersion: dbVersion, numeraireAssetId } = await this.config;
+    const { walletId, fullViewingKey, idbVersion: dbVersion } = await this.config;
     const params = await this.querier.app.appParams();
     if (!params.sctParams?.epochDuration) throw new Error('Epoch duration unknown');
     const {
@@ -123,7 +118,6 @@ export class Services implements ServicesInterface {
       viewServer,
       querier: this.querier,
       indexedDb,
-      numeraireAssetId,
     });
 
     return { viewServer, blockProcessor, indexedDb, querier: this.querier };

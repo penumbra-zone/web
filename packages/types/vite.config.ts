@@ -9,7 +9,6 @@ export default defineConfig({
         base64: './src/base64.ts',
         box: './src/box.ts',
         'block-processor': './src/block-processor.ts',
-        'customize-symbol': './src/customize-symbol.ts',
         environment: './src/environment.ts',
         hex: './src/hex.ts',
         'indexed-db': './src/indexed-db.ts',

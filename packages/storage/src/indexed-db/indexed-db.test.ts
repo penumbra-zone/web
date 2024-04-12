@@ -578,20 +578,36 @@ describe('IndexedDb', () => {
   describe('prices', () => {
     let db: IndexedDb;
 
-    const pricedAssetId = new AssetId({ inner: new Uint8Array([1, 2, 3, 4]) });
     const numeraireAssetId = new AssetId({ inner: new Uint8Array([5, 6, 7, 8]) });
 
     beforeEach(async () => {
       db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.updatePrice(pricedAssetId, numeraireAssetId, 1.23, 50n);
+      await db.updatePrice(delegationMetadataA.penumbraAssetId!, numeraireAssetId, 1.23, 50n);
+      await db.updatePrice(metadataA.penumbraAssetId!, numeraireAssetId, 22.15, 40n);
     });
 
     it('saves and gets a price in the database', async () => {
       // This effectively tests both the save and the get, since we saved via
       // `updatePrice()` in the `beforeEach` above.
-      await expect(db.getPricesForAsset(pricedAssetId)).resolves.toEqual([
+      await expect(db.getPricesForAsset(delegationMetadataA, 50n)).resolves.toEqual([
         new EstimatedPrice({
-          pricedAsset: pricedAssetId,
+          pricedAsset: delegationMetadataA.penumbraAssetId!,
+          numeraire: numeraireAssetId,
+          numerairePerUnit: 1.23,
+          asOfHeight: 50n,
+        }),
+      ]);
+    });
+
+    it('should not return too old price', async () => {
+      await expect(db.getPricesForAsset(metadataA, 241n)).resolves.toEqual([]);
+    });
+
+    it('different types of assets should have different price relevance thresholds', async () => {
+      await expect(db.getPricesForAsset(metadataA, 241n)).resolves.toEqual([]);
+      await expect(db.getPricesForAsset(delegationMetadataA, 241n)).resolves.toEqual([
+        new EstimatedPrice({
+          pricedAsset: delegationMetadataA.penumbraAssetId!,
           numeraire: numeraireAssetId,
           numerairePerUnit: 1.23,
           asOfHeight: 50n,

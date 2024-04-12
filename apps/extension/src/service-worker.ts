@@ -13,7 +13,7 @@ import './listeners';
 
 // services
 import { Services } from '@penumbra-zone/services/src/index';
-import { localExtStorage } from '@penumbra-zone/storage/src/chrome/local';
+import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 
 // adapter
 import { ConnectRouter, createContextValues, PromiseClient } from '@connectrpc/connect';
@@ -74,7 +74,6 @@ const startServices = async () => {
     grpcEndpoint,
     walletId: WalletId.fromJsonString(wallet0.id),
     fullViewingKey: FullViewingKey.fromJsonString(wallet0.fullViewingKey),
-    numeraireAssetId: USDC_ASSET_ID,
   });
   await services.initialize();
   return services;

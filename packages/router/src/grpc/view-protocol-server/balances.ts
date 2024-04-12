@@ -28,16 +28,19 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 import { addLoHi } from '@penumbra-zone/types/src/lo-hi';
 import { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
-import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 import { multiplyAmountByNumber } from '@penumbra-zone/types/src/amount';
 import { Stringified } from '@penumbra-zone/types/src/jsonified';
 
 // Handles aggregating amounts and filtering by account number/asset id
 export const balances: Impl['balances'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);
-  const { indexedDb } = await services.getWalletServices();
+  const { indexedDb, querier } = await services.getWalletServices();
 
-  const aggregator = new BalancesAggregator(ctx, indexedDb);
+  // latestBlockHeight is needed to calculate the threshold of price relevance,
+  //it is better to use  rather than fullSyncHeight to avoid displaying old prices during the synchronization process
+  const latestBlockHeight = await querier.tendermint.latestBlockHeight();
+
+  const aggregator = new BalancesAggregator(ctx, indexedDb, latestBlockHeight);
 
   for await (const noteRecord of indexedDb.iterateSpendableNotes()) {
     if (noteRecord.heightSpent !== 0n) continue;
@@ -72,6 +75,7 @@ class BalancesAggregator {
   constructor(
     private readonly ctx: HandlerContext,
     private readonly indexedDb: IndexedDbInterface,
+    private readonly latestBlockHeight: bigint,
   ) {}
 
   async add(n: SpendableNoteRecord) {
@@ -180,9 +184,11 @@ class BalancesAggregator {
         valueView: { case: 'unknownAssetId', value: { assetId, amount: new Amount() } },
       });
     } else {
-      const assetId = getAssetId.optional()(new Metadata(denomMetadata));
-      if (assetId?.inner && !this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)]) {
-        const prices = await this.indexedDb.getPricesForAsset(new AssetId(assetId));
+      if (!this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)]) {
+        const prices = await this.indexedDb.getPricesForAsset(
+          denomMetadata as Metadata,
+          this.latestBlockHeight,
+        );
         this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)] = prices;
       }
 

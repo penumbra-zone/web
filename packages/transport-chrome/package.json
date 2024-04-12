@@ -1,11 +1,22 @@
 {
   "name": "@penumbra-zone/transport-chrome",
   "version": "2.0.0",
-  "private": true,
   "description": "Tools for adapting `@penumbra-zone/transport` to Chrome's extension runtime messaging API",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
+  },
+  "files": [
+    "src/",
+    "*.md",
+    "!**/*.test.ts"
+  ],
+  "exports": {
+    "./channel-names": "./src/channel-names.ts",
+    "./message": "./src/message.ts",
+    "./session-client": "./src/session-client.ts",
+    "./session-manager": "./src/session-manager.ts",
+    "./stream": "./src/stream.ts"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.8.0",

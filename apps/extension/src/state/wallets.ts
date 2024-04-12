@@ -7,8 +7,8 @@ import {
   getWalletId,
 } from '@penumbra-zone/wasm/src/keys';
 import { Key } from '@penumbra-zone/crypto-web/encryption';
-import { ExtensionStorage } from '@penumbra-zone/storage/src/chrome/base';
-import { LocalStorageState } from '@penumbra-zone/storage/src/chrome/types';
+import { ExtensionStorage } from '@penumbra-zone/storage/chrome/base';
+import { LocalStorageState } from '@penumbra-zone/storage/chrome/types';
 import {
   Address,
   FullViewingKey,

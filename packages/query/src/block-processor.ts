@@ -25,7 +25,7 @@ import { backOff } from 'exponential-backoff';
 import type { BlockProcessorInterface } from '@penumbra-zone/types/src/block-processor';
 import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
-import { customizeSymbol } from '@penumbra-zone/types/src/customize-symbol';
+import { customizeSymbol } from '@penumbra-zone/wasm/src/metadata';
 import { updatePricesFromSwaps } from './price-indexer';
 import {
   AssetId,
@@ -33,7 +33,11 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
-import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
+import {
+  NUMERAIRES,
+  PRICE_RELEVANCE_THRESHOLDS,
+  STAKING_TOKEN_METADATA,
+} from '@penumbra-zone/constants/src/assets';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/src/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
@@ -48,7 +52,6 @@ interface QueryClientProps {
   querier: RootQuerier;
   indexedDb: IndexedDbInterface;
   viewServer: ViewServerInterface;
-  numeraireAssetId: string;
 }
 
 const blankTxSource = new CommitmentSource({
@@ -60,14 +63,12 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly indexedDb: IndexedDbInterface;
   private readonly viewServer: ViewServerInterface;
   private readonly abortController: AbortController = new AbortController();
-  private readonly numeraireAssetId: string;
   private syncPromise: Promise<void> | undefined;
 
-  constructor({ indexedDb, viewServer, querier, numeraireAssetId }: QueryClientProps) {
+  constructor({ indexedDb, viewServer, querier }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
     this.querier = querier;
-    this.numeraireAssetId = numeraireAssetId;
   }
 
   // If syncBlocks() is called multiple times concurrently, they'll all wait for
@@ -261,13 +262,18 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.saveTransactions(compactBlock.height, relevantTx);
       }
 
+      // We do not store historical prices,
+      // so there is no point in saving prices that would already be considered obsolete at the time of saving
+      const blockInPriceRelevanceThreshold =
+        compactBlock.height >= latestKnownBlockHeight - BigInt(PRICE_RELEVANCE_THRESHOLDS.default);
+
       // we can't use third-party price oracles for privacy reasons,
       // so we have to get asset prices from swap results during block scans
       // and store them locally in indexed-db.
-      if (compactBlock.swapOutputs.length) {
+      if (blockInPriceRelevanceThreshold && compactBlock.swapOutputs.length) {
         await updatePricesFromSwaps(
           this.indexedDb,
-          this.numeraireAssetId,
+          NUMERAIRES,
           compactBlock.swapOutputs,
           compactBlock.height,
         );
