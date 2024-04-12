@@ -4,7 +4,7 @@
 # node-status so that they can be PRed to the core repo.
 #
 # Usage:
-# sh ./scripts/zip-frontends -o /tmp
+# sh ./scripts/build-for-deployment -o /tmp
 #
 # Options:
 # -o Output directory for the zipped files. (default: present directory)
