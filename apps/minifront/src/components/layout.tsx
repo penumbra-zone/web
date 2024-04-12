@@ -1,5 +1,4 @@
 import { LoaderFunction, Outlet, useLoaderData } from 'react-router-dom';
-import { getChainId } from '../fetchers/chain-id';
 import { HeadTag } from './metadata/head-tag';
 import { Header } from './header/header';
 import { Toaster } from '@penumbra-zone/ui/components/ui/toaster';
@@ -9,21 +8,16 @@ import { Footer } from './footer/footer';
 import { isPraxConnected, isPraxConnectedTimeout, isPraxAvailable } from '@penumbra-zone/client';
 import '@penumbra-zone/ui/styles/globals.css';
 
-export type LayoutLoaderResult =
-  | { isInstalled: boolean; isConnected: boolean }
-  | {
-      isInstalled: true;
-      isConnected: true;
-      chainId: string;
-    };
+export interface LayoutLoaderResult {
+  isInstalled: boolean;
+  isConnected: boolean;
+}
 
 export const LayoutLoader: LoaderFunction = async (): Promise<LayoutLoaderResult> => {
   const isInstalled = isPraxAvailable();
   if (!isInstalled) return { isInstalled, isConnected: false };
   const isConnected = isPraxConnected() || (await isPraxConnectedTimeout(1000));
-  if (!isConnected) return { isInstalled, isConnected };
-  const chainId = await getChainId();
-  return { isInstalled, isConnected, chainId };
+  return { isInstalled, isConnected };
 };
 
 export const Layout = () => {
