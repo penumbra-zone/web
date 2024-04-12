@@ -1,6 +1,6 @@
+import type { Config } from 'tailwindcss';
 import tailwindCssAnimatePlugin from 'tailwindcss-animate';
 
-/** @type {import('tailwindcss').Config} */
 export default {
   content: [
     './pages/**/*.{ts,tsx}',
@@ -112,12 +112,12 @@ export default {
       },
       keyframes: {
         'accordion-down': {
-          from: { height: 0 },
+          from: { height: '0' },
           to: { height: 'var(--radix-accordion-content-height)' },
         },
         'accordion-up': {
           from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: 0 },
+          to: { height: '0' },
         },
         'gradient-x': {
           '0%, 100%': {
@@ -160,4 +160,4 @@ export default {
     },
   },
   plugins: [tailwindCssAnimatePlugin],
-};
+} satisfies Config;

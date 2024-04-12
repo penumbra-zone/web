@@ -2,74 +2,47 @@ import { ExtensionStorage } from '@penumbra-zone/storage/chrome/base';
 import { LocalStorageState, OriginRecord } from '@penumbra-zone/storage/chrome/types';
 import { AllSlices, SliceCreator } from '.';
 
-import Map from '@penumbra-zone/polyfills/src/Map.groupBy';
-import { UserChoice } from '@penumbra-zone/types/src/user-choice';
-
 export interface ConnectedSitesSlice {
   filter?: string;
-  knownSites: OriginRecord[];
-  approvedSites: OriginRecord[];
-  deniedSites: OriginRecord[];
-  ignoredSites: OriginRecord[];
-  noFilterMatch?: boolean;
-  loadKnownSites: () => Promise<void>;
   setFilter: (search?: string) => void;
+  knownSites: OriginRecord[];
   discardKnownSite: (originRecord: OriginRecord) => Promise<void>;
+  frontendUrl?: string;
+  setFrontendUrl: (frontendUrl: string) => void;
 }
 
 export const createConnectedSitesSlice =
   (local: ExtensionStorage<LocalStorageState>): SliceCreator<ConnectedSitesSlice> =>
   (set, get) => ({
-    filter: undefined,
-    noFilterMatch: undefined,
     knownSites: [],
-    approvedSites: [],
-    deniedSites: [],
-    ignoredSites: [],
 
-    loadKnownSites: async () => {
-      const knownSites = await local.get('knownSites');
-      const groupedSites = Map.groupBy(knownSites, ({ choice }) => choice);
-
-      set(state => {
-        state.connectedSites.knownSites = knownSites;
-        state.connectedSites.approvedSites = groupedSites.get(UserChoice.Approved) ?? [];
-        state.connectedSites.deniedSites = groupedSites.get(UserChoice.Denied) ?? [];
-        state.connectedSites.ignoredSites = groupedSites.get(UserChoice.Ignored) ?? [];
-      });
-    },
-
+    filter: undefined,
     setFilter: (search?: string) => {
-      const knownSites = get().connectedSites.knownSites;
-      const filter = search ?? get().connectedSites.filter;
-
-      const filteredSites = Map.groupBy(
-        knownSites.filter(site => !search || site.origin.includes(search)),
-        ({ choice }) => choice,
-      );
-
-      const approvedSites = filteredSites.get(UserChoice.Approved) ?? [];
-      const deniedSites = filteredSites.get(UserChoice.Denied) ?? [];
-      const ignoredSites = filteredSites.get(UserChoice.Ignored) ?? [];
-      const noFilterMatch = !(approvedSites.length || deniedSites.length || ignoredSites.length);
-
       set(state => {
-        state.connectedSites.filter = filter;
-        state.connectedSites.noFilterMatch = noFilterMatch;
-        state.connectedSites.approvedSites = approvedSites;
-        state.connectedSites.deniedSites = deniedSites;
-        state.connectedSites.ignoredSites = ignoredSites;
+        state.connectedSites.filter = search;
       });
     },
 
-    discardKnownSite: async (deletant: { origin: string }) => {
-      const existingFilter = get().connectedSites.filter;
-      const knownSites = await local.get('knownSites');
-      const withoutDeletant = knownSites.filter(known => known.origin !== deletant.origin);
-      await local.set('knownSites', withoutDeletant);
-      await get().connectedSites.loadKnownSites();
-      get().connectedSites.setFilter(existingFilter);
+    setFrontendUrl: (frontendUrl: string) => {
+      void local.set('frontendUrl', frontendUrl);
+    },
+
+    discardKnownSite: async (siteToDiscard: { origin: string }) => {
+      const { knownSites, frontendUrl, setFrontendUrl } = get().connectedSites;
+      const knownSitesWithoutDiscardedSite = knownSites.filter(
+        known => known.origin !== siteToDiscard.origin,
+      );
+      await local.set('knownSites', knownSitesWithoutDiscardedSite);
+
+      if (frontendUrl === siteToDiscard.origin && knownSitesWithoutDiscardedSite[0]) {
+        setFrontendUrl(knownSitesWithoutDiscardedSite[0].origin);
+      }
     },
   });
 
-export const connectedSitesSelector = (state: AllSlices) => state.connectedSites;
+export const allSitesFilteredOutSelector = (state: AllSlices) => {
+  const filter = state.connectedSites.filter;
+  if (!filter) return false;
+
+  return !state.connectedSites.knownSites.some(site => site.origin.includes(filter));
+};
