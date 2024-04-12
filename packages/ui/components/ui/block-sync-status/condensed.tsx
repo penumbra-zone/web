@@ -12,7 +12,8 @@ export const CondensedBlockSyncStatus = ({
   error,
 }: Partial<BlockSyncProps>) => {
   if (error) return <BlockSyncErrorState error={error} />;
-  if (!latestKnownBlockHeight || !fullSyncHeight) return <AwaitingSyncState />;
+  if (!latestKnownBlockHeight || !fullSyncHeight)
+    return <AwaitingSyncState genesisSyncing={!fullSyncHeight} />;
 
   const isSyncing = latestKnownBlockHeight - fullSyncHeight > 10;
 
@@ -50,12 +51,12 @@ const BlockSyncErrorState = ({ error }: { error: unknown }) => {
   );
 };
 
-const AwaitingSyncState = () => {
+const AwaitingSyncState = ({ genesisSyncing }: { genesisSyncing: boolean }) => {
   return (
     <div className='flex select-none flex-col'>
       <div className='absolute z-20 flex w-full justify-between px-2'>
         <div className='mt-[-5.5px] font-mono text-[10px] text-stone-400'>
-          <div>Loading sync state...</div>
+          {genesisSyncing ? 'Genesis state syncing...' : 'Loading sync state...'}
         </div>
         <LineWave
           visible={true}
