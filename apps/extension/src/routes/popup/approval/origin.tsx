@@ -6,6 +6,7 @@ import { LinkGradientIcon } from '../../../icons/link-gradient';
 import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 
 export const OriginApproval = () => {
   const { requestOrigin, favIconUrl, title, lastRequest, setChoice, sendResponse } =
@@ -90,7 +91,10 @@ export const OriginApproval = () => {
             </div>
             <div className='mt-3 flex flex-col gap-3 text-muted-foreground'>
               <p>This host wants to connect to your wallet.</p>
-              <p>Approval will allow this host to see your balance and transaction history.</p>
+              <p className='text-rust-600'>
+                <ExclamationTriangleIcon className='mr-2 inline-block' /> Approval will allow this
+                host to see your balance and transaction history.
+              </p>
             </div>
           </div>
         </div>
