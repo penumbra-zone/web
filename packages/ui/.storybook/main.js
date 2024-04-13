@@ -25,5 +25,8 @@ const config = {
   docs: {
     autodocs: 'tag',
   },
+  typescript: {
+    reactDocgen: 'react-docgen-typescript',
+  },
 };
 export default config;

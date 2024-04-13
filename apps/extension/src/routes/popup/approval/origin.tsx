@@ -3,10 +3,10 @@ import { useStore } from '../../../state';
 import { originApprovalSelector } from '../../../state/origin-approval';
 import { ApproveDeny } from './approve-deny';
 import { LinkGradientIcon } from '../../../icons/link-gradient';
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { DisplayOriginURL } from '../../../shared/components/display-origin-url';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 
 export const OriginApproval = () => {
   const { requestOrigin, favIconUrl, title, lastRequest, setChoice, sendResponse } =
@@ -89,24 +89,16 @@ export const OriginApproval = () => {
                 </div>
               </div>
             </div>
-            <div className='mt-3 flex flex-col gap-3'>
-              <div className='text-center text-muted-foreground'>
-                This host wants to connect to your wallet.
-              </div>
-              <div className='flex items-center gap-2 text-rust'>
-                <ExclamationTriangleIcon />
-                Approval will allow this host to see your balance and transaction history.
-              </div>
+            <div className='mt-3 flex flex-col gap-3 text-muted-foreground'>
+              <p>This host wants to connect to your wallet.</p>
+              <p className='text-rust-600'>
+                <ExclamationTriangleIcon className='mr-2 inline-block' /> Approval will allow this
+                host to see your balance and transaction history.
+              </p>
             </div>
           </div>
         </div>
-        <ApproveDeny
-          variants={['gradient']}
-          approve={approve}
-          deny={deny}
-          ignore={lastRequest && ignore}
-          wait={3}
-        />
+        <ApproveDeny approve={approve} deny={deny} ignore={lastRequest && ignore} wait={3} />
       </div>
     </FadeTransition>
   );
