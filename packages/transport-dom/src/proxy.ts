@@ -18,10 +18,15 @@ export type ProxyContextHandler = <I>(i: I, ctx: HandlerContext) => [I, CallOpti
  * warning to encourage the developer to be aware of the context feature, and
  * provide a handler if necessary, or replace this one with a silent stub.
  */
-export const noContextHandler: ProxyContextHandler = (i, ctx) => {
-  console.warn('unhandled context', ctx);
+export const defaultContextHandler: ProxyContextHandler = (i, ctx) => {
+  console.warn(
+    "You didn't provide a context handler. If you don't need to use context, you might want to use noContextHandler.",
+    ctx,
+  );
   return [i, {}];
 };
+
+export const noContextHandler: ProxyContextHandler = i => [i, {}];
 
 /**
  * This simple context handler forwards basic context like abort controllers,
@@ -51,7 +56,7 @@ export const simpleContextHandler: ProxyContextHandler = (i, ctx) => {
 export const createProxyImpl = <S extends ServiceType>(
   service: S,
   client: PromiseClient<S>,
-  contextHandler = noContextHandler,
+  contextHandler = defaultContextHandler,
 ) => {
   const makeAnyProxyMethod: CreateAnyMethodImpl<S> = (method, localName) => {
     const clientMethod = client[localName] as (cI: unknown, cOpt: CallOptions) => unknown;

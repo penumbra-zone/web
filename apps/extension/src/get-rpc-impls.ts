@@ -1,6 +1,6 @@
 import { createPromiseClient, ServiceImpl } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
-import { createProxyImpl } from '@penumbra-zone/transport-dom/src/proxy';
+import { createProxyImpl, noContextHandler } from '@penumbra-zone/transport-dom/src/proxy';
 import { rethrowImplErrors } from './utils/rethrow-impl-errors';
 import { Query as IbcProxy } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
 import { QueryService as AppService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/app/v1/app_connect';
@@ -46,6 +46,7 @@ export const getRpcImpls = async () => {
         createProxyImpl(
           serviceType,
           createPromiseClient(serviceType, createGrpcWebTransport({ baseUrl: grpcEndpoint })),
+          noContextHandler,
         ),
       ] as const,
   );
