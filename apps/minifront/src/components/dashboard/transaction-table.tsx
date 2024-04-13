@@ -6,17 +6,11 @@ import {
   TableHeader,
   TableRow,
 } from '@penumbra-zone/ui/components/ui/table';
-import { Link, LoaderFunction } from 'react-router-dom';
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
+import { Link } from 'react-router-dom';
 import { shorten } from '@penumbra-zone/types/src/string';
 import { useStore } from '../../state';
 import { memo, useEffect } from 'react';
 import { TransactionSummary } from '../../state/transactions';
-
-export const TxsLoader: LoaderFunction = async (): Promise<null> => {
-  await throwIfPraxNotConnectedTimeout();
-  return null;
-};
 
 export default function TransactionTable() {
   const { summaries, loadSummaries } = useStore(store => store.transactions);
