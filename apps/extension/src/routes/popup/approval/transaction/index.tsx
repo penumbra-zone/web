@@ -32,8 +32,8 @@ export const TransactionApproval = () => {
   };
 
   return (
-    <div className='flex h-screen flex-col justify-between'>
-      <div className='grow overflow-auto p-[30px] pb-44 pt-10'>
+    <div className='flex h-screen flex-col'>
+      <div className='grow overflow-auto p-[30px] pt-10'>
         <p className='bg-text-linear bg-clip-text pb-2 font-headline text-2xl font-bold text-transparent'>
           Confirm transaction
         </p>
@@ -49,6 +49,7 @@ export const TransactionApproval = () => {
           <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
         </div>
       </div>
+
       <ApproveDeny approve={approve} deny={deny} wait={3} />
     </div>
   );

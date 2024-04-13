@@ -17,7 +17,7 @@ export const ApproveDeny = ({
   useEffect(startCountdown, [startCountdown]);
 
   return (
-    <div className='fixed inset-x-0 bottom-0 flex flex-row flex-wrap justify-center gap-4 bg-black p-4 shadow-lg'>
+    <div className='flex flex-row flex-wrap justify-center gap-4 bg-black p-4 shadow-lg'>
       <Button variant='gradient' className='w-full' size='lg' onClick={approve} disabled={!!count}>
         Approve {count !== 0 && `(${count})`}
       </Button>
