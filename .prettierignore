@@ -3,4 +3,5 @@
 pnpm-lock.yaml
 packages/wasm/crate
 packages/wasm/wasm
-apps/extension/bin
+*_pk.bin
+packages/keys/penumbra

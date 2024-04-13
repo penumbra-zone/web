@@ -5,7 +5,6 @@
   "description": "chrome-extension",
   "type": "module",
   "scripts": {
-    "download-keys": "tsx src/utils/download-proving-keys.ts",
     "dev": "webpack --watch --mode=development -d inline-source-map",
     "clean": "rm -rfv dist bin",
     "build": "webpack",

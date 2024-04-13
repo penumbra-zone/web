@@ -1,0 +1,8 @@
+{
+  "delegatorVote": "delegator_vote",
+  "output": "output",
+  "spend": "spend",
+  "swap": "swap",
+  "swapClaim": "swapclaim",
+  "undelegateClaim": "convert"
+}

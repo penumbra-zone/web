@@ -90,6 +90,13 @@ export default (env, argv) => {
             filename: 'videos/[hash][ext][query]',
           },
         },
+        {
+          test: /_pk\.bin$/,
+          type: 'asset/resource',
+          generator: {
+            filename: 'keys/[hash][ext][query]',
+          },
+        },
       ],
     },
     resolve: {
@@ -112,7 +119,7 @@ export default (env, argv) => {
       }),
       new webpack.DefinePlugin(definitions),
       new CopyPlugin({
-        patterns: ['public', { from: 'bin', to: 'bin' }],
+        patterns: [{ from: 'public', to: '.' }],
       }),
       // html entry points
       new HtmlWebpackPlugin({

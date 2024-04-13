@@ -49,14 +49,12 @@ mod tests {
         // that are based on constructing objects according to protobuf definitions.
 
         // Load the proving key parameters as byte arrays.
-        let spend_key: &[u8] = include_bytes!("../../../../apps/extension/bin/spend_pk.bin");
-        let output_key: &[u8] = include_bytes!("../../../../apps/extension/bin/output_pk.bin");
-        let delegator_vote_key: &[u8] =
-            include_bytes!("../../../../apps/extension/bin/delegator_vote_pk.bin");
-        let swap_key: &[u8] = include_bytes!("../../../../apps/extension/bin/swap_pk.bin");
-        let swapclaim_key: &[u8] =
-            include_bytes!("../../../../apps/extension/bin/swapclaim_pk.bin");
-        let convert_key: &[u8] = include_bytes!("../../../../apps/extension/bin/convert_pk.bin");
+        let spend_key: &[u8] = include_bytes!("../../../keys/dist/spend_pk.bin");
+        let output_key: &[u8] = include_bytes!("../../../keys/dist/output_pk.bin");
+        let delegator_vote_key: &[u8] = include_bytes!("../../../keys/dist/delegator_vote_pk.bin");
+        let swap_key: &[u8] = include_bytes!("../../../keys/dist/swap_pk.bin");
+        let swapclaim_key: &[u8] = include_bytes!("../../../keys/dist/swapclaim_pk.bin");
+        let convert_key: &[u8] = include_bytes!("../../../keys/dist/convert_pk.bin");
 
         // Dynamically load the proving keys at runtime for each key type.
         load_proving_key(spend_key, "spend").expect("can load spend key");

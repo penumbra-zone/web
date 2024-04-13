@@ -17,11 +17,11 @@
   },
   "dependencies": {
     "@penumbra-zone/types": "workspace:*",
+    "@penumbra-zone/keys": "workspace:*",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@penumbra-zone/bech32": "workspace:*",
-    "fake-indexeddb": "^5.0.2",
-    "tsx": "^4.7.1"
+    "fake-indexeddb": "^5.0.2"
   }
 }

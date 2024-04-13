@@ -39,6 +39,9 @@ importers:
       '@changesets/cli':
         specifier: ^2.27.1
         version: 2.27.1
+      '@penumbra-zone/keys':
+        specifier: workspace:^
+        version: link:packages/keys
       '@penumbra-zone/wasm':
         specifier: workspace:*
         version: link:packages/wasm
@@ -117,6 +120,9 @@ importers:
       tsconfig:
         specifier: workspace:*
         version: link:packages/tsconfig
+      tsx:
+        specifier: ^4.7.1
+        version: 4.7.1
       turbo:
         specifier: ^1.13.0
         version: 1.13.0
@@ -141,6 +147,9 @@ importers:
       vitest:
         specifier: ^1.4.0
         version: 1.4.0(@types/node@20.11.30)(@vitest/browser@1.4.0)(jsdom@24.0.0)
+      workspace-root:
+        specifier: ^3.2.0
+        version: 3.2.0
 
   apps/extension:
     dependencies:
@@ -491,6 +500,12 @@ importers:
       '@penumbra-zone/constants':
         specifier: workspace:*
         version: link:../constants
+
+  packages/keys:
+    devDependencies:
+      tsx:
+        specifier: ^4.7.1
+        version: 4.7.1
 
   packages/perspective:
     dependencies:
@@ -856,6 +871,9 @@ importers:
 
   packages/wasm:
     dependencies:
+      '@penumbra-zone/keys':
+        specifier: workspace:*
+        version: link:../keys
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
@@ -869,9 +887,6 @@ importers:
       fake-indexeddb:
         specifier: ^5.0.2
         version: 5.0.2
-      tsx:
-        specifier: ^4.7.1
-        version: 4.7.1
 
 packages:
 
@@ -2196,7 +2211,7 @@ packages:
     dev: true
 
   /@buf/connectrpc_eliza.bufbuild_es@1.7.2-20230913231627-233fca715f49.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/connectrpc_eliza.bufbuild_es/-/connectrpc_eliza.bufbuild_es-1.7.2-20230913231627-233fca715f49.1.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/connectrpc_eliza.bufbuild_es/-/connectrpc_eliza.bufbuild_es-1.7.2-20230913231627-233fca715f49.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2204,7 +2219,7 @@ packages:
     dev: true
 
   /@buf/connectrpc_eliza.bufbuild_es@1.8.0-20230913231627-233fca715f49.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/connectrpc_eliza.bufbuild_es/-/connectrpc_eliza.bufbuild_es-1.8.0-20230913231627-233fca715f49.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/connectrpc_eliza.bufbuild_es/-/connectrpc_eliza.bufbuild_es-1.8.0-20230913231627-233fca715f49.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2212,7 +2227,7 @@ packages:
     dev: true
 
   /@buf/connectrpc_eliza.connectrpc_es@1.4.0-20230913231627-233fca715f49.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/connectrpc_eliza.connectrpc_es/-/connectrpc_eliza.connectrpc_es-1.4.0-20230913231627-233fca715f49.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/connectrpc_eliza.connectrpc_es/-/connectrpc_eliza.connectrpc_es-1.4.0-20230913231627-233fca715f49.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2223,7 +2238,7 @@ packages:
     dev: true
 
   /@buf/cosmos_cosmos-proto.bufbuild_es@1.7.2-20211202220400-1935555c206d.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-proto.bufbuild_es/-/cosmos_cosmos-proto.bufbuild_es-1.7.2-20211202220400-1935555c206d.1.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-proto.bufbuild_es/-/cosmos_cosmos-proto.bufbuild_es-1.7.2-20211202220400-1935555c206d.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2231,7 +2246,7 @@ packages:
     dev: false
 
   /@buf/cosmos_cosmos-proto.bufbuild_es@1.8.0-20211202220400-1935555c206d.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-proto.bufbuild_es/-/cosmos_cosmos-proto.bufbuild_es-1.8.0-20211202220400-1935555c206d.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-proto.bufbuild_es/-/cosmos_cosmos-proto.bufbuild_es-1.8.0-20211202220400-1935555c206d.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2239,7 +2254,7 @@ packages:
     dev: false
 
   /@buf/cosmos_cosmos-proto.connectrpc_es@1.4.0-20211202220400-1935555c206d.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-proto.connectrpc_es/-/cosmos_cosmos-proto.connectrpc_es-1.4.0-20211202220400-1935555c206d.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-proto.connectrpc_es/-/cosmos_cosmos-proto.connectrpc_es-1.4.0-20211202220400-1935555c206d.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2250,7 +2265,7 @@ packages:
     dev: false
 
   /@buf/cosmos_cosmos-sdk.bufbuild_es@1.7.2-20230522115704-e7a85cef453e.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.bufbuild_es/-/cosmos_cosmos-sdk.bufbuild_es-1.7.2-20230522115704-e7a85cef453e.1.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.bufbuild_es/-/cosmos_cosmos-sdk.bufbuild_es-1.7.2-20230522115704-e7a85cef453e.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2261,7 +2276,7 @@ packages:
     dev: false
 
   /@buf/cosmos_cosmos-sdk.bufbuild_es@1.7.2-20230719110346-aa25660f4ff7.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.bufbuild_es/-/cosmos_cosmos-sdk.bufbuild_es-1.7.2-20230719110346-aa25660f4ff7.1.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.bufbuild_es/-/cosmos_cosmos-sdk.bufbuild_es-1.7.2-20230719110346-aa25660f4ff7.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2272,7 +2287,7 @@ packages:
     dev: false
 
   /@buf/cosmos_cosmos-sdk.bufbuild_es@1.8.0-20230522115704-e7a85cef453e.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.bufbuild_es/-/cosmos_cosmos-sdk.bufbuild_es-1.8.0-20230522115704-e7a85cef453e.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.bufbuild_es/-/cosmos_cosmos-sdk.bufbuild_es-1.8.0-20230522115704-e7a85cef453e.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2283,7 +2298,7 @@ packages:
     dev: false
 
   /@buf/cosmos_cosmos-sdk.bufbuild_es@1.8.0-20230719110346-aa25660f4ff7.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.bufbuild_es/-/cosmos_cosmos-sdk.bufbuild_es-1.8.0-20230719110346-aa25660f4ff7.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.bufbuild_es/-/cosmos_cosmos-sdk.bufbuild_es-1.8.0-20230719110346-aa25660f4ff7.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2294,7 +2309,7 @@ packages:
     dev: false
 
   /@buf/cosmos_cosmos-sdk.connectrpc_es@1.4.0-20230522115704-e7a85cef453e.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.connectrpc_es/-/cosmos_cosmos-sdk.connectrpc_es-1.4.0-20230522115704-e7a85cef453e.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.connectrpc_es/-/cosmos_cosmos-sdk.connectrpc_es-1.4.0-20230522115704-e7a85cef453e.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2308,7 +2323,7 @@ packages:
     dev: false
 
   /@buf/cosmos_cosmos-sdk.connectrpc_es@1.4.0-20230719110346-aa25660f4ff7.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.connectrpc_es/-/cosmos_cosmos-sdk.connectrpc_es-1.4.0-20230719110346-aa25660f4ff7.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_cosmos-sdk.connectrpc_es/-/cosmos_cosmos-sdk.connectrpc_es-1.4.0-20230719110346-aa25660f4ff7.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2322,7 +2337,7 @@ packages:
     dev: false
 
   /@buf/cosmos_gogo-proto.bufbuild_es@1.7.2-20221020125208-34d970b699f8.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.bufbuild_es/-/cosmos_gogo-proto.bufbuild_es-1.7.2-20221020125208-34d970b699f8.1.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.bufbuild_es/-/cosmos_gogo-proto.bufbuild_es-1.7.2-20221020125208-34d970b699f8.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2330,7 +2345,7 @@ packages:
     dev: false
 
   /@buf/cosmos_gogo-proto.bufbuild_es@1.7.2-20230509103710-5e5b9fdd0180.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.bufbuild_es/-/cosmos_gogo-proto.bufbuild_es-1.7.2-20230509103710-5e5b9fdd0180.1.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.bufbuild_es/-/cosmos_gogo-proto.bufbuild_es-1.7.2-20230509103710-5e5b9fdd0180.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2338,7 +2353,7 @@ packages:
     dev: false
 
   /@buf/cosmos_gogo-proto.bufbuild_es@1.8.0-20221020125208-34d970b699f8.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.bufbuild_es/-/cosmos_gogo-proto.bufbuild_es-1.8.0-20221020125208-34d970b699f8.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.bufbuild_es/-/cosmos_gogo-proto.bufbuild_es-1.8.0-20221020125208-34d970b699f8.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2346,7 +2361,7 @@ packages:
     dev: false
 
   /@buf/cosmos_gogo-proto.bufbuild_es@1.8.0-20230509103710-5e5b9fdd0180.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.bufbuild_es/-/cosmos_gogo-proto.bufbuild_es-1.8.0-20230509103710-5e5b9fdd0180.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.bufbuild_es/-/cosmos_gogo-proto.bufbuild_es-1.8.0-20230509103710-5e5b9fdd0180.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2354,7 +2369,7 @@ packages:
     dev: false
 
   /@buf/cosmos_gogo-proto.connectrpc_es@1.4.0-20221020125208-34d970b699f8.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.connectrpc_es/-/cosmos_gogo-proto.connectrpc_es-1.4.0-20221020125208-34d970b699f8.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.connectrpc_es/-/cosmos_gogo-proto.connectrpc_es-1.4.0-20221020125208-34d970b699f8.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2365,7 +2380,7 @@ packages:
     dev: false
 
   /@buf/cosmos_gogo-proto.connectrpc_es@1.4.0-20230509103710-5e5b9fdd0180.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.connectrpc_es/-/cosmos_gogo-proto.connectrpc_es-1.4.0-20230509103710-5e5b9fdd0180.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_gogo-proto.connectrpc_es/-/cosmos_gogo-proto.connectrpc_es-1.4.0-20230509103710-5e5b9fdd0180.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2376,7 +2391,7 @@ packages:
     dev: false
 
   /@buf/cosmos_ibc.bufbuild_es@1.7.2-20230913112312-7ab44ae956a0.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.7.2-20230913112312-7ab44ae956a0.1.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.7.2-20230913112312-7ab44ae956a0.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2389,7 +2404,7 @@ packages:
     dev: false
 
   /@buf/cosmos_ibc.bufbuild_es@1.7.2-20240327103030-e2006674271c.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.7.2-20240327103030-e2006674271c.1.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.7.2-20240327103030-e2006674271c.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2402,7 +2417,7 @@ packages:
     dev: false
 
   /@buf/cosmos_ibc.bufbuild_es@1.8.0-20230913112312-7ab44ae956a0.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.8.0-20230913112312-7ab44ae956a0.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.8.0-20230913112312-7ab44ae956a0.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2415,7 +2430,7 @@ packages:
     dev: false
 
   /@buf/cosmos_ibc.bufbuild_es@1.8.0-20240327103030-e2006674271c.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.8.0-20240327103030-e2006674271c.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.bufbuild_es/-/cosmos_ibc.bufbuild_es-1.8.0-20240327103030-e2006674271c.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2428,7 +2443,7 @@ packages:
     dev: false
 
   /@buf/cosmos_ibc.connectrpc_es@1.4.0-20230913112312-7ab44ae956a0.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.connectrpc_es/-/cosmos_ibc.connectrpc_es-1.4.0-20230913112312-7ab44ae956a0.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.connectrpc_es/-/cosmos_ibc.connectrpc_es-1.4.0-20230913112312-7ab44ae956a0.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2444,7 +2459,7 @@ packages:
     dev: false
 
   /@buf/cosmos_ibc.connectrpc_es@1.4.0-20240327103030-e2006674271c.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.connectrpc_es/-/cosmos_ibc.connectrpc_es-1.4.0-20240327103030-e2006674271c.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ibc.connectrpc_es/-/cosmos_ibc.connectrpc_es-1.4.0-20240327103030-e2006674271c.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2460,7 +2475,7 @@ packages:
     dev: false
 
   /@buf/cosmos_ics23.bufbuild_es@1.7.2-20221207100654-55085f7c710a.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ics23.bufbuild_es/-/cosmos_ics23.bufbuild_es-1.7.2-20221207100654-55085f7c710a.1.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ics23.bufbuild_es/-/cosmos_ics23.bufbuild_es-1.7.2-20221207100654-55085f7c710a.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2468,7 +2483,7 @@ packages:
     dev: false
 
   /@buf/cosmos_ics23.bufbuild_es@1.8.0-20221207100654-55085f7c710a.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ics23.bufbuild_es/-/cosmos_ics23.bufbuild_es-1.8.0-20221207100654-55085f7c710a.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ics23.bufbuild_es/-/cosmos_ics23.bufbuild_es-1.8.0-20221207100654-55085f7c710a.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2476,7 +2491,7 @@ packages:
     dev: false
 
   /@buf/cosmos_ics23.connectrpc_es@1.4.0-20221207100654-55085f7c710a.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ics23.connectrpc_es/-/cosmos_ics23.connectrpc_es-1.4.0-20221207100654-55085f7c710a.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/cosmos_ics23.connectrpc_es/-/cosmos_ics23.connectrpc_es-1.4.0-20221207100654-55085f7c710a.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2487,7 +2502,7 @@ packages:
     dev: false
 
   /@buf/googleapis_googleapis.bufbuild_es@1.7.2-20220908150232-8d7204855ec1.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.7.2-20220908150232-8d7204855ec1.1.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.7.2-20220908150232-8d7204855ec1.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2495,7 +2510,7 @@ packages:
     dev: false
 
   /@buf/googleapis_googleapis.bufbuild_es@1.7.2-20221214150216-75b4300737fb.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.7.2-20221214150216-75b4300737fb.1.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.7.2-20221214150216-75b4300737fb.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2503,7 +2518,7 @@ packages:
     dev: false
 
   /@buf/googleapis_googleapis.bufbuild_es@1.7.2-20230502210827-cc916c318597.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.7.2-20230502210827-cc916c318597.1.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.7.2-20230502210827-cc916c318597.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2511,7 +2526,7 @@ packages:
     dev: false
 
   /@buf/googleapis_googleapis.bufbuild_es@1.8.0-20220908150232-8d7204855ec1.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.8.0-20220908150232-8d7204855ec1.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.8.0-20220908150232-8d7204855ec1.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2519,7 +2534,7 @@ packages:
     dev: false
 
   /@buf/googleapis_googleapis.bufbuild_es@1.8.0-20221214150216-75b4300737fb.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.8.0-20221214150216-75b4300737fb.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.8.0-20221214150216-75b4300737fb.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2527,7 +2542,7 @@ packages:
     dev: false
 
   /@buf/googleapis_googleapis.bufbuild_es@1.8.0-20230502210827-cc916c318597.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.8.0-20230502210827-cc916c318597.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.bufbuild_es/-/googleapis_googleapis.bufbuild_es-1.8.0-20230502210827-cc916c318597.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2535,7 +2550,7 @@ packages:
     dev: false
 
   /@buf/googleapis_googleapis.connectrpc_es@1.4.0-20220908150232-8d7204855ec1.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.connectrpc_es/-/googleapis_googleapis.connectrpc_es-1.4.0-20220908150232-8d7204855ec1.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.connectrpc_es/-/googleapis_googleapis.connectrpc_es-1.4.0-20220908150232-8d7204855ec1.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2546,7 +2561,7 @@ packages:
     dev: false
 
   /@buf/googleapis_googleapis.connectrpc_es@1.4.0-20221214150216-75b4300737fb.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.connectrpc_es/-/googleapis_googleapis.connectrpc_es-1.4.0-20221214150216-75b4300737fb.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.connectrpc_es/-/googleapis_googleapis.connectrpc_es-1.4.0-20221214150216-75b4300737fb.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2557,7 +2572,7 @@ packages:
     dev: false
 
   /@buf/googleapis_googleapis.connectrpc_es@1.4.0-20230502210827-cc916c318597.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.connectrpc_es/-/googleapis_googleapis.connectrpc_es-1.4.0-20230502210827-cc916c318597.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/googleapis_googleapis.connectrpc_es/-/googleapis_googleapis.connectrpc_es-1.4.0-20230502210827-cc916c318597.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2568,7 +2583,7 @@ packages:
     dev: false
 
   /@buf/penumbra-zone_penumbra.bufbuild_es@1.7.2-20240331004851-c3b058e666bc.1(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.7.2-20240331004851-c3b058e666bc.1.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.7.2-20240331004851-c3b058e666bc.1.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.7.2
     dependencies:
@@ -2582,7 +2597,7 @@ packages:
     dev: false
 
   /@buf/penumbra-zone_penumbra.bufbuild_es@1.8.0-20240326223351-a25fff24022e.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.8.0-20240326223351-a25fff24022e.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.8.0-20240326223351-a25fff24022e.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2596,7 +2611,7 @@ packages:
     dev: false
 
   /@buf/penumbra-zone_penumbra.bufbuild_es@1.8.0-20240331004851-c3b058e666bc.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.8.0-20240331004851-c3b058e666bc.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.bufbuild_es/-/penumbra-zone_penumbra.bufbuild_es-1.8.0-20240331004851-c3b058e666bc.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -2610,7 +2625,7 @@ packages:
     dev: false
 
   /@buf/penumbra-zone_penumbra.connectrpc_es@1.4.0-20240331004851-c3b058e666bc.2(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.connectrpc_es/-/penumbra-zone_penumbra.connectrpc_es-1.4.0-20240331004851-c3b058e666bc.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/penumbra-zone_penumbra.connectrpc_es/-/penumbra-zone_penumbra.connectrpc_es-1.4.0-20240331004851-c3b058e666bc.2.tgz}
     peerDependencies:
       '@connectrpc/connect': ^1.4.0
     dependencies:
@@ -2627,7 +2642,7 @@ packages:
     dev: false
 
   /@buf/tendermint_tendermint.bufbuild_es@1.8.0-20231117195010-33ed361a9051.2(@bufbuild/protobuf@1.8.0):
-    resolution: {tarball: https://buf.build/gen/npm/v1/@buf/tendermint_tendermint.bufbuild_es/-/tendermint_tendermint.bufbuild_es-1.8.0-20231117195010-33ed361a9051.2.tgz}
+    resolution: {registry: https://buf.build/gen/npm/v1/, tarball: https://buf.build/gen/npm/v1/@buf/tendermint_tendermint.bufbuild_es/-/tendermint_tendermint.bufbuild_es-1.8.0-20231117195010-33ed361a9051.2.tgz}
     peerDependencies:
       '@bufbuild/protobuf': ^1.8.0
     dependencies:
@@ -3885,6 +3900,37 @@ packages:
     engines: {node: '>= 16'}
     dev: false
 
+  /@node-kit/extra.fs@3.2.0:
+    resolution: {integrity: sha512-BtGZcB4ffMneAyKd2qy0umOURc7kMjgNOQlEQNqgkQwcwoGejqiJLQpzKVhAr2waBx7OLZx+/3sNzGgngSzx7w==}
+    hasBin: true
+    dev: true
+
+  /@node-kit/lerna-workspace-root@3.2.0:
+    resolution: {integrity: sha512-z9yfrFJzFuib4Pz1fU6tn6YmKhrISpopbKJsh8BfMXYmKRF4/8Td2JPfNIubAN2rlG3F3hSO4VPCDRwHNaKOhg==}
+    hasBin: true
+    dependencies:
+      '@node-kit/extra.fs': 3.2.0
+      find-up: 5.0.0
+    dev: true
+
+  /@node-kit/pnpm-workspace-root@3.2.0:
+    resolution: {integrity: sha512-+6/4wT34/iipIaFc9P2dYxRNdfrcUULDERnWd+xdLjP4K2VyPRpx/E83BQ1eXhuuNtvevKI5yOxIR03+gb97ZA==}
+    hasBin: true
+    dependencies:
+      '@node-kit/extra.fs': 3.2.0
+      '@pnpm/error': 5.0.3
+      find-up: 5.0.0
+    dev: true
+
+  /@node-kit/yarn-workspace-root@3.2.0:
+    resolution: {integrity: sha512-CJmCTaM0Goi9bRL4gfFxx1INxU9ETyqcnPGFoOMIHCyxJYRpB5C+C3x4BNWsBsBErdZ+BoyvgLsPj6jukCnFFQ==}
+    hasBin: true
+    dependencies:
+      '@node-kit/extra.fs': 3.2.0
+      find-up: 5.0.0
+      micromatch: 4.0.5
+    dev: true
+
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -3946,6 +3992,18 @@ packages:
   /@pnpm/config.env-replace@1.1.0:
     resolution: {integrity: sha512-htyl8TWnKL7K/ESFa1oW2UB5lVDxuF5DpM7tBi6Hu2LNL3mWkIzNLG6N4zoCUP1lCKNxWy/3iu8mS8MvToGd6w==}
     engines: {node: '>=12.22.0'}
+    dev: true
+
+  /@pnpm/constants@7.1.1:
+    resolution: {integrity: sha512-31pZqMtjwV+Vaq7MaPrT1EoDFSYwye3dp6BiHIGRJmVThCQwySRKM7hCvqqI94epNkqFAAYoWrNynWoRYosGdw==}
+    engines: {node: '>=16.14'}
+    dev: true
+
+  /@pnpm/error@5.0.3:
+    resolution: {integrity: sha512-ONJU5cUeoeJSy50qOYsMZQHTA/9QKmGgh1ATfEpCLgtbdwqUiwD9MxHNeXUYYI/pocBCz6r1ZCFqiQvO+8SUKA==}
+    engines: {node: '>=16.14'}
+    dependencies:
+      '@pnpm/constants': 7.1.1
     dev: true
 
   /@pnpm/network.ca-file@1.0.2:
@@ -16931,6 +16989,15 @@ packages:
 
   /wordwrap@1.0.0:
     resolution: {integrity: sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==}
+    dev: true
+
+  /workspace-root@3.2.0:
+    resolution: {integrity: sha512-pa294ZcHkGVfVomqtgNZjbJXwae7awRDni8hVkQSBastuHS2M9LsZ75mToajutFmyYo0tvjO0RWoiKAf3To6ug==}
+    hasBin: true
+    dependencies:
+      '@node-kit/lerna-workspace-root': 3.2.0
+      '@node-kit/pnpm-workspace-root': 3.2.0
+      '@node-kit/yarn-workspace-root': 3.2.0
     dev: true
 
   /wrap-ansi@6.2.0:

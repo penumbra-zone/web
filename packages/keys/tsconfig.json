@@ -1,0 +1,9 @@
+{
+  "extends": "tsconfig/base.json",
+  "include": ["./*.d.ts", "./index.ts"],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "noEmit": true,
+    "declarationMap": false
+  }
+}
