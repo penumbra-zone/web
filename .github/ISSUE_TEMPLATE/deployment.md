@@ -17,7 +17,7 @@ labels: deployment
   - This step will publish updated npm packages.
 - [ ] Update [manifest version](https://github.com/penumbra-zone/web/blob/main/apps/extension/public/manifest.json#L4) based on the extension's newly updated [`package.json` version](https://github.com/penumbra-zone/web/blob/main/apps/extension/package.json) in the extension.
 - [ ] [Create repo release](https://github.com/penumbra-zone/web/releases/new) with `vX.X.X` tag. Triggers approval to run chrome extension publishing.
-- [ ] Run `pnpm build` in the web repo's root. Then take minifront & node-status `dist` output and make PR against core repo to update node's frontends.
+- [ ] In the repo root, run `sh ./scripts/build-for-deployment.sh`. It will create two .zip files. Use those files to open a PR against core repo to update [the node's frontends](https://github.com/penumbra-zone/penumbra/tree/main/assets).
 - [ ] Wait 1-3 days until new extension version is live on [chrome web store](https://chromewebstore.google.com/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe)
 - [ ] Run `Deploy Static Site` [github action](https://github.com/penumbra-zone/web/actions/workflows/deploy-firebase-dapp.yml)
 - [ ] Work with comms team for relevant discord announcements and social posts for new features we want to amplify
