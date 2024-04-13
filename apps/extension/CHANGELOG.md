@@ -1,5 +1,19 @@
 # chrome-extension
 
+## 6.2.1
+
+### Patch Changes
+
+- Updated dependencies [13d0bc5]
+- Updated dependencies [b4082b7]
+- Updated dependencies [76302da]
+  - @penumbra-zone/transport-chrome@2.1.0
+  - @penumbra-zone/crypto-web@3.0.0
+  - @penumbra-zone/storage@3.0.0
+  - @penumbra-zone/query@2.0.2
+  - @penumbra-zone/router@2.0.2
+  - @penumbra-zone/services@2.0.2
+
 ## 6.2.0
 
 ### Minor Changes

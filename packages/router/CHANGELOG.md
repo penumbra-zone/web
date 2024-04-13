@@ -1,5 +1,16 @@
 # @penumbra-zone/router
 
+## 2.0.2
+
+### Patch Changes
+
+- Updated dependencies [b4082b7]
+- Updated dependencies [76302da]
+  - @penumbra-zone/crypto-web@3.0.0
+  - @penumbra-zone/storage@3.0.0
+  - @penumbra-zone/query@2.0.2
+  - @penumbra-zone/services@2.0.2
+
 ## 2.0.1
 
 ### Patch Changes

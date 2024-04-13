@@ -1,5 +1,11 @@
 # @penumbra-zone/crypto-web
 
+## 3.0.0
+
+### Major Changes
+
+- b4082b7: /src/ import path requirement removed
+
 ## 2.0.0
 
 ### Major Changes

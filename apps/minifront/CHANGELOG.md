@@ -1,5 +1,12 @@
 # minifront
 
+## 4.1.1
+
+### Patch Changes
+
+- Updated dependencies [b4082b7]
+  - @penumbra-zone/crypto-web@3.0.0
+
 ## 4.1.0
 
 ### Minor Changes
