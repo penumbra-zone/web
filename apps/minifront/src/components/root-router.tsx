@@ -2,7 +2,7 @@ import { createHashRouter, redirect } from 'react-router-dom';
 import { PagePath } from './metadata/paths';
 import { Layout, LayoutLoader } from './layout';
 import AssetsTable, { AssetsLoader } from './dashboard/assets-table';
-import TransactionTable, { TxsLoader } from './dashboard/transaction-table';
+import TransactionTable from './dashboard/transaction-table';
 import { DashboardLayout } from './dashboard/layout';
 import { TxDetails, TxDetailsErrorBoundary, TxDetailsLoader } from './tx-details';
 import { SendLayout } from './send/layout';
@@ -35,7 +35,6 @@ export const rootRouter = createHashRouter([
           },
           {
             path: PagePath.TRANSACTIONS,
-            loader: TxsLoader,
             element: <TransactionTable />,
             errorElement: <ErrorBoundary />,
           },

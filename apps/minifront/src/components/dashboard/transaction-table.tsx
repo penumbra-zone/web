@@ -6,67 +6,59 @@ import {
   TableHeader,
   TableRow,
 } from '@penumbra-zone/ui/components/ui/table';
-import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
-import { getAllTransactions, TransactionSummary } from '../../fetchers/transactions';
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
+import { Link } from 'react-router-dom';
 import { shorten } from '@penumbra-zone/types/src/string';
-
-export const TxsLoader: LoaderFunction = async (): Promise<TransactionSummary[]> => {
-  await throwIfPraxNotConnectedTimeout();
-  return await getAllTransactions();
-};
+import { useStore } from '../../state';
+import { memo, useEffect } from 'react';
+import { TransactionSummary } from '../../state/transactions';
 
 export default function TransactionTable() {
-  const data = useLoaderData() as TransactionSummary[];
+  const { summaries, loadSummaries } = useStore(store => store.transactions);
+
+  useEffect(() => void loadSummaries(), [loadSummaries]);
 
   return (
-    <>
-      <div className='flex flex-col gap-[34px] md:hidden'>
-        {data.map((tx, i) => (
-          <div key={i} className='flex justify-between gap-4 border-b pb-3'>
-            <p className='text-center text-base font-bold'>{tx.height}</p>
-            <p className='text-center text-base font-bold'>{tx.description}</p>
-            <p className='text-center font-mono text-base'>
-              <Link to={`/tx/${tx.hash}`}>{shorten(tx.hash, 8)}</Link>
-            </p>
-          </div>
+    <Table className='md:table'>
+      <TableHeader className='hidden md:table-header-group'>
+        <TableRow>
+          <TableHead className='text-center'>Block Height</TableHead>
+          <TableHead className='text-center'>Description</TableHead>
+          <TableHead className='text-center'>Transaction Hash</TableHead>
+          <TableHead />
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {summaries.map(summary => (
+          <Row key={summary.hash} summary={summary} />
         ))}
-      </div>
-      <Table className='hidden md:table'>
-        <TableHeader>
-          <TableRow>
-            <TableHead className='text-center'>Block Height</TableHead>
-            <TableHead className='text-center'>Description</TableHead>
-            <TableHead className='text-center'>Transaction Hash</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.map((tx, i) => (
-            <TableRow key={i}>
-              <TableCell>
-                <p className='text-center text-base font-bold'>{tx.height}</p>
-              </TableCell>
-              <TableCell>
-                <p className='text-center text-base font-bold'>{tx.description}</p>
-              </TableCell>
-              <TableCell>
-                <p className='text-center font-mono text-base'>
-                  <Link to={`/tx/${tx.hash}`}>{shorten(tx.hash, 8)}</Link>
-                </p>
-              </TableCell>
-              <TableCell>
-                <Link to={`/tx/${tx.hash}`}>
-                  <img
-                    src='./more.svg'
-                    className='size-4 cursor-pointer hover:opacity-50'
-                    alt='More'
-                  />
-                </Link>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </>
+      </TableBody>
+    </Table>
   );
 }
+
+/**
+ * Split into a separate component so that we can use `memo`, which prevents
+ * rows from re-rendering just because other rows have been added.
+ */
+const Row = memo(({ summary }: { summary: TransactionSummary }) => (
+  <TableRow>
+    <TableCell>
+      <p className='text-center text-base font-bold'>{summary.height}</p>
+    </TableCell>
+    <TableCell>
+      <p className='text-center text-base font-bold'>{summary.description}</p>
+    </TableCell>
+    <TableCell>
+      <p className='text-center font-mono text-base'>
+        <Link to={`/tx/${summary.hash}`}>{shorten(summary.hash, 8)}</Link>
+      </p>
+    </TableCell>
+    <TableCell className='hidden md:table-cell'>
+      <Link to={`/tx/${summary.hash}`}>
+        <img src='./more.svg' className='size-4 cursor-pointer hover:opacity-50' alt='More' />
+      </Link>
+    </TableCell>
+  </TableRow>
+));
+
+Row.displayName = 'Row';
