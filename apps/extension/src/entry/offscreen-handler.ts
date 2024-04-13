@@ -7,37 +7,32 @@ import {
   isOffscreenRequest,
 } from '@penumbra-zone/types/src/internal-msg/offscreen';
 
-// propagates errors that occur in unawaited promises
-// see: https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
-const unhandledRejection = Promise.withResolvers<never>();
-self.addEventListener(
-  'unhandledrejection',
-  event => {
-    // the event object has two special properties:
-    // event.promise - the promise that generated the error
-    // event.reason  - the unhandled error object
-    unhandledRejection.reject(event.reason);
-  },
-  { once: true },
-);
-
 chrome.runtime.onMessage.addListener((req, _sender, respond) => {
   if (!isOffscreenRequest(req)) return false;
   const { type, request } = req;
   if (isActionBuildRequest(request)) {
     void (async () => {
       try {
+        // propagate errors that occur in unawaited promises
+        const unhandled = Promise.withResolvers<never>();
+        self.addEventListener('unhandledrejection', unhandled.reject, {
+          once: true,
+        });
+
         const data = await Promise.race([
           spawnActionBuildWorker(request),
-          // this error might not correspond to the specific request it responds to
-          unhandledRejection.promise,
-        ]);
+          unhandled.promise,
+        ]).finally(() => self.removeEventListener('unhandledrejection', unhandled.reject));
+
         respond({ type, data });
       } catch (e) {
-        respond({
-          type,
-          error: errorToJson(ConnectError.from(e), undefined),
-        });
+        const error = errorToJson(
+          // note that any given promise rejection event probably doesn't
+          // actually involve the specific request it ends up responding to.
+          ConnectError.from(e instanceof PromiseRejectionEvent ? e.reason : e),
+          undefined,
+        );
+        respond({ type, error });
       }
     })();
     return true;
