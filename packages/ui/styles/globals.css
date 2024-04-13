@@ -59,8 +59,11 @@
   }
 
   #popup-root {
-    width: 400px;
-    height: 600px;
+    min-width: 400px;
+    min-height: 600px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     @apply bg-charcoal;
   }
 
