@@ -6,6 +6,7 @@ import { createIbcSendSlice, IbcSendSlice } from './ibc';
 import { createSendSlice, SendSlice } from './send';
 import { createStakingSlice, StakingSlice } from './staking';
 import { createUnclaimedSwapsSlice, UnclaimedSwapsSlice } from './unclaimed-swaps';
+import { createTransactionsSlice, TransactionsSlice } from './transactions';
 
 /**
  * Required to enable use of `Map`s in Zustand state when using Immer
@@ -19,6 +20,7 @@ export interface AllSlices {
   send: SendSlice;
   staking: StakingSlice;
   swap: SwapSlice;
+  transactions: TransactionsSlice;
   unclaimedSwaps: UnclaimedSwapsSlice;
 }
 
@@ -35,6 +37,7 @@ export const initializeStore = () => {
     send: createSendSlice()(setState, getState, store),
     staking: createStakingSlice()(setState, getState, store),
     swap: createSwapSlice()(setState, getState, store),
+    transactions: createTransactionsSlice()(setState, getState, store),
     unclaimedSwaps: createUnclaimedSwapsSlice()(setState, getState, store),
   }));
 };

@@ -6,23 +6,26 @@ import {
   TableHeader,
   TableRow,
 } from '@penumbra-zone/ui/components/ui/table';
-import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
-import { getAllTransactions, TransactionSummary } from '../../fetchers/transactions';
+import { Link, LoaderFunction } from 'react-router-dom';
 import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
 import { shorten } from '@penumbra-zone/types/src/string';
+import { useStore } from '../../state';
+import { useEffect } from 'react';
 
-export const TxsLoader: LoaderFunction = async (): Promise<TransactionSummary[]> => {
+export const TxsLoader: LoaderFunction = async (): Promise<null> => {
   await throwIfPraxNotConnectedTimeout();
-  return await getAllTransactions();
+  return null;
 };
 
 export default function TransactionTable() {
-  const data = useLoaderData() as TransactionSummary[];
+  const { summaries, loadSummaries } = useStore(store => store.transactions);
+
+  useEffect(() => void loadSummaries(), [loadSummaries]);
 
   return (
     <>
       <div className='flex flex-col gap-[34px] md:hidden'>
-        {data.map((tx, i) => (
+        {summaries.map((tx, i) => (
           <div key={i} className='flex justify-between gap-4 border-b pb-3'>
             <p className='text-center text-base font-bold'>{tx.height}</p>
             <p className='text-center text-base font-bold'>{tx.description}</p>
@@ -41,7 +44,7 @@ export default function TransactionTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((tx, i) => (
+          {summaries.map((tx, i) => (
             <TableRow key={i}>
               <TableCell>
                 <p className='text-center text-base font-bold'>{tx.height}</p>
