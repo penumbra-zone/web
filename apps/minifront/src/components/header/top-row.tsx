@@ -11,6 +11,8 @@ import {
 import { Network } from '@penumbra-zone/ui/components/ui/network';
 import { PagePath } from '../metadata/paths';
 import { TabletNavMenu } from './tablet-nav-menu';
+import { useEffect, useState } from 'react';
+import { getChainId } from '../../fetchers/chain-id';
 import { LayoutLoaderResult } from '../layout';
 
 // Infinite-expiry invite link to the #web-ext-feedback channel. Provided by
@@ -18,8 +20,19 @@ import { LayoutLoaderResult } from '../layout';
 // if there are any problems with this link.
 const WEB_EXT_FEEDBACK_DISCORD_CHANNEL = 'https://discord.gg/XDNcrhKVwV';
 
+const useChainId = (): string | undefined => {
+  const { isInstalled, isConnected } = useLoaderData() as LayoutLoaderResult;
+  const [chainId, setChainId] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (isInstalled && isConnected) void getChainId().then(setChainId);
+  }, [isInstalled, isConnected]);
+
+  return chainId;
+};
+
 export const TopRow = () => {
-  const result = useLoaderData() as LayoutLoaderResult;
+  const chainId = useChainId();
 
   return (
     <div className='flex w-full flex-col items-center justify-between px-6 md:h-[82px] md:flex-row md:gap-12 md:px-12'>
@@ -62,9 +75,9 @@ export const TopRow = () => {
           </TooltipProvider>
         </div>
 
-        {'chainId' in result ? (
+        {chainId ? (
           <div className='order-2 flex grow justify-center md:order-none'>
-            <Network name={result.chainId} />
+            <Network name={chainId} />
           </div>
         ) : null}
       </div>
