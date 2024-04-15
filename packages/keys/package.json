@@ -4,17 +4,25 @@
   "description": "Proving keys for Penumbra",
   "type": "module",
   "scripts": {
-    "build": "cp -v $(./download-keys.ts) ./keys",
-    "latest": "cp -v $(./download-keys.ts --latest) ./keys"
+    "clean": "rm -rfv ./dist ./keys",
+    "prebuild": "./download-keys ./keys",
+    "build": "tsc"
   },
   "exports": {
-    ".": "./action_keys.json",
-    "./*_pk.bin": "./keys/*_pk.bin"
+    ".": "./src/index.ts",
+    "./*_pk": "./keys/*_pk.ts"
+  },
+  "publishConfig": {
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts"
+    },
+    "./*_pk": {
+      "import": "./dist/*_pk.js",
+      "types": "./dist/*_pk.d.ts"
+    }
   },
   "bin": {
-    "download-keys": "./download-keys.ts"
-  },
-  "devDependencies": {
-    "tsx": "^4.7.1"
+    "download-keys": "./download-keys"
   }
 }

@@ -18,7 +18,7 @@
     "playwright-install": "playwright install",
     "changeset": "changeset",
     "changeset:publish": "changeset publish",
-    "all-check": "pnpm install && pnpm compile && pnpm format-check && pnpm lint && pnpm test && pnpm download-keys && pnpm build && pnpm format-check:rust && pnpm lint:rust && pnpm test:rust"
+    "all-check": "pnpm install && pnpm compile && pnpm format-check && pnpm lint && pnpm test && pnpm build && pnpm format-check:rust && pnpm lint:rust && pnpm test:rust"
   },
   "dependencies": {
     "@buf/cosmos_ibc.bufbuild_es": "1.8.0-20240327103030-e2006674271c.2",
@@ -60,7 +60,6 @@
     "playwright": "^1.42.1",
     "prettier": "^3.2.5",
     "tsconfig": "workspace:*",
-    "tsx": "^4.7.1",
     "turbo": "^1.13.0",
     "typescript": "^5.4.3",
     "vite": "^5.2.6",

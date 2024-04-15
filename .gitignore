@@ -52,4 +52,5 @@ lerna-debug.log*
 *.sw?
 *.pem
 
+# large binary files
 *_pk.bin

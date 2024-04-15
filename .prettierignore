@@ -4,4 +4,3 @@ pnpm-lock.yaml
 packages/wasm/crate
 packages/wasm/wasm
 *_pk.bin
-packages/keys/penumbra
