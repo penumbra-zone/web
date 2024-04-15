@@ -43,7 +43,7 @@ export interface IbcSlice {
     account: number;
     address: PlainMessage<Address>;
     unshieldAsset?: PlainMessage<BalancesResponse>;
-    unshieldAmount?: PlainMessage<BalancesResponse>;
+    unshieldAmount?: bigint;
     setAccount: (account: number) => Promise<void>;
     setUnshield: (asset: BalancesResponse, amount: bigint) => void;
   };
@@ -90,7 +90,8 @@ export const createIbcSlice = (): SliceCreator<IbcSlice> => set => {
       },
       setUnshield: (asset: BalancesResponse, amount: bigint) => {
         set(state => {
-          state.ibc.penumbra.unshield = toPlainMessage(unshield);
+          state.ibc.penumbra.unshieldAsset = toPlainMessage(asset);
+          state.ibc.penumbra.unshieldAmount = amount;
         });
       },
     },
@@ -144,8 +145,8 @@ export const ibcSelector = (state: AllSlices) => state.ibc;
 
 export const ibcValidationErrors = (state: AllSlices) => {
   const inputBalance =
-    state.ibc.penumbra.unshield?.balanceView?.valueView.case === 'knownAssetId'
-      ? state.ibc.penumbra.unshield.balanceView.valueView.value
+    state.ibc.penumbra.unshieldAsset?.balanceView?.valueView.case === 'knownAssetId'
+      ? state.ibc.penumbra.unshieldAsset.balanceView.valueView.value
       : undefined;
   const availableBalance = state.ibc.assetBalances?.find(
     ({ balanceView }) =>
