@@ -39,7 +39,7 @@ shacmd=$(which sha256sum || which shasum)
 cd "${PENUMBRA_KEYS_DIR}"
 if [ -f "${PENUMBRA_KEYS_SHA256}" ]; then
     ${shacmd} -c "${PENUMBRA_KEYS_SHA256}"
-elif [ "${PENUMBRA_KEYS_VERSION}" == "${defaultKeysVersion}" ]; then
+elif [ "${PENUMBRA_KEYS_VERSION}" = "${defaultKeysVersion}" ]; then
     ${shacmd} -c <<EOF
 882527eb795af2819f8df4f6233d5844757768fb03d51a000f11b100eeea573f  convert_pk.bin
 6712a90216c7c0cfb12ef2a37d48ffae666f8d2bd9a722836864d0a70064dce7  delegator_vote_pk.bin
