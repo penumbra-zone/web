@@ -1,5 +1,16 @@
 # minifront
 
+## 4.2.0
+
+### Minor Changes
+
+- v6.3 ext updates: loading indicator, portfolio viewing, bug fixes
+
+### Patch Changes
+
+- Updated dependencies [b4082b7]
+  - @penumbra-zone/crypto-web@3.0.0
+
 ## 4.1.0
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @penumbra-zone/query
 
+## 2.0.2
+
+### Patch Changes
+
+- Updated dependencies [b4082b7]
+  - @penumbra-zone/crypto-web@3.0.0
+
 ## 2.0.1
 
 ### Patch Changes

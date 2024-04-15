@@ -1,5 +1,13 @@
 # @penumbra-zone/services
 
+## 2.0.2
+
+### Patch Changes
+
+- Updated dependencies [76302da]
+  - @penumbra-zone/storage@3.0.0
+  - @penumbra-zone/query@2.0.2
+
 ## 2.0.1
 
 ### Patch Changes
