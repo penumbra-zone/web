@@ -2,7 +2,10 @@ import { AllSlices, SliceCreator } from '.';
 import { getEphemeralAddress } from '../fetchers/address';
 
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import {
+  BalancesResponse,
+  TransactionPlannerRequest,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
   Chain as PenumbraChain,
   getChainMetadataById,
@@ -17,7 +20,17 @@ import { PlainMessage, toPlainMessage } from '@bufbuild/protobuf';
 import { ChainContext } from '@cosmos-kit/core';
 import { amountMoreThanBalance } from './send';
 import { bech32, bech32m } from 'bech32';
-import { joinLoHi } from '@penumbra-zone/types/src/lo-hi';
+import { joinLoHi, toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
+import BigNumber from 'bignumber.js';
+import {
+  getDisplayDenomExponentFromValueView,
+  getMetadata,
+} from '@penumbra-zone/getters/src/value-view';
+import { ibcClient, viewClient } from '../clients';
+import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
+import { typeRegistry } from '@penumbra-zone/types/src/registry';
+import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
+import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 
 export interface IbcSlice {
   txInProgress: boolean;
@@ -29,9 +42,10 @@ export interface IbcSlice {
   penumbra: {
     account: number;
     address: PlainMessage<Address>;
-    unshield?: PlainMessage<BalancesResponse>;
+    unshieldAsset?: PlainMessage<BalancesResponse>;
+    unshieldAmount?: PlainMessage<BalancesResponse>;
     setAccount: (account: number) => Promise<void>;
-    setUnshield: (send: BalancesResponse) => void;
+    setUnshield: (asset: BalancesResponse, amount: bigint) => void;
   };
   cosmos: {
     rpcEndpoint?: string;
@@ -74,7 +88,7 @@ export const createIbcSlice = (): SliceCreator<IbcSlice> => set => {
           state.ibc.penumbra.address = toPlainMessage(address);
         });
       },
-      setUnshield: (unshield: BalancesResponse) => {
+      setUnshield: (asset: BalancesResponse, amount: bigint) => {
         set(state => {
           state.ibc.penumbra.unshield = toPlainMessage(unshield);
         });
@@ -159,12 +173,11 @@ export const ibcValidationErrors = (state: AllSlices) => {
           bech32.decodeUnsafe(state.ibc.cosmos.destination, limit)),
     ),
     unshieldAmountErr: Boolean(
-      state.ibc.penumbra.unshield?.balanceView?.valueView.case === 'knownAssetId' && amountErr,
+      state.ibc.penumbra.unshieldAsset?.balanceView?.valueView.case === 'knownAssetId' && amountErr,
     ),
   };
 };
 
-/*
 const getTimeout = async (
   chain: PenumbraChain,
 ): Promise<{ timeoutTime: bigint; timeoutHeight: Height }> => {
@@ -196,16 +209,16 @@ const getTimeout = async (
 };
 
 const getPlanRequest = async (
-  amount: bigint,
-  selection: BalancesResponse,
-  chain: PenumbraChain,
-  destinationChainAddress: string,
+  unshieldAmount: bigint,
+  unshieldAsset?: BalancesResponse,
+  chain?: PenumbraChain,
+  destinationChainAddress?: string,
 ): Promise<TransactionPlannerRequest> => {
   if (!destinationChainAddress) throw new Error('no destination chain address set');
   if (!chain) throw new Error('Chain not set');
-  if (!selection) throw new Error('No asset selected');
+  if (!unshieldAsset) throw new Error('No asset selected');
 
-  const addressIndex = getAddressIndex(selection.accountAddress);
+  const addressIndex = getAddressIndex(unshieldAsset.accountAddress);
   const { address: returnAddress } = await viewClient.ephemeralAddress({ addressIndex });
   if (!returnAddress) throw new Error('Error with generating IBC deposit address');
 
@@ -215,10 +228,10 @@ const getPlanRequest = async (
     ics20Withdrawals: [
       {
         amount: toBaseUnit(
-          BigNumber(amount),
-          getDisplayDenomExponentFromValueView(selection.balanceView),
+          BigNumber(unshieldAmount.toString()),
+          getDisplayDenomExponentFromValueView(unshieldAsset.balanceView),
         ),
-        denom: { denom: getMetadata(selection.balanceView).base },
+        denom: { denom: getMetadata(unshieldAsset.balanceView).base },
         destinationChainAddress,
         returnAddress,
         timeoutHeight,
@@ -229,4 +242,3 @@ const getPlanRequest = async (
     source: addressIndex,
   });
 };
-*/
