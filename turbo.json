@@ -21,14 +21,7 @@
     "lint": { "dependsOn": ["compile"] },
     "dev": {
       "dotEnv": [".env"],
-      "env": [
-        "PRAX",
-        "IDB_VERSION",
-        "USDC_ASSET_ID",
-        "MINIFRONT_URL",
-        "PENUMBRA_NODE_PD_URL",
-        "NODE_ENV"
-      ],
+      "env": ["PRAX", "IDB_VERSION", "USDC_ASSET_ID", "MINIFRONT_URL", "PENUMBRA_NODE_PD_URL"],
       "dependsOn": ["^build"],
       "outputs": ["dist/**"],
       "persistent": true,

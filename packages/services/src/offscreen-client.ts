@@ -42,8 +42,7 @@ const activateOffscreen = async () => {
  * Decrement and close if there is no remaining activity.
  */
 const releaseOffscreen = async () => {
-  if (!--active && process.env['NODE_ENV'] !== 'development')
-    await chrome.offscreen.closeDocument();
+  if (!--active) await chrome.offscreen.closeDocument();
 };
 
 const sendOffscreenMessage = async <T extends OffscreenMessage>(

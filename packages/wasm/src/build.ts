@@ -45,8 +45,8 @@ export const buildActionParallel = async (
   keyPath?: string,
 ): Promise<Action> => {
   // Conditionally read proving keys from disk and load keys into WASM binary
-  const actionPlan = txPlan.actions[actionId]!;
-  if (!actionPlan.action.case) throw new Error('No action key provided');
+  const actionPlan = txPlan.actions[actionId];
+  if (!actionPlan?.action.case) throw new Error('No action key provided');
   if (keyPath) await loadProvingKey(actionPlan.action.case, keyPath);
 
   const result = build_action(
