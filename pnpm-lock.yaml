@@ -232,6 +232,9 @@ importers:
         specifier: ^4.5.2
         version: 4.5.2(@types/react@18.2.72)(immer@10.0.4)(react@18.2.0)
     devDependencies:
+      '@penumbra-zone/keys':
+        specifier: workspace:*
+        version: link:../../packages/keys
       '@penumbra-zone/polyfills':
         specifier: workspace:*
         version: link:../../packages/polyfills

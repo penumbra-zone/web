@@ -7,7 +7,6 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import type { StateCommitmentTree } from '@penumbra-zone/types/src/state-commitment-tree';
 import { authorize, build_action, build_parallel, load_proving_key, witness } from '../wasm';
-import actionKeys from '@penumbra-zone/keys';
 import {
   FullViewingKey,
   SpendKey,
@@ -43,11 +42,12 @@ export const buildActionParallel = async (
   witnessData: WitnessData,
   fullViewingKey: FullViewingKey,
   actionId: number,
+  keyPath?: string,
 ): Promise<Action> => {
   // Conditionally read proving keys from disk and load keys into WASM binary
-  const actionPlan = txPlan.actions[actionId];
-  if (!actionPlan?.action.case) throw new Error('No action key provided');
-  await loadProvingKey(actionPlan.action.case);
+  const actionPlan = txPlan.actions[actionId]!;
+  if (!actionPlan.action.case) throw new Error('No action key provided');
+  if (keyPath) await loadProvingKey(actionPlan.action.case, keyPath);
 
   const result = build_action(
     txPlan.toBinary(),
@@ -59,9 +59,10 @@ export const buildActionParallel = async (
   return Action.fromBinary(result);
 };
 
-const loadProvingKey = async (actionType: Exclude<Action['action']['case'], undefined>) => {
-  const keyUrl = actionKeys[actionType];
-  if (!keyUrl) return;
-  const key = new Uint8Array(await (await fetch(keyUrl)).arrayBuffer());
+const loadProvingKey = async (
+  actionType: Exclude<Action['action']['case'], undefined>,
+  keyPath: string,
+) => {
+  const key = new Uint8Array(await (await fetch(keyPath)).arrayBuffer());
   load_proving_key(key, actionType);
 };

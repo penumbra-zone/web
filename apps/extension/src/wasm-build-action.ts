@@ -1,4 +1,5 @@
 import {
+  Action,
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
@@ -48,12 +49,27 @@ async function executeWorker(
   // Dynamically load wasm module
   const penumbraWasmModule = await import('@penumbra-zone/wasm/src/build');
 
+  const actionType = transactionPlan.actions[actionPlanIndex]?.action.case;
+
+  const actionKeys: Partial<Record<Exclude<Action['action']['case'], undefined>, string>> = {
+    delegatorVote: 'delegator_vote',
+    output: 'output',
+    spend: 'spend',
+    swap: 'swap',
+    swapClaim: 'swapclaim',
+    undelegateClaim: 'convert',
+  };
+
+  const keyPath: string | undefined =
+    actionType && actionType in actionKeys ? `/keys/${actionKeys[actionType]}_pk.bin` : undefined;
+
   // Build action according to specification in `TransactionPlan`
   const action = await penumbraWasmModule.buildActionParallel(
     transactionPlan,
     witness,
     fullViewingKey,
     actionPlanIndex,
+    keyPath,
   );
 
   return action.toJson();

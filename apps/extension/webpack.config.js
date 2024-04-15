@@ -3,10 +3,13 @@ import path from 'path';
 import CopyPlugin from 'copy-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import webpack from 'webpack';
+import url from 'url';
 
 // Loads default vars from `.env` file in this directory.  If you set
 // environment variables, you will override those defaults.
 dotenv.config();
+
+const keysPackage = url.fileURLToPath(import.meta.resolve('@penumbra-zone/keys'));
 
 const definitions = {
   // process.env.NODE_ENV is automatically provided by DefinePlugin
@@ -90,13 +93,6 @@ export default (env, argv) => {
             filename: 'videos/[hash][ext][query]',
           },
         },
-        {
-          test: /_pk\.bin$/,
-          type: 'asset/resource',
-          generator: {
-            filename: 'keys/[hash][ext][query]',
-          },
-        },
       ],
     },
     resolve: {
@@ -119,7 +115,13 @@ export default (env, argv) => {
       }),
       new webpack.DefinePlugin(definitions),
       new CopyPlugin({
-        patterns: [{ from: 'public', to: '.' }],
+        patterns: [
+          'public',
+          {
+            from: path.join(keysPackage, '*_pk.bin'),
+            to: 'keys/[name][ext]',
+          },
+        ],
       }),
       // html entry points
       new HtmlWebpackPlugin({

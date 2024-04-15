@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-defaultKeysVersion="v$(npm pkg get version | tr -d '"')"
+defaultKeysVersion="v0.71.0"
 
 usage() {
     echo "${1}"
