@@ -64,7 +64,8 @@ const buildActions = (
 ): Promise<Action>[] => {
   const activation = activateOffscreen();
 
-  // this is a lot of binary -> base64 serialization, so just do it once and reuse
+  // this json serialization involves a lot of binary -> base64 which is slow,
+  // so just do it once and reuse
   const partialRequest = {
     transactionPlan: transactionPlan.toJson() as Jsonified<TransactionPlan>,
     witness: witness.toJson() as Jsonified<WitnessData>,
