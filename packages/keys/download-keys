@@ -26,10 +26,12 @@ fi
 if [ -z "${SKIP_DOWNLOAD_KEYS}" ]; then
     keysUrl="https://github.com/penumbra-zone/penumbra/raw/${PENUMBRA_KEYS_VERSION}/crates/crypto/proof-params/src/gen/"
     keysGlob="{convert,delegator_vote,nullifier_derivation,output,spend,swap,swapclaim}_pk.bin"
-    curl --output-dir "${PENUMBRA_KEYS_DIR}" --continue-at - \
+    curl --output-dir "${PENUMBRA_KEYS_DIR}/${PENUMBRA_KEYS_VERSION}" --continue-at - \
         --parallel --create-dirs --location --remote-name \
         "${keysUrl}${keysGlob}"
 fi
+
+ln -vf "${PENUMBRA_KEYS_DIR}/${PENUMBRA_KEYS_VERSION}/"*_pk.bin "${PENUMBRA_KEYS_DIR}"
 
 shacmd=$(which sha256sum || which shasum)
 [ -z $shacmd ] && usage "No sha256sum or shasum tool available."

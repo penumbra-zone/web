@@ -40,7 +40,7 @@ importers:
         specifier: ^2.27.1
         version: 2.27.1
       '@penumbra-zone/keys':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:packages/keys
       '@penumbra-zone/wasm':
         specifier: workspace:*
@@ -144,9 +144,6 @@ importers:
       vitest:
         specifier: ^1.4.0
         version: 1.5.0(@types/node@20.12.7)(@vitest/browser@1.5.0)(jsdom@24.0.0)
-      workspace-root:
-        specifier: ^3.2.0
-        version: 3.2.0
 
   apps/extension:
     dependencies:
@@ -3737,37 +3734,6 @@ packages:
     engines: {node: '>= 16'}
     dev: false
 
-  /@node-kit/extra.fs@3.2.0:
-    resolution: {integrity: sha512-BtGZcB4ffMneAyKd2qy0umOURc7kMjgNOQlEQNqgkQwcwoGejqiJLQpzKVhAr2waBx7OLZx+/3sNzGgngSzx7w==}
-    hasBin: true
-    dev: true
-
-  /@node-kit/lerna-workspace-root@3.2.0:
-    resolution: {integrity: sha512-z9yfrFJzFuib4Pz1fU6tn6YmKhrISpopbKJsh8BfMXYmKRF4/8Td2JPfNIubAN2rlG3F3hSO4VPCDRwHNaKOhg==}
-    hasBin: true
-    dependencies:
-      '@node-kit/extra.fs': 3.2.0
-      find-up: 5.0.0
-    dev: true
-
-  /@node-kit/pnpm-workspace-root@3.2.0:
-    resolution: {integrity: sha512-+6/4wT34/iipIaFc9P2dYxRNdfrcUULDERnWd+xdLjP4K2VyPRpx/E83BQ1eXhuuNtvevKI5yOxIR03+gb97ZA==}
-    hasBin: true
-    dependencies:
-      '@node-kit/extra.fs': 3.2.0
-      '@pnpm/error': 5.0.3
-      find-up: 5.0.0
-    dev: true
-
-  /@node-kit/yarn-workspace-root@3.2.0:
-    resolution: {integrity: sha512-CJmCTaM0Goi9bRL4gfFxx1INxU9ETyqcnPGFoOMIHCyxJYRpB5C+C3x4BNWsBsBErdZ+BoyvgLsPj6jukCnFFQ==}
-    hasBin: true
-    dependencies:
-      '@node-kit/extra.fs': 3.2.0
-      find-up: 5.0.0
-      micromatch: 4.0.5
-    dev: true
-
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -3829,18 +3795,6 @@ packages:
   /@pnpm/config.env-replace@1.1.0:
     resolution: {integrity: sha512-htyl8TWnKL7K/ESFa1oW2UB5lVDxuF5DpM7tBi6Hu2LNL3mWkIzNLG6N4zoCUP1lCKNxWy/3iu8mS8MvToGd6w==}
     engines: {node: '>=12.22.0'}
-    dev: true
-
-  /@pnpm/constants@7.1.1:
-    resolution: {integrity: sha512-31pZqMtjwV+Vaq7MaPrT1EoDFSYwye3dp6BiHIGRJmVThCQwySRKM7hCvqqI94epNkqFAAYoWrNynWoRYosGdw==}
-    engines: {node: '>=16.14'}
-    dev: true
-
-  /@pnpm/error@5.0.3:
-    resolution: {integrity: sha512-ONJU5cUeoeJSy50qOYsMZQHTA/9QKmGgh1ATfEpCLgtbdwqUiwD9MxHNeXUYYI/pocBCz6r1ZCFqiQvO+8SUKA==}
-    engines: {node: '>=16.14'}
-    dependencies:
-      '@pnpm/constants': 7.1.1
     dev: true
 
   /@pnpm/network.ca-file@1.0.2:
@@ -16685,15 +16639,6 @@ packages:
 
   /wordwrap@1.0.0:
     resolution: {integrity: sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==}
-    dev: true
-
-  /workspace-root@3.2.0:
-    resolution: {integrity: sha512-pa294ZcHkGVfVomqtgNZjbJXwae7awRDni8hVkQSBastuHS2M9LsZ75mToajutFmyYo0tvjO0RWoiKAf3To6ug==}
-    hasBin: true
-    dependencies:
-      '@node-kit/lerna-workspace-root': 3.2.0
-      '@node-kit/pnpm-workspace-root': 3.2.0
-      '@node-kit/yarn-workspace-root': 3.2.0
     dev: true
 
   /wrap-ansi@6.2.0:

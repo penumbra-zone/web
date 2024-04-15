@@ -4,7 +4,7 @@
   "description": "Proving keys for Penumbra",
   "type": "module",
   "scripts": {
-    "clean": "rm -rfv ./dist ./keys",
+    "clean": "rm -rfv ./dist ./keys/*_pk.bin",
     "prebuild": "./download-keys ./keys",
     "build": "tsc"
   },
