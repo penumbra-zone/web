@@ -1,21 +1,42 @@
 {
   "name": "@penumbra-zone/services",
   "version": "2.0.2",
-  "private": true,
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "lint": "eslint \"**/*.ts*\""
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
+  },
+  "files": [
+    "src/",
+    "*.md",
+    "!**/*.test.ts",
+    "!test-utils.ts"
+  ],
+  "exports": {
+    "./ctx/*": "./src/ctx/*.ts",
+    "./custody-service": "./src/custody-service/index.ts",
+    "./custody-service/*": "./src/custody-service/*.ts",
+    "./sct-service": "./src/sct-service/index.ts",
+    "./sct-service/*": "./src/sct-service/*.ts",
+    "./staking-service": "./src/staking-service/index.ts",
+    "./staking-service/*": "./src/staking-service/*.ts",
+    "./view-service": "./src/view-service/index.ts",
+    "./view-service/*": "./src/view-service/*.ts",
+    "./offscreen-client": "./src/offscreen-client.ts"
   },
   "dependencies": {
     "@penumbra-zone/constants": "workspace:*",
+    "@penumbra-zone/crypto-web": "workspace:*",
+    "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/bech32": "workspace:*",
+    "@penumbra-zone/perspective": "workspace:*",
+    "@penumbra-zone/polyfills": "workspace:*",
     "@penumbra-zone/query": "workspace:*",
+    "@penumbra-zone/services-context": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
+    "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm": "workspace:*",
-    "exponential-backoff": "^3.1.1"
-  },
-  "devDependencies": {
-    "@penumbra-zone/polyfills": "workspace:*"
+    "@penumbra-zone/wasm": "workspace:*"
   }
 }

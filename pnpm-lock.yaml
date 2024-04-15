@@ -162,12 +162,12 @@ importers:
       '@penumbra-zone/query':
         specifier: workspace:*
         version: link:../../packages/query
-      '@penumbra-zone/router':
-        specifier: workspace:*
-        version: link:../../packages/router
       '@penumbra-zone/services':
         specifier: workspace:*
         version: link:../../packages/services
+      '@penumbra-zone/services-context':
+        specifier: workspace:*
+        version: link:../../packages/services-context
       '@penumbra-zone/storage':
         specifier: workspace:*
         version: link:../../packages/storage
@@ -540,7 +540,7 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1
 
-  packages/router:
+  packages/services:
     dependencies:
       '@penumbra-zone/bech32':
         specifier: workspace:*
@@ -563,9 +563,9 @@ importers:
       '@penumbra-zone/query':
         specifier: workspace:*
         version: link:../query
-      '@penumbra-zone/services':
+      '@penumbra-zone/services-context':
         specifier: workspace:*
-        version: link:../services
+        version: link:../services-context
       '@penumbra-zone/storage':
         specifier: workspace:*
         version: link:../storage
@@ -579,7 +579,7 @@ importers:
         specifier: workspace:*
         version: link:../wasm
 
-  packages/services:
+  packages/services-context:
     dependencies:
       '@penumbra-zone/constants':
         specifier: workspace:*
