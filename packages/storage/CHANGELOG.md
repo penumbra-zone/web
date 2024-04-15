@@ -1,5 +1,16 @@
 # @penumbra-zone/storage
 
+## 3.0.0
+
+### Major Changes
+
+- 76302da: Drop /src/ requirement for imports
+
+### Patch Changes
+
+- Updated dependencies [b4082b7]
+  - @penumbra-zone/crypto-web@3.0.0
+
 ## 2.0.1
 
 ### Patch Changes
