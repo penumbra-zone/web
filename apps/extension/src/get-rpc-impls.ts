@@ -16,10 +16,10 @@ import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.conn
 import { TendermintProxyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/util/tendermint_proxy/v1/tendermint_proxy_connect';
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
-import { custodyImpl } from '@penumbra-zone/router/src/grpc/custody';
-import { sctImpl } from '@penumbra-zone/router/src/grpc/sct';
-import { stakingImpl } from '@penumbra-zone/router/src/grpc/staking';
-import { viewImpl } from '@penumbra-zone/router/src/grpc/view-protocol-server';
+import { custodyImpl } from '@penumbra-zone/services/custody-service';
+import { sctImpl } from '@penumbra-zone/services/sct-service';
+import { stakingImpl } from '@penumbra-zone/services/staking-service';
+import { viewImpl } from '@penumbra-zone/services/view-service';
 
 import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 import { ServiceType } from '@bufbuild/protobuf';

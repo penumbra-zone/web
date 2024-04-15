@@ -1,0 +1,27 @@
+{
+  "name": "@penumbra-zone/services-context",
+  "version": "2.0.1",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "files": [
+    "src/",
+    "*.md"
+  ],
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@penumbra-zone/constants": "workspace:*",
+    "@penumbra-zone/query": "workspace:*",
+    "@penumbra-zone/storage": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
+    "@penumbra-zone/wasm": "workspace:*",
+    "exponential-backoff": "^3.1.1"
+  },
+  "devDependencies": {
+    "@penumbra-zone/polyfills": "workspace:*"
+  }
+}
