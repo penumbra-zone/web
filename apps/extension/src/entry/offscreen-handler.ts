@@ -13,13 +13,26 @@ chrome.runtime.onMessage.addListener((req, _sender, respond) => {
   if (isActionBuildRequest(request)) {
     void (async () => {
       try {
-        const data = await spawnActionBuildWorker(request);
+        // propagate errors that occur in unawaited promises
+        const unhandled = Promise.withResolvers<never>();
+        self.addEventListener('unhandledrejection', unhandled.reject, {
+          once: true,
+        });
+
+        const data = await Promise.race([
+          spawnActionBuildWorker(request),
+          unhandled.promise,
+        ]).finally(() => self.removeEventListener('unhandledrejection', unhandled.reject));
+
         respond({ type, data });
       } catch (e) {
-        respond({
-          type,
-          error: errorToJson(ConnectError.from(e), undefined),
-        });
+        const error = errorToJson(
+          // note that any given promise rejection event probably doesn't
+          // actually involve the specific request it ends up responding to.
+          ConnectError.from(e instanceof PromiseRejectionEvent ? e.reason : e),
+          undefined,
+        );
+        respond({ type, error });
       }
     })();
     return true;
@@ -28,24 +41,28 @@ chrome.runtime.onMessage.addListener((req, _sender, respond) => {
 });
 
 const spawnActionBuildWorker = (req: ActionBuildRequest) => {
+  const { promise, resolve, reject } = Promise.withResolvers<ActionBuildResponse>();
+
   const worker = new Worker(new URL('../wasm-build-action.ts', import.meta.url));
-  return new Promise<ActionBuildResponse>((resolve, reject) => {
-    const onWorkerMessage = (e: MessageEvent) => resolve(e.data as ActionBuildResponse);
+  void promise.finally(() => worker.terminate());
 
-    const onWorkerError = ({ error, filename, lineno, colno, message }: ErrorEvent) =>
-      reject(
-        error instanceof Error
-          ? error
-          : new Error(`Worker ErrorEvent ${filename}:${lineno}:${colno} ${message}`),
-      );
+  const onWorkerMessage = (e: MessageEvent) => resolve(e.data as ActionBuildResponse);
 
-    const onWorkerMessageError = (ev: MessageEvent) => reject(ConnectError.from(ev.data ?? ev));
+  const onWorkerError = ({ error, filename, lineno, colno, message }: ErrorEvent) =>
+    reject(
+      error instanceof Error
+        ? error
+        : new Error(`Worker ErrorEvent ${filename}:${lineno}:${colno} ${message}`),
+    );
 
-    worker.addEventListener('message', onWorkerMessage, { once: true });
-    worker.addEventListener('error', onWorkerError, { once: true });
-    worker.addEventListener('messageerror', onWorkerMessageError, { once: true });
+  const onWorkerMessageError = (ev: MessageEvent) => reject(ConnectError.from(ev.data ?? ev));
 
-    // Send data to web worker
-    worker.postMessage(req);
-  }).finally(() => worker.terminate());
+  worker.addEventListener('message', onWorkerMessage, { once: true });
+  worker.addEventListener('error', onWorkerError, { once: true });
+  worker.addEventListener('messageerror', onWorkerMessageError, { once: true });
+
+  // Send data to web worker
+  worker.postMessage(req);
+
+  return promise;
 };
