@@ -12,7 +12,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { servicesCtx } from '../ctx/prax';
 import { assets } from './assets';
 import { IndexedDbMock, MockServices } from '../test-utils';
-import { Services } from '@penumbra-zone/services-context/src/index';
+import { Services } from '@penumbra-zone/services/src/index';
 
 describe('Assets request handler', () => {
   let req: AssetsRequest;

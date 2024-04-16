@@ -12,7 +12,7 @@
 import './listeners';
 
 // services
-import { Services } from '@penumbra-zone/services-context';
+import { Services } from '@penumbra-zone/services';
 import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 
 // adapter
@@ -25,10 +25,10 @@ import { transportOptions } from '@penumbra-zone/types/src/registry';
 // context
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
 import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
-import { approverCtx } from '@penumbra-zone/services/ctx/approver';
-import { custodyCtx } from '@penumbra-zone/services/ctx/custody';
-import { servicesCtx } from '@penumbra-zone/services/ctx/prax';
-import { stakingClientCtx } from '@penumbra-zone/services/ctx/staking-client';
+import { approverCtx } from '@penumbra-zone/rpc/ctx/approver';
+import { custodyCtx } from '@penumbra-zone/rpc/ctx/custody';
+import { servicesCtx } from '@penumbra-zone/rpc/ctx/prax';
+import { stakingClientCtx } from '@penumbra-zone/rpc/ctx/staking-client';
 import { approveTransaction } from './approve-transaction';
 
 // all rpc implementations, local and proxy

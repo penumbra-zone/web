@@ -12,7 +12,7 @@ import {
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { Services } from '@penumbra-zone/services-context/src/index';
+import { Services } from '@penumbra-zone/services/src/index';
 import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils';
 import {
   AssetId,

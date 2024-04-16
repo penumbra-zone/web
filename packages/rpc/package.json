@@ -1,5 +1,5 @@
 {
-  "name": "@penumbra-zone/services",
+  "name": "@penumbra-zone/rpc",
   "version": "2.0.2",
   "license": "MIT",
   "type": "module",
@@ -33,7 +33,7 @@
     "@penumbra-zone/perspective": "workspace:*",
     "@penumbra-zone/polyfills": "workspace:*",
     "@penumbra-zone/query": "workspace:*",
-    "@penumbra-zone/services-context": "workspace:*",
+    "@penumbra-zone/services": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/types": "workspace:*",

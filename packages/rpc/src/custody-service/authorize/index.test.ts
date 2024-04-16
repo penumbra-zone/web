@@ -10,7 +10,7 @@ import {
   AuthorizationData,
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { Services } from '@penumbra-zone/services-context';
+import { Services } from '@penumbra-zone/services';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 

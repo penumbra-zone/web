@@ -165,10 +165,10 @@ importers:
       '@penumbra-zone/query':
         specifier: workspace:*
         version: link:../../packages/query
-      '@penumbra-zone/services':
+      '@penumbra-zone/rpc':
         specifier: workspace:*
-        version: link:../../packages/services
-      '@penumbra-zone/services-context':
+        version: link:../../packages/rpc
+      '@penumbra-zone/services':
         specifier: workspace:*
         version: link:../../packages/services-context
       '@penumbra-zone/storage':
@@ -545,7 +545,7 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1
 
-  packages/services:
+  packages/rpc:
     dependencies:
       '@penumbra-zone/bech32':
         specifier: workspace:*
@@ -568,7 +568,7 @@ importers:
       '@penumbra-zone/query':
         specifier: workspace:*
         version: link:../query
-      '@penumbra-zone/services-context':
+      '@penumbra-zone/services':
         specifier: workspace:*
         version: link:../services-context
       '@penumbra-zone/storage':

@@ -11,7 +11,7 @@ import {
   TransactionInfoResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { IndexedDbMock, MockServices, testFullViewingKey, ViewServerMock } from '../test-utils';
-import { Services } from '@penumbra-zone/services-context/src/index';
+import { Services } from '@penumbra-zone/services/src/index';
 import { transactionInfo } from './transaction-info';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
