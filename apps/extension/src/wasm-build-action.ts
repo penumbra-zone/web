@@ -1,10 +1,20 @@
 import {
+  Action,
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import type { JsonValue } from '@bufbuild/protobuf';
 import type { ActionBuildRequest } from '@penumbra-zone/types/src/internal-msg/offscreen';
 import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+
+import actionKeys from '@penumbra-zone/keys';
+const keyFileNames: Partial<Record<Exclude<Action['action']['case'], undefined>, URL>> =
+  Object.fromEntries(
+    Object.entries(actionKeys).map(([action, keyFile]) => [
+      action,
+      new URL('keys/' + keyFile, PRAX_ORIGIN),
+    ]),
+  );
 
 // necessary to propagate errors that occur in promises
 // see: https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
@@ -48,12 +58,15 @@ async function executeWorker(
   // Dynamically load wasm module
   const penumbraWasmModule = await import('@penumbra-zone/wasm/src/build');
 
+  const actionType = transactionPlan.actions[actionPlanIndex]!.action.case!;
+
   // Build action according to specification in `TransactionPlan`
   const action = await penumbraWasmModule.buildActionParallel(
     transactionPlan,
     witness,
     fullViewingKey,
     actionPlanIndex,
+    keyFileNames[actionType]!.href,
   );
 
   return action.toJson();

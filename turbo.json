@@ -6,12 +6,8 @@
     "build": {
       "dotEnv": [".env"],
       "env": ["PRAX", "IDB_VERSION", "USDC_ASSET_ID", "MINIFRONT_URL", "PENUMBRA_NODE_PD_URL"],
-      "dependsOn": ["download-keys", "compile", "^build"],
+      "dependsOn": ["compile", "^build"],
       "outputs": ["dist/**"]
-    },
-    "download-keys": {
-      "inputs": ["src/utils/download-proving-keys.ts"],
-      "outputs": ["bin/**"]
     },
     "compile": {
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock"],
@@ -26,21 +22,21 @@
     "dev": {
       "dotEnv": [".env"],
       "env": ["PRAX", "IDB_VERSION", "USDC_ASSET_ID", "MINIFRONT_URL", "PENUMBRA_NODE_PD_URL"],
-      "dependsOn": ["download-keys", "^build"],
+      "dependsOn": ["^build"],
       "outputs": ["dist/**"],
       "persistent": true,
       "cache": false
     },
     "test": { "dependsOn": ["compile", "//#playwright-install"], "cache": false },
     "test:rust": {
-      "dependsOn": ["download-keys", "compile"],
+      "dependsOn": ["compile"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     },
     "lint:rust": {
-      "dependsOn": ["download-keys", "compile"],
+      "dependsOn": ["compile"],
       "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     },
-    "format-check:rust": { "dependsOn": ["download-keys", "compile"] },
+    "format-check:rust": { "dependsOn": ["compile"] },
     "//#playwright-install": { "cache": false },
     "clean": {
       "cache": false

@@ -6,7 +6,6 @@
     "build": "turbo run build",
     "compile": "turbo run compile",
     "dev": "turbo run dev  --concurrency 20",
-    "download-keys": "turbo run download-keys",
     "lint": "turbo run lint -- --max-warnings=0",
     "lint:rust": "turbo run lint:rust",
     "lint:fix": "turbo run lint -- --fix",
@@ -19,7 +18,7 @@
     "playwright-install": "playwright install",
     "changeset": "changeset",
     "changeset:publish": "changeset publish",
-    "all-check": "pnpm install && pnpm compile && pnpm format-check && pnpm lint && pnpm test && pnpm download-keys && pnpm build && pnpm format-check:rust && pnpm lint:rust && pnpm test:rust"
+    "all-check": "pnpm install && pnpm compile && pnpm format-check && pnpm lint && pnpm test && pnpm build && pnpm format-check:rust && pnpm lint:rust && pnpm test:rust"
   },
   "dependencies": {
     "@buf/cosmos_ibc.bufbuild_es": "1.8.0-20240327103030-e2006674271c.2",
@@ -34,6 +33,7 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
+    "@penumbra-zone/keys": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*",
     "@storybook/react-vite": "8.0.4",
     "@turbo/gen": "^1.13.0",

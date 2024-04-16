@@ -49,23 +49,20 @@ mod tests {
         // that are based on constructing objects according to protobuf definitions.
 
         // Load the proving key parameters as byte arrays.
-        let spend_key: &[u8] = include_bytes!("../../../../apps/extension/bin/spend_pk.bin");
-        let output_key: &[u8] = include_bytes!("../../../../apps/extension/bin/output_pk.bin");
-        let delegator_vote_key: &[u8] =
-            include_bytes!("../../../../apps/extension/bin/delegator_vote_pk.bin");
-        let swap_key: &[u8] = include_bytes!("../../../../apps/extension/bin/swap_pk.bin");
-        let swapclaim_key: &[u8] =
-            include_bytes!("../../../../apps/extension/bin/swapclaim_pk.bin");
-        let convert_key: &[u8] = include_bytes!("../../../../apps/extension/bin/convert_pk.bin");
+        let spend_key: &[u8] = include_bytes!("../../../keys/keys/spend_pk.bin");
+        let output_key: &[u8] = include_bytes!("../../../keys/keys/output_pk.bin");
+        let delegator_vote_key: &[u8] = include_bytes!("../../../keys/keys/delegator_vote_pk.bin");
+        let swap_key: &[u8] = include_bytes!("../../../keys/keys/swap_pk.bin");
+        let swapclaim_key: &[u8] = include_bytes!("../../../keys/keys/swapclaim_pk.bin");
+        let convert_key: &[u8] = include_bytes!("../../../keys/keys/convert_pk.bin");
 
         // Dynamically load the proving keys at runtime for each key type.
         load_proving_key(spend_key, "spend").expect("can load spend key");
         load_proving_key(output_key, "output").expect("can load output key");
-        load_proving_key(delegator_vote_key, "delegator_vote")
-            .expect("can load delegator vote key");
+        load_proving_key(delegator_vote_key, "delegatorVote").expect("can load delegator vote key");
         load_proving_key(swap_key, "swap").expect("can load swap key");
-        load_proving_key(swapclaim_key, "swapclaim").expect("can load swapclaim key");
-        load_proving_key(convert_key, "convert").expect("can load convert key");
+        load_proving_key(swapclaim_key, "swapClaim").expect("can load swapclaim key");
+        load_proving_key(convert_key, "undelegateClaim").expect("can load convert key");
 
         // Define database parameters.
         #[derive(Clone, Debug, Serialize, Deserialize)]

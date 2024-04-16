@@ -1,0 +1,8 @@
+{
+  "delegatorVote": "delegator_vote_pk.bin",
+  "output": "output_pk.bin",
+  "spend": "spend_pk.bin",
+  "swap": "swap_pk.bin",
+  "swapClaim": "swapclaim_pk.bin",
+  "undelegateClaim": "convert_pk.bin"
+}

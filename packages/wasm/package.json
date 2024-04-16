@@ -16,12 +16,12 @@
     "test:rust": "cd crate ; wasm-pack test --headless --firefox -- --test build --target wasm32-unknown-unknown --release --features 'mock-database'"
   },
   "dependencies": {
+    "@penumbra-zone/keys": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@penumbra-zone/bech32": "workspace:*",
-    "fake-indexeddb": "^5.0.2",
-    "tsx": "^4.7.1"
+    "fake-indexeddb": "^5.0.2"
   }
 }
