@@ -7,6 +7,15 @@ import type { JsonValue } from '@bufbuild/protobuf';
 import type { ActionBuildRequest } from '@penumbra-zone/types/src/internal-msg/offscreen';
 import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
+import actionKeys from '@penumbra-zone/keys';
+const keyFileNames: Partial<Record<Exclude<Action['action']['case'], undefined>, URL>> =
+  Object.fromEntries(
+    Object.entries(actionKeys).map(([action, keyFile]) => [
+      action,
+      new URL('keys/' + keyFile, PRAX_ORIGIN),
+    ]),
+  );
+
 // necessary to propagate errors that occur in promises
 // see: https://stackoverflow.com/questions/39992417/how-to-bubble-a-web-worker-error-in-a-promise-via-worker-onerror
 self.addEventListener(
@@ -49,19 +58,7 @@ async function executeWorker(
   // Dynamically load wasm module
   const penumbraWasmModule = await import('@penumbra-zone/wasm/src/build');
 
-  const actionType = transactionPlan.actions[actionPlanIndex]?.action.case;
-
-  const actionKeys: Partial<Record<Exclude<Action['action']['case'], undefined>, string>> = {
-    delegatorVote: 'delegator_vote',
-    output: 'output',
-    spend: 'spend',
-    swap: 'swap',
-    swapClaim: 'swapclaim',
-    undelegateClaim: 'convert',
-  };
-
-  const keyPath: string | undefined =
-    actionType && actionType in actionKeys ? `/keys/${actionKeys[actionType]}_pk.bin` : undefined;
+  const actionType = transactionPlan.actions[actionPlanIndex]!.action.case!;
 
   // Build action according to specification in `TransactionPlan`
   const action = await penumbraWasmModule.buildActionParallel(
@@ -69,7 +66,7 @@ async function executeWorker(
     witness,
     fullViewingKey,
     actionPlanIndex,
-    keyPath,
+    keyFileNames[actionType]!.href,
   );
 
   return action.toJson();

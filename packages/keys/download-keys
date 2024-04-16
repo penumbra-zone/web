@@ -4,8 +4,8 @@ defaultKeysVersion="v0.71.0"
 
 usage() {
     echo "${1}"
-    echo "Usage: download-keys <output-path> [<git tag> <sha256 manifest>]"
-    exit 1
+    echo "Usage: $(basename ${0}) <output-path> [<git tag> <sha256 manifest>]"
+    exit 64 # EX_USAGE
 }
 
 if [ -z "${PENUMBRA_KEYS_DIR}" ]; then

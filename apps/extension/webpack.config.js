@@ -9,7 +9,7 @@ import url from 'url';
 // environment variables, you will override those defaults.
 dotenv.config();
 
-const keysPackage = url.fileURLToPath(import.meta.resolve('@penumbra-zone/keys'));
+const keysPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbra-zone/keys')));
 
 const definitions = {
   // process.env.NODE_ENV is automatically provided by DefinePlugin
@@ -118,7 +118,7 @@ export default (env, argv) => {
         patterns: [
           'public',
           {
-            from: path.join(keysPackage, '*_pk.bin'),
+            from: path.join(keysPackage, 'keys', '*_pk.bin'),
             to: 'keys/[name][ext]',
           },
         ],
