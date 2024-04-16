@@ -14,18 +14,25 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { useSearchParams } from "next/navigation";
-import { SwapExecution } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+import {
+  Position,
+  SwapExecution,
+} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import { LoadingSpinner } from "../../components/util/loadingSpinner";
 import { Token, tokenConfigMapOnSymbol } from "@/constants/tokenConstants";
 import { base64ToUint8Array } from "@/utils/math/base64";
 import { joinLoHi, splitLoHi } from "@/utils/math/hiLo";
 import DepthChart from "@/components/charts/depthChart";
+import BuySellChart from "@/components/charts/buySellChart";
+import { set } from "lodash";
 
 // TODO: Better parameter check
 
 // ! Important note: 'sell' side here refers to selling asset1 for asset2, so its really DEMAND for buying asset 1, anc vice versa for 'buy' side
 export default function TradingPairs() {
+  const LPS_TO_RENDER = 100;
   const [isLoading, setIsLoading] = useState(true);
+  const [isLPsLoading, setIsLPsLoading] = useState(true);
   const [isChartLoading, setIsChartLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
   const searchParams = useSearchParams();
@@ -92,7 +99,7 @@ export default function TradingPairs() {
   ] = useState<{ x: number; y: number }[]>([]);
 
   // ! Note this needs to be kind of extreme for now due to limited 'real' liquidity
-  const bestPriceDeviationPercent = 100; // 100%, 
+  const bestPriceDeviationPercent = 100; // 100%,
   //  Override to 100% to show all liquidity
 
   // Sell Side
@@ -204,6 +211,55 @@ export default function TradingPairs() {
       });
   }, [token1Symbol, token2Symbol]);
 
+  const [lpsBuySide, setLPsBuySide] = useState<Position[]>([]);
+  const [lpsSellSide, setLPsSellSide] = useState<Position[]>([]);
+
+  useEffect(() => {
+    setIsLPsLoading(true);
+
+    try {
+      // Get token 1 & 2
+      const asset1Token = tokenConfigMapOnSymbol[token1Symbol];
+      const asset2Token = tokenConfigMapOnSymbol[token2Symbol];
+
+      const lpsBuySidePromise = fetch(
+        `/api/lp/positionsByPrice/${asset2Token.symbol}/${asset1Token.symbol}/${LPS_TO_RENDER}`
+      ).then((res) => res.json());
+      const lpsSellSidePromise = fetch(
+        `/api/lp/positionsByPrice/${asset1Token.symbol}/${asset2Token.symbol}/${LPS_TO_RENDER}`
+      ).then((res) => res.json());
+
+      Promise.all([lpsBuySidePromise, lpsSellSidePromise])
+        .then(([lpsBuySideResponse, lpsSellSideResponse]) => {
+          if (
+            !lpsBuySideResponse ||
+            lpsBuySideResponse.error ||
+            !lpsSellSideResponse ||
+            lpsSellSideResponse.error
+          ) {
+            console.error("Error querying liquidity positions");
+            setError("Error querying liquidity positions");
+          }
+
+          console.log("lpsBuySideResponse", lpsBuySideResponse);
+          console.log("lpsSellSideResponse", lpsSellSideResponse);
+
+          setLPsBuySide(lpsBuySideResponse as Position[]);
+          setLPsSellSide(lpsSellSideResponse as Position[]);
+        })
+        .catch((error) => {
+          console.error("Error querying lps", error);
+        })
+        .finally(() => {
+          setIsLPsLoading(false);
+        });
+    } catch (error) {
+      console.error("Error querying liquidity positions", error);
+      setError("Error querying liquidity positions");
+      setIsLPsLoading(false);
+    }
+  }, [token1Symbol, token2Symbol]);
+
   useEffect(() => {
     setIsChartLoading(true);
 
@@ -239,7 +295,7 @@ export default function TradingPairs() {
           joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))
         ) / Number(BigInt(10 ** asset2Token.decimals));
 
-      const price: number = outputValue / inputValue;
+      const price: number = inputValue / outputValue;
 
       // First trace will have best price, so set only on first iteration
       if (trace === simulatedMultiHopAsset1SellData!.traces[0]) {
@@ -285,7 +341,7 @@ export default function TradingPairs() {
           joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))
         ) / Number(BigInt(10 ** asset2Token.decimals));
 
-      const price: number = outputValue / inputValue;
+      const price: number = inputValue / outputValue;
 
       // First trace will have best price, so set only on first iteration
       if (trace === simulatedSingleHopAsset1SellData!.traces[0]) {
@@ -340,7 +396,7 @@ export default function TradingPairs() {
         ) / Number(BigInt(10 ** asset1Token.decimals));
 
       // ! Important to note that the price is inverted here, so we do input/output instead of output/input
-      const price: number = inputValue / outputValue;
+      const price: number = outputValue / inputValue;
 
       // First trace will have best price, so set only on first iteration
       if (trace === simulatedMultiHopAsset1BuyData!.traces[0]) {
@@ -387,7 +443,7 @@ export default function TradingPairs() {
         ) / Number(BigInt(10 ** asset1Token.decimals));
 
       // ! Important to note that the price is inverted here, so we do input/output instead of output/input
-      const price: number = inputValue / outputValue;
+      const price: number = outputValue / inputValue;
 
       // First trace will have best price, so set only on first iteration
       if (trace === simulatedSingleHopAsset1BuyData!.traces[0]) {
@@ -480,41 +536,65 @@ export default function TradingPairs() {
 
   return (
     <Layout pageTitle={`Trading View`}>
-      {isLoading || isChartLoading ? (
+      {isLoading || isChartLoading || isLPsLoading ? (
         <Center height="100vh">
           <LoadingSpinner />
         </Center>
       ) : !isChartLoading ? (
         <Center height="100vh">
-          <Box className="neon-box" padding={"3em"}>
-            <VStack>
-              <>
-                <Text
-                  fontFamily="monospace"
-                  paddingBottom={"0em"}
-                  fontSize={"md"}
-                >{`${asset1Token!.symbol} / ${asset2Token!.symbol}`}</Text>
-                {/*
-                <Text
-                  fontSize={"sm"}
-                  fontFamily="monospace"
-                  paddingBottom={"1em"}
-                >
-                  Liquidity
-                </Text>
-      */}
-                {/* Note the reversal of names here since buy and sell side is inverted at this stage (i.e. sell side == buy demand side) */}
-                <DepthChart
-                  buySideData={depthChartMultiHopAsset1SellPoints}
-                  sellSideData={depthChartMultiHopAsset1BuyPoints}
-                  buySideSingleHopData={depthChartSingleHopAsset1SellPoints}
-                  sellSideSingleHopData={depthChartSingleHopAsset1BuyPoints}
-                  asset1Token={asset1Token!}
-                  asset2Token={asset2Token!}
-                />
-              </>
-            </VStack>
-          </Box>
+          <VStack width="85vw">
+            <Box className="neon-box" padding="1.5em" width="100%" height="100%">
+              <HStack spacing={8} width="100%" height="100%">
+                <VStack flex={1} height="100%">
+                  <>
+                    <Text
+                      fontFamily="monospace"
+                      paddingBottom={"0em"}
+                      fontSize={"md"}
+                    >{`${asset1Token!.symbol} / ${asset2Token!.symbol}`}</Text>
+                    {/*
+                      <Text
+                        fontSize={"sm"}
+                        fontFamily="monospace"
+                        paddingBottom={"1em"}
+                      >
+                        Liquidity
+                      </Text>
+                    */}
+                    <DepthChart
+                      buySideData={depthChartMultiHopAsset1BuyPoints}
+                      sellSideData={depthChartMultiHopAsset1SellPoints}
+                      buySideSingleHopData={depthChartSingleHopAsset1BuyPoints}
+                      sellSideSingleHopData={
+                        depthChartSingleHopAsset1SellPoints
+                      }
+                      asset1Token={asset1Token!}
+                      asset2Token={asset2Token!}
+                    />
+                  </>
+                </VStack>
+                <VStack width="60em" height="650px">
+                  <Text fontFamily={"monospace"} fontSize="xs" >
+                    Direct Liq Order Book
+                  </Text>
+                  <VStack
+                    flex={1}
+                    width={"90%"}
+                    outline={"2px solid var(--complimentary-background)"}
+                    borderRadius={"10px"}
+                    height="600px"
+                  >
+                    <BuySellChart
+                      buySidePositions={lpsBuySide}
+                      sellSidePositions={lpsSellSide}
+                      asset1Token={asset1Token!}
+                      asset2Token={asset2Token!}
+                    />
+                  </VStack>
+                </VStack>
+              </HStack>
+            </Box>
+          </VStack>
         </Center>
       ) : (!isLoading && token1Symbol !== "unknown") ||
         token2Symbol !== "unknown" ? (
