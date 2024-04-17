@@ -12,6 +12,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@penumbra-labs/registry": "^3.0.0",
     "@penumbra-zone/bech32": "workspace:*",
     "@penumbra-zone/client": "workspace:*",
     "@penumbra-zone/constants": "workspace:*",

@@ -7,7 +7,6 @@ import { BigNumber } from 'bignumber.js';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { ibcClient, viewClient } from '../clients';
-import { Chain } from '@penumbra-zone/constants/src/chains';
 import {
   getDisplayDenomExponentFromValueView,
   getMetadata,
@@ -17,7 +16,6 @@ import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 import { planBuildBroadcast } from './helpers';
 import { amountMoreThanBalance } from './send';
-import { IbcLoaderResponse } from '../components/ibc/ibc-loader';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 import {
   assetPatterns,
@@ -26,6 +24,7 @@ import {
 } from '@penumbra-zone/constants/src/assets';
 import { bech32IsValid } from '@penumbra-zone/bech32/src/validate';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
+import { Chain } from '@penumbra-labs/registry';
 
 export interface IbcSendSlice {
   selection: BalancesResponse | undefined;
@@ -182,7 +181,7 @@ const validateAddress = (chain: Chain | undefined, address: string): boolean => 
  * we need to ensure ics20 withdraws match these conditions.
  */
 export const filterBalancesPerChain = (
-  allBalances: IbcLoaderResponse,
+  allBalances: BalancesResponse[],
   chain: Chain | undefined,
 ): BalancesResponse[] => {
   const penumbraAssetId = getAssetId(STAKING_TOKEN_METADATA);

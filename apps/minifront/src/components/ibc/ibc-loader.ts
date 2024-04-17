@@ -1,17 +1,31 @@
 import { LoaderFunction } from 'react-router-dom';
-import { testnetIbcChains } from '@penumbra-zone/constants/src/chains';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { getBalances } from '../../fetchers/balances';
 import { useStore } from '../../state';
 import { filterBalancesPerChain } from '../../state/ibc';
+import { getChainId } from '../../fetchers/chain-id';
+import { Chain, ChainRegistryClient } from '@penumbra-labs/registry';
 
-export type IbcLoaderResponse = BalancesResponse[];
+export interface IbcLoaderResponse {
+  balances: BalancesResponse[];
+  chains: Chain[];
+}
+
+const getIbcConnections = async () => {
+  const chainId = await getChainId();
+  if (!chainId) throw new Error('Could not fetch chain id');
+
+  const registryClient = new ChainRegistryClient();
+  const { ibcConnections } = await registryClient.get(chainId);
+  return ibcConnections;
+};
 
 export const IbcLoader: LoaderFunction = async (): Promise<IbcLoaderResponse> => {
   const assetBalances = await getBalances();
+  const ibcConnections = await getIbcConnections();
 
   if (assetBalances[0]) {
-    const initialChain = testnetIbcChains[0];
+    const initialChain = ibcConnections[0];
     const initialSelection = filterBalancesPerChain(assetBalances, initialChain)[0];
 
     // set initial account if accounts exist and asset if account has asset list
@@ -21,5 +35,5 @@ export const IbcLoader: LoaderFunction = async (): Promise<IbcLoaderResponse> =>
     });
   }
 
-  return assetBalances;
+  return { balances: assetBalances, chains: ibcConnections };
 };

@@ -148,8 +148,8 @@ importers:
   apps/extension:
     dependencies:
       '@penumbra-labs/registry':
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^3.0.0
+        version: 3.0.0
       '@penumbra-zone/bech32':
         specifier: workspace:*
         version: link:../../packages/bech32
@@ -316,6 +316,9 @@ importers:
 
   apps/minifront:
     dependencies:
+      '@penumbra-labs/registry':
+        specifier: ^3.0.0
+        version: 3.0.0
       '@penumbra-zone/bech32':
         specifier: workspace:*
         version: link:../../packages/bech32
@@ -3799,8 +3802,8 @@ packages:
     engines: {node: '>=8.12.0'}
     dev: true
 
-  /@penumbra-labs/registry@2.0.0:
-    resolution: {integrity: sha512-yyMLx1ePsOoONznIgPWNA6F5WAnRZY8lDzl9fb/MOVp59Pe/JMgu+6h+oNlXAfRdhSvjVwDMLDwqQByAAjWKoQ==}
+  /@penumbra-labs/registry@3.0.0:
+    resolution: {integrity: sha512-do+uh10ouvn88d5n5CT5EHo8K8SHlXqf4hca9Xf6ElkaPcMKIYPPKIKJiegFUc4f1k6p9yCorkHVqmAjk6DIIg==}
     dev: false
 
   /@pkgjs/parseargs@0.11.0:
