@@ -14,8 +14,14 @@ export interface HeaderLink {
 
 export const headerLinks: HeaderLink[] = [
   {
+    href: PagePath.IBC,
+    label: 'Shield',
+    active: false,
+    mobileIcon: <MixerHorizontalIcon className='size-5 text-muted-foreground' />,
+  },
+  {
     href: PagePath.DASHBOARD,
-    label: 'Dashboard',
+    label: 'Assets',
     active: true,
     subLinks: [PagePath.TRANSACTIONS, PagePath.NFTS],
     mobileIcon: <BoxIcon />,
@@ -38,12 +44,6 @@ export const headerLinks: HeaderLink[] = [
     label: 'Staking',
     active: true,
     mobileIcon: <TextAlignLeftIcon className='size-5 text-muted-foreground' />,
-  },
-  {
-    href: PagePath.IBC,
-    label: 'IBC',
-    active: false,
-    mobileIcon: <MixerHorizontalIcon className='size-5 text-muted-foreground' />,
   },
 ];
 

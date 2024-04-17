@@ -7,22 +7,25 @@ import {
 } from '@penumbra-zone/ui/components/ui/select';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useState } from 'react';
-import { testnetIbcChains } from '@penumbra-zone/constants/src/chains';
-import { useStore } from '../../state';
-import { ibcSelector } from '../../state/ibc';
+import { testnetIbcChains, Chain as PenumbraChain } from '@penumbra-zone/constants/src/chains';
 
-export const ChainSelector = () => {
-  const { chain, setChain } = useStore(ibcSelector);
+export interface ChainSelectorProps {
+  label: string;
+  chain?: PenumbraChain;
+  setChainId: (selectChain: { chainId: string }) => void;
+}
+
+export const ChainSelector = ({ label, chain, setChainId }: ChainSelectorProps) => {
   const [openSelect, setOpenSelect] = useState(false);
 
   return (
     <div className='flex flex-col gap-3 rounded-lg border bg-background px-4 pb-5 pt-3'>
-      <p className='text-base font-bold'>Chain</p>
+      <p className='text-base font-bold'>{label}</p>
       <Select
-        value={chain?.displayName ?? ''}
-        onValueChange={v => setChain(testnetIbcChains.find(i => i.displayName === v))}
+        value={chain?.chainId}
+        onValueChange={v => setChainId({ chainId: v })}
         open={openSelect}
-        onOpenChange={open => setOpenSelect(open)}
+        onOpenChange={setOpenSelect}
       >
         <SelectTrigger open={openSelect}>
           <SelectValue placeholder='Select chain'>
@@ -38,7 +41,7 @@ export const ChainSelector = () => {
           {testnetIbcChains.map((i, index) => (
             <SelectItem
               key={index}
-              value={i.displayName}
+              value={i.chainId}
               className={cn(
                 'hover:bg-brown',
                 chain?.displayName === i.displayName && 'bg-charcoal-secondary',
