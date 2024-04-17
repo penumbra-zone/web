@@ -5,6 +5,7 @@ node_modules
 
 # testing
 coverage
+vite.config.ts.timestamp-*-*.mjs
 
 # build output
 .next/

@@ -44,10 +44,14 @@
     "format-check:rust": {
       "dependsOn": ["compile"]
     },
+    "//#clean:vitest-mjs": {
+      "cache": false
+    },
     "//#playwright-install": {
       "cache": false
     },
     "clean": {
+      "dependsOn": ["//#clean:vitest-mjs"],
       "cache": false
     }
   }

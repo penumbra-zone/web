@@ -63,14 +63,14 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['*.ts', '*.tsx', '*.js'],
+      files: ['*.ts', '*.tsx'],
       parser: '@typescript-eslint/parser',
     },
   ],
   env: {
     webextensions: true,
   },
-  ignorePatterns: ['dist/*'],
+  ignorePatterns: ['dist/*', 'vitest.config.ts.timestmap-*-*.mjs'],
   settings: {
     'import/resolver': {
       typescript: true,
