@@ -7,7 +7,6 @@ import {
   CardTitle,
 } from '@penumbra-zone/ui/components/ui/card';
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
-import { CompressedVideoLogo } from '@penumbra-zone/ui/components/ui/logo/compressed-video';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
 
@@ -16,7 +15,7 @@ export const OnboardingStart = () => {
 
   return (
     <FadeTransition>
-      <CompressedVideoLogo className='mb-10 self-center' />
+      <img src='/prax-white-vertical.svg' alt='prax logo' className='mb-5 w-60 self-center' />
       <Card className='w-[400px] ' gradient>
         <CardHeader className='items-center'>
           <CardTitle>Explore private trading</CardTitle>

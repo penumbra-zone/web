@@ -6,9 +6,11 @@ The [Penumbra](https://penumbra.zone/) monorepo for all things web.
 
 ### Technical Documentation
 
-[Visit docs](./docs/README.md) to see guiding principles, technical decisions, and general architecture of the apps and packages in this repo.
+[Visit docs](./docs/README.md) to see guiding principles, technical decisions, and general architecture of the apps and
+packages in this repo.
 
 ### Links
 
-- [Penumbra Wallet](https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe) - chrome extension for custodying, proving, and signing transactions.
+- [Prax Wallet](https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe) - chrome
+  extension for custodying, proving, and signing transactions.
 - [Testnet Penumbra Dapp](https://app.testnet.penumbra.zone/) - Swap, stake, & send on Penumbra.
