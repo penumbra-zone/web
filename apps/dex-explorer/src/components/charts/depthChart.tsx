@@ -577,6 +577,9 @@ const DepthChart = ({
               content: `Mid Market Price: ${midMarketPrice.toFixed(6)}`,
               position: "end",
               backgroundColor: "#6e6eb8",
+              font: {
+                //family: "monospace"
+              },
             },
           },
           hoverLine: hoverAnnotation,
