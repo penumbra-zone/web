@@ -147,6 +147,9 @@ importers:
 
   apps/extension:
     dependencies:
+      '@penumbra-labs/registry':
+        specifier: ^1.1.0
+        version: 1.1.0
       '@penumbra-zone/bech32':
         specifier: workspace:*
         version: link:../../packages/bech32
@@ -3788,6 +3791,10 @@ packages:
     resolution: {integrity: sha512-wU5J8rUoo32oSef/rFpOT1HIjLjAv3qIDHkw1QIhODV3OpAVHi5oVzlouozg9obUmZKtbZ0qUe/m7FP0y0yBzA==}
     engines: {node: '>=8.12.0'}
     dev: true
+
+  /@penumbra-labs/registry@1.1.0:
+    resolution: {integrity: sha512-slcasw0kd3Be3FuvFLIdlRhZASrO48y/Cuu4wpgtycep2dPwylJvQidXbNQIifeDctIJiNbcbc40RPXBTYp7hw==}
+    dev: false
 
   /@pkgjs/parseargs@0.11.0:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}

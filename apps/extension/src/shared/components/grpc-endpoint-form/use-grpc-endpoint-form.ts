@@ -25,7 +25,11 @@ const isValidUrl = (url: string) => {
   }
 };
 
+// const useFetchRegistry = () => {};
+
 export const useGrpcEndpointForm = () => {
+  console.log(CHAIN_ID);
+
   const [originalChainId, setOriginalChainId] = useState<string | undefined>();
   const [chainId, setChainId] = useState<string>();
   const grpcEndpoints = useMemo(() => [...GRPC_ENDPOINTS].sort(randomSort), []);

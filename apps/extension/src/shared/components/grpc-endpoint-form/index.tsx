@@ -79,7 +79,7 @@ export const GrpcEndpointForm = ({
           </SelectList>
 
           <a
-            href='https://github.com/penumbra-zone/web/blob/main/packages/constants/src/grpc-endpoints.ts'
+            href='https://github.com/prax-wallet/registry'
             target='_blank'
             rel='noreferrer'
             className='block text-right text-xs text-muted-foreground'

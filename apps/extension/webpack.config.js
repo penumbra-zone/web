@@ -11,19 +11,18 @@ dotenv.config();
 
 const keysPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbra-zone/keys')));
 
+// types declared in prax.d.ts
 const definitions = {
   // process.env.NODE_ENV is automatically provided by DefinePlugin
 
+  // Note that because the plugin does a direct text replacement,
+  // the value given to it must include actual quotes inside of the string itself,
+  // Hence the JSON.stringify() usage here
+  CHAIN_ID: JSON.stringify(process.env.CHAIN_ID),
   PRAX: JSON.stringify(process.env.PRAX),
   PRAX_ORIGIN: JSON.stringify(`chrome-extension://${process.env.PRAX}`),
-
   IDB_VERSION: JSON.stringify(Number(process.env.IDB_VERSION)),
-  USDC_ASSET_ID: JSON.stringify(process.env.USDC_ASSET_ID),
-
   MINIFRONT_URL: JSON.stringify(process.env.MINIFRONT_URL),
-
-  // you may want https://grpc.testnet-preview.penumbra.zone/
-  DEFAULT_GRPC_URL: JSON.stringify(process.env.PENUMBRA_NODE_PD_URL),
 };
 
 const __dirname = new URL('.', import.meta.url).pathname;
@@ -33,8 +32,6 @@ const entryDir = path.join(srcDir, 'entry');
 const injectDir = path.join(srcDir, 'content-scripts');
 
 export default (env, argv) => {
-  // types declared in prax.d.ts
-
   return {
     entry: {
       'injected-connection-port': path.join(injectDir, 'injected-connection-port.ts'),
