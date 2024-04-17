@@ -7,9 +7,11 @@ import url from 'url';
 import webpack from 'webpack';
 
 // Loads default vars from `.env.testnet` & `.env.mainnet` file in this directory.
-// Reference package.json build script. TODO: add `.env.mainnet` when ready.
-const envPath = process.env['NODE_ENV'] === 'mainnet' ? '.env.testnet' : '.env.testnet';
-dotenv.config({ path: envPath });
+// Reference package.json build script.
+// TODO: add `.env.mainnet` when ready.
+//       const envPath = process.env['NODE_ENV'] === 'mainnet' ? '.env.mainnet' : '.env.testnet';
+//       dotenv.config({ path: envPath });
+dotenv.config({ path: '.env.testnet' });
 
 const keysPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbra-zone/keys')));
 
