@@ -27,9 +27,9 @@ import {
 import { viewClient } from '../clients';
 import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { getTimeout } from './getTimeout';
+import { getTimeout } from './ibc/get-timeout';
 import { planBuildBroadcast } from './helpers';
-import { filterBalancesPerChain } from './filter-balances-per-chain';
+import { filterBalancesPerChain } from './ibc/filter-balances-per-chain';
 
 export interface IbcOutSlice {
   txInProgress: boolean;
