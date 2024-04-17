@@ -5,14 +5,15 @@
   "description": "chrome-extension",
   "type": "module",
   "scripts": {
-    "dev": "pnpm build --watch --mode=development -d inline-source-map",
+    "dev": "NODE_ENV=testnet pnpm bundle --watch --mode=development -d inline-source-map",
+    "build": "NODE_ENV=mainnet pnpm bundle",
     "clean": "rm -rfv dist bin",
-    "build": "NODE_OPTIONS=\"--import=./src/utils/webpack-register.js\" webpack",
+    "bundle": "NODE_OPTIONS=\"--import=./src/utils/webpack-register.js\" webpack",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
   "dependencies": {
-    "@penumbra-labs/registry": "^1.1.0",
+    "@penumbra-labs/registry": "^2.0.0",
     "@penumbra-zone/bech32": "workspace:*",
     "@penumbra-zone/client": "workspace:*",
     "@penumbra-zone/constants": "workspace:*",
@@ -37,6 +38,7 @@
     "node-fetch": "^3.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^6.22.3",
     "react-use-measure": "^2.1.1",
     "usehooks-ts": "^3.0.2",

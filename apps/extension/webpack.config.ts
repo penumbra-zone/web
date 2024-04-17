@@ -6,19 +6,21 @@ import url from 'url';
 // eslint-disable-next-line import/no-named-as-default
 import webpack from 'webpack';
 
-// Loads default vars from `.env` file in this directory.  If you set
-// environment variables, you will override those defaults.
-dotenv.config();
+// Loads default vars from `.env.testnet` & `.env.mainnet` file in this directory.
+// Reference package.json build script. TODO: add `.env.mainnet` when ready.
+const envPath = process.env['NODE_ENV'] === 'mainnet' ? '.env.testnet' : '.env.testnet';
+dotenv.config({ path: envPath });
 
 const keysPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbra-zone/keys')));
 
-// types declared in prax.d.ts
+/*
+ * The DefinePlugin replaces the specified values in the code during the build process.
+ * - These are also declared in `prax.d.ts` for TypeScript compatibility.
+ * - `process.env.NODE_ENV` and other environment variables are provided by the DefinePlugin.
+ * - Since the plugin performs a direct text replacement, the values must be stringified.
+ *   This is why `JSON.stringify()` is used, to ensure the values include quotes in the final output.
+ */
 const definitions = {
-  // process.env.NODE_ENV is automatically provided by DefinePlugin
-
-  // Note that because the plugin does a direct text replacement,
-  // the value given to it must include actual quotes inside of the string itself,
-  // Hence the JSON.stringify() usage here
   CHAIN_ID: JSON.stringify(process.env['CHAIN_ID']),
   PRAX: JSON.stringify(process.env['PRAX']),
   PRAX_ORIGIN: JSON.stringify(`chrome-extension://${process.env['PRAX']}`),
@@ -50,14 +52,14 @@ const config: webpack.Configuration = {
   optimization: {
     splitChunks: {
       chunks: chunk => {
-        const files = [
+        const filesNotToChunk = [
           'injected-connection-port',
           'injected-penumbra-global',
           'injected-request-listner',
           'service-worker',
           'wasm-build-action',
         ];
-        return !files.includes(chunk.name ?? '');
+        return chunk.name ? !filesNotToChunk.includes(chunk.name) : false;
       },
     },
   },

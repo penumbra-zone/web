@@ -5,6 +5,7 @@ import { Network } from 'lucide-react';
 import { useGrpcEndpointForm } from './use-grpc-endpoint-form';
 import { ConfirmChangedChainIdDialog } from './confirm-changed-chain-id-dialog';
 import { ChainIdOrError } from './chain-id-or-error';
+import { LineWave } from 'react-loader-spinner';
 
 /**
  * Renders all the parts of the gRPC endpoint form that are shared between the
@@ -29,6 +30,7 @@ export const GrpcEndpointForm = ({
     rpcError,
     isSubmitButtonEnabled,
     isCustomGrpcEndpoint,
+    rpcsQuery,
   } = useGrpcEndpointForm();
   const customGrpcEndpointInput = useRef<HTMLInputElement | null>(null);
 
@@ -41,22 +43,36 @@ export const GrpcEndpointForm = ({
     <>
       <div className='flex flex-col gap-2'>
         <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+          {rpcsQuery.isLoading && <LoadingIndicator />}
+          {rpcsQuery.error && (
+            <div className='text-red-700'>
+              Error loading chain registry: {String(rpcsQuery.error)}
+            </div>
+          )}
           <SelectList>
-            {grpcEndpoints.map(option => (
-              <SelectList.Option
-                key={option.url}
-                label={option.name}
-                secondary={option.url}
-                onSelect={setGrpcEndpointInput}
-                value={option.url}
-                isSelected={option.url === grpcEndpointInput}
-                image={
-                  !!option.imageUrl && (
-                    <img src={option.imageUrl} className='size-full object-contain' />
-                  )
-                }
-              />
-            ))}
+            {rpcsQuery.data &&
+              grpcEndpoints.map(option => {
+                const imageUrl = option.images[0]?.png ?? option.images[0]?.svg;
+                return (
+                  <SelectList.Option
+                    key={option.url}
+                    label={option.name}
+                    secondary={option.url}
+                    onSelect={setGrpcEndpointInput}
+                    value={option.url}
+                    isSelected={option.url === grpcEndpointInput}
+                    image={
+                      !!imageUrl && (
+                        <img
+                          src={imageUrl}
+                          className='size-full object-contain'
+                          alt='rpc endpoint brand image'
+                        />
+                      )
+                    }
+                  />
+                );
+              })}
 
             <SelectList.Option
               label='Custom RPC'
@@ -101,5 +117,14 @@ export const GrpcEndpointForm = ({
         promiseWithResolvers={confirmChangedChainIdPromise}
       />
     </>
+  );
+};
+
+const LoadingIndicator = () => {
+  return (
+    <div className='flex gap-2'>
+      <span>Loading rpcs from registry</span>
+      <LineWave visible={true} height='70' width='70' color='white' wrapperClass='-mt-9' />
+    </div>
   );
 };

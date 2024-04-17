@@ -5,9 +5,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { ServicesMessage } from '@penumbra-zone/types/src/services';
-import { GRPC_ENDPOINTS } from '@penumbra-zone/constants/src/grpc-endpoints';
 import debounce from 'lodash/debounce';
 import { PromiseWithResolvers } from '@penumbra-zone/polyfills/src/Promise.withResolvers';
+import { useRpcEndpoints } from '../../../hooks/registry';
 
 const randomSort = () => (Math.random() >= 0.5 ? 1 : -1);
 
@@ -25,25 +25,25 @@ const isValidUrl = (url: string) => {
   }
 };
 
-// const useFetchRegistry = () => {};
-
 export const useGrpcEndpointForm = () => {
-  console.log(CHAIN_ID);
+  // Fetch latest rpc list from registry
+  const rpcsQuery = useRpcEndpoints();
+  const grpcEndpoints = useMemo(() => (rpcsQuery.data ?? []).toSorted(randomSort), [rpcsQuery]);
+
+  // Get the rpc set in storage (if present)
+  const { grpcEndpoint, setGrpcEndpoint } = useStoreShallow(useSaveGrpcEndpointSelector);
 
   const [originalChainId, setOriginalChainId] = useState<string | undefined>();
   const [chainId, setChainId] = useState<string>();
-  const grpcEndpoints = useMemo(() => [...GRPC_ENDPOINTS].sort(randomSort), []);
-  const { grpcEndpoint, setGrpcEndpoint } = useStoreShallow(useSaveGrpcEndpointSelector);
-  const [grpcEndpointInput, setGrpcEndpointInput] = useState<string>(
-    grpcEndpoint ?? grpcEndpoints[0]?.url ?? '',
-  );
+  const [grpcEndpointInput, setGrpcEndpointInput] = useState<string>('');
   const [rpcError, setRpcError] = useState<string>();
   const [isSubmitButtonEnabled, setIsSubmitButtonEnabled] = useState(false);
   const [confirmChangedChainIdPromise, setConfirmChangedChainIdPromise] = useState<
     PromiseWithResolvers<void> | undefined
   >();
 
-  const isCustomGrpcEndpoint = !GRPC_ENDPOINTS.some(({ url }) => url === grpcEndpointInput);
+  const isCustomGrpcEndpoint =
+    grpcEndpointInput !== '' && !grpcEndpoints.some(({ url }) => url === grpcEndpointInput);
 
   const setGrpcEndpointInputOnLoadFromState = useCallback(() => {
     if (grpcEndpoint) setGrpcEndpointInput(grpcEndpoint);
@@ -153,5 +153,6 @@ export const useGrpcEndpointForm = () => {
     onSubmit,
     isSubmitButtonEnabled,
     isCustomGrpcEndpoint,
+    rpcsQuery,
   };
 };
