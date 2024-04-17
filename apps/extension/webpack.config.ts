@@ -128,14 +128,14 @@ const config: webpack.Configuration = {
     }),
     // html entry points
     new HtmlWebpackPlugin({
-      favicon: 'public/icon.png',
-      title: 'Penumbra Wallet',
+      favicon: 'public/favicon/icon128.png',
+      title: 'Prax Wallet',
       template: 'react-root.html',
       filename: 'page.html',
       chunks: ['page-root'],
     }),
     new HtmlWebpackPlugin({
-      title: 'Penumbra Wallet',
+      title: 'Prax Wallet',
       template: 'react-root.html',
       rootId: 'popup-root',
       filename: 'popup.html',

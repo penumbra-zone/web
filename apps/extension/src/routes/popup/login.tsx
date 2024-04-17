@@ -41,7 +41,7 @@ export const Login = () => {
     <FadeTransition className='flex flex-col items-stretch justify-start'>
       <div className='flex h-screen flex-col justify-between p-[30px] pt-10 '>
         <div className='mx-auto my-0 h-[100px] w-[200px]'>
-          <img src='/logo.svg' alt='logo' />
+          <img src='/prax-white-vertical.svg' alt='prax logo' />
         </div>
         <form onSubmit={handleUnlock} className='grid gap-4'>
           <PasswordInput
