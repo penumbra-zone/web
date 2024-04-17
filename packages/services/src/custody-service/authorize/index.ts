@@ -1,5 +1,5 @@
 import type { Impl } from '..';
-import { extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx/prax';
+import { extLocalCtx, extSessionCtx } from '../../ctx/prax';
 import { approverCtx } from '../../ctx/approver';
 import { generateSpendKey } from '@penumbra-zone/wasm/src/keys';
 import { authorizePlan } from '@penumbra-zone/wasm/src/build';
@@ -10,11 +10,12 @@ import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import { assertSwapClaimAddressesBelongToCurrentUser } from './assert-swap-claim-addresses-belong-to-current-user';
 import { isControlledAddress } from '@penumbra-zone/wasm/src/address';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
+import { fvkCtx } from '../../ctx/full-viewing-key';
 
 export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) throw new ConnectError('No plan included in request', Code.InvalidArgument);
 
-  await assertValidRequest(req, ctx);
+  assertValidRequest(req, ctx);
 
   const approveReq = ctx.values.get(approverCtx);
   const sess = ctx.values.get(extSessionCtx);
@@ -62,10 +63,11 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
  *
  * Add more assertions to this function as needed.
  */
-const assertValidRequest = async (req: AuthorizeRequest, ctx: HandlerContext): Promise<void> => {
-  const walletServices = await ctx.values.get(servicesCtx).getWalletServices();
-  const { fullViewingKey } = walletServices.viewServer;
-
+const assertValidRequest = (req: AuthorizeRequest, ctx: HandlerContext): void => {
+  const fullViewingKey = ctx.values.get(fvkCtx);
+  if (!fullViewingKey) {
+    throw new Error('Cannot access full viewing key');
+  }
   assertSwapClaimAddressesBelongToCurrentUser(req.plan!, address =>
     isControlledAddress(fullViewingKey, address),
   );

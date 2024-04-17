@@ -12,7 +12,7 @@ import {
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { Services } from '@penumbra-zone/services-context/src/index';
+import { Services } from '@penumbra-zone/services-context';
 import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils';
 import {
   AssetId,
@@ -29,6 +29,7 @@ import {
 import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
 import { base64ToUint8Array } from '@penumbra-zone/types/src/base64';
 import { multiplyAmountByNumber } from '@penumbra-zone/types/src/amount';
+import { fvkCtx } from '../ctx/full-viewing-key';
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {
   const account0Res = responses.filter(
@@ -67,10 +68,6 @@ describe('Balances request handler', () => {
       assetMetadata: vi.fn(),
     };
 
-    const mockViewServer = {
-      fullViewingKey: testFullViewingKey,
-    };
-
     mockTendermint = {
       latestBlockHeight: vi.fn(),
     };
@@ -80,7 +77,6 @@ describe('Balances request handler', () => {
       getWalletServices: vi.fn(() =>
         Promise.resolve({
           indexedDb: mockIndexedDb,
-          viewServer: mockViewServer,
           querier: {
             shieldedPool: mockShieldedPool,
             tendermint: mockTendermint,
@@ -95,7 +91,9 @@ describe('Balances request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
+      contextValues: createContextValues()
+        .set(servicesCtx, mockServices as unknown as Services)
+        .set(fvkCtx, testFullViewingKey),
     });
 
     for (const record of testData) {

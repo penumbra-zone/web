@@ -5,33 +5,22 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
-import { servicesCtx } from '../ctx/prax';
 import { addressByIndex } from './address-by-index';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/src/services';
 import { testFullViewingKey } from '../test-utils';
+import { fvkCtx } from '../ctx/full-viewing-key';
 
 describe('AddressByIndex request handler', () => {
-  let mockServices: ServicesInterface;
   let mockCtx: HandlerContext;
 
   beforeEach(() => {
-    mockServices = {
-      getWalletServices: () =>
-        Promise.resolve({
-          viewServer: {
-            fullViewingKey: testFullViewingKey,
-          },
-        }),
-    } as ServicesInterface;
-
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.addressByIndex,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, mockServices),
+      contextValues: createContextValues().set(fvkCtx, testFullViewingKey),
     });
   });
 

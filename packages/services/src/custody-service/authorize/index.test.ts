@@ -2,7 +2,13 @@ import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { approverCtx } from '../../ctx/approver';
 import { extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx/prax';
-import { IndexedDbMock, MockExtLocalCtx, MockExtSessionCtx, MockServices } from '../../test-utils';
+import {
+  IndexedDbMock,
+  MockExtLocalCtx,
+  MockExtSessionCtx,
+  MockServices,
+  testFullViewingKey,
+} from '../../test-utils';
 import { authorize } from '.';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
@@ -13,6 +19,7 @@ import {
 import { Services } from '@penumbra-zone/services-context';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import { fvkCtx } from '../../ctx/full-viewing-key';
 
 describe('Authorize request handler', () => {
   let mockServices: MockServices;
@@ -36,7 +43,7 @@ describe('Authorize request handler', () => {
 
     mockServices = {
       getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb, viewServer: { fullViewingKey: 'fvk' } }),
+        Promise.resolve({ indexedDb: mockIndexedDb }),
       ) as MockServices['getWalletServices'],
     };
 
@@ -92,7 +99,8 @@ describe('Authorize request handler', () => {
         .set(extLocalCtx, mockExtLocalCtx as unknown)
         .set(approverCtx, mockApproverCtx as unknown)
         .set(extSessionCtx, mockExtSessionCtx as unknown)
-        .set(servicesCtx, mockServices as unknown as Services),
+        .set(servicesCtx, mockServices as unknown as Services)
+        .set(fvkCtx, testFullViewingKey),
     });
 
     for (const record of testAssetsMetadata) {

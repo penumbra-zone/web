@@ -1,17 +1,16 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
 
 import { getAddressIndexByAddress } from '@penumbra-zone/wasm/src/address';
 
 import { Code, ConnectError } from '@connectrpc/connect';
+import { fvkCtx } from '../ctx/full-viewing-key';
 
-export const indexByAddress: Impl['indexByAddress'] = async (req, ctx) => {
+export const indexByAddress: Impl['indexByAddress'] = (req, ctx) => {
   if (!req.address) throw new ConnectError('no address given in request', Code.InvalidArgument);
-  const services = ctx.values.get(servicesCtx);
-  const {
-    viewServer: { fullViewingKey },
-  } = await services.getWalletServices();
-
+  const fullViewingKey = ctx.values.get(fvkCtx);
+  if (!fullViewingKey) {
+    throw new Error('Cannot access full viewing key');
+  }
   const addressIndex = getAddressIndexByAddress(fullViewingKey, req.address);
 
   if (!addressIndex) return {};

@@ -4,13 +4,16 @@ import { planTransaction } from '@penumbra-zone/wasm/src/planner';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { fvkCtx } from '../../ctx/full-viewing-key';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   const services = ctx.values.get(servicesCtx);
-  const {
-    indexedDb,
-    viewServer: { fullViewingKey },
-  } = await services.getWalletServices();
+  const { indexedDb } = await services.getWalletServices();
+
+  const fullViewingKey = ctx.values.get(fvkCtx);
+  if (!fullViewingKey) {
+    throw new Error('Cannot access full viewing key');
+  }
 
   assertValidRequest(req);
 

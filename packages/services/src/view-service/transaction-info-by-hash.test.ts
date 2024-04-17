@@ -6,15 +6,15 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices, TendermintMock, ViewServerMock } from '../test-utils';
+import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils';
 import { transactionInfoByHash } from './transaction-info-by-hash';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
-import type { Services } from '@penumbra-zone/services-context/src/index';
+import type { Services } from '@penumbra-zone/services-context';
 import {
   Transaction,
   TransactionPerspective,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { bech32ToFullViewingKey } from '@penumbra-zone/bech32/src/full-viewing-key';
+import { fvkCtx } from '../ctx/full-viewing-key';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/src/transaction', () => ({
@@ -23,7 +23,6 @@ vi.mock('@penumbra-zone/wasm/src/transaction', () => ({
 describe('TransactionInfoByHash request handler', () => {
   let mockServices: MockServices;
   let mockIndexedDb: IndexedDbMock;
-  let mockViewServer: ViewServerMock;
   let mockCtx: HandlerContext;
   let mockTendermint: TendermintMock;
 
@@ -34,11 +33,6 @@ describe('TransactionInfoByHash request handler', () => {
       getTransaction: vi.fn(),
       constants: vi.fn(),
     };
-    mockViewServer = {
-      fullViewingKey: bech32ToFullViewingKey(
-        'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
-      ),
-    };
     mockTendermint = {
       getTransaction: vi.fn(),
     };
@@ -46,7 +40,6 @@ describe('TransactionInfoByHash request handler', () => {
       getWalletServices: vi.fn(() =>
         Promise.resolve({
           indexedDb: mockIndexedDb,
-          viewServer: mockViewServer,
           querier: {
             tendermint: mockTendermint,
           },
@@ -60,7 +53,9 @@ describe('TransactionInfoByHash request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
+      contextValues: createContextValues()
+        .set(servicesCtx, mockServices as unknown as Services)
+        .set(fvkCtx, testFullViewingKey),
     });
     mockTransactionInfo.mockReturnValueOnce({
       txp: transactionPerspective,

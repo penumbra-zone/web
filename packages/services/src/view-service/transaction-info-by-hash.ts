@@ -3,15 +3,17 @@ import { servicesCtx } from '../ctx/prax';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { generateTransactionInfo } from '@penumbra-zone/wasm/src/transaction';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { fvkCtx } from '../ctx/full-viewing-key';
 
 export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, ctx) => {
-  const services = ctx.values.get(servicesCtx);
-  const {
-    indexedDb,
-    querier,
-    viewServer: { fullViewingKey },
-  } = await services.getWalletServices();
   if (!req.id) throw new ConnectError('Missing transaction ID in request', Code.InvalidArgument);
+
+  const services = ctx.values.get(servicesCtx);
+  const { indexedDb, querier } = await services.getWalletServices();
+  const fullViewingKey = ctx.values.get(fvkCtx);
+  if (!fullViewingKey) {
+    throw new Error('Cannot access full viewing key');
+  }
 
   // Check database for transaction first
   // if not in database, query tendermint for public info on the transaction
