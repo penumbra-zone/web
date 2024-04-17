@@ -39,7 +39,7 @@ const BuySellChart = ({
       let direction = 1;
 
       if (
-        position.phi!.pair!.asset2!.inner as unknown as string ===
+        (position.phi!.pair!.asset2!.inner as unknown as string) ===
         asset1Token.inner
       ) {
         direction = -1;
@@ -70,7 +70,9 @@ const BuySellChart = ({
         direction === 1 ? q.div(p).toFixed(6) : p.div(q).toFixed(6)
       );
 
-      const willingToBuy = Number.parseFloat(direction === 1 ? reserves1.toFixed(6) : reserves2.toFixed(6))
+      const willingToBuy = Number.parseFloat(
+        direction === 1 ? reserves1.toFixed(6) : reserves2.toFixed(6)
+      );
 
       return {
         price: price,
@@ -93,16 +95,16 @@ const BuySellChart = ({
         position.state?.state.toLocaleString() === "POSITION_STATE_ENUM_OPENED"
     )
     .map((position) => {
-        let direction = 1;
+      let direction = 1;
 
       if (
-        position.phi!.pair!.asset2!.inner as unknown as string ===
+        (position.phi!.pair!.asset2!.inner as unknown as string) ===
         asset1Token.inner
       ) {
         direction = -1;
       }
-      console.warn("direciton sell", direction)
-      
+      console.warn("direciton sell", direction);
+
       const reserves1 = fromBaseUnit(
         BigInt(position.reserves!.r1!.lo ?? 0),
         BigInt(position.reserves!.r1!.hi ?? 0),
@@ -125,11 +127,14 @@ const BuySellChart = ({
         direction === 1 ? asset1Token.decimals : asset2Token.decimals
       );
 
-      let price = Number.parseFloat(direction === 1 ? q.div(p).toFixed(6) : p.div(q).toFixed(6));
+      let price = Number.parseFloat(
+        direction === 1 ? q.div(p).toFixed(6) : p.div(q).toFixed(6)
+      );
 
-      const willingToSell = Number.parseFloat(
-        direction === 1 ? reserves2.toFixed(6) : reserves1.toFixed(6)
-      ) * price;
+      const willingToSell =
+        Number.parseFloat(
+          direction === 1 ? reserves2.toFixed(6) : reserves1.toFixed(6)
+        ) * price;
       return {
         price: price,
         reserves1: Number.parseFloat(reserves1.toFixed(6)),
@@ -148,8 +153,22 @@ const BuySellChart = ({
       return b.price - a.price;
     });
 
-  console.warn("Buy side", cleaned_buy_side_positions);
-  console.warn("Sell side", cleaned_sell_side_positions);
+  let midPointPrice: number = 0;
+  if (
+    cleaned_buy_side_positions.length > 0 &&
+    cleaned_sell_side_positions.length > 0
+  ) {
+    midPointPrice =
+      (cleaned_buy_side_positions[0].price +
+        cleaned_sell_side_positions[cleaned_sell_side_positions.length - 1]
+          .price) /
+      2;
+  } else if (cleaned_buy_side_positions.length > 0) {
+    midPointPrice = cleaned_buy_side_positions[0].price;
+  } else if (cleaned_sell_side_positions.length > 0) {
+    midPointPrice =
+      cleaned_sell_side_positions[cleaned_sell_side_positions.length - 1].price;
+  }
 
   interface PositionData {
     price: number;
@@ -277,9 +296,18 @@ const BuySellChart = ({
         </VStack>
 
         {/* Divider between buy and sell sections */}
-        <Box width="100%" height="2.5px" backgroundColor="gray.10000" />
-        <Box width="100%" height="1px" backgroundColor="gray.200" />
-        <Box width="100%" height="2.5px" backgroundColor="gray.10000" />
+        <Box width="100%" height="3px" backgroundColor="gray.10000" />
+        <Text>{}</Text>
+        <Box width="100%" height="2.5px" backgroundColor="gray.200000" />
+        <Text
+          fontFamily={"monospace"}
+          textAlign={"left"}
+          width="100%"
+          fontSize={"12px"}
+          textColor={"gray.200"}
+        >{`${midPointPrice}`}</Text>
+        <Box width="100%" height="2.5px" backgroundColor="gray.200000" />
+        <Box width="100%" height="3px" backgroundColor="gray.10000" />
         <VStack
           flex={1} // Use flex=1 to ensure that this box also takes up half the space
           width="100%"
