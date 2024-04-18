@@ -90,16 +90,25 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
   };
 };
 
+// Timeout is two days. However, in order to prevent identifying oneself by clock skew,
+// timeout time is rounded to the nearest 10 minute mark.
+// Reference in core: https://github.com/penumbra-zone/penumbra/blob/1376d4b4f47f44bcc82e8bbdf18262942edf461e/crates/bin/pcli/src/command/tx.rs#L1066-L1067
+export const currentTimePlusTwoDaysRounded = (): bigint => {
+  // Get current time in milliseconds and convert to nanoseconds
+  const nowInNanoseconds = BigInt(Date.now()) * BigInt(1_000_000);
+
+  // New timestamp after adding 2 days
+  const twoDays = BigInt(2 * 24 * 60 * 60 * 1000 * 1000000);
+  const nowPlusTwoDays = nowInNanoseconds + twoDays;
+  const tenMinutes = BigInt(10 * 60 * 1000 * 1000000);
+
+  // Round up to nearest 10 minutes
+  return nowPlusTwoDays + tenMinutes - (nowPlusTwoDays % tenMinutes);
+};
+
 const getTimeout = async (
   chain: Chain,
 ): Promise<{ timeoutTime: bigint; timeoutHeight: Height }> => {
-  // timeout 2 days from now, in nanoseconds since epoch
-  const twoDaysMs = BigInt(2 * 24 * 60 * 60 * 1000); // 2 days * 24 hours/day * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds per second
-  // truncate resolution at seconds, to obfuscate clock skew
-  const lowPrecisionNowMs = BigInt(Math.floor(Date.now() / 1000) * 1000); // ms/1000 to second, floor, second*1000 to ms
-  // (now + two days) as nanoseconds
-  const timeoutTime = (lowPrecisionNowMs + twoDaysMs) * 1_000_000n; // 1 million nanoseconds per millisecond
-
   const { clientStates } = await ibcClient.clientStates({});
   const unpacked = clientStates
     .map(cs => cs.clientState!.unpack(typeRegistry))
@@ -112,7 +121,7 @@ const getTimeout = async (
   const revisionHeight = clientState.latestHeight!.revisionHeight + 1000n;
 
   return {
-    timeoutTime,
+    timeoutTime: currentTimePlusTwoDaysRounded(),
     timeoutHeight: new Height({
       revisionHeight,
       revisionNumber: clientState.latestHeight!.revisionNumber,

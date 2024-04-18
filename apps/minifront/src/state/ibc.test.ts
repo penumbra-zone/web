@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
 import {
@@ -12,6 +12,7 @@ import { produce } from 'immer';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
 import { Chain } from '@penumbra-labs/registry';
+import { currentTimePlusTwoDaysRounded } from './ibc';
 
 describe.skip('IBC Slice', () => {
   const selectionExample = new BalancesResponse({
@@ -105,5 +106,26 @@ describe.skip('IBC Slice', () => {
       useStore.getState().send.setSelection(selectionExample);
       expect(useStore.getState().send.selection).toStrictEqual(selectionExample);
     });
+  });
+});
+
+describe('currentTimePlusTwoDaysRounded', () => {
+  test('should add exactly two days to the current time and round up to the nearest ten minutes', () => {
+    const baseTime = Date.now(); // milliseconds
+    const baseTimeInNanoseconds = BigInt(baseTime * 1_000_000);
+    const twoDaysInNanoseconds = BigInt(2 * 24 * 60 * 60 * 1000 * 1_000_000);
+    const tenMinutesInNanoseconds = BigInt(10 * 60 * 1000 * 1_000_000);
+
+    vi.useFakeTimers();
+    vi.setSystemTime(Number(baseTime));
+
+    const expectedTime = baseTimeInNanoseconds + twoDaysInNanoseconds;
+    const remainder = expectedTime % tenMinutesInNanoseconds;
+    const roundedExpectedTime = expectedTime + (tenMinutesInNanoseconds - remainder);
+
+    const result = currentTimePlusTwoDaysRounded();
+    expect(result).toEqual(roundedExpectedTime);
+
+    vi.useRealTimers(); // Reset timers
   });
 });
