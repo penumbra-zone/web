@@ -29,6 +29,7 @@ export const Header = () => {
     unstakedTokensByAccount,
     unbondingTokensByAccount,
     undelegateClaim,
+    stakingTokenMetadata,
   } = useStoreShallow(headerSelector);
   const unstakedTokens = unstakedTokensByAccount.get(account);
   const unbondingTokens = unbondingTokensByAccount.get(account);
@@ -41,7 +42,7 @@ export const Header = () => {
 
           <div className='flex items-start justify-center gap-8'>
             <Stat label='Available to delegate'>
-              <ValueViewComponent view={unstakedTokens ?? ZERO_BALANCE_UM} />
+              <ValueViewComponent view={unstakedTokens ?? ZERO_BALANCE_UM(stakingTokenMetadata)} />
             </Stat>
 
             <Stat label='Unbonding amount'>

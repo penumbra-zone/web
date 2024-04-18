@@ -3,12 +3,7 @@ import { SliceCreator } from '..';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/src/metadata';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
-import {
-  assetPatterns,
-  localAssets,
-  STAKING_TOKEN,
-  STAKING_TOKEN_METADATA,
-} from '@penumbra-zone/constants/src/assets';
+import { assetPatterns } from '@penumbra-zone/constants/src/assets';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { planBuildBroadcast } from '../helpers';
 import {
