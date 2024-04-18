@@ -25,7 +25,6 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import {
   assetPatterns,
-  localAssets,
   PRICE_RELEVANCE_THRESHOLDS,
 } from '@penumbra-zone/constants/src/assets';
 import {
@@ -60,6 +59,7 @@ import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
 import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -121,7 +121,7 @@ export class IndexedDb implements IndexedDbInterface {
     } satisfies IdbConstants;
 
     const instance = new this(db, new IbdUpdater(db), constants, chainId);
-    await instance.saveLocalAssetsMetadata(); // Pre-load asset metadata
+    await instance.saveRegistryAssets(chainId); // Pre-load asset metadata from registry
 
     const existing0thEpoch = await instance.getEpochByHeight(0n);
     if (!existing0thEpoch) await instance.addEpoch(0n); // Create first epoch
@@ -244,10 +244,15 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({ table: 'ASSETS', value: metadata.toJson() as Jsonified<Metadata> });
   }
 
-  // Save all hard-coded assets in config to database
-  async saveLocalAssetsMetadata() {
-    const saveLocalMetadata = localAssets.map(m => this.saveAssetsMetadata(m));
-    await Promise.all(saveLocalMetadata);
+  // creates a local copy of the asset list from registry (https://github.com/prax-wallet/registry)
+  async saveRegistryAssets(chainId: string) {
+    const registryClient = new ChainRegistryClient();
+    const { assetById } = await registryClient.get(chainId);
+    console.log('saveRegistryAssets', assetById);
+    const saveMetadata = Object.values(assetById).map(metadata =>
+      this.saveAssetsMetadata(metadata),
+    );
+    await Promise.all(saveMetadata);
   }
 
   async *iterateSpendableNotes() {

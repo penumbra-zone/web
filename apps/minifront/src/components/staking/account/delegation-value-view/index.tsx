@@ -10,7 +10,6 @@ import {
   getValidatorInfoFromValueView,
 } from '@penumbra-zone/getters/src/value-view';
 import { asValueView } from '@penumbra-zone/getters/src/equivalent-value';
-import { STAKING_TOKEN } from '@penumbra-zone/constants/src/assets';
 
 /**
  * Renders a `ValueView` that contains a delegation token, along with the

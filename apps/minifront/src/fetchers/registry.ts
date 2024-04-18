@@ -10,7 +10,6 @@ export const useRegistry = () => {
     queryFn: async (): Promise<Registry> => {
       const chainId = await getChainId();
       if (!chainId) throw new Error('No chain id in response');
-
       return chainRegistryClient.get(chainId);
     },
     staleTime: Infinity,

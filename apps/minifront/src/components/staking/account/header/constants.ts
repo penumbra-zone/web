@@ -1,5 +1,4 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 
 /**
  * A default `ValueView` to render when we don't have any balance data for a

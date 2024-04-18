@@ -1,25 +1,9 @@
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import LocalAssetRegistry from './local-asset-registry.json';
-import { JsonValue } from '@bufbuild/protobuf';
-
-export const localAssets: Metadata[] = LocalAssetRegistry.map(a =>
-  Metadata.fromJson(a as JsonValue),
-);
-
-export const NUMERAIRE_DENOMS: string[] = ['test_usd', 'usdc'];
-export const NUMERAIRES: Metadata[] = localAssets.filter(m => NUMERAIRE_DENOMS.includes(m.display));
-
 // PRICE_RELEVANCE_THRESHOLDS defines how long prices for different asset types remain relevant (in blocks)
 // 1 block = 5 seconds, 200 blocks approximately equals 17 minutes
 export const PRICE_RELEVANCE_THRESHOLDS = {
   delegationToken: 719,
   default: 200,
 };
-
-export const STAKING_TOKEN = 'penumbra';
-export const STAKING_TOKEN_METADATA = localAssets.find(
-  metadata => metadata.display === STAKING_TOKEN,
-)!;
 
 export interface IbcCaptureGroups {
   channel: string;
