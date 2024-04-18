@@ -2,6 +2,7 @@ import type { Impl } from '.';
 
 import { getAddressByIndex } from '@penumbra-zone/wasm/src/keys';
 import { fvkCtx } from '../ctx/full-viewing-key';
+import { Code, ConnectError } from '@connectrpc/connect';
 
 export const addressByIndex: Impl['addressByIndex'] = (req, ctx) => {
   const fullViewingKey = ctx.values.get(fvkCtx);

@@ -12,7 +12,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
 
   const fullViewingKey = ctx.values.get(fvkCtx);
   if (!fullViewingKey) {
-    throw new Error('Cannot access full viewing key');
+    throw new ConnectError('Cannot access full viewing key', Code.Unauthenticated);
   }
 
   assertValidRequest(req);

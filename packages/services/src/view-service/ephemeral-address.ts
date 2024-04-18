@@ -2,6 +2,7 @@ import type { Impl } from '.';
 
 import { getEphemeralByIndex } from '@penumbra-zone/wasm/src/keys';
 import { fvkCtx } from '../ctx/full-viewing-key';
+import { Code, ConnectError } from '@connectrpc/connect';
 
 export const ephemeralAddress: Impl['ephemeralAddress'] = (req, ctx) => {
   if (!req.addressIndex) {
@@ -9,7 +10,7 @@ export const ephemeralAddress: Impl['ephemeralAddress'] = (req, ctx) => {
   }
   const fullViewingKey = ctx.values.get(fvkCtx);
   if (!fullViewingKey) {
-    throw new Error('Cannot access full viewing key');
+    throw new ConnectError('Cannot access full viewing key', Code.Unauthenticated);
   }
   const address = getEphemeralByIndex(fullViewingKey, req.addressIndex.account);
 

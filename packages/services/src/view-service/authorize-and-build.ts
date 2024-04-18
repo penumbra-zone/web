@@ -16,7 +16,7 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   const { indexedDb } = await services.getWalletServices();
   const fullViewingKey = ctx.values.get(fvkCtx);
   if (!fullViewingKey) {
-    throw new Error('Cannot access full viewing key');
+    throw new ConnectError('Cannot access full viewing key', Code.Unauthenticated);
   }
 
   const sct = await indexedDb.getStateCommitmentTree();

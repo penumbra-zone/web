@@ -66,7 +66,7 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
 const assertValidRequest = (req: AuthorizeRequest, ctx: HandlerContext): void => {
   const fullViewingKey = ctx.values.get(fvkCtx);
   if (!fullViewingKey) {
-    throw new Error('Cannot access full viewing key');
+    throw new ConnectError('Cannot access full viewing key', Code.Unauthenticated);
   }
   assertSwapClaimAddressesBelongToCurrentUser(req.plan!, address =>
     isControlledAddress(fullViewingKey, address),

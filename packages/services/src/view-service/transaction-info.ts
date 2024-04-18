@@ -3,6 +3,7 @@ import { servicesCtx } from '../ctx/prax';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { generateTransactionInfo } from '@penumbra-zone/wasm/src/transaction';
 import { fvkCtx } from '../ctx/full-viewing-key';
+import { Code, ConnectError } from '@connectrpc/connect';
 
 export const transactionInfo: Impl['transactionInfo'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);
@@ -10,7 +11,7 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (req, ct
 
   const fullViewingKey = ctx.values.get(fvkCtx);
   if (!fullViewingKey) {
-    throw new Error('Cannot access full viewing key');
+    throw new ConnectError('Cannot access full viewing key', Code.Unauthenticated);
   }
 
   for await (const txRecord of indexedDb.iterateTransactions()) {

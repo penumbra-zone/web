@@ -9,7 +9,7 @@ export const indexByAddress: Impl['indexByAddress'] = (req, ctx) => {
   if (!req.address) throw new ConnectError('no address given in request', Code.InvalidArgument);
   const fullViewingKey = ctx.values.get(fvkCtx);
   if (!fullViewingKey) {
-    throw new Error('Cannot access full viewing key');
+    throw new ConnectError('Cannot access full viewing key', Code.Unauthenticated);
   }
   const addressIndex = getAddressIndexByAddress(fullViewingKey, req.address);
 
