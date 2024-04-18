@@ -33,11 +33,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
-import {
-  NUMERAIRES,
-  PRICE_RELEVANCE_THRESHOLDS,
-  STAKING_TOKEN_METADATA,
-} from '@penumbra-zone/constants/src/assets';
+import { PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/src/assets';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/src/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
@@ -52,6 +48,8 @@ interface QueryClientProps {
   querier: RootQuerier;
   indexedDb: IndexedDbInterface;
   viewServer: ViewServerInterface;
+  numeraires: Metadata[];
+  stakingTokenMetadata: Metadata;
 }
 
 const blankTxSource = new CommitmentSource({
@@ -63,12 +61,22 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly indexedDb: IndexedDbInterface;
   private readonly viewServer: ViewServerInterface;
   private readonly abortController: AbortController = new AbortController();
+  private readonly numeraires: Metadata[];
+  private readonly stakingTokenMetadata: Metadata;
   private syncPromise: Promise<void> | undefined;
 
-  constructor({ indexedDb, viewServer, querier }: QueryClientProps) {
+  constructor({
+    indexedDb,
+    viewServer,
+    querier,
+    numeraires,
+    stakingTokenMetadata,
+  }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
     this.querier = querier;
+    this.numeraires = numeraires;
+    this.stakingTokenMetadata = stakingTokenMetadata;
   }
 
   // If syncBlocks() is called multiple times concurrently, they'll all wait for
@@ -273,7 +281,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (blockInPriceRelevanceThreshold && compactBlock.swapOutputs.length) {
         await updatePricesFromSwaps(
           this.indexedDb,
-          NUMERAIRES,
+          this.numeraires,
           compactBlock.swapOutputs,
           compactBlock.height,
         );
@@ -473,7 +481,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     if (metadata) {
       const assetId = getAssetId(metadata);
-      const stakingAssetId = getAssetId(STAKING_TOKEN_METADATA);
+      const stakingAssetId = getAssetId(this.stakingTokenMetadata);
       const exchangeRate = getExchangeRateFromValidatorInfoResponse(validatorInfoResponse);
 
       await this.indexedDb.updatePrice(

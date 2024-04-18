@@ -23,8 +23,8 @@ import {
 } from '@penumbra-zone/constants/src/assets';
 import { bech32, bech32m } from 'bech32';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
-import {Chain, ChainRegistryClient} from '@penumbra-labs/registry';
-import {getChainId} from "../fetchers/chain-id";
+import { Chain, ChainRegistryClient } from '@penumbra-labs/registry';
+import { getChainId } from '../fetchers/chain-id';
 
 export interface IbcSendSlice {
   selection: BalancesResponse | undefined;
@@ -240,4 +240,3 @@ export const filterBalancesPerChain = (
     return assetIdsToCheck.some(assetId => assetId.equals(metadata.penumbraAssetId));
   });
 };
-

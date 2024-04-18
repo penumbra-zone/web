@@ -16,6 +16,8 @@ import {
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { Wallet } from '@penumbra-zone/types/src/wallet';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export interface ServicesConfig {
   readonly idbVersion: number;
@@ -114,10 +116,15 @@ export class Services implements ServicesInterface {
       idbConstants: indexedDb.constants(),
     });
 
+    const registryClient = new ChainRegistryClient();
+    const { stakingAssetId, assetById, numeraires } = await registryClient.get(chainId);
+
     const blockProcessor = new BlockProcessor({
       viewServer,
       querier: this.querier,
       indexedDb,
+      stakingTokenMetadata: Metadata.fromJson(assetById[stakingAssetId]!),
+      numeraires: numeraires.map(numeraires => Metadata.fromJson(assetById[numeraires]!)),
     });
 
     return { viewServer, blockProcessor, indexedDb, querier: this.querier };

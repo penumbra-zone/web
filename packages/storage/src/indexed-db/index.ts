@@ -23,10 +23,7 @@ import {
   AddressIndex,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import {
-  assetPatterns,
-  PRICE_RELEVANCE_THRESHOLDS,
-} from '@penumbra-zone/constants/src/assets';
+import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/src/assets';
 import {
   Position,
   PositionId,
@@ -250,7 +247,7 @@ export class IndexedDb implements IndexedDbInterface {
     const { assetById } = await registryClient.get(chainId);
     console.log('saveRegistryAssets', assetById);
     const saveMetadata = Object.values(assetById).map(metadata =>
-      this.saveAssetsMetadata(metadata),
+      this.saveAssetsMetadata(Metadata.fromJson(metadata)),
     );
     await Promise.all(saveMetadata);
   }

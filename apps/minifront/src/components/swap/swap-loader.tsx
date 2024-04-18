@@ -18,7 +18,7 @@ import {
 import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/src/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 import { fromBaseUnitAmount } from '@penumbra-zone/types/src/amount';
-import {getAssetsFromRegistry} from "../../fetchers/registry";
+import { getAssetsFromRegistry } from '../../fetchers/registry';
 
 export interface UnclaimedSwapsWithMetadata {
   swap: SwapRecord;
@@ -29,7 +29,7 @@ export interface UnclaimedSwapsWithMetadata {
 export interface SwapLoaderResponse {
   assetBalances: BalancesResponse[];
   unclaimedSwaps: UnclaimedSwapsWithMetadata[];
-  registryAssets: Metadata [];
+  registryAssets: Metadata[];
 }
 
 const byBalanceDescending = (a: BalancesResponse, b: BalancesResponse) => {
@@ -98,5 +98,5 @@ export const SwapLoader: LoaderFunction = async (): Promise<SwapLoaderResponse> 
     unclaimedSwapsWithMetadata(),
   ]);
 
-  return { assetBalances, unclaimedSwaps, registryAssets};
+  return { assetBalances, unclaimedSwaps, registryAssets };
 };

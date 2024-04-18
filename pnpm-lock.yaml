@@ -755,6 +755,9 @@ importers:
 
   packages/services-context:
     dependencies:
+      '@penumbra-labs/registry':
+        specifier: ^4.0.0
+        version: 4.0.0
       '@penumbra-zone/constants':
         specifier: workspace:*
         version: link:../constants
