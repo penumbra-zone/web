@@ -12,6 +12,7 @@
     "test": "turbo run test",
     "test:rust": "turbo run test:rust",
     "clean": "turbo clean",
+    "clean:vitest-mjs": "find . -type f -name 'vite.config.ts.timestamp-*-*.mjs' -ls -delete",
     "format": "prettier --write .",
     "format-check": "prettier --check .",
     "format-check:rust": "turbo run format-check:rust",
