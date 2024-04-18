@@ -1,6 +1,6 @@
 import type { Impl } from '..';
 import { servicesCtx } from '../../ctx/prax';
-import { planTransaction } from '@penumbra-zone/wasm/src/planner';
+import { planTransaction } from '@penumbra-zone/wasm/planner';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';

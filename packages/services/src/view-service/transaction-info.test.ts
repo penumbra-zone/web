@@ -16,7 +16,7 @@ import { transactionInfo } from './transaction-info';
 import { fvkCtx } from '../ctx/full-viewing-key';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
-vi.mock('@penumbra-zone/wasm/src/transaction', () => ({
+vi.mock('@penumbra-zone/wasm/transaction', () => ({
   generateTransactionInfo: mockTransactionInfo,
 }));
 

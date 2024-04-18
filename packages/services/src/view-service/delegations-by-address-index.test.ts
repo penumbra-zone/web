@@ -34,7 +34,7 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
-vi.mock('@penumbra-zone/wasm/src/metadata', () => ({
+vi.mock('@penumbra-zone/wasm/metadata', () => ({
   customizeSymbol: (metadata: Metadata) => metadata,
 }));
 

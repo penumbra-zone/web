@@ -56,7 +56,7 @@ async function executeWorker(
   actionPlanIndex: number,
 ): Promise<JsonValue> {
   // Dynamically load wasm module
-  const penumbraWasmModule = await import('@penumbra-zone/wasm/src/build');
+  const penumbraWasmModule = await import('@penumbra-zone/wasm/build');
 
   const actionType = transactionPlan.actions[actionPlanIndex]!.action.case!;
 

@@ -1,7 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../ctx/prax';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { generateTransactionInfo } from '@penumbra-zone/wasm/src/transaction';
+import { generateTransactionInfo } from '@penumbra-zone/wasm/transaction';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { fvkCtx } from '../ctx/full-viewing-key';
 

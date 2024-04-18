@@ -2,7 +2,7 @@ import type { Impl } from '.';
 import { servicesCtx } from '../ctx/prax';
 import { optimisticBuild } from './util/build-tx';
 import { custodyAuthorize } from './util/custody-authorize';
-import { getWitness } from '@penumbra-zone/wasm/src/build';
+import { getWitness } from '@penumbra-zone/wasm/build';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { fvkCtx } from '../ctx/full-viewing-key';
 
