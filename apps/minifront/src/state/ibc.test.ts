@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
-import { Chain } from '@penumbra-zone/constants/src/chains';
 import {
   Metadata,
   ValueView,
@@ -12,6 +11,7 @@ import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/co
 import { produce } from 'immer';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
+import { Chain } from '@penumbra-labs/registry';
 
 describe.skip('IBC Slice', () => {
   const selectionExample = new BalancesResponse({
@@ -91,7 +91,7 @@ describe.skip('IBC Slice', () => {
         displayName: 'Osmosis',
         chainId: 'osmosis-test-5',
         ibcChannel: 'channel-0',
-        iconUrl: '/test.svg',
+        images: [{ svg: '/test.svg' }],
         addressPrefix: 'osmo',
       } satisfies Chain;
 

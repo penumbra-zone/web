@@ -9,7 +9,7 @@ import { InputBlock } from '../shared/input-block';
 import { IbcLoaderResponse } from './ibc-loader';
 
 export const IbcOutForm = () => {
-  const assetBalances = useLoaderData() as IbcLoaderResponse;
+  const { balances } = useLoaderData() as IbcLoaderResponse;
   const {
     sendIbcWithdraw,
     destinationChainAddress,
@@ -20,7 +20,7 @@ export const IbcOutForm = () => {
     setSelection,
     chain,
   } = useStore(ibcSelector);
-  const filteredBalances = filterBalancesPerChain(assetBalances, chain);
+  const filteredBalances = filterBalancesPerChain(balances, chain);
   const validationErrors = useStore(ibcValidationErrors);
 
   return (

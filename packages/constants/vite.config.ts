@@ -6,7 +6,6 @@ export default defineConfig({
     lib: {
       entry: {
         assets: './src/assets.ts',
-        chains: './src/chains.ts',
       },
       formats: ['es'],
     },
