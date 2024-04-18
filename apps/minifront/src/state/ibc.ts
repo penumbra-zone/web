@@ -6,13 +6,12 @@ import {
 import { BigNumber } from 'bignumber.js';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
-import { ibcClient, viewClient } from '../clients';
+import { ibcChannelClient, ibcClient, ibcConnectionClient, viewClient } from '../clients';
 import {
   getDisplayDenomExponentFromValueView,
   getMetadata,
 } from '@penumbra-zone/getters/src/value-view';
 import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 import { planBuildBroadcast } from './helpers';
 import { amountMoreThanBalance } from './send';
@@ -25,6 +24,7 @@ import {
 import { bech32IsValid } from '@penumbra-zone/bech32/src/validate';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { Chain } from '@penumbra-labs/registry';
+import { typeRegistry } from '@penumbra-zone/types/src/registry';
 
 export interface IbcSendSlice {
   selection: BalancesResponse | undefined;
@@ -106,15 +106,34 @@ export const currentTimePlusTwoDaysRounded = (): bigint => {
   return nowPlusTwoDays + tenMinutes - (nowPlusTwoDays % tenMinutes);
 };
 
+// Reference in core: https://github.com/penumbra-zone/penumbra/blob/1376d4b4f47f44bcc82e8bbdf18262942edf461e/crates/bin/pcli/src/command/tx.rs#L998-L1050
 const getTimeout = async (
   chain: Chain,
 ): Promise<{ timeoutTime: bigint; timeoutHeight: Height }> => {
-  const { clientStates } = await ibcClient.clientStates({});
-  const unpacked = clientStates
-    .map(cs => cs.clientState!.unpack(typeRegistry))
-    .filter(Boolean) as ClientState[];
+  const { channel } = await ibcChannelClient.channel({
+    portId: 'transfer',
+    channelId: chain.ibcChannel,
+  });
 
-  const clientState = unpacked.find(cs => cs.chainId === chain.chainId);
+  const connectionId = channel?.connectionHops[0];
+  if (!connectionId) {
+    throw new Error('no connectionId in channel returned from ibcChannelClient request');
+  }
+
+  const { connection } = await ibcConnectionClient.connection({
+    connectionId,
+  });
+  const clientId = connection?.clientId;
+  if (!clientId) {
+    throw new Error('no clientId ConnectionEnd returned from ibcConnectionClient request');
+  }
+
+  const { clientState: clientStateUnpacked } = await ibcClient.clientState({ clientId: clientId });
+  if (!clientStateUnpacked) {
+    throw new Error('no clientState returned from ibcClient request');
+  }
+
+  const clientState = clientStateUnpacked.unpack(typeRegistry) as ClientState | undefined;
   if (!clientState) throw new Error('Could not find chain id client state');
 
   // assuming a block time of 10s and adding ~1000 blocks (~3 hours)
