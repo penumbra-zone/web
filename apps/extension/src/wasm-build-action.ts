@@ -66,7 +66,7 @@ async function executeWorker(
     witness,
     fullViewingKey,
     actionPlanIndex,
-    keyFileNames[actionType]!.href,
+    keyFileNames[actionType]?.href,
   );
 
   return action.toJson();
