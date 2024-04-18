@@ -67,7 +67,6 @@ const config: webpack.Configuration = {
   },
   module: {
     rules: [
-      { test: /\.wasm/ },
       {
         test: /\.tsx?$/,
         use: 'ts-loader',
