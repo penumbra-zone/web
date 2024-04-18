@@ -3,13 +3,14 @@ import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { servicesCtx } from '../../ctx/prax';
-import { IndexedDbMock, MockServices, testFullViewingKey, ViewServerMock } from '../../test-utils';
+import { IndexedDbMock, MockServices, testFullViewingKey } from '../../test-utils';
 import type { Services } from '@penumbra-zone/services-context';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import { SctParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { transactionPlanner } from '.';
+import { fvkCtx } from '../../ctx/full-viewing-key';
 
 const mockPlanTransaction = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/src/planner', () => ({
@@ -18,7 +19,6 @@ vi.mock('@penumbra-zone/wasm/src/planner', () => ({
 describe('TransactionPlanner request handler', () => {
   let mockServices: MockServices;
   let mockIndexedDb: IndexedDbMock;
-  let mockViewServer: ViewServerMock;
   let mockCtx: HandlerContext;
   let req: TransactionPlannerRequest;
 
@@ -31,14 +31,11 @@ describe('TransactionPlanner request handler', () => {
       getGasPrices: vi.fn(),
       constants: vi.fn(),
     };
-    mockViewServer = {
-      fullViewingKey: testFullViewingKey,
-    };
+
     mockServices = {
       getWalletServices: vi.fn(() =>
         Promise.resolve({
           indexedDb: mockIndexedDb,
-          viewServer: mockViewServer,
         }),
       ) as MockServices['getWalletServices'],
     };
@@ -49,7 +46,9 @@ describe('TransactionPlanner request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
+      contextValues: createContextValues()
+        .set(servicesCtx, mockServices as unknown as Services)
+        .set(fvkCtx, testFullViewingKey),
     });
 
     req = new TransactionPlannerRequest({});

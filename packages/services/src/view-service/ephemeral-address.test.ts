@@ -5,33 +5,22 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
-import { servicesCtx } from '../ctx/prax';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { ephemeralAddress } from './ephemeral-address';
-import type { ServicesInterface } from '@penumbra-zone/types/src/services';
 import { testFullViewingKey } from '../test-utils';
+import { fvkCtx } from '../ctx/full-viewing-key';
 
 describe('EphemeralAddress request handler', () => {
-  let mockServices: ServicesInterface;
   let mockCtx: HandlerContext;
 
   beforeEach(() => {
-    mockServices = {
-      getWalletServices: () =>
-        Promise.resolve({
-          viewServer: {
-            fullViewingKey: testFullViewingKey,
-          },
-        }),
-    } as ServicesInterface;
-
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.ephemeralAddress,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, mockServices),
+      contextValues: createContextValues().set(fvkCtx, testFullViewingKey),
     });
   });
 
@@ -43,8 +32,8 @@ describe('EphemeralAddress request handler', () => {
     expect(ephemeralAddressResponse.address).toBeInstanceOf(Address);
   });
 
-  test('should get an error if addressIndex is missing', async () => {
-    await expect(ephemeralAddress(new EphemeralAddressRequest(), mockCtx)).rejects.toThrow(
+  test('should get an error if addressIndex is missing', () => {
+    expect(() => ephemeralAddress(new EphemeralAddressRequest(), mockCtx)).toThrowError(
       'Missing address index',
     );
   });

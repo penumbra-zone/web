@@ -10,9 +10,10 @@ import {
   TransactionInfoRequest,
   TransactionInfoResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices, testFullViewingKey, ViewServerMock } from '../test-utils';
-import { Services } from '@penumbra-zone/services-context/src/index';
+import { IndexedDbMock, MockServices, testFullViewingKey } from '../test-utils';
+import { Services } from '@penumbra-zone/services-context';
 import { transactionInfo } from './transaction-info';
+import { fvkCtx } from '../ctx/full-viewing-key';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/src/transaction', () => ({
@@ -23,7 +24,6 @@ describe('TransactionInfo request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
   let mockIndexedDb: IndexedDbMock;
-  let mockViewServer: ViewServerMock;
   let req: TransactionInfoRequest;
 
   beforeEach(() => {
@@ -39,13 +39,9 @@ describe('TransactionInfo request handler', () => {
       constants: vi.fn(),
     };
 
-    mockViewServer = {
-      fullViewingKey: testFullViewingKey,
-    };
-
     mockServices = {
       getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb, viewServer: mockViewServer }),
+        Promise.resolve({ indexedDb: mockIndexedDb }),
       ) as MockServices['getWalletServices'],
     };
 
@@ -55,7 +51,9 @@ describe('TransactionInfo request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
+      contextValues: createContextValues()
+        .set(servicesCtx, mockServices as unknown as Services)
+        .set(fvkCtx, testFullViewingKey),
     });
 
     mockTransactionInfo.mockReturnValue({

@@ -38,6 +38,8 @@ import {
   FullViewingKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { fvkCtx } from '@penumbra-zone/services/ctx/full-viewing-key';
+import { WalletJson } from '@penumbra-zone/types/src/wallet';
 
 /**
  * When a user first onboards with the extension, they won't have chosen a gRPC
@@ -63,24 +65,24 @@ const waitUntilGrpcEndpointExists = async () => {
   return grpcEndpointPromise.promise;
 };
 
-const startServices = async () => {
+const startServices = async (wallet: WalletJson) => {
   const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
-
-  const wallet0 = (await localExtStorage.get('wallets'))[0];
-  if (!wallet0) throw new Error('No wallet found');
 
   const services = new Services({
     idbVersion: IDB_VERSION,
     grpcEndpoint,
-    walletId: WalletId.fromJsonString(wallet0.id),
-    fullViewingKey: FullViewingKey.fromJsonString(wallet0.fullViewingKey),
+    walletId: WalletId.fromJsonString(wallet.id),
+    fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
   });
   await services.initialize();
   return services;
 };
 
 const getServiceHandler = async () => {
-  const services = await backOff(startServices, {
+  const wallet0 = (await localExtStorage.get('wallets'))[0];
+  if (!wallet0) throw new Error('No wallet found');
+
+  const services = await backOff(() => startServices(wallet0), {
     retry: (e, attemptNumber) => {
       if (process.env['NODE_ENV'] === 'development')
         console.warn("Prax couldn't start ", attemptNumber, e);
@@ -111,6 +113,7 @@ const getServiceHandler = async () => {
       contextValues.set(stakingClientCtx, stakingClient);
       contextValues.set(servicesCtx, services);
       contextValues.set(approverCtx, approveTransaction);
+      contextValues.set(fvkCtx, FullViewingKey.fromJsonString(wallet0.fullViewingKey));
 
       return Promise.resolve({ ...req, contextValues });
     },

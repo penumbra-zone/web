@@ -4,6 +4,7 @@ import { optimisticBuild } from './util/build-tx';
 import { custodyAuthorize } from './util/custody-authorize';
 import { getWitness } from '@penumbra-zone/wasm/src/build';
 import { Code, ConnectError } from '@connectrpc/connect';
+import { fvkCtx } from '../ctx/full-viewing-key';
 
 export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   { transactionPlan },
@@ -12,10 +13,12 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   const services = ctx.values.get(servicesCtx);
   if (!transactionPlan) throw new ConnectError('No tx plan in request', Code.InvalidArgument);
 
-  const {
-    indexedDb,
-    viewServer: { fullViewingKey },
-  } = await services.getWalletServices();
+  const { indexedDb } = await services.getWalletServices();
+  const fullViewingKey = ctx.values.get(fvkCtx);
+  if (!fullViewingKey) {
+    throw new ConnectError('Cannot access full viewing key', Code.Unauthenticated);
+  }
+
   const sct = await indexedDb.getStateCommitmentTree();
   const witnessData = getWitness(transactionPlan, sct);
 
