@@ -20,4 +20,6 @@ export type TransactionClassification =
   /** The transaction contains an `undelegateClaim` action. */
   | 'undelegateClaim'
   /** The transaction contains an `ics20Withdrawal` action. */
-  | 'ics20Withdrawal';
+  | 'ics20Withdrawal'
+  /** The transaction contains an `actionDutchAuctionSchedule` action. */
+  | 'dutchAuctionSchedule';

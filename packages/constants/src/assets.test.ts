@@ -2,7 +2,24 @@ import { describe, expect, it } from 'vitest';
 import { assetPatterns, RegexMatcher } from './assets';
 
 describe('assetPatterns', () => {
-  describe('lpNftPattern', () => {
+  describe('auctionNft', () => {
+    it('matches when a string is a valid auction NFT', () => {
+      expect(assetPatterns.auctionNft.matches('auctionnft_0_pauctid1abc123')).toBe(true);
+    });
+
+    it('matches when a string contains, but does not begin with, a valid auction NFT', () => {
+      expect(
+        assetPatterns.auctionNft.matches('ibc-transfer/channel-1234/auctionnft_0_pauctid1abc123'),
+      ).toBe(false);
+    });
+
+    it('captures the capture groups correctly', () => {
+      const result = assetPatterns.auctionNft.capture('auctionnft_0_pauctid1abc123');
+      expect(result).toEqual({ auctionId: 'pauctid1abc123', seqNum: '0' });
+    });
+  });
+
+  describe('lpNft', () => {
     it('matches when a string begins with `lpnft_`', () => {
       expect(assetPatterns.lpNft.matches('lpnft_abc123')).toBe(true);
     });
@@ -12,7 +29,7 @@ describe('assetPatterns', () => {
     });
   });
 
-  describe('delegationTokenPattern', () => {
+  describe('delegationToken', () => {
     it('matches when a string is a valid delegation token name', () => {
       expect(assetPatterns.delegationToken.matches('delegation_penumbravalid1abc123')).toBe(true);
     });
@@ -26,7 +43,7 @@ describe('assetPatterns', () => {
     });
   });
 
-  describe('proposalNftPattern', () => {
+  describe('proposalNft', () => {
     it('matches when a string begins with `proposal_`', () => {
       expect(assetPatterns.proposalNft.matches('proposal_abc123')).toBe(true);
     });
@@ -38,7 +55,7 @@ describe('assetPatterns', () => {
     });
   });
 
-  describe('unbondingTokenPattern', () => {
+  describe('unbondingToken', () => {
     it('matches when a string is a valid unbonding token name', () => {
       expect(
         assetPatterns.unbondingToken.matches('unbonding_start_at_1_penumbravalid1abc123'),
@@ -61,7 +78,7 @@ describe('assetPatterns', () => {
     });
   });
 
-  describe('votingReceiptPattern', () => {
+  describe('votingReceipt', () => {
     it('matches when a string begins with `voted_on_`', () => {
       expect(assetPatterns.votingReceipt.matches('voted_on_abc123')).toBe(true);
     });

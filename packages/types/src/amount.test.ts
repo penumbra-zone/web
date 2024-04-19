@@ -4,6 +4,7 @@ import {
   divideAmounts,
   formatNumber,
   fromBaseUnitAmount,
+  fromString,
   fromValueView,
   isZero,
   joinLoHiAmount,
@@ -251,5 +252,14 @@ describe('formatNumber', () => {
 
   it('formats negative number correctly', () => {
     expect(formatNumber(-123.456, { precision: 2 })).toBe('-123.46');
+  });
+});
+
+describe('fromString', () => {
+  it('converts a string to an amount', () => {
+    const result = fromString('123456');
+    const expected = new Amount({ hi: 0n, lo: 123456n });
+
+    expect(result.equals(expected)).toBe(true);
   });
 });

@@ -250,6 +250,13 @@ export const viewActionPlan =
           },
         });
 
+      case 'actionDutchAuctionSchedule':
+      case 'actionDutchAuctionEnd':
+      case 'actionDutchAuctionWithdraw':
+        return new ActionView({
+          actionView: actionPlan.action,
+        });
+
       case undefined:
         throw new Error('No action case in action plan');
       default:

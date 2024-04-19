@@ -5,6 +5,11 @@ export const PRICE_RELEVANCE_THRESHOLDS = {
   default: 200,
 };
 
+export interface AuctionNftCaptureGroups {
+  seqNum: string;
+  auctionId: string;
+}
+
 export interface IbcCaptureGroups {
   channel: string;
   denom: string;
@@ -22,6 +27,7 @@ export interface UnbondingCaptureGroups {
 }
 
 export interface AssetPatterns {
+  auctionNft: RegexMatcher<AuctionNftCaptureGroups>;
   lpNft: RegexMatcher;
   delegationToken: RegexMatcher<DelegationCaptureGroups>;
   proposalNft: RegexMatcher;
@@ -62,6 +68,9 @@ export class RegexMatcher<T = never> {
  * https://github.com/penumbra-zone/penumbra/blob/main/crates/core/asset/src/asset/registry.rs
  */
 export const assetPatterns: AssetPatterns = {
+  auctionNft: new RegexMatcher(
+    /^auctionnft_(?<seqNum>[0-9]+)_(?<auctionId>pauctid1[a-zA-HJ-NP-Z0-9]+)$/,
+  ),
   lpNft: new RegexMatcher(/^lpnft_/),
   delegationToken: new RegexMatcher(
     /^delegation_(?<idKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,

@@ -1,5 +1,5 @@
-import { useStore } from '../../state';
-import { SimulateSwapResult, swapSelector } from '../../state/swap';
+import { useStore } from '../../../state';
+import { SimulateSwapResult, swapSelector } from '../../../state/swap';
 import {
   Tooltip,
   TooltipContent,
@@ -7,13 +7,13 @@ import {
   TooltipTrigger,
 } from '@penumbra-zone/ui/components/ui/tooltip';
 import { buttonVariants } from '@penumbra-zone/ui/components/ui/button';
-import { AssetSelector } from '../shared/asset-selector';
+import { AssetSelector } from '../../shared/asset-selector';
 import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
-import { groupByAsset } from '../../fetchers/balances/by-asset';
+import { groupByAsset } from '../../../fetchers/balances/by-asset';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
@@ -22,6 +22,8 @@ import { formatNumber, isZero } from '@penumbra-zone/types/amount';
 import { getAmount } from '@penumbra-zone/getters/value-view';
 import { WalletIcon } from '@penumbra-zone/ui/components/ui/icons/wallet';
 import { getAssetIdFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import { useLoaderData } from 'react-router-dom';
+import { SwapLoaderResponse } from './swap-loader';
 
 const findMatchingBalance = (
   metadata: Metadata | undefined,
@@ -51,6 +53,7 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
   const { assetIn, assetOut, setAssetOut, simulateSwap, simulateOutLoading, simulateOutResult } =
     useStore(swapSelector);
 
+  const { assets } = useLoaderData() as SwapLoaderResponse;
   const matchingBalance = findMatchingBalance(assetOut, balances);
   const assetInId = getAssetIdFromBalancesResponseOptional(assetIn);
   const filter = assetInId
@@ -72,7 +75,12 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
         </div>
         <div className='flex flex-col'>
           <div className='ml-auto w-auto shrink-0'>
-            <AssetSelector value={assetOut} onChange={setAssetOut} filter={filter} />
+            <AssetSelector
+              assets={assets}
+              value={assetOut}
+              onChange={setAssetOut}
+              filter={filter}
+            />
           </div>
           <div className='mt-[6px] flex items-start justify-between'>
             <div />

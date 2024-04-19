@@ -6,6 +6,7 @@ export enum EduPanel {
   RECEIVING_FUNDS,
   IBC_WITHDRAW,
   SWAP,
+  SWAP_AUCTION,
   STAKING,
   TEMP_FILLER,
 }
@@ -25,6 +26,8 @@ export const eduPanelContent: Record<EduPanel, string> = {
     'IBC to a connected chain. Note that if the chain is a transparent chain, the transaction will be visible to others.',
   [EduPanel.SWAP]:
     'Shielded swaps between any kind of cryptoasset, with sealed-bid, batch pricing and no frontrunning. Only the batch totals are revealed, providing long-term privacy. Penumbra has no MEV, because transactions do not leak data about user activity.',
+  [EduPanel.SWAP_AUCTION]:
+    "Offer a specific quantity of cryptocurrency at decreasing prices until all the tokens are sold. Buyers can place bids at the price they're willing to pay, with the auction concluding when all tokens are sold or when the auction time expires. This mechanism allows for price discovery based on market demand, with participants potentially acquiring tokens at prices lower than initially offered.",
   [EduPanel.STAKING]:
     'Explore the available validator nodes and their associated rewards, performance metrics, and staking requirements. Select the validator you wish to delegate your tokens to, based on factors like uptime, reputation, and expected returns. Stay informed about validator performance updates, rewards distribution, and any network upgrades to ensure a seamless staking experience.',
   [EduPanel.TEMP_FILLER]:

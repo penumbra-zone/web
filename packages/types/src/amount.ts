@@ -23,6 +23,8 @@ export const fromValueView = ({ amount, metadata }: ValueView_KnownAssetId): Big
   return fromBaseUnitAmount(amount, getDisplayDenomExponent(metadata));
 };
 
+export const fromString = (amount: string): Amount => new Amount(splitLoHi(BigInt(amount)));
+
 export const addAmounts = (a: Amount, b: Amount): Amount => {
   const joined = joinLoHiAmount(a) + joinLoHiAmount(b);
   const { lo, hi } = splitLoHi(joined);
