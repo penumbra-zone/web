@@ -89,13 +89,13 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
   };
 };
 
+const tenMinsMs = 1000 * 60 * 10;
+const twoDaysMs = 1000 * 60 * 60 * 24 * 2;
+
 // Timeout is two days. However, in order to prevent identifying oneself by clock skew,
 // timeout time is rounded up to the nearest 10 minute interval.
 // Reference in core: https://github.com/penumbra-zone/penumbra/blob/1376d4b4f47f44bcc82e8bbdf18262942edf461e/crates/bin/pcli/src/command/tx.rs#L1066-L1067
 export const currentTimePlusTwoDaysRounded = (currentTimeMs: number): bigint => {
-  const tenMinsMs = 1000 * 60 * 10;
-  const twoDaysMs = 1000 * 60 * 60 * 24 * 2;
-
   const twoDaysFromNowMs = currentTimeMs + twoDaysMs;
 
   // round to next ten-minute interval
