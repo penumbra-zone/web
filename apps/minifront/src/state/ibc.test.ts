@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
 import {
@@ -111,21 +111,10 @@ describe.skip('IBC Slice', () => {
 
 describe('currentTimePlusTwoDaysRounded', () => {
   test('should add exactly two days to the current time and round up to the nearest ten minutes', () => {
-    const baseTime = Date.now(); // milliseconds
-    const baseTimeInNanoseconds = BigInt(baseTime * 1_000_000);
-    const twoDaysInNanoseconds = BigInt(2 * 24 * 60 * 60 * 1000 * 1_000_000);
-    const tenMinutesInNanoseconds = BigInt(10 * 60 * 1000 * 1_000_000);
+    const currentTimeMs = 1713519156000; // Apr 19 2024 9:32:36
+    const twoDaysRoundedNano = 1713692400000000000n; // Apr 21 2024 9:40:00
 
-    vi.useFakeTimers();
-    vi.setSystemTime(Number(baseTime));
-
-    const expectedTime = baseTimeInNanoseconds + twoDaysInNanoseconds;
-    const remainder = expectedTime % tenMinutesInNanoseconds;
-    const roundedExpectedTime = expectedTime + (tenMinutesInNanoseconds - remainder);
-
-    const result = currentTimePlusTwoDaysRounded();
-    expect(result).toEqual(roundedExpectedTime);
-
-    vi.useRealTimers(); // Reset timers
+    const result = currentTimePlusTwoDaysRounded(currentTimeMs);
+    expect(result).toEqual(twoDaysRoundedNano);
   });
 });

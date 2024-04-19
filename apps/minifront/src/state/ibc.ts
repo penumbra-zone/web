@@ -24,7 +24,6 @@ import {
 import { bech32IsValid } from '@penumbra-zone/bech32/src/validate';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { Chain } from '@penumbra-labs/registry';
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
 
 export interface IbcSendSlice {
   selection: BalancesResponse | undefined;
@@ -91,19 +90,21 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
 };
 
 // Timeout is two days. However, in order to prevent identifying oneself by clock skew,
-// timeout time is rounded to the nearest 10 minute mark.
+// timeout time is rounded up to the nearest 10 minute interval.
 // Reference in core: https://github.com/penumbra-zone/penumbra/blob/1376d4b4f47f44bcc82e8bbdf18262942edf461e/crates/bin/pcli/src/command/tx.rs#L1066-L1067
-export const currentTimePlusTwoDaysRounded = (): bigint => {
-  // Get current time in milliseconds and convert to nanoseconds
-  const nowInNanoseconds = BigInt(Date.now()) * BigInt(1_000_000);
+export const currentTimePlusTwoDaysRounded = (currentTimeMs: number): bigint => {
+  const tenMinsMs = 1000 * 60 * 10;
+  const twoDaysMs = 1000 * 60 * 60 * 24 * 2;
 
-  // New timestamp after adding 2 days
-  const twoDays = BigInt(2 * 24 * 60 * 60 * 1000 * 1000000);
-  const nowPlusTwoDays = nowInNanoseconds + twoDays;
-  const tenMinutes = BigInt(10 * 60 * 1000 * 1000000);
+  const twoDaysFromNowMs = currentTimeMs + twoDaysMs;
 
-  // Round up to nearest 10 minutes
-  return nowPlusTwoDays + tenMinutes - (nowPlusTwoDays % tenMinutes);
+  // round to next ten-minute interval
+  const roundedTimeoutMs = twoDaysFromNowMs + tenMinsMs - (twoDaysFromNowMs % tenMinsMs);
+
+  // 1 million nanoseconds per millisecond (converted to bigint)
+  const roundedTimeoutNs = BigInt(roundedTimeoutMs) * 1_000_000n;
+
+  return roundedTimeoutNs;
 };
 
 // Reference in core: https://github.com/penumbra-zone/penumbra/blob/1376d4b4f47f44bcc82e8bbdf18262942edf461e/crates/bin/pcli/src/command/tx.rs#L998-L1050
@@ -128,19 +129,22 @@ const getTimeout = async (
     throw new Error('no clientId ConnectionEnd returned from ibcConnectionClient request');
   }
 
-  const { clientState: clientStateUnpacked } = await ibcClient.clientState({ clientId: clientId });
-  if (!clientStateUnpacked) {
-    throw new Error('no clientState returned from ibcClient request');
+  const { clientState: anyClientState } = await ibcClient.clientState({ clientId: clientId });
+  if (!anyClientState) {
+    throw new Error(`Could not get state for client id ${clientId}`);
   }
 
-  const clientState = clientStateUnpacked.unpack(typeRegistry) as ClientState | undefined;
-  if (!clientState) throw new Error('Could not find chain id client state');
+  const clientState = new ClientState();
+  const success = anyClientState.unpackTo(clientState); // Side effect of augmenting input clientState with data
+  if (!success) {
+    throw new Error(`Error while trying to unpack Any to ClientState for client id ${clientId}`);
+  }
 
   // assuming a block time of 10s and adding ~1000 blocks (~3 hours)
   const revisionHeight = clientState.latestHeight!.revisionHeight + 1000n;
 
   return {
-    timeoutTime: currentTimePlusTwoDaysRounded(),
+    timeoutTime: currentTimePlusTwoDaysRounded(Date.now()),
     timeoutHeight: new Height({
       revisionHeight,
       revisionNumber: clientState.latestHeight!.revisionNumber,
