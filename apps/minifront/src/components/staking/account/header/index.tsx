@@ -29,7 +29,6 @@ export const Header = () => {
     unstakedTokensByAccount,
     unbondingTokensByAccount,
     undelegateClaim,
-    stakingTokenMetadata,
   } = useStoreShallow(headerSelector);
   const unstakedTokens = unstakedTokensByAccount.get(account);
   const unbondingTokens = unbondingTokensByAccount.get(account);

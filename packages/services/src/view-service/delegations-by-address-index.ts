@@ -1,8 +1,8 @@
 import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
 import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
+import { assetPatterns } from '@penumbra-zone/constants/src/assets';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
-import { assetPatterns, STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { Any, PartialMessage } from '@bufbuild/protobuf';
 import { getValidatorInfo } from '@penumbra-zone/getters/src/validator-info-response';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/src/validator-info';
@@ -107,12 +107,12 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
               },
               metadata: denomMetadata ? customizeSymbol(new Metadata(denomMetadata)) : undefined,
               extendedMetadata,
-              equivalentValues: [
-                {
-                  equivalentAmount: { hi: 0n, lo: 0n },
-                  numeraire: STAKING_TOKEN_METADATA,
-                },
-              ],
+              // equivalentValues: [
+              //   {
+              //     equivalentAmount: { hi: 0n, lo: 0n },
+              //     numeraire: STAKING_TOKEN_METADATA,
+              //   },
+              // ],
             },
           },
         },
