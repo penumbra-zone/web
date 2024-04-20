@@ -1,5 +1,5 @@
 ---
-"@penumbra-zone/wasm": major
+'@penumbra-zone/wasm': major
 ---
 
 configure for publish
