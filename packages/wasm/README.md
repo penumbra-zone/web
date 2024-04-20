@@ -31,9 +31,9 @@ import { useState, useMemo } from 'react';
 
 export const SpendKeyCat = () => {
   const [phrase, setPhrase] = useState('');
-  const spendKey: Uint8Array | null = useMemo(() => {
+  const spendKey: SpendKey | null = useMemo(() => {
     try {
-      return generateSpendKey(phrase).inner;
+      return generateSpendKey(phrase);
     } catch (e) {
       console.log('Failed to generate key', e);
       return null;
