@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "clean": "rm -rfv dist wasm ; cargo clean --manifest-path ./crate/Cargo.toml",
+    "predev": "cargo install cargo-watch",
     "dev": "cargo watch -C ./crate --postpone -- pnpm turbo run compile",
     "compile": "cd crate ; wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",
     "lint": "eslint \"src/*.ts*\"",
