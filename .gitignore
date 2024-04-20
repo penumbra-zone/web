@@ -55,3 +55,7 @@ lerna-debug.log*
 
 # large binary files
 *_pk.bin
+
+# pack outputs
+penumbra-zone-*.tgz
+packages/*/package
