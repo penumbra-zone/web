@@ -876,15 +876,16 @@ importers:
 
   packages/wasm:
     dependencies:
-      '@penumbra-zone/keys':
-        specifier: workspace:*
-        version: link:../keys
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
       zod:
         specifier: ^3.22.4
         version: 3.22.4
+    optionalDependencies:
+      '@penumbra-zone/keys':
+        specifier: workspace:*
+        version: link:../keys
     devDependencies:
       '@penumbra-zone/bech32':
         specifier: workspace:*

@@ -3,7 +3,7 @@ import { servicesCtx } from '../ctx/prax';
 
 import { optimisticBuild } from './util/build-tx';
 
-import { getWitness } from '@penumbra-zone/wasm/src/build';
+import { getWitness } from '@penumbra-zone/wasm/build';
 
 import { Code, ConnectError } from '@connectrpc/connect';
 import { AuthorizationData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';

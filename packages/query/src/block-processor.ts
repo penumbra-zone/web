@@ -1,6 +1,6 @@
 import { RootQuerier } from './root-querier';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
-import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/src/dex';
+import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/dex';
 
 import {
   getExchangeRateFromValidatorInfoResponse,
@@ -25,7 +25,7 @@ import { backOff } from 'exponential-backoff';
 import type { BlockProcessorInterface } from '@penumbra-zone/types/src/block-processor';
 import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
-import { customizeSymbol } from '@penumbra-zone/wasm/src/metadata';
+import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
 import { updatePricesFromSwaps } from './price-indexer';
 import {
   AssetId,

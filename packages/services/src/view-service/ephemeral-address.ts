@@ -1,6 +1,6 @@
 import type { Impl } from '.';
 
-import { getEphemeralByIndex } from '@penumbra-zone/wasm/src/keys';
+import { getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
 import { fvkCtx } from '../ctx/full-viewing-key';
 import { Code, ConnectError } from '@connectrpc/connect';
 

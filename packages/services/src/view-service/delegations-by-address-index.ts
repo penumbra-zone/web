@@ -1,6 +1,6 @@
 import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
-import { customizeSymbol } from '@penumbra-zone/wasm/src/metadata';
+import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
 import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
 import { assetPatterns, STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { Any, PartialMessage } from '@bufbuild/protobuf';

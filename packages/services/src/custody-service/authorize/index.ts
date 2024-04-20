@@ -1,14 +1,14 @@
 import type { Impl } from '..';
 import { extLocalCtx, extSessionCtx } from '../../ctx/prax';
 import { approverCtx } from '../../ctx/approver';
-import { generateSpendKey } from '@penumbra-zone/wasm/src/keys';
-import { authorizePlan } from '@penumbra-zone/wasm/src/build';
+import { generateSpendKey } from '@penumbra-zone/wasm/keys';
+import { authorizePlan } from '@penumbra-zone/wasm/build';
 import { Key } from '@penumbra-zone/crypto-web/encryption';
 import { Code, ConnectError, HandlerContext } from '@connectrpc/connect';
 import { Box } from '@penumbra-zone/types/src/box';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import { assertSwapClaimAddressesBelongToCurrentUser } from './assert-swap-claim-addresses-belong-to-current-user';
-import { isControlledAddress } from '@penumbra-zone/wasm/src/address';
+import { isControlledAddress } from '@penumbra-zone/wasm/address';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
 import { fvkCtx } from '../../ctx/full-viewing-key';
 

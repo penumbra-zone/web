@@ -1,6 +1,6 @@
 import type { Impl } from '.';
 
-import { getAddressIndexByAddress } from '@penumbra-zone/wasm/src/address';
+import { getAddressIndexByAddress } from '@penumbra-zone/wasm/address';
 
 import { Code, ConnectError } from '@connectrpc/connect';
 import { fvkCtx } from '../ctx/full-viewing-key';

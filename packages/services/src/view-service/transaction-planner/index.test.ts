@@ -13,7 +13,7 @@ import { transactionPlanner } from '.';
 import { fvkCtx } from '../../ctx/full-viewing-key';
 
 const mockPlanTransaction = vi.hoisted(() => vi.fn());
-vi.mock('@penumbra-zone/wasm/src/planner', () => ({
+vi.mock('@penumbra-zone/wasm/planner', () => ({
   planTransaction: mockPlanTransaction,
 }));
 describe('TransactionPlanner request handler', () => {

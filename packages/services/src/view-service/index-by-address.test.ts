@@ -4,7 +4,7 @@ import { createContextValues, createHandlerContext, HandlerContext } from '@conn
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { indexByAddress } from './index-by-address';
-import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/src/keys';
+import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
 import { bech32ToFullViewingKey } from '@penumbra-zone/bech32/src/full-viewing-key';
 import { testFullViewingKey } from '../test-utils';
 import { fvkCtx } from '../ctx/full-viewing-key';

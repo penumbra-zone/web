@@ -10,7 +10,7 @@ import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
 
 const mockGetAddressIndexByAddress = vi.hoisted(() => vi.fn());
 
-vi.mock('@penumbra-zone/wasm/src/address', () => ({
+vi.mock('@penumbra-zone/wasm/address', () => ({
   getAddressIndexByAddress: mockGetAddressIndexByAddress,
 }));
 
