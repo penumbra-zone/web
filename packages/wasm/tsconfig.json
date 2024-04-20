@@ -1,6 +1,6 @@
 {
   "extends": "tsconfig/base.json",
-  "include": ["src/**.ts"],
+  "include": ["src/**.ts", "*.ts"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "noEmit": true,
