@@ -2,6 +2,7 @@
   "name": "node-status",
   "version": "2.0.2",
   "private": true,
+  "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
     "build": "tsc && vite build",

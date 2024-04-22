@@ -1,7 +1,7 @@
 {
   "name": "penumbra-web",
   "private": true,
-  "license": "MIT OR Apache-2.0",
+  "license": "(MIT OR Apache-2.0)",
   "repository": "penumbra-zone/web.git",
   "packageManager": "pnpm@8.6.11",
   "scripts": {
