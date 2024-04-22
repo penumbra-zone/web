@@ -19,7 +19,7 @@
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["compile"]
+      "dependsOn": ["compile", "//#lint:syncpack"]
     },
     "dev": {
       "dotEnv": [".env"],
@@ -45,6 +45,9 @@
       "dependsOn": ["compile"]
     },
     "//#clean:vitest-mjs": {
+      "cache": false
+    },
+    "//#lint:syncpack": {
       "cache": false
     },
     "//#playwright-install": {

@@ -3,6 +3,12 @@
   "version": "1.0.1",
   "description": "Tools for assuming different perspectives of Penumbra transactions",
   "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "clean": "rm -rfv dist",
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
+  },
   "exports": {
     "./*": "./*.ts"
   },
@@ -16,16 +22,15 @@
       "./translators/*": "./dist/translators/*.js"
     }
   },
-  "scripts": {
-    "build": "vite build",
-    "clean": "rm -rfv dist",
-    "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest run"
-  },
   "dependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240326223351-a25fff24022e.2",
     "@penumbra-zone/bech32": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
+  },
+  "devDependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2"
+  },
+  "peerDependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2"
   }
 }

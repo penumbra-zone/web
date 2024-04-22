@@ -19,8 +19,14 @@
     "./stream": "./src/stream.ts"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^1.8.0",
-    "@connectrpc/connect": "^1.4.0",
     "@penumbra-zone/transport-dom": "workspace:*"
+  },
+  "devDependencies": {
+    "@bufbuild/protobuf": "^1.8.0",
+    "@connectrpc/connect": "^1.4.0"
+  },
+  "peerDependencies": {
+    "@bufbuild/protobuf": "^1.8.0",
+    "@connectrpc/connect": "^1.4.0"
   }
 }

@@ -1,7 +1,6 @@
 {
   "name": "@penumbra-zone/crypto-web",
   "version": "3.0.0",
-  "license": "MIT",
   "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
@@ -18,9 +17,9 @@
     "./sha256": "./src/sha256.ts"
   },
   "dependencies": {
+    "@penumbra-zone/types": "workspace:*",
     "bip39": "^3.1.0",
-    "crypto-js": "^4.2.0",
-    "@penumbra-zone/types": "workspace:*"
+    "crypto-js": "^4.2.0"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2"

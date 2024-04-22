@@ -1,7 +1,6 @@
 {
   "name": "@penumbra-zone/storage",
   "version": "3.0.0",
-  "license": "MIT",
   "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
@@ -19,14 +18,20 @@
     "./indexed-db/*": "./src/indexed-db/*.ts"
   },
   "dependencies": {
+    "@penumbra-zone/bech32": "workspace:*",
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
-    "@penumbra-zone/bech32": "workspace:*",
     "idb": "^8.0.0"
   },
   "devDependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2",
+    "@bufbuild/protobuf": "^1.8.0",
     "@penumbra-zone/polyfills": "workspace:*",
     "@penumbra-zone/types": "workspace:*"
+  },
+  "peerDependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2",
+    "@bufbuild/protobuf": "^1.8.0"
   }
 }
