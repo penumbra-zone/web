@@ -1,4 +1,6 @@
-import { Query as IbcQueryService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
+import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
+import { Query as IbcChannelService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/channel/v1/query_connect';
+import { Query as IbcConnectionService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/connection/v1/query_connect';
 import { QueryService as AppService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/app/v1/app_connect';
 import { QueryService as CompactBlockService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/compact_block/v1/compact_block_connect';
 import {
@@ -37,7 +39,9 @@ export const typeRegistry: IMessageTypeRegistry = createRegistry(
   DexService,
   DexSimulationService,
   GovernanceService,
-  IbcQueryService,
+  IbcClientService,
+  IbcChannelService,
+  IbcConnectionService,
   SctService,
   ShieldedPoolService,
   StakeService,

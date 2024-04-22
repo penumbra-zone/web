@@ -6,13 +6,12 @@ import {
 import { BigNumber } from 'bignumber.js';
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
-import { ibcClient, viewClient } from '../clients';
+import { ibcChannelClient, ibcClient, ibcConnectionClient, viewClient } from '../clients';
 import {
   getDisplayDenomExponentFromValueView,
   getMetadata,
 } from '@penumbra-zone/getters/src/value-view';
 import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
-import { typeRegistry } from '@penumbra-zone/types/src/registry';
 import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 import { planBuildBroadcast } from './helpers';
 import { amountMoreThanBalance } from './send';
@@ -90,29 +89,62 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
   };
 };
 
+const tenMinsMs = 1000 * 60 * 10;
+const twoDaysMs = 1000 * 60 * 60 * 24 * 2;
+
+// Timeout is two days. However, in order to prevent identifying oneself by clock skew,
+// timeout time is rounded up to the nearest 10 minute interval.
+// Reference in core: https://github.com/penumbra-zone/penumbra/blob/1376d4b4f47f44bcc82e8bbdf18262942edf461e/crates/bin/pcli/src/command/tx.rs#L1066-L1067
+export const currentTimePlusTwoDaysRounded = (currentTimeMs: number): bigint => {
+  const twoDaysFromNowMs = currentTimeMs + twoDaysMs;
+
+  // round to next ten-minute interval
+  const roundedTimeoutMs = twoDaysFromNowMs + tenMinsMs - (twoDaysFromNowMs % tenMinsMs);
+
+  // 1 million nanoseconds per millisecond (converted to bigint)
+  const roundedTimeoutNs = BigInt(roundedTimeoutMs) * 1_000_000n;
+
+  return roundedTimeoutNs;
+};
+
+// Reference in core: https://github.com/penumbra-zone/penumbra/blob/1376d4b4f47f44bcc82e8bbdf18262942edf461e/crates/bin/pcli/src/command/tx.rs#L998-L1050
 const getTimeout = async (
   chain: Chain,
 ): Promise<{ timeoutTime: bigint; timeoutHeight: Height }> => {
-  // timeout 2 days from now, in nanoseconds since epoch
-  const twoDaysMs = BigInt(2 * 24 * 60 * 60 * 1000); // 2 days * 24 hours/day * 60 minutes/hour * 60 seconds/minute * 1000 milliseconds per second
-  // truncate resolution at seconds, to obfuscate clock skew
-  const lowPrecisionNowMs = BigInt(Math.floor(Date.now() / 1000) * 1000); // ms/1000 to second, floor, second*1000 to ms
-  // (now + two days) as nanoseconds
-  const timeoutTime = (lowPrecisionNowMs + twoDaysMs) * 1_000_000n; // 1 million nanoseconds per millisecond
+  const { channel } = await ibcChannelClient.channel({
+    portId: 'transfer',
+    channelId: chain.ibcChannel,
+  });
 
-  const { clientStates } = await ibcClient.clientStates({});
-  const unpacked = clientStates
-    .map(cs => cs.clientState!.unpack(typeRegistry))
-    .filter(Boolean) as ClientState[];
+  const connectionId = channel?.connectionHops[0];
+  if (!connectionId) {
+    throw new Error('no connectionId in channel returned from ibcChannelClient request');
+  }
 
-  const clientState = unpacked.find(cs => cs.chainId === chain.chainId);
-  if (!clientState) throw new Error('Could not find chain id client state');
+  const { connection } = await ibcConnectionClient.connection({
+    connectionId,
+  });
+  const clientId = connection?.clientId;
+  if (!clientId) {
+    throw new Error('no clientId ConnectionEnd returned from ibcConnectionClient request');
+  }
+
+  const { clientState: anyClientState } = await ibcClient.clientState({ clientId: clientId });
+  if (!anyClientState) {
+    throw new Error(`Could not get state for client id ${clientId}`);
+  }
+
+  const clientState = new ClientState();
+  const success = anyClientState.unpackTo(clientState); // Side effect of augmenting input clientState with data
+  if (!success) {
+    throw new Error(`Error while trying to unpack Any to ClientState for client id ${clientId}`);
+  }
 
   // assuming a block time of 10s and adding ~1000 blocks (~3 hours)
   const revisionHeight = clientState.latestHeight!.revisionHeight + 1000n;
 
   return {
-    timeoutTime,
+    timeoutTime: currentTimePlusTwoDaysRounded(Date.now()),
     timeoutHeight: new Height({
       revisionHeight,
       revisionNumber: clientState.latestHeight!.revisionNumber,

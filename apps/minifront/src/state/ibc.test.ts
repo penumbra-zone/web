@@ -12,6 +12,7 @@ import { produce } from 'immer';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
 import { Chain } from '@penumbra-labs/registry';
+import { currentTimePlusTwoDaysRounded } from './ibc';
 
 describe.skip('IBC Slice', () => {
   const selectionExample = new BalancesResponse({
@@ -105,5 +106,15 @@ describe.skip('IBC Slice', () => {
       useStore.getState().send.setSelection(selectionExample);
       expect(useStore.getState().send.selection).toStrictEqual(selectionExample);
     });
+  });
+});
+
+describe('currentTimePlusTwoDaysRounded', () => {
+  test('should add exactly two days to the current time and round up to the nearest ten minutes', () => {
+    const currentTimeMs = 1713519156000; // Apr 19 2024 9:32:36
+    const twoDaysRoundedNano = 1713692400000000000n; // Apr 21 2024 9:40:00
+
+    const result = currentTimePlusTwoDaysRounded(currentTimeMs);
+    expect(result).toEqual(twoDaysRoundedNano);
   });
 });
