@@ -21,6 +21,7 @@
     "lint:rust": "turbo run lint:rust",
     "lint:syncpack": "syncpack lint",
     "playwright-install": "playwright install",
+    "postinstall": "syncpack list-mismatches",
     "test": "turbo run test",
     "test:rust": "turbo run test:rust"
   },
