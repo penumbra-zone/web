@@ -3,6 +3,12 @@
   "version": "2.0.0",
   "description": "Tools for manipulating Penumbra bech32 strings",
   "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "clean": "rm -rfv dist",
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
+  },
   "exports": {
     "./*": "./*.ts"
   },
@@ -33,13 +39,13 @@
       }
     }
   },
-  "scripts": {
-    "build": "vite build",
-    "clean": "rm -rfv dist",
-    "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest run"
-  },
   "dependencies": {
     "bech32": "^2.0.0"
+  },
+  "devDependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2"
+  },
+  "peerDependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2"
   }
 }

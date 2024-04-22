@@ -2,6 +2,12 @@
   "name": "@penumbra-zone/polyfills",
   "version": "2.0.0",
   "type": "module",
+  "scripts": {
+    "build": "tsc && vite build",
+    "clean": "rm -rfv dist",
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
+  },
   "publishConfig": {
     "files": [
       "dist"
@@ -13,12 +19,6 @@
         "types": "./dist/ReadableStream[Symbol.asyncIterator].d.ts"
       }
     }
-  },
-  "scripts": {
-    "build": "tsc && vite build",
-    "clean": "rm -rfv dist",
-    "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest run"
   },
   "dependencies": {
     "array-from-async": "^3.0.0"

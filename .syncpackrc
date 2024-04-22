@@ -1,0 +1,52 @@
+{
+  "sortFirst": [
+    "name",
+    "version",
+    "private",
+    "license",
+    "description",
+    "repository",
+    "packageManager",
+    "type",
+    "main",
+    "scripts",
+    "files",
+    "exports",
+    "publishConfig",
+    "pnpm"
+  ],
+  "dependencyTypes": [
+    "dev",
+    "peer",
+    "pnpmOverrides",
+    "prod"
+  ],
+  "versionGroups": [
+    {
+      "label": "Use workspace protocol for local packages",
+      "dependencies": [
+        "$LOCAL"
+      ],
+      "pinVersion": "workspace:*"
+    },
+    {
+      "label": "@types packages should only be under devDependencies",
+      "dependencies": [
+        "@types/**"
+      ],
+      "dependencyTypes": [
+        "!dev"
+      ],
+      "isBanned": true
+    },
+    {
+      "label": "Control @buf registry packages from root",
+      "dependencies": [
+        "@buf/*"
+      ],
+      "snapTo": [
+        "penumbra-web"
+      ]
+    }
+  ]
+}

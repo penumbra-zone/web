@@ -2,7 +2,6 @@
   "name": "@penumbra-zone/query",
   "version": "2.0.2",
   "private": true,
-  "license": "MIT",
   "type": "module",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
@@ -10,12 +9,30 @@
   },
   "dependencies": {
     "@penumbra-zone/bech32": "workspace:*",
-    "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/constants": "workspace:*",
+    "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/polyfills": "workspace:*",
-    "@penumbra-zone/wasm": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
+    "@penumbra-zone/wasm": "workspace:*",
     "exponential-backoff": "^3.1.1"
+  },
+  "devDependencies": {
+    "@buf/cosmos_ibc.bufbuild_es": "1.8.0-20240327103030-e2006674271c.2",
+    "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20240327103030-e2006674271c.2",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240331004851-c3b058e666bc.2",
+    "@bufbuild/protobuf": "^1.8.0",
+    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/connect-web": "^1.4.0"
+  },
+  "peerDependencies": {
+    "@buf/cosmos_ibc.bufbuild_es": "1.8.0-20240327103030-e2006674271c.2",
+    "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20240327103030-e2006674271c.2",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240331004851-c3b058e666bc.2",
+    "@bufbuild/protobuf": "^1.8.0",
+    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/connect-web": "^1.4.0"
   }
 }

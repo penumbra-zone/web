@@ -1,8 +1,13 @@
 {
   "name": "@penumbra-zone/constants",
   "version": "2.0.0",
-  "license": "MIT",
   "type": "module",
+  "scripts": {
+    "build": "tsc && vite build",
+    "clean": "rm -rfv dist",
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
+  },
   "publishConfig": {
     "files": [
       "dist"
@@ -11,10 +16,12 @@
       "./src/*": "./dist/*.js"
     }
   },
-  "scripts": {
-    "build": "tsc && vite build",
-    "clean": "rm -rfv dist",
-    "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest run"
+  "devDependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2",
+    "@bufbuild/protobuf": "^1.8.0"
+  },
+  "peerDependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2",
+    "@bufbuild/protobuf": "^1.8.0"
   }
 }

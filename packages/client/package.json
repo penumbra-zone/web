@@ -1,8 +1,13 @@
 {
   "name": "@penumbra-zone/client",
   "version": "3.0.0",
-  "description": "Package for connecting to Prax extension",
+  "description": "Package for connecting to any Penumbra extension, including Prax.",
   "type": "module",
+  "scripts": {
+    "build": "tsc && vite build",
+    "clean": "rm -rfv dist",
+    "lint": "eslint \"**/*.ts*\""
+  },
   "exports": {
     ".": "./src/prax.ts",
     "./src/global": "./src/global.ts",
@@ -18,13 +23,16 @@
       "./get-port": "./dist/get-port.js"
     }
   },
-  "scripts": {
-    "build": "tsc && vite build",
-    "clean": "rm -rfv dist",
-    "lint": "eslint \"**/*.ts*\""
-  },
   "dependencies": {
     "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@bufbuild/protobuf": "^1.8.0",
+    "@connectrpc/connect": "^1.4.0"
+  },
+  "peerDependencies": {
+    "@bufbuild/protobuf": "^1.8.0",
+    "@connectrpc/connect": "^1.4.0"
   }
 }

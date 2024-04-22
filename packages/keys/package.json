@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "Tool to download proving keys for Penumbra",
   "type": "module",
+  "scripts": {
+    "prepare": "./download-keys ./keys"
+  },
   "files": [
     "action-keys.json",
     "download-keys",
@@ -11,9 +14,6 @@
   "exports": {
     ".": "./action-keys.json",
     "./*_pk.bin": "./keys/*_pk.bin"
-  },
-  "scripts": {
-    "prepare": "./download-keys ./keys"
   },
   "bin": {
     "penumbra-download-keys": "./download-keys"

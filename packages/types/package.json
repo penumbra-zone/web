@@ -1,8 +1,13 @@
 {
   "name": "@penumbra-zone/types",
   "version": "2.0.0",
-  "license": "MIT",
   "type": "module",
+  "scripts": {
+    "build": "tsc && vite build",
+    "clean": "rm -rfv dist",
+    "lint": "eslint \"**/*.ts*\"",
+    "test": "vitest run"
+  },
   "exports": {
     "./src/*": "./src/*.ts",
     "./src/internal-msg/*": "./src/internal-msg/*.ts"
@@ -16,18 +21,26 @@
       "./src/internal-msg/*": "./dist/internal-msg/*.js"
     }
   },
-  "scripts": {
-    "build": "tsc && vite build",
-    "clean": "rm -rfv dist",
-    "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest run"
-  },
   "dependencies": {
+    "@penumbra-zone/bech32": "workspace:*",
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
-    "@penumbra-zone/bech32": "workspace:*",
     "bignumber.js": "^9.1.2",
     "idb": "^8.0.0",
     "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@buf/cosmos_ibc.bufbuild_es": "1.8.0-20240327103030-e2006674271c.2",
+    "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20240327103030-e2006674271c.2",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240331004851-c3b058e666bc.2",
+    "@bufbuild/protobuf": "^1.8.0"
+  },
+  "peerDependencies": {
+    "@buf/cosmos_ibc.bufbuild_es": "1.8.0-20240327103030-e2006674271c.2",
+    "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20240327103030-e2006674271c.2",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240331004851-c3b058e666bc.2",
+    "@bufbuild/protobuf": "^1.8.0"
   }
 }

@@ -14,11 +14,10 @@
 
 ### Docs library
 
-- [Spinning up locally](spinning-up-locally.md)
+- [Development](development.md) and Getting Started
+- [Guiding principles](guiding-principles.md)
 - [CI/CD](ci-cd.md)
 - [Publishing](publishing.md)
-- [Guiding principles](guiding-principles.md)
-- [Monorepo](monorepo.md)
 - [State management](state-management.md)
 - [UI library](ui-library.md)
 - [Testing](testing.md)
