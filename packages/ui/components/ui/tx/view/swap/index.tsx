@@ -10,7 +10,7 @@ import {
   getClaimTx,
 } from '@penumbra-zone/getters/src/swap-view';
 import { ValueViewComponent } from '../value';
-import {ValueView} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { ActionDetails } from '../action-details';
 import { UnimplementedView } from '../unimplemented-view';
