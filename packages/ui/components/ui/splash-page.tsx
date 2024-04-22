@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card';
-import { CompressedVideoLogo } from './logo/compressed-video';
 import { FadeTransition } from './fade-transition';
+import { AnimatedPenumbra } from './logo/animated-penumbra';
 
 export const SplashPage = ({
   title,
@@ -15,7 +15,7 @@ export const SplashPage = ({
   return (
     <FadeTransition>
       <div className='absolute inset-0 z-[-1] flex w-screen items-center justify-center'>
-        <CompressedVideoLogo noWords className='w-[calc(100%-25vw)]' />
+        <AnimatedPenumbra className='w-[calc(100%-25vw)]' />
       </div>
       <Card className='w-[608px]' gradient>
         <CardHeader className='items-start'>
