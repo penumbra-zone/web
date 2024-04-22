@@ -1,13 +1,13 @@
-import { Input, InputProps } from '@penumbra-zone/ui/components/ui/input';
+import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import SelectTokenModal from './select-token-modal';
+import BalanceSelector from './balance-selector';
 import { Validation } from './validation-result';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { InputBlock } from './input-block';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { WalletIcon } from '@penumbra-zone/ui/components/ui/icons/wallet';
 
-interface InputTokenProps extends InputProps {
+interface InputTokenProps {
   label: string;
   selection: BalancesResponse | undefined;
   placeholder: string;
@@ -17,6 +17,7 @@ interface InputTokenProps extends InputProps {
   setSelection: (selection: BalancesResponse) => void;
   validations?: Validation[];
   balances: BalancesResponse[];
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }
 
 export default function InputToken({
@@ -29,7 +30,7 @@ export default function InputToken({
   inputClassName,
   setSelection,
   balances,
-  ...props
+  onChange,
 }: InputTokenProps) {
   return (
     <InputBlock label={label} value={value} validations={validations} className={className}>
@@ -43,9 +44,9 @@ export default function InputToken({
             inputClassName,
           )}
           value={value}
-          {...props}
+          onChange={onChange}
         />
-        <SelectTokenModal selection={selection} setSelection={setSelection} balances={balances} />
+        <BalanceSelector value={selection} onChange={setSelection} balances={balances} />
       </div>
 
       <div className='mt-[6px] flex items-center justify-between gap-2'>
