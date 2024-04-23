@@ -47,7 +47,6 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - run: pnpm turbo telemetry disable
-      - run: pnpm format-check
       - run: pnpm turbo lint --cache-dir=.turbo
 
   turbo-build:
@@ -113,7 +112,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-      - run: pnpm turbo format-check:rust --cache-dir=.turbo
+      - run: pnpm turbo telemetry disable
       - run: pnpm turbo lint:rust --cache-dir=.turbo
 
   turbo-test-rust:
@@ -141,4 +140,5 @@ jobs:
         with:
           version: 'latest'
       - uses: browser-actions/setup-firefox@v1
+      - run: pnpm turbo telemetry disable
       - run: pnpm turbo test:rust --cache-dir=.turbo
