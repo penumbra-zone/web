@@ -8,7 +8,7 @@ on:
 
 jobs:
   wasm:
-    runs-on: buildjet-16vcpu-ubuntu-2204 # buildjet for rust, github standard for everything else
+    runs-on: buildjet-16vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - id: compiled
