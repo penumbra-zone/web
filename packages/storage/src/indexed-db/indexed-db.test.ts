@@ -136,6 +136,14 @@ describe('IndexedDb', () => {
       }
       expect(notes.length).toBe(1);
 
+      await db.saveAssetsMetadata(metadataA);
+
+      const assets: Metadata[] = [];
+      for await (const asset of db.iterateAssetsMetadata()) {
+        assets.push(asset);
+      }
+      expect(assets.length).toBe(1);
+
       await db.saveTransaction(transactionId, 1000n, transaction);
       const txs: TransactionInfo[] = [];
       for await (const tx of db.iterateTransactions()) {
