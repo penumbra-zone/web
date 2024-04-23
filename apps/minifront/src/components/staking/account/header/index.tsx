@@ -6,9 +6,9 @@ import { Stat } from './stat';
 import { AllSlices } from '../../../../state';
 import { UnbondingTokens } from './unbonding-tokens';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
-import { ZERO_BALANCE_UM } from './constants';
 import { useLoaderData } from 'react-router-dom';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { zeroValueView } from '../../../shared/zero-value-view';
 
 const headerSelector = (state: AllSlices) => ({
   account: state.staking.account,
@@ -44,7 +44,7 @@ export const Header = () => {
 
           <div className='flex items-start justify-center gap-8'>
             <Stat label='Available to delegate'>
-              <ValueViewComponent view={unstakedTokens ?? ZERO_BALANCE_UM(stakingTokenMetadata)} />
+              <ValueViewComponent view={unstakedTokens ?? zeroValueView(stakingTokenMetadata)} />
             </Stat>
 
             <Stat label='Unbonding amount'>

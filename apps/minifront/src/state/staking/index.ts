@@ -38,8 +38,8 @@ import { viewClient } from '../../clients';
 import { getValueView as getValueViewFromDelegationsByAddressIndexResponse } from '@penumbra-zone/getters/src/delegations-by-address-index-response';
 import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse } from '@penumbra-zone/getters/src/unbonding-tokens-by-address-index-response';
 import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
-import { ZERO_BALANCE_UM } from '../../components/staking/account/header/constants';
 import { getStakingTokenMetadata } from '../../fetchers/registry';
+import { zeroValueView } from '../../components/shared/zero-value-view';
 
 interface UnbondingTokensForAccount {
   claimable: {
@@ -294,8 +294,8 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     const unbondingTokensForAccount = responses.reduce<UnbondingTokensForAccount>(
       (acc, curr) => toUnbondingTokensForAccount(acc, curr, stakingTokenMetadata),
       {
-        claimable: { total: ZERO_BALANCE_UM(stakingTokenMetadata), tokens: [] },
-        notYetClaimable: { total: ZERO_BALANCE_UM(stakingTokenMetadata), tokens: [] },
+        claimable: { total: zeroValueView(stakingTokenMetadata), tokens: [] },
+        notYetClaimable: { total: zeroValueView(stakingTokenMetadata), tokens: [] },
       },
     );
 

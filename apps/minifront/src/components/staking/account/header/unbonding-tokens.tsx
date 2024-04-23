@@ -11,7 +11,7 @@ import {
 } from '@penumbra-zone/ui/components/ui/tooltip';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { ReactNode } from 'react';
-import { ZERO_BALANCE_UM } from './constants';
+import { zeroValueView } from '../../../shared/zero-value-view';
 
 export const UnbondingTokens = ({
   total,
@@ -30,7 +30,7 @@ export const UnbondingTokens = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger>
-          <ValueViewComponent view={total ?? ZERO_BALANCE_UM(stakingTokenMetadata)} />
+          <ValueViewComponent view={total ?? zeroValueView(stakingTokenMetadata)} />
         </TooltipTrigger>
         <TooltipContent>
           <div className='flex flex-col gap-4'>
