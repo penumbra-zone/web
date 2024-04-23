@@ -13,7 +13,6 @@ import {
   getValidatorInfoFromValueView,
 } from '@penumbra-zone/getters/src/value-view';
 import { asValueView } from '@penumbra-zone/getters/src/equivalent-value';
-import { useLoaderData } from 'react-router-dom';
 
 /**
  * Renders a `ValueView` that contains a delegation token, along with the
@@ -28,6 +27,7 @@ export const DelegationValueView = memo(
     valueView,
     votingPowerAsIntegerPercentage,
     unstakedTokens,
+    stakingTokenMetadata,
   }: {
     /**
      * A `ValueView` representing the address's balance of the given delegation
@@ -40,8 +40,8 @@ export const DelegationValueView = memo(
      * Used to show the user how many tokens they have available to delegate.
      */
     unstakedTokens?: ValueView;
+    stakingTokenMetadata: Metadata;
   }) => {
-    const stakingTokenMetadata = useLoaderData() as Metadata;
     const validatorInfo = getValidatorInfoFromValueView(valueView);
     const metadata = getMetadata(valueView);
 

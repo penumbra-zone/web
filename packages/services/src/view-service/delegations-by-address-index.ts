@@ -107,12 +107,6 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
               },
               metadata: denomMetadata ? customizeSymbol(new Metadata(denomMetadata)) : undefined,
               extendedMetadata,
-              // equivalentValues: [
-              //   {
-              //     equivalentAmount: { hi: 0n, lo: 0n },
-              //     numeraire: STAKING_TOKEN_METADATA,
-              //   },
-              // ],
             },
           },
         },

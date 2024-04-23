@@ -8,7 +8,6 @@ import {
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { getAssetsFromRegistry } from '../fetchers/registry';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 
 describe('Swap Slice', () => {
@@ -40,8 +39,8 @@ describe('Swap Slice', () => {
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
   let registryAssets: Metadata[];
 
-  beforeEach(async () => {
-    registryAssets = await getAssetsFromRegistry();
+  beforeEach(() => {
+    registryAssets = [];
     useStore = create<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
   });
 

@@ -1,7 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { AllSlices } from '../../../state';
 import { DelegationValueView } from './delegation-value-view';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {
+  Metadata,
+  ValueView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getValidatorIdentityKeyFromValueView } from '@penumbra-zone/getters/src/value-view';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
@@ -19,7 +22,7 @@ const delegationsSelector = (state: AllSlices) => ({
   votingPowerByValidatorInfo: state.staking.votingPowerByValidatorInfo,
 });
 
-export const Delegations = () => {
+export const Delegations = ({ stakingTokenMetadata }: { stakingTokenMetadata: Metadata }) => {
   const { delegations, unstakedTokens, votingPowerByValidatorInfo } =
     useStoreShallow(delegationsSelector);
 
@@ -35,6 +38,7 @@ export const Delegations = () => {
             <DelegationValueView
               valueView={delegation}
               unstakedTokens={unstakedTokens}
+              stakingTokenMetadata={stakingTokenMetadata}
               votingPowerAsIntegerPercentage={getVotingPowerAsIntegerPercentage(
                 votingPowerByValidatorInfo,
                 delegation,

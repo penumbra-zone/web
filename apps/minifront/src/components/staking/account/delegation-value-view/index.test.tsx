@@ -100,19 +100,25 @@ const valueView = new ValueView({
 
 describe('<DelegationValueView />', () => {
   it('shows balance of the delegation token', () => {
-    const { container } = render(<DelegationValueView valueView={valueView} />);
+    const { container } = render(
+      <DelegationValueView valueView={valueView} stakingTokenMetadata={STAKING_TOKEN_METADATA} />,
+    );
 
     expect(container).toHaveTextContent('1delUM(abc...xyz)');
   });
 
   it("shows the delegation token's equivalent value in terms of the staking token", () => {
-    const { container } = render(<DelegationValueView valueView={valueView} />);
+    const { container } = render(
+      <DelegationValueView valueView={valueView} stakingTokenMetadata={STAKING_TOKEN_METADATA} />,
+    );
 
     expect(container).toHaveTextContent('1.33UM');
   });
 
   it('does not show other equivalent values', () => {
-    const { container } = render(<DelegationValueView valueView={valueView} />);
+    const { container } = render(
+      <DelegationValueView valueView={valueView} stakingTokenMetadata={STAKING_TOKEN_METADATA} />,
+    );
 
     expect(container).not.toHaveTextContent('2.66SOT');
   });
