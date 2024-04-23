@@ -49,7 +49,7 @@ scripts.
 1. Go to the Extensions page [`chrome://extensions`](chrome://extensions)
 2. Enable _Developer Mode_ by clicking the toggle switch at the top right
 3. Click the button _Load unpacked extension_ at the top and locate your cloned
-   pository to select the extension's build output directory
+   repository to select the extension's build output directory
    [`apps/extension/dist`](../apps/extension/dist).
 4. Activate the extension to enter onboarding.
    - Pin your extension to the toolbar for quick access.
