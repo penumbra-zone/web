@@ -7,6 +7,7 @@ import { filterBalancesPerChain, ibcSelector, ibcValidationErrors } from '../../
 import InputToken from '../shared/input-token';
 import { InputBlock } from '../shared/input-block';
 import { IbcLoaderResponse } from './ibc-loader';
+import { LockOpen2Icon } from '@radix-ui/react-icons';
 
 export const IbcOutForm = () => {
   const { balances } = useLoaderData() as IbcLoaderResponse;
@@ -74,15 +75,16 @@ export const IbcOutForm = () => {
       <Button
         type='submit'
         variant='gradient'
-        className='mt-9'
         disabled={
           !Number(amount) ||
           !destinationChainAddress ||
           !!Object.values(validationErrors).find(Boolean) ||
           !selection
         }
+        className='flex items-center gap-2'
       >
-        Send
+        <LockOpen2Icon />
+        <span className='-mb-1'>Unshield Assets</span>
       </Button>
     </form>
   );
