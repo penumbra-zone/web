@@ -44,7 +44,8 @@ const mockBalancesResponse1 = new BalancesResponse({
         amount: { hi: 0n, lo: 1n },
         metadata: {
           display: 'penumbra',
-        },      },
+        },
+      },
     },
   },
 });
