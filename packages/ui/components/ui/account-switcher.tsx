@@ -50,29 +50,26 @@ export const AccountSwitcher = ({
     }
   };
 
-  const shouldShowPreviousButton =
+  const previousButtonEnabled =
     account !== 0 && (!sortedFilter || sortedFilter.indexOf(account) > 0);
-  const shouldShowNextButton =
+  const nextButtonEnabled =
     account !== MAX_INDEX &&
     (!sortedFilter || sortedFilter.indexOf(account) < sortedFilter.length - 1);
 
   return (
     <div className='flex items-center justify-between'>
-      {shouldShowPreviousButton ? (
-        <Button
-          variant='ghost'
-          className={cn('hover:bg-inherit hover:text-slate-400', account === 0 && 'cursor-default')}
-        >
-          <ArrowLeftIcon
-            aria-label='Previous account'
-            role='button'
-            onClick={handleClickPrevious}
-            className='size-6 hover:cursor-pointer'
-          />
-        </Button>
-      ) : (
-        <span className='size-6' />
-      )}
+      <Button
+        variant='ghost'
+        className={cn('hover:bg-inherit hover:text-slate-400', account === 0 && 'cursor-default')}
+        disabled={!previousButtonEnabled}
+      >
+        <ArrowLeftIcon
+          aria-label='Previous account'
+          role='button'
+          onClick={handleClickPrevious}
+          className='size-6 hover:cursor-pointer'
+        />
+      </Button>
       <div className='select-none text-center font-headline text-xl font-semibold leading-[30px]'>
         <div className='flex flex-row flex-wrap items-end gap-[6px]'>
           <span>Account</span>
@@ -109,24 +106,21 @@ export const AccountSwitcher = ({
           </div>
         </div>
       </div>
-      {shouldShowNextButton ? (
-        <Button
-          variant='ghost'
-          className={cn(
-            'hover:bg-inherit hover:text-slate-400',
-            account === MAX_INDEX && 'cursor-default',
-          )}
-        >
-          <ArrowRightIcon
-            aria-label='Next account'
-            role='button'
-            onClick={handleClickNext}
-            className='size-6 hover:cursor-pointer'
-          />
-        </Button>
-      ) : (
-        <span className='size-6' />
-      )}
+      <Button
+        variant='ghost'
+        className={cn(
+          'hover:bg-inherit hover:text-slate-400',
+          account === MAX_INDEX && 'cursor-default',
+        )}
+        disabled={!nextButtonEnabled}
+      >
+        <ArrowRightIcon
+          aria-label='Next account'
+          role='button'
+          onClick={handleClickNext}
+          className='size-6 hover:cursor-pointer'
+        />
+      </Button>
     </div>
   );
 };
