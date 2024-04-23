@@ -46,9 +46,8 @@ export const DelegationValueView = memo(
     const metadata = getMetadata(valueView);
 
     const equivalentValueOfStakingToken = useMemo(() => {
-      const equivalentValue = getEquivalentValues(valueView).find(
-        equivalentValue =>
-          equivalentValue.numeraire?.penumbraAssetId.equals(stakingTokenMetadata.penumbraAssetId),
+      const equivalentValue = getEquivalentValues(valueView).find(equivalentValue =>
+        equivalentValue.numeraire?.penumbraAssetId?.equals(stakingTokenMetadata.penumbraAssetId),
       );
 
       if (equivalentValue) return asValueView(equivalentValue);

@@ -313,11 +313,13 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     // anyway, `balancesByAccount` will be a single-item array for the vast
     // majority of users.
     const unstakedTokensByAccount = balancesByAccount.reduce(
-      toUnstakedTokensByAccount(stakingTokenMetadata),
+      (acc: Map<number, ValueView>, cur: BalancesByAccount) =>
+        toUnstakedTokensByAccount(acc, cur, stakingTokenMetadata),
       new Map(),
     );
     const accountSwitcherFilter = balancesByAccount.reduce(
-      toAccountSwitcherFilter(stakingTokenMetadata),
+      (acc: number[], cur: BalancesByAccount) =>
+        toAccountSwitcherFilter(acc, cur, stakingTokenMetadata),
       [],
     );
     set(state => {

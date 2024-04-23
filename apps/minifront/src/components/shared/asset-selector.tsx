@@ -48,7 +48,13 @@ const switchAssetIfNecessary = ({
 
 const useFilteredAssets = ({ value, onChange, filter }: AssetSelectorProps) => {
   const { registryAssets } = useLoaderData() as SwapLoaderResponse;
-  const sortedAssets = useMemo(() => [...registryAssets].sort((a, b) => (a.symbol.toLocaleLowerCase() < b.symbol.toLocaleLowerCase() ? -1 : 1)), [registryAssets]);
+  const sortedAssets = useMemo(
+    () =>
+      [...registryAssets].sort((a, b) =>
+        a.symbol.toLocaleLowerCase() < b.symbol.toLocaleLowerCase() ? -1 : 1,
+      ),
+    [registryAssets],
+  );
 
   const [search, setSearch] = useState('');
 
