@@ -42,8 +42,9 @@ const mockBalancesResponse1 = new BalancesResponse({
       case: 'knownAssetId',
       value: {
         amount: { hi: 0n, lo: 1n },
-        metadata: {},
-      },
+        metadata: {
+          display: 'penumbra',
+        },      },
     },
   },
 });
@@ -157,7 +158,7 @@ describe('Unbonding Tokens by Address Index handler', () => {
     );
 
     expect(responses.length).toBe(2);
-    expect(getDisplayDenomFromView(responseObjects[0]!.valueView)).not.toBe('');
-    expect(getDisplayDenomFromView(responseObjects[1]!.valueView)).not.toBe('');
+    expect(getDisplayDenomFromView(responseObjects[0]!.valueView)).not.toBe('penumbra');
+    expect(getDisplayDenomFromView(responseObjects[1]!.valueView)).not.toBe('penumbra');
   });
 });
