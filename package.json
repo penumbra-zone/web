@@ -5,7 +5,7 @@
   "repository": "penumbra-zone/web.git",
   "packageManager": "pnpm@8.6.11",
   "scripts": {
-    "all-check": "pnpm install && pnpm compile && pnpm format-check && pnpm lint && pnpm test && pnpm build && pnpm format-check:rust && pnpm lint:rust && pnpm test:rust",
+    "all-check": "pnpm clean && pnpm install && pnpm compile && pnpm format-check && pnpm lint && pnpm test && pnpm build && pnpm format-check:rust && pnpm lint:rust && pnpm test:rust",
     "build": "turbo run build",
     "changeset": "changeset",
     "changeset:publish": "changeset publish",
