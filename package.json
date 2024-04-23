@@ -5,7 +5,7 @@
   "repository": "penumbra-zone/web.git",
   "packageManager": "pnpm@8.6.11",
   "scripts": {
-    "all-check": "pnpm clean && pnpm install && pnpm compile && pnpm lint && pnpm build && pnpm test && pnpm test:rust",
+    "all-check": "pnpm clean && pnpm install && pnpm compile && pnpm lint && pnpm lint:rust && pnpm build && pnpm test && pnpm test:rust",
     "build": "turbo build",
     "clean": "turbo clean",
     "clean:vitest-mjs": "find . -type f -name 'vite.config.ts.timestamp-*-*.mjs' -ls -delete",
@@ -17,6 +17,7 @@
     "lint": "turbo lint",
     "lint:fix": "turbo lint -- --fix",
     "lint:prettier": "prettier --check .",
+    "lint:rust": "turbo lint:rust",
     "lint:syncpack": "syncpack lint",
     "postinstall": "syncpack list-mismatches",
     "pretest": "playwright install",
