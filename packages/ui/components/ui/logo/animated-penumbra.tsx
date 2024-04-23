@@ -19,8 +19,8 @@ export const AnimatedPenumbra = ({ className }: { className: string }) => {
       p[256 + i] = permutation[i]!;
     }
 
-    // Start the theta animation
-    animateTheta(plots, coordinateCentrePoint, p);
+    // Start the theta animation. Returns the cleanup function that cancels the animation.
+    return animateTheta(plots, coordinateCentrePoint, p);
   }, []);
 
   return (

@@ -172,6 +172,7 @@ export const animateTheta = (plots: Plot[], ccp: number, p: number[]) => {
   let lastFrameTime = 0;
   let octaves = 0.1; // this is the first z-value among the arguments fed into the noise function and translating this value produces the shape shifting.
   let rotationAngle = 0; // Initialize rotation angle
+  let animationFrameId: number; // Stores the request ID for cancellation
 
   const updateTheta = (currentTime: number) => {
     // Calculate time since the last frame
@@ -187,9 +188,12 @@ export const animateTheta = (plots: Plot[], ccp: number, p: number[]) => {
       lastFrameTime = currentTime;
     }
     // Request the next animation frame
-    requestAnimationFrame(updateTheta);
+    animationFrameId = requestAnimationFrame(updateTheta);
   };
 
   // Start the animation
-  requestAnimationFrame(updateTheta);
+  animationFrameId = requestAnimationFrame(updateTheta);
+
+  // Returns cancellation function
+  return () => cancelAnimationFrame(animationFrameId);
 };
