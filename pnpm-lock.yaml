@@ -181,8 +181,8 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.8.0)(@connectrpc/connect@1.4.0)
       '@penumbra-labs/registry':
-        specifier: 4.0.0
-        version: 4.0.0
+        specifier: 4.1.0
+        version: 4.1.0
       '@penumbra-zone/bech32':
         specifier: workspace:*
         version: link:../../packages/bech32
@@ -365,8 +365,8 @@ importers:
         specifier: ^1.8.0
         version: 1.8.0
       '@penumbra-labs/registry':
-        specifier: 4.0.0
-        version: 4.0.0
+        specifier: 4.1.0
+        version: 4.1.0
       '@penumbra-zone/bech32':
         specifier: workspace:*
         version: link:../../packages/bech32
@@ -3895,8 +3895,8 @@ packages:
     engines: {node: '>=8.12.0'}
     dev: true
 
-  /@penumbra-labs/registry@4.0.0:
-    resolution: {integrity: sha512-r4YxviA0RFFw6bCbh6CPks2HWi3d865nkviNEcPQa5NxevKlxwIOlX6fIWZhrRDPS09PYD1AsElal6uQYHpH6w==}
+  /@penumbra-labs/registry@4.1.0:
+    resolution: {integrity: sha512-PoM0viPsEqkBNSiVIElqo0n93lCCEwzKrtdiK5JLzsHeSZNlEX/q8k0m0pR+/oM13RiF9GRcPY65jIu2TwZ6AQ==}
     dev: false
 
   /@pkgjs/parseargs@0.11.0:

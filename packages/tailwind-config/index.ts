@@ -154,9 +154,6 @@ export default {
           url('penumbra-logo.svg')
         `,
       },
-      backgroundPosition: {
-        'right-center': 'right center',
-      },
     },
   },
   plugins: [tailwindCssAnimatePlugin],
