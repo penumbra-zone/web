@@ -4,7 +4,7 @@
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
-    "clean": "rm -rfv dist wasm ; cargo clean --manifest-path ./crate/Cargo.toml",
+    "clean": "rm -rfv wasm/*.{js,ts,wasm} ; cargo clean --manifest-path ./crate/Cargo.toml",
     "compile": "cd crate ; wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",
     "dev": "cargo watch -C ./crate --postpone -- pnpm turbo run compile",
     "lint": "eslint \"src/*.ts*\"",
