@@ -7,11 +7,11 @@ import {
   SegmentedPickerOption,
 } from '@penumbra-zone/ui/components/ui/segmented-picker';
 import { InputBlock } from './input-block';
-import { localAssets } from '@penumbra-zone/constants/src/assets';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-
-const PENUMBRA_DENOM_METADATA = localAssets.find(asset => asset.display === 'penumbra')!;
+import {
+  Metadata,
+  ValueView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 const FEE_TIER_OPTIONS: SegmentedPickerOption<FeeTier_Tier>[] = [
   {
@@ -31,10 +31,12 @@ const FEE_TIER_OPTIONS: SegmentedPickerOption<FeeTier_Tier>[] = [
 export const GasFee = ({
   fee,
   feeTier,
+  feeAssetMetadata,
   setFeeTier,
 }: {
   fee: Fee | undefined;
   feeTier: FeeTier_Tier;
+  feeAssetMetadata: Metadata;
   setFeeTier: (feeTier: FeeTier_Tier) => void;
 }) => {
   let feeValueView: ValueView | undefined;
@@ -42,7 +44,7 @@ export const GasFee = ({
     feeValueView = new ValueView({
       valueView: {
         case: 'knownAssetId',
-        value: { amount: fee.amount, metadata: PENUMBRA_DENOM_METADATA },
+        value: { amount: fee.amount, metadata: feeAssetMetadata },
       },
     });
 

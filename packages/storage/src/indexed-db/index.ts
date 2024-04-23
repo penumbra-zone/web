@@ -56,12 +56,12 @@ import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
 import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
-import { ChainRegistryClient } from '@penumbra-labs/registry';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
   chainId: string;
   walletId: WalletId;
+  registryAssets: Record<string, string>;
 }
 
 export class IndexedDb implements IndexedDbInterface {
@@ -72,7 +72,12 @@ export class IndexedDb implements IndexedDbInterface {
     private readonly chainId: string,
   ) {}
 
-  static async initialize({ dbVersion, walletId, chainId }: IndexedDbProps): Promise<IndexedDb> {
+  static async initialize({
+    dbVersion,
+    walletId,
+    chainId,
+    registryAssets,
+  }: IndexedDbProps): Promise<IndexedDb> {
     const bech32Id = bech32mWalletId(walletId);
     const dbName = `viewdata/${chainId}/${bech32Id}`;
 
@@ -118,7 +123,7 @@ export class IndexedDb implements IndexedDbInterface {
     } satisfies IdbConstants;
 
     const instance = new this(db, new IbdUpdater(db), constants, chainId);
-    await instance.saveRegistryAssets(chainId); // Pre-load asset metadata from registry
+    await instance.saveRegistryAssets(registryAssets); // Pre-load asset metadata from registry
 
     const existing0thEpoch = await instance.getEpochByHeight(0n);
     if (!existing0thEpoch) await instance.addEpoch(0n); // Create first epoch
@@ -242,10 +247,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   // creates a local copy of the asset list from registry (https://github.com/prax-wallet/registry)
-  async saveRegistryAssets(chainId: string) {
-    const registryClient = new ChainRegistryClient();
-    const { assetById } = await registryClient.get(chainId);
-    console.log('saveRegistryAssets', assetById);
+  async saveRegistryAssets(assetById: Record<string, string>) {
     const saveMetadata = Object.values(assetById).map(metadata =>
       this.saveAssetsMetadata(Metadata.fromJson(metadata)),
     );

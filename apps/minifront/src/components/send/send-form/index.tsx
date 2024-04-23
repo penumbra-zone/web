@@ -12,8 +12,15 @@ import InputToken from '../../shared/input-token';
 import { useRefreshFee } from './use-refresh-fee';
 import { GasFee } from '../../shared/gas-fee';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { getStakingTokenMetadata } from '../../../fetchers/registry';
 
-export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<BalancesResponse[]> => {
+export interface SendLoaderResponse {
+  assetBalances: BalancesResponse[];
+  feeAssetMetadata: Metadata;
+}
+
+export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<SendLoaderResponse> => {
   await throwIfPraxNotConnectedTimeout();
   const assetBalances = await getBalances();
 
@@ -23,12 +30,13 @@ export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<Balances
       state.send.selection = assetBalances[0];
     });
   }
+  const feeAssetMetadata = await getStakingTokenMetadata();
 
-  return assetBalances;
+  return { assetBalances, feeAssetMetadata };
 };
 
 export const SendForm = () => {
-  const assetBalances = useLoaderData() as BalancesResponse[];
+  const { assetBalances, feeAssetMetadata } = useLoaderData() as SendLoaderResponse;
   const {
     selection,
     amount,
@@ -94,7 +102,12 @@ export const SendForm = () => {
         balances={assetBalances}
       />
 
-      <GasFee fee={fee} feeTier={feeTier} setFeeTier={setFeeTier} />
+      <GasFee
+        fee={fee}
+        feeTier={feeTier}
+        feeAssetMetadata={feeAssetMetadata}
+        setFeeTier={setFeeTier}
+      />
 
       <InputBlock
         label='Memo'

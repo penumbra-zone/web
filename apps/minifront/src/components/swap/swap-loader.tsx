@@ -91,7 +91,7 @@ export const unclaimedSwapsWithMetadata = async (): Promise<UnclaimedSwapsWithMe
 export const SwapLoader: LoaderFunction = async (): Promise<SwapLoaderResponse> => {
   await throwIfPraxNotConnectedTimeout();
 
-  let registryAssets = await getAssetsFromRegistry();
+  const registryAssets = await getAssetsFromRegistry();
 
   const [assetBalances, unclaimedSwaps] = await Promise.all([
     getAndSetDefaultAssetBalances(registryAssets),

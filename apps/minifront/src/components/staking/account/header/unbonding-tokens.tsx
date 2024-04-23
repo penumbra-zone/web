@@ -1,4 +1,7 @@
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {
+  Metadata,
+  ValueView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
 import {
   TooltipProvider,
@@ -15,17 +18,19 @@ export const UnbondingTokens = ({
   tokens,
   helpText,
   children,
+  stakingTokenMetadata,
 }: {
   total?: ValueView;
   tokens?: ValueView[];
   helpText: string;
   children?: ReactNode;
+  stakingTokenMetadata: Metadata;
 }) => {
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger>
-          <ValueViewComponent view={total ?? ZERO_BALANCE_UM} />
+          <ValueViewComponent view={total ?? ZERO_BALANCE_UM(stakingTokenMetadata)} />
         </TooltipTrigger>
         <TooltipContent>
           <div className='flex flex-col gap-4'>

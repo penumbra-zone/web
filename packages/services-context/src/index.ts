@@ -101,10 +101,14 @@ export class Services implements ServicesInterface {
       sctParams: { epochDuration },
     } = params;
 
+    const registryClient = new ChainRegistryClient();
+    const { stakingAssetId, assetById, numeraires } = await registryClient.get(chainId);
+
     const indexedDb = await IndexedDb.initialize({
       chainId,
       dbVersion,
       walletId,
+      registryAssets: assetById,
     });
 
     void syncLastBlockWithLocal(indexedDb);
@@ -115,9 +119,6 @@ export class Services implements ServicesInterface {
       getStoredTree: () => indexedDb.getStateCommitmentTree(),
       idbConstants: indexedDb.constants(),
     });
-
-    const registryClient = new ChainRegistryClient();
-    const { stakingAssetId, assetById, numeraires } = await registryClient.get(chainId);
 
     const blockProcessor = new BlockProcessor({
       viewServer,

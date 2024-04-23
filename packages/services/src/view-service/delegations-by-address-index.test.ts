@@ -16,7 +16,6 @@ import {
   DelegationsByAddressIndexRequest_Filter,
   DelegationsByAddressIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import {
   ValidatorInfoRequest,
   ValidatorInfoResponse,
@@ -127,7 +126,7 @@ const penumbraBalancesResponse = new BalancesResponse({
       case: 'knownAssetId',
       value: {
         amount: { hi: 0n, lo: 1n },
-        metadata: STAKING_TOKEN_METADATA,
+        metadata: {},
       },
     },
   },

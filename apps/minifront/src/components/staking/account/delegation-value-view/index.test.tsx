@@ -5,7 +5,6 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 
@@ -35,6 +34,15 @@ const SOME_OTHER_TOKEN_METADATA = new Metadata({
   name: 'Some Other Token',
   penumbraAssetId: otherAsset,
   symbol: 'SOT',
+});
+
+const STAKING_TOKEN_METADATA = new Metadata({
+  display: 'penumbra',
+  base: 'penumbra',
+  denomUnits: [{ denom: 'upenumbra' }, { denom: 'penumbra', exponent: 6 }],
+  name: 'penumbra',
+  penumbraAssetId: { inner: new Uint8Array([2, 5, 6, 7]) },
+  symbol: 'UM',
 });
 
 const validatorInfo = new ValidatorInfo({

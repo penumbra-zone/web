@@ -47,18 +47,17 @@ import {
   EstimatedPrice,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { localAssets } from '@penumbra-zone/constants/src/assets';
 import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/src/indexed-db';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place
   const generateInitialProps = () => ({
     chainId: 'test',
-    accountAddr: 'penumbra123xyz',
     dbVersion: 1,
     walletId: new WalletId({
       inner: Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)),
     }),
+    registryAssets: {},
   });
 
   describe('initializing', () => {
@@ -98,9 +97,9 @@ describe('IndexedDb', () => {
 
       const version2Props = {
         chainId: 'test',
-        accountAddr: 'penumbra123xyz',
         dbVersion: 2,
         walletId: version1Props.walletId,
+        registryAssets: {},
       };
       const dbB = await IndexedDb.initialize(version2Props);
       expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId!))?.name).toBeUndefined();
@@ -136,14 +135,6 @@ describe('IndexedDb', () => {
         notes.push(note);
       }
       expect(notes.length).toBe(1);
-
-      await db.saveAssetsMetadata(metadataA);
-
-      const assets: Metadata[] = [];
-      for await (const asset of db.iterateAssetsMetadata()) {
-        assets.push(asset);
-      }
-      expect(assets.length).toBe(1 + localAssets.length);
 
       await db.saveTransaction(transactionId, 1000n, transaction);
       const txs: TransactionInfo[] = [];
@@ -278,19 +269,30 @@ describe('IndexedDb', () => {
 
   describe('assets', () => {
     it('should be pre-loaded with hardcoded assets', async () => {
-      const db = await IndexedDb.initialize({ ...generateInitialProps() });
+      const propsWithAssets = {
+        chainId: 'test',
+        dbVersion: 2,
+        walletId: new WalletId({
+          inner: Uint8Array.from({ length: 8 }, () => Math.floor(Math.random() * 256)),
+        }),
+        registryAssets: {
+          asset1: metadataA.toJson() as string,
+          asset2: metadataB.toJson() as string,
+        },
+      };
+      const db = await IndexedDb.initialize(propsWithAssets);
 
       const savedAssets: Metadata[] = [];
       for await (const asset of db.iterateAssetsMetadata()) {
         savedAssets.push(asset);
       }
 
-      for (const metadata of localAssets) {
+      for (const metadata of [metadataA, metadataB]) {
         const match = savedAssets.find(a => a.equals(metadata));
         expect(match).toBeTruthy();
       }
 
-      expect(savedAssets.length === localAssets.length).toBeTruthy();
+      expect(savedAssets.length === 2).toBeTruthy();
     });
 
     it('should be able to set/get by id', async () => {
@@ -313,7 +315,7 @@ describe('IndexedDb', () => {
       for await (const asset of db.iterateAssetsMetadata()) {
         savedAssets.push(asset);
       }
-      expect(savedAssets.length === 3 + localAssets.length).toBeTruthy();
+      expect(savedAssets.length === 3).toBeTruthy();
     });
   });
 
