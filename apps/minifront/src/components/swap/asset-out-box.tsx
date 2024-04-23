@@ -7,7 +7,7 @@ import {
   TooltipTrigger,
 } from '@penumbra-zone/ui/components/ui/tooltip';
 import { buttonVariants } from '@penumbra-zone/ui/components/ui/button';
-import { AssetOutSelector } from './asset-out-selector';
+import { AssetSelector } from '../shared/asset-selector';
 import {
   Metadata,
   ValueView,
@@ -72,11 +72,7 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
         </div>
         <div className='flex flex-col'>
           <div className='ml-auto w-auto shrink-0'>
-            <AssetOutSelector
-              assetOut={matchingBalance}
-              setAssetOut={setAssetOut}
-              filter={filter}
-            />
+            <AssetSelector value={assetOut} onChange={setAssetOut} filter={filter} />
           </div>
           <div className='mt-[6px] flex items-start justify-between'>
             <div />
