@@ -10,11 +10,12 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { localAssets } from '@penumbra-zone/constants/src/assets';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { useEffect, useMemo, useState } from 'react';
 import { IconInput } from '@penumbra-zone/ui/components/ui/icon-input';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { SwapLoaderResponse } from '../swap/swap-loader';
+import { useLoaderData } from 'react-router-dom';
 
 interface AssetSelectorProps {
   value?: Metadata;
@@ -26,10 +27,6 @@ interface AssetSelectorProps {
    */
   filter?: (metadata: Metadata) => boolean;
 }
-
-const sortedAssets = [...localAssets].sort((a, b) =>
-  a.symbol.toLocaleLowerCase() < b.symbol.toLocaleLowerCase() ? -1 : 1,
-);
 
 /**
  * If the `filter` rejects the currently selected `asset`, switch to a different
@@ -50,6 +47,9 @@ const switchAssetIfNecessary = ({
 };
 
 const useFilteredAssets = ({ value, onChange, filter }: AssetSelectorProps) => {
+  const { registryAssets } = useLoaderData() as SwapLoaderResponse;
+  const sortedAssets = [...registryAssets].sort((a, b) => (a.symbol < b.symbol ? -1 : 1));
+
   const [search, setSearch] = useState('');
 
   let assets = filter ? sortedAssets.filter(filter) : sortedAssets;
