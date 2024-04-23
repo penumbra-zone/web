@@ -49,7 +49,7 @@ scripts.
 1. Go to the Extensions page [`chrome://extensions`](chrome://extensions)
 2. Enable _Developer Mode_ by clicking the toggle switch at the top right
 3. Click the button _Load unpacked extension_ at the top and locate your cloned
-   pository to select the extension's build output directory
+   repository to select the extension's build output directory
    [`apps/extension/dist`](../apps/extension/dist).
 4. Activate the extension to enter onboarding.
    - Pin your extension to the toolbar for quick access.
@@ -76,7 +76,7 @@ You may add a new dependency or change a dependency version in the course of
 your work. If you do so, you may see `syncpack` complain.
 
 ```
-$ pnpm syncpack
+$ pnpm syncpack list-mismatches
 Versions
 = Use workspace protocol for local packages ====================================
     86 ✓ already valid
@@ -97,15 +97,33 @@ Versions
 
 Most failures here can be resolved by running `pnpm syncpack fix-mismatches`.
 
-If you have a version mismatch involving a package from the buf registry, be
-sure to upgrade those packages at the root of the monorepo. Syncpack is
-configured to prefer buf registry versions specified at the root package.
+```sh
+$ pnpm syncpack fix-mismatches # propagate versions
+$ pnpm i # use new versions and update lockfile
+```
+
+You should always run install again after fixing, because syncpack will not run
+install for you.
+
+### `@buf` registry
+
+Syncpack is configured to prefer `@buf` registry versions specified at the root
+package of the monorepo. So if you need new message types, you must update at
+the root and propagate from there.
+
+These packages also have tight relationships with `@bufbuild` and `@connectrpc`
+packages, so it's usually best to update these together.
 
 ```sh
-$ pnpm upgrade @buf/penumbra-zone_penumbra.bufbuild_es@latest @buf/penumbra-zone_penumbra.connectrpc_es@latest # update root
-$ pnpm syncpack fix-mismatches # update packages
-$ pnpm i # update lockfile
+$ pnpm update --latest "@buf/*" "@bufbuild/*" "@connectrpc/*" # update root buf packages
+$ pnpm syncpack fix-mismatches # propagate versions
+$ pnpm i # use new versions and update lockfile
 ```
+
+### Identifying sources of conflict
+
+If you have conflicting dependencies, you can use `pnpm why` to inspect the
+dependency tree.
 
 ## Documenting changes
 
