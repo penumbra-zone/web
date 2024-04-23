@@ -6,12 +6,13 @@
   "description": "chrome-extension",
   "type": "module",
   "scripts": {
-    "build": "NODE_ENV=mainnet pnpm bundle",
-    "bundle": "NODE_OPTIONS=\"--import=./src/utils/webpack-register.js\" webpack",
+    "build": "wxt build",
     "clean": "rm -rfv dist bin",
-    "dev": "NODE_ENV=testnet pnpm bundle --watch --mode=development -d inline-source-map",
+    "dev": "wxt",
     "lint": "eslint \"**/*.ts*\"",
-    "test": "vitest run"
+    "postinstall": "wxt prepare",
+    "test": "vitest run",
+    "zip": "wxt zip"
   },
   "dependencies": {
     "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20240327103030-e2006674271c.2",
@@ -76,6 +77,7 @@
     "vite-plugin-wasm": "^3.3.0",
     "webpack": "^5.91.0",
     "webpack-cli": "^5.1.4",
-    "webpack-merge": "^5.10.0"
+    "webpack-merge": "^5.10.0",
+    "wxt": "^0.17.12"
   }
 }

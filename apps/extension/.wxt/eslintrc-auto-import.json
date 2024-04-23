@@ -1,0 +1,29 @@
+{
+  "globals": {
+    "ContentScriptContext": true,
+    "InvalidMatchPattern": true,
+    "MatchPattern": true,
+    "browser": true,
+    "createIframeUi": true,
+    "createIntegratedUi": true,
+    "createShadowRootUi": true,
+    "defineBackground": true,
+    "defineConfig": true,
+    "defineContentScript": true,
+    "defineUnlistedScript": true,
+    "fakeBrowser": true,
+    "getChainIdWithFallback": true,
+    "rethrowImplErrors": true,
+    "storage": true,
+    "useChainIdQuery": true,
+    "useOnboardingSave": true,
+    "usePageNav": true,
+    "usePopupNav": true,
+    "useRegistry": true,
+    "useRpcEndpoints": true,
+    "useStoreShallow": true,
+    "useSyncProgress": true,
+    "useTypesafeNav": true,
+    "useValidationResult": true
+  }
+}

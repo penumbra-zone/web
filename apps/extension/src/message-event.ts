@@ -1,4 +1,4 @@
-import { PraxConnection } from '../message/prax';
+import { PraxConnection } from './message/prax';
 
 // @ts-expect-error - ts can't understand the injected string
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
