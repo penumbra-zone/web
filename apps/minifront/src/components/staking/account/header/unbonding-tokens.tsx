@@ -11,7 +11,7 @@ import {
 } from '@penumbra-zone/ui/components/ui/tooltip';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { ReactNode } from 'react';
-import { zeroValueView } from '../../../shared/zero-value-view';
+import { zeroValueView } from '../../../../utils/zero-value-view';
 
 export const UnbondingTokens = ({
   total,

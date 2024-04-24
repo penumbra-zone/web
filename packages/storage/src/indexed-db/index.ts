@@ -61,7 +61,7 @@ interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
   chainId: string;
   walletId: WalletId;
-  registryAssets: Record<string, string>;
+  registryAssets: Metadata[];
 }
 
 export class IndexedDb implements IndexedDbInterface {
@@ -247,11 +247,9 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   // creates a local copy of the asset list from registry (https://github.com/prax-wallet/registry)
-  async saveRegistryAssets(assetById: Record<string, string>) {
-    const saveMetadata = Object.values(assetById).map(metadata =>
-      this.saveAssetsMetadata(Metadata.fromJson(metadata)),
-    );
-    await Promise.all(saveMetadata);
+  async saveRegistryAssets(assets: Metadata[]) {
+    const saveLocalMetadata = assets.map(m => this.saveAssetsMetadata(m));
+    await Promise.all(saveLocalMetadata);
   }
 
   async *iterateSpendableNotes() {

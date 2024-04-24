@@ -57,7 +57,7 @@ describe('IndexedDb', () => {
     walletId: new WalletId({
       inner: Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)),
     }),
-    registryAssets: {},
+    registryAssets: [],
   });
 
   describe('initializing', () => {
@@ -99,7 +99,7 @@ describe('IndexedDb', () => {
         chainId: 'test',
         dbVersion: 2,
         walletId: version1Props.walletId,
-        registryAssets: {},
+        registryAssets: [],
       };
       const dbB = await IndexedDb.initialize(version2Props);
       expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId!))?.name).toBeUndefined();
@@ -283,10 +283,7 @@ describe('IndexedDb', () => {
         walletId: new WalletId({
           inner: Uint8Array.from({ length: 8 }, () => Math.floor(Math.random() * 256)),
         }),
-        registryAssets: {
-          asset1: metadataA.toJson() as string,
-          asset2: metadataB.toJson() as string,
-        },
+        registryAssets: [metadataA, metadataB],
       };
       const db = await IndexedDb.initialize(propsWithAssets);
 
