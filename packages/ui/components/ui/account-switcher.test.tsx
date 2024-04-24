@@ -56,10 +56,10 @@ describe('<AccountSwitcher />', () => {
       expect(onChange).toHaveBeenCalledWith(122);
     });
 
-    it("does not render when we're at account 0", () => {
+    it("is disabled when we're at account 0", () => {
       const { queryByLabelText } = render(<AccountSwitcher account={0} onChange={vi.fn()} />);
 
-      expect(queryByLabelText('Previous account')).toBeNull();
+      expect(queryByLabelText('Previous account')?.parentElement).toBeDisabled();
     });
 
     describe('when a filter has been passed', () => {
@@ -74,12 +74,12 @@ describe('<AccountSwitcher />', () => {
         expect(onChange).toHaveBeenCalledWith(100);
       });
 
-      it("does not render when we're at the lowest account index in the filter", () => {
+      it("is disabled when we're at the lowest account index in the filter", () => {
         const { queryByLabelText } = render(
           <AccountSwitcher account={100} onChange={vi.fn()} filter={[123, 100]} />,
         );
 
-        expect(queryByLabelText('Previous account')).toBeNull();
+        expect(queryByLabelText('Previous account')?.parentElement).toBeDisabled();
       });
     });
   });
@@ -94,10 +94,10 @@ describe('<AccountSwitcher />', () => {
       expect(onChange).toHaveBeenCalledWith(124);
     });
 
-    it("does not render when we're at the maximum account index", () => {
+    it("is disabled when we're at the maximum account index", () => {
       const { queryByLabelText } = render(<AccountSwitcher account={2 ** 32} onChange={vi.fn()} />);
 
-      expect(queryByLabelText('Next account')).toBeNull();
+      expect(queryByLabelText('Next account')?.parentElement).toBeDisabled();
     });
 
     describe('when a filter has been passed', () => {
@@ -112,12 +112,12 @@ describe('<AccountSwitcher />', () => {
         expect(onChange).toHaveBeenCalledWith(123);
       });
 
-      it("does not render when we're at the highest account index in the filter", () => {
+      it("is disabled when we're at the highest account index in the filter", () => {
         const { queryByLabelText } = render(
           <AccountSwitcher account={123} onChange={vi.fn()} filter={[123, 100]} />,
         );
 
-        expect(queryByLabelText('Next account')).toBeNull();
+        expect(queryByLabelText('Next account')?.parentElement).toBeDisabled();
       });
     });
   });
