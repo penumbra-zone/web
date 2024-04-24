@@ -18,7 +18,7 @@ import {
 import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/src/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 import { fromBaseUnitAmount } from '@penumbra-zone/types/src/amount';
-import { getAssetsFromRegistry } from '../../fetchers/registry';
+import {getAllAssets} from "../../fetchers/assets";
 
 export interface UnclaimedSwapsWithMetadata {
   swap: SwapRecord;
@@ -29,7 +29,7 @@ export interface UnclaimedSwapsWithMetadata {
 export interface SwapLoaderResponse {
   assetBalances: BalancesResponse[];
   unclaimedSwaps: UnclaimedSwapsWithMetadata[];
-  registryAssets: Metadata[];
+  assets: Metadata[];
 }
 
 const byBalanceDescending = (a: BalancesResponse, b: BalancesResponse) => {
@@ -41,7 +41,7 @@ const byBalanceDescending = (a: BalancesResponse, b: BalancesResponse) => {
   return bAmount.comparedTo(aAmount);
 };
 
-const getAndSetDefaultAssetBalances = async (registryAssets: Metadata[]) => {
+const getAndSetDefaultAssetBalances = async (assets: Metadata[]) => {
   const assetBalances = await getBalances();
 
   // filter assets that are not available for swap
@@ -56,7 +56,7 @@ const getAndSetDefaultAssetBalances = async (registryAssets: Metadata[]) => {
   // set initial denom in if there is an available balance
   if (filteredAssetBalances[0]) {
     useStore.getState().swap.setAssetIn(filteredAssetBalances[0]);
-    useStore.getState().swap.setAssetOut(registryAssets[0]!);
+    useStore.getState().swap.setAssetOut(assets[0]!);
   }
 
   return filteredAssetBalances;
@@ -91,12 +91,12 @@ export const unclaimedSwapsWithMetadata = async (): Promise<UnclaimedSwapsWithMe
 export const SwapLoader: LoaderFunction = async (): Promise<SwapLoaderResponse> => {
   await throwIfPraxNotConnectedTimeout();
 
-  const registryAssets = await getAssetsFromRegistry();
+  const assets = await getAllAssets();
 
   const [assetBalances, unclaimedSwaps] = await Promise.all([
-    getAndSetDefaultAssetBalances(registryAssets),
+    getAndSetDefaultAssetBalances(assets),
     unclaimedSwapsWithMetadata(),
   ]);
 
-  return { assetBalances, unclaimedSwaps, registryAssets };
+  return { assetBalances, unclaimedSwaps, assets };
 };

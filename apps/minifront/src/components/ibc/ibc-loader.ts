@@ -6,23 +6,23 @@ import { filterBalancesPerChain } from '../../state/ibc';
 import { Chain } from '@penumbra-labs/registry';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
-  getAssetsFromRegistry,
   getIbcConnections,
   getStakingTokenMetadata,
 } from '../../fetchers/registry';
+import {getAllAssets} from "../../fetchers/assets";
 
 export interface IbcLoaderResponse {
   balances: BalancesResponse[];
   chains: Chain[];
   stakingTokenMetadata: Metadata;
-  registryAssets: Metadata[];
+  assets: Metadata[];
 }
 
 export const IbcLoader: LoaderFunction = async (): Promise<IbcLoaderResponse> => {
   const assetBalances = await getBalances();
   const ibcConnections = await getIbcConnections();
   const stakingTokenMetadata = await getStakingTokenMetadata();
-  const registryAssets = await getAssetsFromRegistry();
+  const assets = await getAllAssets();
 
   if (assetBalances[0]) {
     const initialChain = ibcConnections[0];
@@ -30,7 +30,7 @@ export const IbcLoader: LoaderFunction = async (): Promise<IbcLoaderResponse> =>
       assetBalances,
       initialChain,
       stakingTokenMetadata,
-      registryAssets,
+        assets,
     )[0];
 
     // set initial account if accounts exist and asset if account has asset list
@@ -40,5 +40,5 @@ export const IbcLoader: LoaderFunction = async (): Promise<IbcLoaderResponse> =>
     });
   }
 
-  return { balances: assetBalances, chains: ibcConnections, stakingTokenMetadata, registryAssets };
+  return { balances: assetBalances, chains: ibcConnections, stakingTokenMetadata, assets };
 };

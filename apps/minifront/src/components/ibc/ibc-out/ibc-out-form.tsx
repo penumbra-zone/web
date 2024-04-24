@@ -10,7 +10,7 @@ import { IbcLoaderResponse } from '../ibc-loader';
 import { LockOpen2Icon } from '@radix-ui/react-icons';
 
 export const IbcOutForm = () => {
-  const { balances, stakingTokenMetadata, registryAssets } = useLoaderData() as IbcLoaderResponse;
+  const { balances, stakingTokenMetadata, assets } = useLoaderData() as IbcLoaderResponse;
   const {
     sendIbcWithdraw,
     destinationChainAddress,
@@ -25,7 +25,7 @@ export const IbcOutForm = () => {
     balances,
     chain,
     stakingTokenMetadata,
-    registryAssets,
+      assets,
   );
   const validationErrors = useStore(ibcValidationErrors);
 

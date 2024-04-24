@@ -47,26 +47,26 @@ const switchAssetIfNecessary = ({
 };
 
 const useFilteredAssets = ({ value, onChange, filter }: AssetSelectorProps) => {
-  const { registryAssets } = useLoaderData() as SwapLoaderResponse;
+  const { assets } = useLoaderData() as SwapLoaderResponse;
   const sortedAssets = useMemo(
     () =>
-      [...registryAssets].sort((a, b) =>
+      [...assets].sort((a, b) =>
         a.symbol.toLocaleLowerCase() < b.symbol.toLocaleLowerCase() ? -1 : 1,
       ),
-    [registryAssets],
+    [assets],
   );
 
   const [search, setSearch] = useState('');
 
-  let assets = filter ? sortedAssets.filter(filter) : sortedAssets;
-  assets = search ? assets.filter(bySearch(search)) : assets;
+  let filteredAssets = filter ? sortedAssets.filter(filter) : sortedAssets;
+  filteredAssets = search ? assets.filter(bySearch(search)) : assets;
 
   useEffect(
-    () => switchAssetIfNecessary({ value, onChange, filter, assets }),
-    [filter, value, assets, onChange],
+    () => switchAssetIfNecessary({ value, onChange, filter, assets: filteredAssets }),
+    [filter, value, filteredAssets, onChange],
   );
 
-  return { assets, search, setSearch };
+  return { assets: filteredAssets, search, setSearch };
 };
 
 const bySearch = (search: string) => (asset: Metadata) =>
