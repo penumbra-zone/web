@@ -3,59 +3,68 @@
   "globalDependencies": ["**/.env.*local"],
   "globalEnv": ["NODE_ENV", "MODE"],
   "pipeline": {
-    "build": {
-      "dotEnv": [".env"],
-      "env": ["PRAX", "IDB_VERSION", "CHAIN_ID", "MINIFRONT_URL"],
-      "dependsOn": ["compile", "^build"],
-      "outputs": ["dist/**"]
-    },
-    "compile": {
-      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock"],
-      "outputs": ["wasm/**"]
-    },
-    "host": {
-      "dependsOn": ["^build"],
-      "cache": false,
-      "persistent": true
-    },
-    "lint": {
-      "dependsOn": ["compile", "//#lint:syncpack"]
-    },
-    "dev": {
-      "dotEnv": [".env"],
-      "env": ["PRAX", "IDB_VERSION", "CHAIN_ID", "MINIFRONT_URL"],
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"],
-      "persistent": true,
-      "cache": false
-    },
-    "test": {
-      "dependsOn": ["compile", "//#playwright-install"],
-      "cache": false
-    },
-    "test:rust": {
-      "dependsOn": ["compile"],
-      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
-    },
-    "lint:rust": {
-      "dependsOn": ["compile"],
-      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
-    },
-    "format-check:rust": {
-      "dependsOn": ["compile"]
-    },
     "//#clean:vitest-mjs": {
+      "cache": false
+    },
+    "//#format:prettier": {
+      "cache": false
+    },
+    "//#format:syncpack": {
+      "cache": false
+    },
+    "//#lint:prettier": {
       "cache": false
     },
     "//#lint:syncpack": {
       "cache": false
     },
-    "//#playwright-install": {
-      "cache": false
+    "build": {
+      "dependsOn": ["compile", "^build"],
+      "dotEnv": [".env"],
+      "env": ["PRAX", "IDB_VERSION", "CHAIN_ID", "MINIFRONT_URL"],
+      "outputs": ["dist/**"]
     },
     "clean": {
-      "dependsOn": ["//#clean:vitest-mjs"],
-      "cache": false
+      "cache": false,
+      "dependsOn": ["//#clean:vitest-mjs"]
+    },
+    "compile": {
+      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock"],
+      "outputs": ["wasm/**"]
+    },
+    "dev": {
+      "cache": false,
+      "dependsOn": ["build"],
+      "persistent": true
+    },
+    "format": {
+      "cache": false,
+      "dependsOn": ["//#format:syncpack", "//#format:prettier", "format:rust"]
+    },
+    "format:rust": {
+      "dependsOn": ["compile"],
+      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
+    },
+    "host": {
+      "cache": false,
+      "dependsOn": ["build"],
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["//#lint:syncpack", "//#lint:prettier", "compile"],
+      "inputs": ["**/*.ts", "**/*.tsx", "wasm/index*.ts", "package.json"]
+    },
+    "lint:rust": {
+      "dependsOn": ["compile"],
+      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
+    },
+    "test": {
+      "cache": false,
+      "dependsOn": ["compile"]
+    },
+    "test:rust": {
+      "dependsOn": ["compile"],
+      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
     }
   }
 }

@@ -6,13 +6,13 @@
   "scripts": {
     "clean": "rm -v wasm/index*",
     "clean:rust": "cargo clean --manifest-path ./crate/Cargo.toml",
-    "compile": "cd crate ; wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",
+    "compile": "cd crate && wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",
     "dev": "cargo watch -C ./crate --postpone -- pnpm turbo run compile",
+    "format": "cd crate && cargo fmt --all",
     "lint": "eslint \"src/*.ts*\"",
-    "lint:rust": "cd crate && cargo clippy -- -D warnings && cargo clippy --tests -- -D warnings",
-    "predev": "cargo install cargo-watch",
+    "lint:rust": "cd crate && cargo fmt --all -- --check && cargo clippy -- -D warnings && cargo clippy --tests -- -D warnings",
     "test": "vitest run",
-    "test:rust": "cd crate ; wasm-pack test --headless --firefox -- --test build --target wasm32-unknown-unknown --release --features 'mock-database'"
+    "test:rust": "cd crate && wasm-pack test --headless --firefox -- --test build --target wasm32-unknown-unknown --release --features 'mock-database'"
   },
   "exports": {
     "./*": "./src/*.ts"
