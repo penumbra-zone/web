@@ -1,7 +1,5 @@
 import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
-import {
-  AssetMetadataByIdRequest,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { AssetMetadataByIdRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { viewClient } from '../clients';
 import {
   AssetId,

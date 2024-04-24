@@ -5,11 +5,8 @@ import { useStore } from '../../state';
 import { filterBalancesPerChain } from '../../state/ibc';
 import { Chain } from '@penumbra-labs/registry';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import {
-  getIbcConnections,
-  getStakingTokenMetadata,
-} from '../../fetchers/registry';
-import {getAllAssets} from "../../fetchers/assets";
+import { getIbcConnections, getStakingTokenMetadata } from '../../fetchers/registry';
+import { getAllAssets } from '../../fetchers/assets';
 
 export interface IbcLoaderResponse {
   balances: BalancesResponse[];
@@ -30,7 +27,7 @@ export const IbcLoader: LoaderFunction = async (): Promise<IbcLoaderResponse> =>
       assetBalances,
       initialChain,
       stakingTokenMetadata,
-        assets,
+      assets,
     )[0];
 
     // set initial account if accounts exist and asset if account has asset list

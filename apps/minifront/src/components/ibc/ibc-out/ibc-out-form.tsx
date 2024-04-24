@@ -21,12 +21,7 @@ export const IbcOutForm = () => {
     setSelection,
     chain,
   } = useStore(ibcSelector);
-  const filteredBalances = filterBalancesPerChain(
-    balances,
-    chain,
-    stakingTokenMetadata,
-      assets,
-  );
+  const filteredBalances = filterBalancesPerChain(balances, chain, stakingTokenMetadata, assets);
   const validationErrors = useStore(ibcValidationErrors);
 
   return (

@@ -18,7 +18,7 @@ import {
 import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/src/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 import { fromBaseUnitAmount } from '@penumbra-zone/types/src/amount';
-import {getAllAssets} from "../../fetchers/assets";
+import { getAllAssets } from '../../fetchers/assets';
 
 export interface UnclaimedSwapsWithMetadata {
   swap: SwapRecord;
