@@ -4,7 +4,7 @@
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
-    "clean": "rm -v wasm/index*",
+    "clean": "rm -fv wasm/index*",
     "clean:rust": "cargo clean --manifest-path ./crate/Cargo.toml",
     "compile": "cd crate && wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",
     "dev": "cargo watch -C ./crate --postpone -- pnpm turbo run compile",
