@@ -7,16 +7,24 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
+
+const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
+
+const validatorIk = { ik: u8(32) };
+const validatorIkString = bech32mIdentityKey(validatorIk);
+const delString = 'delegation_' + validatorIkString;
+const udelString = 'udelegation_' + validatorIkString;
+const delAsset = { inner: u8(32) };
+
+const otherAsset = { inner: u8(32) };
 
 const DELEGATION_TOKEN_METADATA = new Metadata({
-  display: 'delegation_penumbravalid1abc123',
-  base: 'udelegation_penumbravalid1abc123',
-  denomUnits: [
-    { denom: 'udelegation_penumbravalid1abc123' },
-    { denom: 'delegation_penumbravalid1abc123', exponent: 6 },
-  ],
+  display: delString,
+  base: udelString,
+  denomUnits: [{ denom: udelString }, { denom: delString, exponent: 6 }],
   name: 'Delegation token',
-  penumbraAssetId: { inner: new Uint8Array([0, 1, 2, 3]) },
+  penumbraAssetId: delAsset,
   symbol: 'delUM(abc...xyz)',
 });
 
@@ -25,7 +33,7 @@ const SOME_OTHER_TOKEN_METADATA = new Metadata({
   base: 'usomeOtherToken',
   denomUnits: [{ denom: 'usomeOtherToken' }, { denom: 'someOtherToken', exponent: 6 }],
   name: 'Some Other Token',
-  penumbraAssetId: { inner: new Uint8Array([4, 5, 6, 7]) },
+  penumbraAssetId: otherAsset,
   symbol: 'SOT',
 });
 

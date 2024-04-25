@@ -2,6 +2,8 @@ import { ActionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/cor
 import { asPublicActionView, asReceiverActionView } from './action-view';
 import { describe, expect, test, vi } from 'vitest';
 
+const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
+
 describe('asPublicActionView()', () => {
   describe('when passed `undefined`', () => {
     test('returns an empty action view', () => {
@@ -33,7 +35,7 @@ describe('asPublicActionView()', () => {
                     case: 'decoded',
                     value: {
                       address: {
-                        inner: Uint8Array.from([0, 1, 2, 3]),
+                        inner: u8(80),
                       },
                       index: {
                         account: 0,
@@ -50,7 +52,7 @@ describe('asPublicActionView()', () => {
                         lo: 0n,
                       },
                       assetId: {
-                        inner: Uint8Array.from([0, 1, 2, 3]),
+                        inner: u8(32),
                       },
                     },
                   },
@@ -59,7 +61,7 @@ describe('asPublicActionView()', () => {
               spend: {
                 body: {
                   balanceCommitment: {
-                    inner: Uint8Array.from([0, 1, 2, 3]),
+                    inner: new Uint8Array(), // no idea
                   },
                 },
               },
@@ -80,7 +82,7 @@ describe('asPublicActionView()', () => {
                 spend: {
                   body: {
                     balanceCommitment: {
-                      inner: Uint8Array.from([0, 1, 2, 3]),
+                      inner: new Uint8Array(), // no idea
                     },
                   },
                 },
@@ -108,7 +110,7 @@ describe('asPublicActionView()', () => {
                     case: 'decoded',
                     value: {
                       address: {
-                        inner: Uint8Array.from([0, 1, 2, 3]),
+                        inner: u8(80),
                       },
                       index: {
                         account: 0,
@@ -125,7 +127,7 @@ describe('asPublicActionView()', () => {
                         lo: 0n,
                       },
                       assetId: {
-                        inner: Uint8Array.from([0, 1, 2, 3]),
+                        inner: u8(32),
                       },
                     },
                   },
@@ -134,7 +136,7 @@ describe('asPublicActionView()', () => {
               output: {
                 body: {
                   balanceCommitment: {
-                    inner: Uint8Array.from([0, 1, 2, 3]),
+                    inner: new Uint8Array(), // no idea
                   },
                 },
               },
@@ -155,7 +157,7 @@ describe('asPublicActionView()', () => {
                 output: {
                   body: {
                     balanceCommitment: {
-                      inner: Uint8Array.from([0, 1, 2, 3]),
+                      inner: new Uint8Array(), // no ide
                     },
                   },
                 },
@@ -238,7 +240,7 @@ describe('asReceiverActionView()', () => {
                     case: 'decoded',
                     value: {
                       address: {
-                        inner: Uint8Array.from([0, 1, 2, 3]),
+                        inner: u8(80),
                       },
                       index: {
                         account: 0,
@@ -255,7 +257,7 @@ describe('asReceiverActionView()', () => {
                         lo: 0n,
                       },
                       assetId: {
-                        inner: Uint8Array.from([0, 1, 2, 3]),
+                        inner: u8(32),
                       },
                     },
                   },
@@ -264,7 +266,7 @@ describe('asReceiverActionView()', () => {
               spend: {
                 body: {
                   balanceCommitment: {
-                    inner: Uint8Array.from([0, 1, 2, 3]),
+                    inner: new Uint8Array(), // no idea
                   },
                 },
               },
@@ -285,7 +287,7 @@ describe('asReceiverActionView()', () => {
                 spend: {
                   body: {
                     balanceCommitment: {
-                      inner: Uint8Array.from([0, 1, 2, 3]),
+                      inner: new Uint8Array(), // no idea
                     },
                   },
                 },
@@ -316,7 +318,7 @@ describe('asReceiverActionView()', () => {
                     case: 'decoded',
                     value: {
                       address: {
-                        inner: Uint8Array.from([0, 1, 2, 3]),
+                        inner: u8(80),
                       },
                       index: {
                         account: 0,
@@ -333,7 +335,7 @@ describe('asReceiverActionView()', () => {
                         lo: 0n,
                       },
                       assetId: {
-                        inner: Uint8Array.from([0, 1, 2, 3]),
+                        inner: u8(32),
                       },
                     },
                   },
@@ -342,7 +344,7 @@ describe('asReceiverActionView()', () => {
               output: {
                 body: {
                   balanceCommitment: {
-                    inner: Uint8Array.from([0, 1, 2, 3]),
+                    inner: new Uint8Array(),
                   },
                 },
               },

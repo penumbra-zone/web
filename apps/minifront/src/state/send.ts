@@ -19,7 +19,7 @@ import {
 import { getAddress, getAddressIndex } from '@penumbra-zone/getters/src/address-view';
 import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 import { fromValueView } from '@penumbra-zone/types/src/amount';
-import { isPenumbraAddr } from '@penumbra-zone/bech32/src/address';
+import { isAddress } from '@penumbra-zone/bech32m/penumbra';
 
 export interface SendSlice {
   selection: BalancesResponse | undefined;
@@ -172,7 +172,7 @@ export const sendValidationErrors = (
   memo?: string,
 ): SendValidationFields => {
   return {
-    recipientErr: Boolean(recipient) && !isPenumbraAddr(recipient),
+    recipientErr: Boolean(recipient) && !isAddress(recipient),
     amountErr: !asset ? false : amountMoreThanBalance(asset, amount),
     // The memo cannot exceed 512 bytes
     // return address uses 80 bytes

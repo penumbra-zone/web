@@ -10,7 +10,7 @@ import { sendValidationErrors } from './send';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { produce } from 'immer';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
+import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 import { Chain } from '@penumbra-labs/registry';
 import { currentTimePlusTwoDaysRounded } from './ibc';
 
@@ -32,11 +32,9 @@ describe.skip('IBC Slice', () => {
       addressView: {
         case: 'opaque',
         value: {
-          address: {
-            inner: bech32ToAddress(
-              'penumbra1e8k5cyds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uu0rgkvtjpxy3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd4',
-            ),
-          },
+          address: addressFromBech32m(
+            'penumbra1e8k5cyds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uu0rgkvtjpxy3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd4',
+          ),
         },
       },
     }),

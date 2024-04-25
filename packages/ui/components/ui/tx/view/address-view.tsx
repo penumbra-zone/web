@@ -2,7 +2,7 @@ import { AddressIcon } from '../../address-icon';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { CopyToClipboardIconButton } from '../../copy-to-clipboard-icon-button';
 import { AddressComponent } from '../../address-component';
-import { bech32Address } from '@penumbra-zone/bech32/src/address';
+import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
 interface AddressViewProps {
   view: AddressView | undefined;
@@ -14,7 +14,7 @@ interface AddressViewProps {
 export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps) => {
   if (!view?.addressView.value?.address) return <></>;
 
-  const encodedAddress = bech32Address(view.addressView.value.address);
+  const encodedAddress = bech32mAddress(view.addressView.value.address);
 
   const accountIndex =
     view.addressView.case === 'decoded' ? view.addressView.value.index?.account : undefined;

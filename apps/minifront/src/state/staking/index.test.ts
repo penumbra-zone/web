@@ -6,7 +6,7 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
+import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { getValidatorInfoFromValueView } from '@penumbra-zone/getters/src/value-view';
 import {
   AddressView,
@@ -15,8 +15,9 @@ import {
 import { THROTTLE_MS } from '.';
 import { DelegationsByAddressIndexResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
-const validator1IdentityKey = new IdentityKey({ ik: new Uint8Array([1, 2, 3]) });
-const validator1Bech32IdentityKey = bech32IdentityKey(validator1IdentityKey);
+const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
+const validator1IdentityKey = new IdentityKey({ ik: u8(32) });
+const validator1Bech32IdentityKey = bech32mIdentityKey(validator1IdentityKey);
 const validatorInfo1 = new ValidatorInfo({
   status: {
     votingPower: { hi: 0n, lo: 2n },
@@ -27,8 +28,10 @@ const validatorInfo1 = new ValidatorInfo({
   },
 });
 
-const validator2IdentityKey = new IdentityKey({ ik: new Uint8Array([4, 5, 6]) });
-const validator2Bech32IdentityKey = bech32IdentityKey(validator2IdentityKey);
+const validator2IdentityKey = new IdentityKey({
+  ik: u8(32),
+});
+const validator2Bech32IdentityKey = bech32mIdentityKey(validator2IdentityKey);
 const validatorInfo2 = new ValidatorInfo({
   status: {
     votingPower: { hi: 0n, lo: 5n },
@@ -39,7 +42,9 @@ const validatorInfo2 = new ValidatorInfo({
   },
 });
 
-const validator3IdentityKey = new IdentityKey({ ik: new Uint8Array([7, 8, 9]) });
+const validator3IdentityKey = new IdentityKey({
+  ik: u8(32),
+});
 const validatorInfo3 = new ValidatorInfo({
   status: {
     votingPower: { hi: 0n, lo: 3n },
@@ -50,7 +55,7 @@ const validatorInfo3 = new ValidatorInfo({
   },
 });
 
-const validator4IdentityKey = new IdentityKey({ ik: new Uint8Array([0]) });
+const validator4IdentityKey = new IdentityKey({ ik: u8(32) });
 const validatorInfo4 = new ValidatorInfo({
   status: {
     votingPower: { hi: 0n, lo: 9n },

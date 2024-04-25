@@ -7,7 +7,7 @@ import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
 import { AccountKeyGradientIcon } from '../../../icons/account-key-gradient';
 import { walletsSelector } from '../../../state/wallets';
-import { bech32SpendKey } from '@penumbra-zone/bech32/src/spend-key';
+import { bech32mSpendKey } from '@penumbra-zone/bech32m/penumbraspendkey';
 import { SettingsScreen } from './settings-screen';
 
 export const SettingsSpendKey = () => {
@@ -23,7 +23,7 @@ export const SettingsSpendKey = () => {
 
     void (async function () {
       if (await isPassword(password)) {
-        setSpendKey(bech32SpendKey(await getSpendKey()));
+        setSpendKey(bech32mSpendKey(await getSpendKey()));
       } else {
         setEnteredIncorrect(true);
       }

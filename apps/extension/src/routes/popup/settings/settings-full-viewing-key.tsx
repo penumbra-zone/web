@@ -7,7 +7,7 @@ import { useStore } from '../../../state';
 import { passwordSelector } from '../../../state/password';
 import { KeyGradientIcon } from '../../../icons/key-gradient';
 import { walletsSelector } from '../../../state/wallets';
-import { bech32FullViewingKey } from '@penumbra-zone/bech32/src/full-viewing-key';
+import { bech32mFullViewingKey } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import { SettingsScreen } from './settings-screen';
 
 export const SettingsFullViewingKey = () => {
@@ -23,7 +23,7 @@ export const SettingsFullViewingKey = () => {
 
     void (async function () {
       if (await isPassword(password)) {
-        setFullViewingKey(bech32FullViewingKey(await getFullViewingKey()));
+        setFullViewingKey(bech32mFullViewingKey(await getFullViewingKey()));
       } else {
         setEnteredIncorrect(true);
       }

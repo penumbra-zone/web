@@ -10,7 +10,6 @@ export default defineConfig({
         'funding-stream': './src/funding-stream.ts',
         metadata: './src/metadata.ts',
         'rate-data': './src/rate-data.ts',
-        string: './src/string.ts',
         swap: './src/swap.ts',
         'swap-record': './src/swap-record.ts',
         'spendable-note-record': './src/spendable-note-record.ts',

@@ -27,7 +27,7 @@ import {
   getEquivalentValues,
   getValidatorInfoFromValueView,
 } from '@penumbra-zone/getters/src/value-view';
-import { asIdentityKey } from '@penumbra-zone/getters/src/string';
+import { identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 import { PartialMessage } from '@bufbuild/protobuf';
 import {
   Metadata,
@@ -54,7 +54,7 @@ const activeValidatorInfoResponse = new ValidatorInfoResponse({
   validatorInfo: {
     validator: {
       name: 'Active validator',
-      identityKey: asIdentityKey(activeValidatorBech32IdentityKey),
+      identityKey: identityKeyFromBech32m(activeValidatorBech32IdentityKey),
     },
     status: {
       state: { state: ValidatorState_ValidatorStateEnum.ACTIVE },
@@ -68,7 +68,7 @@ const activeValidator2InfoResponse = new ValidatorInfoResponse({
   validatorInfo: {
     validator: {
       name: 'Active validator 2',
-      identityKey: asIdentityKey(activeValidator2Bech32IdentityKey),
+      identityKey: identityKeyFromBech32m(activeValidator2Bech32IdentityKey),
     },
     status: {
       state: { state: ValidatorState_ValidatorStateEnum.ACTIVE },
@@ -82,7 +82,7 @@ const inactiveValidatorInfoResponse = new ValidatorInfoResponse({
   validatorInfo: {
     validator: {
       name: 'Inactive validator',
-      identityKey: asIdentityKey(inactiveValidatorBech32IdentityKey),
+      identityKey: identityKeyFromBech32m(inactiveValidatorBech32IdentityKey),
     },
     status: {
       state: { state: ValidatorState_ValidatorStateEnum.INACTIVE },
@@ -96,7 +96,7 @@ const inactiveValidator2InfoResponse = new ValidatorInfoResponse({
   validatorInfo: {
     validator: {
       name: 'Inactive validator 2',
-      identityKey: asIdentityKey(inactiveValidator2Bech32IdentityKey),
+      identityKey: identityKeyFromBech32m(inactiveValidator2Bech32IdentityKey),
     },
     status: {
       state: { state: ValidatorState_ValidatorStateEnum.INACTIVE },

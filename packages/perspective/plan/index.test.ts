@@ -1,23 +1,28 @@
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import {
+  Address,
+  FullViewingKey,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { describe, expect, test, vi } from 'vitest';
 import { viewTransactionPlan } from '.';
 import {
   MemoView_Visible,
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
+import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { bech32ToFullViewingKey } from '@penumbra-zone/bech32/src/full-viewing-key';
+import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 
 describe('viewTransactionPlan()', () => {
   const returnAddressAsBech32 =
     'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
-  const returnAddress = new Address({ inner: bech32ToAddress(returnAddressAsBech32) });
+  const returnAddress = new Address(addressFromBech32m(returnAddressAsBech32));
   const chainId = 'testnet';
   const expiryHeight = 100n;
   const metadataByAssetId = vi.fn(() => Promise.resolve(new Metadata()));
-  const mockFvk = bech32ToFullViewingKey(
-    'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+  const mockFvk = new FullViewingKey(
+    fullViewingKeyFromBech32m(
+      'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+    ),
   );
 
   const validTxnPlan = new TransactionPlan({

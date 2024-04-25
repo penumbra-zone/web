@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { AddressComponent } from './address-component';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { AccountSwitcher } from './account-switcher';
-import { bech32Address } from '@penumbra-zone/bech32/src/address';
+import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
 interface SelectAccountProps {
   getAddrByIndex: (index: number, ephemeral: boolean) => Promise<Address> | Address;
@@ -50,7 +50,7 @@ export const SelectAccount = ({ getAddrByIndex }: SelectAccountProps) => {
                 <AddressComponent address={address} ephemeral={ephemeral} />
               </p>
             </div>
-            <CopyToClipboardIconButton text={bech32Address(address)} />
+            <CopyToClipboardIconButton text={bech32mAddress(address)} />
           </div>
           <div className='mt-2 flex items-center justify-between'>
             <div className='flex items-center gap-2'>

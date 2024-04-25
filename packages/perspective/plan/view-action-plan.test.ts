@@ -14,7 +14,10 @@ import {
   AssetId,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import {
+  Address,
+  FullViewingKey,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import {
   SwapPlaintext,
   BatchSwapOutputData,
@@ -23,18 +26,20 @@ import {
   Delegate,
   Undelegate,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
-import { bech32ToFullViewingKey } from '@penumbra-zone/bech32/src/full-viewing-key';
+import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
+import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 
 describe('viewActionPlan()', () => {
   const addressAsBech32 =
     'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
-  const address = new Address({ inner: bech32ToAddress(addressAsBech32) });
+  const address = new Address(addressFromBech32m(addressAsBech32));
   const assetId = new AssetId({ inner: new Uint8Array() });
   const metadata = new Metadata({ penumbraAssetId: assetId });
   const metadataByAssetId = vi.fn(() => Promise.resolve(metadata));
-  const mockFvk = bech32ToFullViewingKey(
-    'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+  const mockFvk = new FullViewingKey(
+    fullViewingKeyFromBech32m(
+      'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+    ),
   );
 
   describe('`spend` action', () => {
@@ -126,7 +131,7 @@ describe('viewActionPlan()', () => {
   describe('`output` action', () => {
     const addressAsBech32 =
       'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
-    const destAddress = new Address({ inner: bech32ToAddress(addressAsBech32) });
+    const destAddress = new Address(addressFromBech32m(addressAsBech32));
     const validOutputActionPlan = new ActionPlan({
       action: {
         case: 'output',

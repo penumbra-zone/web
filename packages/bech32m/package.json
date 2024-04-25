@@ -1,0 +1,41 @@
+{
+  "name": "@penumbra-zone/bech32m",
+  "version": "2.0.0",
+  "license": "(MIT OR Apache-2.0)",
+  "description": "Tools for manipulating Penumbra bech32m strings",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --build",
+    "clean": "rm -rfv dist",
+    "lint": "eslint \"src/**.ts\"",
+    "test": "vitest run"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "publishConfig": {
+    "files": [
+      "./dist"
+    ],
+    "exports": {
+      ".": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "./*": {
+        "import": "./dist/*.js",
+        "types": "./dist/*.d.ts"
+      }
+    }
+  },
+  "dependencies": {
+    "bech32": "^2.0.0"
+  },
+  "devDependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2"
+  },
+  "peerDependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2"
+  }
+}

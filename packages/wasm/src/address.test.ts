@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { generateSpendKey, getAddressByIndex, getFullViewingKey } from './keys';
 import { getAddressIndexByAddress, isControlledAddress } from './address';
-import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
+import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 describe('address', () => {
@@ -18,11 +18,11 @@ describe('address', () => {
     });
 
     it('returns undefined with uncontrolled addr', () => {
-      const address = new Address({
-        inner: bech32ToAddress(
+      const address = new Address(
+        addressFromBech32m(
           'penumbra1ftmn2a3hf8pxe0e48es8u9rqhny4xggq9wn2caxcjnfwfhwr5s0t3y6nzs9gx3ty5czd0sd9ssfgjt2pcxrq93yvgk2gu3ynmayuwgddkxthce8l445v8x6v07y2sjd8djcr6v',
         ),
-      });
+      );
 
       expect(getAddressIndexByAddress(fullViewingKey, address)).toBeUndefined();
     });
@@ -38,11 +38,11 @@ describe('address', () => {
     it('returns false if the address is not controlled', () => {
       const spendKey = generateSpendKey(seedPhrase);
       const fullViewingKey = getFullViewingKey(spendKey);
-      const address = new Address({
-        inner: bech32ToAddress(
+      const address = new Address(
+        addressFromBech32m(
           'penumbra1ftmn2a3hf8pxe0e48es8u9rqhny4xggq9wn2caxcjnfwfhwr5s0t3y6nzs9gx3ty5czd0sd9ssfgjt2pcxrq93yvgk2gu3ynmayuwgddkxthce8l445v8x6v07y2sjd8djcr6v',
         ),
-      });
+      );
 
       expect(isControlledAddress(fullViewingKey, address)).toBe(false);
     });

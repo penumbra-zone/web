@@ -21,7 +21,7 @@ import {
   localAssets,
   STAKING_TOKEN_METADATA,
 } from '@penumbra-zone/constants/src/assets';
-import { bech32IsValid } from '@penumbra-zone/bech32/src/validate';
+import { bech32, bech32m } from 'bech32';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { Chain } from '@penumbra-labs/registry';
 
@@ -193,16 +193,23 @@ export const ibcValidationErrors = (state: AllSlices) => {
   return {
     recipientErr: !state.ibc.destinationChainAddress
       ? false
-      : !validateAddress(state.ibc.chain, state.ibc.destinationChainAddress),
+      : !validateUnknownAddress(state.ibc.chain, state.ibc.destinationChainAddress),
     amountErr: !state.ibc.selection
       ? false
       : amountMoreThanBalance(state.ibc.selection, state.ibc.amount),
   };
 };
 
-const validateAddress = (chain: Chain | undefined, address: string): boolean => {
+/**
+ * we don't know what format foreign addresses are in. so this only checks:
+ * - it's valid bech32 OR valid bech32m
+ * - the prefix matches the chain
+ */
+const validateUnknownAddress = (chain: Chain | undefined, address: string): boolean => {
   if (!chain || address === '') return false;
-  return bech32IsValid(address, chain.addressPrefix);
+  const { prefix, words } =
+    bech32.decodeUnsafe(address, Infinity) ?? bech32m.decodeUnsafe(address, Infinity) ?? {};
+  return !words || prefix !== chain.addressPrefix;
 };
 
 /**

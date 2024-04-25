@@ -21,7 +21,6 @@ import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import {
   AddressIndex,
-  IdentityKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import {
@@ -42,8 +41,8 @@ import { IdbCursorSource } from './stream';
 import '@penumbra-zone/polyfills/src/ReadableStream[Symbol.asyncIterator]';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { bech32AssetId } from '@penumbra-zone/bech32/src/asset';
-import { bech32IdentityKey, bech32ToIdentityKey } from '@penumbra-zone/bech32/src/identity-key';
+import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
+import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/src/validator-info';
 import {
   IDB_TABLES,
@@ -59,7 +58,7 @@ import type {
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
-import { bech32WalletId } from '@penumbra-zone/bech32/src/wallet-id';
+import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 
 interface IndexedDbProps {
@@ -77,7 +76,7 @@ export class IndexedDb implements IndexedDbInterface {
   ) {}
 
   static async initialize({ dbVersion, walletId, chainId }: IndexedDbProps): Promise<IndexedDb> {
-    const bech32Id = bech32WalletId(walletId);
+    const bech32Id = bech32mWalletId(walletId);
     const dbName = `viewdata/${chainId}/${bech32Id}`;
 
     const db = await openDB<PenumbraDb>(dbName, dbVersion, {
@@ -225,7 +224,7 @@ export class IndexedDb implements IndexedDbInterface {
 
         if (
           metadata.penumbraAssetId &&
-          bech32AssetId(metadata.penumbraAssetId) === assetId.altBech32m
+          bech32mAssetId(metadata.penumbraAssetId) === assetId.altBech32m
         ) {
           return metadata;
         }
@@ -416,9 +415,7 @@ export class IndexedDb implements IndexedDbInterface {
         notesForVoting.push(
           new NotesForVotingResponse({
             noteRecord: note,
-            identityKey: new IdentityKey({
-              ik: bech32ToIdentityKey(regexResult.bech32IdentityKey),
-            }),
+            identityKey: identityKeyFromBech32m(regexResult.idKey),
           }),
         );
       }
@@ -535,7 +532,7 @@ export class IndexedDb implements IndexedDbInterface {
    * validator info if one with the same identity key exists.
    */
   async upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void> {
-    const identityKeyAsBech32 = bech32IdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo));
+    const identityKeyAsBech32 = bech32mIdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo));
 
     await this.u.update({
       table: 'VALIDATOR_INFOS',

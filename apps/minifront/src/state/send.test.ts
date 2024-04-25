@@ -15,8 +15,7 @@ import {
   TransactionPlannerResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Fee } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
-import { stringToUint8Array } from '@penumbra-zone/types/src/string';
-import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
+import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 
 vi.mock('../fetchers/address', () => ({
   getAddressByIndex: vi.fn(),
@@ -35,7 +34,7 @@ describe('Send Slice', () => {
           metadata: new Metadata({
             display: 'xyz',
             denomUnits: [{ denom: 'xyz', exponent: 6 }],
-            penumbraAssetId: { inner: stringToUint8Array('passet1239049023') },
+            penumbraAssetId: { inner: new Uint8Array(32) },
           }),
         },
       },
@@ -44,11 +43,9 @@ describe('Send Slice', () => {
       addressView: {
         case: 'decoded',
         value: {
-          address: {
-            inner: bech32ToAddress(
-              'penumbra1e8k5cyds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uu0rgkvtjpxy3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd4',
-            ),
-          },
+          address: addressFromBech32m(
+            'penumbra1e8k5cyds484dxvapeamwveh5khqv4jsvyvaf5wwxaaccgfghm229qw03pcar3ryy8smptevstycch0qk3uu0rgkvtjpxy3cu3rjd0agawqtlz6erev28a6sg69u7cxy0t02nd4',
+          ),
           index: { account: 12 },
         },
       },
@@ -122,7 +119,7 @@ describe('Send Slice', () => {
 
   describe('setRecipient and validate', () => {
     const rightAddress =
-      'penumbra1lsqlh43cxh6amvtu0g84v9s8sq0zef4mz8jvje9lxwarancqg9qjf6nthhnjzlwngplepq7vaam8h4z530gys7x2s82zn0sgvxneea442q63sumem7r096p7rd2tywm2v6ppc4';
+      'penumbra1ftmn2a3hf8pxe0e48es8u9rqhny4xggq9wn2caxcjnfwfhwr5s0t3y6nzs9gx3ty5czd0sd9ssfgjt2pcxrq93yvgk2gu3ynmayuwgddkxthce8l445v8x6v07y2sjd8djcr6v';
 
     test('recipient can be set and validate', () => {
       useStore.getState().send.setSelection(selectionExample);

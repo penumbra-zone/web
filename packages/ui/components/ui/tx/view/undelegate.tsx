@@ -1,7 +1,7 @@
 import { Undelegate } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { ViewBox } from './viewbox';
 import { joinLoHiAmount } from '@penumbra-zone/types/src/amount';
-import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
+import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { ActionDetails } from './action-details';
 
 /**
@@ -28,7 +28,7 @@ export const UndelegateComponent = ({ value }: { value: Undelegate }) => {
           {/** @todo: Render validator name/etc. after fetching? */}
           {!!value.validatorIdentity && (
             <ActionDetails.Row label='Validator identity' truncate>
-              {bech32IdentityKey(value.validatorIdentity)}
+              {bech32mIdentityKey(value.validatorIdentity)}
             </ActionDetails.Row>
           )}
         </ActionDetails>

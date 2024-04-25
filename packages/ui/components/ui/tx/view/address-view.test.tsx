@@ -13,7 +13,7 @@ const addressViewWithOneTimeAddress = new AddressView({
     case: 'decoded',
 
     value: new AddressView_Decoded({
-      address: new Address(),
+      address: new Address({ inner: new Uint8Array(80) }),
       index: new AddressIndex({
         account: 0,
         // A one-time address is defined by a randomizer with at least one
@@ -29,7 +29,7 @@ const addressViewWithNormalAddress = new AddressView({
     case: 'decoded',
 
     value: new AddressView_Decoded({
-      address: new Address(),
+      address: new Address({ inner: new Uint8Array(80) }),
       index: new AddressIndex({
         account: 0,
         randomizer: new Uint8Array([0, 0, 0]),

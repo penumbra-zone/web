@@ -19,7 +19,7 @@
     }
   },
   "dependencies": {
-    "@penumbra-zone/bech32": "workspace:*",
+    "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/constants": "workspace:*"
   },
   "devDependencies": {

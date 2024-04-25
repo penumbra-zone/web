@@ -16,7 +16,7 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 
 /**
- * Renders a single `ValidatorInfo`: its name, bech32-encoded identity key,
+ * Renders a single `ValidatorInfo`: its name and identity key,
  * voting power, and commission.
  */
 export const ValidatorInfoComponent = ({

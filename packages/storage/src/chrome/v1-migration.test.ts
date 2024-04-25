@@ -7,8 +7,8 @@ import {
   FullViewingKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32ToWalletId } from '@penumbra-zone/bech32/src/wallet-id';
-import { bech32ToFullViewingKey } from '@penumbra-zone/bech32/src/full-viewing-key';
+import { walletIdFromBech32m } from '@penumbra-zone/bech32m/penumbrawalletid';
+import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import { LocalStorageState, LocalStorageVersion } from './types';
 
 describe('migrate walletId and fullViewingKey from bech32 string to json stringified', () => {
@@ -51,29 +51,29 @@ describe('migrate walletId and fullViewingKey from bech32 string to json stringi
 
     const v2Wallets = await v2ExtStorage.get('wallets');
     expect(WalletId.fromJsonString(v2Wallets[0]?.id ?? '').inner).toEqual(
-      bech32ToWalletId(bech32WalletId).inner,
+      walletIdFromBech32m(bech32WalletId).inner,
     );
     expect(FullViewingKey.fromJsonString(v2Wallets[0]?.fullViewingKey ?? '').inner).toEqual(
-      bech32ToFullViewingKey(bech32FVK).inner,
+      fullViewingKeyFromBech32m(bech32FVK).inner,
     );
   });
 
   test('should not migrate if its not needed', async () => {
     await v2ExtStorage.set('wallets', [
       {
-        fullViewingKey: bech32ToFullViewingKey(bech32FVK).toJsonString(),
+        fullViewingKey: new FullViewingKey(fullViewingKeyFromBech32m(bech32FVK)).toJsonString(),
         label: 'Wallet 1',
-        id: bech32ToWalletId(bech32WalletId).toJsonString(),
+        id: new WalletId(walletIdFromBech32m(bech32WalletId)).toJsonString(),
         custody: { encryptedSeedPhrase: { nonce: '', cipherText: '' } },
       },
     ]);
 
     const v2Wallets = await v2ExtStorage.get('wallets');
     expect(WalletId.fromJsonString(v2Wallets[0]?.id ?? '').inner).toEqual(
-      bech32ToWalletId(bech32WalletId).inner,
+      walletIdFromBech32m(bech32WalletId).inner,
     );
     expect(FullViewingKey.fromJsonString(v2Wallets[0]?.fullViewingKey ?? '').inner).toEqual(
-      bech32ToFullViewingKey(bech32FVK).inner,
+      fullViewingKeyFromBech32m(bech32FVK).inner,
     );
   });
 });
