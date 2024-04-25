@@ -42,8 +42,7 @@
       "dependsOn": ["format:ts", "format:rust"]
     },
     "format:rust": {
-      "cache": false,
-      "dependsOn": ["compile"]
+      "cache": false
     },
     "format:ts": {
       "cache": false,
