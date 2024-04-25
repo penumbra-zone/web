@@ -15,19 +15,20 @@ default = ["console_error_panic_hook"]
 mock-database = []
 
 [dependencies]
-penumbra-asset         = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.71.0", package = "penumbra-asset" }
-penumbra-compact-block = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.71.0", package = "penumbra-compact-block", default-features = false }
-penumbra-dex           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.71.0", package = "penumbra-dex", default-features = false }
-penumbra-fee           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.71.0", package = "penumbra-fee", default-features = false }
-penumbra-keys          = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.71.0", package = "penumbra-keys" }
-penumbra-num           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.71.0", package = "penumbra-num" }
-penumbra-proof-params  = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.71.0", package = "penumbra-proof-params", default-features = false }
-penumbra-proto         = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.71.0", package = "penumbra-proto", default-features = false }
-penumbra-sct           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.71.0", package = "penumbra-sct", default-features = false }
-penumbra-shielded-pool = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.71.0", package = "penumbra-shielded-pool", default-features = false }
-penumbra-stake         = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.71.0", package = "penumbra-stake", default-features = false }
-penumbra-tct           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.71.0", package = "penumbra-tct" }
-penumbra-transaction   = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.71.0", package = "penumbra-transaction", default-features = false }
+penumbra-auction       = { path = "../../../../penumbra-core/crates/core/component/auction", package = "penumbra-auction", default-features = false }
+penumbra-asset         = { path = "../../../../penumbra-core/crates/core/asset", package = "penumbra-asset" }
+penumbra-compact-block = { path = "../../../../penumbra-core/crates/core/component/compact-block", package = "penumbra-compact-block", default-features = false }
+penumbra-dex           = { path = "../../../../penumbra-core/crates/core/component/dex", package = "penumbra-dex", default-features = false }
+penumbra-fee           = { path = "../../../../penumbra-core/crates/core/component/fee", package = "penumbra-fee", default-features = false }
+penumbra-keys          = { path = "../../../../penumbra-core/crates/core/keys", package = "penumbra-keys" }
+penumbra-num           = { path = "../../../../penumbra-core/crates/core/num", package = "penumbra-num" }
+penumbra-proof-params  = { path = "../../../../penumbra-core/crates/crypto/proof-params", package = "penumbra-proof-params", default-features = false }
+penumbra-proto         = { path = "../../../../penumbra-core/crates/proto", package = "penumbra-proto", default-features = false }
+penumbra-sct           = { path = "../../../../penumbra-core/crates/core/component/sct", package = "penumbra-sct", default-features = false }
+penumbra-shielded-pool = { path = "../../../../penumbra-core/crates/core/component/shielded-pool", package = "penumbra-shielded-pool", default-features = false }
+penumbra-stake         = { path = "../../../../penumbra-core/crates/core/component/stake", package = "penumbra-stake", default-features = false }
+penumbra-tct           = { path = "../../../../penumbra-core/crates/crypto/tct", package = "penumbra-tct" }
+penumbra-transaction   = { path = "../../../../penumbra-core/crates/core/transaction", package = "penumbra-transaction", default-features = false }
 
 anyhow                   = "1.0.80"
 ark-ff                   = { version = "0.4.2", features = ["std"] }
