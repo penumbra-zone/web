@@ -34,7 +34,7 @@
     },
     "dev": {
       "cache": false,
-      "dependsOn": ["build"],
+      "dependsOn": ["^compile"],
       "persistent": true
     },
     "format": {
