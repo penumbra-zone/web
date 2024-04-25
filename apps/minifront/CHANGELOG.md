@@ -1,5 +1,22 @@
 # minifront
 
+## 4.3.0
+
+### Minor Changes
+
+- 862283c: Using external registry for ibc chains
+
+### Patch Changes
+
+- Updated dependencies [862283c]
+  - @penumbra-zone/constants@3.0.0
+  - @penumbra-zone/perspective@1.0.2
+  - @penumbra-zone/getters@2.0.1
+  - @penumbra-zone/types@2.0.1
+  - @penumbra-zone/ui@2.0.2
+  - @penumbra-zone/client@3.0.1
+  - @penumbra-zone/crypto-web@3.0.1
+
 ## 4.2.0
 
 ### Minor Changes

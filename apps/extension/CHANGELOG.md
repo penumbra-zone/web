@@ -1,5 +1,33 @@
 # chrome-extension
 
+## 7.0.0
+
+### Major Changes
+
+- f23028a: Prax brand integration and renaming
+
+### Minor Changes
+
+- 862283c: Using external registry for ibc chains
+
+### Patch Changes
+
+- Updated dependencies [78ab976]
+- Updated dependencies [9f4c112]
+- Updated dependencies [862283c]
+- Updated dependencies [9f4c112]
+  - @penumbra-zone/wasm@4.0.0
+  - @penumbra-zone/services@3.0.0
+  - @penumbra-zone/constants@3.0.0
+  - @penumbra-zone/services-context@3.0.0
+  - @penumbra-zone/perspective@1.0.2
+  - @penumbra-zone/query@2.0.3
+  - @penumbra-zone/storage@3.0.1
+  - @penumbra-zone/types@2.0.1
+  - @penumbra-zone/ui@2.0.2
+  - @penumbra-zone/client@3.0.1
+  - @penumbra-zone/crypto-web@3.0.1
+
 ## 6.3.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @penumbra-zone/constants
 
+## 3.0.0
+
+### Major Changes
+
+- 862283c: Using external registry for ibc chains
+
 ## 2.0.0
 
 ### Major Changes

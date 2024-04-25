@@ -1,5 +1,17 @@
 # @penumbra-zone/query
 
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies [78ab976]
+- Updated dependencies [862283c]
+  - @penumbra-zone/wasm@4.0.0
+  - @penumbra-zone/constants@3.0.0
+  - @penumbra-zone/getters@2.0.1
+  - @penumbra-zone/types@2.0.1
+  - @penumbra-zone/crypto-web@3.0.1
+
 ## 2.0.2
 
 ### Patch Changes
