@@ -37,6 +37,11 @@ export interface UnbondingCaptureGroups {
   bech32IdentityKey: string;
 }
 
+export interface AuctionCaptureGroups {
+  seqNum: string;
+  auctionId: string;
+}
+
 export interface AssetPatterns {
   lpNft: RegexMatcher;
   delegationToken: RegexMatcher<DelegationCaptureGroups>;
@@ -44,6 +49,7 @@ export interface AssetPatterns {
   unbondingToken: RegexMatcher<UnbondingCaptureGroups>;
   votingReceipt: RegexMatcher;
   ibc: RegexMatcher<IbcCaptureGroups>;
+  auctionNft: RegexMatcher<AuctionCaptureGroups>;
 }
 
 export class RegexMatcher<T = never> {
@@ -88,4 +94,7 @@ export const assetPatterns: AssetPatterns = {
   ),
   votingReceipt: new RegexMatcher(/^voted_on_/),
   ibc: new RegexMatcher(/^transfer\/(?<channel>channel-\d+)\/(?<denom>.*)/),
+  auctionNft: new RegexMatcher(
+    /^auctionnft_(?P<seqNum>[0-9]+)_(?P<auctionId>pauctid1[a-zA-HJ-NP-Z0-9]+)$/,
+  ),
 };

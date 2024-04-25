@@ -5,6 +5,11 @@ use ark_ff::UniformRand;
 use decaf377::{Fq, Fr};
 use penumbra_asset::asset::Metadata;
 use penumbra_asset::{asset, Balance, Value};
+use penumbra_auction::auction;
+use penumbra_auction::auction::dutch::actions::ActionDutchAuctionWithdrawPlan;
+use penumbra_auction::auction::dutch::{
+    ActionDutchAuctionEnd, ActionDutchAuctionSchedule, ActionDutchAuctionWithdraw,
+};
 use penumbra_dex::swap_claim::SwapClaimPlan;
 use penumbra_dex::{
     swap::{SwapPlaintext, SwapPlan},
@@ -15,6 +20,7 @@ use penumbra_keys::keys::AddressIndex;
 use penumbra_keys::{Address, FullViewingKey};
 use penumbra_num::Amount;
 use penumbra_proto::core::app::v1::AppParameters;
+use penumbra_proto::core::component::auction::v1alpha1::{AuctionId, DutchAuctionDescription};
 use penumbra_proto::core::component::ibc;
 use penumbra_proto::view::v1::{
     transaction_planner_request as tpr, NotesRequest, TransactionPlannerRequest,
@@ -382,6 +388,54 @@ pub async fn plan_transaction(
     #[allow(clippy::never_loop)]
     for tpr::PositionWithdraw { .. } in request.position_withdraws {
         return Err(anyhow!("PositionWithdraw not yet implemented").into());
+    }
+
+    for tpr::ActionDutchAuctionSchedule { description } in request.dutch_auction_schedule_actions {
+        let description: DutchAuctionDescription = description
+            .ok_or_else(|| anyhow!("missing description in Dutch auction schedule action"))?
+            .try_into()?;
+
+        actions.push(ActionPlan::ActionDutchAuctionSchedule(
+            ActionDutchAuctionSchedule {
+                description: description.try_into()?,
+            },
+        ));
+    }
+
+    for tpr::ActionDutchAuctionEnd { auction_id } in request.dutch_auction_end_actions {
+        let auction_id: AuctionId = auction_id
+            .ok_or_else(|| anyhow!("missing auction ID in Dutch auction end action"))?
+            .try_into()?;
+
+        actions.push(ActionPlan::ActionDutchAuctionEnd(ActionDutchAuctionEnd {
+            auction_id: auction_id.try_into()?,
+        }));
+    }
+
+    for tpr::ActionDutchAuctionWithdraw {
+        auction_id,
+        input_reserves,
+        output_reserves,
+        seq,
+    } in request.dutch_auction_withdraw_actions
+    {
+        let auction_id: AuctionId = auction_id
+            .ok_or_else(|| anyhow!("missing auction ID in Dutch auction withdraw action"))?
+            .try_into()?;
+        let input_reserves: Amount = input_reserves
+            .ok_or_else(|| anyhow!("missing input reserves in Dutch auction withdraw action"))?
+            .try_into()?;
+        let output_reserves: Amount = output_reserves
+            .ok_or_else(|| anyhow!("missing output reserves in Dutch auction withdraw action"))?
+            .try_into()?;
+
+        actions.push(ActionPlan::ActionDutchAuctionWithdraw(
+            ActionDutchAuctionWithdrawPlan {
+                auction_id: auction_id.try_into()?,
+                reserves_input: input_reserves,
+                seq,
+            },
+        ));
     }
 
     // Phase 2: fill in the required spends to make the transaction balance.
