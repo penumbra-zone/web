@@ -20,7 +20,7 @@ describe('EphemeralAddress request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(fvkCtx, testFullViewingKey),
+      contextValues: createContextValues().set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
   });
 
@@ -32,8 +32,8 @@ describe('EphemeralAddress request handler', () => {
     expect(ephemeralAddressResponse.address).toBeInstanceOf(Address);
   });
 
-  test('should get an error if addressIndex is missing', () => {
-    expect(() => ephemeralAddress(new EphemeralAddressRequest(), mockCtx)).toThrowError(
+  test('should get an error if addressIndex is missing', async () => {
+    await expect(ephemeralAddress(new EphemeralAddressRequest(), mockCtx)).rejects.toThrow(
       'Missing address index',
     );
   });

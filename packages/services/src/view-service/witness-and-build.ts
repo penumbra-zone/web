@@ -13,14 +13,11 @@ export const witnessAndBuild: Impl['witnessAndBuild'] = async function* (
   { authorizationData, transactionPlan },
   ctx,
 ) {
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   if (!transactionPlan) throw new ConnectError('No tx plan', Code.InvalidArgument);
 
   const { indexedDb } = await services.getWalletServices();
-  const fullViewingKey = ctx.values.get(fvkCtx);
-  if (!fullViewingKey) {
-    throw new ConnectError('Cannot access full viewing key', Code.Unauthenticated);
-  }
+  const fvk = ctx.values.get(fvkCtx);
 
   const sct = await indexedDb.getStateCommitmentTree();
 
@@ -30,6 +27,6 @@ export const witnessAndBuild: Impl['witnessAndBuild'] = async function* (
     transactionPlan,
     witnessData,
     Promise.resolve(authorizationData ?? new AuthorizationData()),
-    fullViewingKey,
+    await fvk(),
   );
 };

@@ -2,7 +2,7 @@ import type { Impl } from '.';
 import { servicesCtx } from '../ctx/prax';
 
 export const ownedPositionIds: Impl['ownedPositionIds'] = async function* (req, ctx) {
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
 
   const { indexedDb } = await services.getWalletServices();
 

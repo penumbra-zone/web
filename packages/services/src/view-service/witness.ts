@@ -6,7 +6,7 @@ import { getWitness } from '@penumbra-zone/wasm/build';
 import { Code, ConnectError } from '@connectrpc/connect';
 
 export const witness: Impl['witness'] = async (req, ctx) => {
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
 
   if (!req.transactionPlan) throw new ConnectError('No tx plan in request', Code.InvalidArgument);
 

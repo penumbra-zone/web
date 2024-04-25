@@ -7,7 +7,7 @@ import {
 import { getStateEnumFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
 
 export const validatorInfo: Impl['validatorInfo'] = async function* (req, ctx) {
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
   for await (const validatorInfo of indexedDb.iterateValidatorInfos()) {

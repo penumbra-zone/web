@@ -33,7 +33,7 @@ import { Stringified } from '@penumbra-zone/types/jsonified';
 
 // Handles aggregating amounts and filtering by account number/asset id
 export const balances: Impl['balances'] = async function* (req, ctx) {
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   const { indexedDb, querier } = await services.getWalletServices();
 
   // latestBlockHeight is needed to calculate the threshold of price relevance,

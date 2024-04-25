@@ -5,7 +5,7 @@ import { servicesCtx } from '../ctx/prax';
 export const epochByHeight: Impl['epochByHeight'] = async (req, ctx) => {
   const { height } = req;
 
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
   const epoch = await indexedDb.getEpochByHeight(height);

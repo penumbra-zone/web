@@ -4,18 +4,20 @@ import { approverCtx } from '../../ctx/approver';
 import { generateSpendKey } from '@penumbra-zone/wasm/keys';
 import { authorizePlan } from '@penumbra-zone/wasm/build';
 import { Key } from '@penumbra-zone/crypto-web/encryption';
-import { Code, ConnectError, HandlerContext } from '@connectrpc/connect';
+import { Code, ConnectError } from '@connectrpc/connect';
 import { Box } from '@penumbra-zone/types/box';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { assertSwapClaimAddressesBelongToCurrentUser } from './assert-swap-claim-addresses-belong-to-current-user';
 import { isControlledAddress } from '@penumbra-zone/wasm/address';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
 import { fvkCtx } from '../../ctx/full-viewing-key';
+import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export const authorize: Impl['authorize'] = async (req, ctx) => {
   if (!req.plan) throw new ConnectError('No plan included in request', Code.InvalidArgument);
 
-  assertValidRequest(req, ctx);
+  const fullViewingKey = await ctx.values.get(fvkCtx)();
+  assertValidRequest(req, fullViewingKey);
 
   const approveReq = ctx.values.get(approverCtx);
   const sess = ctx.values.get(extSessionCtx);
@@ -63,12 +65,7 @@ export const authorize: Impl['authorize'] = async (req, ctx) => {
  *
  * Add more assertions to this function as needed.
  */
-const assertValidRequest = (req: AuthorizeRequest, ctx: HandlerContext): void => {
-  const fullViewingKey = ctx.values.get(fvkCtx);
-  if (!fullViewingKey) {
-    throw new ConnectError('Cannot access full viewing key', Code.Unauthenticated);
-  }
+const assertValidRequest = (req: AuthorizeRequest, fvk: FullViewingKey): void =>
   assertSwapClaimAddressesBelongToCurrentUser(req.plan!, address =>
-    isControlledAddress(fullViewingKey, address),
+    isControlledAddress(fvk, address),
   );
-};

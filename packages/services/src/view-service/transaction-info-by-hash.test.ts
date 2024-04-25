@@ -54,8 +54,8 @@ describe('TransactionInfoByHash request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(servicesCtx, mockServices as unknown as ServicesInterface)
-        .set(fvkCtx, testFullViewingKey),
+        .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
+        .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
     mockTransactionInfo.mockReturnValueOnce({
       txp: transactionPerspective,

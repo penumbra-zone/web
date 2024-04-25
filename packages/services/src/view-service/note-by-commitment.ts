@@ -6,7 +6,7 @@ import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/pen
 import { Code, ConnectError } from '@connectrpc/connect';
 
 export const noteByCommitment: Impl['noteByCommitment'] = async (req, ctx) => {
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
   if (!req.noteCommitment)
     throw new ConnectError('Missing note commitment in request', Code.InvalidArgument);

@@ -60,9 +60,8 @@ describe('nullifierStatus', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(
-        servicesCtx,
-        mockServices as unknown as ServicesInterface,
+      contextValues: createContextValues().set(servicesCtx, () =>
+        Promise.resolve(mockServices as unknown as ServicesInterface),
       ),
     });
   });

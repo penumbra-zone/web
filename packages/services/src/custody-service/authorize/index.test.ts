@@ -99,8 +99,8 @@ describe('Authorize request handler', () => {
         .set(extLocalCtx, mockExtLocalCtx as unknown)
         .set(approverCtx, mockApproverCtx as unknown)
         .set(extSessionCtx, mockExtSessionCtx as unknown)
-        .set(servicesCtx, mockServices as unknown as ServicesInterface)
-        .set(fvkCtx, testFullViewingKey),
+        .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
+        .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
 
     for (const record of testAssetsMetadata) {

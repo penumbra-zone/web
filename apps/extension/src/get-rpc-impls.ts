@@ -23,14 +23,12 @@ import { sctImpl } from '@penumbra-zone/services/sct-service';
 import { stakingImpl } from '@penumbra-zone/services/staking-service';
 import { viewImpl } from '@penumbra-zone/services/view-service';
 
-import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 import { ServiceType } from '@bufbuild/protobuf';
 
-export const getRpcImpls = async () => {
-  const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
-  if (!grpcEndpoint) throw new Error('gRPC endpoint not set yet');
+type RpcImplTuple<T extends ServiceType> = [T, Partial<ServiceImpl<T>>];
 
-  type RpcImplTuple<T extends ServiceType> = [T, Partial<ServiceImpl<T>>];
+export const getRpcImpls = (baseUrl: string) => {
+  const webTransport = createGrpcWebTransport({ baseUrl });
 
   const penumbraProxies: RpcImplTuple<ServiceType>[] = [
     AppService,
@@ -49,7 +47,7 @@ export const getRpcImpls = async () => {
         serviceType,
         createProxyImpl(
           serviceType,
-          createPromiseClient(serviceType, createGrpcWebTransport({ baseUrl: grpcEndpoint })),
+          createPromiseClient(serviceType, webTransport),
           noContextHandler,
         ),
       ] as const,

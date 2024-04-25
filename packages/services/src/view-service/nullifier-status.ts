@@ -19,7 +19,7 @@ export const nullifierStatus: Impl['nullifierStatus'] = async (req, ctx) => {
   const { nullifier } = req;
   if (!nullifier) throw new ConnectError('No nullifier passed', Code.InvalidArgument);
 
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
   // grab subscription to table updates before checking the tables.  this avoids

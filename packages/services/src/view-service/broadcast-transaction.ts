@@ -7,7 +7,7 @@ import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 export const broadcastTransaction: Impl['broadcastTransaction'] = async function* (req, ctx) {
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   const { tendermint } = services.querier;
   const { indexedDb } = await services.getWalletServices();
   if (!req.transaction)
