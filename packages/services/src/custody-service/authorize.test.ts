@@ -1,15 +1,9 @@
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { approverCtx } from '../../ctx/approver';
-import { extLocalCtx, extSessionCtx, servicesCtx } from '../../ctx/prax';
-import {
-  IndexedDbMock,
-  MockExtLocalCtx,
-  MockExtSessionCtx,
-  MockServices,
-  testFullViewingKey,
-} from '../../test-utils';
-import { authorize } from '.';
+import { approverCtx } from '../ctx/approver';
+import { servicesCtx } from '../ctx/prax';
+import { testFullViewingKey, testSpendKey } from '../test-utils';
+import { authorize } from './authorize';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
 import {
@@ -19,96 +13,57 @@ import {
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
-import { fvkCtx } from '../../ctx/full-viewing-key';
+import { fvkCtx } from '../ctx/full-viewing-key';
+import { skCtx } from '../ctx/spend-key';
 
 describe('Authorize request handler', () => {
-  let mockServices: MockServices;
-  let mockApproverCtx: Mock;
-  let mockExtLocalCtx: MockExtLocalCtx;
-  let mockExtSessionCtx: MockExtSessionCtx;
-  let mockCtx: HandlerContext;
   let req: AuthorizeRequest;
 
-  beforeEach(() => {
-    vi.resetAllMocks();
+  const mockApproverCtx = vi.fn(() => Promise.resolve<UserChoice>(UserChoice.Approved));
+  const mockFullViewingKeyCtx = vi.fn(() => Promise.resolve(testFullViewingKey));
+  const mockSpendKeyCtx = vi.fn(() => Promise.resolve(testSpendKey));
+  const mockServicesCtx: Mock<[], Promise<ServicesInterface>> = vi.fn();
 
+  const handlerContextInit = {
+    service: CustodyService,
+    method: CustodyService.methods.authorize,
+    protocolName: 'mock',
+    requestMethod: 'MOCK',
+    url: '/mock',
+  };
+
+  const contextValues = createContextValues()
+    .set(approverCtx, mockApproverCtx as unknown)
+    .set(servicesCtx, mockServicesCtx)
+    .set(fvkCtx, mockFullViewingKeyCtx)
+    .set(skCtx, mockSpendKeyCtx);
+
+  const mockCtx: HandlerContext = createHandlerContext({
+    ...handlerContextInit,
+    contextValues,
+  });
+
+  beforeEach(() => {
     const mockIterateMetadata = {
       next: vi.fn(),
       [Symbol.asyncIterator]: () => mockIterateMetadata,
     };
 
-    const mockIndexedDb: IndexedDbMock = {
-      iterateAssetsMetadata: () => mockIterateMetadata,
-    };
-
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
-
-    mockExtLocalCtx = {
-      get: vi.fn().mockImplementation((key: string) => {
-        if (key === 'wallets') {
-          return Promise.resolve([
-            {
-              custody: {
-                encryptedSeedPhrase: {
-                  cipherText:
-                    'di37XH8dpSbuBN9gwGB6hgAJycWVqozf3UB6O3mKTtimp8DsC0ZZRNEaf1hNi2Eu2pu1dF1f+vHAnisk3W4mRggAVUNtO0gvD8jcM0RhzGVEZnUlZuRR1TtoQDFXzmo=',
-                  nonce: 'MUyDW2GHSeZYVF4f',
-                },
-              },
-              fullViewingKey:
-                'penumbrafullviewingkey1f33fr3zrquh869s3h8d0pjx4fpa9fyut2utw7x5y7xdcxz6z7c8sgf5hslrkpf3mh8d26vufsq8y666chx0x0su06ay3rkwu74zuwqq9w8aza',
-            },
-          ]);
-        } else {
-          return Promise.resolve([]);
-        }
-      }),
-    };
-
-    mockExtSessionCtx = {
-      get: vi.fn().mockImplementation((key: string) => {
-        if (key === 'passwordKey') {
-          return Promise.resolve({
-            _inner: {
-              alg: 'A256GCM',
-              ext: true,
-              k: '2l2K1HKpGWaOriS58zwdDTwAMtMuczuUQc4IYzGxyhM',
-              kty: 'oct',
-              key_ops: ['encrypt', 'decrypt'],
-            },
-          });
-        } else {
-          return Promise.resolve(undefined);
-        }
-      }),
-    };
-
-    mockApproverCtx = vi.fn().mockImplementation(() => Promise.resolve(UserChoice.Approved));
-
-    mockCtx = createHandlerContext({
-      service: CustodyService,
-      method: CustodyService.methods.authorize,
-      protocolName: 'mock',
-      requestMethod: 'MOCK',
-      url: '/mock',
-      contextValues: createContextValues()
-        .set(extLocalCtx, mockExtLocalCtx as unknown)
-        .set(approverCtx, mockApproverCtx as unknown)
-        .set(extSessionCtx, mockExtSessionCtx as unknown)
-        .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
-        .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
-    });
+    mockServicesCtx.mockResolvedValue({
+      getWalletServices: () =>
+        Promise.resolve({
+          indexedDb: {
+            iterateAssetsMetadata: () => mockIterateMetadata,
+          },
+        }),
+    } as unknown as ServicesInterface);
 
     for (const record of testAssetsMetadata) {
-      mockIterateMetadata.next.mockResolvedValueOnce({
+      mockIterateMetadata.next.mockResolvedValue({
         value: record,
       });
     }
-    mockIterateMetadata.next.mockResolvedValueOnce({
+    mockIterateMetadata.next.mockResolvedValue({
       done: true,
     });
 
@@ -123,7 +78,7 @@ describe('Authorize request handler', () => {
   });
 
   test('should fail if user denies request', async () => {
-    mockApproverCtx.mockImplementation(() => Promise.resolve(UserChoice.Denied));
+    mockApproverCtx.mockResolvedValueOnce(UserChoice.Denied);
     await expect(authorize(req, mockCtx)).rejects.toThrow();
   });
 
@@ -133,28 +88,42 @@ describe('Authorize request handler', () => {
     );
   });
 
-  test('should fail if user is not logged in extension', async () => {
-    mockExtSessionCtx.get.mockImplementation(() => {
-      return Promise.resolve(undefined);
+  test('should fail if fullViewingKey context is not configured', async () => {
+    const ctxWithoutFullViewingKey = createHandlerContext({
+      ...handlerContextInit,
+      contextValues: createContextValues()
+        .set(approverCtx, mockApproverCtx as unknown)
+        .set(servicesCtx, mockServicesCtx)
+        .set(skCtx, mockSpendKeyCtx),
     });
-    await expect(authorize(req, mockCtx)).rejects.toThrow('User must login to extension');
+    await expect(authorize(req, ctxWithoutFullViewingKey)).rejects.toThrow('[failed_precondition]');
   });
 
-  test('should fail if incorrect password is used', async () => {
-    mockExtSessionCtx.get.mockImplementation(() => {
-      return Promise.resolve({
-        _inner: {
-          alg: 'A256GCM',
-          ext: true,
-          k: '1l2K1HKpGWaOriS58zwdDTwAMtMuczuUQc4IYzGxyhN',
-          kty: 'oct',
-          key_ops: ['encrypt', 'decrypt'],
-        },
-      });
+  test('should fail if spendKey context is not configured', async () => {
+    const ctxWithoutSpendKey = createHandlerContext({
+      ...handlerContextInit,
+      contextValues: createContextValues()
+        .set(approverCtx, mockApproverCtx as unknown)
+        .set(servicesCtx, mockServicesCtx)
+        .set(fvkCtx, mockFullViewingKeyCtx),
     });
-    await expect(authorize(req, mockCtx)).rejects.toThrow(
-      'Unable to decrypt seed phrase with password',
-    );
+    await expect(authorize(req, ctxWithoutSpendKey)).rejects.toThrow('[failed_precondition]');
+  });
+
+  test('should fail if approver context is not configured', async () => {
+    const ctxWithoutApprover = createHandlerContext({
+      ...handlerContextInit,
+      contextValues: createContextValues()
+        .set(servicesCtx, mockServicesCtx)
+        .set(fvkCtx, mockFullViewingKeyCtx)
+        .set(skCtx, mockSpendKeyCtx),
+    });
+    await expect(authorize(req, ctxWithoutApprover)).rejects.toThrow('[failed_precondition]');
+  });
+
+  test('should fail with reason if spendKey is not available', async () => {
+    mockSpendKeyCtx.mockRejectedValueOnce(new Error('some reason'));
+    await expect(authorize(req, mockCtx)).rejects.toThrow('some reason');
   });
 });
 

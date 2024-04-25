@@ -28,8 +28,10 @@ import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
 import { approverCtx } from '@penumbra-zone/services/ctx/approver';
 import { fvkCtx } from '@penumbra-zone/services/ctx/full-viewing-key';
 import { servicesCtx } from '@penumbra-zone/services/ctx/prax';
+import { skCtx } from '@penumbra-zone/services/ctx/spend-key';
 import { approveTransaction } from './approve-transaction';
 import { getFullViewingKey } from './ctx/full-viewing-key';
+import { getSpendKey } from './ctx/spend-key';
 
 // context clients
 import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
@@ -94,10 +96,16 @@ const getServiceHandler = async () => {
       contextValues.set(custodyClientCtx, custodyClient);
       contextValues.set(stakingClientCtx, stakingClient);
 
-      // remaining context
-      contextValues.set(servicesCtx, () => services);
-      contextValues.set(approverCtx, approveTransaction);
+      // remaining context for all services
       contextValues.set(fvkCtx, getFullViewingKey);
+      contextValues.set(servicesCtx, () => services);
+
+      // additional context for custody service only
+      const { pathname } = new URL(req.url);
+      if (pathname.startsWith('/penumbra.custody.v1.Custody')) {
+        contextValues.set(skCtx, getSpendKey);
+        contextValues.set(approverCtx, approveTransaction);
+      }
 
       return Promise.resolve({ ...req, contextValues });
     },
