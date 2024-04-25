@@ -1,5 +1,13 @@
 # @penumbra-zone/types
 
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [862283c]
+  - @penumbra-zone/constants@3.0.0
+  - @penumbra-zone/getters@2.0.1
+
 ## 2.0.0
 
 ### Major Changes

@@ -1,5 +1,21 @@
 # @penumbra-zone/services
 
+## 3.0.0
+
+### Major Changes
+
+- 9f4c112: Drop /src/ requirement for imports and renaming
+
+### Patch Changes
+
+- Updated dependencies [78ab976]
+- Updated dependencies [862283c]
+  - @penumbra-zone/wasm@4.0.0
+  - @penumbra-zone/constants@3.0.0
+  - @penumbra-zone/query@2.0.3
+  - @penumbra-zone/storage@3.0.1
+  - @penumbra-zone/types@2.0.1
+
 ## 2.0.2
 
 ### Patch Changes

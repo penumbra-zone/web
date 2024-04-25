@@ -1,5 +1,13 @@
 # @penumbra-zone/perspective
 
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies [78ab976]
+  - @penumbra-zone/wasm@4.0.0
+  - @penumbra-zone/types@2.0.1
+
 ## 1.0.1
 
 ### Patch Changes

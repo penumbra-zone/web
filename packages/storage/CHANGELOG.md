@@ -1,5 +1,14 @@
 # @penumbra-zone/storage
 
+## 3.0.1
+
+### Patch Changes
+
+- Updated dependencies [862283c]
+  - @penumbra-zone/constants@3.0.0
+  - @penumbra-zone/getters@2.0.1
+  - @penumbra-zone/crypto-web@3.0.1
+
 ## 3.0.0
 
 ### Major Changes

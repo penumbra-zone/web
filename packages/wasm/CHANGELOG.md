@@ -1,5 +1,15 @@
 # @penumbra-zone/wasm
 
+## 4.0.0
+
+### Major Changes
+
+- 78ab976: configure for publish
+
+### Patch Changes
+
+- @penumbra-zone/types@2.0.1
+
 ## 3.0.0
 
 ### Major Changes
