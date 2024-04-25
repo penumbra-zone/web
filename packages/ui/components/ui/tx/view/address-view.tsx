@@ -32,7 +32,7 @@ export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps
       {accountIndex !== undefined ? (
         <>
           <AddressIcon address={view.addressView.value.address} size={14} />
-          <span className='font-bold'>
+          <span className='font-bold break-keep'>
             {addressIndexLabel}
             {accountIndex}
           </span>
