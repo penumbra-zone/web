@@ -39,11 +39,15 @@
     },
     "format": {
       "cache": false,
-      "dependsOn": ["//#format:syncpack", "//#format:prettier", "format:rust"]
+      "dependsOn": ["format:ts", "format:rust"]
     },
     "format:rust": {
-      "dependsOn": ["compile"],
-      "inputs": ["crate/src/**", "crate/Cargo.toml", "crate/Cargo.lock", "crate/tests/**"]
+      "cache": false,
+      "dependsOn": ["compile"]
+    },
+    "format:ts": {
+      "cache": false,
+      "dependsOn": ["//#format:syncpack", "//#format:prettier"]
     },
     "host": {
       "cache": false,
