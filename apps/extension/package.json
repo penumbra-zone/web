@@ -20,7 +20,7 @@
     "@bufbuild/protobuf": "^1.8.0",
     "@connectrpc/connect": "^1.4.0",
     "@connectrpc/connect-web": "^1.4.0",
-    "@penumbra-labs/registry": "4.1.0",
+    "@penumbra-labs/registry": "^5.1.0",
     "@penumbra-zone/bech32": "workspace:*",
     "@penumbra-zone/client": "workspace:*",
     "@penumbra-zone/constants": "workspace:*",

@@ -44,7 +44,7 @@ export const GrpcEndpointForm = ({
       <div className='flex flex-col gap-2'>
         <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
           {rpcsQuery.isLoading && <LoadingIndicator />}
-          {rpcsQuery.error && (
+          {Boolean(rpcsQuery.error) && (
             <div className='text-red-700'>
               Error loading chain registry: {String(rpcsQuery.error)}
             </div>

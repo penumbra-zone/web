@@ -18,7 +18,11 @@
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2",
     "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240331004851-c3b058e666bc.2",
     "@bufbuild/protobuf": "^1.8.0",
-    "@penumbra-labs/registry": "4.1.0",
+    "@cosmjs/proto-signing": "^0.32.3",
+    "@cosmjs/stargate": "^0.32.3",
+    "@cosmos-kit/react": "^2.11.0",
+    "@interchain-ui/react": "^1.23.3",
+    "@penumbra-labs/registry": "^5.1.0",
     "@penumbra-zone/bech32": "workspace:*",
     "@penumbra-zone/client": "workspace:*",
     "@penumbra-zone/constants": "workspace:*",
@@ -31,10 +35,14 @@
     "@radix-ui/react-icons": "^1.3.0",
     "@tanstack/react-query": "^5.28.9",
     "bignumber.js": "^9.1.2",
+    "chain-registry": "^1.41.9",
+    "cosmos-kit": "^2.10.0",
     "date-fns": "^3.6.0",
     "framer-motion": "^11.0.22",
     "immer": "^10.0.4",
     "lodash": "^4.17.21",
+    "match-sorter": "^6.3.4",
+    "osmo-query": "^16.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
@@ -46,6 +54,7 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@chain-registry/types": "^0.25.7",
     "@penumbra-zone/polyfills": "workspace:*",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.2.2",
@@ -56,6 +65,7 @@
     "autoprefixer": "^10.4.19",
     "firebase-tools": "^13.6.0",
     "postcss": "^8.4.38",
-    "promise.withresolvers": "^1.0.3"
+    "promise.withresolvers": "^1.0.3",
+    "vite-plugin-node-stdlib-browser": "^0.2.1"
   }
 }
