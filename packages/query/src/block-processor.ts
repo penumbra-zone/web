@@ -5,7 +5,7 @@ import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/dex';
 import {
   getExchangeRateFromValidatorInfoResponse,
   getIdentityKeyFromValidatorInfoResponse,
-} from '@penumbra-zone/getters/src/validator-info-response';
+} from '@penumbra-zone/getters/validator-info-response';
 import {
   PositionState,
   PositionState_PositionStateEnum,
@@ -32,8 +32,8 @@ import {
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
-import { getAssetId } from '@penumbra-zone/getters/src/metadata';
-import { PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/src/assets';
+import { getAssetId } from '@penumbra-zone/getters/metadata';
+import { PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/assets';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/src/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';

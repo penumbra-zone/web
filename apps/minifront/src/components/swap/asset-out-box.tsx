@@ -19,9 +19,9 @@ import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumb
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 
 import { formatNumber, isZero } from '@penumbra-zone/types/src/amount';
-import { getAmount } from '@penumbra-zone/getters/src/value-view';
+import { getAmount } from '@penumbra-zone/getters/value-view';
 import { WalletIcon } from '@penumbra-zone/ui/components/ui/icons/wallet';
-import { getAssetIdFromBalancesResponseOptional } from '@penumbra-zone/getters/src/balances-response';
+import { getAssetIdFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 
 const findMatchingBalance = (
   metadata: Metadata | undefined,

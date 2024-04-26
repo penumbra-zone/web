@@ -15,8 +15,8 @@ import {
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
-} from '@penumbra-zone/getters/src/value-view';
-import { getAddress, getAddressIndex } from '@penumbra-zone/getters/src/address-view';
+} from '@penumbra-zone/getters/value-view';
+import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 import { fromValueView } from '@penumbra-zone/types/src/amount';
 import { isAddress } from '@penumbra-zone/bech32m/penumbra';

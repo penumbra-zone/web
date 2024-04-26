@@ -10,6 +10,9 @@
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
+  "exports": {
+    "./*": "./src/*.ts"
+  },
   "publishConfig": {
     "files": [
       "dist"

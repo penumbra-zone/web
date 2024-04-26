@@ -18,8 +18,8 @@ import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 // adapter
 import { ConnectRouter, createContextValues, PromiseClient } from '@connectrpc/connect';
 import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
-import { createDirectClient } from '@penumbra-zone/transport-dom/src/direct';
-import { connectChannelAdapter } from '@penumbra-zone/transport-dom/src/adapter';
+import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
+import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
 import { transportOptions } from '@penumbra-zone/types/src/registry';
 
 // context

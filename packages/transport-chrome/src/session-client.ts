@@ -19,7 +19,7 @@ import {
   isTransportMessage,
   isTransportStream,
   TransportStream,
-} from '@penumbra-zone/transport-dom/src/messages';
+} from '@penumbra-zone/transport-dom/messages';
 import { ChannelLabel, nameConnection } from './channel-names';
 import { isTransportInitChannel, TransportInitChannel } from './message';
 import { PortStreamSink, PortStreamSource } from './stream';

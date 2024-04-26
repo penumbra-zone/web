@@ -25,8 +25,8 @@ import {
   getAssetIdFromValueView,
   getEquivalentValues,
   getMetadata,
-} from '@penumbra-zone/getters/src/value-view';
-import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
+} from '@penumbra-zone/getters/value-view';
+import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { base64ToUint8Array } from '@penumbra-zone/types/src/base64';
 import { multiplyAmountByNumber } from '@penumbra-zone/types/src/amount';
 import { fvkCtx } from '../ctx/full-viewing-key';

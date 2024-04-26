@@ -1,7 +1,7 @@
 import { AllSlices, SliceCreator } from '.';
 import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { issueSwapClaim } from './swap';
-import { getSwapRecordCommitment } from '@penumbra-zone/getters/src/swap-record';
+import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 
 type SwapCommitmentId = string;
 

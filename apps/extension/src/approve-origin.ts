@@ -1,7 +1,7 @@
 import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 import { OriginApproval, PopupType } from './message/popup';
 import { popup } from './popup';
-import Map from '@penumbra-zone/polyfills/src/Map.groupBy';
+import Map from '@penumbra-zone/polyfills/Map.groupBy';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 
 export const originAlreadyApproved = async (url: string): Promise<boolean> => {

@@ -9,13 +9,13 @@ import {
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { fetchUnclaimedSwaps } from '../../fetchers/unclaimed-swaps';
 import { viewClient } from '../../clients';
-import { assetPatterns } from '@penumbra-zone/constants/src/assets';
+import { assetPatterns } from '@penumbra-zone/constants/assets';
 import {
   getAmount,
   getDisplayDenomExponentFromValueView,
   getDisplayDenomFromView,
-} from '@penumbra-zone/getters/src/value-view';
-import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/src/swap-record';
+} from '@penumbra-zone/getters/value-view';
+import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
 import { fromBaseUnitAmount } from '@penumbra-zone/types/src/amount';
 import { getAllAssets } from '../../fetchers/assets';

@@ -1,4 +1,4 @@
-import { assetPatterns } from '@penumbra-zone/constants/src/assets';
+import { assetPatterns } from '@penumbra-zone/constants/assets';
 
 const getFirstEightCharactersOfValidatorId = (displayDenom = ''): [string, string] => {
   const id = (assetPatterns.delegationToken.capture(displayDenom)?.id ?? '').substring(0, 8);

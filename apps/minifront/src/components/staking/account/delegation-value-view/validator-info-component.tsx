@@ -10,7 +10,7 @@ import { useStore } from '../../../../state';
 import {
   getIdentityKeyFromValidatorInfo,
   getValidator,
-} from '@penumbra-zone/getters/src/validator-info';
+} from '@penumbra-zone/getters/validator-info';
 import { calculateCommissionAsPercentage } from '@penumbra-zone/types/src/staking';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';

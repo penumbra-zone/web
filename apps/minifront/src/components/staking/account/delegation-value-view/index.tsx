@@ -11,8 +11,8 @@ import {
   getEquivalentValues,
   getMetadata,
   getValidatorInfoFromValueView,
-} from '@penumbra-zone/getters/src/value-view';
-import { asValueView } from '@penumbra-zone/getters/src/equivalent-value';
+} from '@penumbra-zone/getters/value-view';
+import { asValueView } from '@penumbra-zone/getters/equivalent-value';
 
 /**
  * Renders a `ValueView` that contains a delegation token, along with the

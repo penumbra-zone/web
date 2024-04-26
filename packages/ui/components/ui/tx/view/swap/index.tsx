@@ -8,12 +8,12 @@ import {
   getAddressView,
   getClaimFeeFromSwapView,
   getClaimTx,
-} from '@penumbra-zone/getters/src/swap-view';
+} from '@penumbra-zone/getters/swap-view';
 import { ValueViewComponent } from '../value';
 import { ActionDetails } from '../action-details';
 import { UnimplementedView } from '../unimplemented-view';
 import { joinLoHiAmount } from '@penumbra-zone/types/src/amount';
-import { getAmount } from '@penumbra-zone/getters/src/fee';
+import { getAmount } from '@penumbra-zone/getters/fee';
 
 export const SwapViewComponent = ({ value }: { value: SwapView }) => {
   if (value.swapView.case === 'visible') {

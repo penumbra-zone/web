@@ -1,7 +1,7 @@
 import { expect, describe, it } from 'vitest';
 
 import Array from './Array.fromAsync';
-import './ReadableStream[Symbol.asyncIterator]';
+import './ReadableStream_Symbol.asyncIterator_';
 
 describe('Array.fromAsync', () => {
   it('should convert an async iterable to an array', async () => {

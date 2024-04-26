@@ -9,7 +9,7 @@ import {
   getAmount,
   getValidatorIdentityKeyFromValueView,
   getUnbondingStartHeightFromValueView,
-} from '@penumbra-zone/getters/src/value-view';
+} from '@penumbra-zone/getters/value-view';
 
 const getUndelegateClaimPlannerRequest =
   (endEpochIndex: bigint) => async (unbondingToken: ValueView) => {

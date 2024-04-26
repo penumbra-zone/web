@@ -7,7 +7,7 @@ import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import { SettingsScreen } from '../settings-screen';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
 import { allSitesFilteredOutSelector } from '../../../../state/connected-sites';
-import Map from '@penumbra-zone/polyfills/src/Map.groupBy';
+import Map from '@penumbra-zone/polyfills/Map.groupBy';
 import { KnownSitesGroup } from './known-sites-group';
 
 const settingsConnectedSitesSelector = (state: AllSlices) => ({

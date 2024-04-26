@@ -10,13 +10,13 @@ import { ibcChannelClient, ibcClient, ibcConnectionClient, viewClient } from '..
 import {
   getDisplayDenomExponentFromValueView,
   getMetadata,
-} from '@penumbra-zone/getters/src/value-view';
-import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
+} from '@penumbra-zone/getters/value-view';
+import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 import { planBuildBroadcast } from './helpers';
 import { amountMoreThanBalance } from './send';
-import { getAssetId } from '@penumbra-zone/getters/src/metadata';
-import { assetPatterns } from '@penumbra-zone/constants/src/assets';
+import { getAssetId } from '@penumbra-zone/getters/metadata';
+import { assetPatterns } from '@penumbra-zone/constants/assets';
 import { bech32, bech32m } from 'bech32';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { Chain } from '@penumbra-labs/registry';

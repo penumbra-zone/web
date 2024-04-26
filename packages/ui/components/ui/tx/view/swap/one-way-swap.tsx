@@ -1,7 +1,7 @@
 import { ValueViewComponent } from '../value';
 import { ArrowRight } from 'lucide-react';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { getAmount, getSymbolFromValueView } from '@penumbra-zone/getters/src/value-view';
+import { getAmount, getSymbolFromValueView } from '@penumbra-zone/getters/value-view';
 
 /**
  * Renders a one-way swap (which should be the only kind of swap that ever

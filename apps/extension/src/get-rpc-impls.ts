@@ -1,6 +1,6 @@
 import { createPromiseClient, ServiceImpl } from '@connectrpc/connect';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
-import { createProxyImpl, noContextHandler } from '@penumbra-zone/transport-dom/src/proxy';
+import { createProxyImpl, noContextHandler } from '@penumbra-zone/transport-dom/proxy';
 import { rethrowImplErrors } from './utils/rethrow-impl-errors';
 import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
 import { Query as IbcChannelService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/channel/v1/query_connect';

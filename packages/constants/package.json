@@ -9,12 +9,18 @@
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
+  "exports": {
+    "./assets": "./src/assets.ts"
+  },
   "publishConfig": {
     "files": [
       "dist"
     ],
     "exports": {
-      "./src/*": "./dist/*.js"
+      "./assets": {
+        "import": "./dist/assets.js",
+        "types": "./dist/index.d.ts"
+      }
     }
   },
   "devDependencies": {

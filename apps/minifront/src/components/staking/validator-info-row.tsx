@@ -2,7 +2,7 @@ import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { TableCell, TableRow } from '@penumbra-zone/ui/components/ui/table';
 import { ReactNode } from 'react';
 import { Oval } from 'react-loader-spinner';
-import { getValidator } from '@penumbra-zone/getters/src/validator-info';
+import { getValidator } from '@penumbra-zone/getters/validator-info';
 import { calculateCommissionAsPercentage } from '@penumbra-zone/types/src/staking';
 
 export const ValidatorInfoRow = ({

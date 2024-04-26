@@ -10,7 +10,7 @@ import {
   WalletServices,
 } from '@penumbra-zone/types/src/services';
 import type { JsonValue } from '@bufbuild/protobuf';
-import '@penumbra-zone/polyfills/src/Promise.withResolvers';
+import '@penumbra-zone/polyfills/Promise.withResolvers';
 import {
   FullViewingKey,
   WalletId,

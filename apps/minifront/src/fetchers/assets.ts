@@ -1,11 +1,11 @@
-import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
+import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { AssetMetadataByIdRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { viewClient } from '../clients';
 import {
   AssetId,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { getDenomMetadata } from '@penumbra-zone/getters/src/assets-response';
+import { getDenomMetadata } from '@penumbra-zone/getters/assets-response';
 
 export const getAllAssets = async (): Promise<Metadata[]> => {
   const responses = await Array.fromAsync(viewClient.assets({}));

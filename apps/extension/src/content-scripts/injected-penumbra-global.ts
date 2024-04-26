@@ -24,7 +24,7 @@ import {
 } from '@penumbra-zone/client/src/global';
 import { isPraxFailureMessageEvent, isPraxPortMessageEvent, PraxMessage } from './message-event';
 
-import '@penumbra-zone/polyfills/src/Promise.withResolvers';
+import '@penumbra-zone/polyfills/Promise.withResolvers';
 import { PraxConnection } from '../message/prax';
 
 const request = Promise.withResolvers();

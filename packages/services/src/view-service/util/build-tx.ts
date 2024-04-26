@@ -13,7 +13,7 @@ import {
 import { PartialMessage } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 
-import '@penumbra-zone/polyfills/src/Promise.withResolvers';
+import '@penumbra-zone/polyfills/Promise.withResolvers';
 import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export const optimisticBuild = async function* (

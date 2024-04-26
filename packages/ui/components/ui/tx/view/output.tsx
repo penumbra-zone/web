@@ -2,8 +2,8 @@ import { OutputView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/cor
 import { ViewBox } from './viewbox';
 import { ValueViewComponent } from './value';
 import { ValueWithAddress } from './value-with-address';
-import { getNote } from '@penumbra-zone/getters/src/output-view';
-import { getAddress } from '@penumbra-zone/getters/src/note-view';
+import { getNote } from '@penumbra-zone/getters/output-view';
+import { getAddress } from '@penumbra-zone/getters/note-view';
 
 export const OutputViewComponent = ({ value }: { value: OutputView }) => {
   if (value.outputView.case === 'visible') {
