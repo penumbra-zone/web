@@ -1,4 +1,4 @@
-import { EmptyObject, isEmptyObj } from '@penumbra-zone/types/src/utility';
+import { EmptyObject, isEmptyObj } from '@penumbra-zone/types/utility';
 
 type Listener = (changes: Record<string, { oldValue?: unknown; newValue?: unknown }>) => void;
 

@@ -18,9 +18,9 @@ import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 // adapter
 import { ConnectRouter, createContextValues, PromiseClient } from '@connectrpc/connect';
 import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
-import { createDirectClient } from '@penumbra-zone/transport-dom/src/direct';
-import { connectChannelAdapter } from '@penumbra-zone/transport-dom/src/adapter';
-import { transportOptions } from '@penumbra-zone/types/src/registry';
+import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
+import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
+import { transportOptions } from '@penumbra-zone/types/registry';
 
 // context
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
@@ -39,7 +39,7 @@ import {
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { fvkCtx } from '@penumbra-zone/services/ctx/full-viewing-key';
-import { WalletJson } from '@penumbra-zone/types/src/wallet';
+import { WalletJson } from '@penumbra-zone/types/wallet';
 
 /**
  This fixes an issue where some users do not have 'grpcEndpoint' set after they have finished onboarding

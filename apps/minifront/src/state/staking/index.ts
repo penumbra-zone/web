@@ -1,12 +1,12 @@
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { SliceCreator } from '..';
-import { getDisplayDenomExponent } from '@penumbra-zone/getters/src/metadata';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
-import { assetPatterns } from '@penumbra-zone/constants/src/assets';
+import { assetPatterns } from '@penumbra-zone/constants/assets';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { planBuildBroadcast } from '../helpers';
 import {
@@ -22,22 +22,22 @@ import {
   getDisplayDenomExponentFromValueView,
   getDisplayDenomFromView,
   getValidatorInfoFromValueView,
-} from '@penumbra-zone/getters/src/value-view';
+} from '@penumbra-zone/getters/value-view';
 import {
   getRateData,
   getVotingPowerFromValidatorInfo,
-} from '@penumbra-zone/getters/src/validator-info';
+} from '@penumbra-zone/getters/validator-info';
 import {
   getVotingPowerByValidatorInfo,
   isDelegationTokenForValidator,
   VotingPowerAsIntegerPercentage,
-} from '@penumbra-zone/types/src/staking';
-import { joinLoHiAmount } from '@penumbra-zone/types/src/amount';
-import { splitLoHi, toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
+} from '@penumbra-zone/types/staking';
+import { joinLoHiAmount } from '@penumbra-zone/types/amount';
+import { splitLoHi, toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { viewClient } from '../../clients';
-import { getValueView as getValueViewFromDelegationsByAddressIndexResponse } from '@penumbra-zone/getters/src/delegations-by-address-index-response';
-import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse } from '@penumbra-zone/getters/src/unbonding-tokens-by-address-index-response';
-import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
+import { getValueView as getValueViewFromDelegationsByAddressIndexResponse } from '@penumbra-zone/getters/delegations-by-address-index-response';
+import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse } from '@penumbra-zone/getters/unbonding-tokens-by-address-index-response';
+import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { getStakingTokenMetadata } from '../../fetchers/registry';
 import { zeroValueView } from '../../utils/zero-value-view';
 

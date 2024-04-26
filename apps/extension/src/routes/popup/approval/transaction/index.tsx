@@ -6,8 +6,8 @@ import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumb
 import { useTransactionViewSwitcher } from './use-transaction-view-switcher';
 import { ViewTabs } from './view-tabs';
 import { ApproveDeny } from '../approve-deny';
-import { UserChoice } from '@penumbra-zone/types/src/user-choice';
-import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
+import type { Jsonified } from '@penumbra-zone/types/jsonified';
 
 export const TransactionApproval = () => {
   const { authorizeRequest: authReqString, setChoice, sendResponse } = useStore(txApprovalSelector);

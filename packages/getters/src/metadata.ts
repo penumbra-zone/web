@@ -1,6 +1,6 @@
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { createGetter } from './utils/create-getter';
-import { assetPatterns } from '@penumbra-zone/constants/src/assets';
+import { assetPatterns } from '@penumbra-zone/constants/assets';
 
 export const getAssetId = createGetter((metadata?: Metadata) => metadata?.penumbraAssetId);
 

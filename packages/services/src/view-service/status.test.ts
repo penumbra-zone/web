@@ -8,7 +8,7 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 import { servicesCtx } from '../ctx/prax';
 import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils';
 import { status } from './status';
-import type { ServicesInterface } from '@penumbra-zone/types/src/services';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('Status request handler', () => {
   let mockServices: MockServices;

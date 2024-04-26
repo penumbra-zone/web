@@ -5,11 +5,11 @@ import {
   getDelta2IFromSwapView,
   getOutput1ValueOptional,
   getOutput2ValueOptional,
-} from '@penumbra-zone/getters/src/swap-view';
+} from '@penumbra-zone/getters/swap-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { isZero } from './amount';
-import { getAmount } from '@penumbra-zone/getters/src/value-view';
+import { getAmount } from '@penumbra-zone/getters/value-view';
 
 /**
  * Swaps can go in either direction in Penumbra, and can even go in both

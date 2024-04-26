@@ -10,8 +10,8 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 import { createHandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { unbondingTokensByAddressIndex } from '.';
-import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
-import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
+import Array from '@penumbra-zone/polyfills/Array.fromAsync';
+import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 
 const mockBalances = vi.hoisted(() => vi.fn());
 vi.mock('../balances', () => ({

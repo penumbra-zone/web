@@ -12,7 +12,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { servicesCtx } from '../ctx/prax';
 import { assets } from './assets';
 import { IndexedDbMock, MockServices } from '../test-utils';
-import { Services } from '@penumbra-zone/services-context/src/index';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('Assets request handler', () => {
   let req: AssetsRequest;
@@ -43,7 +43,10 @@ describe('Assets request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
+      contextValues: createContextValues().set(
+        servicesCtx,
+        mockServices as unknown as ServicesInterface,
+      ),
     });
 
     for (const record of testData) {

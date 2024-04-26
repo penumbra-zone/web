@@ -5,7 +5,7 @@ import { ActionDetails } from './action-details';
 import {
   getUnbondingStartHeightFromUndelegateClaim,
   getValidatorIdentityFromUndelegateClaim,
-} from '@penumbra-zone/getters/src/undelegate-claim';
+} from '@penumbra-zone/getters/undelegate-claim';
 
 /** Render an `UndelegateClaim` action. */
 export const UndelegateClaimComponent = ({ value }: { value: UndelegateClaim }) => {

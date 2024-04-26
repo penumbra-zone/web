@@ -23,7 +23,7 @@ import {
   AddressIndex,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/src/assets';
+import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/assets';
 import {
   Position,
   PositionId,
@@ -34,28 +34,28 @@ import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 
 import { IdbCursorSource } from './stream';
 
-import '@penumbra-zone/polyfills/src/ReadableStream[Symbol.asyncIterator]';
+import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
-import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/src/validator-info';
+import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
 import {
   IDB_TABLES,
   IdbConstants,
   IdbUpdate,
   IndexedDbInterface,
   PenumbraDb,
-} from '@penumbra-zone/types/src/indexed-db';
+} from '@penumbra-zone/types/indexed-db';
 import type {
   ScanBlockResult,
   StateCommitmentTree,
-} from '@penumbra-zone/types/src/state-commitment-tree';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
-import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
-import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
+} from '@penumbra-zone/types/state-commitment-tree';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
+import type { Jsonified } from '@penumbra-zone/types/jsonified';
+import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
-import { getAssetId } from '@penumbra-zone/getters/src/metadata';
+import { getAssetId } from '@penumbra-zone/getters/metadata';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes

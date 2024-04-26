@@ -1,6 +1,6 @@
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
-import { getAssetIdFromValue } from '@penumbra-zone/getters/src/value';
+import { getAssetIdFromValue } from '@penumbra-zone/getters/value';
 
 export const assertSwapAssetsAreNotTheSame = (
   transactionPlannerRequest: TransactionPlannerRequest,

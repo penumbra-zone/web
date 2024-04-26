@@ -21,10 +21,10 @@ import {
   PenumbraProvider,
   PenumbraRequestFailure,
   PenumbraSymbol,
-} from '@penumbra-zone/client/src/global';
+} from '@penumbra-zone/client/global';
 import { isPraxFailureMessageEvent, isPraxPortMessageEvent, PraxMessage } from './message-event';
 
-import '@penumbra-zone/polyfills/src/Promise.withResolvers';
+import '@penumbra-zone/polyfills/Promise.withResolvers';
 import { PraxConnection } from '../message/prax';
 
 const request = Promise.withResolvers();

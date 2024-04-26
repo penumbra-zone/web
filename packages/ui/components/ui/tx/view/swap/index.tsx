@@ -1,19 +1,19 @@
 import { ViewBox } from '../viewbox';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { TransactionIdComponent } from '../transaction-id';
-import { getOneWaySwapValues, isOneWaySwap } from '@penumbra-zone/types/src/swap';
+import { getOneWaySwapValues, isOneWaySwap } from '@penumbra-zone/types/swap';
 import { OneWaySwap } from './one-way-swap';
 import { ValueWithAddress } from '../value-with-address';
 import {
   getAddressView,
   getClaimFeeFromSwapView,
   getClaimTx,
-} from '@penumbra-zone/getters/src/swap-view';
+} from '@penumbra-zone/getters/swap-view';
 import { ValueViewComponent } from '../value';
 import { ActionDetails } from '../action-details';
 import { UnimplementedView } from '../unimplemented-view';
-import { joinLoHiAmount } from '@penumbra-zone/types/src/amount';
-import { getAmount } from '@penumbra-zone/getters/src/fee';
+import { joinLoHiAmount } from '@penumbra-zone/types/amount';
+import { getAmount } from '@penumbra-zone/getters/fee';
 
 export const SwapViewComponent = ({ value }: { value: SwapView }) => {
   if (value.swapView.case === 'visible') {

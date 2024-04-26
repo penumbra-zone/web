@@ -8,7 +8,7 @@ import {
   Epoch,
   EpochByHeightRequest,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/src/services';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('EpochByHeight request handler', () => {
   let mockServices: MockServices;

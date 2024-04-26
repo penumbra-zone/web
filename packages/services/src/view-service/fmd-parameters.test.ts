@@ -9,7 +9,7 @@ import { servicesCtx } from '../ctx/prax';
 import { IndexedDbMock, MockServices } from '../test-utils';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { fMDParameters } from './fmd-parameters';
-import type { ServicesInterface } from '@penumbra-zone/types/src/services';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('FmdParameters request handler', () => {
   let mockServices: MockServices;

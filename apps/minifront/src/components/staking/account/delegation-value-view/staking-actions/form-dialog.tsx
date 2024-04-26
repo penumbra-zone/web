@@ -7,7 +7,7 @@ import { InputBlock } from '../../../../shared/input-block';
 import { Validator } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { FormEvent } from 'react';
-import { getIdentityKey } from '@penumbra-zone/getters/src/validator';
+import { getIdentityKey } from '@penumbra-zone/getters/validator';
 import { WalletIcon } from '@penumbra-zone/ui/components/ui/icons/wallet';
 
 const getCapitalizedAction = (action: 'delegate' | 'undelegate') =>

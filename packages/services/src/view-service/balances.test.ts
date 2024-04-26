@@ -12,7 +12,7 @@ import {
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { Services } from '@penumbra-zone/services-context';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils';
 import {
   AssetId,
@@ -25,10 +25,10 @@ import {
   getAssetIdFromValueView,
   getEquivalentValues,
   getMetadata,
-} from '@penumbra-zone/getters/src/value-view';
-import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
-import { base64ToUint8Array } from '@penumbra-zone/types/src/base64';
-import { multiplyAmountByNumber } from '@penumbra-zone/types/src/amount';
+} from '@penumbra-zone/getters/value-view';
+import { getAddressIndex } from '@penumbra-zone/getters/address-view';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+import { multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { fvkCtx } from '../ctx/full-viewing-key';
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {
@@ -92,7 +92,7 @@ describe('Balances request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(servicesCtx, mockServices as unknown as Services)
+        .set(servicesCtx, mockServices as unknown as ServicesInterface)
         .set(fvkCtx, testFullViewingKey),
     });
 

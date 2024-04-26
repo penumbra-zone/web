@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import './ReadableStream[Symbol.asyncIterator]';
+import './ReadableStream_Symbol.asyncIterator_';
 
 describe('ReadableStream[Symbol.asyncIterator]', () => {
   test('ReadableStream contains Symbol.asyncIterator', () => {

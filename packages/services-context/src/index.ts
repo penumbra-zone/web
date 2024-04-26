@@ -1,21 +1,17 @@
-import { BlockProcessor } from '@penumbra-zone/query/src/block-processor';
-import { RootQuerier } from '@penumbra-zone/query/src/root-querier';
+import { BlockProcessor } from '@penumbra-zone/query/block-processor';
+import { RootQuerier } from '@penumbra-zone/query/root-querier';
 import { IndexedDb } from '@penumbra-zone/storage/indexed-db';
 import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 import { syncLastBlockWithLocal } from '@penumbra-zone/storage/chrome/syncer';
 import { ViewServer } from '@penumbra-zone/wasm/view-server';
-import {
-  ServicesInterface,
-  ServicesMessage,
-  WalletServices,
-} from '@penumbra-zone/types/src/services';
+import { ServicesInterface, ServicesMessage, WalletServices } from '@penumbra-zone/types/services';
 import type { JsonValue } from '@bufbuild/protobuf';
-import '@penumbra-zone/polyfills/src/Promise.withResolvers';
+import '@penumbra-zone/polyfills/Promise.withResolvers';
 import {
   FullViewingKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { Wallet } from '@penumbra-zone/types/src/wallet';
+import { Wallet } from '@penumbra-zone/types/wallet';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 
 export interface ServicesConfig {

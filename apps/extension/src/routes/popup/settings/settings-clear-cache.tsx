@@ -1,7 +1,7 @@
 import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { TrashGradientIcon } from '../../../icons/trash-gradient';
-import { ServicesMessage } from '@penumbra-zone/types/src/services';
+import { ServicesMessage } from '@penumbra-zone/types/services';
 import { usePopupNav } from '../../../utils/navigate';
 import { PopupPath } from '../paths';
 import { useStore } from '../../../state';

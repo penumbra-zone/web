@@ -1,11 +1,8 @@
 import { sessionExtStorage } from '@penumbra-zone/storage/chrome/session';
 import { PopupMessage, PopupRequest, PopupType } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
-import type {
-  InternalRequest,
-  InternalResponse,
-} from '@penumbra-zone/types/src/internal-msg/shared';
-import { isChromeResponderDroppedError } from '@penumbra-zone/types/src/internal-msg/chrome-error';
+import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
+import { isChromeResponderDroppedError } from '@penumbra-zone/types/internal-msg/chrome-error';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
 

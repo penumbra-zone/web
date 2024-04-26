@@ -8,6 +8,9 @@
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
+  "exports": {
+    "./*": "./src/*.ts"
+  },
   "dependencies": {
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/constants": "workspace:*",

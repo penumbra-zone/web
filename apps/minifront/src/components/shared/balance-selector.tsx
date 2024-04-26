@@ -11,11 +11,8 @@ import {
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { getAddressIndex } from '@penumbra-zone/getters/src/address-view';
-import {
-  getDisplayDenomFromView,
-  getSymbolFromValueView,
-} from '@penumbra-zone/getters/src/value-view';
+import { getAddressIndex } from '@penumbra-zone/getters/address-view';
+import { getDisplayDenomFromView, getSymbolFromValueView } from '@penumbra-zone/getters/value-view';
 
 const bySearch = (search: string) => (balancesResponse: BalancesResponse) =>
   getDisplayDenomFromView(balancesResponse.balanceView)

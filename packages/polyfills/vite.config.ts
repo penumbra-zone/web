@@ -9,7 +9,7 @@ export default defineConfig({
         'Map.groupBy': './src/Map.groupBy.ts',
         'Promise.withResolvers': './src/Promise.withResolvers.ts',
         'ReadableStream.from': './src/ReadableStream.from.ts',
-        'ReadableStream[Symbol.asyncIterator]': './src/ReadableStream[Symbol.asyncIterator].ts',
+        'ReadableStream[Symbol.asyncIterator]': './src/ReadableStream_Symbol.asyncIterator_.ts',
       },
       formats: ['es'],
     },

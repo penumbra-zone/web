@@ -1,7 +1,7 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../ctx/prax';
-import { getAmount } from '@penumbra-zone/getters/src/value-view';
-import { getAssetIdFromRecord } from '@penumbra-zone/getters/src/spendable-note-record';
+import { getAmount } from '@penumbra-zone/getters/value-view';
+import { getAssetIdFromRecord } from '@penumbra-zone/getters/spendable-note-record';
 import {
   AssetId,
   EquivalentValue,
@@ -25,11 +25,11 @@ import { HandlerContext } from '@connectrpc/connect';
 import { assetMetadataById } from './asset-metadata-by-id';
 import { addressByIndex } from './address-by-index';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
-import { addLoHi } from '@penumbra-zone/types/src/lo-hi';
-import { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
-import { multiplyAmountByNumber } from '@penumbra-zone/types/src/amount';
-import { Stringified } from '@penumbra-zone/types/src/jsonified';
+import { Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
+import { addLoHi } from '@penumbra-zone/types/lo-hi';
+import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { multiplyAmountByNumber } from '@penumbra-zone/types/amount';
+import { Stringified } from '@penumbra-zone/types/jsonified';
 
 // Handles aggregating amounts and filtering by account number/asset id
 export const balances: Impl['balances'] = async function* (req, ctx) {

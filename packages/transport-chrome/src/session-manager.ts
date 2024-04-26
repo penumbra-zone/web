@@ -3,13 +3,13 @@ import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import { ChannelLabel, nameConnection, parseConnectionName } from './channel-names';
 import { isTransportInitChannel, TransportInitChannel } from './message';
 import { PortStreamSink, PortStreamSource } from './stream';
-import { ChannelHandlerFn } from '@penumbra-zone/transport-dom/src/adapter';
+import { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
 import {
   isTransportMessage,
   TransportEvent,
   TransportMessage,
   TransportStream,
-} from '@penumbra-zone/transport-dom/src/messages';
+} from '@penumbra-zone/transport-dom/messages';
 
 interface CRSession {
   clientId: string;
@@ -131,8 +131,11 @@ export class CRSessionManager {
     return this.handler(message)
       .then(response =>
         response instanceof ReadableStream
-          ? this.responseChannelStream(signal, { requestId, stream: response })
-          : { requestId, message: response },
+          ? this.responseChannelStream(signal, {
+              requestId,
+              stream: response as unknown,
+            } as TransportStream)
+          : ({ requestId, message: response as unknown } as TransportEvent),
       )
       .catch((error: unknown) => ({
         requestId,

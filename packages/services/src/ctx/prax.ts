@@ -6,7 +6,7 @@
 import { createContextKey } from '@connectrpc/connect';
 import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 import { sessionExtStorage } from '@penumbra-zone/storage/chrome/session';
-import type { ServicesInterface } from '@penumbra-zone/types/src/services';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 export const servicesCtx = createContextKey<ServicesInterface>({} as ServicesInterface);
 export const extLocalCtx = createContextKey(localExtStorage);

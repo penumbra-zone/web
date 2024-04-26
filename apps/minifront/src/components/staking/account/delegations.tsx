@@ -6,9 +6,9 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { getValidatorIdentityKeyFromValueView } from '@penumbra-zone/getters/src/value-view';
+import { getValidatorIdentityKeyFromValueView } from '@penumbra-zone/getters/value-view';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
-import { VotingPowerAsIntegerPercentage } from '@penumbra-zone/types/src/staking';
+import { VotingPowerAsIntegerPercentage } from '@penumbra-zone/types/staking';
 
 const getVotingPowerAsIntegerPercentage = (
   votingPowerByValidatorInfo: Record<string, VotingPowerAsIntegerPercentage>,

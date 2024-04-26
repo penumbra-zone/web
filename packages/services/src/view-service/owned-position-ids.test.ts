@@ -10,7 +10,7 @@ import {
   OwnedPositionIdsResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { IndexedDbMock, MockServices } from '../test-utils';
-import { Services } from '@penumbra-zone/services-context/src/index';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { PositionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { ownedPositionIds } from './owned-position-ids';
 
@@ -44,7 +44,10 @@ describe('OwnedPositionIds request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
+      contextValues: createContextValues().set(
+        servicesCtx,
+        mockServices as unknown as ServicesInterface,
+      ),
     });
 
     for (const record of testData) {

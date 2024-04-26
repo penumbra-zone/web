@@ -9,15 +9,22 @@
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
+  "exports": {
+    "./ReadableStream[Symbol.asyncIterator]": "./src/ReadableStream_Symbol.asyncIterator_.ts",
+    "./*": "./src/*.ts"
+  },
   "publishConfig": {
     "files": [
       "dist"
     ],
     "exports": {
-      "./src/*": "./dist/*.js",
-      "./src/ReadableStream[Symbol.asyncIterator]": {
+      "./ReadableStream[Symbol.asyncIterator]": {
         "import": "./dist/ReadableStream_Symbol.asyncIterator_.js",
-        "types": "./dist/ReadableStream[Symbol.asyncIterator].d.ts"
+        "types": "./src/ReadableStream_Symbol.asyncIterator_.d.ts"
+      },
+      "./*": {
+        "import": "./dist/*.js",
+        "types": "./dist/*.d.ts"
       }
     }
   },

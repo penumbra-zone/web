@@ -5,7 +5,7 @@ import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/dex';
 import {
   getExchangeRateFromValidatorInfoResponse,
   getIdentityKeyFromValidatorInfoResponse,
-} from '@penumbra-zone/getters/src/validator-info-response';
+} from '@penumbra-zone/getters/validator-info-response';
 import {
   PositionState,
   PositionState_PositionStateEnum,
@@ -22,9 +22,9 @@ import {
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { backOff } from 'exponential-backoff';
-import type { BlockProcessorInterface } from '@penumbra-zone/types/src/block-processor';
-import type { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
-import type { ViewServerInterface } from '@penumbra-zone/types/src/servers';
+import type { BlockProcessorInterface } from '@penumbra-zone/types/block-processor';
+import type { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import type { ViewServerInterface } from '@penumbra-zone/types/servers';
 import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
 import { updatePricesFromSwaps } from './price-indexer';
 import {
@@ -32,11 +32,11 @@ import {
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
-import { getAssetId } from '@penumbra-zone/getters/src/metadata';
-import { PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/src/assets';
-import { toDecimalExchangeRate } from '@penumbra-zone/types/src/amount';
+import { getAssetId } from '@penumbra-zone/getters/metadata';
+import { PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/assets';
+import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
+import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 declare global {
   // `var` required for global declaration (as let/const are block scoped)

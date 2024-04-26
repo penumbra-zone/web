@@ -6,12 +6,9 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { ConnectError } from '@connectrpc/connect';
 import { errorFromJson } from '@connectrpc/connect/protocol-connect';
-import {
-  ActionBuildMessage,
-  OffscreenMessage,
-} from '@penumbra-zone/types/src/internal-msg/offscreen';
-import { InternalRequest, InternalResponse } from '@penumbra-zone/types/src/internal-msg/shared';
-import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
+import { ActionBuildMessage, OffscreenMessage } from '@penumbra-zone/types/internal-msg/offscreen';
+import { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
+import type { Jsonified } from '@penumbra-zone/types/jsonified';
 
 const OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 

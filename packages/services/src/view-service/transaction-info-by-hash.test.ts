@@ -9,7 +9,7 @@ import { servicesCtx } from '../ctx/prax';
 import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils';
 import { transactionInfoByHash } from './transaction-info-by-hash';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
-import type { Services } from '@penumbra-zone/services-context';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 import {
   Transaction,
   TransactionPerspective,
@@ -54,7 +54,7 @@ describe('TransactionInfoByHash request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(servicesCtx, mockServices as unknown as Services)
+        .set(servicesCtx, mockServices as unknown as ServicesInterface)
         .set(fvkCtx, testFullViewingKey),
     });
     mockTransactionInfo.mockReturnValueOnce({

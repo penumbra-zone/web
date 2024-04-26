@@ -47,7 +47,7 @@ import {
   EstimatedPrice,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/src/indexed-db';
+import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/indexed-db';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place

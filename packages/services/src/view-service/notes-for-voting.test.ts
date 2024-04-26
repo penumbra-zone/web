@@ -8,7 +8,7 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 import { servicesCtx } from '../ctx/prax';
 import { IndexedDbMock, MockServices } from '../test-utils';
 import { notesForVoting } from './notes-for-voting';
-import type { ServicesInterface } from '@penumbra-zone/types/src/services';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('NotesForVoting request handler', () => {
   let mockServices: MockServices;

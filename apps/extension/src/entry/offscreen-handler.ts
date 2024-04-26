@@ -5,7 +5,7 @@ import {
   ActionBuildResponse,
   isActionBuildRequest,
   isOffscreenRequest,
-} from '@penumbra-zone/types/src/internal-msg/offscreen';
+} from '@penumbra-zone/types/internal-msg/offscreen';
 
 chrome.runtime.onMessage.addListener((req, _sender, respond) => {
   if (!isOffscreenRequest(req)) return false;

@@ -4,9 +4,9 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { ServicesMessage } from '@penumbra-zone/types/src/services';
+import { ServicesMessage } from '@penumbra-zone/types/services';
 import debounce from 'lodash/debounce';
-import { PromiseWithResolvers } from '@penumbra-zone/polyfills/src/Promise.withResolvers';
+import { PromiseWithResolvers } from '@penumbra-zone/polyfills/Promise.withResolvers';
 import { useRpcEndpoints } from '../../../hooks/registry';
 
 const randomSort = () => (Math.random() >= 0.5 ? 1 : -1);

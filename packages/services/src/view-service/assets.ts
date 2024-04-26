@@ -1,6 +1,6 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../ctx/prax';
-import { assetPatterns, RegexMatcher } from '@penumbra-zone/constants/src/assets';
+import { assetPatterns, RegexMatcher } from '@penumbra-zone/constants/assets';
 
 export const assets: Impl['assets'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);

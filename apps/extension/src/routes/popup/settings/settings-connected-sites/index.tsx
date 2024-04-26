@@ -3,11 +3,11 @@ import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { LinkGradientIcon } from '../../../../icons/link-gradient';
 import { OriginRecord } from '@penumbra-zone/storage/chrome/types';
 import { AllSlices, useStore } from '../../../../state';
-import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { SettingsScreen } from '../settings-screen';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
 import { allSitesFilteredOutSelector } from '../../../../state/connected-sites';
-import Map from '@penumbra-zone/polyfills/src/Map.groupBy';
+import Map from '@penumbra-zone/polyfills/Map.groupBy';
 import { KnownSitesGroup } from './known-sites-group';
 
 const settingsConnectedSitesSelector = (state: AllSlices) => ({

@@ -5,7 +5,7 @@ import { ShieldedPoolQuerier } from './queriers/shielded-pool';
 import { IbcClientQuerier } from './queriers/ibc-client';
 import { CnidariumQuerier } from './queriers/cnidarium';
 import { StakingQuerier } from './queriers/staking';
-import type { RootQuerierInterface } from '@penumbra-zone/types/src/querier';
+import type { RootQuerierInterface } from '@penumbra-zone/types/querier';
 
 // Given the amount of query services, this root querier aggregates them all
 // to make it easier for consumers
