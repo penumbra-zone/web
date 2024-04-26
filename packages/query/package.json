@@ -9,8 +9,7 @@
     "test": "vitest run"
   },
   "exports": {
-    "./*": "./src/*.ts",
-    "./quieriers": "./src/queriers/*.ts"
+    "./*": "./src/*.ts"
   },
   "dependencies": {
     "@penumbra-zone/bech32m": "workspace:*",
