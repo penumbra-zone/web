@@ -18,17 +18,25 @@ export const useRegistry = () => {
 };
 
 export const getStakingTokenMetadata = async () => {
-    const chainId = await getChainId();
-    if (!chainId) {
-        throw new Error('Could not fetch chain id');
-    }
+  const chainId = await getChainId();
+  if (!chainId) {
+    throw new Error('Could not fetch chain id');
+  }
 
-    const { stakingAssetId } = await chainRegistryClient.get(chainId);
-    const stakingAssetsMetadata = await getAssetMetadataById(stakingAssetId);
+  const { stakingAssetId } = await chainRegistryClient.get(chainId);
+  const stakingAssetsMetadata = await getAssetMetadataById(stakingAssetId);
 
-    if (!stakingAssetsMetadata) {
-        throw new Error('Could not fetch staking asset metadata');
-    }
-    return stakingAssetsMetadata;
+  if (!stakingAssetsMetadata) {
+    throw new Error('Could not fetch staking asset metadata');
+  }
+  return stakingAssetsMetadata;
 };
 
+export const getIbcConnections = async () => {
+  const chainId = await getChainId();
+  if (!chainId) throw new Error('Could not fetch chain id');
+
+  const registryClient = new ChainRegistryClient();
+  const { ibcConnections } = await registryClient.get(chainId);
+  return ibcConnections;
+};

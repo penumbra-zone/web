@@ -281,7 +281,7 @@ describe('IndexedDb', () => {
         chainId: 'test',
         dbVersion: 2,
         walletId: new WalletId({
-          inner: Uint8Array.from({ length: 8 }, () => Math.floor(Math.random() * 256)),
+          inner: Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)),
         }),
         registryAssets: [metadataA, metadataB],
       };
