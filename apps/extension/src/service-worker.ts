@@ -41,7 +41,6 @@ import {
 import { fvkCtx } from '@penumbra-zone/services/ctx/full-viewing-key';
 import { WalletJson } from '@penumbra-zone/types/src/wallet';
 
-
 /**
  This fixes an issue where some users do not have 'grpcEndpoint' set after they have finished onboarding
  */
@@ -51,7 +50,7 @@ const fixEmptyGrpcEndpointAfterOnboarding = async () => {
   const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
   const wallets = await localExtStorage.get('wallets');
   if (!grpcEndpoint && wallets[0]) {
-     await localExtStorage.set('grpcEndpoint',DEFAULT_GRPC_URL);
+    await localExtStorage.set('grpcEndpoint', DEFAULT_GRPC_URL);
   }
 };
 
