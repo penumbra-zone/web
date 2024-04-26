@@ -16,7 +16,7 @@ import {
   AuthorizationData,
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import { Services } from '@penumbra-zone/services-context';
+import type { ServicesInterface } from '@penumbra-zone/types/src/services';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { UserChoice } from '@penumbra-zone/types/src/user-choice';
 import { fvkCtx } from '../../ctx/full-viewing-key';
@@ -99,7 +99,7 @@ describe('Authorize request handler', () => {
         .set(extLocalCtx, mockExtLocalCtx as unknown)
         .set(approverCtx, mockApproverCtx as unknown)
         .set(extSessionCtx, mockExtSessionCtx as unknown)
-        .set(servicesCtx, mockServices as unknown as Services)
+        .set(servicesCtx, mockServices as unknown as ServicesInterface)
         .set(fvkCtx, testFullViewingKey),
     });
 

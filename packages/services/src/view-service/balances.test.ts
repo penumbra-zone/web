@@ -12,7 +12,7 @@ import {
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { Services } from '@penumbra-zone/services-context';
+import type { ServicesInterface } from '@penumbra-zone/types/src/services';
 import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils';
 import {
   AssetId,
@@ -92,7 +92,7 @@ describe('Balances request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(servicesCtx, mockServices as unknown as Services)
+        .set(servicesCtx, mockServices as unknown as ServicesInterface)
         .set(fvkCtx, testFullViewingKey),
     });
 

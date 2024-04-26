@@ -11,7 +11,7 @@ import {
   TransactionInfoResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { IndexedDbMock, MockServices, testFullViewingKey } from '../test-utils';
-import { Services } from '@penumbra-zone/services-context';
+import type { ServicesInterface } from '@penumbra-zone/types/src/services';
 import { transactionInfo } from './transaction-info';
 import { fvkCtx } from '../ctx/full-viewing-key';
 
@@ -52,7 +52,7 @@ describe('TransactionInfo request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(servicesCtx, mockServices as unknown as Services)
+        .set(servicesCtx, mockServices as unknown as ServicesInterface)
         .set(fvkCtx, testFullViewingKey),
     });
 

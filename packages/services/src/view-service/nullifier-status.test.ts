@@ -4,7 +4,7 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 import { servicesCtx } from '../ctx/prax';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import type { Services } from '@penumbra-zone/services-context';
+import type { ServicesInterface } from '@penumbra-zone/types/src/services';
 
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 
@@ -60,7 +60,10 @@ describe('nullifierStatus', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, mockServices as unknown as Services),
+      contextValues: createContextValues().set(
+        servicesCtx,
+        mockServices as unknown as ServicesInterface,
+      ),
     });
   });
 
