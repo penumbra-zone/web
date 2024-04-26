@@ -28,13 +28,13 @@ export interface IbcCaptureGroups {
 
 export interface DelegationCaptureGroups {
   id: string;
-  bech32IdentityKey: string;
+  idKey: string;
 }
 
 export interface UnbondingCaptureGroups {
   startAt: string;
   id: string;
-  bech32IdentityKey: string;
+  idKey: string;
 }
 
 export interface AssetPatterns {
@@ -80,11 +80,11 @@ export class RegexMatcher<T = never> {
 export const assetPatterns: AssetPatterns = {
   lpNft: new RegexMatcher(/^lpnft_/),
   delegationToken: new RegexMatcher(
-    /^delegation_(?<bech32IdentityKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
+    /^delegation_(?<idKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
   ),
   proposalNft: new RegexMatcher(/^proposal_/),
   unbondingToken: new RegexMatcher(
-    /^unbonding_start_at_(?<startAt>[0-9]+)_(?<bech32IdentityKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
+    /^unbonding_start_at_(?<startAt>[0-9]+)_(?<idKey>penumbravalid1(?<id>[a-zA-HJ-NP-Z0-9]+))$/,
   ),
   votingReceipt: new RegexMatcher(/^voted_on_/),
   ibc: new RegexMatcher(/^transfer\/(?<channel>channel-\d+)\/(?<denom>.*)/),

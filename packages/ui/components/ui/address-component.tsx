@@ -1,5 +1,5 @@
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32Address } from '@penumbra-zone/bech32/src/address';
+import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
 interface AddressComponentProps {
   address: Address;
@@ -11,7 +11,7 @@ interface AddressComponentProps {
  * characters, and rendered in color when it is ephemeral.
  */
 export const AddressComponent = ({ address, ephemeral }: AddressComponentProps) => {
-  const bech32Addr = bech32Address(address);
+  const bech32Addr = bech32mAddress(address);
 
   return (
     <span

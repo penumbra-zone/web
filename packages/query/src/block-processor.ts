@@ -31,7 +31,7 @@ import {
   AssetId,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
+import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
 import {
   NUMERAIRES,
@@ -466,7 +466,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   ) {
     const identityKey = getIdentityKeyFromValidatorInfoResponse(validatorInfoResponse);
     const delegationTokenAssetId = new AssetId({
-      altBaseDenom: `udelegation_${bech32IdentityKey(identityKey)}`,
+      altBaseDenom: `udelegation_${bech32mIdentityKey(identityKey)}`,
     });
 
     const metadata = await this.saveAndReturnMetadata(delegationTokenAssetId);

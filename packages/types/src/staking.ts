@@ -12,7 +12,7 @@ import {
 } from '@penumbra-zone/getters/src/validator-info';
 import { getRateBpsFromFundingStream } from '@penumbra-zone/getters/src/funding-stream';
 import { joinLoHiAmount } from './amount';
-import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
+import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { assetPatterns } from '@penumbra-zone/constants/src/assets';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
@@ -41,8 +41,7 @@ export const isDelegationTokenForValidator = (
   if (!delegationMatch) return false;
 
   return (
-    delegationMatch.bech32IdentityKey ===
-    bech32IdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo))
+    delegationMatch.idKey === bech32mIdentityKey(getIdentityKeyFromValidatorInfo(validatorInfo))
   );
 };
 
@@ -86,7 +85,7 @@ export const getVotingPowerByValidatorInfo = (
   const totalVotingPower = validatorInfos.reduce(toTotalVotingPower, 0);
 
   return validatorInfos.reduce<Record<string, VotingPowerAsIntegerPercentage>>((prev, curr) => {
-    prev[bech32IdentityKey(getIdentityKeyFromValidatorInfo(curr))] = getFormattedVotingPower(
+    prev[bech32mIdentityKey(getIdentityKeyFromValidatorInfo(curr))] = getFormattedVotingPower(
       curr,
       totalVotingPower,
     );

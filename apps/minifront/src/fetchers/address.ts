@@ -1,6 +1,6 @@
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { viewClient } from '../clients';
-import { bech32Address } from '@penumbra-zone/bech32/src/address';
+import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
 type Index = number;
 type Bech32Address = string;
@@ -15,7 +15,7 @@ export const getAddresses = async (accounts: (number | undefined)[]): Promise<In
     .map((address, i) => {
       return {
         index: accounts[i] ?? 0,
-        address: bech32Address(address),
+        address: bech32mAddress(address),
       };
     })
     .reduce<IndexAddrRecord>((acc, curr) => {

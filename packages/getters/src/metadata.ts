@@ -41,28 +41,6 @@ export const getUnbondingStartHeight = createGetter((metadata?: Metadata) => {
   return undefined;
 });
 
-/**
- * Get the bech32 representation of a validator's identity key from the metadata
- * of a delegation or unbonding token.
- *
- * For metadata of other token types, will return `undefined`.
- */
-export const getValidatorIdentityKeyAsBech32String = createGetter((metadata?: Metadata) => {
-  if (!metadata) return undefined;
-
-  const delegationMatch = assetPatterns.delegationToken.capture(metadata.display);
-  if (delegationMatch) {
-    return delegationMatch.bech32IdentityKey;
-  }
-
-  const unbondingMatch = assetPatterns.unbondingToken.capture(metadata.display);
-  if (unbondingMatch) {
-    return unbondingMatch.bech32IdentityKey;
-  }
-
-  return undefined;
-});
-
 export const getDisplay = createGetter((metadata?: Metadata) => metadata?.display);
 
 export const getSymbol = createGetter((metadata?: Metadata) => metadata?.symbol);

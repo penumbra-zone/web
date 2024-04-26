@@ -26,7 +26,7 @@
     "./offscreen-client": "./src/offscreen-client.ts"
   },
   "dependencies": {
-    "@penumbra-zone/bech32": "workspace:*",
+    "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",

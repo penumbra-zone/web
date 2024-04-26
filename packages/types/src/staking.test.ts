@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { calculateCommissionAsPercentage, getVotingPowerByValidatorInfo } from './staking';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
+import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/src/validator-info';
 
 describe('calculateCommission()', () => {
@@ -48,7 +48,7 @@ describe('getVotingPowerByValidatorInfo()', () => {
     },
     validator: {
       name: 'Validator 1',
-      identityKey: { ik: new Uint8Array([1, 2, 3]) },
+      identityKey: { ik: Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)) },
     },
   });
 
@@ -58,7 +58,7 @@ describe('getVotingPowerByValidatorInfo()', () => {
     },
     validator: {
       name: 'Validator 2',
-      identityKey: { ik: new Uint8Array([4, 5, 6]) },
+      identityKey: { ik: Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)) },
     },
   });
 
@@ -68,19 +68,19 @@ describe('getVotingPowerByValidatorInfo()', () => {
     },
     validator: {
       name: 'Validator 3',
-      identityKey: { ik: new Uint8Array([7, 8, 9]) },
+      identityKey: { ik: Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)) },
     },
   });
 
-  const validator1Bech32IdentityKey = bech32IdentityKey(
+  const validator1Bech32IdentityKey = bech32mIdentityKey(
     getIdentityKeyFromValidatorInfo(validatorInfo1),
   );
 
-  const validator2Bech32IdentityKey = bech32IdentityKey(
+  const validator2Bech32IdentityKey = bech32mIdentityKey(
     getIdentityKeyFromValidatorInfo(validatorInfo2),
   );
 
-  const validator3Bech32IdentityKey = bech32IdentityKey(
+  const validator3Bech32IdentityKey = bech32mIdentityKey(
     getIdentityKeyFromValidatorInfo(validatorInfo3),
   );
 

@@ -1,6 +1,6 @@
 import { Mock } from 'vitest';
 import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32ToFullViewingKey } from '@penumbra-zone/bech32/src/full-viewing-key';
+import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 
 export interface IndexedDbMock {
   constants?: Mock;
@@ -74,6 +74,8 @@ export interface MockExtSessionCtx {
   get: Mock;
 }
 
-export const testFullViewingKey = bech32ToFullViewingKey(
-  'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+export const testFullViewingKey = new FullViewingKey(
+  fullViewingKeyFromBech32m(
+    'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09',
+  ),
 );

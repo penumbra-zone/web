@@ -5,7 +5,7 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { bech32AssetId } from '@penumbra-zone/bech32/src/asset';
+import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { base64ToUint8Array } from '@penumbra-zone/types/src/base64';
 
 describe('<ValueViewComponent />', () => {
@@ -76,7 +76,7 @@ describe('<ValueViewComponent />', () => {
 
     test('renders the amount in the base unit, along with an asset ID', () => {
       const { container } = render(<ValueViewComponent view={valueView} />);
-      const assetIdAsString = bech32AssetId(penumbraMetadata.penumbraAssetId!);
+      const assetIdAsString = bech32mAssetId(penumbraMetadata.penumbraAssetId!);
 
       expect(container).toHaveTextContent(`123,456,789${assetIdAsString}`);
     });

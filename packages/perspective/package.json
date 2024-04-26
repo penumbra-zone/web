@@ -24,7 +24,7 @@
     }
   },
   "dependencies": {
-    "@penumbra-zone/bech32": "workspace:*",
+    "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
   },

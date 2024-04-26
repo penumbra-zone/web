@@ -6,7 +6,7 @@ import {
   AddressView,
   FullViewingKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32ToAddress } from '@penumbra-zone/bech32/src/address';
+import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 
 const mockGetAddressIndexByAddress = vi.hoisted(() => vi.fn());
 
@@ -17,7 +17,7 @@ vi.mock('@penumbra-zone/wasm/address', () => ({
 describe('getAddressView()', () => {
   const addressAsBech32 =
     'penumbra147mfall0zr6am5r45qkwht7xqqrdsp50czde7empv7yq2nk3z8yyfh9k9520ddgswkmzar22vhz9dwtuem7uxw0qytfpv7lk3q9dp8ccaw2fn5c838rfackazmgf3ahh09cxmz';
-  const address = new Address({ inner: bech32ToAddress(addressAsBech32) });
+  const address = new Address(addressFromBech32m(addressAsBech32));
 
   beforeEach(() => {
     mockGetAddressIndexByAddress.mockReset();

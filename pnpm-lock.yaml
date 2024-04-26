@@ -183,9 +183,9 @@ importers:
       '@penumbra-labs/registry':
         specifier: ^5.1.0
         version: 5.1.0
-      '@penumbra-zone/bech32':
+      '@penumbra-zone/bech32m':
         specifier: workspace:*
-        version: link:../../packages/bech32
+        version: link:../../packages/bech32m
       '@penumbra-zone/client':
         specifier: workspace:*
         version: link:../../packages/client
@@ -227,7 +227,7 @@ importers:
         version: link:../../packages/wasm
       '@tanstack/react-query':
         specifier: ^5.28.9
-        version: 5.32.0(react@18.2.0)
+        version: 5.29.2(react@18.2.0)
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
@@ -379,9 +379,9 @@ importers:
       '@penumbra-labs/registry':
         specifier: ^5.1.0
         version: 5.1.0
-      '@penumbra-zone/bech32':
+      '@penumbra-zone/bech32m':
         specifier: workspace:*
-        version: link:../../packages/bech32
+        version: link:../../packages/bech32m
       '@penumbra-zone/client':
         specifier: workspace:*
         version: link:../../packages/client
@@ -411,7 +411,10 @@ importers:
         version: 1.3.0(react@18.2.0)
       '@tanstack/react-query':
         specifier: ^5.28.9
-        version: 5.32.0(react@18.2.0)
+        version: 5.29.2(react@18.2.0)
+      bech32:
+        specifier: ^2.0.0
+        version: 2.0.0
       bignumber.js:
         specifier: ^9.1.2
         version: 9.1.2
@@ -438,7 +441,7 @@ importers:
         version: 6.3.4
       osmo-query:
         specifier: ^16.11.0
-        version: 16.11.0(@tanstack/react-query@5.32.0)(react-dom@18.2.0)(react@18.2.0)
+        version: 16.11.0(@tanstack/react-query@5.29.2)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -556,7 +559,7 @@ importers:
         specifier: ^18.2.22
         version: 18.2.25
 
-  packages/bech32:
+  packages/bech32m:
     dependencies:
       bech32:
         specifier: ^2.0.0
@@ -611,9 +614,9 @@ importers:
 
   packages/getters:
     dependencies:
-      '@penumbra-zone/bech32':
+      '@penumbra-zone/bech32m':
         specifier: workspace:*
-        version: link:../bech32
+        version: link:../bech32m
       '@penumbra-zone/constants':
         specifier: workspace:*
         version: link:../constants
@@ -629,9 +632,9 @@ importers:
 
   packages/perspective:
     dependencies:
-      '@penumbra-zone/bech32':
+      '@penumbra-zone/bech32m':
         specifier: workspace:*
-        version: link:../bech32
+        version: link:../bech32m
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
@@ -651,9 +654,9 @@ importers:
 
   packages/query:
     dependencies:
-      '@penumbra-zone/bech32':
+      '@penumbra-zone/bech32m':
         specifier: workspace:*
-        version: link:../bech32
+        version: link:../bech32m
       '@penumbra-zone/constants':
         specifier: workspace:*
         version: link:../constants
@@ -700,9 +703,9 @@ importers:
 
   packages/services:
     dependencies:
-      '@penumbra-zone/bech32':
+      '@penumbra-zone/bech32m':
         specifier: workspace:*
-        version: link:../bech32
+        version: link:../bech32m
       '@penumbra-zone/constants':
         specifier: workspace:*
         version: link:../constants
@@ -783,9 +786,9 @@ importers:
 
   packages/storage:
     dependencies:
-      '@penumbra-zone/bech32':
+      '@penumbra-zone/bech32m':
         specifier: workspace:*
-        version: link:../bech32
+        version: link:../bech32m
       '@penumbra-zone/constants':
         specifier: workspace:*
         version: link:../constants
@@ -856,9 +859,9 @@ importers:
 
   packages/types:
     dependencies:
-      '@penumbra-zone/bech32':
+      '@penumbra-zone/bech32m':
         specifier: workspace:*
-        version: link:../bech32
+        version: link:../bech32m
       '@penumbra-zone/constants':
         specifier: workspace:*
         version: link:../constants
@@ -902,9 +905,9 @@ importers:
       '@mui/material':
         specifier: ^5.15.14
         version: 5.15.15(@emotion/react@11.11.4)(@emotion/styled@11.11.5)(@types/react@18.2.79)(react-dom@18.2.0)(react@18.2.0)
-      '@penumbra-zone/bech32':
+      '@penumbra-zone/bech32m':
         specifier: workspace:*
-        version: link:../bech32
+        version: link:../bech32m
       '@penumbra-zone/constants':
         specifier: workspace:*
         version: link:../constants
@@ -1085,9 +1088,9 @@ importers:
       '@bufbuild/protobuf':
         specifier: ^1.8.0
         version: 1.8.0
-      '@penumbra-zone/bech32':
+      '@penumbra-zone/bech32m':
         specifier: workspace:*
-        version: link:../bech32
+        version: link:../bech32m
       fake-indexeddb:
         specifier: ^5.0.2
         version: 5.0.2
@@ -2819,11 +2822,11 @@ packages:
   /@bufbuild/protobuf@1.8.0:
     resolution: {integrity: sha512-qR9FwI8QKIveDnUYutvfzbC21UZJJryYrLuZGjeZ/VGz+vXelUkK+xgkOHsvPEdYEdxtgUUq4313N8QtOehJ1Q==}
 
-  /@chain-registry/client@1.28.7:
-    resolution: {integrity: sha512-Hi/ACfdAPFGxMoR9W9yN/Pnnjx02B70W+opGq057kRqRb2rb+mK3/WSlPB8/P3eMWvrQ27W0Vjt9uL/1PHvaGw==}
+  /@chain-registry/client@1.31.2:
+    resolution: {integrity: sha512-nCoUdHKU8pUMnjfNuDDAxej7KRPqLpLIBtsqeMkU/Ci53UXHNiRDnQnYeCvTrPSlu9W3k0Nf3k7vF0A61nLy4Q==}
     dependencies:
-      '@chain-registry/types': 0.25.7
-      '@chain-registry/utils': 1.26.7
+      '@chain-registry/types': 0.28.2
+      '@chain-registry/utils': 1.29.2
       bfs-path: 1.0.2
       cross-fetch: 3.1.8
     transitivePeerDependencies:
@@ -2834,16 +2837,16 @@ packages:
     resolution: {integrity: sha512-MmjThpQ0U0EJF66UJzPy67iKC9hY7ljrpGtQOPfeYGB/lUlKZTsE/mgF2XkKGUf7wJK8LugOqU5Zul7C1/ZA4Q==}
     dependencies:
       '@babel/runtime': 7.24.4
-      '@chain-registry/types': 0.17.0
-      '@chain-registry/utils': 1.26.7
+      '@chain-registry/types': 0.17.1
+      '@chain-registry/utils': 1.29.2
       '@cosmostation/extension-client': 0.1.15
     dev: false
 
-  /@chain-registry/cosmostation@1.48.1:
-    resolution: {integrity: sha512-VxpGubdyVHlN9uSKb1o02bZ45Hd0TRuUXrE4N2/KUvduzQaUJ1zTh+8CP0gk2ySwr/c2gHHU57FVc7tN2sZ3hg==}
+  /@chain-registry/cosmostation@1.48.2:
+    resolution: {integrity: sha512-Hbxgvp+PSWmWGL6178ptq2lZD31X3wl/LtcGUbUUhERsFYu2e30EkmfJeFnGRByBbod0CdJLzI2v2GOGAIZbog==}
     dependencies:
-      '@chain-registry/types': 0.28.1
-      '@chain-registry/utils': 1.29.1
+      '@chain-registry/types': 0.28.2
+      '@chain-registry/utils': 1.29.2
       '@cosmostation/extension-client': 0.1.15
     dev: false
 
@@ -2851,7 +2854,7 @@ packages:
     resolution: {integrity: sha512-MRAEgUpafyGLRDQc4SPB+R/If4CL2SREqdbxZMKHX9aeqzKXhJlEM5IPjJTZCWTbUP/eGXC9JNjxPNUYd92PqQ==}
     dependencies:
       '@babel/runtime': 7.24.4
-      '@chain-registry/types': 0.17.0
+      '@chain-registry/types': 0.17.1
       '@keplr-wallet/cosmos': 0.12.28
       '@keplr-wallet/crypto': 0.12.28
       semver: 7.6.0
@@ -2863,25 +2866,23 @@ packages:
       '@babel/runtime': 7.24.4
     dev: false
 
+  /@chain-registry/types@0.17.1:
+    resolution: {integrity: sha512-O0CgrtJgIlqXvZm1CqDZe/7jZz068O/uuCIoyDXCegFHK03rdHacKcDGwEIUuI0MNUf8YV3jdE4xHQMSAX+79w==}
+    dependencies:
+      '@babel/runtime': 7.24.4
+    dev: false
+
   /@chain-registry/types@0.25.7:
     resolution: {integrity: sha512-RJywPFbxPTnyhty1cH1FZlAaK0g2x9jGgJm/ai8zNXVIiK02Vx19j0IIQAWhanl/Kn9t7Qn3lsBEDVcxPBnAWQ==}
 
-  /@chain-registry/types@0.28.1:
-    resolution: {integrity: sha512-Xr9CCR2n5EU02b0Aw4Uh72WEsFKThx5QrVIgzc54uFHn/wxnyXvFdYWak7UwJuhhk6SbYT17GH8cfPBO/MID0g==}
+  /@chain-registry/types@0.28.2:
+    resolution: {integrity: sha512-JcBNM3kMgpwe/PTmDhXmSEQuGE2iKXPgiCoRUW4SH7vveF66sTRpBKYMZWa4wS7AGe49YvQUttQv/EMofbEhCw==}
     dev: false
 
-  /@chain-registry/utils@1.26.7:
-    resolution: {integrity: sha512-CXJPbzf8qnJGlWlVcSd95DJ0wQg3v7EdsgjENyPgxkhklu943bkQfdIJELRLDBbLYnyWV6yK2AVwhpmELjKuYQ==}
+  /@chain-registry/utils@1.29.2:
+    resolution: {integrity: sha512-b5RfSAJSJTR32+YdQc4q8ff5ISJJqIRfFsv7uBLsiSAnvmC0v7yQ286vAddkIE/Mpvf82HtyLYKzLTte1yLM+Q==}
     dependencies:
-      '@chain-registry/types': 0.25.7
-      bignumber.js: 9.1.1
-      sha.js: 2.4.11
-    dev: false
-
-  /@chain-registry/utils@1.29.1:
-    resolution: {integrity: sha512-NhIaTiWoG99navpHp29eJ7QDcASTRnYDD7j1cxGTLO0P2XlG3ur7D2He/C6fv33v3cY8Ag1r2oQIi8Ce5e7w1w==}
-    dependencies:
-      '@chain-registry/types': 0.28.1
+      '@chain-registry/types': 0.28.2
       bignumber.js: 9.1.1
       sha.js: 2.4.11
     dev: false
@@ -3233,7 +3234,7 @@ packages:
   /@cosmjs/proto-signing@0.32.2:
     resolution: {integrity: sha512-UV4WwkE3W3G3s7wwU9rizNcUEz2g0W8jQZS5J6/3fiN0mRPwtPKQ6EinPN9ASqcAJ7/VQH4/9EPOw7d6XQGnqw==}
     dependencies:
-      '@cosmjs/amino': 0.32.3
+      '@cosmjs/amino': 0.32.2
       '@cosmjs/crypto': 0.32.3
       '@cosmjs/encoding': 0.32.3
       '@cosmjs/math': 0.32.3
@@ -3268,7 +3269,7 @@ packages:
     resolution: {integrity: sha512-AsJa29fT7Jd4xt9Ai+HMqhyj7UQu7fyYKdXj/8+/9PD74xe6lZSYhQPcitUmMLJ1ckKPgXSk5Dd2LbsQT0IhZg==}
     dependencies:
       '@confio/ics23': 0.6.8
-      '@cosmjs/amino': 0.32.3
+      '@cosmjs/amino': 0.32.2
       '@cosmjs/encoding': 0.32.3
       '@cosmjs/math': 0.32.3
       '@cosmjs/proto-signing': 0.32.3
@@ -3463,7 +3464,7 @@ packages:
   /@cosmos-kit/core@2.9.0:
     resolution: {integrity: sha512-s08DuvNTKvWl8bGfWQjknPNRAQbm4rowB6qFcQFmAf0WIKqBh2VzNFE03yhtrchNYOMXKtFLCD5CrO+QGg+XfQ==}
     dependencies:
-      '@chain-registry/client': 1.28.7
+      '@chain-registry/client': 1.31.2
       '@chain-registry/types': 0.17.0
       '@cosmjs/amino': 0.32.3
       '@cosmjs/cosmwasm-stargate': 0.32.3
@@ -3501,7 +3502,7 @@ packages:
       '@cosmjs/amino': '>=0.32.3'
       '@cosmjs/proto-signing': '>=0.32.3'
     dependencies:
-      '@chain-registry/cosmostation': 1.48.1
+      '@chain-registry/cosmostation': 1.48.2
       '@cosmjs/amino': 0.32.3
       '@cosmjs/proto-signing': 0.32.3
       '@cosmos-kit/core': 2.9.0
@@ -5749,26 +5750,26 @@ packages:
   /@internationalized/date@3.5.2:
     resolution: {integrity: sha512-vo1yOMUt2hzp63IutEaTUxROdvQg1qlMRsbCvbay2AK2Gai7wIgCyK5weEX3nHkiLgo4qCXHijFNC/ILhlRpOQ==}
     dependencies:
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
     dev: false
 
   /@internationalized/message@3.1.2:
     resolution: {integrity: sha512-MHAWsZWz8jf6jFPZqpTudcCM361YMtPIRu9CXkYmKjJ/0R3pQRScV5C0zS+Qi50O5UAm8ecKhkXx6mWDDcF6/g==}
     dependencies:
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       intl-messageformat: 10.5.11
     dev: false
 
   /@internationalized/number@3.5.1:
     resolution: {integrity: sha512-N0fPU/nz15SwR9IbfJ5xaS9Ss/O5h1sVXMZf43vc9mxEG48ovglvvzBjF53aHlq20uoR6c+88CrIXipU/LSzwg==}
     dependencies:
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
     dev: false
 
   /@internationalized/string@3.2.1:
     resolution: {integrity: sha512-vWQOvRIauvFMzOO+h7QrdsJmtN1AXAFVcaLWP9AseRN2o7iHceZ6bIXhBD4teZl8i91A3gxKnWBlGgjCwU6MFQ==}
     dependencies:
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
     dev: false
 
   /@isaacs/cliui@8.0.2:
@@ -7344,7 +7345,7 @@ packages:
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-types/breadcrumbs': 3.7.3(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7359,7 +7360,7 @@ packages:
       '@react-stately/toggle': 3.7.2(react@18.2.0)
       '@react-types/button': 3.9.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7378,7 +7379,7 @@ packages:
       '@react-types/button': 3.9.2(react@18.2.0)
       '@react-types/calendar': 3.4.4(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7398,7 +7399,7 @@ packages:
       '@react-stately/toggle': 3.7.2(react@18.2.0)
       '@react-types/checkbox': 3.7.1(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7422,7 +7423,7 @@ packages:
       '@react-types/button': 3.9.2(react@18.2.0)
       '@react-types/combobox': 3.10.1(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7450,7 +7451,7 @@ packages:
       '@react-types/datepicker': 3.7.2(react@18.2.0)
       '@react-types/dialog': 3.5.8(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7466,7 +7467,7 @@ packages:
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-types/dialog': 3.5.8(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7486,7 +7487,7 @@ packages:
       '@react-stately/dnd': 3.2.8(react@18.2.0)
       '@react-types/button': 3.9.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7499,7 +7500,7 @@ packages:
       '@react-aria/interactions': 3.21.1(react@18.2.0)
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       clsx: 2.1.0
       react: 18.2.0
     dev: false
@@ -7513,7 +7514,7 @@ packages:
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-stately/form': 3.0.1(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7536,7 +7537,7 @@ packages:
       '@react-types/checkbox': 3.7.1(react@18.2.0)
       '@react-types/grid': 3.2.4(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7555,7 +7556,7 @@ packages:
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-stately/list': 3.10.3(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7572,7 +7573,7 @@ packages:
       '@react-aria/ssr': 3.9.2(react@18.2.0)
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7584,7 +7585,7 @@ packages:
       '@react-aria/ssr': 3.9.2(react@18.2.0)
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7595,7 +7596,7 @@ packages:
     dependencies:
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7609,7 +7610,7 @@ packages:
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-types/link': 3.5.3(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7627,7 +7628,7 @@ packages:
       '@react-stately/list': 3.10.3(react@18.2.0)
       '@react-types/listbox': 3.4.7(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7635,7 +7636,7 @@ packages:
   /@react-aria/live-announcer@3.3.2:
     resolution: {integrity: sha512-aOyPcsfyY9tLCBhuUaYCruwcd1IrYLc47Ou+J7wMzjeN9v4lsaEfiN12WFl8pDqOwfy6/7It2wmlm5hOuZY8wQ==}
     dependencies:
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
     dev: false
 
   /@react-aria/menu@3.13.1(react-dom@18.2.0)(react@18.2.0):
@@ -7656,7 +7657,7 @@ packages:
       '@react-types/button': 3.9.2(react@18.2.0)
       '@react-types/menu': 3.9.7(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7669,7 +7670,7 @@ packages:
       '@react-aria/progress': 3.4.11(react@18.2.0)
       '@react-types/meter': 3.3.7(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7689,7 +7690,7 @@ packages:
       '@react-types/button': 3.9.2(react@18.2.0)
       '@react-types/numberfield': 3.8.1(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7710,7 +7711,7 @@ packages:
       '@react-types/button': 3.9.2(react@18.2.0)
       '@react-types/overlays': 3.8.5(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7725,7 +7726,7 @@ packages:
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-types/progress': 3.5.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7743,7 +7744,7 @@ packages:
       '@react-stately/radio': 3.10.2(react@18.2.0)
       '@react-types/radio': 3.7.1(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7759,7 +7760,7 @@ packages:
       '@react-types/button': 3.9.2(react@18.2.0)
       '@react-types/searchfield': 3.5.3(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7782,7 +7783,7 @@ packages:
       '@react-types/button': 3.9.2(react@18.2.0)
       '@react-types/select': 3.9.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7799,7 +7800,7 @@ packages:
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-stately/selection': 3.14.3(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7811,7 +7812,7 @@ packages:
     dependencies:
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7828,7 +7829,7 @@ packages:
       '@react-stately/slider': 3.5.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
       '@react-types/slider': 3.7.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7843,7 +7844,7 @@ packages:
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-types/button': 3.9.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7854,7 +7855,7 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
     dependencies:
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7866,7 +7867,7 @@ packages:
       '@react-aria/toggle': 3.10.2(react@18.2.0)
       '@react-stately/toggle': 3.7.2(react@18.2.0)
       '@react-types/switch': 3.5.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7891,7 +7892,7 @@ packages:
       '@react-types/grid': 3.2.4(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
       '@react-types/table': 3.9.3(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7909,7 +7910,7 @@ packages:
       '@react-stately/tabs': 3.6.4(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
       '@react-types/tabs': 3.3.5(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7929,7 +7930,7 @@ packages:
       '@react-stately/list': 3.10.3(react@18.2.0)
       '@react-types/button': 3.9.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -7947,7 +7948,7 @@ packages:
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
       '@react-types/textfield': 3.9.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7961,7 +7962,7 @@ packages:
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-stately/toggle': 3.7.2(react@18.2.0)
       '@react-types/checkbox': 3.7.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7976,7 +7977,7 @@ packages:
       '@react-stately/tooltip': 3.4.7(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
       '@react-types/tooltip': 3.4.7(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -7988,7 +7989,7 @@ packages:
       '@react-aria/ssr': 3.9.2(react@18.2.0)
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       clsx: 2.1.0
       react: 18.2.0
     dev: false
@@ -8001,7 +8002,7 @@ packages:
       '@react-aria/interactions': 3.21.1(react@18.2.0)
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8022,7 +8023,7 @@ packages:
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/calendar': 3.4.4(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8035,7 +8036,7 @@ packages:
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/checkbox': 3.7.1(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8045,7 +8046,7 @@ packages:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
     dependencies:
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8062,7 +8063,7 @@ packages:
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/combobox': 3.10.1(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8072,7 +8073,7 @@ packages:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
     dependencies:
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8088,7 +8089,7 @@ packages:
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/datepicker': 3.7.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8099,7 +8100,7 @@ packages:
     dependencies:
       '@react-stately/selection': 3.14.3(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8115,7 +8116,7 @@ packages:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
     dependencies:
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8128,7 +8129,7 @@ packages:
       '@react-stately/selection': 3.14.3(react@18.2.0)
       '@react-types/grid': 3.2.4(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8141,7 +8142,7 @@ packages:
       '@react-stately/selection': 3.14.3(react@18.2.0)
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8153,7 +8154,7 @@ packages:
       '@react-stately/overlays': 3.6.5(react@18.2.0)
       '@react-types/menu': 3.9.7(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8166,7 +8167,7 @@ packages:
       '@react-stately/form': 3.0.1(react@18.2.0)
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/numberfield': 3.8.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8177,7 +8178,7 @@ packages:
     dependencies:
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/overlays': 3.8.5(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8190,7 +8191,7 @@ packages:
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/radio': 3.7.1(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8201,7 +8202,7 @@ packages:
     dependencies:
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/searchfield': 3.5.3(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8215,7 +8216,7 @@ packages:
       '@react-stately/overlays': 3.6.5(react@18.2.0)
       '@react-types/select': 3.9.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8227,7 +8228,7 @@ packages:
       '@react-stately/collections': 3.10.5(react@18.2.0)
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8239,7 +8240,7 @@ packages:
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
       '@react-types/slider': 3.7.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8256,7 +8257,7 @@ packages:
       '@react-types/grid': 3.2.4(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
       '@react-types/table': 3.9.3(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8268,7 +8269,7 @@ packages:
       '@react-stately/list': 3.10.3(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
       '@react-types/tabs': 3.3.5(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8279,7 +8280,7 @@ packages:
     dependencies:
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/checkbox': 3.7.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8290,7 +8291,7 @@ packages:
     dependencies:
       '@react-stately/overlays': 3.6.5(react@18.2.0)
       '@react-types/tooltip': 3.4.7(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8303,7 +8304,7 @@ packages:
       '@react-stately/selection': 3.14.3(react@18.2.0)
       '@react-stately/utils': 3.9.1(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8312,7 +8313,7 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
     dependencies:
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -8323,7 +8324,7 @@ packages:
     dependencies:
       '@react-aria/utils': 3.23.2(react@18.2.0)
       '@react-types/shared': 3.22.1(react@18.2.0)
-      '@swc/helpers': 0.5.10
+      '@swc/helpers': 0.5.11
       react: 18.2.0
     dev: false
 
@@ -10038,8 +10039,8 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@swc/helpers@0.5.10:
-    resolution: {integrity: sha512-CU+RF9FySljn7HVSkkjiB84hWkvTaI3rtLvF433+jRSBL2hMu3zX5bGhHS8C80SM++h4xy8hBSnUHFQHmRXSBw==}
+  /@swc/helpers@0.5.11:
+    resolution: {integrity: sha512-YNlnKRWF2sVojTpIyzwou9XoTNbzbzONwRhOoniEioF1AtaitTvVZblaQRrAzChWQ1bLYyYSWzM18y4WwgzJ+A==}
     dependencies:
       tslib: 2.6.2
     dev: false
@@ -10050,16 +10051,16 @@ packages:
       '@swc/counter': 0.1.3
     dev: true
 
-  /@tanstack/query-core@5.32.0:
-    resolution: {integrity: sha512-Z3flEgCat55DRXU5UMwYU1U+DgFZKA3iufyOKs+II7iRAo0uXkeU7PH5e6sOH1CGEag0IpKmZxlUFpCg6roSKw==}
+  /@tanstack/query-core@5.29.0:
+    resolution: {integrity: sha512-WgPTRs58hm9CMzEr5jpISe8HXa3qKQ8CxewdYZeVnA54JrPY9B1CZiwsCoLpLkf0dGRZq+LcX5OiJb0bEsOFww==}
     dev: false
 
-  /@tanstack/react-query@5.32.0(react@18.2.0):
-    resolution: {integrity: sha512-+E3UudQtarnx9A6xhpgMZapyF+aJfNBGFMgI459FnduEZqT/9KhOWnMOneZahLRt52yzskSA0AuOyLkXHK0yBA==}
+  /@tanstack/react-query@5.29.2(react@18.2.0):
+    resolution: {integrity: sha512-nyuWILR4u7H5moLGSiifLh8kIqQDLNOHGuSz0rcp+J75fNc8aQLyr5+I2JCHU3n+nJrTTW1ssgAD8HiKD7IFBQ==}
     peerDependencies:
       react: ^18.0.0
     dependencies:
-      '@tanstack/query-core': 5.32.0
+      '@tanstack/query-core': 5.29.0
       react: 18.2.0
     dev: false
 
@@ -18425,7 +18426,7 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /osmo-query@16.11.0(@tanstack/react-query@5.32.0)(react-dom@18.2.0)(react@18.2.0):
+  /osmo-query@16.11.0(@tanstack/react-query@5.29.2)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-UyuFCXkqqMGCsWJP74ZrPjwWQEUdyeBtEc+wzkYMZ+C0VGcMGonhrAIJymzLJCc/Tp8Nd8E31GcqLx4KeFOYeA==}
     peerDependencies:
       '@tanstack/react-query': '>= 4'
@@ -18437,7 +18438,7 @@ packages:
       '@cosmjs/stargate': 0.32.2
       '@cosmjs/tendermint-rpc': 0.32.3
       '@cosmology/lcd': 0.13.3
-      '@tanstack/react-query': 5.32.0(react@18.2.0)
+      '@tanstack/react-query': 5.29.2(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     transitivePeerDependencies:

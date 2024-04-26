@@ -3,14 +3,15 @@ import { AllSlices } from '../../../state';
 import { DelegationValueView } from './delegation-value-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { getIdentityKeyFromValueView } from '@penumbra-zone/getters/src/value-view';
-import { bech32IdentityKey } from '@penumbra-zone/bech32/src/identity-key';
+import { getValidatorIdentityKeyFromValueView } from '@penumbra-zone/getters/src/value-view';
+import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { VotingPowerAsIntegerPercentage } from '@penumbra-zone/types/src/staking';
 
 const getVotingPowerAsIntegerPercentage = (
   votingPowerByValidatorInfo: Record<string, VotingPowerAsIntegerPercentage>,
   delegation: ValueView,
-) => votingPowerByValidatorInfo[bech32IdentityKey(getIdentityKeyFromValueView(delegation))];
+) =>
+  votingPowerByValidatorInfo[bech32mIdentityKey(getValidatorIdentityKeyFromValueView(delegation))];
 
 const delegationsSelector = (state: AllSlices) => ({
   delegations: state.staking.delegationsByAccount.get(state.staking.account) ?? [],
@@ -27,7 +28,7 @@ export const Delegations = () => {
       <AnimatePresence>
         {delegations.map(delegation => (
           <motion.div
-            key={bech32IdentityKey(getIdentityKeyFromValueView(delegation))}
+            key={bech32mIdentityKey(getValidatorIdentityKeyFromValueView(delegation))}
             layout
             className='bg-charcoal'
           >

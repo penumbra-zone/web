@@ -5,20 +5,24 @@ import {
 import { describe, expect, test } from 'vitest';
 import { asOpaqueAddressView } from './address-view';
 
+const u8 = (length: number) => Uint8Array.from({ length }, () => Math.floor(Math.random() * 256));
+
+const sameAddress = {
+  inner: u8(80),
+};
+
 describe('asOpaqueAddressView()', () => {
   describe('when the address view is visible', () => {
     const addressView = new AddressView({
       addressView: {
         case: 'decoded',
         value: {
-          address: {
-            inner: Uint8Array.from([0, 1, 2, 3]),
-          },
+          address: sameAddress,
           index: {
             account: 0,
           },
           walletId: {
-            inner: Uint8Array.from([4, 5, 6, 7]),
+            inner: u8(32),
           },
         },
       },
@@ -29,9 +33,7 @@ describe('asOpaqueAddressView()', () => {
         addressView: {
           case: 'opaque',
           value: {
-            address: {
-              inner: Uint8Array.from([0, 1, 2, 3]),
-            },
+            address: sameAddress,
           },
         },
       });
