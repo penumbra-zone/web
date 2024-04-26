@@ -5,7 +5,7 @@ import {
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import type { StateCommitmentTree } from '@penumbra-zone/types/src/state-commitment-tree';
+import type { StateCommitmentTree } from '@penumbra-zone/types/state-commitment-tree';
 import { authorize, build_action, build_parallel, load_proving_key, witness } from '../wasm';
 import {
   FullViewingKey,

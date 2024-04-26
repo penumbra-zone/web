@@ -6,7 +6,7 @@ import {
   ValidatorPenaltyRequest,
   ValidatorPenaltyResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { StakingQuerierInterface } from '@penumbra-zone/types/src/querier';
+import { StakingQuerierInterface } from '@penumbra-zone/types/querier';
 
 export class StakingQuerier implements StakingQuerierInterface {
   private readonly client: PromiseClient<typeof StakingService>;

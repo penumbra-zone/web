@@ -5,7 +5,7 @@ import {
   AssetId,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import type { ShieldedPoolQuerierInterface } from '@penumbra-zone/types/src/querier';
+import type { ShieldedPoolQuerierInterface } from '@penumbra-zone/types/querier';
 
 export class ShieldedPoolQuerier implements ShieldedPoolQuerierInterface {
   private readonly client: PromiseClient<typeof QueryService>;

@@ -10,16 +10,16 @@
     "test": "vitest run"
   },
   "exports": {
-    "./src/*": "./src/*.ts",
-    "./src/internal-msg/*": "./src/internal-msg/*.ts"
+    "./*": "./src/*.ts",
+    "./internal-msg/*": "./src/internal-msg/*.ts"
   },
   "publishConfig": {
     "files": [
       "dist"
     ],
     "exports": {
-      "./src/*": "./dist/*.js",
-      "./src/internal-msg/*": "./dist/internal-msg/*.js"
+      "./*": "./dist/*.js",
+      "./internal-msg/*": "./dist/internal-msg/*.js"
     }
   },
   "dependencies": {

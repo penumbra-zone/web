@@ -4,7 +4,7 @@ import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { Code, ConnectError } from '@connectrpc/connect';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
+import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 export const broadcastTransaction: Impl['broadcastTransaction'] = async function* (req, ctx) {
   const services = ctx.values.get(servicesCtx);

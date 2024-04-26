@@ -16,9 +16,9 @@ import {
   AuthorizationData,
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/src/services';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { fvkCtx } from '../../ctx/full-viewing-key';
 
 describe('Authorize request handler', () => {

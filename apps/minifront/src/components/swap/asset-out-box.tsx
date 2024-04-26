@@ -18,7 +18,7 @@ import { cn } from '@penumbra-zone/ui/lib/utils';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 
-import { formatNumber, isZero } from '@penumbra-zone/types/src/amount';
+import { formatNumber, isZero } from '@penumbra-zone/types/amount';
 import { getAmount } from '@penumbra-zone/getters/value-view';
 import { WalletIcon } from '@penumbra-zone/ui/components/ui/icons/wallet';
 import { getAssetIdFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';

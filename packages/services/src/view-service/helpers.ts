@@ -1,6 +1,6 @@
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
-import { RootQuerierInterface } from '@penumbra-zone/types/src/querier';
+import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { RootQuerierInterface } from '@penumbra-zone/types/querier';
 
 export const getAssetMetadata = async (
   targetAsset: AssetId,

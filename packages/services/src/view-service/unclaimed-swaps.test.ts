@@ -11,7 +11,7 @@ import {
   UnclaimedSwapsResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { IndexedDbMock, MockServices } from '../test-utils';
-import type { ServicesInterface } from '@penumbra-zone/types/src/services';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { unclaimedSwaps } from './unclaimed-swaps';
 
 describe('UnclaimedSwaps request handler', () => {

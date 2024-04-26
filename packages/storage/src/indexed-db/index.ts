@@ -46,14 +46,14 @@ import {
   IdbUpdate,
   IndexedDbInterface,
   PenumbraDb,
-} from '@penumbra-zone/types/src/indexed-db';
+} from '@penumbra-zone/types/indexed-db';
 import type {
   ScanBlockResult,
   StateCommitmentTree,
-} from '@penumbra-zone/types/src/state-commitment-tree';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
-import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
-import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
+} from '@penumbra-zone/types/state-commitment-tree';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
+import type { Jsonified } from '@penumbra-zone/types/jsonified';
+import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 

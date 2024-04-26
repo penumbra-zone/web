@@ -31,9 +31,9 @@ import {
   getVotingPowerByValidatorInfo,
   isDelegationTokenForValidator,
   VotingPowerAsIntegerPercentage,
-} from '@penumbra-zone/types/src/staking';
-import { joinLoHiAmount } from '@penumbra-zone/types/src/amount';
-import { splitLoHi, toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
+} from '@penumbra-zone/types/staking';
+import { joinLoHiAmount } from '@penumbra-zone/types/amount';
+import { splitLoHi, toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { viewClient } from '../../clients';
 import { getValueView as getValueViewFromDelegationsByAddressIndexResponse } from '@penumbra-zone/getters/delegations-by-address-index-response';
 import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse } from '@penumbra-zone/getters/unbonding-tokens-by-address-index-response';

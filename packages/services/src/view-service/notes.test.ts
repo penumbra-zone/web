@@ -15,7 +15,7 @@ import {
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { IndexedDbMock, MockServices } from '../test-utils';
-import type { ServicesInterface } from '@penumbra-zone/types/src/services';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('Notes request handler', () => {
   let mockServices: MockServices;

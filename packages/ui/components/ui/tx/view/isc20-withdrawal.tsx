@@ -1,7 +1,7 @@
 import { Ics20Withdrawal } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/ibc/v1/ibc_pb';
 import { ViewBox } from './viewbox';
 import { ActionDetails } from './action-details';
-import { joinLoHiAmount } from '@penumbra-zone/types/src/amount';
+import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
 export const Ics20WithdrawalComponent = ({ value }: { value: Ics20Withdrawal }) => {

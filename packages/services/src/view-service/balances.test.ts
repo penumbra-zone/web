@@ -12,7 +12,7 @@ import {
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import type { ServicesInterface } from '@penumbra-zone/types/src/services';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils';
 import {
   AssetId,
@@ -27,8 +27,8 @@ import {
   getMetadata,
 } from '@penumbra-zone/getters/value-view';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
-import { base64ToUint8Array } from '@penumbra-zone/types/src/base64';
-import { multiplyAmountByNumber } from '@penumbra-zone/types/src/amount';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+import { multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { fvkCtx } from '../ctx/full-viewing-key';
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {

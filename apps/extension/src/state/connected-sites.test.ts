@@ -8,7 +8,7 @@ import {
   mockLocalExtStorage,
   mockSessionExtStorage,
 } from '@penumbra-zone/storage/chrome/test-utils/mock';
-import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { allSitesFilteredOutSelector } from './connected-sites';
 
 describe('Connected Sites Slice', () => {

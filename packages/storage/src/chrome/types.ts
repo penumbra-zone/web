@@ -1,5 +1,5 @@
-import { UserChoice } from '@penumbra-zone/types/src/user-choice';
-import { WalletJson } from '@penumbra-zone/types/src/wallet';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
+import { WalletJson } from '@penumbra-zone/types/wallet';
 import { KeyPrintJson } from '@penumbra-zone/crypto-web/encryption';
 
 export enum LocalStorageVersion {

@@ -10,7 +10,7 @@ import { servicesCtx } from '../ctx/prax';
 import { IndexedDbMock, MockServices } from '../test-utils';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { noteByCommitment } from './note-by-commitment';
-import type { ServicesInterface } from '@penumbra-zone/types/src/services';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('NoteByCommitment request handler', () => {
   let mockServices: MockServices;

@@ -7,7 +7,7 @@ import { AllSlices } from '../../../../../state';
 import { useStoreShallow } from '../../../../../utils/use-store-shallow';
 import { getValidator } from '@penumbra-zone/getters/validator-info';
 import { getAmount } from '@penumbra-zone/getters/value-view';
-import { joinLoHiAmount } from '@penumbra-zone/types/src/amount';
+import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 
 const stakingActionsSelector = (state: AllSlices) => ({
   action: state.staking.action,

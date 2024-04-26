@@ -9,7 +9,7 @@ import { servicesCtx } from '../ctx/prax';
 import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils';
 import { transactionInfoByHash } from './transaction-info-by-hash';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/src/services';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 import {
   Transaction,
   TransactionPerspective,

@@ -8,7 +8,7 @@ import {
   mockLocalExtStorage,
   mockSessionExtStorage,
 } from '@penumbra-zone/storage/chrome/test-utils/mock';
-import type { WalletCreate } from '@penumbra-zone/types/src/wallet';
+import type { WalletCreate } from '@penumbra-zone/types/wallet';
 
 vi.stubGlobal('crypto', webcrypto);
 

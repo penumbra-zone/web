@@ -14,7 +14,7 @@ import {
   FullViewingKey,
   SpendKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { Wallet, WalletCreate } from '@penumbra-zone/types/src/wallet';
+import { Wallet, WalletCreate } from '@penumbra-zone/types/wallet';
 
 export interface WalletsSlice {
   all: Wallet[];

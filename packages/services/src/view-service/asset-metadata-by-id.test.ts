@@ -12,7 +12,7 @@ import {
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { assetMetadataById } from './asset-metadata-by-id';
-import type { ServicesInterface } from '@penumbra-zone/types/src/services';
+import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('AssetMetadataById request handler', () => {
   let mockServices: MockServices;

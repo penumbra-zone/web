@@ -7,7 +7,7 @@ import {
   getOutput2ValueOptional,
 } from '@penumbra-zone/getters/swap-claim-view';
 import { getAmount } from '@penumbra-zone/getters/value-view';
-import { isZero } from '@penumbra-zone/types/src/amount';
+import { isZero } from '@penumbra-zone/types/amount';
 import { ValueViewComponent } from './value';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { UnimplementedView } from './unimplemented-view';

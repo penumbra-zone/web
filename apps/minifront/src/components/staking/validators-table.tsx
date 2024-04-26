@@ -11,7 +11,7 @@ import { ValidatorInfoRow } from './validator-info-row';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { ReactNode } from 'react';
 import { getValidator } from '@penumbra-zone/getters/validator-info';
-import { VotingPowerAsIntegerPercentage } from '@penumbra-zone/types/src/staking';
+import { VotingPowerAsIntegerPercentage } from '@penumbra-zone/types/staking';
 
 const HEADERS = ['Validator', 'Voting power', 'Commission', 'Staking'];
 

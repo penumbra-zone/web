@@ -2,7 +2,7 @@ import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { MemoViewComponent } from './memo-view';
 import { ActionViewComponent } from './action-view';
 import { ViewBox, ViewSection } from './viewbox';
-import { joinLoHiAmount } from '@penumbra-zone/types/src/amount';
+import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 
 export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
   if (!txv.bodyView) throw new Error('transaction view missing body view');

@@ -16,8 +16,8 @@ import {
   getDisplayDenomFromView,
 } from '@penumbra-zone/getters/value-view';
 import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/swap-record';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
-import { fromBaseUnitAmount } from '@penumbra-zone/types/src/amount';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
+import { fromBaseUnitAmount } from '@penumbra-zone/types/amount';
 import { getAllAssets } from '../../fetchers/assets';
 
 export interface UnclaimedSwapsWithMetadata {

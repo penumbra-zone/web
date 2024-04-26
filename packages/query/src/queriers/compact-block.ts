@@ -8,7 +8,7 @@ import { createClient } from './utils';
 import type {
   CompactBlockQuerierInterface,
   CompactBlockRangeParams,
-} from '@penumbra-zone/types/src/querier';
+} from '@penumbra-zone/types/querier';
 
 export class CompactBlockQuerier implements CompactBlockQuerierInterface {
   private readonly client: PromiseClient<typeof QueryService>;

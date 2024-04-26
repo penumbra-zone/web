@@ -3,7 +3,7 @@ import { TableCell, TableRow } from '@penumbra-zone/ui/components/ui/table';
 import { ReactNode } from 'react';
 import { Oval } from 'react-loader-spinner';
 import { getValidator } from '@penumbra-zone/getters/validator-info';
-import { calculateCommissionAsPercentage } from '@penumbra-zone/types/src/staking';
+import { calculateCommissionAsPercentage } from '@penumbra-zone/types/staking';
 
 export const ValidatorInfoRow = ({
   loading,

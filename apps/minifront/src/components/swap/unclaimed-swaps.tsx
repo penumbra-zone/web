@@ -6,7 +6,7 @@ import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 import { useStore } from '../../state';
 import { unclaimedSwapsSelector } from '../../state/unclaimed-swaps';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types/src/base64';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 
 export const UnclaimedSwaps = () => {
   const { unclaimedSwaps } = useLoaderData() as SwapLoaderResponse;

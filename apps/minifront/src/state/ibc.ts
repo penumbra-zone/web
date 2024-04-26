@@ -12,7 +12,7 @@ import {
   getMetadata,
 } from '@penumbra-zone/getters/value-view';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
-import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
+import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { planBuildBroadcast } from './helpers';
 import { amountMoreThanBalance } from './send';
 import { getAssetId } from '@penumbra-zone/getters/metadata';

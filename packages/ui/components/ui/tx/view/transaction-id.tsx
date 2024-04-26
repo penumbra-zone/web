@@ -1,7 +1,7 @@
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { Pill } from '../../pill';
-import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
-import { shorten } from '@penumbra-zone/types/src/string';
+import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
+import { shorten } from '@penumbra-zone/types/string';
 
 /**
  * Renders a SHA-256 hash of a transaction ID in a pill.

@@ -1,5 +1,5 @@
 import { ExtensionStorage } from './base';
-import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { v1Migrations } from './v1-migration';
 import { LocalStorageState, LocalStorageVersion } from './types';
 

@@ -3,9 +3,9 @@ import type {
   InternalMessage,
   InternalRequest,
   InternalResponse,
-} from '@penumbra-zone/types/src/internal-msg/shared';
-import type { UserChoice } from '@penumbra-zone/types/src/user-choice';
-import type { Jsonified } from '@penumbra-zone/types/src/jsonified';
+} from '@penumbra-zone/types/internal-msg/shared';
+import type { UserChoice } from '@penumbra-zone/types/user-choice';
+import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { OriginRecord } from '@penumbra-zone/storage/chrome/types';
 
 export enum PopupType {

@@ -17,7 +17,7 @@ import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { PartialMessage } from '@bufbuild/protobuf';
 import { TransactionToast } from '@penumbra-zone/ui/lib/toast/transaction-toast';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
-import { uint8ArrayToHex } from '@penumbra-zone/types/src/hex';
+import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 /**
  * Handles the common use case of planning, building, and broadcasting a

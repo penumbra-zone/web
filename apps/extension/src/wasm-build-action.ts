@@ -4,7 +4,7 @@ import {
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import type { JsonValue } from '@bufbuild/protobuf';
-import type { ActionBuildRequest } from '@penumbra-zone/types/src/internal-msg/offscreen';
+import type { ActionBuildRequest } from '@penumbra-zone/types/internal-msg/offscreen';
 import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 import actionKeys from '@penumbra-zone/keys';

@@ -1,6 +1,6 @@
 import { BatchSwapOutputData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { IndexedDbInterface } from '@penumbra-zone/types/src/indexed-db';
-import { divideAmounts, isZero, subtractAmounts } from '@penumbra-zone/types/src/amount';
+import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { divideAmounts, isZero, subtractAmounts } from '@penumbra-zone/types/amount';
 import {
   AssetId,
   Metadata,

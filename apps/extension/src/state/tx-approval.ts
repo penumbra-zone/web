@@ -8,12 +8,9 @@ import {
 import { viewClient } from '../clients';
 import { ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
-import type {
-  InternalRequest,
-  InternalResponse,
-} from '@penumbra-zone/types/src/internal-msg/shared';
-import type { Jsonified, Stringified } from '@penumbra-zone/types/src/jsonified';
-import { UserChoice } from '@penumbra-zone/types/src/user-choice';
+import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
+import type { Jsonified, Stringified } from '@penumbra-zone/types/jsonified';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 import { TransactionClassification } from '@penumbra-zone/perspective/transaction/classification';
 import {

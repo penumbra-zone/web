@@ -27,10 +27,10 @@ import {
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { getSwapCommitmentFromTx } from '@penumbra-zone/getters/transaction';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
-import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
+import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { getAmountFromValue, getAssetIdFromValue } from '@penumbra-zone/getters/value';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { divideAmounts } from '@penumbra-zone/types/src/amount';
+import { divideAmounts } from '@penumbra-zone/types/amount';
 import { amountMoreThanBalance } from './send';
 
 export interface SimulateSwapResult {
