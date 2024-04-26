@@ -32,8 +32,8 @@ export const IbcLoader: LoaderFunction = async (): Promise<IbcLoaderResponse> =>
 
     // set initial account if accounts exist and asset if account has asset list
     useStore.setState(state => {
-      state.ibc.selection = initialSelection;
-      state.ibc.chain = initialChain;
+      state.ibcOut.selection = initialSelection;
+      state.ibcOut.chain = initialChain;
     });
   }
 

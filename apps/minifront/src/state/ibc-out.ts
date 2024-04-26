@@ -22,7 +22,7 @@ import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { Chain } from '@penumbra-labs/registry';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
-export interface IbcSendSlice {
+export interface IbcOutSlice {
   selection: BalancesResponse | undefined;
   setSelection: (selection: BalancesResponse) => void;
   amount: string;
@@ -35,7 +35,7 @@ export interface IbcSendSlice {
   txInProgress: boolean;
 }
 
-export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) => {
+export const createIbcOutSlice = (): SliceCreator<IbcOutSlice> => (set, get) => {
   return {
     amount: '',
     selection: undefined,
@@ -44,22 +44,22 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
     txInProgress: false,
     setSelection: selection => {
       set(state => {
-        state.ibc.selection = selection;
+        state.ibcOut.selection = selection;
       });
     },
     setAmount: amount => {
       set(state => {
-        state.ibc.amount = amount;
+        state.ibcOut.amount = amount;
       });
     },
     setChain: chain => {
       set(state => {
-        state.ibc.chain = chain;
+        state.ibcOut.chain = chain;
       });
     },
     setDestinationChainAddress: addr => {
       set(state => {
-        state.ibc.destinationChainAddress = addr;
+        state.ibcOut.destinationChainAddress = addr;
       });
     },
     sendIbcWithdraw: async () => {
@@ -68,18 +68,18 @@ export const createIbcSendSlice = (): SliceCreator<IbcSendSlice> => (set, get) =
       });
 
       try {
-        const req = await getPlanRequest(get().ibc);
+        const req = await getPlanRequest(get().ibcOut);
         await planBuildBroadcast('ics20Withdrawal', req);
 
         // Reset form
         set(state => {
-          state.ibc.amount = '';
+          state.ibcOut.amount = '';
         });
       } catch (e) {
         errorToast(e, 'Ics20 withdrawal error').render();
       } finally {
         set(state => {
-          state.ibc.txInProgress = false;
+          state.ibcOut.txInProgress = false;
         });
       }
     },
@@ -154,7 +154,7 @@ const getPlanRequest = async ({
   selection,
   chain,
   destinationChainAddress,
-}: IbcSendSlice): Promise<TransactionPlannerRequest> => {
+}: IbcOutSlice): Promise<TransactionPlannerRequest> => {
   if (!destinationChainAddress) throw new Error('no destination chain address set');
   if (!chain) throw new Error('Chain not set');
   if (!selection) throw new Error('No asset selected');
@@ -184,16 +184,16 @@ const getPlanRequest = async ({
   });
 };
 
-export const ibcSelector = (state: AllSlices) => state.ibc;
+export const ibcOutSelector = (state: AllSlices) => state.ibcOut;
 
 export const ibcValidationErrors = (state: AllSlices) => {
   return {
-    recipientErr: !state.ibc.destinationChainAddress
+    recipientErr: !state.ibcOut.destinationChainAddress
       ? false
-      : !validateUnknownAddress(state.ibc.chain, state.ibc.destinationChainAddress),
-    amountErr: !state.ibc.selection
+      : !validateUnknownAddress(state.ibcOut.chain, state.ibcOut.destinationChainAddress),
+    amountErr: !state.ibcOut.selection
       ? false
-      : amountMoreThanBalance(state.ibc.selection, state.ibc.amount),
+      : amountMoreThanBalance(state.ibcOut.selection, state.ibcOut.amount),
   };
 };
 

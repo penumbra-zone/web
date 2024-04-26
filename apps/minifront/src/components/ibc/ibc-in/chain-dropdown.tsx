@@ -3,21 +3,14 @@ import { useMemo } from 'react';
 import { Avatar, Box, Combobox, Skeleton, Stack, Text } from '@interchain-ui/react';
 import { matchSorter } from 'match-sorter';
 import { useManager } from '@cosmos-kit/react';
-
-interface Option {
-  label: string;
-  value: string;
-}
+import { useStore } from '../../../state';
+import { ibcInSelector } from '../../../state/ibc-in';
 
 export interface ChainInfo {
   chainName: string;
   label: string;
   value: string;
   icon?: string;
-}
-
-export interface ChooseChainProps {
-  onChange: (selectedItem: Option) => void;
 }
 
 const ChainOption = ({ chainInfo: { label, icon } }: { chainInfo: ChainInfo }) => {
@@ -54,8 +47,9 @@ const useChainInfos = (): ChainInfo[] => {
 
 // Note the console will display aria-label warnings (despite them being present).
 // The cosmology team has been notified of the issue.
-export const ChainDropdown = ({ onChange }: ChooseChainProps) => {
+export const ChainDropdown = () => {
   const chainInfos = useChainInfos();
+  const { setChain } = useStore(ibcInSelector);
 
   const [selectedKey, setSelectedKey] = React.useState<string>();
   const [filterValue, setFilterValue] = React.useState<string>('');
@@ -79,6 +73,7 @@ export const ChainDropdown = ({ onChange }: ChooseChainProps) => {
         onInputChange={value => {
           setFilterValue(value);
           if (!value) {
+            setChain(undefined);
             setSelectedKey(undefined);
           }
         }}
@@ -90,7 +85,7 @@ export const ChainDropdown = ({ onChange }: ChooseChainProps) => {
             const found = chainInfos.find(options => options.value === item) ?? null;
 
             if (found) {
-              onChange(found);
+              setChain(found);
               setFilterValue(found.label);
             }
           }

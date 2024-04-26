@@ -12,7 +12,7 @@ import { produce } from 'immer';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 import { Chain } from '@penumbra-labs/registry';
-import { currentTimePlusTwoDaysRounded } from './ibc';
+import { currentTimePlusTwoDaysRounded } from './ibc-out';
 
 describe.skip('IBC Slice', () => {
   const selectionExample = new BalancesResponse({
@@ -47,15 +47,15 @@ describe.skip('IBC Slice', () => {
   });
 
   test('the default is empty, false or undefined', () => {
-    expect(useStore.getState().ibc.amount).toBe('');
-    expect(useStore.getState().ibc.selection).toBeUndefined();
-    expect(useStore.getState().ibc.chain).toBeUndefined();
+    expect(useStore.getState().ibcOut.amount).toBe('');
+    expect(useStore.getState().ibcOut.selection).toBeUndefined();
+    expect(useStore.getState().ibcOut.chain).toBeUndefined();
   });
 
   describe('setAmount', () => {
     test('amount can be set', () => {
-      useStore.getState().ibc.setAmount('2');
-      expect(useStore.getState().ibc.amount).toBe('2');
+      useStore.getState().ibcOut.setAmount('2');
+      expect(useStore.getState().ibcOut.amount).toBe('2');
     });
 
     test('validate high enough amount validates', () => {
@@ -94,8 +94,8 @@ describe.skip('IBC Slice', () => {
         addressPrefix: 'osmo',
       } satisfies Chain;
 
-      useStore.getState().ibc.setChain(chain);
-      expect(useStore.getState().ibc.chain).toBe(chain);
+      useStore.getState().ibcOut.setChain(chain);
+      expect(useStore.getState().ibcOut.chain).toBe(chain);
     });
   });
 
