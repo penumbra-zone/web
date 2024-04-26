@@ -21,7 +21,7 @@ jobs:
   publish:
     environment: ext-publish
     name: Publish extension
-    runs-on: buildjet-4vcpu-ubuntu-2204
+    runs-on: buildjet-16vcpu-ubuntu-2204
     needs: turbo-compile
 
     steps:
