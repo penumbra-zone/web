@@ -1,5 +1,6 @@
 {
   "extends": "tsconfig/base.json",
+  "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "outDir": "dist",
     "noEmit": false,
