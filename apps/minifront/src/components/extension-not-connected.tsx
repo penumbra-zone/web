@@ -10,7 +10,7 @@ import {
   throwIfPraxNotInstalled,
 } from '@penumbra-zone/client';
 import { useState } from 'react';
-import { PenumbraRequestFailure } from '@penumbra-zone/client/src/global';
+import { PenumbraRequestFailure } from '@penumbra-zone/client/global';
 
 const handleErr = (e: unknown) => {
   if (e instanceof Error && e.cause) {

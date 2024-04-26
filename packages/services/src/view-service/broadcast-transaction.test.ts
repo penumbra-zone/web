@@ -9,7 +9,7 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 import { servicesCtx } from '../ctx/prax';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { broadcastTransaction } from './broadcast-transaction';
-import type { Services } from '@penumbra-zone/services-context/src/index';
+import type { Services } from '@penumbra-zone/services-context';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils';
 

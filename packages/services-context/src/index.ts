@@ -1,5 +1,5 @@
-import { BlockProcessor } from '@penumbra-zone/query/src/block-processor';
-import { RootQuerier } from '@penumbra-zone/query/src/root-querier';
+import { BlockProcessor } from '@penumbra-zone/query/block-processor';
+import { RootQuerier } from '@penumbra-zone/query/root-querier';
 import { IndexedDb } from '@penumbra-zone/storage/indexed-db';
 import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 import { syncLastBlockWithLocal } from '@penumbra-zone/storage/chrome/syncer';

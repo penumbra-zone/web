@@ -11,8 +11,8 @@
   },
   "exports": {
     ".": "./src/prax.ts",
-    "./src/global": "./src/global.ts",
-    "./src/get-port": "./src/get-port.ts"
+    "./global": "./src/global.ts",
+    "./get-port": "./src/get-port.ts"
   },
   "publishConfig": {
     "files": [

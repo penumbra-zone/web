@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { viewClient } from '../clients';
 import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
-import { AppQuerier } from '@penumbra-zone/query/src/queriers/app';
+import { AppQuerier } from '@penumbra-zone/query/queriers/app';
 
 export const getChainIdWithFallback = async (): Promise<string> => {
   // Check storage first to see if available

@@ -8,6 +8,10 @@
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
+  "exports": {
+    "./*": "./src/*.ts",
+    "./quieriers": "./src/queriers/*.ts"
+  },
   "dependencies": {
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/constants": "workspace:*",

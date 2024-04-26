@@ -4,7 +4,7 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 import { servicesCtx } from '../ctx/prax';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import type { Services } from '@penumbra-zone/services-context/src/index';
+import type { Services } from '@penumbra-zone/services-context';
 
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 
