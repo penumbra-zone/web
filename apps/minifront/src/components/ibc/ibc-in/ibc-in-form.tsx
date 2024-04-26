@@ -1,5 +1,6 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { LockClosedIcon } from '@radix-ui/react-icons';
+import { InterchainUi } from './interchain-ui';
 
 export const IbcInForm = () => {
   return (
@@ -9,8 +10,7 @@ export const IbcInForm = () => {
         e.preventDefault();
       }}
     >
-      <h2 className='text-base font-bold text-gray-500'>Stuff to go here..</h2>
-
+      <InterchainUi />
       <Button type='submit' variant='onLight'>
         <div className='flex items-center gap-2'>
           <LockClosedIcon />

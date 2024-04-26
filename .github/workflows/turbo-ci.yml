@@ -51,7 +51,7 @@ jobs:
 
   turbo-build:
     name: Build
-    runs-on: buildjet-4vcpu-ubuntu-2204
+    runs-on: buildjet-8vcpu-ubuntu-2204
     needs: turbo-compile
     steps:
       - uses: actions/checkout@v4

@@ -7,10 +7,10 @@ import {
 } from '@penumbra-zone/ui/components/ui/select';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useState } from 'react';
-import { useStore } from '../../state';
-import { ibcSelector } from '../../state/ibc';
+import { useStore } from '../../../state';
+import { ibcSelector } from '../../../state/ibc';
 import { useLoaderData } from 'react-router-dom';
-import { IbcLoaderResponse } from './ibc-loader';
+import { IbcLoaderResponse } from '../ibc-loader';
 import { Chain } from '@penumbra-labs/registry';
 
 export const ChainSelector = () => {
