@@ -42,6 +42,19 @@ import { fvkCtx } from '@penumbra-zone/services/ctx/full-viewing-key';
 import { WalletJson } from '@penumbra-zone/types/src/wallet';
 
 /**
+ This fixes an issue where some users do not have 'grpcEndpoint' set after they have finished onboarding
+ */
+const fixEmptyGrpcEndpointAfterOnboarding = async () => {
+  //TODO change to mainnet default RPC
+  const DEFAULT_GRPC_URL = 'https://grpc.testnet.penumbra.zone';
+  const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
+  const wallets = await localExtStorage.get('wallets');
+  if (!grpcEndpoint && wallets[0]) {
+    await localExtStorage.set('grpcEndpoint', DEFAULT_GRPC_URL);
+  }
+};
+
+/**
  * When a user first onboards with the extension, they won't have chosen a gRPC
  * endpoint yet. So we'll wait until they've chosen one to start trying to make
  * requests against it.
@@ -120,6 +133,7 @@ const getServiceHandler = async () => {
   });
 };
 
+await fixEmptyGrpcEndpointAfterOnboarding();
 await waitUntilGrpcEndpointExists();
 const handler = await getServiceHandler();
 CRSessionManager.init(PRAX, handler);
