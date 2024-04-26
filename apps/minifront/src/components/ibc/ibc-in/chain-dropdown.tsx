@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Avatar, Box, Combobox, Skeleton, Stack, Text } from '@interchain-ui/react';
 import { matchSorter } from 'match-sorter';
 import { useManager } from '@cosmos-kit/react';
@@ -49,10 +49,20 @@ const useChainInfos = (): ChainInfo[] => {
 // The cosmology team has been notified of the issue.
 export const ChainDropdown = () => {
   const chainInfos = useChainInfos();
-  const { setChain } = useStore(ibcInSelector);
+  const { setSelectedChain } = useStore(ibcInSelector);
 
   const [selectedKey, setSelectedKey] = React.useState<string>();
   const [filterValue, setFilterValue] = React.useState<string>('');
+
+  // Initialize selection to first chain
+  useEffect(() => {
+    if (chainInfos.length > 0) {
+      setSelectedKey(chainInfos[0]!.value);
+      setFilterValue(chainInfos[0]!.label);
+    }
+
+    // if (!chainName) setSelectedKey(undefined);
+  }, [chainInfos]);
 
   const filteredItems = React.useMemo(() => {
     return matchSorter(chainInfos, filterValue, {
@@ -73,7 +83,7 @@ export const ChainDropdown = () => {
         onInputChange={value => {
           setFilterValue(value);
           if (!value) {
-            setChain(undefined);
+            setSelectedChain(undefined);
             setSelectedKey(undefined);
           }
         }}
@@ -85,7 +95,7 @@ export const ChainDropdown = () => {
             const found = chainInfos.find(options => options.value === item) ?? null;
 
             if (found) {
-              setChain(found);
+              setSelectedChain(found);
               setFilterValue(found.label);
             }
           }

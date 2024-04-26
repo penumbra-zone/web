@@ -436,6 +436,9 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      lucide-react:
+        specifier: ^0.363.0
+        version: 0.363.0(react@18.2.0)
       match-sorter:
         specifier: ^6.3.4
         version: 6.3.4
