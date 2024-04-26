@@ -16,14 +16,11 @@ import { toBaseUnit } from '@penumbra-zone/types/src/lo-hi';
 import { planBuildBroadcast } from './helpers';
 import { amountMoreThanBalance } from './send';
 import { getAssetId } from '@penumbra-zone/getters/src/metadata';
-import {
-  assetPatterns,
-  localAssets,
-  STAKING_TOKEN_METADATA,
-} from '@penumbra-zone/constants/src/assets';
+import { assetPatterns } from '@penumbra-zone/constants/src/assets';
 import { bech32, bech32m } from 'bech32';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { Chain } from '@penumbra-labs/registry';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export interface IbcSendSlice {
   selection: BalancesResponse | undefined;
@@ -222,9 +219,11 @@ const validateUnknownAddress = (chain: Chain | undefined, address: string): bool
 export const filterBalancesPerChain = (
   allBalances: BalancesResponse[],
   chain: Chain | undefined,
+  stakingTokenMetadata: Metadata,
+  registryAssets: Metadata[],
 ): BalancesResponse[] => {
-  const penumbraAssetId = getAssetId(STAKING_TOKEN_METADATA);
-  const assetsWithMatchingChannel = localAssets
+  const penumbraAssetId = getAssetId(stakingTokenMetadata);
+  const assetsWithMatchingChannel = registryAssets
     .filter(a => {
       const match = assetPatterns.ibc.capture(a.base);
       if (!match) return false;

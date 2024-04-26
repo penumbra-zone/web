@@ -23,11 +23,7 @@ import {
   AddressIndex,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import {
-  assetPatterns,
-  localAssets,
-  PRICE_RELEVANCE_THRESHOLDS,
-} from '@penumbra-zone/constants/src/assets';
+import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/src/assets';
 import {
   Position,
   PositionId,
@@ -65,6 +61,7 @@ interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
   chainId: string;
   walletId: WalletId;
+  registryAssets: Metadata[];
 }
 
 export class IndexedDb implements IndexedDbInterface {
@@ -75,7 +72,12 @@ export class IndexedDb implements IndexedDbInterface {
     private readonly chainId: string,
   ) {}
 
-  static async initialize({ dbVersion, walletId, chainId }: IndexedDbProps): Promise<IndexedDb> {
+  static async initialize({
+    dbVersion,
+    walletId,
+    chainId,
+    registryAssets,
+  }: IndexedDbProps): Promise<IndexedDb> {
     const bech32Id = bech32mWalletId(walletId);
     const dbName = `viewdata/${chainId}/${bech32Id}`;
 
@@ -121,7 +123,7 @@ export class IndexedDb implements IndexedDbInterface {
     } satisfies IdbConstants;
 
     const instance = new this(db, new IbdUpdater(db), constants, chainId);
-    await instance.saveLocalAssetsMetadata(); // Pre-load asset metadata
+    await instance.saveRegistryAssets(registryAssets); // Pre-load asset metadata from registry
 
     const existing0thEpoch = await instance.getEpochByHeight(0n);
     if (!existing0thEpoch) await instance.addEpoch(0n); // Create first epoch
@@ -244,9 +246,9 @@ export class IndexedDb implements IndexedDbInterface {
     await this.u.update({ table: 'ASSETS', value: metadata.toJson() as Jsonified<Metadata> });
   }
 
-  // Save all hard-coded assets in config to database
-  async saveLocalAssetsMetadata() {
-    const saveLocalMetadata = localAssets.map(m => this.saveAssetsMetadata(m));
+  // creates a local copy of the asset list from registry (https://github.com/prax-wallet/registry)
+  async saveRegistryAssets(assets: Metadata[]) {
+    const saveLocalMetadata = assets.map(m => this.saveAssetsMetadata(m));
     await Promise.all(saveLocalMetadata);
   }
 

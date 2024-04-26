@@ -10,11 +10,12 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { localAssets } from '@penumbra-zone/constants/src/assets';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { useEffect, useMemo, useState } from 'react';
 import { IconInput } from '@penumbra-zone/ui/components/ui/icon-input';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { SwapLoaderResponse } from '../swap/swap-loader';
+import { useLoaderData } from 'react-router-dom';
 
 interface AssetSelectorProps {
   value?: Metadata;
@@ -26,10 +27,6 @@ interface AssetSelectorProps {
    */
   filter?: (metadata: Metadata) => boolean;
 }
-
-const sortedAssets = [...localAssets].sort((a, b) =>
-  a.symbol.toLocaleLowerCase() < b.symbol.toLocaleLowerCase() ? -1 : 1,
-);
 
 /**
  * If the `filter` rejects the currently selected `asset`, switch to a different
@@ -50,17 +47,26 @@ const switchAssetIfNecessary = ({
 };
 
 const useFilteredAssets = ({ value, onChange, filter }: AssetSelectorProps) => {
-  const [search, setSearch] = useState('');
-
-  let assets = filter ? sortedAssets.filter(filter) : sortedAssets;
-  assets = search ? assets.filter(bySearch(search)) : assets;
-
-  useEffect(
-    () => switchAssetIfNecessary({ value, onChange, filter, assets }),
-    [filter, value, assets, onChange],
+  const { assets } = useLoaderData() as SwapLoaderResponse;
+  const sortedAssets = useMemo(
+    () =>
+      [...assets].sort((a, b) =>
+        a.symbol.toLocaleLowerCase() < b.symbol.toLocaleLowerCase() ? -1 : 1,
+      ),
+    [assets],
   );
 
-  return { assets, search, setSearch };
+  const [search, setSearch] = useState('');
+
+  let filteredAssets = filter ? sortedAssets.filter(filter) : sortedAssets;
+  filteredAssets = search ? assets.filter(bySearch(search)) : assets;
+
+  useEffect(
+    () => switchAssetIfNecessary({ value, onChange, filter, assets: filteredAssets }),
+    [filter, value, filteredAssets, onChange],
+  );
+
+  return { assets: filteredAssets, search, setSearch };
 };
 
 const bySearch = (search: string) => (asset: Metadata) =>

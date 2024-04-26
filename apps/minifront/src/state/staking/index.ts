@@ -1,14 +1,12 @@
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { SliceCreator } from '..';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/src/metadata';
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
 import {
-  assetPatterns,
-  localAssets,
-  STAKING_TOKEN,
-  STAKING_TOKEN_METADATA,
-} from '@penumbra-zone/constants/src/assets';
+  Metadata,
+  ValueView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
+import { assetPatterns } from '@penumbra-zone/constants/src/assets';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { planBuildBroadcast } from '../helpers';
 import {
@@ -40,12 +38,8 @@ import { viewClient } from '../../clients';
 import { getValueView as getValueViewFromDelegationsByAddressIndexResponse } from '@penumbra-zone/getters/src/delegations-by-address-index-response';
 import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse } from '@penumbra-zone/getters/src/unbonding-tokens-by-address-index-response';
 import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
-import { ZERO_BALANCE_UM } from '../../components/staking/account/header/constants';
-
-const STAKING_TOKEN_DISPLAY_DENOM_EXPONENT = (() => {
-  const stakingAsset = localAssets.find(asset => asset.display === STAKING_TOKEN);
-  return getDisplayDenomExponent(stakingAsset);
-})();
+import { getStakingTokenMetadata } from '../../fetchers/registry';
+import { zeroValueView } from '../../utils/zero-value-view';
 
 interface UnbondingTokensForAccount {
   claimable: {
@@ -295,12 +289,13 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     const responses = await Array.fromAsync(
       viewClient.unbondingTokensByAddressIndex({ addressIndex }),
     );
+    const stakingTokenMetadata = await getStakingTokenMetadata();
 
     const unbondingTokensForAccount = responses.reduce<UnbondingTokensForAccount>(
-      toUnbondingTokensForAccount,
+      (acc, curr) => toUnbondingTokensForAccount(acc, curr, stakingTokenMetadata),
       {
-        claimable: { total: ZERO_BALANCE_UM, tokens: [] },
-        notYetClaimable: { total: ZERO_BALANCE_UM, tokens: [] },
+        claimable: { total: zeroValueView(stakingTokenMetadata), tokens: [] },
+        notYetClaimable: { total: zeroValueView(stakingTokenMetadata), tokens: [] },
       },
     );
 
@@ -311,13 +306,22 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
   loadAndReduceBalances: async () => {
     const balancesByAccount = await getBalancesByAccount();
 
+    const stakingTokenMetadata = await getStakingTokenMetadata();
+
     // It's slightly inefficient to reduce over an array twice, rather than
     // combining the reducers into one. But this is much more readable; and
     // anyway, `balancesByAccount` will be a single-item array for the vast
     // majority of users.
-    const unstakedTokensByAccount = balancesByAccount.reduce(toUnstakedTokensByAccount, new Map());
-    const accountSwitcherFilter = balancesByAccount.reduce(toAccountSwitcherFilter, []);
-
+    const unstakedTokensByAccount = balancesByAccount.reduce(
+      (acc: Map<number, ValueView>, cur: BalancesByAccount) =>
+        toUnstakedTokensByAccount(acc, cur, stakingTokenMetadata),
+      new Map(),
+    );
+    const accountSwitcherFilter = balancesByAccount.reduce(
+      (acc: number[], cur: BalancesByAccount) =>
+        toAccountSwitcherFilter(acc, cur, stakingTokenMetadata),
+      [],
+    );
     set(state => {
       state.staking.unstakedTokensByAccount = unstakedTokensByAccount;
       state.staking.accountSwitcherFilter = accountSwitcherFilter;
@@ -325,7 +329,9 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
   },
   delegate: async () => {
     try {
-      const req = assembleDelegateRequest(get().staking);
+      const stakingTokenMetadata = await getStakingTokenMetadata();
+
+      const req = assembleDelegateRequest(get().staking, stakingTokenMetadata);
 
       // Reset form _after_ building the transaction planner request, since it depends on
       // the state.
@@ -403,11 +409,14 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
   votingPowerByValidatorInfo: {},
 });
 
-const assembleDelegateRequest = ({ account, amount, validatorInfo }: StakingSlice) => {
+const assembleDelegateRequest = (
+  { account, amount, validatorInfo }: StakingSlice,
+  stakingAssetMetadata: Metadata,
+) => {
   return new TransactionPlannerRequest({
     delegations: [
       {
-        amount: toBaseUnit(BigNumber(amount), STAKING_TOKEN_DISPLAY_DENOM_EXPONENT),
+        amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponent(stakingAssetMetadata)),
         rateData: getRateData(validatorInfo),
       },
     ],
@@ -448,9 +457,10 @@ const assembleUndelegateRequest = ({
 const toUnstakedTokensByAccount = (
   unstakedTokensByAccount: Map<number, ValueView>,
   curr: BalancesByAccount,
+  stakingTokenMetadata: Metadata,
 ) => {
   const stakingTokenBalance = curr.balances.find(
-    ({ balanceView }) => getDisplayDenomFromView(balanceView) === STAKING_TOKEN,
+    ({ balanceView }) => getDisplayDenomFromView(balanceView) === stakingTokenMetadata.display,
   );
 
   if (stakingTokenBalance?.balanceView) {
@@ -464,14 +474,18 @@ const toUnstakedTokensByAccount = (
  * Function to use with `reduce()` over an array of `BalancesByAccount` objects.
  * Reduces to an array of accounts that have relevant balances for staking.
  */
-const toAccountSwitcherFilter = (accountSwitcherFilter: number[], curr: BalancesByAccount) => {
+const toAccountSwitcherFilter = (
+  accountSwitcherFilter: number[],
+  curr: BalancesByAccount,
+  stakingTokenMetadata: Metadata,
+) => {
   const isRelevantAccount = curr.balances.some(({ balanceView }) => {
     const displayDenom = getDisplayDenomFromView(balanceView);
 
     return (
       assetPatterns.delegationToken.matches(displayDenom) ||
       assetPatterns.unbondingToken.matches(displayDenom) ||
-      displayDenom === STAKING_TOKEN
+      displayDenom === stakingTokenMetadata.display
     );
   });
 
@@ -486,6 +500,7 @@ const toAccountSwitcherFilter = (accountSwitcherFilter: number[], curr: Balances
 const toUnbondingTokensForAccount = (
   unbondingTokensForAccount: UnbondingTokensForAccount,
   curr: UnbondingTokensByAddressIndexResponse,
+  stakingTokenMetadata: Metadata,
 ): UnbondingTokensForAccount => {
   const valueView = getValueViewFromUnbondingTokensByAddressIndexResponse(curr);
 
@@ -505,7 +520,7 @@ const toUnbondingTokensForAccount = (
       case: 'knownAssetId',
       value: {
         amount: splitLoHi(claimableTotal),
-        metadata: STAKING_TOKEN_METADATA,
+        metadata: stakingTokenMetadata,
       },
     },
   });
@@ -520,7 +535,7 @@ const toUnbondingTokensForAccount = (
       case: 'knownAssetId',
       value: {
         amount: splitLoHi(notYetClaimableTotal),
-        metadata: STAKING_TOKEN_METADATA,
+        metadata: stakingTokenMetadata,
       },
     },
   });

@@ -1,4 +1,7 @@
-import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {
+  Metadata,
+  ValueView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValidatorInfoComponent } from './validator-info-component';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { StakingActions } from './staking-actions';
@@ -10,7 +13,6 @@ import {
   getValidatorInfoFromValueView,
 } from '@penumbra-zone/getters/src/value-view';
 import { asValueView } from '@penumbra-zone/getters/src/equivalent-value';
-import { STAKING_TOKEN } from '@penumbra-zone/constants/src/assets';
 
 /**
  * Renders a `ValueView` that contains a delegation token, along with the
@@ -25,6 +27,7 @@ export const DelegationValueView = memo(
     valueView,
     votingPowerAsIntegerPercentage,
     unstakedTokens,
+    stakingTokenMetadata,
   }: {
     /**
      * A `ValueView` representing the address's balance of the given delegation
@@ -37,18 +40,19 @@ export const DelegationValueView = memo(
      * Used to show the user how many tokens they have available to delegate.
      */
     unstakedTokens?: ValueView;
+    stakingTokenMetadata: Metadata;
   }) => {
     const validatorInfo = getValidatorInfoFromValueView(valueView);
     const metadata = getMetadata(valueView);
 
     const equivalentValueOfStakingToken = useMemo(() => {
-      const equivalentValue = getEquivalentValues(valueView).find(
-        equivalentValue => equivalentValue.numeraire?.display === STAKING_TOKEN,
+      const equivalentValue = getEquivalentValues(valueView).find(equivalentValue =>
+        equivalentValue.numeraire?.penumbraAssetId?.equals(stakingTokenMetadata.penumbraAssetId),
       );
 
       if (equivalentValue) return asValueView(equivalentValue);
       return undefined;
-    }, [valueView]);
+    }, [valueView, stakingTokenMetadata.penumbraAssetId]);
 
     return (
       <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-8'>

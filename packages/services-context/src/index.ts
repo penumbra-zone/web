@@ -16,6 +16,7 @@ import {
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { Wallet } from '@penumbra-zone/types/src/wallet';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
 
 export interface ServicesConfig {
   readonly idbVersion: number;
@@ -99,10 +100,14 @@ export class Services implements ServicesInterface {
       sctParams: { epochDuration },
     } = params;
 
+    const registryClient = new ChainRegistryClient();
+    const registry = await registryClient.get(chainId);
+
     const indexedDb = await IndexedDb.initialize({
       chainId,
       dbVersion,
       walletId,
+      registryAssets: registry.getAllAssets(),
     });
 
     void syncLastBlockWithLocal(indexedDb);
@@ -118,6 +123,8 @@ export class Services implements ServicesInterface {
       viewServer,
       querier: this.querier,
       indexedDb,
+      stakingTokenMetadata: registry.getMetadata(registry.stakingAssetId),
+      numeraires: registry.numeraires.map(numeraires => registry.getMetadata(numeraires)),
     });
 
     return { viewServer, blockProcessor, indexedDb, querier: this.querier };

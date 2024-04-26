@@ -66,6 +66,10 @@ const validatorInfo4 = new ValidatorInfo({
   },
 });
 
+vi.mock('../../fetchers/registry', () => ({
+  getStakingTokenMetadata: vi.fn(async () => Promise.resolve(new Metadata())),
+}));
+
 vi.mock('../../fetchers/balances', () => ({
   getBalances: vi.fn(async () =>
     Promise.resolve([

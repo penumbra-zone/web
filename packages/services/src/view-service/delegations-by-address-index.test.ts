@@ -16,17 +16,12 @@ import {
   DelegationsByAddressIndexRequest_Filter,
   DelegationsByAddressIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import {
   ValidatorInfoRequest,
   ValidatorInfoResponse,
   ValidatorState_ValidatorStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import {
-  getAmount,
-  getEquivalentValues,
-  getValidatorInfoFromValueView,
-} from '@penumbra-zone/getters/src/value-view';
+import { getAmount, getValidatorInfoFromValueView } from '@penumbra-zone/getters/src/value-view';
 import { identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 import { PartialMessage } from '@bufbuild/protobuf';
 import {
@@ -127,7 +122,7 @@ const penumbraBalancesResponse = new BalancesResponse({
       case: 'knownAssetId',
       value: {
         amount: { hi: 0n, lo: 1n },
-        metadata: STAKING_TOKEN_METADATA,
+        metadata: {},
       },
     },
   },
@@ -309,7 +304,6 @@ describe('DelegationsByAddressIndex request handler', () => {
       const secondValueView = new ValueView(results[1]!.valueView);
 
       expect(getAmount(secondValueView)).toEqual({ hi: 0n, lo: 0n });
-      expect(getEquivalentValues(secondValueView)[0]!.equivalentAmount).toEqual({ hi: 0n, lo: 0n });
     });
   });
 

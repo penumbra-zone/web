@@ -6,7 +6,6 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { localAssets } from '@penumbra-zone/constants/src/assets';
 import { AddressView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
@@ -38,8 +37,10 @@ describe('Swap Slice', () => {
   });
 
   let useStore: UseBoundStore<StoreApi<AllSlices>>;
+  let registryAssets: Metadata[];
 
   beforeEach(() => {
+    registryAssets = [];
     useStore = create<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
   });
 
@@ -58,8 +59,8 @@ describe('Swap Slice', () => {
 
   test('assetOut can be set', () => {
     expect(useStore.getState().swap.assetOut).toBeUndefined();
-    useStore.getState().swap.setAssetOut(localAssets[0]!);
-    expect(useStore.getState().swap.assetOut).toBe(localAssets[0]);
+    useStore.getState().swap.setAssetOut(registryAssets[0]!);
+    expect(useStore.getState().swap.assetOut).toBe(registryAssets[0]);
   });
 
   test('amount can be set', () => {

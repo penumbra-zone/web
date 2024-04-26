@@ -10,7 +10,6 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 import { createHandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { unbondingTokensByAddressIndex } from '.';
-import { STAKING_TOKEN, STAKING_TOKEN_METADATA } from '@penumbra-zone/constants/src/assets';
 import Array from '@penumbra-zone/polyfills/src/Array.fromAsync';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/src/value-view';
 
@@ -43,7 +42,9 @@ const mockBalancesResponse1 = new BalancesResponse({
       case: 'knownAssetId',
       value: {
         amount: { hi: 0n, lo: 1n },
-        metadata: STAKING_TOKEN_METADATA,
+        metadata: {
+          display: 'penumbra',
+        },
       },
     },
   },
@@ -158,7 +159,7 @@ describe('Unbonding Tokens by Address Index handler', () => {
     );
 
     expect(responses.length).toBe(2);
-    expect(getDisplayDenomFromView(responseObjects[0]!.valueView)).not.toBe(STAKING_TOKEN);
-    expect(getDisplayDenomFromView(responseObjects[1]!.valueView)).not.toBe(STAKING_TOKEN);
+    expect(getDisplayDenomFromView(responseObjects[0]!.valueView)).not.toBe('penumbra');
+    expect(getDisplayDenomFromView(responseObjects[1]!.valueView)).not.toBe('penumbra');
   });
 });

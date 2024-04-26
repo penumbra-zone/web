@@ -4,16 +4,18 @@ import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
 import { Header } from './account/header';
 import { Delegations } from './account/delegations';
-import { LoaderFunction } from 'react-router-dom';
+import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { useStoreShallow } from '../../utils/use-store-shallow';
 import { RestrictMaxWidth } from '../shared/restrict-max-width';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { getStakingTokenMetadata } from '../../fetchers/registry';
 
-export const StakingLoader: LoaderFunction = async () => {
+export const StakingLoader: LoaderFunction = async (): Promise<Metadata> => {
   await throwIfPraxNotConnectedTimeout();
   // Await to avoid screen flicker.
   await useStore.getState().staking.loadAndReduceBalances();
 
-  return null;
+  return await getStakingTokenMetadata();
 };
 
 const stakingLayoutSelector = (state: AllSlices) => ({
@@ -23,6 +25,7 @@ const stakingLayoutSelector = (state: AllSlices) => ({
 });
 
 export const StakingLayout = () => {
+  const stakingTokenMetadata = useLoaderData() as Metadata;
   const { account, loadDelegationsForCurrentAccount, loadUnbondingTokensForCurrentAccount } =
     useStoreShallow(stakingLayoutSelector);
 
@@ -41,7 +44,7 @@ export const StakingLayout = () => {
             <CardTitle>Delegation tokens</CardTitle>
           </CardHeader>
           <CardContent>
-            <Delegations />
+            <Delegations stakingTokenMetadata={stakingTokenMetadata} />
           </CardContent>
         </Card>
       </div>
