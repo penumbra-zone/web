@@ -38,20 +38,39 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 const viewClient = createPraxClient(ViewService);
 ```
 
+An incredibly simple use might be something like this.
+
+```ts
+import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
+
+const { address } = await viewClient.addressByIndex({});
+console.log(bech32mAddress(address));
+```
+
 ### Connection to other Penumbra wallets
 
 Other providers may be available.
 
 ```ts
 import { getAnyPenumbraPort } from '@penumbra-zone/client';
-import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
+import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 
 const channelTransport = createChannelTransport({
   getPort: getAnyPenumbraPort,
-  jsonOptions: { typeRegistry: createRegistry(ViewService) },
+  jsonOptions: { typeRegistry: createRegistry(CustodyService) },
 });
 
-const viewClient = createPromiseClient(ViewService, channelTransport);
+const custodyClient = createPromiseClient(CustodyService, channelTransport);
+```
+
+Use is identical.
+
+```ts
+const { fullViewingKey } = await custodyClient.exportFullViewingKey({});
+void fetch('https://example.com/iamveryclever', {
+  method: 'POST',
+  body: fullViewingKey.toJsonString(),
+});
 ```
 
 ### The actual interface
