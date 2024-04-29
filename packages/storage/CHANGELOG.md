@@ -1,5 +1,20 @@
 # @penumbra-zone/storage
 
+## 3.1.0
+
+### Minor Changes
+
+- 55f31c9: Store sct positions of swaps
+
+### Patch Changes
+
+- Updated dependencies [3148375]
+- Updated dependencies [fdd4303]
+  - @penumbra-zone/constants@4.0.0
+  - @penumbra-zone/getters@3.0.0
+  - @penumbra-zone/bech32m@3.0.0
+  - @penumbra-zone/crypto-web@3.0.2
+
 ## 3.0.1
 
 ### Patch Changes

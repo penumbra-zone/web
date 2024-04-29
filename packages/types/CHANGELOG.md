@@ -1,5 +1,19 @@
 # @penumbra-zone/types
 
+## 3.0.0
+
+### Major Changes
+
+- 3148375: remove `/src/` path segment from exports
+
+### Patch Changes
+
+- Updated dependencies [3148375]
+- Updated dependencies [fdd4303]
+  - @penumbra-zone/constants@4.0.0
+  - @penumbra-zone/getters@3.0.0
+  - @penumbra-zone/bech32m@3.0.0
+
 ## 2.0.1
 
 ### Patch Changes
