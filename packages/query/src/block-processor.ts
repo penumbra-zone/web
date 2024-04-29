@@ -213,7 +213,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         // - saves new decrypted notes
         // - saves new decrypted swaps
         // - updates last block synced
-        await this.indexedDb.saveScanResult(flush);
+        await this.indexedDb.saveScanResult(flush, compactBlock.height);
 
         // - detect unknown asset types
         // - shielded pool for asset metadata

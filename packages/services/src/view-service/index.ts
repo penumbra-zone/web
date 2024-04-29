@@ -32,7 +32,7 @@ import { witnessAndBuild } from './witness-and-build';
 
 export type Impl = ServiceImpl<typeof ViewService>;
 
-export const viewImpl: Impl = {
+export const viewImpl: Omit<Impl, 'auctions'> = {
   addressByIndex,
   appParameters,
   assetMetadataById,

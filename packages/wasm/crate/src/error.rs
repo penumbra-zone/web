@@ -1,4 +1,5 @@
 use std::convert::Infallible;
+use std::num::TryFromIntError;
 
 use base64::DecodeError as Base64DecodeError;
 use hex::FromHexError;
@@ -41,10 +42,13 @@ pub enum WasmError {
     ProstDecodeError(#[from] ProstDecodeError),
 
     #[error("{0}")]
-    Wasm(#[from] serde_wasm_bindgen::Error),
+    RegexError(#[from] regex::Error),
 
     #[error("{0}")]
-    RegexError(#[from] regex::Error),
+    TryInt(#[from] TryFromIntError),
+
+    #[error("{0}")]
+    Wasm(#[from] serde_wasm_bindgen::Error),
 }
 
 impl From<WasmError> for serde_wasm_bindgen::Error {

@@ -13,6 +13,7 @@ pub mod note_record;
 pub mod planner;
 pub mod storage;
 pub mod swap_record;
+pub mod tree;
 pub mod tx;
 pub mod utils;
 pub mod view_server;

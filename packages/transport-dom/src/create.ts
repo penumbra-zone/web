@@ -2,6 +2,7 @@ import {
   Any,
   AnyMessage,
   JsonReadOptions,
+  type JsonValue,
   JsonWriteOptions,
   Message,
   MethodInfo,
@@ -184,7 +185,7 @@ export const createChannelTransport = ({
             Code.OutOfRange,
           );
       } else {
-        const stream = ReadableStream.from(input).pipeThrough(
+        const stream: ReadableStream<JsonValue> = ReadableStream.from(input).pipeThrough(
           new TransformStream({
             transform: (chunk: PartialMessage<I>, cont) =>
               cont.enqueue(Any.pack(new method.I(chunk)).toJson(jsonOptions)),
