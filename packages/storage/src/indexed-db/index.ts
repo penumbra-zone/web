@@ -161,12 +161,12 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   // All updates must be atomic in order to prevent invalid tree state
-  public async saveScanResult(updates: ScanBlockResult, blockHeight: bigint): Promise<void> {
+  public async saveScanResult(updates: ScanBlockResult): Promise<void> {
     const txs = new IbdUpdates();
 
     this.addSctUpdates(txs, updates.sctUpdates);
     this.addNewNotes(txs, updates.newNotes);
-    await this.addNewSwaps(txs, updates.newSwaps, blockHeight);
+    await this.addNewSwaps(txs, updates.newSwaps, updates.height);
     txs.add({ table: 'FULL_SYNC_HEIGHT', value: updates.height, key: 'height' });
 
     await this.u.updateAll(txs);

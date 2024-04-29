@@ -68,7 +68,7 @@ export interface IndexedDbInterface {
   saveAssetsMetadata(metadata: Metadata): Promise<void>;
   iterateAssetsMetadata(): AsyncGenerator<Metadata, void>;
   getStateCommitmentTree(): Promise<StateCommitmentTree>;
-  saveScanResult(updates: ScanBlockResult, blockHeight: bigint): Promise<void>;
+  saveScanResult(updates: ScanBlockResult): Promise<void>;
   getFmdParams(): Promise<FmdParameters | undefined>;
   saveFmdParams(params: FmdParameters): Promise<void>;
   getAppParams(): Promise<AppParameters | undefined>;
