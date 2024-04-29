@@ -1,10 +1,20 @@
 import * as React from 'react';
-import { useEffect, useMemo } from 'react';
-import { Avatar, Box, Combobox, Skeleton, Stack, Text } from '@interchain-ui/react';
-import { matchSorter } from 'match-sorter';
+import { useMemo } from 'react';
 import { useManager } from '@cosmos-kit/react';
-import { useStore } from '../../../state';
+import { Popover, PopoverContent, PopoverTrigger } from '@penumbra-zone/ui/components/ui/popover';
+import { ChevronsUpDown } from 'lucide-react';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from '@penumbra-zone/ui/components/ui/command';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { ibcInSelector } from '../../../state/ibc-in';
+import { useStore } from '../../../state';
+import { Avatar, AvatarImage } from '@penumbra-zone/ui/components/ui/avatar';
+import { Identicon } from '@penumbra-zone/ui/components/ui/identicon';
 
 export interface ChainInfo {
   chainName: string;
@@ -12,22 +22,6 @@ export interface ChainInfo {
   value: string;
   icon?: string;
 }
-
-const ChainOption = ({ chainInfo: { label, icon } }: { chainInfo: ChainInfo }) => {
-  return (
-    <Stack aria-label={`Chain option: ${label}`}>
-      <Avatar
-        name={label}
-        className='mr-2'
-        getInitials={name => name[0]!}
-        size='xs'
-        src={icon}
-        fallbackMode='bg'
-      />
-      <Text>{label}</Text>
-    </Stack>
-  );
-};
 
 const useChainInfos = (): ChainInfo[] => {
   const { chainRecords, getChainLogo } = useManager();
@@ -51,88 +45,59 @@ export const ChainDropdown = () => {
   const chainInfos = useChainInfos();
   const { setSelectedChain } = useStore(ibcInSelector);
 
-  const [selectedKey, setSelectedKey] = React.useState<string>();
-  const [filterValue, setFilterValue] = React.useState<string>('');
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState('');
 
-  // Initialize selection to first chain
-  useEffect(() => {
-    if (chainInfos.length > 0) {
-      setSelectedKey(chainInfos[0]!.value);
-      setFilterValue(chainInfos[0]!.label);
-    }
-
-    // if (!chainName) setSelectedKey(undefined);
-  }, [chainInfos]);
-
-  const filteredItems = React.useMemo(() => {
-    return matchSorter(chainInfos, filterValue, {
-      keys: ['label', 'value'],
-    });
-  }, [chainInfos, filterValue]);
-
-  const avatarUrl = filteredItems.find(i => i.value === selectedKey)?.icon ?? undefined;
+  const selected = chainInfos.find(c => c.value === value);
 
   return (
-    <Box className='flex flex-col items-center justify-center'>
-      <div className='font-bold text-stone-700'>Select chain</div>
-      <Combobox
-        aria-label='Select a chain'
-        items={filteredItems}
-        inputValue={filterValue}
-        openOnFocus
-        onInputChange={value => {
-          setFilterValue(value);
-          if (!value) {
-            setSelectedChain(undefined);
-            setSelectedKey(undefined);
-          }
-        }}
-        selectedKey={selectedKey}
-        onSelectionChange={item => {
-          if (item) {
-            setSelectedKey(item as string);
-
-            const found = chainInfos.find(options => options.value === item) ?? null;
-
-            if (found) {
-              setSelectedChain(found);
-              setFilterValue(found.label);
-            }
-          }
-        }}
-        inputAddonStart={
-          selectedKey && avatarUrl ? (
-            <Avatar
-              name={selectedKey.toString()}
-              getInitials={name => name[0]!}
-              size='xs'
-              src={avatarUrl}
-              fallbackMode='bg'
-              className='px-2'
-            />
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant='onLight' role='combobox' aria-expanded={open} className='w-[300px]'>
+          {value ? (
+            <div className='flex gap-2'>
+              <Avatar className='size-6'>
+                <AvatarImage src={selected?.icon} />
+                <Identicon uniqueIdentifier={selected?.label ?? ''} type='gradient' size={22} />
+              </Avatar>
+              <span className='mt-0.5'>{selected?.label}</span>
+            </div>
           ) : (
-            <Box className='flex items-center justify-center px-2'>
-              <Skeleton width='24px' height='24px' className='rounded-full' />
-            </Box>
-          )
-        }
-        styleProps={{
-          width: {
-            mobile: '100%',
-            mdMobile: '350px',
-          },
-        }}
-      >
-        {filteredItems.map(info => (
-          <Combobox.Item
-            key={info.value}
-            textValue={info.label}
-            aria-label={`Select ${info.label}`}
-          >
-            <ChainOption chainInfo={info} />
-          </Combobox.Item>
-        ))}
-      </Combobox>
-    </Box>
+            'Select a chain'
+          )}
+          <ChevronsUpDown className='ml-2 size-4 shrink-0 opacity-50' />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className='w-[300px] p-0'>
+        <Command>
+          <CommandInput placeholder='Search chains...' />
+          <CommandEmpty>No framework found.</CommandEmpty>
+          <CommandGroup>
+            {chainInfos.map(chain => (
+              <CommandItem
+                key={chain.value}
+                value={chain.value}
+                onSelect={currentValue => {
+                  setValue(currentValue === value ? '' : currentValue);
+                  setOpen(false);
+
+                  const match = chainInfos.find(options => options.value === currentValue);
+                  if (match) {
+                    setSelectedChain(match);
+                  }
+                }}
+                className='flex gap-2'
+              >
+                <Avatar className='size-6'>
+                  <AvatarImage src={chain.icon} />
+                  <Identicon uniqueIdentifier={chain.label} type='gradient' size={22} />
+                </Avatar>
+                {chain.label}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 };

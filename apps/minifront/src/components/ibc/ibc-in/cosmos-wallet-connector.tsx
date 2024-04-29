@@ -51,6 +51,8 @@ export const CosmosWalletConnector = () => {
   const { selectedChain } = useStore(ibcInSelector);
   const { username, address, status } = useChainConnector();
 
+  console.log(selectedChain);
+
   return (
     <Box
       display='flex'

@@ -11,7 +11,7 @@ export const IbcInForm = () => {
       }}
     >
       <InterchainUi />
-      <Button type='submit' variant='onLight'>
+      <Button type='submit' variant='onLight' disabled>
         <div className='flex items-center gap-2'>
           <LockClosedIcon />
           <span className='-mb-1'>Shield Assets</span>

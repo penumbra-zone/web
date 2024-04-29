@@ -1,7 +1,7 @@
 import { IbcChainProvider } from './chain-provider';
 import { useRegistry } from '../../../fetchers/registry';
-import { CosmosWalletConnector } from './cosmos-wallet-connector';
 import { ChainDropdown } from './chain-dropdown';
+import { CosmosWalletConnector } from './cosmos-wallet-connector';
 
 export const InterchainUi = () => {
   const { data, isLoading, error } = useRegistry();
@@ -13,7 +13,7 @@ export const InterchainUi = () => {
   return (
     <IbcChainProvider registry={data}>
       {/* negative margin offsets div inserted by provider */}
-      <div className='-mt-4'>
+      <div className='-mt-4 flex justify-center'>
         <ChainDropdown />
       </div>
       <CosmosWalletConnector />
