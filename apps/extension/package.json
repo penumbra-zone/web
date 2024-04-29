@@ -15,9 +15,9 @@
   },
   "dependencies": {
     "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20240327103030-e2006674271c.2",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240331004851-c3b058e666bc.2",
-    "@bufbuild/protobuf": "^1.8.0",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240429125510-24b08e70bbc2.1",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240429125510-24b08e70bbc2.2",
+    "@bufbuild/protobuf": "^1.9.0",
     "@connectrpc/connect": "^1.4.0",
     "@connectrpc/connect-web": "^1.4.0",
     "@penumbra-labs/registry": "^5.1.0",

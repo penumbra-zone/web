@@ -23,12 +23,12 @@
     "exponential-backoff": "^3.1.1"
   },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2",
-    "@bufbuild/protobuf": "^1.8.0",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240429125510-24b08e70bbc2.1",
+    "@bufbuild/protobuf": "^1.9.0",
     "@penumbra-zone/polyfills": "workspace:*"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.8.0-20240331004851-c3b058e666bc.2",
-    "@bufbuild/protobuf": "^1.8.0"
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240429125510-24b08e70bbc2.1",
+    "@bufbuild/protobuf": "^1.9.0"
   }
 }

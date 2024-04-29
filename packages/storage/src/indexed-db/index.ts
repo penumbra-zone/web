@@ -1,45 +1,49 @@
-import { IDBPDatabase, openDB, StoreNames } from 'idb';
-import { IbdUpdater, IbdUpdates } from './updater';
-import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
-import {
-  Epoch,
-  Nullifier,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
-import {
-  NotesForVotingResponse,
-  SpendableNoteRecord,
-  SwapRecord,
-  TransactionInfo,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import {
   AssetId,
   EstimatedPrice,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
-import {
-  AddressIndex,
-  WalletId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/assets';
 import {
   Position,
   PositionId,
   PositionState,
   TradingPair,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
+import {
+  Epoch,
+  Nullifier,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
+import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import {
+  AddressIndex,
+  WalletId,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
+import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
+import {
+  NotesForVotingResponse,
+  SpendableNoteRecord,
+  SwapRecord,
+  TransactionInfo,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/assets';
+import { IDBPDatabase, openDB, StoreNames } from 'idb';
+import { IbdUpdater, IbdUpdates } from './updater';
 
 import { IdbCursorSource } from './stream';
 
-import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
+import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
+import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
+import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
+import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import {
   IDB_TABLES,
   IdbConstants,
@@ -47,15 +51,12 @@ import {
   IndexedDbInterface,
   PenumbraDb,
 } from '@penumbra-zone/types/indexed-db';
+import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import type {
   ScanBlockResult,
   StateCommitmentTree,
 } from '@penumbra-zone/types/state-commitment-tree';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
-import type { Jsonified } from '@penumbra-zone/types/jsonified';
-import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
-import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
-import { getAssetId } from '@penumbra-zone/getters/metadata';
+import { sctPosition } from '@penumbra-zone/wasm/tree';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -130,6 +131,7 @@ export class IndexedDb implements IndexedDbInterface {
 
     return instance;
   }
+
   close(): void {
     this.db.close();
   }
@@ -164,7 +166,7 @@ export class IndexedDb implements IndexedDbInterface {
 
     this.addSctUpdates(txs, updates.sctUpdates);
     this.addNewNotes(txs, updates.newNotes);
-    this.addNewSwaps(txs, updates.newSwaps);
+    await this.addNewSwaps(txs, updates.newSwaps, updates.height);
     txs.add({ table: 'FULL_SYNC_HEIGHT', value: updates.height, key: 'height' });
 
     await this.u.updateAll(txs);
@@ -648,8 +650,22 @@ export class IndexedDb implements IndexedDbInterface {
     }
   }
 
-  private addNewSwaps(txs: IbdUpdates, swaps: SwapRecord[]): void {
+  private async addNewSwaps(
+    txs: IbdUpdates,
+    swaps: SwapRecord[],
+    blockHeight: bigint,
+  ): Promise<void> {
+    if (!swaps.length) return;
+
+    const epoch =
+      (await this.getEpochByHeight(blockHeight)) ?? new Epoch({ startHeight: 0n, index: 0n });
+
     for (const n of swaps) {
+      if (!n.outputData) throw new Error('No output data in swap record');
+
+      // Adds position prefix to swap record. Needed to make swap claims.
+      n.outputData.sctPositionPrefix = sctPosition(blockHeight, epoch);
+
       txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });
     }
   }
