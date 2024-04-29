@@ -1,5 +1,17 @@
 # @penumbra-zone/client
 
+## 4.0.0
+
+### Major Changes
+
+- 3148375: remove `/src/` path segment from exports
+
+### Patch Changes
+
+- Updated dependencies [3148375]
+  - @penumbra-zone/transport-dom@3.0.0
+  - @penumbra-zone/types@3.0.0
+
 ## 3.0.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @penumbra-zone/constants
 
+## 4.0.0
+
+### Major Changes
+
+- 3148375: remove `/src/` path segment from exports
+
 ## 3.0.0
 
 ### Major Changes
