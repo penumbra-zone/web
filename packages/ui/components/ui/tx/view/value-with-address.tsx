@@ -17,7 +17,7 @@ export const ValueWithAddress = ({
   addressView?: AddressView;
 }) => (
   <div className='flex flex-col justify-between gap-2 sm:flex-row'>
-    {children}
+    <div className='shrink-0'>{children}</div>
 
     {addressView && (
       <div className='flex items-center gap-2 overflow-hidden'>
