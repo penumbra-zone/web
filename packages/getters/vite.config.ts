@@ -6,6 +6,7 @@ export default defineConfig({
     lib: {
       entry: {
         'address-view': './src/address-view.ts',
+        'batch-swap-output-data': './src/batch-swap-output-data.ts',
         'delegations-by-address-index-response': './src/delegations-by-address-index-response.ts',
         'funding-stream': './src/funding-stream.ts',
         metadata: './src/metadata.ts',
