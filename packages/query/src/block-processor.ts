@@ -14,7 +14,10 @@ import {
   CommitmentSource,
   Nullifier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import {
+  Action,
+  Transaction,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import {
@@ -37,6 +40,7 @@ import { PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/assets';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
+import { getAuctionId, getAuctionNftMetadata } from '@penumbra-zone/wasm/auction';
 
 declare global {
   // `var` required for global declaration (as let/const are block scoped)
@@ -52,9 +56,15 @@ interface QueryClientProps {
   stakingTokenMetadata: Metadata;
 }
 
-const blankTxSource = new CommitmentSource({
+const BLANK_TX_SOURCE = new CommitmentSource({
   source: { case: 'transaction', value: { id: new Uint8Array() } },
 });
+
+const POSITION_STATES: PositionState[] = [
+  new PositionState({ state: PositionState_PositionStateEnum.OPENED }),
+  new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+  new PositionState({ state: PositionState_PositionStateEnum.WITHDRAWN, sequence: 0n }),
+];
 
 export class BlockProcessor implements BlockProcessorInterface {
   private readonly querier: RootQuerier;
@@ -142,7 +152,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         if (txCommitments.some(txCommitment => stateCommitment.equals(txCommitment))) {
           txId ??= new TransactionId({ inner: await sha256Hash(tx.toBinary()) });
           relevantTx.set(txId, tx);
-          if (blankTxSource.equals(spendableNoteRecord.source)) {
+          if (BLANK_TX_SOURCE.equals(spendableNoteRecord.source)) {
             spendableNoteRecord.source = new CommitmentSource({
               source: { case: 'transaction', value: { id: txId.inner } },
             });
@@ -261,7 +271,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         // - detect LpNft position opens
         // - generate all possible position state metadata
         // - update idb
-        await this.identifyLpNftPositions(blockTx);
+        await this.processTransactions(blockTx);
 
         // at this point txinfo can be generated and saved. this will resolve
         // pending broadcasts, and populate the transaction list.
@@ -361,45 +371,66 @@ export class BlockProcessor implements BlockProcessorInterface {
     return spentNullifiers;
   }
 
-  private async identifyLpNftPositions(txs: Transaction[]) {
-    const positionStates: PositionState[] = [
-      new PositionState({ state: PositionState_PositionStateEnum.OPENED }),
-      new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
-      new PositionState({ state: PositionState_PositionStateEnum.WITHDRAWN, sequence: 0n }),
-    ];
-
+  private async processTransactions(txs: Transaction[]) {
     for (const tx of txs) {
       for (const { action } of tx.body?.actions ?? []) {
-        if (action.case === 'positionOpen' && action.value.position) {
-          for (const state of positionStates) {
-            const metadata = getLpNftMetadata(computePositionId(action.value.position), state);
-            await this.indexedDb.saveAssetsMetadata(metadata);
-          }
-          // to optimize on-chain storage PositionId is not written in the positionOpen action,
-          // but can be computed via hashing of immutable position fields
-          await this.indexedDb.addPosition(
-            computePositionId(action.value.position),
-            action.value.position,
-          );
-        }
-        if (action.case === 'positionClose' && action.value.positionId) {
-          await this.indexedDb.updatePosition(
-            action.value.positionId,
-            new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
-          );
-        }
-        if (action.case === 'positionWithdraw' && action.value.positionId) {
-          // Record the LPNFT for the current sequence number.
-          const positionState = new PositionState({
-            state: PositionState_PositionStateEnum.WITHDRAWN,
-            sequence: action.value.sequence,
-          });
-          const metadata = getLpNftMetadata(action.value.positionId, positionState);
-          await this.indexedDb.saveAssetsMetadata(metadata);
-
-          await this.indexedDb.updatePosition(action.value.positionId, positionState);
-        }
+        await Promise.all([this.identifyAuctionNfts(action), this.identifyLpNftPositions(action)]);
       }
+    }
+  }
+
+  private async identifyAuctionNfts(action: Action['action']) {
+    if (action.case === 'actionDutchAuctionSchedule' && action.value.description) {
+      const auctionId = getAuctionId(action.value.description);
+      const metadata = getAuctionNftMetadata(
+        auctionId,
+        // Always a sequence number of 0 when starting a Dutch auction
+        0n,
+      );
+      await this.indexedDb.saveAssetsMetadata(metadata);
+    } else if (action.case === 'actionDutchAuctionEnd' && action.value.auctionId) {
+      const metadata = getAuctionNftMetadata(
+        action.value.auctionId,
+        // Always a sequence number of 1 when ending a Dutch auction
+        1n,
+      );
+      await this.indexedDb.saveAssetsMetadata(metadata);
+    }
+    /**
+     * @todo Handle `actionDutchAuctionWithdraw`, and figure out how to
+     * determine the sequence number if there have been multiple withdrawals.
+     */
+  }
+
+  private async identifyLpNftPositions(action: Action['action']) {
+    if (action.case === 'positionOpen' && action.value.position) {
+      for (const state of POSITION_STATES) {
+        const metadata = getLpNftMetadata(computePositionId(action.value.position), state);
+        await this.indexedDb.saveAssetsMetadata(metadata);
+      }
+      // to optimize on-chain storage PositionId is not written in the positionOpen action,
+      // but can be computed via hashing of immutable position fields
+      await this.indexedDb.addPosition(
+        computePositionId(action.value.position),
+        action.value.position,
+      );
+    }
+    if (action.case === 'positionClose' && action.value.positionId) {
+      await this.indexedDb.updatePosition(
+        action.value.positionId,
+        new PositionState({ state: PositionState_PositionStateEnum.CLOSED }),
+      );
+    }
+    if (action.case === 'positionWithdraw' && action.value.positionId) {
+      // Record the LPNFT for the current sequence number.
+      const positionState = new PositionState({
+        state: PositionState_PositionStateEnum.WITHDRAWN,
+        sequence: action.value.sequence,
+      });
+      const metadata = getLpNftMetadata(action.value.positionId, positionState);
+      await this.indexedDb.saveAssetsMetadata(metadata);
+
+      await this.indexedDb.updatePosition(action.value.positionId, positionState);
     }
   }
 
