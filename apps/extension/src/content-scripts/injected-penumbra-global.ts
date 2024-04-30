@@ -3,22 +3,21 @@
  * mainworld global that allows pages to detect installed providers and connect
  * to them.
  *
- * The global is identified by `Symbol.for('penumbra')` and consists
- * of a record with string keys referring to `PenumbraProvider` objects that
- * contain a simple api. The identifiers on this record should be unique and
- * correspond to an id in a manifest, and providers should provide a link to
- * the manifest in their record entry.
- *
+ * The global is identified by `Symbol.for('penumbra')` and consists of a record
+ * with string keys referring to `PenumbraInjection` objects that contain a
+ * simple api. The identifiers on this record should be unique and correspond to
+ * an id in a manifest, and providers should provide a link to the manifest in
+ * their record entry.
  *
  * The global is frozen to prevent mutation, but you should consider that the
  * global and everything on it is only as trustable as the scripts running on
- * the page - imports, includes, and packages your webapp depends on could all
- * mutate or preempt the global. User-agent injections like userscripts or
- * other content scripts could interfere or intercept connections.
+ * the page. Imports, includes, and packages your webapp depends on could all
+ * mutate or preempt the global. User-agent injections like userscripts or other
+ * content scripts could interfere or intercept connections.
  */
 
 import {
-  PenumbraProvider,
+  PenumbraInjection,
   PenumbraRequestFailure,
   PenumbraSymbol,
 } from '@penumbra-zone/client/global';
@@ -93,7 +92,7 @@ const postRequest = () => {
 };
 
 // the actual object we attach to the global record, frozen
-const praxProvider: PenumbraProvider = Object.freeze({
+const praxProvider: PenumbraInjection = Object.freeze({
   manifest: `${PRAX_ORIGIN}/manifest.json`,
   connect: () => connection.promise,
   isConnected: () => connection.state,

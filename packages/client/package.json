@@ -5,23 +5,29 @@
   "description": "Package for connecting to any Penumbra extension, including Prax.",
   "type": "module",
   "scripts": {
-    "build": "tsc && vite build",
-    "clean": "rm -rfv dist",
-    "lint": "eslint \"**/*.ts*\""
+    "build": "tsc",
+    "clean": "rm -rfv dist package penumbra-zone-client-*.tgz",
+    "lint": "eslint \"**/*.ts*\"",
+    "prebuild": "$npm_execpath run clean",
+    "prepack": "$npm_execpath run build"
   },
+  "files": [
+    "dist"
+  ],
   "exports": {
-    ".": "./src/prax.ts",
-    "./global": "./src/global.ts",
-    "./get-port": "./src/get-port.ts"
+    ".": "./src/index.ts",
+    "./prax": "./src/prax.ts"
   },
   "publishConfig": {
-    "files": [
-      "dist"
-    ],
     "exports": {
-      ".": "./dist/prax.js",
-      "./global": "./dist/global.js",
-      "./get-port": "./dist/get-port.js"
+      ".": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "./*": {
+        "import": "./dist/*.js",
+        "types": "./dist/*.d.ts"
+      }
     }
   },
   "dependencies": {

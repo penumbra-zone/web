@@ -8,7 +8,7 @@ import type { JsonValue, ServiceType } from '@bufbuild/protobuf';
 import type { Transport } from '@connectrpc/connect';
 import { createPromiseClient } from '@connectrpc/connect';
 import { createChannelTransport } from '@penumbra-zone/transport-dom/create';
-import { PenumbraSymbol } from './global';
+import { PenumbraSymbol } from '.';
 import { jsonOptions } from '@penumbra-zone/protobuf';
 
 const prax_id = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe';
@@ -83,11 +83,14 @@ export const throwIfPraxNotInstalled = async () => {
   if (!isInstalled) throw new PraxNotInstalledError('Prax not installed');
 };
 
-let praxTransport: Transport | undefined;
-export const createPraxClient = <T extends ServiceType>(serviceType: T) => {
-  praxTransport ??= createChannelTransport({
+export const createPraxTransport = () =>
+  createChannelTransport({
     jsonOptions,
     getPort: getPraxPort,
   });
+
+let praxTransport: Transport | undefined;
+export const createPraxClient = <T extends ServiceType>(serviceType: T) => {
+  praxTransport ??= createPraxTransport();
   return createPromiseClient(serviceType, praxTransport);
 };
