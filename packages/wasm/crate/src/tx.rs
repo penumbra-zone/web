@@ -297,21 +297,30 @@ pub async fn transaction_info_inner(
         };
         match action_view {
             ActionView::Spend(SpendView::Visible { note, .. }) => {
-                address_views.insert(note.address(), fvk.view_address(note.address()));
+                address_views.insert(
+                    note.address().encode_to_vec(),
+                    fvk.view_address(note.address()),
+                );
                 asset_ids.insert(note.asset_id());
             }
             ActionView::Output(OutputView::Visible { note, .. }) => {
-                address_views.insert(note.address(), fvk.view_address(note.address()));
+                address_views.insert(
+                    note.address().encode_to_vec(),
+                    fvk.view_address(note.address()),
+                );
                 asset_ids.insert(note.asset_id());
 
                 // Also add an AddressView for the return address in the memo.
                 let memo = tx.decrypt_memo(&fvk)?;
-                address_views.insert(memo.return_address(), fvk.view_address(note.address()));
+                address_views.insert(
+                    memo.return_address().encode_to_vec(),
+                    fvk.view_address(note.address()),
+                );
             }
             ActionView::Swap(SwapView::Visible { swap_plaintext, .. }) => {
                 let address = swap_plaintext.claim_address.clone();
                 let address_view = fvk.view_address(swap_plaintext.claim_address.clone());
-                address_views.insert(address, address_view);
+                address_views.insert(address.encode_to_vec(), address_view);
                 asset_ids.insert(swap_plaintext.trading_pair.asset_1());
                 asset_ids.insert(swap_plaintext.trading_pair.asset_2());
             }
@@ -319,14 +328,17 @@ pub async fn transaction_info_inner(
                 output_1, output_2, ..
             }) => {
                 // Both will be sent to the same address so this only needs to be added once
-                address_views.insert(output_1.address(), fvk.view_address(output_1.address()));
+                address_views.insert(
+                    output_1.address().encode_to_vec(),
+                    fvk.view_address(output_1.address()),
+                );
                 asset_ids.insert(output_1.asset_id());
                 asset_ids.insert(output_2.asset_id());
             }
             ActionView::DelegatorVote(DelegatorVoteView::Visible { note, .. }) => {
                 let address = note.address();
                 let address_view = fvk.view_address(address.clone());
-                address_views.insert(address, address_view);
+                address_views.insert(address.encode_to_vec(), address_view);
                 asset_ids.insert(note.asset_id());
             }
             _ => {}
