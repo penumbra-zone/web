@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference path="./array-from-async.d.ts" />
 import fromAsync from 'array-from-async';
 
 type FromAsync = <T, U = T>(
