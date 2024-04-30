@@ -20,7 +20,7 @@ import { ConnectRouter, createContextValues, PromiseClient } from '@connectrpc/c
 import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
 import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
 import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
-import { transportOptions } from '@penumbra-zone/types/registry';
+import { transportOptions } from '@penumbra-zone/protobuf';
 
 // context
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
