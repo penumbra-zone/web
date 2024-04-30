@@ -430,7 +430,7 @@ pub async fn plan_transaction(
             .try_into()?;
 
         actions.push(ActionPlan::ActionDutchAuctionEnd(ActionDutchAuctionEnd {
-            auction_id: auction_id.try_into()?,
+            auction_id,
         }));
     }
 
