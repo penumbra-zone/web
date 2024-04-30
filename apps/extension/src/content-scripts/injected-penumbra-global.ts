@@ -16,11 +16,7 @@
  * content scripts could interfere or intercept connections.
  */
 
-import {
-  PenumbraInjection,
-  PenumbraRequestFailure,
-  PenumbraSymbol,
-} from '@penumbra-zone/client/global';
+import { PenumbraInjection, PenumbraRequestFailure, PenumbraSymbol } from '@penumbra-zone/client';
 import { isPraxFailureMessageEvent, isPraxPortMessageEvent, PraxMessage } from './message-event';
 
 import { PraxConnection } from '../message/prax';

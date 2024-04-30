@@ -1,4 +1,4 @@
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
+import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 import { getSwappableBalancesResponses } from '../helpers';
 import { useStore } from '../../../state';
 import { getAllAssets } from '../../../fetchers/assets';

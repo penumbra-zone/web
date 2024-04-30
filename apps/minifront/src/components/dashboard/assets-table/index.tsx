@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@penumbra-zone/ui/components/ui/table';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
+import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
 
