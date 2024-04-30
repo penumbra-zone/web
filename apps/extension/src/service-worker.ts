@@ -20,7 +20,7 @@ import { ConnectRouter, createContextValues, PromiseClient } from '@connectrpc/c
 import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
 import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
 import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
-import { transportOptions } from '@penumbra-zone/protobuf';
+import { jsonOptions } from '@penumbra-zone/protobuf';
 
 // context
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
@@ -107,8 +107,7 @@ const getServiceHandler = async () => {
   let custodyClient: PromiseClient<typeof CustodyService> | undefined;
   let stakingClient: PromiseClient<typeof StakingService> | undefined;
   return connectChannelAdapter({
-    // jsonOptions contains typeRegistry providing ser/de
-    jsonOptions: transportOptions.jsonOptions,
+    jsonOptions,
 
     /** @see https://connectrpc.com/docs/node/implementing-services */
     routes: (router: ConnectRouter) =>
@@ -119,8 +118,8 @@ const getServiceHandler = async () => {
       const contextValues = req.contextValues ?? createContextValues();
 
       // dynamically initialize clients, or reuse if already available
-      custodyClient ??= createDirectClient(CustodyService, handler, transportOptions);
-      stakingClient ??= createDirectClient(StakingService, handler, transportOptions);
+      custodyClient ??= createDirectClient(CustodyService, handler, { jsonOptions });
+      stakingClient ??= createDirectClient(StakingService, handler, { jsonOptions });
 
       contextValues.set(custodyCtx, custodyClient);
       contextValues.set(stakingClientCtx, stakingClient);

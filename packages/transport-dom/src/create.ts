@@ -49,8 +49,8 @@ export interface ChannelTransportOptions
 
 export const createChannelTransport = ({
   getPort,
-  defaultTimeoutMs,
   jsonOptions,
+  defaultTimeoutMs = 10_000,
 }: ChannelTransportOptions) => {
   const pending = new Map<string, (response: TransportEvent) => void>();
 
@@ -64,9 +64,6 @@ export const createChannelTransport = ({
    * This function is called on the first request.  It begins channel init at
    * that moment, using the `getPort` function from options.  Message listeners
    * are attached during this process.  Failure will reject the first request.
-   *
-   * Any createChannelTransport caller should supply  `defaultTimeoutMs` or init
-   * may stall forever.
    *
    * @returns A promise that resolves when the channel is acquired.
    */

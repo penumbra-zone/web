@@ -68,12 +68,3 @@ export const jsonOptions = {
   // write options
   emitDefaultValues: false,
 };
-
-/**
- * Intended for use with `createChannelTransport` from
- * `@penumbra-zone/transport-dom`
- */
-export const transportOptions = {
-  defaultTimeoutMs: 10000,
-  jsonOptions,
-};
