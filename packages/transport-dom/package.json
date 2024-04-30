@@ -5,19 +5,24 @@
   "type": "module",
   "scripts": {
     "build": "tsc && vite build",
-    "clean": "rm -rfv dist",
+    "clean": "rm -rfv dist package penumbra-zone-transport-dom-*.tgz",
     "lint": "eslint \"**/*.ts*\"",
+    "prebuild": "$npm_execpath run clean",
+    "prepack": "$npm_execpath run build",
     "test": "vitest run"
   },
+  "files": [
+    "dist"
+  ],
   "exports": {
     "./*": "./src/*.ts"
   },
   "publishConfig": {
-    "files": [
-      "dist"
-    ],
     "exports": {
-      "./src/*": "./dist/*.js"
+      "./*": {
+        "import": "./dist/*.js",
+        "types": "./dist/*.d.ts"
+      }
     }
   },
   "devDependencies": {
