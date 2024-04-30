@@ -78,11 +78,14 @@ export const ChainDropdown = () => {
                 key={chain.value}
                 value={chain.value}
                 onSelect={currentValue => {
-                  setValue(currentValue === value ? '' : currentValue);
                   setOpen(false);
 
-                  const match = chainInfos.find(options => options.value === currentValue);
-                  if (match) {
+                  if (currentValue === value) {
+                    setValue('');
+                    setSelectedChain(undefined);
+                  } else {
+                    setValue(currentValue);
+                    const match = chainInfos.find(options => options.value === currentValue);
                     setSelectedChain(match);
                   }
                 }}
