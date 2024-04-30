@@ -2,10 +2,30 @@
 
 import * as SliderPrimitive from '@radix-ui/react-slider';
 
+/**
+ * Renders a draggable range slider:
+ * |---o-------------|
+ *
+ * @example
+ * ```tsx
+ * <Slider
+ *   min={0}
+ *   max={10}
+ *   step={2}
+ *   value={value}
+ *   onValueChange={onValueChange}
+ * />
+ * ```
+ */
 const Slider = (props: {
   min?: number;
   max?: number;
+  /** The step size to count by */
   step?: number;
+  /**
+   * Note that this is an array. You can pass more than one value to have
+   * multiple draggable points on the slider.
+   */
   value: number[];
   onValueChange: (value: number[]) => void;
 }) => (
