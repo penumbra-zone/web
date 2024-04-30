@@ -20,7 +20,7 @@ import { LayoutLoaderResult } from '../layout';
 // if there are any problems with this link.
 const WEB_EXT_FEEDBACK_DISCORD_CHANNEL = 'https://discord.gg/XDNcrhKVwV';
 
-const useChainId = (): string | undefined => {
+export const TopRow = () => {
   const { isInstalled, isConnected } = useLoaderData() as LayoutLoaderResult;
   const [chainId, setChainId] = useState<string | undefined>();
 
@@ -28,15 +28,9 @@ const useChainId = (): string | undefined => {
     if (isInstalled && isConnected) void getChainId().then(setChainId);
   }, [isInstalled, isConnected]);
 
-  return chainId;
-};
-
-export const TopRow = () => {
-  const chainId = useChainId();
-
   return (
     <div className='flex w-full flex-col items-center justify-between px-6 md:h-[82px] md:flex-row md:gap-12 md:px-12'>
-      <div className='mb-[30px] md:mb-0'>
+      <div className='relative inset-x-0 mb-[30px] md:mb-0'>
         <img
           src='./penumbra-logo.svg'
           alt='Penumbra logo'
@@ -45,7 +39,7 @@ export const TopRow = () => {
         <Link to={PagePath.INDEX}>
           <img
             src='./logo.svg'
-            alt='Penumbra logo'
+            alt='Penumbra logotype'
             className='relative z-10 mt-[20px] h-4 w-[171px] md:mt-0'
           />
         </Link>
