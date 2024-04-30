@@ -7,6 +7,9 @@ import { ExtensionNotInstalled } from './extension-not-installed';
 import { Footer } from './footer/footer';
 import { isPraxConnected, isPraxConnectedTimeout, isPraxAvailable } from '@penumbra-zone/client';
 import '@penumbra-zone/ui/styles/globals.css';
+import { getChainId } from '../fetchers/chain-id';
+import { useEffect, useState } from 'react';
+import { TestnetBanner } from '@penumbra-zone/ui/components/ui/testnet-banner';
 
 export interface LayoutLoaderResult {
   isInstalled: boolean;
@@ -22,12 +25,18 @@ export const LayoutLoader: LoaderFunction = async (): Promise<LayoutLoaderResult
 
 export const Layout = () => {
   const { isInstalled, isConnected } = useLoaderData() as LayoutLoaderResult;
+  const [chainId, setChainId] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (isInstalled && isConnected) void getChainId().then(id => setChainId(id));
+  }, [isInstalled, isConnected]);
 
   if (!isInstalled) return <ExtensionNotInstalled />;
   if (!isConnected) return <ExtensionNotConnected />;
 
   return (
     <>
+      <TestnetBanner chainId={chainId} />
       <HeadTag />
       <div className='flex min-h-screen w-full flex-col'>
         <Header />

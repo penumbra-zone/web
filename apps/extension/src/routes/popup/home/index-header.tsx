@@ -5,6 +5,7 @@ import { Network } from '@penumbra-zone/ui/components/ui/network';
 import { useChainIdQuery } from '../../../hooks/chain-id';
 import { motion } from 'framer-motion';
 import { useStore } from '../../../state';
+import { TestnetBanner } from '@penumbra-zone/ui/components/ui/testnet-banner';
 
 export const IndexHeader = () => {
   const navigate = usePopupNav();
@@ -13,7 +14,7 @@ export const IndexHeader = () => {
 
   return (
     <header className='top-0 z-40 w-full'>
-      <div className='flex items-center justify-between gap-4 pt-4'>
+      <div className='flex items-center justify-between gap-4 py-4'>
         <HamburgerMenuIcon
           onClick={() => navigate(PopupPath.SETTINGS)}
           className='size-6 shrink-0 cursor-pointer hover:opacity-50'
@@ -30,6 +31,7 @@ export const IndexHeader = () => {
           <div className='m-[19px]' />
         )}
       </div>
+      {chainId?.includes('testnet') && <TestnetBanner chainId={chainId} />}
     </header>
   );
 };
