@@ -1,14 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
 import { TestnetBanner } from './testnet-banner';
 
 describe('<TestnetBanner />', () => {
-  const onChange = vi.fn();
-
-  beforeEach(() => {
-    onChange.mockReset();
-  });
-
   it('renders banner if chainId is a testnet', () => {
     const { container } = render(<TestnetBanner chainId='penumbra-testnet-deimos-7' />);
 
