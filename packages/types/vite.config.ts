@@ -17,7 +17,6 @@ export default defineConfig({
         jsonified: './src/jsonified.ts',
         'lo-hi': './src/lo-hi.ts',
         querier: './src/querier.ts',
-        registry: './src/registry.ts',
         servers: './src/servers.ts',
         services: './src/services.ts',
         staking: './src/staking.ts',
