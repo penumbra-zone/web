@@ -3,7 +3,11 @@ import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { ChainSelector } from './chain-selector';
 import { useLoaderData } from 'react-router-dom';
 import { useStore } from '../../../state';
-import { filterBalancesPerChain, ibcSelector, ibcValidationErrors } from '../../../state/ibc';
+import {
+  filterBalancesPerChain,
+  ibcOutSelector,
+  ibcValidationErrors,
+} from '../../../state/ibc-out';
 import InputToken from '../../shared/input-token';
 import { InputBlock } from '../../shared/input-block';
 import { IbcLoaderResponse } from '../ibc-loader';
@@ -20,7 +24,7 @@ export const IbcOutForm = () => {
     selection,
     setSelection,
     chain,
-  } = useStore(ibcSelector);
+  } = useStore(ibcOutSelector);
   const filteredBalances = filterBalancesPerChain(balances, chain, stakingTokenMetadata, assets);
   const validationErrors = useStore(ibcValidationErrors);
 

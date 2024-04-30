@@ -55,6 +55,7 @@ export const IbcChainProvider = ({ registry, children }: IbcProviderProps) => {
         },
       }}
       signerOptions={signerOptions}
+      modalTheme={{ defaultTheme: 'light' }}
     >
       {children}
     </ChainProvider>

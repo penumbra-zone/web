@@ -8,13 +8,13 @@ import {
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useState } from 'react';
 import { useStore } from '../../../state';
-import { ibcSelector } from '../../../state/ibc';
+import { ibcOutSelector } from '../../../state/ibc-out';
 import { useLoaderData } from 'react-router-dom';
 import { IbcLoaderResponse } from '../ibc-loader';
 import { Chain } from '@penumbra-labs/registry';
 
 export const ChainSelector = () => {
-  const { chain, setChain } = useStore(ibcSelector);
+  const { chain, setChain } = useStore(ibcOutSelector);
   const { chains: ibcConnections } = useLoaderData() as IbcLoaderResponse;
   const [openSelect, setOpenSelect] = useState(false);
 
