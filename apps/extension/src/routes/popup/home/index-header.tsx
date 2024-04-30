@@ -31,7 +31,7 @@ export const IndexHeader = () => {
           <div className='m-[19px]' />
         )}
       </div>
-      {chainId?.includes('testnet') && <TestnetBanner chainId={chainId} />}
+      <TestnetBanner chainId={chainId} />
     </header>
   );
 };

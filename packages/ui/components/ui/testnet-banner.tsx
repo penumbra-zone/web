@@ -1,5 +1,5 @@
-export const TestnetBanner = ({ chainId }: { chainId?: string }) => {
-  return (
+export const TestnetBanner = ({ chainId }: { chainId?: string }) =>
+  chainId?.includes('testnet') && (
     <div className='w-full bg-yellow-500 text-center font-headline text-black'>
       <div className='m-auto max-w-prose p-2'>
         <h1 className='font-bold'>You are using {chainId}.</h1>
@@ -10,4 +10,3 @@ export const TestnetBanner = ({ chainId }: { chainId?: string }) => {
       </div>
     </div>
   );
-};
