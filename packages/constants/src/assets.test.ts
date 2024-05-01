@@ -7,7 +7,7 @@ describe('assetPatterns', () => {
       expect(assetPatterns.auctionNft.matches('auctionnft_0_pauctid1abc123')).toBe(true);
     });
 
-    it('matches when a string contains, but does not begin with, a valid auction NFT', () => {
+    it('does not match when a string contains, but does not begin with, a valid auction NFT', () => {
       expect(
         assetPatterns.auctionNft.matches('ibc-transfer/channel-1234/auctionnft_0_pauctid1abc123'),
       ).toBe(false);
