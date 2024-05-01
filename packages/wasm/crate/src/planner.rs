@@ -32,7 +32,7 @@ use penumbra_transaction::gas::GasCost;
 use penumbra_transaction::memo::MemoPlaintext;
 use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters, TransactionPlan};
 use prost::Message;
-use rand_core::OsRng;
+use rand_core::{OsRng, RngCore};
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 
@@ -407,6 +407,8 @@ pub async fn plan_transaction(
             .max_output
             .ok_or_else(|| anyhow!("missing max output in Dutch auction schedule action"))?
             .try_into()?;
+        let mut nonce = [0u8; 32];
+        OsRng.fill_bytes(&mut nonce);
 
         actions.push(ActionPlan::ActionDutchAuctionSchedule(
             ActionDutchAuctionSchedule {
@@ -418,7 +420,7 @@ pub async fn plan_transaction(
                     output_id,
                     min_output,
                     max_output,
-                    nonce: [0; 32], // TODO: Use a real nonce
+                    nonce,
                 },
             },
         ));
