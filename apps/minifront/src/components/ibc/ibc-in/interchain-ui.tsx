@@ -20,12 +20,8 @@ export const InterchainUi = () => {
       <div className='-mt-4 flex justify-center'>
         <ChainDropdown />
       </div>
-      {selectedChain && (
-        <>
-          <CosmosWalletConnector />
-          <AssetsTable />
-        </>
-      )}
+      {selectedChain && <CosmosWalletConnector />}
+      <AssetsTable />
     </IbcChainProvider>
   );
 };
