@@ -1,6 +1,6 @@
 import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
-import { TxViewer } from './hash-parser';
+import { TxViewer } from './tx-viewer';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
 import { EduPanel } from '../shared/edu-panels/content';
 import { LoaderFunction, useLoaderData, useRouteError } from 'react-router-dom';
