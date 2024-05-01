@@ -14,10 +14,9 @@ import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/valu
 import { useEffect, useMemo, useState } from 'react';
 import { IconInput } from '@penumbra-zone/ui/components/ui/icon-input';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { SwapLoaderResponse } from '../swap/swap-loader';
-import { useLoaderData } from 'react-router-dom';
 
 interface AssetSelectorProps {
+  assets: Metadata[];
   value?: Metadata;
   onChange: (metadata: Metadata) => void;
   /**
@@ -46,8 +45,7 @@ const switchAssetIfNecessary = ({
   }
 };
 
-const useFilteredAssets = ({ value, onChange, filter }: AssetSelectorProps) => {
-  const { assets } = useLoaderData() as SwapLoaderResponse;
+const useFilteredAssets = ({ assets, value, onChange, filter }: AssetSelectorProps) => {
   const sortedAssets = useMemo(
     () =>
       [...assets].sort((a, b) =>
@@ -66,7 +64,7 @@ const useFilteredAssets = ({ value, onChange, filter }: AssetSelectorProps) => {
     [filter, value, filteredAssets, onChange],
   );
 
-  return { assets: filteredAssets, search, setSearch };
+  return { filteredAssets, search, setSearch };
 };
 
 const bySearch = (search: string) => (asset: Metadata) =>
@@ -80,8 +78,13 @@ const bySearch = (search: string) => (asset: Metadata) =>
  * For an asset selector that picks from the user's balances, use
  * `<BalanceSelector />`.
  */
-export const AssetSelector = ({ onChange, value, filter }: AssetSelectorProps) => {
-  const { assets, search, setSearch } = useFilteredAssets({ value, onChange, filter });
+export const AssetSelector = ({ assets, onChange, value, filter }: AssetSelectorProps) => {
+  const { filteredAssets, search, setSearch } = useFilteredAssets({
+    assets,
+    value,
+    onChange,
+    filter,
+  });
 
   /**
    * @todo: Refactor to not use `ValueViewComponent`, since it's not intended to
@@ -109,7 +112,7 @@ export const AssetSelector = ({ onChange, value, filter }: AssetSelectorProps) =
               onChange={setSearch}
               placeholder='Search assets...'
             />
-            {assets.map(metadata => (
+            {filteredAssets.map(metadata => (
               <div key={metadata.display} className='flex flex-col'>
                 <DialogClose>
                   <div

@@ -16,6 +16,6 @@ export const sendTabsHelper: SendTabMap = {
 };
 
 export const sendTabs = [
-  { title: 'Send', href: PagePath.SEND, active: true },
-  { title: 'Receive', href: PagePath.RECEIVE, active: true },
+  { title: 'Send', href: PagePath.SEND, enabled: true },
+  { title: 'Receive', href: PagePath.RECEIVE, enabled: true },
 ];

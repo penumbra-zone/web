@@ -1,11 +1,12 @@
 import { DashboardTabMap } from './types';
 import { PagePath } from '../metadata/paths';
 import { EduPanel } from '../shared/edu-panels/content';
+import { Tab } from '../shared/tabs';
 
-export const dashboardTabs = [
-  { title: 'Assets', href: PagePath.DASHBOARD, active: true },
-  { title: 'Transactions', href: PagePath.TRANSACTIONS, active: true },
-  { title: 'NFTs', href: PagePath.NFTS, active: false },
+export const dashboardTabs: Tab[] = [
+  { title: 'Assets', href: PagePath.DASHBOARD, enabled: true },
+  { title: 'Transactions', href: PagePath.TRANSACTIONS, enabled: true },
+  { title: 'NFTs', href: PagePath.NFTS, enabled: false },
 ];
 
 export const dashboardTabsHelper: DashboardTabMap = {

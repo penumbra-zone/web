@@ -29,6 +29,7 @@ export const headerLinks: HeaderLink[] = [
     href: PagePath.SWAP,
     label: 'Swap',
     active: true,
+    subLinks: [PagePath.SWAP_AUCTION],
     mobileIcon: <SwapIcon />,
   },
   {
