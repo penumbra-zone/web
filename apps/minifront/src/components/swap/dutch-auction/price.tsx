@@ -30,7 +30,7 @@ export const Price = () => {
           <Input
             variant='transparent'
             value={minOutput}
-            min={1}
+            min={0}
             max={maxOutput}
             onChange={e => setMinOutput(e.target.value)}
             type='number'
