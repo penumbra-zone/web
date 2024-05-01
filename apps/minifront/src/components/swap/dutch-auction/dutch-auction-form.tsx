@@ -4,7 +4,7 @@ import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { InputBlock } from '../../shared/input-block';
 import InputToken from '../../shared/input-token';
 import { DurationSlider } from './duration-slider';
-import { Prices } from './prices';
+import { Price } from './price';
 
 const dutchAuctionFormSelector = (state: AllSlices) => ({
   balances: state.dutchAuction.balancesResponses,
@@ -49,7 +49,7 @@ export const DutchAuctionForm = () => {
 
       <InputBlock label='Price'>
         <div className='pt-2'>
-          <Prices />
+          <Price />
         </div>
       </InputBlock>
 

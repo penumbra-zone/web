@@ -6,7 +6,7 @@ import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
 import { useLoaderData } from 'react-router-dom';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
-const pricesSelector = (state: AllSlices) => ({
+const priceSelector = (state: AllSlices) => ({
   assetIn: state.dutchAuction.assetIn,
   assetOut: state.dutchAuction.assetOut,
   setAssetOut: state.dutchAuction.setAssetOut,
@@ -16,9 +16,9 @@ const pricesSelector = (state: AllSlices) => ({
   setMaxOutput: state.dutchAuction.setMaxOutput,
 });
 
-export const Prices = () => {
+export const Price = () => {
   const { minOutput, setMinOutput, maxOutput, setMaxOutput, assetIn, assetOut, setAssetOut } =
-    useStoreShallow(pricesSelector);
+    useStoreShallow(priceSelector);
   const assetInId = getAssetIdFromValueView(assetIn?.balanceView);
   const assets = useLoaderData() as Metadata[];
 
