@@ -3,6 +3,7 @@ import { assembleRequest } from './assemble-request';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { BLOCKS_PER_MINUTE, DURATION_IN_BLOCKS } from './constants';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 
 const MOCK_START_HEIGHT = vi.hoisted(() => 1234n);
 
@@ -15,6 +16,18 @@ vi.mock('../../clients', () => ({
 }));
 
 const metadata = new Metadata({
+  base: 'uasset',
+  display: 'asset',
+  denomUnits: [
+    {
+      denom: 'uasset',
+      exponent: 0,
+    },
+    {
+      denom: 'asset',
+      exponent: 6,
+    },
+  ],
   penumbraAssetId: {},
 });
 
@@ -63,5 +76,24 @@ describe('assembleRequest()', () => {
     const req = await assembleRequest(ARGS);
 
     expect(req.dutchAuctionScheduleActions[0]!.description!.stepCount).toBe(120n);
+  });
+
+  it('correctly parses the input based on the display denom exponent', async () => {
+    const req = await assembleRequest(ARGS);
+
+    expect(req.dutchAuctionScheduleActions[0]!.description!.input?.amount).toEqual(
+      new Amount({ hi: 0n, lo: 123_000_000n }),
+    );
+  });
+
+  it('correctly parses the min/max outputs based on the display denom exponent', async () => {
+    const req = await assembleRequest(ARGS);
+
+    expect(req.dutchAuctionScheduleActions[0]!.description!.minOutput).toEqual(
+      new Amount({ hi: 0n, lo: 1_000_000n }),
+    );
+    expect(req.dutchAuctionScheduleActions[0]!.description!.maxOutput).toEqual(
+      new Amount({ hi: 0n, lo: 1_000_000_000n }),
+    );
   });
 });

@@ -262,4 +262,11 @@ describe('fromString', () => {
 
     expect(result.equals(expected)).toBe(true);
   });
+
+  it('handles an exponent', () => {
+    const result = fromString('123.456', 3);
+    const expected = new Amount({ hi: 0n, lo: 123456n });
+
+    expect(result.equals(expected)).toBe(true);
+  });
 });

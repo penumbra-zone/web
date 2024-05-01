@@ -1,5 +1,5 @@
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { fromBaseUnit, joinLoHi, splitLoHi } from './lo-hi';
+import { fromBaseUnit, joinLoHi, splitLoHi, toBaseUnit } from './lo-hi';
 import { BigNumber } from 'bignumber.js';
 import { ValueView_KnownAssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
@@ -23,7 +23,8 @@ export const fromValueView = ({ amount, metadata }: ValueView_KnownAssetId): Big
   return fromBaseUnitAmount(amount, getDisplayDenomExponent(metadata));
 };
 
-export const fromString = (amount: string): Amount => new Amount(splitLoHi(BigInt(amount)));
+export const fromString = (amount: string, exponent = 0): Amount =>
+  new Amount(toBaseUnit(BigNumber(amount), exponent));
 
 export const addAmounts = (a: Amount, b: Amount): Amount => {
   const joined = joinLoHiAmount(a) + joinLoHiAmount(b);
