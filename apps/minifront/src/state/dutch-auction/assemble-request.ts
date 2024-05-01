@@ -21,7 +21,10 @@ export const assembleRequest = async ({
   minOutput,
   maxOutput,
   duration,
-}: DutchAuctionSlice): Promise<TransactionPlannerRequest> => {
+}: Pick<
+  DutchAuctionSlice,
+  'amount' | 'assetIn' | 'assetOut' | 'minOutput' | 'maxOutput' | 'duration'
+>): Promise<TransactionPlannerRequest> => {
   const assetId = getAssetIdFromValueView(assetIn?.balanceView);
   const outputId = getAssetId(assetOut);
   const amount = fromString(amountAsString);
