@@ -34,7 +34,7 @@ export const Price = () => {
             max={maxOutput}
             onChange={e => setMinOutput(e.target.value)}
             type='number'
-            inputMode='numeric'
+            inputMode='decimal'
           />
         </div>
 
