@@ -46,7 +46,7 @@ describe('assembleRequest()', () => {
       MOCK_START_HEIGHT + BLOCKS_PER_MINUTE,
     );
     expect(req.dutchAuctionScheduleActions[0]!.description!.endHeight).toBe(
-      MOCK_START_HEIGHT + BLOCKS_PER_MINUTE + DURATION_IN_BLOCKS.get('10min')!,
+      MOCK_START_HEIGHT + BLOCKS_PER_MINUTE + DURATION_IN_BLOCKS['10min'],
     );
 
     const req2 = await assembleRequest({ ...ARGS, duration: '48h' });
@@ -55,7 +55,7 @@ describe('assembleRequest()', () => {
       MOCK_START_HEIGHT + BLOCKS_PER_MINUTE,
     );
     expect(req2.dutchAuctionScheduleActions[0]!.description!.endHeight).toBe(
-      MOCK_START_HEIGHT + BLOCKS_PER_MINUTE + DURATION_IN_BLOCKS.get('48h')!,
+      MOCK_START_HEIGHT + BLOCKS_PER_MINUTE + DURATION_IN_BLOCKS['48h'],
     );
   });
 

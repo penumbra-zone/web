@@ -32,7 +32,7 @@ export const assembleRequest = async ({
   const { fullSyncHeight } = await viewClient.status({});
 
   const startHeight = getStartHeight(fullSyncHeight);
-  const endHeight = startHeight + DURATION_IN_BLOCKS.get(duration)!;
+  const endHeight = startHeight + DURATION_IN_BLOCKS[duration];
 
   return new TransactionPlannerRequest({
     dutchAuctionScheduleActions: [
