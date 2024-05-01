@@ -8,7 +8,7 @@ import { UndelegateClaimComponent } from './undelegate-claim';
 import { Ics20WithdrawalComponent } from './isc20-withdrawal';
 import { UnimplementedView } from './unimplemented-view';
 import { SwapViewComponent } from './swap';
-import { ActionDutchAuctionScheduleComponent } from './action-dutch-auction-schedule';
+import { ActionDutchAuctionScheduleViewComponent } from './action-dutch-auction-schedule-view';
 
 const CASE_TO_LABEL: Record<string, string> = {
   daoDeposit: 'DAO Deposit',
@@ -69,7 +69,7 @@ export const ActionViewComponent = ({ av: { actionView } }: { av: ActionView }) 
       return <UndelegateClaimComponent value={actionView.value} />;
 
     case 'actionDutchAuctionSchedule':
-      return <ActionDutchAuctionScheduleComponent value={actionView.value} />;
+      return <ActionDutchAuctionScheduleViewComponent value={actionView.value} />;
 
     case 'validatorDefinition':
       return <UnimplementedView label='Validator Definition' />;

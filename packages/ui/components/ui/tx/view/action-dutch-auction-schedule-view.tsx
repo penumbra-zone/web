@@ -1,4 +1,4 @@
-import { ActionDutchAuctionSchedule } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { ActionDutchAuctionScheduleView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { ViewBox } from './viewbox';
 import { ActionDetails } from './action-details';
 import {
@@ -21,14 +21,23 @@ const getValueView = (amount?: Amount, assetId?: AssetId) =>
     },
   });
 
-export const ActionDutchAuctionScheduleComponent = ({
+export const ActionDutchAuctionScheduleViewComponent = ({
   value,
 }: {
-  value: ActionDutchAuctionSchedule;
+  value: ActionDutchAuctionScheduleView;
 }) => {
-  const input = getValueView(value.description?.input?.amount, value.description?.input?.assetId);
-  const maxOutput = getValueView(value.description?.maxOutput, value.description?.outputId);
-  const minOutput = getValueView(value.description?.minOutput, value.description?.outputId);
+  const input = getValueView(
+    value.action?.description?.input?.amount,
+    value.action?.description?.input?.assetId,
+  );
+  const maxOutput = getValueView(
+    value.action?.description?.maxOutput,
+    value.action?.description?.outputId,
+  );
+  const minOutput = getValueView(
+    value.action?.description?.minOutput,
+    value.action?.description?.outputId,
+  );
 
   return (
     <ViewBox
@@ -53,8 +62,10 @@ export const ActionDutchAuctionScheduleComponent = ({
           </ActionDetails.Row>
 
           <ActionDetails.Row label='Duration'>
-            Height {value.description?.startHeight.toString()} to{' '}
-            {value.description?.endHeight.toString()}
+            <span className='text-nowrap text-muted-foreground'>Height</span>{' '}
+            {value.action?.description?.startHeight.toString()}{' '}
+            <span className='text-nowrap text-muted-foreground'>to</span>{' '}
+            {value.action?.description?.endHeight.toString()}
           </ActionDetails.Row>
         </ActionDetails>
       }
