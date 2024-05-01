@@ -58,4 +58,10 @@ describe('assembleRequest()', () => {
       MOCK_START_HEIGHT + BLOCKS_PER_MINUTE + DURATION_IN_BLOCKS.get('48h')!,
     );
   });
+
+  it('uses a step count of 120', async () => {
+    const req = await assembleRequest(ARGS);
+
+    expect(req.dutchAuctionScheduleActions[0]!.description!.stepCount).toBe(120n);
+  });
 });
