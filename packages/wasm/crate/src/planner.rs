@@ -8,7 +8,7 @@ use penumbra_asset::{asset, Balance, Value};
 use penumbra_auction::auction::dutch::{
     ActionDutchAuctionEnd, ActionDutchAuctionSchedule, DutchAuctionDescription,
 };
-use penumbra_auction::auction::AuctionId;
+use penumbra_auction::auction::{AuctionId, AuctionNft};
 use penumbra_dex::swap_claim::SwapClaimPlan;
 use penumbra_dex::{
     swap::{SwapPlaintext, SwapPlan},
@@ -410,19 +410,27 @@ pub async fn plan_transaction(
         let mut nonce = [0u8; 32];
         OsRng.fill_bytes(&mut nonce);
 
+        let description = DutchAuctionDescription {
+            start_height: description.start_height,
+            end_height: description.end_height,
+            step_count: description.step_count,
+            input,
+            output_id,
+            min_output,
+            max_output,
+            nonce,
+        };
+
+        save_auction_nft_metadata_if_needed(
+            &description,
+            &storage,
+            // When scheduling a Dutch auction, the sequence number is always 0
+            0,
+        )
+        .await?;
+
         actions.push(ActionPlan::ActionDutchAuctionSchedule(
-            ActionDutchAuctionSchedule {
-                description: DutchAuctionDescription {
-                    start_height: description.start_height,
-                    end_height: description.end_height,
-                    step_count: description.step_count,
-                    input,
-                    output_id,
-                    min_output,
-                    max_output,
-                    nonce,
-                },
-            },
+            ActionDutchAuctionSchedule { description },
         ));
     }
 
@@ -541,15 +549,36 @@ pub async fn plan_transaction(
 /// When planning an undelegate action, there may not be metadata yet in the
 /// IndexedDB database for the unbonding token that the transaction will output.
 /// That's because unbonding tokens are tied to a specific height. If unbonding
-/// tokens for a given validator and a given height don't exist yet, we'll
-/// generate them here and save them to the database, so that they can render
-/// correctly in the transaction approval dialog.
+/// token metadata for a given validator and a given height doesn't exist yet,
+/// we'll generate it here and save it to the database, so that the undelegate
+/// action renders correctly in the transaction approval dialog.
 async fn save_unbonding_token_metadata_if_needed(
     undelegate: &Undelegate,
     storage: &IndexedDBStorage,
 ) -> WasmResult<()> {
     let metadata = undelegate.unbonding_token().denom();
 
+    save_metadata_if_needed(metadata, storage).await
+}
+
+/// When planning a Dutch auction schedule action, there will not be metadata
+/// yet in the IndexedDB database for the auction NFT that the transaction will
+/// output. That's because auction NFTs are derived from the auction description
+/// parameters, which include a nonce. So we'll generate the metadata here and
+/// save it to the database, so that the action renders correctly in the
+/// transaction approval dialog.
+async fn save_auction_nft_metadata_if_needed(
+    description: &DutchAuctionDescription,
+    storage: &IndexedDBStorage,
+    seq: u64,
+) -> WasmResult<()> {
+    let nft = AuctionNft::new(description.id(), seq);
+    let metadata = nft.metadata;
+
+    save_metadata_if_needed(metadata, storage).await
+}
+
+async fn save_metadata_if_needed(metadata: Metadata, storage: &IndexedDBStorage) -> WasmResult<()> {
     if storage.get_asset(&metadata.id()).await?.is_none() {
         let metadata_proto = metadata.to_proto();
         let customized_metadata_proto = customize_symbol_inner(metadata_proto)?;
