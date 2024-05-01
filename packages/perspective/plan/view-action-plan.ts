@@ -24,6 +24,11 @@ import {
   SwapView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { getAuctionId } from '@penumbra-zone/wasm/auction';
+import {
+  getInputAssetId,
+  getOutputAssetId,
+} from '@penumbra-zone/getters/dutch-auction-description';
 
 const getValueView = async (
   value: Value | undefined,
@@ -250,9 +255,39 @@ export const viewActionPlan =
           },
         });
 
-      case 'actionDutchAuctionSchedule':
-      case 'actionDutchAuctionEnd':
+      case 'actionDutchAuctionSchedule': {
+        const inputAssetId = getInputAssetId.optional()(actionPlan.action.value.description);
+        const outputAssetId = getOutputAssetId.optional()(actionPlan.action.value.description);
+
+        return new ActionView({
+          actionView: {
+            case: 'actionDutchAuctionSchedule',
+            value: {
+              action: actionPlan.action.value,
+              auctionId: actionPlan.action.value.description
+                ? getAuctionId(actionPlan.action.value.description)
+                : undefined,
+              inputMetadata: inputAssetId ? await denomMetadataByAssetId(inputAssetId) : undefined,
+              outputMetadata: outputAssetId
+                ? await denomMetadataByAssetId(outputAssetId)
+                : undefined,
+            },
+          },
+        });
+      }
+
       case 'actionDutchAuctionWithdraw':
+        return new ActionView({
+          actionView: {
+            case: 'actionDutchAuctionWithdraw',
+            value: {
+              action: actionPlan.action.value,
+              /** @todo: Add `reserves` property */
+            },
+          },
+        });
+
+      case 'actionDutchAuctionEnd':
         return new ActionView({
           actionView: actionPlan.action,
         });

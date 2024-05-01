@@ -28,6 +28,15 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
+import {
+  ActionDutchAuctionSchedule,
+  ActionDutchAuctionWithdraw,
+  AuctionId,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+
+vi.mock('@penumbra-zone/wasm/auction', () => ({
+  getAuctionId: () => new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) }),
+}));
 
 describe('viewActionPlan()', () => {
   const addressAsBech32 =
@@ -502,6 +511,70 @@ describe('viewActionPlan()', () => {
           actionView: {
             case: 'undelegate',
             value: undelegate,
+          },
+        }),
+      );
+    });
+  });
+
+  describe('`actionDutchAuctionSchedule` action', () => {
+    test('returns an action view with the appropriate view', async () => {
+      const schedule = new ActionDutchAuctionSchedule({
+        description: {
+          input: {
+            amount: { hi: 0n, lo: 1n },
+            assetId: {},
+          },
+          outputId: {},
+        },
+      });
+      const actionPlan = new ActionPlan({
+        action: {
+          case: 'actionDutchAuctionSchedule',
+          value: schedule,
+        },
+      });
+
+      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
+
+      await expect(actionView).resolves.toEqual(
+        new ActionView({
+          actionView: {
+            case: 'actionDutchAuctionSchedule',
+            value: {
+              action: schedule,
+              auctionId: { inner: new Uint8Array([0, 1, 2, 3]) },
+              inputMetadata: metadata,
+              outputMetadata: metadata,
+            },
+          },
+        }),
+      );
+    });
+  });
+
+  describe('`actionDutchAuctionWithdraw` action', () => {
+    test('returns an action view with the action as-is', async () => {
+      const withdraw = new ActionDutchAuctionWithdraw({
+        auctionId: {},
+        seq: 0n,
+      });
+      const actionPlan = new ActionPlan({
+        action: {
+          case: 'actionDutchAuctionWithdraw',
+          value: withdraw,
+        },
+      });
+
+      const actionView = viewActionPlan(metadataByAssetId, mockFvk)(actionPlan);
+
+      await expect(actionView).resolves.toEqual(
+        new ActionView({
+          actionView: {
+            case: 'actionDutchAuctionWithdraw',
+            value: {
+              action: withdraw,
+            },
           },
         }),
       );

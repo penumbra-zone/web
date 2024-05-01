@@ -641,6 +641,9 @@ importers:
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
+      '@penumbra-zone/getters':
+        specifier: workspace:*
+        version: link:../getters
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
