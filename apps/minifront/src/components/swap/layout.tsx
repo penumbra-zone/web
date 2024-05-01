@@ -12,7 +12,7 @@ const TABS: Tab[] = [
   },
   {
     title: 'Auction',
-    enabled: true,
+    enabled: false,
     href: PagePath.SWAP_AUCTION,
   },
 ];
@@ -23,7 +23,8 @@ export const SwapLayout = () => {
   return (
     <RestrictMaxWidth>
       <div className='flex justify-center'>
-        <Tabs tabs={TABS} activeTab={pathname} />
+        {/** @todo: Remove this conditional when we launch auctions */}
+        {TABS[1]!.enabled && <Tabs tabs={TABS} activeTab={pathname} />}
       </div>
 
       <Outlet />
