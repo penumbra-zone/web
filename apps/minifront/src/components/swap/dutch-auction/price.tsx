@@ -24,31 +24,31 @@ export const Price = () => {
 
   return (
     <div className='flex grow items-center gap-4'>
-      <div className='flex items-center gap-2'>
-        <span className='text-muted-foreground'>Min:</span>
-        <Input
-          variant='transparent'
-          value={minOutput}
-          min={1}
-          max={maxOutput}
-          onChange={e => setMinOutput(e.target.value)}
-          type='number'
-          inputMode='numeric'
-          className='grow'
-        />
-      </div>
+      <div className='flex grow flex-col gap-2'>
+        <div className='flex items-center gap-2'>
+          <span className='text-muted-foreground'>Min:</span>
+          <Input
+            variant='transparent'
+            value={minOutput}
+            min={1}
+            max={maxOutput}
+            onChange={e => setMinOutput(e.target.value)}
+            type='number'
+            inputMode='numeric'
+          />
+        </div>
 
-      <div className='flex grow items-center gap-2'>
-        <span className='text-muted-foreground'>Max:</span>
-        <Input
-          variant='transparent'
-          value={maxOutput}
-          min={minOutput}
-          onChange={e => setMaxOutput(e.target.value)}
-          type='number'
-          inputMode='numeric'
-          className='grow text-right'
-        />
+        <div className='flex grow items-center gap-2'>
+          <span className='text-muted-foreground'>Max:</span>
+          <Input
+            variant='transparent'
+            value={maxOutput}
+            min={minOutput}
+            onChange={e => setMaxOutput(e.target.value)}
+            type='number'
+            inputMode='numeric'
+          />
+        </div>
       </div>
 
       <div className='w-min'>
