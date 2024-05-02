@@ -2,21 +2,19 @@ import { ActionDutchAuctionScheduleView } from '@buf/penumbra-zone_penumbra.bufb
 import { ViewBox } from './viewbox';
 import { ActionDetails } from './action-details';
 import {
-  AssetId,
+  Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from './value';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 
-const getValueView = (amount?: Amount, assetId?: AssetId) =>
+const getValueView = (amount?: Amount, metadata?: Metadata) =>
   new ValueView({
     valueView: {
       case: 'knownAssetId',
       value: {
         amount,
-        metadata: {
-          penumbraAssetId: assetId,
-        },
+        metadata,
       },
     },
   });
@@ -26,18 +24,9 @@ export const ActionDutchAuctionScheduleViewComponent = ({
 }: {
   value: ActionDutchAuctionScheduleView;
 }) => {
-  const input = getValueView(
-    value.action?.description?.input?.amount,
-    value.action?.description?.input?.assetId,
-  );
-  const maxOutput = getValueView(
-    value.action?.description?.maxOutput,
-    value.action?.description?.outputId,
-  );
-  const minOutput = getValueView(
-    value.action?.description?.minOutput,
-    value.action?.description?.outputId,
-  );
+  const input = getValueView(value.action?.description?.input?.amount, value.inputMetadata);
+  const maxOutput = getValueView(value.action?.description?.maxOutput, value.outputMetadata);
+  const minOutput = getValueView(value.action?.description?.minOutput, value.outputMetadata);
 
   return (
     <ViewBox
@@ -62,9 +51,9 @@ export const ActionDutchAuctionScheduleViewComponent = ({
           </ActionDetails.Row>
 
           <ActionDetails.Row label='Duration'>
-            <span className='text-nowrap text-muted-foreground'>Height</span>{' '}
-            {value.action?.description?.startHeight.toString()}{' '}
-            <span className='text-nowrap text-muted-foreground'>to</span>{' '}
+            <span className='mx-1 text-nowrap text-muted-foreground'>Height </span>
+            {value.action?.description?.startHeight.toString()}
+            <span className='mx-1 text-nowrap text-muted-foreground'> to </span>
             {value.action?.description?.endHeight.toString()}
           </ActionDetails.Row>
         </ActionDetails>
