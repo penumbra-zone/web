@@ -13,7 +13,6 @@ import {
 import { PartialMessage } from '@bufbuild/protobuf';
 import { ConnectError } from '@connectrpc/connect';
 
-import '@penumbra-zone/polyfills/Promise.withResolvers';
 import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export const optimisticBuild = async function* (
@@ -56,7 +55,7 @@ export const optimisticBuild = async function* (
 
 const progressStream = async function* <T>(tasks: PromiseLike<T>[], cancel: PromiseLike<never>) {
   // deliberately not a 'map' - tasks and promises have no direct relationship.
-  const tasksRemaining = Array.from(tasks, () => Promise.withResolvers());
+  const tasksRemaining = Array.from(tasks, () => Promise.withResolvers<void>());
 
   // tasksRemaining will be consumed in order, as tasks complete in any order.
   tasks.forEach(task => void task.then(() => tasksRemaining.shift()?.resolve()));

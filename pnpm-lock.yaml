@@ -274,9 +274,6 @@ importers:
       '@penumbra-zone/keys':
         specifier: workspace:*
         version: link:../../packages/keys
-      '@penumbra-zone/polyfills':
-        specifier: workspace:*
-        version: link:../../packages/polyfills
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../../packages/protobuf
@@ -697,9 +694,6 @@ importers:
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
-      '@penumbra-zone/polyfills':
-        specifier: workspace:*
-        version: link:../polyfills
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
@@ -814,9 +808,6 @@ importers:
       '@bufbuild/protobuf':
         specifier: ^1.9.0
         version: 1.9.0
-      '@penumbra-zone/polyfills':
-        specifier: workspace:*
-        version: link:../polyfills
 
   packages/storage:
     dependencies:

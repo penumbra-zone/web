@@ -6,7 +6,6 @@ import { syncLastBlockWithLocal } from '@penumbra-zone/storage/chrome/syncer';
 import { ViewServer } from '@penumbra-zone/wasm/view-server';
 import { ServicesInterface, ServicesMessage, WalletServices } from '@penumbra-zone/types/services';
 import type { JsonValue } from '@bufbuild/protobuf';
-import '@penumbra-zone/polyfills/Promise.withResolvers';
 import {
   FullViewingKey,
   WalletId,

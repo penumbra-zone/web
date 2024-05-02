@@ -25,7 +25,6 @@ import {
 
 import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
 import ReadableStream from '@penumbra-zone/polyfills/ReadableStream.from';
-import '@penumbra-zone/polyfills/Promise.withResolvers';
 
 const forceTransportOptions = {
   httpClient: null as never,

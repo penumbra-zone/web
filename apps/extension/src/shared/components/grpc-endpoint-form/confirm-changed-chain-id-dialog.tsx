@@ -1,4 +1,3 @@
-import { PromiseWithResolvers } from '@penumbra-zone/polyfills/Promise.withResolvers';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import {
   Dialog,

@@ -60,7 +60,7 @@ const fixEmptyGrpcEndpointAfterOnboarding = async () => {
  * requests against it.
  */
 const waitUntilGrpcEndpointExists = async () => {
-  const grpcEndpointPromise = Promise.withResolvers();
+  const grpcEndpointPromise = Promise.withResolvers<void>();
   const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
 
   if (grpcEndpoint) {

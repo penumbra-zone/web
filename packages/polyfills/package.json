@@ -1,32 +1,16 @@
 {
   "name": "@penumbra-zone/polyfills",
   "version": "3.0.0",
+  "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
-    "build": "tsc && vite build",
-    "clean": "rm -rfv dist",
     "lint": "eslint \"**/*.ts*\"",
     "test": "vitest run"
   },
   "exports": {
     "./ReadableStream[Symbol.asyncIterator]": "./src/ReadableStream_Symbol.asyncIterator_.ts",
     "./*": "./src/*.ts"
-  },
-  "publishConfig": {
-    "files": [
-      "dist"
-    ],
-    "exports": {
-      "./ReadableStream[Symbol.asyncIterator]": {
-        "import": "./dist/ReadableStream_Symbol.asyncIterator_.js",
-        "types": "./src/ReadableStream_Symbol.asyncIterator_.d.ts"
-      },
-      "./*": {
-        "import": "./dist/*.js",
-        "types": "./dist/*.d.ts"
-      }
-    }
   },
   "dependencies": {
     "array-from-async": "^3.0.0"
