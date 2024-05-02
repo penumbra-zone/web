@@ -265,12 +265,6 @@ export class BlockProcessor implements BlockProcessorInterface {
         // TODO: this is the second time we save these records, after "saveScanResult"
         await this.saveRecoveredCommitmentSources(recordsWithSources);
 
-        // during wasm tx info generation later, wasm independently queries idb
-        // for asset metadata, so we have to pre-populate. LpNft position states
-        // aren't known by the chain so aren't populated by identifyNewAssets
-        // - detect LpNft position opens
-        // - generate all possible position state metadata
-        // - update idb
         await this.processTransactions(blockTx);
 
         // at this point txinfo can be generated and saved. this will resolve
@@ -371,6 +365,10 @@ export class BlockProcessor implements BlockProcessorInterface {
     return spentNullifiers;
   }
 
+  /**
+   * Identify various pieces of data from the transaction that we need to save,
+   * such as metadata, liquidity positions, etc.
+   */
   private async processTransactions(txs: Transaction[]) {
     for (const tx of txs) {
       for (const { action } of tx.body?.actions ?? []) {
@@ -379,6 +377,11 @@ export class BlockProcessor implements BlockProcessorInterface {
     }
   }
 
+  /**
+   * during wasm tx info generation later, wasm independently queries idb for
+   * asset metadata, so we have to pre-populate. Auction NFTs aren't known by
+   * the chain so aren't populated by identifyNewAssets.
+   */
   private async identifyAuctionNfts(action: Action['action']) {
     if (action.case === 'actionDutchAuctionSchedule' && action.value.description) {
       const auctionId = getAuctionId(action.value.description);
@@ -402,6 +405,14 @@ export class BlockProcessor implements BlockProcessorInterface {
      */
   }
 
+  /**
+   * during wasm tx info generation later, wasm independently queries idb for
+   * asset metadata, so we have to pre-populate. LpNft position states aren't
+   * known by the chain so aren't populated by identifyNewAssets
+   * - detect LpNft position opens
+   * - generate all possible position state metadata
+   * - update idb
+   */
   private async identifyLpNftPositions(action: Action['action']) {
     if (action.case === 'positionOpen' && action.value.position) {
       for (const state of POSITION_STATES) {
