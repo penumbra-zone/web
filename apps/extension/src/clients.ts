@@ -2,13 +2,13 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 import { createPromiseClient } from '@connectrpc/connect';
 import { createChannelTransport } from '@penumbra-zone/transport-dom/create';
 import { CRSessionClient } from '@penumbra-zone/transport-chrome/session-client';
-import { transportOptions } from '@penumbra-zone/types/registry';
+import { jsonOptions } from '@penumbra-zone/protobuf';
 
 const port = CRSessionClient.init(PRAX);
 
 const extensionPageTransport = createChannelTransport({
+  jsonOptions,
   getPort: () => Promise.resolve(port),
-  ...transportOptions,
 });
 
 export const viewClient = createPromiseClient(ViewService, extensionPageTransport);

@@ -9,7 +9,7 @@ import type { Transport } from '@connectrpc/connect';
 import { createPromiseClient } from '@connectrpc/connect';
 import { createChannelTransport } from '@penumbra-zone/transport-dom/create';
 import { PenumbraSymbol } from './global';
-import { jsonOptions } from '@penumbra-zone/types/registry';
+import { jsonOptions } from '@penumbra-zone/protobuf';
 
 const prax_id = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe';
 const prax_origin = `chrome-extension://${prax_id}`;
@@ -86,9 +86,8 @@ export const throwIfPraxNotInstalled = async () => {
 let praxTransport: Transport | undefined;
 export const createPraxClient = <T extends ServiceType>(serviceType: T) => {
   praxTransport ??= createChannelTransport({
-    defaultTimeoutMs: 10000,
-    getPort: getPraxPort,
     jsonOptions,
+    getPort: getPraxPort,
   });
   return createPromiseClient(serviceType, praxTransport);
 };

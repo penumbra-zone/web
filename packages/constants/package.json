@@ -22,13 +22,5 @@
         "types": "./dist/index.d.ts"
       }
     }
-  },
-  "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240429125510-24b08e70bbc2.1",
-    "@bufbuild/protobuf": "^1.9.0"
-  },
-  "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240429125510-24b08e70bbc2.1",
-    "@bufbuild/protobuf": "^1.9.0"
   }
 }
