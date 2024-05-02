@@ -13,7 +13,7 @@ export const IbcLayout = () => {
             direction='right'
             // Negative calculated margin giving lint issue
             /* eslint-disable-next-line tailwindcss/enforces-negative-arbitrary-values */
-            className='invisible absolute -top-44 right-0 z-0 -mr-[calc(30vw-3px)] size-[30vw] text-stone-300 md:visible'
+            className='invisible absolute -top-32 right-0 z-0 -mr-80 size-80 text-stone-300 md:visible'
           />
           <IbcInForm />
         </Card>
@@ -22,7 +22,7 @@ export const IbcLayout = () => {
             direction='left'
             // Negative calculated margin giving lint issue
             /* eslint-disable-next-line tailwindcss/enforces-negative-arbitrary-values */
-            className='invisible absolute -bottom-44 left-0 z-0 my-auto -ml-[calc(30vw-3px)] size-[30vw] text-stone-700 md:visible'
+            className='invisible absolute -bottom-32 left-0 z-0 my-auto -ml-80 size-80 text-stone-700 md:visible'
           />
           <IbcOutForm />
         </Card>
