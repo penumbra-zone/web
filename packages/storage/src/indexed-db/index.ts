@@ -57,6 +57,10 @@ import type {
   StateCommitmentTree,
 } from '@penumbra-zone/types/state-commitment-tree';
 import { sctPosition } from '@penumbra-zone/wasm/tree';
+import {
+  AuctionId,
+  DutchAuction,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -669,5 +673,21 @@ export class IndexedDb implements IndexedDbInterface {
 
       txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });
     }
+  }
+
+  // As more auction types are created, add them to T as a union type.
+  async upsertAuction<T extends DutchAuction>(
+    auctionId: AuctionId,
+    auction: T,
+    noteCommitment: StateCommitment,
+  ): Promise<void> {
+    await this.u.update({
+      table: 'AUCTIONS',
+      value: {
+        auction: auction.toJson() as Jsonified<T>,
+        noteCommitment: noteCommitment.toJson() as Jsonified<StateCommitment>,
+      },
+      key: uint8ArrayToBase64(auctionId.inner),
+    });
   }
 }
