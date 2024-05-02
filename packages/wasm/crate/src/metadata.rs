@@ -9,6 +9,8 @@ use crate::{error::WasmResult, utils};
 pub static UNBONDING_TOKEN_REGEX: &str = "^uunbonding_(?P<data>start_at_(?P<start>[0-9]+)_(?P<validator>penumbravalid1(?P<id>[a-zA-HJ-NP-Z0-9]+)))$";
 pub static DELEGATION_TOKEN_REGEX: &str =
     "^udelegation_(?P<data>penumbravalid1(?P<id>[a-zA-HJ-NP-Z0-9]+))$";
+pub static AUCTION_NFT_REGEX: &str =
+    "^auctionnft_(?P<data>[a-z_0-9]+_pauctid1(?P<id>[a-zA-HJ-NP-Z0-9]+))$";
 pub static SHORTENED_ID_LENGTH: usize = 8;
 
 /// Given a binary-encoded `Metadata`, returns a new binary-encoded `Metadata`
@@ -32,6 +34,7 @@ pub fn customize_symbol(metadata_bytes: &[u8]) -> WasmResult<Vec<u8>> {
 pub fn customize_symbol_inner(metadata: Metadata) -> WasmResult<Metadata> {
     let unbonding_re = Regex::new(UNBONDING_TOKEN_REGEX)?;
     let delegation_re = Regex::new(DELEGATION_TOKEN_REGEX)?;
+    let auction_re = Regex::new(AUCTION_NFT_REGEX)?;
 
     if let Some(captures) = unbonding_re.captures(&metadata.base) {
         let shortened_id = shorten_id(&captures)?;
@@ -49,6 +52,13 @@ pub fn customize_symbol_inner(metadata: Metadata) -> WasmResult<Metadata> {
 
         return Ok(Metadata {
             symbol: format!("delUM({shortened_id}...)"),
+            ..metadata
+        });
+    } else if let Some(captures) = auction_re.captures(&metadata.base) {
+        let shortened_id = shorten_id(&captures)?;
+
+        return Ok(Metadata {
+            symbol: format!("auction({shortened_id}...)"),
             ..metadata
         });
     }
@@ -73,21 +83,32 @@ mod test_helpers {
 
     use super::*;
 
-    pub fn get_metadata_for(display_denom: &str) -> Metadata {
+    pub fn get_metadata_for(display_denom: &str, base_denom_is_display_denom: bool) -> Metadata {
         let mut denom_units = Vec::new();
         denom_units.push(DenomUnit {
             aliases: Vec::new(),
-            denom: format!("u{display_denom}"),
+            denom: if base_denom_is_display_denom {
+                String::from(display_denom)
+            } else {
+                format!("u{display_denom}")
+            },
             exponent: 0,
         });
-        denom_units.push(DenomUnit {
-            aliases: Vec::new(),
-            denom: String::from(display_denom),
-            exponent: 6,
-        });
+
+        if !base_denom_is_display_denom {
+            denom_units.push(DenomUnit {
+                aliases: Vec::new(),
+                denom: String::from(display_denom),
+                exponent: 6,
+            });
+        }
 
         Metadata {
-            base: format!("u{display_denom}"),
+            base: if base_denom_is_display_denom {
+                String::from(display_denom)
+            } else {
+                format!("u{display_denom}")
+            },
             description: String::from(""),
             denom_units,
             display: String::from(display_denom),
@@ -100,14 +121,14 @@ mod test_helpers {
 
     #[test]
     fn it_interpolates_display_denom() {
-        assert_eq!(get_metadata_for("penumbra").base, "upenumbra");
-        assert_eq!(get_metadata_for("penumbra").display, "penumbra");
+        assert_eq!(get_metadata_for("penumbra", false).base, "upenumbra");
+        assert_eq!(get_metadata_for("penumbra", false).display, "penumbra");
         assert_eq!(
-            get_metadata_for("penumbra").denom_units[0].denom,
+            get_metadata_for("penumbra", false).denom_units[0].denom,
             "upenumbra"
         );
         assert_eq!(
-            get_metadata_for("penumbra").denom_units[1].denom,
+            get_metadata_for("penumbra", false).denom_units[1].denom,
             "penumbra"
         );
     }
@@ -122,7 +143,7 @@ mod customize_symbol_inner_tests {
         let metadata = Metadata {
             name: String::from("Penumbra"),
             symbol: String::from("UM"),
-            ..test_helpers::get_metadata_for("penumbra")
+            ..test_helpers::get_metadata_for("penumbra", false)
         };
         let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
 
@@ -134,7 +155,10 @@ mod customize_symbol_inner_tests {
         let metadata = Metadata {
             name: String::from("Unbonding Token"),
             symbol: String::from(""),
-            ..test_helpers::get_metadata_for("unbonding_start_at_1234_penumbravalid1abcdef123456")
+            ..test_helpers::get_metadata_for(
+                "unbonding_start_at_1234_penumbravalid1abcdef123456",
+                false,
+            )
         };
         let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
 
@@ -146,11 +170,26 @@ mod customize_symbol_inner_tests {
         let metadata = Metadata {
             name: String::from("Delegation Token"),
             symbol: String::from(""),
-            ..test_helpers::get_metadata_for("delegation_penumbravalid1abcdef123456")
+            ..test_helpers::get_metadata_for("delegation_penumbravalid1abcdef123456", false)
         };
         let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
 
         assert_eq!(customized_metadata.symbol, "delUM(abcdef12...)");
+    }
+
+    #[test]
+    fn it_modifies_auction_nft_symbol() {
+        let metadata = Metadata {
+            name: String::from(""),
+            symbol: String::from(""),
+            ..test_helpers::get_metadata_for(
+                "auctionnft_0_pauctid1jqyupqnzznyfpq940mv0ac33pyx77s7af3kgdw4nstjmp3567dks8n5amh",
+                true,
+            )
+        };
+        let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
+
+        assert_eq!(customized_metadata.symbol, "auction(jqyupqnz...)")
     }
 }
 
@@ -167,7 +206,7 @@ mod customize_symbol_tests {
         let metadata = Metadata {
             name: String::from("Delegation Token"),
             symbol: String::from(""),
-            ..test_helpers::get_metadata_for("delegation_penumbravalid1abcdef123456")
+            ..test_helpers::get_metadata_for("delegation_penumbravalid1abcdef123456", false)
         };
         let metadata_as_bytes = MetadataDomainType::try_from(metadata)
             .unwrap()

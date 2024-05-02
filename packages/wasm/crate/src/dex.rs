@@ -22,7 +22,7 @@ pub fn compute_position_id(position: &[u8]) -> WasmResult<Vec<u8>> {
 /// Arguments:
 ///     position_value: `lp::position::Position`
 ///     position_state: `lp::position::State`
-/// Returns: `Uint8Array representing a DenomMetadata`
+/// Returns: `Uint8Array` representing a `Metadata`
 #[wasm_bindgen]
 pub fn get_lpnft_asset(position_id: &[u8], position_state: &[u8]) -> WasmResult<Vec<u8>> {
     utils::set_panic_hook();

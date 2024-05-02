@@ -115,6 +115,7 @@ mod tests {
             fixed_candidates: Vec::new(),
             is_enabled: true,
             max_hops: 5u32,
+            max_positions_per_pair: 0,
         };
 
         let app_params = AppParameters {
@@ -129,6 +130,7 @@ mod tests {
             distributions_params: None,
             funding_params: None,
             shielded_pool_params: None,
+            auction_params: None,
         };
 
         let fmd_params = FmdParameters {
@@ -412,6 +414,9 @@ mod tests {
             position_closes: vec![],
             position_withdraws: vec![],
             fee_mode: None,
+            dutch_auction_schedule_actions: vec![],
+            dutch_auction_end_actions: vec![],
+            dutch_auction_withdraw_actions: vec![],
         };
 
         // Viewing key to reveal asset balances and transactions.

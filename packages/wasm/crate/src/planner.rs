@@ -101,7 +101,7 @@ impl ActionList {
         for value in self.balance().provided() {
             self.change_outputs.insert(
                 value.asset_id,
-                OutputPlan::new(&mut OsRng, value, change_address),
+                OutputPlan::new(&mut OsRng, value, change_address.clone()),
             );
         }
     }
@@ -440,7 +440,7 @@ pub async fn plan_transaction(
         actions.push(SpendPlan::new(&mut OsRng, note.note, note.position).into());
 
         // Recompute the change outputs, without accounting for fees.
-        actions.refresh_change(change_address);
+        actions.refresh_change(change_address.clone());
         // Now re-estimate the fee of the updated transaction and adjust the change if possible.
         let fee = actions.fee_estimate(&gas_prices, &fee_tier);
         actions.adjust_change_for_fee(fee);
