@@ -41,6 +41,7 @@ import {
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import type { Jsonified } from './jsonified';
+import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -189,6 +190,14 @@ export interface PenumbraDb extends DBSchema {
       pricedAsset: Jsonified<Required<EstimatedPrice>['pricedAsset']['inner']>;
     };
   };
+  AUCTIONS: {
+    key: string; // base64 AuctionId
+    value: {
+      noteCommitment: Jsonified<StateCommitment>;
+      // add more types to `auction` as more auction types are created
+      auction: Jsonified<DutchAuction>;
+    };
+  };
 }
 
 // need to store PositionId and Position in the same table
@@ -209,6 +218,7 @@ export interface IdbConstants {
 
 export const IDB_TABLES: Tables = {
   assets: 'ASSETS',
+  auctions: 'AUCTIONS',
   notes: 'NOTES',
   spendable_notes: 'SPENDABLE_NOTES',
   swaps: 'SWAPS',

@@ -115,6 +115,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('PRICES', {
           keyPath: ['pricedAsset.inner', 'numeraire.inner'],
         }).createIndex('pricedAsset', 'pricedAsset.inner');
+        db.createObjectStore('AUCTIONS');
       },
     });
     const constants = {
