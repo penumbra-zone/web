@@ -274,9 +274,6 @@ importers:
       '@penumbra-zone/keys':
         specifier: workspace:*
         version: link:../../packages/keys
-      '@penumbra-zone/polyfills':
-        specifier: workspace:*
-        version: link:../../packages/polyfills
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../../packages/protobuf
