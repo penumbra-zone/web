@@ -3,8 +3,12 @@ use std::collections::BTreeMap;
 use anyhow::anyhow;
 use ark_ff::UniformRand;
 use decaf377::{Fq, Fr};
-use penumbra_asset::asset::Metadata;
+use penumbra_asset::asset::{Id, Metadata};
 use penumbra_asset::{asset, Balance, Value};
+use penumbra_auction::auction::dutch::{
+    ActionDutchAuctionEnd, ActionDutchAuctionSchedule, DutchAuctionDescription,
+};
+use penumbra_auction::auction::AuctionId;
 use penumbra_dex::swap_claim::SwapClaimPlan;
 use penumbra_dex::{
     swap::{SwapPlaintext, SwapPlan},
@@ -28,7 +32,7 @@ use penumbra_transaction::gas::GasCost;
 use penumbra_transaction::memo::MemoPlaintext;
 use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters, TransactionPlan};
 use prost::Message;
-use rand_core::OsRng;
+use rand_core::{OsRng, RngCore};
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 
@@ -383,6 +387,56 @@ pub async fn plan_transaction(
     for tpr::PositionWithdraw { .. } in request.position_withdraws {
         return Err(anyhow!("PositionWithdraw not yet implemented").into());
     }
+
+    for tpr::ActionDutchAuctionSchedule { description } in request.dutch_auction_schedule_actions {
+        let description = description
+            .ok_or_else(|| anyhow!("missing description in Dutch auction schedule action"))?;
+        let input: Value = description
+            .input
+            .ok_or_else(|| anyhow!("missing input in Dutch auction schedule action"))?
+            .try_into()?;
+        let output_id: Id = description
+            .output_id
+            .ok_or_else(|| anyhow!("missing output ID in Dutch auction schedule action"))?
+            .try_into()?;
+        let min_output: Amount = description
+            .min_output
+            .ok_or_else(|| anyhow!("missing min output in Dutch auction schedule action"))?
+            .try_into()?;
+        let max_output: Amount = description
+            .max_output
+            .ok_or_else(|| anyhow!("missing max output in Dutch auction schedule action"))?
+            .try_into()?;
+        let mut nonce = [0u8; 32];
+        OsRng.fill_bytes(&mut nonce);
+
+        actions.push(ActionPlan::ActionDutchAuctionSchedule(
+            ActionDutchAuctionSchedule {
+                description: DutchAuctionDescription {
+                    start_height: description.start_height,
+                    end_height: description.end_height,
+                    step_count: description.step_count,
+                    input,
+                    output_id,
+                    min_output,
+                    max_output,
+                    nonce,
+                },
+            },
+        ));
+    }
+
+    for tpr::ActionDutchAuctionEnd { auction_id } in request.dutch_auction_end_actions {
+        let auction_id: AuctionId = auction_id
+            .ok_or_else(|| anyhow!("missing auction ID in Dutch auction end action"))?
+            .try_into()?;
+
+        actions.push(ActionPlan::ActionDutchAuctionEnd(ActionDutchAuctionEnd {
+            auction_id,
+        }));
+    }
+
+    // TODO: Handle Dutch auction withdraws
 
     // Phase 2: fill in the required spends to make the transaction balance.
 

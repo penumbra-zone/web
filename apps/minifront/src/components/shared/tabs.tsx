@@ -3,8 +3,14 @@ import { cn } from '@penumbra-zone/ui/lib/utils';
 import { PagePath } from '../metadata/paths';
 import { useNavigate } from 'react-router-dom';
 
+export interface Tab {
+  title: string;
+  enabled: boolean;
+  href: PagePath;
+}
+
 interface TabsProps {
-  tabs: { title: string; active: boolean; href: PagePath }[];
+  tabs: Tab[];
   activeTab: PagePath;
   className?: string;
 }
@@ -21,7 +27,7 @@ export const Tabs = ({ tabs, activeTab, className }: TabsProps) => {
     >
       {tabs.map(
         tab =>
-          tab.active && (
+          tab.enabled && (
             <Button
               className={cn(
                 'w-full transition-all',

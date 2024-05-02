@@ -1,24 +1,17 @@
 import { LoaderFunction } from 'react-router-dom';
-import { getBalances } from '../../fetchers/balances';
-import { useStore } from '../../state';
+import { useStore } from '../../../state';
 import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
 import {
   BalancesResponse,
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { fetchUnclaimedSwaps } from '../../fetchers/unclaimed-swaps';
-import { viewClient } from '../../clients';
-import { assetPatterns } from '@penumbra-zone/constants/assets';
-import {
-  getAmount,
-  getDisplayDenomExponentFromValueView,
-  getDisplayDenomFromView,
-} from '@penumbra-zone/getters/value-view';
+import { fetchUnclaimedSwaps } from '../../../fetchers/unclaimed-swaps';
+import { viewClient } from '../../../clients';
 import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
-import { fromBaseUnitAmount } from '@penumbra-zone/types/amount';
-import { getAllAssets } from '../../fetchers/assets';
+import { getSwappableBalancesResponses } from '../helpers';
+import { getAllAssets } from '../../../fetchers/assets';
 
 export interface UnclaimedSwapsWithMetadata {
   swap: SwapRecord;
@@ -32,34 +25,16 @@ export interface SwapLoaderResponse {
   assets: Metadata[];
 }
 
-const byBalanceDescending = (a: BalancesResponse, b: BalancesResponse) => {
-  const aExponent = getDisplayDenomExponentFromValueView(a.balanceView);
-  const bExponent = getDisplayDenomExponentFromValueView(b.balanceView);
-  const aAmount = fromBaseUnitAmount(getAmount(a.balanceView), aExponent);
-  const bAmount = fromBaseUnitAmount(getAmount(b.balanceView), bExponent);
-
-  return bAmount.comparedTo(aAmount);
-};
-
 const getAndSetDefaultAssetBalances = async (assets: Metadata[]) => {
-  const assetBalances = await getBalances();
-
-  // filter assets that are not available for swap
-  const filteredAssetBalances = assetBalances
-    .filter(b =>
-      [assetPatterns.lpNft, assetPatterns.proposalNft, assetPatterns.votingReceipt].every(
-        pattern => !pattern.matches(getDisplayDenomFromView(b.balanceView)),
-      ),
-    )
-    .sort(byBalanceDescending);
+  const balancesResponses = await getSwappableBalancesResponses();
 
   // set initial denom in if there is an available balance
-  if (filteredAssetBalances[0]) {
-    useStore.getState().swap.setAssetIn(filteredAssetBalances[0]);
+  if (balancesResponses[0]) {
+    useStore.getState().swap.setAssetIn(balancesResponses[0]);
     useStore.getState().swap.setAssetOut(assets[0]!);
   }
 
-  return filteredAssetBalances;
+  return balancesResponses;
 };
 
 const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapsWithMetadata> => {
