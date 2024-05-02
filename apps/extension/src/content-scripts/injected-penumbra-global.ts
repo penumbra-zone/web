@@ -24,10 +24,9 @@ import {
 } from '@penumbra-zone/client/global';
 import { isPraxFailureMessageEvent, isPraxPortMessageEvent, PraxMessage } from './message-event';
 
-import '@penumbra-zone/polyfills/Promise.withResolvers';
 import { PraxConnection } from '../message/prax';
 
-const request = Promise.withResolvers();
+const request = Promise.withResolvers<void>();
 
 // this is just withResolvers, plus a sync-queryable state attribute
 const connection = Object.assign(Promise.withResolvers<MessagePort>(), { state: false });

@@ -6,7 +6,6 @@ import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { ServicesMessage } from '@penumbra-zone/types/services';
 import debounce from 'lodash/debounce';
-import { PromiseWithResolvers } from '@penumbra-zone/polyfills/Promise.withResolvers';
 import { useRpcEndpoints } from '../../../hooks/registry';
 
 const randomSort = () => (Math.random() >= 0.5 ? 1 : -1);
@@ -105,7 +104,7 @@ export const useGrpcEndpointForm = () => {
 
     // If the chain id has changed, our cache is invalid
     if (chainIdChanged) {
-      const promiseWithResolvers = Promise.withResolvers();
+      const promiseWithResolvers = Promise.withResolvers<void>();
       setConfirmChangedChainIdPromise(promiseWithResolvers);
 
       try {

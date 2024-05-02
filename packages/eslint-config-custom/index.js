@@ -35,6 +35,7 @@ module.exports = {
     '@typescript-eslint/no-confusing-void-expression': ['error', { ignoreArrowShorthand: true }],
     '@typescript-eslint/switch-exhaustiveness-check': 'error',
     '@typescript-eslint/no-unnecessary-condition': ['error', { allowConstantLoopConditions: true }],
+    '@typescript-eslint/no-invalid-void-type': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
     // Catches untyped let declarations

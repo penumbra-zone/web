@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { ShareGradientIcon } from '../../../icons/share-gradient';
 import { GrpcEndpointForm } from '../../../shared/components/grpc-endpoint-form';
 import { SettingsScreen } from './settings-screen';
-import '@penumbra-zone/polyfills/Promise.withResolvers';
 
 export const SettingsRPC = () => {
   const [countdownTime, setCountdownTime] = useState<number>();
@@ -10,7 +9,7 @@ export const SettingsRPC = () => {
     Number(countdownTime) > 0 ? `Saved! Restarting in ${countdownTime}...` : 'Save';
 
   const countdown = (seconds: number) => {
-    const { promise, resolve } = Promise.withResolvers();
+    const { promise, resolve } = Promise.withResolvers<void>();
     setCountdownTime(seconds);
     setInterval(() => {
       if (!seconds) resolve(undefined);
