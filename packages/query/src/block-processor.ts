@@ -36,12 +36,16 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/assets';
+import { PRICE_RELEVANCE_THRESHOLDS, assetPatterns } from '@penumbra-zone/constants/assets';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { getAuctionId, getAuctionNftMetadata } from '@penumbra-zone/wasm/auction';
-import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import {
+  AuctionId,
+  DutchAuction,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 
 declare global {
   // `var` required for global declaration (as let/const are block scoped)
@@ -234,6 +238,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
         for (const spendableNoteRecord of flush.newNotes) {
           recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
+          await this.maybeUpsertAuctionWithNoteCommitment(spendableNoteRecord);
         }
         for (const swapRecord of flush.newSwaps)
           recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
@@ -450,6 +455,21 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       await this.indexedDb.updatePosition(action.value.positionId, positionState);
     }
+  }
+
+  private async maybeUpsertAuctionWithNoteCommitment(spendableNoteRecord: SpendableNoteRecord) {
+    const assetId = spendableNoteRecord.note?.value?.assetId;
+    if (!assetId) return;
+
+    const metadata = await this.indexedDb.getAssetsMetadata(assetId);
+    const captureGroups = assetPatterns.auctionNft.capture(metadata?.display ?? '');
+    if (!captureGroups) return;
+
+    const auctionId = new AuctionId(auctionIdFromBech32(captureGroups.auctionId));
+
+    await this.indexedDb.upsertAuction(auctionId, {
+      noteCommitment: spendableNoteRecord.noteCommitment,
+    });
   }
 
   private async saveTransactions(height: bigint, relevantTx: Map<TransactionId, Transaction>) {
