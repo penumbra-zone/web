@@ -1,5 +1,12 @@
 # @penumbra-zone/getters
 
+## 3.0.1
+
+### Patch Changes
+
+- Updated dependencies [8410d2f]
+  - @penumbra-zone/bech32m@3.0.1
+
 ## 3.0.0
 
 ### Major Changes

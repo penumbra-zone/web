@@ -1,5 +1,11 @@
 # @penumbra-zone/wasm
 
+## 4.0.3
+
+### Patch Changes
+
+- @penumbra-zone/types@4.0.1
+
 ## 4.0.2
 
 ### Patch Changes

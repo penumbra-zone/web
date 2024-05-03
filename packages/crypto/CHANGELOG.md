@@ -1,5 +1,11 @@
 # @penumbra-zone/crypto-web
 
+## 3.0.4
+
+### Patch Changes
+
+- @penumbra-zone/types@4.0.1
+
 ## 3.0.3
 
 ### Patch Changes

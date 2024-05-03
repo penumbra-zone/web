@@ -1,5 +1,23 @@
 # chrome-extension
 
+## 7.0.3
+
+### Patch Changes
+
+- Updated dependencies [8410d2f]
+- Updated dependencies [8410d2f]
+  - @penumbra-zone/bech32m@3.0.1
+  - @penumbra-zone/client@4.1.0
+  - @penumbra-zone/perspective@1.0.5
+  - @penumbra-zone/query@3.0.2
+  - @penumbra-zone/services@3.0.3
+  - @penumbra-zone/storage@3.1.2
+  - @penumbra-zone/types@4.0.1
+  - @penumbra-zone/ui@2.0.5
+  - @penumbra-zone/wasm@4.0.3
+  - @penumbra-zone/services-context@3.0.3
+  - @penumbra-zone/crypto-web@3.0.4
+
 ## 7.0.2
 
 ### Patch Changes

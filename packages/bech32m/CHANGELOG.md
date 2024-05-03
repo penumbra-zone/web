@@ -1,5 +1,11 @@
 # @penumbra-zone/bech32
 
+## 3.0.1
+
+### Patch Changes
+
+- 8410d2f: dependency version bump
+
 ## 3.0.0
 
 ### Major Changes
