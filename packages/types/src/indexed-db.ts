@@ -44,7 +44,6 @@ import type { Jsonified } from './jsonified';
 import {
   AuctionId,
   DutchAuction,
-  DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
@@ -105,13 +104,23 @@ export interface IndexedDbInterface {
     height: bigint,
   ): Promise<void>;
   getPricesForAsset(assetMetadata: Metadata, latestBlockHeight: bigint): Promise<EstimatedPrice[]>;
-  upsertAuction<T extends DutchAuctionDescription>(
+  upsertAuction<T extends DutchAuction>(
     auctionId: AuctionId,
     value: {
       auction?: T;
       noteCommitment?: StateCommitment;
     },
   ): Promise<void>;
+  iterateAuctions(): AsyncGenerator<
+    {
+      id: AuctionId;
+      value: {
+        auction?: DutchAuction;
+        noteCommitment?: StateCommitment;
+      };
+    },
+    void
+  >;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -206,7 +215,7 @@ export interface PenumbraDb extends DBSchema {
     value: {
       noteCommitment: Jsonified<StateCommitment>;
       // add more types to `auction` as more auction types are created
-      auction: Jsonified<DutchAuctionDescription>;
+      auction: Jsonified<DutchAuction>;
     };
   };
 }
