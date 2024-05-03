@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { AllSlices, useStore } from '../../state';
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client';
+import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 import { Card, CardContent, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
 import { Header } from './account/header';
 import { Delegations } from './account/delegations';

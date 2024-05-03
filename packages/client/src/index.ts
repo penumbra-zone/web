@@ -5,7 +5,7 @@ export enum PenumbraRequestFailure {
 
 export const PenumbraSymbol = Symbol.for('penumbra');
 
-export interface PenumbraProvider {
+export interface PenumbraInjection {
   readonly connect: () => Promise<MessagePort>;
   readonly request: () => Promise<void>;
   readonly isConnected: () => boolean | undefined;
@@ -14,6 +14,6 @@ export interface PenumbraProvider {
 
 declare global {
   interface Window {
-    readonly [PenumbraSymbol]?: undefined | Readonly<Record<string, PenumbraProvider>>;
+    readonly [PenumbraSymbol]?: undefined | Readonly<Record<string, PenumbraInjection>>;
   }
 }
