@@ -1,5 +1,13 @@
 # @penumbra-zone/types
 
+## 4.0.1
+
+### Patch Changes
+
+- Updated dependencies [8410d2f]
+  - @penumbra-zone/bech32m@3.0.1
+  - @penumbra-zone/getters@3.0.1
+
 ## 4.0.0
 
 ### Major Changes

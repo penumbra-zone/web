@@ -1,5 +1,11 @@
 # @penumbra-zone/client
 
+## 4.1.0
+
+### Minor Changes
+
+- 8410d2f: add createPraxTransport export, change interface name
+
 ## 4.0.1
 
 ### Patch Changes

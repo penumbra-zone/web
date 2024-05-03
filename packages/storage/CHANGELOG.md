@@ -1,5 +1,14 @@
 # @penumbra-zone/storage
 
+## 3.1.2
+
+### Patch Changes
+
+- Updated dependencies [8410d2f]
+  - @penumbra-zone/bech32m@3.0.1
+  - @penumbra-zone/getters@3.0.1
+  - @penumbra-zone/crypto-web@3.0.4
+
 ## 3.1.1
 
 ### Patch Changes
