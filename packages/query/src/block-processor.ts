@@ -234,7 +234,6 @@ export class BlockProcessor implements BlockProcessorInterface {
 
         for (const spendableNoteRecord of flush.newNotes) {
           recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
-          // spendableNoteRecord.note?.value?.assetId
         }
         for (const swapRecord of flush.newSwaps)
           recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
