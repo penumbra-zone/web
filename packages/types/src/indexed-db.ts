@@ -213,9 +213,9 @@ export interface PenumbraDb extends DBSchema {
   AUCTIONS: {
     key: string; // base64 AuctionId
     value: {
-      noteCommitment: Jsonified<StateCommitment>;
+      noteCommitment?: Jsonified<StateCommitment>;
       // add more types to `auction` as more auction types are created
-      auction: Jsonified<DutchAuction>;
+      auction?: Jsonified<DutchAuction>;
     };
   };
 }
