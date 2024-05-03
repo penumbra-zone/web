@@ -26,6 +26,7 @@ export interface IndexedDbMock {
   getEpochByHeight?: Mock;
   saveAssetsMetadata?: Mock;
   getPricesForAsset?: Mock;
+  iterateAuctions?: () => Partial<AsyncIterable<Mock>>;
 }
 export interface TendermintMock {
   broadcastTx?: Mock;
