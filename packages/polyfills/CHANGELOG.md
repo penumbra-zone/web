@@ -1,5 +1,12 @@
 # @penumbra-zone/polyfills
 
+## 4.0.0
+
+### Major Changes
+
+- 423e1d2: - don't publish
+  - remove polyfills now present in esnext
+
 ## 3.0.0
 
 ### Major Changes

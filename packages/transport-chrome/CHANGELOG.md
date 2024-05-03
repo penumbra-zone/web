@@ -1,5 +1,12 @@
 # @penumbra-zone/transport-chrome
 
+## 2.1.2
+
+### Patch Changes
+
+- Updated dependencies [fc500af]
+  - @penumbra-zone/transport-dom@4.0.0
+
 ## 2.1.1
 
 ### Patch Changes

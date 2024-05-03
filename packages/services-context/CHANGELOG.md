@@ -1,5 +1,15 @@
 # @penumbra-zone/services
 
+## 3.0.2
+
+### Patch Changes
+
+- Updated dependencies [6fb898a]
+  - @penumbra-zone/types@4.0.0
+  - @penumbra-zone/storage@3.1.1
+  - @penumbra-zone/query@3.0.1
+  - @penumbra-zone/wasm@4.0.2
+
 ## 3.0.1
 
 ### Patch Changes
