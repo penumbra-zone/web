@@ -48,6 +48,10 @@ import {
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/indexed-db';
+import {
+  AuctionId,
+  DutchAuction,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place
@@ -620,6 +624,22 @@ describe('IndexedDb', () => {
           asOfHeight: 50n,
         }),
       ]);
+    });
+  });
+
+  describe('upsertAuction()', () => {
+    let db: IndexedDb;
+
+    beforeEach(async () => {
+      db = await IndexedDb.initialize({ ...generateInitialProps() });
+    });
+
+    it('inserts an auction', async () => {
+      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auction = new DutchAuction();
+      await db.upsertAuction(auctionId, { auction });
+
+      // const auctions = Array.from
     });
   });
 });

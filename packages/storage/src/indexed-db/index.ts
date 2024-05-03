@@ -692,4 +692,8 @@ export class IndexedDb implements IndexedDbInterface {
       key: uint8ArrayToBase64(auctionId.inner),
     });
   }
+
+  async *iterateAuctions() {
+    const results = this.db.transaction('AUCTIONS', 'readonly').store;
+  }
 }

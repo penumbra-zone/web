@@ -231,8 +231,10 @@ export class BlockProcessor implements BlockProcessorInterface {
         // - update idb
         await this.identifyNewAssets(flush.newNotes);
 
-        for (const spendableNoteRecord of flush.newNotes)
+        for (const spendableNoteRecord of flush.newNotes) {
           recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
+          // spendableNoteRecord.note?.value?.assetId
+        }
         for (const swapRecord of flush.newSwaps)
           recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
       }
@@ -403,6 +405,7 @@ export class BlockProcessor implements BlockProcessorInterface {
      * @todo Handle `actionDutchAuctionWithdraw`, and figure out how to
      * determine the sequence number if there have been multiple withdrawals.
      */
+    return undefined;
   }
 
   /**
