@@ -1,5 +1,22 @@
 # @penumbra-zone/router
 
+## 3.0.2
+
+### Patch Changes
+
+- Updated dependencies [423e1d2]
+- Updated dependencies [fc500af]
+- Updated dependencies [6fb898a]
+  - @penumbra-zone/polyfills@4.0.0
+  - @penumbra-zone/transport-dom@4.0.0
+  - @penumbra-zone/types@4.0.0
+  - @penumbra-zone/storage@3.1.1
+  - @penumbra-zone/crypto-web@3.0.3
+  - @penumbra-zone/perspective@1.0.4
+  - @penumbra-zone/query@3.0.1
+  - @penumbra-zone/services-context@3.0.2
+  - @penumbra-zone/wasm@4.0.2
+
 ## 3.0.1
 
 ### Patch Changes

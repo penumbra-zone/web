@@ -1,5 +1,11 @@
 # @penumbra-zone/storage
 
+## 3.1.1
+
+### Patch Changes
+
+- @penumbra-zone/crypto-web@3.0.3
+
 ## 3.1.0
 
 ### Minor Changes

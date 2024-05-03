@@ -1,5 +1,11 @@
 # @penumbra-zone/transport-dom
 
+## 4.0.0
+
+### Major Changes
+
+- fc500af: correctly build transport-dom
+
 ## 3.0.0
 
 ### Major Changes

@@ -1,5 +1,14 @@
 # @penumbra-zone/client
 
+## 4.0.1
+
+### Patch Changes
+
+- Updated dependencies [fc500af]
+- Updated dependencies [6fb898a]
+  - @penumbra-zone/transport-dom@4.0.0
+  - @penumbra-zone/protobuf@1.0.0
+
 ## 4.0.0
 
 ### Major Changes

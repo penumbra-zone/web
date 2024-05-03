@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/wasm",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {

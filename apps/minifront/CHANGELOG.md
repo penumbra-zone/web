@@ -1,5 +1,18 @@
 # minifront
 
+## 4.3.2
+
+### Patch Changes
+
+- Updated dependencies [fc500af]
+- Updated dependencies [6fb898a]
+  - @penumbra-zone/transport-dom@4.0.0
+  - @penumbra-zone/types@4.0.0
+  - @penumbra-zone/client@4.0.1
+  - @penumbra-zone/crypto-web@3.0.3
+  - @penumbra-zone/perspective@1.0.4
+  - @penumbra-zone/ui@2.0.4
+
 ## 4.3.1
 
 ### Patch Changes

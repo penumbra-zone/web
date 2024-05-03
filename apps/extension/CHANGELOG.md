@@ -1,5 +1,24 @@
 # chrome-extension
 
+## 7.0.2
+
+### Patch Changes
+
+- Updated dependencies [fc500af]
+- Updated dependencies [6fb898a]
+  - @penumbra-zone/transport-dom@4.0.0
+  - @penumbra-zone/types@4.0.0
+  - @penumbra-zone/services@3.0.2
+  - @penumbra-zone/storage@3.1.1
+  - @penumbra-zone/client@4.0.1
+  - @penumbra-zone/transport-chrome@2.1.2
+  - @penumbra-zone/crypto-web@3.0.3
+  - @penumbra-zone/perspective@1.0.4
+  - @penumbra-zone/query@3.0.1
+  - @penumbra-zone/services-context@3.0.2
+  - @penumbra-zone/ui@2.0.4
+  - @penumbra-zone/wasm@4.0.2
+
 ## 7.0.1
 
 ### Patch Changes

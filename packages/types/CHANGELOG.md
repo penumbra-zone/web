@@ -1,5 +1,11 @@
 # @penumbra-zone/types
 
+## 4.0.0
+
+### Major Changes
+
+- 6fb898a: initial release of `@penumbra-zone/protobuf` package containing `typeRegistry`. same removed from `@penumbra-zone/types`
+
 ## 3.0.0
 
 ### Major Changes
