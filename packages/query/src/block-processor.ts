@@ -41,6 +41,7 @@ import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { getAuctionId, getAuctionNftMetadata } from '@penumbra-zone/wasm/auction';
+import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 
 declare global {
   // `var` required for global declaration (as let/const are block scoped)
@@ -392,7 +393,12 @@ export class BlockProcessor implements BlockProcessorInterface {
         // Always a sequence number of 0 when starting a Dutch auction
         0n,
       );
-      await this.indexedDb.saveAssetsMetadata(metadata);
+      await Promise.all([
+        this.indexedDb.saveAssetsMetadata(metadata),
+        this.indexedDb.upsertAuction(auctionId, {
+          auction: new DutchAuction({ description: action.value.description }),
+        }),
+      ]);
     } else if (action.case === 'actionDutchAuctionEnd' && action.value.auctionId) {
       const metadata = getAuctionNftMetadata(
         action.value.auctionId,
