@@ -59,7 +59,7 @@ import type {
 import { sctPosition } from '@penumbra-zone/wasm/tree';
 import {
   AuctionId,
-  DutchAuction,
+  DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 
 interface IndexedDbProps {
@@ -676,16 +676,18 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   // As more auction types are created, add them to T as a union type.
-  async upsertAuction<T extends DutchAuction>(
+  async upsertAuction<T extends DutchAuctionDescription>(
     auctionId: AuctionId,
-    auction: T,
-    noteCommitment: StateCommitment,
+    value: {
+      auction?: T;
+      noteCommitment?: StateCommitment;
+    },
   ): Promise<void> {
     await this.u.update({
       table: 'AUCTIONS',
       value: {
-        auction: auction.toJson() as Jsonified<T>,
-        noteCommitment: noteCommitment.toJson() as Jsonified<StateCommitment>,
+        auction: value.auction?.toJson() as Jsonified<T>,
+        noteCommitment: value.noteCommitment?.toJson() as Jsonified<StateCommitment>,
       },
       key: uint8ArrayToBase64(auctionId.inner),
     });
