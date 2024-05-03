@@ -238,7 +238,7 @@ const getMatchingAmount = (values: Value[], toMatch: AssetId): Amount => {
 
 export const swapValidationErrors = ({ swap }: AllSlices) => {
   return {
-    assetInErr: !swap.assetIn,
+    assetInErr: !swap.assetIn || swap.assetIn.balanceView?.valueView.case === 'unknownAssetId',
     assetOutErr: !swap.assetOut,
     amountErr: (swap.assetIn && amountMoreThanBalance(swap.assetIn, swap.amount)) ?? false,
   };

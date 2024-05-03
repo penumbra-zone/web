@@ -58,27 +58,30 @@ describe('AssetMetadataById request handler', () => {
     });
   });
 
-  test('should successfully get metadata from idb when idb has them', async () => {
+  test('should successfully respond with metadata when idb record is present', async () => {
     mockIndexedDb.getAssetsMetadata?.mockResolvedValue(metadataFromIdb);
     const metadataByIdResponse = new AssetMetadataByIdResponse(
       await assetMetadataById(request, mockCtx),
     );
-    expect(metadataByIdResponse.denomMetadata?.equals(metadataFromIdb)).toBeTruthy();
+    expect(metadataByIdResponse.equals({ denomMetadata: metadataFromIdb })).toBeTruthy();
   });
 
-  test('should successfully get metadata from node if record is not found in idb', async () => {
+  test('should successfully respond with metadata when idb record is absent, but metadata is available from remote rpc', async () => {
     mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
     mockShieldedPool.assetMetadataById.mockResolvedValueOnce(metadataFromNode);
     const metadataByIdResponse = new AssetMetadataByIdResponse(
       await assetMetadataById(request, mockCtx),
     );
-    expect(metadataByIdResponse.denomMetadata?.equals(metadataFromNode)).toBeTruthy();
+    expect(metadataByIdResponse.equals({ denomMetadata: metadataFromNode })).toBeTruthy();
   });
 
-  test('should fail to get metadata when metadata not found in idb and node', async () => {
+  test('should successfully respond even when no metadata is available', async () => {
     mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
     mockShieldedPool.assetMetadataById.mockResolvedValueOnce(undefined);
-    await expect(assetMetadataById(request, mockCtx)).rejects.toThrow();
+    const metadataByIdResponse = new AssetMetadataByIdResponse(
+      await assetMetadataById(request, mockCtx),
+    );
+    expect(metadataByIdResponse.equals({})).toBeTruthy();
   });
 
   test('should fail if assetId is missing in request', async () => {

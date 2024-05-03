@@ -28,7 +28,10 @@ const isSwappable = (balancesResponse: BalancesResponse) =>
     pattern => !pattern.matches(getDisplayDenomFromView(balancesResponse.balanceView)),
   );
 
+const isKnown = (balancesResponse: BalancesResponse) =>
+  balancesResponse.balanceView?.valueView.case === 'knownAssetId';
+
 export const getSwappableBalancesResponses = async (): Promise<BalancesResponse[]> => {
   const balancesResponses = await getBalances();
-  return balancesResponses.filter(isSwappable).sort(byBalanceDescending);
+  return balancesResponses.filter(isSwappable).filter(isKnown).sort(byBalanceDescending);
 };
