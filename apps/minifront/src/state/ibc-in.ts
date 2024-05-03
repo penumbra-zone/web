@@ -4,9 +4,7 @@ import { CosmosAssetBalance } from '../components/ibc/ibc-in/hooks';
 import { getAddrByIndex } from '../fetchers/address';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { ChainWalletContext } from '@cosmos-kit/core/cjs/types/hook';
-import { queryClient } from '../main';
-import { Registry } from '@penumbra-labs/registry';
-import { REGISTRY_QUERY_KEY } from '../fetchers/registry';
+import { chainRegistryClient } from '../fetchers/registry';
 import { augmentToAsset, fromDisplayAmount } from '../components/ibc/ibc-in/asset-utils';
 import { MsgTransfer } from 'osmo-query/ibc/applications/transfer/v1/tx';
 import { cosmos, ibc } from 'osmo-query';
@@ -14,6 +12,7 @@ import { Toast } from '@penumbra-zone/ui/lib/toast/toast';
 import { ibcChannelClient, tendermintClient } from '../clients';
 import { clientStateForChannel, currentTimePlusTwoDaysRounded } from './ibc-out';
 import { StdFee } from '@cosmjs/stargate';
+import { getChainId } from '../fetchers/chain-id';
 
 interface PenumbraAddrs {
   ephemeral: string;
@@ -32,7 +31,6 @@ export interface IbcInSlice {
   issueTx: (
     address: string,
     getClient: ChainWalletContext['getSigningStargateClient'],
-    estimateFee: ChainWalletContext['estimateFee'],
   ) => Promise<void>;
 }
 
@@ -70,19 +68,18 @@ export const createIbcInSlice = (): SliceCreator<IbcInSlice> => (set, get) => {
         };
       });
     },
-    issueTx: async (address, getClient, estimateFee) => {
+    issueTx: async (address, getClient) => {
       const toast = new Toast();
       try {
         toast.loading().message('Issuing IBC transaction').render();
-        const { height, transactionHash } = await execute(
-          get().ibcIn,
-          address,
-          getClient,
-          estimateFee,
-        );
+        const { height, transactionHash } = await execute(get().ibcIn, address, getClient);
+        // TODO: Don't think txHash is enough information to consider this a success
+        //       e.g. https://www.mintscan.io/osmosis-testnet/tx/C9AE1477D63B2F9AF4A5D23217A5548C3EE169DBF358F17E1885E1A4873C98C3
+        //       It successfully broadcasted, but the transaction was a failure
         toast
           .success()
           .message(`Success! Height: ${height}`)
+          // TODO: Link to mintscan. Keep a map of chain-id to mintscan domain?
           .description(`Tx hash: ${transactionHash}`)
           .render();
       } catch (e) {
@@ -96,7 +93,6 @@ async function execute(
   slice: IbcInSlice,
   address: string,
   getStargateClient: ChainWalletContext['getSigningStargateClient'],
-  estimateFee: ChainWalletContext['estimateFee'],
 ) {
   const { penumbraAddrs, selectedChain, coin, amount } = slice;
   if (!penumbraAddrs) throw new Error('Penumbra address not available');
@@ -104,43 +100,40 @@ async function execute(
   if (!amount) throw new Error('Amount has not been entered');
   if (!selectedChain) throw new Error('No chain has been selected');
 
-  const { timeoutHeight, timeoutTimestamp } = await getTimeout();
+  const penumbraChainId = await getChainId();
+  if (!penumbraChainId) throw new Error('Penumbra chain id could not be retrieved');
+
+  const { timeoutHeight, timeoutTimestamp } = await getTimeout(penumbraChainId);
   const assetMetadata = augmentToAsset(coin.raw.denom, selectedChain.chainName);
 
-  const transferToken = fromDisplayAmount(assetMetadata, amount);
+  const transferToken = fromDisplayAmount(assetMetadata, coin.displayDenom, amount);
   const params: MsgTransfer = {
     sourcePort: 'transfer',
-    sourceChannel: await getCounterpartyChannelId(selectedChain),
+    sourceChannel: await getCounterpartyChannelId(selectedChain, penumbraChainId),
     sender: address,
     receiver: penumbraAddrs.ephemeral,
     token: transferToken,
     timeoutHeight,
     timeoutTimestamp,
-    memo: `IBC transfer from ${selectedChain.chainName} (msg transfer)`,
+    memo: '',
   };
-  console.log(params);
   const ibcTransferMsg = ibc.applications.transfer.v1.MessageComposer.withTypeUrl.transfer(params);
 
-  // const estimatedFee = await estimateFee([ibcTransferMsg]);
-
-  // TODO: this is not right
+  // TODO: Properly estimate fee using estimateFee() hook from useChain()
   const estimatedFee: StdFee = {
     amount: [{ denom: transferToken.denom, amount: '1000' }],
     gas: '250000',
   };
   const client = await getStargateClient();
-  const signedTx = await client.sign(
-    address,
-    [ibcTransferMsg],
-    estimatedFee,
-    `IBC transfer from ${selectedChain.chainName} (signature tx)`,
-  );
+  const signedTx = await client.sign(address, [ibcTransferMsg], estimatedFee, '');
   return await client.broadcastTx(cosmos.tx.v1beta1.TxRaw.encode(signedTx).finish());
 }
 
-const getCounterpartyChannelId = async (counterpartyChain: ChainInfo): Promise<string> => {
-  const registry = queryClient.getQueryData<Registry>(REGISTRY_QUERY_KEY);
-  if (!registry) throw new Error('Registry is not available in cache');
+const getCounterpartyChannelId = async (
+  counterpartyChain: ChainInfo,
+  penumbraChainId: string,
+): Promise<string> => {
+  const registry = await chainRegistryClient.get(penumbraChainId);
 
   const penumbraChannel = registry.ibcConnections.find(
     c => c.chainId === counterpartyChain.chainId,
@@ -151,8 +144,8 @@ const getCounterpartyChannelId = async (counterpartyChain: ChainInfo): Promise<s
     );
   }
 
-  // TODO: implement collect result of paginating through all
-  // TODO: promise.race
+  // TODO: implement collecting result of paginating queries over all channels
+  //       Use Promise.race() to have early exit and parallel queries
   const { channels } = await ibcChannelClient.channels({});
   for (const channel of channels) {
     const clientState = await clientStateForChannel(channel);
@@ -170,8 +163,23 @@ const getCounterpartyChannelId = async (counterpartyChain: ChainInfo): Promise<s
   throw new Error(`Did not find counterparty chain id for ${penumbraChannel}`);
 };
 
-// Get timeout of penumbra chain
-const getTimeout = async () => {
+/**
+ * Examples:
+ * getRevisionNumberFromChainId("grand-1") returns 1n
+ * getRevisionNumberFromChainId("osmo-test-5") returns 5n
+ * getRevisionNumberFromChainId("penumbra-testnet-deimos-7") returns 7n
+ */
+export const parseRevisionNumberFromChainId = (chainId: string): bigint => {
+  const match = chainId.match(/-(\d+)$/);
+  if (match?.[1]) {
+    return BigInt(match[1]);
+  } else {
+    throw new Error(`No revision number found within chain id: ${chainId}`);
+  }
+};
+
+// Get timeout from penumbra chain blocks
+const getTimeout = async (chainId: string) => {
   const { syncInfo } = await tendermintClient.getStatus({});
   const height = syncInfo?.latestBlockHeight;
   if (height === undefined) {
@@ -179,7 +187,7 @@ const getTimeout = async () => {
   }
 
   const timeoutHeight = {
-    revisionNumber: 7n, // Chain version, TODO: env var?--no pull from chain id
+    revisionNumber: parseRevisionNumberFromChainId(chainId),
     revisionHeight: height + 1000n, // assuming a block time of 10s and adding ~1000 blocks (~3 hours)
   };
   const timeoutTimestamp = currentTimePlusTwoDaysRounded(Date.now());
@@ -192,14 +200,23 @@ const isIbcAsset = (denom: string): boolean => {
   return ibcRegex.test(denom);
 };
 
+export const isReadySelector = (state: AllSlices) => {
+  const { amount, coin, selectedChain, penumbraAddrs } = state.ibcIn;
+  const errorsPresent = Object.values(ibcErrorSelector(state)).some(Boolean);
+  const formsFilled =
+    Boolean(amount) && Boolean(coin) && Boolean(selectedChain) && Boolean(penumbraAddrs);
+  return !errorsPresent && formsFilled;
+};
+
 export const ibcErrorSelector = (state: AllSlices) => {
   const { amount, coin } = state.ibcIn;
 
   const numberTooLow = Number(amount) <= 0;
   const inputAmountTooBig = Number(coin?.displayAmount) < Number(amount);
-  const isNotValid = Boolean(coin) && Boolean(amount) && (inputAmountTooBig || numberTooLow);
+  const isNotValidAmount = Boolean(coin) && Boolean(amount) && (inputAmountTooBig || numberTooLow);
+
   return {
-    amountErr: isNotValid,
+    amountErr: isNotValidAmount,
     // Testnet coins don't seem to have assetType field. Checking manually for ibc address first.
     isUnsupportedAsset:
       coin && (isIbcAsset(coin.raw.denom) || (coin.assetType && coin.assetType !== 'sdk.coin')),

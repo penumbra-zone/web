@@ -28,11 +28,13 @@ const useChainInfos = (): ChainInfo[] => {
   return useMemo(
     () =>
       chainRecords.map(r => {
+        if (!r.chain?.chain_id) throw new Error(`No chain id found for ${r.name}`);
+
         return {
           chainName: r.name,
-          label: r.chain?.pretty_name ?? '',
+          label: r.chain.pretty_name,
           icon: getChainLogo(r.name),
-          chainId: r.chain!.chain_id, // TODO: double check this
+          chainId: r.chain.chain_id,
         };
       }),
     [chainRecords, getChainLogo],

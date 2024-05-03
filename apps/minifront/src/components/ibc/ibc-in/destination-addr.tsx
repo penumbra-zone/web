@@ -3,11 +3,13 @@ import { ibcInSelector } from '../../../state/ibc-in';
 import { useEffect } from 'react';
 import { IncognitoIcon } from '@penumbra-zone/ui/components/ui/icons/incognito';
 
-export const AddressSelector = () => {
+export const DestinationAddr = () => {
   const { penumbraAddrs, fetchPenumbraAddrs } = useStore(ibcInSelector);
 
-  // On mount, get ephemeral address for Account #0
   // TODO: allow for user account selection
+  // On mount, get normal+ephemeral address for Account #0
+  // List disable reason: Do not want to re-render ephemeral address every-render
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => void fetchPenumbraAddrs(), []);
 
   return (

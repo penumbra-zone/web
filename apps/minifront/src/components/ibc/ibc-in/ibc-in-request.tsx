@@ -1,6 +1,6 @@
 import { useChainConnector, useCosmosChainBalances } from './hooks';
 import { useStore } from '../../../state';
-import { ibcErrorSelector, ibcInSelector } from '../../../state/ibc-in';
+import { ibcErrorSelector, ibcInSelector, isReadySelector } from '../../../state/ibc-in';
 import {
   Select,
   SelectContent,
@@ -11,16 +11,17 @@ import {
 import { Avatar, AvatarImage } from '@penumbra-zone/ui/components/ui/avatar';
 import { Identicon } from '@penumbra-zone/ui/components/ui/identicon';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
-import { AddressSelector } from './address-selector';
+import { DestinationAddr } from './destination-addr';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { LockClosedIcon } from '@radix-ui/react-icons';
 
 export const IbcInRequest = () => {
-  const { address, getSigningStargateClient, estimateFee } = useChainConnector();
+  const { address, getSigningStargateClient } = useChainConnector();
   const { selectedChain, setCoin, issueTx } = useStore(ibcInSelector);
   const { data } = useCosmosChainBalances();
 
   const { isUnsupportedAsset } = useStore(ibcErrorSelector);
+  const isReady = useStore(isReadySelector);
 
   // User is not ready to issue request
   if (!address || !selectedChain || !data?.length) return <></>;
@@ -57,12 +58,12 @@ export const IbcInRequest = () => {
         </Select>
         <AmountInput />
       </div>
-      <AddressSelector />
+      <DestinationAddr />
       <Button
         variant='onLight'
-        disabled={isUnsupportedAsset} // TODO: Create real ready guard
+        disabled={!isReady}
         className='w-full'
-        onClick={() => void issueTx(address, getSigningStargateClient, estimateFee)}
+        onClick={() => void issueTx(address, getSigningStargateClient)}
       >
         <div className='flex items-center gap-2'>
           <LockClosedIcon />

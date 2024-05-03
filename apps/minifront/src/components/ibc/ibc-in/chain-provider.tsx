@@ -5,16 +5,9 @@ import { SignerOptions, wallets } from 'cosmos-kit';
 import { Chain } from '@chain-registry/types';
 import { ReactNode, useMemo } from 'react';
 import { Registry as PenumbraRegistry } from '@penumbra-labs/registry';
-import { GasPrice } from '@cosmjs/stargate';
 
 import '@interchain-ui/react/styles';
-
-const gasPrices: Record<string, GasPrice> = {
-  osmosis: GasPrice.fromString('0.0025uosmo'),
-  osmosistestnet: GasPrice.fromString('0.0025uosmo'),
-  noble: GasPrice.fromString('0.0025unoble'),
-  nobletestnet: GasPrice.fromString('0.0025unoble'),
-};
+import { GasPrice } from '@cosmjs/stargate';
 
 const signerOptions: SignerOptions = {
   signingStargate: () => {
@@ -24,11 +17,14 @@ const signerOptions: SignerOptions = {
     };
   },
   signingCosmwasm: (chain: Chain | string) => {
-    // TODO: this doesn't work
     const chainName = getChainName(chain);
-    const gasPrice = gasPrices[chainName];
-    if (gasPrice) {
-      return { gasPrice };
+
+    // TODO: Find comprehensive way to get gas prices for all chains we connect to
+
+    if (chainName === 'osmosis' || chainName === 'osmosistestnet') {
+      return {
+        gasPrice: GasPrice.fromString('0.0025uosmo'),
+      };
     } else {
       return {};
     }

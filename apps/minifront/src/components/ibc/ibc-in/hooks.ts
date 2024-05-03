@@ -69,6 +69,7 @@ interface BalancesResponse {
   pagination: { nexKey: Uint8Array; total: bigint };
 }
 
+// Reference: https://github.com/cosmos/chain-registry/blob/master/assetlist.schema.json#L60
 type AssetType =
   | 'sdk.coin'
   | 'cw20'

@@ -27,21 +27,33 @@ const fallbackAsset = (denom: string): Asset => {
 export const toDisplayAmount = (asset: Asset, coin: Coin): string => {
   const currentExponent = getExponent(asset.denom_units, coin.denom);
   const displayExponent = getExponent(asset.denom_units, asset.display);
+  if (currentExponent === undefined || displayExponent === undefined) {
+    return coin.amount;
+  }
 
   const exponentDifference = currentExponent - displayExponent;
   return new BigNumber(coin.amount).shiftedBy(exponentDifference).toString();
 };
 
 // Converts a readable amount back to its base amount
-export const fromDisplayAmount = (asset: Asset, displayAmount: string): Coin => {
-  const displayExponent = getExponent(asset.denom_units, asset.display);
-  const baseExponent = getExponent(asset.denom_units, asset.base);
+export const fromDisplayAmount = (
+  asset: Asset,
+  displayDenom: string,
+  displayAmount: string,
+): Coin => {
+  const displayExponent = getExponent(asset.denom_units, displayDenom);
+  if (displayExponent === undefined) {
+    return { denom: displayDenom, amount: displayAmount };
+  }
+
+  // Defaults to zero if not found
+  const baseExponent = getExponent(asset.denom_units, asset.base) ?? 0;
 
   const exponentDifference = displayExponent - baseExponent;
   const amount = new BigNumber(displayAmount).shiftedBy(exponentDifference).toString();
   return { denom: asset.base, amount };
 };
 
-const getExponent = (denomUnits: AssetDenomUnit[], denom: string): number => {
-  return denomUnits.find(unit => unit.denom === denom)?.exponent ?? 0;
+const getExponent = (denomUnits: AssetDenomUnit[], denom: string): number | undefined => {
+  return denomUnits.find(unit => unit.denom === denom)?.exponent;
 };

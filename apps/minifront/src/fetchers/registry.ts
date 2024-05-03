@@ -3,13 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { getChainId } from './chain-id';
 import { getAssetMetadataById } from './assets';
 
-const chainRegistryClient = new ChainRegistryClient();
-
-export const REGISTRY_QUERY_KEY = ['penumbraRegistry'];
+export const chainRegistryClient = new ChainRegistryClient();
 
 export const useRegistry = () => {
   return useQuery({
-    queryKey: REGISTRY_QUERY_KEY,
+    queryKey: ['penumbraRegistry'],
     queryFn: async (): Promise<Registry> => {
       const chainId = await getChainId();
       if (!chainId) throw new Error('No chain id in response');
