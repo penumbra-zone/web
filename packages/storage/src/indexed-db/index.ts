@@ -42,7 +42,7 @@ import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
 import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
-import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
+import { base64ToUint8Array, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import {
   IDB_TABLES,
@@ -683,17 +683,44 @@ export class IndexedDb implements IndexedDbInterface {
       noteCommitment?: StateCommitment;
     },
   ): Promise<void> {
+    const key = uint8ArrayToBase64(auctionId.inner);
+    const existingRecord = await this.db.get('AUCTIONS', key);
+    const auction =
+      (value.auction?.toJson() as Jsonified<T> | undefined) ?? existingRecord?.auction;
+    const noteCommitment =
+      (value.noteCommitment?.toJson() as Jsonified<StateCommitment> | undefined) ??
+      existingRecord?.noteCommitment;
+
     await this.u.update({
       table: 'AUCTIONS',
+      key,
       value: {
-        auction: value.auction?.toJson() as Jsonified<T>,
-        noteCommitment: value.noteCommitment?.toJson() as Jsonified<StateCommitment>,
+        auction,
+        noteCommitment,
       },
-      key: uint8ArrayToBase64(auctionId.inner),
     });
   }
 
-  async *iterateAuctions() {
-    const results = this.db.transaction('AUCTIONS', 'readonly').store;
+  async *iterateAuctions(): AsyncGenerator<
+    {
+      id: AuctionId;
+      value: {
+        auction?: DutchAuction;
+        noteCommitment?: StateCommitment;
+      };
+    },
+    void
+  > {
+    for await (const result of this.db.transaction('AUCTIONS', 'readonly').store) {
+      yield {
+        id: new AuctionId({ inner: base64ToUint8Array(result.key) }),
+        value: {
+          auction: result.value.auction ? DutchAuction.fromJson(result.value.auction) : undefined,
+          noteCommitment: result.value.noteCommitment
+            ? StateCommitment.fromJson(result.value.noteCommitment)
+            : undefined,
+        },
+      };
+    }
   }
 }
