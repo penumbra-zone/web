@@ -5,9 +5,11 @@ import { getAssetMetadataById } from './assets';
 
 const chainRegistryClient = new ChainRegistryClient();
 
+export const REGISTRY_QUERY_KEY = ['penumbraRegistry'];
+
 export const useRegistry = () => {
   return useQuery({
-    queryKey: ['penumbraRegistry'],
+    queryKey: REGISTRY_QUERY_KEY,
     queryFn: async (): Promise<Registry> => {
       const chainId = await getChainId();
       if (!chainId) throw new Error('No chain id in response');

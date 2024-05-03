@@ -13,12 +13,16 @@ const SelectValue = SelectPrimitive.Value;
 
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & { open?: boolean }
->(({ className, children, open, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & {
+    open?: boolean;
+    textColor?: string;
+  }
+>(({ className, children, open, textColor = 'text-muted', ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      'flex w-full items-center justify-between bg-background  ring-offset-background focus:outline-none focus:ring-0 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-[15px] leading-[22px] font-bold text-light-brown',
+      'flex w-full items-center justify-between bg-background ring-offset-background focus:outline-none focus:ring-0 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-[15px] leading-[22px] font-bold text-light-brown',
+      textColor,
       className,
     )}
     {...props}
@@ -26,7 +30,7 @@ const SelectTrigger = React.forwardRef<
     {children}
     <SelectPrimitive.Icon asChild>
       <ChevronDownIcon
-        className={cn('h-6 w-6 text-muted transition-all duration-500', open && 'rotate-180')}
+        className={cn('h-6 w-6 transition-all duration-500', open && 'rotate-180', textColor)}
       />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>

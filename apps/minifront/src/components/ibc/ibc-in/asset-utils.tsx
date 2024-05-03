@@ -2,28 +2,46 @@ import { assets as cosmosAssetList } from 'chain-registry';
 import { Coin } from 'osmo-query';
 import { Asset } from '@chain-registry/types';
 import { BigNumber } from 'bignumber.js';
+import { AssetDenomUnit } from '@chain-registry/types/assets';
 
 // Searches for corresponding denom in asset registry and returns the metadata
-export const augmentToAsset = (coin: Coin, chainName: string): Asset => {
+export const augmentToAsset = (denom: string, chainName: string): Asset => {
   const match = cosmosAssetList
     .find(({ chain_name }) => chain_name === chainName)
-    ?.assets.find(asset => asset.base === coin.denom);
+    ?.assets.find(asset => asset.base === denom);
 
-  return match ? match : fallbackAsset(coin);
+  return match ? match : fallbackAsset(denom);
 };
 
-const fallbackAsset = (coin: Coin): Asset => {
+const fallbackAsset = (denom: string): Asset => {
   return {
-    base: coin.denom,
-    denom_units: [{ denom: coin.denom, exponent: 0 }],
-    display: coin.denom,
-    name: coin.denom,
-    symbol: coin.denom,
+    base: denom,
+    denom_units: [{ denom, exponent: 0 }],
+    display: denom,
+    name: denom,
+    symbol: denom,
   };
 };
 
 // Helps us convert from say 41000000uosmo to the more readable 41osmo
-export const rawToDisplayAmount = (asset: Asset, amount: string) => {
-  const displayUnit = asset.denom_units.find(({ denom }) => denom === asset.display)?.exponent ?? 0;
-  return new BigNumber(amount).shiftedBy(-displayUnit).toString();
+export const toDisplayAmount = (asset: Asset, coin: Coin): string => {
+  const currentExponent = getExponent(asset.denom_units, coin.denom);
+  const displayExponent = getExponent(asset.denom_units, asset.display);
+
+  const exponentDifference = currentExponent - displayExponent;
+  return new BigNumber(coin.amount).shiftedBy(exponentDifference).toString();
+};
+
+// Converts a readable amount back to its base amount
+export const fromDisplayAmount = (asset: Asset, displayAmount: string): Coin => {
+  const displayExponent = getExponent(asset.denom_units, asset.display);
+  const baseExponent = getExponent(asset.denom_units, asset.base);
+
+  const exponentDifference = displayExponent - baseExponent;
+  const amount = new BigNumber(displayAmount).shiftedBy(exponentDifference).toString();
+  return { denom: asset.base, amount };
+};
+
+const getExponent = (denomUnits: AssetDenomUnit[], denom: string): number => {
+  return denomUnits.find(unit => unit.denom === denom)?.exponent ?? 0;
 };

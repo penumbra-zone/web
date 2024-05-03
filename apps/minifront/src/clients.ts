@@ -7,6 +7,7 @@ import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/cor
 import { Query as IbcChannelService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/channel/v1/query_connect';
 import { Query as IbcConnectionService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/connection/v1/query_connect';
 import { QueryService as SctService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/sct/v1/sct_connect';
+import { TendermintProxyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/util/tendermint_proxy/v1/tendermint_proxy_connect';
 
 export const viewClient = createPraxClient(ViewService);
 
@@ -23,3 +24,5 @@ export const ibcConnectionClient = createPraxClient(IbcConnectionService);
 export const sctClient = createPraxClient(SctService);
 
 export const stakeClient = createPraxClient(StakeService);
+
+export const tendermintClient = createPraxClient(TendermintProxyService);

@@ -1,13 +1,20 @@
 import { ChainProvider } from '@cosmos-kit/react';
 import { aminoTypes, registry as CosmosRegistry } from './config/defaults';
 import { assets, chains } from 'chain-registry';
-import { GasPrice } from '@cosmjs/stargate';
 import { SignerOptions, wallets } from 'cosmos-kit';
 import { Chain } from '@chain-registry/types';
 import { ReactNode, useMemo } from 'react';
 import { Registry as PenumbraRegistry } from '@penumbra-labs/registry';
+import { GasPrice } from '@cosmjs/stargate';
 
 import '@interchain-ui/react/styles';
+
+const gasPrices: Record<string, GasPrice> = {
+  osmosis: GasPrice.fromString('0.0025uosmo'),
+  osmosistestnet: GasPrice.fromString('0.0025uosmo'),
+  noble: GasPrice.fromString('0.0025unoble'),
+  nobletestnet: GasPrice.fromString('0.0025unoble'),
+};
 
 const signerOptions: SignerOptions = {
   signingStargate: () => {
@@ -17,10 +24,11 @@ const signerOptions: SignerOptions = {
     };
   },
   signingCosmwasm: (chain: Chain | string) => {
-    if (isOsmosisChain(chain)) {
-      return {
-        gasPrice: GasPrice.fromString('0.0025uosmo'),
-      };
+    // TODO: this doesn't work
+    const chainName = getChainName(chain);
+    const gasPrice = gasPrices[chainName];
+    if (gasPrice) {
+      return { gasPrice };
     } else {
       return {};
     }
@@ -42,7 +50,7 @@ export const IbcChainProvider = ({ registry, children }: IbcProviderProps) => {
       wallets={wallets}
       walletConnectOptions={{
         signClient: {
-          projectId: 'a8510432ebb71e6948cfd6cde54b70f7',
+          projectId: 'a8510432ebb71e6948cfd6cde54b70f7', // TODO: get penumbra project id
           relayUrl: 'wss://relay.walletconnect.org',
           metadata: {
             name: 'IBC into Penumbra',
@@ -67,11 +75,6 @@ const chainsInPenumbraRegistry = ({ ibcConnections }: PenumbraRegistry) => {
   return chains.filter(c => ibcConnections.some(i => c.chain_id === i.chainId));
 };
 
-const isOsmosisChain = (chain: unknown): chain is Chain => {
-  return (
-    typeof chain === 'object' &&
-    chain !== null &&
-    'chain_name' in chain &&
-    (chain.chain_name === 'osmosis' || chain.chain_name === 'osmosistestnet')
-  );
+const getChainName = (c: Chain | string): string => {
+  return typeof c === 'string' ? c : c.chain_name;
 };
