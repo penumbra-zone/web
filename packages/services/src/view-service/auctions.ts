@@ -13,6 +13,7 @@ import { assetPatterns } from '@penumbra-zone/constants/assets';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax';
 import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
+import { Code, ConnectError } from '@connectrpc/connect';
 
 const getBech32mAuctionId = (
   balancesResponse: PartialMessage<BalancesResponse>,
@@ -31,6 +32,10 @@ const getBech32mAuctionId = (
 export const auctions: Impl['auctions'] = async function* (req, ctx) {
   const { includeInactive, queryLatestState, accountFilter } = req;
 
+  if (queryLatestState) {
+    throw new ConnectError('`queryLatestState` not yet implemented', Code.Unimplemented);
+  }
+
   const bech32mAuctionIds = new Set<string>();
   for await (const balancesResponse of balances(new BalancesRequest({ accountFilter }), ctx)) {
     const auctionId = getBech32mAuctionId(balancesResponse);
@@ -46,6 +51,9 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
 
   for await (const { id, value } of indexedDb.iterateAuctions()) {
     if (!bech32mAuctionIds.has(bech32mAuctionId(id))) continue;
+
+    if (!includeInactive && value.auction?.state?.seq !== 0n) continue;
+
     let noteRecord: SpendableNoteRecord | undefined;
     if (value.noteCommitment) {
       noteRecord = await indexedDb.getSpendableNoteByCommitment(value.noteCommitment);

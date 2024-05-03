@@ -19,10 +19,9 @@ import { servicesCtx } from '../ctx/prax';
 import { IndexedDbMock, MockServices } from '../test-utils';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 
-const AUCTION_ID = new AuctionId({ inner: new Uint8Array(Array(32).fill(0)) });
-const BECH32M_AUCTION_ID = bech32mAuctionId(AUCTION_ID);
-
-const MOCK_AUCTION = new DutchAuction({
+const AUCTION_ID_1 = new AuctionId({ inner: new Uint8Array(Array(32).fill(0)) });
+const BECH32M_AUCTION_ID_1 = bech32mAuctionId(AUCTION_ID_1);
+const MOCK_AUCTION_1 = new DutchAuction({
   description: {
     startHeight: 0n,
     endHeight: 120n,
@@ -33,37 +32,84 @@ const MOCK_AUCTION = new DutchAuction({
   },
 });
 
+const AUCTION_ID_2 = new AuctionId({ inner: new Uint8Array(Array(32).fill(0)) });
+const BECH32M_AUCTION_ID_2 = bech32mAuctionId(AUCTION_ID_2);
+const MOCK_AUCTION_2 = new DutchAuction({
+  description: {
+    startHeight: 120n,
+    endHeight: 240n,
+  },
+  state: {
+    seq: 1n,
+    nextTrigger: 121n,
+  },
+});
+
+const AUCTION_ID_3 = new AuctionId({ inner: new Uint8Array(Array(32).fill(0)) });
+const BECH32M_AUCTION_ID_3 = bech32mAuctionId(AUCTION_ID_3);
+const MOCK_AUCTION_3 = new DutchAuction({
+  description: {
+    startHeight: 240n,
+    endHeight: 360n,
+  },
+  state: {
+    seq: 2n,
+    nextTrigger: 241n,
+  },
+});
+
 const MOCK_SPENDABLE_NOTE_RECORD = new SpendableNoteRecord({
   heightCreated: 1234n,
 });
 
 vi.mock('./balances', () => ({
   *balances() {
-    yield new BalancesResponse({
-      balanceView: {
-        valueView: {
-          case: 'knownAssetId',
-          value: {
-            amount: { hi: 0n, lo: 1n },
-            metadata: {
-              base: `auctionnft_0_${BECH32M_AUCTION_ID}`,
-              display: `auctionnft_0_${BECH32M_AUCTION_ID}`,
-              denomUnits: [{ denom: `auctionnft_0_${BECH32M_AUCTION_ID}`, exponent: 0 }],
-              penumbraAssetId: { inner: new Uint8Array([0, 1, 2, 3]) },
-              symbol: 'auction(abcd1234...)',
+    const auctionsThisUserControls = [
+      BECH32M_AUCTION_ID_1,
+      BECH32M_AUCTION_ID_2,
+      BECH32M_AUCTION_ID_3,
+    ];
+    for (const bech32mAuctionId of auctionsThisUserControls) {
+      yield new BalancesResponse({
+        balanceView: {
+          valueView: {
+            case: 'knownAssetId',
+            value: {
+              amount: { hi: 0n, lo: 1n },
+              metadata: {
+                base: `auctionnft_0_${bech32mAuctionId}`,
+                display: `auctionnft_0_${bech32mAuctionId}`,
+                denomUnits: [{ denom: `auctionnft_0_${bech32mAuctionId}`, exponent: 0 }],
+                penumbraAssetId: { inner: new Uint8Array([0, 1, 2, 3]) },
+                symbol: 'auction(abcd1234...)',
+              },
             },
           },
         },
-      },
-    });
+      });
+    }
   },
 }));
 
 const testData = [
   {
-    id: AUCTION_ID,
+    id: AUCTION_ID_1,
     value: {
-      auction: MOCK_AUCTION,
+      auction: MOCK_AUCTION_1,
+      noteCommitment: new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) }),
+    },
+  },
+  {
+    id: AUCTION_ID_2,
+    value: {
+      auction: MOCK_AUCTION_2,
+      noteCommitment: new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) }),
+    },
+  },
+  {
+    id: AUCTION_ID_3,
+    value: {
+      auction: MOCK_AUCTION_3,
       noteCommitment: new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) }),
     },
   },
@@ -73,7 +119,6 @@ describe('Auctions request handler', () => {
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
   let mockIndexedDb: IndexedDbMock;
-  let req: AuctionsRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -116,17 +161,15 @@ describe('Auctions request handler', () => {
     mockIterateAuctions.next.mockResolvedValueOnce({
       done: true,
     });
-
-    req = new AuctionsRequest();
   });
 
   it('returns auctions', async () => {
+    const req = new AuctionsRequest();
     const result = await Array.fromAsync(auctions(req, mockCtx));
 
-    expect(result.length).toBe(1);
     expect(result[0]).toEqual(
       new AuctionsResponse({
-        id: AUCTION_ID,
+        id: AUCTION_ID_1,
         auction: {
           typeUrl: DutchAuction.typeName,
           value: testData[0]!.value.auction.toBinary(),
@@ -134,5 +177,19 @@ describe('Auctions request handler', () => {
         noteRecord: MOCK_SPENDABLE_NOTE_RECORD,
       }),
     );
+  });
+
+  it('returns only active auctions by default', async () => {
+    const req = new AuctionsRequest();
+    const result = await Array.fromAsync(auctions(req, mockCtx));
+
+    expect(result.length).toBe(1);
+  });
+
+  it('includes inactive auctions when requested', async () => {
+    const req = new AuctionsRequest({ includeInactive: true });
+    const result = await Array.fromAsync(auctions(req, mockCtx));
+
+    expect(result.length).toBe(3);
   });
 });
