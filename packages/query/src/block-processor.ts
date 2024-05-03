@@ -405,7 +405,6 @@ export class BlockProcessor implements BlockProcessorInterface {
      * @todo Handle `actionDutchAuctionWithdraw`, and figure out how to
      * determine the sequence number if there have been multiple withdrawals.
      */
-    return undefined;
   }
 
   /**
