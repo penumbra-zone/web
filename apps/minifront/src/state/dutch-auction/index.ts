@@ -104,6 +104,10 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
 
   auctions: [],
   loadAuctions: async () => {
+    set(state => {
+      state.dutchAuction.auctions = [];
+    });
+
     for await (const response of viewClient.auctions({})) {
       if (!response.auction) continue;
       const auction = DutchAuction.fromBinary(response.auction.value);
