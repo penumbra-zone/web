@@ -4,6 +4,8 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { planBuildBroadcast } from '../helpers';
 import { assembleRequest } from './assemble-request';
 import { DurationOption } from './constants';
+import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { viewClient } from '../../clients';
 
 export interface DutchAuctionSlice {
   balancesResponses: BalancesResponse[];
@@ -22,6 +24,8 @@ export interface DutchAuctionSlice {
   setMaxOutput: (maxOutput: string) => void;
   onSubmit: () => Promise<void>;
   txInProgress: boolean;
+  auctions: DutchAuction[];
+  loadAuctions: () => Promise<void>;
 }
 
 export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (set, get) => ({
@@ -91,4 +95,17 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   },
 
   txInProgress: false,
+
+  auctions: [],
+  loadAuctions: async () => {
+    for await (const response of viewClient.auctions({})) {
+      if (!response.auction) continue;
+      const auction = DutchAuction.fromBinary(response.auction.value);
+      const auctions = [...get().dutchAuction.auctions, auction];
+
+      set(state => {
+        state.dutchAuction.auctions = auctions;
+      });
+    }
+  },
 });

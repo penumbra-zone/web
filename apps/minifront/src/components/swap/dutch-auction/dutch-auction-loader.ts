@@ -6,6 +6,9 @@ import { getAllAssets } from '../../../fetchers/assets';
 export const DutchAuctionLoader = async () => {
   await throwIfPraxNotConnectedTimeout();
 
+  // Load into state, but don't block rendering.
+  void useStore.getState().dutchAuction.loadAuctions();
+
   const [assets, balancesResponses] = await Promise.all([
     getAllAssets(),
     getSwappableBalancesResponses(),
