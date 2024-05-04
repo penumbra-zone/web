@@ -25,8 +25,6 @@ const auctionsSelector = (state: AllSlices) => ({
 export const Auctions = () => {
   const { auctions, metadataByAssetId } = useStoreShallow(auctionsSelector);
 
-  if (!auctions.length) return null;
-
   return (
     <>
       <p className='mb-2 bg-text-linear bg-clip-text font-headline text-xl font-semibold leading-[30px] text-transparent md:text-2xl md:font-bold md:leading-9'>
@@ -34,6 +32,8 @@ export const Auctions = () => {
       </p>
 
       <div className='flex flex-col gap-2'>
+        {!auctions.length && "You don't currently have any auctions running."}
+
         {auctions.map(auction => (
           <ViewBox
             key={auction.description?.nonce.toString()}
