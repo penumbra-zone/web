@@ -41,7 +41,7 @@ export const DutchAuctionComponent = ({
       </ActionDetails.Row>
 
       <ActionDetails.Row label='Output'>
-        <div className='flex flex-col items-end gap-2 sm:flex-row'>
+        <div className='flex flex-wrap justify-end gap-2'>
           <div className='flex items-center gap-2'>
             <span className='text-nowrap text-muted-foreground'>Max:</span>
             <ValueViewComponent view={maxOutput} />
