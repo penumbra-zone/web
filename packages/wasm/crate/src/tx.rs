@@ -2,6 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::convert::TryInto;
 
 use anyhow::anyhow;
+use penumbra_auction::auction::dutch::actions::view::ActionDutchAuctionScheduleView;
 use penumbra_dex::BatchSwapOutputData;
 use penumbra_keys::keys::SpendKey;
 use penumbra_keys::FullViewingKey;
@@ -340,6 +341,13 @@ pub async fn transaction_info_inner(
                 let address_view = fvk.view_address(address.clone());
                 address_views.insert(address.encode_to_vec(), address_view);
                 asset_ids.insert(note.asset_id());
+            }
+            ActionView::ActionDutchAuctionSchedule(ActionDutchAuctionScheduleView {
+                action,
+                ..
+            }) => {
+                asset_ids.insert(action.description.output_id);
+                asset_ids.insert(action.description.input.asset_id);
             }
             _ => {}
         }
