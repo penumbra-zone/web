@@ -50,7 +50,7 @@ import {
 import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/indexed-db';
 import {
   AuctionId,
-  DutchAuction,
+  DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
@@ -638,7 +638,7 @@ describe('IndexedDb', () => {
 
     it('inserts an auction', async () => {
       const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
-      const auction = new DutchAuction({ description: { startHeight: 1234n } });
+      const auction = new DutchAuctionDescription({ startHeight: 1234n });
       await db.upsertAuction(auctionId, { auction });
 
       const auctions = await Array.fromAsync(db.iterateAuctions());
@@ -668,7 +668,7 @@ describe('IndexedDb', () => {
 
     it('inserts both an auction and a note commitment', async () => {
       const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
-      const auction = new DutchAuction({ description: { startHeight: 1234n } });
+      const auction = new DutchAuctionDescription({ startHeight: 1234n });
       const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
       await db.upsertAuction(auctionId, { auction, noteCommitment });
 
@@ -685,7 +685,7 @@ describe('IndexedDb', () => {
 
     it('inserts an auction and then updates with a note commitment when given the same auction ID', async () => {
       const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
-      const auction = new DutchAuction({ description: { startHeight: 1234n } });
+      const auction = new DutchAuctionDescription({ startHeight: 1234n });
       await db.upsertAuction(auctionId, { auction });
 
       let auctions = await Array.fromAsync(db.iterateAuctions());
@@ -714,7 +714,7 @@ describe('IndexedDb', () => {
       let auctions = await Array.fromAsync(db.iterateAuctions());
       expect(auctions.length).toBe(1);
 
-      const auction = new DutchAuction({ description: { startHeight: 1234n } });
+      const auction = new DutchAuctionDescription({ startHeight: 1234n });
       await db.upsertAuction(auctionId, { auction });
 
       auctions = await Array.fromAsync(db.iterateAuctions());

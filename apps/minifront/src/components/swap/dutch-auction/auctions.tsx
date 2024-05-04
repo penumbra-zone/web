@@ -7,7 +7,7 @@ export const Auctions = () => {
       {!auctions.length && <>No auctions</>}
       {!!auctions.length &&
         auctions.map(auction => (
-          <div key={auction.description?.nonce}>{auction.description?.startHeight.toString()}</div>
+          <div key={auction.nonce.toString()}>{auction.startHeight.toString()}</div>
         ))}
     </div>
   );

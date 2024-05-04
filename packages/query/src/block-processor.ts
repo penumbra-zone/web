@@ -41,10 +41,7 @@ import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { getAuctionId, getAuctionNftMetadata } from '@penumbra-zone/wasm/auction';
-import {
-  AuctionId,
-  DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
 
@@ -405,7 +402,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       await Promise.all([
         this.indexedDb.saveAssetsMetadata(metadata),
         this.indexedDb.upsertAuction(auctionId, {
-          auction: new DutchAuction({ description: action.value.description }),
+          auction: action.value.description,
         }),
       ]);
     } else if (action.case === 'actionDutchAuctionEnd' && action.value.auctionId) {

@@ -5,7 +5,7 @@ import {
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Impl } from '.';
-import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { balances } from './balances';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
@@ -36,6 +36,10 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
     throw new ConnectError('`queryLatestState` not yet implemented', Code.Unimplemented);
   }
 
+  if (includeInactive) {
+    throw new ConnectError('`includeInactive` not yet implemented', Code.Unimplemented);
+  }
+
   const bech32mAuctionIds = new Set<string>();
   for await (const balancesResponse of balances(new BalancesRequest({ accountFilter }), ctx)) {
     const auctionId = getBech32mAuctionId(balancesResponse);
@@ -52,7 +56,7 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
   for await (const { id, value } of indexedDb.iterateAuctions()) {
     if (!bech32mAuctionIds.has(bech32mAuctionId(id))) continue;
 
-    if (!includeInactive && value.auction?.state?.seq !== 0n) continue;
+    /** @todo: if (req.includeInactive && auctionIsInactive()) continue; */
 
     let noteRecord: SpendableNoteRecord | undefined;
     if (value.noteCommitment) {
@@ -62,7 +66,7 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
     yield new AuctionsResponse({
       id,
       auction: {
-        typeUrl: DutchAuction.typeName,
+        typeUrl: DutchAuctionDescription.typeName,
         value: value.auction?.toBinary(),
       },
       noteRecord,
