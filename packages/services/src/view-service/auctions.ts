@@ -5,12 +5,12 @@ import {
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Impl } from '.';
-import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { balances } from './balances';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { assetPatterns } from '@penumbra-zone/constants/assets';
-import { PartialMessage } from '@bufbuild/protobuf';
+import { Any, PartialMessage } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax';
 import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
 import { Code, ConnectError } from '@connectrpc/connect';
@@ -63,12 +63,17 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
       noteRecord = await indexedDb.getSpendableNoteByCommitment(value.noteCommitment);
     }
 
+    const auction = new Any({
+      typeUrl: DutchAuction.typeName,
+      value: new DutchAuction({
+        description: value.auction,
+        /** @todo include state if `queryLatestState` is `true` */
+      }).toBinary(),
+    });
+
     yield new AuctionsResponse({
       id,
-      auction: {
-        typeUrl: DutchAuctionDescription.typeName,
-        value: value.auction?.toBinary(),
-      },
+      auction,
       noteRecord,
     });
   }
