@@ -1,11 +1,15 @@
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { SliceCreator } from '..';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {
+  AssetId,
+  Metadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { planBuildBroadcast } from '../helpers';
 import { assembleRequest } from './assemble-request';
 import { DurationOption } from './constants';
 import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { viewClient } from '../../clients';
+import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 
 export interface DutchAuctionSlice {
   balancesResponses: BalancesResponse[];
@@ -26,6 +30,8 @@ export interface DutchAuctionSlice {
   txInProgress: boolean;
   auctions: DutchAuction[];
   loadAuctions: () => Promise<void>;
+  loadMetadata: (assetId?: AssetId) => Promise<void>;
+  metadataByAssetId: Record<string, Metadata>;
 }
 
 export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (set, get) => ({
@@ -103,9 +109,26 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
       const auction = DutchAuction.fromBinary(response.auction.value);
       const auctions = [...get().dutchAuction.auctions, auction];
 
+      void get().dutchAuction.loadMetadata(auction.description?.input?.assetId);
+      void get().dutchAuction.loadMetadata(auction.description?.outputId);
+
       set(state => {
         state.dutchAuction.auctions = auctions;
       });
     }
   },
+
+  loadMetadata: async assetId => {
+    if (!assetId) return;
+
+    const { denomMetadata } = await viewClient.assetMetadataById({ assetId });
+
+    if (denomMetadata) {
+      set(state => {
+        state.dutchAuction.metadataByAssetId[bech32mAssetId(assetId)] = denomMetadata;
+      });
+    }
+  },
+
+  metadataByAssetId: {},
 });

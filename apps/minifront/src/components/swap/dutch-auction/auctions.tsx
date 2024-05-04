@@ -1,15 +1,30 @@
 import { ViewBox } from '@penumbra-zone/ui/components/ui/tx/view/viewbox';
-import { useStore } from '../../../state';
+import { AllSlices } from '../../../state';
 import { DutchAuctionComponent } from '@penumbra-zone/ui/components/ui/dutch-auction-component';
 import {
   AssetId,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { useStoreShallow } from '../../../utils/use-store-shallow';
+import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 
-const getMetadata = (penumbraAssetId?: AssetId) => new Metadata({ penumbraAssetId });
+const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: AssetId) => {
+  let metadata: Metadata | undefined;
+  if (assetId && (metadata = metadataByAssetId[bech32mAssetId(assetId)])) {
+    return metadata;
+  }
+
+  return new Metadata({ penumbraAssetId: assetId });
+};
+
+const auctionsSelector = (state: AllSlices) => ({
+  auctions: state.dutchAuction.auctions,
+  metadataByAssetId: state.dutchAuction.metadataByAssetId,
+});
 
 export const Auctions = () => {
-  const auctions = useStore(state => state.dutchAuction.auctions);
+  const { auctions, metadataByAssetId } = useStoreShallow(auctionsSelector);
+
   return (
     <div className='flex flex-col gap-2'>
       {!auctions.length && <>No auctions</>}
@@ -22,8 +37,8 @@ export const Auctions = () => {
             visibleContent={
               <DutchAuctionComponent
                 dutchAuction={auction}
-                inputMetadata={getMetadata(auction.description?.input?.assetId)}
-                outputMetadata={getMetadata(auction.description?.outputId)}
+                inputMetadata={getMetadata(metadataByAssetId, auction.description?.input?.assetId)}
+                outputMetadata={getMetadata(metadataByAssetId, auction.description?.outputId)}
               />
             }
           />
