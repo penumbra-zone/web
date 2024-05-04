@@ -46,6 +46,7 @@ import {
   DutchAuction,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
+import { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
 
 declare global {
   // `var` required for global declaration (as let/const are block scoped)
@@ -220,8 +221,9 @@ export class BlockProcessor implements BlockProcessorInterface {
       };
 
       const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
+      let flush: ScanBlockResult | undefined;
       if (Object.values(flushReasons).some(Boolean)) {
-        const flush = this.viewServer.flushUpdates();
+        flush = this.viewServer.flushUpdates();
 
         // in an atomic query, this
         // - saves 'sctUpdates'
@@ -238,7 +240,6 @@ export class BlockProcessor implements BlockProcessorInterface {
 
         for (const spendableNoteRecord of flush.newNotes) {
           recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
-          await this.maybeUpsertAuctionWithNoteCommitment(spendableNoteRecord);
         }
         for (const swapRecord of flush.newSwaps)
           recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
@@ -279,6 +280,10 @@ export class BlockProcessor implements BlockProcessorInterface {
         // - calls wasm for each relevant tx
         // - saves to idb
         await this.saveTransactions(compactBlock.height, relevantTx);
+      }
+
+      for (const spendableNoteRecord of flush?.newNotes ?? []) {
+        await this.maybeUpsertAuctionWithNoteCommitment(spendableNoteRecord);
       }
 
       // We do not store historical prices,
