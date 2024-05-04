@@ -701,26 +701,28 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
-  async *iterateAuctions(): AsyncGenerator<
-    {
-      id: AuctionId;
-      value: {
-        auction?: DutchAuction;
-        noteCommitment?: StateCommitment;
-      };
-    },
-    void
-  > {
-    for await (const result of this.db.transaction('AUCTIONS', 'readonly').store) {
-      yield {
-        id: new AuctionId({ inner: base64ToUint8Array(result.key) }),
-        value: {
-          auction: result.value.auction ? DutchAuction.fromJson(result.value.auction) : undefined,
-          noteCommitment: result.value.noteCommitment
-            ? StateCommitment.fromJson(result.value.noteCommitment)
-            : undefined,
-        },
-      };
-    }
+  async *iterateAuctions() {
+    yield* new ReadableStream({
+      start: async controller => {
+        let cursor = await this.db.transaction('AUCTIONS', 'readonly').store.openCursor();
+        while (cursor) {
+          controller.enqueue({
+            id: new AuctionId({ inner: base64ToUint8Array(cursor.key) }),
+            value: {
+              auction: cursor.value.auction
+                ? DutchAuction.fromJson(cursor.value.auction)
+                : undefined,
+              noteCommitment: cursor.value.noteCommitment
+                ? StateCommitment.fromJson(cursor.value.noteCommitment)
+                : undefined,
+            },
+          });
+
+          cursor = await cursor.continue();
+        }
+
+        controller.close();
+      },
+    });
   }
 }
