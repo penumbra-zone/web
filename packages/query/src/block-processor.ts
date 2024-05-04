@@ -235,9 +235,8 @@ export class BlockProcessor implements BlockProcessorInterface {
         // - update idb
         await this.identifyNewAssets(flush.newNotes);
 
-        for (const spendableNoteRecord of flush.newNotes) {
+        for (const spendableNoteRecord of flush.newNotes)
           recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
-        }
         for (const swapRecord of flush.newSwaps)
           recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
       }
