@@ -7,7 +7,7 @@ import { Auctions } from './auctions';
 export const DutchAuction = () => {
   return (
     <div className='grid gap-6 md:grid-cols-2 md:gap-4 xl:grid-cols-3 xl:gap-5'>
-      <Card className='order-1 md:order-3 xl:order-1'>
+      <Card className='order-1 p-5 md:order-3 md:p-4 xl:order-1 xl:p-5'>
         <Auctions />
       </Card>
 
