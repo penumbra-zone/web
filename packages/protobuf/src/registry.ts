@@ -22,7 +22,7 @@ import { QueryService as SctService } from '@buf/penumbra-zone_penumbra.connectr
 import { QueryService as ShieldedPoolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/shielded_pool/v1/shielded_pool_connect';
 import { QueryService as StakeService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
 
-import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 
 /**
  * This type registry is for JSON serialization of protobuf messages.
@@ -56,7 +56,9 @@ export const typeRegistry: IMessageTypeRegistry = createRegistry(
   StakeService,
 
   // Types not explicitly referenced by any above services should be added here.
-  DutchAuctionDescription,
+  // Otherwise, it will not be possible to serialize/deserialize these types if,
+  // e.g., they're used in an `Any` protobuf.
+  DutchAuction,
 );
 
 /**
