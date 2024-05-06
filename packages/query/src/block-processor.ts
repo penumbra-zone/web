@@ -278,6 +278,32 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.saveTransactions(compactBlock.height, relevantTx);
       }
 
+      /**
+       * This... really isn't great.
+       *
+       * You can see above that we're already iterating over flush.newNotes. So
+       * why don't we put this call to
+       * `this.maybeUpsertAuctionWithNoteCommitment()` inside that earlier `for`
+       * loop?
+       *
+       * The problem is, we need to call `this.processTransactions()` before
+       * calling `this.maybeUpsertAuctionWithNoteCommitment()`, because
+       * `this.processTransactions()` is what saves the auction NFT metadata to
+       * the database. `this.maybeUpsertAuctionWithNoteCommitment()` depends on
+       * that auction NFT metadata being saved already to be able to detect
+       * whether a given note is for an auction NFT; only then will it save the
+       * note's commitment to the `AUCTIONS` table.
+       *
+       * "So why not just move `this.processTransactions()` to before the block
+       * where we handle `flush.newNotes`?" Because `this.processTransactions()`
+       * should only run after we've handled `flush.newNotes`, since we depend
+       * on the result of the flush to determine whether there are transactions
+       * to process in the first place. It's a catch-22.
+       *
+       * This isn't a problem in core because core isn't going back and forth
+       * between Rust and TypeScript like we are. If and when we move the block
+       * processor into Rust, this issue should be resolved.
+       */
       for (const spendableNoteRecord of flush?.newNotes ?? []) {
         await this.maybeUpsertAuctionWithNoteCommitment(spendableNoteRecord);
       }
