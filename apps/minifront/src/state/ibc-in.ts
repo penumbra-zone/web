@@ -9,8 +9,8 @@ import { augmentToAsset, fromDisplayAmount } from '../components/ibc/ibc-in/asse
 import { MsgTransfer } from 'osmo-query/ibc/applications/transfer/v1/tx';
 import { cosmos, ibc } from 'osmo-query';
 import { Toast } from '@penumbra-zone/ui/lib/toast/toast';
-import { ibcChannelClient, tendermintClient } from '../clients';
-import { clientStateForChannel, currentTimePlusTwoDaysRounded } from './ibc-out';
+import { tendermintClient } from '../clients';
+import { currentTimePlusTwoDaysRounded } from './ibc-out';
 import { StdFee } from '@cosmjs/stargate';
 import { getChainId } from '../fetchers/chain-id';
 
@@ -135,32 +135,16 @@ const getCounterpartyChannelId = async (
 ): Promise<string> => {
   const registry = await chainRegistryClient.get(penumbraChainId);
 
-  const penumbraChannel = registry.ibcConnections.find(
+  const counterpartyChannelId = registry.ibcConnections.find(
     c => c.chainId === counterpartyChain.chainId,
-  )?.ibcChannel;
-  if (!penumbraChannel) {
+  )?.counterpartyChannelId;
+  if (!counterpartyChannelId) {
     throw new Error(
-      `Ibc channel could not be found in registry for chain id: ${counterpartyChain.chainId}`,
+      `Counterparty channel could not be found in registry for chain id: ${counterpartyChain.chainId}`,
     );
   }
 
-  // TODO: implement collecting result of paginating queries over all channels
-  //       Use Promise.race() to have early exit and parallel queries
-  const { channels } = await ibcChannelClient.channels({});
-  for (const channel of channels) {
-    const clientState = await clientStateForChannel(channel);
-    if (
-      clientState.chainId === counterpartyChain.chainId &&
-      channel.channelId === penumbraChannel
-    ) {
-      if (!channel.counterparty) {
-        throw new Error(`No counterparty channelId for channel: ${channel.channelId}`);
-      }
-      return channel.counterparty.channelId;
-    }
-  }
-
-  throw new Error(`Did not find counterparty chain id for ${penumbraChannel}`);
+  return counterpartyChannelId;
 };
 
 /**

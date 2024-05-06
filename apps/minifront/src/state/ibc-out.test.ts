@@ -89,7 +89,8 @@ describe.skip('IBC Slice', () => {
       const chain = {
         displayName: 'Osmosis',
         chainId: 'osmosis-test-5',
-        ibcChannel: 'channel-0',
+        channelId: 'channel-0',
+        counterpartyChannelId: 'channel-999',
         images: [{ svg: '/test.svg' }],
         addressPrefix: 'osmo',
       } satisfies Chain;

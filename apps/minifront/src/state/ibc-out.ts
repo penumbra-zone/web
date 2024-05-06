@@ -105,7 +105,7 @@ export const currentTimePlusTwoDaysRounded = (currentTimeMs: number): bigint => 
   return roundedTimeoutNs;
 };
 
-export const clientStateForChannel = async (channel?: Channel): Promise<ClientState> => {
+const clientStateForChannel = async (channel?: Channel): Promise<ClientState> => {
   const connectionId = channel?.connectionHops[0];
   if (!connectionId) {
     throw new Error('no connectionId in channel returned from ibcChannelClient request');
@@ -170,7 +170,7 @@ const getPlanRequest = async ({
   const { address: returnAddress } = await viewClient.ephemeralAddress({ addressIndex });
   if (!returnAddress) throw new Error('Error with generating IBC deposit address');
 
-  const { timeoutHeight, timeoutTime } = await getTimeout(chain.ibcChannel);
+  const { timeoutHeight, timeoutTime } = await getTimeout(chain.channelId);
 
   return new TransactionPlannerRequest({
     ics20Withdrawals: [
@@ -184,7 +184,7 @@ const getPlanRequest = async ({
         returnAddress,
         timeoutHeight,
         timeoutTime,
-        sourceChannel: chain.ibcChannel,
+        sourceChannel: chain.channelId,
       },
     ],
     source: addressIndex,
@@ -234,7 +234,7 @@ export const filterBalancesPerChain = (
     .filter(a => {
       const match = assetPatterns.ibc.capture(a.base);
       if (!match) return false;
-      return chain?.ibcChannel === match.channel;
+      return chain?.channelId === match.channel;
     })
     .map(m => m.penumbraAssetId!);
 
