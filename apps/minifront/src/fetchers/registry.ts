@@ -23,7 +23,7 @@ export const getStakingTokenMetadata = async () => {
     throw new Error('Could not fetch chain id');
   }
 
-  const { stakingAssetId } = await chainRegistryClient.get(chainId);
+  const { stakingAssetId } = chainRegistryClient.get(chainId);
   const stakingAssetsMetadata = await getAssetMetadataById(stakingAssetId);
 
   if (!stakingAssetsMetadata) {
@@ -37,6 +37,6 @@ export const getIbcConnections = async () => {
   if (!chainId) throw new Error('Could not fetch chain id');
 
   const registryClient = new ChainRegistryClient();
-  const { ibcConnections } = await registryClient.get(chainId);
+  const { ibcConnections } = registryClient.get(chainId);
   return ibcConnections;
 };

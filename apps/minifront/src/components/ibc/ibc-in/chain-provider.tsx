@@ -13,7 +13,7 @@ const signerOptions: SignerOptions = {
   signingStargate: () => {
     return {
       aminoTypes,
-      registry: CosmosRegistry,
+      registryClient: CosmosRegistry,
     };
   },
   signingCosmwasm: (chain: Chain | string) => {

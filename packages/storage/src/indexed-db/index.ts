@@ -61,12 +61,13 @@ import {
   AuctionId,
   DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
   chainId: string;
   walletId: WalletId;
-  registryAssets: Metadata[];
+  registryClient: ChainRegistryClient;
 }
 
 export class IndexedDb implements IndexedDbInterface {
@@ -81,7 +82,7 @@ export class IndexedDb implements IndexedDbInterface {
     dbVersion,
     walletId,
     chainId,
-    registryAssets,
+    registryClient,
   }: IndexedDbProps): Promise<IndexedDb> {
     const bech32Id = bech32mWalletId(walletId);
     const dbName = `viewdata/${chainId}/${bech32Id}`;
@@ -120,6 +121,7 @@ export class IndexedDb implements IndexedDbInterface {
           keyPath: ['pricedAsset.inner', 'numeraire.inner'],
         }).createIndex('pricedAsset', 'pricedAsset.inner');
         db.createObjectStore('AUCTIONS');
+        db.createObjectStore('REGISTRY_VERSION');
       },
     });
     const constants = {
@@ -129,7 +131,7 @@ export class IndexedDb implements IndexedDbInterface {
     } satisfies IdbConstants;
 
     const instance = new this(db, new IbdUpdater(db), constants, chainId);
-    await instance.saveRegistryAssets(registryAssets); // Pre-load asset metadata from registry
+    await instance.saveRegistryAssets(registryClient, chainId); // Pre-load asset metadata from registry
 
     const existing0thEpoch = await instance.getEpochByHeight(0n);
     if (!existing0thEpoch) await instance.addEpoch(0n); // Create first epoch
@@ -254,9 +256,17 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   // creates a local copy of the asset list from registry (https://github.com/prax-wallet/registry)
-  async saveRegistryAssets(assets: Metadata[]) {
+  async saveRegistryAssets(registryClient: ChainRegistryClient, chainId: string) {
+    const { commit } = registryClient.version();
+    const lastPosition = await this.db.get('REGISTRY_VERSION', 'commit');
+
+    // Registry version already saved
+    if (lastPosition === commit) return;
+
+    const assets = registryClient.get(chainId).getAllAssets();
     const saveLocalMetadata = assets.map(m => this.saveAssetsMetadata(m));
     await Promise.all(saveLocalMetadata);
+    await this.u.update({ table: 'REGISTRY_VERSION', key: 'commit', value: commit });
   }
 
   async *iterateSpendableNotes() {
