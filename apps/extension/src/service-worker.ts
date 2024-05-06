@@ -13,74 +13,45 @@ import './listeners';
 
 // services
 import { Services } from '@penumbra-zone/services-context';
-import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
-
-// adapter
-import { ConnectRouter, createContextValues, PromiseClient } from '@connectrpc/connect';
-import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
-import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
-import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
-import { jsonOptions } from '@penumbra-zone/protobuf';
-
-// context
-import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
-import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
-import { approverCtx } from '@penumbra-zone/services/ctx/approver';
-import { custodyCtx } from '@penumbra-zone/services/ctx/custody';
-import { servicesCtx } from '@penumbra-zone/services/ctx/prax';
-import { stakingClientCtx } from '@penumbra-zone/services/ctx/staking-client';
-import { approveTransaction } from './approve-transaction';
+import { backOff } from 'exponential-backoff';
 
 // all rpc implementations, local and proxy
 import { getRpcImpls } from './get-rpc-impls';
-import { backOff } from 'exponential-backoff';
+
+// adapter
+import { ConnectRouter, createContextValues, PromiseClient } from '@connectrpc/connect';
+import { jsonOptions } from '@penumbra-zone/protobuf';
+import { CRSessionManager } from '@penumbra-zone/transport-chrome/session-manager';
+import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
+
+// context
+import { approverCtx } from '@penumbra-zone/services/ctx/approver';
+import { fvkCtx } from '@penumbra-zone/services/ctx/full-viewing-key';
+import { servicesCtx } from '@penumbra-zone/services/ctx/prax';
+import { approveTransaction } from './approve-transaction';
+import { getFullViewingKey } from './ctx/full-viewing-key';
+
+// context clients
+import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
+import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
+import { custodyClientCtx } from '@penumbra-zone/services/ctx/custody-client';
+import { stakingClientCtx } from '@penumbra-zone/services/ctx/staking-client';
+import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
+
+// storage
 import {
   FullViewingKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { fvkCtx } from '@penumbra-zone/services/ctx/full-viewing-key';
-import { WalletJson } from '@penumbra-zone/types/wallet';
-
-/**
- This fixes an issue where some users do not have 'grpcEndpoint' set after they have finished onboarding
- */
-const fixEmptyGrpcEndpointAfterOnboarding = async () => {
-  //TODO change to mainnet default RPC
-  const DEFAULT_GRPC_URL = 'https://grpc.testnet.penumbra.zone';
-  const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
-  const wallets = await localExtStorage.get('wallets');
-  if (!grpcEndpoint && wallets[0]) {
-    await localExtStorage.set('grpcEndpoint', DEFAULT_GRPC_URL);
-  }
-};
-
-/**
- * When a user first onboards with the extension, they won't have chosen a gRPC
- * endpoint yet. So we'll wait until they've chosen one to start trying to make
- * requests against it.
- */
-const waitUntilGrpcEndpointExists = async () => {
-  const grpcEndpointPromise = Promise.withResolvers<void>();
-  const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
-
-  if (grpcEndpoint) {
-    grpcEndpointPromise.resolve();
-  } else {
-    const listener = (changes: Record<string, { newValue?: unknown }>) => {
-      if (changes['grpcEndpoint']?.newValue) {
-        grpcEndpointPromise.resolve();
-        localExtStorage.removeListener(listener);
-      }
-    };
-    localExtStorage.addListener(listener);
-  }
-
-  return grpcEndpointPromise.promise;
-};
+import type { WalletJson } from '@penumbra-zone/types/wallet';
+import {
+  fixEmptyGrpcEndpointAfterOnboarding,
+  onboardGrpcEndpoint,
+  onboardWallet,
+} from './storage/onboard';
 
 const startServices = async (wallet: WalletJson) => {
-  const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
-
+  const grpcEndpoint = await onboardGrpcEndpoint();
   const services = new Services({
     idbVersion: IDB_VERSION,
     grpcEndpoint,
@@ -92,20 +63,20 @@ const startServices = async (wallet: WalletJson) => {
 };
 
 const getServiceHandler = async () => {
-  const wallet0 = (await localExtStorage.get('wallets'))[0];
-  if (!wallet0) throw new Error('No wallet found');
-
-  const services = await backOff(() => startServices(wallet0), {
+  const wallet = await onboardWallet();
+  const services = backOff(() => startServices(wallet), {
     retry: (e, attemptNumber) => {
-      if (process.env['NODE_ENV'] === 'development')
-        console.warn("Prax couldn't start ", attemptNumber, e);
+      console.log("Prax couldn't start services-context", attemptNumber, e);
       return true;
     },
   });
 
-  const rpcImpls = await getRpcImpls();
+  const grpcEndpoint = await onboardGrpcEndpoint();
+  const rpcImpls = getRpcImpls(grpcEndpoint);
+
   let custodyClient: PromiseClient<typeof CustodyService> | undefined;
   let stakingClient: PromiseClient<typeof StakingService> | undefined;
+
   return connectChannelAdapter({
     jsonOptions,
 
@@ -117,15 +88,16 @@ const getServiceHandler = async () => {
     createRequestContext: req => {
       const contextValues = req.contextValues ?? createContextValues();
 
-      // dynamically initialize clients, or reuse if already available
+      // initialize or reuse context clients
       custodyClient ??= createDirectClient(CustodyService, handler, { jsonOptions });
       stakingClient ??= createDirectClient(StakingService, handler, { jsonOptions });
-
-      contextValues.set(custodyCtx, custodyClient);
+      contextValues.set(custodyClientCtx, custodyClient);
       contextValues.set(stakingClientCtx, stakingClient);
-      contextValues.set(servicesCtx, services);
+
+      // remaining context
+      contextValues.set(servicesCtx, () => services);
       contextValues.set(approverCtx, approveTransaction);
-      contextValues.set(fvkCtx, FullViewingKey.fromJsonString(wallet0.fullViewingKey));
+      contextValues.set(fvkCtx, getFullViewingKey);
 
       return Promise.resolve({ ...req, contextValues });
     },
@@ -133,6 +105,6 @@ const getServiceHandler = async () => {
 };
 
 await fixEmptyGrpcEndpointAfterOnboarding();
-await waitUntilGrpcEndpointExists();
+
 const handler = await getServiceHandler();
 CRSessionManager.init(PRAX, handler);

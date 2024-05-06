@@ -6,7 +6,7 @@ import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/vie
 import { Code, ConnectError } from '@connectrpc/connect';
 
 export const swapByCommitment: Impl['swapByCommitment'] = async (req, ctx) => {
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
   const { swapCommitment } = req;
   if (!swapCommitment)

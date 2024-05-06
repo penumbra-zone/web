@@ -9,7 +9,7 @@ export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, 
       'Either `inner`, `altBaseDenom`, or `altBech32m` must be set on the asset ID passed in the `assetMetadataById` request',
     );
 
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   const { indexedDb, querier } = await services.getWalletServices();
 
   const localMetadata = await indexedDb.getAssetsMetadata(assetId);

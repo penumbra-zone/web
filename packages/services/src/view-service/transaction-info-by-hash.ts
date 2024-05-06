@@ -8,12 +8,9 @@ import { fvkCtx } from '../ctx/full-viewing-key';
 export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, ctx) => {
   if (!req.id) throw new ConnectError('Missing transaction ID in request', Code.InvalidArgument);
 
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   const { indexedDb, querier } = await services.getWalletServices();
-  const fullViewingKey = ctx.values.get(fvkCtx);
-  if (!fullViewingKey) {
-    throw new ConnectError('Cannot access full viewing key', Code.Unauthenticated);
-  }
+  const fvk = ctx.values.get(fvkCtx);
 
   // Check database for transaction first
   // if not in database, query tendermint for public info on the transaction
@@ -23,7 +20,7 @@ export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, 
   if (!transaction) throw new ConnectError('Transaction not available', Code.NotFound);
 
   const { txp: perspective, txv: view } = await generateTransactionInfo(
-    fullViewingKey,
+    await fvk(),
     transaction,
     indexedDb.constants(),
   );

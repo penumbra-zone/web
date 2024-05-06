@@ -7,13 +7,10 @@ import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_
 import { fvkCtx } from '../../ctx/full-viewing-key';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
-  const fullViewingKey = ctx.values.get(fvkCtx);
-  if (!fullViewingKey) {
-    throw new ConnectError('Cannot access full viewing key', Code.Unauthenticated);
-  }
+  const fvk = ctx.values.get(fvkCtx);
 
   assertValidRequest(req);
 
@@ -27,7 +24,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
 
   const idbConstants = indexedDb.constants();
 
-  const plan = await planTransaction(idbConstants, req, fullViewingKey);
+  const plan = await planTransaction(idbConstants, req, await fvk());
   return { plan };
 };
 

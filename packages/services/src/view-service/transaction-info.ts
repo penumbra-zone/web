@@ -3,16 +3,12 @@ import { servicesCtx } from '../ctx/prax';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { generateTransactionInfo } from '@penumbra-zone/wasm/transaction';
 import { fvkCtx } from '../ctx/full-viewing-key';
-import { Code, ConnectError } from '@connectrpc/connect';
 
 export const transactionInfo: Impl['transactionInfo'] = async function* (req, ctx) {
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
-  const fullViewingKey = ctx.values.get(fvkCtx);
-  if (!fullViewingKey) {
-    throw new ConnectError('Cannot access full viewing key', Code.Unauthenticated);
-  }
+  const fvk = ctx.values.get(fvkCtx);
 
   for await (const txRecord of indexedDb.iterateTransactions()) {
     // filter transactions between startHeight and endHeight, inclusive
@@ -24,7 +20,7 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (req, ct
       continue;
 
     const { txp: perspective, txv: view } = await generateTransactionInfo(
-      fullViewingKey,
+      await fvk(),
       txRecord.transaction,
       indexedDb.constants(),
     );

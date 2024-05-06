@@ -3,7 +3,7 @@ import { servicesCtx } from '../ctx/prax';
 import { assetPatterns, RegexMatcher } from '@penumbra-zone/constants/assets';
 
 export const assets: Impl['assets'] = async function* (req, ctx) {
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
   const {

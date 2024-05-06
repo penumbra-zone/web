@@ -23,7 +23,7 @@ describe('IndexByAddress request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(fvkCtx, testFullViewingKey),
+      contextValues: createContextValues().set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
 
     testAddress = getAddressByIndex(testFullViewingKey, 0);

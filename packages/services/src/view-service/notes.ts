@@ -5,7 +5,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { addAmounts, joinLoHiAmount } from '@penumbra-zone/types/amount';
 
 export const notes: Impl['notes'] = async function* (req, ctx) {
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
   const { assetId, addressIndex, includeSpent, amountToSpend } = req;
