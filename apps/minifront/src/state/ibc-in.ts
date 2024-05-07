@@ -113,7 +113,7 @@ async function execute(
   const transferToken = fromDisplayAmount(assetMetadata, coin.displayDenom, amount);
   const params: MsgTransfer = {
     sourcePort: 'transfer',
-    sourceChannel: await getCounterpartyChannelId(selectedChain, penumbraChainId),
+    sourceChannel: getCounterpartyChannelId(selectedChain, penumbraChainId),
     sender: address,
     receiver: penumbraAddrs.ephemeral,
     token: transferToken,
@@ -133,11 +133,11 @@ async function execute(
   return await client.broadcastTx(cosmos.tx.v1beta1.TxRaw.encode(signedTx).finish());
 }
 
-const getCounterpartyChannelId = async (
+const getCounterpartyChannelId = (
   counterpartyChain: ChainInfo,
   penumbraChainId: string,
-): Promise<string> => {
-  const registry = await chainRegistryClient.get(penumbraChainId);
+): string => {
+  const registry = chainRegistryClient.get(penumbraChainId);
 
   const counterpartyChannelId = registry.ibcConnections.find(
     c => c.chainId === counterpartyChain.chainId,
