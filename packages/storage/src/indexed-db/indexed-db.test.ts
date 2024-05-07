@@ -714,5 +714,26 @@ describe('IndexedDb', () => {
         seqNum,
       });
     });
+
+    it('inserts all data, and then updates with a sequence number when given the same auction ID', async () => {
+      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auction = new DutchAuctionDescription({ startHeight: 1234n });
+      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      await db.upsertAuction(auctionId, { auction, noteCommitment, seqNum: 0n });
+
+      let fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toBeTruthy();
+
+      await db.upsertAuction(auctionId, { seqNum: 1n });
+
+      fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toBeTruthy();
+
+      expect(fetchedAuction).toEqual({
+        auction,
+        noteCommitment,
+        seqNum: 1n,
+      });
+    });
   });
 });
