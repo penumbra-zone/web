@@ -57,6 +57,10 @@ import type {
   StateCommitmentTree,
 } from '@penumbra-zone/types/state-commitment-tree';
 import { sctPosition } from '@penumbra-zone/wasm/tree';
+import {
+  AuctionId,
+  DutchAuctionDescription,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -115,6 +119,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('PRICES', {
           keyPath: ['pricedAsset.inner', 'numeraire.inner'],
         }).createIndex('pricedAsset', 'pricedAsset.inner');
+        db.createObjectStore('AUCTIONS');
       },
     });
     const constants = {
@@ -668,5 +673,46 @@ export class IndexedDb implements IndexedDbInterface {
 
       txs.add({ table: 'SWAPS', value: n.toJson() as Jsonified<SwapRecord> });
     }
+  }
+
+  // As more auction types are created, add them to T as a union type.
+  async upsertAuction<T extends DutchAuctionDescription>(
+    auctionId: AuctionId,
+    value: {
+      auction?: T;
+      noteCommitment?: StateCommitment;
+    },
+  ): Promise<void> {
+    const key = uint8ArrayToBase64(auctionId.inner);
+    const existingRecord = await this.db.get('AUCTIONS', key);
+    const auction =
+      (value.auction?.toJson() as Jsonified<T> | undefined) ?? existingRecord?.auction;
+    const noteCommitment =
+      (value.noteCommitment?.toJson() as Jsonified<StateCommitment> | undefined) ??
+      existingRecord?.noteCommitment;
+
+    await this.u.update({
+      table: 'AUCTIONS',
+      key,
+      value: {
+        auction,
+        noteCommitment,
+      },
+    });
+  }
+
+  async getAuction(auctionId: AuctionId): Promise<{
+    // Add more auction union types as they are created
+    auction?: DutchAuctionDescription;
+    noteCommitment?: StateCommitment;
+  }> {
+    const result = await this.db.get('AUCTIONS', uint8ArrayToBase64(auctionId.inner));
+
+    return {
+      auction: result?.auction ? DutchAuctionDescription.fromJson(result.auction) : undefined,
+      noteCommitment: result?.noteCommitment
+        ? StateCommitment.fromJson(result.noteCommitment)
+        : undefined,
+    };
   }
 }

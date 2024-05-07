@@ -16,7 +16,7 @@ export const fromBech32m = <P extends Prefix>(
   prefix: Prefix = b32mStr.slice(0, b32mStr.lastIndexOf('1')) as P,
 ): Uint8Array => {
   const p = b32mStr.slice(0, b32mStr.lastIndexOf('1'));
-  if (p !== prefix) throw new TypeError('Unexpected prefix');
+  if (p !== prefix) throw new TypeError(`Unexpected prefix: expected ${prefix}, got ${p}`);
   return from(b32mStr, p, StringLength[p], ByteLength[p]);
 };
 
@@ -47,7 +47,10 @@ const from = (
   expectLength: number,
   expectBytes: number,
 ): Uint8Array => {
-  if (bStr.length !== expectLength) throw new TypeError('Invalid string length');
+  if (bStr.length !== expectLength) {
+    throw new TypeError(`Invalid string length: expected ${expectLength}, got ${bStr.length}`);
+  }
+
   const { prefix, words } = bech32m.decode(bStr, expectLength);
   if (prefix !== expectPrefix) throw new TypeError('Wrong prefix');
   const bytes = new Uint8Array(bech32m.fromWords(words));
@@ -71,7 +74,9 @@ const to = <P extends string>(
   expectLength: number,
   expectBytes: number,
 ): `${P}1${string}` => {
-  if (bData.length !== expectBytes) throw new TypeError('Invalid data length');
+  if (bData.length !== expectBytes) {
+    throw new TypeError(`Invalid data length: expected ${expectBytes}, got ${bData.length}`);
+  }
   const bStr = bech32m.encode(prefix, bech32m.toWords(bData), expectLength);
   if (bStr.length !== expectLength) throw new TypeError('Unexpected string length');
   return bStr as `${P}1${string}`;

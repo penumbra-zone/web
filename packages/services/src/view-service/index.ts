@@ -5,6 +5,7 @@ import { addressByIndex } from './address-by-index';
 import { appParameters } from './app-parameters';
 import { assetMetadataById } from './asset-metadata-by-id';
 import { assets } from './assets';
+import { auctions } from './auctions';
 import { authorizeAndBuild } from './authorize-and-build';
 import { balances } from './balances';
 import { broadcastTransaction } from './broadcast-transaction';
@@ -32,11 +33,12 @@ import { witnessAndBuild } from './witness-and-build';
 
 export type Impl = ServiceImpl<typeof ViewService>;
 
-export const viewImpl: Omit<Impl, 'auctions'> = {
+export const viewImpl: Impl = {
   addressByIndex,
   appParameters,
   assetMetadataById,
   assets,
+  auctions,
   authorizeAndBuild,
   balances,
   broadcastTransaction,

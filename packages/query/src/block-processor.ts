@@ -36,11 +36,14 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/assets';
+import { PRICE_RELEVANCE_THRESHOLDS, assetPatterns } from '@penumbra-zone/constants/assets';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { getAuctionId, getAuctionNftMetadata } from '@penumbra-zone/wasm/auction';
+import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
+import { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
 
 declare global {
   // `var` required for global declaration (as let/const are block scoped)
@@ -215,8 +218,9 @@ export class BlockProcessor implements BlockProcessorInterface {
       };
 
       const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
+      let flush: ScanBlockResult | undefined;
       if (Object.values(flushReasons).some(Boolean)) {
-        const flush = this.viewServer.flushUpdates();
+        flush = this.viewServer.flushUpdates();
 
         // in an atomic query, this
         // - saves 'sctUpdates'
@@ -272,6 +276,36 @@ export class BlockProcessor implements BlockProcessorInterface {
         // - calls wasm for each relevant tx
         // - saves to idb
         await this.saveTransactions(compactBlock.height, relevantTx);
+      }
+
+      /**
+       * This... really isn't great.
+       *
+       * You can see above that we're already iterating over flush.newNotes. So
+       * why don't we put this call to
+       * `this.maybeUpsertAuctionWithNoteCommitment()` inside that earlier `for`
+       * loop?
+       *
+       * The problem is, we need to call `this.processTransactions()` before
+       * calling `this.maybeUpsertAuctionWithNoteCommitment()`, because
+       * `this.processTransactions()` is what saves the auction NFT metadata to
+       * the database. `this.maybeUpsertAuctionWithNoteCommitment()` depends on
+       * that auction NFT metadata being saved already to be able to detect
+       * whether a given note is for an auction NFT; only then will it save the
+       * note's commitment to the `AUCTIONS` table.
+       *
+       * "So why not just move `this.processTransactions()` to before the block
+       * where we handle `flush.newNotes`?" Because `this.processTransactions()`
+       * should only run after we've handled `flush.newNotes`, since we depend
+       * on the result of the flush to determine whether there are transactions
+       * to process in the first place. It's a catch-22.
+       *
+       * This isn't a problem in core because core isn't going back and forth
+       * between Rust and TypeScript like we are. If and when we move the block
+       * processor into Rust, this issue should be resolved.
+       */
+      for (const spendableNoteRecord of flush?.newNotes ?? []) {
+        await this.maybeUpsertAuctionWithNoteCommitment(spendableNoteRecord);
       }
 
       // We do not store historical prices,
@@ -390,7 +424,12 @@ export class BlockProcessor implements BlockProcessorInterface {
         // Always a sequence number of 0 when starting a Dutch auction
         0n,
       );
-      await this.indexedDb.saveAssetsMetadata(metadata);
+      await Promise.all([
+        this.indexedDb.saveAssetsMetadata(metadata),
+        this.indexedDb.upsertAuction(auctionId, {
+          auction: action.value.description,
+        }),
+      ]);
     } else if (action.case === 'actionDutchAuctionEnd' && action.value.auctionId) {
       const metadata = getAuctionNftMetadata(
         action.value.auctionId,
@@ -443,6 +482,21 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       await this.indexedDb.updatePosition(action.value.positionId, positionState);
     }
+  }
+
+  private async maybeUpsertAuctionWithNoteCommitment(spendableNoteRecord: SpendableNoteRecord) {
+    const assetId = spendableNoteRecord.note?.value?.assetId;
+    if (!assetId) return;
+
+    const metadata = await this.indexedDb.getAssetsMetadata(assetId);
+    const captureGroups = assetPatterns.auctionNft.capture(metadata?.display ?? '');
+    if (!captureGroups) return;
+
+    const auctionId = new AuctionId(auctionIdFromBech32(captureGroups.auctionId));
+
+    await this.indexedDb.upsertAuction(auctionId, {
+      noteCommitment: spendableNoteRecord.noteCommitment,
+    });
   }
 
   private async saveTransactions(height: bigint, relevantTx: Map<TransactionId, Transaction>) {

@@ -3,8 +3,6 @@ import { IMessageTypeRegistry, createRegistry } from '@bufbuild/protobuf';
 import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 
-import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
-
 import { TendermintProxyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/util/tendermint_proxy/v1/tendermint_proxy_connect';
 
 import { Query as IbcChannelService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/channel/v1/query_connect';
@@ -22,6 +20,9 @@ import { QueryService as SctService } from '@buf/penumbra-zone_penumbra.connectr
 import { QueryService as ShieldedPoolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/shielded_pool/v1/shielded_pool_connect';
 import { QueryService as StakeService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
 
+import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
+import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+
 /**
  * This type registry is for JSON serialization of protobuf messages.
  *
@@ -37,8 +38,6 @@ export const typeRegistry: IMessageTypeRegistry = createRegistry(
   CustodyService,
   ViewService,
 
-  ClientState,
-
   TendermintProxyService,
 
   AppService,
@@ -52,6 +51,12 @@ export const typeRegistry: IMessageTypeRegistry = createRegistry(
   SctService,
   ShieldedPoolService,
   StakeService,
+
+  // Types not explicitly referenced by any above services should be added here.
+  // Otherwise, it will not be possible to serialize/deserialize these types if,
+  // e.g., they're used in an `Any` protobuf.
+  ClientState,
+  DutchAuction,
 );
 
 /**

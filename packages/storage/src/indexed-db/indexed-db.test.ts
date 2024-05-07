@@ -48,6 +48,11 @@ import {
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/indexed-db';
+import {
+  AuctionId,
+  DutchAuctionDescription,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place
@@ -620,6 +625,89 @@ describe('IndexedDb', () => {
           asOfHeight: 50n,
         }),
       ]);
+    });
+  });
+
+  describe('upsertAuction()', () => {
+    let db: IndexedDb;
+
+    beforeEach(async () => {
+      db = await IndexedDb.initialize({ ...generateInitialProps() });
+    });
+
+    it('inserts an auction', async () => {
+      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auction = new DutchAuctionDescription({ startHeight: 1234n });
+      await db.upsertAuction(auctionId, { auction });
+
+      const fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toEqual({
+        auction,
+      });
+    });
+
+    it('inserts a note commitment', async () => {
+      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      await db.upsertAuction(auctionId, { noteCommitment });
+
+      const fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toEqual({
+        noteCommitment,
+      });
+    });
+
+    it('inserts both an auction and a note commitment', async () => {
+      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auction = new DutchAuctionDescription({ startHeight: 1234n });
+      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      await db.upsertAuction(auctionId, { auction, noteCommitment });
+
+      const fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toEqual({
+        auction,
+        noteCommitment,
+      });
+    });
+
+    it('inserts an auction and then updates with a note commitment when given the same auction ID', async () => {
+      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auction = new DutchAuctionDescription({ startHeight: 1234n });
+      await db.upsertAuction(auctionId, { auction });
+
+      let fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toBeTruthy();
+
+      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      await db.upsertAuction(auctionId, { noteCommitment });
+
+      fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toBeTruthy();
+
+      expect(fetchedAuction).toEqual({
+        auction,
+        noteCommitment,
+      });
+    });
+
+    it('inserts a note commitment and then updates with an auction when given the same auction ID', async () => {
+      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
+      await db.upsertAuction(auctionId, { noteCommitment });
+
+      let fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toBeTruthy();
+
+      const auction = new DutchAuctionDescription({ startHeight: 1234n });
+      await db.upsertAuction(auctionId, { auction });
+
+      fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toBeTruthy();
+
+      expect(fetchedAuction).toEqual({
+        auction,
+        noteCommitment,
+      });
     });
   });
 });
