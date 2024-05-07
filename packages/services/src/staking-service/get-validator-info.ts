@@ -1,4 +1,4 @@
-import { Impl } from './index';
+import { Impl } from '.';
 import { servicesCtx } from '../ctx/prax';
 import { Code, ConnectError } from '@connectrpc/connect';
 
@@ -9,7 +9,7 @@ export const getValidatorInfo: Impl['getValidatorInfo'] = async (req, ctx) => {
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
-  let validatorInfo = await indexedDb.getValidatorInfo(req.identityKey);
+  const validatorInfo = await indexedDb.getValidatorInfo(req.identityKey);
 
   if (!validatorInfo) {
     throw new ConnectError('No found validator info', Code.NotFound);

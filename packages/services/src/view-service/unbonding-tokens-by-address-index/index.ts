@@ -1,5 +1,6 @@
 import {
-  BalancesRequest, BalancesResponse,
+  BalancesRequest,
+  BalancesResponse,
   UnbondingTokensByAddressIndexRequest_Filter,
   UnbondingTokensByAddressIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
@@ -9,10 +10,13 @@ import { getIsClaimable, isUnbondingTokenBalance } from './helpers';
 import { Any } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { stakingClientCtx } from '../../ctx/staking-client';
-import {getValidatorInfo} from "@penumbra-zone/getters/get-validator-info-response";
-import {assetPatterns} from "@penumbra-zone/constants/assets";
-import {getBalanceView, getDisplayFromBalancesResponse} from "@penumbra-zone/getters/balances-response";
-import {identityKeyFromBech32m} from "@penumbra-zone/bech32m/penumbravalid";
+import { getValidatorInfo } from '@penumbra-zone/getters/get-validator-info-response';
+import { assetPatterns } from '@penumbra-zone/constants/assets';
+import {
+  getBalanceView,
+  getDisplayFromBalancesResponse,
+} from '@penumbra-zone/getters/balances-response';
+import { identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 
 export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'] =
   async function* (req, ctx) {
@@ -40,11 +44,15 @@ export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'
         continue;
       }
 
-      const regexResult = assetPatterns.unbondingToken.capture(getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse)));
+      const regexResult = assetPatterns.unbondingToken.capture(
+        getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse)) ?? '',
+      );
       if (!regexResult) throw new Error('expected delegation token identity key not present');
 
-      const validatorInfoResponse = await stakingClient.getValidatorInfo({ identityKey: identityKeyFromBech32m(regexResult.idKey) });
-      let validatorInfo = getValidatorInfo(validatorInfoResponse);
+      const validatorInfoResponse = await stakingClient.getValidatorInfo({
+        identityKey: identityKeyFromBech32m(regexResult.idKey),
+      });
+      const validatorInfo = getValidatorInfo(validatorInfoResponse);
       const extendedMetadata = new Any({
         typeUrl: ValidatorInfo.typeName,
         value: validatorInfo.toBinary(),

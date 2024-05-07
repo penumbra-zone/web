@@ -571,7 +571,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async getValidatorInfo(identityKey: IdentityKey): Promise<ValidatorInfo | undefined> {
-    const key = uint8ArrayToBase64(identityKey.ik);
+    const key = bech32mIdentityKey(identityKey);
     const json = await this.db.get('VALIDATOR_INFOS', key);
     if (!json) return undefined;
     return ValidatorInfo.fromJson(json);
