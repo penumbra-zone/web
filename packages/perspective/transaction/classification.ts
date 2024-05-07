@@ -22,4 +22,8 @@ export type TransactionClassification =
   /** The transaction contains an `ics20Withdrawal` action. */
   | 'ics20Withdrawal'
   /** The transaction contains an `actionDutchAuctionSchedule` action. */
-  | 'dutchAuctionSchedule';
+  | 'dutchAuctionSchedule'
+  /** The transaction contains an `actionDutchAuctionEnd` action. */
+  | 'dutchAuctionEnd'
+  /** The transaction contains an `actionDutchAuctionWithdraw` action. */
+  | 'dutchAuctionWithdraw';
