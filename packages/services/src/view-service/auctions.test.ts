@@ -11,7 +11,6 @@ import {
   AuctionId,
   DutchAuction,
   DutchAuctionDescription,
-  DutchAuctionState,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
@@ -133,7 +132,7 @@ describe('Auctions request handler', () => {
 
     mockQuerier = {
       auction: {
-        auctionStateById: vi.fn().mockResolvedValue(new DutchAuctionState({ seq: 1234n })),
+        auctionStateById: vi.fn().mockResolvedValue(new DutchAuction({ state: { seq: 1234n } })),
       },
     };
 

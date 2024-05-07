@@ -4,7 +4,7 @@ import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils';
 import {
   AuctionId,
-  DutchAuctionState,
+  DutchAuction,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 
 export class AuctionQuerier implements AuctionQuerierInterface {
@@ -16,13 +16,13 @@ export class AuctionQuerier implements AuctionQuerierInterface {
 
   async auctionStateById(id: AuctionId): Promise<
     // Add more auction types to this union type as they are created.
-    DutchAuctionState | undefined
+    DutchAuction | undefined
   > {
     const result = await this.client.auctionStateById({ id });
 
     // As more auction types are created, handle them here.
-    if (result.auction?.typeUrl === DutchAuctionState.typeName) {
-      return DutchAuctionState.fromBinary(result.auction.value);
+    if (result.auction?.typeUrl === DutchAuction.typeName) {
+      return DutchAuction.fromBinary(result.auction.value);
     }
 
     return undefined;

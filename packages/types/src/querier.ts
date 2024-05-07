@@ -19,7 +19,7 @@ import {
 import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import {
   AuctionId,
-  DutchAuctionState,
+  DutchAuction,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 
 export interface RootQuerierInterface {
@@ -72,5 +72,5 @@ export interface CnidariumQuerierInterface {
 }
 
 export interface AuctionQuerierInterface {
-  auctionStateById(id: AuctionId): Promise<DutchAuctionState | undefined>;
+  auctionStateById(id: AuctionId): Promise<DutchAuction | undefined>;
 }
