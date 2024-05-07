@@ -671,10 +671,11 @@ describe('IndexedDb', () => {
       });
     });
 
-    it('inserts an auction and then updates with a note commitment when given the same auction ID', async () => {
+    it('inserts an auction and state, and then updates with a note commitment when given the same auction ID', async () => {
       const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
       const auction = new DutchAuctionDescription({ startHeight: 1234n });
-      await db.upsertAuction(auctionId, { auction });
+      const state = 0n;
+      await db.upsertAuction(auctionId, { auction, state });
 
       let fetchedAuction = await db.getAuction(auctionId);
       expect(fetchedAuction).toBeTruthy();
@@ -688,10 +689,11 @@ describe('IndexedDb', () => {
       expect(fetchedAuction).toEqual({
         auction,
         noteCommitment,
+        state,
       });
     });
 
-    it('inserts a note commitment and then updates with an auction when given the same auction ID', async () => {
+    it('inserts a note commitment and then updates with an auction and state when given the same auction ID', async () => {
       const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
       const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
       await db.upsertAuction(auctionId, { noteCommitment });
@@ -700,7 +702,8 @@ describe('IndexedDb', () => {
       expect(fetchedAuction).toBeTruthy();
 
       const auction = new DutchAuctionDescription({ startHeight: 1234n });
-      await db.upsertAuction(auctionId, { auction });
+      const state = 0n;
+      await db.upsertAuction(auctionId, { auction, state });
 
       fetchedAuction = await db.getAuction(auctionId);
       expect(fetchedAuction).toBeTruthy();
@@ -708,6 +711,7 @@ describe('IndexedDb', () => {
       expect(fetchedAuction).toEqual({
         auction,
         noteCommitment,
+        state,
       });
     });
   });

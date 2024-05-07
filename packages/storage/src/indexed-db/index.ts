@@ -691,6 +691,7 @@ export class IndexedDb implements IndexedDbInterface {
     value: {
       auction?: T;
       noteCommitment?: StateCommitment;
+      state?: bigint;
     },
   ): Promise<void> {
     const key = uint8ArrayToBase64(auctionId.inner);
@@ -700,6 +701,7 @@ export class IndexedDb implements IndexedDbInterface {
     const noteCommitment =
       (value.noteCommitment?.toJson() as Jsonified<StateCommitment> | undefined) ??
       existingRecord?.noteCommitment;
+    const state = value.state ?? existingRecord?.state;
 
     await this.u.update({
       table: 'AUCTIONS',
@@ -707,6 +709,7 @@ export class IndexedDb implements IndexedDbInterface {
       value: {
         auction,
         noteCommitment,
+        state,
       },
     });
   }
@@ -715,6 +718,7 @@ export class IndexedDb implements IndexedDbInterface {
     // Add more auction union types as they are created
     auction?: DutchAuctionDescription;
     noteCommitment?: StateCommitment;
+    state?: bigint;
   }> {
     const result = await this.db.get('AUCTIONS', uint8ArrayToBase64(auctionId.inner));
 
@@ -723,6 +727,7 @@ export class IndexedDb implements IndexedDbInterface {
       noteCommitment: result?.noteCommitment
         ? StateCommitment.fromJson(result.noteCommitment)
         : undefined,
+      state: result?.state,
     };
   }
 }
