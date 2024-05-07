@@ -52,7 +52,6 @@ import {
   AuctionId,
   DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
-import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 
 describe('IndexedDb', () => {
