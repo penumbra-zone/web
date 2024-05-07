@@ -694,6 +694,9 @@ importers:
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
+      '@penumbra-zone/polyfills':
+        specifier: workspace:*
+        version: link:../polyfills
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
