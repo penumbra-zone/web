@@ -62,21 +62,13 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
       noteRecord = await indexedDb.getSpendableNoteByCommitment(value.noteCommitment);
     }
 
-    let state: DutchAuctionState | undefined;
-    if (queryLatestState) {
-      const result = await querier.auction.auctionStateById(id);
-      if (result.auction?.typeUrl === DutchAuctionState.typeName) {
-        state = DutchAuctionState.fromBinary(result.auction.value);
-      }
-    }
-
     let auction: Any | undefined;
     if (!!value.auction || queryLatestState) {
       auction = new Any({
         typeUrl: DutchAuction.typeName,
         value: new DutchAuction({
           description: value.auction,
-          state,
+          state: queryLatestState ? await querier.auction.auctionStateById(id) : undefined,
         }).toBinary(),
       });
     }

@@ -28,6 +28,11 @@ export interface IndexedDbMock {
   getPricesForAsset?: Mock;
   getAuction?: Mock;
 }
+
+export interface AuctionMock {
+  auctionStateById: Mock;
+}
+
 export interface TendermintMock {
   broadcastTx?: Mock;
   getTransaction?: Mock;
@@ -42,7 +47,8 @@ export interface ViewServerMock {
   fullViewingKey?: FullViewingKey;
 }
 
-interface MockQuerier {
+export interface MockQuerier {
+  auction?: AuctionMock;
   tendermint?: TendermintMock;
   shieldedPool?: ShieldedPoolMock;
   staking?: StakingMock;
