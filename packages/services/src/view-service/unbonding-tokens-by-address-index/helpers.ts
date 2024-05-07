@@ -11,7 +11,7 @@ import { status } from '../status';
 import { appParameters } from '../app-parameters';
 
 export const isUnbondingTokenBalance = (balancesResponse: PartialMessage<BalancesResponse>) => {
-  if (balancesResponse?.balanceView?.valueView?.case === 'unknownAssetId') return false;
+  if (balancesResponse.balanceView?.valueView?.case === 'unknownAssetId') return false;
 
   return assetPatterns.unbondingToken.matches(
     getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse)),
