@@ -52,7 +52,7 @@ export const DutchAuctionComponent = ({
   const minOutput = getValueView(description.minOutput, outputMetadata);
 
   return (
-    <div className='flex flex-col items-end gap-2'>
+    <div className='flex flex-col gap-8'>
       <ActionDetails>
         <ActionDetails.Row label='Input'>
           <ValueViewComponent view={input} />
@@ -80,9 +80,11 @@ export const DutchAuctionComponent = ({
       </ActionDetails>
 
       {showEndButton && (
-        <Button variant='destructiveSecondary' size='md' onClick={onClickEndButton}>
-          End auction
-        </Button>
+        <div className='self-end'>
+          <Button variant='destructiveSecondary' size='md' onClick={onClickEndButton}>
+            End auction
+          </Button>
+        </div>
       )}
     </div>
   );
