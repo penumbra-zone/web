@@ -112,7 +112,6 @@ const TEST_DATA = [
 ];
 
 describe('Auctions request handler', () => {
-  let mockServices: MockServices;
   let mockCtx: HandlerContext;
   let mockIndexedDb: IndexedDbMock;
 
@@ -126,13 +125,14 @@ describe('Auctions request handler', () => {
       getSpendableNoteByCommitment: vi.fn().mockResolvedValue(MOCK_SPENDABLE_NOTE_RECORD),
     };
 
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({
-          indexedDb: mockIndexedDb,
-        }),
-      ) as MockServices['getWalletServices'],
-    };
+    const mockServices = () =>
+      Promise.resolve({
+        getWalletServices: vi.fn(() =>
+          Promise.resolve({
+            indexedDb: mockIndexedDb,
+          }),
+        ) as MockServices['getWalletServices'],
+      } as unknown as ServicesInterface);
 
     mockCtx = createHandlerContext({
       service: ViewService,
@@ -140,10 +140,7 @@ describe('Auctions request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(
-        servicesCtx,
-        mockServices as unknown as ServicesInterface,
-      ),
+      contextValues: createContextValues().set(servicesCtx, mockServices),
     });
   });
 

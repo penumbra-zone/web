@@ -53,7 +53,7 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
     throw new ConnectError('`includeInactive` not yet implemented', Code.Unimplemented);
   }
 
-  const services = ctx.values.get(servicesCtx);
+  const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
   for await (const auctionId of iterateAuctionsThisUserControls(ctx, accountFilter)) {
