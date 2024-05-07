@@ -7,7 +7,7 @@ import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { getBalances } from '../../../fetchers/balances';
 import { useMemo } from 'react';
 import { penumbraAddrValidation } from '../helpers';
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
+import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax2';
 import InputToken from '../../shared/input-token';
 import { useRefreshFee } from './use-refresh-fee';
 import { GasFee } from '../../shared/gas-fee';

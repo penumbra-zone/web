@@ -71,6 +71,7 @@ export class CRSessionManager {
    * the connection is for this manager, a handler is connected to the port.
    */
   private transportConnection = (port: chrome.runtime.Port) => {
+    console.log('transportConnection', port);
     // require an identified origin
     const sender = port.sender;
     if (!sender?.origin) return;
@@ -163,10 +164,12 @@ export class CRSessionManager {
     const channel = nameConnection(this.prefix, ChannelLabel.STREAM);
     const sinkListener = (p: chrome.runtime.Port) => {
       if (p.name !== channel) return;
-      chrome.runtime.onConnect.removeListener(sinkListener);
+      if (this.external) chrome.runtime.onConnectExternal.removeListener(sinkListener);
+      else chrome.runtime.onConnect.removeListener(sinkListener);
       void stream.pipeTo(new WritableStream(new PortStreamSink(p)), { signal }).catch(() => null);
     };
-    chrome.runtime.onConnect.addListener(sinkListener);
+    if (this.external) chrome.runtime.onConnectExternal.addListener(sinkListener);
+    else chrome.runtime.onConnect.addListener(sinkListener);
     return { requestId, channel };
   }
 

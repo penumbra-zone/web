@@ -33,13 +33,18 @@ export class CRSessionClient {
   private constructor(
     private prefix: string,
     private clientPort: MessagePort,
+    private external: boolean,
   ) {
     if (CRSessionClient.singleton) throw new Error('Already constructed');
 
-    this.servicePort = chrome.runtime.connect({
-      includeTlsChannelId: true,
-      name: nameConnection(prefix, ChannelLabel.TRANSPORT),
-    });
+    if (this.external)
+      this.servicePort = chrome.runtime.connect(prefix, {
+        name: nameConnection(prefix, ChannelLabel.TRANSPORT),
+      });
+    else
+      this.servicePort = chrome.runtime.connect({
+        name: nameConnection(prefix, ChannelLabel.TRANSPORT),
+      });
 
     this.servicePort.onMessage.addListener(this.serviceListener);
     this.servicePort.onDisconnect.addListener(this.disconnect);
@@ -53,9 +58,9 @@ export class CRSessionClient {
    * @param prefix a string containing no spaces
    * @returns a `MessagePort` that can be provided to DOM channel transports
    */
-  public static init(prefix: string): MessagePort {
+  public static init(prefix: string, external = false): MessagePort {
     const { port1, port2 } = new MessageChannel();
-    CRSessionClient.singleton ??= new CRSessionClient(prefix, port1);
+    CRSessionClient.singleton ??= new CRSessionClient(prefix, port1, external);
     return port2;
   }
 
@@ -90,7 +95,13 @@ export class CRSessionClient {
   };
 
   private acceptChannelStreamResponse = ({ requestId, channel: name }: TransportInitChannel) => {
-    const stream = new ReadableStream(new PortStreamSource(chrome.runtime.connect({ name })));
+    const stream = new ReadableStream(
+      new PortStreamSource(
+        this.external
+          ? chrome.runtime.connect(this.prefix, { name })
+          : chrome.runtime.connect({ name }),
+      ),
+    );
     return [{ requestId, stream }, [stream]] satisfies [TransportStream, [Transferable]];
   };
 
@@ -98,10 +109,12 @@ export class CRSessionClient {
     const channel = nameConnection(this.prefix, ChannelLabel.STREAM);
     const sinkListener = (p: chrome.runtime.Port) => {
       if (p.name !== channel) return;
-      chrome.runtime.onConnect.removeListener(sinkListener);
+      if (this.external) chrome.runtime.onConnectExternal.removeListener(sinkListener);
+      else chrome.runtime.onConnect.removeListener(sinkListener);
       void stream.pipeTo(new WritableStream(new PortStreamSink(p))).catch(() => null);
     };
-    chrome.runtime.onConnect.addListener(sinkListener);
+    if (this.external) chrome.runtime.onConnectExternal.addListener(sinkListener);
+    else chrome.runtime.onConnect.addListener(sinkListener);
     return { requestId, channel } satisfies TransportInitChannel;
   };
 }

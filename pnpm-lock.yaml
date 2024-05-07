@@ -571,6 +571,9 @@ importers:
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../protobuf
+      '@penumbra-zone/transport-chrome':
+        specifier: workspace:*
+        version: link:../transport-chrome
       '@penumbra-zone/transport-dom':
         specifier: workspace:*
         version: link:../transport-dom

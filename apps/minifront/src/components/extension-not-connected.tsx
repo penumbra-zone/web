@@ -8,7 +8,7 @@ import {
   requestPraxConnection,
   throwIfPraxNotAvailable,
   throwIfPraxNotInstalled,
-} from '@penumbra-zone/client/prax';
+} from '@penumbra-zone/client/prax2';
 import { useState } from 'react';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
 

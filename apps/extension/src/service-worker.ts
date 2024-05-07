@@ -2,14 +2,10 @@
  * This file is the entrypoint for the main and only background service worker.
  *
  * It is responsible for initializing:
- * - listeners for chrome runtime events
  * - Services, with endpoint config and a wallet
  * - rpc services, router, and adapter
  * - session manager for rpc entry
  */
-
-// side-effectful import attaches transport init listeners
-import './listeners';
 
 // services
 import { Services } from '@penumbra-zone/services-context';
@@ -115,4 +111,4 @@ const getServiceHandler = async () => {
 await fixEmptyGrpcEndpointAfterOnboarding();
 
 const handler = await getServiceHandler();
-CRSessionManager.init(PRAX, handler);
+CRSessionManager.init(PRAX, handler, true);

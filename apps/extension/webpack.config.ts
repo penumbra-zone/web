@@ -34,13 +34,9 @@ const __dirname = new URL('.', import.meta.url).pathname;
 const srcDir = path.join(__dirname, 'src');
 
 const entryDir = path.join(srcDir, 'entry');
-const injectDir = path.join(srcDir, 'content-scripts');
 
 const config: webpack.Configuration = {
   entry: {
-    'injected-connection-port': path.join(injectDir, 'injected-connection-port.ts'),
-    'injected-penumbra-global': path.join(injectDir, 'injected-penumbra-global.ts'),
-    'injected-request-listener': path.join(injectDir, 'injected-request-listener.ts'),
     'offscreen-handler': path.join(entryDir, 'offscreen-handler.ts'),
     'page-root': path.join(entryDir, 'page-root.tsx'),
     'popup-root': path.join(entryDir, 'popup-root.tsx'),

@@ -9,7 +9,7 @@ import {
   isPraxConnected,
   isPraxConnectedTimeout,
   isPraxAvailable,
-} from '@penumbra-zone/client/prax';
+} from '@penumbra-zone/client/prax2';
 import '@penumbra-zone/ui/styles/globals.css';
 import { getChainId } from '../fetchers/chain-id';
 import { useEffect, useState } from 'react';
