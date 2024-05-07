@@ -23,17 +23,16 @@ interface CRSession {
  * background worker.
  *
  * Currently this supports
- * - connections from content scripts (and thus webpages)
+ * - connections from content scripts
  * - connections from pages in this extension
  * - connections from workers in this extension
+ * - if external is true, connections from other extensions or pages (experimental)
  *
  * This does not support
  * - connections from a script back to itself
  *
  * In the future we may want to support
- * - connections directly from webpages
  * - connections from native applications
- * - connections from other extensions
  *
  * If you are connecting from the same worker running this script (currently,
  * service-to-service communication) you cannot make a `chrome.runtime.connect`
@@ -47,18 +46,21 @@ export class CRSessionManager {
   private constructor(
     private prefix: string,
     private handler: ChannelHandlerFn,
+    private external: boolean,
   ) {
     if (CRSessionManager.singleton) throw new Error('Already constructed');
     chrome.runtime.onConnect.addListener(this.transportConnection);
+    if (this.external) chrome.runtime.onConnectExternal.addListener(this.transportConnection);
   }
 
   /**
    *
    * @param prefix a string containing no spaces, matching the prefix used in your content script
    * @param handler your router entry function
+   * @param external if true, apply handler to onConnectExternal
    */
-  public static init = (prefix: string, handler: ChannelHandlerFn) => {
-    CRSessionManager.singleton ??= new CRSessionManager(prefix, handler);
+  public static init = (prefix: string, handler: ChannelHandlerFn, external = false) => {
+    CRSessionManager.singleton ??= new CRSessionManager(prefix, handler, external);
   };
 
   /**
