@@ -16,9 +16,8 @@ export class AuctionQuerier implements AuctionQuerierInterface {
     this.client = createClient(grpcEndpoint, QueryService);
   }
 
-  async auctionStateById(id: AuctionId): Promise<AuctionStateByIdResponse> {
-    const result = await this.client.auctionStateById({ id });
-    return result;
+  auctionStateById(id: AuctionId): Promise<AuctionStateByIdResponse> {
+    return this.client.auctionStateById({ id });
   }
 
   auctionStateByIds(ids: AuctionId[]): Promise<AuctionStateByIdsResponse[]> {
