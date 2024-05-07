@@ -33,6 +33,8 @@ const getBech32mAuctionId = (
   return captureGroups.auctionId;
 };
 
+const isInactive = (seqNum?: bigint) => (seqNum === undefined ? false : seqNum > 0n);
+
 const iterateAuctionsThisUserControls = async function* (
   ctx: HandlerContext,
   accountFilter?: AddressIndex,
@@ -56,7 +58,7 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
   for await (const auctionId of iterateAuctionsThisUserControls(ctx, accountFilter)) {
     const id = new AuctionId(auctionIdFromBech32(auctionId));
     const value = await indexedDb.getAuction(id);
-    if (!includeInactive && value.seqNum) continue;
+    if (!includeInactive && isInactive(value.seqNum)) continue;
 
     let noteRecord: SpendableNoteRecord | undefined;
     if (value.noteCommitment) {
