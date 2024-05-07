@@ -6,9 +6,15 @@ import {
 import { Impl } from '..';
 import { balances } from '../balances';
 import { getIsClaimable, isUnbondingTokenBalance } from './helpers';
+import {getValidatorInfo} from "@penumbra-zone/getters/validator-info-response";
+import {Any} from "@bufbuild/protobuf";
+import {ValidatorInfo} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb";
+import {stakingClientCtx} from "../../ctx/staking-client";
 
 export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'] =
   async function* (req, ctx) {
+    const stakingClient = ctx.values.get(stakingClientCtx);
+    if (!stakingClient) throw new Error('Staking context not found');
     for await (const balancesResponse of balances(
       new BalancesRequest({ accountFilter: req.addressIndex }),
       ctx,
@@ -30,6 +36,14 @@ export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'
       ) {
         continue;
       }
+
+
+      const validatorInfo = stakingClient.validatorInfo({ showInactive: true });
+      getValidatorInfo(va)
+      const extendedMetadata = new Any({
+        typeUrl: ValidatorInfo.typeName,
+        value: validatorInfo.toBinary(),
+      });
 
       yield new UnbondingTokensByAddressIndexResponse({
         claimable,
