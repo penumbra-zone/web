@@ -1,27 +1,29 @@
 import { ChainDropdown } from './chain-dropdown';
 import { CosmosWalletConnector } from './cosmos-wallet-connector';
 import { AssetsTable } from './assets-table';
-import { IbcChainProvider } from './chain-provider';
-import { useRegistry } from '../../../fetchers/registry';
 import { IbcInRequest } from './ibc-in-request';
+import { AllSlices, useStore } from '../../../state';
+import { useChainConnector } from './hooks';
+import { FormEvent, MouseEvent } from 'react';
 
 export const IbcInForm = () => {
-  const { data, isLoading, error } = useRegistry();
+  const issueTx = useStore(({ ibcIn }: AllSlices) => ibcIn.issueTx);
+  const { address, getSigningStargateClient } = useChainConnector();
 
-  if (isLoading) return <div>Loading registry...</div>;
-  if (error) return <div>Error trying to load registry!</div>;
-  if (!data) return <></>;
+  const handleSubmit = (event: FormEvent | MouseEvent) => {
+    event.preventDefault();
+
+    void issueTx(getSigningStargateClient, address);
+  };
 
   return (
-    <IbcChainProvider registry={data}>
-      <div className='flex w-full flex-col gap-4 md:w-[340px] xl:w-[450px]'>
-        <div className='flex justify-center'>
-          <ChainDropdown />
-        </div>
-        <CosmosWalletConnector />
-        <AssetsTable />
-        <IbcInRequest />
+    <form className='flex w-full flex-col gap-4 md:w-[340px] xl:w-[450px]' onSubmit={handleSubmit}>
+      <div className='flex justify-center'>
+        <ChainDropdown />
       </div>
-    </IbcChainProvider>
+      <CosmosWalletConnector />
+      <AssetsTable />
+      <IbcInRequest />
+    </form>
   );
 };

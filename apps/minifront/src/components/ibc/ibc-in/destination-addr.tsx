@@ -1,16 +1,19 @@
-import { useStore } from '../../../state';
-import { ibcInSelector } from '../../../state/ibc-in';
+import { AllSlices } from '../../../state';
 import { useEffect } from 'react';
 import { IncognitoIcon } from '@penumbra-zone/ui/components/ui/icons/incognito';
+import { useStoreShallow } from '../../../utils/use-store-shallow';
+
+const addrsSelector = ({ ibcIn }: AllSlices) => ({
+  fetchPenumbraAddrs: ibcIn.fetchPenumbraAddrs,
+  penumbraAddrs: ibcIn.penumbraAddrs,
+});
 
 export const DestinationAddr = () => {
-  const { penumbraAddrs, fetchPenumbraAddrs } = useStore(ibcInSelector);
+  const { penumbraAddrs, fetchPenumbraAddrs } = useStoreShallow(addrsSelector);
 
   // TODO: allow for user account selection
   // On mount, get normal+ephemeral address for Account #0
-  // List disable reason: Do not want to re-render ephemeral address every-render
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => void fetchPenumbraAddrs(), []);
+  useEffect(() => void fetchPenumbraAddrs(), [fetchPenumbraAddrs]);
 
   return (
     <div className='flex flex-col gap-1 break-all text-stone-700'>

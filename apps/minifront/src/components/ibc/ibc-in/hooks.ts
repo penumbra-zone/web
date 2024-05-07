@@ -70,17 +70,20 @@ interface BalancesResponse {
 }
 
 // Reference: https://github.com/cosmos/chain-registry/blob/master/assetlist.schema.json#L60
-type AssetType =
-  | 'sdk.coin'
-  | 'cw20'
-  | 'erc20'
-  | 'ics20'
-  | 'snip20'
-  | 'snip25'
-  | 'bitcoin-like'
-  | 'evm-base'
-  | 'svm-base'
-  | 'substrate';
+const ASSET_TYPES = [
+  'sdk.coin',
+  'cw20',
+  'erc20',
+  'ics20',
+  'snip20',
+  'snip25',
+  'bitcoin-like',
+  'evm-base',
+  'svm-base',
+  'substrate',
+] as const;
+
+type AssetType = (typeof ASSET_TYPES)[number];
 
 export interface CosmosAssetBalance {
   raw: Coin;
@@ -122,8 +125,14 @@ export const useCosmosChainBalances = (): UseCosmosChainBalancesRes => {
       displayDenom: asset.display,
       displayAmount: toDisplayAmount(asset, coin),
       icon: asset.logo_URIs?.svg ?? asset.logo_URIs?.png,
-      assetType: asset.type_asset as AssetType | undefined,
+      assetType: assetTypeCheck(asset.type_asset),
     };
   });
   return { data: augmentedAssets, isLoading, error };
+};
+
+const assetTypeCheck = (type?: string): AssetType | undefined => {
+  return typeof type === 'string' && ASSET_TYPES.includes(type as AssetType)
+    ? (type as AssetType)
+    : undefined;
 };

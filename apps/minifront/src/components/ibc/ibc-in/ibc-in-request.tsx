@@ -1,6 +1,6 @@
 import { useChainConnector, useCosmosChainBalances } from './hooks';
-import { useStore } from '../../../state';
-import { ibcErrorSelector, ibcInSelector, isReadySelector } from '../../../state/ibc-in';
+import { AllSlices, useStore } from '../../../state';
+import { ibcErrorSelector, ibcInSelector } from '../../../state/ibc-in';
 import {
   Select,
   SelectContent,
@@ -15,9 +15,17 @@ import { DestinationAddr } from './destination-addr';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { LockClosedIcon } from '@radix-ui/react-icons';
 
+const isReadySelector = (state: AllSlices) => {
+  const { amount, coin, selectedChain, penumbraAddrs } = state.ibcIn;
+  const errorsPresent = Object.values(ibcErrorSelector(state)).some(Boolean);
+  const formsFilled =
+    Boolean(amount) && Boolean(coin) && Boolean(selectedChain) && Boolean(penumbraAddrs);
+  return !errorsPresent && formsFilled;
+};
+
 export const IbcInRequest = () => {
-  const { address, getSigningStargateClient } = useChainConnector();
-  const { selectedChain, setCoin, issueTx } = useStore(ibcInSelector);
+  const { address } = useChainConnector();
+  const { selectedChain, setCoin } = useStore(ibcInSelector);
   const { data } = useCosmosChainBalances();
 
   const { isUnsupportedAsset } = useStore(ibcErrorSelector);
@@ -37,7 +45,7 @@ export const IbcInRequest = () => {
       )}
       <div className='flex w-full gap-2'>
         <Select onValueChange={v => setCoin(data.find(b => b.displayDenom === v))}>
-          <SelectTrigger className='truncate rounded-lg bg-white p-2' textColor='text-stone-700'>
+          <SelectTrigger className='truncate rounded-lg bg-white p-2' variant='light'>
             <SelectValue placeholder='Select Asset' />
           </SelectTrigger>
           <SelectContent className='max-w-52 bg-white text-stone-700'>
@@ -59,12 +67,7 @@ export const IbcInRequest = () => {
         <AmountInput />
       </div>
       <DestinationAddr />
-      <Button
-        variant='onLight'
-        disabled={!isReady}
-        className='w-full'
-        onClick={() => void issueTx(address, getSigningStargateClient)}
-      >
+      <Button variant='onLight' disabled={!isReady} className='w-full' type='submit'>
         <div className='flex items-center gap-2'>
           <LockClosedIcon />
           <span className='-mb-1'>Shield Assets</span>
@@ -82,10 +85,12 @@ const AmountInput = () => {
     <Input
       disabled={!coin}
       type='number'
+      step='any'
       placeholder='Enter amount'
       className='bg-white text-stone-700'
       variant={amountErr ? 'error' : 'default'}
       onChange={e => setAmount(e.target.value)}
+      required
     />
   );
 };

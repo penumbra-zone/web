@@ -4,6 +4,19 @@ import * as React from 'react';
 import * as SelectPrimitive from '@radix-ui/react-select';
 import { cn } from '../../lib/utils';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
+import { cva, type VariantProps } from 'class-variance-authority';
+
+const selectVariants = cva('', {
+  variants: {
+    variant: {
+      dark: 'text-muted',
+      light: 'text-stone-700',
+    },
+  },
+  defaultVariants: {
+    variant: 'dark',
+  },
+});
 
 const Select = SelectPrimitive.Root;
 
@@ -11,18 +24,22 @@ const SelectGroup = SelectPrimitive.Group;
 
 const SelectValue = SelectPrimitive.Value;
 
+export interface SelectTriggerProps
+  extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>,
+    VariantProps<typeof selectVariants> {
+  open?: boolean;
+  textColor?: string;
+}
+
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & {
-    open?: boolean;
-    textColor?: string;
-  }
->(({ className, children, open, textColor = 'text-muted', ...props }, ref) => (
+  SelectTriggerProps
+>(({ className, children, open, variant, ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
       'flex w-full items-center justify-between bg-background ring-offset-background focus:outline-none focus:ring-0 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-[15px] leading-[22px] font-bold text-light-brown',
-      textColor,
+      selectVariants({ variant }),
       className,
     )}
     {...props}
@@ -30,7 +47,11 @@ const SelectTrigger = React.forwardRef<
     {children}
     <SelectPrimitive.Icon asChild>
       <ChevronDownIcon
-        className={cn('h-6 w-6 transition-all duration-500', open && 'rotate-180', textColor)}
+        className={cn(
+          'h-6 w-6 transition-all duration-500',
+          open && 'rotate-180',
+          selectVariants({ variant }),
+        )}
       />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>

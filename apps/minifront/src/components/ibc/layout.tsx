@@ -1,6 +1,6 @@
 import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { IbcOutForm } from './ibc-out/ibc-out-form';
-import { IbcInForm } from './ibc-in/ibc-in-form';
+import { InterchainUi } from './ibc-in/interchain-ui';
 import { LongArrowIcon } from './long-arrow';
 
 export const IbcLayout = () => {
@@ -15,7 +15,7 @@ export const IbcLayout = () => {
             /* eslint-disable-next-line tailwindcss/enforces-negative-arbitrary-values */
             className='invisible absolute -top-32 right-0 z-0 -mr-80 size-80 text-stone-300 md:visible'
           />
-          <IbcInForm />
+          <InterchainUi />
         </Card>
         <Card gradient className='relative overflow-visible md:mt-40 md:self-start'>
           <LongArrowIcon

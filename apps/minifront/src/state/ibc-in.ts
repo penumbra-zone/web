@@ -13,6 +13,7 @@ import { tendermintClient } from '../clients';
 import { currentTimePlusTwoDaysRounded } from './ibc-out';
 import { StdFee } from '@cosmjs/stargate';
 import { getChainId } from '../fetchers/chain-id';
+import { BLOCKS_PER_HOUR } from './dutch-auction/constants';
 
 interface PenumbraAddrs {
   ephemeral: string;
@@ -29,8 +30,8 @@ export interface IbcInSlice {
   penumbraAddrs?: PenumbraAddrs;
   fetchPenumbraAddrs: () => Promise<void>;
   issueTx: (
-    address: string,
     getClient: ChainWalletContext['getSigningStargateClient'],
+    address?: string,
   ) => Promise<void>;
 }
 
@@ -68,11 +69,14 @@ export const createIbcInSlice = (): SliceCreator<IbcInSlice> => (set, get) => {
         };
       });
     },
-    issueTx: async (address, getClient) => {
+    issueTx: async (getClient, address) => {
       const toast = new Toast();
       try {
         toast.loading().message('Issuing IBC transaction').render();
+
+        if (!address) throw new Error('Address not selected');
         const { height, transactionHash } = await execute(get().ibcIn, address, getClient);
+
         // TODO: Don't think txHash is enough information to consider this a success
         //       e.g. https://www.mintscan.io/osmosis-testnet/tx/C9AE1477D63B2F9AF4A5D23217A5548C3EE169DBF358F17E1885E1A4873C98C3
         //       It successfully broadcasted, but the transaction was a failure
@@ -172,7 +176,8 @@ const getTimeout = async (chainId: string) => {
 
   const timeoutHeight = {
     revisionNumber: parseRevisionNumberFromChainId(chainId),
-    revisionHeight: height + 1000n, // assuming a block time of 10s and adding ~1000 blocks (~3 hours)
+    // We don't know the average block times for the counterparty chain, so just putting in the Penumbra average
+    revisionHeight: height + BLOCKS_PER_HOUR * 3n,
   };
   const timeoutTimestamp = currentTimePlusTwoDaysRounded(Date.now());
 
@@ -182,14 +187,6 @@ const getTimeout = async (chainId: string) => {
 const isIbcAsset = (denom: string): boolean => {
   const ibcRegex = /^ibc\/[0-9A-F]{64}$/i;
   return ibcRegex.test(denom);
-};
-
-export const isReadySelector = (state: AllSlices) => {
-  const { amount, coin, selectedChain, penumbraAddrs } = state.ibcIn;
-  const errorsPresent = Object.values(ibcErrorSelector(state)).some(Boolean);
-  const formsFilled =
-    Boolean(amount) && Boolean(coin) && Boolean(selectedChain) && Boolean(penumbraAddrs);
-  return !errorsPresent && formsFilled;
 };
 
 export const ibcErrorSelector = (state: AllSlices) => {

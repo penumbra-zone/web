@@ -15,7 +15,7 @@ export const headerLinks: HeaderLink[] = [
   {
     href: PagePath.IBC,
     label: 'Shield Funds',
-    active: false,
+    active: true,
     mobileIcon: <MixerHorizontalIcon className='size-5 text-muted-foreground' />,
   },
   {

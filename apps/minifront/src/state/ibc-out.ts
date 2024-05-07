@@ -22,6 +22,7 @@ import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { Chain } from '@penumbra-labs/registry';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Channel } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/channel/v1/channel_pb';
+import { BLOCKS_PER_HOUR } from './dutch-auction/constants';
 
 export interface IbcOutSlice {
   selection: BalancesResponse | undefined;
@@ -143,15 +144,15 @@ const getTimeout = async (
   });
 
   const clientState = await clientStateForChannel(channel);
-
-  // assuming a block time of 10s and adding ~1000 blocks (~3 hours)
-  const revisionHeight = clientState.latestHeight!.revisionHeight + 1000n;
+  if (!clientState.latestHeight) {
+    throw new Error(`latestHeight not provided in client state for ${clientState.chainId}`);
+  }
 
   return {
     timeoutTime: currentTimePlusTwoDaysRounded(Date.now()),
     timeoutHeight: new Height({
-      revisionHeight,
-      revisionNumber: clientState.latestHeight!.revisionNumber,
+      revisionHeight: clientState.latestHeight.revisionHeight + BLOCKS_PER_HOUR * 3n,
+      revisionNumber: clientState.latestHeight.revisionNumber,
     }),
   };
 };

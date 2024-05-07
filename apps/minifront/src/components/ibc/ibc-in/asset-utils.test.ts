@@ -58,8 +58,15 @@ describe('fromDisplayAmount', () => {
     expect(result).toEqual({ denom: 'xosmo', amount: '100' });
   });
 
-  test('defaults base exponent to zero when not found', () => {
-    const result = fromDisplayAmount(asset, 'osmo', '100');
+  test('defaults base exponent to zero when base exponent not found in denom units array', () => {
+    const noExponentForBase = {
+      denom_units: [{ denom: 'osmo', exponent: 6 }],
+      base: 'uosmo',
+      name: 'Osmosis',
+      display: 'osmo',
+      symbol: 'OSMO',
+    };
+    const result = fromDisplayAmount(noExponentForBase, 'osmo', '100');
     expect(result).toEqual({ denom: 'uosmo', amount: '100000000' });
   });
 });
