@@ -114,17 +114,11 @@ export interface IndexedDbInterface {
     },
   ): Promise<void>;
 
-  iterateAuctions(): AsyncGenerator<
-    {
-      id: AuctionId;
-      value: {
-        // Add more auction union types as they are created
-        auction?: DutchAuctionDescription;
-        noteCommitment?: StateCommitment;
-      };
-    },
-    void
-  >;
+  getAuction(auctionId: AuctionId): Promise<{
+    // Add more auction union types as they are created
+    auction?: DutchAuctionDescription;
+    noteCommitment?: StateCommitment;
+  }>;
 }
 
 export interface PenumbraDb extends DBSchema {

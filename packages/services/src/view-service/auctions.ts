@@ -5,14 +5,17 @@ import {
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Impl } from '.';
-import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import {
+  AuctionId,
+  DutchAuction,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { balances } from './balances';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { assetPatterns } from '@penumbra-zone/constants/assets';
 import { Any, PartialMessage } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax';
-import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
+import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { Code, ConnectError, HandlerContext } from '@connectrpc/connect';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
@@ -30,17 +33,14 @@ const getBech32mAuctionId = (
   return captureGroups.auctionId;
 };
 
-const getAuctionsThisUserControls = async (ctx: HandlerContext, accountFilter?: AddressIndex) => {
-  const auctionsThisUserControls = new Set<string>();
-
+const iterateAuctionsThisUserControls = async function* (
+  ctx: HandlerContext,
+  accountFilter?: AddressIndex,
+) {
   for await (const balancesResponse of balances(new BalancesRequest({ accountFilter }), ctx)) {
     const auctionId = getBech32mAuctionId(balancesResponse);
-    if (!auctionId) continue;
-
-    auctionsThisUserControls.add(auctionId);
+    if (auctionId) yield auctionId;
   }
-
-  return auctionsThisUserControls;
 };
 
 export const auctions: Impl['auctions'] = async function* (req, ctx) {
@@ -53,29 +53,30 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
     throw new ConnectError('`includeInactive` not yet implemented', Code.Unimplemented);
   }
 
-  const auctionsThisUserControls = await getAuctionsThisUserControls(ctx, accountFilter);
-  if (!auctionsThisUserControls.size) return;
-
   const services = ctx.values.get(servicesCtx);
   const { indexedDb } = await services.getWalletServices();
 
-  for await (const { id, value } of indexedDb.iterateAuctions()) {
-    if (!auctionsThisUserControls.has(bech32mAuctionId(id))) continue;
-
+  for await (const auctionId of iterateAuctionsThisUserControls(ctx, accountFilter)) {
     /** @todo: if (req.includeInactive && auctionIsInactive()) continue; */
+    const id = new AuctionId(auctionIdFromBech32(auctionId));
+    const value = await indexedDb.getAuction(id);
 
     let noteRecord: SpendableNoteRecord | undefined;
     if (value.noteCommitment) {
       noteRecord = await indexedDb.getSpendableNoteByCommitment(value.noteCommitment);
     }
 
-    const auction = new Any({
-      typeUrl: DutchAuction.typeName,
-      value: new DutchAuction({
-        description: value.auction,
-        /** @todo include state if `queryLatestState` is `true` */
-      }).toBinary(),
-    });
+    let auction: Any | undefined;
+
+    if (value.auction) {
+      auction = new Any({
+        typeUrl: DutchAuction.typeName,
+        value: new DutchAuction({
+          description: value.auction,
+          /** @todo include state if `queryLatestState` is `true` */
+        }).toBinary(),
+      });
+    }
 
     yield new AuctionsResponse({
       id,

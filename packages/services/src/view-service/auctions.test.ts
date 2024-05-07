@@ -119,13 +119,10 @@ describe('Auctions request handler', () => {
   beforeEach(() => {
     vi.resetAllMocks();
 
-    const mockIterateAuctions = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateAuctions,
-    };
-
     mockIndexedDb = {
-      iterateAuctions: () => mockIterateAuctions,
+      getAuction: vi.fn((auctionId: AuctionId) =>
+        Promise.resolve(TEST_DATA.find(({ id }) => id.equals(auctionId))?.value),
+      ),
       getSpendableNoteByCommitment: vi.fn().mockResolvedValue(MOCK_SPENDABLE_NOTE_RECORD),
     };
 
@@ -148,15 +145,6 @@ describe('Auctions request handler', () => {
         mockServices as unknown as ServicesInterface,
       ),
     });
-
-    for (const record of TEST_DATA) {
-      mockIterateAuctions.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIterateAuctions.next.mockResolvedValueOnce({
-      done: true,
-    });
   });
 
   it('returns auctions', async () => {
@@ -168,7 +156,7 @@ describe('Auctions request handler', () => {
         id: AUCTION_ID_1,
         auction: {
           typeUrl: DutchAuction.typeName,
-          value: new DutchAuction({ description: TEST_DATA[0]!.value.auction }).toBinary(),
+          value: new DutchAuction({ description: MOCK_AUCTION_1 }).toBinary(),
         },
         noteRecord: MOCK_SPENDABLE_NOTE_RECORD,
       }),

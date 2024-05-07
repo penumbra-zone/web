@@ -42,7 +42,7 @@ import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
 import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
-import { base64ToUint8Array, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import {
   IDB_TABLES,
@@ -701,28 +701,18 @@ export class IndexedDb implements IndexedDbInterface {
     });
   }
 
-  async *iterateAuctions() {
-    yield* new ReadableStream({
-      start: async controller => {
-        let cursor = await this.db.transaction('AUCTIONS', 'readonly').store.openCursor();
-        while (cursor) {
-          controller.enqueue({
-            id: new AuctionId({ inner: base64ToUint8Array(cursor.key) }),
-            value: {
-              auction: cursor.value.auction
-                ? DutchAuctionDescription.fromJson(cursor.value.auction)
-                : undefined,
-              noteCommitment: cursor.value.noteCommitment
-                ? StateCommitment.fromJson(cursor.value.noteCommitment)
-                : undefined,
-            },
-          });
+  async getAuction(auctionId: AuctionId): Promise<{
+    // Add more auction union types as they are created
+    auction?: DutchAuctionDescription;
+    noteCommitment?: StateCommitment;
+  }> {
+    const result = await this.db.get('AUCTIONS', uint8ArrayToBase64(auctionId.inner));
 
-          cursor = await cursor.continue();
-        }
-
-        controller.close();
-      },
-    });
+    return {
+      auction: result?.auction ? DutchAuctionDescription.fromJson(result.auction) : undefined,
+      noteCommitment: result?.noteCommitment
+        ? StateCommitment.fromJson(result.noteCommitment)
+        : undefined,
+    };
   }
 }

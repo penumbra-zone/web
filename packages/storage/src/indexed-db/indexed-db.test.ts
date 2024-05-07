@@ -641,13 +641,9 @@ describe('IndexedDb', () => {
       const auction = new DutchAuctionDescription({ startHeight: 1234n });
       await db.upsertAuction(auctionId, { auction });
 
-      const auctions = await Array.fromAsync(db.iterateAuctions());
-      expect(auctions.length).toBe(1);
-      expect(auctions[0]).toEqual({
-        id: auctionId,
-        value: {
-          auction,
-        },
+      const fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toEqual({
+        auction,
       });
     });
 
@@ -656,13 +652,9 @@ describe('IndexedDb', () => {
       const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
       await db.upsertAuction(auctionId, { noteCommitment });
 
-      const auctions = await Array.fromAsync(db.iterateAuctions());
-      expect(auctions.length).toBe(1);
-      expect(auctions[0]).toEqual({
-        id: auctionId,
-        value: {
-          noteCommitment,
-        },
+      const fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toEqual({
+        noteCommitment,
       });
     });
 
@@ -672,14 +664,10 @@ describe('IndexedDb', () => {
       const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
       await db.upsertAuction(auctionId, { auction, noteCommitment });
 
-      const auctions = await Array.fromAsync(db.iterateAuctions());
-      expect(auctions.length).toBe(1);
-      expect(auctions[0]).toEqual({
-        id: auctionId,
-        value: {
-          auction,
-          noteCommitment,
-        },
+      const fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toEqual({
+        auction,
+        noteCommitment,
       });
     });
 
@@ -688,21 +676,18 @@ describe('IndexedDb', () => {
       const auction = new DutchAuctionDescription({ startHeight: 1234n });
       await db.upsertAuction(auctionId, { auction });
 
-      let auctions = await Array.fromAsync(db.iterateAuctions());
-      expect(auctions.length).toBe(1);
+      let fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toBeTruthy();
 
       const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
       await db.upsertAuction(auctionId, { noteCommitment });
 
-      auctions = await Array.fromAsync(db.iterateAuctions());
-      expect(auctions.length).toBe(1);
+      fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toBeTruthy();
 
-      expect(auctions[0]).toEqual({
-        id: auctionId,
-        value: {
-          auction,
-          noteCommitment,
-        },
+      expect(fetchedAuction).toEqual({
+        auction,
+        noteCommitment,
       });
     });
 
@@ -711,21 +696,18 @@ describe('IndexedDb', () => {
       const noteCommitment = new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) });
       await db.upsertAuction(auctionId, { noteCommitment });
 
-      let auctions = await Array.fromAsync(db.iterateAuctions());
-      expect(auctions.length).toBe(1);
+      let fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toBeTruthy();
 
       const auction = new DutchAuctionDescription({ startHeight: 1234n });
       await db.upsertAuction(auctionId, { auction });
 
-      auctions = await Array.fromAsync(db.iterateAuctions());
-      expect(auctions.length).toBe(1);
+      fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toBeTruthy();
 
-      expect(auctions[0]).toEqual({
-        id: auctionId,
-        value: {
-          auction,
-          noteCommitment,
-        },
+      expect(fetchedAuction).toEqual({
+        auction,
+        noteCommitment,
       });
     });
   });
