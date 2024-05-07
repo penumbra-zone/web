@@ -11,11 +11,8 @@ import { status } from '../status';
 import { appParameters } from '../app-parameters';
 
 export const isUnbondingTokenBalance = (balancesResponse: PartialMessage<BalancesResponse>) => {
-  if (balancesResponse.balanceView?.valueView?.case === 'unknownAssetId') return false;
-
-  return assetPatterns.unbondingToken.matches(
-    getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse)),
-  );
+  const display = getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse));
+  return display ? assetPatterns.unbondingToken.matches(display) : false;
 };
 
 /**
@@ -42,6 +39,8 @@ export const getIsClaimable = async (
   if (!fullSyncHeight || !parameters?.stakeParams?.unbondingDelay) return false;
 
   const display = getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse));
+  if (!display) return false;
+
   const unbondingStartHeight = assetPatterns.unbondingToken.capture(display);
 
   if (unbondingStartHeight?.startAt) {
