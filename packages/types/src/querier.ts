@@ -74,5 +74,4 @@ export interface CnidariumQuerierInterface {
 
 export interface AuctionQuerierInterface {
   auctionStateById(id: AuctionId): Promise<AuctionStateByIdResponse>;
-  auctionStateByIds(auctionIds: AuctionId[]): Promise<AuctionStateByIdsResponse[]>;
 }
