@@ -3,10 +3,12 @@ import { ServiceImpl } from '@connectrpc/connect';
 
 import { validatorInfo } from './validator-info';
 import { validatorPenalty } from './validator-penalty';
+import { getValidatorInfo } from './get-validator-info';
 
 export type Impl = ServiceImpl<typeof StakingService>;
 
-export const stakingImpl: Pick<Impl, 'validatorInfo' | 'validatorPenalty'> = {
+export const stakingImpl: Pick<Impl, 'getValidatorInfo' | 'validatorInfo' | 'validatorPenalty'> = {
+  getValidatorInfo,
   validatorInfo,
   validatorPenalty,
 };

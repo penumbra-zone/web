@@ -13,7 +13,7 @@ import {
 
 const getUndelegateClaimPlannerRequest =
   (endEpochIndex: bigint) => async (unbondingToken: ValueView) => {
-    console.log(unbondingToken)
+    console.log(unbondingToken);
     const unbondingStartHeight = getUnbondingStartHeightFromValueView(unbondingToken);
     const identityKey = getValidatorIdentityKeyFromValueView(unbondingToken);
     const { epoch: startEpoch } = await sctClient.epochByHeight({ height: unbondingStartHeight });

@@ -18,6 +18,7 @@ import {
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
   AddressIndex,
+  IdentityKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
@@ -567,6 +568,13 @@ export class IndexedDb implements IndexedDbInterface {
     yield* new ReadableStream(
       new IdbCursorSource(this.db.transaction('VALIDATOR_INFOS').store.openCursor(), ValidatorInfo),
     );
+  }
+
+  async getValidatorInfo(identityKey: IdentityKey): Promise<ValidatorInfo | undefined> {
+    const key = uint8ArrayToBase64(identityKey.ik);
+    const json = await this.db.get('VALIDATOR_INFOS', key);
+    if (!json) return undefined;
+    return ValidatorInfo.fromJson(json);
   }
 
   async updatePrice(
