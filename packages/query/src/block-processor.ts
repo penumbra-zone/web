@@ -442,11 +442,19 @@ export class BlockProcessor implements BlockProcessorInterface {
         this.indexedDb.saveAssetsMetadata(metadata),
         this.indexedDb.upsertAuction(action.value.auctionId, { seqNum }),
       ]);
+    } else if (action.case === 'actionDutchAuctionWithdraw') {
+      const auctionId = action.value.auctionId;
+      if (!auctionId) return;
+
+      const metadata = getAuctionNftMetadata(auctionId, action.value.seq);
+
+      await Promise.all([
+        this.indexedDb.saveAssetsMetadata(metadata),
+        this.indexedDb.upsertAuction(auctionId, {
+          seqNum: action.value.seq,
+        }),
+      ]);
     }
-    /**
-     * @todo Handle `actionDutchAuctionWithdraw`, and figure out how to
-     * determine the sequence number if there have been multiple withdrawals.
-     */
   }
 
   /**
