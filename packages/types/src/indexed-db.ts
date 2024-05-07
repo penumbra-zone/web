@@ -111,7 +111,7 @@ export interface IndexedDbInterface {
     value: {
       auction?: T;
       noteCommitment?: StateCommitment;
-      state?: bigint;
+      seqNum?: bigint;
     },
   ): Promise<void>;
 
@@ -119,6 +119,7 @@ export interface IndexedDbInterface {
     // Add more auction union types as they are created
     auction?: DutchAuctionDescription;
     noteCommitment?: StateCommitment;
+    seqNum?: bigint;
   }>;
 }
 
@@ -225,7 +226,7 @@ export interface PenumbraDb extends DBSchema {
        * `1n`: auction has ended
        * `2n`+: the user has withdrawn funds from the auction
        */
-      state?: bigint;
+      seqNum?: bigint;
     };
   };
 }
