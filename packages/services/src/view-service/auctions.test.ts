@@ -86,6 +86,7 @@ const TEST_DATA = [
     value: {
       auction: MOCK_AUCTION_1,
       noteCommitment: new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) }),
+      seqNum: 0n,
     },
   },
   {
@@ -93,6 +94,7 @@ const TEST_DATA = [
     value: {
       auction: MOCK_AUCTION_2,
       noteCommitment: new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) }),
+      seqNum: 1n,
     },
   },
   {
@@ -100,6 +102,7 @@ const TEST_DATA = [
     value: {
       auction: MOCK_AUCTION_3,
       noteCommitment: new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) }),
+      seqNum: 2n,
     },
   },
   {
@@ -107,6 +110,7 @@ const TEST_DATA = [
     value: {
       auction: MOCK_AUCTION_4,
       noteCommitment: new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) }),
+      seqNum: 0n,
     },
   },
 ];
@@ -146,9 +150,9 @@ describe('Auctions request handler', () => {
 
   it('returns auctions', async () => {
     const req = new AuctionsRequest();
-    const result = await Array.fromAsync(auctions(req, mockCtx));
+    const results = await Array.fromAsync(auctions(req, mockCtx));
 
-    expect(result[0]).toEqual(
+    expect(results[0]).toEqual(
       new AuctionsResponse({
         id: AUCTION_ID_1,
         auction: {
@@ -173,5 +177,21 @@ describe('Auctions request handler', () => {
         }),
       );
     });
+  });
+
+  it('excludes inactive auctions by default', async () => {
+    const req = new AuctionsRequest();
+    const results = await Array.fromAsync(auctions(req, mockCtx));
+
+    expect(results.some(result => new AuctionId(result.id).equals(AUCTION_ID_2))).toBe(false);
+    expect(results.some(result => new AuctionId(result.id).equals(AUCTION_ID_3))).toBe(false);
+  });
+
+  it('includes inactive auctions if `includeInactive` is `true`', async () => {
+    const req = new AuctionsRequest({ includeInactive: true });
+    const results = await Array.fromAsync(auctions(req, mockCtx));
+
+    expect(results.some(result => new AuctionId(result.id).equals(AUCTION_ID_2))).toBe(true);
+    expect(results.some(result => new AuctionId(result.id).equals(AUCTION_ID_3))).toBe(true);
   });
 });

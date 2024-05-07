@@ -49,17 +49,14 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
   if (queryLatestState) {
     throw new ConnectError('`queryLatestState` not yet implemented', Code.Unimplemented);
   }
-  if (includeInactive) {
-    throw new ConnectError('`includeInactive` not yet implemented', Code.Unimplemented);
-  }
 
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
   for await (const auctionId of iterateAuctionsThisUserControls(ctx, accountFilter)) {
-    /** @todo: if (req.includeInactive && auctionIsInactive()) continue; */
     const id = new AuctionId(auctionIdFromBech32(auctionId));
     const value = await indexedDb.getAuction(id);
+    if (!includeInactive && value.seqNum) continue;
 
     let noteRecord: SpendableNoteRecord | undefined;
     if (value.noteCommitment) {
