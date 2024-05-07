@@ -181,8 +181,8 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.9.0)(@connectrpc/connect@1.4.0)
       '@penumbra-labs/registry':
-        specifier: ^6.0.0
-        version: 6.0.0
+        specifier: ^7.0.0
+        version: 7.0.0
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../../packages/bech32m
@@ -380,8 +380,8 @@ importers:
         specifier: ^1.23.11
         version: 1.23.11(@types/react@18.2.72)(react-dom@18.2.0)(react@18.2.0)
       '@penumbra-labs/registry':
-        specifier: ^6.0.0
-        version: 6.0.0
+        specifier: ^7.0.0
+        version: 7.0.0
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../../packages/bech32m
@@ -781,8 +781,8 @@ importers:
   packages/services-context:
     dependencies:
       '@penumbra-labs/registry':
-        specifier: ^6.0.0
-        version: 6.0.0
+        specifier: ^7.0.0
+        version: 7.0.0
       '@penumbra-zone/constants':
         specifier: workspace:*
         version: link:../constants
@@ -812,8 +812,8 @@ importers:
   packages/storage:
     dependencies:
       '@penumbra-labs/registry':
-        specifier: ^6.0.0
-        version: 6.0.0
+        specifier: ^7.0.0
+        version: 7.0.0
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
@@ -6418,6 +6418,7 @@ packages:
     dependencies:
       is-glob: 4.0.3
       micromatch: 4.0.5
+      napi-wasm: 1.1.0
     dev: false
     bundledDependencies:
       - napi-wasm
@@ -6472,8 +6473,8 @@ packages:
       '@parcel/watcher-win32-x64': 2.4.1
     dev: false
 
-  /@penumbra-labs/registry@6.0.0:
-    resolution: {integrity: sha512-2HKl/cfJtFZsFe+etO/resfCnTNrdtGFGygMZp9CJr0Ks57GOS7tQc90WTTXEG+1ZAeitTKX0GA/BzUjwO+cSQ==}
+  /@penumbra-labs/registry@7.0.0:
+    resolution: {integrity: sha512-1l9km5GsBO5QUw5LizhG6n2jcmjZp0nYz4d7kCMrcaVA1d51j0w40wJtlkqXc5ADE5yt78g062WRj0+E53tZvQ==}
     dev: false
 
   /@pkgjs/parseargs@0.11.0:
@@ -18162,6 +18163,10 @@ packages:
     resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
+
+  /napi-wasm@1.1.0:
+    resolution: {integrity: sha512-lHwIAJbmLSjF9VDRm9GoVOy9AGp3aIvkjv+Kvz9h16QR3uSVYH78PNQUnT2U4X53mhlnV2M7wrhibQ3GHicDmg==}
+    dev: false
 
   /natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}

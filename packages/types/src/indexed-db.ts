@@ -154,6 +154,10 @@ export interface PenumbraDb extends DBSchema {
     key: string; // base64 TransactionInfo['id']['inner'];
     value: Jsonified<TransactionInfo>; // TransactionInfo with undefined view and perspective
   };
+  REGISTRY_VERSION: {
+    key: 'commit';
+    value: string;
+  };
   // ======= Json serialized values =======
   // Allows wasm crate to directly deserialize
   ASSETS: {

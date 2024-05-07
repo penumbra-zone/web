@@ -96,13 +96,12 @@ export class Services implements ServicesInterface {
     } = params;
 
     const registryClient = new ChainRegistryClient();
-    const registry = await registryClient.get(chainId);
 
     const indexedDb = await IndexedDb.initialize({
       chainId,
       dbVersion,
       walletId,
-      registryAssets: registry.getAllAssets(),
+      registryClient,
     });
 
     void syncLastBlockWithLocal(indexedDb);
@@ -114,6 +113,7 @@ export class Services implements ServicesInterface {
       idbConstants: indexedDb.constants(),
     });
 
+    const registry = registryClient.get(chainId);
     const blockProcessor = new BlockProcessor({
       viewServer,
       querier: this.querier,

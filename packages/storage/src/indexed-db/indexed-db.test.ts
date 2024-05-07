@@ -53,16 +53,19 @@ import {
   DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
 
 describe('IndexedDb', () => {
   // uses different wallet ids so no collisions take place
+  const registryClient = new ChainRegistryClient();
+  const chainId = 'penumbra-testnet-deimos-6';
   const generateInitialProps = () => ({
-    chainId: 'test',
+    chainId,
     dbVersion: 1,
     walletId: new WalletId({
       inner: Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)),
     }),
-    registryAssets: [],
+    registryClient,
   });
 
   describe('initializing', () => {
@@ -75,7 +78,7 @@ describe('IndexedDb', () => {
       const testnetDb = await IndexedDb.initialize(generateInitialProps());
       const mainnetDb = await IndexedDb.initialize({
         ...generateInitialProps(),
-        chainId: 'mainnet',
+        chainId: 'penumbra-testnet-deimos-7',
       });
 
       await testnetDb.saveAssetsMetadata(metadataA);
@@ -101,10 +104,10 @@ describe('IndexedDb', () => {
       dbA.close();
 
       const version2Props = {
-        chainId: 'test',
+        chainId,
         dbVersion: 2,
         walletId: version1Props.walletId,
-        registryAssets: [],
+        registryClient: new ChainRegistryClient(),
       };
       const dbB = await IndexedDb.initialize(version2Props);
       expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId!))?.name).toBeUndefined();
@@ -147,7 +150,8 @@ describe('IndexedDb', () => {
       for await (const asset of db.iterateAssetsMetadata()) {
         assets.push(asset);
       }
-      expect(assets.length).toBe(1);
+      const registryLength = registryClient.get(chainId).getAllAssets().length;
+      expect(assets.length).toBe(registryLength + 1);
 
       await db.saveTransaction(transactionId, 1000n, transaction);
       const txs: TransactionInfo[] = [];
@@ -283,12 +287,12 @@ describe('IndexedDb', () => {
   describe('assets', () => {
     it('should be pre-loaded with hardcoded assets', async () => {
       const propsWithAssets = {
-        chainId: 'test',
+        chainId,
         dbVersion: 2,
         walletId: new WalletId({
           inner: Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)),
         }),
-        registryAssets: [metadataA, metadataB],
+        registryClient: new ChainRegistryClient(),
       };
       const db = await IndexedDb.initialize(propsWithAssets);
 
@@ -297,12 +301,8 @@ describe('IndexedDb', () => {
         savedAssets.push(asset);
       }
 
-      for (const metadata of [metadataA, metadataB]) {
-        const match = savedAssets.find(a => a.equals(metadata));
-        expect(match).toBeTruthy();
-      }
-
-      expect(savedAssets.length === 2).toBeTruthy();
+      const registryLength = registryClient.get(chainId).getAllAssets().length;
+      expect(savedAssets.length === registryLength).toBeTruthy();
     });
 
     it('should be able to set/get by id', async () => {
@@ -325,7 +325,8 @@ describe('IndexedDb', () => {
       for await (const asset of db.iterateAssetsMetadata()) {
         savedAssets.push(asset);
       }
-      expect(savedAssets.length === 3).toBeTruthy();
+      const registryLength = registryClient.get(chainId).getAllAssets().length;
+      expect(savedAssets.length === registryLength + 3).toBeTruthy();
     });
   });
 
