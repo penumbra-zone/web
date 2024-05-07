@@ -18,8 +18,8 @@ import { Identicon } from '@penumbra-zone/ui/components/ui/identicon';
 
 export interface ChainInfo {
   chainName: string;
+  chainId: string;
   label: string;
-  value: string;
   icon?: string;
 }
 
@@ -28,11 +28,13 @@ const useChainInfos = (): ChainInfo[] => {
   return useMemo(
     () =>
       chainRecords.map(r => {
+        if (!r.chain?.chain_id) throw new Error(`No chain id found for ${r.name}`);
+
         return {
           chainName: r.name,
-          label: r.chain?.pretty_name ?? '',
-          value: r.name,
+          label: r.chain.pretty_name,
           icon: getChainLogo(r.name),
+          chainId: r.chain.chain_id,
         };
       }),
     [chainRecords, getChainLogo],
@@ -48,7 +50,7 @@ export const ChainDropdown = () => {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
 
-  const selected = chainInfos.find(c => c.value === value);
+  const selected = chainInfos.find(c => c.chainName === value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -75,8 +77,8 @@ export const ChainDropdown = () => {
           <CommandGroup>
             {chainInfos.map(chain => (
               <CommandItem
-                key={chain.value}
-                value={chain.value}
+                key={chain.chainName}
+                value={chain.chainName}
                 onSelect={currentValue => {
                   setOpen(false);
 
@@ -85,7 +87,7 @@ export const ChainDropdown = () => {
                     setSelectedChain(undefined);
                   } else {
                     setValue(currentValue);
-                    const match = chainInfos.find(options => options.value === currentValue);
+                    const match = chainInfos.find(options => options.chainName === currentValue);
                     setSelectedChain(match);
                   }
                 }}

@@ -4,7 +4,7 @@ import { useChain, useManager } from '@cosmos-kit/react';
 import { UseQueryResult } from '@tanstack/react-query';
 import { ProtobufRpcClient } from '@cosmjs/stargate';
 import { Coin, createRpcQueryHooks, useRpcClient, useRpcEndpoint } from 'osmo-query';
-import { augmentToAsset, rawToDisplayAmount } from './asset-utils';
+import { augmentToAsset, toDisplayAmount } from './asset-utils';
 
 // This is sad, but osmo-query's custom hooks require calling .toJSON() on all fields.
 // This will throw an error for bigint, so needs to be added to the prototype.
@@ -69,11 +69,28 @@ interface BalancesResponse {
   pagination: { nexKey: Uint8Array; total: bigint };
 }
 
-interface CosmosAssetBalance {
+// Reference: https://github.com/cosmos/chain-registry/blob/master/assetlist.schema.json#L60
+const ASSET_TYPES = [
+  'sdk.coin',
+  'cw20',
+  'erc20',
+  'ics20',
+  'snip20',
+  'snip25',
+  'bitcoin-like',
+  'evm-base',
+  'svm-base',
+  'substrate',
+] as const;
+
+type AssetType = (typeof ASSET_TYPES)[number];
+
+export interface CosmosAssetBalance {
   raw: Coin;
   displayDenom: string;
   displayAmount: string;
   icon?: string;
+  assetType?: AssetType;
 }
 
 interface UseCosmosChainBalancesRes {
@@ -102,13 +119,20 @@ export const useCosmosChainBalances = (): UseCosmosChainBalancesRes => {
   }) as UseQueryResult<BalancesResponse>;
 
   const augmentedAssets = data?.balances.map(coin => {
-    const asset = augmentToAsset(coin, chain.chain_name);
+    const asset = augmentToAsset(coin.denom, chain.chain_name);
     return {
       raw: coin,
       displayDenom: asset.display,
-      displayAmount: rawToDisplayAmount(asset, coin.amount),
+      displayAmount: toDisplayAmount(asset, coin),
       icon: asset.logo_URIs?.svg ?? asset.logo_URIs?.png,
+      assetType: assetTypeCheck(asset.type_asset),
     };
   });
   return { data: augmentedAssets, isLoading, error };
+};
+
+const assetTypeCheck = (type?: string): AssetType | undefined => {
+  return typeof type === 'string' && ASSET_TYPES.includes(type as AssetType)
+    ? (type as AssetType)
+    : undefined;
 };

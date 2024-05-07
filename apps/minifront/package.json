@@ -22,8 +22,8 @@
     "@cosmjs/stargate": "^0.32.3",
     "@cosmos-kit/core": "^2.9.2",
     "@cosmos-kit/react": "^2.11.2",
-    "@interchain-ui/react": "^1.23.10",
-    "@penumbra-labs/registry": "^5.1.0",
+    "@interchain-ui/react": "^1.23.11",
+    "@penumbra-labs/registry": "^6.0.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/client": "workspace:*",
     "@penumbra-zone/constants": "workspace:*",
@@ -37,7 +37,7 @@
     "@tanstack/react-query": "4.36.1",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",
-    "chain-registry": "^1.45.5",
+    "chain-registry": "^1.46.3",
     "cosmos-kit": "^2.10.2",
     "date-fns": "^3.6.0",
     "framer-motion": "^11.0.22",
@@ -56,7 +56,7 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "@chain-registry/types": "^0.28.4",
+    "@chain-registry/types": "^0.28.8",
     "@penumbra-zone/polyfills": "workspace:*",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.2.2",

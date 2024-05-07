@@ -21,6 +21,8 @@ import { bech32, bech32m } from 'bech32';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { Chain } from '@penumbra-labs/registry';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Channel } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/channel/v1/channel_pb';
+import { BLOCKS_PER_HOUR } from './dutch-auction/constants';
 
 export interface IbcOutSlice {
   selection: BalancesResponse | undefined;
@@ -104,15 +106,7 @@ export const currentTimePlusTwoDaysRounded = (currentTimeMs: number): bigint => 
   return roundedTimeoutNs;
 };
 
-// Reference in core: https://github.com/penumbra-zone/penumbra/blob/1376d4b4f47f44bcc82e8bbdf18262942edf461e/crates/bin/pcli/src/command/tx.rs#L998-L1050
-const getTimeout = async (
-  chain: Chain,
-): Promise<{ timeoutTime: bigint; timeoutHeight: Height }> => {
-  const { channel } = await ibcChannelClient.channel({
-    portId: 'transfer',
-    channelId: chain.ibcChannel,
-  });
-
+const clientStateForChannel = async (channel?: Channel): Promise<ClientState> => {
   const connectionId = channel?.connectionHops[0];
   if (!connectionId) {
     throw new Error('no connectionId in channel returned from ibcChannelClient request');
@@ -137,14 +131,28 @@ const getTimeout = async (
     throw new Error(`Error while trying to unpack Any to ClientState for client id ${clientId}`);
   }
 
-  // assuming a block time of 10s and adding ~1000 blocks (~3 hours)
-  const revisionHeight = clientState.latestHeight!.revisionHeight + 1000n;
+  return clientState;
+};
+
+// Reference in core: https://github.com/penumbra-zone/penumbra/blob/1376d4b4f47f44bcc82e8bbdf18262942edf461e/crates/bin/pcli/src/command/tx.rs#L998-L1050
+const getTimeout = async (
+  ibcChannelId: string,
+): Promise<{ timeoutTime: bigint; timeoutHeight: Height }> => {
+  const { channel } = await ibcChannelClient.channel({
+    portId: 'transfer',
+    channelId: ibcChannelId,
+  });
+
+  const clientState = await clientStateForChannel(channel);
+  if (!clientState.latestHeight) {
+    throw new Error(`latestHeight not provided in client state for ${clientState.chainId}`);
+  }
 
   return {
     timeoutTime: currentTimePlusTwoDaysRounded(Date.now()),
     timeoutHeight: new Height({
-      revisionHeight,
-      revisionNumber: clientState.latestHeight!.revisionNumber,
+      revisionHeight: clientState.latestHeight.revisionHeight + BLOCKS_PER_HOUR * 3n,
+      revisionNumber: clientState.latestHeight.revisionNumber,
     }),
   };
 };
@@ -163,7 +171,7 @@ const getPlanRequest = async ({
   const { address: returnAddress } = await viewClient.ephemeralAddress({ addressIndex });
   if (!returnAddress) throw new Error('Error with generating IBC deposit address');
 
-  const { timeoutHeight, timeoutTime } = await getTimeout(chain);
+  const { timeoutHeight, timeoutTime } = await getTimeout(chain.channelId);
 
   return new TransactionPlannerRequest({
     ics20Withdrawals: [
@@ -177,7 +185,7 @@ const getPlanRequest = async ({
         returnAddress,
         timeoutHeight,
         timeoutTime,
-        sourceChannel: chain.ibcChannel,
+        sourceChannel: chain.channelId,
       },
     ],
     source: addressIndex,
@@ -227,7 +235,7 @@ export const filterBalancesPerChain = (
     .filter(a => {
       const match = assetPatterns.ibc.capture(a.base);
       if (!match) return false;
-      return chain?.ibcChannel === match.channel;
+      return chain?.channelId === match.channel;
     })
     .map(m => m.penumbraAssetId!);
 

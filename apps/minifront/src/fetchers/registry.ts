@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getChainId } from './chain-id';
 import { getAssetMetadataById } from './assets';
 
-const chainRegistryClient = new ChainRegistryClient();
+export const chainRegistryClient = new ChainRegistryClient();
 
 export const useRegistry = () => {
   return useQuery({
