@@ -3,7 +3,6 @@ import {
   mockLocalExtStorage,
   mockSessionExtStorage,
 } from '@penumbra-zone/storage/chrome/test-utils/mock';
-import { SpendKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 const localExtStorage = mockLocalExtStorage();
 const sessionExtStorage = mockSessionExtStorage();
@@ -28,47 +27,49 @@ vi.doMock('@penumbra-zone/storage/chrome/session', async importOriginal => {
 const { getSpendKey } = await import('./spend-key');
 
 describe('Authorize request handler', () => {
+  const sk0 = {
+    inner: new Uint8Array([
+      0xa0, 0xe1, 0x33, 0x3d, 0xbe, 0xee, 0xc2, 0x7f, 0x06, 0x11, 0x5c, 0x9d, 0x0c, 0x8a, 0xb2,
+      0xc2, 0xf9, 0x23, 0xfa, 0x57, 0x67, 0x14, 0x8c, 0xa8, 0x36, 0xdc, 0x05, 0x17, 0xd0, 0x33,
+      0xb3, 0xf6,
+    ]),
+  };
+
+  const wallet0 = {
+    label: 'mock',
+    id: 'mock',
+    fullViewingKey: 'mock',
+    custody: {
+      encryptedSeedPhrase: {
+        cipherText:
+          'di37XH8dpSbuBN9gwGB6hgAJycWVqozf3UB6O3mKTtimp8DsC0ZZRNEaf1hNi2Eu2pu1dF1f+vHAnisk3W4mRggAVUNtO0gvD8jcM0RhzGVEZnUlZuRR1TtoQDFXzmo=',
+        nonce: 'MUyDW2GHSeZYVF4f',
+      },
+    },
+  };
+
+  const pw = {
+    _inner: {
+      alg: 'A256GCM',
+      ext: true,
+      k: '2l2K1HKpGWaOriS58zwdDTwAMtMuczuUQc4IYzGxyhM',
+      kty: 'oct',
+      key_ops: ['encrypt', 'decrypt'],
+    },
+  };
+
   beforeEach(async () => {
     vi.resetAllMocks();
-
-    await localExtStorage.set('wallets', [
-      {
-        label: 'mock',
-        id: 'mock',
-        custody: {
-          encryptedSeedPhrase: {
-            cipherText:
-              'di37XH8dpSbuBN9gwGB6hgAJycWVqozf3UB6O3mKTtimp8DsC0ZZRNEaf1hNi2Eu2pu1dF1f+vHAnisk3W4mRggAVUNtO0gvD8jcM0RhzGVEZnUlZuRR1TtoQDFXzmo=',
-            nonce: 'MUyDW2GHSeZYVF4f',
-          },
-        },
-        fullViewingKey:
-          'penumbrafullviewingkey1f33fr3zrquh869s3h8d0pjx4fpa9fyut2utw7x5y7xdcxz6z7c8sgf5hslrkpf3mh8d26vufsq8y666chx0x0su06ay3rkwu74zuwqq9w8aza',
-      },
-    ]);
-
-    await sessionExtStorage.set('passwordKey', {
-      _inner: {
-        alg: 'A256GCM',
-        ext: true,
-        k: '2l2K1HKpGWaOriS58zwdDTwAMtMuczuUQc4IYzGxyhM',
-        kty: 'oct',
-        key_ops: ['encrypt', 'decrypt'],
-      },
-    });
+    await localExtStorage.set('wallets', [wallet0]);
+    await sessionExtStorage.set('passwordKey', pw);
   });
 
-  test('should successfully get a spend key', async () => {
-    await expect(getSpendKey()).resolves.toSatisfy(
-      value =>
-        value instanceof SpendKey &&
-        value.equals({
-          inner: new Uint8Array([
-            160, 225, 51, 61, 190, 238, 194, 127, 6, 17, 92, 157, 12, 138, 178, 194, 249, 35, 250,
-            87, 103, 20, 140, 168, 54, 220, 5, 23, 208, 51, 179, 246,
-          ]),
-        }),
-    );
+  test('should successfully get the correct spend key', () =>
+    expect(getSpendKey()).resolves.toMatchObject(sk0));
+
+  test('should fail if no wallet is present', async () => {
+    await localExtStorage.set('wallets', []);
+    await expect(getSpendKey()).rejects.toThrow('No wallet found');
   });
 
   test('should fail if user is not logged in extension', async () => {
@@ -86,6 +87,6 @@ describe('Authorize request handler', () => {
         key_ops: ['encrypt', 'decrypt'],
       },
     });
-    await expect(getSpendKey()).rejects.toThrow('Unable to decrypt');
+    await expect(getSpendKey()).rejects.toThrow('Unable to decrypt seed phrase');
   });
 });
