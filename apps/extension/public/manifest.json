@@ -14,24 +14,6 @@
     "48": "favicon/icon48.png",
     "128": "favicon/icon128.png"
   },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["injected-connection-port.js"],
-      "run_at": "document_start"
-    },
-    {
-      "matches": ["<all_urls>"],
-      "js": ["injected-penumbra-global.js"],
-      "run_at": "document_start",
-      "world": "MAIN"
-    },
-    {
-      "matches": ["<all_urls>"],
-      "js": ["injected-request-listener.js"],
-      "run_at": "document_start"
-    }
-  ],
   "options_ui": {
     "page": "page.html",
     "open_in_tab": true
@@ -41,12 +23,30 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["manifest.json"],
+      "resources": ["manifest.json", "providers.html"],
       "matches": ["<all_urls>"]
     }
   ],
-  "permissions": ["storage", "unlimitedStorage", "offscreen"],
-  "host_permissions": ["<all_urls>"],
+  "permissions": [
+    "cookies",
+    "declarativeNetRequestWithHostAccess",
+    "storage",
+    "unlimitedStorage",
+    "offscreen"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "announce",
+        "enabled": true,
+        "path": "provider-redirect.json"
+      }
+    ]
+  },
+  "host_permissions": ["https://penumbra.zone.invalid/*"],
+  "externally_connectable": {
+    "matches": ["https://*/*"]
+  },
   "content_security_policy": {
     "extension_pages": "object-src 'self'; script-src 'self' 'wasm-unsafe-eval'"
   }

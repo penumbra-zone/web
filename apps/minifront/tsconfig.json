@@ -1,5 +1,9 @@
 {
   "extends": "tsconfig/vite.json",
   "include": ["src", "*.ts", "__mocks__"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "declaration": false,
+    "declarationMap": false
+  }
 }

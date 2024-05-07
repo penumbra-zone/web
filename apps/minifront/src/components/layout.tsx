@@ -5,11 +5,7 @@ import { Toaster } from '@penumbra-zone/ui/components/ui/toaster';
 import { ExtensionNotConnected } from './extension-not-connected';
 import { ExtensionNotInstalled } from './extension-not-installed';
 import { Footer } from './footer/footer';
-import {
-  isPraxConnected,
-  isPraxConnectedTimeout,
-  isPraxAvailable,
-} from '@penumbra-zone/client/prax';
+import { isPraxConnected, isPraxAvailable } from '@penumbra-zone/client/prax';
 import '@penumbra-zone/ui/styles/globals.css';
 import { getChainId } from '../fetchers/chain-id';
 import { useEffect, useState } from 'react';
@@ -22,9 +18,9 @@ export interface LayoutLoaderResult {
 }
 
 export const LayoutLoader: LoaderFunction = async (): Promise<LayoutLoaderResult> => {
-  const isInstalled = isPraxAvailable();
+  const isInstalled = await isPraxAvailable();
   if (!isInstalled) return { isInstalled, isConnected: false };
-  const isConnected = isPraxConnected() || (await isPraxConnectedTimeout(1000));
+  const isConnected = Boolean(isPraxConnected());
   return { isInstalled, isConnected };
 };
 

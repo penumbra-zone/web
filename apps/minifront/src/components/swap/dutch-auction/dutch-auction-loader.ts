@@ -1,11 +1,8 @@
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 import { getSwappableBalancesResponses } from '../helpers';
 import { useStore } from '../../../state';
 import { getAllAssets } from '../../../fetchers/assets';
 
 export const DutchAuctionLoader = async () => {
-  await throwIfPraxNotConnectedTimeout();
-
   // Load into state, but don't block rendering.
   void useStore.getState().dutchAuction.loadAuctionInfos();
 

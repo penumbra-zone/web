@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "redirect",
+      "redirect": { "path": "", "extensionPath": "/providers.html" }
+    },
+    "condition": {
+      "urlFilter": "https://penumbra.zone.invalid/providers",
+      "resourceTypes": ["main_frame", "sub_frame"]
+    }
+  }
+]

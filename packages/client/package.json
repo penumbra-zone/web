@@ -16,7 +16,7 @@
   ],
   "exports": {
     ".": "./src/index.ts",
-    "./prax": "./src/prax.ts"
+    "./*": "./src/*.ts"
   },
   "publishConfig": {
     "exports": {
@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@penumbra-zone/protobuf": "workspace:*",
+    "@penumbra-zone/transport-chrome": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*"
   },
   "devDependencies": {
