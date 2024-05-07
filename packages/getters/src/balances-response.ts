@@ -12,4 +12,7 @@ export const getAssetIdFromBalancesResponseOptional = getBalanceView
   .pipe(getMetadata)
   .pipe(getAssetId);
 
-export const getDisplayFromBalancesResponse = getBalanceView.pipe(getMetadata).pipe(getDisplay);
+export const getDisplayFromBalancesResponse = getBalanceView
+  .pipe(getMetadata)
+  .optional()
+  .pipe(getDisplay);
