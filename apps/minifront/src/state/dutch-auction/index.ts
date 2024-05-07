@@ -8,7 +8,7 @@ import {
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { planBuildBroadcast } from '../helpers';
-import { assembleRequest } from './assemble-request';
+import { assembleScheduleRequest } from './assemble-schedule-request';
 import { DurationOption } from './constants';
 import {
   AuctionId,
@@ -101,7 +101,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     });
 
     try {
-      const req = await assembleRequest(get().dutchAuction);
+      const req = await assembleScheduleRequest(get().dutchAuction);
       await planBuildBroadcast('dutchAuctionSchedule', req);
 
       get().dutchAuction.setAmount('');
