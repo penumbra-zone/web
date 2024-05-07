@@ -105,6 +105,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
       await planBuildBroadcast('dutchAuctionSchedule', req);
 
       get().dutchAuction.setAmount('');
+      void get().dutchAuction.loadAuctionInfos();
     } finally {
       set(state => {
         state.dutchAuction.txInProgress = false;
@@ -156,6 +157,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     try {
       const req = new TransactionPlannerRequest({ dutchAuctionEndActions: [{ auctionId }] });
       await planBuildBroadcast('dutchAuctionEnd', req);
+      void get().dutchAuction.loadAuctionInfos();
     } finally {
       set(state => {
         state.dutchAuction.txInProgress = false;
