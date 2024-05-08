@@ -1,10 +1,10 @@
-# Publishes extension to chrome web store when a release is made in github.
+# Uploads extension dist to chrome dev dashboard when a release is made in github.
+# Admins can log into https://chrome.google.com/webstore/devconsole to submit for approval.
+# Note: `maniftest.json` should already be updated to the desired version before release.
 
-# `maniftest.json` should already be updated to the desired version before release.
-# make sure download-proving-keys contains the correct version tag.
-
-# https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe
-name: Publish extension
+# Prod: https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe
+# Beta: https://chrome.google.com/webstore/detail/penumbra-wallet/ejpfkiblcablembkdhcofhokccbbppnc
+name: Upload extension
 
 on:
   push:
@@ -12,6 +12,7 @@ on:
       - '*-?v[0-9]+*'
   workflow_call:
   workflow_dispatch:
+  pull_request: # remove this after testing
 
 jobs:
   turbo-compile:
@@ -20,7 +21,7 @@ jobs:
 
   publish:
     environment: ext-publish
-    name: Publish extension
+    name: Upload extension dist
     runs-on: buildjet-16vcpu-ubuntu-2204
     needs: turbo-compile
 
@@ -41,14 +42,26 @@ jobs:
       - run: pnpm turbo telemetry disable
       - run: pnpm turbo build --cache-dir=.turbo
 
-      - name: Package up extension
-        run: zip -r dist.zip apps/extension/dist
+      # Outputs beta.zip and prod.zip
+      - name: Zip extension versions
+        run: pnpm dlx tsx apps/extension/src/utils/zip-extension.ts
 
-      - name: Upload & release
+      - name: Upload beta
         uses: penumbra-zone/chrome-extension-upload@v1
         with:
-          file-path: dist.zip
+          file-path: beta.zip
+          extension-id: ejpfkiblcablembkdhcofhokccbbppnc
+          client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
+          client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          publish: false
+
+      - name: Upload prod
+        uses: penumbra-zone/chrome-extension-upload@v1
+        with:
+          file-path: prod.zip
           extension-id: lkpmkhpnhknhmibgnmmhdhgdilepfghe
           client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
           client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           refresh-token: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          publish: false

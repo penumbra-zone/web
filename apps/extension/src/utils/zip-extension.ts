@@ -25,10 +25,14 @@ const updateManifestToBeta = (): void => {
   fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2));
 };
 
+const zipDirectory = (path: string) => {
+  child_process.execSync(`zip -r ${path} .`, { cwd: DIST_PATH, stdio: 'inherit' });
+};
+
 const main = () => {
-  child_process.execSync(`zip -r ${PROD_ZIP_PATH} .`, { cwd: DIST_PATH, stdio: 'inherit' });
+  zipDirectory(PROD_ZIP_PATH);
   updateManifestToBeta();
-  child_process.execSync(`zip -r ${BETA_ZIP_PATH} .`, { cwd: DIST_PATH, stdio: 'inherit' });
+  zipDirectory(BETA_ZIP_PATH);
 };
 
 main();
