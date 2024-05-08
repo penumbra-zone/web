@@ -385,6 +385,9 @@ importers:
       '@penumbra-zone/client':
         specifier: workspace:*
         version: link:../../packages/client
+      '@penumbra-zone/client-chrome':
+        specifier: workspace:*
+        version: link:../../packages/client-chrome
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../../packages/crypto
