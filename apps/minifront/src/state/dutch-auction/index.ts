@@ -1,15 +1,26 @@
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import {
+  BalancesResponse,
+  TransactionPlannerRequest,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { SliceCreator } from '..';
 import {
   AssetId,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { planBuildBroadcast } from '../helpers';
-import { assembleRequest } from './assemble-request';
+import { assembleScheduleRequest } from './assemble-schedule-request';
 import { DurationOption } from './constants';
-import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import {
+  AuctionId,
+  DutchAuction,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { viewClient } from '../../clients';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
+
+interface AuctionInfo {
+  id: AuctionId;
+  auction: DutchAuction;
+}
 
 export interface DutchAuctionSlice {
   balancesResponses: BalancesResponse[];
@@ -28,10 +39,11 @@ export interface DutchAuctionSlice {
   setMaxOutput: (maxOutput: string) => void;
   onSubmit: () => Promise<void>;
   txInProgress: boolean;
-  auctions: DutchAuction[];
-  loadAuctions: () => Promise<void>;
+  auctionInfos: AuctionInfo[];
+  loadAuctionInfos: () => Promise<void>;
   loadMetadata: (assetId?: AssetId) => Promise<void>;
   metadataByAssetId: Record<string, Metadata>;
+  endAuction: (auctionId: AuctionId) => Promise<void>;
 }
 
 export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (set, get) => ({
@@ -89,10 +101,11 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     });
 
     try {
-      const req = await assembleRequest(get().dutchAuction);
+      const req = await assembleScheduleRequest(get().dutchAuction);
       await planBuildBroadcast('dutchAuctionSchedule', req);
 
       get().dutchAuction.setAmount('');
+      void get().dutchAuction.loadAuctionInfos();
     } finally {
       set(state => {
         state.dutchAuction.txInProgress = false;
@@ -102,22 +115,22 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
 
   txInProgress: false,
 
-  auctions: [],
-  loadAuctions: async () => {
+  auctionInfos: [],
+  loadAuctionInfos: async () => {
     set(state => {
-      state.dutchAuction.auctions = [];
+      state.dutchAuction.auctionInfos = [];
     });
 
     for await (const response of viewClient.auctions({})) {
-      if (!response.auction) continue;
+      if (!response.auction || !response.id) continue;
       const auction = DutchAuction.fromBinary(response.auction.value);
-      const auctions = [...get().dutchAuction.auctions, auction];
+      const auctions = [...get().dutchAuction.auctionInfos, { id: response.id, auction }];
 
       void get().dutchAuction.loadMetadata(auction.description?.input?.assetId);
       void get().dutchAuction.loadMetadata(auction.description?.outputId);
 
       set(state => {
-        state.dutchAuction.auctions = auctions;
+        state.dutchAuction.auctionInfos = auctions;
       });
     }
   },
@@ -135,4 +148,20 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   },
 
   metadataByAssetId: {},
+
+  endAuction: async auctionId => {
+    set(state => {
+      state.dutchAuction.txInProgress = true;
+    });
+
+    try {
+      const req = new TransactionPlannerRequest({ dutchAuctionEndActions: [{ auctionId }] });
+      await planBuildBroadcast('dutchAuctionEnd', req);
+      void get().dutchAuction.loadAuctionInfos();
+    } finally {
+      set(state => {
+        state.dutchAuction.txInProgress = false;
+      });
+    }
+  },
 });

@@ -422,7 +422,7 @@ pub async fn plan_transaction(
         };
 
         save_auction_nft_metadata_if_needed(
-            &description,
+            description.id(),
             &storage,
             // When scheduling a Dutch auction, the sequence number is always 0
             0,
@@ -438,6 +438,13 @@ pub async fn plan_transaction(
         let auction_id: AuctionId = auction_id
             .ok_or_else(|| anyhow!("missing auction ID in Dutch auction end action"))?
             .try_into()?;
+
+        save_auction_nft_metadata_if_needed(
+            auction_id, &storage,
+            // When ending a Dutch auction, the sequence number is always 1
+            1,
+        )
+        .await?;
 
         actions.push(ActionPlan::ActionDutchAuctionEnd(ActionDutchAuctionEnd {
             auction_id,
@@ -561,18 +568,19 @@ async fn save_unbonding_token_metadata_if_needed(
     save_metadata_if_needed(metadata, storage).await
 }
 
-/// When planning a Dutch auction schedule action, there will not be metadata
-/// yet in the IndexedDB database for the auction NFT that the transaction will
-/// output. That's because auction NFTs are derived from the auction description
-/// parameters, which include a nonce. So we'll generate the metadata here and
-/// save it to the database, so that the action renders correctly in the
-/// transaction approval dialog.
+/// When planning Dutch auction-related actions, there will not be metadata yet
+/// in the IndexedDB database for the auction NFT that the transaction will
+/// output. That's because auction NFTs are derived from information about the
+/// auction (for example, an NFT corresponding to a newly started auction is
+/// dervived from the auction description parameters, which include a nonce). So
+/// we'll generate the metadata here and save it to the database, so that the
+/// action renders correctly in the transaction approval dialog.
 async fn save_auction_nft_metadata_if_needed(
-    description: &DutchAuctionDescription,
+    id: AuctionId,
     storage: &IndexedDBStorage,
     seq: u64,
 ) -> WasmResult<()> {
-    let nft = AuctionNft::new(description.id(), seq);
+    let nft = AuctionNft::new(id, seq);
     let metadata = nft.metadata;
 
     save_metadata_if_needed(metadata, storage).await

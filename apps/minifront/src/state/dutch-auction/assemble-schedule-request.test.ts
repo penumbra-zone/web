@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { assembleRequest } from './assemble-request';
+import { assembleScheduleRequest } from './assemble-schedule-request';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { BLOCKS_PER_MINUTE, DURATION_IN_BLOCKS } from './constants';
@@ -42,7 +42,7 @@ const balancesResponse = new BalancesResponse({
   },
 });
 
-const ARGS: Parameters<typeof assembleRequest>[0] = {
+const ARGS: Parameters<typeof assembleScheduleRequest>[0] = {
   amount: '123',
   duration: '10min',
   minOutput: '1',
@@ -51,9 +51,9 @@ const ARGS: Parameters<typeof assembleRequest>[0] = {
   assetOut: metadata,
 };
 
-describe('assembleRequest()', () => {
+describe('assembleScheduleRequest()', () => {
   it('correctly converts durations to block heights', async () => {
-    const req = await assembleRequest({ ...ARGS, duration: '10min' });
+    const req = await assembleScheduleRequest({ ...ARGS, duration: '10min' });
 
     expect(req.dutchAuctionScheduleActions[0]!.description!.startHeight).toBe(
       MOCK_START_HEIGHT + BLOCKS_PER_MINUTE,
@@ -62,7 +62,7 @@ describe('assembleRequest()', () => {
       MOCK_START_HEIGHT + BLOCKS_PER_MINUTE + DURATION_IN_BLOCKS['10min'],
     );
 
-    const req2 = await assembleRequest({ ...ARGS, duration: '48h' });
+    const req2 = await assembleScheduleRequest({ ...ARGS, duration: '48h' });
 
     expect(req2.dutchAuctionScheduleActions[0]!.description!.startHeight).toBe(
       MOCK_START_HEIGHT + BLOCKS_PER_MINUTE,
@@ -73,13 +73,13 @@ describe('assembleRequest()', () => {
   });
 
   it('uses a step count of 120', async () => {
-    const req = await assembleRequest(ARGS);
+    const req = await assembleScheduleRequest(ARGS);
 
     expect(req.dutchAuctionScheduleActions[0]!.description!.stepCount).toBe(120n);
   });
 
   it('correctly parses the input based on the display denom exponent', async () => {
-    const req = await assembleRequest(ARGS);
+    const req = await assembleScheduleRequest(ARGS);
 
     expect(req.dutchAuctionScheduleActions[0]!.description!.input?.amount).toEqual(
       new Amount({ hi: 0n, lo: 123_000_000n }),
@@ -87,7 +87,7 @@ describe('assembleRequest()', () => {
   });
 
   it('correctly parses the min/max outputs based on the display denom exponent', async () => {
-    const req = await assembleRequest(ARGS);
+    const req = await assembleScheduleRequest(ARGS);
 
     expect(req.dutchAuctionScheduleActions[0]!.description!.minOutput).toEqual(
       new Amount({ hi: 0n, lo: 1_000_000n }),

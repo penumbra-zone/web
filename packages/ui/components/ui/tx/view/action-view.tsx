@@ -9,6 +9,7 @@ import { Ics20WithdrawalComponent } from './isc20-withdrawal';
 import { UnimplementedView } from './unimplemented-view';
 import { SwapViewComponent } from './swap';
 import { ActionDutchAuctionScheduleViewComponent } from './action-dutch-auction-schedule-view';
+import { ActionDutchAuctionEndComponent } from './action-dutch-auction-end';
 
 const CASE_TO_LABEL: Record<string, string> = {
   daoDeposit: 'DAO Deposit',
@@ -70,6 +71,9 @@ export const ActionViewComponent = ({ av: { actionView } }: { av: ActionView }) 
 
     case 'actionDutchAuctionSchedule':
       return <ActionDutchAuctionScheduleViewComponent value={actionView.value} />;
+
+    case 'actionDutchAuctionEnd':
+      return <ActionDutchAuctionEndComponent value={actionView.value} />;
 
     case 'validatorDefinition':
       return <UnimplementedView label='Validator Definition' />;

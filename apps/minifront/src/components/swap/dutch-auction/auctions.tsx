@@ -18,12 +18,13 @@ const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: Asse
 };
 
 const auctionsSelector = (state: AllSlices) => ({
-  auctions: state.dutchAuction.auctions,
+  auctionInfos: state.dutchAuction.auctionInfos,
   metadataByAssetId: state.dutchAuction.metadataByAssetId,
+  endAuction: state.dutchAuction.endAuction,
 });
 
 export const Auctions = () => {
-  const { auctions, metadataByAssetId } = useStoreShallow(auctionsSelector);
+  const { auctionInfos, metadataByAssetId, endAuction } = useStoreShallow(auctionsSelector);
 
   return (
     <>
@@ -32,17 +33,25 @@ export const Auctions = () => {
       </p>
 
       <div className='flex flex-col gap-2'>
-        {!auctions.length && "You don't currently have any auctions running."}
+        {!auctionInfos.length && "You don't currently have any auctions running."}
 
-        {auctions.map(auction => (
+        {auctionInfos.map(auctionInfo => (
           <ViewBox
-            key={auction.description?.nonce.toString()}
+            key={auctionInfo.auction.description?.nonce.toString()}
             label='Dutch Auction'
             visibleContent={
               <DutchAuctionComponent
-                dutchAuction={auction}
-                inputMetadata={getMetadata(metadataByAssetId, auction.description?.input?.assetId)}
-                outputMetadata={getMetadata(metadataByAssetId, auction.description?.outputId)}
+                dutchAuction={auctionInfo.auction}
+                inputMetadata={getMetadata(
+                  metadataByAssetId,
+                  auctionInfo.auction.description?.input?.assetId,
+                )}
+                outputMetadata={getMetadata(
+                  metadataByAssetId,
+                  auctionInfo.auction.description?.outputId,
+                )}
+                showEndButton
+                onClickEndButton={() => void endAuction(auctionInfo.id)}
               />
             }
           />

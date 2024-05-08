@@ -320,30 +320,31 @@ describe('classifyTransaction()', () => {
   it('returns `dutchAuctionSchedule` for transactions with an `actionDutchAuctionSchedule` action', () => {
     const transactionView = new TransactionView({
       bodyView: {
-        actionViews: [
-          {
-            actionView: {
-              case: 'actionDutchAuctionSchedule',
-              value: {},
-            },
-          },
-          {
-            actionView: {
-              case: 'spend',
-              value: {},
-            },
-          },
-          {
-            actionView: {
-              case: 'output',
-              value: {},
-            },
-          },
-        ],
+        actionViews: [{ actionView: { case: 'actionDutchAuctionSchedule', value: {} } }],
       },
     });
 
     expect(classifyTransaction(transactionView)).toBe('dutchAuctionSchedule');
+  });
+
+  it('returns `dutchAuctionEnd` for transactions with an `actionDutchAuctionEnd` action', () => {
+    const transactionView = new TransactionView({
+      bodyView: {
+        actionViews: [{ actionView: { case: 'actionDutchAuctionEnd', value: {} } }],
+      },
+    });
+
+    expect(classifyTransaction(transactionView)).toBe('dutchAuctionEnd');
+  });
+
+  it('returns `dutchAuctionWithdraw` for transactions with an `actionDutchAuctionWithdraw` action', () => {
+    const transactionView = new TransactionView({
+      bodyView: {
+        actionViews: [{ actionView: { case: 'actionDutchAuctionWithdraw', value: {} } }],
+      },
+    });
+
+    expect(classifyTransaction(transactionView)).toBe('dutchAuctionWithdraw');
   });
 
   it("returns `unknown` for transactions that don't fit the above categories", () => {

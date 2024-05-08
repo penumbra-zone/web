@@ -16,6 +16,8 @@ export const classifyTransaction = (txv?: TransactionView): TransactionClassific
   if (allActionCases.has('undelegateClaim')) return 'undelegateClaim';
   if (allActionCases.has('ics20Withdrawal')) return 'ics20Withdrawal';
   if (allActionCases.has('actionDutchAuctionSchedule')) return 'dutchAuctionSchedule';
+  if (allActionCases.has('actionDutchAuctionEnd')) return 'dutchAuctionEnd';
+  if (allActionCases.has('actionDutchAuctionWithdraw')) return 'dutchAuctionWithdraw';
 
   const hasOpaqueSpend = txv.bodyView?.actionViews.some(
     a => a.actionView.case === 'spend' && a.actionView.value.spendView.case === 'opaque',
@@ -90,6 +92,8 @@ export const TRANSACTION_LABEL_BY_CLASSIFICATION: Record<TransactionClassificati
   undelegateClaim: 'Undelegate Claim',
   ics20Withdrawal: 'Ics20 Withdrawal',
   dutchAuctionSchedule: 'Dutch Auction Schedule',
+  dutchAuctionEnd: 'Dutch Auction End',
+  dutchAuctionWithdraw: 'Dutch Auction Withdraw',
 };
 
 export const getTransactionClassificationLabel = (txv?: TransactionView): string =>
