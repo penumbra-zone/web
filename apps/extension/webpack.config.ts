@@ -11,7 +11,7 @@ import webpack from 'webpack';
 // TODO: add `.env.mainnet` when ready.
 //       const envPath = process.env['NODE_ENV'] === 'mainnet' ? '.env.mainnet' : '.env.testnet';
 //       dotenv.config({ path: envPath });
-dotenv.config({ path: '.env.testnet' });
+dotenv.config({ path: ['.env.local', '.env.testnet'] });
 
 const keysPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbra-zone/keys')));
 
