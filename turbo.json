@@ -21,7 +21,7 @@
     "build": {
       "dependsOn": ["compile", "^build"],
       "dotEnv": [".env"],
-      "env": ["PRAX", "IDB_VERSION", "CHAIN_ID", "MINIFRONT_URL"],
+      "env": ["PRAX", "PRAX_IDB_VERSION", "PRAX_CHAIN_ID", "PRAX_MINIFRONT_URL", "PRAX_EXTERNAL"],
       "outputs": ["dist/**"]
     },
     "clean": {

@@ -2,10 +2,14 @@
  * This file is the entrypoint for the main and only background service worker.
  *
  * It is responsible for initializing:
+ * - listeners for chrome runtime events
  * - Services, with endpoint config and a wallet
  * - rpc services, router, and adapter
  * - session manager for rpc entry
  */
+
+// side-effectful import attaches transport init listeners
+import './apply-listeners';
 
 // services
 import { Services } from '@penumbra-zone/services-context';
@@ -47,6 +51,8 @@ import {
   onboardGrpcEndpoint,
   onboardWallet,
 } from './storage/onboard';
+import { approveOrigin } from './approve-origin';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 const startServices = async (wallet: WalletJson) => {
   const grpcEndpoint = await onboardGrpcEndpoint();
@@ -111,4 +117,10 @@ const getServiceHandler = async () => {
 await fixEmptyGrpcEndpointAfterOnboarding();
 
 const handler = await getServiceHandler();
-CRSessionManager.init(PRAX, handler, true);
+CRSessionManager.init(
+  PRAX,
+  handler,
+  async (sender?: chrome.runtime.MessageSender) =>
+    (await approveOrigin(sender)) === UserChoice.Approved,
+  EXTERNAL,
+);

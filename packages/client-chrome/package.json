@@ -1,6 +1,7 @@
 {
-  "name": "@penumbra-zone/client",
+  "name": "@penumbra-zone/client-chrome",
   "version": "4.1.0",
+  "private": true,
   "license": "(MIT OR Apache-2.0)",
   "description": "Package for connecting to any Penumbra extension, including Prax.",
   "type": "module",
@@ -32,6 +33,7 @@
   },
   "dependencies": {
     "@penumbra-zone/protobuf": "workspace:*",
+    "@penumbra-zone/transport-chrome": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
-import { PraxNotConnectedError } from '@penumbra-zone/client/prax2';
+import { PraxNotConnectedError } from '@penumbra-zone/client/prax';
 import { ExtensionNotConnected } from '../extension-not-connected';
 import { NotFound } from '../not-found';
 import { ExtensionUnavailable } from '../extension-unavailable';

@@ -23,20 +23,25 @@ const keysPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbr
  *   This is why `JSON.stringify()` is used, to ensure the values include quotes in the final output.
  */
 const definitions = {
-  CHAIN_ID: JSON.stringify(process.env['CHAIN_ID']),
+  CHAIN_ID: JSON.stringify(process.env['PRAX_CHAIN_ID']),
   PRAX: JSON.stringify(process.env['PRAX']),
   PRAX_ORIGIN: JSON.stringify(`chrome-extension://${process.env['PRAX']}`),
-  IDB_VERSION: JSON.stringify(Number(process.env['IDB_VERSION'])),
-  MINIFRONT_URL: JSON.stringify(process.env['MINIFRONT_URL']),
+  IDB_VERSION: JSON.stringify(Number(process.env['PRAX_IDB_VERSION'])),
+  MINIFRONT_URL: JSON.stringify(process.env['PRAX_MINIFRONT_URL']),
+  EXTERNAL: JSON.stringify(JSON.parse(process.env['PRAX_EXTERNAL'] ?? 'false')),
 };
 
 const __dirname = new URL('.', import.meta.url).pathname;
 const srcDir = path.join(__dirname, 'src');
 
 const entryDir = path.join(srcDir, 'entry');
+const injectDir = path.join(srcDir, 'content-scripts');
 
 const config: webpack.Configuration = {
   entry: {
+    'injected-connection-port': path.join(injectDir, 'injected-connection-port.ts'),
+    'injected-penumbra-global': path.join(injectDir, 'injected-penumbra-global.ts'),
+    'injected-request-listener': path.join(injectDir, 'injected-request-listener.ts'),
     'offscreen-handler': path.join(entryDir, 'offscreen-handler.ts'),
     'page-root': path.join(entryDir, 'page-root.tsx'),
     'popup-root': path.join(entryDir, 'popup-root.tsx'),

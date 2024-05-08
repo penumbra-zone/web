@@ -3,7 +3,8 @@ import { OriginApproval, PopupType } from './message/popup';
 import { popup } from './popup';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 
-export const originAlreadyApproved = async (url: string): Promise<boolean> => {
+export const originAlreadyApproved = async (url?: string): Promise<boolean> => {
+  if (!url) return false;
   // parses the origin and returns a consistent format
   const urlOrigin = new URL(url).origin;
   const knownSites = await localExtStorage.get('knownSites');
@@ -11,16 +12,13 @@ export const originAlreadyApproved = async (url: string): Promise<boolean> => {
   return existingRecord?.choice === UserChoice.Approved;
 };
 
-export const approveOrigin = async ({
-  origin: senderOrigin,
-  tab,
-  frameId,
-}: chrome.runtime.MessageSender): Promise<UserChoice> => {
-  if (!senderOrigin?.startsWith('https://') || !tab?.id || frameId)
+export const approveOrigin = async (sender?: chrome.runtime.MessageSender): Promise<UserChoice> => {
+  if (sender?.id === chrome.runtime.id) return UserChoice.Approved;
+  else if (!sender?.origin?.startsWith('https://') || !sender.tab?.id || sender.frameId)
     throw new Error('Unsupported sender');
 
   // parses the origin and returns a consistent format
-  const urlOrigin = new URL(senderOrigin).origin;
+  const urlOrigin = new URL(sender.origin).origin;
   const knownSites = await localExtStorage.get('knownSites');
 
   const siteRecords = Map.groupBy(knownSites, site => site.origin === urlOrigin);
@@ -41,8 +39,8 @@ export const approveOrigin = async ({
     type: PopupType.OriginApproval,
     request: {
       origin: urlOrigin,
-      favIconUrl: tab.favIconUrl,
-      title: tab.title,
+      favIconUrl: sender.tab.favIconUrl,
+      title: sender.tab.title,
       lastRequest: existingRecord?.date,
     },
   });

@@ -1,21 +1,21 @@
-import { ConnectError } from '@connectrpc/connect';
+import { Code, ConnectError } from '@connectrpc/connect';
 import { errorToJson } from '@connectrpc/connect/protocol-connect';
 import { ChannelLabel, nameConnection, parseConnectionName } from './channel-names';
 import { isTransportInitChannel, TransportInitChannel } from './message';
-import { PortStreamSink, PortStreamSource } from './stream';
+import { PortStreamSink } from './stream';
 import { ChannelHandlerFn } from '@penumbra-zone/transport-dom/adapter';
 import {
   isTransportMessage,
+  TransportError,
   TransportEvent,
   TransportMessage,
   TransportStream,
 } from '@penumbra-zone/transport-dom/messages';
 
 interface CRSession {
-  clientId: string;
   acont: AbortController;
   port: chrome.runtime.Port;
-  origin: string;
+  sender: chrome.runtime.MessageSender;
 }
 
 /**
@@ -46,21 +46,34 @@ export class CRSessionManager {
   private constructor(
     private prefix: string,
     private handler: ChannelHandlerFn,
+    private approvedSender: (sender: chrome.runtime.MessageSender) => Promise<boolean>,
     private external: boolean,
   ) {
     if (CRSessionManager.singleton) throw new Error('Already constructed');
-    chrome.runtime.onConnect.addListener(this.transportConnection);
-    if (this.external) chrome.runtime.onConnectExternal.addListener(this.transportConnection);
+    const connect = (port: chrome.runtime.Port) =>
+      void (
+        port.sender &&
+        this.approvedSender(port.sender).then(
+          ok => ok && this.transportConnection(port),
+          err => console.warn(err),
+        )
+      );
+    if (this.external) chrome.runtime.onConnectExternal.addListener(connect);
+    chrome.runtime.onConnect.addListener(connect);
   }
 
   /**
-   *
    * @param prefix a string containing no spaces, matching the prefix used in your content script
    * @param handler your router entry function
-   * @param external if true, apply handler to onConnectExternal
+   * @param external if true, apply handlers to onConnectExternal
    */
-  public static init = (prefix: string, handler: ChannelHandlerFn, external = false) => {
-    CRSessionManager.singleton ??= new CRSessionManager(prefix, handler, external);
+  public static init = (
+    prefix: string,
+    handler: ChannelHandlerFn,
+    approvedSender: (sender?: chrome.runtime.MessageSender) => Promise<boolean>,
+    external = false,
+  ) => {
+    CRSessionManager.singleton ??= new CRSessionManager(prefix, handler, approvedSender, external);
   };
 
   /**
@@ -71,79 +84,64 @@ export class CRSessionManager {
    * the connection is for this manager, a handler is connected to the port.
    */
   private transportConnection = (port: chrome.runtime.Port) => {
-    console.log('transportConnection', port);
-    // require an identified origin
-    const sender = port.sender;
-    if (!sender?.origin) return;
+    const { name, sender } = port;
 
-    // fast and simple name test, parse later
-    if (!port.name.startsWith(this.prefix)) return;
-
-    // origin restrictions
-    const fromThisExtension = sender.id === chrome.runtime.id;
-    // frameId == 0 for top-level documents
-    const fromPageHttps = !sender.frameId && sender.tab?.id && sender.origin.startsWith('https://');
-    if (!(fromThisExtension || fromPageHttps)) return;
+    if (!sender) return;
+    if (!name.startsWith(this.prefix)) return;
 
     // parse the name
-    const { label: channelLabel, uuid: clientId } =
-      parseConnectionName(this.prefix, port.name) ?? {};
-    if (channelLabel !== ChannelLabel.TRANSPORT || !clientId) return;
+    const { label: channelLabel, uuid: sessionId } = parseConnectionName(this.prefix, name) ?? {};
+    if (channelLabel !== ChannelLabel.TRANSPORT || !sessionId) return;
+    if (this.sessions.has(sessionId)) throw new Error(`Session collision: ${sessionId}`);
 
-    if (this.sessions.has(clientId)) throw new Error(`Session collision: ${clientId}`);
-    const session = {
-      clientId,
-      acont: new AbortController(),
-      origin: sender.origin,
-      port: port,
-    };
-    this.sessions.set(clientId, session);
+    const acont = new AbortController();
+    acont.signal.addEventListener('abort', () => port.disconnect());
+    port.onDisconnect.addListener(() => acont.abort('Disconnect'));
 
-    session.acont.signal.addEventListener('abort', () => port.disconnect());
-    port.onDisconnect.addListener(() => session.acont.abort('Disconnect'));
+    this.sessions.set(sessionId, { acont, port, sender });
 
     port.onMessage.addListener((i, p) => {
       void (async () => {
         try {
-          if (isTransportMessage(i)) {
-            p.postMessage(await this.clientMessageHandler(session.acont.signal, i));
-          } else if (isTransportInitChannel(i)) {
-            console.warn('Client streaming unimplemented', this.acceptChannelStreamRequest(i));
-          } else {
-            console.warn('Unknown item in transport', i);
-          }
+          if (isTransportMessage(i))
+            p.postMessage(await this.clientMessageHandler(sender, acont.signal, i));
+          else if (isTransportInitChannel(i))
+            p.postMessage(await this.clientStreamHandler(acont.signal, i));
+          else console.warn('Unknown item in transport', i);
         } catch (e) {
-          session.acont.abort(e);
+          acont.abort(e);
         }
       })();
     });
   };
 
   /**
-   * This method enters the router, and returns a response.
+   * This method queries the service, then returns a response message or stream.
+   * It expects an input of a single request message, so only supports unary
+   * server-streaming method kinds.
    *
-   * It expects a single message, so only supports unary requests and
-   * server-streaming requests. This should *always successfully return* a
-   * `TransportEvent`, containing json representing a response or json
-   * representing an error.
+   * This should *always successfully return* a jsonifiable object, representing
+   * a response or error.
    */
   private clientMessageHandler(
+    client: chrome.runtime.MessageSender,
     signal: AbortSignal,
     { requestId, message }: TransportMessage,
   ): Promise<TransportEvent> {
-    return this.handler(message)
-      .then(response =>
+    return this.handler(message).then(
+      response =>
         response instanceof ReadableStream
-          ? this.responseChannelStream(signal, {
+          ? (this.streamResponse(client, signal, {
               requestId,
-              stream: response as unknown,
-            } as TransportStream)
-          : ({ requestId, message: response as unknown } as TransportEvent),
-      )
-      .catch((error: unknown) => ({
-        requestId,
-        error: errorToJson(ConnectError.from(error), undefined),
-      }));
+              stream: response,
+            }) satisfies TransportInitChannel)
+          : ({ requestId, message: response } satisfies TransportMessage),
+      error =>
+        ({
+          requestId,
+          error: errorToJson(ConnectError.from(error), undefined),
+        }) satisfies TransportEvent & TransportError,
+    );
   }
 
   /**
@@ -154,30 +152,37 @@ export class CRSessionManager {
    * A jsonifiable message identifying a unique connection name is returned
    * and should be transported to the client.  The client should open a
    * connection bearing this name to source the stream.
-   *
-   * TODO: time out if the client fails to initiate a connection
    */
-  private responseChannelStream(
+  private streamResponse(
+    to: chrome.runtime.MessageSender,
     signal: AbortSignal,
     { requestId, stream }: TransportStream,
   ): TransportInitChannel {
     const channel = nameConnection(this.prefix, ChannelLabel.STREAM);
-    const sinkListener = (p: chrome.runtime.Port) => {
-      if (p.name !== channel) return;
-      if (this.external) chrome.runtime.onConnectExternal.removeListener(sinkListener);
-      else chrome.runtime.onConnect.removeListener(sinkListener);
-      void stream.pipeTo(new WritableStream(new PortStreamSink(p)), { signal }).catch(() => null);
+    const sinkListener = (sink: chrome.runtime.Port) => {
+      if (sink.name !== channel || sink.sender?.id !== to.id || sink.sender?.origin !== to.origin)
+        return;
+      removeSinkListener();
+      stream.pipeTo(new WritableStream(new PortStreamSink(sink)), { signal }).catch(() => null);
     };
+
+    const removeSinkListener = () => {
+      if (this.external) chrome.runtime.onConnectExternal.removeListener(sinkListener);
+      chrome.runtime.onConnect.removeListener(sinkListener);
+    };
+    signal.addEventListener('abort', removeSinkListener);
+
     if (this.external) chrome.runtime.onConnectExternal.addListener(sinkListener);
-    else chrome.runtime.onConnect.addListener(sinkListener);
+    chrome.runtime.onConnect.addListener(sinkListener);
     return { requestId, channel };
   }
 
-  private acceptChannelStreamRequest = ({
-    requestId,
-    channel: name,
-  }: TransportInitChannel): TransportStream => ({
-    requestId,
-    stream: new ReadableStream(new PortStreamSource(chrome.runtime.connect({ name }))),
-  });
+  private clientStreamHandler = ({ requestId }: TransportInitChannel) =>
+    Promise.resolve({
+      requestId,
+      error: errorToJson(
+        new ConnectError('Client streaming unimplemented', Code.Unimplemented),
+        undefined,
+      ),
+    } satisfies TransportEvent & TransportError);
 }
