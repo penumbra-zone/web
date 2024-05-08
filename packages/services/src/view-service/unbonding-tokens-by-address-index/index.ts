@@ -58,7 +58,7 @@ export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'
         value: validatorInfo.toBinary(),
       });
 
-      const withValidatorInfo = getBalanceView(new BalancesResponse(balancesResponse)).clone();
+      const withValidatorInfo = getBalanceView(new BalancesResponse(balancesResponse));
       if (withValidatorInfo.valueView.case !== 'knownAssetId')
         throw new Error(`Unexpected ValueView case: ${withValidatorInfo.valueView.case}`);
 

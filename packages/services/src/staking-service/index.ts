@@ -7,7 +7,10 @@ import { getValidatorInfo } from './get-validator-info';
 
 export type Impl = ServiceImpl<typeof StakingService>;
 
-export const stakingImpl: Pick<Impl, 'getValidatorInfo' | 'validatorInfo' | 'validatorPenalty'> = {
+export const stakingImpl: Omit<
+  Impl,
+  'currentValidatorRate' | 'validatorStatus' | 'validatorUptime'
+> = {
   getValidatorInfo,
   validatorInfo,
   validatorPenalty,
