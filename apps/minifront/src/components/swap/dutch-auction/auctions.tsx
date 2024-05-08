@@ -7,6 +7,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
+import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 
 const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: AssetId) => {
   let metadata: Metadata | undefined;
@@ -23,6 +24,19 @@ const auctionsSelector = (state: AllSlices) => ({
   endAuction: state.dutchAuction.endAuction,
   fullSyncHeight: state.status.fullSyncHeight,
 });
+
+const getButtonProps = (
+  auctionId: AuctionId,
+  endAuction: (auctionId: AuctionId) => Promise<void>,
+  seqNum?: bigint,
+):
+  | { buttonType: 'end' | 'withdraw'; onClickButton: VoidFunction }
+  | { buttonType: undefined; onClickButton: undefined } =>
+  seqNum === 0n
+    ? { buttonType: 'end', onClickButton: () => void endAuction(auctionId) }
+    : seqNum === 1n
+      ? { buttonType: 'withdraw', onClickButton: console.log }
+      : { buttonType: undefined, onClickButton: undefined };
 
 export const Auctions = () => {
   const { auctionInfos, metadataByAssetId, endAuction, fullSyncHeight } =
@@ -52,9 +66,8 @@ export const Auctions = () => {
                   metadataByAssetId,
                   auctionInfo.auction.description?.outputId,
                 )}
-                showEndButton
-                onClickEndButton={() => void endAuction(auctionInfo.id)}
                 fullSyncHeight={fullSyncHeight}
+                {...getButtonProps(auctionInfo.id, endAuction, auctionInfo.auction.state?.seq)}
               />
             }
           />

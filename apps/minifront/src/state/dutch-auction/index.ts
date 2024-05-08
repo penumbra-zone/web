@@ -121,7 +121,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
       state.dutchAuction.auctionInfos = [];
     });
 
-    for await (const response of viewClient.auctions({})) {
+    for await (const response of viewClient.auctions({ includeInactive: true })) {
       if (!response.auction || !response.id) continue;
       const auction = DutchAuction.fromBinary(response.auction.value);
       const auctions = [...get().dutchAuction.auctionInfos, { id: response.id, auction }];

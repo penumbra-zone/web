@@ -27,25 +27,25 @@ interface BaseProps {
   fullSyncHeight?: bigint;
 }
 
-interface PropsWithEndButton extends BaseProps {
-  showEndButton: true;
-  onClickEndButton: VoidFunction;
+interface PropsWithButton extends BaseProps {
+  buttonType: 'end' | 'withdraw';
+  onClickButton: VoidFunction;
 }
 
-interface PropsWithoutEndButton extends BaseProps {
-  showEndButton?: false;
-  onClickEndButton?: undefined;
+interface PropsWithoutButton extends BaseProps {
+  buttonType?: undefined;
+  onClickButton?: undefined;
 }
 
-type Props = PropsWithEndButton | PropsWithoutEndButton;
+type Props = PropsWithButton | PropsWithoutButton;
 
 export const DutchAuctionComponent = ({
   dutchAuction,
   inputMetadata,
   outputMetadata,
-  showEndButton,
-  onClickEndButton,
   fullSyncHeight,
+  buttonType,
+  onClickButton,
 }: Props) => {
   const { description } = dutchAuction;
   if (!description) return null;
@@ -82,9 +82,17 @@ export const DutchAuctionComponent = ({
         fullSyncHeight={fullSyncHeight}
       />
 
-      {showEndButton && (
+      {buttonType === 'withdraw' && (
         <div className='self-end'>
-          <Button variant='destructiveSecondary' size='md' onClick={onClickEndButton}>
+          <Button variant='gradient' size='md' onClick={onClickButton}>
+            Withdraw funds
+          </Button>
+        </div>
+      )}
+
+      {buttonType === 'end' && (
+        <div className='self-end'>
+          <Button variant='destructiveSecondary' size='md' onClick={onClickButton}>
             End auction
           </Button>
         </div>
