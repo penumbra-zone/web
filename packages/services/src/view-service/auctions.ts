@@ -70,9 +70,8 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
       auction = new Any({
         typeUrl: DutchAuction.typeName,
         value: new DutchAuction({
-          state: { seq: value.seqNum },
+          state: state ?? { seq: value.seqNum },
           description: value.auction,
-          state,
         }).toBinary(),
       });
     }
