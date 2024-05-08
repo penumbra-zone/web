@@ -10,7 +10,7 @@ import { fetchUnclaimedSwaps } from '../../../fetchers/unclaimed-swaps';
 import { viewClient } from '../../../clients';
 import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
-import { getSwappableBalancesResponses } from '../helpers';
+import { getSwappableBalancesResponses, isSwappable } from '../helpers';
 import { getAllAssets } from '../../../fetchers/assets';
 
 export interface UnclaimedSwapsWithMetadata {
@@ -22,16 +22,16 @@ export interface UnclaimedSwapsWithMetadata {
 export interface SwapLoaderResponse {
   assetBalances: BalancesResponse[];
   unclaimedSwaps: UnclaimedSwapsWithMetadata[];
-  assets: Metadata[];
+  swappableAssets: Metadata[];
 }
 
-const getAndSetDefaultAssetBalances = async (assets: Metadata[]) => {
+const getAndSetDefaultAssetBalances = async (swappableAssets: Metadata[]) => {
   const balancesResponses = await getSwappableBalancesResponses();
 
   // set initial denom in if there is an available balance
   if (balancesResponses[0]) {
     useStore.getState().swap.setAssetIn(balancesResponses[0]);
-    useStore.getState().swap.setAssetOut(assets[0]!);
+    useStore.getState().swap.setAssetOut(swappableAssets[0]!);
   }
 
   return balancesResponses;
@@ -66,12 +66,12 @@ export const unclaimedSwapsWithMetadata = async (): Promise<UnclaimedSwapsWithMe
 export const SwapLoader: LoaderFunction = async (): Promise<SwapLoaderResponse> => {
   await throwIfPraxNotConnectedTimeout();
 
-  const assets = await getAllAssets();
+  const swappableAssets = (await getAllAssets()).filter(isSwappable);
 
   const [assetBalances, unclaimedSwaps] = await Promise.all([
-    getAndSetDefaultAssetBalances(assets),
+    getAndSetDefaultAssetBalances(swappableAssets),
     unclaimedSwapsWithMetadata(),
   ]);
 
-  return { assetBalances, unclaimedSwaps, assets };
+  return { assetBalances, unclaimedSwaps, swappableAssets };
 };
