@@ -177,7 +177,7 @@ export class CRSessionManager {
     return { requestId, channel };
   }
 
-  private clientStreamHandler = ({ requestId }: TransportInitChannel) =>
+  private clientStreamHandler = (_signal: AbortSignal, { requestId }: TransportInitChannel) =>
     Promise.resolve({
       requestId,
       error: errorToJson(
