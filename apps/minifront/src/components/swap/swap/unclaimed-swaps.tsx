@@ -11,10 +11,13 @@ import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 export const UnclaimedSwaps = () => {
   const { unclaimedSwaps } = useLoaderData() as SwapLoaderResponse;
 
+  const sortedUnclaimedSwaps = unclaimedSwaps.sort(
+    (a, b) => Number(b.swap.outputData?.height) - Number(a.swap.outputData?.height),
+  );
   return !unclaimedSwaps.length ? (
     <div className='hidden xl:block'></div>
   ) : (
-    <_UnclaimedSwaps unclaimedSwaps={unclaimedSwaps}></_UnclaimedSwaps>
+    <_UnclaimedSwaps unclaimedSwaps={sortedUnclaimedSwaps}></_UnclaimedSwaps>
   );
 };
 
