@@ -7,7 +7,7 @@ export const DutchAuctionLoader = async () => {
   await throwIfPraxNotConnectedTimeout();
 
   // Load into state, but don't block rendering.
-  void useStore.getState().dutchAuction.loadAuctions();
+  void useStore.getState().dutchAuction.loadAuctionInfos();
 
   const [assets, balancesResponses] = await Promise.all([
     getAllAssets(),

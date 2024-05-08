@@ -10,7 +10,7 @@ pub static UNBONDING_TOKEN_REGEX: &str = "^uunbonding_(?P<data>start_at_(?P<star
 pub static DELEGATION_TOKEN_REGEX: &str =
     "^udelegation_(?P<data>penumbravalid1(?P<id>[a-zA-HJ-NP-Z0-9]+))$";
 pub static AUCTION_NFT_REGEX: &str =
-    "^auctionnft_(?P<data>[a-z_0-9]+_pauctid1(?P<id>[a-zA-HJ-NP-Z0-9]+))$";
+    "^auctionnft_(?P<data>(?<seq_num>[a-z_0-9]+)_pauctid1(?P<id>[a-zA-HJ-NP-Z0-9]+))$";
 pub static SHORTENED_ID_LENGTH: usize = 8;
 
 /// Given a binary-encoded `Metadata`, returns a new binary-encoded `Metadata`
@@ -44,21 +44,22 @@ pub fn customize_symbol_inner(metadata: Metadata) -> WasmResult<Metadata> {
             .as_str();
 
         return Ok(Metadata {
-            symbol: format!("unbondUMat{start_match}({shortened_id}...)"),
+            symbol: format!("unbondUMat{start_match}({shortened_id}…)"),
             ..metadata
         });
     } else if let Some(captures) = delegation_re.captures(&metadata.base) {
         let shortened_id = shorten_id(&captures)?;
 
         return Ok(Metadata {
-            symbol: format!("delUM({shortened_id}...)"),
+            symbol: format!("delUM({shortened_id}…)"),
             ..metadata
         });
     } else if let Some(captures) = auction_re.captures(&metadata.base) {
         let shortened_id = shorten_id(&captures)?;
+        let seq_num = get_seq_num(&captures)?;
 
         return Ok(Metadata {
-            symbol: format!("auction({shortened_id}...)"),
+            symbol: format!("auction@{seq_num}({shortened_id}…)"),
             ..metadata
         });
     }
@@ -69,11 +70,20 @@ pub fn customize_symbol_inner(metadata: Metadata) -> WasmResult<Metadata> {
 fn shorten_id(captures: &regex::Captures) -> WasmResult<String> {
     let id_match = captures
         .name("id")
-        .ok_or_else(|| anyhow!("<id> not matched in staking token regex"))?;
+        .ok_or_else(|| anyhow!("<id> not matched in token regex"))?;
     Ok(id_match
         .as_str()
         .chars()
         .take(SHORTENED_ID_LENGTH)
+        .collect())
+}
+
+fn get_seq_num(captures: &regex::Captures) -> WasmResult<String> {
+    Ok(captures
+        .name("seq_num")
+        .ok_or_else(|| anyhow!("<seq_num> not matched in auction NFT token regex"))?
+        .as_str()
+        .chars()
         .collect())
 }
 
@@ -162,7 +172,7 @@ mod customize_symbol_inner_tests {
         };
         let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
 
-        assert_eq!(customized_metadata.symbol, "unbondUMat1234(abcdef12...)");
+        assert_eq!(customized_metadata.symbol, "unbondUMat1234(abcdef12…)");
     }
 
     #[test]
@@ -174,11 +184,11 @@ mod customize_symbol_inner_tests {
         };
         let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
 
-        assert_eq!(customized_metadata.symbol, "delUM(abcdef12...)");
+        assert_eq!(customized_metadata.symbol, "delUM(abcdef12…)");
     }
 
     #[test]
-    fn it_modifies_auction_nft_symbol() {
+    fn it_modifies_auction_nft_symbol_with_seq_num() {
         let metadata = Metadata {
             name: String::from(""),
             symbol: String::from(""),
@@ -189,7 +199,19 @@ mod customize_symbol_inner_tests {
         };
         let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
 
-        assert_eq!(customized_metadata.symbol, "auction(jqyupqnz...)")
+        assert_eq!(customized_metadata.symbol, "auction@0(jqyupqnz…)");
+
+        let metadata = Metadata {
+            name: String::from(""),
+            symbol: String::from(""),
+            ..test_helpers::get_metadata_for(
+                "auctionnft_123_pauctid1jqyupqnzznyfpq940mv0ac33pyx77s7af3kgdw4nstjmp3567dks8n5amh",
+                true,
+            )
+        };
+        let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
+
+        assert_eq!(customized_metadata.symbol, "auction@123(jqyupqnz…)");
     }
 }
 

@@ -17,6 +17,10 @@ import {
   ValidatorPenaltyResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
+import {
+  AuctionId,
+  DutchAuction,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 
 export interface RootQuerierInterface {
   app: AppQuerierInterface;
@@ -26,6 +30,7 @@ export interface RootQuerierInterface {
   ibcClient: IbcClientQuerierInterface;
   staking: StakingQuerierInterface;
   cnidarium: CnidariumQuerierInterface;
+  auction: AuctionQuerierInterface;
 }
 
 export interface AppQuerierInterface {
@@ -64,4 +69,8 @@ export interface StakingQuerierInterface {
 
 export interface CnidariumQuerierInterface {
   fetchRemoteRoot(blockHeight: bigint): Promise<MerkleRoot>;
+}
+
+export interface AuctionQuerierInterface {
+  auctionStateById(id: AuctionId): Promise<DutchAuction | undefined>;
 }
