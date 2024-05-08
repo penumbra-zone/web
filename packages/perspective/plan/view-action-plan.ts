@@ -145,8 +145,6 @@ const getActionDutchAuctionWithdrawView = async (
 ): Promise<PartialMessage<ActionDutchAuctionWithdrawView>> => {
   const reserves = [];
 
-  console.log('getActionDutchAuctionWithdrawView', action);
-
   if (action.reservesInput) {
     reserves.push(getValueView(action.reservesInput, denomMetadataByAssetId));
   }
