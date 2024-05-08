@@ -140,6 +140,7 @@ mod tests {
             as_of_block_height: 1u64,
         };
         let gas_prices = GasPrices {
+            asset_id: None,
             block_space_price: 0,
             compact_block_space_price: 0,
             verification_price: 0,
