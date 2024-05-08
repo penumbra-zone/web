@@ -1,14 +1,27 @@
 import {
   BalancesRequest,
+  BalancesResponse,
   UnbondingTokensByAddressIndexRequest_Filter,
   UnbondingTokensByAddressIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Impl } from '..';
 import { balances } from '../balances';
 import { getIsClaimable, isUnbondingTokenBalance } from './helpers';
+import { Any } from '@bufbuild/protobuf';
+import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
+import { stakingClientCtx } from '../../ctx/staking-client';
+import { getValidatorInfo } from '@penumbra-zone/getters/get-validator-info-response';
+import { assetPatterns } from '@penumbra-zone/constants/assets';
+import {
+  getBalanceView,
+  getDisplayFromBalancesResponse,
+} from '@penumbra-zone/getters/balances-response';
+import { identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 
 export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'] =
   async function* (req, ctx) {
+    const stakingClient = ctx.values.get(stakingClientCtx);
+    if (!stakingClient) throw new Error('Staking context not found');
     for await (const balancesResponse of balances(
       new BalancesRequest({ accountFilter: req.addressIndex }),
       ctx,
@@ -31,9 +44,29 @@ export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'
         continue;
       }
 
+      const regexResult = assetPatterns.unbondingToken.capture(
+        getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse)) ?? '',
+      );
+      if (!regexResult) throw new Error('expected delegation token identity key not present');
+
+      const validatorInfoResponse = await stakingClient.getValidatorInfo({
+        identityKey: identityKeyFromBech32m(regexResult.idKey),
+      });
+      const validatorInfo = getValidatorInfo(validatorInfoResponse);
+      const extendedMetadata = new Any({
+        typeUrl: ValidatorInfo.typeName,
+        value: validatorInfo.toBinary(),
+      });
+
+      const withValidatorInfo = getBalanceView(new BalancesResponse(balancesResponse));
+      if (withValidatorInfo.valueView.case !== 'knownAssetId')
+        throw new Error(`Unexpected ValueView case: ${withValidatorInfo.valueView.case}`);
+
+      withValidatorInfo.valueView.value.extendedMetadata = extendedMetadata;
+
       yield new UnbondingTokensByAddressIndexResponse({
         claimable,
-        valueView: balancesResponse.balanceView,
+        valueView: withValidatorInfo,
       });
     }
   };

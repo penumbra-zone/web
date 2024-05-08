@@ -7,11 +7,14 @@ import {
   UnbondingTokensByAddressIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
-import { createHandlerContext } from '@connectrpc/connect';
+import { createContextValues, createHandlerContext, PromiseClient } from '@connectrpc/connect';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { unbondingTokensByAddressIndex } from '.';
 import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
+import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
+import { stakingClientCtx } from '../../ctx/staking-client';
+import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
 const mockBalances = vi.hoisted(() => vi.fn());
 vi.mock('../balances', () => ({
@@ -28,12 +31,20 @@ vi.mock('../status', () => ({
   status: mockStatus,
 }));
 
+const mockStakingClient = {
+  getValidatorInfo: vi.fn(),
+};
+
 const mockCtx = createHandlerContext({
   service: ViewService,
   method: ViewService.methods.unbondingTokensByAddressIndex,
   protocolName: 'mock',
   requestMethod: 'MOCK',
   url: '/mock',
+  contextValues: createContextValues().set(
+    stakingClientCtx,
+    mockStakingClient as unknown as PromiseClient<typeof StakingService>,
+  ),
 });
 
 const mockBalancesResponse1 = new BalancesResponse({
@@ -57,7 +68,8 @@ const mockBalancesResponse2 = new BalancesResponse({
       value: {
         amount: { hi: 0n, lo: 2n },
         metadata: {
-          display: 'unbonding_start_at_100_penumbravalid1abc123',
+          display:
+            'unbonding_start_at_100_penumbravalid1u2z9c75xcc2ny6jxccge6ehqtqkhgy4ltxms3ldappr06ekpguxqq48pdh',
         },
       },
     },
@@ -71,8 +83,20 @@ const mockBalancesResponse3 = new BalancesResponse({
       value: {
         amount: { hi: 0n, lo: 3n },
         metadata: {
-          display: 'unbonding_start_at_200_penumbravalid1abc123',
+          display:
+            'unbonding_start_at_200_penumbravalid1ltltrqe7f2c0q8mqlsx3u74s0r6nm968f325njz4h8zzqh0gsgfq2g5d3m',
         },
+      },
+    },
+  },
+});
+
+const mockBalancesResponse4 = new BalancesResponse({
+  balanceView: {
+    valueView: {
+      case: 'unknownAssetId',
+      value: {
+        amount: { hi: 0n, lo: 3n },
       },
     },
   },
@@ -86,6 +110,15 @@ describe('Unbonding Tokens by Address Index handler', () => {
       new AppParametersResponse({ parameters: { stakeParams: { unbondingDelay: 100n } } }),
     );
 
+    mockStakingClient.getValidatorInfo.mockResolvedValue(
+      new ValidatorInfoResponse({
+        validatorInfo: {
+          validator: {
+            name: 'Validator 1',
+          },
+        },
+      }),
+    );
     mockStatus.mockResolvedValue(new StatusResponse({ fullSyncHeight: 250n }));
 
     const mockBalancesResponse = {
@@ -100,6 +133,9 @@ describe('Unbonding Tokens by Address Index handler', () => {
     });
     mockBalancesResponse.next.mockResolvedValueOnce({
       value: mockBalancesResponse3,
+    });
+    mockBalancesResponse.next.mockResolvedValueOnce({
+      value: mockBalancesResponse4,
     });
     mockBalancesResponse.next.mockResolvedValueOnce({ done: true });
 
