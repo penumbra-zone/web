@@ -17,7 +17,7 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 import { ServicesInterface } from '@penumbra-zone/types/services';
 import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
 import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices } from '../test-utils';
+import { IndexedDbMock, MockQuerier, MockServices } from '../test-utils';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 
 const AUCTION_ID_1 = new AuctionId({ inner: new Uint8Array(Array(32).fill(1)) });
@@ -118,6 +118,7 @@ const TEST_DATA = [
 describe('Auctions request handler', () => {
   let mockCtx: HandlerContext;
   let mockIndexedDb: IndexedDbMock;
+  let mockQuerier: MockQuerier;
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -129,11 +130,18 @@ describe('Auctions request handler', () => {
       getSpendableNoteByCommitment: vi.fn().mockResolvedValue(MOCK_SPENDABLE_NOTE_RECORD),
     };
 
+    mockQuerier = {
+      auction: {
+        auctionStateById: vi.fn().mockResolvedValue(new DutchAuction({ state: { seq: 1234n } })),
+      },
+    };
+
     const mockServices = () =>
       Promise.resolve({
         getWalletServices: vi.fn(() =>
           Promise.resolve({
             indexedDb: mockIndexedDb,
+            querier: mockQuerier,
           }),
         ) as MockServices['getWalletServices'],
       } as unknown as ServicesInterface);
@@ -193,5 +201,17 @@ describe('Auctions request handler', () => {
 
     expect(results.some(result => new AuctionId(result.id).equals(AUCTION_ID_2))).toBe(true);
     expect(results.some(result => new AuctionId(result.id).equals(AUCTION_ID_3))).toBe(true);
+  });
+
+  it('includes the latest state from the fullnode if `queryLatestState` is `true`', async () => {
+    const req = new AuctionsRequest({ queryLatestState: true });
+    const results = await Array.fromAsync(auctions(req, mockCtx));
+
+    results.forEach(result => {
+      if (!result.auction?.value) throw new Error('missing data');
+      const dutchAuction = DutchAuction.fromBinary(result.auction.value);
+
+      expect(dutchAuction.state?.seq).toBe(1234n);
+    });
   });
 });

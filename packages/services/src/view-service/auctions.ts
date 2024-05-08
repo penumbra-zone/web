@@ -8,6 +8,7 @@ import { Impl } from '.';
 import {
   AuctionId,
   DutchAuction,
+  DutchAuctionState,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { balances } from './balances';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
@@ -16,7 +17,7 @@ import { assetPatterns } from '@penumbra-zone/constants/assets';
 import { Any, PartialMessage } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
-import { Code, ConnectError, HandlerContext } from '@connectrpc/connect';
+import { HandlerContext } from '@connectrpc/connect';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 const getBech32mAuctionId = (
@@ -48,12 +49,8 @@ const iterateAuctionsThisUserControls = async function* (
 export const auctions: Impl['auctions'] = async function* (req, ctx) {
   const { includeInactive, queryLatestState, accountFilter } = req;
 
-  if (queryLatestState) {
-    throw new ConnectError('`queryLatestState` not yet implemented', Code.Unimplemented);
-  }
-
   const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb } = await services.getWalletServices();
+  const { indexedDb, querier } = await services.getWalletServices();
 
   for await (const auctionId of iterateAuctionsThisUserControls(ctx, accountFilter)) {
     const id = new AuctionId(auctionIdFromBech32(auctionId));
@@ -65,14 +62,16 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
       noteRecord = await indexedDb.getSpendableNoteByCommitment(value.noteCommitment);
     }
 
-    let auction: Any | undefined;
+    let state: DutchAuctionState | undefined;
+    if (queryLatestState) state = (await querier.auction.auctionStateById(id))?.state;
 
-    if (value.auction) {
+    let auction: Any | undefined;
+    if (!!value.auction || state) {
       auction = new Any({
         typeUrl: DutchAuction.typeName,
         value: new DutchAuction({
           description: value.auction,
-          /** @todo include state if `queryLatestState` is `true` */
+          state,
         }).toBinary(),
       });
     }
