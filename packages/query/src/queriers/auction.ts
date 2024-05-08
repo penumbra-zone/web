@@ -6,7 +6,7 @@ import {
   AuctionId,
   DutchAuction,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
-import { typeUrlMatchesTypeName } from '@penumbra-zone/types/protobuf';
+import { typeUrlMatchesTypeName, unpackAny } from '@penumbra-zone/types/protobuf';
 
 export class AuctionQuerier implements AuctionQuerierInterface {
   private readonly client: PromiseClient<typeof QueryService>;
@@ -21,9 +21,10 @@ export class AuctionQuerier implements AuctionQuerierInterface {
   > {
     const result = await this.client.auctionStateById({ id });
 
+    result.auction?.is(DutchAuction.typeName);
     // As more auction types are created, handle them here.
     if (typeUrlMatchesTypeName(result.auction?.typeUrl, DutchAuction.typeName)) {
-      return DutchAuction.fromBinary(result.auction.value);
+      return unpackAny(result.auction, DutchAuction);
     }
 
     return undefined;
