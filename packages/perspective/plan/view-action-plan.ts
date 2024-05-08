@@ -29,6 +29,11 @@ import {
   getInputAssetId,
   getOutputAssetId,
 } from '@penumbra-zone/getters/dutch-auction-description';
+import {
+  ActionDutchAuctionWithdrawPlan,
+  ActionDutchAuctionWithdrawView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { PartialMessage } from '@bufbuild/protobuf';
 
 const getValueView = async (
   value: Value | undefined,
@@ -132,6 +137,27 @@ const getSwapView = async (
       },
     },
   });
+};
+
+const getActionDutchAuctionWithdrawView = async (
+  action: ActionDutchAuctionWithdrawPlan,
+  denomMetadataByAssetId: (id: AssetId) => Promise<Metadata>,
+): Promise<PartialMessage<ActionDutchAuctionWithdrawView>> => {
+  const reserves = [];
+
+  console.log('getActionDutchAuctionWithdrawView', action);
+
+  if (action.reservesInput) {
+    reserves.push(getValueView(action.reservesInput, denomMetadataByAssetId));
+  }
+  if (action.reservesOutput) {
+    reserves.push(getValueView(action.reservesOutput, denomMetadataByAssetId));
+  }
+
+  return {
+    action,
+    reserves: await Promise.all(reserves),
+  };
 };
 
 const getSwapClaimView = async (
@@ -282,10 +308,10 @@ export const viewActionPlan =
         return new ActionView({
           actionView: {
             case: 'actionDutchAuctionWithdraw',
-            value: {
-              action: actionPlan.action.value,
-              /** @todo: Add `reserves` property */
-            },
+            value: await getActionDutchAuctionWithdrawView(
+              actionPlan.action.value,
+              denomMetadataByAssetId,
+            ),
           },
         });
 
