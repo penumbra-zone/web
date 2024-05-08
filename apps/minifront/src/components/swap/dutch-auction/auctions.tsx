@@ -21,25 +21,29 @@ const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: Asse
 const auctionsSelector = (state: AllSlices) => ({
   auctionInfos: state.dutchAuction.auctionInfos,
   metadataByAssetId: state.dutchAuction.metadataByAssetId,
-  endAuction: state.dutchAuction.endAuction,
   fullSyncHeight: state.status.fullSyncHeight,
+  endAuction: state.dutchAuction.endAuction,
+  withdraw: state.dutchAuction.withdraw,
 });
 
 const getButtonProps = (
   auctionId: AuctionId,
   endAuction: (auctionId: AuctionId) => Promise<void>,
+  withdraw: (auctionId: AuctionId, seqNum: bigint) => Promise<void>,
   seqNum?: bigint,
 ):
   | { buttonType: 'end' | 'withdraw'; onClickButton: VoidFunction }
-  | { buttonType: undefined; onClickButton: undefined } =>
-  seqNum === 0n
-    ? { buttonType: 'end', onClickButton: () => void endAuction(auctionId) }
-    : seqNum === 1n
-      ? { buttonType: 'withdraw', onClickButton: console.log }
-      : { buttonType: undefined, onClickButton: undefined };
+  | { buttonType: undefined; onClickButton: undefined } => {
+  if (seqNum === 0n) return { buttonType: 'end', onClickButton: () => void endAuction(auctionId) };
+
+  if (seqNum === 1n)
+    return { buttonType: 'withdraw', onClickButton: () => void withdraw(auctionId, seqNum) };
+
+  return { buttonType: undefined, onClickButton: undefined };
+};
 
 export const Auctions = () => {
-  const { auctionInfos, metadataByAssetId, endAuction, fullSyncHeight } =
+  const { auctionInfos, metadataByAssetId, fullSyncHeight, endAuction, withdraw } =
     useStoreShallow(auctionsSelector);
 
   return (
@@ -67,7 +71,12 @@ export const Auctions = () => {
                   auctionInfo.auction.description?.outputId,
                 )}
                 fullSyncHeight={fullSyncHeight}
-                {...getButtonProps(auctionInfo.id, endAuction, auctionInfo.auction.state?.seq)}
+                {...getButtonProps(
+                  auctionInfo.id,
+                  endAuction,
+                  withdraw,
+                  auctionInfo.auction.state?.seq,
+                )}
               />
             }
           />

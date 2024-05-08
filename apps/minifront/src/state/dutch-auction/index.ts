@@ -44,6 +44,7 @@ export interface DutchAuctionSlice {
   loadMetadata: (assetId?: AssetId) => Promise<void>;
   metadataByAssetId: Record<string, Metadata>;
   endAuction: (auctionId: AuctionId) => Promise<void>;
+  withdraw: (auctionId: AuctionId, currentSeqNum: bigint) => Promise<void>;
 }
 
 export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (set, get) => ({
@@ -157,6 +158,24 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     try {
       const req = new TransactionPlannerRequest({ dutchAuctionEndActions: [{ auctionId }] });
       await planBuildBroadcast('dutchAuctionEnd', req);
+      void get().dutchAuction.loadAuctionInfos();
+    } finally {
+      set(state => {
+        state.dutchAuction.txInProgress = false;
+      });
+    }
+  },
+
+  withdraw: async (auctionId, currentSeqNum) => {
+    set(state => {
+      state.dutchAuction.txInProgress = true;
+    });
+
+    try {
+      const req = new TransactionPlannerRequest({
+        dutchAuctionWithdrawActions: [{ auctionId, seq: currentSeqNum + 1n }],
+      });
+      await planBuildBroadcast('dutchAuctionWithdraw', req);
       void get().dutchAuction.loadAuctionInfos();
     } finally {
       set(state => {
