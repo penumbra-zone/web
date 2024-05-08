@@ -53,7 +53,7 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
   const { assetIn, assetOut, setAssetOut, simulateSwap, simulateOutLoading, simulateOutResult } =
     useStore(swapSelector);
 
-  const { assets } = useLoaderData() as SwapLoaderResponse;
+  const { swappableAssets } = useLoaderData() as SwapLoaderResponse;
   const matchingBalance = findMatchingBalance(assetOut, balances);
   const assetInId = getAssetIdFromBalancesResponseOptional(assetIn);
   const filter = assetInId
@@ -76,7 +76,7 @@ export const AssetOutBox = ({ balances }: AssetOutBoxProps) => {
         <div className='flex flex-col'>
           <div className='ml-auto w-auto shrink-0'>
             <AssetSelector
-              assets={assets}
+              assets={swappableAssets}
               value={assetOut}
               onChange={setAssetOut}
               filter={filter}
