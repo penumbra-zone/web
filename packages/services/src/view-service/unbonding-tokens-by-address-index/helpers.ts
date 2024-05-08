@@ -10,10 +10,10 @@ import { getDisplayFromBalancesResponse } from '@penumbra-zone/getters/balances-
 import { status } from '../status';
 import { appParameters } from '../app-parameters';
 
-export const isUnbondingTokenBalance = (balancesResponse: PartialMessage<BalancesResponse>) =>
-  assetPatterns.unbondingToken.matches(
-    getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse)),
-  );
+export const isUnbondingTokenBalance = (balancesResponse: PartialMessage<BalancesResponse>) => {
+  const display = getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse));
+  return display ? assetPatterns.unbondingToken.matches(display) : false;
+};
 
 /**
  * Given a `BalancesResponse`, resolves to a boolean indicating whether the
@@ -39,6 +39,8 @@ export const getIsClaimable = async (
   if (!fullSyncHeight || !parameters?.stakeParams?.unbondingDelay) return false;
 
   const display = getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse));
+  if (!display) return false;
+
   const unbondingStartHeight = assetPatterns.unbondingToken.capture(display);
 
   if (unbondingStartHeight?.startAt) {
