@@ -13,6 +13,7 @@ import {
   AssetId,
   EstimatedPrice,
   Metadata,
+  Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   Position,
@@ -116,6 +117,7 @@ export interface IndexedDbInterface {
       auction?: T;
       noteCommitment?: StateCommitment;
       seqNum?: bigint;
+      outstandingReserves?: Value[];
     },
   ): Promise<void>;
 
@@ -231,6 +233,11 @@ export interface PenumbraDb extends DBSchema {
        * `2n`+: the user has withdrawn funds from the auction
        */
       seqNum?: bigint;
+      /**
+       * Only populated when BOTH a) the user has ended an auction, and b) the
+       * user has not yet withdrawn funds from it.
+       */
+      outstandingReserves?: Jsonified<Value>[];
     };
   };
 }

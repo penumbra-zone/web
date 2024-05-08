@@ -44,6 +44,7 @@ import { getAuctionId, getAuctionNftMetadata } from '@penumbra-zone/wasm/auction
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
+import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auction-end';
 
 declare global {
   // `var` required for global declaration (as let/const are block scoped)
@@ -433,15 +434,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         }),
       ]);
     } else if (action.case === 'actionDutchAuctionEnd' && action.value.auctionId) {
-      // Always a sequence number of 1 when ending a Dutch auction
-      const seqNum = 1n;
-
-      const metadata = getAuctionNftMetadata(action.value.auctionId, seqNum);
-
-      await Promise.all([
-        this.indexedDb.saveAssetsMetadata(metadata),
-        this.indexedDb.upsertAuction(action.value.auctionId, { seqNum }),
-      ]);
+      await processActionDutchAuctionEnd(action.value, this.querier.auction, this.indexedDb);
     } else if (action.case === 'actionDutchAuctionWithdraw') {
       const auctionId = action.value.auctionId;
       if (!auctionId) return;
