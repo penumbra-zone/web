@@ -152,36 +152,16 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   metadataByAssetId: {},
 
   endAuction: async auctionId => {
-    set(state => {
-      state.dutchAuction.txInProgress = true;
-    });
-
-    try {
-      const req = new TransactionPlannerRequest({ dutchAuctionEndActions: [{ auctionId }] });
-      await planBuildBroadcast('dutchAuctionEnd', req);
-      void get().dutchAuction.loadAuctionInfos();
-    } finally {
-      set(state => {
-        state.dutchAuction.txInProgress = false;
-      });
-    }
+    const req = new TransactionPlannerRequest({ dutchAuctionEndActions: [{ auctionId }] });
+    await planBuildBroadcast('dutchAuctionEnd', req);
+    void get().dutchAuction.loadAuctionInfos();
   },
 
   withdraw: async (auctionId, currentSeqNum) => {
-    set(state => {
-      state.dutchAuction.txInProgress = true;
+    const req = new TransactionPlannerRequest({
+      dutchAuctionWithdrawActions: [{ auctionId, seq: currentSeqNum + 1n }],
     });
-
-    try {
-      const req = new TransactionPlannerRequest({
-        dutchAuctionWithdrawActions: [{ auctionId, seq: currentSeqNum + 1n }],
-      });
-      await planBuildBroadcast('dutchAuctionWithdraw', req);
-      void get().dutchAuction.loadAuctionInfos();
-    } finally {
-      set(state => {
-        state.dutchAuction.txInProgress = false;
-      });
-    }
+    await planBuildBroadcast('dutchAuctionWithdraw', req);
+    void get().dutchAuction.loadAuctionInfos();
   },
 });
