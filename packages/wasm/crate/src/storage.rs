@@ -363,12 +363,9 @@ impl IndexedDBStorage {
         &self,
         auction_id: AuctionId,
     ) -> WasmResult<OutstandingReserves> {
-        let tx = self
-            .db
-            .transaction_on_one(&self.constants.tables.auctions)?;
-        let store = tx.object_store(&self.constants.tables.auctions)?;
-
-        store
+        self.db
+            .transaction_on_one(&self.constants.tables.auctions)?
+            .object_store(&self.constants.tables.auctions)?
             .get::<JsValue>(&byte_array_to_base64(&auction_id.to_proto().inner).into())?
             .await?
             .map(|auction| {
