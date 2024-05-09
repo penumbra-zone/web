@@ -8,6 +8,11 @@ This is a monolithic repository of Penumbra web code, a monorepo. Multiple apps,
 internal packages, and published packages developed in this repository, to
 simplify work and make broad cross-package changes more feasible.
 
+To participate in the test network, use the browser extension
+[Prax](https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe) from the Chrome Web Store.
+
+You can talk to us on [Discord](https://discord.gg/hKvkrqa3zC).
+
 ## You might be looking for examples
 
 ### [`@penumbra-zone/client` nextjs example](https://github.com/penumbra-zone/nextjs-penumbra-client-example)
@@ -18,7 +23,7 @@ simplify work and make broad cross-package changes more feasible.
 
 ### [Minifront](https://app.testnet.penumbra.zone/): Dapp to swap, stake, and send on the Penumbra testnet.
 
-### [Prax](https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe): Extension for Chrome that provides key custody, manages chain activity, and hosts Penumbra services used by dapps.
+### [Prax](https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe): Extension for Chrome that provides key custody, manages chain activity, and hosts services used by dapps.
 
 ### [Status](https://grpc.testnet.penumbra.zone/): Public info dashboard for Penumbra nodes.
 
@@ -44,9 +49,8 @@ simplify work and make broad cross-package changes more feasible.
 
 ## Documentation
 
-Package-specific documentation is available in the respective README.md
-
-More general documentation is available at [docs/README.md](docs/README.md)
+Package-specific documentation is available in each respective package. More
+general documentation is available in [docs](docs).
 
 ## Getting Started
 
@@ -75,7 +79,7 @@ Minifront will hot-reload. If you're working on the web extension, Chrome
 supports hot-reloading extension pages, but cannot hot-reload the extension
 worker scripts or content scripts.
 
-#### Loading Prax into Chrome
+#### Loading your unbundled build of Prax into Chrome
 
 It's recommended to use a dedicated browser profile for development, not your
 personal profile.
