@@ -445,6 +445,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         this.indexedDb.saveAssetsMetadata(metadata),
         this.indexedDb.upsertAuction(auctionId, {
           seqNum: action.value.seq,
+          outstandingReserves: undefined,
         }),
       ]);
     }
