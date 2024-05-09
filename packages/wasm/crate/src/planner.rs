@@ -446,15 +446,15 @@ pub async fn plan_transaction(
             .try_into()?;
 
         save_auction_nft_metadata_if_needed(auction_id, &storage, seq).await?;
-        let result: OutstandingReserves =
+        let oustanding_reserves: OutstandingReserves =
             storage.get_auction_oustanding_reserves(auction_id).await?;
 
         actions_list.push(ActionPlan::ActionDutchAuctionWithdraw(
             ActionDutchAuctionWithdrawPlan {
                 auction_id,
                 seq,
-                reserves_input: result.input.try_into()?,
-                reserves_output: result.output.try_into()?,
+                reserves_input: oustanding_reserves.input.try_into()?,
+                reserves_output: oustanding_reserves.output.try_into()?,
             },
         ));
     }
