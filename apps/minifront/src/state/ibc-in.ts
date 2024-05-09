@@ -15,7 +15,7 @@ import { StdFee } from '@cosmjs/stargate';
 import { getChainId } from '../fetchers/chain-id';
 import { BLOCKS_PER_HOUR } from './dutch-auction/constants';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { bech32CompatAddress } from '@penumbra-zone/bech32m/penumbracompat1';
+import { bech32CompatAddress } from '@penumbra-zone/bech32m/penumbracompat';
 
 interface PenumbraAddrs {
   ephemeral: string;
