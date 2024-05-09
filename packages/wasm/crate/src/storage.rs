@@ -171,10 +171,7 @@ impl IndexedDBStorage {
         let store = tx.object_store(&self.constants.tables.assets)?;
 
         Ok(store
-            .get_owned(base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                id.to_proto().inner,
-            ))?
+            .get_owned(byte_array_to_base_64(&id.to_proto().inner))?
             .await?
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)
@@ -215,10 +212,7 @@ impl IndexedDBStorage {
         let store = tx.object_store(&self.constants.tables.spendable_notes)?;
 
         Ok(store
-            .get_owned(base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                commitment.to_proto().inner,
-            ))?
+            .get_owned(byte_array_to_base_64(&commitment.to_proto().inner))?
             .await?
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)
@@ -235,10 +229,7 @@ impl IndexedDBStorage {
 
         Ok(store
             .index("nullifier")?
-            .get_owned(&base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                nullifier.to_proto().inner,
-            ))?
+            .get_owned(byte_array_to_base_64(&nullifier.to_proto().inner))?
             .await?
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)
@@ -256,13 +247,7 @@ impl IndexedDBStorage {
 
         let commitment_proto = note.commit().to_proto();
 
-        store.put_key_val_owned(
-            base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                commitment_proto.inner,
-            ),
-            &note_js,
-        )?;
+        store.put_key_val_owned(byte_array_to_base_64(&commitment_proto.inner), &note_js)?;
 
         Ok(())
     }
@@ -274,10 +259,7 @@ impl IndexedDBStorage {
         let commitment_proto = commitment.to_proto();
 
         Ok(store
-            .get_owned(base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                commitment_proto.inner,
-            ))?
+            .get_owned(byte_array_to_base_64(&commitment_proto.inner))?
             .await?
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)
@@ -291,10 +273,7 @@ impl IndexedDBStorage {
         let store = tx.object_store(&self.constants.tables.swaps)?;
 
         Ok(store
-            .get_owned(base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                swap_commitment.inner,
-            ))?
+            .get_owned(byte_array_to_base_64(&swap_commitment.inner))?
             .await?
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)
@@ -309,10 +288,7 @@ impl IndexedDBStorage {
 
         Ok(store
             .index("nullifier")?
-            .get_owned(base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                &nullifier.to_proto().inner,
-            ))?
+            .get_owned(byte_array_to_base_64(&nullifier.to_proto().inner))?
             .await?
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)
