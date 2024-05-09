@@ -8,6 +8,7 @@ import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tender
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { ibcChannelClient, ibcClient, ibcConnectionClient, viewClient } from '../clients';
 import {
+  getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
   getMetadata,
 } from '@penumbra-zone/getters/value-view';
@@ -242,7 +243,6 @@ export const filterBalancesPerChain = (
   const assetIdsToCheck = [penumbraAssetId, ...assetsWithMatchingChannel];
 
   return allBalances.filter(({ balanceView }) => {
-    const metadata = getMetadata(balanceView);
-    return assetIdsToCheck.some(assetId => assetId.equals(metadata.penumbraAssetId));
+    return assetIdsToCheck.some(assetId => assetId.equals(getAssetIdFromValueView(balanceView)));
   });
 };
