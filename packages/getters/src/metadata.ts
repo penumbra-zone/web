@@ -1,6 +1,5 @@
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { createGetter } from './utils/create-getter';
-import { assetPatterns } from '@penumbra-zone/constants/assets';
 
 export const getAssetId = createGetter((metadata?: Metadata) => metadata?.penumbraAssetId);
 
@@ -21,25 +20,6 @@ export const getDisplayDenomExponent = createGetter(
   (metadata?: Metadata) =>
     metadata?.denomUnits.find(denomUnit => denomUnit.denom === metadata.display)?.exponent,
 );
-
-/**
- * Get the unbonding start height index from the metadata of an unbonding token
- * -- that is, the block height at which unbonding started.
- *
- * For metadata of a non-unbonding token, will return `undefined`.
- */
-export const getUnbondingStartHeight = createGetter((metadata?: Metadata) => {
-  if (!metadata) return undefined;
-
-  const unbondingMatch = assetPatterns.unbondingToken.capture(metadata.display);
-
-  if (unbondingMatch) {
-    const { startAt } = unbondingMatch;
-    return BigInt(startAt);
-  }
-
-  return undefined;
-});
 
 export const getDisplay = createGetter((metadata?: Metadata) => metadata?.display);
 

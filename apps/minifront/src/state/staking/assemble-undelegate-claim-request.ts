@@ -8,12 +8,13 @@ import { sctClient, stakeClient, viewClient } from '../../clients';
 import {
   getAmount,
   getValidatorIdentityKeyFromValueView,
-  getUnbondingStartHeightFromValueView,
+  getMetadata,
 } from '@penumbra-zone/getters/value-view';
+import { getUnbondingStartHeight } from '@penumbra-zone/types/assets';
 
 const getUndelegateClaimPlannerRequest =
   (endEpochIndex: bigint) => async (unbondingToken: ValueView) => {
-    const unbondingStartHeight = getUnbondingStartHeightFromValueView(unbondingToken);
+    const unbondingStartHeight = getUnbondingStartHeight(getMetadata(unbondingToken));
     const identityKey = getValidatorIdentityKeyFromValueView(unbondingToken);
     const { epoch: startEpoch } = await sctClient.epochByHeight({ height: unbondingStartHeight });
 

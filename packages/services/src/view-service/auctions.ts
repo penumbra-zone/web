@@ -13,7 +13,7 @@ import {
 import { balances } from './balances';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { assetPatterns } from '@penumbra-zone/constants/assets';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 import { Any, PartialMessage } from '@bufbuild/protobuf';
 import { servicesCtx } from '../ctx/prax';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';

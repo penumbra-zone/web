@@ -21,7 +21,6 @@
   "dependencies": {
     "@penumbra-labs/registry": "^7.0.0",
     "@penumbra-zone/bech32m": "workspace:*",
-    "@penumbra-zone/constants": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "idb": "^8.0.0"

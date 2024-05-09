@@ -14,7 +14,7 @@ import { getRateBpsFromFundingStream } from '@penumbra-zone/getters/funding-stre
 import { joinLoHiAmount } from './amount';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { assetPatterns } from '@penumbra-zone/constants/assets';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 
 export const getStateLabel = (validatorInfo: ValidatorInfo): string =>
