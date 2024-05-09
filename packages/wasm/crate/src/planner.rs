@@ -78,20 +78,18 @@ impl ActionList {
         // to the fee is ideally small, hopefully it doesn't matter.
         let mut gas = Gas::zero();
         for action in &self.actions {
-            // TODO missing AddAssign
-            gas = gas + action.gas_cost();
+            gas += action.gas_cost();
         }
         for action in self.change_outputs.values() {
-            // TODO missing AddAssign
             // TODO missing GasCost impl on OutputPlan
-            gas = gas + ActionPlan::from(action.clone()).gas_cost();
+            gas += ActionPlan::from(action.clone()).gas_cost();
         }
 
         gas
     }
 
     fn fee_estimate(&self, gas_prices: &GasPrices, fee_tier: &FeeTier) -> Fee {
-        let base_fee = Fee::from_staking_token_amount(gas_prices.fee(&self.gas_estimate()));
+        let base_fee = gas_prices.fee(&self.gas_estimate());
         base_fee.apply_tier(*fee_tier)
     }
 
@@ -538,14 +536,14 @@ pub async fn plan_transaction(
     };
 
     if let Some(pb_memo_plaintext) = request.memo {
-        plan.memo = Some(MemoPlan::new(&mut OsRng, pb_memo_plaintext.try_into()?)?);
+        plan.memo = Some(MemoPlan::new(&mut OsRng, pb_memo_plaintext.try_into()?));
     } else if plan.output_plans().next().is_some() {
         // If a memo was not provided, but is required (because we have outputs),
         // auto-create one with the change address.
         plan.memo = Some(MemoPlan::new(
             &mut OsRng,
             MemoPlaintext::new(change_address, String::new())?,
-        )?);
+        ));
     }
 
     plan.populate_detection_data(&mut OsRng, fmd_params.precision_bits.into());
