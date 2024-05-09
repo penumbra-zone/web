@@ -3,6 +3,7 @@ import {
   AssetId,
   EstimatedPrice,
   Metadata,
+  Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   Position,
@@ -719,6 +720,7 @@ export class IndexedDb implements IndexedDbInterface {
       auction?: T;
       noteCommitment?: StateCommitment;
       seqNum?: bigint;
+      outstandingReserves?: { input: Value; output: Value };
     },
   ): Promise<void> {
     const key = uint8ArrayToBase64(auctionId.inner);
@@ -728,6 +730,14 @@ export class IndexedDb implements IndexedDbInterface {
     const noteCommitment =
       (value.noteCommitment?.toJson() as Jsonified<StateCommitment> | undefined) ??
       existingRecord?.noteCommitment;
+    const outstandingReserves = value.outstandingReserves
+      ? {
+          input: value.outstandingReserves.input.toJson() as Jsonified<Value>,
+          output: value.outstandingReserves.output.toJson() as Jsonified<Value>,
+        }
+      : 'outstandingReserves' in value
+        ? undefined
+        : existingRecord?.outstandingReserves;
     const seqNum = value.seqNum ?? existingRecord?.seqNum;
 
     await this.u.update({
@@ -737,6 +747,7 @@ export class IndexedDb implements IndexedDbInterface {
         auction,
         noteCommitment,
         seqNum,
+        outstandingReserves,
       },
     });
   }
@@ -746,6 +757,7 @@ export class IndexedDb implements IndexedDbInterface {
     auction?: DutchAuctionDescription;
     noteCommitment?: StateCommitment;
     seqNum?: bigint;
+    outstandingReserves?: { input: Value; output: Value };
   }> {
     const result = await this.db.get('AUCTIONS', uint8ArrayToBase64(auctionId.inner));
 
@@ -755,6 +767,12 @@ export class IndexedDb implements IndexedDbInterface {
         ? StateCommitment.fromJson(result.noteCommitment)
         : undefined,
       seqNum: result?.seqNum,
+      outstandingReserves: result?.outstandingReserves
+        ? {
+            input: Value.fromJson(result.outstandingReserves.input),
+            output: Value.fromJson(result.outstandingReserves.output),
+          }
+        : undefined,
     };
   }
 }

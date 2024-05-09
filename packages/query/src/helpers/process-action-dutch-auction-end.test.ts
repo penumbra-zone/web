@@ -72,10 +72,10 @@ describe('processActionDutchAuctionEnd()', () => {
 
     expect(indexedDb.upsertAuction).toHaveBeenCalledWith(auctionId, {
       seqNum: 1n,
-      outstandingReserves: [
-        new Value({ amount: { hi: 0n, lo: 1234n }, assetId: inputAssetId }),
-        new Value({ amount: { hi: 0n, lo: 5678n }, assetId: outputAssetId }),
-      ],
+      outstandingReserves: {
+        input: new Value({ amount: { hi: 0n, lo: 1234n }, assetId: inputAssetId }),
+        output: new Value({ amount: { hi: 0n, lo: 5678n }, assetId: outputAssetId }),
+      },
     });
   });
 });

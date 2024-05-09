@@ -117,7 +117,7 @@ export interface IndexedDbInterface {
       auction?: T;
       noteCommitment?: StateCommitment;
       seqNum?: bigint;
-      outstandingReserves?: Value[];
+      outstandingReserves?: { input: Value; output: Value };
     },
   ): Promise<void>;
 
@@ -237,7 +237,7 @@ export interface PenumbraDb extends DBSchema {
        * Only populated when BOTH a) the user has ended an auction, and b) the
        * user has not yet withdrawn funds from it.
        */
-      outstandingReserves?: Jsonified<Value>[];
+      outstandingReserves?: { input: Jsonified<Value>; output: Jsonified<Value> };
     };
   };
 }

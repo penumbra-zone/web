@@ -1,8 +1,23 @@
 import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { ActionDutchAuctionEnd } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import {
+  ActionDutchAuctionEnd,
+  DutchAuction,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import { AuctionQuerierInterface } from '@penumbra-zone/types/querier';
 import { getAuctionNftMetadata } from '@penumbra-zone/wasm/auction';
+
+const getInputValue = (auction?: DutchAuction) =>
+  new Value({
+    amount: auction?.state?.inputReserves,
+    assetId: auction?.description?.input?.assetId,
+  });
+
+const getOutputValue = (auction?: DutchAuction) =>
+  new Value({
+    amount: auction?.state?.outputReserves,
+    assetId: auction?.description?.outputId,
+  });
 
 export const processActionDutchAuctionEnd = async (
   action: ActionDutchAuctionEnd,
@@ -17,24 +32,10 @@ export const processActionDutchAuctionEnd = async (
   const metadata = getAuctionNftMetadata(action.auctionId, seqNum);
   const auction = await auctionQuerier.auctionStateById(action.auctionId);
 
-  const outstandingReserves = [];
-  if (auction?.state?.inputReserves) {
-    outstandingReserves.push(
-      new Value({
-        amount: auction.state.inputReserves,
-        assetId: auction.description?.input?.assetId,
-      }),
-    );
-  }
-
-  if (auction?.state?.outputReserves) {
-    outstandingReserves.push(
-      new Value({
-        amount: auction.state.outputReserves,
-        assetId: auction.description?.outputId,
-      }),
-    );
-  }
+  const outstandingReserves = {
+    input: getInputValue(auction),
+    output: getOutputValue(auction),
+  };
 
   await Promise.all([
     indexedDb.saveAssetsMetadata(metadata),

@@ -46,6 +46,7 @@ import {
   AssetId,
   EstimatedPrice,
   Metadata,
+  Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/indexed-db';
 import {
@@ -734,6 +735,51 @@ describe('IndexedDb', () => {
         noteCommitment,
         seqNum: 1n,
       });
+    });
+
+    it('updates an auction with outstanding reserves', async () => {
+      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auction = new DutchAuctionDescription({ startHeight: 1234n });
+      await db.upsertAuction(auctionId, { auction });
+
+      let fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toBeTruthy();
+
+      const outstandingReserves = {
+        input: new Value({ amount: { hi: 0n, lo: 1n }, assetId: new AssetId() }),
+        output: new Value({ amount: { hi: 0n, lo: 2n }, assetId: new AssetId() }),
+      };
+      await db.upsertAuction(auctionId, {
+        outstandingReserves,
+      });
+
+      fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction).toBeTruthy();
+
+      expect(fetchedAuction).toEqual({
+        auction,
+        outstandingReserves,
+      });
+    });
+
+    it('allows clearing the outstanding reserves', async () => {
+      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const auction = new DutchAuctionDescription({ startHeight: 1234n });
+      const outstandingReserves = {
+        input: new Value({ amount: { hi: 0n, lo: 1n }, assetId: new AssetId() }),
+        output: new Value({ amount: { hi: 0n, lo: 2n }, assetId: new AssetId() }),
+      };
+      await db.upsertAuction(auctionId, { auction, outstandingReserves });
+
+      let fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction.outstandingReserves).toBeTruthy();
+
+      await db.upsertAuction(auctionId, {
+        outstandingReserves: undefined,
+      });
+
+      fetchedAuction = await db.getAuction(auctionId);
+      expect(fetchedAuction.outstandingReserves).toBeUndefined();
     });
   });
 });
