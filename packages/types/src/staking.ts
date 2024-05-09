@@ -15,7 +15,7 @@ import { joinLoHiAmount } from './amount';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
-import {assetPatterns} from "./assets";
+import { assetPatterns } from './assets';
 
 export const getStateLabel = (validatorInfo: ValidatorInfo): string =>
   ValidatorState_ValidatorStateEnum[getStateEnumFromValidatorInfo(validatorInfo)];
