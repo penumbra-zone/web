@@ -1,15 +1,17 @@
 #[allow(unused_imports)]
 use std::future::IntoFuture;
 
+use anyhow::Error;
 use indexed_db_futures::{
     prelude::{IdbObjectStoreParameters, IdbOpenDbRequestLike, OpenDbRequest},
     IdbDatabase, IdbKeyPath, IdbQuerySource, IdbVersionChangeEvent,
 };
 use penumbra_asset::asset::{self, Id, Metadata};
+use penumbra_auction::auction::AuctionId;
 use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
 use penumbra_proto::{
-    core::{app::v1::AppParameters, component::sct::v1::Epoch},
+    core::{app::v1::AppParameters, asset::v1::Value, component::sct::v1::Epoch},
     crypto::tct::v1::StateCommitment,
     view::v1::{NotesRequest, SwapRecord, TransactionInfo},
     DomainType,
@@ -20,7 +22,7 @@ use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsValue;
 use web_sys::IdbTransactionMode::Readwrite;
 
-use crate::error::WasmResult;
+use crate::error::{WasmError, WasmResult};
 use crate::note_record::SpendableNoteRecord;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -42,6 +44,7 @@ pub struct Tables {
     pub epochs: String,
     pub transactions: String,
     pub full_sync_height: String,
+    pub auctions: String,
 }
 
 pub struct IndexedDBStorage {
@@ -379,4 +382,42 @@ impl IndexedDBStorage {
 
         Ok(records)
     }
+
+    pub async fn get_auction_oustanding_reserves(
+        &self,
+        auction_id: AuctionId,
+    ) -> WasmResult<OutstandingReserves> {
+        let tx = self
+            .db
+            .transaction_on_one(&self.constants.tables.auctions)?;
+        let store = tx.object_store(&self.constants.tables.auctions)?;
+
+        store
+            .get::<JsValue>(&byte_array_to_base_64(&auction_id.to_proto().inner).into())?
+            .await?
+            .map(|auction| {
+                serde_wasm_bindgen::from_value::<AuctionRecord>(auction)?
+                    .outstanding_reserves
+                    .ok_or(WasmError::Anyhow(Error::msg("could not find reserves")))
+            })
+            .unwrap_or(Err(WasmError::Anyhow(Error::msg(
+                "could not find reserves",
+            ))))
+    }
+}
+
+fn byte_array_to_base_64(byte_array: &Vec<u8>) -> String {
+    base64::Engine::encode(&base64::engine::general_purpose::STANDARD, byte_array)
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct AuctionRecord {
+    pub outstanding_reserves: Option<OutstandingReserves>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct OutstandingReserves {
+    pub input: Value,
+    pub output: Value,
 }
