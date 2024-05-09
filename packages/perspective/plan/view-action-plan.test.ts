@@ -554,7 +554,7 @@ describe('viewActionPlan()', () => {
   });
 
   describe('`actionDutchAuctionWithdraw` action', () => {
-    test('returns an action view with the action as-is', async () => {
+    test('returns an action view with the action and reserves', async () => {
       const withdraw = new ActionDutchAuctionWithdrawPlan({
         auctionId: {},
         seq: 0n,
