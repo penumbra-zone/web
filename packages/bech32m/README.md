@@ -95,3 +95,20 @@ export const addressRegex = new RegEx(
   `^${pnPrefix}1[02-9ac-hj-np-z]{${pnLength - (pnPrefix.length + 1)}}$`,
 );
 ```
+
+## penumbracompat is bech32, not bech32m
+
+For IBC compatibility, we provide a `penumbracompat` address format that is
+bech32 instead of bech32m. You can use `penumbracompat` when interacting with
+any chain that does not support a bech32m destination.
+
+```ts
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { bech32Address } from '@penumbra-zone/bech32m/penumbra';
+import { bech32CompatAddress } from '@penumbra-zone/bech32m/penumbracompat';
+
+const bech32Chains = ['noble', 'nobletestnet'];
+const getCompatibleAddress = (chainName: string, address: Address): string => {
+  return bech32Chains.includes(chainName) ? bech32CompatAddress(address) : bech32mAddress(address);
+};
+```

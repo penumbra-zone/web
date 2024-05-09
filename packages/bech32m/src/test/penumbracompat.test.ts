@@ -1,6 +1,6 @@
 import { describe } from 'vitest';
 import { generateTests } from './util/generate-tests';
-import { bech32CompatAddress, compatAddressFromBech32 } from '../penumbracompat1';
+import { bech32CompatAddress, compatAddressFromBech32 } from '../penumbracompat';
 import { Prefixes } from '../format/prefix';
 import { Inner } from '../format/inner';
 
