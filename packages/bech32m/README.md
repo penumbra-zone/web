@@ -103,12 +103,11 @@ bech32 instead of bech32m. You can use `penumbracompat` when interacting with
 any chain that does not support a bech32m destination.
 
 ```ts
-import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { bech32Address } from '@penumbra-zone/bech32m/penumbra';
 import { bech32CompatAddress } from '@penumbra-zone/bech32m/penumbracompat';
 
 const bech32Chains = ['noble', 'nobletestnet'];
-const getCompatibleAddress = (chainName: string, address: Address): string => {
+const getCompatibleAddress = (chainName: string, address: { inner: Uint8Array }): string => {
   return bech32Chains.includes(chainName) ? bech32CompatAddress(address) : bech32mAddress(address);
 };
 ```
