@@ -165,7 +165,7 @@ describe('Auctions request handler', () => {
         id: AUCTION_ID_1,
         auction: {
           typeUrl: DutchAuction.typeName,
-          value: new DutchAuction({ description: MOCK_AUCTION_1 }).toBinary(),
+          value: new DutchAuction({ description: MOCK_AUCTION_1, state: { seq: 0n } }).toBinary(),
         },
         noteRecord: MOCK_SPENDABLE_NOTE_RECORD,
       }),
