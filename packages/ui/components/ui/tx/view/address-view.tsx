@@ -31,7 +31,9 @@ export const AddressViewComponent = ({ view, copyable = true }: AddressViewProps
     <div className='flex items-center gap-2 overflow-hidden'>
       {accountIndex !== undefined ? (
         <>
-          <AddressIcon address={view.addressView.value.address} size={14} />
+          <div className='shrink-0'>
+            <AddressIcon address={view.addressView.value.address} size={14} />
+          </div>
           <span className='break-keep font-bold'>
             {addressIndexLabel}
             {accountIndex}
