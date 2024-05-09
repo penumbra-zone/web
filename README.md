@@ -5,11 +5,12 @@ The [Penumbra](https://penumbra.zone/) monorepo for all things web.
 ![ci status](https://github.com/penumbra-zone/web/actions/workflows/turbo-ci.yml/badge.svg?branch=main)
 
 This is a monolithic repository of Penumbra web code, a monorepo. Multiple apps,
-internal packages, and published packages developed in this repository, to
+internal packages, and published packages are developed in this repository, to
 simplify work and make broad cross-package changes more feasible.
 
 To participate in the test network, use the browser extension
-[Prax](https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe) from the Chrome Web Store.
+[Prax](https://chrome.google.com/webstore/detail/penumbra-wallet/lkpmkhpnhknhmibgnmmhdhgdilepfghe)
+from the Chrome Web Store.
 
 You can talk to us on [Discord](https://discord.gg/hKvkrqa3zC).
 
@@ -49,8 +50,7 @@ You can talk to us on [Discord](https://discord.gg/hKvkrqa3zC).
 
 ## Documentation
 
-Package-specific documentation is available in each respective package. More
-general documentation is available in [docs](docs).
+General documentation is available in [docs/README.md](docs/README.md). Package-specific documentation is available in each respective package.
 
 ## Getting Started
 
