@@ -14,6 +14,8 @@ import { currentTimePlusTwoDaysRounded } from './ibc-out';
 import { StdFee } from '@cosmjs/stargate';
 import { getChainId } from '../fetchers/chain-id';
 import { BLOCKS_PER_HOUR } from './dutch-auction/constants';
+import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { bech32CompatAddress } from '@penumbra-zone/bech32m/penumbracompat1';
 
 interface PenumbraAddrs {
   ephemeral: string;
@@ -62,10 +64,13 @@ export const createIbcInSlice = (): SliceCreator<IbcInSlice> => (set, get) => {
       const normalAddr = await getAddrByIndex(0, false);
       const ephemeralAddr = await getAddrByIndex(0, true);
 
+      const chain = get().ibcIn.selectedChain;
+      if (!chain) throw new Error('No chain selected');
+
       set(({ ibcIn }) => {
         ibcIn.penumbraAddrs = {
           normal: bech32mAddress(normalAddr),
-          ephemeral: bech32mAddress(ephemeralAddr),
+          ephemeral: getCompatibleBech32(chain.chainName, ephemeralAddr),
         };
       });
     },
@@ -91,6 +96,17 @@ export const createIbcInSlice = (): SliceCreator<IbcInSlice> => (set, get) => {
       }
     },
   };
+};
+
+/**
+ * For Noble specifically we need to use a Bech32 encoding rather than Bech32m,
+ * because Noble currently has a middleware that decodes as Bech32.
+ * Noble plans to change this at some point in the future but until then we need
+ * to use a special encoding just for Noble specifically.
+ */
+const bech32Chains = ['noble', 'nobletestnet'];
+const getCompatibleBech32 = (chainName: string, address: Address): string => {
+  return bech32Chains.includes(chainName) ? bech32CompatAddress(address) : bech32mAddress(address);
 };
 
 async function execute(

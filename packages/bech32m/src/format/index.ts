@@ -31,6 +31,12 @@ export default {
     byteLength: ByteLength.penumbra,
     innerName: Inner.penumbra,
   },
+  penumbracompat1: {
+    prefix: Prefixes.penumbracompat1,
+    stringLength: StringLength.penumbracompat1,
+    byteLength: ByteLength.penumbracompat1,
+    innerName: Inner.penumbracompat1,
+  },
   penumbrafullviewingkey: {
     prefix: Prefixes.penumbrafullviewingkey,
     stringLength: StringLength.penumbrafullviewingkey,
