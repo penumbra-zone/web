@@ -6,6 +6,7 @@ export default defineConfig({
     lib: {
       entry: {
         amount: './src/amount.ts',
+        assets: './src/assets.ts',
         base64: './src/base64.ts',
         box: './src/box.ts',
         'block-processor': './src/block-processor.ts',

@@ -17,7 +17,7 @@ import { fromString } from '@penumbra-zone/types/amount';
  */
 const getStartHeight = (fullSyncHeight: bigint) => fullSyncHeight + BLOCKS_PER_MINUTE;
 
-export const assembleRequest = async ({
+export const assembleScheduleRequest = async ({
   amount: amountAsString,
   assetIn,
   assetOut,

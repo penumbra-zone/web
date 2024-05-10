@@ -181,17 +181,14 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.9.0)(@connectrpc/connect@1.4.0)
       '@penumbra-labs/registry':
-        specifier: ^7.0.0
-        version: 7.0.0
+        specifier: 7.2.0
+        version: 7.2.0
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../../packages/bech32m
       '@penumbra-zone/client':
         specifier: workspace:*
         version: link:../../packages/client
-      '@penumbra-zone/constants':
-        specifier: workspace:*
-        version: link:../../packages/constants
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../../packages/crypto
@@ -380,17 +377,14 @@ importers:
         specifier: ^1.23.11
         version: 1.23.11(@types/react@18.2.72)(react-dom@18.2.0)(react@18.2.0)
       '@penumbra-labs/registry':
-        specifier: ^7.0.0
-        version: 7.0.0
+        specifier: 7.2.0
+        version: 7.2.0
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../../packages/bech32m
       '@penumbra-zone/client':
         specifier: workspace:*
         version: link:../../packages/client
-      '@penumbra-zone/constants':
-        specifier: workspace:*
-        version: link:../../packages/constants
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../../packages/crypto
@@ -588,15 +582,6 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.9.0)
 
-  packages/constants:
-    devDependencies:
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.9.0-20240501193854-ea3cc743390d.1
-        version: 1.9.0-20240501193854-ea3cc743390d.1(@bufbuild/protobuf@1.9.0)
-      '@bufbuild/protobuf':
-        specifier: ^1.9.0
-        version: 1.9.0
-
   packages/crypto:
     dependencies:
       '@penumbra-zone/types':
@@ -620,9 +605,6 @@ importers:
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
-      '@penumbra-zone/constants':
-        specifier: workspace:*
-        version: link:../constants
     devDependencies:
       '@buf/penumbra-zone_penumbra.bufbuild_es':
         specifier: 1.9.0-20240501193854-ea3cc743390d.1
@@ -685,9 +667,6 @@ importers:
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
-      '@penumbra-zone/constants':
-        specifier: workspace:*
-        version: link:../constants
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../crypto
@@ -731,9 +710,6 @@ importers:
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
-      '@penumbra-zone/constants':
-        specifier: workspace:*
-        version: link:../constants
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../crypto
@@ -781,11 +757,8 @@ importers:
   packages/services-context:
     dependencies:
       '@penumbra-labs/registry':
-        specifier: ^7.0.0
-        version: 7.0.0
-      '@penumbra-zone/constants':
-        specifier: workspace:*
-        version: link:../constants
+        specifier: 7.2.0
+        version: 7.2.0
       '@penumbra-zone/query':
         specifier: workspace:*
         version: link:../query
@@ -812,14 +785,11 @@ importers:
   packages/storage:
     dependencies:
       '@penumbra-labs/registry':
-        specifier: ^7.0.0
-        version: 7.0.0
+        specifier: 7.2.0
+        version: 7.2.0
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
-      '@penumbra-zone/constants':
-        specifier: workspace:*
-        version: link:../constants
       '@penumbra-zone/crypto-web':
         specifier: workspace:*
         version: link:../crypto
@@ -893,9 +863,6 @@ importers:
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
-      '@penumbra-zone/constants':
-        specifier: workspace:*
-        version: link:../constants
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
@@ -939,9 +906,6 @@ importers:
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
-      '@penumbra-zone/constants':
-        specifier: workspace:*
-        version: link:../constants
       '@penumbra-zone/getters':
         specifier: workspace:*
         version: link:../getters
@@ -6473,8 +6437,8 @@ packages:
       '@parcel/watcher-win32-x64': 2.4.1
     dev: false
 
-  /@penumbra-labs/registry@7.0.0:
-    resolution: {integrity: sha512-1l9km5GsBO5QUw5LizhG6n2jcmjZp0nYz4d7kCMrcaVA1d51j0w40wJtlkqXc5ADE5yt78g062WRj0+E53tZvQ==}
+  /@penumbra-labs/registry@7.2.0:
+    resolution: {integrity: sha512-YifwKQgw2CGhkDqYcYPv9PYlvm6QZvp8kCESHP3rhIToYTzPJrDStLZQOm/F1bGKHjbksH/CekQlUqOU/zQ/jA==}
     dev: false
 
   /@pkgjs/parseargs@0.11.0:

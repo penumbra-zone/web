@@ -8,6 +8,7 @@ import { ViewTabs } from './view-tabs';
 import { ApproveDeny } from '../approve-deny';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
+import { TransactionViewTab } from './types';
 
 export const TransactionApproval = () => {
   const { authorizeRequest: authReqString, setChoice, sendResponse } = useStore(txApprovalSelector);
@@ -45,9 +46,11 @@ export const TransactionApproval = () => {
 
         <TransactionViewComponent txv={selectedTransactionView} />
 
-        <div className='mt-8'>
-          <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
-        </div>
+        {selectedTransactionViewName === TransactionViewTab.SENDER && (
+          <div className='mt-8'>
+            <JsonViewer jsonObj={authorizeRequest.toJson() as Jsonified<AuthorizeRequest>} />
+          </div>
+        )}
       </div>
 
       <ApproveDeny approve={approve} deny={deny} wait={3} />

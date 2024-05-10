@@ -8,6 +8,7 @@ import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tender
 import { Height } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/client/v1/client_pb';
 import { ibcChannelClient, ibcClient, ibcConnectionClient, viewClient } from '../clients';
 import {
+  getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
   getMetadata,
 } from '@penumbra-zone/getters/value-view';
@@ -16,7 +17,7 @@ import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { planBuildBroadcast } from './helpers';
 import { amountMoreThanBalance } from './send';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { assetPatterns } from '@penumbra-zone/constants/assets';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 import { bech32, bech32m } from 'bech32';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { Chain } from '@penumbra-labs/registry';
@@ -242,7 +243,6 @@ export const filterBalancesPerChain = (
   const assetIdsToCheck = [penumbraAssetId, ...assetsWithMatchingChannel];
 
   return allBalances.filter(({ balanceView }) => {
-    const metadata = getMetadata(balanceView);
-    return assetIdsToCheck.some(assetId => assetId.equals(metadata.penumbraAssetId));
+    return assetIdsToCheck.some(assetId => assetId.equals(getAssetIdFromValueView(balanceView)));
   });
 };

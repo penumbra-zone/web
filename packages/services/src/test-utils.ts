@@ -24,6 +24,7 @@ export interface IndexedDbMock {
   iterateSwaps?: () => Partial<AsyncIterable<Mock>>;
   iterateTransactions?: () => Partial<AsyncIterable<Mock>>;
   iterateValidatorInfos?: () => Partial<AsyncIterable<Mock>>;
+  getValidatorInfo?: Mock;
   subscribe?: (table: string) => Partial<AsyncIterable<Mock>>;
   getSwapByCommitment?: Mock;
   getEpochByHeight?: Mock;
@@ -31,6 +32,11 @@ export interface IndexedDbMock {
   getPricesForAsset?: Mock;
   getAuction?: Mock;
 }
+
+export interface AuctionMock {
+  auctionStateById: Mock;
+}
+
 export interface TendermintMock {
   broadcastTx?: Mock;
   getTransaction?: Mock;
@@ -45,7 +51,8 @@ export interface ViewServerMock {
   fullViewingKey?: FullViewingKey;
 }
 
-interface MockQuerier {
+export interface MockQuerier {
+  auction?: AuctionMock;
   tendermint?: TendermintMock;
   shieldedPool?: ShieldedPoolMock;
   staking?: StakingMock;

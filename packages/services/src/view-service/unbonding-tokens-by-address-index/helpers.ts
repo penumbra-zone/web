@@ -5,15 +5,15 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
 import { HandlerContext } from '@connectrpc/connect';
-import { assetPatterns } from '@penumbra-zone/constants/assets';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 import { getDisplayFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 import { status } from '../status';
 import { appParameters } from '../app-parameters';
 
-export const isUnbondingTokenBalance = (balancesResponse: PartialMessage<BalancesResponse>) =>
-  assetPatterns.unbondingToken.matches(
-    getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse)),
-  );
+export const isUnbondingTokenBalance = (balancesResponse: PartialMessage<BalancesResponse>) => {
+  const display = getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse));
+  return display ? assetPatterns.unbondingToken.matches(display) : false;
+};
 
 /**
  * Given a `BalancesResponse`, resolves to a boolean indicating whether the
@@ -39,6 +39,8 @@ export const getIsClaimable = async (
   if (!fullSyncHeight || !parameters?.stakeParams?.unbondingDelay) return false;
 
   const display = getDisplayFromBalancesResponse(new BalancesResponse(balancesResponse));
+  if (!display) return false;
+
   const unbondingStartHeight = assetPatterns.unbondingToken.capture(display);
 
   if (unbondingStartHeight?.startAt) {

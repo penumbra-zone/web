@@ -30,7 +30,10 @@ import {
   Note,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import {
+  AddressIndex,
+  IdentityKey,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
@@ -97,6 +100,7 @@ export interface IndexedDbInterface {
   getEpochByHeight(height: bigint): Promise<Epoch | undefined>;
   upsertValidatorInfo(validatorInfo: ValidatorInfo): Promise<void>;
   iterateValidatorInfos(): AsyncGenerator<ValidatorInfo, void>;
+  getValidatorInfo(identityKey: IdentityKey): Promise<ValidatorInfo | undefined>;
   updatePrice(
     pricedAsset: AssetId,
     numeraire: AssetId,
@@ -111,6 +115,7 @@ export interface IndexedDbInterface {
     value: {
       auction?: T;
       noteCommitment?: StateCommitment;
+      seqNum?: bigint;
     },
   ): Promise<void>;
 
@@ -118,6 +123,7 @@ export interface IndexedDbInterface {
     // Add more auction union types as they are created
     auction?: DutchAuctionDescription;
     noteCommitment?: StateCommitment;
+    seqNum?: bigint;
   }>;
 }
 
@@ -218,6 +224,13 @@ export interface PenumbraDb extends DBSchema {
       noteCommitment?: Jsonified<StateCommitment>;
       // Add more types to `auction` as more auction types are created
       auction?: Jsonified<DutchAuctionDescription>;
+      /**
+       * For Dutch auctions:
+       * `0n`: auction is active
+       * `1n`: auction has ended
+       * `2n`+: the user has withdrawn funds from the auction
+       */
+      seqNum?: bigint;
     };
   };
 }

@@ -1,12 +1,14 @@
-import { assetPatterns } from '@penumbra-zone/constants/assets';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 import { getBalances } from '../../fetchers/balances';
 import {
   getAmount,
   getDisplayDenomExponentFromValueView,
-  getDisplayDenomFromView,
+  getMetadata,
 } from '@penumbra-zone/getters/value-view';
 import { fromBaseUnitAmount } from '@penumbra-zone/types/amount';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { getDisplay } from '@penumbra-zone/getters/metadata';
 
 const byBalanceDescending = (a: BalancesResponse, b: BalancesResponse) => {
   const aExponent = getDisplayDenomExponentFromValueView(a.balanceView);
@@ -21,17 +23,22 @@ const nonSwappableAssetPatterns = [
   assetPatterns.lpNft,
   assetPatterns.proposalNft,
   assetPatterns.votingReceipt,
+
+  // In theory, these asset types are swappable, but we have removed them for now to get a better UX
+  assetPatterns.delegationToken,
+  assetPatterns.unbondingToken,
 ];
 
-const isSwappable = (balancesResponse: BalancesResponse) =>
-  nonSwappableAssetPatterns.every(
-    pattern => !pattern.matches(getDisplayDenomFromView(balancesResponse.balanceView)),
-  );
+export const isSwappable = (metadata: Metadata) =>
+  nonSwappableAssetPatterns.every(pattern => !pattern.matches(getDisplay(metadata)));
 
 const isKnown = (balancesResponse: BalancesResponse) =>
   balancesResponse.balanceView?.valueView.case === 'knownAssetId';
 
 export const getSwappableBalancesResponses = async (): Promise<BalancesResponse[]> => {
   const balancesResponses = await getBalances();
-  return balancesResponses.filter(isSwappable).filter(isKnown).sort(byBalanceDescending);
+  return balancesResponses
+    .filter(isKnown)
+    .filter(balance => isSwappable(getMetadata(balance.balanceView)))
+    .sort(byBalanceDescending);
 };

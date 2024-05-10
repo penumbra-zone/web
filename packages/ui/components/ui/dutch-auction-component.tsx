@@ -6,6 +6,8 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { Button } from './button';
+import { ArrowRight } from 'lucide-react';
 
 const getValueView = (amount?: Amount, metadata?: Metadata) =>
   new ValueView({
@@ -18,15 +20,31 @@ const getValueView = (amount?: Amount, metadata?: Metadata) =>
     },
   });
 
+interface BaseProps {
+  dutchAuction: DutchAuction;
+  inputMetadata?: Metadata;
+  outputMetadata?: Metadata;
+}
+
+interface PropsWithEndButton extends BaseProps {
+  showEndButton: true;
+  onClickEndButton: VoidFunction;
+}
+
+interface PropsWithoutEndButton extends BaseProps {
+  showEndButton?: false;
+  onClickEndButton?: undefined;
+}
+
+type Props = PropsWithEndButton | PropsWithoutEndButton;
+
 export const DutchAuctionComponent = ({
   dutchAuction,
   inputMetadata,
   outputMetadata,
-}: {
-  dutchAuction: DutchAuction;
-  inputMetadata?: Metadata;
-  outputMetadata?: Metadata;
-}) => {
+  showEndButton,
+  onClickEndButton,
+}: Props) => {
   const { description } = dutchAuction;
   if (!description) return null;
 
@@ -35,13 +53,15 @@ export const DutchAuctionComponent = ({
   const minOutput = getValueView(description.minOutput, outputMetadata);
 
   return (
-    <ActionDetails>
-      <ActionDetails.Row label='Input'>
-        <ValueViewComponent view={input} />
-      </ActionDetails.Row>
+    <div className='flex flex-col gap-8'>
+      <div className='flex items-center justify-between'>
+        <div>
+          <ValueViewComponent view={input} />
+        </div>
 
-      <ActionDetails.Row label='Output'>
-        <div className='flex flex-wrap justify-end gap-2'>
+        <ArrowRight />
+
+        <div className='flex w-min flex-wrap justify-end gap-2'>
           <div className='flex items-center gap-2'>
             <span className='text-nowrap text-muted-foreground'>Max:</span>
             <ValueViewComponent view={maxOutput} />
@@ -51,14 +71,24 @@ export const DutchAuctionComponent = ({
             <ValueViewComponent view={minOutput} />
           </div>
         </div>
-      </ActionDetails.Row>
+      </div>
 
-      <ActionDetails.Row label='Duration'>
-        <span className='mx-1 text-nowrap text-muted-foreground'>Height </span>
-        {description.startHeight.toString()}
-        <span className='mx-1 text-nowrap text-muted-foreground'> to </span>
-        {description.endHeight.toString()}
-      </ActionDetails.Row>
-    </ActionDetails>
+      <ActionDetails>
+        <ActionDetails.Row label='Duration'>
+          <span className='mx-1 text-nowrap text-muted-foreground'>Height </span>
+          {description.startHeight.toString()}
+          <span className='mx-1 text-nowrap text-muted-foreground'> to </span>
+          {description.endHeight.toString()}
+        </ActionDetails.Row>
+      </ActionDetails>
+
+      {showEndButton && (
+        <div className='self-end'>
+          <Button variant='destructiveSecondary' size='md' onClick={onClickEndButton}>
+            End auction
+          </Button>
+        </div>
+      )}
+    </div>
   );
 };

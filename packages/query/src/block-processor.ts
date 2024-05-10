@@ -36,7 +36,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { PRICE_RELEVANCE_THRESHOLDS, assetPatterns } from '@penumbra-zone/constants/assets';
+import { PRICE_RELEVANCE_THRESHOLDS, assetPatterns } from '@penumbra-zone/types/assets';
 import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
@@ -419,29 +419,42 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async identifyAuctionNfts(action: Action['action']) {
     if (action.case === 'actionDutchAuctionSchedule' && action.value.description) {
       const auctionId = getAuctionId(action.value.description);
-      const metadata = getAuctionNftMetadata(
-        auctionId,
-        // Always a sequence number of 0 when starting a Dutch auction
-        0n,
-      );
+
+      // Always a sequence number of 0 when starting a Dutch auction
+      const seqNum = 0n;
+
+      const metadata = getAuctionNftMetadata(auctionId, seqNum);
+
       await Promise.all([
         this.indexedDb.saveAssetsMetadata(metadata),
         this.indexedDb.upsertAuction(auctionId, {
           auction: action.value.description,
+          seqNum,
         }),
       ]);
     } else if (action.case === 'actionDutchAuctionEnd' && action.value.auctionId) {
-      const metadata = getAuctionNftMetadata(
-        action.value.auctionId,
-        // Always a sequence number of 1 when ending a Dutch auction
-        1n,
-      );
-      await this.indexedDb.saveAssetsMetadata(metadata);
+      // Always a sequence number of 1 when ending a Dutch auction
+      const seqNum = 1n;
+
+      const metadata = getAuctionNftMetadata(action.value.auctionId, seqNum);
+
+      await Promise.all([
+        this.indexedDb.saveAssetsMetadata(metadata),
+        this.indexedDb.upsertAuction(action.value.auctionId, { seqNum }),
+      ]);
+    } else if (action.case === 'actionDutchAuctionWithdraw') {
+      const auctionId = action.value.auctionId;
+      if (!auctionId) return;
+
+      const metadata = getAuctionNftMetadata(auctionId, action.value.seq);
+
+      await Promise.all([
+        this.indexedDb.saveAssetsMetadata(metadata),
+        this.indexedDb.upsertAuction(auctionId, {
+          seqNum: action.value.seq,
+        }),
+      ]);
     }
-    /**
-     * @todo Handle `actionDutchAuctionWithdraw`, and figure out how to
-     * determine the sequence number if there have been multiple withdrawals.
-     */
   }
 
   /**

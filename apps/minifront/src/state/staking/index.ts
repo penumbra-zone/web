@@ -6,7 +6,6 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { BalancesByAccount, getBalancesByAccount } from '../../fetchers/balances/by-account';
-import { assetPatterns } from '@penumbra-zone/constants/assets';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { planBuildBroadcast } from '../helpers';
 import {
@@ -40,6 +39,7 @@ import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse }
 import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { getStakingTokenMetadata } from '../../fetchers/registry';
 import { zeroValueView } from '../../utils/zero-value-view';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 
 interface UnbondingTokensForAccount {
   claimable: {

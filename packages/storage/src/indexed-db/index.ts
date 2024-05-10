@@ -18,6 +18,7 @@ import {
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import {
   AddressIndex,
+  IdentityKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
@@ -28,7 +29,7 @@ import {
   SwapRecord,
   TransactionInfo,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/constants/assets';
+import { assetPatterns, PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/types/assets';
 import { IDBPDatabase, openDB, StoreNames } from 'idb';
 import { IbdUpdater, IbdUpdates } from './updater';
 
@@ -569,6 +570,13 @@ export class IndexedDb implements IndexedDbInterface {
     );
   }
 
+  async getValidatorInfo(identityKey: IdentityKey): Promise<ValidatorInfo | undefined> {
+    const key = bech32mIdentityKey(identityKey);
+    const json = await this.db.get('VALIDATOR_INFOS', key);
+    if (!json) return undefined;
+    return ValidatorInfo.fromJson(json);
+  }
+
   async updatePrice(
     /**
      * The asset to save the price for in terms of the numeraire.
@@ -691,6 +699,7 @@ export class IndexedDb implements IndexedDbInterface {
     value: {
       auction?: T;
       noteCommitment?: StateCommitment;
+      seqNum?: bigint;
     },
   ): Promise<void> {
     const key = uint8ArrayToBase64(auctionId.inner);
@@ -700,6 +709,7 @@ export class IndexedDb implements IndexedDbInterface {
     const noteCommitment =
       (value.noteCommitment?.toJson() as Jsonified<StateCommitment> | undefined) ??
       existingRecord?.noteCommitment;
+    const seqNum = value.seqNum ?? existingRecord?.seqNum;
 
     await this.u.update({
       table: 'AUCTIONS',
@@ -707,6 +717,7 @@ export class IndexedDb implements IndexedDbInterface {
       value: {
         auction,
         noteCommitment,
+        seqNum,
       },
     });
   }
@@ -715,6 +726,7 @@ export class IndexedDb implements IndexedDbInterface {
     // Add more auction union types as they are created
     auction?: DutchAuctionDescription;
     noteCommitment?: StateCommitment;
+    seqNum?: bigint;
   }> {
     const result = await this.db.get('AUCTIONS', uint8ArrayToBase64(auctionId.inner));
 
@@ -723,6 +735,7 @@ export class IndexedDb implements IndexedDbInterface {
       noteCommitment: result?.noteCommitment
         ? StateCommitment.fromJson(result.noteCommitment)
         : undefined,
+      seqNum: result?.seqNum,
     };
   }
 }

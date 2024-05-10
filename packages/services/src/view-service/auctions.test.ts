@@ -17,7 +17,7 @@ import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/
 import { ServicesInterface } from '@penumbra-zone/types/services';
 import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
 import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices } from '../test-utils';
+import { IndexedDbMock, MockQuerier, MockServices } from '../test-utils';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 
 const AUCTION_ID_1 = new AuctionId({ inner: new Uint8Array(Array(32).fill(1)) });
@@ -86,6 +86,7 @@ const TEST_DATA = [
     value: {
       auction: MOCK_AUCTION_1,
       noteCommitment: new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) }),
+      seqNum: 0n,
     },
   },
   {
@@ -93,6 +94,7 @@ const TEST_DATA = [
     value: {
       auction: MOCK_AUCTION_2,
       noteCommitment: new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) }),
+      seqNum: 1n,
     },
   },
   {
@@ -100,6 +102,7 @@ const TEST_DATA = [
     value: {
       auction: MOCK_AUCTION_3,
       noteCommitment: new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) }),
+      seqNum: 2n,
     },
   },
   {
@@ -107,6 +110,7 @@ const TEST_DATA = [
     value: {
       auction: MOCK_AUCTION_4,
       noteCommitment: new StateCommitment({ inner: new Uint8Array([0, 1, 2, 3]) }),
+      seqNum: 0n,
     },
   },
 ];
@@ -114,6 +118,7 @@ const TEST_DATA = [
 describe('Auctions request handler', () => {
   let mockCtx: HandlerContext;
   let mockIndexedDb: IndexedDbMock;
+  let mockQuerier: MockQuerier;
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -125,11 +130,18 @@ describe('Auctions request handler', () => {
       getSpendableNoteByCommitment: vi.fn().mockResolvedValue(MOCK_SPENDABLE_NOTE_RECORD),
     };
 
+    mockQuerier = {
+      auction: {
+        auctionStateById: vi.fn().mockResolvedValue(new DutchAuction({ state: { seq: 1234n } })),
+      },
+    };
+
     const mockServices = () =>
       Promise.resolve({
         getWalletServices: vi.fn(() =>
           Promise.resolve({
             indexedDb: mockIndexedDb,
+            querier: mockQuerier,
           }),
         ) as MockServices['getWalletServices'],
       } as unknown as ServicesInterface);
@@ -146,9 +158,9 @@ describe('Auctions request handler', () => {
 
   it('returns auctions', async () => {
     const req = new AuctionsRequest();
-    const result = await Array.fromAsync(auctions(req, mockCtx));
+    const results = await Array.fromAsync(auctions(req, mockCtx));
 
-    expect(result[0]).toEqual(
+    expect(results[0]).toEqual(
       new AuctionsResponse({
         id: AUCTION_ID_1,
         auction: {
@@ -172,6 +184,34 @@ describe('Auctions request handler', () => {
           id: AUCTION_ID_4,
         }),
       );
+    });
+  });
+
+  it('excludes inactive auctions by default', async () => {
+    const req = new AuctionsRequest();
+    const results = await Array.fromAsync(auctions(req, mockCtx));
+
+    expect(results.some(result => new AuctionId(result.id).equals(AUCTION_ID_2))).toBe(false);
+    expect(results.some(result => new AuctionId(result.id).equals(AUCTION_ID_3))).toBe(false);
+  });
+
+  it('includes inactive auctions if `includeInactive` is `true`', async () => {
+    const req = new AuctionsRequest({ includeInactive: true });
+    const results = await Array.fromAsync(auctions(req, mockCtx));
+
+    expect(results.some(result => new AuctionId(result.id).equals(AUCTION_ID_2))).toBe(true);
+    expect(results.some(result => new AuctionId(result.id).equals(AUCTION_ID_3))).toBe(true);
+  });
+
+  it('includes the latest state from the fullnode if `queryLatestState` is `true`', async () => {
+    const req = new AuctionsRequest({ queryLatestState: true });
+    const results = await Array.fromAsync(auctions(req, mockCtx));
+
+    results.forEach(result => {
+      if (!result.auction?.value) throw new Error('missing data');
+      const dutchAuction = DutchAuction.fromBinary(result.auction.value);
+
+      expect(dutchAuction.state?.seq).toBe(1234n);
     });
   });
 });

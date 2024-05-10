@@ -1,6 +1,8 @@
 import { describe } from 'vitest';
 import { bech32mFullViewingKey, fullViewingKeyFromBech32m } from '../penumbrafullviewingkey';
 import { generateTests } from './util/generate-tests';
+import { Prefixes } from '../format/prefix';
+import { Inner } from '../format/inner';
 
 describe('fvk conversion', () => {
   const okInner = new Uint8Array([
@@ -12,8 +14,8 @@ describe('fvk conversion', () => {
     'penumbrafullviewingkey1vzfytwlvq067g2kz095vn7sgcft47hga40atrg5zu2crskm6tyyjysm28qg5nth2fqmdf5n0q530jreumjlsrcxjwtfv6zdmfpe5kqsa5lg09';
 
   generateTests(
-    'penumbrafullviewingkey',
-    'inner',
+    Prefixes.penumbrafullviewingkey,
+    Inner.penumbrafullviewingkey,
     okInner,
     okBech32,
     bech32mFullViewingKey,
