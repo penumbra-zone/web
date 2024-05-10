@@ -462,7 +462,7 @@ pub async fn plan_transaction(
         // Find a single note to spend towards the required balance.
         let note = notes_by_asset_id
             .get_mut(&required.asset_id)
-            .expect("we already made a notesrequest for each required asset")
+            .expect("we already made a notes request for each required asset")
             .pop()
             .ok_or_else(|| {
                 anyhow!(
