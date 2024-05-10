@@ -7,6 +7,7 @@ import { CopyIcon } from '@radix-ui/react-icons';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { fromBaseUnitAmount } from '@penumbra-zone/types/amount';
 import { Pill } from '../../../pill';
+import { cn } from '../../../../../lib/utils';
 
 interface ValueViewProps {
   view: ValueView | undefined;
@@ -18,6 +19,7 @@ interface ValueViewProps {
   showDenom?: boolean;
   showValue?: boolean;
   showIcon?: boolean;
+  size?: 'default' | 'sm';
 }
 
 export const ValueViewComponent = ({
@@ -26,6 +28,7 @@ export const ValueViewComponent = ({
   showDenom = true,
   showValue = true,
   showIcon = true,
+  size = 'default',
 }: ValueViewProps) => {
   if (!view) return <></>;
 
@@ -43,13 +46,13 @@ export const ValueViewComponent = ({
     return (
       <Pill variant={variant === 'default' ? 'default' : 'dashed'}>
         <div className='flex min-w-0 items-center gap-1'>
-          {showIcon && (
+          {showIcon && size === 'default' && (
             <div className='-ml-2 mr-1 flex size-6 shrink-0 items-center justify-center rounded-full'>
               <AssetIcon metadata={metadata} />
             </div>
           )}
           {showValue && (
-            <span className='-mb-0.5 text-nowrap leading-[15px]'>
+            <span className={cn('-mb-0.5 text-nowrap leading-[15px]', size === 'sm' && 'text-xs')}>
               {variant === 'equivalent' && <>~ </>}
               {formattedAmount}
             </span>
