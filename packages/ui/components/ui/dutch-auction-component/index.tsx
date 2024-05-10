@@ -1,5 +1,4 @@
 import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
-import { ActionDetails } from '../tx/view/action-details';
 import { ValueViewComponent } from '../tx/view/value';
 import {
   Metadata,
@@ -76,22 +75,12 @@ export const DutchAuctionComponent = ({
         </div>
       </div>
 
-      {!!fullSyncHeight && (
-        <Duration
-          startHeight={description.startHeight}
-          endHeight={description.endHeight}
-          fullSyncHeight={fullSyncHeight}
-        />
-      )}
-
-      <ActionDetails>
-        <ActionDetails.Row label='Duration'>
-          <span className='mx-1 text-nowrap text-muted-foreground'>Height </span>
-          {description.startHeight.toString()}
-          <span className='mx-1 text-nowrap text-muted-foreground'> to </span>
-          {description.endHeight.toString()}
-        </ActionDetails.Row>
-      </ActionDetails>
+      <Duration
+        auctionDescription={description}
+        inputMetadata={inputMetadata}
+        outputMetadata={outputMetadata}
+        fullSyncHeight={fullSyncHeight}
+      />
 
       {showEndButton && (
         <div className='self-end'>
