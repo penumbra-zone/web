@@ -66,16 +66,16 @@ repo, in which case they use turbo or the monorepo configuration.
 
 Minifront is a webapp blob which stores no state, and executes locally on the
 user's browser. Prax is a browser extension on the user's local machine, where
-it manages keys, configuration, and an abbreviated chain representing only the
-user's activity.
-
-[![finch's presentation at ZK8 describing the state commitment tree](https://img.youtube.com/vi/mHoe7lQMcxU/0.jpg)](https://www.youtube.com/watch?v=mHoe7lQMcxU)
+it [manages keys](./custody.md), configuration, and [an abbreviated chain
+representing only the user's
+activity](https://www.youtube.com/watch?v=mHoe7lQMcxU).
 
 ### Simplified architecture
 
-Minifront (and eventually other dapps) connect to services hosted by Prax (and
-eventually other providers) for information on the user's chain state, and to
-conduct new activity.
+Minifront (and eventually other dapps) [connect to
+services](./extension-services.md) hosted by Prax (and eventually other
+providers) for information on the user's chain state, and to conduct new
+activity.
 
 Prax queries a remote 'full node' `pd` endpoint to scan the compact chain,
 download full block details when interested, and broadcast new chain activity.
@@ -89,16 +89,18 @@ https://excalidraw.com/#json=_3b4K0RpWFJWAtVCH5ymB,CHegLkto1X_NdKG67LNh2A
 
 ### Some critical details
 
-Prax and Minifront share React components and some other reuseable dependencies.
+Prax and Minifront [share React components](./ui-library.md) and some other
+reuseable dependencies.
 
-Both Prax and Minifront manage running state with Zustand.
+Both Prax and Minifront manage running state with Zustand. For storage, Prax
+uses extension storage and idb. Minifront does not store anything.
 
-For storage, Prax uses extension storage and idb. Minifront does not store
-anything.
+Prax [parallelizes WASM during transaction
+builds](https://penumbra.zone/blog/faster-client-side-proving-with-parallelism)
+by launching individual [web workers](./web-workers.md) for each chunk of work.
+Chrome extension workers can't launch web workers, so this is managed via the
+'Offscreen' feature of the chrome extension API which provides full DOM
+compatibility.
 
-Prax parallelizes WASM during transaction builds by launching individual web
-workers for each chunk of work. Chrome extension workers can't launch web
-workers, so this is managed via the 'Offscreen' feature of the chrome extension
-API which provides full DOM compatibility.
-
-WASM directly accesses IDB for some operations, outside of the typical interface.
+WASM directly accesses IDB for some operations, outside of the typical
+interface.

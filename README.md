@@ -54,12 +54,14 @@ General documentation is available in [docs/README.md](docs/README.md). Package-
 
 ## Getting Started
 
-To start developing the software in this repository, you simply:
+### Prerequisites
 
 - [Install Rust and Cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html) (probably with rustup)
-- [Install Node.js](https://nodejs.org/en/download/package-manager) (at least version 20)
+- [Install Node.js](https://nodejs.org/en/download/package-manager) however you like (at least version 20)
 - [Install pnpm](https://pnpm.io/installation) (probably via corepack)
 - Install Google Chrome
+
+### Building
 
 Once you have all these tools, you can
 
@@ -72,14 +74,20 @@ pnpm dev
 
 You now have a local copy of Minifront available at
 [`https://localhost:5173`](https://localhost:5173) and an unbundled Prax is
-available at `apps/extension/dist/`, ready to be loaded into your testing
-browser.
+available at [`apps/extension/dist`](apps/extension/dist), ready to be loaded
+into your browser.
 
-Minifront will hot-reload. If you're working on the web extension, Chrome
-supports hot-reloading extension pages, but cannot hot-reload the extension
-worker scripts or content scripts.
+Minifront will hot-reload.
+
+If you're working on Prax, Chrome will show extension page changes after a
+manual refresh, but cannot reload the extension worker scripts or content
+scripts. For worker script changes, you must manually reload the extension. For
+content script changes, you must also manually reload pages hosting the injected
+scripts.
 
 #### Loading your unbundled build of Prax into Chrome
+
+After building Prax, you can load it into Chrome.
 
 It's recommended to use a dedicated browser profile for development, not your
 personal profile.
