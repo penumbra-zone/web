@@ -169,8 +169,10 @@ pub async fn plan_transaction(
         .try_into()?;
     let chain_id: String = app_parameters.chain_id;
 
-    let mut transaction_parameters: TransactionParameters = Default::default();
-    transaction_parameters.chain_id = chain_id;
+    let transaction_parameters = TransactionParameters {
+        chain_id,
+        ..Default::default()
+    };
 
     let gas_prices: GasPrices = {
         let gas_prices: penumbra_proto::core::component::fee::v1::GasPrices =
@@ -195,7 +197,7 @@ pub async fn plan_transaction(
             .ok_or_else(|| anyhow!("missing address in output"))?
             .try_into()?;
 
-        let output: OutputPlan = OutputPlan::new(&mut OsRng, value, address).into();
+        let output: OutputPlan = OutputPlan::new(&mut OsRng, value, address);
 
         actions.push(output);
     }
@@ -249,7 +251,7 @@ pub async fn plan_transaction(
             claim_address,
         );
 
-        let swap: SwapPlan = SwapPlan::new(&mut OsRng, swap_plaintext).into();
+        let swap: SwapPlan = SwapPlan::new(&mut OsRng, swap_plaintext);
 
         actions.push(swap);
     }
@@ -271,8 +273,7 @@ pub async fn plan_transaction(
             epoch_duration: sct_params.epoch_duration,
             proof_blinding_r: Fq::rand(&mut OsRng),
             proof_blinding_s: Fq::rand(&mut OsRng),
-        }
-        .into();
+        };
 
         actions.push(swap_claim);
     }
@@ -286,7 +287,7 @@ pub async fn plan_transaction(
             .ok_or_else(|| anyhow!("missing rate data in delegation"))?
             .try_into()?;
 
-        let delegate: Delegate = rate_data.build_delegate(epoch.into(), amount).into();
+        let delegate: Delegate = rate_data.build_delegate(epoch.into(), amount);
         actions.push(delegate);
     }
 
@@ -299,9 +300,7 @@ pub async fn plan_transaction(
             .ok_or_else(|| anyhow!("missing rate data in undelegation"))?
             .try_into()?;
 
-        let undelegate: Undelegate = rate_data
-            .build_undelegate(epoch.into(), value.amount)
-            .into();
+        let undelegate: Undelegate = rate_data.build_undelegate(epoch.into(), value.amount);
 
         save_unbonding_token_metadata_if_needed(&undelegate, &storage).await?;
 
@@ -444,7 +443,7 @@ pub async fn plan_transaction(
     };
 
     // Compute an initial fee estimate based on the actions we have so far.
-    actions.refresh_fee_and_change(&mut OsRng, &gas_prices, &fee_tier, &change_address);
+    actions.refresh_fee_and_change(OsRng, &gas_prices, &fee_tier, &change_address);
 
     let mut notes_by_asset_id = BTreeMap::new();
     for required in actions.balance_with_fee().required() {
@@ -484,9 +483,9 @@ pub async fn plan_transaction(
         actions.push(SpendPlan::new(&mut OsRng, note.note, note.position));
 
         // Refresh the fee estimate and change outputs.
-        actions.refresh_fee_and_change(&mut OsRng, &gas_prices, &fee_tier, &change_address);
+        actions.refresh_fee_and_change(OsRng, &gas_prices, &fee_tier, &change_address);
 
-        iterations = iterations + 1;
+        iterations += 1;
         if iterations > 100 {
             return Err(anyhow!("failed to plan transaction after 100 iterations").into());
         }
@@ -505,7 +504,7 @@ pub async fn plan_transaction(
     }
 
     let plan =
-        mem::take(&mut actions).into_plan(&mut OsRng, &fmd_params, transaction_parameters, memo)?;
+        mem::take(&mut actions).into_plan(OsRng, &fmd_params, transaction_parameters, memo)?;
 
     Ok(serde_wasm_bindgen::to_value(&plan)?)
 }

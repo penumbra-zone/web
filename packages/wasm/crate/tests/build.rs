@@ -140,12 +140,11 @@ mod tests {
             as_of_block_height: 1u64,
         };
         let gas_prices = GasPrices {
-            asset_id: None,
+            asset_id: Some((*STAKING_TOKEN_ASSET_ID).into()),
             block_space_price: 0,
             compact_block_space_price: 0,
             verification_price: 0,
             execution_price: 0,
-            asset_id: Some((*STAKING_TOKEN_ASSET_ID).into()),
         };
 
         // Serialize the parameters into `JsValue`.
