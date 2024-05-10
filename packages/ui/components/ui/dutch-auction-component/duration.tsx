@@ -50,16 +50,20 @@ export const Duration = ({
       {!!priceValueView && (
         <div className='relative'>
           <div
-            className='absolute w-min -translate-x-1/2'
+            className='absolute flex w-min -translate-x-1/2 flex-col items-center gap-1'
             ref={priceWrapper}
             style={{ left: priceWrapperLeft }}
           >
             <ValueViewComponent view={priceValueView} size='sm' />
+            {inputMetadata?.symbol && (
+              <span className='text-xs text-muted-foreground'>per {inputMetadata.symbol}</span>
+            )}
           </div>
 
           {/* placeholder for absolute-positioned value view */}
-          <div className='opacity-0'>
+          <div className='flex flex-col gap-1 opacity-0'>
             <ValueViewComponent view={priceValueView} size='sm' />
+            {inputMetadata?.symbol && <span className='text-xs text-muted-foreground'>per</span>}
           </div>
         </div>
       )}
