@@ -23,7 +23,7 @@
     "@cosmos-kit/core": "^2.9.2",
     "@cosmos-kit/react": "^2.11.2",
     "@interchain-ui/react": "^1.23.11",
-    "@penumbra-labs/registry": "^7.0.0",
+    "@penumbra-labs/registry": "7.1.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/client": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
