@@ -139,15 +139,18 @@ pub async fn plan_transaction(
 
     let request = TransactionPlannerRequest::decode(request)?;
 
-    let source_address_index: AddressIndex = request
+    let mut source_address_index: AddressIndex = request
         .source
         .map(TryInto::try_into)
         .transpose()?
         .unwrap_or_default();
 
-    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
+    // Wipe out the randomizer for the provided source, since
+    // 1. All randomizers correspond to the same account
+    // 2. Using one-time addresses for change addresses is undesirable.
+    source_address_index.randomizer = [0u8; 12];
 
-    // should ignore the randomizer for change_address, there is no point using ephemeral address
+    let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
     let (change_address, _) = fvk
         .incoming()
         .payment_address(source_address_index.account.into());
@@ -163,10 +166,12 @@ pub async fn plan_transaction(
         .get_app_params()
         .await?
         .ok_or_else(|| anyhow!("AppParameters not available"))?;
+
     let sct_params: SctParameters = app_parameters
         .sct_params
         .ok_or_else(|| anyhow!("SctParameters not available"))?
         .try_into()?;
+
     let chain_id: String = app_parameters.chain_id;
 
     let transaction_parameters = TransactionParameters {
@@ -196,7 +201,6 @@ pub async fn plan_transaction(
         let address = address
             .ok_or_else(|| anyhow!("missing address in output"))?
             .try_into()?;
-
         let output: OutputPlan = OutputPlan::new(&mut OsRng, value, address);
 
         actions.push(output);
@@ -250,7 +254,6 @@ pub async fn plan_transaction(
             fee,
             claim_address,
         );
-
         let swap: SwapPlan = SwapPlan::new(&mut OsRng, swap_plaintext);
 
         actions.push(swap);
@@ -286,8 +289,8 @@ pub async fn plan_transaction(
         let rate_data: RateData = rate_data
             .ok_or_else(|| anyhow!("missing rate data in delegation"))?
             .try_into()?;
-
         let delegate: Delegate = rate_data.build_delegate(epoch.into(), amount);
+
         actions.push(delegate);
     }
 
@@ -299,9 +302,7 @@ pub async fn plan_transaction(
         let rate_data: RateData = rate_data
             .ok_or_else(|| anyhow!("missing rate data in undelegation"))?
             .try_into()?;
-
         let undelegate: Undelegate = rate_data.build_undelegate(epoch.into(), value.amount);
-
         save_unbonding_token_metadata_if_needed(&undelegate, &storage).await?;
 
         actions.push(undelegate);
@@ -395,13 +396,7 @@ pub async fn plan_transaction(
             nonce,
         };
 
-        save_auction_nft_metadata_if_needed(
-            description.id(),
-            &storage,
-            // When scheduling a Dutch auction, the sequence number is always 0
-            0,
-        )
-        .await?;
+        save_auction_nft_metadata_if_needed(description.id(), &storage, 0).await?;
 
         actions.push(ActionPlan::ActionDutchAuctionSchedule(
             ActionDutchAuctionSchedule { description },
@@ -424,8 +419,6 @@ pub async fn plan_transaction(
             auction_id,
         }));
     }
-
-    // TODO (Jesse): Handle Dutch auction withdraws
 
     // Phase 2: balance the transaction with information from the view service.
     //
@@ -491,6 +484,7 @@ pub async fn plan_transaction(
         }
     }
 
+    // Add memo to the transaction plan.
     let mut memo: Option<MemoPlan> = None;
     if let Some(pb_memo_plaintext) = request.memo {
         memo = Some(MemoPlan::new(&mut OsRng, pb_memo_plaintext.try_into()?));
