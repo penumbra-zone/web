@@ -492,10 +492,10 @@ pub async fn plan_transaction(
         }
     }
 
-    let mut memo = None;
+    let mut memo: Option<MemoPlan> = None;
     if let Some(pb_memo_plaintext) = request.memo {
         memo = Some(MemoPlan::new(&mut OsRng, pb_memo_plaintext.try_into()?));
-    } else {
+    } else if actions.requires_memo() {
         // If a memo was not provided, but is required (because we have outputs),
         // auto-create one with the change address.
         memo = Some(MemoPlan::new(
