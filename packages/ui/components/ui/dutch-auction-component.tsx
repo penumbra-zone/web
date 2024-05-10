@@ -7,6 +7,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { Button } from './button';
+import { ArrowRight } from 'lucide-react';
 
 const getValueView = (amount?: Amount, metadata?: Metadata) =>
   new ValueView({
@@ -53,24 +54,26 @@ export const DutchAuctionComponent = ({
 
   return (
     <div className='flex flex-col gap-8'>
-      <ActionDetails>
-        <ActionDetails.Row label='Input'>
+      <div className='flex items-center justify-between'>
+        <div>
           <ValueViewComponent view={input} />
-        </ActionDetails.Row>
+        </div>
 
-        <ActionDetails.Row label='Output'>
-          <div className='flex flex-wrap justify-end gap-2'>
-            <div className='flex items-center gap-2'>
-              <span className='text-nowrap text-muted-foreground'>Max:</span>
-              <ValueViewComponent view={maxOutput} />
-            </div>
-            <div className='flex items-center gap-2'>
-              <span className='text-nowrap text-muted-foreground'>Min:</span>
-              <ValueViewComponent view={minOutput} />
-            </div>
+        <ArrowRight />
+
+        <div className='flex w-min flex-wrap justify-end gap-2'>
+          <div className='flex items-center gap-2'>
+            <span className='text-nowrap text-muted-foreground'>Max:</span>
+            <ValueViewComponent view={maxOutput} />
           </div>
-        </ActionDetails.Row>
+          <div className='flex items-center gap-2'>
+            <span className='text-nowrap text-muted-foreground'>Min:</span>
+            <ValueViewComponent view={minOutput} />
+          </div>
+        </div>
+      </div>
 
+      <ActionDetails>
         <ActionDetails.Row label='Duration'>
           <span className='mx-1 text-nowrap text-muted-foreground'>Height </span>
           {description.startHeight.toString()}

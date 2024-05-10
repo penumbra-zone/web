@@ -49,7 +49,7 @@ export const ValueViewComponent = ({
             </div>
           )}
           {showValue && (
-            <span className='-mb-0.5 leading-[15px]'>
+            <span className='-mb-0.5 text-nowrap leading-[15px]'>
               {variant === 'equivalent' && <>~ </>}
               {formattedAmount}
             </span>
