@@ -1,4 +1,4 @@
-import { assetPatterns } from '@penumbra-zone/constants/assets';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 import { getBalances } from '../../fetchers/balances';
 import {
   getAmount,

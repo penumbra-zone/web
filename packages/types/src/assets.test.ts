@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { assetPatterns, RegexMatcher } from './assets';
+import { assetPatterns, getUnbondingStartHeight, RegexMatcher } from './assets';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 describe('assetPatterns', () => {
   describe('auctionNft', () => {
@@ -154,5 +155,23 @@ describe('RegexMatcher', () => {
       subject: 'world',
     };
     expect(matcher.capture('hello world')).toEqual(expected);
+  });
+});
+
+describe('getUnbondingStartHeight()', () => {
+  it("gets the unbonding start height, coerced to a `BigInt`, from an unbonding token's asset ID", () => {
+    const metadata = new Metadata({ display: 'unbonding_start_at_123_penumbravalid1abc123' });
+
+    expect(getUnbondingStartHeight(metadata)).toBe(123n);
+  });
+
+  it("returns `undefined` for a non-unbonding token's metadata", () => {
+    const metadata = new Metadata({ display: 'penumbra' });
+
+    expect(getUnbondingStartHeight(metadata)).toBeUndefined();
+  });
+
+  it('returns `undefined` for undefined metadata', () => {
+    expect(getUnbondingStartHeight(undefined)).toBeUndefined();
   });
 });

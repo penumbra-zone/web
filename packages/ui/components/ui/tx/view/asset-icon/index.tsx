@@ -3,7 +3,7 @@ import { Identicon } from '../../../identicon';
 import { cn } from '../../../../../lib/utils';
 import { DelegationTokenIcon } from './delegation-token-icon';
 import { getDisplay } from '@penumbra-zone/getters/metadata';
-import { assetPatterns } from '@penumbra-zone/constants/assets';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 import { UnbondingTokenIcon } from './unbonding-token-icon';
 
 export const AssetIcon = ({

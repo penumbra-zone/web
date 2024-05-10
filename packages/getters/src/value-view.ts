@@ -1,7 +1,7 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { createGetter } from './utils/create-getter';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
-import { getDisplayDenomExponent, getSymbol, getUnbondingStartHeight } from './metadata';
+import { getDisplayDenomExponent, getSymbol } from './metadata';
 import { Any } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { getIdentityKeyFromValidatorInfo } from './validator-info';
@@ -56,12 +56,6 @@ export const getAssetIdFromValueView = createGetter((v?: ValueView) => {
 export const getAmount = createGetter(
   (valueView?: ValueView) => valueView?.valueView.value?.amount,
 );
-
-/**
- * For a `ValueView` containing an unbonding token, gets the unbonding start
- * height.
- */
-export const getUnbondingStartHeightFromValueView = getMetadata.pipe(getUnbondingStartHeight);
 
 export const getSymbolFromValueView = getMetadata.pipe(getSymbol);
 

@@ -11,7 +11,7 @@ import { Any } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { stakingClientCtx } from '../../ctx/staking-client';
 import { getValidatorInfo } from '@penumbra-zone/getters/get-validator-info-response';
-import { assetPatterns } from '@penumbra-zone/constants/assets';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 import {
   getBalanceView,
   getDisplayFromBalancesResponse,
