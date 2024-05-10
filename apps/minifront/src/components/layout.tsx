@@ -14,6 +14,7 @@ import '@penumbra-zone/ui/styles/globals.css';
 import { getChainId } from '../fetchers/chain-id';
 import { useEffect, useState } from 'react';
 import { TestnetBanner } from '@penumbra-zone/ui/components/ui/testnet-banner';
+import { Status } from './Status';
 
 export interface LayoutLoaderResult {
   isInstalled: boolean;
@@ -40,6 +41,7 @@ export const Layout = () => {
 
   return (
     <>
+      <Status />
       <TestnetBanner chainId={chainId} />
       <HeadTag />
       <div className='flex min-h-screen w-full flex-col'>
