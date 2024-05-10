@@ -25,16 +25,21 @@ const getBuildStatusDescription = (
 ): ReactNode | undefined => {
   if (status?.case === 'buildProgress')
     return (
-      <Progress
-        status='in-progress'
-        value={Math.round(status.value.progress * 100)}
-        size='sm'
-        className='mt-2'
-        background='stone'
-      />
+      <div className='mt-2'>
+        <Progress
+          status='in-progress'
+          value={Math.round(status.value.progress * 100)}
+          size='sm'
+          background='stone'
+        />
+      </div>
     );
   if (status?.case === 'complete')
-    return <Progress status='done' value={100} size='sm' className='mt-2' />;
+    return (
+      <div className='mt-2'>
+        <Progress status='done' value={100} size='sm' />
+      </div>
+    );
   return undefined;
 };
 

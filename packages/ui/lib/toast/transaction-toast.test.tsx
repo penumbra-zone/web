@@ -67,13 +67,9 @@ describe('TransactionToast', () => {
         'Building Send transaction',
         expect.objectContaining({
           description: (
-            <Progress
-              status='in-progress'
-              background='stone'
-              value={50}
-              size='sm'
-              className='mt-2'
-            />
+            <div className='mt-2'>
+              <Progress status='in-progress' background='stone' value={50} size='sm' />
+            </div>
           ),
           duration: Infinity,
           id: MOCK_TOAST_ID,
@@ -97,7 +93,11 @@ describe('TransactionToast', () => {
       expect(mockToastFn.loading).toHaveBeenCalledWith(
         'Building Send transaction',
         expect.objectContaining({
-          description: <Progress status='done' value={100} size='sm' className='mt-2' />,
+          description: (
+            <div className='mt-2'>
+              <Progress status='done' value={100} size='sm' />
+            </div>
+          ),
           duration: Infinity,
           id: MOCK_TOAST_ID,
         }),
