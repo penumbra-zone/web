@@ -2,6 +2,7 @@ export const Prefixes = {
   passet: 'passet',
   pauctid: 'pauctid',
   penumbra: 'penumbra',
+  penumbracompat1: 'penumbracompat1',
   penumbrafullviewingkey: 'penumbrafullviewingkey',
   penumbragovern: 'penumbragovern',
   penumbraspendkey: 'penumbraspendkey',

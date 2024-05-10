@@ -4,6 +4,7 @@ export const StringLength = {
   passet: 65,
   pauctid: 66,
   penumbra: 143,
+  penumbracompat1: 150,
   penumbrafullviewingkey: 132,
   penumbragovern: 73,
   penumbraspendkey: 75,
