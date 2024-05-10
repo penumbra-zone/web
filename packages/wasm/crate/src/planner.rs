@@ -1,6 +1,8 @@
 use std::collections::BTreeMap;
+use std::mem;
 
 use anyhow::anyhow;
+use anyhow::Result;
 use ark_ff::UniformRand;
 use decaf377::{Fq, Fr};
 use penumbra_asset::asset::{Id, Metadata};
@@ -27,12 +29,12 @@ use penumbra_proto::DomainType;
 use penumbra_sct::params::SctParameters;
 use penumbra_shielded_pool::{fmd, OutputPlan, SpendPlan};
 use penumbra_stake::rate::RateData;
-use penumbra_stake::{IdentityKey, Penalty, Undelegate, UndelegateClaimPlan};
+use penumbra_stake::{Delegate, IdentityKey, Penalty, Undelegate, UndelegateClaimPlan};
 use penumbra_transaction::gas::GasCost;
 use penumbra_transaction::memo::MemoPlaintext;
 use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters, TransactionPlan};
 use prost::Message;
-use rand_core::{OsRng, RngCore};
+use rand_core::{CryptoRng, OsRng, RngCore};
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
 
@@ -42,40 +44,99 @@ use crate::storage::IndexedDBStorage;
 use crate::utils;
 use crate::{error::WasmResult, swap_record::SwapRecord};
 
-struct ActionList {
+/// A list of planned actions to be turned into a TransactionPlan.
+///
+/// A transaction is a bundle of actions plus auxiliary data (like a memo). A
+/// transaction plan is a bundle of action plans plus plans for the auxiliary
+/// data (like a memo plan).  The [`ActionList`] is just the list of actions,
+/// which is useful for building up a [`TransactionPlan`].
+#[derive(Debug, Default, Clone)]
+pub struct ActionList {
     // A list of the user-specified outputs.
     actions: Vec<ActionPlan>,
     // These are tracked separately for convenience when adjusting change.
     change_outputs: BTreeMap<asset::Id, OutputPlan>,
+    // The fee is tracked as part of the ActionList so it can be adjusted
+    // internally to handle special cases like swap claims.
+    fee: Fee,
 }
 
 impl ActionList {
-    fn new() -> Self {
-        Self {
-            actions: Vec::new(),
-            change_outputs: BTreeMap::new(),
-        }
+    /// Returns true if the resulting transaction would require a memo.
+    pub fn requires_memo(&self) -> bool {
+        let has_change_outputs = !self.change_outputs.is_empty();
+        let has_other_outputs = self
+            .actions
+            .iter()
+            .any(|action| matches!(action, ActionPlan::Output(_)));
+
+        has_change_outputs || has_other_outputs
     }
 
-    fn balance(&self) -> Balance {
-        let mut balance = Balance::zero();
-        for action in &self.actions {
-            balance += action.balance();
-        }
-        for action in self.change_outputs.values() {
-            balance += action.balance();
-        }
-        balance
+    /// Convert this list of actions into a [`TransactionPlan`].
+    pub fn into_plan<R: RngCore + CryptoRng>(
+        self,
+        rng: R,
+        fmd_params: &fmd::Parameters,
+        mut transaction_parameters: TransactionParameters,
+        memo_plan: Option<MemoPlan>,
+    ) -> Result<TransactionPlan> {
+        transaction_parameters.fee = self.fee;
+
+        let mut plan = TransactionPlan {
+            actions: self
+                .actions
+                .into_iter()
+                .chain(self.change_outputs.into_values().map(Into::into))
+                .collect(),
+            transaction_parameters,
+            memo: memo_plan,
+            detection_data: None,
+        };
+        plan.populate_detection_data(rng, fmd_params.precision_bits.into());
+
+        // Implement a canonical ordering to the actions within the transaction
+        // plan to reduce client distinguishability.
+        plan.sort_actions();
+
+        Ok(plan)
     }
 
-    fn push(&mut self, action: ActionPlan) {
-        self.actions.push(action);
+    /// Push a new action onto this list.
+    pub fn push<A: Into<ActionPlan>>(&mut self, action: A) {
+        let plan = action.into();
+
+        // Special case: if the plan is a `SwapClaimPlan`, adjust the fee to include the
+        // prepaid fee contributed by the swap claim. This helps ensure that the value
+        // released by the swap claim is used to pay the fee, rather than generating change.
+        if let ActionPlan::SwapClaim(claim) = &plan {
+            let claim_fee = claim.swap_plaintext.claim_fee;
+            if self.fee.amount() == Amount::zero() {
+                // If the fee is currently zero, set it to the claim fee,
+                // regardless of fee token, i.e., set the fee token to match
+                // the swap claim.
+                self.fee = claim_fee;
+            } else if self.fee.asset_matches(&claim_fee) {
+                // Otherwise, if the fee token matches, accumulate the amount
+                // released by the swap claim into the fee, rather than letting it
+                // be handled as change.
+                self.fee.0.amount += claim_fee.amount();
+            } else {
+                // In this situation, the fee has been manually set to a
+                // different token than was released by the swap claim. So we
+                // can't accumulate the swap claim fee into it, and it will
+                // produce change instead.
+            }
+        }
+
+        self.actions.push(plan);
     }
 
-    fn gas_estimate(&self) -> Gas {
-        // TODO: this won't include the gas cost for the bytes of the tx itself
-        // so this gas estimate will be an underestimate, but since the tx-bytes contribution
-        // to the fee is ideally small, hopefully it doesn't matter.
+    /// Compute the gas used by a transaction comprised of the actions in this list.
+    ///
+    /// Because Penumbra transactions have static gas costs, and gas use is linear in the actions,
+    /// this is an exact computation.
+    fn gas_cost(&self) -> Gas {
         let mut gas = Gas::zero();
         for action in &self.actions {
             // TODO missing AddAssign
@@ -90,30 +151,114 @@ impl ActionList {
         gas
     }
 
-    fn fee_estimate(&self, gas_prices: &GasPrices, fee_tier: &FeeTier) -> Fee {
-        let base_fee = Fee::from_staking_token_amount(gas_prices.fee(&self.gas_estimate()));
+    /// Use the provided gas prices and fee tier to estimate the fee for
+    /// the transaction.
+    ///
+    /// While the gas cost can be computed exactly, the base fee can only be
+    /// estimated, because the actual base fee paid by the transaction will
+    /// depend on the gas prices at the time it's accepted on-chain.
+    fn compute_fee_estimate(&self, gas_prices: &GasPrices, fee_tier: &FeeTier) -> Fee {
+        let base_fee = gas_prices.fee(&self.gas_cost());
         base_fee.apply_tier(*fee_tier)
     }
 
-    fn balance_with_fee_estimate(&self, gas_prices: &GasPrices, fee_tier: &FeeTier) -> Balance {
-        self.balance() - self.fee_estimate(gas_prices, fee_tier).0
+    /// Use the provided gas prices and fee tier to refresh the fee estimate for
+    /// the transaction.
+    ///
+    /// If the current fee estimate is too low, it will be increased. In that
+    /// case, change notes will be adjusted to cover the increase if possible.
+    pub fn refresh_fee_and_change<R: RngCore + CryptoRng>(
+        &mut self,
+        rng: R,
+        gas_prices: &GasPrices,
+        fee_tier: &FeeTier,
+        change_address: &Address,
+    ) {
+        // First, refresh the change outputs, to capture any surplus imbalance.
+        self.refresh_change(rng, &change_address);
+
+        // Next, recompute the fee estimate for the actions and change outputs.
+        let new_fee = self.compute_fee_estimate(gas_prices, fee_tier);
+
+        // Update the targeted fee with the new estimate.
+        if new_fee.asset_matches(&self.fee) {
+            // Take the max of the current fee and the new estimate. This ensures
+            // that if we already overpaid the fee for some reason, we don't lower it
+            // and cause the creation of unwanted change outputs.
+            self.fee.0.amount = std::cmp::max(self.fee.amount(), new_fee.amount());
+        } else {
+            // Otherwise, overwrite the previous fee with the new estimate.
+            self.fee = new_fee;
+        }
+
+        // Finally, adjust the change outputs to cover the fee increase if possible.
+        self.adjust_change_for_imbalance();
     }
 
-    fn refresh_change(&mut self, change_address: Address) {
+    /// Return the balance of the actions in the list, without accounting for fees.
+    pub fn balance_without_fee(&self) -> Balance {
+        let mut balance = Balance::zero();
+
+        for action in &self.actions {
+            balance += action.balance();
+        }
+        for action in self.change_outputs.values() {
+            balance += action.balance();
+        }
+
+        balance
+    }
+
+    /// Return the balance of the actions in the list, minus the currently estimated fee
+    /// required to pay their gas costs.
+    pub fn balance_with_fee(&self) -> Balance {
+        self.balance_without_fee() - self.fee.0
+    }
+
+    /// Refresh the change notes used to store any surplus imbalance from the
+    /// actions in the list.
+    fn refresh_change<R: RngCore + CryptoRng>(&mut self, mut rng: R, change_address: &Address) {
         self.change_outputs = BTreeMap::new();
         // For each "provided" balance component, create a change note.
-        for value in self.balance().provided() {
+        for value in self.balance_with_fee().provided() {
             self.change_outputs.insert(
                 value.asset_id,
-                OutputPlan::new(&mut OsRng, value, change_address.clone()),
+                OutputPlan::new(&mut rng, value, change_address.clone()),
             );
         }
     }
 
-    fn adjust_change_for_fee(&mut self, fee: Fee) {
-        self.change_outputs.entry(fee.0.asset_id).and_modify(|e| {
-            e.value.amount = e.value.amount.saturating_sub(&fee.0.amount);
-        });
+    /// Attempt adjust existing change notes to repair imbalance:
+    ///
+    /// - cover required balance by decreasing change if possible
+    /// - cover surplus balance by increasing change if possible
+    fn adjust_change_for_imbalance(&mut self) {
+        // We need to grab the current balance upfront before doing modifications.
+        let balance = self.balance_with_fee();
+
+        // Sweep surplus balance into existing change notes.
+        for provided in balance.provided() {
+            self.change_outputs
+                .entry(provided.asset_id)
+                .and_modify(|e| {
+                    e.value.amount += provided.amount;
+                });
+        }
+
+        // Attempt to cover imbalance via existing change notes.
+        for required in balance.required() {
+            self.change_outputs
+                .entry(required.asset_id)
+                .and_modify(|e| {
+                    // It's important to use saturating_sub here because
+                    // our expectation is that we commonly won't have enough balance.
+                    e.value.amount = e.value.amount.saturating_sub(&required.amount);
+                });
+        }
+
+        // Remove any 0-value change notes we might have created.
+        self.change_outputs
+            .retain(|_, output| output.value.amount > Amount::zero());
     }
 }
 
@@ -212,9 +357,9 @@ pub async fn plan_transaction(
         gas_prices.try_into()?
     };
 
-    // Phase 1: process all of the user-supplied intents into complete action plans.
+    let mut actions = ActionList::default();
 
-    let mut actions = ActionList::new();
+    // Phase 1: process all of the user-supplied intents into complete action plans.
 
     for tpr::Output { value, address } in request.outputs {
         let value = value
@@ -224,7 +369,7 @@ pub async fn plan_transaction(
             .ok_or_else(|| anyhow!("missing address in output"))?
             .try_into()?;
 
-        let output = OutputPlan::new(&mut OsRng, value, address).into();
+        let output: OutputPlan = OutputPlan::new(&mut OsRng, value, address).into();
 
         actions.push(output);
     }
@@ -278,7 +423,7 @@ pub async fn plan_transaction(
             claim_address,
         );
 
-        let swap = SwapPlan::new(&mut OsRng, swap_plaintext).into();
+        let swap: SwapPlan = SwapPlan::new(&mut OsRng, swap_plaintext).into();
 
         actions.push(swap);
     }
@@ -293,7 +438,7 @@ pub async fn plan_transaction(
             .ok_or_else(|| anyhow!("Swap record not found"))?
             .try_into()?;
 
-        let swap_claim = SwapClaimPlan {
+        let swap_claim: SwapClaimPlan = SwapClaimPlan {
             swap_plaintext: swap_record.swap,
             position: swap_record.position,
             output_data: swap_record.output_data,
@@ -314,7 +459,9 @@ pub async fn plan_transaction(
         let rate_data: RateData = rate_data
             .ok_or_else(|| anyhow!("missing rate data in delegation"))?
             .try_into()?;
-        actions.push(rate_data.build_delegate(epoch.into(), amount).into());
+
+        let delegate: Delegate = rate_data.build_delegate(epoch.into(), amount).into();
+        actions.push(delegate);
     }
 
     for tpr::Undelegate { value, rate_data } in request.undelegations {
@@ -326,11 +473,13 @@ pub async fn plan_transaction(
             .ok_or_else(|| anyhow!("missing rate data in undelegation"))?
             .try_into()?;
 
-        let undelegate = rate_data.build_undelegate(epoch.into(), value.amount);
+        let undelegate: Undelegate = rate_data
+            .build_undelegate(epoch.into(), value.amount)
+            .into();
 
         save_unbonding_token_metadata_if_needed(&undelegate, &storage).await?;
 
-        actions.push(undelegate.into());
+        actions.push(undelegate);
     }
 
     for tpr::UndelegateClaim {
@@ -422,7 +571,7 @@ pub async fn plan_transaction(
         };
 
         save_auction_nft_metadata_if_needed(
-            &description,
+            description.id(),
             &storage,
             // When scheduling a Dutch auction, the sequence number is always 0
             0,
@@ -439,14 +588,26 @@ pub async fn plan_transaction(
             .ok_or_else(|| anyhow!("missing auction ID in Dutch auction end action"))?
             .try_into()?;
 
+        save_auction_nft_metadata_if_needed(
+            auction_id, &storage,
+            // When ending a Dutch auction, the sequence number is always 1
+            1,
+        )
+        .await?;
+
         actions.push(ActionPlan::ActionDutchAuctionEnd(ActionDutchAuctionEnd {
             auction_id,
         }));
     }
 
-    // TODO: Handle Dutch auction withdraws
+    // TODO (Jesse): Handle Dutch auction withdraws
 
-    // Phase 2: fill in the required spends to make the transaction balance.
+    // Phase 2: balance the transaction with information from the view service.
+    //
+    // It's possible that adding spends could increase the gas, increasing
+    // the fee amount, and so on, so we add spends iteratively. However, we
+    // need to query all the notes we'll use for planning upfront, so we
+    // don't accidentally try to use the same one twice.
 
     let fee_tier = match request.fee_mode {
         None => FeeTier::default(),
@@ -456,14 +617,11 @@ pub async fn plan_transaction(
         }
     };
 
-    // It's possible that adding spends could increase the gas, increasing the fee
-    // amount, and so on, so we add spends iteratively.
+    // Compute an initial fee estimate based on the actions we have so far.
+    actions.refresh_fee_and_change(&mut OsRng, &gas_prices, &fee_tier, &change_address);
 
     let mut notes_by_asset_id = BTreeMap::new();
-    for required in actions
-        .balance_with_fee_estimate(&gas_prices, &fee_tier)
-        .required()
-    {
+    for required in actions.balance_with_fee().required() {
         // Find all the notes of this asset in the source account.
         let records = storage
             .get_notes(NotesRequest {
@@ -481,67 +639,55 @@ pub async fn plan_transaction(
 
     let mut iterations = 0usize;
 
-    while let Some(required) = actions
-        .balance_with_fee_estimate(&gas_prices, &fee_tier)
-        .required()
-        .next()
-    {
-        // Spend a single note towards the required balance, if possible.
-        let Some(note) = notes_by_asset_id
+    // Now iterate over the action list's imbalances to balance the transaction.
+    while let Some(required) = actions.balance_with_fee().required().next() {
+        // Find a single note to spend towards the required balance.
+        let note = notes_by_asset_id
             .get_mut(&required.asset_id)
-            .expect("we already queried")
+            .expect("we already made a notesrequest for each required asset")
             .pop()
-        else {
-            return Err(anyhow!(
-                "ran out of notes to spend while planning transaction, need {} of asset {}",
-                required.amount,
-                required.asset_id,
-            )
-            .into());
-        };
-        actions.push(SpendPlan::new(&mut OsRng, note.note, note.position).into());
+            .ok_or_else(|| {
+                anyhow!(
+                    "ran out of notes to spend while planning transaction, need {} of asset {}",
+                    required.amount,
+                    required.asset_id,
+                )
+            })?;
 
-        // Recompute the change outputs, without accounting for fees.
-        actions.refresh_change(change_address.clone());
-        // Now re-estimate the fee of the updated transaction and adjust the change if possible.
-        let fee = actions.fee_estimate(&gas_prices, &fee_tier);
-        actions.adjust_change_for_fee(fee);
+        // Add a spend for that note to the action list.
+        actions.push(SpendPlan::new(&mut OsRng, note.note, note.position));
 
-        iterations += 1;
+        // Refresh the fee estimate and change outputs.
+        actions.refresh_fee_and_change(&mut OsRng, &gas_prices, &fee_tier, &change_address);
+
+        iterations = iterations + 1;
         if iterations > 100 {
             return Err(anyhow!("failed to plan transaction after 100 iterations").into());
         }
     }
 
-    let fee = actions.fee_estimate(&gas_prices, &fee_tier);
-
-    let mut plan = TransactionPlan {
-        actions: actions
-            .actions
-            .into_iter()
-            .chain(actions.change_outputs.into_values().map(Into::into))
-            .collect(),
-        transaction_parameters: TransactionParameters {
-            expiry_height: request.expiry_height,
-            chain_id,
-            fee,
-        },
-        detection_data: None,
-        memo: None,
-    };
-
+    let mut memo = None;
     if let Some(pb_memo_plaintext) = request.memo {
-        plan.memo = Some(MemoPlan::new(&mut OsRng, pb_memo_plaintext.try_into()?)?);
-    } else if plan.output_plans().next().is_some() {
+        memo = Some(MemoPlan::new(&mut OsRng, pb_memo_plaintext.try_into()?));
+    } else {
         // If a memo was not provided, but is required (because we have outputs),
         // auto-create one with the change address.
-        plan.memo = Some(MemoPlan::new(
+        memo = Some(MemoPlan::new(
             &mut OsRng,
             MemoPlaintext::new(change_address, String::new())?,
-        )?);
+        ));
     }
 
-    plan.populate_detection_data(&mut OsRng, fmd_params.precision_bits.into());
+    let fee = actions.compute_fee_estimate(&gas_prices, &fee_tier);
+
+    let transaction_parameters = TransactionParameters {
+        expiry_height: request.expiry_height,
+        chain_id,
+        fee,
+    };
+
+    let plan =
+        mem::take(&mut actions).into_plan(&mut OsRng, &fmd_params, transaction_parameters, memo)?;
 
     Ok(serde_wasm_bindgen::to_value(&plan)?)
 }
@@ -561,18 +707,19 @@ async fn save_unbonding_token_metadata_if_needed(
     save_metadata_if_needed(metadata, storage).await
 }
 
-/// When planning a Dutch auction schedule action, there will not be metadata
-/// yet in the IndexedDB database for the auction NFT that the transaction will
-/// output. That's because auction NFTs are derived from the auction description
-/// parameters, which include a nonce. So we'll generate the metadata here and
-/// save it to the database, so that the action renders correctly in the
-/// transaction approval dialog.
+/// When planning Dutch auction-related actions, there will not be metadata yet
+/// in the IndexedDB database for the auction NFT that the transaction will
+/// output. That's because auction NFTs are derived from information about the
+/// auction (for example, an NFT corresponding to a newly started auction is
+/// dervived from the auction description parameters, which include a nonce). So
+/// we'll generate the metadata here and save it to the database, so that the
+/// action renders correctly in the transaction approval dialog.
 async fn save_auction_nft_metadata_if_needed(
-    description: &DutchAuctionDescription,
+    id: AuctionId,
     storage: &IndexedDBStorage,
     seq: u64,
 ) -> WasmResult<()> {
-    let nft = AuctionNft::new(description.id(), seq);
+    let nft = AuctionNft::new(id, seq);
     let metadata = nft.metadata;
 
     save_metadata_if_needed(metadata, storage).await

@@ -776,8 +776,8 @@ dependencies = [
 
 [[package]]
 name = "decaf377-fmd"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "ark-ff",
  "ark-serialize",
@@ -790,8 +790,8 @@ dependencies = [
 
 [[package]]
 name = "decaf377-ka"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "ark-ff",
  "decaf377 0.5.0",
@@ -2087,8 +2087,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-asset"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2125,8 +2125,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-auction"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2171,8 +2171,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-community-pool"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2201,8 +2201,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-compact-block"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2233,8 +2233,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-dex"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2285,8 +2285,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-distributions"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2301,8 +2301,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-fee"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2324,8 +2324,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-funding"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2343,8 +2343,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-governance"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2388,6 +2388,7 @@ dependencies = [
  "rand_core",
  "regex",
  "serde",
+ "serde_json",
  "tap",
  "tendermint",
  "thiserror",
@@ -2396,8 +2397,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-ibc"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2429,8 +2430,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-keys"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "aes",
  "anyhow",
@@ -2473,8 +2474,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-num"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2509,8 +2510,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-proof-params"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "ark-ec",
@@ -2535,8 +2536,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-proto"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2562,8 +2563,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-sct"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2593,8 +2594,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-shielded-pool"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2641,8 +2642,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-stake"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2683,8 +2684,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-tct"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "ark-ed-on-bls12-377",
  "ark-ff",
@@ -2711,8 +2712,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-transaction"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "ark-ff",
@@ -2762,8 +2763,8 @@ dependencies = [
 
 [[package]]
 name = "penumbra-txhash"
-version = "0.74.0-alpha.1"
-source = "git+https://github.com/penumbra-zone/penumbra.git?rev=a500f2c72#a500f2c72206e805a85c9aa7e4b0381901ff6896"
+version = "0.74.0"
+source = "git+https://github.com/penumbra-zone/penumbra.git?tag=v0.74.0#8903538cabd2669d0f595012ecb9904039df5112"
 dependencies = [
  "anyhow",
  "blake2b_simd 1.0.2",
