@@ -28,24 +28,26 @@ You can talk to us on [Discord](https://discord.gg/hKvkrqa3zC).
 
 ### [Status](https://grpc.testnet.penumbra.zone/): Public info dashboard for Penumbra nodes.
 
-### Packages
+### Published Packages
+
+All have a `@penumbra-zone/` namespace prefix on npm.
 
 **🌘
-[@penumbra-zone/bech32m](https://www.npmjs.com/package/@penumbra-zone/bech32m) 🌑
-[@penumbra-zone/client](https://www.npmjs.com/package/@penumbra-zone/client) 🌑
-[@penumbra-zone/constants](https://www.npmjs.com/package/@penumbra-zone/constants) 🌑
-[@penumbra-zone/crypto](https://www.npmjs.com/package/@penumbra-zone/crypto) 🌑
-[@penumbra-zone/getters](https://www.npmjs.com/package/@penumbra-zone/getters) 🌑
-[@penumbra-zone/keys](https://www.npmjs.com/package/@penumbra-zone/keys) 🌑
-[@penumbra-zone/perspective](https://www.npmjs.com/package/@penumbra-zone/perspective) 🌑
-[@penumbra-zone/protobuf](https://www.npmjs.com/package/@penumbra-zone/protobuf) 🌑
-[@penumbra-zone/services](https://www.npmjs.com/package/@penumbra-zone/services) 🌑
-[@penumbra-zone/services-context](https://www.npmjs.com/package/@penumbra-zone/services-context) 🌑
-[@penumbra-zone/storage](https://www.npmjs.com/package/@penumbra-zone/storage) 🌑
-[@penumbra-zone/transport-chrome](https://www.npmjs.com/package/@penumbra-zone/transport-chrome) 🌑
-[@penumbra-zone/transport-dom](https://www.npmjs.com/package/@penumbra-zone/transport-dom) 🌑
-[@penumbra-zone/types](https://www.npmjs.com/package/@penumbra-zone/types) 🌑
-[@penumbra-zone/wasm](https://www.npmjs.com/package/@penumbra-zone/wasm)
+[bech32m](https://www.npmjs.com/package/@penumbra-zone/bech32m) 🌑
+[client](https://www.npmjs.com/package/@penumbra-zone/client) 🌑
+[constants](https://www.npmjs.com/package/@penumbra-zone/constants) 🌑
+[crypto](https://www.npmjs.com/package/@penumbra-zone/crypto) 🌑
+[getters](https://www.npmjs.com/package/@penumbra-zone/getters) 🌑
+[keys](https://www.npmjs.com/package/@penumbra-zone/keys) 🌑
+[perspective](https://www.npmjs.com/package/@penumbra-zone/perspective) 🌑
+[protobuf](https://www.npmjs.com/package/@penumbra-zone/protobuf) 🌑
+[services](https://www.npmjs.com/package/@penumbra-zone/services) 🌑
+[services-context](https://www.npmjs.com/package/@penumbra-zone/services-context) 🌑
+[storage](https://www.npmjs.com/package/@penumbra-zone/storage) 🌑
+[transport-chrome](https://www.npmjs.com/package/@penumbra-zone/transport-chrome) 🌑
+[transport-dom](https://www.npmjs.com/package/@penumbra-zone/transport-dom) 🌑
+[types](https://www.npmjs.com/package/@penumbra-zone/types) 🌑
+[wasm](https://www.npmjs.com/package/@penumbra-zone/wasm)
 🌒**
 
 ## Documentation
