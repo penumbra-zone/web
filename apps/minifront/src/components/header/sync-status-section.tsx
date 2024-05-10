@@ -1,19 +1,22 @@
-import { useStream } from '../../fetchers/stream';
-import { useMemo } from 'react';
-import { viewClient } from '../../clients';
 import { CondensedBlockSyncStatus } from '@penumbra-zone/ui/components/ui/block-sync-status/condensed';
+import { AllSlices } from '../../state';
+import { useStoreShallow } from '../../utils/use-store-shallow';
+
+const syncStatusSectionSelector = (state: AllSlices) => ({
+  fullSyncHeight: state.status.fullSyncHeight,
+  latestKnownBlockHeight: state.status.latestKnownBlockHeight,
+  error: state.status.error,
+});
 
 export const SyncStatusSection = () => {
-  const syncStream = useMemo(() => viewClient.statusStream({}), []);
-  const { data, error } = useStream(syncStream);
+  const { fullSyncHeight, latestKnownBlockHeight, error } =
+    useStoreShallow(syncStatusSectionSelector);
 
   return (
     <div className='relative z-30 flex w-full flex-col'>
       <CondensedBlockSyncStatus
-        fullSyncHeight={data?.fullSyncHeight ? Number(data.fullSyncHeight) : undefined}
-        latestKnownBlockHeight={
-          data?.latestKnownBlockHeight ? Number(data.latestKnownBlockHeight) : undefined
-        }
+        fullSyncHeight={fullSyncHeight ? Number(fullSyncHeight) : undefined}
+        latestKnownBlockHeight={latestKnownBlockHeight ? Number(latestKnownBlockHeight) : undefined}
         error={error}
       />
     </div>
