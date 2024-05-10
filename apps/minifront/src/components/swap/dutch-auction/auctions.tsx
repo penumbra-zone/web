@@ -21,10 +21,12 @@ const auctionsSelector = (state: AllSlices) => ({
   auctionInfos: state.dutchAuction.auctionInfos,
   metadataByAssetId: state.dutchAuction.metadataByAssetId,
   endAuction: state.dutchAuction.endAuction,
+  fullSyncHeight: state.status.fullSyncHeight,
 });
 
 export const Auctions = () => {
-  const { auctionInfos, metadataByAssetId, endAuction } = useStoreShallow(auctionsSelector);
+  const { auctionInfos, metadataByAssetId, endAuction, fullSyncHeight } =
+    useStoreShallow(auctionsSelector);
 
   return (
     <>
@@ -52,6 +54,7 @@ export const Auctions = () => {
                 )}
                 showEndButton
                 onClickEndButton={() => void endAuction(auctionInfo.id)}
+                fullSyncHeight={fullSyncHeight}
               />
             }
           />

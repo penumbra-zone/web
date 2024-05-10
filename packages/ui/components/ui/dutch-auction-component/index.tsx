@@ -1,13 +1,14 @@
 import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
-import { ActionDetails } from './tx/view/action-details';
-import { ValueViewComponent } from './tx/view/value';
+import { ActionDetails } from '../tx/view/action-details';
+import { ValueViewComponent } from '../tx/view/value';
 import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { Button } from './button';
+import { Button } from '../button';
 import { ArrowRight } from 'lucide-react';
+import { Duration } from './duration';
 
 const getValueView = (amount?: Amount, metadata?: Metadata) =>
   new ValueView({
@@ -24,6 +25,7 @@ interface BaseProps {
   dutchAuction: DutchAuction;
   inputMetadata?: Metadata;
   outputMetadata?: Metadata;
+  fullSyncHeight?: bigint;
 }
 
 interface PropsWithEndButton extends BaseProps {
@@ -44,6 +46,7 @@ export const DutchAuctionComponent = ({
   outputMetadata,
   showEndButton,
   onClickEndButton,
+  fullSyncHeight,
 }: Props) => {
   const { description } = dutchAuction;
   if (!description) return null;
@@ -72,6 +75,14 @@ export const DutchAuctionComponent = ({
           </div>
         </div>
       </div>
+
+      {!!fullSyncHeight && (
+        <Duration
+          startHeight={description.startHeight}
+          endHeight={description.endHeight}
+          fullSyncHeight={fullSyncHeight}
+        />
+      )}
 
       <ActionDetails>
         <ActionDetails.Row label='Duration'>
