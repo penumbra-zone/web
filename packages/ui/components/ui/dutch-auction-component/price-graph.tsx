@@ -13,7 +13,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 const getValueView = (amount: Amount, metadata: Metadata) =>
   new ValueView({ valueView: { case: 'knownAssetId', value: { amount, metadata } } });
 
-export const Duration = ({
+export const PriceGraph = ({
   auctionDescription,
   inputMetadata,
   outputMetadata,

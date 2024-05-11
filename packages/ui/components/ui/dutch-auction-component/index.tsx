@@ -7,7 +7,7 @@ import {
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { Button } from '../button';
 import { ArrowRight } from 'lucide-react';
-import { Duration } from './duration';
+import { PriceGraph } from './price-graph';
 
 const getValueView = (amount?: Amount, metadata?: Metadata) =>
   new ValueView({
@@ -75,7 +75,7 @@ export const DutchAuctionComponent = ({
         </div>
       </div>
 
-      <Duration
+      <PriceGraph
         auctionDescription={description}
         inputMetadata={inputMetadata}
         outputMetadata={outputMetadata}
