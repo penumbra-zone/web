@@ -8,7 +8,8 @@ import { getPrice } from './get-price';
 import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { ValueViewComponent } from '../tx/view/value';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { ReactNode, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { cn } from '../../../lib/utils';
 
 const getValueView = (amount: Amount, metadata: Metadata) =>
   new ValueView({ valueView: { case: 'knownAssetId', value: { amount, metadata } } });
@@ -59,19 +60,15 @@ export const PriceGraph = ({
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex items-center gap-4'>
-        <div className='grow basis-1/4 text-right text-xs text-muted-foreground'>
-          {auctionDescription.startHeight.toString()}
+        <div className='grow basis-1/4 text-right'>
+          <Label muted>{auctionDescription.startHeight.toString()}</Label>
         </div>
 
         <div className='w-1 grow-0' />
 
         <div className='flex grow basis-3/4 items-center gap-1'>
           <ValueViewComponent view={maxPriceValueView} size='sm' />
-          {inputMetadata?.symbol && (
-            <span className='text-nowrap text-xs text-muted-foreground'>
-              per {inputMetadata.symbol}
-            </span>
-          )}
+          {inputMetadata?.symbol && <Label muted>per {inputMetadata.symbol}</Label>}
         </div>
       </div>
 
@@ -79,10 +76,10 @@ export const PriceGraph = ({
         <div className='relative grow basis-1/4'>
           {showProgress && (
             <div
-              className='absolute w-full -translate-y-1/2 text-right text-xs'
+              className='absolute w-full -translate-y-1/2 text-right'
               style={{ top: positionTop }}
             >
-              {fullSyncHeight.toString()}
+              <Label>{fullSyncHeight.toString()}</Label>
             </div>
           )}
         </div>
@@ -101,32 +98,28 @@ export const PriceGraph = ({
               style={{ top: positionTop }}
             >
               <ValueViewComponent view={priceValueView} size='sm' />
-              {inputMetadata?.symbol && (
-                <span className='text-nowrap text-xs text-muted-foreground'>
-                  per {inputMetadata.symbol}
-                </span>
-              )}
+              {inputMetadata?.symbol && <Label muted>per {inputMetadata.symbol}</Label>}
             </div>
           )}
         </div>
       </div>
 
       <div className='flex items-center gap-4'>
-        <div className='grow basis-1/4 text-right text-xs text-muted-foreground'>
-          {auctionDescription.endHeight.toString()}
+        <div className='grow basis-1/4 text-right'>
+          <Label muted>{auctionDescription.endHeight.toString()}</Label>
         </div>
 
         <div className='w-1 grow-0' />
 
         <div className='flex grow basis-3/4 items-center gap-1'>
           <ValueViewComponent view={minPriceValueView} size='sm' />
-          {inputMetadata?.symbol && (
-            <span className='text-nowrap text-xs text-muted-foreground'>
-              per {inputMetadata.symbol}
-            </span>
-          )}
+          {inputMetadata?.symbol && <Label muted>per {inputMetadata.symbol}</Label>}
         </div>
       </div>
     </div>
   );
 };
+
+const Label = ({ children, muted }: { children: ReactNode; muted?: boolean }) => (
+  <span className={cn('text-nowrap text-xs', muted && 'text-muted-foreground')}>{children}</span>
+);
