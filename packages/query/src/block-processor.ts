@@ -44,6 +44,7 @@ import { getAuctionId, getAuctionNftMetadata } from '@penumbra-zone/wasm/auction
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 
 declare global {
   // `var` required for global declaration (as let/const are block scoped)
@@ -200,6 +201,14 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (compactBlock.gasPrices) {
         await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
       }
+
+      // manually (temporarily) set non-zero gas prices in index db for testing purposes.
+      await this.indexedDb.saveGasPrices(new GasPrices({
+        verificationPrice: 1n,
+        executionPrice: 1n,
+        blockSpacePrice: 1n,
+        compactBlockSpacePrice: 1n,
+      }));
 
       // wasm view server scan
       // - decrypts new notes
