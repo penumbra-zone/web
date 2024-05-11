@@ -60,7 +60,7 @@ describe('getPrice()', () => {
     expect(getPrice(auction, metadata, 9n)).toEqual(new Amount({ hi: 0n, lo: 200_000n }));
   });
 
-  it.only("rounds to the nearest whole number if it can't be divided evenly", () => {
+  it("rounds to the nearest whole number if it can't be divided evenly", () => {
     const metadata = new Metadata({
       display: 'penumbra',
       base: 'upenumbra',
