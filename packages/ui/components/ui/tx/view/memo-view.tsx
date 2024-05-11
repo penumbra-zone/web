@@ -12,7 +12,7 @@ export const MemoViewComponent = ({ memo: { memoView } }: { memo: MemoView }) =>
           visibleContent={
             <div className='flex flex-col gap-4'>
               <ActionDetails>
-                <ActionDetails.Row label='Sender Return Address'>
+                <ActionDetails.Row label='Return Address'>
                   <AddressViewComponent view={memoView.value.plaintext!.returnAddress} />
                 </ActionDetails.Row>
                 <ActionDetails.Row label='Memo Text'>
