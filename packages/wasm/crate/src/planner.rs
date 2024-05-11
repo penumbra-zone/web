@@ -236,9 +236,7 @@ pub async fn plan_transaction(
 
         // This is the prepaid fee for the swap claim. We don't expect much of a drift in gas
         // prices in a few blocks, and the fee tier adjustments should be enough to cover it.
-        let estimated_claim_fee = gas_prices
-            .fee(&swap_claim_gas_cost())
-            .apply_tier(fee_tier.into());
+        let estimated_claim_fee = gas_prices.fee(&swap_claim_gas_cost()).apply_tier(fee_tier);
 
         // Determine the canonical order for the assets being swapped.
         // This will determine whether the input amount is assigned to delta_1 or delta_2.
