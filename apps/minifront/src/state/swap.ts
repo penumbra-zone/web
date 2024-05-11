@@ -177,9 +177,7 @@ const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => 
           assetId: getAssetIdFromValueView(assetIn.balanceView),
         },
         claimAddress: await getAddressByIndex(addressIndex.account),
-        // TODO: Calculate this properly in subsequent PR
-        //       Asset Id should almost certainly be upenumbra,
-        //       may need to indicate native denom in registry
+        // The prepaid fee will instead be calculated directly in the rust planner logic.
         fee: {
           amount: {
             hi: 0n,

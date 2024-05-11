@@ -31,6 +31,7 @@ use penumbra_sct::params::SctParameters;
 use penumbra_shielded_pool::{fmd, OutputPlan, SpendPlan};
 use penumbra_stake::rate::RateData;
 use penumbra_stake::{Delegate, IdentityKey, Penalty, Undelegate, UndelegateClaimPlan};
+use penumbra_transaction::gas::swap_claim_gas_cost;
 use penumbra_transaction::memo::MemoPlaintext;
 use penumbra_transaction::ActionList;
 use penumbra_transaction::{plan::MemoPlan, ActionPlan, TransactionParameters};
@@ -151,6 +152,8 @@ pub async fn plan_transaction(
     source_address_index.randomizer = [0u8; 12];
 
     let fvk: FullViewingKey = FullViewingKey::decode(full_viewing_key)?;
+
+    // Compute the change address for this transaction.
     let (change_address, _) = fvk
         .incoming()
         .payment_address(source_address_index.account.into());
@@ -190,7 +193,15 @@ pub async fn plan_transaction(
         gas_prices.try_into()?
     };
 
-    let mut actions = ActionList::default();
+    let fee_tier = match request.fee_mode {
+        None => FeeTier::default(),
+        Some(tpr::FeeMode::AutoFee(tier)) => tier.try_into()?,
+        Some(tpr::FeeMode::ManualFee(_)) => {
+            return Err(anyhow!("Manual fee mode not yet implemented").into());
+        }
+    };
+
+    let mut actions_list = ActionList::default();
 
     // Phase 1: process all of the user-supplied intents into complete action plans.
 
@@ -203,13 +214,13 @@ pub async fn plan_transaction(
             .try_into()?;
         let output: OutputPlan = OutputPlan::new(&mut OsRng, value, address);
 
-        actions.push(output);
+        actions_list.push(output);
     }
 
     for tpr::Swap {
         value,
         target_asset,
-        fee,
+        fee: _,
         claim_address,
     } in request.swaps
     {
@@ -219,12 +230,15 @@ pub async fn plan_transaction(
         let target_asset = target_asset
             .ok_or_else(|| anyhow!("missing target asset in swap"))?
             .try_into()?;
-        let fee = fee
-            .ok_or_else(|| anyhow!("missing fee in swap"))?
-            .try_into()?;
         let claim_address = claim_address
             .ok_or_else(|| anyhow!("missing claim address in swap"))?
             .try_into()?;
+
+        // This is the prepaid fee for the swap claim. We don't expect much of a drift in gas
+        // prices in a few blocks, and the fee tier adjustments should be enough to cover it.
+        let estimated_claim_fee = gas_prices
+            .fee(&swap_claim_gas_cost())
+            .apply_tier(fee_tier.into());
 
         // Determine the canonical order for the assets being swapped.
         // This will determine whether the input amount is assigned to delta_1 or delta_2.
@@ -251,12 +265,12 @@ pub async fn plan_transaction(
             trading_pair,
             delta_1,
             delta_2,
-            fee,
+            estimated_claim_fee,
             claim_address,
         );
         let swap: SwapPlan = SwapPlan::new(&mut OsRng, swap_plaintext);
 
-        actions.push(swap);
+        actions_list.push(swap);
     }
 
     for tpr::SwapClaim { swap_commitment } in request.swap_claims {
@@ -278,7 +292,7 @@ pub async fn plan_transaction(
             proof_blinding_s: Fq::rand(&mut OsRng),
         };
 
-        actions.push(swap_claim);
+        actions_list.push(swap_claim);
     }
 
     for tpr::Delegate { amount, rate_data } in request.delegations {
@@ -291,7 +305,7 @@ pub async fn plan_transaction(
             .try_into()?;
         let delegate: Delegate = rate_data.build_delegate(epoch.into(), amount);
 
-        actions.push(delegate);
+        actions_list.push(delegate);
     }
 
     for tpr::Undelegate { value, rate_data } in request.undelegations {
@@ -305,7 +319,7 @@ pub async fn plan_transaction(
         let undelegate: Undelegate = rate_data.build_undelegate(epoch.into(), value.amount);
         save_unbonding_token_metadata_if_needed(&undelegate, &storage).await?;
 
-        actions.push(undelegate);
+        actions_list.push(undelegate);
     }
 
     for tpr::UndelegateClaim {
@@ -336,7 +350,7 @@ pub async fn plan_transaction(
             proof_blinding_s: Fq::rand(&mut OsRng),
         };
 
-        actions.push(ActionPlan::UndelegateClaim(undelegate_claim_plan));
+        actions_list.push(ActionPlan::UndelegateClaim(undelegate_claim_plan));
     }
 
     #[allow(clippy::never_loop)]
@@ -345,7 +359,7 @@ pub async fn plan_transaction(
     }
 
     for ics20_withdrawal in request.ics20_withdrawals {
-        actions.push(ActionPlan::Ics20Withdrawal(ics20_withdrawal.try_into()?));
+        actions_list.push(ActionPlan::Ics20Withdrawal(ics20_withdrawal.try_into()?));
     }
 
     #[allow(clippy::never_loop)]
@@ -398,7 +412,7 @@ pub async fn plan_transaction(
 
         save_auction_nft_metadata_if_needed(description.id(), &storage, 0).await?;
 
-        actions.push(ActionPlan::ActionDutchAuctionSchedule(
+        actions_list.push(ActionPlan::ActionDutchAuctionSchedule(
             ActionDutchAuctionSchedule { description },
         ));
     }
@@ -415,10 +429,12 @@ pub async fn plan_transaction(
         )
         .await?;
 
-        actions.push(ActionPlan::ActionDutchAuctionEnd(ActionDutchAuctionEnd {
+        actions_list.push(ActionPlan::ActionDutchAuctionEnd(ActionDutchAuctionEnd {
             auction_id,
         }));
     }
+
+    println!("planner log!");
 
     // Phase 2: balance the transaction with information from the view service.
     //
@@ -427,19 +443,11 @@ pub async fn plan_transaction(
     // need to query all the notes we'll use for planning upfront, so we
     // don't accidentally try to use the same one twice.
 
-    let fee_tier = match request.fee_mode {
-        None => FeeTier::default(),
-        Some(tpr::FeeMode::AutoFee(tier)) => tier.try_into()?,
-        Some(tpr::FeeMode::ManualFee(_)) => {
-            return Err(anyhow!("Manual fee mode not yet implemented").into());
-        }
-    };
-
     // Compute an initial fee estimate based on the actions we have so far.
-    actions.refresh_fee_and_change(OsRng, &gas_prices, &fee_tier, &change_address);
+    actions_list.refresh_fee_and_change(OsRng, &gas_prices, &fee_tier, &change_address);
 
     let mut notes_by_asset_id = BTreeMap::new();
-    for required in actions.balance_with_fee().required() {
+    for required in actions_list.balance_with_fee().required() {
         // Find all the notes of this asset in the source account.
         let records = storage
             .get_notes(NotesRequest {
@@ -458,7 +466,7 @@ pub async fn plan_transaction(
     let mut iterations = 0usize;
 
     // Now iterate over the action list's imbalances to balance the transaction.
-    while let Some(required) = actions.balance_with_fee().required().next() {
+    while let Some(required) = actions_list.balance_with_fee().required().next() {
         // Find a single note to spend towards the required balance.
         let note = notes_by_asset_id
             .get_mut(&required.asset_id)
@@ -473,10 +481,10 @@ pub async fn plan_transaction(
             })?;
 
         // Add a spend for that note to the action list.
-        actions.push(SpendPlan::new(&mut OsRng, note.note, note.position));
+        actions_list.push(SpendPlan::new(&mut OsRng, note.note, note.position));
 
         // Refresh the fee estimate and change outputs.
-        actions.refresh_fee_and_change(OsRng, &gas_prices, &fee_tier, &change_address);
+        actions_list.refresh_fee_and_change(OsRng, &gas_prices, &fee_tier, &change_address);
 
         iterations += 1;
         if iterations > 100 {
@@ -488,7 +496,7 @@ pub async fn plan_transaction(
     let mut memo: Option<MemoPlan> = None;
     if let Some(pb_memo_plaintext) = request.memo {
         memo = Some(MemoPlan::new(&mut OsRng, pb_memo_plaintext.try_into()?));
-    } else if actions.requires_memo() {
+    } else if actions_list.requires_memo() {
         // If a memo was not provided, but is required (because we have outputs),
         // auto-create one with the change address.
         memo = Some(MemoPlan::new(
@@ -498,7 +506,7 @@ pub async fn plan_transaction(
     }
 
     let plan =
-        mem::take(&mut actions).into_plan(OsRng, &fmd_params, transaction_parameters, memo)?;
+        mem::take(&mut actions_list).into_plan(OsRng, &fmd_params, transaction_parameters, memo)?;
 
     Ok(serde_wasm_bindgen::to_value(&plan)?)
 }
