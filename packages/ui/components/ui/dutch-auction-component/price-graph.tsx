@@ -28,10 +28,12 @@ export const PriceGraph = ({
   const maxPrice = getPrice(auctionDescription, inputMetadata, auctionDescription.startHeight);
   const price = getPrice(auctionDescription, inputMetadata, fullSyncHeight);
   const minPrice = getPrice(auctionDescription, inputMetadata, auctionDescription.endHeight);
+
   const maxPriceValueView =
     maxPrice && outputMetadata ? getValueView(maxPrice, outputMetadata) : undefined;
   const minPriceValueView =
     minPrice && outputMetadata ? getValueView(minPrice, outputMetadata) : undefined;
+
   const progress = getProgress(
     auctionDescription.startHeight,
     auctionDescription.endHeight,
