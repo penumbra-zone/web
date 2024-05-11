@@ -24,7 +24,13 @@ export const Duration = ({
   outputMetadata?: Metadata;
   fullSyncHeight?: bigint;
 }) => {
+  const maxPrice = getPrice(auctionDescription, inputMetadata, auctionDescription.startHeight);
   const price = getPrice(auctionDescription, inputMetadata, fullSyncHeight);
+  const minPrice = getPrice(auctionDescription, inputMetadata, auctionDescription.endHeight);
+  const maxPriceValueView =
+    maxPrice && outputMetadata ? getValueView(maxPrice, outputMetadata) : undefined;
+  const minPriceValueView =
+    minPrice && outputMetadata ? getValueView(minPrice, outputMetadata) : undefined;
   const progress = getProgress(
     auctionDescription.startHeight,
     auctionDescription.endHeight,
@@ -36,47 +42,90 @@ export const Duration = ({
     [price, outputMetadata],
   );
   const priceWrapper = useRef<HTMLDivElement | null>(null);
-  const [priceWrapperLeft, setPriceWrapperLeft] = useState('');
+  const [positionTop, setPositionTop] = useState('');
+
+  const showProgress =
+    !!fullSyncHeight &&
+    fullSyncHeight >= auctionDescription.startHeight &&
+    fullSyncHeight <= auctionDescription.endHeight;
 
   useLayoutEffect(() => {
     if (!priceWrapper.current) return;
-    setPriceWrapperLeft(
-      `clamp(${priceWrapper.current.offsetWidth / 2}px, 100% - ${priceWrapper.current.offsetWidth / 2}px, ${progress * 100}%)`,
+    setPositionTop(
+      `clamp(${priceWrapper.current.offsetHeight / 2}px, 100% - ${priceWrapper.current.offsetHeight / 2}px, ${progress * 100}%)`,
     );
   }, [progress]);
 
   return (
     <div className='flex flex-col gap-2'>
-      {!!priceValueView && (
-        <div className='relative'>
-          <div
-            className='absolute flex w-min -translate-x-1/2 flex-col items-center gap-1'
-            ref={priceWrapper}
-            style={{ left: priceWrapperLeft }}
-          >
-            <ValueViewComponent view={priceValueView} size='sm' />
-            {inputMetadata?.symbol && (
-              <span className='text-xs text-muted-foreground'>per {inputMetadata.symbol}</span>
-            )}
-          </div>
+      <div className='flex items-center gap-4'>
+        <div className='grow basis-1/4 text-right text-xs text-muted-foreground'>
+          {auctionDescription.startHeight.toString()}
+        </div>
 
-          {/* placeholder for absolute-positioned value view */}
-          <div className='flex flex-col gap-1 opacity-0'>
-            <ValueViewComponent view={priceValueView} size='sm' />
-            {inputMetadata?.symbol && <span className='text-xs text-muted-foreground'>per</span>}
+        <div className='w-1 grow-0' />
+
+        <div className='flex grow basis-3/4 items-center gap-1'>
+          <ValueViewComponent view={maxPriceValueView} size='sm' />
+          {inputMetadata?.symbol && (
+            <span className='text-nowrap text-xs text-muted-foreground'>
+              per {inputMetadata.symbol}
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className='flex h-[200px] gap-4'>
+        <div className='relative grow basis-1/4'>
+          {showProgress && (
+            <div
+              className='absolute w-full -translate-y-1/2 text-right text-xs'
+              style={{ top: positionTop }}
+            >
+              {fullSyncHeight.toString()}
+            </div>
+          )}
+        </div>
+
+        <div className='w-1 grow-0'>
+          <div className='w-[200px] origin-top-left translate-x-1 rotate-90'>
+            <Progress value={progress * 100} status='in-progress' size='sm' background='stone' />
           </div>
         </div>
-      )}
 
-      <Progress value={progress * 100} status='in-progress' size='sm' background='stone' />
-      <div className='flex justify-between'>
-        <span className='text-xs text-muted-foreground'>
-          {auctionDescription.startHeight.toString()}
-        </span>
-        <span className='text-xs text-muted-foreground'>Block height</span>
-        <span className='text-xs text-muted-foreground'>
+        <div className='relative h-full grow basis-3/4'>
+          {!!showProgress && !!priceValueView && (
+            <div
+              className='absolute flex w-full -translate-y-1/2 items-center gap-1'
+              ref={priceWrapper}
+              style={{ top: positionTop }}
+            >
+              <ValueViewComponent view={priceValueView} size='sm' />
+              {inputMetadata?.symbol && (
+                <span className='text-nowrap text-xs text-muted-foreground'>
+                  per {inputMetadata.symbol}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className='flex items-center gap-4'>
+        <div className='grow basis-1/4 text-right text-xs text-muted-foreground'>
           {auctionDescription.endHeight.toString()}
-        </span>
+        </div>
+
+        <div className='w-1 grow-0' />
+
+        <div className='flex grow basis-3/4 items-center gap-1'>
+          <ValueViewComponent view={minPriceValueView} size='sm' />
+          {inputMetadata?.symbol && (
+            <span className='text-nowrap text-xs text-muted-foreground'>
+              per {inputMetadata.symbol}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );
