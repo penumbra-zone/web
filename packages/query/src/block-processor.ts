@@ -203,12 +203,14 @@ export class BlockProcessor implements BlockProcessorInterface {
       }
 
       // manually (temporarily) set non-zero gas prices in index db for testing purposes.
-      await this.indexedDb.saveGasPrices(new GasPrices({
-        verificationPrice: 1n,
-        executionPrice: 1n,
-        blockSpacePrice: 1n,
-        compactBlockSpacePrice: 1n,
-      }));
+      await this.indexedDb.saveGasPrices(
+        new GasPrices({
+          verificationPrice: 1n,
+          executionPrice: 1n,
+          blockSpacePrice: 1n,
+          compactBlockSpacePrice: 1n,
+        }),
+      );
 
       // wasm view server scan
       // - decrypts new notes
