@@ -45,13 +45,9 @@ export const getPrice = (
   // The input, scaled up by `step_count` to match.
   const inputScaled = (stepCount - 1n) * input;
 
-  // The trading function interpolates between (input, 0) and (0, target_output)
-  const p = targetOutputScaled;
-  const q = inputScaled;
-
   const inputDisplayDenomExponent = getDisplayDenomExponent.optional()(inputMetadata);
   const multiplier = 10 ** (inputDisplayDenomExponent ?? 0);
-  const price = Math.round((Number(p) / Number(q)) * multiplier);
+  const price = Math.round((Number(targetOutputScaled) / Number(inputScaled)) * multiplier);
 
   return new Amount(splitLoHi(BigInt(price)));
 };
