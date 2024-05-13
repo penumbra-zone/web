@@ -6,6 +6,7 @@ import { createSwapSlice, SwapSlice } from './swap';
 import { createIbcOutSlice, IbcOutSlice } from './ibc-out';
 import { createSendSlice, SendSlice } from './send';
 import { createStakingSlice, StakingSlice } from './staking';
+import { createStatusSlice, StatusSlice } from './status';
 import { createUnclaimedSwapsSlice, UnclaimedSwapsSlice } from './unclaimed-swaps';
 import { createTransactionsSlice, TransactionsSlice } from './transactions';
 import { createIbcInSlice, IbcInSlice } from './ibc-in';
@@ -23,6 +24,7 @@ export interface AllSlices {
   dutchAuction: DutchAuctionSlice;
   send: SendSlice;
   staking: StakingSlice;
+  status: StatusSlice;
   swap: SwapSlice;
   transactions: TransactionsSlice;
   unclaimedSwaps: UnclaimedSwapsSlice;
@@ -42,6 +44,7 @@ export const initializeStore = () => {
     dutchAuction: createDutchAuctionSlice()(setState, getState, store),
     send: createSendSlice()(setState, getState, store),
     staking: createStakingSlice()(setState, getState, store),
+    status: createStatusSlice()(setState, getState, store),
     swap: createSwapSlice()(setState, getState, store),
     transactions: createTransactionsSlice()(setState, getState, store),
     unclaimedSwaps: createUnclaimedSwapsSlice()(setState, getState, store),

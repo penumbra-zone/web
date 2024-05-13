@@ -11,12 +11,17 @@ export const AssetIcon = ({
   size = 'sm',
 }: {
   metadata?: Metadata;
-  size?: 'sm' | 'lg';
+  size?: 'xs' | 'sm' | 'lg';
 }) => {
   // Image default is "" and thus cannot do nullish-coalescing
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const icon = metadata?.images[0]?.png || metadata?.images[0]?.svg;
-  const className = cn('rounded-full', size === 'sm' && 'size-6', size === 'lg' && 'size-12');
+  const className = cn(
+    'rounded-full',
+    size === 'xs' && 'size-4',
+    size === 'sm' && 'size-6',
+    size === 'lg' && 'size-12',
+  );
   const display = getDisplay.optional()(metadata);
   const isDelegationToken = display ? assetPatterns.delegationToken.matches(display) : false;
   const isUnbondingToken = display ? assetPatterns.unbondingToken.matches(display) : false;
@@ -37,7 +42,7 @@ export const AssetIcon = ({
       ) : (
         <Identicon
           uniqueIdentifier={metadata?.symbol ?? '?'}
-          size={size === 'lg' ? 48 : 24}
+          size={size === 'lg' ? 48 : size === 'sm' ? 24 : 16}
           type='solid'
         />
       )}
