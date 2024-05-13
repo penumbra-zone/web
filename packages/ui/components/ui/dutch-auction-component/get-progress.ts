@@ -1,3 +1,8 @@
+/**
+ * We want to represent progress as a decimal between 0 and 1 (inclusive),
+ * without letting it go above 1 or below 0 if the full sync height is after the
+ * end of the auction or before the beginning, respectively.
+ */
 const clampToDecimal = (value: number) => Math.min(Math.max(value, 0), 1);
 
 export const getProgress = (
