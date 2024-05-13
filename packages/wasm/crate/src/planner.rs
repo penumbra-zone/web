@@ -30,7 +30,7 @@ use penumbra_proto::DomainType;
 use penumbra_sct::params::SctParameters;
 use penumbra_shielded_pool::{fmd, OutputPlan, SpendPlan};
 use penumbra_stake::rate::RateData;
-use penumbra_stake::{Delegate, IdentityKey, Penalty, Undelegate, UndelegateClaimPlan};
+use penumbra_stake::{IdentityKey, Penalty, Undelegate, UndelegateClaimPlan};
 use penumbra_transaction::gas::swap_claim_gas_cost;
 use penumbra_transaction::memo::MemoPlaintext;
 use penumbra_transaction::ActionList;
@@ -212,7 +212,7 @@ pub async fn plan_transaction(
         let address = address
             .ok_or_else(|| anyhow!("missing address in output"))?
             .try_into()?;
-        let output: OutputPlan = OutputPlan::new(&mut OsRng, value, address);
+        let output = OutputPlan::new(&mut OsRng, value, address);
 
         actions_list.push(output);
     }
@@ -266,7 +266,7 @@ pub async fn plan_transaction(
             estimated_claim_fee,
             claim_address,
         );
-        let swap: SwapPlan = SwapPlan::new(&mut OsRng, swap_plaintext);
+        let swap = SwapPlan::new(&mut OsRng, swap_plaintext);
 
         actions_list.push(swap);
     }
@@ -281,7 +281,7 @@ pub async fn plan_transaction(
             .ok_or_else(|| anyhow!("Swap record not found"))?
             .try_into()?;
 
-        let swap_claim: SwapClaimPlan = SwapClaimPlan {
+        let swap_claim = SwapClaimPlan {
             swap_plaintext: swap_record.swap,
             position: swap_record.position,
             output_data: swap_record.output_data,
@@ -301,7 +301,7 @@ pub async fn plan_transaction(
         let rate_data: RateData = rate_data
             .ok_or_else(|| anyhow!("missing rate data in delegation"))?
             .try_into()?;
-        let delegate: Delegate = rate_data.build_delegate(epoch.into(), amount);
+        let delegate = rate_data.build_delegate(epoch.into(), amount);
 
         actions_list.push(delegate);
     }
@@ -314,7 +314,7 @@ pub async fn plan_transaction(
         let rate_data: RateData = rate_data
             .ok_or_else(|| anyhow!("missing rate data in undelegation"))?
             .try_into()?;
-        let undelegate: Undelegate = rate_data.build_undelegate(epoch.into(), value.amount);
+        let undelegate = rate_data.build_undelegate(epoch.into(), value.amount);
         save_unbonding_token_metadata_if_needed(&undelegate, &storage).await?;
 
         actions_list.push(undelegate);
