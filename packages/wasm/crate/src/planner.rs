@@ -432,8 +432,6 @@ pub async fn plan_transaction(
         }));
     }
 
-    println!("planner log!");
-
     // Phase 2: balance the transaction with information from the view service.
     //
     // It's possible that adding spends could increase the gas, increasing
