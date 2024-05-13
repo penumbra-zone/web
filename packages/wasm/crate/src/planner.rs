@@ -489,17 +489,16 @@ pub async fn plan_transaction(
     }
 
     // Add memo to the transaction plan.
-    let mut memo: Option<MemoPlan> = None;
-    if let Some(pb_memo_plaintext) = request.memo {
-        memo = Some(MemoPlan::new(&mut OsRng, pb_memo_plaintext.try_into()?));
+    let memo = if let Some(pb_memo_plaintext) = request.memo {
+        Some(MemoPlan::new(&mut OsRng, pb_memo_plaintext.try_into()?))
     } else if actions_list.requires_memo() {
         // If a memo was not provided, but is required (because we have outputs),
         // auto-create one with the change address.
-        memo = Some(MemoPlan::new(
-            &mut OsRng,
-            MemoPlaintext::new(change_address, String::new())?,
-        ));
-    }
+        let plaintext = MemoPlaintext::new(change_address, String::new())?;
+        Some(MemoPlan::new(&mut OsRng, plaintext))
+    } else {
+        None
+    };
 
     let plan =
         mem::take(&mut actions_list).into_plan(OsRng, &fmd_params, transaction_parameters, memo)?;
