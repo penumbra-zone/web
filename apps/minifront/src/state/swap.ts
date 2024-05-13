@@ -177,13 +177,6 @@ const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => 
           assetId: getAssetIdFromValueView(assetIn.balanceView),
         },
         claimAddress: await getAddressByIndex(addressIndex.account),
-        // The prepaid fee will instead be calculated directly in the rust planner logic.
-        fee: {
-          amount: {
-            hi: 0n,
-            lo: 0n,
-          },
-        },
       },
     ],
     source: getAddressIndex(assetIn.accountAddress),

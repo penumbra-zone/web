@@ -220,6 +220,11 @@ pub async fn plan_transaction(
     for tpr::Swap {
         value,
         target_asset,
+        // The prepaid fee will instead be calculated directly in the rust planner logic.
+        //
+        // TODO: external consumers of prax may decide to enable manaual fees, and there may be
+        // additional checks required to make sure the fees satisfy to the balancing checks
+        // for swap claims.
         fee: _,
         claim_address,
     } in request.swaps
@@ -466,13 +471,12 @@ pub async fn plan_transaction(
         // Find a single note to spend towards the required balance.
         let note = notes_by_asset_id
             .get_mut(&required.asset_id)
-            .expect("we already made a notes request for each required asset")
-            .pop()
+            .and_then(|notes| notes.pop())
             .ok_or_else(|| {
                 anyhow!(
-                    "ran out of notes to spend while planning transaction, need {} of asset {}",
-                    required.amount,
+                    "Failed to retrieve or ran out of notes for asset {}, required amount {}",
                     required.asset_id,
+                    required.amount
                 )
             })?;
 
@@ -500,6 +504,7 @@ pub async fn plan_transaction(
         None
     };
 
+    // Reset the planner in case it were reused.
     let plan =
         mem::take(&mut actions_list).into_plan(OsRng, &fmd_params, transaction_parameters, memo)?;
 

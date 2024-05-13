@@ -137,6 +137,9 @@ export class IndexedDb implements IndexedDbInterface {
     const existing0thEpoch = await instance.getEpochByHeight(0n);
     if (!existing0thEpoch) await instance.addEpoch(0n); // Create first epoch
 
+    // set non-zero gas prices in indexDB since the testnet has not yet enabled gas fees.
+    await instance.initGasPrices();
+
     return instance;
   }
 
@@ -277,6 +280,22 @@ export class IndexedDb implements IndexedDbInterface {
         SpendableNoteRecord,
       ),
     );
+  }
+
+  async initGasPrices() {
+    const savedGasPrices = await this.getGasPrices();
+    // These are arbitrarily set, but can take on any value.
+    // The gas prices set here will determine the fees to use Penumbra.
+    if (!savedGasPrices) {
+      await this.saveGasPrices(
+        new GasPrices({
+          verificationPrice: 1n,
+          executionPrice: 1n,
+          blockSpacePrice: 1n,
+          compactBlockSpacePrice: 1n,
+        }),
+      );
+    }
   }
 
   async *iterateTransactions() {
