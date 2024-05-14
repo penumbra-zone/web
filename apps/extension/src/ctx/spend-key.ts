@@ -10,7 +10,7 @@ export const getSpendKey = async () => {
   if (!passKeyJson) throw new ConnectError('User must login', Code.Unauthenticated);
   const passKey = await Key.fromJson(passKeyJson);
 
-  const wallet0 = (await localExtStorage.get('wallets'))[0];
+  const wallet0 = (await localExtStorage.get('wallets'))?.[0];
   if (!wallet0) throw new ConnectError('No wallet found', Code.FailedPrecondition);
 
   const seedBox = Box.fromJson(wallet0.custody.encryptedSeedPhrase);

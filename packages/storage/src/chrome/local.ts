@@ -9,12 +9,11 @@ import { LocalStorageState, LocalStorageVersion } from './types';
 // extension app.
 declare const MINIFRONT_URL: string;
 
-export const localDefaults: LocalStorageState = {
+export const localDefaults = {
   wallets: [],
-  fullSyncHeight: undefined,
   knownSites: [{ origin: MINIFRONT_URL, choice: UserChoice.Approved, date: Date.now() }],
   frontendUrl: MINIFRONT_URL,
-};
+} as const satisfies Pick<LocalStorageState, 'wallets' | 'knownSites' | 'frontendUrl'>;
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.
 export const localExtStorage = new ExtensionStorage<LocalStorageState>(

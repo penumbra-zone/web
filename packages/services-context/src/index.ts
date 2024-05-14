@@ -127,7 +127,7 @@ export class Services implements ServicesInterface {
 
   private async completeConfig(initConfig: ServicesConfig): Promise<Required<ServicesConfig>> {
     const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
-    const wallet0 = (await localExtStorage.get('wallets'))[0];
+    const wallet0 = (await localExtStorage.get('wallets'))?.[0];
     if (!wallet0) throw Error('No wallets found');
     if (!grpcEndpoint) throw Error('No gRPC endpoint found');
     const { id: walletId, fullViewingKey } = Wallet.fromJson(wallet0);

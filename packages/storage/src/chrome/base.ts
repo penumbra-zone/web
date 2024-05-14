@@ -1,18 +1,11 @@
 import { EmptyObject, isEmptyObj } from '@penumbra-zone/types/utility';
 
-export type Listener = (
-  changes: Record<string, { oldValue?: unknown; newValue?: unknown }>,
-) => void;
+type ChromeStorageChangedListener = (changes: Record<string, chrome.storage.StorageChange>) => void;
 
-export interface IStorage {
-  get(key: string): Promise<Record<string, unknown>>;
-  set(items: Record<string, unknown>): Promise<void>;
-  remove(key: string): Promise<void>;
-  onChanged: {
-    addListener(listener: Listener): void;
-    removeListener(listener: Listener): void;
-  };
-}
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+export type StorageListener<T> = (
+  changes: Partial<{ [K in keyof T]: { newValue?: StorageItem<T[K]>; oldValue?: unknown } }>,
+) => void;
 
 export interface StorageItem<T> {
   version: string;
@@ -25,26 +18,36 @@ type Version = string;
 // See `migration.test.ts` for an example.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Migration = Record<Version, (a: any) => any>;
-type Migrations<K extends string | number | symbol> = Partial<Record<K, Migration>>;
 
-export class ExtensionStorage<T> {
+export class ExtensionStorage<T, D extends keyof T> {
   constructor(
-    private storage: IStorage,
-    private defaults: T,
+    private storage: chrome.storage.StorageArea,
+    private defaults: Pick<T, D>,
     private version: Version,
-    private migrations: Migrations<keyof T>,
+    private migrations: Partial<Record<keyof T, Migration>>,
   ) {}
 
-  async get<K extends keyof T>(key: K): Promise<T[K]> {
+  async get<K extends keyof T>(key: K): Promise<Partial<T>[K]> {
+    console.log('GET', key);
     const result = (await this.storage.get(String(key))) as
       | Record<K, StorageItem<T[K]>>
       | EmptyObject;
 
-    if (isEmptyObj(result)) return this.defaults[key];
-    else return await this.migrateIfNeeded(key, result[key]);
+    // no value in storage
+    if (isEmptyObj(result)) {
+      if (key in this.defaults) return this.defaults[key as K & D];
+      else return (result as Partial<T>)[key as Exclude<K, D>];
+    }
+
+    // old version in storage
+    if (result[key].version !== this.version) return await this.migrate(key, result[key]);
+
+    // normal case
+    return result[key].value;
   }
 
   async set<K extends keyof T>(key: K, value: T[K]): Promise<void> {
+    console.log('SET', key, value);
     await this.storage.set({
       [String(key)]: {
         version: this.version,
@@ -53,31 +56,47 @@ export class ExtensionStorage<T> {
     });
   }
 
-  async remove<K extends keyof T>(key: K): Promise<void> {
-    await this.storage.remove(String(key));
+  async remove<K extends keyof T & string>(key: K): Promise<void> {
+    await this.storage.remove(key);
   }
 
-  addListener(listener: Listener) {
+  addListener(listener: ChromeStorageChangedListener & StorageListener<T>): void {
     this.storage.onChanged.addListener(listener);
   }
 
-  removeListener(listener: Listener) {
-    this.storage.onChanged.removeListener(listener);
+  removeListener(remove: ChromeStorageChangedListener): void {
+    this.storage.onChanged.removeListener(remove);
   }
 
-  private async migrateIfNeeded<K extends keyof T>(key: K, item: StorageItem<T[K]>): Promise<T[K]> {
-    if (item.version !== this.version) {
-      const migrationFn = this.migrations[key]?.[item.version];
-      if (migrationFn) {
-        // Update the value to latest schema
-        const transformedVal = migrationFn(item.value) as T[K];
-        await this.set(key, transformedVal);
-        return transformedVal;
-      } else {
-        // If there's no migration function, handle it appropriately, possibly by just returning the current value
-        return item.value;
+  public async waitFor<K extends keyof T>(key: K): Promise<NonNullable<T[K]>> {
+    const existing = await this.get(key);
+    if (existing != null) return existing;
+    const { promise, resolve, reject } = Promise.withResolvers<NonNullable<T[K]>>();
+    const listener: ChromeStorageChangedListener & StorageListener<T> = changes => {
+      if (key in changes && changes[key]?.newValue != null) {
+        const newValue = changes[key]?.newValue as StorageItem<T[K]>;
+        if (typeof newValue === 'object' && 'value' in newValue) {
+          if (newValue.value != null) resolve(newValue.value);
+          else reject(new Error('Storage item removed'));
+        } else reject(new TypeError('Invalid structure in storage update'));
       }
+    };
+    void promise.finally(() => this.removeListener(listener));
+    this.addListener(listener);
+    return promise;
+  }
+
+  private async migrate<K extends keyof T>(key: K, stored: StorageItem<T[K]>): Promise<T[K]> {
+    const migrateFrom = this.migrations[key]?.[stored.version];
+    if (!migrateFrom) {
+      // No migration, set to bump version
+      await this.set(key, stored.value);
+      return stored.value;
+    } else {
+      // Run migration, save and bump version
+      const migratedValue = migrateFrom(stored.value) as T[K];
+      await this.set(key, migratedValue);
+      return migratedValue;
     }
-    return item.value;
   }
 }

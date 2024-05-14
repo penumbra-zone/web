@@ -30,6 +30,7 @@ export const createWalletsSlice =
     return {
       all: [],
       addWallet: async ({ label, seedPhrase }) => {
+        console.log('addWallet');
         const seedPhraseStr = seedPhrase.join(' ');
         const spendKey = generateSpendKey(seedPhraseStr);
         const fullViewingKey = getFullViewingKey(spendKey);
@@ -52,7 +53,9 @@ export const createWalletsSlice =
         });
 
         const wallets = await local.get('wallets');
+        console.log('about to set wallets');
         await local.set('wallets', [newWallet.toJson(), ...wallets]);
+        console.log('set wallets');
         return newWallet;
       },
       getSeedPhrase: async () => {

@@ -58,6 +58,7 @@ export class CRSessionManager {
    * @param handler your router entry function
    */
   public static init = (prefix: string, handler: ChannelHandlerFn) => {
+    console.log('init session manager');
     CRSessionManager.singleton ??= new CRSessionManager(prefix, handler);
   };
 

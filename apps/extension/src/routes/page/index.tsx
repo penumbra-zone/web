@@ -10,7 +10,7 @@ import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 export const pageIndexLoader = async () => {
   const wallets = await localExtStorage.get('wallets');
 
-  if (!wallets.length) return redirect(PagePath.WELCOME);
+  if (!wallets?.length) return redirect(PagePath.WELCOME);
 
   return null;
 };

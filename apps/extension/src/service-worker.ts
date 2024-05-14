@@ -53,6 +53,7 @@ import {
 } from './storage/onboard';
 
 const startServices = async (wallet: WalletJson) => {
+  console.log('startServices');
   const grpcEndpoint = await onboardGrpcEndpoint();
   const services = new Services({
     idbVersion: IDB_VERSION,
@@ -65,7 +66,9 @@ const startServices = async (wallet: WalletJson) => {
 };
 
 const getServiceHandler = async () => {
+  console.log('getServiceHandler');
   const wallet = await onboardWallet();
+  console.log('got wallet');
   const services = backOff(() => startServices(wallet), {
     retry: (e, attemptNumber) => {
       console.log("Prax couldn't start services-context", attemptNumber, e);
@@ -74,7 +77,9 @@ const getServiceHandler = async () => {
   });
 
   const grpcEndpoint = await onboardGrpcEndpoint();
+  console.log('got grpc endpoint');
   const rpcImpls = getRpcImpls(grpcEndpoint);
+  console.log('got rpc impls');
 
   let custodyClient: PromiseClient<typeof CustodyService> | undefined;
   let stakingClient: PromiseClient<typeof StakingService> | undefined;
@@ -111,7 +116,6 @@ const getServiceHandler = async () => {
     },
   });
 };
-
 await fixEmptyGrpcEndpointAfterOnboarding();
 
 const handler = await getServiceHandler();
