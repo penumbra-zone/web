@@ -13,7 +13,7 @@ export const OnboardingSuccess = () => {
         <Button
           variant='gradient'
           onClick={() => {
-            window.open(MINIFRONT_URL, '_blank');
+            window.open(DEFAULT_FRONTEND_URL, '_blank');
             window.close();
           }}
           className='mt-4'

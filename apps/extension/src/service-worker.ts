@@ -8,8 +8,11 @@
  * - session manager for rpc entry
  */
 
-// side-effectful import attaches transport init listeners
-import './listeners';
+// do not relocate -----------
+// side-effectful imports
+import './listeners/install';
+import './listeners/messages';
+// end do not relocate -------
 
 // services
 import { Services } from '@penumbra-zone/services-context';
@@ -41,40 +44,34 @@ import { stakingClientCtx } from '@penumbra-zone/services/ctx/staking-client';
 import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
 
 // storage
-import {
-  FullViewingKey,
-  WalletId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import type { WalletJson } from '@penumbra-zone/types/wallet';
-import {
-  fixEmptyGrpcEndpointAfterOnboarding,
-  onboardGrpcEndpoint,
-  onboardWallet,
-} from './storage/onboard';
+import { fullViewingKey, walletId } from './storage/local/wallets';
+import { grpcEndpoint } from './storage/local/grpcEndpoint';
 
-const startServices = async (wallet: WalletJson) => {
-  const grpcEndpoint = await onboardGrpcEndpoint();
+const startServices = async () => {
+  console.log('startServices');
   const services = new Services({
     idbVersion: IDB_VERSION,
-    grpcEndpoint,
-    walletId: WalletId.fromJsonString(wallet.id),
-    fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
+    grpcEndpoint: String(await grpcEndpoint()),
+    walletId: await walletId(),
+    fullViewingKey: await fullViewingKey(),
   });
   await services.initialize();
   return services;
 };
 
 const getServiceHandler = async () => {
-  const wallet = await onboardWallet();
-  const services = backOff(() => startServices(wallet), {
+  console.log('getServiceHandler');
+  console.log('got wallet');
+  const services = backOff(() => startServices(), {
     retry: (e, attemptNumber) => {
       console.log("Prax couldn't start services-context", attemptNumber, e);
       return true;
     },
   });
 
-  const grpcEndpoint = await onboardGrpcEndpoint();
-  const rpcImpls = getRpcImpls(grpcEndpoint);
+  console.log('got grpc endpoint');
+  const rpcImpls = getRpcImpls(String(await grpcEndpoint()));
+  console.log('got rpc impls');
 
   let custodyClient: PromiseClient<typeof CustodyService> | undefined;
   let stakingClient: PromiseClient<typeof StakingService> | undefined;
@@ -111,8 +108,6 @@ const getServiceHandler = async () => {
     },
   });
 };
-
-await fixEmptyGrpcEndpointAfterOnboarding();
 
 const handler = await getServiceHandler();
 CRSessionManager.init(PRAX, handler);

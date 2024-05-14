@@ -10,7 +10,7 @@ import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 export const pageIndexLoader = async () => {
   const wallets = await localExtStorage.get('wallets');
 
-  if (!wallets.length) return redirect(PagePath.WELCOME);
+  if (!wallets?.length) return redirect(PagePath.WELCOME);
 
   return null;
 };
@@ -25,7 +25,7 @@ export const PageIndex = () => {
         variant='gradient'
         className='w-full'
         onClick={() => {
-          window.open(MINIFRONT_URL, '_blank');
+          window.open(DEFAULT_FRONTEND_URL, '_blank');
           window.close();
         }}
       >
