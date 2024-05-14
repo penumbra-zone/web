@@ -11,11 +11,13 @@ import { cosmos, ibc } from 'osmo-query';
 import { Toast } from '@penumbra-zone/ui/lib/toast/toast';
 import { tendermintClient } from '../clients';
 import { currentTimePlusTwoDaysRounded } from './ibc-out';
-import { StdFee } from '@cosmjs/stargate';
+import { calculateFee, GasPrice, SigningStargateClient } from '@cosmjs/stargate';
 import { getChainId } from '../fetchers/chain-id';
 import { BLOCKS_PER_HOUR } from './dutch-auction/constants';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { bech32CompatAddress } from '@penumbra-zone/bech32m/penumbracompat1';
+import { chains } from 'chain-registry';
+import { EncodeObject } from '@cosmjs/proto-signing';
 
 interface PenumbraAddrs {
   ephemeral: string;
@@ -109,6 +111,28 @@ const getCompatibleBech32 = (chainName: string, address: Address): string => {
   return bech32Chains.includes(chainName) ? bech32CompatAddress(address) : bech32mAddress(address);
 };
 
+const estimateFee = async ({
+  chainId,
+  client,
+  signerAddress,
+  message,
+}: {
+  chainId: string;
+  client: SigningStargateClient;
+  signerAddress: string;
+  message: EncodeObject;
+}) => {
+  const feeToken = chains.find(({ chain_id }) => chain_id === chainId)?.fees?.fee_tokens[0];
+  const avgGasPrice = feeToken?.average_gas_price;
+  if (!feeToken) throw new Error(`Fee token not found in registry for ${chainId}`);
+  if (!avgGasPrice) throw new Error(`Average gas price not found for ${chainId}`);
+
+  const estimatedGas = await client.simulate(signerAddress, [message], '');
+  const gasLimit = estimatedGas * 1.5; // Give some padding to the limit due to fluctuations
+  const gasPrice = GasPrice.fromString(`${feeToken.average_gas_price}${feeToken.denom}`); // e.g. 132uosmo
+  return calculateFee(gasLimit, gasPrice);
+};
+
 async function execute(
   slice: IbcInSlice,
   address: string,
@@ -139,13 +163,15 @@ async function execute(
   };
   const ibcTransferMsg = ibc.applications.transfer.v1.MessageComposer.withTypeUrl.transfer(params);
 
-  // TODO: Properly estimate fee using estimateFee() hook from useChain()
-  const estimatedFee: StdFee = {
-    amount: [{ denom: transferToken.denom, amount: '1000' }],
-    gas: '250000',
-  };
   const client = await getStargateClient();
-  const signedTx = await client.sign(address, [ibcTransferMsg], estimatedFee, '');
+  const fee = await estimateFee({
+    chainId: selectedChain.chainId,
+    client,
+    signerAddress: address,
+    message: ibcTransferMsg,
+  });
+
+  const signedTx = await client.sign(address, [ibcTransferMsg], fee, '');
   return await client.broadcastTx(cosmos.tx.v1beta1.TxRaw.encode(signedTx).finish());
 }
 
