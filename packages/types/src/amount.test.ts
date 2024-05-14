@@ -15,7 +15,7 @@ import {
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import {
   Metadata,
-  ValueView_KnownAssetId,
+  ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 describe('lohi helpers', () => {
@@ -30,7 +30,7 @@ describe('lohi helpers', () => {
     expect(joinLoHiAmount(new Amount({ lo, hi }))).toBe(340282366920938463463374607431768211455n);
   });
 
-  it('fromBaseUnitAmountAndMetadata works', () => {
+  it('fromBaseUnitAmountAndMetadata works for knownAssetId', () => {
     const penumbraMetadata = new Metadata({
       display: 'penumbra',
       denomUnits: [
@@ -50,13 +50,33 @@ describe('lohi helpers', () => {
     });
 
     const result = fromValueView(
-      new ValueView_KnownAssetId({
-        amount: { lo: 123456789n, hi: 0n },
-        metadata: penumbraMetadata,
+      new ValueView({
+        valueView: {
+          case: 'knownAssetId',
+          value: {
+            amount: { lo: 123456789n, hi: 0n },
+            metadata: penumbraMetadata,
+          },
+        },
       }),
     );
 
     expect(result.toString()).toBe('123.456789');
+  });
+
+  it('fromBaseUnitAmountAndMetadata works for unknownAssetId', () => {
+    const result = fromValueView(
+      new ValueView({
+        valueView: {
+          case: 'unknownAssetId',
+          value: {
+            amount: { lo: 123456789n, hi: 0n },
+          },
+        },
+      }),
+    );
+
+    expect(result.toString()).toBe('123456789');
   });
 });
 
