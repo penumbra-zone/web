@@ -6,14 +6,15 @@ import { useStoreShallow } from '../../../utils/use-store-shallow';
 const addrsSelector = ({ ibcIn }: AllSlices) => ({
   fetchPenumbraAddrs: ibcIn.fetchPenumbraAddrs,
   penumbraAddrs: ibcIn.penumbraAddrs,
+  selectedChain: ibcIn.selectedChain,
 });
 
 export const DestinationAddr = () => {
-  const { penumbraAddrs, fetchPenumbraAddrs } = useStoreShallow(addrsSelector);
+  const { penumbraAddrs, fetchPenumbraAddrs, selectedChain } = useStoreShallow(addrsSelector);
 
   // TODO: allow for user account selection
   // On mount, get normal+ephemeral address for Account #0
-  useEffect(() => void fetchPenumbraAddrs(), [fetchPenumbraAddrs]);
+  useEffect(() => void fetchPenumbraAddrs(), [fetchPenumbraAddrs, selectedChain]);
 
   return (
     <div className='flex flex-col gap-1 break-all text-stone-700'>
