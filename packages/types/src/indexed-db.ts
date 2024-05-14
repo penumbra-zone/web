@@ -117,7 +117,6 @@ export interface IndexedDbInterface {
       auction?: T;
       noteCommitment?: StateCommitment;
       seqNum?: bigint;
-      outstandingReserves?: { input: Value; output: Value };
     },
   ): Promise<void>;
 
@@ -127,6 +126,20 @@ export interface IndexedDbInterface {
     noteCommitment?: StateCommitment;
     seqNum?: bigint;
   }>;
+
+  addAuctionOutstandingReserves(
+    auctionId: AuctionId,
+    value: {
+      input: Value;
+      output: Value;
+    },
+  ): Promise<void>;
+
+  deleteAuctionOutstandingReserves(auctionId: AuctionId): Promise<void>;
+
+  getAuctionOutstandingReserves(
+    auctionId: AuctionId,
+  ): Promise<{ input: Value; output: Value } | undefined>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -233,11 +246,17 @@ export interface PenumbraDb extends DBSchema {
        * `2n`+: the user has withdrawn funds from the auction
        */
       seqNum?: bigint;
-      /**
-       * Only populated when BOTH a) the user has ended an auction, and b) the
-       * user has not yet withdrawn funds from it.
-       */
-      outstandingReserves?: { input: Jsonified<Value>; output: Jsonified<Value> };
+    };
+  };
+  /**
+   * Only populated when BOTH a) the user has ended an auction, and b) the
+   * user has not yet withdrawn funds from it.
+   */
+  AUCTION_OUTSTANDING_RESERVES: {
+    key: string; // base64 AuctionId
+    value: {
+      input: Jsonified<Value>;
+      output: Jsonified<Value>;
     };
   };
 }
@@ -261,6 +280,7 @@ export interface IdbConstants {
 export const IDB_TABLES: Tables = {
   assets: 'ASSETS',
   auctions: 'AUCTIONS',
+  auction_outstanding_reserves: 'AUCTION_OUTSTANDING_RESERVES',
   notes: 'NOTES',
   spendable_notes: 'SPENDABLE_NOTES',
   swaps: 'SWAPS',

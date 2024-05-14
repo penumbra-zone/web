@@ -13,7 +13,7 @@ export const processActionDutchAuctionWithdraw = async (
     indexedDb.saveAssetsMetadata(metadata),
     indexedDb.upsertAuction(auctionId, {
       seqNum,
-      outstandingReserves: undefined,
     }),
+    indexedDb.deleteAuctionOutstandingReserves(auctionId),
   ]);
 };

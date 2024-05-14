@@ -39,6 +39,7 @@ export const processActionDutchAuctionEnd = async (
 
   await Promise.all([
     indexedDb.saveAssetsMetadata(metadata),
-    indexedDb.upsertAuction(action.auctionId, { seqNum, outstandingReserves }),
+    indexedDb.upsertAuction(action.auctionId, { seqNum }),
+    indexedDb.addAuctionOutstandingReserves(action.auctionId, outstandingReserves),
   ]);
 };

@@ -736,50 +736,56 @@ describe('IndexedDb', () => {
         seqNum: 1n,
       });
     });
+  });
 
-    it('updates an auction with outstanding reserves', async () => {
-      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
-      const auction = new DutchAuctionDescription({ startHeight: 1234n });
-      await db.upsertAuction(auctionId, { auction });
+  describe('addAuctionOutstandingReserves()', () => {
+    let db: IndexedDb;
 
-      let fetchedAuction = await db.getAuction(auctionId);
-      expect(fetchedAuction).toBeTruthy();
-
-      const outstandingReserves = {
-        input: new Value({ amount: { hi: 0n, lo: 1n }, assetId: new AssetId() }),
-        output: new Value({ amount: { hi: 0n, lo: 2n }, assetId: new AssetId() }),
-      };
-      await db.upsertAuction(auctionId, {
-        outstandingReserves,
-      });
-
-      fetchedAuction = await db.getAuction(auctionId);
-      expect(fetchedAuction).toBeTruthy();
-
-      expect(fetchedAuction).toEqual({
-        auction,
-        outstandingReserves,
-      });
+    beforeEach(async () => {
+      db = await IndexedDb.initialize({ ...generateInitialProps() });
     });
 
-    it('allows clearing the outstanding reserves', async () => {
+    it('saves the outstanding reserves', async () => {
       const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
-      const auction = new DutchAuctionDescription({ startHeight: 1234n });
-      const outstandingReserves = {
-        input: new Value({ amount: { hi: 0n, lo: 1n }, assetId: new AssetId() }),
-        output: new Value({ amount: { hi: 0n, lo: 2n }, assetId: new AssetId() }),
-      };
-      await db.upsertAuction(auctionId, { auction, outstandingReserves });
-
-      let fetchedAuction = await db.getAuction(auctionId);
-      expect(fetchedAuction.outstandingReserves).toBeTruthy();
-
-      await db.upsertAuction(auctionId, {
-        outstandingReserves: undefined,
+      const input = new Value({
+        amount: { hi: 0n, lo: 1n },
+        assetId: { inner: new Uint8Array([1, 1, 1, 1]) },
       });
+      const output = new Value({
+        amount: { hi: 0n, lo: 2n },
+        assetId: { inner: new Uint8Array([2, 2, 2, 2]) },
+      });
+      await db.addAuctionOutstandingReserves(auctionId, { input, output });
 
-      fetchedAuction = await db.getAuction(auctionId);
-      expect(fetchedAuction.outstandingReserves).toBeUndefined();
+      await expect(db.getAuctionOutstandingReserves(auctionId)).resolves.toEqual({ input, output });
+    });
+  });
+
+  describe('deleteAuctionOutstandingReserves()', () => {
+    let db: IndexedDb;
+
+    beforeEach(async () => {
+      db = await IndexedDb.initialize({ ...generateInitialProps() });
+    });
+
+    it('deletes the reserves', async () => {
+      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const input = new Value({
+        amount: { hi: 0n, lo: 1n },
+        assetId: { inner: new Uint8Array([1, 1, 1, 1]) },
+      });
+      const output = new Value({
+        amount: { hi: 0n, lo: 2n },
+        assetId: { inner: new Uint8Array([2, 2, 2, 2]) },
+      });
+      await db.addAuctionOutstandingReserves(auctionId, { input, output });
+
+      // Make sure this test is actually deleting an existing record
+      await expect(db.getAuctionOutstandingReserves(auctionId)).resolves.toBeTruthy();
+
+      await db.deleteAuctionOutstandingReserves(auctionId);
+
+      await expect(db.getAuctionOutstandingReserves(auctionId)).resolves.toBeUndefined();
     });
   });
 });

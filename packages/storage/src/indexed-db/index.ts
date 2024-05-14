@@ -123,6 +123,7 @@ export class IndexedDb implements IndexedDbInterface {
           keyPath: ['pricedAsset.inner', 'numeraire.inner'],
         }).createIndex('pricedAsset', 'pricedAsset.inner');
         db.createObjectStore('AUCTIONS');
+        db.createObjectStore('AUCTION_OUTSTANDING_RESERVES');
         db.createObjectStore('REGISTRY_VERSION');
       },
     });
@@ -730,14 +731,6 @@ export class IndexedDb implements IndexedDbInterface {
     const noteCommitment =
       (value.noteCommitment?.toJson() as Jsonified<StateCommitment> | undefined) ??
       existingRecord?.noteCommitment;
-    const outstandingReserves = value.outstandingReserves
-      ? {
-          input: value.outstandingReserves.input.toJson() as Jsonified<Value>,
-          output: value.outstandingReserves.output.toJson() as Jsonified<Value>,
-        }
-      : 'outstandingReserves' in value
-        ? undefined
-        : existingRecord?.outstandingReserves;
     const seqNum = value.seqNum ?? existingRecord?.seqNum;
 
     await this.u.update({
@@ -747,7 +740,6 @@ export class IndexedDb implements IndexedDbInterface {
         auction,
         noteCommitment,
         seqNum,
-        outstandingReserves,
       },
     });
   }
@@ -757,7 +749,6 @@ export class IndexedDb implements IndexedDbInterface {
     auction?: DutchAuctionDescription;
     noteCommitment?: StateCommitment;
     seqNum?: bigint;
-    outstandingReserves?: { input: Value; output: Value };
   }> {
     const result = await this.db.get('AUCTIONS', uint8ArrayToBase64(auctionId.inner));
 
@@ -767,12 +758,40 @@ export class IndexedDb implements IndexedDbInterface {
         ? StateCommitment.fromJson(result.noteCommitment)
         : undefined,
       seqNum: result?.seqNum,
-      outstandingReserves: result?.outstandingReserves
-        ? {
-            input: Value.fromJson(result.outstandingReserves.input),
-            output: Value.fromJson(result.outstandingReserves.output),
-          }
-        : undefined,
+    };
+  }
+
+  async addAuctionOutstandingReserves(
+    auctionId: AuctionId,
+    value: { input: Value; output: Value },
+  ): Promise<void> {
+    await this.db.add(
+      'AUCTION_OUTSTANDING_RESERVES',
+      {
+        input: value.input.toJson() as Jsonified<Value>,
+        output: value.output.toJson() as Jsonified<Value>,
+      },
+      uint8ArrayToBase64(auctionId.inner),
+    );
+  }
+
+  async deleteAuctionOutstandingReserves(auctionId: AuctionId): Promise<void> {
+    await this.db.delete('AUCTION_OUTSTANDING_RESERVES', uint8ArrayToBase64(auctionId.inner));
+  }
+
+  async getAuctionOutstandingReserves(
+    auctionId: AuctionId,
+  ): Promise<{ input: Value; output: Value } | undefined> {
+    const result = await this.db.get(
+      'AUCTION_OUTSTANDING_RESERVES',
+      uint8ArrayToBase64(auctionId.inner),
+    );
+
+    if (!result) return undefined;
+
+    return {
+      input: Value.fromJson(result.input),
+      output: Value.fromJson(result.output),
     };
   }
 }

@@ -45,6 +45,7 @@ pub struct Tables {
     pub transactions: String,
     pub full_sync_height: String,
     pub auctions: String,
+    pub auction_outstanding_reserves: String,
 }
 
 pub struct IndexedDBStorage {
@@ -363,30 +364,28 @@ impl IndexedDBStorage {
         &self,
         auction_id: AuctionId,
     ) -> WasmResult<OutstandingReserves> {
-        self.db
-            .transaction_on_one(&self.constants.tables.auctions)?
-            .object_store(&self.constants.tables.auctions)?
+        let result = self
+            .db
+            .transaction_on_one(&self.constants.tables.auction_outstanding_reserves)?
+            .object_store(&self.constants.tables.auction_outstanding_reserves)?
             .get::<JsValue>(&byte_array_to_base64(&auction_id.to_proto().inner).into())?
             .await?
-            .map(|auction| {
-                serde_wasm_bindgen::from_value::<AuctionRecord>(auction)?
-                    .outstanding_reserves
-                    .ok_or(WasmError::Anyhow(Error::msg("could not find reserves")))
-            })
+            .map(serde_wasm_bindgen::from_value::<OutstandingReserves>)
             .unwrap_or(Err(WasmError::Anyhow(Error::msg(
                 "could not find reserves",
-            ))))
+            ))
+            .into()));
+
+        if let Ok(outstanding_reserves) = result {
+            Ok(outstanding_reserves)
+        } else {
+            Err(WasmError::Anyhow(Error::msg("could not find reserves")))
+        }
     }
 }
 
 fn byte_array_to_base64(byte_array: &Vec<u8>) -> String {
     base64::Engine::encode(&base64::engine::general_purpose::STANDARD, byte_array)
-}
-
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct AuctionRecord {
-    pub outstanding_reserves: Option<OutstandingReserves>,
 }
 
 #[derive(Serialize, Deserialize)]
