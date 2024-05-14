@@ -17,14 +17,12 @@ export const isZero = (amount: Amount): boolean => {
 };
 
 export const fromValueView = (valueView: ValueView): BigNumber => {
-  if (valueView.valueView.case === 'knownAssetId') {
-    return fromBaseUnitAmount(
-      getAmount(valueView),
-      getDisplayDenomExponentFromValueView(valueView),
-    );
-  } else {
-    return fromBaseUnitAmount(getAmount(valueView), 0);
-  }
+  return fromBaseUnitAmount(
+    getAmount(valueView),
+    valueView.valueView.case === 'knownAssetId'
+      ? getDisplayDenomExponentFromValueView(valueView)
+      : 0,
+  );
 };
 
 export const fromString = (amount: string, exponent = 0): Amount =>
