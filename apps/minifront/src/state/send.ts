@@ -152,10 +152,11 @@ export const amountMoreThanBalance = (
    */
   amountInDisplayDenom: string,
 ): boolean => {
-  if (asset.balanceView?.valueView.case !== 'knownAssetId')
-    throw new Error('unknown asset selected');
+  if (!asset.balanceView) {
+    throw new Error('Missing balanceView');
+  }
 
-  const balanceAmt = fromValueView(asset.balanceView.valueView.value);
+  const balanceAmt = fromValueView(asset.balanceView);
   return Boolean(amountInDisplayDenom) && BigNumber(amountInDisplayDenom).gt(balanceAmt);
 };
 

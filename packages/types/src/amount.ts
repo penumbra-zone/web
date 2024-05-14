@@ -1,8 +1,8 @@
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { fromBaseUnit, joinLoHi, splitLoHi, toBaseUnit } from './lo-hi';
 import { BigNumber } from 'bignumber.js';
-import { ValueView_KnownAssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { getAmount, getDisplayDenomExponentFromValueView } from '@penumbra-zone/getters/value-view';
 
 export const joinLoHiAmount = (amount: Amount): bigint => {
   return joinLoHi(amount.lo, amount.hi);
@@ -16,11 +16,13 @@ export const isZero = (amount: Amount): boolean => {
   return joinLoHiAmount(amount) === 0n;
 };
 
-export const fromValueView = ({ amount, metadata }: ValueView_KnownAssetId): BigNumber => {
-  if (!amount) throw new Error('No amount in value view');
-  if (!metadata) throw new Error('No denom in value view');
-
-  return fromBaseUnitAmount(amount, getDisplayDenomExponent(metadata));
+export const fromValueView = (valueView: ValueView): BigNumber => {
+  return fromBaseUnitAmount(
+    getAmount(valueView),
+    valueView.valueView.case === 'knownAssetId'
+      ? getDisplayDenomExponentFromValueView(valueView)
+      : 0,
+  );
 };
 
 export const fromString = (amount: string, exponent = 0): Amount =>
