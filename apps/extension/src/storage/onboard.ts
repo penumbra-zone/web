@@ -1,3 +1,4 @@
+import { Listener } from '@penumbra-zone/storage/chrome/base';
 import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 import { WalletJson } from '@penumbra-zone/types/wallet';
 
@@ -13,8 +14,12 @@ export const onboardGrpcEndpoint = async (): Promise<string> => {
   return new Promise(resolve => {
     const storageListener = (changes: Record<string, { newValue?: unknown }>) => {
       const newValue = changes['grpcEndpoint']?.newValue;
-      if (newValue && typeof newValue === 'string') {
-        resolve(newValue);
+      const val =
+        typeof newValue === 'object' && newValue != null && 'value' in newValue
+          ? newValue.value
+          : undefined;
+      if (val && typeof val === 'string') {
+        resolve(val);
         localExtStorage.removeListener(storageListener);
       }
     };
@@ -27,10 +32,14 @@ export const onboardWallet = async (): Promise<WalletJson> => {
   if (wallets[0]) return wallets[0];
 
   return new Promise(resolve => {
-    const storageListener = (changes: Record<string, { newValue?: unknown }>) => {
-      const newValue: unknown = changes['wallets']?.newValue;
-      if (Array.isArray(newValue) && newValue[0]) {
-        resolve(newValue[0] as WalletJson);
+    const storageListener: Listener = changes => {
+      const newValue = changes['wallets']?.newValue;
+      const val =
+        typeof newValue === 'object' && newValue != null && 'value' in newValue
+          ? newValue.value
+          : undefined;
+      if (Array.isArray(val) && val[0]) {
+        resolve(val[0] as WalletJson);
         localExtStorage.removeListener(storageListener);
       }
     };

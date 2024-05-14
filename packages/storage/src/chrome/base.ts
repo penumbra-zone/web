@@ -1,6 +1,8 @@
 import { EmptyObject, isEmptyObj } from '@penumbra-zone/types/utility';
 
-type Listener = (changes: Record<string, { oldValue?: unknown; newValue?: unknown }>) => void;
+export type Listener = (
+  changes: Record<string, { oldValue?: unknown; newValue?: unknown }>,
+) => void;
 
 export interface IStorage {
   get(key: string): Promise<Record<string, unknown>>;
