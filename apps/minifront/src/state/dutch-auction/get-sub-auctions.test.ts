@@ -75,6 +75,16 @@ describe('getSubAuctions()', () => {
     });
   });
 
+  it('rounds down to the nearest whole number input', async () => {
+    expect.assertions(4);
+
+    const subAuctions = await getSubAuctions({ ...ARGS, duration: '10min', amount: '2.666666' });
+
+    subAuctions.forEach(subAuction => {
+      expect(subAuction.description?.input?.amount).toEqual(new Amount({ hi: 0n, lo: 666_666n }));
+    });
+  });
+
   it('correctly divides the min/max outputs across sub-auctions, using the display denom exponent', async () => {
     expect.assertions(8);
 
@@ -88,6 +98,39 @@ describe('getSubAuctions()', () => {
     subAuctions.forEach(subAuction => {
       expect(subAuction.description?.minOutput).toEqual(new Amount({ hi: 0n, lo: 250n }));
       expect(subAuction.description?.maxOutput).toEqual(new Amount({ hi: 0n, lo: 2_500n }));
+    });
+  });
+
+  it('rounds down to the nearest whole number output', async () => {
+    expect.assertions(8);
+
+    const subAuctions = await getSubAuctions({
+      ...ARGS,
+      duration: '10min',
+      maxOutput: '10.666',
+      minOutput: '2.666',
+    });
+
+    subAuctions.forEach(subAuction => {
+      expect(subAuction.description?.minOutput).toEqual(new Amount({ hi: 0n, lo: 666n }));
+      expect(subAuction.description?.maxOutput).toEqual(new Amount({ hi: 0n, lo: 2_666n }));
+    });
+  });
+
+  it("doesn't choke when the user enters too many decimal places for the given asset type", async () => {
+    expect.assertions(8);
+
+    const subAuctions = await getSubAuctions({
+      ...ARGS,
+      duration: '10min',
+      amount: '2.666666666666666666666666666666',
+      maxOutput: '10.666666666666666666666666666666',
+      minOutput: '2.666666666666666666666666666666',
+    });
+
+    subAuctions.forEach(subAuction => {
+      expect(subAuction.description?.minOutput).toEqual(new Amount({ hi: 0n, lo: 666n }));
+      expect(subAuction.description?.maxOutput).toEqual(new Amount({ hi: 0n, lo: 2_666n }));
     });
   });
 });

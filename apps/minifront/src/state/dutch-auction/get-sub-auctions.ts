@@ -11,6 +11,7 @@ import { BLOCKS_PER_MINUTE, GDA_RECIPES, GdaRecipe, STEP_COUNT } from './constan
 import { getPoissonDistribution } from './get-poisson-distribution';
 import { splitLoHi } from '@penumbra-zone/types/lo-hi';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import BigNumber from 'bignumber.js';
 
 /**
  * The start height of an auction must be, at minimum, the current block height.
@@ -58,7 +59,7 @@ export const getSubAuctions = async ({
   const scaledInputAmount = splitLoHi(
     BigInt(
       divideAmounts(inputAmount, new Amount(splitLoHi(recipe.numberOfSubAuctions)))
-        .decimalPlaces(0)
+        .decimalPlaces(0, BigNumber.ROUND_FLOOR)
         .toString(),
     ),
   );
@@ -66,7 +67,7 @@ export const getSubAuctions = async ({
   const scaledMinOutputAmount = splitLoHi(
     BigInt(
       divideAmounts(minOutputAmount, new Amount(splitLoHi(recipe.numberOfSubAuctions)))
-        .decimalPlaces(0)
+        .decimalPlaces(0, BigNumber.ROUND_FLOOR)
         .toString(),
     ),
   );
@@ -74,7 +75,7 @@ export const getSubAuctions = async ({
   const scaledMaxOutputAmount = splitLoHi(
     BigInt(
       divideAmounts(maxOutputAmount, new Amount(splitLoHi(recipe.numberOfSubAuctions)))
-        .decimalPlaces(0)
+        .decimalPlaces(0, BigNumber.ROUND_FLOOR)
         .toString(),
     ),
   );

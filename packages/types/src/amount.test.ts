@@ -289,4 +289,11 @@ describe('fromString', () => {
 
     expect(result.equals(expected)).toBe(true);
   });
+
+  it('rounds down when the user enters too many decimal places for the given exponent', () => {
+    const result = fromString('123.456789', 3);
+    const expected = new Amount({ hi: 0n, lo: 123456n });
+
+    expect(result.equals(expected)).toBe(true);
+  });
 });
