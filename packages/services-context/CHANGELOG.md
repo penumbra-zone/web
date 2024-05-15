@@ -1,5 +1,17 @@
 # @penumbra-zone/services
 
+## 3.0.4
+
+### Patch Changes
+
+- 610a445: update osmosis channel for deimos-8
+- Updated dependencies
+- Updated dependencies [610a445]
+  - @penumbra-zone/query@3.1.0
+  - @penumbra-zone/storage@3.2.0
+  - @penumbra-zone/types@4.1.0
+  - @penumbra-zone/wasm@4.0.4
+
 ## 3.0.3
 
 ### Patch Changes

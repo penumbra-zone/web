@@ -1,5 +1,14 @@
 # node-status
 
+## 2.0.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/ui@3.0.0
+  - @penumbra-zone/types@4.1.0
+  - @penumbra-zone/crypto-web@3.0.5
+
 ## 2.0.6
 
 ### Patch Changes
