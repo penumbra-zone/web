@@ -1,25 +1,24 @@
+import { ChainInfo } from '../components/ibc/ibc-in/chain-dropdown';
+import { CosmosAssetBalance } from '../components/ibc/ibc-in/hooks';
+import { ChainWalletContext } from '@cosmos-kit/core';
+import { AllSlices, SliceCreator } from '.';
+import { getAddrByIndex } from '../fetchers/address';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
-import { ChainWalletContext } from '@cosmos-kit/core/cjs/types/hook';
-import { MsgTransfer } from 'osmo-query/ibc/applications/transfer/v1/tx';
-import { cosmos, ibc } from 'osmo-query';
 import { Toast } from '@penumbra-zone/ui/lib/toast/toast';
-import { calculateFee, GasPrice, SigningStargateClient } from '@cosmjs/stargate';
+import { shorten } from '@penumbra-zone/types/string';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { bech32CompatAddress } from '@penumbra-zone/bech32m/penumbracompat1';
+import { calculateFee, GasPrice, SigningStargateClient } from '@cosmjs/stargate';
 import { chains } from 'chain-registry';
+import { getChainId } from '../fetchers/chain-id';
+import { augmentToAsset, fromDisplayAmount } from '../components/ibc/ibc-in/asset-utils';
+import { cosmos, ibc } from 'osmo-query';
+import { chainRegistryClient } from '../fetchers/registry';
+import { tendermintClient } from '../clients';
+import { BLOCKS_PER_HOUR } from './dutch-auction/constants';
+import { currentTimePlusTwoDaysRounded } from './ibc-out';
 import { EncodeObject } from '@cosmjs/proto-signing';
-import { bech32Chains, blockExplorerTxBase } from './constants';
-import { ChainInfo } from '../../components/ibc/ibc-in/chain-dropdown';
-import { CosmosAssetBalance } from '../../components/ibc/ibc-in/hooks';
-import { AllSlices, SliceCreator } from '..';
-import { getAddrByIndex } from '../../fetchers/address';
-import { getChainId } from '../../fetchers/chain-id';
-import { augmentToAsset, fromDisplayAmount } from '../../components/ibc/ibc-in/asset-utils';
-import { chainRegistryClient } from '../../fetchers/registry';
-import { tendermintClient } from '../../clients';
-import { BLOCKS_PER_HOUR } from '../dutch-auction/constants';
-import { currentTimePlusTwoDaysRounded } from '../ibc-out';
-import { shorten } from '@penumbra-zone/types/string';
+import { MsgTransfer } from 'osmo-query/ibc/applications/transfer/v1/tx';
 
 interface PenumbraAddrs {
   ephemeral: string;
@@ -91,12 +90,12 @@ export const createIbcInSlice = (): SliceCreator<IbcInSlice> => (set, get) => {
           throw new Error(`Tendermint error: ${code}`);
         }
 
-        // If we have a block explorer base tx link for this chain id, include it in toast
+        // If we have a block explorer tx page link for this chain id, include it in toast
         const chainId = get().ibcIn.selectedChain?.chainId;
-        const baseTxLink = chainId ? blockExplorerTxBase[chainId] : undefined;
-        if (baseTxLink) {
+        const explorerTxPage = getExplorerPage(transactionHash, chainId);
+        if (explorerTxPage) {
           toast.action(
-            <a href={`${baseTxLink}/${transactionHash}`} target='_blank' rel='noreferrer'>
+            <a href={explorerTxPage} target='_blank' rel='noreferrer'>
               See details
             </a>,
           );
@@ -117,12 +116,23 @@ export const createIbcInSlice = (): SliceCreator<IbcInSlice> => (set, get) => {
   };
 };
 
+const getExplorerPage = (txHash: string, chainId?: string) => {
+  if (!chainId) return undefined;
+
+  // They come in the format of "https://mintscan.io/noble-testnet/txs/${txHash}"
+  const txPage = chains.find(({ chain_id }) => chain_id === chainId)?.explorers?.[0]?.tx_page;
+  if (!txPage) return undefined;
+
+  return txPage.replace('${txHash}', txHash);
+};
+
 /**
  * For Noble specifically we need to use a Bech32 encoding rather than Bech32m,
  * because Noble currently has a middleware that decodes as Bech32.
  * Noble plans to change this at some point in the future but until then we need
  * to use a special encoding just for Noble specifically.
  */
+const bech32Chains = ['noble', 'nobletestnet'];
 const getCompatibleBech32 = (chainName: string, address: Address): string => {
   return bech32Chains.includes(chainName) ? bech32CompatAddress(address) : bech32mAddress(address);
 };
