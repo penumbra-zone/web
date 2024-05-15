@@ -72,10 +72,10 @@ describe('assembleScheduleRequest()', () => {
     );
   });
 
-  it('uses a step count of 120', async () => {
+  it('uses a step count of 60', async () => {
     const req = await assembleScheduleRequest(ARGS);
 
-    expect(req.dutchAuctionScheduleActions[0]!.description!.stepCount).toBe(120n);
+    expect(req.dutchAuctionScheduleActions[0]!.description!.stepCount).toBe(60n);
   });
 
   it('correctly parses the input based on the display denom exponent', async () => {
