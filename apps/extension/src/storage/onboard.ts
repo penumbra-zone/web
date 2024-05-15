@@ -1,5 +1,7 @@
+import { Listener, StorageItem } from '@penumbra-zone/storage/chrome/base';
 import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 import { WalletJson } from '@penumbra-zone/types/wallet';
+import { LocalStorageState } from '@penumbra-zone/storage/chrome/types';
 
 /**
  * When a user first onboards with the extension, they won't have chosen a gRPC
@@ -12,9 +14,12 @@ export const onboardGrpcEndpoint = async (): Promise<string> => {
 
   return new Promise(resolve => {
     const storageListener = (changes: Record<string, { newValue?: unknown }>) => {
-      const newValue = changes['grpcEndpoint']?.newValue;
-      if (newValue && typeof newValue === 'string') {
-        resolve(newValue);
+      const storageItem = changes['grpcEndpoint']?.newValue as
+        | StorageItem<LocalStorageState['grpcEndpoint']>
+        | undefined;
+      const rpcEndpoint = storageItem?.value;
+      if (rpcEndpoint) {
+        resolve(rpcEndpoint);
         localExtStorage.removeListener(storageListener);
       }
     };
@@ -27,10 +32,13 @@ export const onboardWallet = async (): Promise<WalletJson> => {
   if (wallets[0]) return wallets[0];
 
   return new Promise(resolve => {
-    const storageListener = (changes: Record<string, { newValue?: unknown }>) => {
-      const newValue: unknown = changes['wallets']?.newValue;
-      if (Array.isArray(newValue) && newValue[0]) {
-        resolve(newValue[0] as WalletJson);
+    const storageListener: Listener = changes => {
+      const storageItem = changes['wallets']?.newValue as
+        | StorageItem<LocalStorageState['wallets']>
+        | undefined;
+      const initialWallet = storageItem?.value[0];
+      if (initialWallet) {
+        resolve(initialWallet);
         localExtStorage.removeListener(storageListener);
       }
     };
