@@ -1,5 +1,13 @@
 # @penumbra-zone/wasm
 
+## 4.0.4
+
+### Patch Changes
+
+- v8.0.0 versioning and manifest
+- Updated dependencies
+  - @penumbra-zone/types@4.1.0
+
 ## 4.0.3
 
 ### Patch Changes
