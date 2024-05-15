@@ -40,7 +40,7 @@ import { PRICE_RELEVANCE_THRESHOLDS, assetPatterns } from '@penumbra-zone/types/
 import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
-import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
 import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auction-end';

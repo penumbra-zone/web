@@ -7,7 +7,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
-import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 
 const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: AssetId) => {
   let metadata: Metadata | undefined;

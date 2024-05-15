@@ -5,7 +5,7 @@ import {
 import { Progress } from '../progress';
 import { getProgress } from './get-progress';
 import { getPrice } from './get-price';
-import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { ValueViewComponent } from '../tx/view/value';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { ReactNode, useLayoutEffect, useMemo, useRef, useState } from 'react';

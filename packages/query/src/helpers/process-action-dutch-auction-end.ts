@@ -2,7 +2,7 @@ import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/ass
 import {
   ActionDutchAuctionEnd,
   DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import { AuctionQuerierInterface } from '@penumbra-zone/types/querier';
 import { getAuctionNftMetadata } from '@penumbra-zone/wasm/auction';

@@ -9,7 +9,7 @@ import {
   ActionDutchAuctionEnd,
   AuctionId,
   DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
 vi.mock('@penumbra-zone/wasm/auction', () => ({

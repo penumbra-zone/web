@@ -13,7 +13,7 @@ import { DurationOption } from './constants';
 import {
   AuctionId,
   DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { viewClient } from '../../clients';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 

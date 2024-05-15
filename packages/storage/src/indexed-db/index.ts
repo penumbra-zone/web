@@ -62,7 +62,7 @@ import { sctPosition } from '@penumbra-zone/wasm/tree';
 import {
   AuctionId,
   DutchAuctionDescription,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 
 interface IndexedDbProps {

@@ -1,6 +1,6 @@
 import { CopyToClipboardIconButton } from './copy-to-clipboard-icon-button';
 import { useMemo } from 'react';
-import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { bech32mAuctionId, PENUMBRA_BECH32M_AUCTION_PREFIX } from '@penumbra-zone/bech32m/pauctid';
 
 const SEPARATOR_INDEX = PENUMBRA_BECH32M_AUCTION_PREFIX.length + 1;

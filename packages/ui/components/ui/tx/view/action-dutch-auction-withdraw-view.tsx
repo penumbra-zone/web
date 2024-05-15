@@ -1,4 +1,4 @@
-import { ActionDutchAuctionWithdrawView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { ActionDutchAuctionWithdrawView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { ViewBox } from './viewbox';
 import { ActionDetails } from './action-details';
 import { AuctionIdComponent } from '../../auction-id-component';

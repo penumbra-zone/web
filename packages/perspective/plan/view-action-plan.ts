@@ -32,7 +32,7 @@ import {
 import {
   ActionDutchAuctionWithdrawPlan,
   ActionDutchAuctionWithdrawView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
 
 const getValueView = async (

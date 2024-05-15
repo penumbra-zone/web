@@ -32,7 +32,7 @@ import {
   ActionDutchAuctionSchedule,
   ActionDutchAuctionWithdrawPlan,
   AuctionId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 
 vi.mock('@penumbra-zone/wasm/auction', () => ({
   getAuctionId: () => new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) }),

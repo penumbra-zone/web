@@ -52,7 +52,7 @@ import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/indexed-db';
 import {
   AuctionId,
   DutchAuctionDescription,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 
