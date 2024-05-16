@@ -287,6 +287,9 @@ export class IndexedDb implements IndexedDbInterface {
     const savedGasPrices = await this.getGasPrices();
     // These are arbitrarily set, but can take on any value.
     // The gas prices set here will determine the fees to use Penumbra.
+    //
+    // Note: this is a temporary measure to enable gas prices in the web, but once
+    // https://github.com/penumbra-zone/penumbra/issues/4306 is merged, we can remove this.
     if (!savedGasPrices) {
       await this.saveGasPrices(
         new GasPrices({
