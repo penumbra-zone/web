@@ -13,6 +13,7 @@ import {
   AssetId,
   EstimatedPrice,
   Metadata,
+  Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   Position,
@@ -47,7 +48,7 @@ import type { Jsonified } from './jsonified';
 import {
   AuctionId,
   DutchAuctionDescription,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
@@ -126,6 +127,20 @@ export interface IndexedDbInterface {
     noteCommitment?: StateCommitment;
     seqNum?: bigint;
   }>;
+
+  addAuctionOutstandingReserves(
+    auctionId: AuctionId,
+    value: {
+      input: Value;
+      output: Value;
+    },
+  ): Promise<void>;
+
+  deleteAuctionOutstandingReserves(auctionId: AuctionId): Promise<void>;
+
+  getAuctionOutstandingReserves(
+    auctionId: AuctionId,
+  ): Promise<{ input: Value; output: Value } | undefined>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -234,6 +249,17 @@ export interface PenumbraDb extends DBSchema {
       seqNum?: bigint;
     };
   };
+  /**
+   * Only populated when BOTH a) the user has ended an auction, and b) the
+   * user has not yet withdrawn funds from it.
+   */
+  AUCTION_OUTSTANDING_RESERVES: {
+    key: string; // base64 AuctionId
+    value: {
+      input: Jsonified<Value>;
+      output: Jsonified<Value>;
+    };
+  };
 }
 
 // need to store PositionId and Position in the same table
@@ -255,6 +281,7 @@ export interface IdbConstants {
 export const IDB_TABLES: Tables = {
   assets: 'ASSETS',
   auctions: 'AUCTIONS',
+  auction_outstanding_reserves: 'AUCTION_OUTSTANDING_RESERVES',
   notes: 'NOTES',
   spendable_notes: 'SPENDABLE_NOTES',
   swaps: 'SWAPS',

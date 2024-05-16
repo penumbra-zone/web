@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getStepIndex } from './get-step-index';
-import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 
 describe('getStepIndex()', () => {
   const dutchAuctionDescription = new DutchAuctionDescription({

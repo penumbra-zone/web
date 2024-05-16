@@ -11,7 +11,7 @@ import {
   AuctionId,
   DutchAuction,
   DutchAuctionDescription,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
 import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import { ServicesInterface } from '@penumbra-zone/types/services';
@@ -165,7 +165,7 @@ describe('Auctions request handler', () => {
         id: AUCTION_ID_1,
         auction: {
           typeUrl: DutchAuction.typeName,
-          value: new DutchAuction({ description: MOCK_AUCTION_1 }).toBinary(),
+          value: new DutchAuction({ description: MOCK_AUCTION_1, state: { seq: 0n } }).toBinary(),
         },
         noteRecord: MOCK_SPENDABLE_NOTE_RECORD,
       }),

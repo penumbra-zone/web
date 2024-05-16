@@ -9,7 +9,7 @@ import {
   AuctionId,
   DutchAuction,
   DutchAuctionState,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { balances } from './balances';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
@@ -70,8 +70,8 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
       auction = new Any({
         typeUrl: DutchAuction.typeName,
         value: new DutchAuction({
+          state: state ?? { seq: value.seqNum },
           description: value.auction,
-          state,
         }).toBinary(),
       });
     }

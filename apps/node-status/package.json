@@ -12,8 +12,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240501193854-ea3cc743390d.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240501193854-ea3cc743390d.2",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240514224745-858b19969460.1",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240514224745-858b19969460.2",
     "@buf/tendermint_tendermint.bufbuild_es": "1.9.0-20231117195010-33ed361a9051.1",
     "@connectrpc/connect-web": "^1.4.0",
     "@penumbra-zone/crypto-web": "workspace:*",

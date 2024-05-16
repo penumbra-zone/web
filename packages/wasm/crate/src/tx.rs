@@ -2,7 +2,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::convert::TryInto;
 
 use anyhow::anyhow;
-use penumbra_auction::auction::dutch::actions::view::ActionDutchAuctionScheduleView;
+use penumbra_auction::auction::dutch::actions::view::{
+    ActionDutchAuctionScheduleView, ActionDutchAuctionWithdrawView,
+};
 use penumbra_dex::BatchSwapOutputData;
 use penumbra_keys::keys::SpendKey;
 use penumbra_keys::FullViewingKey;
@@ -349,6 +351,12 @@ pub async fn transaction_info_inner(
                 asset_ids.insert(action.description.output_id);
                 asset_ids.insert(action.description.input.asset_id);
             }
+            ActionView::ActionDutchAuctionWithdraw(ActionDutchAuctionWithdrawView {
+                reserves,
+                ..
+            }) => reserves.iter().for_each(|reserve| {
+                asset_ids.insert(reserve.asset_id());
+            }),
             _ => {}
         }
     }

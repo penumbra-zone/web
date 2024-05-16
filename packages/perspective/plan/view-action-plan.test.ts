@@ -30,9 +30,9 @@ import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 import {
   ActionDutchAuctionSchedule,
-  ActionDutchAuctionWithdraw,
+  ActionDutchAuctionWithdrawPlan,
   AuctionId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 
 vi.mock('@penumbra-zone/wasm/auction', () => ({
   getAuctionId: () => new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) }),
@@ -554,10 +554,18 @@ describe('viewActionPlan()', () => {
   });
 
   describe('`actionDutchAuctionWithdraw` action', () => {
-    test('returns an action view with the action as-is', async () => {
-      const withdraw = new ActionDutchAuctionWithdraw({
+    test('returns an action view with the action and reserves', async () => {
+      const withdraw = new ActionDutchAuctionWithdrawPlan({
         auctionId: {},
         seq: 0n,
+        reservesInput: {
+          amount: { hi: 0n, lo: 1234n },
+          assetId: {},
+        },
+        reservesOutput: {
+          amount: { hi: 0n, lo: 5678n },
+          assetId: {},
+        },
       });
       const actionPlan = new ActionPlan({
         action: {
@@ -574,6 +582,26 @@ describe('viewActionPlan()', () => {
             case: 'actionDutchAuctionWithdraw',
             value: {
               action: withdraw,
+              reserves: [
+                {
+                  valueView: {
+                    case: 'knownAssetId',
+                    value: {
+                      amount: { hi: 0n, lo: 1234n },
+                      metadata,
+                    },
+                  },
+                },
+                {
+                  valueView: {
+                    case: 'knownAssetId',
+                    value: {
+                      amount: { hi: 0n, lo: 5678n },
+                      metadata,
+                    },
+                  },
+                },
+              ],
             },
           },
         }),
