@@ -40,7 +40,7 @@ export interface DutchAuctionSlice {
   onSubmit: () => Promise<void>;
   txInProgress: boolean;
   auctionInfos: AuctionInfo[];
-  loadAuctionInfos: () => Promise<void>;
+  loadAuctionInfos: (queryLatestState?: boolean) => Promise<void>;
   loadMetadata: (assetId?: AssetId) => Promise<void>;
   metadataByAssetId: Record<string, Metadata>;
   endAuction: (auctionId: AuctionId) => Promise<void>;
@@ -117,13 +117,13 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   txInProgress: false,
 
   auctionInfos: [],
-  loadAuctionInfos: async () => {
+  loadAuctionInfos: async (queryLatestState = false) => {
     set(state => {
       state.dutchAuction.auctionInfos = [];
     });
 
     /** @todo: Sort by... something? */
-    for await (const response of viewClient.auctions({ includeInactive: true })) {
+    for await (const response of viewClient.auctions({ queryLatestState, includeInactive: true })) {
       if (!response.auction || !response.id) continue;
       const auction = DutchAuction.fromBinary(response.auction.value);
       const auctions = [...get().dutchAuction.auctionInfos, { id: response.id, auction }];
