@@ -85,7 +85,7 @@ export interface IndexedDbInterface {
   getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined>;
   saveSwap(note: SwapRecord): Promise<void>;
   getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined>;
-  getGasPrices(): Promise<GasPrices | undefined>;
+  getGasPrices(): Promise<PlainMessage<GasPrices> | undefined>;
   saveGasPrices(value: GasPrices): Promise<void>;
   getNotesForVoting(
     addressIndex: AddressIndex | undefined,
