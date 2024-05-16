@@ -1,9 +1,6 @@
 import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
 import { HeadTag } from './metadata/head-tag';
 
-const NODE_STATUS_PAGE_URL =
-  window.location.hostname === 'localhost' ? 'http://localhost:5174' : '/';
-
 export const ExtensionUnavailable = () => {
   return (
     <>
