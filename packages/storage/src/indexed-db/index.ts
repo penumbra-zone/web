@@ -64,6 +64,7 @@ import {
   DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { PartialMessage } from '@bufbuild/protobuf';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -288,15 +289,16 @@ export class IndexedDb implements IndexedDbInterface {
     const savedGasPrices = await this.getGasPrices();
     // These are arbitrarily set, but can take on any value.
     // The gas prices set here will determine the fees to use Penumbra.
+    //
+    // Note: this is a temporary measure to enable gas prices in the web, but once
+    // https://github.com/penumbra-zone/penumbra/issues/4306 is merged, we can remove this.
     if (!savedGasPrices) {
-      await this.saveGasPrices(
-        new GasPrices({
-          verificationPrice: 1n,
-          executionPrice: 1n,
-          blockSpacePrice: 1n,
-          compactBlockSpacePrice: 1n,
-        }),
-      );
+      await this.saveGasPrices({
+        verificationPrice: 1n,
+        executionPrice: 1n,
+        blockSpacePrice: 1n,
+        compactBlockSpacePrice: 1n,
+      });
     }
   }
 
@@ -391,11 +393,17 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async getGasPrices(): Promise<GasPrices | undefined> {
-    return this.db.get('GAS_PRICES', 'gas_prices');
+    const jsonGasPrices = await this.db.get('GAS_PRICES', 'gas_prices');
+    if (!jsonGasPrices) return undefined;
+    return GasPrices.fromJson(jsonGasPrices);
   }
 
-  async saveGasPrices(value: GasPrices): Promise<void> {
-    await this.u.update({ table: 'GAS_PRICES', value, key: 'gas_prices' });
+  async saveGasPrices(value: PartialMessage<GasPrices>): Promise<void> {
+    await this.u.update({
+      table: 'GAS_PRICES',
+      value: new GasPrices(value).toJson() as Jsonified<GasPrices>,
+      key: 'gas_prices',
+    });
   }
 
   /**

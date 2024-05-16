@@ -1,5 +1,19 @@
 # @penumbra-zone/ui
 
+## 3.0.0
+
+### Major Changes
+
+- v8.0.0 versioning and manifest
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/bech32m@3.1.0
+  - @penumbra-zone/types@4.1.0
+  - @penumbra-zone/getters@3.0.2
+  - @penumbra-zone/perspective@1.0.6
+
 ## 2.0.5
 
 ### Patch Changes

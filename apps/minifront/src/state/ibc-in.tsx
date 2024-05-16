@@ -1,23 +1,24 @@
-import { AllSlices, SliceCreator } from '.';
 import { ChainInfo } from '../components/ibc/ibc-in/chain-dropdown';
 import { CosmosAssetBalance } from '../components/ibc/ibc-in/hooks';
+import { ChainWalletContext } from '@cosmos-kit/core';
+import { AllSlices, SliceCreator } from '.';
 import { getAddrByIndex } from '../fetchers/address';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
-import { ChainWalletContext } from '@cosmos-kit/core/cjs/types/hook';
-import { chainRegistryClient } from '../fetchers/registry';
-import { augmentToAsset, fromDisplayAmount } from '../components/ibc/ibc-in/asset-utils';
-import { MsgTransfer } from 'osmo-query/ibc/applications/transfer/v1/tx';
-import { cosmos, ibc } from 'osmo-query';
 import { Toast } from '@penumbra-zone/ui/lib/toast/toast';
-import { tendermintClient } from '../clients';
-import { currentTimePlusTwoDaysRounded } from './ibc-out';
-import { calculateFee, GasPrice, SigningStargateClient } from '@cosmjs/stargate';
-import { getChainId } from '../fetchers/chain-id';
-import { BLOCKS_PER_HOUR } from './dutch-auction/constants';
+import { shorten } from '@penumbra-zone/types/string';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { bech32CompatAddress } from '@penumbra-zone/bech32m/penumbracompat1';
+import { calculateFee, GasPrice, SigningStargateClient } from '@cosmjs/stargate';
 import { chains } from 'chain-registry';
+import { getChainId } from '../fetchers/chain-id';
+import { augmentToAsset, fromDisplayAmount } from '../components/ibc/ibc-in/asset-utils';
+import { cosmos, ibc } from 'osmo-query';
+import { chainRegistryClient } from '../fetchers/registry';
+import { tendermintClient } from '../clients';
+import { BLOCKS_PER_HOUR } from './dutch-auction/constants';
+import { currentTimePlusTwoDaysRounded } from './ibc-out';
 import { EncodeObject } from '@cosmjs/proto-signing';
+import { MsgTransfer } from 'osmo-query/ibc/applications/transfer/v1/tx';
 
 interface PenumbraAddrs {
   ephemeral: string;
@@ -82,22 +83,47 @@ export const createIbcInSlice = (): SliceCreator<IbcInSlice> => (set, get) => {
         toast.loading().message('Issuing IBC transaction').render();
 
         if (!address) throw new Error('Address not selected');
-        const { height, transactionHash } = await execute(get().ibcIn, address, getClient);
+        const { code, transactionHash, height } = await execute(get().ibcIn, address, getClient);
 
-        // TODO: Don't think txHash is enough information to consider this a success
-        //       e.g. https://www.mintscan.io/osmosis-testnet/tx/C9AE1477D63B2F9AF4A5D23217A5548C3EE169DBF358F17E1885E1A4873C98C3
-        //       It successfully broadcasted, but the transaction was a failure
+        // The transaction succeeded if and only if code is 0.
+        if (code !== 0) {
+          throw new Error(`Tendermint error: ${code}`);
+        }
+
+        // If we have a block explorer tx page link for this chain id, include it in toast
+        const chainId = get().ibcIn.selectedChain?.chainId;
+        const explorerTxPage = getExplorerPage(transactionHash, chainId);
+        if (explorerTxPage) {
+          toast.action(
+            <a href={explorerTxPage} target='_blank' rel='noreferrer'>
+              See details
+            </a>,
+          );
+        }
+
+        const chainName = get().ibcIn.selectedChain?.chainName;
         toast
           .success()
-          .message(`Success! Height: ${height}`)
-          // TODO: Link to mintscan. Keep a map of chain-id to mintscan domain?
-          .description(`Tx hash: ${transactionHash}`)
+          .message(`IBC transaction succeeded! 🎉`)
+          .description(
+            `Transaction ${shorten(transactionHash, 8)} appeared on ${chainName} at height ${height}.`,
+          )
           .render();
       } catch (e) {
-        toast.error().message('Error occurred').description(String(e)).render();
+        toast.error().message('Transaction error ❌').description(String(e)).render();
       }
     },
   };
+};
+
+const getExplorerPage = (txHash: string, chainId?: string) => {
+  if (!chainId) return undefined;
+
+  // They come in the format of "https://mintscan.io/noble-testnet/txs/${txHash}"
+  const txPage = chains.find(({ chain_id }) => chain_id === chainId)?.explorers?.[0]?.tx_page;
+  if (!txPage) return undefined;
+
+  return txPage.replace('${txHash}', txHash);
 };
 
 /**
@@ -128,7 +154,7 @@ const estimateFee = async ({
   if (!avgGasPrice) throw new Error(`Average gas price not found for ${chainId}`);
 
   const estimatedGas = await client.simulate(signerAddress, [message], '');
-  const gasLimit = estimatedGas * 1.5; // Give some padding to the limit due to fluctuations
+  const gasLimit = Math.round(estimatedGas * 1.5); // Give some padding to the limit due to fluctuations
   const gasPrice = GasPrice.fromString(`${feeToken.average_gas_price}${feeToken.denom}`); // e.g. 132uosmo
   return calculateFee(gasLimit, gasPrice);
 };

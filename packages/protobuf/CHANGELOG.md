@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 1.1.0
+
+### Minor Changes
+
+- v8.0.0 versioning and manifest
+
 ## 1.0.0
 
 ### Major Changes

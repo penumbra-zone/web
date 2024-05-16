@@ -1,5 +1,23 @@
 # minifront
 
+## 4.4.0
+
+### Minor Changes
+
+- v8.0.0 versioning and manifest
+
+### Patch Changes
+
+- 610a445: update osmosis channel for deimos-8
+- Updated dependencies
+  - @penumbra-zone/ui@3.0.0
+  - @penumbra-zone/bech32m@3.1.0
+  - @penumbra-zone/types@4.1.0
+  - @penumbra-zone/getters@3.0.2
+  - @penumbra-zone/perspective@1.0.6
+  - @penumbra-zone/client@4.1.1
+  - @penumbra-zone/crypto-web@3.0.5
+
 ## 4.3.3
 
 ### Patch Changes

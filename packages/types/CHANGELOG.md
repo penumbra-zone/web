@@ -1,5 +1,17 @@
 # @penumbra-zone/types
 
+## 4.1.0
+
+### Minor Changes
+
+- v8.0.0 versioning and manifest
+
+### Patch Changes
+
+- Updated dependencies
+  - @penumbra-zone/bech32m@3.1.0
+  - @penumbra-zone/getters@3.0.2
+
 ## 4.0.1
 
 ### Patch Changes

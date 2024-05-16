@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/services-context",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
@@ -14,7 +14,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@penumbra-labs/registry": "7.2.1",
+    "@penumbra-labs/registry": "7.2.2",
     "@penumbra-zone/query": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/types": "workspace:*",

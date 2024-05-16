@@ -1,5 +1,19 @@
 # @penumbra-zone/storage
 
+## 3.2.0
+
+### Minor Changes
+
+- v8.0.0 versioning and manifest
+
+### Patch Changes
+
+- 610a445: update osmosis channel for deimos-8
+- Updated dependencies
+  - @penumbra-zone/bech32m@3.1.0
+  - @penumbra-zone/getters@3.0.2
+  - @penumbra-zone/crypto-web@3.0.5
+
 ## 3.1.2
 
 ### Patch Changes

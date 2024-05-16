@@ -5,7 +5,6 @@ import { Network } from '@penumbra-zone/ui/components/ui/network';
 import { useChainIdQuery } from '../../../hooks/chain-id';
 import { motion } from 'framer-motion';
 import { useStore } from '../../../state';
-import { TestnetBanner } from '@penumbra-zone/ui/components/ui/testnet-banner';
 
 export const IndexHeader = () => {
   const navigate = usePopupNav();
@@ -31,7 +30,6 @@ export const IndexHeader = () => {
           <div className='m-[19px]' />
         )}
       </div>
-      <TestnetBanner chainId={chainId} />
     </header>
   );
 };

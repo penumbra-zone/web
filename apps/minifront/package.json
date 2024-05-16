@@ -1,6 +1,6 @@
 {
   "name": "minifront",
-  "version": "4.3.3",
+  "version": "4.4.0",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
@@ -23,7 +23,7 @@
     "@cosmos-kit/core": "^2.9.2",
     "@cosmos-kit/react": "^2.11.2",
     "@interchain-ui/react": "^1.23.11",
-    "@penumbra-labs/registry": "7.2.1",
+    "@penumbra-labs/registry": "7.2.2",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/client": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
