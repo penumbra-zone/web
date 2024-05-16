@@ -4,9 +4,8 @@ import { useStore } from '../../../state';
 import { sendSelector, sendValidationErrors } from '../../../state/send';
 import { InputBlock } from '../../shared/input-block';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { getBalances } from '../../../fetchers/balances';
 import { useMemo } from 'react';
-import { penumbraAddrValidation } from '../helpers';
+import { getTransferableBalancesResponses, penumbraAddrValidation } from '../helpers';
 import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 import InputToken from '../../shared/input-token';
 import { useRefreshFee } from './use-refresh-fee';
@@ -22,7 +21,7 @@ export interface SendLoaderResponse {
 
 export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<SendLoaderResponse> => {
   await throwIfPraxNotConnectedTimeout();
-  const assetBalances = await getBalances();
+  const assetBalances = await getTransferableBalancesResponses();
 
   if (assetBalances[0]) {
     // set initial account if accounts exist and asset if account has asset list

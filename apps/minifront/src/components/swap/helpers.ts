@@ -23,6 +23,7 @@ const nonSwappableAssetPatterns = [
   assetPatterns.lpNft,
   assetPatterns.proposalNft,
   assetPatterns.votingReceipt,
+  assetPatterns.auctionNft,
 
   // In theory, these asset types are swappable, but we have removed them for now to get a better UX
   assetPatterns.delegationToken,
