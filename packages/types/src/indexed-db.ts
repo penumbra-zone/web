@@ -48,6 +48,7 @@ import {
   AuctionId,
   DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { PlainMessage } from '@bufbuild/protobuf';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -194,7 +195,7 @@ export interface PenumbraDb extends DBSchema {
   };
   GAS_PRICES: {
     key: 'gas_prices';
-    value: GasPrices;
+    value: PlainMessage<GasPrices>;
   };
   POSITIONS: {
     key: string; // base64 PositionRecord['id']['inner'];

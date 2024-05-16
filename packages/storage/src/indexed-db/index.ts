@@ -63,6 +63,7 @@ import {
   DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { PartialMessage, toPlainMessage } from '@bufbuild/protobuf';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -389,11 +390,16 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async getGasPrices(): Promise<GasPrices | undefined> {
-    return this.db.get('GAS_PRICES', 'gas_prices');
+    const plainGasPrices = await this.db.get('GAS_PRICES', 'gas_prices');
+    return plainGasPrices && new GasPrices(plainGasPrices);
   }
 
-  async saveGasPrices(value: GasPrices): Promise<void> {
-    await this.u.update({ table: 'GAS_PRICES', value, key: 'gas_prices' });
+  async saveGasPrices(value: PartialMessage<GasPrices>): Promise<void> {
+    await this.u.update({
+      table: 'GAS_PRICES',
+      value: toPlainMessage(new GasPrices(value)),
+      key: 'gas_prices',
+    });
   }
 
   /**
