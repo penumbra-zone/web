@@ -118,7 +118,7 @@ describe('getSubAuctions()', () => {
   });
 
   it("doesn't choke when the user enters too many decimal places for the given asset type", async () => {
-    expect.assertions(8);
+    expect.assertions(12);
 
     const subAuctions = await getSubAuctions({
       ...ARGS,
@@ -129,6 +129,7 @@ describe('getSubAuctions()', () => {
     });
 
     subAuctions.forEach(subAuction => {
+      expect(subAuction.description?.input?.amount).toEqual(new Amount({ hi: 0n, lo: 666_666n }));
       expect(subAuction.description?.minOutput).toEqual(new Amount({ hi: 0n, lo: 666n }));
       expect(subAuction.description?.maxOutput).toEqual(new Amount({ hi: 0n, lo: 2_666n }));
     });
