@@ -169,6 +169,8 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async syncAndStore() {
+    let startTime: PerformanceMark | undefined;
+
     const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
     const startHeight = fullSyncHeight !== undefined ? fullSyncHeight + 1n : 0n; // Must compare to undefined as 0n is falsy
     let latestKnownBlockHeight = await this.querier.tendermint.latestBlockHeight();
@@ -191,6 +193,10 @@ export class BlockProcessor implements BlockProcessorInterface {
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
+      const blockTime = performance.mark(`block${compactBlock.height}`);
+
+      if (!compactBlock.height) startTime = performance.mark('start');
+
       if (compactBlock.appParametersUpdated) {
         await this.indexedDb.saveAppParams(await this.querier.app.appParams());
       }
@@ -216,6 +222,10 @@ export class BlockProcessor implements BlockProcessorInterface {
         interval: compactBlock.height % 1000n === 0n,
         new: compactBlock.height > latestKnownBlockHeight,
       };
+      if (compactBlock.height > latestKnownBlockHeight) {
+        performance.measure('end', startTime?.name);
+        console.log('Measures', performance.getEntriesByType('measure'));
+      }
 
       const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
       let flush: ScanBlockResult | undefined;
@@ -342,6 +352,8 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (globalThis.ASSERT_ROOT_VALID) {
         await this.assertRootValid(compactBlock.height);
       }
+
+      performance.measure(`end${blockTime.name}`, blockTime.name);
     }
   }
 

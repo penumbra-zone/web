@@ -58,8 +58,17 @@ export class ViewServer implements ViewServerInterface {
   // Makes update to internal state-commitment-tree as a side effect.
   // Should extract updates via this.flushUpdates().
   async scanBlock(compactBlock: CompactBlock): Promise<boolean> {
-    const res = compactBlock.toJson();
-    return this.wasmViewServer.scan_block(res);
+    //const height = compactBlock.height;
+    //const start = performance.mark(`scanBlock${height}`);
+    const ser = compactBlock.toJson();
+    //const end_ser = performance.mark(`scanBlock${height} toJson`);
+    const wasmResult = this.wasmViewServer.scan_block(ser);
+    //const end_scan = performance.mark(`scanBlock${height} scan_block`);
+
+    //performance.measure(`scanBlock${height} serialization`, start.name, end_ser.name);
+    //performance.measure(`scanBlock${height} actual scan`, end_ser.name, end_scan.name);
+    //performance.measure(`scanBlock${height} total`, start.name, end_ser.name);
+    return wasmResult;
   }
 
   // Resets the state of the wasmViewServer to the one set in storage
