@@ -48,7 +48,7 @@ import {
   AuctionId,
   DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
-import { PlainMessage } from '@bufbuild/protobuf';
+import { PartialMessage } from '@bufbuild/protobuf';
 
 export interface IdbUpdate<DBTypes extends PenumbraDb, StoreName extends StoreNames<DBTypes>> {
   table: StoreName;
@@ -85,8 +85,8 @@ export interface IndexedDbInterface {
   getSwapByNullifier(nullifier: Nullifier): Promise<SwapRecord | undefined>;
   saveSwap(note: SwapRecord): Promise<void>;
   getSwapByCommitment(commitment: StateCommitment): Promise<SwapRecord | undefined>;
-  getGasPrices(): Promise<PlainMessage<GasPrices> | undefined>;
-  saveGasPrices(value: GasPrices): Promise<void>;
+  getGasPrices(): Promise<GasPrices | undefined>;
+  saveGasPrices(value: PartialMessage<GasPrices>): Promise<void>;
   getNotesForVoting(
     addressIndex: AddressIndex | undefined,
     votableAtHeight: bigint,
@@ -195,7 +195,7 @@ export interface PenumbraDb extends DBSchema {
   };
   GAS_PRICES: {
     key: 'gas_prices';
-    value: PlainMessage<GasPrices>;
+    value: Jsonified<GasPrices>;
   };
   POSITIONS: {
     key: string; // base64 PositionRecord['id']['inner'];
