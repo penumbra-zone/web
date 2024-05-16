@@ -16,12 +16,7 @@ export const ExtensionUnavailable = () => {
           and see if that fixes the issue.
         </p>
         <p>
-          If it doesn&apos;t, the RPC node that you&apos;re connected to could be down. Check{' '}
-          <a href={NODE_STATUS_PAGE_URL} className='underline'>
-            the node&apos;s status page
-          </a>{' '}
-          and, if it is down, consider switching to a different RPC URL in the Penumbra
-          extension&apos;s settings.
+          If it doesn&apos;t, please check the status page of the rpc provider in your extension
         </p>
       </SplashPage>
     </>
