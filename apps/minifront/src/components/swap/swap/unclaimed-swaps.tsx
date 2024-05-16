@@ -7,6 +7,7 @@ import { useStore } from '../../../state';
 import { unclaimedSwapsSelector } from '../../../state/unclaimed-swaps';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
+import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
 
 export const UnclaimedSwaps = () => {
   const { unclaimedSwaps } = useLoaderData() as SwapLoaderResponse;
@@ -27,9 +28,7 @@ const _UnclaimedSwaps = ({ unclaimedSwaps }: { unclaimedSwaps: UnclaimedSwapsWit
 
   return (
     <Card className='order-1 md:order-3 xl:order-1'>
-      <p className='bg-text-linear bg-clip-text font-headline text-xl font-semibold leading-[30px] text-transparent md:text-2xl md:font-bold md:leading-9'>
-        Unclaimed Swaps
-      </p>
+      <GradientHeader>Unclaimed Swaps</GradientHeader>
       <p className='text-gray-400'>
         Swaps on Penumbra are a two step process. The first transaction issues the request and the
         second claims the result of the swap action. For some reason, these second transactions were

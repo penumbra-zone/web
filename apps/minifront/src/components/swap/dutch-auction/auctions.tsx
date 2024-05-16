@@ -8,6 +8,7 @@ import {
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
+import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
 
 const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: AssetId) => {
   let metadata: Metadata | undefined;
@@ -48,9 +49,9 @@ export const Auctions = () => {
 
   return (
     <>
-      <p className='mb-2 bg-text-linear bg-clip-text font-headline text-xl font-semibold leading-[30px] text-transparent md:text-2xl md:font-bold md:leading-9'>
-        My auctions
-      </p>
+      <div className='mb-2'>
+        <GradientHeader>My Auctions</GradientHeader>
+      </div>
 
       <div className='flex flex-col gap-2'>
         {!auctionInfos.length && "You don't currently have any auctions running."}
