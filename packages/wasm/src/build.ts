@@ -29,7 +29,7 @@ export const buildParallel = (
   authData: AuthorizationData,
 ): Transaction => {
   const result = build_parallel(
-    batchActions.map(action => action.toBinary()),
+    batchActions.map(action => action.toJson()),
     txPlan.toBinary(),
     witnessData.toBinary(),
     authData.toBinary(),
