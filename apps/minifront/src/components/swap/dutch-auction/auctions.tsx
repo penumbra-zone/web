@@ -9,6 +9,7 @@ import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
+import { QueryLatestStateButton } from './query-latest-state-button';
 
 const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: AssetId) => {
   let metadata: Metadata | undefined;
@@ -49,8 +50,9 @@ export const Auctions = () => {
 
   return (
     <>
-      <div className='mb-2'>
+      <div className='mb-2 flex items-center justify-between'>
         <GradientHeader>My Auctions</GradientHeader>
+        {!!auctionInfos.length && <QueryLatestStateButton />}
       </div>
 
       <div className='flex flex-col gap-2'>
