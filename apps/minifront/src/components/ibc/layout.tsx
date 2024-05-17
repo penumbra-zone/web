@@ -11,8 +11,6 @@ export const IbcLayout = () => {
         <Card light className='relative z-10 overflow-visible md:self-start'>
           <LongArrowIcon
             direction='right'
-            // Negative calculated margin giving lint issue
-            /* eslint-disable-next-line tailwindcss/enforces-negative-arbitrary-values */
             className='invisible absolute -top-32 right-0 z-0 -mr-80 size-80 text-stone-300 md:visible'
           />
           <InterchainUi />
@@ -20,8 +18,6 @@ export const IbcLayout = () => {
         <Card gradient className='relative overflow-visible md:mt-40 md:self-start'>
           <LongArrowIcon
             direction='left'
-            // Negative calculated margin giving lint issue
-            /* eslint-disable-next-line tailwindcss/enforces-negative-arbitrary-values */
             className='invisible absolute -bottom-32 left-0 z-0 my-auto -ml-80 size-80 text-stone-700 md:visible'
           />
           <IbcOutForm />

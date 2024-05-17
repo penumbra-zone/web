@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build-storybook": "storybook build",
-    "lint": "eslint \"**/*.ts*\"",
+    "lint": "eslint components lib",
     "storybook": "storybook dev -p 6006",
     "test": "vitest run",
     "ui:add": "pnpm dlx shadcn-ui@latest add"
