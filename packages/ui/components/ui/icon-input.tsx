@@ -17,7 +17,7 @@ export const IconInput = ({
   placeholder?: string;
 }) => {
   return (
-    <div className='flex w-full gap-2 items-center'>
+    <div className='flex w-full items-center gap-2'>
       {icon}
       <Input
         value={value}
