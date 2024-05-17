@@ -63,7 +63,10 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
     }
 
     let state: DutchAuctionState | undefined;
-    if (queryLatestState) state = (await querier.auction.auctionStateById(id))?.state;
+    if (queryLatestState) {
+      const auction = await querier.auction.auctionStateById(id);
+      state = auction?.state;
+    }
 
     const outstandingReserves = await indexedDb.getAuctionOutstandingReserves(id);
 
