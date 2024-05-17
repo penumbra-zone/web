@@ -2,13 +2,13 @@ import { Box } from '@penumbra-zone/ui/components/ui/box';
 import { IconInput } from '@penumbra-zone/ui/components/ui/icon-input';
 import { useEffect, useState } from 'react';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { BadgeAlert, BadgeCheck } from 'lucide-react';
-import { Result } from './types';
+import { Result as TResult } from './types';
 import { getResultFromBech32mAddress } from './get-result-from-bech32m-address';
+import { Result } from './result';
 
 export const InspectAddress = () => {
   const [address, setAddress] = useState('');
-  const [result, setResult] = useState<Result | undefined>();
+  const [result, setResult] = useState<TResult | undefined>();
 
   useEffect(() => {
     void getResultFromBech32mAddress(address).then(setResult);
@@ -24,34 +24,7 @@ export const InspectAddress = () => {
           placeholder='Paste address here...'
         />
 
-        {result && (
-          <div className='flex items-center gap-2'>
-            {result.belongsToWallet && (
-              <>
-                <BadgeCheck className='text-green' />
-
-                <div className='flex flex-col'>
-                  Belongs to this wallet
-                  <span className='text-xs text-muted-foreground'>
-                    Account #{result.addressIndexAccount}
-                    {result.ibc && (
-                      <>
-                        {' '}
-                        &bull; <span className='text-rust'>IBC deposit address</span>
-                      </>
-                    )}
-                  </span>
-                </div>
-              </>
-            )}
-            {!result.belongsToWallet && (
-              <>
-                <BadgeAlert className='text-red' />
-                Does not belong to this wallet
-              </>
-            )}
-          </div>
-        )}
+        <Result result={result} />
       </div>
     </Box>
   );
