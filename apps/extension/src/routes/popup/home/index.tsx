@@ -13,6 +13,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
 import { Wallet } from '@penumbra-zone/types/wallet';
+import { InspectAddress } from './inspect-address';
 
 export interface PopupLoaderData {
   fullSyncHeight?: number;
@@ -55,6 +56,8 @@ export const PopupIndex = () => {
         <div className='flex flex-col gap-8'>
           {activeWallet && <SelectAccount getAddrByIndex={getAddrByIndex(activeWallet)} />}
         </div>
+
+        <InspectAddress />
 
         {!!frontendUrl && (
           <a href={frontendUrl} target='_blank' rel='noreferrer'>
