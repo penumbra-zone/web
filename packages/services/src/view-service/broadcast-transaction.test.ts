@@ -112,8 +112,8 @@ describe('BroadcastTransaction request handler', () => {
     mockTendermint.broadcastTx?.mockResolvedValue(new TransactionId());
     await expect(
       (async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
-        for await (const _ of broadcastTransaction(broadcastTransactionRequest, mockCtx)); // eslint-disable-line   no-empty
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        for await (const _ of broadcastTransaction(broadcastTransactionRequest, mockCtx));
       })(),
     ).rejects.toThrow('broadcast transaction id disagrees');
   });
@@ -122,7 +122,7 @@ describe('BroadcastTransaction request handler', () => {
     mockTendermint.broadcastTx?.mockRejectedValue(new Error('broadcast failed'));
     await expect(
       (async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for await (const _ of broadcastTransaction(broadcastTransactionRequest, mockCtx));
       })(),
     ).rejects.toThrow('broadcast failed');

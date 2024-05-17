@@ -10,7 +10,7 @@
     "bundle": "NODE_OPTIONS=\"--import=./src/utils/webpack-register.js\" webpack",
     "clean": "rm -rfv dist bin",
     "dev": "NODE_ENV=testnet pnpm bundle --watch --mode=development -d inline-source-map",
-    "lint": "eslint \"**/*.ts*\"",
+    "lint": "eslint src",
     "test": "vitest run"
   },
   "dependencies": {

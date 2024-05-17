@@ -1,16 +1,9 @@
 import { AllSlices, SliceCreator } from '.';
-import {
-  generateSpendKey,
-  getAddressByIndex,
-  getEphemeralByIndex,
-  getFullViewingKey,
-  getWalletId,
-} from '@penumbra-zone/wasm/keys';
+import { generateSpendKey, getFullViewingKey, getWalletId } from '@penumbra-zone/wasm/keys';
 import { Key } from '@penumbra-zone/crypto-web/encryption';
 import { ExtensionStorage } from '@penumbra-zone/storage/chrome/base';
 import { LocalStorageState } from '@penumbra-zone/storage/chrome/types';
 import {
-  Address,
   FullViewingKey,
   SpendKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
@@ -84,15 +77,3 @@ export const createWalletsSlice =
 
 export const walletsSelector = (state: AllSlices) => state.wallets;
 export const getActiveWallet = (state: AllSlices) => state.wallets.all[0];
-
-export const addrByIndexSelector =
-  (state: AllSlices) =>
-  (index: number, ephemeral: boolean): Address => {
-    const active = getActiveWallet(state);
-    if (!active) throw new Error('No active wallet');
-
-    const fullViewingKey = FullViewingKey.fromJsonString(active.fullViewingKey);
-    return ephemeral
-      ? getEphemeralByIndex(fullViewingKey, index)
-      : getAddressByIndex(fullViewingKey, index);
-  };

@@ -7,7 +7,7 @@
   "scripts": {
     "build": "vite build",
     "clean": "rm -rfv dist",
-    "lint": "eslint \"**/*.ts*\"",
+    "lint": "eslint plan transaction translators",
     "test": "vitest run"
   },
   "exports": {

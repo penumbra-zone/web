@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc && vite build",
     "clean": "rm -rfv dist",
-    "lint": "eslint \"**/*.ts*\"",
+    "lint": "eslint src",
     "test": "vitest run"
   },
   "exports": {

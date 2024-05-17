@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "clean": "rm -rfv dist",
     "dev": "vite --port 5174",
-    "lint": "eslint . --ext ts,tsx",
+    "lint": "eslint src",
     "preview": "vite preview"
   },
   "dependencies": {
