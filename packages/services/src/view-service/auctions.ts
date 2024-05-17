@@ -68,10 +68,9 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
       state = auction?.state;
     }
 
-    const outstandingReserves = await indexedDb.getAuctionOutstandingReserves(id);
-
     let auction: Any | undefined;
     if (!!value.auction || state) {
+      const outstandingReserves = await indexedDb.getAuctionOutstandingReserves(id);
       auction = new Any({
         typeUrl: DutchAuction.typeName,
         value: new DutchAuction({
