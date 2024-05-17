@@ -6,6 +6,7 @@ import { getDisplay } from '@penumbra-zone/getters/metadata';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { getBalances } from '../../fetchers/balances';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
+import { isUnknown } from '../dashboard/assets-table/helpers';
 
 export const penumbraAddrValidation = (): Validation => {
   return {
@@ -19,9 +20,6 @@ const nonTransferableAssetPatterns = [assetPatterns.proposalNft, assetPatterns.a
 
 export const isTransferable = (metadata: Metadata) =>
   nonTransferableAssetPatterns.every(pattern => !pattern.matches(getDisplay(metadata)));
-
-const isUnknown = (balancesResponse: BalancesResponse) =>
-  balancesResponse.balanceView?.valueView.case === 'unknownAssetId';
 
 export const getTransferableBalancesResponses = async (): Promise<BalancesResponse[]> => {
   const balancesResponses = await getBalances();
