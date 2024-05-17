@@ -4,7 +4,6 @@ import {
   IndexByAddressRequest,
   IndexByAddressResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { beforeEach } from 'node:test';
 
 const INVALID = 'invalid';
 const CONTROLLED_ADDRESS =
@@ -47,8 +46,6 @@ vi.mock('../../../../clients', () => ({
 }));
 
 describe('getResultFromBech32mAddress()', () => {
-  beforeEach(() => {});
-
   it('returns undefined if the the RPC method throws (because the address is invalid)', async () => {
     await expect(getResultFromBech32mAddress(INVALID)).resolves.toBeUndefined();
   });
