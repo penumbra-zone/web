@@ -11,7 +11,7 @@ export const InspectAddress = () => {
   const [result, setResult] = useState<Result | undefined>();
 
   useEffect(() => {
-    getResultFromBech32mAddress(address).then(setResult);
+    void getResultFromBech32mAddress(address).then(setResult);
   }, [address]);
 
   return (
@@ -32,7 +32,7 @@ export const InspectAddress = () => {
 
                 <div className='flex flex-col'>
                   Belongs to this wallet
-                  <span className='text-muted-foreground text-xs'>
+                  <span className='text-xs text-muted-foreground'>
                     Account #{result.addressIndexAccount}
                     {result.ibc && (
                       <>
