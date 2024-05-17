@@ -239,7 +239,7 @@ describe('Auctions request handler', () => {
     results.forEach(result => {
       const dutchAuction = DutchAuction.fromBinary(result.auction!.value!);
 
-      if (AUCTION_ID_2.equals(new AuctionId(result.id!))) {
+      if (AUCTION_ID_2.equals(new AuctionId(result.id))) {
         expect(dutchAuction.state?.inputReserves).toEqual(new Amount({ hi: 0n, lo: 1234n }));
         expect(dutchAuction.state?.outputReserves).toEqual(new Amount({ hi: 0n, lo: 5678n }));
       } else {
