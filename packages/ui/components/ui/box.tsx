@@ -23,7 +23,7 @@ export const Box = ({
 }: PropsWithChildren<VariantProps<typeof variants> & { label?: string }>) => {
   return (
     <div className={variants({ spacing })}>
-      {label && <div className='font-bold text-muted-foreground mb-2'>{label}</div>}
+      {label && <div className='mb-2 font-bold text-muted-foreground'>{label}</div>}
       {children}
     </div>
   );
