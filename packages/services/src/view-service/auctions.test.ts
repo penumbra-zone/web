@@ -19,6 +19,8 @@ import { HandlerContext, createContextValues, createHandlerContext } from '@conn
 import { servicesCtx } from '../ctx/prax';
 import { IndexedDbMock, MockQuerier, MockServices } from '../test-utils';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
+import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 
 const AUCTION_ID_1 = new AuctionId({ inner: new Uint8Array(Array(32).fill(1)) });
 const BECH32M_AUCTION_ID_1 = bech32mAuctionId(AUCTION_ID_1);
@@ -128,6 +130,7 @@ describe('Auctions request handler', () => {
         Promise.resolve(TEST_DATA.find(({ id }) => id.equals(auctionId))?.value),
       ),
       getSpendableNoteByCommitment: vi.fn().mockResolvedValue(MOCK_SPENDABLE_NOTE_RECORD),
+      getAuctionOutstandingReserves: vi.fn().mockResolvedValue(undefined),
     };
 
     mockQuerier = {
@@ -204,14 +207,45 @@ describe('Auctions request handler', () => {
   });
 
   it('includes the latest state from the fullnode if `queryLatestState` is `true`', async () => {
+    expect.hasAssertions();
+
     const req = new AuctionsRequest({ queryLatestState: true });
     const results = await Array.fromAsync(auctions(req, mockCtx));
 
     results.forEach(result => {
-      if (!result.auction?.value) throw new Error('missing data');
-      const dutchAuction = DutchAuction.fromBinary(result.auction.value);
+      const dutchAuction = DutchAuction.fromBinary(result.auction!.value!);
 
       expect(dutchAuction.state?.seq).toBe(1234n);
+    });
+  });
+
+  it('includes the outstanding reserves if any exist in the database (i.e., for an ended auction)', async () => {
+    expect.hasAssertions();
+
+    mockIndexedDb.getAuctionOutstandingReserves?.mockImplementation((auctionId: AuctionId) => {
+      if (auctionId.equals(AUCTION_ID_2)) {
+        return {
+          input: new Value({ amount: { hi: 0n, lo: 1234n } }),
+          output: new Value({ amount: { hi: 0n, lo: 5678n } }),
+        };
+      }
+
+      return undefined;
+    });
+
+    const req = new AuctionsRequest({ includeInactive: true });
+    const results = await Array.fromAsync(auctions(req, mockCtx));
+
+    results.forEach(result => {
+      const dutchAuction = DutchAuction.fromBinary(result.auction!.value!);
+
+      if (AUCTION_ID_2.equals(new AuctionId(result.id))) {
+        expect(dutchAuction.state?.inputReserves).toEqual(new Amount({ hi: 0n, lo: 1234n }));
+        expect(dutchAuction.state?.outputReserves).toEqual(new Amount({ hi: 0n, lo: 5678n }));
+      } else {
+        expect(dutchAuction.state?.inputReserves).toBeUndefined();
+        expect(dutchAuction.state?.outputReserves).toBeUndefined();
+      }
     });
   });
 });

@@ -8,6 +8,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { Button } from '../button';
 import { ArrowRight } from 'lucide-react';
 import { PriceGraph } from './price-graph';
+import { Reserves } from './reserves';
 
 const getValueView = (amount?: Amount, metadata?: Metadata) =>
   new ValueView({
@@ -80,6 +81,12 @@ export const DutchAuctionComponent = ({
         inputMetadata={inputMetadata}
         outputMetadata={outputMetadata}
         fullSyncHeight={fullSyncHeight}
+      />
+
+      <Reserves
+        dutchAuction={dutchAuction}
+        inputMetadata={inputMetadata}
+        outputMetadata={outputMetadata}
       />
 
       {buttonType === 'withdraw' && (
