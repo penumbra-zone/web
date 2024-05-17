@@ -66,7 +66,7 @@ export default function AssetsTable() {
           </TableHeader>
           <TableBody>
             {account.balances
-              .filter(balance => isVisible(balance))
+              .filter(isVisible)
               .map((assetBalance, index) => (
                 <TableRow key={index}>
                   <TableCell>
