@@ -4,7 +4,9 @@ import { PropsWithChildren } from 'react';
 const variants = cva('rounded-lg border bg-background', {
   variants: {
     spacing: {
+      /** Useful for e.g., wrapping around a transparent `<Input />`. */
       compact: 'p-2',
+      /** Default, roomier spacing. */
       default: 'p-4',
     },
   },
