@@ -9,6 +9,7 @@ import { AddressComponent } from './address-component';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { AccountSwitcher } from './account-switcher';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
+import { Box } from './box';
 
 interface SelectAccountProps {
   getAddrByIndex: (index: number, ephemeral: boolean) => Promise<Address> | Address;
@@ -38,17 +39,21 @@ export const SelectAccount = ({ getAddrByIndex }: SelectAccountProps) => {
         <div className='flex w-full flex-col'>
           <AccountSwitcher account={index} onChange={setIndex} />
 
-          <div className='mt-4 flex items-center justify-between gap-1 break-all rounded-lg border bg-background px-3 py-4'>
-            <div className='flex items-center gap-[6px] overflow-hidden'>
-              <div className='shrink-0'>
-                <AddressIcon address={address} size={24} />
-              </div>
+          <div className='mt-4'>
+            <Box>
+              <div className='flex items-center justify-between gap-1 break-all'>
+                <div className='flex items-center gap-[6px] overflow-hidden'>
+                  <div className='shrink-0'>
+                    <AddressIcon address={address} size={24} />
+                  </div>
 
-              <p className='truncate text-sm'>
-                <AddressComponent address={address} ephemeral={ephemeral} />
-              </p>
-            </div>
-            <CopyToClipboardIconButton text={bech32mAddress(address)} />
+                  <p className='truncate text-sm'>
+                    <AddressComponent address={address} ephemeral={ephemeral} />
+                  </p>
+                </div>
+                <CopyToClipboardIconButton text={bech32mAddress(address)} />
+              </div>
+            </Box>
           </div>
           <div className='mt-2 flex items-center justify-between'>
             <div className='flex items-center gap-2'>
