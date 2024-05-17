@@ -34,7 +34,12 @@ export const InspectAddress = () => {
                   Belongs to this wallet
                   <span className='text-muted-foreground text-xs'>
                     Account #{result.addressIndexAccount}
-                    {result.ibc && ' • IBC deposit address'}
+                    {result.ibc && (
+                      <>
+                        {' '}
+                        &bull; <span className='text-rust'>IBC deposit address</span>
+                      </>
+                    )}
                   </span>
                 </div>
               </>
