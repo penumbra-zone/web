@@ -41,6 +41,7 @@ export interface DutchAuctionSlice {
   txInProgress: boolean;
   auctionInfos: AuctionInfo[];
   loadAuctionInfos: (queryLatestState?: boolean) => Promise<void>;
+  loadAuctionInfosAbortController?: AbortController;
   loadMetadata: (assetId?: AssetId) => Promise<void>;
   metadataByAssetId: Record<string, Metadata>;
   endAuction: (auctionId: AuctionId) => Promise<void>;
@@ -118,13 +119,31 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
 
   auctionInfos: [],
   loadAuctionInfos: async (queryLatestState = false) => {
+    get().dutchAuction.loadAuctionInfosAbortController?.abort();
+    const newAbortController = new AbortController();
+
     set(state => {
       state.dutchAuction.auctionInfos = [];
+      state.dutchAuction.loadAuctionInfosAbortController = newAbortController;
     });
 
     /** @todo: Sort by... something? */
-    for await (const response of viewClient.auctions({ queryLatestState, includeInactive: true })) {
+    for await (const response of viewClient.auctions(
+      { queryLatestState, includeInactive: true },
+      /**
+       * Weirdly, just passing the newAbortController.signal here doesn't seem to
+       * have any effect, despite the ConnectRPC docs saying that it should
+       * work. I still left this line in, though, since it seems right and
+       * perhaps will be fixed in a later ConnectRPC release. But in the
+       * meantime, returning early from the `for` loop below fixes this issue.
+       *
+       * @see https://connectrpc.com/docs/web/cancellation-and-timeouts/
+       */
+      { signal: newAbortController.signal },
+    )) {
+      if (newAbortController.signal.aborted) return;
       if (!response.auction || !response.id) continue;
+
       const auction = DutchAuction.fromBinary(response.auction.value);
       const auctions = [...get().dutchAuction.auctionInfos, { id: response.id, auction }];
 
