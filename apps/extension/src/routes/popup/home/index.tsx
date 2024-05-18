@@ -13,7 +13,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
 import { Wallet } from '@penumbra-zone/types/wallet';
-import { InspectAddress } from './inspect-address';
+import { ValidateAddress } from './validate-address';
 
 export interface PopupLoaderData {
   fullSyncHeight?: number;
@@ -57,7 +57,7 @@ export const PopupIndex = () => {
           {activeWallet && <SelectAccount getAddrByIndex={getAddrByIndex(activeWallet)} />}
         </div>
 
-        <InspectAddress />
+        <ValidateAddress />
 
         <div className='grow' />
 

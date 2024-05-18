@@ -6,7 +6,7 @@ import { AddressOwnershipInfo } from './types';
 import { getAddressOwnershipInfoFromBech32mAddress } from './get-address-ownership-info-from-bech32m-address';
 import { Result } from './result';
 
-export const InspectAddress = () => {
+export const ValidateAddress = () => {
   const [address, setAddress] = useState('');
   const [addressOwnershipInfo, setAddressOwnershipInfo] = useState<
     AddressOwnershipInfo | undefined
@@ -17,7 +17,7 @@ export const InspectAddress = () => {
   }, [address]);
 
   return (
-    <Box label='Inspect address'>
+    <Box label='Validate address'>
       <div className='flex flex-col gap-2'>
         <IconInput
           icon={<MagnifyingGlassIcon />}
