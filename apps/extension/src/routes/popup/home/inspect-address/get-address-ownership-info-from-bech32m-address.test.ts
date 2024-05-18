@@ -1,5 +1,5 @@
 import { Mock, describe, expect, it, vi } from 'vitest';
-import { getResultFromBech32mAddress } from './get-result-from-bech32m-address';
+import { getAddressOwnershipInfoFromBech32mAddress } from './get-address-ownership-info-from-bech32m-address';
 import { IndexByAddressResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 const ADDRESS =
@@ -11,13 +11,13 @@ vi.mock('../../../../clients', () => ({
   viewClient: { indexByAddress: mockIndexByAddress },
 }));
 
-describe('getResultFromBech32mAddress()', () => {
+describe('getAddressOwnershipInfoFromBech32mAddress()', () => {
   it('returns undefined if the RPC method throws (because the address is invalid)', async () => {
     mockIndexByAddress.mockImplementation(() => {
       throw new Error('oops');
     });
 
-    await expect(getResultFromBech32mAddress(ADDRESS)).resolves.toBeUndefined();
+    await expect(getAddressOwnershipInfoFromBech32mAddress(ADDRESS)).resolves.toBeUndefined();
   });
 
   it('indicates a controlled address if the RPC method returns an address index', async () => {
@@ -27,7 +27,7 @@ describe('getResultFromBech32mAddress()', () => {
       }),
     );
 
-    await expect(getResultFromBech32mAddress(ADDRESS)).resolves.toEqual({
+    await expect(getAddressOwnershipInfoFromBech32mAddress(ADDRESS)).resolves.toEqual({
       belongsToWallet: true,
       addressIndexAccount: 1234,
       ibc: false,
@@ -41,7 +41,7 @@ describe('getResultFromBech32mAddress()', () => {
       }),
     );
 
-    await expect(getResultFromBech32mAddress(ADDRESS)).resolves.toEqual({
+    await expect(getAddressOwnershipInfoFromBech32mAddress(ADDRESS)).resolves.toEqual({
       belongsToWallet: true,
       addressIndexAccount: 5678,
       ibc: true,
@@ -51,7 +51,7 @@ describe('getResultFromBech32mAddress()', () => {
   it('indicates a non-controlled address if the RPC method returns no address index', async () => {
     mockIndexByAddress.mockResolvedValue(new IndexByAddressResponse());
 
-    await expect(getResultFromBech32mAddress(ADDRESS)).resolves.toEqual({
+    await expect(getAddressOwnershipInfoFromBech32mAddress(ADDRESS)).resolves.toEqual({
       belongsToWallet: false,
     });
   });

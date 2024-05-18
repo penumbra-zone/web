@@ -2,16 +2,18 @@ import { Box } from '@penumbra-zone/ui/components/ui/box';
 import { IconInput } from '@penumbra-zone/ui/components/ui/icon-input';
 import { useEffect, useState } from 'react';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { Result as TResult } from './types';
-import { getResultFromBech32mAddress } from './get-result-from-bech32m-address';
+import { AddressOwnershipInfo } from './types';
+import { getAddressOwnershipInfoFromBech32mAddress } from './get-address-ownership-info-from-bech32m-address';
 import { Result } from './result';
 
 export const InspectAddress = () => {
   const [address, setAddress] = useState('');
-  const [result, setResult] = useState<TResult | undefined>();
+  const [addressOwnershipInfo, setAddressOwnershipInfo] = useState<
+    AddressOwnershipInfo | undefined
+  >();
 
   useEffect(() => {
-    void getResultFromBech32mAddress(address).then(setResult);
+    void getAddressOwnershipInfoFromBech32mAddress(address).then(setAddressOwnershipInfo);
   }, [address]);
 
   return (
@@ -24,7 +26,7 @@ export const InspectAddress = () => {
           placeholder='Paste address here...'
         />
 
-        <Result result={result} />
+        <Result addressOwnershipInfo={addressOwnershipInfo} />
       </div>
     </Box>
   );

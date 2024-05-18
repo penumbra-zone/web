@@ -1,10 +1,14 @@
 import { BadgeAlert, BadgeCheck } from 'lucide-react';
-import type { Result as TResult } from './types';
+import type { AddressOwnershipInfo } from './types';
 
-export const Result = ({ result }: { result?: TResult }) => {
-  if (!result) return null;
+export const Result = ({
+  addressOwnershipInfo,
+}: {
+  addressOwnershipInfo?: AddressOwnershipInfo;
+}) => {
+  if (!addressOwnershipInfo) return null;
 
-  if (result.belongsToWallet) {
+  if (addressOwnershipInfo.belongsToWallet) {
     return (
       <div className='flex items-center gap-2'>
         <BadgeCheck className='text-green' />
@@ -12,8 +16,8 @@ export const Result = ({ result }: { result?: TResult }) => {
         <div className='flex flex-col'>
           Belongs to this wallet
           <span className='text-xs text-muted-foreground'>
-            Account #{result.addressIndexAccount}
-            {result.ibc && (
+            Account #{addressOwnershipInfo.addressIndexAccount}
+            {addressOwnershipInfo.isEphemeral && (
               <>
                 {' '}
                 &bull; <span className='text-rust'>IBC deposit address</span>

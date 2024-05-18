@@ -1,3 +1,3 @@
-export type Result =
-  | { belongsToWallet: true; addressIndexAccount: number; ibc: boolean }
+export type AddressOwnershipInfo =
+  | { belongsToWallet: true; addressIndexAccount: number; isEphemeral: boolean }
   | { belongsToWallet: false };
