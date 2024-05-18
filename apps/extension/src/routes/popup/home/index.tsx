@@ -50,7 +50,7 @@ export const PopupIndex = () => {
     <>
       <BlockSync />
 
-      <div className='flex h-full grow flex-col items-stretch justify-between bg-logo bg-left-bottom px-[30px] pb-[30px]'>
+      <div className='flex h-full grow flex-col items-stretch gap-[30px] bg-logo bg-left-bottom px-[30px] pb-[30px]'>
         <IndexHeader />
 
         <div className='flex flex-col gap-8'>
@@ -58,6 +58,8 @@ export const PopupIndex = () => {
         </div>
 
         <InspectAddress />
+
+        <div className='grow' />
 
         {!!frontendUrl && (
           <a href={frontendUrl} target='_blank' rel='noreferrer'>
