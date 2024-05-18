@@ -30,7 +30,7 @@ describe('getAddressOwnershipInfoFromBech32mAddress()', () => {
     await expect(getAddressOwnershipInfoFromBech32mAddress(ADDRESS)).resolves.toEqual({
       belongsToWallet: true,
       addressIndexAccount: 1234,
-      ibc: false,
+      isEphemeral: false,
     });
   });
 
@@ -44,7 +44,7 @@ describe('getAddressOwnershipInfoFromBech32mAddress()', () => {
     await expect(getAddressOwnershipInfoFromBech32mAddress(ADDRESS)).resolves.toEqual({
       belongsToWallet: true,
       addressIndexAccount: 5678,
-      ibc: true,
+      isEphemeral: true,
     });
   });
 
