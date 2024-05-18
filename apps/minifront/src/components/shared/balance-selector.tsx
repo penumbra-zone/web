@@ -13,6 +13,7 @@ import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/valu
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { getDisplayDenomFromView, getSymbolFromValueView } from '@penumbra-zone/getters/value-view';
+import { Box } from '@penumbra-zone/ui/components/ui/box';
 
 const bySearch = (search: string) => (balancesResponse: BalancesResponse) =>
   getDisplayDenomFromView(balancesResponse.balanceView)
@@ -51,12 +52,14 @@ export default function BalanceSelector({ value, balances, onChange }: BalanceSe
         <div className='flex max-h-screen flex-col'>
           <DialogHeader>Select asset</DialogHeader>
           <div className='flex shrink flex-col gap-4 overflow-auto p-4'>
-            <IconInput
-              icon={<MagnifyingGlassIcon className='size-5 text-muted-foreground' />}
-              value={search}
-              onChange={setSearch}
-              placeholder='Search assets...'
-            />
+            <Box spacing='compact'>
+              <IconInput
+                icon={<MagnifyingGlassIcon className='size-5 text-muted-foreground' />}
+                value={search}
+                onChange={setSearch}
+                placeholder='Search assets...'
+              />
+            </Box>
             <div className='mt-2 grid grid-cols-4 font-headline text-base font-semibold'>
               <p className='flex justify-start'>Account</p>
               <p className='col-span-3 flex justify-start'>Asset</p>
