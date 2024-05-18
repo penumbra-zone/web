@@ -12,12 +12,18 @@ vi.mock('../../../../clients', () => ({
 }));
 
 describe('getAddressOwnershipInfoFromBech32mAddress()', () => {
-  it('returns undefined if the RPC method throws (because the address is invalid)', async () => {
+  it('returns undefined if the address is an empty string', async () => {
+    await expect(getAddressOwnershipInfoFromBech32mAddress('')).resolves.toBeUndefined();
+  });
+
+  it('indicates an invalid address if the RPC method throws (because the address is invalid)', async () => {
     mockIndexByAddress.mockImplementation(() => {
       throw new Error('oops');
     });
 
-    await expect(getAddressOwnershipInfoFromBech32mAddress(ADDRESS)).resolves.toBeUndefined();
+    await expect(getAddressOwnershipInfoFromBech32mAddress(ADDRESS)).resolves.toEqual({
+      isValidAddress: false,
+    });
   });
 
   it('indicates a controlled address if the RPC method returns an address index', async () => {
@@ -31,6 +37,7 @@ describe('getAddressOwnershipInfoFromBech32mAddress()', () => {
       belongsToWallet: true,
       addressIndexAccount: 1234,
       isEphemeral: false,
+      isValidAddress: true,
     });
   });
 
@@ -45,6 +52,7 @@ describe('getAddressOwnershipInfoFromBech32mAddress()', () => {
       belongsToWallet: true,
       addressIndexAccount: 5678,
       isEphemeral: true,
+      isValidAddress: true,
     });
   });
 
@@ -53,6 +61,7 @@ describe('getAddressOwnershipInfoFromBech32mAddress()', () => {
 
     await expect(getAddressOwnershipInfoFromBech32mAddress(ADDRESS)).resolves.toEqual({
       belongsToWallet: false,
+      isValidAddress: true,
     });
   });
 });

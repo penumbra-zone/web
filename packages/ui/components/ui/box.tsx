@@ -9,9 +9,14 @@ const variants = cva('rounded-lg border bg-background', {
       /** Default, roomier spacing. */
       default: 'p-4',
     },
+    state: {
+      default: '',
+      error: 'border-red',
+    },
   },
   defaultVariants: {
     spacing: 'default',
+    state: 'default',
   },
 });
 
@@ -22,9 +27,10 @@ export const Box = ({
   children,
   label,
   spacing,
+  state,
 }: PropsWithChildren<VariantProps<typeof variants> & { label?: string }>) => {
   return (
-    <div className={variants({ spacing })}>
+    <div className={variants({ spacing, state })}>
       {label && <div className='mb-2 font-bold text-muted-foreground'>{label}</div>}
       {children}
     </div>

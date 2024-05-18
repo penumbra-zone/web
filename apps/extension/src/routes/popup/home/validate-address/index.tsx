@@ -17,7 +17,10 @@ export const ValidateAddress = () => {
   }, [address]);
 
   return (
-    <Box label='Validate address'>
+    <Box
+      label='Validate address'
+      state={addressOwnershipInfo?.isValidAddress === false ? 'error' : undefined}
+    >
       <div className='flex flex-col gap-2'>
         <IconInput
           icon={<MagnifyingGlassIcon />}

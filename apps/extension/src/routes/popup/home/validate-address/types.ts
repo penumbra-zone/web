@@ -1,3 +1,9 @@
 export type AddressOwnershipInfo =
-  | { belongsToWallet: true; addressIndexAccount: number; isEphemeral: boolean }
-  | { belongsToWallet: false };
+  | {
+      isValidAddress: true;
+      belongsToWallet: true;
+      addressIndexAccount: number;
+      isEphemeral: boolean;
+    }
+  | { isValidAddress: true; belongsToWallet: false }
+  | { isValidAddress: false };

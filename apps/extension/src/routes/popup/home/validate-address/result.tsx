@@ -8,6 +8,15 @@ export const Result = ({
 }) => {
   if (!addressOwnershipInfo) return null;
 
+  if (!addressOwnershipInfo.isValidAddress) {
+    return (
+      <div className='flex items-center gap-2'>
+        <BadgeAlert className='text-red' />
+        Invalid address
+      </div>
+    );
+  }
+
   if (addressOwnershipInfo.belongsToWallet) {
     return (
       <div className='flex items-center gap-2'>
