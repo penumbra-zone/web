@@ -130,6 +130,15 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     /** @todo: Sort by... something? */
     for await (const response of viewClient.auctions(
       { queryLatestState, includeInactive: true },
+      /**
+       * Weirdly, just passing the newAbortController.signal here doesn't seem to
+       * have any effect, despite the ConnectRPC docs saying that it should
+       * work. I still left this line in, though, since it seems right and
+       * perhaps will be fixed in a later ConnectRPC release. But in the
+       * meantime, returning early from the `for` loop below fixes this issue.
+       *
+       * @see https://connectrpc.com/docs/web/cancellation-and-timeouts/
+       */
       { signal: newAbortController.signal },
     )) {
       if (newAbortController.signal.aborted) return;
