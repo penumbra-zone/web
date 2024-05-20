@@ -21,6 +21,12 @@ import { BigNumber } from 'bignumber.js';
  */
 const getStartHeight = (fullSyncHeight: bigint) => fullSyncHeight + BLOCKS_PER_MINUTE;
 
+/**
+ * Sub-auctions are spaced apart using a Poisson distribution to ensure random
+ * yet statistically predictable spacing. This means that sub-auctions will have
+ * some overlap, and prevents too many users' auctions from starting/ending on
+ * identical block heights.
+ */
 const getSubAuctionStartHeights = (overallStartHeight: bigint, recipe: GdaRecipe): bigint[] => {
   const startHeights: bigint[] = [];
   const lambda = recipe.poissonIntensityPerBlock * Number(recipe.durationInBlocks);
