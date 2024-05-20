@@ -1,6 +1,3 @@
-use std::collections::BTreeMap;
-use std::convert::TryInto;
-
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_compact_block::{CompactBlock, StatePayload};
 use penumbra_keys::FullViewingKey;
@@ -11,6 +8,7 @@ use penumbra_tct as tct;
 use penumbra_tct::Witness::*;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::Serializer;
+use std::collections::BTreeMap;
 use tct::storage::{StoreCommitment, StoreHash, StoredPosition, Updates};
 use tct::{Forgotten, Tree};
 use wasm_bindgen::prelude::wasm_bindgen;
