@@ -1,5 +1,3 @@
-
-
 # ADR 003: opaque and opaque fields in views
 
 Auditing the views, which are what the end-user will see. The <u><u>**_visible_**</u></u> view requires a viewing key, the <u><u>**_opaque_**</u></u> view is public. https://github.com/penumbra-zone/web/issues/875. Fields tagged as <u><u>**_opaque_**</u></u> are optionally also <u><u>**_visible_**</u></u> fields, but the opposite is false. For each view, we enumerate the protobuf fields and mark them accordingly.
@@ -47,7 +45,7 @@ Components:
     - `SwapPayload`
       - $swap \ commitment$: <u>**_opaque_**</u> field since the swap commitment is a $F_q$ element derived from a secure Poseidon hashing scheme and blinded by a $F_q$ element.
       - $encrypted \ swap$: <u>**_opaque_**</u> field since the swap ciphertext is encrypted symmetrically using the visible payload key and reveals no more information about the swap that isn't already public.
-- `BatchSwapOutputData`: <u>**_opaque_**</u> field since the BSOD in the TxP does not leak any information about the specific output notes that the view service computes for the swap using the BSOD. Computing the output notes already assumes decrypting the swap ciphertext. The BSOD contains the results of the batch swap and is emitted in an event. 
+- `BatchSwapOutputData`: <u>**_opaque_**</u> field since the BSOD in the TxP does not leak any information about the specific output notes that the view service computes for the swap using the BSOD. Computing the output notes already assumes decrypting the swap ciphertext. The BSOD contains the results of the batch swap and is emitted in an event.
 - `ValueView`: <u>**_opaque_**</u> field since the swap values are in the clear.
 - `Metadata`: <u>**_opaque_**</u> field and the metadata is reported on-chain.
 - `SwapPlaintext`: <u>**_visible_**</u> field since the decrypted swap ciphertext enables, alongside the BSOD, to retrieve output notes, which amonst other fields includes the private address controlling the note.
@@ -68,30 +66,44 @@ Components:
 
 ## 5. [Delegate View](https://buf.build/penumbra-zone/penumbra/docs/78be1d64b1cb484ba4bc666d54dc76c5:penumbra.core.component.stake.v1#penumbra.core.component.stake.v1.Delegate)
 
-
 - `Delegate`
-  - `IdentityKey`: <u>**_opaque_**</u> field since the validator's identity (decaf377-rdsa spendauth verification key) is supposed to be public, while individual delegators are kept private. 
-  - `epochIndex`:  <u>**_opaque_**</u> field since this is included as part of the chain state. 
-  - `unbondedAmount`: <u>**_opaque_**</u> field since the unbounded amount is public until flow encryption is supported to only display batched amounts per block. 
+
+  - `IdentityKey`: <u>**_opaque_**</u> field since the validator's identity (decaf377-rdsa spendauth verification key) is supposed to be public, while individual delegators are kept private.
+  - `epochIndex`: <u>**_opaque_**</u> field since this is included as part of the chain state.
+  - `unbondedAmount`: <u>**_opaque_**</u> field since the unbounded amount is public until flow encryption is supported to only display batched amounts per block.
   - `delegationAmount`: <u>**_opaque_**</u> field since the delegation amount is determined by validator's exchange rate, which is public.
 
   ## 6. [Undelegate View](https://buf.build/penumbra-zone/penumbra/docs/78be1d64b1cb484ba4bc666d54dc76c5:penumbra.core.component.stake.v1#penumbra.core.component.stake.v1.Undelegate)
 
-
 - `Undelegate`
-  - `IdentityKey`: <u>**_opaque_**</u> field (refer to the same explanation in the [Delegate section](#1-delegate)). 
-  - `unbondedAmount`: <u>**_opaque_**</u> field (refer to the same explanation in the [Delegate section](#1-delegate)). 
+  - `IdentityKey`: <u>**_opaque_**</u> field (refer to the same explanation in the [Delegate section](#1-delegate)).
+  - `unbondedAmount`: <u>**_opaque_**</u> field (refer to the same explanation in the [Delegate section](#1-delegate)).
   - `delegationAmount`: <u>**_opaque_**</u> field (refer to the same explanation in the [Delegate section](#1-delegate)).
   - `fromEpoch`: <u>**_opaque_**</u> field (refer to the same explanation in the [Delegate section](#1-delegate))
 
 ## 7. [UndelegateClaim View](https://buf.build/penumbra-zone/penumbra/docs/78be1d64b1cb484ba4bc666d54dc76c5:penumbra.core.component.stake.v1#penumbra.core.component.stake.v1.UndelegateClaim)
 
 - `UndelegateClaim `
-  - `IdentityKey`: <u>**_opaque_**</u> field (refer to the same explanation in the [Delegate section](#1-delegate)). 
+  - `IdentityKey`: <u>**_opaque_**</u> field (refer to the same explanation in the [Delegate section](#1-delegate)).
   - `Penalty`: <u>**_opaque_**</u> field since this is part of the on-chain data.
-  - `BalanceCommitment`: <u>**_opaque_**</u> field since the pedersen commitment reveals not data about the note balances. 
+  - `BalanceCommitment`: <u>**_opaque_**</u> field since the pedersen commitment reveals not data about the note balances.
   - `UnbondingStartHeight`: <u>**_opaque_**</u> field since this is recorded publicly on-chain.
 
 ## 7. [ActionDutchAuctionSchedule View](https://buf.build/penumbra-zone/penumbra/docs/78be1d64b1cb484ba4bc666d54dc76c5/penumbra.core.component.auction.v1alpha1#penumbra.core.component.auction.v1alpha1.ActionDutchAuctionSchedule)
 
-- 
+- `ActionDutchAuctionSchedule`
+  - `DutchAuctionDescription`: <u>**_opaque_**</u> field since the amounts and asset types can be public similiar to swaps.
+  - `AuctionId`: <u>**_opaque_**</u> field since the unique identifier reveals no information about the auction.
+  - `Metadata`: <u>**_visible_**</u> field?
+
+## 8. [ActionDutchAuctionEnd View](https://buf.build/penumbra-zone/penumbra/docs/78be1d64b1cb484ba4bc666d54dc76c5:penumbra.core.component.auction.v1alpha1#penumbra.core.component.auction.v1alpha1.ActionDutchAuctionEnd)
+
+- `ActionDutchAuctionEnd`
+  - `AuctionId`: <u>**_opaque_**</u> field (refer to the same explanation in the [ActionDutchAuctionSchedule section](#1-delegate)).
+
+## 9. [ActionDutchAuctionWithdraw View](https://buf.build/penumbra-zone/penumbra/docs/78be1d64b1cb484ba4bc666d54dc76c5:penumbra.core.component.auction.v1alpha1#penumbra.core.component.auction.v1alpha1.ActionDutchAuctionWithdraw)
+
+- `ActionDutchAuctionEnd`
+  - `AuctionId`: <u>**_opaque_**</u> field (refer to the same explanation in the [ActionDutchAuctionSchedule section](#1-delegate)).
+  - `SequenceNumber`: <u>**_opaque_**</u> field since it only reveals the state (active or inactive) of the auction.
+  - `BalanceCommitment`: <u>**_opaque_**</u> field since the pedersen commitment reveals not data about the note balances.
