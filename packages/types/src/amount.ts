@@ -26,7 +26,9 @@ export const fromValueView = (valueView: ValueView): BigNumber => {
 };
 
 export const fromString = (amount: string, exponent = 0): Amount =>
-  new Amount(toBaseUnit(BigNumber(amount), exponent));
+  new Amount(
+    toBaseUnit(BigNumber(amount).decimalPlaces(exponent, BigNumber.ROUND_FLOOR), exponent),
+  );
 
 export const addAmounts = (a: Amount, b: Amount): Amount => {
   const joined = joinLoHiAmount(a) + joinLoHiAmount(b);
