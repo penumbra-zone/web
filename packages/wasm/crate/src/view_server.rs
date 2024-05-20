@@ -1,6 +1,3 @@
-use std::collections::BTreeMap;
-use std::convert::TryInto;
-
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_compact_block::{CompactBlock, StatePayload};
 use penumbra_keys::FullViewingKey;
@@ -11,6 +8,7 @@ use penumbra_tct as tct;
 use penumbra_tct::Witness::*;
 use serde::{Deserialize, Serialize};
 use serde_wasm_bindgen::Serializer;
+use std::collections::BTreeMap;
 use tct::storage::{StoreCommitment, StoreHash, StoredPosition, Updates};
 use tct::{Forgotten, Tree};
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -113,13 +111,10 @@ impl ViewServer {
     /// Use `flush_updates()` to get the scan results
     /// Returns: `bool`
     #[wasm_bindgen]
-    pub async fn scan_block(&mut self, compact_block: JsValue) -> WasmResult<bool> {
+    pub async fn scan_block(&mut self, compact_block: &[u8]) -> WasmResult<bool> {
         utils::set_panic_hook();
 
-        let block_proto: penumbra_proto::core::component::compact_block::v1::CompactBlock =
-            serde_wasm_bindgen::from_value(compact_block)?;
-
-        let block: CompactBlock = block_proto.try_into()?;
+        let block = CompactBlock::decode(compact_block)?;
 
         let mut found_new_data: bool = false;
 
