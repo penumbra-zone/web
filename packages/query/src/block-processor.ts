@@ -97,6 +97,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   // If syncBlocks() is called multiple times concurrently, they'll all wait for
   // the same promise rather than each starting their own sync process.
   public sync(): Promise<void> {
+    console.log("entered sync!")
     this.syncPromise ??= backOff(() => this.syncAndStore(), {
       maxDelay: 30_000, // 30 seconds
       retry: async (e, attemptNumber) => {
@@ -171,20 +172,37 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async syncAndStore() {
+    console.log("entered syncAndStore!")
     const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
     const startHeight = fullSyncHeight !== undefined ? fullSyncHeight + 1n : 0n; // Must compare to undefined as 0n is falsy
     let latestKnownBlockHeight = await this.querier.tendermint.latestBlockHeight();
 
-    if (startHeight === 0n) {
-      // In the `for` loop below, we only update validator infos once we've
-      // reached the latest known epoch. This means that, if a user is syncing
-      // for the first time, they could experience a broken UI until the latest
-      // known epoch is reached, since they may have delegation tokens but no
-      // validator info to go with them. So we'll update validator infos at the
-      // beginning of sync as well, and force the rest of sync to wait until
-      // it's done.
-      await this.updateValidatorInfos(0n);
-    }
+    // if (startHeight === 0n) {
+    //   // In the `for` loop below, we only update validator infos once we've
+    //   // reached the latest known epoch. This means that, if a user is syncing
+    //   // for the first time, they could experience a broken UI until the latest
+    //   // known epoch is reached, since they may have delegation tokens but no
+    //   // validator info to go with them. So we'll update validator infos at the
+    //   // beginning of sync as well, and force the rest of sync to wait until
+    //   // it's done.
+    //   await this.updateValidatorInfos(0n);
+    // }
+
+    // performance.mark('Function2_Start');
+
+    // let compactBlocks = await this.querier.compactBlock.compactBlockRange({
+    //   startHeight,
+    //   keepAlive: true,
+    //   abortSignal: this.abortController.signal,
+    // });
+
+    // performance.mark('Function2_End');
+    // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+    // console.log('Measure2: ' + measure2.duration);
+
+    // for await (const block of compactBlocks) {
+    //   console.log("Compact Block:", block);
+    // }
 
     // this is an indefinite stream of the (compact) chain from the network
     // intended to run continuously
@@ -194,12 +212,15 @@ export class BlockProcessor implements BlockProcessorInterface {
       abortSignal: this.abortController.signal,
     })) {
       if (compactBlock.appParametersUpdated) {
+        console.log("entered 1")
         await this.indexedDb.saveAppParams(await this.querier.app.appParams());
       }
       if (compactBlock.fmdParameters) {
+        console.log("entered 2")
         await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
       }
       if (compactBlock.gasPrices) {
+        console.log("entered 3")
         await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
       }
 
@@ -207,7 +228,12 @@ export class BlockProcessor implements BlockProcessorInterface {
       // - decrypts new notes
       // - decrypts new swaps
       // - updates idb with advice
+
+      // performance.mark('Function2_Start');
       const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock);
+      // performance.mark('Function2_End');
+      // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+      // console.log('Measure2: ' + measure2.duration);
 
       // flushing is slow, avoid it until
       // - wasm says
@@ -218,67 +244,92 @@ export class BlockProcessor implements BlockProcessorInterface {
         interval: compactBlock.height % 1000n === 0n,
         new: compactBlock.height > latestKnownBlockHeight,
       };
-
-      const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
+      // const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
       let flush: ScanBlockResult | undefined;
       if (Object.values(flushReasons).some(Boolean)) {
         flush = this.viewServer.flushUpdates();
+
+        // performance.mark('Function2_End');
+        // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+        // console.log('Measure2: ' + measure2.duration);
 
         // in an atomic query, this
         // - saves 'sctUpdates'
         // - saves new decrypted notes
         // - saves new decrypted swaps
         // - updates last block synced
+
+        // performance.mark('Function2_Start');
+
         await this.indexedDb.saveScanResult(flush);
+
+        // performance.mark('Function2_End');
+        // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+        // console.log('Measure2: ' + measure2.duration);
 
         // - detect unknown asset types
         // - shielded pool for asset metadata
         // - or, generate default fallback metadata
         // - update idb
-        await this.identifyNewAssets(flush.newNotes);
 
-        for (const spendableNoteRecord of flush.newNotes)
-          recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
-        for (const swapRecord of flush.newSwaps)
-          recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
+        // performance.mark('Function2_Start');
+
+        // await this.identifyNewAssets(flush.newNotes);
+
+        // performance.mark('Function2_End');
+        // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+        // console.log('Measure2: ' + measure2.duration);
+
+        // for (const spendableNoteRecord of flush.newNotes)
+        //   recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
+        // for (const swapRecord of flush.newSwaps)
+        //   recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
       }
 
       // nullifiers on this block may match notes or swaps from db
       // - update idb, mark as spent/claimed
       // - return nullifiers used in this way
-      const spentNullifiers = await this.resolveNullifiers(
-        compactBlock.nullifiers,
-        compactBlock.height,
-      );
+      // const spentNullifiers = await this.resolveNullifiers(
+      //   compactBlock.nullifiers,
+      //   compactBlock.height,
+      // );
 
       // if a new record involves a state commitment, scan all block tx
-      if (spentNullifiers.size || recordsByCommitment.size) {
-        // this is a network query
-        const blockTx = await this.querier.app.txsByHeight(compactBlock.height);
+      // if (spentNullifiers.size || recordsByCommitment.size) {
+      //   // this is a network query
+      //   // performance.mark('Function2_Start');
 
-        // identify tx that involve a new record
-        // - compare nullifiers
-        // - compare state commitments
-        // - collect relevant tx for info generation later
-        // - if matched by commitment, collect record with recovered source
-        const { relevantTx, recordsWithSources } = await this.identifyTransactions(
-          spentNullifiers,
-          recordsByCommitment,
-          blockTx,
-        );
+      //   // console.log("compactBlock.height: ", compactBlock.height)
+      //   // const blockTx = await this.querier.app.txsByHeight(compactBlock.height);
+      //   const blockTx: Transaction[] = [];
 
-        // this simply stores the new records with 'rehydrated' sources to idb
-        // TODO: this is the second time we save these records, after "saveScanResult"
-        await this.saveRecoveredCommitmentSources(recordsWithSources);
+      //   // performance.mark('Function2_End');
+      //   // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+      //   // console.log('Measure2: ' + measure2.duration);
 
-        await this.processTransactions(blockTx);
+      //   // identify tx that involve a new record
+      //   // - compare nullifiers
+      //   // - compare state commitments
+      //   // - collect relevant tx for info generation later
+      //   // - if matched by commitment, collect record with recovered source
+      //   const { relevantTx, recordsWithSources } = await this.identifyTransactions(
+      //     spentNullifiers,
+      //     recordsByCommitment,
+      //     blockTx,
+      //   );
 
-        // at this point txinfo can be generated and saved. this will resolve
-        // pending broadcasts, and populate the transaction list.
-        // - calls wasm for each relevant tx
-        // - saves to idb
-        await this.saveTransactions(compactBlock.height, relevantTx);
-      }
+      //   // this simply stores the new records with 'rehydrated' sources to idb
+      //   // TODO: this is the second time we save these records, after "saveScanResult"
+      //   await this.saveRecoveredCommitmentSources(recordsWithSources);
+
+      //   await this.processTransactions(blockTx);
+
+      //   // at this point txinfo can be generated and saved. this will resolve
+      //   // pending broadcasts, and populate the transaction list.
+      //   // - calls wasm for each relevant tx
+      //   // - saves to idb
+      //   await this.saveTransactions(compactBlock.height, relevantTx);
+      // }
 
       /**
        * This... really isn't great.
@@ -306,26 +357,26 @@ export class BlockProcessor implements BlockProcessorInterface {
        * between Rust and TypeScript like we are. If and when we move the block
        * processor into Rust, this issue should be resolved.
        */
-      for (const spendableNoteRecord of flush?.newNotes ?? []) {
-        await this.maybeUpsertAuctionWithNoteCommitment(spendableNoteRecord);
-      }
+      // for (const spendableNoteRecord of flush?.newNotes ?? []) {
+      //   await this.maybeUpsertAuctionWithNoteCommitment(spendableNoteRecord);
+      // }
 
       // We do not store historical prices,
       // so there is no point in saving prices that would already be considered obsolete at the time of saving
-      const blockInPriceRelevanceThreshold =
-        compactBlock.height >= latestKnownBlockHeight - BigInt(PRICE_RELEVANCE_THRESHOLDS.default);
+      // const blockInPriceRelevanceThreshold =
+      //   compactBlock.height >= latestKnownBlockHeight - BigInt(PRICE_RELEVANCE_THRESHOLDS.default);
 
       // we can't use third-party price oracles for privacy reasons,
       // so we have to get asset prices from swap results during block scans
       // and store them locally in indexed-db.
-      if (blockInPriceRelevanceThreshold && compactBlock.swapOutputs.length) {
-        await updatePricesFromSwaps(
-          this.indexedDb,
-          this.numeraires,
-          compactBlock.swapOutputs,
-          compactBlock.height,
-        );
-      }
+      // if (blockInPriceRelevanceThreshold && compactBlock.swapOutputs.length) {
+      //   await updatePricesFromSwaps(
+      //     this.indexedDb,
+      //     this.numeraires,
+      //     compactBlock.swapOutputs,
+      //     compactBlock.height,
+      //   );
+      // }
 
       // We only query Tendermint for the latest known block height once, when
       // the block processor starts running. Once we're caught up, though, the
@@ -336,14 +387,20 @@ export class BlockProcessor implements BlockProcessorInterface {
         latestKnownBlockHeight = compactBlock.height;
       }
 
+      // performance.mark('Function2_Start');
+
       const isLastBlockOfEpoch = !!compactBlock.epochRoot;
       if (isLastBlockOfEpoch) {
         await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
       }
 
-      if (globalThis.ASSERT_ROOT_VALID) {
-        await this.assertRootValid(compactBlock.height);
-      }
+      // performance.mark('Function2_End');
+      // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+      // console.log('Measure2: ' + measure2.duration);
+
+      // if (globalThis.ASSERT_ROOT_VALID) {
+      //   await this.assertRootValid(compactBlock.height);
+      // }
     }
   }
 
@@ -367,12 +424,16 @@ export class BlockProcessor implements BlockProcessorInterface {
     const metadataAlreadyInDb = await this.indexedDb.getAssetsMetadata(assetId);
     if (metadataAlreadyInDb) return metadataAlreadyInDb;
 
-    const metadataFromNode = await this.querier.shieldedPool.assetMetadataById(assetId);
+    // performance.mark('Function2_Start');
+    // const metadataFromNode = await this.querier.shieldedPool.assetMetadataById(assetId);
+    // performance.mark('Function2_End');
+    // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+    // console.log('Measure2: ' + measure2.duration);
 
-    if (metadataFromNode) {
-      await this.indexedDb.saveAssetsMetadata(customizeSymbol(metadataFromNode));
-      return metadataFromNode;
-    }
+    // if (metadataFromNode) {
+    //   await this.indexedDb.saveAssetsMetadata(customizeSymbol(metadataFromNode));
+    //   return metadataFromNode;
+    // }
 
     return undefined;
   }

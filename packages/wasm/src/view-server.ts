@@ -59,7 +59,7 @@ export class ViewServer implements ViewServerInterface {
   // Should extract updates via this.flushUpdates().
   async scanBlock(compactBlock: CompactBlock): Promise<boolean> {
     const res = compactBlock.toJson();
-    return this.wasmViewServer.scan_block(res);
+    return await this.wasmViewServer.scan_block(res);
   }
 
   // Resets the state of the wasmViewServer to the one set in storage
