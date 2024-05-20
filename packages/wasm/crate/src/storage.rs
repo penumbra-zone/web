@@ -1,15 +1,17 @@
 #[allow(unused_imports)]
 use std::future::IntoFuture;
 
+use anyhow::Error;
 use indexed_db_futures::{
     prelude::{IdbObjectStoreParameters, IdbOpenDbRequestLike, OpenDbRequest},
     IdbDatabase, IdbKeyPath, IdbQuerySource, IdbVersionChangeEvent,
 };
 use penumbra_asset::asset::{self, Id, Metadata};
+use penumbra_auction::auction::AuctionId;
 use penumbra_keys::keys::AddressIndex;
 use penumbra_num::Amount;
 use penumbra_proto::{
-    core::{app::v1::AppParameters, component::sct::v1::Epoch},
+    core::{app::v1::AppParameters, asset::v1::Value, component::sct::v1::Epoch},
     crypto::tct::v1::StateCommitment,
     view::v1::{NotesRequest, SwapRecord, TransactionInfo},
     DomainType,
@@ -20,7 +22,7 @@ use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsValue;
 use web_sys::IdbTransactionMode::Readwrite;
 
-use crate::error::WasmResult;
+use crate::error::{WasmError, WasmResult};
 use crate::note_record::SpendableNoteRecord;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -42,6 +44,8 @@ pub struct Tables {
     pub epochs: String,
     pub transactions: String,
     pub full_sync_height: String,
+    pub auctions: String,
+    pub auction_outstanding_reserves: String,
 }
 
 pub struct IndexedDBStorage {
@@ -168,10 +172,7 @@ impl IndexedDBStorage {
         let store = tx.object_store(&self.constants.tables.assets)?;
 
         Ok(store
-            .get_owned(base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                id.to_proto().inner,
-            ))?
+            .get_owned(byte_array_to_base64(&id.to_proto().inner))?
             .await?
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)
@@ -212,10 +213,7 @@ impl IndexedDBStorage {
         let store = tx.object_store(&self.constants.tables.spendable_notes)?;
 
         Ok(store
-            .get_owned(base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                commitment.to_proto().inner,
-            ))?
+            .get_owned(byte_array_to_base64(&commitment.to_proto().inner))?
             .await?
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)
@@ -232,10 +230,7 @@ impl IndexedDBStorage {
 
         Ok(store
             .index("nullifier")?
-            .get_owned(&base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                nullifier.to_proto().inner,
-            ))?
+            .get_owned(byte_array_to_base64(&nullifier.to_proto().inner))?
             .await?
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)
@@ -253,13 +248,7 @@ impl IndexedDBStorage {
 
         let commitment_proto = note.commit().to_proto();
 
-        store.put_key_val_owned(
-            base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                commitment_proto.inner,
-            ),
-            &note_js,
-        )?;
+        store.put_key_val_owned(byte_array_to_base64(&commitment_proto.inner), &note_js)?;
 
         Ok(())
     }
@@ -271,10 +260,7 @@ impl IndexedDBStorage {
         let commitment_proto = commitment.to_proto();
 
         Ok(store
-            .get_owned(base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                commitment_proto.inner,
-            ))?
+            .get_owned(byte_array_to_base64(&commitment_proto.inner))?
             .await?
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)
@@ -288,10 +274,7 @@ impl IndexedDBStorage {
         let store = tx.object_store(&self.constants.tables.swaps)?;
 
         Ok(store
-            .get_owned(base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                swap_commitment.inner,
-            ))?
+            .get_owned(byte_array_to_base64(&swap_commitment.inner))?
             .await?
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)
@@ -306,10 +289,7 @@ impl IndexedDBStorage {
 
         Ok(store
             .index("nullifier")?
-            .get_owned(base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                &nullifier.to_proto().inner,
-            ))?
+            .get_owned(byte_array_to_base64(&nullifier.to_proto().inner))?
             .await?
             .map(serde_wasm_bindgen::from_value)
             .transpose()?)
@@ -379,4 +359,37 @@ impl IndexedDBStorage {
 
         Ok(records)
     }
+
+    pub async fn get_auction_oustanding_reserves(
+        &self,
+        auction_id: AuctionId,
+    ) -> WasmResult<OutstandingReserves> {
+        let result = self
+            .db
+            .transaction_on_one(&self.constants.tables.auction_outstanding_reserves)?
+            .object_store(&self.constants.tables.auction_outstanding_reserves)?
+            .get::<JsValue>(&byte_array_to_base64(&auction_id.to_proto().inner).into())?
+            .await?
+            .map(serde_wasm_bindgen::from_value::<OutstandingReserves>)
+            .unwrap_or(Err(WasmError::Anyhow(Error::msg(
+                "could not find reserves",
+            ))
+            .into()));
+
+        if let Ok(outstanding_reserves) = result {
+            Ok(outstanding_reserves)
+        } else {
+            Err(WasmError::Anyhow(Error::msg("could not find reserves")))
+        }
+    }
+}
+
+fn byte_array_to_base64(byte_array: &Vec<u8>) -> String {
+    base64::Engine::encode(&base64::engine::general_purpose::STANDARD, byte_array)
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct OutstandingReserves {
+    pub input: Value,
+    pub output: Value,
 }

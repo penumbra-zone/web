@@ -1,5 +1,28 @@
 # chrome-extension
 
+## 8.0.0
+
+### Major Changes
+
+- v8.0.0 versioning and manifest
+
+### Patch Changes
+
+- 610a445: update osmosis channel for deimos-8
+- Updated dependencies
+- Updated dependencies [610a445]
+  - @penumbra-zone/ui@3.0.0
+  - @penumbra-zone/bech32m@3.1.0
+  - @penumbra-zone/query@3.1.0
+  - @penumbra-zone/services@3.1.0
+  - @penumbra-zone/storage@3.2.0
+  - @penumbra-zone/types@4.1.0
+  - @penumbra-zone/wasm@4.0.4
+  - @penumbra-zone/services-context@3.0.4
+  - @penumbra-zone/perspective@1.0.6
+  - @penumbra-zone/client@4.1.1
+  - @penumbra-zone/crypto-web@3.0.5
+
 ## 7.0.3
 
 ### Patch Changes

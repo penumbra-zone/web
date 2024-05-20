@@ -1,4 +1,4 @@
-import { expect, describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import Array from './Array.fromAsync';
 import './ReadableStream_Symbol.asyncIterator_';
@@ -47,7 +47,6 @@ describe('Array.fromAsync', () => {
     const objWithMapFn = {
       multiplier: 3,
       mapFn(value: number) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         return value * this.multiplier;
       },
     };

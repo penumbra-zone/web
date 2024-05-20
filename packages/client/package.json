@@ -1,13 +1,13 @@
 {
   "name": "@penumbra-zone/client",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "license": "(MIT OR Apache-2.0)",
   "description": "Package for connecting to any Penumbra extension, including Prax.",
   "type": "module",
   "scripts": {
     "build": "tsc",
     "clean": "rm -rfv dist package penumbra-zone-client-*.tgz",
-    "lint": "eslint \"**/*.ts*\"",
+    "lint": "eslint src",
     "prebuild": "$npm_execpath run clean",
     "prepack": "$npm_execpath run build"
   },

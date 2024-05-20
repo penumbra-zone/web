@@ -13,7 +13,7 @@ import { DurationOption } from './constants';
 import {
   AuctionId,
   DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { viewClient } from '../../clients';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 
@@ -40,10 +40,12 @@ export interface DutchAuctionSlice {
   onSubmit: () => Promise<void>;
   txInProgress: boolean;
   auctionInfos: AuctionInfo[];
-  loadAuctionInfos: () => Promise<void>;
+  loadAuctionInfos: (queryLatestState?: boolean) => Promise<void>;
+  loadAuctionInfosAbortController?: AbortController;
   loadMetadata: (assetId?: AssetId) => Promise<void>;
   metadataByAssetId: Record<string, Metadata>;
   endAuction: (auctionId: AuctionId) => Promise<void>;
+  withdraw: (auctionId: AuctionId, currentSeqNum: bigint) => Promise<void>;
 }
 
 export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (set, get) => ({
@@ -116,13 +118,32 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   txInProgress: false,
 
   auctionInfos: [],
-  loadAuctionInfos: async () => {
+  loadAuctionInfos: async (queryLatestState = false) => {
+    get().dutchAuction.loadAuctionInfosAbortController?.abort();
+    const newAbortController = new AbortController();
+
     set(state => {
       state.dutchAuction.auctionInfos = [];
+      state.dutchAuction.loadAuctionInfosAbortController = newAbortController;
     });
 
-    for await (const response of viewClient.auctions({})) {
+    /** @todo: Sort by... something? */
+    for await (const response of viewClient.auctions(
+      { queryLatestState, includeInactive: true },
+      /**
+       * Weirdly, just passing the newAbortController.signal here doesn't seem to
+       * have any effect, despite the ConnectRPC docs saying that it should
+       * work. I still left this line in, though, since it seems right and
+       * perhaps will be fixed in a later ConnectRPC release. But in the
+       * meantime, returning early from the `for` loop below fixes this issue.
+       *
+       * @see https://connectrpc.com/docs/web/cancellation-and-timeouts/
+       */
+      { signal: newAbortController.signal },
+    )) {
+      if (newAbortController.signal.aborted) return;
       if (!response.auction || !response.id) continue;
+
       const auction = DutchAuction.fromBinary(response.auction.value);
       const auctions = [...get().dutchAuction.auctionInfos, { id: response.id, auction }];
 
@@ -150,18 +171,16 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   metadataByAssetId: {},
 
   endAuction: async auctionId => {
-    set(state => {
-      state.dutchAuction.txInProgress = true;
-    });
+    const req = new TransactionPlannerRequest({ dutchAuctionEndActions: [{ auctionId }] });
+    await planBuildBroadcast('dutchAuctionEnd', req);
+    void get().dutchAuction.loadAuctionInfos();
+  },
 
-    try {
-      const req = new TransactionPlannerRequest({ dutchAuctionEndActions: [{ auctionId }] });
-      await planBuildBroadcast('dutchAuctionEnd', req);
-      void get().dutchAuction.loadAuctionInfos();
-    } finally {
-      set(state => {
-        state.dutchAuction.txInProgress = false;
-      });
-    }
+  withdraw: async (auctionId, currentSeqNum) => {
+    const req = new TransactionPlannerRequest({
+      dutchAuctionWithdrawActions: [{ auctionId, seq: currentSeqNum + 1n }],
+    });
+    await planBuildBroadcast('dutchAuctionWithdraw', req);
+    void get().dutchAuction.loadAuctionInfos();
   },
 });

@@ -34,12 +34,10 @@ export const rootRouter = createHashRouter([
             index: true,
             loader: AssetsLoader,
             element: <AssetsTable />,
-            errorElement: <ErrorBoundary />,
           },
           {
             path: PagePath.TRANSACTIONS,
             element: <TransactionTable />,
-            errorElement: <ErrorBoundary />,
           },
         ],
       },

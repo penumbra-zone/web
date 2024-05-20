@@ -85,6 +85,7 @@ mod tests {
             transactions: String,
             full_sync_height: String,
             auctions: String,
+            auction_outstanding_reserves: String,
         }
 
         // Define `IndexDB` table parameters and constants.
@@ -100,6 +101,7 @@ mod tests {
             transactions: "TRANSACTIONS".to_string(),
             full_sync_height: "FULL_SYNC_HEIGHT".to_string(),
             auctions: "AUCTIONS".to_string(),
+            auction_outstanding_reserves: "AUCTION_OUTSTANDING_RESERVES".to_string(),
         };
 
         let constants: IndexedDbConstants = IndexedDbConstants {

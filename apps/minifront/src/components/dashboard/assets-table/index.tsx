@@ -14,6 +14,7 @@ import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/valu
 import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
+import { shouldDisplay } from './helpers';
 
 export const AssetsLoader: LoaderFunction = async (): Promise<BalancesByAccount[]> => {
   await throwIfPraxNotConnectedTimeout();
@@ -64,7 +65,7 @@ export default function AssetsTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {account.balances.map((assetBalance, index) => (
+            {account.balances.filter(shouldDisplay).map((assetBalance, index) => (
               <TableRow key={index}>
                 <TableCell>
                   <ValueViewComponent view={assetBalance.balanceView} />

@@ -10,6 +10,7 @@ import { UnimplementedView } from './unimplemented-view';
 import { SwapViewComponent } from './swap';
 import { ActionDutchAuctionScheduleViewComponent } from './action-dutch-auction-schedule-view';
 import { ActionDutchAuctionEndComponent } from './action-dutch-auction-end';
+import { ActionDutchAuctionWithdrawViewComponent } from './action-dutch-auction-withdraw-view';
 
 const CASE_TO_LABEL: Record<string, string> = {
   daoDeposit: 'DAO Deposit',
@@ -74,6 +75,9 @@ export const ActionViewComponent = ({ av: { actionView } }: { av: ActionView }) 
 
     case 'actionDutchAuctionEnd':
       return <ActionDutchAuctionEndComponent value={actionView.value} />;
+
+    case 'actionDutchAuctionWithdraw':
+      return <ActionDutchAuctionWithdrawViewComponent value={actionView.value} />;
 
     case 'validatorDefinition':
       return <UnimplementedView label='Validator Definition' />;

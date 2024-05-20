@@ -24,6 +24,6 @@ describe('<AddressComponent />', () => {
   test('uses colored text for ephemeral addresses', () => {
     const { getByText } = render(<AddressComponent address={pbAddress} ephemeral />);
 
-    expect(getByText(address)).toHaveClass('text-[#8D5728]');
+    expect(getByText(address)).toHaveClass('text-rust');
   });
 });

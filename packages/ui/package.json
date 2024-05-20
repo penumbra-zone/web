@@ -1,12 +1,12 @@
 {
   "name": "@penumbra-zone/ui",
-  "version": "2.0.5",
+  "version": "3.0.0",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
     "build-storybook": "storybook build",
-    "lint": "eslint \"**/*.ts*\"",
+    "lint": "eslint components lib",
     "storybook": "storybook dev -p 6006",
     "test": "vitest run",
     "ui:add": "pnpm dlx shadcn-ui@latest add"
@@ -51,7 +51,7 @@
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240501193854-ea3cc743390d.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240514224745-858b19969460.1",
     "@bufbuild/protobuf": "^1.9.0",
     "@storybook/addon-essentials": "^8.0.4",
     "@storybook/addon-interactions": "^8.0.4",
@@ -75,7 +75,7 @@
     "tailwindcss": "^3.4.1"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240501193854-ea3cc743390d.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240514224745-858b19969460.1",
     "@bufbuild/protobuf": "^1.9.0"
   }
 }

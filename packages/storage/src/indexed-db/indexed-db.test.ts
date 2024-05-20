@@ -46,12 +46,13 @@ import {
   AssetId,
   EstimatedPrice,
   Metadata,
+  Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import type { IdbUpdate, PenumbraDb } from '@penumbra-zone/types/indexed-db';
 import {
   AuctionId,
   DutchAuctionDescription,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 
@@ -734,6 +735,57 @@ describe('IndexedDb', () => {
         noteCommitment,
         seqNum: 1n,
       });
+    });
+  });
+
+  describe('addAuctionOutstandingReserves()', () => {
+    let db: IndexedDb;
+
+    beforeEach(async () => {
+      db = await IndexedDb.initialize({ ...generateInitialProps() });
+    });
+
+    it('saves the outstanding reserves', async () => {
+      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const input = new Value({
+        amount: { hi: 0n, lo: 1n },
+        assetId: { inner: new Uint8Array([1, 1, 1, 1]) },
+      });
+      const output = new Value({
+        amount: { hi: 0n, lo: 2n },
+        assetId: { inner: new Uint8Array([2, 2, 2, 2]) },
+      });
+      await db.addAuctionOutstandingReserves(auctionId, { input, output });
+
+      await expect(db.getAuctionOutstandingReserves(auctionId)).resolves.toEqual({ input, output });
+    });
+  });
+
+  describe('deleteAuctionOutstandingReserves()', () => {
+    let db: IndexedDb;
+
+    beforeEach(async () => {
+      db = await IndexedDb.initialize({ ...generateInitialProps() });
+    });
+
+    it('deletes the reserves', async () => {
+      const auctionId = new AuctionId({ inner: new Uint8Array([0, 1, 2, 3]) });
+      const input = new Value({
+        amount: { hi: 0n, lo: 1n },
+        assetId: { inner: new Uint8Array([1, 1, 1, 1]) },
+      });
+      const output = new Value({
+        amount: { hi: 0n, lo: 2n },
+        assetId: { inner: new Uint8Array([2, 2, 2, 2]) },
+      });
+      await db.addAuctionOutstandingReserves(auctionId, { input, output });
+
+      // Make sure this test is actually deleting an existing record
+      await expect(db.getAuctionOutstandingReserves(auctionId)).resolves.toBeTruthy();
+
+      await db.deleteAuctionOutstandingReserves(auctionId);
+
+      await expect(db.getAuctionOutstandingReserves(auctionId)).resolves.toBeUndefined();
     });
   });
 });

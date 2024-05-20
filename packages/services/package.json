@@ -1,10 +1,10 @@
 {
   "name": "@penumbra-zone/services",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
-    "lint": "eslint \"**/*.ts*\"",
+    "lint": "eslint src",
     "test": "vitest run"
   },
   "files": [
@@ -39,14 +39,14 @@
     "@penumbra-zone/wasm": "workspace:*"
   },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240501193854-ea3cc743390d.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240501193854-ea3cc743390d.2",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240514224745-858b19969460.1",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240514224745-858b19969460.2",
     "@bufbuild/protobuf": "^1.9.0",
     "@connectrpc/connect": "^1.4.0"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240501193854-ea3cc743390d.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240501193854-ea3cc743390d.2",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240514224745-858b19969460.1",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240514224745-858b19969460.2",
     "@bufbuild/protobuf": "^1.9.0",
     "@connectrpc/connect": "^1.4.0"
   }

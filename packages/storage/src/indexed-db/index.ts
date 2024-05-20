@@ -3,6 +3,7 @@ import {
   AssetId,
   EstimatedPrice,
   Metadata,
+  Value,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import {
   Position,
@@ -61,8 +62,9 @@ import { sctPosition } from '@penumbra-zone/wasm/tree';
 import {
   AuctionId,
   DutchAuctionDescription,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { PartialMessage } from '@bufbuild/protobuf';
 
 interface IndexedDbProps {
   dbVersion: number; // Incremented during schema changes
@@ -122,6 +124,7 @@ export class IndexedDb implements IndexedDbInterface {
           keyPath: ['pricedAsset.inner', 'numeraire.inner'],
         }).createIndex('pricedAsset', 'pricedAsset.inner');
         db.createObjectStore('AUCTIONS');
+        db.createObjectStore('AUCTION_OUTSTANDING_RESERVES');
         db.createObjectStore('REGISTRY_VERSION');
       },
     });
@@ -286,15 +289,16 @@ export class IndexedDb implements IndexedDbInterface {
     const savedGasPrices = await this.getGasPrices();
     // These are arbitrarily set, but can take on any value.
     // The gas prices set here will determine the fees to use Penumbra.
+    //
+    // Note: this is a temporary measure to enable gas prices in the web, but once
+    // https://github.com/penumbra-zone/penumbra/issues/4306 is merged, we can remove this.
     if (!savedGasPrices) {
-      await this.saveGasPrices(
-        new GasPrices({
-          verificationPrice: 1n,
-          executionPrice: 1n,
-          blockSpacePrice: 1n,
-          compactBlockSpacePrice: 1n,
-        }),
-      );
+      await this.saveGasPrices({
+        verificationPrice: 1n,
+        executionPrice: 1n,
+        blockSpacePrice: 1n,
+        compactBlockSpacePrice: 1n,
+      });
     }
   }
 
@@ -389,11 +393,17 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async getGasPrices(): Promise<GasPrices | undefined> {
-    return this.db.get('GAS_PRICES', 'gas_prices');
+    const jsonGasPrices = await this.db.get('GAS_PRICES', 'gas_prices');
+    if (!jsonGasPrices) return undefined;
+    return GasPrices.fromJson(jsonGasPrices);
   }
 
-  async saveGasPrices(value: GasPrices): Promise<void> {
-    await this.u.update({ table: 'GAS_PRICES', value, key: 'gas_prices' });
+  async saveGasPrices(value: PartialMessage<GasPrices>): Promise<void> {
+    await this.u.update({
+      table: 'GAS_PRICES',
+      value: new GasPrices(value).toJson() as Jsonified<GasPrices>,
+      key: 'gas_prices',
+    });
   }
 
   /**
@@ -719,6 +729,7 @@ export class IndexedDb implements IndexedDbInterface {
       auction?: T;
       noteCommitment?: StateCommitment;
       seqNum?: bigint;
+      outstandingReserves?: { input: Value; output: Value };
     },
   ): Promise<void> {
     const key = uint8ArrayToBase64(auctionId.inner);
@@ -755,6 +766,40 @@ export class IndexedDb implements IndexedDbInterface {
         ? StateCommitment.fromJson(result.noteCommitment)
         : undefined,
       seqNum: result?.seqNum,
+    };
+  }
+
+  async addAuctionOutstandingReserves(
+    auctionId: AuctionId,
+    value: { input: Value; output: Value },
+  ): Promise<void> {
+    await this.db.add(
+      'AUCTION_OUTSTANDING_RESERVES',
+      {
+        input: value.input.toJson() as Jsonified<Value>,
+        output: value.output.toJson() as Jsonified<Value>,
+      },
+      uint8ArrayToBase64(auctionId.inner),
+    );
+  }
+
+  async deleteAuctionOutstandingReserves(auctionId: AuctionId): Promise<void> {
+    await this.db.delete('AUCTION_OUTSTANDING_RESERVES', uint8ArrayToBase64(auctionId.inner));
+  }
+
+  async getAuctionOutstandingReserves(
+    auctionId: AuctionId,
+  ): Promise<{ input: Value; output: Value } | undefined> {
+    const result = await this.db.get(
+      'AUCTION_OUTSTANDING_RESERVES',
+      uint8ArrayToBase64(auctionId.inner),
+    );
+
+    if (!result) return undefined;
+
+    return {
+      input: Value.fromJson(result.input),
+      output: Value.fromJson(result.output),
     };
   }
 }

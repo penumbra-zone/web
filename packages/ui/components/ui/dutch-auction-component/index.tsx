@@ -1,4 +1,4 @@
-import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1alpha1/auction_pb';
+import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { ValueViewComponent } from '../tx/view/value';
 import {
   Metadata,
@@ -8,6 +8,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { Button } from '../button';
 import { ArrowRight } from 'lucide-react';
 import { PriceGraph } from './price-graph';
+import { Reserves } from './reserves';
 
 const getValueView = (amount?: Amount, metadata?: Metadata) =>
   new ValueView({
@@ -27,25 +28,25 @@ interface BaseProps {
   fullSyncHeight?: bigint;
 }
 
-interface PropsWithEndButton extends BaseProps {
-  showEndButton: true;
-  onClickEndButton: VoidFunction;
+interface PropsWithButton extends BaseProps {
+  buttonType: 'end' | 'withdraw';
+  onClickButton: VoidFunction;
 }
 
-interface PropsWithoutEndButton extends BaseProps {
-  showEndButton?: false;
-  onClickEndButton?: undefined;
+interface PropsWithoutButton extends BaseProps {
+  buttonType?: undefined;
+  onClickButton?: undefined;
 }
 
-type Props = PropsWithEndButton | PropsWithoutEndButton;
+type Props = PropsWithButton | PropsWithoutButton;
 
 export const DutchAuctionComponent = ({
   dutchAuction,
   inputMetadata,
   outputMetadata,
-  showEndButton,
-  onClickEndButton,
   fullSyncHeight,
+  buttonType,
+  onClickButton,
 }: Props) => {
   const { description } = dutchAuction;
   if (!description) return null;
@@ -82,9 +83,23 @@ export const DutchAuctionComponent = ({
         fullSyncHeight={fullSyncHeight}
       />
 
-      {showEndButton && (
+      <Reserves
+        dutchAuction={dutchAuction}
+        inputMetadata={inputMetadata}
+        outputMetadata={outputMetadata}
+      />
+
+      {buttonType === 'withdraw' && (
         <div className='self-end'>
-          <Button variant='destructiveSecondary' size='md' onClick={onClickEndButton}>
+          <Button variant='gradient' size='md' onClick={onClickButton}>
+            Withdraw funds
+          </Button>
+        </div>
+      )}
+
+      {buttonType === 'end' && (
+        <div className='self-end'>
+          <Button variant='destructiveSecondary' size='md' onClick={onClickButton}>
             End auction
           </Button>
         </div>

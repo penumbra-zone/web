@@ -3,10 +3,17 @@ import { IndexHeader } from './index-header';
 import { useStore } from '../../../state';
 import { BlockSync } from './block-sync';
 import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
-import { addrByIndexSelector, getActiveWallet } from '../../../state/wallets';
+import { getActiveWallet } from '../../../state/wallets';
 import { needsLogin } from '../popup-needs';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { ExternalLink } from 'lucide-react';
+import {
+  Address,
+  FullViewingKey,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
+import { Wallet } from '@penumbra-zone/types/wallet';
+import { ValidateAddress } from './validate-address';
 
 export interface PopupLoaderData {
   fullSyncHeight?: number;
@@ -24,21 +31,35 @@ export const popupIndexLoader = async (): Promise<Response | PopupLoaderData> =>
   };
 };
 
+const getAddrByIndex =
+  (wallet?: Wallet) =>
+  (index: number, ephemeral: boolean): Address => {
+    if (!wallet) throw new Error('No active wallet');
+
+    const fullViewingKey = FullViewingKey.fromJsonString(wallet.fullViewingKey);
+    return ephemeral
+      ? getEphemeralByIndex(fullViewingKey, index)
+      : getAddressByIndex(fullViewingKey, index);
+  };
+
 export const PopupIndex = () => {
   const activeWallet = useStore(getActiveWallet);
-  const getAddrByIndex = useStore(addrByIndexSelector);
   const frontendUrl = useStore(state => state.connectedSites.frontendUrl);
 
   return (
     <>
       <BlockSync />
 
-      <div className='flex h-full grow flex-col items-stretch justify-between bg-logo bg-left-bottom px-[30px] pb-[30px]'>
+      <div className='flex h-full grow flex-col items-stretch gap-[30px] bg-logo bg-left-bottom px-[30px] pb-[30px]'>
         <IndexHeader />
 
         <div className='flex flex-col gap-8'>
-          {activeWallet && <SelectAccount getAddrByIndex={getAddrByIndex} />}
+          {activeWallet && <SelectAccount getAddrByIndex={getAddrByIndex(activeWallet)} />}
         </div>
+
+        <ValidateAddress />
+
+        <div className='grow' />
 
         {!!frontendUrl && (
           <a href={frontendUrl} target='_blank' rel='noreferrer'>

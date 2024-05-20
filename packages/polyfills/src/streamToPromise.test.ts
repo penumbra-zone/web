@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, test } from 'vitest';
 
 import Array from './Array.fromAsync';
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
 const streamToPromise = Array.fromAsync;
 
 describe('streamToPromise()', () => {

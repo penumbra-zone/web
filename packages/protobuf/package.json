@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/protobuf",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Exports a `@bufbuild/protobuf` type registry with all message types necessary to communicate with a Penumbra extension",
   "type": "module",
@@ -32,10 +32,10 @@
     "@connectrpc/connect": "^1.4.0"
   },
   "peerDependencies": {
-    "@buf/cosmos_ibc.bufbuild_es": "1.9.0-20240327103030-e2006674271c.1",
-    "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20240327103030-e2006674271c.2",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240501193854-ea3cc743390d.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240501193854-ea3cc743390d.2",
+    "@buf/cosmos_ibc.bufbuild_es": "1.9.0-20240514155357-266dbe8e0fc5.1",
+    "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20240514155357-266dbe8e0fc5.2",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240514224745-858b19969460.1",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240514224745-858b19969460.2",
     "@bufbuild/protobuf": "^1.9.0",
     "@connectrpc/connect": "^1.4.0"
   }

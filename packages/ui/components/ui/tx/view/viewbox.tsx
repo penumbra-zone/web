@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { cn } from '../../../../lib/utils';
 import { IncognitoIcon } from '../../icons/incognito';
+import { Box } from '../../box';
 
 export interface ViewBoxProps {
   label: string;
@@ -16,25 +17,27 @@ export const ViewBox = ({ label, visibleContent, isOpaque }: ViewBoxProps) => {
   // if isOpaque is undefined, set it to !visibleContent
   isOpaque = isOpaque ?? !visibleContent;
   return (
-    <div
-      className={cn(
-        'bg-background px-4 pt-3 pb-4 rounded-lg border flex flex-col gap-1 break-all overflow-hidden',
-        isOpaque ? 'cursor-not-allowed' : '',
-      )}
-    >
-      <div className='flex items-center gap-2 self-start'>
-        <span className={cn('text-base font-bold', isOpaque ? 'text-gray-600' : '')}>
-          {!isOpaque && <Label label={label} />}
-          {isOpaque && (
-            <div className='flex gap-2'>
-              <IncognitoIcon fill='#4b5563' />
-              <Label label={label} />
-            </div>
-          )}
-        </span>
+    <Box>
+      <div
+        className={cn(
+          'flex flex-col gap-1 break-all overflow-hidden',
+          isOpaque ? 'cursor-not-allowed' : '',
+        )}
+      >
+        <div className='flex items-center gap-2 self-start'>
+          <span className={cn('text-base font-bold', isOpaque ? 'text-gray-600' : '')}>
+            {!isOpaque && <Label label={label} />}
+            {isOpaque && (
+              <div className='flex gap-2'>
+                <IncognitoIcon fill='#4b5563' />
+                <Label label={label} />
+              </div>
+            )}
+          </span>
+        </div>
+        {visibleContent}
       </div>
-      {visibleContent}
-    </div>
+    </Box>
   );
 };
 

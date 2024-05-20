@@ -1,6 +1,6 @@
 use crate::metadata::customize_symbol_inner;
 use crate::note_record::SpendableNoteRecord;
-use crate::storage::IndexedDBStorage;
+use crate::storage::{IndexedDBStorage, OutstandingReserves};
 use crate::utils;
 use crate::{error::WasmResult, swap_record::SwapRecord};
 use anyhow::anyhow;
@@ -8,6 +8,7 @@ use ark_ff::UniformRand;
 use decaf377::{Fq, Fr};
 use penumbra_asset::asset::{Id, Metadata};
 use penumbra_asset::Value;
+use penumbra_auction::auction::dutch::actions::ActionDutchAuctionWithdrawPlan;
 use penumbra_auction::auction::dutch::{
     ActionDutchAuctionEnd, ActionDutchAuctionSchedule, DutchAuctionDescription,
 };
@@ -435,6 +436,27 @@ pub async fn plan_transaction(
         actions_list.push(ActionPlan::ActionDutchAuctionEnd(ActionDutchAuctionEnd {
             auction_id,
         }));
+    }
+
+    for tpr::ActionDutchAuctionWithdraw { auction_id, seq } in
+        request.dutch_auction_withdraw_actions
+    {
+        let auction_id: AuctionId = auction_id
+            .ok_or_else(|| anyhow!("missing auction ID in Dutch auction withdraw action"))?
+            .try_into()?;
+
+        save_auction_nft_metadata_if_needed(auction_id, &storage, seq).await?;
+        let outstanding_reserves: OutstandingReserves =
+            storage.get_auction_oustanding_reserves(auction_id).await?;
+
+        actions_list.push(ActionPlan::ActionDutchAuctionWithdraw(
+            ActionDutchAuctionWithdrawPlan {
+                auction_id,
+                seq,
+                reserves_input: outstanding_reserves.input.try_into()?,
+                reserves_output: outstanding_reserves.output.try_into()?,
+            },
+        ));
     }
 
     // Phase 2: balance the transaction with information from the view service.

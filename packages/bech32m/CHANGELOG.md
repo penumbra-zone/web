@@ -1,5 +1,11 @@
 # @penumbra-zone/bech32
 
+## 3.1.0
+
+### Minor Changes
+
+- v8.0.0 versioning and manifest
+
 ## 3.0.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "chrome-extension",
-  "version": "7.0.3",
+  "version": "8.0.0",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "description": "chrome-extension",
@@ -10,13 +10,13 @@
     "bundle": "NODE_OPTIONS=\"--import=./src/utils/webpack-register.js\" webpack",
     "clean": "rm -rfv dist bin",
     "dev": "NODE_ENV=testnet pnpm bundle --watch --mode=development -d inline-source-map",
-    "lint": "eslint \"**/*.ts*\"",
+    "lint": "eslint src",
     "test": "vitest run"
   },
   "dependencies": {
-    "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20240327103030-e2006674271c.2",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240501193854-ea3cc743390d.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240501193854-ea3cc743390d.2",
+    "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20240514155357-266dbe8e0fc5.2",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240514224745-858b19969460.1",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240514224745-858b19969460.2",
     "@bufbuild/protobuf": "^1.9.0",
     "@connectrpc/connect": "^1.4.0",
     "@connectrpc/connect-web": "^1.4.0",
