@@ -1,16 +1,11 @@
-import { AllSlices } from '../../../../../state';
-import { useStoreShallow } from '../../../../../utils/use-store-shallow';
+import { useStore } from '../../../../../state';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { PriceImpact } from './price-impact';
 import { Trace } from './trace';
 import { Box } from '@penumbra-zone/ui/components/ui/box';
 
-const simulateSwapResultSelector = (state: AllSlices) => ({
-  result: state.swap.simulateOutResult,
-});
-
 export const SimulateSwapResult = () => {
-  const { result } = useStoreShallow(simulateSwapResultSelector);
+  const result = useStore(state => state.swap.simulateOutResult);
 
   if (!result) return null;
 
