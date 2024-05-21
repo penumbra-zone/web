@@ -19,19 +19,19 @@
   },
   "dependencies": {
     "@penumbra-zone/types": "workspace:*",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240514224745-858b19969460.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1",
     "@bufbuild/protobuf": "^1.9.0",
     "@penumbra-zone/bech32m": "workspace:*",
-    "fake-indexeddb": "^5.0.2"
+    "fake-indexeddb": "^6.0.0"
   },
   "optionalDependencies": {
     "@penumbra-zone/keys": "workspace:*"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240514224745-858b19969460.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1",
     "@bufbuild/protobuf": "^1.9.0"
   }
 }
