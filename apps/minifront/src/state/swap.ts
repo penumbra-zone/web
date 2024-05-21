@@ -17,8 +17,9 @@ import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import {
   SimulateTradeRequest,
   SwapExecution,
+  SwapExecution_Trace,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { simulateClient } from '../clients';
+import { simulateClient, viewClient } from '../clients';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
@@ -32,11 +33,32 @@ import { getAmountFromValue, getAssetIdFromValue } from '@penumbra-zone/getters/
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { divideAmounts } from '@penumbra-zone/types/amount';
 import { amountMoreThanBalance } from './send';
+import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
+
+const getMetadataByAssetId = async (
+  traces: SwapExecution_Trace[] = [],
+): Promise<Record<string, Metadata>> => {
+  const map: Record<string, Metadata> = {};
+
+  for (const trace of traces) {
+    for (const value of trace.value) {
+      if (!value.assetId || map[bech32mAssetId(value.assetId)]) continue;
+
+      const { denomMetadata } = await viewClient.assetMetadataById({ assetId: value.assetId });
+
+      if (denomMetadata) map[bech32mAssetId(value.assetId)] = denomMetadata;
+    }
+  }
+
+  return map;
+};
 
 export interface SimulateSwapResult {
   output: ValueView;
   unfilled: ValueView;
   priceImpact: number | undefined;
+  traces?: SwapExecution_Trace[];
+  metadataByAssetId: Record<string, Metadata>;
 }
 
 export interface SwapSlice {
@@ -122,11 +144,15 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
           },
         });
 
+        const metadataByAssetId = await getMetadataByAssetId(res.output?.traces);
+
         set(({ swap }) => {
           swap.simulateOutResult = {
             output,
             unfilled,
             priceImpact: calculatePriceImpact(res.output),
+            traces: res.output?.traces,
+            metadataByAssetId,
           };
         });
       } catch (e) {

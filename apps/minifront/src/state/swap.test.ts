@@ -76,6 +76,7 @@ describe('Swap Slice', () => {
         output: new ValueView(),
         unfilled: new ValueView(),
         priceImpact: undefined,
+        metadataByAssetId: {},
       };
       return state;
     });
@@ -91,6 +92,7 @@ describe('Swap Slice', () => {
         output: new ValueView(),
         unfilled: new ValueView(),
         priceImpact: undefined,
+        metadataByAssetId: {},
       };
       return state;
     });
@@ -106,6 +108,7 @@ describe('Swap Slice', () => {
         output: new ValueView(),
         unfilled: new ValueView(),
         priceImpact: undefined,
+        metadataByAssetId: {},
       };
       return state;
     });
