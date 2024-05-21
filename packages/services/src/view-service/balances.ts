@@ -1,7 +1,10 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../ctx/prax';
 import { getAmount } from '@penumbra-zone/getters/value-view';
-import { getAssetIdFromRecord } from '@penumbra-zone/getters/spendable-note-record';
+import {
+  getAmountFromRecord,
+  getAssetIdFromRecord,
+} from '@penumbra-zone/getters/spendable-note-record';
 import {
   AssetId,
   EquivalentValue,
@@ -28,7 +31,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { addLoHi } from '@penumbra-zone/types/lo-hi';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
-import { multiplyAmountByNumber } from '@penumbra-zone/types/amount';
+import { isZero, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { Stringified } from '@penumbra-zone/types/jsonified';
 
 // Handles aggregating amounts and filtering by account number/asset id
@@ -44,6 +47,8 @@ export const balances: Impl['balances'] = async function* (req, ctx) {
 
   for await (const noteRecord of indexedDb.iterateSpendableNotes()) {
     if (noteRecord.heightSpent !== 0n) continue;
+    if (isZero(getAmountFromRecord(noteRecord))) continue;
+
     await aggregator.add(noteRecord);
   }
 
