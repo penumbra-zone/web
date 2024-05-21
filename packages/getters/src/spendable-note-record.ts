@@ -4,3 +4,7 @@ import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/pen
 export const getAssetIdFromRecord = createGetter(
   (noteRecord?: SpendableNoteRecord) => noteRecord?.note?.value?.assetId,
 );
+
+export const getAmountFromRecord = createGetter(
+  (noteRecord?: SpendableNoteRecord) => noteRecord?.note?.value?.amount,
+);
