@@ -13,7 +13,6 @@ export const SimulateSwapResult = () => {
   const { result } = useStoreShallow(simulateSwapResultSelector);
 
   if (!result) return null;
-  console.log('SimulateSwapResult', result);
 
   const { unfilled, output, priceImpact, traces, metadataByAssetId } = result;
 
