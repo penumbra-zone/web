@@ -40,15 +40,19 @@ const getMetadataByAssetId = async (
 ): Promise<Record<string, Metadata>> => {
   const map: Record<string, Metadata> = {};
 
-  for (const trace of traces) {
-    for (const value of trace.value) {
-      if (!value.assetId || map[bech32mAssetId(value.assetId)]) continue;
+  const promises = traces.flatMap(trace =>
+    trace.value.map(async value => {
+      if (!value.assetId || map[bech32mAssetId(value.assetId)]) return;
 
       const { denomMetadata } = await viewClient.assetMetadataById({ assetId: value.assetId });
 
-      if (denomMetadata) map[bech32mAssetId(value.assetId)] = denomMetadata;
-    }
-  }
+      if (denomMetadata) {
+        map[bech32mAssetId(value.assetId)] = denomMetadata;
+      }
+    }),
+  );
+
+  await Promise.all(promises);
 
   return map;
 };
