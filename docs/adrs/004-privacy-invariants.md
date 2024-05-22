@@ -34,6 +34,9 @@ While this behavior is correct and expected, there are additional potential priv
    - Consider storing the encrypted full viewing key or not storing the full viewing key at all and deriving it from the spend key each time it is needed.
 
 2. Require a password for the extension upon mainnet launch and warn users that setting an empty password is not advised.
+3. Avoid transmitting errors by default in case keys are exposed in error data. Currently, `unseal` method for instance has the potential to transmit errors that could expose sensitive key information through the error data. Instead, handle errors securely and generalize the emitted error messages.
+
+Generally, the local and session storage need to be more restricted.
 
 ```
 Invariant 2.
@@ -53,3 +56,9 @@ WebAssembly.instantiate(maliciousCode, {}).then(instance => {
 #### <ins>Remediations</ins>
 
 We may instead want to consider serving the Webassembly modules as static files. This approach would allow prax to maintain a more strict content security policy.
+
+```
+Invariant 3.
+
+The extension is properly signing transactions.
+```
