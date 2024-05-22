@@ -3,10 +3,10 @@ import { VStack, Text, Badge, HStack, Image, Avatar } from "@chakra-ui/react";
 import { Position, PositionState } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import { fromBaseUnit } from "../../utils/math/hiLo";
 import { uint8ArrayToBase64 } from "../../utils/math/base64";
-import { tokenConfigMapOnInner, Token } from "../../constants/tokenConstants";
-import { fetchToken } from "../../utils/token/tokenFetch";
+import { fetchTokenAsset } from "../../utils/token/tokenFetch";
 import BigNumber from "bignumber.js";
 import { CopyIcon } from "@radix-ui/react-icons";
+import { Token } from "@/utils/types/token";
 
 interface CurrentLPStatusProps {
   nftId: string;
@@ -61,12 +61,14 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
   // States for tokens
   const [asset1Token, setAsset1Token] = useState<Token>({
     symbol: "UNKNOWN",
+    display: "UNKNOWN",
     decimals: 0,
     inner: "UNKNOWN",
     imagePath: "UNKNOWN",
   });
   const [asset2Token, setAsset2Token] = useState<Token>({
     symbol: "UNKNOWN",
+    display: "UNKNOWN",
     decimals: 0,
     inner: "UNKNOWN",
     imagePath: "UNKNOWN",
@@ -81,7 +83,7 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
         const asset2 = position!.phi!.pair!.asset2;
 
         if (asset1 && asset1.inner) {
-          const fetchedAsset1Token = await fetchToken(asset1.inner);
+          const fetchedAsset1Token = fetchTokenAsset(asset1.inner);
           if (!fetchedAsset1Token) {
             setAssetError("Asset 1 token not found");
             throw new Error("Asset 1 token not found");
@@ -90,7 +92,7 @@ const CurrentLPStatus = ({ nftId, position }: CurrentLPStatusProps) => {
         }
 
         if (asset2 && asset2.inner) {
-          const fetchedAsset2Token = await fetchToken(asset2.inner);
+          const fetchedAsset2Token = fetchTokenAsset(asset2.inner);
           if (!fetchedAsset2Token) {
             setAssetError("Asset 2 token not found");
             throw new Error("Asset 2 token not found");
