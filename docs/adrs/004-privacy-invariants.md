@@ -1,6 +1,6 @@
 # ADR 004: Privacy and Security Invariants
 
-Following the documentation of [integrity invariants](https://github.com/penumbra-zone/penumbra/issues/3867) in the protocol spec for each action containing a proof and the description of [privacy invariants](https://github.com/penumbra-zone/penumbra/issues/3997) for each action, we aim to compile a comprehensive list of privacy / security-related invariants for the web code. This compilation is motivated by the same principles of ensuring robustness and security. This is tracked by the the following [tracking issue](https://github.com/orgs/penumbra-zone/projects/20/views/6?pane=issue&itemId=569114927).
+Following the documentation of [integrity invariants](https://github.com/penumbra-zone/penumbra/issues/3867) in the protocol spec for each action containing a proof and the description of [privacy invariants](https://github.com/penumbra-zone/penumbra/issues/3997) for each action, we aim to compile a comprehensive list of privacy / security-related invariants for the web code. This is tracked by the the following [tracking issue](https://github.com/penumbra-zone/web/issues/792).
 
 ### Prax Extension
 
@@ -34,3 +34,22 @@ While this behavior is correct and expected, there are additional potential priv
    - Consider storing the encrypted full viewing key or not storing the full viewing key at all and deriving it from the spend key each time it is needed.
 
 2. Require a password for the extension upon mainnet launch and warn users that setting an empty password is not advised.
+
+```
+Invariant 2.
+
+The Content Security Policy (CSP) defined in the Manifest V3 file must restrict permissions to only those that are necessary, ensuring no extranous security risks are introduced.
+```
+
+Currently, we define `wasm-unsafe-eval` in the manifest file to enable dynamic loading of WebAssembly modules. Without the `wasm-unsafe-eval` CSP directive, WebAssembly is blocked from loading and executing on the page. However, `wasm-unsafe-eval` opens up the possiblity for attackers to inject and execute malicious WebAssembly code:
+
+```
+const maliciousCode = "(wasm binary code)";
+WebAssembly.instantiate(maliciousCode, {}).then(instance => {
+  // Execute the malicious code
+});
+```
+
+#### <ins>Remediations</ins>
+
+We may instead want to consider serving the Webassembly modules as static files. This approach would allow prax to maintain a more strict content security policy.
