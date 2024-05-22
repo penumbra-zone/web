@@ -70,9 +70,9 @@ describe('Swap Slice', () => {
   });
 
   test('changing assetIn clears simulation', () => {
-    expect(useStore.getState().swap.simulateOutResult).toBeUndefined();
+    expect(useStore.getState().swap.simulateSwapResult).toBeUndefined();
     useStore.setState(state => {
-      state.swap.simulateOutResult = {
+      state.swap.simulateSwapResult = {
         output: new ValueView(),
         unfilled: new ValueView(),
         priceImpact: undefined,
@@ -80,15 +80,15 @@ describe('Swap Slice', () => {
       };
       return state;
     });
-    expect(useStore.getState().swap.simulateOutResult).toBeDefined();
+    expect(useStore.getState().swap.simulateSwapResult).toBeDefined();
     useStore.getState().swap.setAssetIn({} as BalancesResponse);
-    expect(useStore.getState().swap.simulateOutResult).toBeUndefined();
+    expect(useStore.getState().swap.simulateSwapResult).toBeUndefined();
   });
 
   test('changing assetOut clears simulation', () => {
-    expect(useStore.getState().swap.simulateOutResult).toBeUndefined();
+    expect(useStore.getState().swap.simulateSwapResult).toBeUndefined();
     useStore.setState(state => {
-      state.swap.simulateOutResult = {
+      state.swap.simulateSwapResult = {
         output: new ValueView(),
         unfilled: new ValueView(),
         priceImpact: undefined,
@@ -96,15 +96,15 @@ describe('Swap Slice', () => {
       };
       return state;
     });
-    expect(useStore.getState().swap.simulateOutResult).toBeDefined();
+    expect(useStore.getState().swap.simulateSwapResult).toBeDefined();
     useStore.getState().swap.setAssetOut({} as Metadata);
-    expect(useStore.getState().swap.simulateOutResult).toBeUndefined();
+    expect(useStore.getState().swap.simulateSwapResult).toBeUndefined();
   });
 
   test('changing amount clears simulation', () => {
-    expect(useStore.getState().swap.simulateOutResult).toBeUndefined();
+    expect(useStore.getState().swap.simulateSwapResult).toBeUndefined();
     useStore.setState(state => {
-      state.swap.simulateOutResult = {
+      state.swap.simulateSwapResult = {
         output: new ValueView(),
         unfilled: new ValueView(),
         priceImpact: undefined,
@@ -112,8 +112,8 @@ describe('Swap Slice', () => {
       };
       return state;
     });
-    expect(useStore.getState().swap.simulateOutResult).toBeDefined();
+    expect(useStore.getState().swap.simulateSwapResult).toBeDefined();
     useStore.getState().swap.setAmount('123');
-    expect(useStore.getState().swap.simulateOutResult).toBeUndefined();
+    expect(useStore.getState().swap.simulateSwapResult).toBeUndefined();
   });
 });

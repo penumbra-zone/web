@@ -75,8 +75,8 @@ export interface SwapSlice {
   initiateSwapTx: () => Promise<void>;
   txInProgress: boolean;
   simulateSwap: () => Promise<void>;
-  simulateOutResult: SimulateSwapResult | undefined;
-  simulateOutLoading: boolean;
+  simulateSwapResult: SimulateSwapResult | undefined;
+  simulateSwapLoading: boolean;
 }
 
 export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
@@ -85,30 +85,30 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
     setAssetIn: asset => {
       set(({ swap }) => {
         swap.assetIn = asset;
-        swap.simulateOutResult = undefined;
+        swap.simulateSwapResult = undefined;
       });
     },
     assetOut: undefined,
     setAssetOut: metadata => {
       set(({ swap }) => {
         swap.assetOut = metadata;
-        swap.simulateOutResult = undefined;
+        swap.simulateSwapResult = undefined;
       });
     },
     amount: '',
     setAmount: amount => {
       set(({ swap }) => {
         swap.amount = amount;
-        swap.simulateOutResult = undefined;
+        swap.simulateSwapResult = undefined;
       });
     },
     txInProgress: false,
-    simulateOutResult: undefined,
-    simulateOutLoading: false,
+    simulateSwapResult: undefined,
+    simulateSwapLoading: false,
     simulateSwap: async () => {
       try {
         set(({ swap }) => {
-          swap.simulateOutLoading = true;
+          swap.simulateSwapLoading = true;
         });
 
         const assetIn = get().swap.assetIn;
@@ -151,7 +151,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         const metadataByAssetId = await getMetadataByAssetId(res.output?.traces);
 
         set(({ swap }) => {
-          swap.simulateOutResult = {
+          swap.simulateSwapResult = {
             output,
             unfilled,
             priceImpact: calculatePriceImpact(res.output),
@@ -163,7 +163,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         errorToast(e, 'Error estimating swap').render();
       } finally {
         set(({ swap }) => {
-          swap.simulateOutLoading = false;
+          swap.simulateSwapLoading = false;
         });
       }
     },

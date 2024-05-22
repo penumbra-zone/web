@@ -5,7 +5,7 @@ import { Trace } from './trace';
 import { Box } from '@penumbra-zone/ui/components/ui/box';
 
 export const SimulateSwapResult = () => {
-  const result = useStore(state => state.swap.simulateOutResult);
+  const result = useStore(state => state.swap.simulateSwapResult);
 
   if (!result) return null;
 

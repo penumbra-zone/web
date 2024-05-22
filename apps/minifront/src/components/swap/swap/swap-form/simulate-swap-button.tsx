@@ -10,7 +10,7 @@ import { AllSlices } from '../../../../state';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
 
 const simulateSwapButtonSelector = (state: AllSlices) => ({
-  loading: state.swap.simulateOutLoading,
+  loading: state.swap.simulateSwapLoading,
   simulateSwap: state.swap.simulateSwap,
 });
 
