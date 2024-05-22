@@ -1,13 +1,6 @@
-import React, { FC, useEffect, useState } from "react";
-import { CopyIcon } from "@radix-ui/react-icons";
-import { Avatar, HStack, VStack } from "@chakra-ui/react";
-import { testnetConstants } from "@/constants/configConstants";
+import React, { FC } from "react";
+import { HStack } from "@chakra-ui/react";
 import { Text } from "@chakra-ui/react";
-import { LiquidityPositionEvent } from "@/utils/indexer/types/lps";
-import { Token } from "@/constants/tokenConstants";
-import { fetchToken } from "@/utils/token/tokenFetch";
-import { fromBaseUnit } from "@/utils/math/hiLo";
-import { base64ToUint8Array } from "@/utils/math/base64";
 
 interface BlockTimestampProps {
   blockHeight: number;
@@ -44,7 +37,7 @@ const BlockTimestampView: FC<BlockTimestampProps> = ({
         </Text>
         <Text>
           <a
-            href={`${testnetConstants.cuiloaUrl}/block/${blockHeight}`}
+            href={`block/${blockHeight}`}
             target="_blank"
             rel="noreferrer"
             style={{
