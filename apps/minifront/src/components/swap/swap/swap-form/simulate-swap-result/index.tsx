@@ -31,12 +31,10 @@ export const SimulateSwapResult = () => {
       {!!traces?.length && (
         <Box label='Routes'>
           <div className='flex flex-col gap-2 overflow-auto [scrollbar-width:thin]'>
-            <div className='inline-block w-max'>
-              <div>
-                {traces.map((trace, index) => (
-                  <Trace key={index} trace={trace} metadataByAssetId={metadataByAssetId} />
-                ))}
-              </div>
+            <div className='inline-flex w-max flex-col gap-4'>
+              {traces.map((trace, index) => (
+                <Trace key={index} trace={trace} metadataByAssetId={metadataByAssetId} />
+              ))}
             </div>
           </div>
         </Box>

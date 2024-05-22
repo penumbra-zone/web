@@ -5,7 +5,10 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { formatAmount } from '@penumbra-zone/types/amount';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import BigNumber from 'bignumber.js';
 import { Fragment } from 'react';
 
 const getValueView = (metadataByAssetId: Record<string, Metadata>, { amount, assetId }: Value) =>
@@ -31,17 +34,42 @@ export const Trace = ({
   trace: SwapExecution_Trace;
   metadataByAssetId: Record<string, Metadata>;
 }) => {
-  return (
-    <div className='flex items-center justify-between gap-2'>
-      {trace.value.map((value, index) => (
-        <Fragment key={index}>
-          <div className='shrink-0'>
-            <ValueViewComponent view={getValueView(metadataByAssetId, value)} size='sm' />
-          </div>
+  const inputValue = trace.value[0];
+  const outputValue = trace.value[trace.value.length - 1];
+  let price: string | undefined;
 
-          {index < trace.value.length - 1 && <Separator />}
-        </Fragment>
-      ))}
+  if (inputValue?.amount && outputValue?.amount && inputValue.assetId && outputValue.assetId) {
+    const firstValueMetadata = metadataByAssetId[bech32mAssetId(inputValue.assetId)];
+    const lastValueMetadata = metadataByAssetId[bech32mAssetId(outputValue.assetId)];
+
+    if (firstValueMetadata?.symbol && lastValueMetadata?.symbol) {
+      const inputDisplayDenomExponent = getDisplayDenomExponent.optional()(firstValueMetadata) ?? 0;
+      const outputDisplayDenomExponent = getDisplayDenomExponent.optional()(lastValueMetadata) ?? 0;
+      const formattedInputAmount = formatAmount(inputValue.amount, inputDisplayDenomExponent);
+      const formattedOutputAmount = formatAmount(outputValue.amount, outputDisplayDenomExponent);
+
+      const outputToInputRatio = new BigNumber(formattedOutputAmount)
+        .dividedBy(formattedInputAmount)
+        .toFormat(outputDisplayDenomExponent);
+
+      price = `1 ${firstValueMetadata.symbol} = ${outputToInputRatio} ${lastValueMetadata.symbol}`;
+    }
+  }
+
+  return (
+    <div className='flex flex-col gap-0.5'>
+      <div className='flex items-center justify-between gap-2'>
+        {trace.value.map((value, index) => (
+          <Fragment key={index}>
+            <div className='flex shrink-0 items-center gap-1'>
+              <ValueViewComponent view={getValueView(metadataByAssetId, value)} size='sm' />
+            </div>
+
+            {index < trace.value.length - 1 && <Separator />}
+          </Fragment>
+        ))}
+      </div>
+      {price && <span className='text-xs text-muted-foreground'>{price}</span>}
     </div>
   );
 };
