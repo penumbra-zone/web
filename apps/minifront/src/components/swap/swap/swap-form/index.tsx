@@ -1,11 +1,12 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { useLoaderData } from 'react-router-dom';
-import { AllSlices, useStore } from '../../../../state';
+import { AllSlices } from '../../../../state';
 import { swapValidationErrors } from '../../../../state/swap';
 import { SwapLoaderResponse } from '../swap-loader';
 import { SimulateSwapButton } from './simulate-swap-button';
 import { SimulateSwapResult } from './simulate-swap-result';
 import { TokenSwapInput } from '../../token-swap-input';
+import { useStoreShallow } from '../../../../utils/use-store-shallow';
 
 const swapFormSelector = (state: AllSlices) => ({
   assetIn: state.swap.assetIn,
@@ -29,8 +30,8 @@ export const SwapForm = () => {
     setAmount,
     initiateSwapTx,
     txInProgress,
-  } = useStore(swapFormSelector);
-  const validationErrs = useStore(swapValidationErrors);
+  } = useStoreShallow(swapFormSelector);
+  const validationErrs = useStoreShallow(swapValidationErrors);
 
   return (
     <form
