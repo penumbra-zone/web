@@ -8,9 +8,9 @@ import {
   SimulateTradeResponse,
   SwapExecution,
 } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
-import { tokenConfigMapOnSymbol } from "@/constants/tokenConstants";
 import { joinLoHi, splitLoHi } from "@/utils/math/hiLo";
 import { NextApiRequest, NextApiResponse } from "next";
+import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
 
 export default async function simulationHandler(
   req: NextApiRequest,
@@ -35,9 +35,13 @@ export default async function simulationHandler(
     }
 
     // Get token 1 & 2
-    const asset1Token = tokenConfigMapOnSymbol[token1];
-    const asset2Token = tokenConfigMapOnSymbol[token2];
+    const tokenAssets = fetchAllTokenAssets();
+    const asset1Token = tokenAssets.find((x) => x.display === token1);
+    const asset2Token = tokenAssets.find((x) => x.display === token2);
 
+    if (!asset1Token || !asset2Token) {
+      return res.status(400).json({ error: "Could not find requested token in registry" });
+    }
     const sim_querier = new SimulationQuerier({
       grpcEndpoint: testnetConstants.grpcEndpoint,
     });

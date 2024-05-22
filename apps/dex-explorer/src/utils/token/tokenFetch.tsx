@@ -1,70 +1,74 @@
-import { tokenConfigMapOnInner, Token } from "../../constants/tokenConstants";
 import { uint8ArrayToBase64, base64ToUint8Array } from "../../utils/math/base64";
-import { ShieldedPoolQuerier } from "../protos/services/app/shielded-pool";
 import { testnetConstants } from "../../constants/configConstants";
-import {
-  Metadata,
-} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb";
+import { AssetId, AssetImage, DenomUnit, Metadata } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb";
+import { ChainRegistryClient, Registry } from '@penumbra-labs/registry';
+import { Token } from "../types/token";
 
-// TODO: Eventually this should read from a penumbra asset registry/repo
-export const fetchToken = async (
-  tokenInner: Uint8Array | string
-): Promise<Token | undefined> => {
-  if (typeof tokenInner !== "string") {
-    tokenInner = uint8ArrayToBase64(tokenInner);
-  }
-
-  let token: Token | undefined =
-    tokenConfigMapOnInner[tokenInner];
-
-  if (!token) {
-    console.error(
-      "Token not found in tokenConfigMapOnInner, querying chain",
-      tokenInner,
-    );
-
-    const assetPromise = fetch(
-      `/api/shieldedPool/${encodeURIComponent(tokenInner)}`
-    ).then((res) => res.json());
-
-    Promise.all([assetPromise])
-      .then(([assetResponse]) => {
-        if (!assetResponse) {
-          console.error("Error fetching token metadata (no response):", assetResponse);
-          return undefined;
-        }
-
-        // Search denomUnits for highest exponent
-        let decimals = 0;
-        let symbol = "";
-
-        const res = assetResponse as Metadata;
-
-        res.denomUnits.forEach((unit) => {
-          if (unit.exponent >= decimals) {
-            decimals = unit.exponent;
-            symbol = unit.denom;
-          }
-        });
-
-        if (typeof tokenInner !== "string") {
-          tokenInner = uint8ArrayToBase64(tokenInner);
-        }
-
-        // Assign fetched token data
-        token = {
-          symbol: symbol,
-          decimals: decimals,
-          inner: tokenInner,
-        };
-
-        return token;
-      })
-      .catch((error) => {
-        console.error("Error fetching token metadata:", error);
-        return undefined;
-      })
-  }
-
-  return token;
+const getRegistry = (): Registry => {
+  const chainId = testnetConstants.chainId
+  const registryClient = new ChainRegistryClient()
+  return registryClient.get(chainId)
 };
+
+export const fetchAllTokenAssets = (): Token[] => {
+  const registry = getRegistry();
+  const metadata = registry.getAllAssets();
+  const tokens : Token[] = []
+  metadata.forEach((x) => {
+    // Filter out assets with no assetId and "Delegation" assets -- need to check this
+    if (x.penumbraAssetId && !x.display.startsWith("delegation_")) {
+      const displayParts = x.display.split('/')
+      tokens.push(
+        {
+          'decimals': decimalsFromDenomUnits(x.denomUnits),
+          'display': displayParts[displayParts.length - 1],
+          'symbol': x.symbol,
+          'inner': uint8ArrayToBase64(x.penumbraAssetId?.inner),
+          'imagePath': imagePathFromAssetImages(x.images)
+        }
+      )
+    }
+  })
+  return tokens
+}
+
+export const fetchTokenAsset = (tokenId: Uint8Array | string): Token | undefined => {
+  const assetId: AssetId = new AssetId()
+  assetId.inner = typeof tokenId !== 'string' ? tokenId : base64ToUint8Array(tokenId);
+
+  const registry = getRegistry();
+  const tokenMetadata = registry.getMetadata(assetId)
+  const displayParts = tokenMetadata.display.split('/')
+  return {
+    'decimals': decimalsFromDenomUnits(tokenMetadata.denomUnits),
+    'display': displayParts[displayParts.length - 1],
+    'symbol': tokenMetadata.symbol,
+    'inner': typeof tokenId !== 'string' ? uint8ArrayToBase64(tokenId) : tokenId,
+    'imagePath': imagePathFromAssetImages(tokenMetadata.images)
+  }
+}
+
+export const imagePathFromAssetImages = (assetImages: AssetImage[]): string | undefined => {
+  // Take first png/svg from first AssetImage
+  var imagePath: string | undefined = undefined
+  assetImages.forEach((x) => {
+    if (x.png.length > 0) {
+      imagePath = x.png
+    }
+    else if (x.svg.length > 0) {
+      imagePath = x.svg
+    }
+  })
+  return imagePath
+}
+
+export const decimalsFromDenomUnits = (denomUnits: DenomUnit[]): number => {
+  // Search denomUnits for highest exponent
+  var decimals = 0
+  denomUnits.forEach((x) => {
+    if (x.exponent >= decimals) {
+      decimals = x.exponent
+    }
+  })
+  return decimals
+}

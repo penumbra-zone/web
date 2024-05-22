@@ -10,8 +10,8 @@ import annotationPlugin, { AnnotationOptions } from "chartjs-plugin-annotation";
 import { set, throttle } from "lodash";
 import { Chart } from "chart.js/auto";
 import { Button, HStack, Text, useBreakpoint, VStack } from "@chakra-ui/react";
-import { Token } from "@/constants/tokenConstants";
 import zoomPlugin, { zoom } from "chartjs-plugin-zoom";
+import { Token } from "@/utils/types/token";
 
 // Register the necessary components from chart.js
 ChartJS.register(...registerables, annotationPlugin);

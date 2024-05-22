@@ -15,8 +15,6 @@ import {
 } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import { fromBaseUnit } from "../../utils/math/hiLo";
 import { uint8ArrayToBase64 } from "../../utils/math/base64";
-import { tokenConfigMapOnInner, Token } from "../../constants/tokenConstants";
-import { fetchToken } from "../../utils/token/tokenFetch";
 import BigNumber from "bignumber.js";
 import {
   LiquidityPositionEvent,
