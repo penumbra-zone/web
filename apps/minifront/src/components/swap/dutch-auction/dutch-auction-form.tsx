@@ -2,14 +2,18 @@ import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { InputBlock } from '../../shared/input-block';
-import InputToken from '../../shared/input-token';
 import { DurationSlider } from './duration-slider';
 import { Price } from './price';
+import { TokenSwapInput } from '../token-swap-input';
+import { useLoaderData } from 'react-router-dom';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 const dutchAuctionFormSelector = (state: AllSlices) => ({
   balances: state.dutchAuction.balancesResponses,
   assetIn: state.dutchAuction.assetIn,
   setAssetIn: state.dutchAuction.setAssetIn,
+  assetOut: state.dutchAuction.assetOut,
+  setAssetOut: state.dutchAuction.setAssetOut,
   amount: state.dutchAuction.amount,
   setAmount: state.dutchAuction.setAmount,
   onSubmit: state.dutchAuction.onSubmit,
@@ -17,8 +21,18 @@ const dutchAuctionFormSelector = (state: AllSlices) => ({
 });
 
 export const DutchAuctionForm = () => {
-  const { amount, setAmount, assetIn, setAssetIn, balances, onSubmit, submitButtonDisabled } =
-    useStoreShallow(dutchAuctionFormSelector);
+  const {
+    amount,
+    setAmount,
+    assetIn,
+    setAssetIn,
+    assetOut,
+    setAssetOut,
+    balances,
+    onSubmit,
+    submitButtonDisabled,
+  } = useStoreShallow(dutchAuctionFormSelector);
+  const assets = useLoaderData() as Metadata[];
 
   return (
     <form
@@ -28,28 +42,27 @@ export const DutchAuctionForm = () => {
         void onSubmit();
       }}
     >
-      <InputToken
+      <TokenSwapInput
         label='Amount to sell'
         balances={balances}
-        selection={assetIn}
-        setSelection={setAssetIn}
-        value={amount}
-        onChange={e => {
-          if (Number(e.target.value) < 0) return;
-          setAmount(e.target.value);
-        }}
-        placeholder='Enter an amount'
+        assetIn={assetIn}
+        onChangeAssetIn={setAssetIn}
+        assetOut={assetOut}
+        onChangeAssetOut={setAssetOut}
+        amount={amount}
+        onChangeAmount={setAmount}
+        assets={assets}
       />
 
-      <InputBlock label='Duration'>
-        <div className='pt-2'>
-          <DurationSlider />
+      <InputBlock label='Price'>
+        <div className='mt-2'>
+          <Price />
         </div>
       </InputBlock>
 
-      <InputBlock label='Price'>
-        <div className='pt-2'>
-          <Price />
+      <InputBlock label='Duration'>
+        <div className='mt-2'>
+          <DurationSlider />
         </div>
       </InputBlock>
 

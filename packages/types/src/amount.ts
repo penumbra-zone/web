@@ -77,6 +77,11 @@ export const formatNumber = (number: number, options: FormatOptions): string => 
     : parseFloat(number.toFixed(precision)).toString();
 };
 
+export const formatAmount = (amount: Amount, exponent = 0) =>
+  fromBaseUnitAmount(amount, exponent)
+    .toFormat(6)
+    .replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
+
 /**
  * Exchange rates in core are expressed as whole numbers on the order of 10 to
  * the power of 8, so they need to be divided by 10e8 to turn into a decimal.

@@ -1,10 +1,6 @@
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
-import { AssetSelector } from '../../shared/asset-selector';
-import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
-import { useLoaderData } from 'react-router-dom';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 const priceSelector = (state: AllSlices) => ({
   assetIn: state.dutchAuction.assetIn,
@@ -17,10 +13,7 @@ const priceSelector = (state: AllSlices) => ({
 });
 
 export const Price = () => {
-  const { minOutput, setMinOutput, maxOutput, setMaxOutput, assetIn, assetOut, setAssetOut } =
-    useStoreShallow(priceSelector);
-  const assetInId = getAssetIdFromValueView(assetIn?.balanceView);
-  const assets = useLoaderData() as Metadata[];
+  const { minOutput, setMinOutput, maxOutput, setMaxOutput } = useStoreShallow(priceSelector);
 
   return (
     <div className='flex grow items-center gap-4'>
@@ -49,15 +42,6 @@ export const Price = () => {
             inputMode='numeric'
           />
         </div>
-      </div>
-
-      <div className='w-min'>
-        <AssetSelector
-          assets={assets}
-          value={assetOut}
-          onChange={setAssetOut}
-          filter={asset => !asset.penumbraAssetId?.equals(assetInId)}
-        />
       </div>
     </div>
   );
