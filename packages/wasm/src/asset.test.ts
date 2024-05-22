@@ -24,7 +24,7 @@ describe('assetIdFromBaseDenom', () => {
 
     expect(
       randomIds.every(
-        id => id instanceof AssetId && id.inner instanceof Uint8Array && id.inner.length == 32,
+        id => id instanceof AssetId && id.inner instanceof Uint8Array && id.inner.length === 32,
       ),
     ).toBeTruthy();
   });

@@ -15,5 +15,5 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 pub fn get_asset_id_inner(input_id_bin: &[u8]) -> WasmResult<Vec<u8>> {
     let input_id = Id::decode(input_id_bin)?;
-    return Ok(input_id.to_bytes().to_vec());
+    Ok(input_id.to_bytes().to_vec())
 }
