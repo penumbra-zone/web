@@ -1,9 +1,9 @@
-import { AllSlices, SliceCreator } from '.';
+import { AllSlices, SliceCreator } from '..';
 import {
   BalancesResponse,
   TransactionPlannerRequest,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { planBuildBroadcast } from './helpers';
+import { planBuildBroadcast } from '../helpers';
 import {
   AssetId,
   Metadata,
@@ -11,7 +11,7 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { BigNumber } from 'bignumber.js';
-import { getAddressByIndex } from '../fetchers/address';
+import { getAddressByIndex } from '../../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import {
@@ -19,7 +19,7 @@ import {
   SwapExecution,
   SwapExecution_Trace,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { simulateClient, viewClient } from '../clients';
+import { simulateClient, viewClient } from '../../clients';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
@@ -32,7 +32,7 @@ import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { getAmountFromValue, getAssetIdFromValue } from '@penumbra-zone/getters/value';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { divideAmounts } from '@penumbra-zone/types/amount';
-import { amountMoreThanBalance } from './send';
+import { amountMoreThanBalance } from '../send';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 
 const getMetadataByAssetId = async (
