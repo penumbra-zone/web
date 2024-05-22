@@ -19,11 +19,12 @@ import {
   SwapExecution,
 } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import { LoadingSpinner } from "../../components/util/loadingSpinner";
-import { Token, tokenConfigMapOnSymbol } from "@/constants/tokenConstants";
 import { base64ToUint8Array } from "@/utils/math/base64";
 import { joinLoHi, splitLoHi } from "@/utils/math/hiLo";
 import DepthChart from "@/components/charts/depthChart";
 import BuySellChart from "@/components/charts/buySellChart";
+import { Token } from "@/utils/types/token";
+import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
 
 // TODO: Better parameter check
 
@@ -134,8 +135,9 @@ export default function TradingPairs() {
     setIsLoading(true);
 
     // Get token 1 & 2
-    const asset1Token = tokenConfigMapOnSymbol[token1Symbol];
-    const asset2Token = tokenConfigMapOnSymbol[token2Symbol];
+    const tokenAssets = fetchAllTokenAssets();
+    const asset1Token = tokenAssets.find((x) => x.display === token1Symbol);
+    const asset2Token = tokenAssets.find((x) => x.display === token2Symbol);
 
     if (!asset1Token || !asset2Token) {
       setIsLoading(false);
@@ -149,16 +151,16 @@ export default function TradingPairs() {
     setAsset2Token(asset2Token);
 
     const simSellMultiHopPromise = fetch(
-      `/api/simulations/${asset1Token.symbol}/${asset2Token.symbol}/${unitsToSimulateSelling}`
+      `/api/simulations/${asset1Token.display}/${asset2Token.display}/${unitsToSimulateSelling}`
     ).then((res) => res.json());
     const simSellSingleHopPromise = fetch(
-      `/api/simulations/${asset1Token.symbol}/${asset2Token.symbol}/${unitsToSimulateSelling}/singleHop`
+      `/api/simulations/${asset1Token.display}/${asset2Token.display}/${unitsToSimulateSelling}/singleHop`
     ).then((res) => res.json());
     const simBuyMultiHopPromise = fetch(
-      `/api/simulations/${asset2Token.symbol}/${asset1Token.symbol}/${unitsToSimulateBuying}`
+      `/api/simulations/${asset2Token.display}/${asset1Token.display}/${unitsToSimulateBuying}`
     ).then((res) => res.json());
     const simBuySingleHopPromise = fetch(
-      `/api/simulations/${asset2Token.symbol}/${asset1Token.symbol}/${unitsToSimulateBuying}/singleHop`
+      `/api/simulations/${asset2Token.display}/${asset1Token.display}/${unitsToSimulateBuying}/singleHop`
     ).then((res) => res.json());
 
     Promise.all([
@@ -235,8 +237,9 @@ export default function TradingPairs() {
 
     try {
       // Get token 1 & 2
-      const asset1Token = tokenConfigMapOnSymbol[token1Symbol];
-      const asset2Token = tokenConfigMapOnSymbol[token2Symbol];
+      const tokenAssets = fetchAllTokenAssets();
+      const asset1Token = tokenAssets.find((x) => x.display === token1Symbol);
+      const asset2Token = tokenAssets.find((x) => x.display === token2Symbol);
       if (!asset1Token || !asset2Token) {
         setIsLoading(false);
         setIsChartLoading(false);
@@ -247,10 +250,10 @@ export default function TradingPairs() {
       setError(undefined);
 
       const lpsBuySidePromise = fetch(
-        `/api/lp/positionsByPrice/${asset2Token.symbol}/${asset1Token.symbol}/${LPS_TO_RENDER}`
+        `/api/lp/positionsByPrice/${asset2Token.display}/${asset1Token.display}/${LPS_TO_RENDER}`
       ).then((res) => res.json());
       const lpsSellSidePromise = fetch(
-        `/api/lp/positionsByPrice/${asset1Token.symbol}/${asset2Token.symbol}/${LPS_TO_RENDER}`
+        `/api/lp/positionsByPrice/${asset1Token.display}/${asset2Token.display}/${LPS_TO_RENDER}`
       ).then((res) => res.json());
 
       Promise.all([lpsBuySidePromise, lpsSellSidePromise])
@@ -305,6 +308,9 @@ export default function TradingPairs() {
     // Clear depth chart data
     setDepthChartMultiHopAsset1SellPoints([]);
     setDepthChartSingleHopAsset1SellPoints([]);
+
+    console.log(asset1Token)
+    console.log(asset2Token)
 
     // Set single and multi hop depth chart data
     simulatedMultiHopAsset1SellData!.traces.forEach((trace) => {
@@ -582,7 +588,7 @@ export default function TradingPairs() {
                       fontFamily="monospace"
                       paddingBottom={"0em"}
                       fontSize={"md"}
-                    >{`${asset1Token!.symbol} / ${asset2Token!.symbol}`}</Text>
+                    >{`${asset1Token!.display} / ${asset2Token!.display}`}</Text>
                     {/*
                       <Text
                         fontSize={"sm"}

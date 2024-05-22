@@ -1,19 +1,10 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Line } from "react-chartjs-2";
-import {
-  Box,
-  Button,
-  HStack,
-  Spacer,
-  Text,
-  useBreakpoint,
-  VStack,
-} from "@chakra-ui/react";
-import { Token } from "@/constants/tokenConstants";
+import React, { useRef, useEffect } from "react";
+import { Box, HStack, Spacer, Text, VStack } from "@chakra-ui/react";
 import { Position } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import { fromBaseUnit } from "@/utils/math/hiLo";
 import BigNumber from "bignumber.js";
-import { base64ToUint8Array, uint8ArrayToBase64 } from "@/utils/math/base64";
+import { Token } from "@/utils/types/token";
+import { computePositionId } from "@penumbra-zone/wasm/dex"
 
 interface BuySellprops {
   buySidePositions: Position[];
@@ -73,6 +64,10 @@ const BuySellChart = ({
       const willingToBuy = Number.parseFloat(
         direction === 1 ? reserves1.toFixed(6) : reserves2.toFixed(6)
       );
+
+      // TODO: Fix webpack issues to uncomment this line and use positionId
+      // const positionId = computePositionId(position);
+      // console.log(positionId)
 
       return {
         price: price,
