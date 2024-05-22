@@ -1,11 +1,8 @@
 // pages/lp/utils.tsx
 
-import React, { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/router";
-import styles from "../../../styles/Home.module.css";
-import { testnetConstants } from "../../constants/configConstants";
+import React, { useState } from "react";
 import Layout from "../../components/layout";
-import { VStack, Text, Spinner, Center, Box, HStack, Input, Button } from "@chakra-ui/react";
+import { VStack, Text, Center, HStack, Input, Button } from "@chakra-ui/react";
 import { innerToBech32Address, bech32ToInner } from "../../utils/math/bech32";
 
 export default function Utils() {

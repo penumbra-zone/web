@@ -3,32 +3,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import styles from "../../../styles/Home.module.css";
-import { LiquidityPositionQuerier } from "../../utils/protos/services/dex/liquidity-positions";
-import { testnetConstants } from "../../constants/configConstants";
-import {
-  PositionId,
-  Position,
-} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+import { Position } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import Layout from "../../components/layout";
 import CurrentLPStatus from "../../components/liquidityPositions/currentStatus";
-import {
-  VStack,
-  Text,
-  Spinner,
-  Center,
-  Box,
-  HStack,
-  IconButton,
-} from "@chakra-ui/react";
+import { VStack, Text, Box, HStack, IconButton } from "@chakra-ui/react";
 import { LoadingSpinner } from "../../components/util/loadingSpinner";
-import {
-  LiquidityPositionEvent,
-  PositionExecutionEvent,
-} from "@/utils/indexer/types/lps";
+import { LiquidityPositionEvent, PositionExecutionEvent } from "@/utils/indexer/types/lps";
 import TimelinePosition from "@/components/liquidityPositions/timelinePosition";
 import ExecutionEvent from "@/components/liquidityPositions/executionEvent";
-import { POSITION_OPEN_EVENT } from "@/components/liquidityPositions/timelinePosition";
-import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 export default function LP() {
   const [isLoading, setIsLoading] = useState(true);

@@ -6,10 +6,10 @@ import {
   LiquidityPositionEvent,
   PositionExecutionEvent,
 } from "@/utils/indexer/types/lps";
-import { Token } from "@/constants/tokenConstants";
-import { fetchToken } from "@/utils/token/tokenFetch";
+import { fetchTokenAsset } from "@/utils/token/tokenFetch";
 import { fromBaseUnit } from "@/utils/math/hiLo";
 import { base64ToUint8Array } from "@/utils/math/base64";
+import { Token } from "@/utils/types/token";
 
 interface LPAssetViewProps {
   sectionTitle: string;
@@ -20,12 +20,14 @@ const LPAssetView: FC<LPAssetViewProps> = ({ sectionTitle, lp_event }) => {
   // States for tokens
   const [asset1Token, setAsset1Token] = useState<Token>({
     symbol: "UNKNOWN",
+    display: "UNKNOWN",
     decimals: 0,
     inner: "UNKNOWN",
     imagePath: "UNKNOWN",
   });
   const [asset2Token, setAsset2Token] = useState<Token>({
     symbol: "UNKNOWN",
+    display: "UNKNOWN",
     decimals: 0,
     inner: "UNKNOWN",
     imagePath: "UNKNOWN",
@@ -60,7 +62,7 @@ const LPAssetView: FC<LPAssetViewProps> = ({ sectionTitle, lp_event }) => {
         }
 
         if (asset1) {
-          const fetchedAsset1Token = await fetchToken(asset1);
+          const fetchedAsset1Token = fetchTokenAsset(asset1)
           if (!fetchedAsset1Token) {
             setAssetError("Asset 1 token not found");
             throw new Error("Asset 1 token not found");
@@ -69,7 +71,8 @@ const LPAssetView: FC<LPAssetViewProps> = ({ sectionTitle, lp_event }) => {
         }
 
         if (asset2) {
-          const fetchedAsset2Token = await fetchToken(asset2);
+          const fetchedAsset2Token = fetchTokenAsset(asset2)
+          //const fetchedAsset2Token = await fetchToken(asset2);
           if (!fetchedAsset2Token) {
             setAssetError("Asset 2 token not found");
             throw new Error("Asset 2 token not found");
@@ -134,7 +137,7 @@ const LPAssetView: FC<LPAssetViewProps> = ({ sectionTitle, lp_event }) => {
           {/* Asset 1 */}
           <HStack>
             <Avatar
-              name={asset1Token.symbol}
+              name={asset1Token.display}
               src={asset1Token.imagePath}
               // Extra small
               size="xs"
@@ -148,7 +151,7 @@ const LPAssetView: FC<LPAssetViewProps> = ({ sectionTitle, lp_event }) => {
           {/* Asset 2 */}
           <HStack>
             <Avatar
-              name={asset2Token.symbol}
+              name={asset2Token.display}
               src={asset2Token.imagePath}
               // Extra small
               size="xs"

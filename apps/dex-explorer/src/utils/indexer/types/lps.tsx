@@ -64,3 +64,7 @@ export type PositionExecutionEvent = {
   };
 };
 
+export interface BlockInfo {
+  height: number,
+  created_at: string
+}
