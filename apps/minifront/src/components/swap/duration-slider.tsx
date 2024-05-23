@@ -33,7 +33,7 @@ export const DurationSlider = () => {
         <div className='flex flex-col items-center'>
           ~ {duration}{' '}
           <span className='text-xs text-muted-foreground'>
-            distributed across {GDA_RECIPES[duration].numberOfSubAuctions.toString()} sub-auctions
+            distributed across {GDA_RECIPES[duration].numberOfSubAuctions.toString()} auctions
           </span>
         </div>
       )}
