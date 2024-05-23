@@ -3,7 +3,7 @@ import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { InputBlock } from '../../shared/input-block';
 import { DurationSlider } from '../duration-slider';
-import { Price } from './price';
+import { Output } from '../swap-form/output';
 import { TokenSwapInput } from '../token-swap-input';
 import { useLoaderData } from 'react-router-dom';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
@@ -54,9 +54,9 @@ export const DutchAuctionForm = () => {
         assets={assets}
       />
 
-      <InputBlock label='Price'>
+      <InputBlock label='Output'>
         <div className='mt-2'>
-          <Price />
+          <Output />
         </div>
       </InputBlock>
 

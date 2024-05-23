@@ -9,6 +9,7 @@ import { TokenSwapInput } from '../token-swap-input';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { DurationSlider } from '../duration-slider';
 import { InputBlock } from '../../shared/input-block';
+import { Output } from './output';
 
 const swapFormSelector = (state: AllSlices) => ({
   assetIn: state.swap.assetIn,
@@ -62,6 +63,14 @@ export const SwapForm = () => {
           <DurationSlider />
         </div>
       </InputBlock>
+
+      {duration !== 'instant' && (
+        <InputBlock label='Output'>
+          <div className='mt-2'>
+            <Output />
+          </div>
+        </InputBlock>
+      )}
 
       <div className='mt-3 flex gap-2'>
         {duration === 'instant' && <SimulateSwapButton />}
