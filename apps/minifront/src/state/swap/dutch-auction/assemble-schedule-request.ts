@@ -2,6 +2,7 @@ import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_
 import { DutchAuctionSlice } from '.';
 import { getSubAuctions } from './get-sub-auctions';
 import { getAddressIndex } from '@penumbra-zone/getters/balances-response';
+import { SwapSlice } from '..';
 
 export const assembleScheduleRequest = async ({
   amount,
@@ -10,10 +11,11 @@ export const assembleScheduleRequest = async ({
   minOutput,
   maxOutput,
   duration,
-}: Pick<
-  DutchAuctionSlice,
-  'amount' | 'assetIn' | 'assetOut' | 'minOutput' | 'maxOutput' | 'duration'
->): Promise<TransactionPlannerRequest> => {
+}: Pick<SwapSlice, 'amount' | 'assetIn' | 'assetOut'> &
+  Pick<
+    DutchAuctionSlice,
+    'minOutput' | 'maxOutput' | 'duration'
+  >): Promise<TransactionPlannerRequest> => {
   const source = getAddressIndex.optional()(assetIn);
 
   return new TransactionPlannerRequest({

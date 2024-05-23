@@ -1,9 +1,16 @@
-const APPROX_BLOCK_DURATION_MS = 5_000n;
-const MINUTE_MS = 60_000n;
-export const BLOCKS_PER_MINUTE = MINUTE_MS / APPROX_BLOCK_DURATION_MS;
-export const BLOCKS_PER_HOUR = BLOCKS_PER_MINUTE * 60n;
+import { BLOCKS_PER_MINUTE, BLOCKS_PER_HOUR } from '../constants';
 
-export const DURATION_OPTIONS = ['10min', '30min', '1h', '2h', '6h', '12h', '24h', '48h'] as const;
+export const DURATION_OPTIONS = [
+  'instant',
+  '10min',
+  '30min',
+  '1h',
+  '2h',
+  '6h',
+  '12h',
+  '24h',
+  '48h',
+] as const;
 export type DurationOption = (typeof DURATION_OPTIONS)[number];
 
 export const STEP_COUNT = 60n;
@@ -38,7 +45,7 @@ export interface GdaRecipe {
  * Configuration parameters for generating sub-auctions based on the user's
  * desired duration.
  */
-export const GDA_RECIPES: Record<DurationOption, GdaRecipe> = {
+export const GDA_RECIPES: Record<Exclude<DurationOption, 'instant'>, GdaRecipe> = {
   '10min': {
     durationInBlocks: 10n * BLOCKS_PER_MINUTE,
     poissonIntensityPerBlock: 0.064614,

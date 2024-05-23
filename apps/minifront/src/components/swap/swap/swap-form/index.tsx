@@ -1,7 +1,7 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { useLoaderData } from 'react-router-dom';
 import { AllSlices } from '../../../../state';
-import { swapValidationErrors } from '../../../../state/swap';
+import { swapValidationErrors } from '../../../../state/swap/instant-swap';
 import { SwapLoaderResponse } from '../swap-loader';
 import { SimulateSwapButton } from './simulate-swap-button';
 import { SimulateSwapResult } from './simulate-swap-result';
@@ -15,8 +15,8 @@ const swapFormSelector = (state: AllSlices) => ({
   setAssetOut: state.swap.setAssetOut,
   amount: state.swap.amount,
   setAmount: state.swap.setAmount,
-  initiateSwapTx: state.swap.initiateSwapTx,
-  txInProgress: state.swap.txInProgress,
+  initiateSwapTx: state.swap.instantSwap.initiateSwapTx,
+  txInProgress: state.swap.instantSwap.txInProgress,
 });
 
 export const SwapForm = () => {

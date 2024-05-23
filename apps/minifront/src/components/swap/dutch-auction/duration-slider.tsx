@@ -1,11 +1,11 @@
 import { Slider } from '@penumbra-zone/ui/components/ui/slider';
-import { DURATION_OPTIONS, GDA_RECIPES } from '../../../state/dutch-auction/constants';
+import { DURATION_OPTIONS, GDA_RECIPES } from '../../../state/swap/constants';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { AllSlices } from '../../../state';
 
 const durationSliderSelector = (state: AllSlices) => ({
-  duration: state.dutchAuction.duration,
-  setDuration: state.dutchAuction.setDuration,
+  duration: state.swap.duration,
+  setDuration: state.swap.setDuration,
 });
 
 export const DurationSlider = () => {
@@ -27,12 +27,14 @@ export const DurationSlider = () => {
         onValueChange={handleChange}
       />
 
-      <div className='flex flex-col items-center'>
-        ~ {duration}{' '}
-        <span className='text-xs text-muted-foreground'>
-          distributed across {GDA_RECIPES[duration].numberOfSubAuctions.toString()} sub-auctions
-        </span>
-      </div>
+      {duration !== 'instant' && (
+        <div className='flex flex-col items-center'>
+          ~ {duration}{' '}
+          <span className='text-xs text-muted-foreground'>
+            distributed across {GDA_RECIPES[duration].numberOfSubAuctions.toString()} sub-auctions
+          </span>
+        </div>
+      )}
     </div>
   );
 };

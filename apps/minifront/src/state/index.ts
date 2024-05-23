@@ -1,7 +1,6 @@
 import { create, StateCreator } from 'zustand';
 import { enableMapSet } from 'immer';
 import { immer } from 'zustand/middleware/immer';
-import { createDutchAuctionSlice, DutchAuctionSlice } from './dutch-auction';
 import { createSwapSlice, SwapSlice } from './swap';
 import { createIbcOutSlice, IbcOutSlice } from './ibc-out';
 import { createSendSlice, SendSlice } from './send';
@@ -21,7 +20,6 @@ enableMapSet();
 export interface AllSlices {
   ibcIn: IbcInSlice;
   ibcOut: IbcOutSlice;
-  dutchAuction: DutchAuctionSlice;
   send: SendSlice;
   staking: StakingSlice;
   status: StatusSlice;
@@ -41,7 +39,6 @@ export const initializeStore = () => {
   return immer((setState, getState: () => AllSlices, store) => ({
     ibcIn: createIbcInSlice()(setState, getState, store),
     ibcOut: createIbcOutSlice()(setState, getState, store),
-    dutchAuction: createDutchAuctionSlice()(setState, getState, store),
     send: createSendSlice()(setState, getState, store),
     staking: createStakingSlice()(setState, getState, store),
     status: createStatusSlice()(setState, getState, store),

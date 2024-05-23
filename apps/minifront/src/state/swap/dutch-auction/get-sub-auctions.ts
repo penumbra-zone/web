@@ -6,12 +6,14 @@ import {
 } from '@penumbra-zone/getters/value-view';
 import { divideAmounts, fromString } from '@penumbra-zone/types/amount';
 import { DutchAuctionSlice } from '.';
-import { viewClient } from '../../clients';
-import { BLOCKS_PER_MINUTE, GDA_RECIPES, GdaRecipe, STEP_COUNT } from './constants';
+import { viewClient } from '../../../clients';
+import { GDA_RECIPES, GdaRecipe, STEP_COUNT } from '../constants';
+import { BLOCKS_PER_MINUTE } from '../../constants';
 import { getPoissonDistribution } from './get-poisson-distribution';
 import { splitLoHi } from '@penumbra-zone/types/lo-hi';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { BigNumber } from 'bignumber.js';
+import { SwapSlice } from '..';
 
 /**
  * The start height of an auction must be, at minimum, the current block height.
@@ -48,10 +50,11 @@ export const getSubAuctions = async ({
   minOutput,
   maxOutput,
   duration,
-}: Pick<
-  DutchAuctionSlice,
-  'amount' | 'assetIn' | 'assetOut' | 'minOutput' | 'maxOutput' | 'duration'
->): Promise<TransactionPlannerRequest_ActionDutchAuctionSchedule[]> => {
+}: Pick<SwapSlice, 'amount' | 'assetIn' | 'assetOut' | 'duration'> &
+  Pick<DutchAuctionSlice, 'minOutput' | 'maxOutput'>): Promise<
+  TransactionPlannerRequest_ActionDutchAuctionSchedule[]
+> => {
+  if (duration === 'instant') return [];
   const inputAssetId = getAssetIdFromValueView(assetIn?.balanceView);
   const outputAssetId = getAssetId(assetOut);
   const assetInExponent = getDisplayDenomExponentFromValueView(assetIn?.balanceView);

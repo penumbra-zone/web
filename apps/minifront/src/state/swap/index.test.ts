@@ -44,11 +44,11 @@ describe('Swap Slice', () => {
     useStore = create<AllSlices>()(initializeStore()) as UseBoundStore<StoreApi<AllSlices>>;
   });
 
-  test('the default is empty, false or undefined', () => {
+  test('the default is empty or undefined', () => {
     expect(useStore.getState().swap.assetIn).toBeUndefined();
     expect(useStore.getState().swap.amount).toBe('');
     expect(useStore.getState().swap.assetOut).toBeUndefined();
-    expect(useStore.getState().swap.txInProgress).toBeFalsy();
+    expect(useStore.getState().swap).toBeFalsy();
   });
 
   test('assetIn can be set', () => {
