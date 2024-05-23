@@ -19,6 +19,7 @@ const swapFormSelector = (state: AllSlices) => ({
   setAmount: state.swap.setAmount,
   initiateSwapTx: state.swap.instantSwap.initiateSwapTx,
   txInProgress: state.swap.instantSwap.txInProgress,
+  duration: state.swap.duration,
 });
 
 export const SwapForm = () => {
@@ -32,6 +33,7 @@ export const SwapForm = () => {
     setAmount,
     initiateSwapTx,
     txInProgress,
+    duration,
   } = useStoreShallow(swapFormSelector);
   const validationErrs = useStoreShallow(swapValidationErrors);
 
@@ -62,7 +64,7 @@ export const SwapForm = () => {
       </InputBlock>
 
       <div className='mt-3 flex gap-2'>
-        <SimulateSwapButton />
+        {duration === 'instant' && <SimulateSwapButton />}
 
         <Button
           type='submit'
@@ -75,7 +77,7 @@ export const SwapForm = () => {
         </Button>
       </div>
 
-      <SimulateSwapResult />
+      {duration === 'instant' && <SimulateSwapResult />}
     </form>
   );
 };
