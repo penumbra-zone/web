@@ -79,6 +79,7 @@ export const TokenSwapInput = ({
         variant='transparent'
         placeholder='Enter an amount...'
         max={maxAmountAsString}
+        step='any'
         className={
           'font-bold leading-10 md:h-8 md:w-[calc(100%-80px)] md:text-xl xl:h-10 xl:w-[calc(100%-160px)] xl:text-3xl'
         }

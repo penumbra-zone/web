@@ -24,7 +24,8 @@ export const Output = () => {
           min={minOutput}
           onChange={e => setMaxOutput(e.target.value)}
           type='number'
-          inputMode='numeric'
+          inputMode='decimal'
+          step='any'
           className='text-right'
         />
 
@@ -44,6 +45,7 @@ export const Output = () => {
           onChange={e => setMinOutput(e.target.value)}
           type='number'
           inputMode='decimal'
+          step='any'
           className='text-right'
         />
 
