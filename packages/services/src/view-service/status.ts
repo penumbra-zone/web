@@ -6,10 +6,9 @@ export const status: Impl['status'] = async (_, ctx) => {
   const { indexedDb } = await services.getWalletServices();
   const latestBlockHeight = await services.querier.tendermint.latestBlockHeight();
   const fullSyncHeight = await indexedDb.getFullSyncHeight();
-  if (!fullSyncHeight) throw new Error('Last block synced not in db');
 
   return {
-    catchingUp: fullSyncHeight < latestBlockHeight,
+    catchingUp: fullSyncHeight ? fullSyncHeight < latestBlockHeight : true,
     partialSyncHeight: fullSyncHeight,
     fullSyncHeight: fullSyncHeight,
   };
