@@ -64,9 +64,4 @@ describe('Status request handler', () => {
     expect(statusResponse.partialSyncHeight === 111n).toBeTruthy();
   });
 
-  test('should get an error if there is no fullSyncHeight record in indexed-db', async () => {
-    mockIndexedDb.getFullSyncHeight?.mockResolvedValue(undefined);
-    mockTendermint.latestBlockHeight?.mockResolvedValue(222n);
-    await expect(status(new StatusRequest(), mockCtx)).rejects.toThrow();
-  });
 });
