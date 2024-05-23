@@ -18,6 +18,11 @@ const swapFormSelector = (state: AllSlices) => ({
   setAssetOut: state.swap.setAssetOut,
   amount: state.swap.amount,
   setAmount: state.swap.setAmount,
+  onSubmit:
+    state.swap.duration === 'instant'
+      ? state.swap.instantSwap.initiateSwapTx
+      : state.swap.dutchAuction.onSubmit,
+  submitButtonLabel: state.swap.duration === 'instant' ? 'Swap' : 'Start auctions',
   initiateSwapTx: state.swap.instantSwap.initiateSwapTx,
   txInProgress: state.swap.instantSwap.txInProgress,
   duration: state.swap.duration,
@@ -32,7 +37,8 @@ export const SwapForm = () => {
     setAssetOut,
     amount,
     setAmount,
-    initiateSwapTx,
+    onSubmit,
+    submitButtonLabel,
     txInProgress,
     duration,
   } = useStoreShallow(swapFormSelector);
@@ -43,7 +49,7 @@ export const SwapForm = () => {
       className='flex flex-col gap-4 xl:gap-3'
       onSubmit={e => {
         e.preventDefault();
-        void initiateSwapTx();
+        void onSubmit();
       }}
     >
       <TokenSwapInput
@@ -82,7 +88,7 @@ export const SwapForm = () => {
           className='grow'
           disabled={txInProgress || Object.values(validationErrs).find(Boolean)}
         >
-          Swap
+          {submitButtonLabel}
         </Button>
       </div>
 
