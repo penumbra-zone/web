@@ -26,7 +26,7 @@ export const SimulateSwapButton = () => {
             // Style as a button
             className={cn(
               'w-full',
-              buttonVariants({ variant: 'secondary' }),
+              buttonVariants({ variant: 'secondary', size: 'lg' }),
               loading ? 'animate-pulse duration-700' : undefined,
             )}
             onClick={e => {
