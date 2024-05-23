@@ -16,7 +16,6 @@ const swapFormSelector = (state: AllSlices) => ({
       : state.swap.dutchAuction.onSubmit,
   submitButtonLabel: state.swap.duration === 'instant' ? 'Swap' : 'Start auctions',
   submitButtonDisabled: state.swap.dutchAuction.txInProgress || !state.swap.amount,
-  initiateSwapTx: state.swap.instantSwap.initiateSwapTx,
   duration: state.swap.duration,
 });
 
