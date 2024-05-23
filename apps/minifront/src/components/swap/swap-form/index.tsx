@@ -9,6 +9,7 @@ import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { DurationSlider } from '../duration-slider';
 import { InputBlock } from '../../shared/input-block';
 import { Output } from './output';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
 
 const swapFormSelector = (state: AllSlices) => ({
   assetIn: state.swap.assetIn,
@@ -43,54 +44,56 @@ export const SwapForm = () => {
   } = useStoreShallow(swapFormSelector);
 
   return (
-    <form
-      className='flex flex-col gap-4 xl:gap-3'
-      onSubmit={e => {
-        e.preventDefault();
-        void onSubmit();
-      }}
-    >
-      <TokenSwapInput
-        label='Amount to swap'
-        assetIn={assetIn}
-        onChangeAssetIn={setAssetIn}
-        assetOut={assetOut}
-        onChangeAssetOut={setAssetOut}
-        assets={swappableAssets}
-        balances={assetBalances}
-        amount={amount}
-        onChangeAmount={setAmount}
-      />
+    <Card>
+      <form
+        className='flex flex-col gap-4 xl:gap-3'
+        onSubmit={e => {
+          e.preventDefault();
+          void onSubmit();
+        }}
+      >
+        <TokenSwapInput
+          label='Amount to swap'
+          assetIn={assetIn}
+          onChangeAssetIn={setAssetIn}
+          assetOut={assetOut}
+          onChangeAssetOut={setAssetOut}
+          assets={swappableAssets}
+          balances={assetBalances}
+          amount={amount}
+          onChangeAmount={setAmount}
+        />
 
-      <InputBlock label='Duration'>
-        <div className='mt-2'>
-          <DurationSlider />
-        </div>
-      </InputBlock>
-
-      {duration !== 'instant' && (
-        <InputBlock label='Output'>
+        <InputBlock label='Duration'>
           <div className='mt-2'>
-            <Output />
+            <DurationSlider />
           </div>
         </InputBlock>
-      )}
 
-      <div className='mt-3 flex gap-2'>
-        {duration === 'instant' && <SimulateSwapButton />}
+        {duration !== 'instant' && (
+          <InputBlock label='Output'>
+            <div className='mt-2'>
+              <Output />
+            </div>
+          </InputBlock>
+        )}
 
-        <Button
-          type='submit'
-          variant='gradient'
-          size='lg'
-          className='grow'
-          disabled={submitButtonDisabled}
-        >
-          {submitButtonLabel}
-        </Button>
-      </div>
+        <div className='mt-3 flex gap-2'>
+          {duration === 'instant' && <SimulateSwapButton />}
 
-      {duration === 'instant' && <SimulateSwapResult />}
-    </form>
+          <Button
+            type='submit'
+            variant='gradient'
+            size='lg'
+            className='grow'
+            disabled={submitButtonDisabled}
+          >
+            {submitButtonLabel}
+          </Button>
+        </div>
+
+        {duration === 'instant' && <SimulateSwapResult />}
+      </form>
+    </Card>
   );
 };

@@ -1,15 +1,16 @@
 import { ViewBox } from '@penumbra-zone/ui/components/ui/tx/view/viewbox';
-import { AllSlices } from '../../../state';
+import { AllSlices } from '../../state';
 import { DutchAuctionComponent } from '@penumbra-zone/ui/components/ui/dutch-auction-component';
 import {
   AssetId,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { useStoreShallow } from '../../../utils/use-store-shallow';
+import { useStoreShallow } from '../../utils/use-store-shallow';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
-import { QueryLatestStateButton } from './query-latest-state-button';
+import { QueryLatestStateButton } from './dutch-auction/query-latest-state-button';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
 
 const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: AssetId) => {
   let metadata: Metadata | undefined;
@@ -49,7 +50,7 @@ export const Auctions = () => {
     useStoreShallow(auctionsSelector);
 
   return (
-    <>
+    <Card>
       <div className='mb-2 flex items-center justify-between'>
         <GradientHeader>My Auctions</GradientHeader>
         {!!auctionInfos.length && <QueryLatestStateButton />}
@@ -85,6 +86,6 @@ export const Auctions = () => {
           />
         ))}
       </div>
-    </>
+    </Card>
   );
 };
