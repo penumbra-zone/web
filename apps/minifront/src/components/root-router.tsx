@@ -14,8 +14,6 @@ import { SwapLoader } from './swap/swap-loader';
 import { StakingLayout, StakingLoader } from './staking/layout';
 import { IbcLoader } from './ibc/ibc-loader';
 import { IbcLayout } from './ibc/layout';
-import { Swap } from './swap/swap';
-import { DutchAuction } from './swap/dutch-auction';
 
 export const rootRouter = createHashRouter([
   {
@@ -59,16 +57,6 @@ export const rootRouter = createHashRouter([
         path: PagePath.SWAP,
         loader: SwapLoader,
         element: <SwapLayout />,
-        children: [
-          {
-            index: true,
-            element: <Swap />,
-          },
-          {
-            path: PagePath.SWAP_AUCTION,
-            element: <DutchAuction />,
-          },
-        ],
       },
       {
         path: PagePath.TRANSACTION_DETAILS,
