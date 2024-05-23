@@ -124,7 +124,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   },
 
   loadMetadata: async assetId => {
-    if (!assetId) return;
+    if (!assetId || get().swap.dutchAuction.metadataByAssetId[bech32mAssetId(assetId)]) return;
 
     const { denomMetadata } = await viewClient.assetMetadataById({ assetId });
 
@@ -155,8 +155,9 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
         ...state.swap.dutchAuction,
         ...INITIAL_STATE,
 
-        // preserve loaded auctions:
+        // preserve loaded auctions and metadata:
         auctionInfos: state.swap.dutchAuction.auctionInfos,
+        metadataByAssetId: state.swap.dutchAuction.metadataByAssetId,
       };
     }),
 });
