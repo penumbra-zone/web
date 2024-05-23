@@ -74,7 +74,7 @@ export const TokenSwapInput = () => {
   if (maxAmount) maxAmountAsString = joinLoHiAmount(maxAmount).toString();
 
   return (
-    <Box label='Amount to swap'>
+    <Box label='Trade'>
       <Input
         value={amount}
         type='number'

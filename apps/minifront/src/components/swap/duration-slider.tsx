@@ -41,6 +41,13 @@ export const DurationSlider = () => {
         </span>
       </div>
 
+      {duration === 'instant' && (
+        <div className='flex flex-col items-center'>
+          Now
+          <span className='text-xs text-muted-foreground'>single trade at market price</span>
+        </div>
+      )}
+
       {duration !== 'instant' && (
         <div className='flex flex-col items-center'>
           ~ {duration}{' '}

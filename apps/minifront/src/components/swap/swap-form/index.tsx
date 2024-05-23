@@ -34,7 +34,7 @@ export const SwapForm = () => {
       >
         <TokenSwapInput />
 
-        <InputBlock label='Duration'>
+        <InputBlock label='Speed'>
           <div className='mt-2'>
             <DurationSlider />
           </div>
