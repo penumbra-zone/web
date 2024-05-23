@@ -1,15 +1,15 @@
 import { ViewBox } from '@penumbra-zone/ui/components/ui/tx/view/viewbox';
-import { AllSlices } from '../../state';
+import { AllSlices } from '../../../state';
 import { DutchAuctionComponent } from '@penumbra-zone/ui/components/ui/dutch-auction-component';
 import {
   AssetId,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { useStoreShallow } from '../../utils/use-store-shallow';
+import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
-import { QueryLatestStateButton } from './dutch-auction/query-latest-state-button';
+import { QueryLatestStateButton } from './query-latest-state-button';
 import { Card } from '@penumbra-zone/ui/components/ui/card';
 
 const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: AssetId) => {
@@ -21,7 +21,7 @@ const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: Asse
   return new Metadata({ penumbraAssetId: assetId });
 };
 
-const auctionsSelector = (state: AllSlices) => ({
+const auctionListSelector = (state: AllSlices) => ({
   auctionInfos: state.swap.dutchAuction.auctionInfos,
   metadataByAssetId: state.swap.dutchAuction.metadataByAssetId,
   fullSyncHeight: state.status.fullSyncHeight,
@@ -45,9 +45,9 @@ const getButtonProps = (
   return { buttonType: undefined, onClickButton: undefined };
 };
 
-export const Auctions = () => {
+export const AuctionList = () => {
   const { auctionInfos, metadataByAssetId, fullSyncHeight, endAuction, withdraw } =
-    useStoreShallow(auctionsSelector);
+    useStoreShallow(auctionListSelector);
 
   return (
     <Card>
