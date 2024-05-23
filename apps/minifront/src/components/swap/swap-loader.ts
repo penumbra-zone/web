@@ -67,7 +67,7 @@ export const SwapLoader: LoaderFunction = async (): Promise<SwapLoaderResponse> 
     unclaimedSwapsWithMetadata(),
   ]);
   useStore.getState().swap.setBalancesResponses(balancesResponses);
-  useStore.getState().swap.setAssets(assets);
+  useStore.getState().swap.setSwappableAssets(swappableAssets);
   void useStore.getState().swap.dutchAuction.loadAuctionInfos();
 
   return unclaimedSwaps;

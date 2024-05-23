@@ -16,8 +16,6 @@ import { getAmount } from '@penumbra-zone/getters/balances-response';
 import { amountMoreThanBalance } from '../../../state/send';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { useMemo } from 'react';
-import { isSwappable } from '../helpers';
 
 const findMatchingBalance = (
   metadata: Metadata | undefined,
@@ -43,7 +41,7 @@ const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
 
 const tokenSwapInputSelector = (state: AllSlices) => ({
-  assets: state.swap.assets,
+  swappableAssets: state.swap.swappableAssets,
   assetIn: state.swap.assetIn,
   setAssetIn: state.swap.setAssetIn,
   assetOut: state.swap.assetOut,
@@ -61,7 +59,7 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
  */
 export const TokenSwapInput = () => {
   const {
-    assets,
+    swappableAssets,
     amount,
     setAmount,
     assetIn,
@@ -70,7 +68,6 @@ export const TokenSwapInput = () => {
     setAssetOut,
     balancesResponses,
   } = useStoreShallow(tokenSwapInputSelector);
-  const swappableAssets = useMemo(() => assets.filter(isSwappable), [assets]);
   const balanceOfAssetOut = findMatchingBalance(assetOut, balancesResponses);
   const maxAmount = getAmount.optional()(assetIn);
   let maxAmountAsString: string | undefined;

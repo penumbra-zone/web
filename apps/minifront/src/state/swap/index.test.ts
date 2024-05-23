@@ -48,7 +48,7 @@ describe('Swap Slice', () => {
     expect(useStore.getState().swap.amount).toBe('');
     expect(useStore.getState().swap.assetIn).toBeUndefined();
     expect(useStore.getState().swap.assetOut).toBeUndefined();
-    expect(useStore.getState().swap.assets).toEqual([]);
+    expect(useStore.getState().swap.swappableAssets).toEqual([]);
     expect(useStore.getState().swap.balancesResponses).toEqual([]);
     expect(useStore.getState().swap.duration).toBe('instant');
     expect(useStore.getState().swap.txInProgress).toBe(false);
