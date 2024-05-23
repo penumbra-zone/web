@@ -4,7 +4,7 @@ import { AllSlices } from '../../../state';
 import { SwapLoaderResponse } from '../swap-loader';
 import { SimulateSwapButton } from './simulate-swap-button';
 import { SimulateSwapResult } from './simulate-swap-result';
-import { TokenSwapInput } from '../token-swap-input';
+import { TokenSwapInput } from './token-swap-input';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { DurationSlider } from '../duration-slider';
 import { InputBlock } from '../../shared/input-block';
