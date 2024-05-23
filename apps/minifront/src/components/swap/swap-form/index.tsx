@@ -1,7 +1,6 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { useLoaderData } from 'react-router-dom';
 import { AllSlices } from '../../../state';
-import { swapValidationErrors } from '../../../state/swap/instant-swap';
 import { SwapLoaderResponse } from '../swap-loader';
 import { SimulateSwapButton } from './simulate-swap-button';
 import { SimulateSwapResult } from './simulate-swap-result';
@@ -23,8 +22,8 @@ const swapFormSelector = (state: AllSlices) => ({
       ? state.swap.instantSwap.initiateSwapTx
       : state.swap.dutchAuction.onSubmit,
   submitButtonLabel: state.swap.duration === 'instant' ? 'Swap' : 'Start auctions',
+  submitButtonDisabled: state.swap.dutchAuction.txInProgress || !state.swap.amount,
   initiateSwapTx: state.swap.instantSwap.initiateSwapTx,
-  txInProgress: state.swap.instantSwap.txInProgress,
   duration: state.swap.duration,
 });
 
@@ -39,10 +38,9 @@ export const SwapForm = () => {
     setAmount,
     onSubmit,
     submitButtonLabel,
-    txInProgress,
     duration,
+    submitButtonDisabled,
   } = useStoreShallow(swapFormSelector);
-  const validationErrs = useStoreShallow(swapValidationErrors);
 
   return (
     <form
@@ -86,7 +84,7 @@ export const SwapForm = () => {
           variant='gradient'
           size='lg'
           className='grow'
-          disabled={txInProgress || Object.values(validationErrs).find(Boolean)}
+          disabled={submitButtonDisabled}
         >
           {submitButtonLabel}
         </Button>

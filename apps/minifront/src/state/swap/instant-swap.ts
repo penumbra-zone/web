@@ -1,4 +1,4 @@
-import { AllSlices, SliceCreator } from '..';
+import { SliceCreator } from '..';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { planBuildBroadcast } from '../helpers';
 import {
@@ -29,7 +29,6 @@ import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { getAmountFromValue, getAssetIdFromValue } from '@penumbra-zone/getters/value';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { divideAmounts } from '@penumbra-zone/types/amount';
-import { amountMoreThanBalance } from '../send';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { SwapSlice } from '.';
 
@@ -246,13 +245,3 @@ const getMatchingAmount = (values: Value[], toMatch: AssetId): Amount => {
 
   return match.amount;
 };
-
-export const swapValidationErrors = ({ swap }: AllSlices) => {
-  return {
-    assetInErr: !swap.assetIn || swap.assetIn.balanceView?.valueView.case === 'unknownAssetId',
-    assetOutErr: !swap.assetOut,
-    amountErr: (swap.assetIn && amountMoreThanBalance(swap.assetIn, swap.amount)) ?? false,
-  };
-};
-
-export const swapSelector = (state: AllSlices) => state.swap;
