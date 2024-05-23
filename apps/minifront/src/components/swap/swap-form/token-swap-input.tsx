@@ -14,6 +14,8 @@ import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { getAmount } from '@penumbra-zone/getters/balances-response';
 import { amountMoreThanBalance } from '../../../state/send';
+import { AllSlices } from '../../../state';
+import { useStoreShallow } from '../../../utils/use-store-shallow';
 
 const findMatchingBalance = (
   metadata: Metadata | undefined,
@@ -38,40 +40,32 @@ const findMatchingBalance = (
 const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
 
+const tokenSwapInputSelector = (state: AllSlices) => ({
+  assetIn: state.swap.assetIn,
+  setAssetIn: state.swap.setAssetIn,
+  assetOut: state.swap.assetOut,
+  setAssetOut: state.swap.setAssetOut,
+  amount: state.swap.amount,
+  setAmount: state.swap.setAmount,
+  balancesResponses: state.swap.balancesResponses,
+});
+
 /**
  * Exposes a UI with three interactive elements: an asset selector for the user
  * to choose which asset to swap _from_, an asset selector for the user to
  * choose which asset to swap _to_, and a text field for the user to enter an
  * amount.
  */
-export const TokenSwapInput = ({
-  assets = [],
-  balances = [],
-  amount,
-  onChangeAmount,
-  assetIn,
-  onChangeAssetIn,
-  assetOut,
-  onChangeAssetOut,
-  label,
-}: {
-  assets?: Metadata[];
-  balances?: BalancesResponse[];
-  amount: string;
-  onChangeAmount: (amount: string) => void;
-  assetIn?: BalancesResponse;
-  onChangeAssetIn: (assetIn: BalancesResponse) => void;
-  assetOut?: Metadata;
-  onChangeAssetOut: (assetOut: Metadata) => void;
-  label: string;
-}) => {
-  const balanceOfAssetOut = findMatchingBalance(assetOut, balances);
+export const TokenSwapInput = ({ assets = [] }: { assets?: Metadata[] }) => {
+  const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, balancesResponses } =
+    useStoreShallow(tokenSwapInputSelector);
+  const balanceOfAssetOut = findMatchingBalance(assetOut, balancesResponses);
   const maxAmount = getAmount.optional()(assetIn);
   let maxAmountAsString: string | undefined;
   if (maxAmount) maxAmountAsString = joinLoHiAmount(maxAmount).toString();
 
   return (
-    <Box label={label}>
+    <Box label='Amount to swap'>
       <Input
         value={amount}
         type='number'
@@ -85,20 +79,20 @@ export const TokenSwapInput = ({
         }
         onChange={e => {
           if (!isValidAmount(e.target.value, assetIn)) return;
-          onChangeAmount(e.target.value);
+          setAmount(e.target.value);
         }}
       />
 
       <div className='mt-4 flex items-center justify-between'>
         <div className='flex flex-col gap-1'>
-          <BalanceSelector value={assetIn} onChange={onChangeAssetIn} balances={balances} />
+          <BalanceSelector value={assetIn} onChange={setAssetIn} balances={balancesResponses} />
           {assetIn?.balanceView && <BalanceValueView valueView={assetIn.balanceView} />}
         </div>
 
         <ArrowRight />
 
         <div className='flex flex-col items-end gap-1'>
-          <AssetSelector assets={assets} value={assetOut} onChange={onChangeAssetOut} />
+          <AssetSelector assets={assets} value={assetOut} onChange={setAssetOut} />
           {balanceOfAssetOut && <BalanceValueView valueView={balanceOfAssetOut} />}
         </div>
       </div>

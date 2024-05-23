@@ -1,5 +1,8 @@
 import { SliceCreator } from '..';
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import {
+  SwapRecord,
+  TransactionPlannerRequest,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { planBuildBroadcast } from '../helpers';
 import {
   AssetId,
@@ -72,14 +75,22 @@ interface State {
   txInProgress: boolean;
   simulateSwapResult?: SimulateSwapResult;
   simulateSwapLoading: boolean;
+  unclaimedSwaps: UnclaimedSwapWithMetadata[];
 }
 
 export type InstantSwapSlice = Actions & State;
+
+export interface UnclaimedSwapWithMetadata {
+  swap: SwapRecord;
+  asset1: Metadata;
+  asset2: Metadata;
+}
 
 const INITIAL_STATE: State = {
   txInProgress: false,
   simulateSwapLoading: false,
   simulateSwapResult: undefined,
+  unclaimedSwaps: [],
 };
 
 export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set, get) => {
@@ -169,7 +180,11 @@ export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set
     },
     reset: () => {
       set(state => {
-        state.swap.instantSwap = { ...state.swap.instantSwap, ...INITIAL_STATE };
+        state.swap.instantSwap = {
+          ...state.swap.instantSwap,
+          ...INITIAL_STATE,
+          ...state.swap.instantSwap.unclaimedSwaps,
+        };
       });
     },
   };

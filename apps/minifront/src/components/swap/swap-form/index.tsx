@@ -12,12 +12,6 @@ import { Output } from './output';
 import { Card } from '@penumbra-zone/ui/components/ui/card';
 
 const swapFormSelector = (state: AllSlices) => ({
-  assetIn: state.swap.assetIn,
-  setAssetIn: state.swap.setAssetIn,
-  assetOut: state.swap.assetOut,
-  setAssetOut: state.swap.setAssetOut,
-  amount: state.swap.amount,
-  setAmount: state.swap.setAmount,
   onSubmit:
     state.swap.duration === 'instant'
       ? state.swap.instantSwap.initiateSwapTx
@@ -29,19 +23,9 @@ const swapFormSelector = (state: AllSlices) => ({
 });
 
 export const SwapForm = () => {
-  const { assetBalances, swappableAssets } = useLoaderData() as SwapLoaderResponse;
-  const {
-    assetIn,
-    setAssetIn,
-    assetOut,
-    setAssetOut,
-    amount,
-    setAmount,
-    onSubmit,
-    submitButtonLabel,
-    duration,
-    submitButtonDisabled,
-  } = useStoreShallow(swapFormSelector);
+  const { swappableAssets } = useLoaderData() as SwapLoaderResponse;
+  const { onSubmit, submitButtonLabel, duration, submitButtonDisabled } =
+    useStoreShallow(swapFormSelector);
 
   return (
     <Card>
@@ -52,17 +36,7 @@ export const SwapForm = () => {
           void onSubmit();
         }}
       >
-        <TokenSwapInput
-          label='Amount to swap'
-          assetIn={assetIn}
-          onChangeAssetIn={setAssetIn}
-          assetOut={assetOut}
-          onChangeAssetOut={setAssetOut}
-          assets={swappableAssets}
-          balances={assetBalances}
-          amount={amount}
-          onChangeAmount={setAmount}
-        />
+        <TokenSwapInput assets={swappableAssets} />
 
         <InputBlock label='Duration'>
           <div className='mt-2'>

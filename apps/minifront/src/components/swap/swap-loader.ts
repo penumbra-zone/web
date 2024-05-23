@@ -1,10 +1,7 @@
 import { LoaderFunction } from 'react-router-dom';
 import { useStore } from '../../state';
 import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
-import {
-  BalancesResponse,
-  SwapRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { fetchUnclaimedSwaps } from '../../fetchers/unclaimed-swaps';
 import { viewClient } from '../../clients';
@@ -12,16 +9,10 @@ import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/swap-record
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { getSwappableBalancesResponses, isSwappable } from './helpers';
 import { getAllAssets } from '../../fetchers/assets';
-
-export interface UnclaimedSwapsWithMetadata {
-  swap: SwapRecord;
-  asset1: Metadata;
-  asset2: Metadata;
-}
+import { UnclaimedSwapWithMetadata } from '../../state/swap/instant-swap';
 
 export interface SwapLoaderResponse {
-  assetBalances: BalancesResponse[];
-  unclaimedSwaps: UnclaimedSwapsWithMetadata[];
+  unclaimedSwaps: UnclaimedSwapWithMetadata[];
   assets: Metadata[];
   swappableAssets: Metadata[];
 }
@@ -38,7 +29,7 @@ const getAndSetDefaultAssetBalances = async (swappableAssets: Metadata[]) => {
   return balancesResponses;
 };
 
-const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapsWithMetadata> => {
+const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapWithMetadata> => {
   const assetId1 = getSwapAsset1(swap);
   const assetId2 = getSwapAsset2(swap);
 
@@ -59,7 +50,7 @@ const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapsWit
   };
 };
 
-export const unclaimedSwapsWithMetadata = async (): Promise<UnclaimedSwapsWithMetadata[]> => {
+export const unclaimedSwapsWithMetadata = async (): Promise<UnclaimedSwapWithMetadata[]> => {
   const unclaimedSwaps = await fetchUnclaimedSwaps();
   return Promise.all(unclaimedSwaps.map(fetchMetadataForSwap));
 };
@@ -77,5 +68,5 @@ export const SwapLoader: LoaderFunction = async (): Promise<SwapLoaderResponse> 
   ]);
   useStore.getState().swap.setBalancesResponses(balancesResponses);
 
-  return { assets, assetBalances: balancesResponses, unclaimedSwaps, swappableAssets };
+  return { assets, unclaimedSwaps, swappableAssets };
 };
