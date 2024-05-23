@@ -11,7 +11,9 @@ export interface StatusSlice {
 export const createStatusSlice = (): SliceCreator<StatusSlice> => set => ({
   start: async () => {
     try {
-      //set the current status using unary request, since statusStream does not guarantee that we will get the status
+      // statusStream sends new data to stream only when a new block is detected.
+      // This can take up to 5 seconds (time of new block generated).
+      // Therefore, we need to do a unary request to start us off.
       const status = await viewClient.status({});
       set(state => {
         state.status.fullSyncHeight = status.fullSyncHeight;
