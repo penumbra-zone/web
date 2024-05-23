@@ -80,6 +80,7 @@ export type InstantSwapSlice = Actions & State;
 const INITIAL_STATE: State = {
   txInProgress: false,
   simulateSwapLoading: false,
+  simulateSwapResult: undefined,
 };
 
 export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set, get) => {

@@ -23,7 +23,7 @@ interface Actions {
   setAmount: (amount: string) => void;
   setAssetOut: (metadata: Metadata) => void;
   setDuration: (duration: DurationOption) => void;
-  reset: VoidFunction;
+  resetSubslices: VoidFunction;
 }
 
 interface State {
@@ -60,16 +60,19 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
   },
   assetIn: undefined,
   setAssetIn: asset => {
+    get().swap.resetSubslices();
     set(({ swap }) => {
       swap.assetIn = asset;
     });
   },
   setAssetOut: metadata => {
+    get().swap.resetSubslices();
     set(({ swap }) => {
       swap.assetOut = metadata;
     });
   },
   setAmount: amount => {
+    get().swap.resetSubslices();
     set(({ swap }) => {
       swap.amount = amount;
     });
@@ -77,20 +80,13 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
   dutchAuction: createDutchAuctionSlice()(set, get, store),
   instantSwap: createInstantSwapSlice()(set, get, store),
   setDuration: duration => {
+    get().swap.resetSubslices();
     set(state => {
       state.swap.duration = duration;
     });
   },
-  reset: () => {
+  resetSubslices: () => {
     get().swap.dutchAuction.reset();
     get().swap.instantSwap.reset();
-    set(state => {
-      state.swap = {
-        ...state.swap,
-        ...INITIAL_STATE,
-        // Preserve the duration, as that affects which type of swap we're doing
-        duration: state.swap.duration,
-      };
-    });
   },
 });
