@@ -9,10 +9,15 @@ import { getSwapAsset1, getSwapAsset2 } from '@penumbra-zone/getters/swap-record
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { getSwappableBalancesResponses, isSwappable } from './helpers';
 import { getAllAssets } from '../../fetchers/assets';
-import { UnclaimedSwapWithMetadata } from '../../state/swap/instant-swap';
+
+export interface UnclaimedSwapsWithMetadata {
+  swap: SwapRecord;
+  asset1: Metadata;
+  asset2: Metadata;
+}
 
 export interface SwapLoaderResponse {
-  unclaimedSwaps: UnclaimedSwapWithMetadata[];
+  unclaimedSwaps: UnclaimedSwapsWithMetadata[];
   assets: Metadata[];
   swappableAssets: Metadata[];
 }
@@ -29,7 +34,7 @@ const getAndSetDefaultAssetBalances = async (swappableAssets: Metadata[]) => {
   return balancesResponses;
 };
 
-const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapWithMetadata> => {
+const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapsWithMetadata> => {
   const assetId1 = getSwapAsset1(swap);
   const assetId2 = getSwapAsset2(swap);
 
@@ -50,7 +55,7 @@ const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapWith
   };
 };
 
-export const unclaimedSwapsWithMetadata = async (): Promise<UnclaimedSwapWithMetadata[]> => {
+export const unclaimedSwapsWithMetadata = async (): Promise<UnclaimedSwapsWithMetadata[]> => {
   const unclaimedSwaps = await fetchUnclaimedSwaps();
   return Promise.all(unclaimedSwaps.map(fetchMetadataForSwap));
 };
