@@ -1,7 +1,6 @@
 export enum PagePath {
   INDEX = '/',
   SWAP = '/swap',
-  SWAP_AUCTION = '/swap/auction',
   SEND = '/send',
   STAKING = '/staking',
   RECEIVE = '/send/receive',
