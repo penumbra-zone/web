@@ -21,11 +21,11 @@ const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: Asse
 };
 
 const auctionsSelector = (state: AllSlices) => ({
-  auctionInfos: state.dutchAuction.auctionInfos,
-  metadataByAssetId: state.dutchAuction.metadataByAssetId,
+  auctionInfos: state.swap.dutchAuction.auctionInfos,
+  metadataByAssetId: state.swap.dutchAuction.metadataByAssetId,
   fullSyncHeight: state.status.fullSyncHeight,
-  endAuction: state.dutchAuction.endAuction,
-  withdraw: state.dutchAuction.withdraw,
+  endAuction: state.swap.dutchAuction.endAuction,
+  withdraw: state.swap.dutchAuction.withdraw,
 });
 
 const getButtonProps = (
