@@ -20,14 +20,26 @@ export const DurationSlider = () => {
 
   return (
     <div className='flex flex-col items-center gap-4'>
-      <Slider
-        min={0}
-        max={DURATION_OPTIONS.length - 1}
-        value={[DURATION_OPTIONS.indexOf(duration)]}
-        onValueChange={handleChange}
-      />
+      <div className='flex w-full items-center gap-4'>
+        <span className='text-xs text-muted-foreground'>
+          Instant
+          <br />
+          Price
+        </span>
 
-      {duration === 'instant' && <>instant</>}
+        <Slider
+          min={0}
+          max={DURATION_OPTIONS.length - 1}
+          value={[DURATION_OPTIONS.indexOf(duration)]}
+          onValueChange={handleChange}
+        />
+
+        <span className='text-right text-xs text-muted-foreground'>
+          Averaged
+          <br />
+          Price
+        </span>
+      </div>
 
       {duration !== 'instant' && (
         <div className='flex flex-col items-center'>
