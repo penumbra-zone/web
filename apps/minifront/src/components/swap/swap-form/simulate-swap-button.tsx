@@ -12,30 +12,30 @@ import { useStoreShallow } from '../../../utils/use-store-shallow';
 const simulateSwapButtonSelector = (state: AllSlices) => ({
   loading: state.swap.instantSwap.simulateSwapLoading,
   simulateSwap: state.swap.instantSwap.simulateSwap,
+  disabled: state.swap.txInProgress || !state.swap.amount,
 });
 
 export const SimulateSwapButton = () => {
-  const { loading, simulateSwap } = useStoreShallow(simulateSwapButtonSelector);
+  const { loading, simulateSwap, disabled } = useStoreShallow(simulateSwapButtonSelector);
 
   return (
     <div className='grow'>
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger className='w-full'>
-            <div
-              // Nested buttons are not allowed. Manually passing button classes.
-              className={cn(
-                'w-full',
-                buttonVariants({ variant: 'secondary' }),
-                loading ? 'animate-pulse duration-700' : undefined,
-              )}
-              onClick={e => {
-                e.preventDefault();
-                void simulateSwap();
-              }}
-            >
-              Estimate
-            </div>
+          <TooltipTrigger
+            // Style as a button
+            className={cn(
+              'w-full',
+              buttonVariants({ variant: 'secondary' }),
+              loading ? 'animate-pulse duration-700' : undefined,
+            )}
+            onClick={e => {
+              e.preventDefault();
+              void simulateSwap();
+            }}
+            disabled={disabled}
+          >
+            Estimate
           </TooltipTrigger>
           <TooltipContent side='bottom' className='w-60'>
             <p>
