@@ -6,8 +6,8 @@ import {
   TooltipContent,
 } from '@penumbra-zone/ui/components/ui/tooltip';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { AllSlices } from '../../../../state';
-import { useStoreShallow } from '../../../../utils/use-store-shallow';
+import { AllSlices } from '../../../state';
+import { useStoreShallow } from '../../../utils/use-store-shallow';
 
 const simulateSwapButtonSelector = (state: AllSlices) => ({
   loading: state.swap.instantSwap.simulateSwapLoading,

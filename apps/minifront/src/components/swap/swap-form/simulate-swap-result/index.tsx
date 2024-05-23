@@ -1,4 +1,4 @@
-import { useStore } from '../../../../../state';
+import { useStore } from '../../../../state';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { PriceImpact } from './price-impact';
 import { Trace } from './trace';

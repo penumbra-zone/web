@@ -1,14 +1,14 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { useLoaderData } from 'react-router-dom';
-import { AllSlices } from '../../../../state';
-import { swapValidationErrors } from '../../../../state/swap/instant-swap';
-import { SwapLoaderResponse } from '../../swap-loader';
+import { AllSlices } from '../../../state';
+import { swapValidationErrors } from '../../../state/swap/instant-swap';
+import { SwapLoaderResponse } from '../swap-loader';
 import { SimulateSwapButton } from './simulate-swap-button';
 import { SimulateSwapResult } from './simulate-swap-result';
-import { TokenSwapInput } from '../../token-swap-input';
-import { useStoreShallow } from '../../../../utils/use-store-shallow';
-import { DurationSlider } from '../../duration-slider';
-import { InputBlock } from '../../../shared/input-block';
+import { TokenSwapInput } from '../token-swap-input';
+import { useStoreShallow } from '../../../utils/use-store-shallow';
+import { DurationSlider } from '../duration-slider';
+import { InputBlock } from '../../shared/input-block';
 
 const swapFormSelector = (state: AllSlices) => ({
   assetIn: state.swap.assetIn,
