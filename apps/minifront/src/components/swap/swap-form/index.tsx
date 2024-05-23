@@ -1,7 +1,5 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { useLoaderData } from 'react-router-dom';
 import { AllSlices } from '../../../state';
-import { SwapLoaderResponse } from '../swap-loader';
 import { SimulateSwapButton } from './simulate-swap-button';
 import { SimulateSwapResult } from './simulate-swap-result';
 import { TokenSwapInput } from './token-swap-input';
@@ -23,7 +21,6 @@ const swapFormSelector = (state: AllSlices) => ({
 });
 
 export const SwapForm = () => {
-  const { swappableAssets } = useLoaderData() as SwapLoaderResponse;
   const { onSubmit, submitButtonLabel, duration, submitButtonDisabled } =
     useStoreShallow(swapFormSelector);
 
@@ -36,7 +33,7 @@ export const SwapForm = () => {
           void onSubmit();
         }}
       >
-        <TokenSwapInput assets={swappableAssets} />
+        <TokenSwapInput />
 
         <InputBlock label='Duration'>
           <div className='mt-2'>

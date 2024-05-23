@@ -16,6 +16,8 @@ import { getAmount } from '@penumbra-zone/getters/balances-response';
 import { amountMoreThanBalance } from '../../../state/send';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
+import { useMemo } from 'react';
+import { isSwappable } from '../helpers';
 
 const findMatchingBalance = (
   metadata: Metadata | undefined,
@@ -41,6 +43,7 @@ const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
 
 const tokenSwapInputSelector = (state: AllSlices) => ({
+  assets: state.swap.assets,
   assetIn: state.swap.assetIn,
   setAssetIn: state.swap.setAssetIn,
   assetOut: state.swap.assetOut,
@@ -56,9 +59,18 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
  * choose which asset to swap _to_, and a text field for the user to enter an
  * amount.
  */
-export const TokenSwapInput = ({ assets = [] }: { assets?: Metadata[] }) => {
-  const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, balancesResponses } =
-    useStoreShallow(tokenSwapInputSelector);
+export const TokenSwapInput = () => {
+  const {
+    assets,
+    amount,
+    setAmount,
+    assetIn,
+    setAssetIn,
+    assetOut,
+    setAssetOut,
+    balancesResponses,
+  } = useStoreShallow(tokenSwapInputSelector);
+  const swappableAssets = useMemo(() => assets.filter(isSwappable), [assets]);
   const balanceOfAssetOut = findMatchingBalance(assetOut, balancesResponses);
   const maxAmount = getAmount.optional()(assetIn);
   let maxAmountAsString: string | undefined;
@@ -92,7 +104,7 @@ export const TokenSwapInput = ({ assets = [] }: { assets?: Metadata[] }) => {
         <ArrowRight />
 
         <div className='flex flex-col items-end gap-1'>
-          <AssetSelector assets={assets} value={assetOut} onChange={setAssetOut} />
+          <AssetSelector assets={swappableAssets} value={assetOut} onChange={setAssetOut} />
           {balanceOfAssetOut && <BalanceValueView valueView={balanceOfAssetOut} />}
         </div>
       </div>

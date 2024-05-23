@@ -65,13 +65,14 @@ export const SwapLoader: LoaderFunction = async (): Promise<SwapLoaderResponse> 
 
   const assets = await getAllAssets();
   const swappableAssets = assets.filter(isSwappable);
-  void useStore.getState().swap.dutchAuction.loadAuctionInfos();
 
   const [balancesResponses, unclaimedSwaps] = await Promise.all([
     getAndSetDefaultAssetBalances(swappableAssets),
     unclaimedSwapsWithMetadata(),
   ]);
   useStore.getState().swap.setBalancesResponses(balancesResponses);
+  useStore.getState().swap.setAssets(assets);
+  void useStore.getState().swap.dutchAuction.loadAuctionInfos();
 
   return { assets, unclaimedSwaps, swappableAssets };
 };
