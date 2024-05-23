@@ -15,7 +15,7 @@ export const Output = () => {
     useStoreShallow(outputSelector);
 
   return (
-    <div className='flex max-w-[250px] grow flex-col gap-2'>
+    <div className='flex max-w-[200px] grow flex-col gap-2'>
       <div className='flex grow items-center gap-2'>
         <span className='text-muted-foreground'>Maximum:</span>
         <Input
