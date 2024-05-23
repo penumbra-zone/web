@@ -18,7 +18,7 @@ interface AuctionInfo {
   auction: DutchAuction;
 }
 
-interface DutchAuctionActions {
+interface Actions {
   setMinOutput: (minOutput: string) => void;
   setMaxOutput: (maxOutput: string) => void;
   onSubmit: () => Promise<void>;
@@ -29,7 +29,7 @@ interface DutchAuctionActions {
   reset: VoidFunction;
 }
 
-interface DutchAuctionState {
+interface State {
   minOutput: string;
   maxOutput: string;
   txInProgress: boolean;
@@ -38,9 +38,9 @@ interface DutchAuctionState {
   metadataByAssetId: Record<string, Metadata>;
 }
 
-export type DutchAuctionSlice = DutchAuctionActions & DutchAuctionState;
+export type DutchAuctionSlice = Actions & State;
 
-const INITIAL_STATE: DutchAuctionState = {
+const INITIAL_STATE: State = {
   minOutput: '1',
   maxOutput: '1000',
   txInProgress: false,

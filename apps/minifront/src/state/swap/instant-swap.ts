@@ -63,19 +63,28 @@ export interface SimulateSwapResult {
   metadataByAssetId: Record<string, Metadata>;
 }
 
-export interface InstantSwapSlice {
+interface Actions {
   initiateSwapTx: () => Promise<void>;
-  txInProgress: boolean;
   simulateSwap: () => Promise<void>;
-  simulateSwapResult: SimulateSwapResult | undefined;
+  reset: VoidFunction;
+}
+
+interface State {
+  txInProgress: boolean;
+  simulateSwapResult?: SimulateSwapResult;
   simulateSwapLoading: boolean;
 }
 
+export type InstantSwapSlice = Actions & State;
+
+const INITIAL_STATE: State = {
+  txInProgress: false,
+  simulateSwapLoading: false,
+};
+
 export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set, get) => {
   return {
-    txInProgress: false,
-    simulateSwapResult: undefined,
-    simulateSwapLoading: false,
+    ...INITIAL_STATE,
     simulateSwap: async () => {
       try {
         set(({ swap }) => {
@@ -157,6 +166,11 @@ export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set
           state.swap.instantSwap.txInProgress = false;
         });
       }
+    },
+    reset: () => {
+      set(state => {
+        state.swap.instantSwap = { ...state.swap.instantSwap, ...INITIAL_STATE };
+      });
     },
   };
 };

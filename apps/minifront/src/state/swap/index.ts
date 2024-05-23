@@ -17,55 +17,80 @@ export interface SimulateSwapResult {
   metadataByAssetId: Record<string, Metadata>;
 }
 
-export interface SwapSlice {
-  balancesResponses: BalancesResponse[];
+interface Actions {
   setBalancesResponses: (balancesResponses: BalancesResponse[]) => void;
-  assets: Metadata[];
-  assetIn: BalancesResponse | undefined;
   setAssetIn: (asset: BalancesResponse) => void;
-  amount: string;
   setAmount: (amount: string) => void;
-  assetOut: Metadata | undefined;
   setAssetOut: (metadata: Metadata) => void;
-  dutchAuction: DutchAuctionSlice;
-  instantSwap: InstantSwapSlice;
-  duration: DurationOption;
   setDuration: (duration: DurationOption) => void;
+  reset: VoidFunction;
 }
 
-export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) => ({
+interface State {
+  balancesResponses: BalancesResponse[];
+  assets: Metadata[];
+  assetIn?: BalancesResponse;
+  amount: string;
+  assetOut?: Metadata;
+  duration: DurationOption;
+  txInProgress: boolean;
+}
+
+interface Subslices {
+  dutchAuction: DutchAuctionSlice;
+  instantSwap: InstantSwapSlice;
+}
+
+const INITIAL_STATE: State = {
+  amount: '',
+  assets: [],
   balancesResponses: [],
+  duration: 'instant',
+  txInProgress: false,
+};
+
+export type SwapSlice = Actions & State & Subslices;
+
+export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) => ({
+  ...INITIAL_STATE,
   setBalancesResponses: balancesResponses => {
     set(state => {
       state.swap.balancesResponses = balancesResponses;
     });
   },
-  assets: [],
   assetIn: undefined,
   setAssetIn: asset => {
     set(({ swap }) => {
       swap.assetIn = asset;
     });
   },
-  assetOut: undefined,
   setAssetOut: metadata => {
     set(({ swap }) => {
       swap.assetOut = metadata;
     });
   },
-  amount: '',
   setAmount: amount => {
     set(({ swap }) => {
       swap.amount = amount;
     });
   },
-  txInProgress: false,
   dutchAuction: createDutchAuctionSlice()(set, get, store),
   instantSwap: createInstantSwapSlice()(set, get, store),
-  duration: 'instant',
   setDuration: duration => {
     set(state => {
       state.swap.duration = duration;
+    });
+  },
+  reset: () => {
+    get().swap.dutchAuction.reset();
+    get().swap.instantSwap.reset();
+    set(state => {
+      state.swap = {
+        ...state.swap,
+        ...INITIAL_STATE,
+        // Preserve the duration, as that affects which type of swap we're doing
+        duration: state.swap.duration,
+      };
     });
   },
 });
