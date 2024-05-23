@@ -11,6 +11,7 @@ import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
 import { QueryLatestStateButton } from './query-latest-state-button';
 import { Card } from '@penumbra-zone/ui/components/ui/card';
+import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
 
 const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: AssetId) => {
   let metadata: Metadata | undefined;
@@ -61,7 +62,7 @@ export const AuctionList = () => {
 
         {auctionInfos.map(auctionInfo => (
           <ViewBox
-            key={auctionInfo.auction.description?.nonce.toString()}
+            key={bech32mAuctionId(auctionInfo.id)}
             label='Dutch Auction'
             visibleContent={
               <DutchAuctionComponent
