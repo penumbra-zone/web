@@ -19,6 +19,10 @@ const swapInfoCardSelector = (state: AllSlices) => {
   };
 };
 
+/**
+ * Renders an `EduInfoCard` for either swaps or Dutch auctions, depending on the
+ * value of the duration slider.
+ */
 export const SwapInfoCard = () => {
   const props = useStoreShallow(swapInfoCardSelector);
 
