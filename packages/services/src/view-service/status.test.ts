@@ -63,5 +63,4 @@ describe('Status request handler', () => {
     expect(statusResponse.catchingUp).toBe(true);
     expect(statusResponse.partialSyncHeight === 111n).toBeTruthy();
   });
-
 });
