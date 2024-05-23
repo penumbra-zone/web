@@ -12,7 +12,6 @@ export const CondensedBlockSyncStatus = ({
   error,
 }: Partial<BlockSyncProps>) => {
   if (error) return <BlockSyncErrorState error={error} />;
-  console.log(latestKnownBlockHeight, fullSyncHeight);
   if (!latestKnownBlockHeight || !fullSyncHeight)
     return <AwaitingSyncState genesisSyncing={!!latestKnownBlockHeight} />;
 

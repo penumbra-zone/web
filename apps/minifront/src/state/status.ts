@@ -27,7 +27,6 @@ export const createStatusSlice = (): SliceCreator<StatusSlice> => set => ({
       }
     } catch (error) {
       set(state => {
-        console.error(error);
         state.status.error = error;
       });
     }
