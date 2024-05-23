@@ -46,6 +46,9 @@ import { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
 import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auction-end';
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw';
+import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/compact_block/v1/compact_block_connect';
+import { createPromiseClient } from '@connectrpc/connect';
+import { createGrpcWebTransport } from '@connectrpc/connect-web';
 
 declare global {
   // `var` required for global declaration (as let/const are block scoped)
@@ -59,6 +62,7 @@ interface QueryClientProps {
   viewServer: ViewServerInterface;
   numeraires: Metadata[];
   stakingTokenMetadata: Metadata;
+  grpcEndpoint: string;
 }
 
 const BLANK_TX_SOURCE = new CommitmentSource({
@@ -79,6 +83,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly numeraires: Metadata[];
   private readonly stakingTokenMetadata: Metadata;
   private syncPromise: Promise<void> | undefined;
+  // private grpcEndpoint: string;
 
   constructor({
     indexedDb,
@@ -86,12 +91,14 @@ export class BlockProcessor implements BlockProcessorInterface {
     querier,
     numeraires,
     stakingTokenMetadata,
+    grpcEndpoint
   }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
     this.querier = querier;
     this.numeraires = numeraires;
     this.stakingTokenMetadata = stakingTokenMetadata;
+    // this.grpcEndpoint = grpcEndpoint;
   }
 
   // If syncBlocks() is called multiple times concurrently, they'll all wait for
@@ -204,64 +211,168 @@ export class BlockProcessor implements BlockProcessorInterface {
     //   console.log("Compact Block:", block);
     // }
 
+    // Start timing the entire loop
+    performance.mark('Loop_Start');
+
+    let blockCounter = 0;
+    const maxBlocks = 50000;
+    const intervalBlocks = 1000;
+    const compactBlockJsons = [];
+
+    // Mark the start of the first interval
+    // performance.mark(`Interval_1_Start`);
+
+    // performance.mark('Function2_Start');
+    // let t = this.querier.compactBlock.compactBlockRange({
+    //   startHeight,
+    //   keepAlive: true,
+    //   abortSignal: this.abortController.signal,
+    // });
+    // performance.mark('Function2_End');
+    // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+    // console.log('Measure2: ' + measure2.duration);
+
+    // let blockProcessorClient = createPromiseClient(QueryService, createGrpcWebTransport({
+    //   baseUrl: "https://grpc.testnet.penumbra.zone",
+    // }))
+
+    // performance.mark('Function2_Start');
+    // let emptyBlockRequest = fetch("https://grpc.testnet.penumbra.zone/penumbra.core.component.compact_block.v1.QueryService/CompactBlockRange", {
+    //   method: 'POST',
+    //   headers: {
+    //       "Content-Type": "application/grpc-web",
+    //   },
+    //   body: new Uint8Array(5), 
+    // });
+
+    // const reader = (await emptyBlockRequest).body?.getReader();
+    // for (;;) {
+    //   console.log("itrator of blocks");
+    //   const result = await reader!.read();
+    //   if (result.done) return;
+    //   result.value;
+
+    //   blockCounter++;
+    //   if (blockCounter >= maxBlocks) {
+    //     console.log(`Processed ${blockCounter} blocks. Exiting loop.`);
+    //     break;
+    //   }
+    // }
+
+    // compare async iterator to fetch
+    // *** webpage vs browser extension ***?
+
+    // performance.mark('Function2_End');
+    // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+    // console.log('Measure2: ' + measure2.duration);
+
+    // grpc.testnet.penumbra.zone/penumbra.core.component.compact_block.v1.QueryService/CompactBlockRange
+
     // this is an indefinite stream of the (compact) chain from the network
     // intended to run continuously
+    // for await (const compactBlock of blockProcessorClient.compactBlockRange({
+    //   startHeight,
+    //   keepAlive: true,
+    // }, { signal: this.abortController.signal })) {
     for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
       startHeight,
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
-      if (compactBlock.appParametersUpdated) {
-        console.log("entered 1")
-        await this.indexedDb.saveAppParams(await this.querier.app.appParams());
+      // console.log("entered loop!")
+
+      // console.log('compact block: ', compactBlock)
+
+      // Increment the block counter
+      blockCounter++;
+      
+      // Break the loop if we've processed the first 10,000 blocks
+      if (blockCounter > maxBlocks) {
+        break;
       }
-      if (compactBlock.fmdParameters) {
-        console.log("entered 2")
-        await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
+
+      // Accumulate compactBlock.toJson() results
+      // let t = compactBlock.toJson();
+      // console.log("t: ", t)
+
+
+      // // Start timing this iteration
+      // performance.mark('Iteration_Start');
+
+      // // if (compactBlock.appParametersUpdated) {
+      // //   console.log("entered 1")
+      // //   await this.indexedDb.saveAppParams(await this.querier.app.appParams());
+      // // }
+      // // if (compactBlock.fmdParameters) {
+      // //   console.log("entered 2")
+      // //   await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
+      // // }
+      // // if (compactBlock.gasPrices) {
+      // //   console.log("entered 3")
+      // //   await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
+      // // }
+
+      // // console.log("compactBlock contents: ", compactBlock)
+
+      // // wasm view server scan
+      // // - decrypts new notes
+      // // - decrypts new swaps
+      // // - updates idb with advice
+
+      // // performance.mark('Function2_Start');
+      // const compactBlockJson = compactBlock.toBinary();
+      // compactBlockJsons.push(compactBlockJson)
+      if (compactBlock.height < 10) {
+      // //   // Start timing this iteration
+        performance.mark('toBinary_Start');
+        const compactBlockJson = compactBlock.toBinary();
+        performance.mark('toBinary_End');
+        const toBinaryMeasure = performance.measure('toBinary_Measure', 'toBinary_Start', 'toBinary_End');
+        console.log('toBinary_Measure: ' + toBinaryMeasure.duration);
+        
+        performance.mark('Function2_Start');
+        await this.viewServer.scanBlock(compactBlockJson);
+        performance.mark('Function2_End');
+        const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+        console.log('Measure2: ' + measure2.duration);
       }
-      if (compactBlock.gasPrices) {
-        console.log("entered 3")
-        await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
-      }
 
-      // wasm view server scan
-      // - decrypts new notes
-      // - decrypts new swaps
-      // - updates idb with advice
+      // // flushing is slow, avoid it until
+      // // - wasm says
+      // // - every 1000th block
+      // // - every block at tip
+      // const flushReasons = {
+      //   // scannerWantsFlush,
+      //   interval: compactBlock.height % 1000n === 0n,
+      //   // new: compactBlock.height > latestKnownBlockHeight,
+      // };
+      // // const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
+      // let flush: ScanBlockResult | undefined;
+      // if (Object.values(flushReasons).some(Boolean)) {
+      //   // performance.mark('Function2_Start');
 
-      // performance.mark('Function2_Start');
-      const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock);
-      // performance.mark('Function2_End');
-      // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
-      // console.log('Measure2: ' + measure2.duration);
+      //   flush = this.viewServer.flushUpdates();
+      //   // performance.mark('Function2_End');
+      //   // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+      //   // console.log('Measure2: ' + measure2.duration);
 
-      // flushing is slow, avoid it until
-      // - wasm says
-      // - every 1000th block
-      // - every block at tip
-      const flushReasons = {
-        scannerWantsFlush,
-        interval: compactBlock.height % 1000n === 0n,
-        new: compactBlock.height > latestKnownBlockHeight,
-      };
-      // const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
-      let flush: ScanBlockResult | undefined;
-      if (Object.values(flushReasons).some(Boolean)) {
-        flush = this.viewServer.flushUpdates();
+      //   // performance.mark('Function2_End');
+      //   // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+      //   // console.log('Measure2: ' + measure2.duration);
 
+      //   // in an atomic query, this
+      //   // - saves 'sctUpdates'
+      //   // - saves new decrypted notes
+      //   // - saves new decrypted swaps
+      //   // - updates last block synced
+
+      //   // performance.mark('Function2_Start');
+
+      //   // performance.mark('Function2_Start');
+      //   await this.indexedDb.saveScanResult(flush);
         // performance.mark('Function2_End');
         // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
         // console.log('Measure2: ' + measure2.duration);
-
-        // in an atomic query, this
-        // - saves 'sctUpdates'
-        // - saves new decrypted notes
-        // - saves new decrypted swaps
-        // - updates last block synced
-
-        // performance.mark('Function2_Start');
-
-        await this.indexedDb.saveScanResult(flush);
 
         // performance.mark('Function2_End');
         // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
@@ -284,7 +395,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         //   recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
         // for (const swapRecord of flush.newSwaps)
         //   recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
-      }
+      // }
 
       // nullifiers on this block may match notes or swaps from db
       // - update idb, mark as spent/claimed
@@ -383,16 +494,20 @@ export class BlockProcessor implements BlockProcessorInterface {
       // chain will of course continue adding blocks, and we'll keep processing
       // them. So, we need to update `latestKnownBlockHeight` once we've passed
       // it.
-      if (compactBlock.height > latestKnownBlockHeight) {
-        latestKnownBlockHeight = compactBlock.height;
-      }
+      // if (compactBlock.height > latestKnownBlockHeight) {
+      //   latestKnownBlockHeight = compactBlock.height;
+      // }
 
       // performance.mark('Function2_Start');
-
-      const isLastBlockOfEpoch = !!compactBlock.epochRoot;
-      if (isLastBlockOfEpoch) {
-        await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
-      }
+      
+      // performance.mark('Function2_Start');
+      // const isLastBlockOfEpoch = !!compactBlock.epochRoot;
+      // if (isLastBlockOfEpoch) {
+      //   await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
+      // }
+      // performance.mark('Function2_End');
+      // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+      // console.log('Measure2: ' + measure2.duration);
 
       // performance.mark('Function2_End');
       // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
@@ -401,7 +516,34 @@ export class BlockProcessor implements BlockProcessorInterface {
       // if (globalThis.ASSERT_ROOT_VALID) {
       //   await this.assertRootValid(compactBlock.height);
       // }
+
+      // End timing this iteration
+      // performance.mark('Iteration_End');
+      // const iterationMeasure = performance.measure('Iteration_Measure', 'Iteration_Start', 'Iteration_End');
+      // console.log('Iteration time: ' + iterationMeasure.duration + ' ms');
+        
+      // Time every 1,000 blocks
+      // if (blockCounter % intervalBlocks === 0) {
+      //   performance.mark(`Interval_${blockCounter}_End`);
+      //   const intervalMeasure = performance.measure(`Interval_${blockCounter}_Measure`, `Interval_${blockCounter - intervalBlocks + 1}_Start`, `Interval_${blockCounter}_End`);
+      //   console.log(`Time for blocks ${blockCounter - intervalBlocks + 1} to ${blockCounter}: ${intervalMeasure.duration} ms`);
+        
+      //   // Clear interval marks and measures to avoid accumulation
+      //   performance.clearMarks(`Interval_${blockCounter - intervalBlocks + 1}_Start`);
+      //   performance.clearMarks(`Interval_${blockCounter}_End`);
+      //   performance.clearMeasures(`Interval_${blockCounter}_Measure`);
+
+      //   // Start timing the next interval
+      //   performance.mark(`Interval_${blockCounter + 1}_Start`);
+      // }
     }
+
+    // End timing the entire loop
+    performance.mark('Loop_End');
+    const loopMeasure = performance.measure('Loop_Measure', 'Loop_Start', 'Loop_End');
+    console.log('Total loop time: ' + loopMeasure.duration + ' ms');
+
+    // console.log("compactBlockJsons: ", compactBlockJsons)
   }
 
   private async saveRecoveredCommitmentSources(recovered: (SpendableNoteRecord | SwapRecord)[]) {

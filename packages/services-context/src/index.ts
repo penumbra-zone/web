@@ -122,6 +122,8 @@ export class Services implements ServicesInterface {
       numeraires: registry.numeraires.map(numeraires => registry.getMetadata(numeraires)),
     });
 
+    // grpcEndpoint: "https://grpc.testnet.penumbra.zone"
+
     return { viewServer, blockProcessor, indexedDb, querier: this.querier };
   }
 
