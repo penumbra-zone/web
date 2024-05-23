@@ -16,11 +16,7 @@ export interface UnclaimedSwapsWithMetadata {
   asset2: Metadata;
 }
 
-export interface SwapLoaderResponse {
-  unclaimedSwaps: UnclaimedSwapsWithMetadata[];
-  assets: Metadata[];
-  swappableAssets: Metadata[];
-}
+export type SwapLoaderResponse = UnclaimedSwapsWithMetadata[];
 
 const getAndSetDefaultAssetBalances = async (swappableAssets: Metadata[]) => {
   const balancesResponses = await getSwappableBalancesResponses();
@@ -74,5 +70,5 @@ export const SwapLoader: LoaderFunction = async (): Promise<SwapLoaderResponse> 
   useStore.getState().swap.setAssets(assets);
   void useStore.getState().swap.dutchAuction.loadAuctionInfos();
 
-  return { assets, unclaimedSwaps, swappableAssets };
+  return unclaimedSwaps;
 };

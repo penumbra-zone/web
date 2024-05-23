@@ -10,7 +10,7 @@ import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
 
 export const UnclaimedSwaps = () => {
-  const { unclaimedSwaps } = useLoaderData() as SwapLoaderResponse;
+  const unclaimedSwaps = useLoaderData() as SwapLoaderResponse;
 
   const sortedUnclaimedSwaps = unclaimedSwaps.sort(
     (a, b) => Number(b.swap.outputData?.height) - Number(a.swap.outputData?.height),
