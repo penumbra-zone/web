@@ -18,6 +18,9 @@ export interface SimulateSwapResult {
 }
 
 export interface SwapSlice {
+  balancesResponses: BalancesResponse[];
+  setBalancesResponses: (balancesResponses: BalancesResponse[]) => void;
+  assets: Metadata[];
   assetIn: BalancesResponse | undefined;
   setAssetIn: (asset: BalancesResponse) => void;
   amount: string;
@@ -31,6 +34,13 @@ export interface SwapSlice {
 }
 
 export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) => ({
+  balancesResponses: [],
+  setBalancesResponses: balancesResponses => {
+    set(state => {
+      state.swap.balancesResponses = balancesResponses;
+    });
+  },
+  assets: [],
   assetIn: undefined,
   setAssetIn: asset => {
     set(({ swap }) => {

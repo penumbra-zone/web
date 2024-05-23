@@ -2,22 +2,22 @@ import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { InputBlock } from '../../shared/input-block';
-import { DurationSlider } from './duration-slider';
+import { DurationSlider } from '../duration-slider';
 import { Price } from './price';
 import { TokenSwapInput } from '../token-swap-input';
 import { useLoaderData } from 'react-router-dom';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 const dutchAuctionFormSelector = (state: AllSlices) => ({
-  balances: state.dutchAuction.balancesResponses,
-  assetIn: state.dutchAuction.assetIn,
-  setAssetIn: state.dutchAuction.setAssetIn,
-  assetOut: state.dutchAuction.assetOut,
-  setAssetOut: state.dutchAuction.setAssetOut,
-  amount: state.dutchAuction.amount,
-  setAmount: state.dutchAuction.setAmount,
-  onSubmit: state.dutchAuction.onSubmit,
-  submitButtonDisabled: state.dutchAuction.txInProgress || !state.dutchAuction.amount,
+  balances: state.swap.balancesResponses,
+  assetIn: state.swap.assetIn,
+  setAssetIn: state.swap.setAssetIn,
+  assetOut: state.swap.assetOut,
+  setAssetOut: state.swap.setAssetOut,
+  amount: state.swap.amount,
+  setAmount: state.swap.setAmount,
+  onSubmit: state.swap.dutchAuction.onSubmit,
+  submitButtonDisabled: state.swap.dutchAuction.txInProgress || !state.swap.amount,
 });
 
 export const DutchAuctionForm = () => {

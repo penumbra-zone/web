@@ -1,7 +1,4 @@
-import {
-  BalancesResponse,
-  TransactionPlannerRequest,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { SliceCreator } from '../..';
 import {
   AssetId,
@@ -22,7 +19,6 @@ interface AuctionInfo {
 }
 
 interface DutchAuctionActions {
-  setBalancesResponses: (balancesResponses: BalancesResponse[]) => void;
   setMinOutput: (minOutput: string) => void;
   setMaxOutput: (maxOutput: string) => void;
   onSubmit: () => Promise<void>;
@@ -34,7 +30,6 @@ interface DutchAuctionActions {
 }
 
 interface DutchAuctionState {
-  balancesResponses: BalancesResponse[];
   minOutput: string;
   maxOutput: string;
   txInProgress: boolean;
@@ -46,7 +41,6 @@ interface DutchAuctionState {
 export type DutchAuctionSlice = DutchAuctionActions & DutchAuctionState;
 
 const INITIAL_STATE: DutchAuctionState = {
-  balancesResponses: [],
   minOutput: '1',
   maxOutput: '1000',
   txInProgress: false,
@@ -56,11 +50,6 @@ const INITIAL_STATE: DutchAuctionState = {
 
 export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (set, get) => ({
   ...INITIAL_STATE,
-  setBalancesResponses: balancesResponses => {
-    set(state => {
-      state.swap.dutchAuction.balancesResponses = balancesResponses;
-    });
-  },
   setMinOutput: minOutput => {
     set(state => {
       state.swap.dutchAuction.minOutput = minOutput;
@@ -162,6 +151,12 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
 
   reset: () =>
     set(state => {
-      state.swap.dutchAuction = { ...state.swap.dutchAuction, ...INITIAL_STATE };
+      state.swap.dutchAuction = {
+        ...state.swap.dutchAuction,
+        ...INITIAL_STATE,
+
+        // preserve loaded auctions:
+        auctionInfos: state.swap.dutchAuction.auctionInfos,
+      };
     }),
 });

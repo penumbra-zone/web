@@ -1,7 +1,7 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { useLoaderData, useRevalidator } from 'react-router-dom';
-import { SwapLoaderResponse, UnclaimedSwapsWithMetadata } from './swap-loader';
+import { SwapLoaderResponse, UnclaimedSwapsWithMetadata } from '../swap-loader';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 import { useStore } from '../../../state';
 import { unclaimedSwapsSelector } from '../../../state/unclaimed-swaps';

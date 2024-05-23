@@ -33,8 +33,8 @@ export const Trace = ({
   metadataByAssetId: Record<string, Metadata>;
 }) => {
   return (
-    <div className='flex flex-col gap-0.5'>
-      <div className='flex items-center justify-between gap-2'>
+    <div className='flex w-full flex-col gap-0.5'>
+      <div className='flex w-full items-center justify-between gap-2'>
         {trace.value.map((value, index) => (
           <Fragment key={index}>
             <div className='flex shrink-0 items-center gap-1'>

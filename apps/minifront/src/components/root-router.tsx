@@ -10,13 +10,12 @@ import { SendAssetBalanceLoader, SendForm } from './send/send-form';
 import { Receive } from './send/receive';
 import { ErrorBoundary } from './shared/error-boundary';
 import { SwapLayout } from './swap/layout';
-import { SwapLoader } from './swap/swap/swap-loader';
+import { SwapLoader } from './swap/swap-loader';
 import { StakingLayout, StakingLoader } from './staking/layout';
 import { IbcLoader } from './ibc/ibc-loader';
 import { IbcLayout } from './ibc/layout';
 import { Swap } from './swap/swap';
 import { DutchAuction } from './swap/dutch-auction';
-import { DutchAuctionLoader } from './swap/dutch-auction/dutch-auction-loader';
 
 export const rootRouter = createHashRouter([
   {
@@ -58,16 +57,15 @@ export const rootRouter = createHashRouter([
       },
       {
         path: PagePath.SWAP,
+        loader: SwapLoader,
         element: <SwapLayout />,
         children: [
           {
             index: true,
-            loader: SwapLoader,
             element: <Swap />,
           },
           {
             path: PagePath.SWAP_AUCTION,
-            loader: DutchAuctionLoader,
             element: <DutchAuction />,
           },
         ],

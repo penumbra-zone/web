@@ -2,11 +2,13 @@ import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { useLoaderData } from 'react-router-dom';
 import { AllSlices } from '../../../../state';
 import { swapValidationErrors } from '../../../../state/swap/instant-swap';
-import { SwapLoaderResponse } from '../swap-loader';
+import { SwapLoaderResponse } from '../../swap-loader';
 import { SimulateSwapButton } from './simulate-swap-button';
 import { SimulateSwapResult } from './simulate-swap-result';
 import { TokenSwapInput } from '../../token-swap-input';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
+import { DurationSlider } from '../../duration-slider';
+import { InputBlock } from '../../../shared/input-block';
 
 const swapFormSelector = (state: AllSlices) => ({
   assetIn: state.swap.assetIn,
@@ -52,6 +54,12 @@ export const SwapForm = () => {
         amount={amount}
         onChangeAmount={setAmount}
       />
+
+      <InputBlock label='Duration'>
+        <div className='mt-2'>
+          <DurationSlider />
+        </div>
+      </InputBlock>
 
       <div className='mt-3 flex gap-2'>
         <SimulateSwapButton />

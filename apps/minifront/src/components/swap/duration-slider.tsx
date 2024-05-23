@@ -1,7 +1,7 @@
 import { Slider } from '@penumbra-zone/ui/components/ui/slider';
-import { DURATION_OPTIONS, GDA_RECIPES } from '../../../state/swap/constants';
-import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { AllSlices } from '../../../state';
+import { DURATION_OPTIONS, GDA_RECIPES } from '../../state/swap/constants';
+import { useStoreShallow } from '../../utils/use-store-shallow';
+import { AllSlices } from '../../state';
 
 const durationSliderSelector = (state: AllSlices) => ({
   duration: state.swap.duration,
@@ -26,6 +26,8 @@ export const DurationSlider = () => {
         value={[DURATION_OPTIONS.indexOf(duration)]}
         onValueChange={handleChange}
       />
+
+      {duration === 'instant' && <>instant</>}
 
       {duration !== 'instant' && (
         <div className='flex flex-col items-center'>
