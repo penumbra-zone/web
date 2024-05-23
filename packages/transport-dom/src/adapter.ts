@@ -33,10 +33,7 @@ import ReadableStream from '@penumbra-zone/polyfills/ReadableStream.from';
 // hopefully also simplifies transport call soon
 type MethodType = MethodInfo & { service: { typeName: string } };
 
-type ChannelRequest = JsonValue;
-type ChannelResponse = JsonValue | ReadableStream<JsonValue>;
-
-export type ChannelHandlerFn = (r: ChannelRequest) => Promise<ChannelResponse>;
+export type ChannelHandlerFn = (r: JsonValue) => Promise<JsonValue | ReadableStream<JsonValue>>;
 export type ChannelContextFn = (
   h: UniversalServerRequest,
 ) => Promise<UniversalServerRequest & { contextValues: ContextValues }>;
@@ -164,7 +161,7 @@ export const connectChannelAdapter = (opt: ChannelAdapterOptions): ChannelHandle
     httpClient: injectRequestContext,
   });
 
-  return async function channelHandler(message: ChannelRequest) {
+  return async function channelHandler(message: JsonValue) {
     const request = Any.fromJson(message, jsonOptions).unpack(jsonOptions.typeRegistry)!;
     const requestType = request.getType();
 

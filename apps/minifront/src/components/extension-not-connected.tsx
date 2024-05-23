@@ -4,24 +4,20 @@ import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
 import { errorToast, warningToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { HeadTag } from './metadata/head-tag';
 
-import {
-  requestPraxConnection,
-  throwIfPraxNotAvailable,
-  throwIfPraxNotInstalled,
-} from '@penumbra-zone/client/prax';
+import { requestPraxConnection } from '@penumbra-zone/client/prax';
 import { useState } from 'react';
-import { PenumbraRequestFailure } from '@penumbra-zone/client';
+import { PenumbraAccessResponse } from '@penumbra-zone/client/messages';
 
 const handleErr = (e: unknown) => {
   if (e instanceof Error && e.cause) {
     switch (e.cause) {
-      case PenumbraRequestFailure.Denied:
+      case PenumbraAccessResponse.Denied:
         errorToast(
           'You may need to un-ignore this site in your extension settings.',
           'Connection denied',
         ).render();
         break;
-      case PenumbraRequestFailure.NeedsLogin:
+      case PenumbraAccessResponse.NeedsLogin:
         warningToast(
           'Not logged in',
           'Please login into the extension and reload the page',
@@ -36,27 +32,22 @@ const handleErr = (e: unknown) => {
   }
 };
 
-const useExtConnector = () => {
-  const [result, setResult] = useState<boolean>();
+const useRequestPraxConnection = () => {
+  const [requested, setRequested] = useState<boolean>();
 
-  const request = async () => {
-    try {
-      throwIfPraxNotAvailable();
-      await throwIfPraxNotInstalled();
-      await requestPraxConnection();
-      location.reload();
-    } catch (e) {
-      handleErr(e);
-    } finally {
-      setResult(true);
-    }
+  const request = () => {
+    void requestPraxConnection().then(
+      () => location.reload(),
+      e => handleErr(e),
+    );
+    setRequested(true);
   };
 
-  return { request, result };
+  return { request, requested };
 };
 
 export const ExtensionNotConnected = () => {
-  const { request, result } = useExtConnector();
+  const { request, requested } = useRequestPraxConnection();
 
   return (
     <>
@@ -65,8 +56,8 @@ export const ExtensionNotConnected = () => {
       <SplashPage title='Welcome to Penumbra'>
         <div className='flex items-center justify-between gap-[1em] text-lg'>
           <div>To get started, connect the Penumbra Chrome extension.</div>
-          {!result ? (
-            <Button variant='gradient' onClick={() => void request()} className='px-4'>
+          {!requested ? (
+            <Button variant='gradient' className='px-4' onClick={() => request()}>
               Connect
             </Button>
           ) : (

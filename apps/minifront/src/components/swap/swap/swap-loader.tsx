@@ -1,6 +1,5 @@
 import { LoaderFunction } from 'react-router-dom';
 import { useStore } from '../../../state';
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 import {
   BalancesResponse,
   SwapRecord,
@@ -64,8 +63,6 @@ export const unclaimedSwapsWithMetadata = async (): Promise<UnclaimedSwapsWithMe
 };
 
 export const SwapLoader: LoaderFunction = async (): Promise<SwapLoaderResponse> => {
-  await throwIfPraxNotConnectedTimeout();
-
   const swappableAssets = (await getAllAssets()).filter(isSwappable);
 
   const [assetBalances, unclaimedSwaps] = await Promise.all([

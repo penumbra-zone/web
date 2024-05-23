@@ -4,7 +4,7 @@ import { createChannelTransport } from '@penumbra-zone/transport-dom/create';
 import { CRSessionClient } from '@penumbra-zone/transport-chrome/session-client';
 import { jsonOptions } from '@penumbra-zone/protobuf';
 
-const port = CRSessionClient.init(PRAX);
+const { port } = CRSessionClient.init(PRAX);
 
 const extensionPageTransport = createChannelTransport({
   jsonOptions,

@@ -8,7 +8,7 @@
  * - session manager for rpc entry
  */
 
-// side-effectful import attaches transport init listeners
+// side-effectful import attaches listeners
 import './listeners';
 
 // services
@@ -51,6 +51,8 @@ import {
   onboardGrpcEndpoint,
   onboardWallet,
 } from './storage/onboard';
+import { approveSender } from './approve-origin';
+import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 const startServices = async (wallet: WalletJson) => {
   const grpcEndpoint = await onboardGrpcEndpoint();
@@ -115,4 +117,17 @@ const getServiceHandler = async () => {
 await fixEmptyGrpcEndpointAfterOnboarding();
 
 const handler = await getServiceHandler();
-CRSessionManager.init(PRAX, handler);
+CRSessionManager.init(
+  PRAX,
+  handler,
+  async (sender?: chrome.runtime.MessageSender) =>
+    (await approveSender(sender)) === UserChoice.Approved,
+  EXTERNAL,
+);
+
+void chrome.cookies.set({
+  url: 'https://penumbra.zone.invalid/provider',
+  name: chrome.runtime.id,
+  value: chrome.runtime.getURL('manifest.json'),
+  secure: true,
+});

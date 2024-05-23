@@ -6,7 +6,6 @@ import { InputBlock } from '../../shared/input-block';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { useMemo } from 'react';
 import { getTransferableBalancesResponses, penumbraAddrValidation } from '../helpers';
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 import InputToken from '../../shared/input-token';
 import { useRefreshFee } from './use-refresh-fee';
 import { GasFee } from '../../shared/gas-fee';
@@ -20,7 +19,6 @@ export interface SendLoaderResponse {
 }
 
 export const SendAssetBalanceLoader: LoaderFunction = async (): Promise<SendLoaderResponse> => {
-  await throwIfPraxNotConnectedTimeout();
   const assetBalances = await getTransferableBalancesResponses();
 
   if (assetBalances[0]) {
