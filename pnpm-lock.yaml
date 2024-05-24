@@ -145,8 +145,8 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.9.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.9.0))
       '@penumbra-labs/registry':
-        specifier: 7.3.0
-        version: 7.3.0
+        specifier: 7.4.1
+        version: 7.4.1
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../../packages/bech32m
@@ -341,8 +341,8 @@ importers:
         specifier: ^1.23.13
         version: 1.23.13(@types/react@18.3.2)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@penumbra-labs/registry':
-        specifier: 7.3.0
-        version: 7.3.0
+        specifier: 7.4.1
+        version: 7.4.1
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../../packages/bech32m
@@ -764,8 +764,8 @@ importers:
   packages/services-context:
     dependencies:
       '@penumbra-labs/registry':
-        specifier: 7.3.0
-        version: 7.3.0
+        specifier: 7.4.1
+        version: 7.4.1
       '@penumbra-zone/query':
         specifier: workspace:*
         version: link:../query
@@ -792,8 +792,8 @@ importers:
   packages/storage:
     dependencies:
       '@penumbra-labs/registry':
-        specifier: 7.3.0
-        version: 7.3.0
+        specifier: 7.4.1
+        version: 7.4.1
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
@@ -3148,8 +3148,8 @@ packages:
     resolution: {integrity: sha512-HNjmfLQEVRZmHRET336f20H/8kOozUGwk7yajvsonjNxbj2wBTK1WsQuHkD5yYh9RxFGL2EyDHryOihOwUoKDA==}
     engines: {node: '>= 10.0.0'}
 
-  '@penumbra-labs/registry@7.3.0':
-    resolution: {integrity: sha512-4zmtFRpJZP4dc+HQK7IAXO54cLetcxyMm1VgxPZV1VP5Pc8BIT/+9chPt6zwSM0LCJid9MIdol9fEkQmCJllqg==}
+  '@penumbra-labs/registry@7.4.1':
+    resolution: {integrity: sha512-WBFoEV/NARidHR/HHfKgGLzMfHVFozVKLTOaiB458ZCMJ75JqZJw6hjqbzX1uoegVmHi6mfVP6kzEbpEbdm4Wg==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -15323,7 +15323,7 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.4.1
       '@parcel/watcher-win32-x64': 2.4.1
 
-  '@penumbra-labs/registry@7.3.0': {}
+  '@penumbra-labs/registry@7.4.1': {}
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
