@@ -47,6 +47,125 @@ import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auc
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw';
 
+import { CompactBlockRangeRequest, CompactBlockRangeResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
+
+let totalScanBlockTime = 0;
+
+// async *compactBlockRange({
+//   startHeight,
+//   keepAlive,
+//   abortSignal,
+// }: CompactBlockRangeParams): AsyncIterable<CompactBlock> { }
+
+/**
+ * yield raw compact blocks
+ */
+const rawCompactBlockRangeRequestStream = async function* (
+  req: CompactBlockRangeRequest,
+  signal?: AbortSignal,
+) {
+  console.log('enter fn');
+  performance.mark('scanBlock_Start');
+
+  const streamResponse = await fetch(
+    'https://grpc.testnet.penumbra.zone/penumbra.core.component.compact_block.v1.QueryService/CompactBlockRange',
+    {
+      signal,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/grpc-web',
+      },
+      body: new Uint8Array(5),
+      //req.toBinary(),
+    },
+  );
+  console.log(
+    'streamResponse',
+    streamResponse,
+    Object.fromEntries(streamResponse.headers.entries()),
+  );
+  // |-----| |-----| |----| |----|
+  // compact block range response | compact block range reponse
+  // |header|compactblock|other|footer||header
+  // compact block
+
+  //const alldata = await streamResponse.blob()
+  //console.log('blob', alldata);
+  // not end
+
+  const header = new Uint8Array(5);
+  let headerPos: number = 0;
+  let payload = new Uint8Array(0);
+  let payloadRemaining = 0;
+  if (!streamResponse.body) throw new Error('no response body');
+  const reader = streamResponse.body.getReader();
+
+  let httpChunks = 0;
+  let responseMessages = 0;
+  let bytesSoFar = 0;
+  for (const { done, value: chunk } = await reader.read(); ; !done) {
+    if (!chunk) {
+      console.warn('no chunk in read');
+      break;
+    }
+    bytesSoFar += chunk.length;
+    httpChunks++;
+    //console.log('bytesSoFar', bytesSoFar)
+    for (let pos = 0; pos < chunk.length; ) {
+      if (headerPos < 5) {
+        // check unary addition priority
+        while (headerPos < 5 && pos < chunk.length) header[headerPos++] = chunk[pos++]!;
+        // check endianness
+        // is it offset one byte, or is it offset by a uint32?
+        if (headerPos === 5) payloadRemaining = new DataView(header.buffer).getUint32(1, false);
+        console.log(`Header read pos: ${headerPos}`, `Payload remaining: ${payloadRemaining}`);
+      }
+      if (payloadRemaining) {
+        const chunkLen = Math.min(chunk.length - pos, payloadRemaining);
+        const newMessage = new Uint8Array(payload.length + chunkLen);
+        newMessage.set(payload);
+        newMessage.set(chunk.subarray(pos, pos + chunkLen), payload.length);
+        pos += chunkLen;
+        payloadRemaining -= chunkLen;
+        if (!payloadRemaining) {
+          console.log('newMessage', newMessage.length, newMessage);
+          yield newMessage; // a compact block range response
+
+          // Got an entire message.
+          // check trailers?
+          if (Number(header[0]) & 0x80) {
+            // Trailers frame
+            console.log(`gRPC Web Trailer`);
+            //console.log(`gRPC Web Trailer: flags=${header[0]} payload:\n${new TextDecoder().decode(payload)}`);
+          } else {
+            // Message
+            console.log(`gRPC Web Message`);
+            //console.log(`gRPC Web Message: flags=${header[0]} payload=${uint8ArrayToHex(payload)}`);
+          }
+
+          headerPos = 0;
+          payload = new Uint8Array();
+          responseMessages++;
+        }
+        //console.log(`Remaining message bytes: ${payloadRemaining}`);
+      }
+    }
+
+
+    // 0.1% of the total time
+  }
+
+  console.warn('loop ended')
+
+  performance.mark('scanBlock_End');
+  performance.measure('scanBlock_Measure', 'scanBlock_Start', 'scanBlock_End');
+
+  const measure = performance.getEntriesByName('scanBlock_Measure').pop();
+  console.log({ httpChunks, responseMessages });
+  console.log('totalScanBlockTime += ', measure!.duration);
+  totalScanBlockTime += measure!.duration;
+};
+
 declare global {
   // `var` required for global declaration (as let/const are block scoped)
   // eslint-disable-next-line no-var
@@ -171,7 +290,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async syncAndStore() {
-    console.log("Entered syncAndStore")
+    console.log('Entered syncAndStore');
     const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
     const startHeight = fullSyncHeight !== undefined ? fullSyncHeight + 1n : 0n; // Must compare to undefined as 0n is falsy
     let latestKnownBlockHeight = await this.querier.tendermint.latestBlockHeight();
@@ -192,24 +311,34 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     let blockCounter = 0;
     const maxBlocks = 10000;
-    const intervalBlocks = 1000;
-    const compactBlocks = [];
-    let totalScanBlockTime = 0;
-    let totalScanBlockTime1 = 0;
+    // const intervalBlocks = 1000;
+    // const compactBlocks = [];
+    // let totalScanBlockTime1 = 0;
 
     // this is an indefinite stream of the (compact) chain from the network
     // intended to run continuously
-    for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
-      startHeight,
-      keepAlive: true,
-      abortSignal: this.abortController.signal,
-    })) {
+    //this.querier.compactBlock.compactBlockRange({ startHeight, keepAlive: true, abortSignal: this.abortController.signal, })
+    for await (const response of rawCompactBlockRangeRequestStream(
+      new CompactBlockRangeRequest({ startHeight, keepAlive: true }),
+      this.abortController.signal,
+    )) {
       blockCounter++;
       if (blockCounter > maxBlocks) {
+        console.log("blockCounter > maxBlocks", blockCounter, maxBlocks)
+        this.abortController.abort()
         break;
       }
 
-      compactBlocks.push(compactBlock)
+      // JIT optimizations?
+      // arrives as binary
+      // protobuf deserialization 
+      // serialize back to binary (round tripping...)
+      // JSON in idb (plainmessage)
+      // transport with custom fetch method w/ blob
+      // look inside bufbuild code to view serialization scheme
+      console.log('response', CompactBlockRangeResponse.fromBinary(response))
+
+      // compactBlocks.push(compactBlock);
 
       // if (compactBlock.appParametersUpdated) {
       //   await this.indexedDb.saveAppParams(await this.querier.app.appParams());
@@ -225,6 +354,8 @@ export class BlockProcessor implements BlockProcessorInterface {
       // - decrypts new notes
       // - decrypts new swaps
       // - updates idb with advice
+
+      /*
       performance.mark('scanBlock_Start');
       const compactBlockBinary = compactBlock.toBinary();
       performance.mark('scanBlock_End');
@@ -232,15 +363,16 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       const measure = performance.getEntriesByName('scanBlock_Measure').pop();
       totalScanBlockTime += measure!.duration;
-            
-      if (compactBlock.height < maxBlocks) {
-        performance.mark('scanBlock1_Start');
-        await this.viewServer.scanBlock(compactBlockBinary);
-        performance.mark('scanBlock1_End');
-        performance.measure('scanBlock1_Measure', 'scanBlock1_Start', 'scanBlock1_End');
-        const measure1 = performance.getEntriesByName('scanBlock1_Measure').pop();
-        totalScanBlockTime1 += measure1!.duration;
-      }
+      */
+
+      // if (compactBlock.height < maxBlocks) {
+      //   performance.mark('scanBlock1_Start');
+      //   await this.viewServer.scanBlock(compactBlockBinary);
+      //   performance.mark('scanBlock1_End');
+      //   performance.measure('scanBlock1_Measure', 'scanBlock1_Start', 'scanBlock1_End');
+      //   const measure1 = performance.getEntriesByName('scanBlock1_Measure').pop();
+      //   totalScanBlockTime1 += measure1!.duration;
+      // }
 
       // // flushing is slow, avoid it until
       // // - wasm says
@@ -383,10 +515,14 @@ export class BlockProcessor implements BlockProcessorInterface {
     performance.mark('Loop_End');
     const loopMeasure = performance.measure('Loop_Measure', 'Loop_Start', 'Loop_End');
     console.log('Total loop time for blocks with height < 10000: ' + loopMeasure.duration + ' ms');
-    console.log('Total serialization time for blocks with height < 10000: ' + totalScanBlockTime + ' ms');
-    console.log('Total scan block (wasm) time for blocks with height < 10000: ' + totalScanBlockTime1 + ' ms');
- 
-    console.log("compactBlocks: ", compactBlocks)
+    console.log(
+      'Total serialization time for blocks with height < 10000: ' + totalScanBlockTime + ' ms',
+    );
+    // console.log(
+    //   'Total scan block (wasm) time for blocks with height < 10000: ' + totalScanBlockTime1 + ' ms',
+    // );
+
+    // console.log('compactBlocks: ', compactBlocks);
   }
 
   private async saveRecoveredCommitmentSources(recovered: (SpendableNoteRecord | SwapRecord)[]) {
