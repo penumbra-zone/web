@@ -74,7 +74,13 @@ export const DutchAuctionComponent = ({
       </div>
 
       {isExpanded && (
-        <div className='flex w-full gap-2'>
+        <motion.div
+          initial={{ scaleY: 0, opacity: 0 }}
+          animate={{ scaleY: 1, opacity: 1 }}
+          exit={{ scaleY: 0, opacity: 0 }}
+          layout
+          className='flex w-full gap-2'
+        >
           <div className='w-4 shrink-0' />
 
           <ExpandedDetails
@@ -85,7 +91,7 @@ export const DutchAuctionComponent = ({
           />
 
           <div className='w-[85px] shrink-0' />
-        </div>
+        </motion.div>
       )}
     </motion.div>
   );

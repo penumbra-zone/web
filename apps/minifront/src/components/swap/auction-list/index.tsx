@@ -14,6 +14,7 @@ import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
 import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picker';
 import { useMemo } from 'react';
 import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
+import { LayoutGroup } from 'framer-motion';
 
 const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: AssetId) => {
   let metadata: Metadata | undefined;
@@ -95,27 +96,29 @@ export const AuctionList = () => {
           filter === 'active' &&
           "You don't currently have any active auctions."}
 
-        {filteredAuctionInfos.map(auctionInfo => (
-          <DutchAuctionComponent
-            key={bech32mAuctionId(auctionInfo.id)}
-            dutchAuction={auctionInfo.auction}
-            inputMetadata={getMetadata(
-              metadataByAssetId,
-              auctionInfo.auction.description?.input?.assetId,
-            )}
-            outputMetadata={getMetadata(
-              metadataByAssetId,
-              auctionInfo.auction.description?.outputId,
-            )}
-            fullSyncHeight={fullSyncHeight}
-            {...getButtonProps(
-              auctionInfo.id,
-              endAuction,
-              withdraw,
-              auctionInfo.auction.state?.seq,
-            )}
-          />
-        ))}
+        <LayoutGroup>
+          {filteredAuctionInfos.map(auctionInfo => (
+            <DutchAuctionComponent
+              key={bech32mAuctionId(auctionInfo.id)}
+              dutchAuction={auctionInfo.auction}
+              inputMetadata={getMetadata(
+                metadataByAssetId,
+                auctionInfo.auction.description?.input?.assetId,
+              )}
+              outputMetadata={getMetadata(
+                metadataByAssetId,
+                auctionInfo.auction.description?.outputId,
+              )}
+              fullSyncHeight={fullSyncHeight}
+              {...getButtonProps(
+                auctionInfo.id,
+                endAuction,
+                withdraw,
+                auctionInfo.auction.state?.seq,
+              )}
+            />
+          ))}
+        </LayoutGroup>
       </div>
     </Card>
   );
