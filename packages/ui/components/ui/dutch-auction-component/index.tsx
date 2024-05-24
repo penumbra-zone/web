@@ -6,9 +6,12 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { Button } from '../button';
-import { ArrowRight } from 'lucide-react';
-import { PriceGraph } from './price-graph';
+import { ArrowRight, ChevronRight } from 'lucide-react';
 import { Reserves } from './reserves';
+import { ProgressBar } from './progress-bar';
+import { useState } from 'react';
+import { cn } from '../../../lib/utils';
+import { ExpandedDetails } from './expanded-details';
 
 const getValueView = (amount?: Amount, metadata?: Metadata) =>
   new ValueView({
@@ -54,10 +57,12 @@ export const DutchAuctionComponent = ({
   const input = getValueView(description.input?.amount, inputMetadata);
   const maxOutput = getValueView(description.maxOutput, outputMetadata);
   const minOutput = getValueView(description.minOutput, outputMetadata);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const seqNum = dutchAuction.state?.seq ?? 0n;
 
   return (
-    <div className='flex flex-col gap-8'>
-      <div className='flex items-center justify-between'>
+    <div className='flex flex-col gap-2'>
+      {/* <div className='flex items-center justify-between'>
         <div>
           <ValueViewComponent view={input} />
         </div>
@@ -74,21 +79,54 @@ export const DutchAuctionComponent = ({
             <ValueViewComponent view={minOutput} />
           </div>
         </div>
+      </div> */}
+
+      <div className='flex items-center gap-2'>
+        <button className='appearance-none' onClick={() => setIsExpanded(current => !current)}>
+          <div className={cn('transition-transform', isExpanded && 'rotate-90')}>
+            <ChevronRight size={16} />
+          </div>
+        </button>
+
+        <ProgressBar
+          fullSyncHeight={fullSyncHeight}
+          auction={description}
+          input={input}
+          inputMetadata={inputMetadata}
+          outputMetadata={outputMetadata}
+          seqNum={dutchAuction.state?.seq}
+        />
+
+        <div className='w-[85px] shrink-0'>
+          {seqNum <= 1n && (
+            <Button size='sm' variant='secondary' className='w-full'>
+              {seqNum === 0n ? 'End' : 'Claim'}
+            </Button>
+          )}
+        </div>
       </div>
 
-      <PriceGraph
-        auctionDescription={description}
-        inputMetadata={inputMetadata}
-        outputMetadata={outputMetadata}
-        fullSyncHeight={fullSyncHeight}
-      />
+      {isExpanded && (
+        <div className='flex gap-2 w-full'>
+          <div className='w-4 shrink-0' />
+
+          <ExpandedDetails
+            description={description}
+            inputMetadata={inputMetadata}
+            outputMetadata={outputMetadata}
+            fullSyncHeight={fullSyncHeight}
+          />
+
+          <div className='w-[85px] shrink-0' />
+        </div>
+      )}
 
       <Reserves
         dutchAuction={dutchAuction}
         inputMetadata={inputMetadata}
         outputMetadata={outputMetadata}
       />
-
+      {/*
       {buttonType === 'withdraw' && (
         <div className='self-end'>
           <Button variant='gradient' size='md' onClick={onClickButton}>
@@ -103,7 +141,7 @@ export const DutchAuctionComponent = ({
             End auction
           </Button>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

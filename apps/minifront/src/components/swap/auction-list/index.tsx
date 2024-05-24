@@ -1,4 +1,3 @@
-import { ViewBox } from '@penumbra-zone/ui/components/ui/tx/view/viewbox';
 import { AllSlices } from '../../../state';
 import { DutchAuctionComponent } from '@penumbra-zone/ui/components/ui/dutch-auction-component';
 import {
@@ -61,29 +60,24 @@ export const AuctionList = () => {
         {!auctionInfos.length && "You don't currently have any auctions running."}
 
         {auctionInfos.map(auctionInfo => (
-          <ViewBox
+          <DutchAuctionComponent
             key={bech32mAuctionId(auctionInfo.id)}
-            label='Dutch Auction'
-            visibleContent={
-              <DutchAuctionComponent
-                dutchAuction={auctionInfo.auction}
-                inputMetadata={getMetadata(
-                  metadataByAssetId,
-                  auctionInfo.auction.description?.input?.assetId,
-                )}
-                outputMetadata={getMetadata(
-                  metadataByAssetId,
-                  auctionInfo.auction.description?.outputId,
-                )}
-                fullSyncHeight={fullSyncHeight}
-                {...getButtonProps(
-                  auctionInfo.id,
-                  endAuction,
-                  withdraw,
-                  auctionInfo.auction.state?.seq,
-                )}
-              />
-            }
+            dutchAuction={auctionInfo.auction}
+            inputMetadata={getMetadata(
+              metadataByAssetId,
+              auctionInfo.auction.description?.input?.assetId,
+            )}
+            outputMetadata={getMetadata(
+              metadataByAssetId,
+              auctionInfo.auction.description?.outputId,
+            )}
+            fullSyncHeight={fullSyncHeight}
+            {...getButtonProps(
+              auctionInfo.id,
+              endAuction,
+              withdraw,
+              auctionInfo.auction.state?.seq,
+            )}
           />
         ))}
       </div>
