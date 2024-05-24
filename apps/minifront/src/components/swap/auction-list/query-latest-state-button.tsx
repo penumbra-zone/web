@@ -8,7 +8,7 @@ import { ReloadIcon } from '@radix-ui/react-icons';
 import { useStore } from '../../../state';
 
 export const QueryLatestStateButton = () => {
-  const loadAuctionInfos = useStore(state => state.dutchAuction.loadAuctionInfos);
+  const loadAuctionInfos = useStore(state => state.swap.dutchAuction.loadAuctionInfos);
   const handleClick = () => void loadAuctionInfos(true);
 
   return (

@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import plugin from 'tailwindcss/plugin';
 import tailwindCssAnimatePlugin from 'tailwindcss-animate';
 
 export default {
@@ -156,5 +157,15 @@ export default {
       },
     },
   },
-  plugins: [tailwindCssAnimatePlugin],
+  plugins: [
+    tailwindCssAnimatePlugin,
+
+    plugin(({ addUtilities }) => {
+      addUtilities({
+        '.grid-std-spacing': {
+          '@apply gap-6 md:gap-4 xl:gap-5': {},
+        },
+      });
+    }),
+  ],
 } satisfies Config;

@@ -3,14 +3,14 @@ import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { useLoaderData, useRevalidator } from 'react-router-dom';
 import { SwapLoaderResponse, UnclaimedSwapsWithMetadata } from './swap-loader';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
-import { useStore } from '../../../state';
-import { unclaimedSwapsSelector } from '../../../state/unclaimed-swaps';
+import { useStore } from '../../state';
+import { unclaimedSwapsSelector } from '../../state/unclaimed-swaps';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
 
 export const UnclaimedSwaps = () => {
-  const { unclaimedSwaps } = useLoaderData() as SwapLoaderResponse;
+  const unclaimedSwaps = useLoaderData() as SwapLoaderResponse;
 
   const sortedUnclaimedSwaps = unclaimedSwaps.sort(
     (a, b) => Number(b.swap.outputData?.height) - Number(a.swap.outputData?.height),
@@ -27,7 +27,7 @@ const _UnclaimedSwaps = ({ unclaimedSwaps }: { unclaimedSwaps: UnclaimedSwapsWit
   const { claimSwap, isInProgress } = useStore(unclaimedSwapsSelector);
 
   return (
-    <Card className='order-1 md:order-3 xl:order-1'>
+    <Card>
       <GradientHeader>Unclaimed Swaps</GradientHeader>
       <p className='text-gray-400'>
         Swaps on Penumbra are a two step process. The first transaction issues the request and the

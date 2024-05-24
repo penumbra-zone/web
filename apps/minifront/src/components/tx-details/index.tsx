@@ -35,7 +35,7 @@ export const TxDetails = () => {
   return (
     <FadeTransition className='flex min-h-[calc(100vh-122px)] flex-col items-stretch justify-start'>
       <RestrictMaxWidth>
-        <div className='relative grid gap-6 md:gap-4 lg:grid-cols-3 xl:gap-5'>
+        <div className='relative grid grid-std-spacing lg:grid-cols-3'>
           <Card gradient className='flex-1 p-5 md:p-4 lg:col-span-2 lg:row-span-2 xl:p-5'>
             <TxViewer txInfo={txInfo} hash={hash} />
           </Card>

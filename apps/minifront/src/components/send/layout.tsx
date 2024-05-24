@@ -12,7 +12,7 @@ export const SendLayout = () => {
 
   return (
     <RestrictMaxWidth>
-      <div className='grid gap-6 md:grid-cols-2 md:gap-4 xl:grid-cols-3 xl:gap-5'>
+      <div className='grid grid-std-spacing md:grid-cols-2 xl:grid-cols-3'>
         <div className='hidden xl:order-1 xl:block' />
         <Card
           gradient

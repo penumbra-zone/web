@@ -1,11 +1,11 @@
-import { useStore } from '../../../../../state';
+import { useStore } from '../../../../state';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { PriceImpact } from './price-impact';
 import { Trace } from './trace';
 import { Box } from '@penumbra-zone/ui/components/ui/box';
 
 export const SimulateSwapResult = () => {
-  const result = useStore(state => state.swap.simulateOutResult);
+  const result = useStore(state => state.swap.instantSwap.simulateSwapResult);
 
   if (!result) return null;
 
@@ -31,7 +31,7 @@ export const SimulateSwapResult = () => {
       {!!traces?.length && (
         <Box label='Routes'>
           <div className='flex flex-col gap-2 overflow-auto [scrollbar-width:thin]'>
-            <div className='inline-flex w-max flex-col gap-4'>
+            <div className='inline-flex w-max min-w-full flex-col gap-4'>
               {traces.map((trace, index) => (
                 <Trace key={index} trace={trace} metadataByAssetId={metadataByAssetId} />
               ))}

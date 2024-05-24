@@ -15,7 +15,7 @@ import { augmentToAsset, fromDisplayAmount } from '../components/ibc/ibc-in/asse
 import { cosmos, ibc } from 'osmo-query';
 import { chainRegistryClient } from '../fetchers/registry';
 import { tendermintClient } from '../clients';
-import { BLOCKS_PER_HOUR } from './dutch-auction/constants';
+import { BLOCKS_PER_HOUR } from './constants';
 import { currentTimePlusTwoDaysRounded } from './ibc-out';
 import { EncodeObject } from '@cosmjs/proto-signing';
 import { MsgTransfer } from 'osmo-query/ibc/applications/transfer/v1/tx';

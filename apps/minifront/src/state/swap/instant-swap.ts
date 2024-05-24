@@ -1,9 +1,6 @@
-import { AllSlices, SliceCreator } from '.';
-import {
-  BalancesResponse,
-  TransactionPlannerRequest,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { planBuildBroadcast } from './helpers';
+import { SliceCreator } from '..';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { planBuildBroadcast } from '../helpers';
 import {
   AssetId,
   Metadata,
@@ -11,7 +8,7 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { BigNumber } from 'bignumber.js';
-import { getAddressByIndex } from '../fetchers/address';
+import { getAddressByIndex } from '../../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import {
@@ -19,7 +16,7 @@ import {
   SwapExecution,
   SwapExecution_Trace,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { simulateClient, viewClient } from '../clients';
+import { simulateClient, viewClient } from '../../clients';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
@@ -32,8 +29,8 @@ import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { getAmountFromValue, getAssetIdFromValue } from '@penumbra-zone/getters/value';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { divideAmounts } from '@penumbra-zone/types/amount';
-import { amountMoreThanBalance } from './send';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
+import { SwapSlice } from '.';
 
 const getMetadataByAssetId = async (
   traces: SwapExecution_Trace[] = [],
@@ -65,50 +62,33 @@ export interface SimulateSwapResult {
   metadataByAssetId: Record<string, Metadata>;
 }
 
-export interface SwapSlice {
-  assetIn: BalancesResponse | undefined;
-  setAssetIn: (asset: BalancesResponse) => void;
-  amount: string;
-  setAmount: (amount: string) => void;
-  assetOut: Metadata | undefined;
-  setAssetOut: (metadata: Metadata) => void;
+interface Actions {
   initiateSwapTx: () => Promise<void>;
-  txInProgress: boolean;
   simulateSwap: () => Promise<void>;
-  simulateOutResult: SimulateSwapResult | undefined;
-  simulateOutLoading: boolean;
+  reset: VoidFunction;
 }
 
-export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
+interface State {
+  txInProgress: boolean;
+  simulateSwapResult?: SimulateSwapResult;
+  simulateSwapLoading: boolean;
+}
+
+export type InstantSwapSlice = Actions & State;
+
+const INITIAL_STATE: State = {
+  txInProgress: false,
+  simulateSwapLoading: false,
+  simulateSwapResult: undefined,
+};
+
+export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set, get) => {
   return {
-    assetIn: undefined,
-    setAssetIn: asset => {
-      set(({ swap }) => {
-        swap.assetIn = asset;
-        swap.simulateOutResult = undefined;
-      });
-    },
-    assetOut: undefined,
-    setAssetOut: metadata => {
-      set(({ swap }) => {
-        swap.assetOut = metadata;
-        swap.simulateOutResult = undefined;
-      });
-    },
-    amount: '',
-    setAmount: amount => {
-      set(({ swap }) => {
-        swap.amount = amount;
-        swap.simulateOutResult = undefined;
-      });
-    },
-    txInProgress: false,
-    simulateOutResult: undefined,
-    simulateOutLoading: false,
+    ...INITIAL_STATE,
     simulateSwap: async () => {
       try {
         set(({ swap }) => {
-          swap.simulateOutLoading = true;
+          swap.instantSwap.simulateSwapLoading = true;
         });
 
         const assetIn = get().swap.assetIn;
@@ -151,7 +131,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         const metadataByAssetId = await getMetadataByAssetId(res.output?.traces);
 
         set(({ swap }) => {
-          swap.simulateOutResult = {
+          swap.instantSwap.simulateSwapResult = {
             output,
             unfilled,
             priceImpact: calculatePriceImpact(res.output),
@@ -163,13 +143,13 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         errorToast(e, 'Error estimating swap').render();
       } finally {
         set(({ swap }) => {
-          swap.simulateOutLoading = false;
+          swap.instantSwap.simulateSwapLoading = false;
         });
       }
     },
     initiateSwapTx: async () => {
       set(state => {
-        state.swap.txInProgress = true;
+        state.swap.instantSwap.txInProgress = true;
       });
 
       try {
@@ -183,14 +163,26 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get) => {
         });
       } finally {
         set(state => {
-          state.swap.txInProgress = false;
+          state.swap.instantSwap.txInProgress = false;
         });
       }
+    },
+    reset: () => {
+      set(state => {
+        state.swap.instantSwap = {
+          ...state.swap.instantSwap,
+          ...INITIAL_STATE,
+        };
+      });
     },
   };
 };
 
-const assembleSwapRequest = async ({ assetIn, amount, assetOut }: SwapSlice) => {
+const assembleSwapRequest = async ({
+  assetIn,
+  amount,
+  assetOut,
+}: Pick<SwapSlice, 'assetIn' | 'assetOut' | 'amount'>) => {
   if (!assetIn) throw new Error('`assetIn` was undefined');
 
   const addressIndex = getAddressIndex(assetIn.accountAddress);
@@ -256,13 +248,3 @@ const getMatchingAmount = (values: Value[], toMatch: AssetId): Amount => {
 
   return match.amount;
 };
-
-export const swapValidationErrors = ({ swap }: AllSlices) => {
-  return {
-    assetInErr: !swap.assetIn || swap.assetIn.balanceView?.valueView.case === 'unknownAssetId',
-    assetOutErr: !swap.assetOut,
-    amountErr: (swap.assetIn && amountMoreThanBalance(swap.assetIn, swap.amount)) ?? false,
-  };
-};
-
-export const swapSelector = (state: AllSlices) => state.swap;

@@ -10,7 +10,7 @@ const mockViewClient = vi.hoisted(() => ({
   status: () => Promise.resolve({ fullSyncHeight: MOCK_START_HEIGHT }),
 }));
 
-vi.mock('../../clients', () => ({
+vi.mock('../../../clients', () => ({
   viewClient: mockViewClient,
 }));
 

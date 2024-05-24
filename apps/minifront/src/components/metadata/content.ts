@@ -39,10 +39,6 @@ export const metadata: Record<PagePath, PageMetadata> = {
     title: 'Penumbra | Swap',
     description: eduPanelContent[EduPanel.SWAP],
   },
-  [PagePath.SWAP_AUCTION]: {
-    title: 'Penumbra | Auction',
-    description: eduPanelContent[EduPanel.SWAP_AUCTION],
-  },
   [PagePath.STAKING]: {
     title: 'Penumbra | Staking',
     description: eduPanelContent[EduPanel.STAKING],

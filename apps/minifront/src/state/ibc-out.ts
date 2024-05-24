@@ -23,7 +23,7 @@ import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { Chain } from '@penumbra-labs/registry';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Channel } from '@buf/cosmos_ibc.bufbuild_es/ibc/core/channel/v1/channel_pb';
-import { BLOCKS_PER_HOUR } from './dutch-auction/constants';
+import { BLOCKS_PER_HOUR } from './constants';
 
 export interface IbcOutSlice {
   selection: BalancesResponse | undefined;
