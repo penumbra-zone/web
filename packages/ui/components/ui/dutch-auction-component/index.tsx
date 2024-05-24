@@ -3,7 +3,7 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { Button } from '../button';
 import { ChevronRight } from 'lucide-react';
 import { ProgressBar } from './progress-bar';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { cn } from '../../../lib/utils';
 import { ExpandedDetails } from './expanded-details';
 
@@ -38,23 +38,30 @@ export const DutchAuctionComponent = ({
   if (!description) return null;
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const rowId = useId();
 
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex items-center gap-2'>
-        <button className='appearance-none' onClick={() => setIsExpanded(current => !current)}>
+        <button
+          className='appearance-none flex items-center gap-2 w-full'
+          onClick={() => setIsExpanded(current => !current)}
+          aria-label={isExpanded ? 'Collapse this row' : 'Expand this row'}
+          aria-expanded={isExpanded}
+          id={rowId}
+        >
           <div className={cn('transition-transform', isExpanded && 'rotate-90')}>
             <ChevronRight size={16} />
           </div>
-        </button>
 
-        <ProgressBar
-          fullSyncHeight={fullSyncHeight}
-          auction={description}
-          inputMetadata={inputMetadata}
-          outputMetadata={outputMetadata}
-          seqNum={dutchAuction.state?.seq}
-        />
+          <ProgressBar
+            fullSyncHeight={fullSyncHeight}
+            auction={description}
+            inputMetadata={inputMetadata}
+            outputMetadata={outputMetadata}
+            seqNum={dutchAuction.state?.seq}
+          />
+        </button>
 
         <div className='w-[85px] shrink-0'>
           {!!buttonType && (
