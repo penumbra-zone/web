@@ -67,10 +67,10 @@ export const ProgressBar = ({
   const timeTillStart = getTimeTillStart(auction.startHeight, fullSyncHeight);
 
   return (
-    <div className='relative flex w-full items-center justify-between gap-4'>
+    <div className='relative flex grow items-center justify-between gap-4 overflow-hidden'>
       <ValueViewComponent view={input} size='sm' />
 
-      <div className='relative flex grow items-center'>
+      <div className='relative flex shrink grow items-center overflow-hidden'>
         {seqNum !== undefined && !auctionIsUpcoming && (
           <div className='absolute -translate-x-1/2' style={{ left: `${progress * 100}%` }}>
             <Indicator icon={auctionEnded ? 'checkmark' : 'arrow'} />
@@ -81,15 +81,15 @@ export const ProgressBar = ({
 
         {auctionIsUpcoming && (
           <>
-            <div className='flex items-center gap-2 text-xs text-light-brown group-hover:text-muted-foreground'>
-              <div className='flex items-center gap-1 truncate'>
+            <div className='flex shrink items-center gap-2 truncate text-xs text-light-brown group-hover:text-muted-foreground'>
+              <div className='flex items-center gap-1'>
                 <ClockIcon size={12} />
-                <span className='pt-[3px]'>starts in ~{timeTillStart}</span>
+                <span className='truncate pt-[3px]'>starts in ~{timeTillStart}</span>
               </div>
 
-              <div className='flex items-center gap-1 truncate'>
+              <div className='flex items-center gap-1'>
                 <HourglassIcon size={12} />
-                <span className='pt-[3px]'>lasts ~{totalTime}</span>
+                <span className='truncate pt-[3px]'>lasts ~{totalTime}</span>
               </div>
             </div>
 
@@ -102,7 +102,7 @@ export const ProgressBar = ({
             <div className='flex items-center gap-1 truncate text-xs text-light-brown group-hover:text-muted-foreground'>
               <HourglassIcon size={12} />
 
-              <span className='pt-[3px]'>
+              <span className='truncate pt-[3px]'>
                 ~{remainingTime && <>{remainingTime} of</>} ~{totalTime} remaining
               </span>
             </div>
