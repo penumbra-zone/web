@@ -34,17 +34,17 @@ export const DutchAuctionComponent = ({
   buttonType,
   onClickButton,
 }: Props) => {
-  const { description } = dutchAuction;
-  if (!description) return null;
-
   const [isExpanded, setIsExpanded] = useState(false);
   const rowId = useId();
+
+  const { description } = dutchAuction;
+  if (!description) return null;
 
   return (
     <div className='flex flex-col gap-2'>
       <div className='flex items-center gap-2'>
         <button
-          className='appearance-none flex items-center gap-2 w-full'
+          className='flex w-full appearance-none items-center gap-2'
           onClick={() => setIsExpanded(current => !current)}
           aria-label={isExpanded ? 'Collapse this row' : 'Expand this row'}
           aria-expanded={isExpanded}
@@ -73,7 +73,7 @@ export const DutchAuctionComponent = ({
       </div>
 
       {isExpanded && (
-        <div className='flex gap-2 w-full'>
+        <div className='flex w-full gap-2'>
           <div className='w-4 shrink-0' />
 
           <ExpandedDetails
