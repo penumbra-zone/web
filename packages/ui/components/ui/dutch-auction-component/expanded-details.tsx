@@ -1,5 +1,5 @@
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
+import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { formatAmount } from '@penumbra-zone/types/amount';
 import { ReactNode } from 'react';
 import { Separator } from '../separator';
@@ -8,19 +8,24 @@ import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { cn } from '../../../lib/utils';
 
 export const ExpandedDetails = ({
-  description,
+  dutchAuction,
   inputMetadata,
   outputMetadata,
   fullSyncHeight,
 }: {
-  description: DutchAuctionDescription;
+  dutchAuction: DutchAuction;
   inputMetadata?: Metadata;
   outputMetadata?: Metadata;
   fullSyncHeight?: bigint;
 }) => {
+  const { description } = dutchAuction;
+  if (!description) return null;
+
   const maxPrice = getPrice(description, inputMetadata, description.startHeight);
   const currentPrice = getPrice(description, inputMetadata, fullSyncHeight);
   const minPrice = getPrice(description, inputMetadata, description.endHeight);
+  const inputReservesAmount = dutchAuction.state?.inputReserves;
+  const outputReservesAmount = dutchAuction.state?.outputReserves;
 
   const showCurrent =
     !!fullSyncHeight &&
@@ -28,6 +33,7 @@ export const ExpandedDetails = ({
     fullSyncHeight >= description.startHeight &&
     fullSyncHeight <= description.endHeight;
 
+  const inputExponent = getDisplayDenomExponent(inputMetadata);
   const outputExponent = getDisplayDenomExponent(outputMetadata);
 
   return (
@@ -66,6 +72,20 @@ export const ExpandedDetails = ({
               {outputMetadata.symbol} / {inputMetadata?.symbol} @ {description.endHeight.toString()}
             </span>
           )}
+        </Row>
+      )}
+
+      {inputReservesAmount && (
+        <Row label='Input reserves'>
+          {formatAmount(inputReservesAmount, inputExponent)}
+          {inputMetadata && <span className='font-mono text-xs'> {inputMetadata.symbol}</span>}
+        </Row>
+      )}
+
+      {outputReservesAmount && (
+        <Row label='Output reserves'>
+          {formatAmount(outputReservesAmount, outputExponent)}
+          {outputMetadata && <span className='font-mono text-xs'> {outputMetadata.symbol}</span>}
         </Row>
       )}
     </div>

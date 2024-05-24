@@ -7,19 +7,30 @@ import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es
 import { Separator } from '../../separator';
 import { getProgress } from '../get-progress';
 import { Indicator } from './indicator';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+
+const getValueView = (amount?: Amount, metadata?: Metadata) =>
+  new ValueView({
+    valueView: {
+      case: 'knownAssetId',
+      value: {
+        amount,
+        metadata,
+      },
+    },
+  });
 
 const getEmptyValueView = (metadata: Metadata) =>
   new ValueView({ valueView: { case: 'knownAssetId', value: { metadata } } });
 
 export const ProgressBar = ({
   auction,
-  input,
+  inputMetadata,
   outputMetadata,
   fullSyncHeight,
   seqNum,
 }: {
   auction: DutchAuctionDescription;
-  input: ValueView;
   inputMetadata?: Metadata;
   outputMetadata?: Metadata;
   fullSyncHeight?: bigint;
@@ -28,6 +39,7 @@ export const ProgressBar = ({
   const progress = getProgress(auction.startHeight, auction.endHeight, fullSyncHeight);
   const auctionEnded =
     (!!seqNum && seqNum > 0n) || (!!fullSyncHeight && fullSyncHeight >= auction.endHeight);
+  const input = getValueView(auction.input?.amount, inputMetadata);
 
   return (
     <div className='relative flex w-full items-center justify-between gap-4'>
