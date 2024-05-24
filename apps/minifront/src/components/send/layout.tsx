@@ -6,14 +6,13 @@ import { Tabs } from '../shared/tabs';
 import { Outlet } from 'react-router-dom';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
 import { RestrictMaxWidth } from '../shared/restrict-max-width';
-import { GRID_LAYOUT_GAP_CLASSES } from '../constants';
 
 export const SendLayout = () => {
   const pathname = usePagePath<SendTab>();
 
   return (
     <RestrictMaxWidth>
-      <div className={`grid md:grid-cols-2 xl:grid-cols-3 ${GRID_LAYOUT_GAP_CLASSES}`}>
+      <div className='grid grid-std-spacing md:grid-cols-2 xl:grid-cols-3'>
         <div className='hidden xl:order-1 xl:block' />
         <Card
           gradient

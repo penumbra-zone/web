@@ -8,7 +8,6 @@ import { getTxInfoByHash } from '../../fetchers/tx-info-by-hash';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 import { RestrictMaxWidth } from '../shared/restrict-max-width';
-import { GRID_LAYOUT_GAP_CLASSES } from '../constants';
 
 export interface TxDetailsLoaderResult {
   hash: string;
@@ -36,7 +35,7 @@ export const TxDetails = () => {
   return (
     <FadeTransition className='flex min-h-[calc(100vh-122px)] flex-col items-stretch justify-start'>
       <RestrictMaxWidth>
-        <div className={`relative grid lg:grid-cols-3 ${GRID_LAYOUT_GAP_CLASSES}`}>
+        <div className='relative grid grid-std-spacing lg:grid-cols-3'>
           <Card gradient className='flex-1 p-5 md:p-4 lg:col-span-2 lg:row-span-2 xl:p-5'>
             <TxViewer txInfo={txInfo} hash={hash} />
           </Card>

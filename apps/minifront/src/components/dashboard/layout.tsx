@@ -6,14 +6,13 @@ import { Tabs } from '../shared/tabs';
 import { usePagePath } from '../../fetchers/page-path';
 import { DashboardTab } from './types';
 import { RestrictMaxWidth } from '../shared/restrict-max-width';
-import { GRID_LAYOUT_GAP_CLASSES } from '../constants';
 
 export const DashboardLayout = () => {
   const pathname = usePagePath<DashboardTab>();
 
   return (
     <RestrictMaxWidth>
-      <div className={`grid lg:grid-cols-3 ${GRID_LAYOUT_GAP_CLASSES}`}>
+      <div className='grid grid-std-spacing lg:grid-cols-3'>
         <Card
           gradient
           className='order-2 flex flex-1 flex-col p-5 md:p-4 lg:order-1 lg:col-span-2 lg:row-span-2 xl:p-5'
