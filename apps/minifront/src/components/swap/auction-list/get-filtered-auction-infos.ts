@@ -18,6 +18,15 @@ const haveEnoughDataToDetermineIfAuctionMatchesFilter = (
   return !!auctionInfo.auction.description && !!auctionInfo.auction.state;
 };
 
+const auctionIsActive = (auctionInfo: FilterMatchableAuctionInfo, fullSyncHeight: bigint) =>
+  auctionInfo.auction.state.seq === 0n &&
+  fullSyncHeight >= auctionInfo.auction.description.startHeight &&
+  fullSyncHeight <= auctionInfo.auction.description.endHeight;
+
+const auctionIsUpcoming = (auctionInfo: FilterMatchableAuctionInfo, fullSyncHeight: bigint) =>
+  auctionInfo.auction.state.seq === 0n &&
+  fullSyncHeight < auctionInfo.auction.description.startHeight;
+
 export const getFilteredAuctionInfos = (
   auctionInfos: AuctionInfo[],
   filter: Filter,
@@ -32,12 +41,3 @@ export const getFilteredAuctionInfos = (
     return auctionIsUpcoming(auctionInfo, fullSyncHeight);
   });
 };
-
-const auctionIsActive = (auctionInfo: FilterMatchableAuctionInfo, fullSyncHeight: bigint) =>
-  auctionInfo.auction.state.seq === 0n &&
-  fullSyncHeight >= auctionInfo.auction.description.startHeight &&
-  fullSyncHeight <= auctionInfo.auction.description.endHeight;
-
-const auctionIsUpcoming = (auctionInfo: FilterMatchableAuctionInfo, fullSyncHeight: bigint) =>
-  auctionInfo.auction.state.seq === 0n &&
-  fullSyncHeight < auctionInfo.auction.description.startHeight;
