@@ -6,6 +6,7 @@ import { ProgressBar } from './progress-bar';
 import { useId, useState } from 'react';
 import { cn } from '../../../lib/utils';
 import { ExpandedDetails } from './expanded-details';
+import { motion } from 'framer-motion';
 
 interface BaseProps {
   dutchAuction: DutchAuction;
@@ -41,7 +42,7 @@ export const DutchAuctionComponent = ({
   if (!description) return null;
 
   return (
-    <div className='flex flex-col gap-2'>
+    <motion.div className='flex flex-col gap-2 bg-charcoal' layout='position'>
       <div className='flex items-center gap-2'>
         <button
           className='group flex w-full appearance-none items-center gap-2 overflow-hidden'
@@ -86,6 +87,6 @@ export const DutchAuctionComponent = ({
           <div className='w-[85px] shrink-0' />
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
