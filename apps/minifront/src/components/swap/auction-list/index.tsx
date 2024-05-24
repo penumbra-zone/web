@@ -11,6 +11,9 @@ import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header'
 import { QueryLatestStateButton } from './query-latest-state-button';
 import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
+import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picker';
+import { useMemo } from 'react';
+import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
 
 const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: AssetId) => {
   let metadata: Metadata | undefined;
@@ -27,6 +30,8 @@ const auctionListSelector = (state: AllSlices) => ({
   fullSyncHeight: state.status.fullSyncHeight,
   endAuction: state.swap.dutchAuction.endAuction,
   withdraw: state.swap.dutchAuction.withdraw,
+  filter: state.swap.dutchAuction.filter,
+  setFilter: state.swap.dutchAuction.setFilter,
 });
 
 const getButtonProps = (
@@ -46,20 +51,50 @@ const getButtonProps = (
 };
 
 export const AuctionList = () => {
-  const { auctionInfos, metadataByAssetId, fullSyncHeight, endAuction, withdraw } =
-    useStoreShallow(auctionListSelector);
+  const {
+    auctionInfos,
+    metadataByAssetId,
+    fullSyncHeight,
+    endAuction,
+    withdraw,
+    filter,
+    setFilter,
+  } = useStoreShallow(auctionListSelector);
+
+  const filteredAuctionInfos = useMemo(
+    () => getFilteredAuctionInfos(auctionInfos, filter, fullSyncHeight),
+    [auctionInfos, filter, fullSyncHeight],
+  );
 
   return (
     <Card>
-      <div className='mb-2 flex items-center justify-between'>
+      <div className='mb-4 flex items-center justify-between'>
         <GradientHeader>My Auctions</GradientHeader>
-        {!!auctionInfos.length && <QueryLatestStateButton />}
+
+        <div className='flex items-center gap-2'>
+          {!!filteredAuctionInfos.length && <QueryLatestStateButton />}
+
+          <SegmentedPicker
+            value={filter}
+            onChange={setFilter}
+            options={[
+              { label: 'Active', value: 'active' },
+              { label: 'All', value: 'all' },
+            ]}
+          />
+        </div>
       </div>
 
       <div className='flex flex-col gap-2'>
-        {!auctionInfos.length && "You don't currently have any auctions running."}
+        {!filteredAuctionInfos.length &&
+          filter === 'all' &&
+          "You don't currently have any auctions."}
 
-        {auctionInfos.map(auctionInfo => (
+        {!filteredAuctionInfos.length &&
+          filter === 'active' &&
+          "You don't currently have any active auctions."}
+
+        {filteredAuctionInfos.map(auctionInfo => (
           <DutchAuctionComponent
             key={bech32mAuctionId(auctionInfo.id)}
             dutchAuction={auctionInfo.auction}
