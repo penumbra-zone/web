@@ -169,6 +169,9 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
         // preserve loaded auctions and metadata:
         auctionInfos: swap.dutchAuction.auctionInfos,
         metadataByAssetId: swap.dutchAuction.metadataByAssetId,
+
+        // preserve filter:
+        filter: swap.dutchAuction.filter,
       };
     }),
 
