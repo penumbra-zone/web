@@ -51,19 +51,19 @@ const INITIAL_STATE: State = {
 export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (set, get) => ({
   ...INITIAL_STATE,
   setMinOutput: minOutput => {
-    set(state => {
-      state.swap.dutchAuction.minOutput = minOutput;
+    set(({ swap }) => {
+      swap.dutchAuction.minOutput = minOutput;
     });
   },
   setMaxOutput: maxOutput => {
-    set(state => {
-      state.swap.dutchAuction.maxOutput = maxOutput;
+    set(({ swap }) => {
+      swap.dutchAuction.maxOutput = maxOutput;
     });
   },
 
   onSubmit: async () => {
-    set(state => {
-      state.swap.dutchAuction.txInProgress = true;
+    set(({ swap }) => {
+      swap.dutchAuction.txInProgress = true;
     });
 
     try {
@@ -89,9 +89,9 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     get().swap.dutchAuction.loadAuctionInfosAbortController?.abort();
     const newAbortController = new AbortController();
 
-    set(state => {
-      state.swap.dutchAuction.auctionInfos = [];
-      state.swap.dutchAuction.loadAuctionInfosAbortController = newAbortController;
+    set(({ swap }) => {
+      swap.dutchAuction.auctionInfos = [];
+      swap.dutchAuction.loadAuctionInfosAbortController = newAbortController;
     });
 
     /** @todo: Sort by... something? */
@@ -129,8 +129,8 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     const { denomMetadata } = await viewClient.assetMetadataById({ assetId });
 
     if (denomMetadata) {
-      set(state => {
-        state.swap.dutchAuction.metadataByAssetId[bech32mAssetId(assetId)] = denomMetadata;
+      set(({ swap }) => {
+        swap.dutchAuction.metadataByAssetId[bech32mAssetId(assetId)] = denomMetadata;
       });
     }
   },
@@ -150,14 +150,14 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   },
 
   reset: () =>
-    set(state => {
-      state.swap.dutchAuction = {
-        ...state.swap.dutchAuction,
+    set(({ swap }) => {
+      swap.dutchAuction = {
+        ...swap.dutchAuction,
         ...INITIAL_STATE,
 
         // preserve loaded auctions and metadata:
-        auctionInfos: state.swap.dutchAuction.auctionInfos,
-        metadataByAssetId: state.swap.dutchAuction.metadataByAssetId,
+        auctionInfos: swap.dutchAuction.auctionInfos,
+        metadataByAssetId: swap.dutchAuction.metadataByAssetId,
       };
     }),
 });
