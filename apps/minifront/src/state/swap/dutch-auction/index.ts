@@ -18,7 +18,7 @@ export interface AuctionInfo {
   auction: DutchAuction;
 }
 
-export type Filter = 'active' | 'all';
+export type Filter = 'active' | 'upcoming' | 'all';
 
 const byStartHeightDescending = (a: AuctionInfo, b: AuctionInfo) => {
   if (!a.auction.description?.startHeight || !b.auction.description?.startHeight) return 0;

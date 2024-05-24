@@ -1,23 +1,43 @@
 import { AuctionInfo, Filter } from '../../../state/swap/dutch-auction';
 
+type FilterMatchableAuctionInfo = AuctionInfo & {
+  auction: {
+    description: {
+      startHeight: bigint;
+      endHeight: bigint;
+    };
+    state: {
+      seq: bigint;
+    };
+  };
+};
+
+const haveEnoughDataToDetermineIfAuctionMatchesFilter = (
+  auctionInfo: AuctionInfo,
+): auctionInfo is FilterMatchableAuctionInfo => {
+  return !!auctionInfo.auction.description && !!auctionInfo.auction.state;
+};
+
 export const getFilteredAuctionInfos = (
   auctionInfos: AuctionInfo[],
   filter: Filter,
   fullSyncHeight?: bigint,
-): AuctionInfo[] =>
-  filter === 'all'
-    ? auctionInfos
-    : auctionInfos.filter(auctionInfo => {
-        if (!fullSyncHeight) return true;
-        if (
-          !auctionInfo.auction.description?.startHeight ||
-          !auctionInfo.auction.description.endHeight
-        )
-          return false;
+): AuctionInfo[] => {
+  if (filter === 'all') return auctionInfos;
 
-        return (
-          auctionInfo.auction.state?.seq === 0n &&
-          fullSyncHeight >= auctionInfo.auction.description.startHeight &&
-          fullSyncHeight <= auctionInfo.auction.description.endHeight
-        );
-      });
+  return auctionInfos.filter(auctionInfo => {
+    if (!fullSyncHeight) return false;
+    if (!haveEnoughDataToDetermineIfAuctionMatchesFilter(auctionInfo)) return false;
+    if (filter === 'active') return auctionIsActive(auctionInfo, fullSyncHeight);
+    return auctionIsUpcoming(auctionInfo, fullSyncHeight);
+  });
+};
+
+const auctionIsActive = (auctionInfo: FilterMatchableAuctionInfo, fullSyncHeight: bigint) =>
+  auctionInfo.auction.state.seq === 0n &&
+  fullSyncHeight >= auctionInfo.auction.description.startHeight &&
+  fullSyncHeight <= auctionInfo.auction.description.endHeight;
+
+const auctionIsUpcoming = (auctionInfo: FilterMatchableAuctionInfo, fullSyncHeight: bigint) =>
+  auctionInfo.auction.state.seq === 0n &&
+  fullSyncHeight < auctionInfo.auction.description.startHeight;

@@ -79,6 +79,7 @@ export const AuctionList = () => {
             onChange={setFilter}
             options={[
               { label: 'Active', value: 'active' },
+              { label: 'Upcoming', value: 'upcoming' },
               { label: 'All', value: 'all' },
             ]}
           />

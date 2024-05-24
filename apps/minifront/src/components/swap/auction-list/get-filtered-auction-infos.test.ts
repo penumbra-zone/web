@@ -108,5 +108,39 @@ describe('getFilteredAuctionInfos()', () => {
         MOCK_AUCTION_INFO_4,
       );
     });
+
+    it('filters out everything if `fullSyncHeight` is undefined', () => {
+      expect(getFilteredAuctionInfos(AUCTION_INFOS, 'active', undefined)).toEqual([]);
+    });
+  });
+
+  describe('when the `filter` is `upcoming`', () => {
+    it('filters out active auctions', () => {
+      expect(
+        getFilteredAuctionInfos(AUCTION_INFOS, 'upcoming', MOCK_FULL_SYNC_HEIGHT),
+      ).not.toContain(MOCK_AUCTION_INFO_1);
+    });
+
+    it('filters out auctions with a nonzero `seq`', () => {
+      expect(
+        getFilteredAuctionInfos(AUCTION_INFOS, 'upcoming', MOCK_FULL_SYNC_HEIGHT),
+      ).not.toContain(MOCK_AUCTION_INFO_2);
+    });
+
+    it('filters out auctions that end before `fullSyncHeight`', () => {
+      expect(
+        getFilteredAuctionInfos(AUCTION_INFOS, 'upcoming', MOCK_FULL_SYNC_HEIGHT),
+      ).not.toContain(MOCK_AUCTION_INFO_3);
+    });
+
+    it('includes auctions that start after `fullSyncHeight`', () => {
+      expect(getFilteredAuctionInfos(AUCTION_INFOS, 'upcoming', MOCK_FULL_SYNC_HEIGHT)).toContain(
+        MOCK_AUCTION_INFO_4,
+      );
+    });
+
+    it('filters out everything if `fullSyncHeight` is undefined', () => {
+      expect(getFilteredAuctionInfos(AUCTION_INFOS, 'upcoming', undefined)).toEqual([]);
+    });
   });
 });
