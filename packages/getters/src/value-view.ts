@@ -40,7 +40,11 @@ export const getValidatorIdentityKeyFromValueView = getValidatorInfoFromValueVie
   getIdentityKeyFromValidatorInfo,
 );
 
-export const getDisplayDenomExponentFromValueView = getMetadata.pipe(getDisplayDenomExponent);
+export const getDisplayDenomExponentFromValueView = createGetter((valueView?: ValueView) =>
+  valueView?.valueView.case === 'knownAssetId'
+    ? getDisplayDenomExponent.optional()(valueView.valueView.value.metadata)
+    : undefined,
+);
 
 export const getAssetIdFromValueView = createGetter((v?: ValueView) => {
   switch (v?.valueView.case) {
@@ -57,7 +61,10 @@ export const getAmount = createGetter(
   (valueView?: ValueView) => valueView?.valueView.value?.amount,
 );
 
-export const getSymbolFromValueView = getMetadata.pipe(getSymbol);
+export const getSymbolFromValueView = createGetter((valueView?: ValueView) => {
+  const metadata = getMetadata.optional()(valueView);
+  return getSymbol.optional()(metadata);
+});
 
 export const getDisplayDenomFromView = createGetter((view?: ValueView) => {
   if (view?.valueView.case === 'unknownAssetId') {
