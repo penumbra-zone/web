@@ -19,6 +19,20 @@ const getRoundedClasses = (index: number, optionsLength: number, size: 'md' | 'l
     index === optionsLength - 1 && size === 'lg' && 'rounded-r-lg',
   );
 
+const ActiveSegmentIndicator = ({
+  layoutId,
+  roundedClasses,
+}: {
+  layoutId: string;
+  roundedClasses: string;
+}) => (
+  <motion.div
+    layout
+    layoutId={layoutId}
+    className={cn('absolute inset-0 z-10 bg-teal', roundedClasses)}
+  />
+);
+
 /**
  * Renders a segmented picker where only one option can be selected at a time.
  * Functionally equivalent to a `<select>` element or a set of radio buttons,
@@ -51,6 +65,8 @@ export const SegmentedPicker = <ValueType extends { toString: () => string }>({
   grow?: boolean;
   size?: 'md' | 'lg';
 }) => {
+  // Used by framer-motion to tie the active segment indicator together across
+  // all segments.
   const layoutId = useId();
 
   return (
@@ -71,16 +87,12 @@ export const SegmentedPicker = <ValueType extends { toString: () => string }>({
           )}
         >
           {value === option.value && (
-            <motion.div
-              layout
+            <ActiveSegmentIndicator
               layoutId={layoutId}
-              className={cn(
-                'absolute inset-0 z-10 bg-teal',
-                getRoundedClasses(index, options.length, size),
-                index === options.length - 1 && size === 'lg' && 'rounded-r-lg',
-              )}
+              roundedClasses={getRoundedClasses(index, options.length, size)}
             />
           )}
+
           <div className='absolute inset-0 z-20 flex items-center justify-center'>
             {option.label}
           </div>
