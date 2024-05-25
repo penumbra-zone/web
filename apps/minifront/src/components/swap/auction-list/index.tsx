@@ -17,20 +17,19 @@ import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
 import { LayoutGroup } from 'framer-motion';
 import { AuctionInfo, Filter } from '../../../state/swap/dutch-auction';
 
-const byStartHeightAscending = (a: AuctionInfo, b: AuctionInfo) => {
-  if (!a.auction.description?.startHeight || !b.auction.description?.startHeight) return 0;
-  return Number(a.auction.description.startHeight - b.auction.description.startHeight);
-};
-
-const byStartHeightDescending = (a: AuctionInfo, b: AuctionInfo) => {
-  if (!a.auction.description?.startHeight || !b.auction.description?.startHeight) return 0;
-  return Number(b.auction.description.startHeight - a.auction.description.startHeight);
-};
+const byStartHeight =
+  (direction: 'ascending' | 'descending') => (a: AuctionInfo, b: AuctionInfo) => {
+    if (!a.auction.description?.startHeight || !b.auction.description?.startHeight) return 0;
+    if (direction === 'ascending') {
+      return Number(a.auction.description.startHeight - b.auction.description.startHeight);
+    }
+    return Number(b.auction.description.startHeight - a.auction.description.startHeight);
+  };
 
 const SORT_FUNCTIONS: Record<Filter, (a: AuctionInfo, b: AuctionInfo) => number> = {
-  all: byStartHeightAscending,
-  active: byStartHeightDescending,
-  upcoming: byStartHeightAscending,
+  all: byStartHeight('ascending'),
+  active: byStartHeight('descending'),
+  upcoming: byStartHeight('ascending'),
 };
 
 const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: AssetId) => {
