@@ -5,6 +5,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { cn } from '../../lib/utils';
 import { cva, VariantProps } from 'class-variance-authority';
+import { motion } from 'framer-motion';
 
 /**
  * You can use a `<Dialog />` in two ways.
@@ -83,7 +84,6 @@ const dialogContentVariants = cva(
     '-translate-y-1/2',
     'gap-4',
     'rounded-lg',
-    'bg-card-radial',
     'shadow-lg',
     'duration-200',
     'data-[state=open]:animate-in',
@@ -114,16 +114,19 @@ const dialogContentVariants = cva(
 );
 interface DialogContentProps extends VariantProps<typeof dialogContentVariants> {
   children?: React.ReactNode;
+  layoutId?: string;
 }
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
->(({ children, size }, ref) => (
+>(({ children, size, layoutId }, ref) => (
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content ref={ref} className={cn(dialogContentVariants({ size }))}>
-      {children}
+      <motion.div layout layoutId={layoutId} className='bg-card-radial'>
+        {children}
+      </motion.div>
     </DialogPrimitive.Content>
   </DialogPortal>
 ));
