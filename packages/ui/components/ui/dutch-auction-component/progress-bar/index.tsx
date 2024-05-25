@@ -1,46 +1,17 @@
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '../../tx/view/value';
 import { DutchAuctionDescription } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { Separator } from '../../separator';
 import { getProgress } from '../get-progress';
 import { Indicator } from './indicator';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { ClockIcon, HourglassIcon } from 'lucide-react';
-import { getHumanReadableInterval } from './get-human-readable-interval';
-
-const APPROX_BLOCK_DURATION_SEC = 5n;
-
-const getValueView = (amount?: Amount, metadata?: Metadata) =>
-  new ValueView({
-    valueView: {
-      case: 'knownAssetId',
-      value: {
-        amount,
-        metadata,
-      },
-    },
-  });
-
-const getEmptyValueView = (metadata: Metadata) =>
-  new ValueView({ valueView: { case: 'knownAssetId', value: { metadata } } });
-
-const getTotalTime = (auction: DutchAuctionDescription) =>
-  getHumanReadableInterval(
-    Number((auction.endHeight - auction.startHeight) * APPROX_BLOCK_DURATION_SEC),
-  );
-
-const getRemainingTime = (endHeight: bigint, fullSyncHeight?: bigint): string | undefined =>
-  fullSyncHeight
-    ? getHumanReadableInterval(Number((endHeight - fullSyncHeight) * APPROX_BLOCK_DURATION_SEC))
-    : undefined;
-
-const getTimeTillStart = (startHeight: bigint, fullSyncHeight?: bigint): string | undefined =>
-  fullSyncHeight
-    ? getHumanReadableInterval(Number((startHeight - fullSyncHeight) * APPROX_BLOCK_DURATION_SEC))
-    : undefined;
+import {
+  getEmptyValueView,
+  getRemainingTime,
+  getTimeTillStart,
+  getTotalTime,
+  getValueView,
+} from './helpers';
 
 export const ProgressBar = ({
   auction,
@@ -60,6 +31,10 @@ export const ProgressBar = ({
   const auctionEnded =
     (!!seqNum && seqNum > 0n) || (!!fullSyncHeight && fullSyncHeight >= auction.endHeight);
   const auctionIsUpcoming = !!fullSyncHeight && fullSyncHeight < auction.startHeight;
+  const auctionIsInProgress =
+    !!fullSyncHeight &&
+    fullSyncHeight >= auction.startHeight &&
+    fullSyncHeight <= auction.endHeight;
 
   const input = getValueView(auction.input?.amount, inputMetadata);
   const totalTime = getTotalTime(auction);
@@ -97,7 +72,7 @@ export const ProgressBar = ({
           </>
         )}
 
-        {!auctionIsUpcoming && !auctionEnded && (
+        {auctionIsInProgress && (
           <>
             <div className='flex items-center gap-1 truncate text-xs text-light-brown group-hover:text-muted-foreground'>
               <HourglassIcon size={12} />
