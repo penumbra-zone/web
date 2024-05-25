@@ -82,9 +82,7 @@ export const AuctionList = () => {
           filter === 'all' &&
           "You don't currently have any auctions."}
 
-        {!filteredAuctionInfos.length &&
-          filter === 'active' &&
-          "You don't currently have any active auctions."}
+        {!filteredAuctionInfos.length && `You don't currently have any ${filter} auctions.`}
 
         <LayoutGroup>
           {filteredAuctionInfos.map(auctionInfo => (
