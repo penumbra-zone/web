@@ -83,6 +83,17 @@ export const viewActionFromEmptyPerspective = (action: Action): ActionView | und
       return new ActionView({
         actionView: action.action,
       });
+    case 'actionDutchAuctionSchedule':
+      return new ActionView({
+        actionView: {
+          case: 'actionDutchAuctionSchedule',
+          value: {
+            action: action.action.value,
+          },
+        },
+      });
+    // case 'actionDutchAuctionEnd':
+    // case 'actionDutchAuctionWithdraw':
     default:
       // TODO: fill in other actions. most actions don't have views (they are their own view) so they can be passed through.
       return undefined;

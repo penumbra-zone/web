@@ -43,22 +43,18 @@ export const ValueViewComponent = ({
     );
   }
 
-  if (view.valueView.case === 'unknownAssetId') {
-    const { amount = new Amount() } = view.valueView.value;
-    const formattedAmount = formatAmount(amount);
-    const encodedAssetId = getDisplayDenomFromView(view);
-    return (
-      <ValueComponent
-        formattedAmount={formattedAmount}
-        symbol={encodedAssetId}
-        variant={variant}
-        showIcon={showIcon}
-        showValue={showValue}
-        showDenom={showDenom}
-        size={size}
-      />
-    );
-  }
-
-  return <></>;
+  const { amount = new Amount() } = view.valueView.value ?? {};
+  const formattedAmount = formatAmount(amount);
+  const encodedAssetId = getDisplayDenomFromView(view);
+  return (
+    <ValueComponent
+      formattedAmount={formattedAmount}
+      symbol={encodedAssetId}
+      variant={variant}
+      showIcon={showIcon}
+      showValue={showValue}
+      showDenom={showDenom}
+      size={size}
+    />
+  );
 };
