@@ -1,22 +1,8 @@
 import { Code, ConnectError } from '@connectrpc/connect';
-import { approveOrigin, originAlreadyApproved } from './approve-origin';
-import { PraxConnection } from './message/prax';
+import { approveOrigin } from '../approve-origin';
+import { PraxConnection } from '../message/prax';
 import { JsonValue } from '@bufbuild/protobuf';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
-
-// trigger injected-connection-port to init when a known page is loaded.
-chrome.tabs.onUpdated.addListener(
-  (tabId, { status, discarded }, { url }) =>
-    void (async () => {
-      if (
-        status === 'complete' &&
-        !discarded &&
-        url?.startsWith('https://') &&
-        (await originAlreadyApproved(url))
-      )
-        void chrome.tabs.sendMessage(tabId, PraxConnection.Init);
-    })(),
-);
 
 // listen for page connection requests.
 // this is the only message we handle from an unapproved content script.
