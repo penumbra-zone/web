@@ -72,7 +72,7 @@ export const ProgressBar = ({
 
       <div className='relative flex min-h-4 shrink grow items-center overflow-hidden'>
         {seqNum !== undefined && !auctionIsUpcoming && (
-          <div className='absolute' style={{ left: `calc(${progress * 100}% - 16px)` }}>
+          <div className='absolute' style={{ left: `max(${progress * 100}% - 16px, 0px)` }}>
             <Indicator icon={auctionEnded ? 'checkmark' : 'arrow'} />
           </div>
         )}
