@@ -3,7 +3,7 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { Button } from '../button';
 import { ChevronRight } from 'lucide-react';
 import { ProgressBar } from './progress-bar';
-import { useId, useState } from 'react';
+import { useState } from 'react';
 import { cn } from '../../../lib/utils';
 import { ExpandedDetails } from './expanded-details';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -43,7 +43,6 @@ export const DutchAuctionComponent = ({
   renderButtonPlaceholder = false,
 }: Props) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const rowId = useId();
 
   const { description } = dutchAuction;
   if (!description) return null;
@@ -56,7 +55,6 @@ export const DutchAuctionComponent = ({
           onClick={() => setIsExpanded(current => !current)}
           aria-label={isExpanded ? 'Collapse this row' : 'Expand this row'}
           aria-expanded={isExpanded}
-          id={rowId}
         >
           <div className={cn('transition-transform', isExpanded && 'rotate-90')}>
             <ChevronRight size={16} />
