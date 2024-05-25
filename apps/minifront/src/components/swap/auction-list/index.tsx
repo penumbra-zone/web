@@ -117,25 +117,32 @@ export const AuctionList = () => {
 
         <LayoutGroup>
           {filteredAuctionInfos.map(auctionInfo => (
-            <DutchAuctionComponent
+            <div
               key={bech32mAuctionId(auctionInfo.id)}
-              dutchAuction={auctionInfo.auction}
-              inputMetadata={getMetadata(
-                metadataByAssetId,
-                auctionInfo.auction.description?.input?.assetId,
-              )}
-              outputMetadata={getMetadata(
-                metadataByAssetId,
-                auctionInfo.auction.description?.outputId,
-              )}
-              fullSyncHeight={fullSyncHeight}
-              {...getButtonProps(
-                auctionInfo.id,
-                endAuction,
-                withdraw,
-                auctionInfo.auction.state?.seq,
-              )}
-            />
+              // Wrap each auction in a div with `bg-charcoal` so that they will
+              // not overlap each other while animating in
+              className='bg-charcoal'
+            >
+              <DutchAuctionComponent
+                dutchAuction={auctionInfo.auction}
+                inputMetadata={getMetadata(
+                  metadataByAssetId,
+                  auctionInfo.auction.description?.input?.assetId,
+                )}
+                outputMetadata={getMetadata(
+                  metadataByAssetId,
+                  auctionInfo.auction.description?.outputId,
+                )}
+                fullSyncHeight={fullSyncHeight}
+                {...getButtonProps(
+                  auctionInfo.id,
+                  endAuction,
+                  withdraw,
+                  auctionInfo.auction.state?.seq,
+                )}
+                renderButtonPlaceholder
+              />
+            </div>
           ))}
         </LayoutGroup>
       </div>

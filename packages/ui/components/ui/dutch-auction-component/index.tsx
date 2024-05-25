@@ -13,6 +13,12 @@ interface BaseProps {
   inputMetadata?: Metadata;
   outputMetadata?: Metadata;
   fullSyncHeight?: bigint;
+  /**
+   * If this will be in a list of other `<DutchAuctionComponent />`s, and some
+   * of them will have buttons, set this to `true` to render a blank placeholder
+   * space if there are no buttons, to ensure even layout.
+   */
+  renderButtonPlaceholder?: boolean;
 }
 
 interface PropsWithButton extends BaseProps {
@@ -34,6 +40,7 @@ export const DutchAuctionComponent = ({
   fullSyncHeight,
   buttonType,
   onClickButton,
+  renderButtonPlaceholder = false,
 }: Props) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const rowId = useId();
@@ -42,7 +49,7 @@ export const DutchAuctionComponent = ({
   if (!description) return null;
 
   return (
-    <motion.div className='flex flex-col gap-2 bg-charcoal' layout='position'>
+    <motion.div layout='position' className='flex flex-col gap-2'>
       <div className='flex items-center gap-2'>
         <button
           className='group flex w-full appearance-none items-center gap-2 overflow-hidden'
@@ -64,13 +71,15 @@ export const DutchAuctionComponent = ({
           />
         </button>
 
-        <div className='w-[85px] shrink-0'>
-          {!!buttonType && (
-            <Button size='sm' variant='secondary' className='w-full' onClick={onClickButton}>
-              {buttonType === 'end' ? 'End' : 'Withdraw'}
-            </Button>
-          )}
-        </div>
+        {(!!buttonType || renderButtonPlaceholder) && (
+          <div className='w-[85px] shrink-0'>
+            {!!buttonType && (
+              <Button size='sm' variant='secondary' className='w-full' onClick={onClickButton}>
+                {buttonType === 'end' ? 'End' : 'Withdraw'}
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       <AnimatePresence mode='popLayout'>
@@ -91,7 +100,7 @@ export const DutchAuctionComponent = ({
               fullSyncHeight={fullSyncHeight}
             />
 
-            <div className='w-[85px] shrink-0' />
+            {renderButtonPlaceholder && <div className='w-[85px] shrink-0' />}
           </motion.div>
         )}
       </AnimatePresence>
