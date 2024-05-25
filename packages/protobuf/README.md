@@ -1,5 +1,11 @@
 # `@penumbra-zone/protobuf`
 
+**To use this package, you need to [enable the Buf Schema Registry](https://buf.build/docs/bsr/generated-sdks/npm)**
+
+```sh
+echo "@buf:registry=https://buf.build/gen/npm/v1/" >> .npmrc
+```
+
 This package exports a `typeRegistry` (and inclusive `jsonOptions`) for use with
 `@bufbuild` and `@connectrpc` tooling, particularly
 `@penumbra-zone/transport-dom`.
