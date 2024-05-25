@@ -6,7 +6,7 @@ import { ProgressBar } from './progress-bar';
 import { useId, useState } from 'react';
 import { cn } from '../../../lib/utils';
 import { ExpandedDetails } from './expanded-details';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface BaseProps {
   dutchAuction: DutchAuction;
@@ -73,26 +73,28 @@ export const DutchAuctionComponent = ({
         </div>
       </div>
 
-      {isExpanded && (
-        <motion.div
-          initial={{ scaleY: 0, opacity: 0 }}
-          animate={{ scaleY: 1, opacity: 1 }}
-          exit={{ scaleY: 0, opacity: 0 }}
-          layout
-          className='flex w-full gap-2'
-        >
-          <div className='w-4 shrink-0' />
+      <AnimatePresence mode='popLayout'>
+        {isExpanded && (
+          <motion.div
+            initial={{ scaleY: 0, opacity: 0 }}
+            animate={{ scaleY: 1, opacity: 1 }}
+            exit={{ scaleY: 0, opacity: 0 }}
+            layout
+            className='flex w-full origin-top gap-2'
+          >
+            <div className='w-4 shrink-0' />
 
-          <ExpandedDetails
-            dutchAuction={dutchAuction}
-            inputMetadata={inputMetadata}
-            outputMetadata={outputMetadata}
-            fullSyncHeight={fullSyncHeight}
-          />
+            <ExpandedDetails
+              dutchAuction={dutchAuction}
+              inputMetadata={inputMetadata}
+              outputMetadata={outputMetadata}
+              fullSyncHeight={fullSyncHeight}
+            />
 
-          <div className='w-[85px] shrink-0' />
-        </motion.div>
-      )}
+            <div className='w-[85px] shrink-0' />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
