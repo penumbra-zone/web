@@ -28,7 +28,7 @@ describe('<SegmentedPicker />', () => {
     const { getByText } = render(
       <SegmentedPicker value='one' options={options} onChange={onChange} />,
     );
-    fireEvent.click(getByText('Two'));
+    fireEvent.click(getByText('Two', { selector: ':not([aria-hidden])' }));
 
     expect(onChange).toHaveBeenCalledWith('two');
   });
@@ -38,8 +38,17 @@ describe('<SegmentedPicker />', () => {
       <SegmentedPicker value='one' options={options} onChange={onChange} />,
     );
 
-    expect(getByText('One')).toHaveAttribute('aria-checked', 'true');
-    expect(getByText('Two')).toHaveAttribute('aria-checked', 'false');
-    expect(getByText('Three')).toHaveAttribute('aria-checked', 'false');
+    expect(getByText('One', { selector: ':not([aria-hidden])' }).parentElement).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+    expect(getByText('Two', { selector: ':not([aria-hidden])' }).parentElement).toHaveAttribute(
+      'aria-checked',
+      'false',
+    );
+    expect(getByText('Three', { selector: ':not([aria-hidden])' }).parentElement).toHaveAttribute(
+      'aria-checked',
+      'false',
+    );
   });
 });
