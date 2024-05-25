@@ -20,11 +20,6 @@ export interface AuctionInfo {
 
 export type Filter = 'active' | 'upcoming' | 'all';
 
-const byStartHeightDescending = (a: AuctionInfo, b: AuctionInfo) => {
-  if (!a.auction.description?.startHeight || !b.auction.description?.startHeight) return 0;
-  return Number(b.auction.description.startHeight - a.auction.description.startHeight);
-};
-
 interface Actions {
   setMinOutput: (minOutput: string) => void;
   setMaxOutput: (maxOutput: string) => void;
@@ -121,9 +116,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
       if (!response.auction || !response.id) continue;
 
       const auction = DutchAuction.fromBinary(response.auction.value);
-      const auctions = [...get().swap.dutchAuction.auctionInfos, { id: response.id, auction }].sort(
-        byStartHeightDescending,
-      );
+      const auctions = [...get().swap.dutchAuction.auctionInfos, { id: response.id, auction }];
 
       void get().swap.dutchAuction.loadMetadata(auction.description?.input?.assetId);
       void get().swap.dutchAuction.loadMetadata(auction.description?.outputId);

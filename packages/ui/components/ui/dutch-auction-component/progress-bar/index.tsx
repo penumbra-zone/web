@@ -67,12 +67,12 @@ export const ProgressBar = ({
   const timeTillStart = getTimeTillStart(auction.startHeight, fullSyncHeight);
 
   return (
-    <div className='relative flex grow items-center justify-between gap-4 overflow-hidden'>
+    <div className='relative flex grow items-center justify-between gap-2 overflow-hidden'>
       <ValueViewComponent view={input} size='sm' />
 
-      <div className='relative flex shrink grow items-center overflow-hidden'>
+      <div className='relative flex min-h-4 shrink grow items-center overflow-hidden'>
         {seqNum !== undefined && !auctionIsUpcoming && (
-          <div className='absolute -translate-x-1/2' style={{ left: `${progress * 100}%` }}>
+          <div className='absolute' style={{ left: `calc(${progress * 100}% - 16px)` }}>
             <Indicator icon={auctionEnded ? 'checkmark' : 'arrow'} />
           </div>
         )}
