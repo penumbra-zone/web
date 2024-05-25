@@ -69,15 +69,15 @@ export const DutchAuctionComponent = ({
           />
         </button>
 
-        {(!!buttonType || renderButtonPlaceholder) && (
+        {buttonType && (
           <div className='w-[85px] shrink-0'>
-            {!!buttonType && (
-              <Button size='sm' variant='secondary' className='w-full' onClick={onClickButton}>
-                {buttonType === 'end' ? 'End' : 'Withdraw'}
-              </Button>
-            )}
+            <Button size='sm' variant='secondary' className='w-full' onClick={onClickButton}>
+              {buttonType === 'end' ? 'End' : 'Withdraw'}
+            </Button>
           </div>
         )}
+
+        {!buttonType && renderButtonPlaceholder && <div className='w-[85px] shrink-0' />}
       </div>
 
       <AnimatePresence mode='popLayout'>
