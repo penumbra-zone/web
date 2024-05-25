@@ -49,7 +49,7 @@ export default function BalanceSelector({ value, balances, onChange }: BalanceSe
         <motion.div
           layout
           layoutId={layoutId}
-          className='flex h-9 min-w-[100px] max-w-[200px] cursor-pointer items-center justify-center gap-2 rounded-lg bg-light-brown px-2'
+          className='flex min-w-[100px] max-w-[200px] cursor-pointer items-center justify-center rounded-lg bg-light-brown px-2'
           onClick={() => setIsOpen(true)}
         >
           <ValueViewComponent view={value?.balanceView} showValue={false} />
@@ -57,9 +57,12 @@ export default function BalanceSelector({ value, balances, onChange }: BalanceSe
       )}
 
       {isOpen && (
-        <div className='flex h-9 min-w-[100px] max-w-[200px] px-2 opacity-0'>
-          <ValueViewComponent view={value?.balanceView} showValue={false} />
-        </div>
+        <>
+          {/* 0-opacity placeholder for layout's sake */}
+          <div className='flex min-w-[100px] max-w-[200px] px-2 opacity-0'>
+            <ValueViewComponent view={value?.balanceView} showValue={false} />
+          </div>
+        </>
       )}
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
