@@ -16,7 +16,7 @@ export const SendLayout = () => {
         <div className='hidden xl:order-1 xl:block' />
         <Card
           gradient
-          className='order-2 row-span-2 flex flex-1 flex-col p-5 md:order-1 md:p-4 xl:p-5'
+          className='order-2 row-span-2 flex flex-1 flex-col gap-4 p-5 md:order-1 md:p-4 xl:p-5'
         >
           <Tabs tabs={sendTabs} activeTab={pathname} />
           <Outlet />
