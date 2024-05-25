@@ -1,5 +1,11 @@
 # Getters
 
+**To use this package, you need to [enable the Buf Schema Registry](https://buf.build/docs/bsr/generated-sdks/npm)**
+
+```sh
+echo "@buf:registry=https://buf.build/gen/npm/v1/" >> .npmrc
+```
+
 Getters were designed to solve a common pain point when working with deserialized Protobuf messages: accessing deeply nested, often optional properties.
 
 For example, let's say you have an `AddressView`, and you want to render an `AddressIndex`. You'd need render it conditionally, like so:

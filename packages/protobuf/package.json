@@ -21,12 +21,6 @@
       }
     }
   },
-  "bundleDependencies": [
-    "@buf/cosmos_ibc.bufbuild_es",
-    "@buf/cosmos_ibc.connectrpc_es",
-    "@buf/penumbra-zone_penumbra.bufbuild_es",
-    "@buf/penumbra-zone_penumbra.connectrpc_es"
-  ],
   "devDependencies": {
     "@bufbuild/protobuf": "^1.9.0",
     "@connectrpc/connect": "^1.4.0"

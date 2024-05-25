@@ -10,13 +10,10 @@
     "lint": "eslint plan transaction translators",
     "test": "vitest run"
   },
-  "exports": {
-    "./*": "./*.ts"
-  },
+  "files": [
+    "./dist"
+  ],
   "publishConfig": {
-    "files": [
-      "./dist"
-    ],
     "exports": {
       "./plan/*": "./dist/plan/*.js",
       "./transaction/*": "./dist/transaction/*.js",
