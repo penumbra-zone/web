@@ -101,7 +101,9 @@ export const SegmentedPicker = <ValueType extends { toString: () => string }>({
            * Render the label again underneath the absolute-positioned label,
            * since the absolute-positioned label has no effect on layout.
            */}
-          {option.label}
+          <span aria-hidden className='text-transparent'>
+            {option.label}
+          </span>
         </div>
       ))}
     </div>
