@@ -4,6 +4,7 @@
 
 extern crate core;
 
+pub mod asset;
 pub mod auction;
 pub mod build;
 pub mod dex;
