@@ -84,6 +84,11 @@ export const SegmentedPicker = <ValueType extends { toString: () => string }>({
           <div className='absolute inset-0 z-20 flex items-center justify-center'>
             {option.label}
           </div>
+
+          {/**
+           * Render the label again underneath the absolute-positioned label,
+           * since the absolute-positioned label has no effect on layout.
+           */}
           {option.label}
         </div>
       ))}
