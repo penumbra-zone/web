@@ -10,13 +10,13 @@
     "lint": "eslint src",
     "test": "vitest run"
   },
+  "files": [
+    "dist"
+  ],
   "exports": {
     "./*": "./src/*.ts"
   },
   "publishConfig": {
-    "files": [
-      "dist"
-    ],
     "exports": {
       "./*": "./dist/*.js"
     }

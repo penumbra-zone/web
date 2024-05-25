@@ -9,14 +9,14 @@
     "lint": "eslint src",
     "test": "vitest run"
   },
+  "files": [
+    "dist"
+  ],
   "exports": {
     "./*": "./src/*.ts",
     "./internal-msg/*": "./src/internal-msg/*.ts"
   },
   "publishConfig": {
-    "files": [
-      "dist"
-    ],
     "exports": {
       "./*": "./dist/*.js",
       "./internal-msg/*": "./dist/internal-msg/*.js"
