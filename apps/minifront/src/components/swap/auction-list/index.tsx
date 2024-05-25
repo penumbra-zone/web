@@ -1,11 +1,6 @@
 import { AllSlices } from '../../../state';
 import { DutchAuctionComponent } from '@penumbra-zone/ui/components/ui/dutch-auction-component';
-import {
-  AssetId,
-  Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
 import { QueryLatestStateButton } from './query-latest-state-button';
@@ -15,31 +10,7 @@ import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picke
 import { useMemo } from 'react';
 import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
 import { LayoutGroup } from 'framer-motion';
-import { AuctionInfo, Filter } from '../../../state/swap/dutch-auction';
-
-const byStartHeight =
-  (direction: 'ascending' | 'descending') => (a: AuctionInfo, b: AuctionInfo) => {
-    if (!a.auction.description?.startHeight || !b.auction.description?.startHeight) return 0;
-    if (direction === 'ascending') {
-      return Number(a.auction.description.startHeight - b.auction.description.startHeight);
-    }
-    return Number(b.auction.description.startHeight - a.auction.description.startHeight);
-  };
-
-const SORT_FUNCTIONS: Record<Filter, (a: AuctionInfo, b: AuctionInfo) => number> = {
-  all: byStartHeight('ascending'),
-  active: byStartHeight('descending'),
-  upcoming: byStartHeight('ascending'),
-};
-
-const getMetadata = (metadataByAssetId: Record<string, Metadata>, assetId?: AssetId) => {
-  let metadata: Metadata | undefined;
-  if (assetId && (metadata = metadataByAssetId[bech32mAssetId(assetId)])) {
-    return metadata;
-  }
-
-  return new Metadata({ penumbraAssetId: assetId });
-};
+import { SORT_FUNCTIONS, getMetadata } from './helpers';
 
 const auctionListSelector = (state: AllSlices) => ({
   auctionInfos: state.swap.dutchAuction.auctionInfos,
