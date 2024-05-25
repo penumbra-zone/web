@@ -30,6 +30,8 @@ describe('getHumanReadableInterval()', () => {
 
     expect(getHumanReadableInterval(60 * 15 + 23)).toBe('15m 23s');
 
-    expect(getHumanReadableInterval(60 * 60 * 3 + 23)).toBe('3h 23s');
+    expect(getHumanReadableInterval(60 * 60 * 3 + 23)).toBe('3h 0m 23s');
+
+    expect(getHumanReadableInterval(60 * 60 * 24 * 3 + 23)).toBe('3d 0h 0m 23s');
   });
 });
