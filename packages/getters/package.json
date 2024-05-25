@@ -18,7 +18,7 @@
       "dist"
     ],
     "exports": {
-      "./src/*": "./dist/*.js"
+      "./*": "./dist/*.js"
     }
   },
   "dependencies": {
