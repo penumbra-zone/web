@@ -60,5 +60,5 @@ We may instead want to consider serving the Webassembly modules as static files.
 ```
 Invariant 3.
 
-The extension is properly signing transactions.
+The extension is not improperly missigning transactions.
 ```
