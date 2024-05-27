@@ -1,5 +1,11 @@
 # @penumbra-zone/query
 
+## 3.2.1
+
+### Patch Changes
+
+- @penumbra-zone/wasm@5.0.1
+
 ## 3.2.0
 
 ### Minor Changes

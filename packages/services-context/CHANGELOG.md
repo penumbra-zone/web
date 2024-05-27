@@ -1,5 +1,13 @@
 # @penumbra-zone/services
 
+## 3.1.1
+
+### Patch Changes
+
+- @penumbra-zone/wasm@5.0.1
+- @penumbra-zone/query@3.2.1
+- @penumbra-zone/storage@3.3.0
+
 ## 3.1.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @penumbra-zone/keys
 
+## 4.0.0
+
+### Major Changes
+
+- 0b7c427: keys v0.76.0
+
 ## 2.0.0
 
 ### Major Changes
