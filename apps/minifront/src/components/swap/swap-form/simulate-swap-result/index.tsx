@@ -1,17 +1,17 @@
-import { useStore } from '../../../../state';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { PriceImpact } from './price-impact';
 import { Trace } from './trace';
+import { motion } from 'framer-motion';
+import { SimulateSwapResult as TSimulateSwapResult } from '../../../../state/swap';
 
-export const SimulateSwapResult = () => {
-  const result = useStore(state => state.swap.instantSwap.simulateSwapResult);
+const HIDE = { clipPath: 'polygon(0 0, 100% 0, 100% 0, 0 0)' };
+const SHOW = { clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' };
 
-  if (!result) return null;
-
+export const SimulateSwapResult = ({ result }: { result: TSimulateSwapResult }) => {
   const { unfilled, output, priceImpact, traces, metadataByAssetId } = result;
 
   return (
-    <div className='flex flex-col gap-4'>
+    <motion.div layout initial={HIDE} animate={SHOW} exit={HIDE} className='flex flex-col gap-4'>
       <div className='flex items-end justify-between gap-2'>
         <div className='flex flex-col items-center'>
           <ValueViewComponent view={output} size='sm' />
@@ -44,6 +44,6 @@ export const SimulateSwapResult = () => {
           </div>
         </>
       )}
-    </div>
+    </motion.div>
   );
 };

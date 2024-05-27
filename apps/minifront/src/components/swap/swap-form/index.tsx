@@ -7,6 +7,7 @@ import { InputBlock } from '../../shared/input-block';
 import { Output } from './output';
 import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { SimulateSwap } from './simulate-swap';
+import { LayoutGroup, motion } from 'framer-motion';
 
 const swapFormSelector = (state: AllSlices) => ({
   onSubmit:
@@ -24,39 +25,41 @@ export const SwapForm = () => {
 
   return (
     <Card>
-      <form
-        className='flex flex-col gap-4 xl:gap-3'
-        onSubmit={e => {
-          e.preventDefault();
-          void onSubmit();
-        }}
-      >
-        <TokenSwapInput />
+      <LayoutGroup>
+        <form
+          className='flex flex-col gap-4 xl:gap-3'
+          onSubmit={e => {
+            e.preventDefault();
+            void onSubmit();
+          }}
+        >
+          <TokenSwapInput />
 
-        <InputBlock label='Speed'>
-          <DurationSlider />
-        </InputBlock>
-
-        {duration !== 'instant' && (
-          <InputBlock label='Output'>
-            <Output />
+          <InputBlock label='Speed'>
+            <DurationSlider />
           </InputBlock>
-        )}
 
-        {duration === 'instant' && <SimulateSwap />}
+          {duration !== 'instant' && (
+            <InputBlock label='Output'>
+              <Output />
+            </InputBlock>
+          )}
 
-        <div className='mt-3 flex'>
-          <Button
-            type='submit'
-            variant='gradient'
-            size='lg'
-            className='grow'
-            disabled={submitButtonDisabled}
-          >
-            {submitButtonLabel}
-          </Button>
-        </div>
-      </form>
+          {duration === 'instant' && <SimulateSwap />}
+
+          <motion.div layout className='mt-3 flex'>
+            <Button
+              type='submit'
+              variant='gradient'
+              size='lg'
+              className='grow'
+              disabled={submitButtonDisabled}
+            >
+              {submitButtonLabel}
+            </Button>
+          </motion.div>
+        </form>
+      </LayoutGroup>
     </Card>
   );
 };
