@@ -126,6 +126,7 @@ mod test_helpers {
             name: String::from(""),
             penumbra_asset_id: None,
             symbol: String::from(""),
+            priority_score: 0,
         }
     }
 
