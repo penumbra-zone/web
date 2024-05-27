@@ -8,8 +8,8 @@ interface Plot {
 
 // Adjustable variables. Take care while adjusting these as small changes in the values can result in massive changes in the result.
 const baseRadFactor = 0.0022; //the radius of the smallest ring. Adjust carefully as small changes result it large results. Generally keep wthin the range of 0.0015 and 0.0022.
-const octaveSpeed = 0.007; // controls the speed for animating octaves
-const plotRotationSpeed = -0.009; //adjust value to control speed of plot rotation and sign to control direction.
+const octaveSpeed = 0.007 / 3; // controls the speed for animating octaves
+const plotRotationSpeed = -0.009 / 3; //adjust value to control speed of plot rotation and sign to control direction.
 const plotThickness = 0.3; //adjust the thickness of each plot
 const wobblyConstant = 1.1; //This adjusts the frequency of the perlin noise allowing for more peaks.
 const numPoints = 250; // Resolution of the plot for each ring. This can be adjusted to get a better balance betwen performance and visual fidelity
@@ -19,6 +19,8 @@ const plotGap = 0.00017; //Distance between each plot. small changes produce lar
 const numPlots = 22; //this number corresponds to the number of plots in the svg section
 const maxTheta = 2 * Math.PI; //Used in the polar coordinates calculation which gives the circular appearance, this variable limits the circle to just one turn.
 const amplitudeFactor = 1; //this can also be used to control the distance between each plot
+
+const frameTime = 16.67;
 
 const scale = (n: number) => Math.pow((1 + n) / 1.75, 3.5);
 
@@ -111,7 +113,7 @@ export const animateTheta = (plots: Plot[], ccp: number) => {
     // Calculate time since the last frame
     const deltaTime = currentTime - lastFrameTime;
     // If the time since the last frame is greater than or equal to 16.67 milliseconds (approx. 60 fps or 33.33ms for 30fps), proceed to update
-    if (deltaTime >= 16.67) {
+    if (deltaTime >= frameTime) {
       plots.forEach(plot => {
         renderPlot(plot, ccp, octaves, rotationAngle);
       });
