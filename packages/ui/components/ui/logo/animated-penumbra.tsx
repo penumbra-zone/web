@@ -13,14 +13,8 @@ export const AnimatedPenumbra = ({ className }: { className: string }) => {
     const noiseIntensityFactor = coordinateCentrePoint * 0.0014;
     const plots = initializePlotsArr(noiseIntensityFactor);
 
-    const p = new Array<number>(512);
-    for (let i = 0; i < 256; i++) {
-      p[i] = permutation[i]!;
-      p[256 + i] = permutation[i]!;
-    }
-
     // Start the theta animation. Returns the cleanup function that cancels the animation.
-    return animateTheta(plots, coordinateCentrePoint, p);
+    return animateTheta(plots, coordinateCentrePoint);
   }, []);
 
   return (
