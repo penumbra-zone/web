@@ -18,9 +18,9 @@ const p = [...p1, ...p1] as const;
 const fade = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
 const lerp = (t: number, a: number, b: number) => a + t * (b - a);
 const grad = (hash: number, x: number, y: number, z: number): number => {
-  let h = hash & 15;
-  let u = h < 8 ? x : y;
-  let v = h < 4 ? y : h === 12 || h === 14 ? x : z;
+  const h = hash & 15;
+  const u = h < 8 ? x : y;
+  const v = h < 4 ? y : h === 12 || h === 14 ? x : z;
   return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
 };
 

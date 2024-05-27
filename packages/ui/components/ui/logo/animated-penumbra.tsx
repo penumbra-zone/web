@@ -1,10 +1,5 @@
 import { useEffect } from 'react';
-import {
-  animateTheta,
-  extractViewBoxDimensions,
-  initializePlotsArr,
-  permutation,
-} from './animation-logic';
+import { animateTheta, extractViewBoxDimensions, initializePlotsArr } from './animation-logic';
 
 // React component version of animated-penumbra.svg
 export const AnimatedPenumbra = ({ className }: { className: string }) => {
