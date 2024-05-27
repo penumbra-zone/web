@@ -15,6 +15,7 @@ import { getChainId } from '../fetchers/chain-id';
 import { useEffect, useState } from 'react';
 import { TestnetBanner } from '@penumbra-zone/ui/components/ui/testnet-banner';
 import { Status } from './Status';
+import { MotionConfig } from 'framer-motion';
 
 export interface LayoutLoaderResult {
   isInstalled: boolean;
@@ -40,7 +41,7 @@ export const Layout = () => {
   if (!isConnected) return <ExtensionNotConnected />;
 
   return (
-    <>
+    <MotionConfig transition={{ duration: 0.1 }}>
       <Status />
       <TestnetBanner chainId={chainId} />
       <HeadTag />
@@ -52,6 +53,6 @@ export const Layout = () => {
         <Footer />
       </div>
       <Toaster />
-    </>
+    </MotionConfig>
   );
 };
