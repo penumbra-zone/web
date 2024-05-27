@@ -16,38 +16,38 @@ mock-database = []
 [dependencies]
 # TODO: Use `tag` instead of `rev` once auctions land in a tagged release of
 # core.
-penumbra-auction       = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.75.0", package = "penumbra-auction", default-features = false }
-penumbra-asset         = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.75.0", package = "penumbra-asset" }
-penumbra-compact-block = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.75.0", package = "penumbra-compact-block", default-features = false }
-penumbra-dex           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.75.0", package = "penumbra-dex", default-features = false }
-penumbra-fee           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.75.0", package = "penumbra-fee", default-features = false }
-penumbra-keys          = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.75.0", package = "penumbra-keys" }
-penumbra-num           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.75.0", package = "penumbra-num" }
-penumbra-proof-params  = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.75.0", package = "penumbra-proof-params", default-features = false }
-penumbra-proto         = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.75.0", package = "penumbra-proto", default-features = false }
-penumbra-sct           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.75.0", package = "penumbra-sct", default-features = false }
-penumbra-shielded-pool = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.75.0", package = "penumbra-shielded-pool", default-features = false }
-penumbra-stake         = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.75.0", package = "penumbra-stake", default-features = false }
-penumbra-tct           = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.75.0", package = "penumbra-tct" }
-penumbra-transaction   = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.75.0", package = "penumbra-transaction", default-features = false }
+penumbra-auction = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.76.0", package = "penumbra-auction", default-features = false }
+penumbra-asset = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.76.0", package = "penumbra-asset" }
+penumbra-compact-block = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.76.0", package = "penumbra-compact-block", default-features = false }
+penumbra-dex = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.76.0", package = "penumbra-dex", default-features = false }
+penumbra-fee = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.76.0", package = "penumbra-fee", default-features = false }
+penumbra-keys = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.76.0", package = "penumbra-keys" }
+penumbra-num = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.76.0", package = "penumbra-num" }
+penumbra-proof-params = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.76.0", package = "penumbra-proof-params", default-features = false }
+penumbra-proto = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.76.0", package = "penumbra-proto", default-features = false }
+penumbra-sct = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.76.0", package = "penumbra-sct", default-features = false }
+penumbra-shielded-pool = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.76.0", package = "penumbra-shielded-pool", default-features = false }
+penumbra-stake = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.76.0", package = "penumbra-stake", default-features = false }
+penumbra-tct = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.76.0", package = "penumbra-tct" }
+penumbra-transaction = { git = "https://github.com/penumbra-zone/penumbra.git", tag = "v0.76.0", package = "penumbra-transaction", default-features = false }
 
-anyhow                   = "1.0.86"
-ark-ff                   = { version = "0.4.2", features = ["std"] }
-base64                   = "0.22.1"
+anyhow = "1.0.86"
+ark-ff = { version = "0.4.2", features = ["std"] }
+base64 = "0.22.1"
 console_error_panic_hook = { version = "0.1.7", optional = true }
-decaf377                 = { version = "0.5.0", features = ["r1cs"] }
-hex                      = "0.4.3"
-indexed_db_futures       = "0.4.1"
-prost                    = "0.12.6"
-rand_core                = { version = "0.6.4", features = ["getrandom"] }
-regex                    = { version = "1.10.4" }
-serde                    = { version = "1.0.202", features = ["derive"] }
-serde-wasm-bindgen       = "0.6.5"
-thiserror                = "1.0"
-wasm-bindgen             = "0.2.92"
-wasm-bindgen-futures     = "0.4.42"
-web-sys                  = { version = "0.3.69", features = ["console"] }
+decaf377 = { version = "0.5.0", features = ["r1cs"] }
+hex = "0.4.3"
+indexed_db_futures = "0.4.1"
+prost = "0.12.6"
+rand_core = { version = "0.6.4", features = ["getrandom"] }
+regex = { version = "1.10.4" }
+serde = { version = "1.0.202", features = ["derive"] }
+serde-wasm-bindgen = "0.6.5"
+thiserror = "1.0"
+wasm-bindgen = "0.2.92"
+wasm-bindgen-futures = "0.4.42"
+web-sys = { version = "0.3.69", features = ["console"] }
 
 [dev-dependencies]
-wasm-bindgen-test        = "0.3.42"
-serde_json               = "1.0.117"
+wasm-bindgen-test = "0.3.42"
+serde_json = "1.0.117"
