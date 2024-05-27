@@ -1,5 +1,35 @@
 # @penumbra-zone/router
 
+## 3.2.0
+
+### Minor Changes
+
+- e4c9fce: Add features to handle auction withdrawals
+
+### Patch Changes
+
+- e35c6f7: Deps bumped to latest
+- Updated dependencies [e47a04e]
+- Updated dependencies [146b48d]
+- Updated dependencies [65677c1]
+- Updated dependencies [8ccaf30]
+- Updated dependencies [8ccaf30]
+- Updated dependencies [e35c6f7]
+- Updated dependencies [cf63b30]
+- Updated dependencies [99feb9d]
+- Updated dependencies [e4c9fce]
+- Updated dependencies [d6b8a23]
+- Updated dependencies [8ccaf30]
+  - @penumbra-zone/services-context@3.1.0
+  - @penumbra-zone/storage@3.3.0
+  - @penumbra-zone/getters@4.0.0
+  - @penumbra-zone/types@5.0.0
+  - @penumbra-zone/wasm@5.0.0
+  - @penumbra-zone/perspective@2.0.0
+  - @penumbra-zone/bech32m@3.1.1
+  - @penumbra-zone/query@3.2.0
+  - @penumbra-zone/crypto-web@3.0.6
+
 ## 3.1.0
 
 ### Minor Changes

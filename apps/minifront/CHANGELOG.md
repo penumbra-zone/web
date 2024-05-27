@@ -1,5 +1,39 @@
 # minifront
 
+## 4.5.0
+
+### Minor Changes
+
+- e47a04e: Update registry to latest (fixes labs + adds starling)
+- a241386: Combine the swap and auction forms
+- 146b48d: Support GDAs
+- cf63b30: Show swap routes in the UI; extract a <TokenSwapInput /> component.
+- e4c9fce: Add features to handle auction withdrawals
+
+### Patch Changes
+
+- d654724: Fix error splash screen
+- 9563ed0: Fix a bug where multiple responses streamed to the same state variable simultaneously
+- e35c6f7: Deps bumped to latest
+- d6b8a23: Update registry
+- 43bf99f: Add a UI to inspect an address; create a <Box /> component
+- Updated dependencies [146b48d]
+- Updated dependencies [8ccaf30]
+- Updated dependencies [8ccaf30]
+- Updated dependencies [e35c6f7]
+- Updated dependencies [cf63b30]
+- Updated dependencies [e4c9fce]
+- Updated dependencies [8a3b442]
+- Updated dependencies [43bf99f]
+- Updated dependencies [8ccaf30]
+  - @penumbra-zone/getters@4.0.0
+  - @penumbra-zone/types@5.0.0
+  - @penumbra-zone/perspective@2.0.0
+  - @penumbra-zone/bech32m@3.1.1
+  - @penumbra-zone/ui@3.1.0
+  - @penumbra-zone/crypto-web@3.0.6
+  - @penumbra-zone/client@4.1.2
+
 ## 4.4.0
 
 ### Minor Changes
