@@ -1,13 +1,12 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { AllSlices } from '../../../state';
-import { SimulateSwapButton } from './simulate-swap-button';
-import { SimulateSwapResult } from './simulate-swap-result';
 import { TokenSwapInput } from './token-swap-input';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { DurationSlider } from '../duration-slider';
 import { InputBlock } from '../../shared/input-block';
 import { Output } from './output';
 import { Card } from '@penumbra-zone/ui/components/ui/card';
+import { SimulateSwap } from './simulate-swap';
 
 const swapFormSelector = (state: AllSlices) => ({
   onSubmit:
@@ -35,22 +34,18 @@ export const SwapForm = () => {
         <TokenSwapInput />
 
         <InputBlock label='Speed'>
-          <div className='mt-2'>
-            <DurationSlider />
-          </div>
+          <DurationSlider />
         </InputBlock>
 
         {duration !== 'instant' && (
           <InputBlock label='Output'>
-            <div className='mt-2'>
-              <Output />
-            </div>
+            <Output />
           </InputBlock>
         )}
 
-        <div className='mt-3 flex gap-2'>
-          {duration === 'instant' && <SimulateSwapButton />}
+        {duration === 'instant' && <SimulateSwap />}
 
+        <div className='mt-3 flex'>
           <Button
             type='submit'
             variant='gradient'
@@ -61,8 +56,6 @@ export const SwapForm = () => {
             {submitButtonLabel}
           </Button>
         </div>
-
-        {duration === 'instant' && <SimulateSwapResult />}
       </form>
     </Card>
   );

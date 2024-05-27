@@ -1,5 +1,5 @@
 import { VariantProps, cva } from 'class-variance-authority';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 
 const variants = cva('overflow-hidden rounded-lg border bg-background', {
   variants: {
@@ -28,10 +28,17 @@ export const Box = ({
   label,
   spacing,
   state,
-}: PropsWithChildren<VariantProps<typeof variants> & { label?: string }>) => {
+  headerContent,
+}: PropsWithChildren<
+  VariantProps<typeof variants> & { label?: string; headerContent?: ReactNode }
+>) => {
   return (
     <div className={variants({ spacing, state })}>
-      {label && <div className='mb-2 font-bold'>{label}</div>}
+      <div className='mb-4 flex items-center justify-between'>
+        {label && <div className='grow font-bold'>{label}</div>}
+        <div className='grow-0'>{headerContent}</div>
+      </div>
+
       {children}
     </div>
   );

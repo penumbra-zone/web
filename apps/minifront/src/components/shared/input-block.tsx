@@ -15,7 +15,12 @@ export const InputBlock = ({ label, className, validations, value, children }: I
   const vResult = typeof value === 'string' ? validationResult(value, validations) : undefined;
 
   return (
-    <Box>
+    <Box
+      label={label}
+      headerContent={
+        vResult ? <div className={cn('italic', 'text-red-400')}>{vResult.issue}</div> : null
+      }
+    >
       <div
         className={cn(
           'flex flex-col gap-1',
@@ -24,11 +29,6 @@ export const InputBlock = ({ label, className, validations, value, children }: I
           className,
         )}
       >
-        <div className='flex items-center gap-2'>
-          <p className='text-base font-bold'>{label}</p>
-          {vResult ? <div className={cn('italic', 'text-red-400')}>{vResult.issue}</div> : null}
-        </div>
-
         {children}
       </div>
     </Box>

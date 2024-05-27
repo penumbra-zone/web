@@ -2,7 +2,6 @@ import { useStore } from '../../../../state';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { PriceImpact } from './price-impact';
 import { Trace } from './trace';
-import { Box } from '@penumbra-zone/ui/components/ui/box';
 
 export const SimulateSwapResult = () => {
   const result = useStore(state => state.swap.instantSwap.simulateSwapResult);
@@ -12,7 +11,7 @@ export const SimulateSwapResult = () => {
   const { unfilled, output, priceImpact, traces, metadataByAssetId } = result;
 
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-4'>
       <div className='flex items-end justify-between gap-2'>
         <div className='flex flex-col items-center'>
           <ValueViewComponent view={output} size='sm' />
@@ -29,7 +28,13 @@ export const SimulateSwapResult = () => {
       </div>
 
       {!!traces?.length && (
-        <Box label='Routes'>
+        <>
+          <div>
+            <div className='font-bold'>Routes</div>
+            Swaps are filled in descending order of price to get you the best possible trade for
+            your tokens. Given the amount you wish to trade, here are the routes your tokens are
+            estimated to take to fulfill your swap.
+          </div>
           <div className='flex flex-col gap-2 overflow-auto [scrollbar-width:thin]'>
             <div className='inline-flex w-max min-w-full flex-col gap-4'>
               {traces.map((trace, index) => (
@@ -37,7 +42,7 @@ export const SimulateSwapResult = () => {
               ))}
             </div>
           </div>
-        </Box>
+        </>
       )}
     </div>
   );
