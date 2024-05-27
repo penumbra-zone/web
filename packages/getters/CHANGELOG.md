@@ -1,5 +1,24 @@
 # @penumbra-zone/getters
 
+## 4.0.0
+
+### Major Changes
+
+- 8ccaf30: remove /src/ segment of import path
+- 8ccaf30: externalize dependencies
+
+### Minor Changes
+
+- 146b48d: Support GDAs
+- cf63b30: Show swap routes in the UI; extract a <TokenSwapInput /> component.
+
+### Patch Changes
+
+- 8ccaf30: readme update recommending bsr
+- e35c6f7: Deps bumped to latest
+- Updated dependencies [e35c6f7]
+  - @penumbra-zone/bech32m@3.1.1
+
 ## 3.0.2
 
 ### Patch Changes

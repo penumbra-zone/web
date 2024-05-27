@@ -1,5 +1,25 @@
 # @penumbra-zone/wasm
 
+## 5.0.0
+
+### Major Changes
+
+- 65677c1: publish javascript instead of typescript
+
+### Minor Changes
+
+- e4c9fce: Add features to handle auction withdrawals
+
+### Patch Changes
+
+- 8ccaf30: readme update recommending bsr
+- e35c6f7: Deps bumped to latest
+- 99feb9d: add base denom string to binary AssetId conversion utility
+- Updated dependencies [146b48d]
+- Updated dependencies [e35c6f7]
+- Updated dependencies [8ccaf30]
+  - @penumbra-zone/types@5.0.0
+
 ## 4.0.4
 
 ### Patch Changes

@@ -1,5 +1,29 @@
 # @penumbra-zone/ui
 
+## 3.1.0
+
+### Minor Changes
+
+- cf63b30: Show swap routes in the UI; extract a <TokenSwapInput /> component.
+- e4c9fce: Add features to handle auction withdrawals
+- 43bf99f: Add a UI to inspect an address; create a <Box /> component
+
+### Patch Changes
+
+- e35c6f7: Deps bumped to latest
+- 8a3b442: optimize animation
+- Updated dependencies [146b48d]
+- Updated dependencies [8ccaf30]
+- Updated dependencies [8ccaf30]
+- Updated dependencies [e35c6f7]
+- Updated dependencies [cf63b30]
+- Updated dependencies [e4c9fce]
+- Updated dependencies [8ccaf30]
+  - @penumbra-zone/getters@4.0.0
+  - @penumbra-zone/types@5.0.0
+  - @penumbra-zone/perspective@2.0.0
+  - @penumbra-zone/bech32m@3.1.1
+
 ## 3.0.0
 
 ### Major Changes

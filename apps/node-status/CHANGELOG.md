@@ -1,5 +1,21 @@
 # node-status
 
+## 2.0.8
+
+### Patch Changes
+
+- e35c6f7: Deps bumped to latest
+- Updated dependencies [146b48d]
+- Updated dependencies [e35c6f7]
+- Updated dependencies [cf63b30]
+- Updated dependencies [e4c9fce]
+- Updated dependencies [8a3b442]
+- Updated dependencies [43bf99f]
+- Updated dependencies [8ccaf30]
+  - @penumbra-zone/types@5.0.0
+  - @penumbra-zone/ui@3.1.0
+  - @penumbra-zone/crypto-web@3.0.6
+
 ## 2.0.7
 
 ### Patch Changes

@@ -1,5 +1,41 @@
 # chrome-extension
 
+## 8.1.0
+
+### Minor Changes
+
+- e47a04e: Update registry to latest (fixes labs + adds starling)
+- e4c9fce: Add features to handle auction withdrawals
+- 43bf99f: Add a UI to inspect an address; create a <Box /> component
+
+### Patch Changes
+
+- e35c6f7: Deps bumped to latest
+- d6b8a23: Update registry
+- Updated dependencies [e47a04e]
+- Updated dependencies [146b48d]
+- Updated dependencies [65677c1]
+- Updated dependencies [8ccaf30]
+- Updated dependencies [e35c6f7]
+- Updated dependencies [cf63b30]
+- Updated dependencies [99feb9d]
+- Updated dependencies [e4c9fce]
+- Updated dependencies [8a3b442]
+- Updated dependencies [d6b8a23]
+- Updated dependencies [43bf99f]
+- Updated dependencies [8ccaf30]
+  - @penumbra-zone/services-context@3.1.0
+  - @penumbra-zone/storage@3.3.0
+  - @penumbra-zone/types@5.0.0
+  - @penumbra-zone/wasm@5.0.0
+  - @penumbra-zone/perspective@2.0.0
+  - @penumbra-zone/services@3.2.0
+  - @penumbra-zone/bech32m@3.1.1
+  - @penumbra-zone/query@3.2.0
+  - @penumbra-zone/ui@3.1.0
+  - @penumbra-zone/crypto-web@3.0.6
+  - @penumbra-zone/client@4.1.2
+
 ## 8.0.0
 
 ### Major Changes
