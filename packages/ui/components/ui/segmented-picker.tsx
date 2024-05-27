@@ -47,7 +47,7 @@ export const SegmentedPicker = <ValueType extends { toString: () => string }>({
           aria-checked={value === option.value}
           onClick={() => onChange(option.value)}
           className={cn(
-            'px-3 py-1 font-bold',
+            'px-3 py-1 font-bold cursor-pointer',
             index === 0 && 'rounded-l-sm',
             index === options.length - 1 && 'rounded-r-sm',
             value === option.value && 'bg-teal',

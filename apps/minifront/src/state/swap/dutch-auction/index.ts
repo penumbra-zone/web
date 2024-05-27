@@ -13,10 +13,12 @@ import {
 import { viewClient } from '../../../clients';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 
-interface AuctionInfo {
+export interface AuctionInfo {
   id: AuctionId;
   auction: DutchAuction;
 }
+
+export type Filter = 'active' | 'upcoming' | 'all';
 
 interface Actions {
   setMinOutput: (minOutput: string) => void;
@@ -27,6 +29,7 @@ interface Actions {
   endAuction: (auctionId: AuctionId) => Promise<void>;
   withdraw: (auctionId: AuctionId, currentSeqNum: bigint) => Promise<void>;
   reset: VoidFunction;
+  setFilter: (filter: Filter) => void;
 }
 
 interface State {
@@ -36,6 +39,7 @@ interface State {
   auctionInfos: AuctionInfo[];
   loadAuctionInfosAbortController?: AbortController;
   metadataByAssetId: Record<string, Metadata>;
+  filter: Filter;
 }
 
 export type DutchAuctionSlice = Actions & State;
@@ -46,6 +50,7 @@ const INITIAL_STATE: State = {
   txInProgress: false,
   auctionInfos: [],
   metadataByAssetId: {},
+  filter: 'active',
 };
 
 export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (set, get) => ({
@@ -94,7 +99,6 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
       swap.dutchAuction.loadAuctionInfosAbortController = newAbortController;
     });
 
-    /** @todo: Sort by... something? */
     for await (const response of viewClient.auctions(
       { queryLatestState, includeInactive: true },
       /**
@@ -158,6 +162,15 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
         // preserve loaded auctions and metadata:
         auctionInfos: swap.dutchAuction.auctionInfos,
         metadataByAssetId: swap.dutchAuction.metadataByAssetId,
+
+        // preserve filter:
+        filter: swap.dutchAuction.filter,
       };
     }),
+
+  setFilter: filter => {
+    set(({ swap }) => {
+      swap.dutchAuction.filter = filter;
+    });
+  },
 });

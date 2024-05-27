@@ -8,6 +8,7 @@ import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { Fragment } from 'react';
 import { Price } from './price';
+import { Separator } from '@penumbra-zone/ui/components/ui/separator';
 
 const getValueView = (metadataByAssetId: Record<string, Metadata>, { amount, assetId }: Value) =>
   new ValueView({
@@ -19,11 +20,6 @@ const getValueView = (metadataByAssetId: Record<string, Metadata>, { amount, ass
       },
     },
   });
-
-const Separator = () => (
-  // eslint-disable-next-line tailwindcss/no-unnecessary-arbitrary-value
-  <div className='mx-2 h-px min-w-4 grow border-b-[1px] border-dotted border-light-brown' />
-);
 
 export const Trace = ({
   trace,
