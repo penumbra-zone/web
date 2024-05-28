@@ -193,10 +193,23 @@ export interface PenumbraDb extends DBSchema {
       nullifier: Jsonified<Required<SpendableNoteRecord>['nullifier']['inner']>; // base64
     };
   };
-  // Store for advice for future spendable notes
-  // Used in wasm crate to process swap and swap claim
-  // When we detect a swap we save advices, and when we detect a swap claim we use advices to get spendable notes
-  // This table is never written or queried by typescript
+
+  /**
+   * Store for advice for future spendable notes
+   * Used in wasm crate to process swap and swap claim
+   *
+   * This emphasizes the difference between Rust view service data storage and extension view service data storage.
+   * In the relational model (Rust view service), each 'SPENDABLE_NOTES' must have a corresponding record
+   * in the 'NOTES' table ('note_commitment' is used as a foreign key).
+   * Therefore, in Rust view service, the 'NOTES' table stores both notes that do not yet have an associated
+   * record in the 'SPENDABLE_NOTES' table (we call them advices)
+   * and notes that already have an associated record in 'SPENDABLE_NOTES'.
+   *
+   * In indexed-db (extension view service), we store advices separately in the 'ADVICE_NOTES' table,
+   * and store spendable notes along with nested notes in the 'SPENDABLE_NOTES' table.
+   *
+   * This table is never written or queried by TypeScript.
+   */
   ADVICE_NOTES: {
     // key is not part of the stored object
     key: Jsonified<StateCommitment['inner']>; // base64
