@@ -44,7 +44,7 @@ export const ExpandedDetails = ({
           {outputMetadata && (
             <span className='font-mono text-xs'>
               {' '}
-              {outputMetadata.symbol} / {inputMetadata?.symbol} @{' '}
+              {outputMetadata.symbol} / {inputMetadata?.symbol} @ block{' '}
               {description.startHeight.toString()}
             </span>
           )}
@@ -57,7 +57,7 @@ export const ExpandedDetails = ({
           {outputMetadata && (
             <span className='font-mono text-xs'>
               {' '}
-              {outputMetadata.symbol} / {inputMetadata?.symbol} @ {fullSyncHeight.toString()}
+              {outputMetadata.symbol} / {inputMetadata?.symbol} @ block {fullSyncHeight.toString()}
             </span>
           )}
         </Row>
@@ -69,7 +69,8 @@ export const ExpandedDetails = ({
           {outputMetadata && (
             <span className='font-mono text-xs'>
               {' '}
-              {outputMetadata.symbol} / {inputMetadata?.symbol} @ {description.endHeight.toString()}
+              {outputMetadata.symbol} / {inputMetadata?.symbol} @ block{' '}
+              {description.endHeight.toString()}
             </span>
           )}
         </Row>
