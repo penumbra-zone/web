@@ -9,9 +9,19 @@ interface InputBlockProps {
   validations?: Validation[] | undefined;
   value?: unknown;
   children: ReactNode;
+  layout?: boolean;
+  layoutId?: string;
 }
 
-export const InputBlock = ({ label, className, validations, value, children }: InputBlockProps) => {
+export const InputBlock = ({
+  label,
+  className,
+  validations,
+  value,
+  children,
+  layout,
+  layoutId,
+}: InputBlockProps) => {
   const vResult = typeof value === 'string' ? validationResult(value, validations) : undefined;
 
   return (
@@ -20,6 +30,8 @@ export const InputBlock = ({ label, className, validations, value, children }: I
       headerContent={
         vResult ? <div className={cn('italic', 'text-red-400')}>{vResult.issue}</div> : null
       }
+      layout={layout}
+      layoutId={layoutId}
     >
       <div
         className={cn(
