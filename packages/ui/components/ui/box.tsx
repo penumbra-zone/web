@@ -43,7 +43,7 @@ export const Box = ({
 >) => {
   return (
     <motion.div
-      layout={layout ?? layoutId ? true : false}
+      layout={layout ?? !!layoutId}
       layoutId={layoutId}
       className={variants({ spacing, state })}
       /**
