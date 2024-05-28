@@ -18,6 +18,10 @@ import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 
+/**
+ * Multipliers to use with the output of the swap simulation, to determine
+ * reasonable maximum and minimimum outputs for the auction.
+ */
 const MAX_OUTPUT_ESTIMATE_MULTIPLIER = 2;
 const MIN_OUTPUT_ESTIMATE_MULTIPLIER = 0.5;
 
