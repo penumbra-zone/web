@@ -193,10 +193,11 @@ export interface PenumbraDb extends DBSchema {
       nullifier: Jsonified<Required<SpendableNoteRecord>['nullifier']['inner']>; // base64
     };
   };
-  // Store for Notes that have been detected but cannot yet be spent
+  // Store for advice for future spendable notes
   // Used in wasm crate to process swap and swap claim
+  // When we detect a swap we save advices, and when we detect a swap claim we use advices to get spendable notes
   // This table is never written or queried by typescript
-  NOTES: {
+  ADVICE_NOTES: {
     // key is not part of the stored object
     key: Jsonified<StateCommitment['inner']>; // base64
     value: Jsonified<Note>;
@@ -282,7 +283,7 @@ export const IDB_TABLES: Tables = {
   assets: 'ASSETS',
   auctions: 'AUCTIONS',
   auction_outstanding_reserves: 'AUCTION_OUTSTANDING_RESERVES',
-  notes: 'NOTES',
+  advice_notes: 'ADVICE_NOTES',
   spendable_notes: 'SPENDABLE_NOTES',
   swaps: 'SWAPS',
   fmd_parameters: 'FMD_PARAMETERS',

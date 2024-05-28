@@ -112,7 +112,7 @@ export class IndexedDb implements IndexedDbInterface {
         db.createObjectStore('FMD_PARAMETERS');
         db.createObjectStore('APP_PARAMETERS');
 
-        db.createObjectStore('NOTES');
+        db.createObjectStore('ADVICE_NOTES');
         db.createObjectStore('SWAPS', {
           keyPath: 'swapCommitment.inner',
         }).createIndex('nullifier', 'nullifier.inner');

@@ -35,7 +35,7 @@ pub struct IndexedDbConstants {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Tables {
     pub assets: String,
-    pub notes: String,
+    pub advice_notes: String,
     pub spendable_notes: String,
     pub swaps: String,
     pub fmd_parameters: String,
@@ -239,8 +239,8 @@ impl IndexedDBStorage {
     pub async fn store_advice(&self, note: Note) -> WasmResult<()> {
         let tx = self
             .db
-            .transaction_on_one_with_mode(&self.constants.tables.notes, Readwrite)?;
-        let store = tx.object_store(&self.constants.tables.notes)?;
+            .transaction_on_one_with_mode(&self.constants.tables.advice_notes, Readwrite)?;
+        let store = tx.object_store(&self.constants.tables.advice_notes)?;
 
         let note_proto: penumbra_proto::core::component::shielded_pool::v1::Note =
             note.clone().into();
@@ -254,8 +254,10 @@ impl IndexedDBStorage {
     }
 
     pub async fn read_advice(&self, commitment: note::StateCommitment) -> WasmResult<Option<Note>> {
-        let tx = self.db.transaction_on_one(&self.constants.tables.notes)?;
-        let store = tx.object_store(&self.constants.tables.notes)?;
+        let tx = self
+            .db
+            .transaction_on_one(&self.constants.tables.advice_notes)?;
+        let store = tx.object_store(&self.constants.tables.advice_notes)?;
 
         let commitment_proto = commitment.to_proto();
 
