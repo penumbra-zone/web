@@ -93,6 +93,7 @@ export const AuctionList = () => {
               className='bg-charcoal'
             >
               <DutchAuctionComponent
+                auctionId={auctionInfo.id}
                 dutchAuction={auctionInfo.auction}
                 inputMetadata={getMetadata(
                   metadataByAssetId,

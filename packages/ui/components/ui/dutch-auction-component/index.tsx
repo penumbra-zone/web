@@ -1,4 +1,7 @@
-import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
+import {
+  AuctionId,
+  DutchAuction,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Button } from '../button';
 import { ChevronRight } from 'lucide-react';
@@ -9,6 +12,7 @@ import { ExpandedDetails } from './expanded-details';
 import { AnimatePresence, motion } from 'framer-motion';
 
 interface BaseProps {
+  auctionId?: AuctionId;
   dutchAuction: DutchAuction;
   inputMetadata?: Metadata;
   outputMetadata?: Metadata;
@@ -34,6 +38,7 @@ interface PropsWithoutButton extends BaseProps {
 type Props = PropsWithButton | PropsWithoutButton;
 
 export const DutchAuctionComponent = ({
+  auctionId,
   dutchAuction,
   inputMetadata,
   outputMetadata,
@@ -92,6 +97,7 @@ export const DutchAuctionComponent = ({
             <div className='w-4 shrink-0' />
 
             <ExpandedDetails
+              auctionId={auctionId}
               dutchAuction={dutchAuction}
               inputMetadata={inputMetadata}
               outputMetadata={outputMetadata}
