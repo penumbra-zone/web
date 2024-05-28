@@ -15,7 +15,7 @@ const simulateSwapSelector = (state: AllSlices) => ({
 export const SimulateSwap = ({ layoutId }: { layoutId: string }) => {
   const { loading, simulateSwap, disabled, result } = useStoreShallow(simulateSwapSelector);
 
-  return result ? (
+  return (
     <Box
       label='Swap'
       headerContent={
@@ -23,15 +23,7 @@ export const SimulateSwap = ({ layoutId }: { layoutId: string }) => {
       }
       layoutId={layoutId}
     >
-      <SimulateSwapResult result={result} />
+      {result && <SimulateSwapResult result={result} />}
     </Box>
-  ) : (
-    <Box
-      label='Swap'
-      headerContent={
-        <EstimateButton disabled={disabled} loading={loading} onClick={() => void simulateSwap()} />
-      }
-      layoutId={layoutId}
-    />
   );
 };
