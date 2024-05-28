@@ -55,6 +55,15 @@ export const multiplyAmountByNumber = (amount: Amount, multiplier: number): Amou
   return new Amount(loHi);
 };
 
+export const multiplyAmounts = (amount1: Amount, amount2: Amount): Amount => {
+  const amount1AsBigNumber = new BigNumber(joinLoHiAmount(amount1).toString());
+  const amount2AsBigNumber = new BigNumber(joinLoHiAmount(amount2).toString());
+  const result = amount1AsBigNumber.multipliedBy(amount2AsBigNumber).decimalPlaces(0).toString(10);
+  const loHi = splitLoHi(BigInt(result));
+
+  return new Amount(loHi);
+};
+
 export const divideAmounts = (dividend: Amount, divisor: Amount): BigNumber => {
   if (isZero(divisor)) throw new Error('Division by zero');
 

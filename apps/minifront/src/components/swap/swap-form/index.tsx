@@ -42,13 +42,11 @@ export const SwapForm = () => {
             <DurationSlider />
           </InputBlock>
 
-          {duration !== 'instant' && (
-            <InputBlock label='Output' layoutId={mechanismLayoutId}>
-              <Output />
-            </InputBlock>
+          {duration === 'instant' ? (
+            <SimulateSwap layoutId={mechanismLayoutId} />
+          ) : (
+            <Output layoutId={mechanismLayoutId} />
           )}
-
-          {duration === 'instant' && <SimulateSwap layoutId={mechanismLayoutId} />}
 
           <Button
             type='submit'

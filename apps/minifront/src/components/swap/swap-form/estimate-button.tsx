@@ -6,18 +6,16 @@ import {
   TooltipContent,
 } from '@penumbra-zone/ui/components/ui/tooltip';
 import { cn } from '@penumbra-zone/ui/lib/utils';
-import { AllSlices } from '../../../../state';
-import { useStoreShallow } from '../../../../utils/use-store-shallow';
 
-const simulateSwapButtonSelector = (state: AllSlices) => ({
-  loading: state.swap.instantSwap.simulateSwapLoading,
-  simulateSwap: state.swap.instantSwap.simulateSwap,
-  disabled: state.swap.txInProgress || !state.swap.amount,
-});
-
-export const SimulateSwapButton = () => {
-  const { loading, simulateSwap, disabled } = useStoreShallow(simulateSwapButtonSelector);
-
+export const EstimateButton = ({
+  loading,
+  disabled,
+  onClick,
+}: {
+  loading: boolean;
+  disabled: boolean;
+  onClick: () => void;
+}) => {
   return (
     <TooltipProvider>
       <Tooltip>
@@ -30,7 +28,7 @@ export const SimulateSwapButton = () => {
           )}
           onClick={e => {
             e.preventDefault();
-            void simulateSwap();
+            onClick();
           }}
           disabled={disabled}
         >
