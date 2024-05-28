@@ -12,11 +12,10 @@ import { getAddressByIndex } from '../../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import {
-  SimulateTradeRequest,
   SwapExecution,
   SwapExecution_Trace,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { simulateClient, viewClient } from '../../clients';
+import { viewClient } from '../../clients';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
@@ -31,6 +30,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { divideAmounts } from '@penumbra-zone/types/amount';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { SwapSlice } from '.';
+import { sendSimulateTradeRequest } from './helpers';
 
 const getMetadataByAssetId = async (
   traces: SwapExecution_Trace[] = [],
@@ -91,29 +91,14 @@ export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set
           swap.instantSwap.simulateSwapLoading = true;
         });
 
-        const assetIn = get().swap.assetIn;
-        const assetOut = get().swap.assetOut;
-        if (!assetIn || !assetOut) throw new Error('Both asset in and out need to be set');
-
-        const swapInValue = new Value({
-          assetId: getAssetIdFromValueView(assetIn.balanceView),
-          amount: toBaseUnit(
-            BigNumber(get().swap.amount || 0),
-            getDisplayDenomExponentFromValueView(assetIn.balanceView),
-          ),
-        });
-        const req = new SimulateTradeRequest({
-          input: swapInValue,
-          output: getAssetId(assetOut),
-        });
-        const res = await simulateClient.simulateTrade(req);
+        const res = await sendSimulateTradeRequest(get().swap);
 
         const output = new ValueView({
           valueView: {
             case: 'knownAssetId',
             value: {
               amount: res.output?.output?.amount,
-              metadata: assetOut,
+              metadata: get().swap.assetOut,
             },
           },
         });
@@ -123,7 +108,7 @@ export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set
             case: 'knownAssetId',
             value: {
               amount: res.unfilled?.amount,
-              metadata: getMetadata(assetIn.balanceView),
+              metadata: getMetadata(get().swap.assetIn?.balanceView),
             },
           },
         });
