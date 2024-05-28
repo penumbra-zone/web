@@ -1,7 +1,7 @@
 import { VariantProps, cva } from 'class-variance-authority';
 import { PropsWithChildren } from 'react';
 
-const variants = cva('rounded-lg border bg-background', {
+const variants = cva('overflow-hidden rounded-lg border bg-background', {
   variants: {
     spacing: {
       /** Useful for e.g., wrapping around a transparent `<Input />`. */
