@@ -7,7 +7,8 @@ import { InputBlock } from '../../shared/input-block';
 import { Output } from './output';
 import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { SimulateSwap } from './simulate-swap';
-import { LayoutGroup, motion } from 'framer-motion';
+import { LayoutGroup } from 'framer-motion';
+import { useId } from 'react';
 
 const swapFormSelector = (state: AllSlices) => ({
   onSubmit:
@@ -23,8 +24,10 @@ export const SwapForm = () => {
   const { onSubmit, submitButtonLabel, duration, submitButtonDisabled } =
     useStoreShallow(swapFormSelector);
 
+  const mechanismLayoutId = useId();
+
   return (
-    <Card>
+    <Card layout>
       <LayoutGroup>
         <form
           className='flex flex-col gap-4 xl:gap-3'
@@ -35,29 +38,27 @@ export const SwapForm = () => {
         >
           <TokenSwapInput />
 
-          <InputBlock label='Speed'>
+          <InputBlock label='Speed' layout>
             <DurationSlider />
           </InputBlock>
 
           {duration !== 'instant' && (
-            <InputBlock label='Output'>
+            <InputBlock label='Output' layoutId={mechanismLayoutId}>
               <Output />
             </InputBlock>
           )}
 
-          {duration === 'instant' && <SimulateSwap />}
+          {duration === 'instant' && <SimulateSwap layoutId={mechanismLayoutId} />}
 
-          <motion.div layout className='mt-3 flex'>
-            <Button
-              type='submit'
-              variant='gradient'
-              size='lg'
-              className='grow'
-              disabled={submitButtonDisabled}
-            >
-              {submitButtonLabel}
-            </Button>
-          </motion.div>
+          <Button
+            type='submit'
+            variant='gradient'
+            size='lg'
+            className='mt-3 flex grow'
+            disabled={submitButtonDisabled}
+          >
+            {submitButtonLabel}
+          </Button>
         </form>
       </LayoutGroup>
     </Card>

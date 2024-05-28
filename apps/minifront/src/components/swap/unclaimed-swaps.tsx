@@ -27,8 +27,8 @@ const _UnclaimedSwaps = ({ unclaimedSwaps }: { unclaimedSwaps: UnclaimedSwapsWit
   const { claimSwap, isInProgress } = useStore(unclaimedSwapsSelector);
 
   return (
-    <Card>
-      <GradientHeader>Unclaimed Swaps</GradientHeader>
+    <Card layout>
+      <GradientHeader layout>Unclaimed Swaps</GradientHeader>
       <p className='text-gray-400'>
         Swaps on Penumbra are a two step process. The first transaction issues the request and the
         second claims the result of the swap action. For some reason, these second transactions were

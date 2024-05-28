@@ -58,7 +58,7 @@ export const AuctionList = () => {
   );
 
   return (
-    <Card>
+    <Card layout>
       <div className='mb-4 flex items-center justify-between'>
         <GradientHeader>My Auctions</GradientHeader>
 

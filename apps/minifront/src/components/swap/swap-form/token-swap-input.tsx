@@ -47,7 +47,7 @@ export const TokenSwapInput = () => {
   if (maxAmount) maxAmountAsString = joinLoHiAmount(maxAmount).toString();
 
   return (
-    <Box label='Trade'>
+    <Box label='Trade' layout>
       <div className='flex flex-col items-start gap-4 sm:flex-row'>
         <div className='flex grow flex-col items-start gap-2'>
           <Input
