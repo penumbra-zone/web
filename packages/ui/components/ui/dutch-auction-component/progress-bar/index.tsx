@@ -26,12 +26,14 @@ export const ProgressBar = ({
   fullSyncHeight?: bigint;
   seqNum?: bigint;
 }) => {
-  const progress = getProgress(auction.startHeight, auction.endHeight, fullSyncHeight);
+  const progress = getProgress(auction.startHeight, auction.endHeight, fullSyncHeight, seqNum);
 
   const auctionEnded =
     (!!seqNum && seqNum > 0n) || (!!fullSyncHeight && fullSyncHeight >= auction.endHeight);
-  const auctionIsUpcoming = !!fullSyncHeight && fullSyncHeight < auction.startHeight;
+  const auctionIsUpcoming =
+    seqNum === 0n && !!fullSyncHeight && fullSyncHeight < auction.startHeight;
   const auctionIsInProgress =
+    seqNum === 0n &&
     !!fullSyncHeight &&
     fullSyncHeight >= auction.startHeight &&
     fullSyncHeight <= auction.endHeight;
