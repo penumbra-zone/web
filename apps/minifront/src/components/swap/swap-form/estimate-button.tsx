@@ -8,11 +8,9 @@ import {
 import { cn } from '@penumbra-zone/ui/lib/utils';
 
 export const EstimateButton = ({
-  loading,
   disabled,
   onClick,
 }: {
-  loading: boolean;
   disabled: boolean;
   onClick: () => void;
 }) => {
@@ -21,11 +19,7 @@ export const EstimateButton = ({
       <Tooltip>
         <TooltipTrigger
           // Style as a button
-          className={cn(
-            'w-full',
-            buttonVariants({ variant: 'secondary', size: 'sm' }),
-            loading ? 'animate-pulse duration-700' : undefined,
-          )}
+          className={cn('w-full', buttonVariants({ variant: 'secondary', size: 'sm' }))}
           onClick={e => {
             e.preventDefault();
             onClick();

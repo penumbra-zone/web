@@ -12,7 +12,6 @@ const outputSelector = (state: AllSlices) => ({
   setMinOutput: state.swap.dutchAuction.setMinOutput,
   maxOutput: state.swap.dutchAuction.maxOutput,
   setMaxOutput: state.swap.dutchAuction.setMaxOutput,
-  estimateLoading: state.swap.dutchAuction.estimateLoading,
   estimate: state.swap.dutchAuction.estimate,
   estimateButtonDisabled:
     state.swap.txInProgress || !state.swap.amount || state.swap.dutchAuction.estimateLoading,
@@ -25,7 +24,6 @@ export const Output = ({ layoutId }: { layoutId: string }) => {
     setMinOutput,
     maxOutput,
     setMaxOutput,
-    estimateLoading,
     estimate,
     estimateButtonDisabled,
   } = useStoreShallow(outputSelector);
@@ -35,11 +33,7 @@ export const Output = ({ layoutId }: { layoutId: string }) => {
       layoutId={layoutId}
       label='Output'
       headerContent={
-        <EstimateButton
-          disabled={estimateButtonDisabled}
-          loading={estimateLoading}
-          onClick={() => void estimate()}
-        />
+        <EstimateButton disabled={estimateButtonDisabled} onClick={() => void estimate()} />
       }
     >
       <motion.div layout className='flex flex-col gap-4'>

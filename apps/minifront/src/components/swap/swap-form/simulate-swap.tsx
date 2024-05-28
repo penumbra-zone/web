@@ -5,7 +5,6 @@ import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { EstimateButton } from './estimate-button';
 
 const simulateSwapSelector = (state: AllSlices) => ({
-  loading: state.swap.instantSwap.simulateSwapLoading,
   simulateSwap: state.swap.instantSwap.simulateSwap,
   disabled:
     state.swap.txInProgress || !state.swap.amount || state.swap.instantSwap.simulateSwapLoading,
@@ -13,14 +12,12 @@ const simulateSwapSelector = (state: AllSlices) => ({
 });
 
 export const SimulateSwap = ({ layoutId }: { layoutId: string }) => {
-  const { loading, simulateSwap, disabled, result } = useStoreShallow(simulateSwapSelector);
+  const { simulateSwap, disabled, result } = useStoreShallow(simulateSwapSelector);
 
   return (
     <Box
       label='Swap'
-      headerContent={
-        <EstimateButton disabled={disabled} loading={loading} onClick={() => void simulateSwap()} />
-      }
+      headerContent={<EstimateButton disabled={disabled} onClick={() => void simulateSwap()} />}
       layoutId={layoutId}
     >
       {result && <SimulateSwapResult result={result} />}
