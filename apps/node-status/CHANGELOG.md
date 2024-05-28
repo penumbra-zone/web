@@ -1,5 +1,13 @@
 # node-status
 
+## 2.0.9
+
+### Patch Changes
+
+- Updated dependencies [d8fef48]
+- Updated dependencies [5b80e7c]
+  - @penumbra-zone/ui@3.2.0
+
 ## 2.0.8
 
 ### Patch Changes

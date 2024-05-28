@@ -1,5 +1,19 @@
 # chrome-extension
 
+## 8.1.1
+
+### Patch Changes
+
+- Updated dependencies [d8fef48]
+- Updated dependencies [5b80e7c]
+  - @penumbra-zone/ui@3.2.0
+  - @penumbra-zone/wasm@5.0.1
+  - @penumbra-zone/perspective@2.0.1
+  - @penumbra-zone/query@3.2.1
+  - @penumbra-zone/services@3.2.1
+  - @penumbra-zone/services-context@3.1.1
+  - @penumbra-zone/storage@3.3.0
+
 ## 8.1.0
 
 ### Minor Changes

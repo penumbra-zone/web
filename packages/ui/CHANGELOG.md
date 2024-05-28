@@ -1,5 +1,16 @@
 # @penumbra-zone/ui
 
+## 3.2.0
+
+### Minor Changes
+
+- d8fef48: Update design of DutchAuctionComponent; add filtering to auctions
+- 5b80e7c: Add animations to SegmentedPicker
+
+### Patch Changes
+
+- @penumbra-zone/perspective@2.0.1
+
 ## 3.1.0
 
 ### Minor Changes

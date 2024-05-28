@@ -1,5 +1,11 @@
 # @penumbra-zone/perspective
 
+## 2.0.1
+
+### Patch Changes
+
+- @penumbra-zone/wasm@5.0.1
+
 ## 2.0.0
 
 ### Major Changes

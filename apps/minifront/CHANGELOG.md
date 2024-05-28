@@ -1,5 +1,18 @@
 # minifront
 
+## 4.6.0
+
+### Minor Changes
+
+- d8fef48: Update design of DutchAuctionComponent; add filtering to auctions
+
+### Patch Changes
+
+- Updated dependencies [d8fef48]
+- Updated dependencies [5b80e7c]
+  - @penumbra-zone/ui@3.2.0
+  - @penumbra-zone/perspective@2.0.1
+
 ## 4.5.0
 
 ### Minor Changes
