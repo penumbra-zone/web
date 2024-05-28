@@ -2,6 +2,90 @@ import { RootQuerier } from './root-querier';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/dex';
 
+const slicer = {
+  /**
+   * Parse a stream of size-delimited messages.
+   */
+  async *decStream(iterable: AsyncIterable<Uint8Array>) {
+    // append chunk to buffer, returning updated buffer
+    function append(buffer: Uint8Array, chunk: Uint8Array): Uint8Array {
+      const n = new Uint8Array(buffer.byteLength + chunk.byteLength);
+      n.set(buffer);
+      n.set(chunk, buffer.length);
+      return n;
+    }
+    let buffer = new Uint8Array(0);
+    for await (const chunk of iterable) {
+      buffer = append(buffer, chunk);
+      for (;;) {
+        const size = slicer.peekSize(buffer);
+        if (size.eof) {
+          // size is incomplete, buffer more data
+          break;
+        }
+        if (size.offset + size.size > buffer.byteLength) {
+          // message is incomplete, buffer more data
+          break;
+        }
+        yield buffer;
+        buffer = buffer.subarray(size.offset + size.size);
+      }
+    }
+    if (buffer.byteLength > 0) {
+      throw new Error('incomplete data');
+    }
+  },
+
+  /**
+   * Decodes the size from the given size-delimited message, which may be
+   * incomplete.
+   *
+   * Returns an object with the following properties:
+   * - size: The size of the delimited message in bytes
+   * - offset: The offset in the given byte array where the message starts
+   * - eof: true
+   *
+   * If the size-delimited data does not include all bytes of the varint size,
+   * the following object is returned:
+   * - size: null
+   * - offset: null
+   * - eof: false
+   *
+   * This function can be used to implement parsing of size-delimited messages
+   * from a stream.
+   */
+  peekSize(
+    data: Uint8Array,
+  ):
+    | { readonly eof: false; readonly size: number; readonly offset: number }
+    | { readonly eof: true; readonly size: null; readonly offset: null } {
+    const sizeEof = { eof: true, size: null, offset: null } as const;
+    for (let i = 0; i < 10; i++) {
+      if (i > data.byteLength) {
+        return sizeEof;
+      }
+      if ((data[i]! & 0x80) == 0) {
+        const reader = new BinaryReader(data);
+        let size: number;
+        try {
+          size = reader.uint32();
+        } catch (e) {
+          if (e instanceof RangeError) {
+            return sizeEof;
+          }
+          throw e;
+        }
+        return {
+          eof: false,
+          size,
+          offset: reader.pos,
+        };
+      }
+    }
+    throw new Error('invalid varint');
+  },
+};
+
 import {
   getExchangeRateFromValidatorInfoResponse,
   getIdentityKeyFromValidatorInfoResponse,
@@ -46,6 +130,11 @@ import { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
 import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auction-end';
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw';
+import { BinaryReader } from '@bufbuild/protobuf';
+import {
+  CompactBlock,
+  CompactBlockRangeResponse,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
 
 declare global {
   // `var` required for global declaration (as let/const are block scoped)
@@ -171,7 +260,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async syncAndStore() {
-    console.log("Entered syncAndStore")
+    console.log('Entered syncAndStore');
     const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
     const startHeight = fullSyncHeight !== undefined ? fullSyncHeight + 1n : 0n; // Must compare to undefined as 0n is falsy
     let latestKnownBlockHeight = await this.querier.tendermint.latestBlockHeight();
@@ -197,19 +286,67 @@ export class BlockProcessor implements BlockProcessorInterface {
     let totalScanBlockTime = 0;
     let totalScanBlockTime1 = 0;
 
+    const res = await fetch(
+      'https://grpc.testnet.penumbra.zone/penumbra.core.component.compact_block.v1.QueryService/CompactBlockRange',
+      {
+        signal: this.abortController.signal,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/grpc-web+proto' },
+        body: new Uint8Array(5),
+      },
+    );
+
+    if (!res.body) throw new Error('No body in response');
+
+    const iter = (async function* (b: ReadableStream) {
+      const reader = b.getReader();
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+        yield value;
+      }
+    })(res.body);
+
+    const chunks = slicer.decStream(iter);
+
     // this is an indefinite stream of the (compact) chain from the network
     // intended to run continuously
-    for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
-      startHeight,
-      keepAlive: true,
-      abortSignal: this.abortController.signal,
-    })) {
+    for await (const compactBlockRangeResponse of chunks) {
       blockCounter++;
       if (blockCounter > maxBlocks) {
+        this.abortController.abort();
         break;
       }
 
-      compactBlocks.push(compactBlock)
+      let cbrr: CompactBlockRangeResponse;
+      let ok = false;
+      let idx = 0;
+      console.log('block1');
+      while (!ok) {
+        try {
+          cbrr = CompactBlockRangeResponse.fromBinary(compactBlockRangeResponse.slice(idx), {
+            readUnknownFields: false,
+          });
+          const { compactBlock } = cbrr;
+          if (!compactBlock) continue;
+          const j = compactBlock.toJson()!;
+          const e = Object.entries(j).length;
+          if (e) console.log(j);
+          ok = e > 2;
+        } catch {
+          ok = false;
+        }
+        idx++;
+      }
+      console.log('wow we did it everyone', idx, compactBlockRangeResponse.length - idx);
+
+      //const { compactBlock } = cbrr;
+      console.log('compactBlockRangeResponse', compactBlockRangeResponse.length);
+      const compactBlock = new CompactBlock();
+
+      compactBlocks.push(compactBlock);
 
       // if (compactBlock.appParametersUpdated) {
       //   await this.indexedDb.saveAppParams(await this.querier.app.appParams());
@@ -232,7 +369,7 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       const measure = performance.getEntriesByName('scanBlock_Measure').pop();
       totalScanBlockTime += measure!.duration;
-            
+
       if (compactBlock.height < maxBlocks) {
         performance.mark('scanBlock1_Start');
         await this.viewServer.scanBlock(compactBlockBinary);
@@ -383,10 +520,14 @@ export class BlockProcessor implements BlockProcessorInterface {
     performance.mark('Loop_End');
     const loopMeasure = performance.measure('Loop_Measure', 'Loop_Start', 'Loop_End');
     console.log('Total loop time for blocks with height < 10000: ' + loopMeasure.duration + ' ms');
-    console.log('Total serialization time for blocks with height < 10000: ' + totalScanBlockTime + ' ms');
-    console.log('Total scan block (wasm) time for blocks with height < 10000: ' + totalScanBlockTime1 + ' ms');
- 
-    console.log("compactBlocks: ", compactBlocks)
+    console.log(
+      'Total serialization time for blocks with height < 10000: ' + totalScanBlockTime + ' ms',
+    );
+    console.log(
+      'Total scan block (wasm) time for blocks with height < 10000: ' + totalScanBlockTime1 + ' ms',
+    );
+
+    console.log('compactBlocks: ', compactBlocks);
   }
 
   private async saveRecoveredCommitmentSources(recovered: (SpendableNoteRecord | SwapRecord)[]) {
