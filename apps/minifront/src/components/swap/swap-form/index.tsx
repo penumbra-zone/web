@@ -24,7 +24,7 @@ export const SwapForm = () => {
   const { onSubmit, submitButtonLabel, duration, submitButtonDisabled } =
     useStoreShallow(swapFormSelector);
 
-  const mechanismLayoutId = useId();
+  const sharedLayoutId = useId();
 
   return (
     <Card layout>
@@ -43,9 +43,9 @@ export const SwapForm = () => {
           </InputBlock>
 
           {duration === 'instant' ? (
-            <SimulateSwap layoutId={mechanismLayoutId} />
+            <SimulateSwap layoutId={sharedLayoutId} />
           ) : (
-            <Output layoutId={mechanismLayoutId} />
+            <Output layoutId={sharedLayoutId} />
           )}
 
           <Button
