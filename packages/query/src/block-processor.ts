@@ -47,6 +47,11 @@ import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auc
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw';
 
+import ReadableStream from '@penumbra-zone/polyfills/ReadableStream.from';
+import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
+import Array from '@penumbra-zone/polyfills/Array.fromAsync';
+import { CompactBlock } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
+
 declare global {
   // `var` required for global declaration (as let/const are block scoped)
   // eslint-disable-next-line no-var
@@ -94,25 +99,243 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.stakingTokenMetadata = stakingTokenMetadata;
   }
 
-  // If syncBlocks() is called multiple times concurrently, they'll all wait for
-  // the same promise rather than each starting their own sync process.
-  public sync(): Promise<void> {
-    this.syncPromise ??= backOff(() => this.syncAndStore(), {
-      maxDelay: 30_000, // 30 seconds
-      retry: async (e, attemptNumber) => {
-        console.warn('Sync failure', attemptNumber, e);
-        await this.viewServer.resetTreeToStored();
-        return !this.abortController.signal.aborted;
-      },
-    });
-    return this.syncPromise;
-  }
-
   public stop(r: string) {
     this.abortController.abort(`Sync abort ${r}`);
   }
 
-  async identifyTransactions(
+  public sync(): Promise<void> {
+    this.syncPromise ??= backOff(
+      async () => {
+        const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
+        const startHeight = fullSyncHeight !== undefined ? fullSyncHeight + 1n : 0n; // Must compare to undefined as 0n is falsy
+        let latestKnownBlockHeight = await this.querier.tendermint.latestBlockHeight();
+
+        if (startHeight === 0n) {
+          // In the `for` loop below, we only update validator infos once we've
+          // reached the latest known epoch. This means that, if a user is syncing
+          // for the first time, they could experience a broken UI until the latest
+          // known epoch is reached, since they may have delegation tokens but no
+          // validator info to go with them. So we'll update validator infos at the
+          // beginning of sync as well, and force the rest of sync to wait until
+          // it's done.
+          await this.updateValidatorInfos(0n);
+        }
+
+        const [syncRequest, syncRequestTee] = ReadableStream.from(
+          this.querier.compactBlock.compactBlockRange({
+            startHeight,
+            keepAlive: true,
+            abortSignal: this.abortController.signal,
+          }),
+        ).tee();
+
+        const binaryCompactBlocks = new Array<Uint8Array>();
+
+        // todo: this lives forever
+        void (async (stream: ReadableStream<CompactBlock>) => {
+          let startHeight: bigint;
+          for await (const compactBlock of stream) {
+            startHeight ??= compactBlock.height;
+            binaryCompactBlocks.push(compactBlock.toBinary());
+            if (!(compactBlock.height % 1000n) || compactBlock.height > latestKnownBlockHeight)
+              console.log(
+                'syncRequestTee',
+                startHeight,
+                binaryCompactBlocks.length,
+                compactBlock.height,
+              );
+          }
+        })(syncRequestTee);
+
+        // this is an indefinite stream of the (compact) chain from the network
+        // intended to run continuously
+        for await (const compactBlock of syncRequest) {
+          if (compactBlock.appParametersUpdated) {
+            await this.indexedDb.saveAppParams(await this.querier.app.appParams());
+          }
+          if (compactBlock.fmdParameters) {
+            await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
+          }
+          if (compactBlock.gasPrices) {
+            await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
+          }
+
+          // wasm view server scan
+          // - decrypts new notes
+          // - decrypts new swaps
+          // - updates idb with advice
+          const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock);
+
+          // flushing is slow, avoid it until
+          // - wasm says
+          // - every 1000th block
+          // - every block at tip
+          const flushReasons = {
+            scannerWantsFlush,
+            interval: compactBlock.height % 1000n === 0n,
+            new: compactBlock.height > latestKnownBlockHeight,
+          };
+
+          const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
+          let flush: ScanBlockResult | undefined;
+          if (Object.values(flushReasons).some(Boolean)) {
+            console.log('syncRequest', compactBlock.height);
+            flush = this.viewServer.flushUpdates();
+
+            // in an atomic query, this
+            // - saves 'sctUpdates'
+            // - saves new decrypted notes
+            // - saves new decrypted swaps
+            // - updates last block synced
+            await this.indexedDb.saveScanResult(flush);
+
+            // - detect unknown asset types
+            // - shielded pool for asset metadata
+            // - or, generate default fallback metadata
+            // - update idb
+            await this.identifyNewAssets(flush.newNotes);
+
+            for (const spendableNoteRecord of flush.newNotes)
+              recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
+            for (const swapRecord of flush.newSwaps)
+              recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
+          }
+
+          // nullifiers on this block may match notes or swaps from db
+          // - update idb, mark as spent/claimed
+          // - return nullifiers used in this way
+          const spentNullifiers = await this.resolveNullifiers(
+            compactBlock.nullifiers,
+            compactBlock.height,
+          );
+
+          // if a new record involves a state commitment, scan all block tx
+          if (spentNullifiers.size || recordsByCommitment.size) {
+            // this is a network query
+            const blockTx = await this.querier.app.txsByHeight(compactBlock.height);
+
+            // identify tx that involve a new record
+            // - compare nullifiers
+            // - compare state commitments
+            // - collect relevant tx for info generation later
+            // - if matched by commitment, collect record with recovered source
+            const { relevantTx, recordsWithSources } = await this.identifyTransactions(
+              spentNullifiers,
+              recordsByCommitment,
+              blockTx,
+            );
+
+            // this simply stores the new records with 'rehydrated' sources to idb
+            // TODO: this is the second time we save these records, after "saveScanResult"
+            await this.saveRecoveredCommitmentSources(recordsWithSources);
+
+            await this.processTransactions(blockTx);
+
+            // at this point txinfo can be generated and saved. this will resolve
+            // pending broadcasts, and populate the transaction list.
+            // - calls wasm for each relevant tx
+            // - saves to idb
+            await this.saveTransactions(compactBlock.height, relevantTx);
+          }
+
+          /**
+           * This... really isn't great.
+           *
+           * You can see above that we're already iterating over flush.newNotes. So
+           * why don't we put this call to
+           * `this.maybeUpsertAuctionWithNoteCommitment()` inside that earlier `for`
+           * loop?
+           *
+           * The problem is, we need to call `this.processTransactions()` before
+           * calling `this.maybeUpsertAuctionWithNoteCommitment()`, because
+           * `this.processTransactions()` is what saves the auction NFT metadata to
+           * the database. `this.maybeUpsertAuctionWithNoteCommitment()` depends on
+           * that auction NFT metadata being saved already to be able to detect
+           * whether a given note is for an auction NFT; only then will it save the
+           * note's commitment to the `AUCTIONS` table.
+           *
+           * "So why not just move `this.processTransactions()` to before the block
+           * where we handle `flush.newNotes`?" Because `this.processTransactions()`
+           * should only run after we've handled `flush.newNotes`, since we depend
+           * on the result of the flush to determine whether there are transactions
+           * to process in the first place. It's a catch-22.
+           *
+           * This isn't a problem in core because core isn't going back and forth
+           * between Rust and TypeScript like we are. If and when we move the block
+           * processor into Rust, this issue should be resolved.
+           */
+          for (const spendableNoteRecord of flush?.newNotes ?? []) {
+            await this.maybeUpsertAuctionWithNoteCommitment(spendableNoteRecord);
+          }
+
+          // We do not store historical prices,
+          // so there is no point in saving prices that would already be considered obsolete at the time of saving
+          const blockInPriceRelevanceThreshold =
+            compactBlock.height >=
+            latestKnownBlockHeight - BigInt(PRICE_RELEVANCE_THRESHOLDS.default);
+
+          // we can't use third-party price oracles for privacy reasons,
+          // so we have to get asset prices from swap results during block scans
+          // and store them locally in indexed-db.
+          if (blockInPriceRelevanceThreshold && compactBlock.swapOutputs.length) {
+            await updatePricesFromSwaps(
+              this.indexedDb,
+              this.numeraires,
+              compactBlock.swapOutputs,
+              compactBlock.height,
+            );
+          }
+
+          // We only query Tendermint for the latest known block height once, when
+          // the block processor starts running. Once we're caught up, though, the
+          // chain will of course continue adding blocks, and we'll keep processing
+          // them. So, we need to update `latestKnownBlockHeight` once we've passed
+          // it.
+          if (compactBlock.height > latestKnownBlockHeight) {
+            latestKnownBlockHeight = compactBlock.height;
+          }
+
+          const isLastBlockOfEpoch = !!compactBlock.epochRoot;
+          if (isLastBlockOfEpoch) {
+            await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
+          }
+
+          if (globalThis.ASSERT_ROOT_VALID) {
+            await this.assertRootValid(compactBlock.height);
+          }
+        }
+      },
+
+      // backOff options
+      {
+        maxDelay: 30_000, // 30 seconds
+        retry: async (e, attemptNumber) => {
+          console.warn('Sync failure', attemptNumber, e);
+          await this.viewServer.resetTreeToStored();
+          return !this.abortController.signal.aborted;
+        },
+      },
+    );
+    return this.syncPromise;
+  }
+
+  private async saveRecoveredCommitmentSources(recovered: (SpendableNoteRecord | SwapRecord)[]) {
+    for (const record of recovered)
+      if (record instanceof SpendableNoteRecord) await this.indexedDb.saveSpendableNote(record);
+      else if (record instanceof SwapRecord) await this.indexedDb.saveSwap(record);
+      else throw new Error('Unexpected record type');
+  }
+
+  private async identifyNewAssets(notes: SpendableNoteRecord[]) {
+    for (const note of notes) {
+      const assetId = note.note?.value?.assetId;
+      if (!assetId) continue;
+
+      await this.saveAndReturnMetadata(assetId);
+    }
+  }
+
+  private async identifyTransactions(
     spentNullifiers: Set<Nullifier>,
     commitmentRecordsByStateCommitment: Map<StateCommitment, SpendableNoteRecord | SwapRecord>,
     blockTx: Transaction[],
@@ -168,199 +391,6 @@ export class BlockProcessor implements BlockProcessorInterface {
       }
     }
     return { relevantTx, recordsWithSources };
-  }
-
-  private async syncAndStore() {
-    const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
-    const startHeight = fullSyncHeight !== undefined ? fullSyncHeight + 1n : 0n; // Must compare to undefined as 0n is falsy
-    let latestKnownBlockHeight = await this.querier.tendermint.latestBlockHeight();
-
-    if (startHeight === 0n) {
-      // In the `for` loop below, we only update validator infos once we've
-      // reached the latest known epoch. This means that, if a user is syncing
-      // for the first time, they could experience a broken UI until the latest
-      // known epoch is reached, since they may have delegation tokens but no
-      // validator info to go with them. So we'll update validator infos at the
-      // beginning of sync as well, and force the rest of sync to wait until
-      // it's done.
-      await this.updateValidatorInfos(0n);
-    }
-
-    // this is an indefinite stream of the (compact) chain from the network
-    // intended to run continuously
-    for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
-      startHeight,
-      keepAlive: true,
-      abortSignal: this.abortController.signal,
-    })) {
-      if (compactBlock.appParametersUpdated) {
-        await this.indexedDb.saveAppParams(await this.querier.app.appParams());
-      }
-      if (compactBlock.fmdParameters) {
-        await this.indexedDb.saveFmdParams(compactBlock.fmdParameters);
-      }
-      if (compactBlock.gasPrices) {
-        await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
-      }
-
-      // wasm view server scan
-      // - decrypts new notes
-      // - decrypts new swaps
-      // - updates idb with advice
-      const scannerWantsFlush = await this.viewServer.scanBlock(compactBlock);
-
-      // flushing is slow, avoid it until
-      // - wasm says
-      // - every 1000th block
-      // - every block at tip
-      const flushReasons = {
-        scannerWantsFlush,
-        interval: compactBlock.height % 1000n === 0n,
-        new: compactBlock.height > latestKnownBlockHeight,
-      };
-
-      const recordsByCommitment = new Map<StateCommitment, SpendableNoteRecord | SwapRecord>();
-      let flush: ScanBlockResult | undefined;
-      if (Object.values(flushReasons).some(Boolean)) {
-        flush = this.viewServer.flushUpdates();
-
-        // in an atomic query, this
-        // - saves 'sctUpdates'
-        // - saves new decrypted notes
-        // - saves new decrypted swaps
-        // - updates last block synced
-        await this.indexedDb.saveScanResult(flush);
-
-        // - detect unknown asset types
-        // - shielded pool for asset metadata
-        // - or, generate default fallback metadata
-        // - update idb
-        await this.identifyNewAssets(flush.newNotes);
-
-        for (const spendableNoteRecord of flush.newNotes)
-          recordsByCommitment.set(spendableNoteRecord.noteCommitment!, spendableNoteRecord);
-        for (const swapRecord of flush.newSwaps)
-          recordsByCommitment.set(swapRecord.swapCommitment!, swapRecord);
-      }
-
-      // nullifiers on this block may match notes or swaps from db
-      // - update idb, mark as spent/claimed
-      // - return nullifiers used in this way
-      const spentNullifiers = await this.resolveNullifiers(
-        compactBlock.nullifiers,
-        compactBlock.height,
-      );
-
-      // if a new record involves a state commitment, scan all block tx
-      if (spentNullifiers.size || recordsByCommitment.size) {
-        // this is a network query
-        const blockTx = await this.querier.app.txsByHeight(compactBlock.height);
-
-        // identify tx that involve a new record
-        // - compare nullifiers
-        // - compare state commitments
-        // - collect relevant tx for info generation later
-        // - if matched by commitment, collect record with recovered source
-        const { relevantTx, recordsWithSources } = await this.identifyTransactions(
-          spentNullifiers,
-          recordsByCommitment,
-          blockTx,
-        );
-
-        // this simply stores the new records with 'rehydrated' sources to idb
-        // TODO: this is the second time we save these records, after "saveScanResult"
-        await this.saveRecoveredCommitmentSources(recordsWithSources);
-
-        await this.processTransactions(blockTx);
-
-        // at this point txinfo can be generated and saved. this will resolve
-        // pending broadcasts, and populate the transaction list.
-        // - calls wasm for each relevant tx
-        // - saves to idb
-        await this.saveTransactions(compactBlock.height, relevantTx);
-      }
-
-      /**
-       * This... really isn't great.
-       *
-       * You can see above that we're already iterating over flush.newNotes. So
-       * why don't we put this call to
-       * `this.maybeUpsertAuctionWithNoteCommitment()` inside that earlier `for`
-       * loop?
-       *
-       * The problem is, we need to call `this.processTransactions()` before
-       * calling `this.maybeUpsertAuctionWithNoteCommitment()`, because
-       * `this.processTransactions()` is what saves the auction NFT metadata to
-       * the database. `this.maybeUpsertAuctionWithNoteCommitment()` depends on
-       * that auction NFT metadata being saved already to be able to detect
-       * whether a given note is for an auction NFT; only then will it save the
-       * note's commitment to the `AUCTIONS` table.
-       *
-       * "So why not just move `this.processTransactions()` to before the block
-       * where we handle `flush.newNotes`?" Because `this.processTransactions()`
-       * should only run after we've handled `flush.newNotes`, since we depend
-       * on the result of the flush to determine whether there are transactions
-       * to process in the first place. It's a catch-22.
-       *
-       * This isn't a problem in core because core isn't going back and forth
-       * between Rust and TypeScript like we are. If and when we move the block
-       * processor into Rust, this issue should be resolved.
-       */
-      for (const spendableNoteRecord of flush?.newNotes ?? []) {
-        await this.maybeUpsertAuctionWithNoteCommitment(spendableNoteRecord);
-      }
-
-      // We do not store historical prices,
-      // so there is no point in saving prices that would already be considered obsolete at the time of saving
-      const blockInPriceRelevanceThreshold =
-        compactBlock.height >= latestKnownBlockHeight - BigInt(PRICE_RELEVANCE_THRESHOLDS.default);
-
-      // we can't use third-party price oracles for privacy reasons,
-      // so we have to get asset prices from swap results during block scans
-      // and store them locally in indexed-db.
-      if (blockInPriceRelevanceThreshold && compactBlock.swapOutputs.length) {
-        await updatePricesFromSwaps(
-          this.indexedDb,
-          this.numeraires,
-          compactBlock.swapOutputs,
-          compactBlock.height,
-        );
-      }
-
-      // We only query Tendermint for the latest known block height once, when
-      // the block processor starts running. Once we're caught up, though, the
-      // chain will of course continue adding blocks, and we'll keep processing
-      // them. So, we need to update `latestKnownBlockHeight` once we've passed
-      // it.
-      if (compactBlock.height > latestKnownBlockHeight) {
-        latestKnownBlockHeight = compactBlock.height;
-      }
-
-      const isLastBlockOfEpoch = !!compactBlock.epochRoot;
-      if (isLastBlockOfEpoch) {
-        await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
-      }
-
-      if (globalThis.ASSERT_ROOT_VALID) {
-        await this.assertRootValid(compactBlock.height);
-      }
-    }
-  }
-
-  private async saveRecoveredCommitmentSources(recovered: (SpendableNoteRecord | SwapRecord)[]) {
-    for (const record of recovered)
-      if (record instanceof SpendableNoteRecord) await this.indexedDb.saveSpendableNote(record);
-      else if (record instanceof SwapRecord) await this.indexedDb.saveSwap(record);
-      else throw new Error('Unexpected record type');
-  }
-
-  private async identifyNewAssets(notes: SpendableNoteRecord[]) {
-    for (const note of notes) {
-      const assetId = note.note?.value?.assetId;
-      if (!assetId) continue;
-
-      await this.saveAndReturnMetadata(assetId);
-    }
   }
 
   private async saveAndReturnMetadata(assetId: AssetId): Promise<Metadata | undefined> {

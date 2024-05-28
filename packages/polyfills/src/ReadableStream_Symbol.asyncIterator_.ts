@@ -19,7 +19,7 @@ ReadableStream.prototype[Symbol.asyncIterator] ??= async function* () {
 
 declare global {
   interface ReadableStream<R> extends AsyncIterable<R> {
-    [Symbol.asyncIterator](): AsyncIterableIterator<R>;
+    [Symbol.asyncIterator](): AsyncIterator<R>;
   }
 }
 
