@@ -192,7 +192,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   estimate: async () => {
     try {
       set(({ swap }) => {
-        swap.instantSwap.simulateSwapLoading = true;
+        swap.dutchAuction.estimateLoading = true;
       });
 
       const res = await sendSimulateTradeRequest(get().swap);
@@ -218,7 +218,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
       errorToast(e, 'Error estimating swap').render();
     } finally {
       set(({ swap }) => {
-        swap.instantSwap.simulateSwapLoading = false;
+        swap.dutchAuction.estimateLoading = false;
       });
     }
   },
