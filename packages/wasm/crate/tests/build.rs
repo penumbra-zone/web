@@ -75,7 +75,7 @@ mod tests {
         #[derive(Clone, Debug, Serialize, Deserialize)]
         pub struct Tables {
             assets: String,
-            notes: String,
+            advice_notes: String,
             spendable_notes: String,
             swaps: String,
             fmd_parameters: String,
@@ -91,7 +91,7 @@ mod tests {
         // Define `IndexDB` table parameters and constants.
         let tables: Tables = Tables {
             assets: "ASSETS".to_string(),
-            notes: "NOTES".to_string(),
+            advice_notes: "ADVICE_NOTES".to_string(),
             spendable_notes: "SPENDABLE_NOTES".to_string(),
             swaps: "SWAPS".to_string(),
             fmd_parameters: "FMD_PARAMETERS".to_string(),
