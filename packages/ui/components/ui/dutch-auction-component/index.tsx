@@ -1,31 +1,24 @@
 import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
-import { ValueViewComponent } from '../tx/view/value';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Button } from '../button';
-import { ArrowRight } from 'lucide-react';
-import { PriceGraph } from './price-graph';
-import { Reserves } from './reserves';
-
-const getValueView = (amount?: Amount, metadata?: Metadata) =>
-  new ValueView({
-    valueView: {
-      case: 'knownAssetId',
-      value: {
-        amount,
-        metadata,
-      },
-    },
-  });
+import { ChevronRight } from 'lucide-react';
+import { ProgressBar } from './progress-bar';
+import { useState } from 'react';
+import { cn } from '../../../lib/utils';
+import { ExpandedDetails } from './expanded-details';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface BaseProps {
   dutchAuction: DutchAuction;
   inputMetadata?: Metadata;
   outputMetadata?: Metadata;
   fullSyncHeight?: bigint;
+  /**
+   * If this will be in a list of other `<DutchAuctionComponent />`s, and some
+   * of them will have buttons, set this to `true` to render a blank placeholder
+   * space if there are no buttons, to ensure even layout.
+   */
+  renderButtonPlaceholder?: boolean;
 }
 
 interface PropsWithButton extends BaseProps {
@@ -47,63 +40,68 @@ export const DutchAuctionComponent = ({
   fullSyncHeight,
   buttonType,
   onClickButton,
+  renderButtonPlaceholder = false,
 }: Props) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const { description } = dutchAuction;
   if (!description) return null;
 
-  const input = getValueView(description.input?.amount, inputMetadata);
-  const maxOutput = getValueView(description.maxOutput, outputMetadata);
-  const minOutput = getValueView(description.minOutput, outputMetadata);
-
   return (
-    <div className='flex flex-col gap-8'>
-      <div className='flex items-center justify-between'>
-        <div>
-          <ValueViewComponent view={input} />
-        </div>
-
-        <ArrowRight />
-
-        <div className='flex w-min flex-wrap justify-end gap-2'>
-          <div className='flex items-center gap-2'>
-            <span className='text-nowrap text-muted-foreground'>Max:</span>
-            <ValueViewComponent view={maxOutput} />
+    <motion.div layout='position' className='flex flex-col gap-2'>
+      <div className='flex items-center gap-2'>
+        <button
+          className='group flex w-full appearance-none items-center gap-2 overflow-hidden'
+          onClick={() => setIsExpanded(current => !current)}
+          aria-label={isExpanded ? 'Collapse this row' : 'Expand this row'}
+          aria-expanded={isExpanded}
+        >
+          <div className={cn('transition-transform', isExpanded && 'rotate-90')}>
+            <ChevronRight size={16} />
           </div>
-          <div className='flex items-center gap-2'>
-            <span className='text-nowrap text-muted-foreground'>Min:</span>
-            <ValueViewComponent view={minOutput} />
+
+          <ProgressBar
+            fullSyncHeight={fullSyncHeight}
+            auction={description}
+            inputMetadata={inputMetadata}
+            outputMetadata={outputMetadata}
+            seqNum={dutchAuction.state?.seq}
+          />
+        </button>
+
+        {buttonType && (
+          <div className='w-[85px] shrink-0'>
+            <Button size='sm' variant='secondary' className='w-full' onClick={onClickButton}>
+              {buttonType === 'end' ? 'End' : 'Withdraw'}
+            </Button>
           </div>
-        </div>
+        )}
+
+        {!buttonType && renderButtonPlaceholder && <div className='w-[85px] shrink-0' />}
       </div>
 
-      <PriceGraph
-        auctionDescription={description}
-        inputMetadata={inputMetadata}
-        outputMetadata={outputMetadata}
-        fullSyncHeight={fullSyncHeight}
-      />
+      <AnimatePresence mode='popLayout'>
+        {isExpanded && (
+          <motion.div
+            initial={{ scaleY: 0, opacity: 0 }}
+            animate={{ scaleY: 1, opacity: 1 }}
+            exit={{ scaleY: 0, opacity: 0 }}
+            layout
+            className='flex w-full origin-top gap-2'
+          >
+            <div className='w-4 shrink-0' />
 
-      <Reserves
-        dutchAuction={dutchAuction}
-        inputMetadata={inputMetadata}
-        outputMetadata={outputMetadata}
-      />
+            <ExpandedDetails
+              dutchAuction={dutchAuction}
+              inputMetadata={inputMetadata}
+              outputMetadata={outputMetadata}
+              fullSyncHeight={fullSyncHeight}
+            />
 
-      {buttonType === 'withdraw' && (
-        <div className='self-end'>
-          <Button variant='gradient' size='md' onClick={onClickButton}>
-            Withdraw funds
-          </Button>
-        </div>
-      )}
-
-      {buttonType === 'end' && (
-        <div className='self-end'>
-          <Button variant='destructiveSecondary' size='md' onClick={onClickButton}>
-            End auction
-          </Button>
-        </div>
-      )}
-    </div>
+            {renderButtonPlaceholder && <div className='w-[85px] shrink-0' />}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };

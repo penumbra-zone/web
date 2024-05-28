@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { IncognitoIcon } from '../../icons/incognito';
+import { Separator } from '../../separator';
 
 /**
  * Render key/value pairs inside a `<ViewBox />`.
@@ -22,11 +23,6 @@ export const ActionDetails = ({ children, label }: { children: ReactNode; label?
     </div>
   );
 };
-
-const Separator = () => (
-  // eslint-disable-next-line tailwindcss/no-unnecessary-arbitrary-value
-  <div className='mx-2 h-px min-w-8 grow border-b-[1px] border-dotted border-light-brown' />
-);
 
 const ActionDetailsRow = ({
   label,

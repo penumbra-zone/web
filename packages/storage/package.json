@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/storage",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
@@ -19,21 +19,21 @@
     "./indexed-db/*": "./src/indexed-db/*.ts"
   },
   "dependencies": {
-    "@penumbra-labs/registry": "7.2.2",
+    "@penumbra-labs/registry": "7.4.1",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "idb": "^8.0.0"
   },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240514224745-858b19969460.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1",
     "@bufbuild/protobuf": "^1.9.0",
     "@penumbra-zone/polyfills": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240514224745-858b19969460.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1",
     "@bufbuild/protobuf": "^1.9.0"
   }
 }

@@ -12,12 +12,14 @@ export const DashboardLayout = () => {
 
   return (
     <RestrictMaxWidth>
-      <div className='grid gap-6 md:gap-4 lg:grid-cols-3 xl:gap-5'>
+      <div className='grid grid-std-spacing lg:grid-cols-3'>
         <Card
           gradient
           className='order-2 flex flex-1 flex-col p-5 md:p-4 lg:order-1 lg:col-span-2 lg:row-span-2 xl:p-5'
         >
-          <Tabs tabs={dashboardTabs} activeTab={pathname} className='mx-auto w-full md:w-[70%]' />
+          <div className='mx-auto mb-4 w-full md:w-[70%]'>
+            <Tabs tabs={dashboardTabs} activeTab={pathname} />
+          </div>
           <Outlet />
         </Card>
         <EduInfoCard

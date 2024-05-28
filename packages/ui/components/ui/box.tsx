@@ -31,7 +31,7 @@ export const Box = ({
 }: PropsWithChildren<VariantProps<typeof variants> & { label?: string }>) => {
   return (
     <div className={variants({ spacing, state })}>
-      {label && <div className='mb-2 font-bold text-muted-foreground'>{label}</div>}
+      {label && <div className='mb-2 font-bold'>{label}</div>}
       {children}
     </div>
   );

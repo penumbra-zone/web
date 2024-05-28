@@ -1,5 +1,26 @@
 # @penumbra-zone/storage
 
+## 3.3.0
+
+### Minor Changes
+
+- e47a04e: Update registry to latest (fixes labs + adds starling)
+- e4c9fce: Add features to handle auction withdrawals
+
+### Patch Changes
+
+- e35c6f7: Deps bumped to latest
+- d6b8a23: Update registry
+- Updated dependencies [146b48d]
+- Updated dependencies [8ccaf30]
+- Updated dependencies [8ccaf30]
+- Updated dependencies [e35c6f7]
+- Updated dependencies [cf63b30]
+- Updated dependencies [8ccaf30]
+  - @penumbra-zone/getters@4.0.0
+  - @penumbra-zone/bech32m@3.1.1
+  - @penumbra-zone/crypto-web@3.0.6
+
 ## 3.2.0
 
 ### Minor Changes

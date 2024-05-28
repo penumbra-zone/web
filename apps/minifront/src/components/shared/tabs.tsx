@@ -1,7 +1,7 @@
-import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { cn } from '@penumbra-zone/ui/lib/utils';
 import { PagePath } from '../metadata/paths';
 import { useNavigate } from 'react-router-dom';
+import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picker';
+import { ComponentProps } from 'react';
 
 export interface Tab {
   title: string;
@@ -15,32 +15,22 @@ interface TabsProps {
   className?: string;
 }
 
-export const Tabs = ({ tabs, activeTab, className }: TabsProps) => {
+export const Tabs = ({ tabs, activeTab }: TabsProps) => {
   const navigate = useNavigate();
+  const options: ComponentProps<typeof SegmentedPicker>['options'] = tabs
+    .filter(tab => tab.enabled)
+    .map(tab => ({
+      label: tab.title,
+      value: tab.href,
+    }));
 
   return (
-    <div
-      className={cn(
-        'inline-flex h-[52px] items-center justify-center rounded-lg bg-background px-2 mb-6 gap-3',
-        className,
-      )}
-    >
-      {tabs.map(
-        tab =>
-          tab.enabled && (
-            <Button
-              className={cn(
-                'w-full transition-all',
-                activeTab !== tab.href && ' bg-transparent text-muted-foreground',
-              )}
-              size='md'
-              key={tab.href}
-              onClick={() => navigate(tab.href)}
-            >
-              {tab.title}
-            </Button>
-          ),
-      )}
-    </div>
+    <SegmentedPicker
+      value={activeTab}
+      onChange={value => navigate(value.toString())}
+      options={options}
+      grow
+      size='lg'
+    />
   );
 };

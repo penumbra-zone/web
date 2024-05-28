@@ -1,14 +1,11 @@
 {
   "name": "@penumbra-zone/tailwind-config",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "main": "index.ts",
-  "publishConfig": {
-    "access": "public"
-  },
   "dependencies": {
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^3.4.3",
     "tailwindcss-animate": "^1.0.7"
   }
 }

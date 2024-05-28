@@ -2,7 +2,7 @@ import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { fromBaseUnitAmount } from '@penumbra-zone/types/amount';
+import { formatAmount } from '@penumbra-zone/types/amount';
 import { ValueComponent } from './value';
 
 interface ValueViewProps {
@@ -23,11 +23,6 @@ export const ValueViewComponent = ({
   size = 'default',
 }: ValueViewProps) => {
   if (!view) return null;
-
-  const formatAmount = (amount: Amount, exponent = 0) =>
-    fromBaseUnitAmount(amount, exponent)
-      .toFormat(6)
-      .replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
 
   if (view.valueView.case === 'knownAssetId' && view.valueView.value.metadata) {
     const { amount = new Amount(), metadata } = view.valueView.value;

@@ -5,6 +5,9 @@
  */
 const clampToDecimal = (value: number) => Math.min(Math.max(value, 0), 1);
 
+/**
+ * Returns the auction's progress as a decimal between 0 and 1, inclusive.
+ */
 export const getProgress = (
   startHeight: bigint,
   endHeight: bigint,

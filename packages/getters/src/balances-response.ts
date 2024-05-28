@@ -16,3 +16,13 @@ export const getDisplayFromBalancesResponse = getBalanceView
   .pipe(getMetadata)
   .optional()
   .pipe(getDisplay);
+
+export const getAddressIndex = createGetter((balancesResponse?: BalancesResponse) =>
+  balancesResponse?.accountAddress?.addressView.case === 'decoded'
+    ? balancesResponse.accountAddress.addressView.value.index
+    : undefined,
+);
+
+export const getAmount = createGetter(
+  (balancesResponse?: BalancesResponse) => balancesResponse?.balanceView?.valueView.value?.amount,
+);

@@ -8,7 +8,7 @@
  * - session manager for rpc entry
  */
 
-// side-effectful import attaches transport init listeners
+// side-effectful import attaches listeners
 import './listeners';
 
 // services
@@ -61,6 +61,7 @@ const startServices = async (wallet: WalletJson) => {
     fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
   });
   await services.initialize();
+
   return services;
 };
 

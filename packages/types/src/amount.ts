@@ -26,7 +26,9 @@ export const fromValueView = (valueView: ValueView): BigNumber => {
 };
 
 export const fromString = (amount: string, exponent = 0): Amount =>
-  new Amount(toBaseUnit(BigNumber(amount), exponent));
+  new Amount(
+    toBaseUnit(BigNumber(amount).decimalPlaces(exponent, BigNumber.ROUND_FLOOR), exponent),
+  );
 
 export const addAmounts = (a: Amount, b: Amount): Amount => {
   const joined = joinLoHiAmount(a) + joinLoHiAmount(b);
@@ -74,6 +76,11 @@ export const formatNumber = (number: number, options: FormatOptions): string => 
     ? number.toFixed(precision)
     : parseFloat(number.toFixed(precision)).toString();
 };
+
+export const formatAmount = (amount: Amount, exponent = 0) =>
+  fromBaseUnitAmount(amount, exponent)
+    .toFormat(6)
+    .replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
 
 /**
  * Exchange rates in core are expressed as whole numbers on the order of 10 to

@@ -1,5 +1,11 @@
 # @penumbra-zone/bech32
 
+## 3.1.1
+
+### Patch Changes
+
+- e35c6f7: Deps bumped to latest
+
 ## 3.1.0
 
 ### Minor Changes
