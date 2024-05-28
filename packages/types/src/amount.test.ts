@@ -9,7 +9,6 @@ import {
   isZero,
   joinLoHiAmount,
   multiplyAmountByNumber,
-  multiplyAmounts,
   subtractAmounts,
   toDecimalExchangeRate,
 } from './amount';
@@ -251,15 +250,6 @@ describe('multiplyAmountByNumber()', () => {
         lo: 111n,
       }),
     );
-  });
-});
-
-describe('multiplyAmounts()', () => {
-  it('correctly multiplies the amounts together', () => {
-    const amount1 = new Amount({ hi: 0n, lo: 2n });
-    const amount2 = new Amount({ hi: 0n, lo: 3n });
-
-    expect(multiplyAmounts(amount1, amount2)).toEqual(new Amount({ hi: 0n, lo: 6n }));
   });
 });
 
