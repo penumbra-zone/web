@@ -217,7 +217,7 @@ export class BlockProcessor implements BlockProcessorInterface {
     let blockCounter = 0;
     const maxBlocks = 50000;
     const intervalBlocks = 1000;
-    const compactBlockJsons = [];
+    const compactBlocks = [];
 
     // Mark the start of the first interval
     // performance.mark(`Interval_1_Start`);
@@ -321,21 +321,22 @@ export class BlockProcessor implements BlockProcessorInterface {
 
       // // performance.mark('Function2_Start');
       // const compactBlockJson = compactBlock.toBinary();
-      // compactBlockJsons.push(compactBlockJson)
-      if (compactBlock.height < 10) {
+      compactBlocks.push(compactBlock)
+      // if (compactBlock.height < 10) {
       // //   // Start timing this iteration
-        performance.mark('toBinary_Start');
-        const compactBlockJson = compactBlock.toBinary();
-        performance.mark('toBinary_End');
-        const toBinaryMeasure = performance.measure('toBinary_Measure', 'toBinary_Start', 'toBinary_End');
-        console.log('toBinary_Measure: ' + toBinaryMeasure.duration);
+        // performance.mark('toBinary_Start');
+        // const compactBlockJson = compactBlock.toBinary();
+        // performance.mark('toBinary_End');
+        // const toBinaryMeasure = performance.measure('toBinary_Measure', 'toBinary_Start', 'toBinary_End');
+        // compactBlockJsons.push(compactBlockJson);
+        // console.log('toBinary_Measure: ' + toBinaryMeasure.duration);
         
-        performance.mark('Function2_Start');
-        await this.viewServer.scanBlock(compactBlockJson);
-        performance.mark('Function2_End');
-        const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
-        console.log('Measure2: ' + measure2.duration);
-      }
+        // performance.mark('Function2_Start');
+        // await this.viewServer.scanBlock(compactBlockJson);
+        // performance.mark('Function2_End');
+        // const measure2 = performance.measure('Measure2', 'Function2_Start', 'Function2_End');
+        // console.log('Measure2: ' + measure2.duration);
+      // }
 
       // // flushing is slow, avoid it until
       // // - wasm says
@@ -541,9 +542,29 @@ export class BlockProcessor implements BlockProcessorInterface {
     // End timing the entire loop
     performance.mark('Loop_End');
     const loopMeasure = performance.measure('Loop_Measure', 'Loop_Start', 'Loop_End');
-    console.log('Total loop time: ' + loopMeasure.duration + ' ms');
+    console.log('Streaming 50k blocks: ' + loopMeasure.duration + ' ms');
+    console.log("50k compact blocks: ", compactBlocks)
 
-    // console.log("compactBlockJsons: ", compactBlockJsons)
+    const compactBlocksJson = [];
+    performance.mark('toBinary_Start');
+    for (let block of compactBlocks) {
+      const compactBlockJson = block.toBinary();
+      if (block.statePayloads.length < 5) {
+        compactBlocksJson.push(compactBlockJson);
+      }
+    }
+    performance.mark('toBinary_End');
+    const toBinaryMeasure = performance.measure('toBinary_Measure', 'toBinary_Start', 'toBinary_End');
+    console.log('Serializing 50k blocks: ' + toBinaryMeasure.duration);
+    console.log("50k serialized compact blocks: ", compactBlocksJson)
+
+    performance.mark('toScan_Start');
+    for (let block of compactBlocksJson) {
+      await this.viewServer.scanBlock(block);
+    }
+    performance.mark('toScan_End');
+    const toScan_Measure = performance.measure('toScan_Measure', 'toScan_Start', 'toScan_End');
+    console.log('scanning 50k blocks (with trial decryption): ' + toScan_Measure.duration);
   }
 
   private async saveRecoveredCommitmentSources(recovered: (SpendableNoteRecord | SwapRecord)[]) {

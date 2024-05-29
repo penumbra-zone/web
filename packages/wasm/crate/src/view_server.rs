@@ -125,120 +125,120 @@ impl ViewServer {
                 StatePayload::Note { note: payload, .. } => {
                     match payload.trial_decrypt(&self.fvk) {
                         Some(note) => {
-                            let note_position = self.sct.insert(Keep, payload.note_commitment)?;
+                    //         let note_position = self.sct.insert(Keep, payload.note_commitment)?;
 
-                            let source = clone_payload.source().clone();
-                            let nullifier = Nullifier::derive(
-                                self.fvk.nullifier_key(),
-                                note_position,
-                                clone_payload.commitment(),
-                            );
-                            let address_index = self
-                                .fvk
-                                .incoming()
-                                .index_for_diversifier(note.diversifier());
+                    //         let source = clone_payload.source().clone();
+                    //         let nullifier = Nullifier::derive(
+                    //             self.fvk.nullifier_key(),
+                    //             note_position,
+                    //             clone_payload.commitment(),
+                    //         );
+                    //         let address_index = self
+                    //             .fvk
+                    //             .incoming()
+                    //             .index_for_diversifier(note.diversifier());
 
-                            let note_record = SpendableNoteRecord {
-                                note_commitment: *clone_payload.commitment(),
-                                height_spent: None,
-                                height_created: block.height,
-                                note: note.clone(),
-                                address_index,
-                                nullifier,
-                                position: note_position,
-                                source,
-                                return_address: None,
-                            };
-                            self.notes
-                                .insert(payload.note_commitment, note_record.clone());
-                            found_new_data = true;
+                    //         let note_record = SpendableNoteRecord {
+                    //             note_commitment: *clone_payload.commitment(),
+                    //             height_spent: None,
+                    //             height_created: block.height,
+                    //             note: note.clone(),
+                    //             address_index,
+                    //             nullifier,
+                    //             position: note_position,
+                    //             source,
+                    //             return_address: None,
+                    //         };
+                    //         self.notes
+                    //             .insert(payload.note_commitment, note_record.clone());
+                    //         found_new_data = true;
                         }
                         None => {
-                            self.sct.insert(Forget, payload.note_commitment)?;
+                    //         self.sct.insert(Forget, payload.note_commitment)?;
                         }
                     }
                 }
                 StatePayload::Swap { swap: payload, .. } => {
-                    match payload.trial_decrypt(&self.fvk) {
-                        Some(swap) => {
-                            let swap_position = self.sct.insert(Keep, payload.commitment)?;
-                            let batch_data =
-                                block.swap_outputs.get(&swap.trading_pair).ok_or_else(|| {
-                                    anyhow::anyhow!("server gave invalid compact block")
-                                })?;
+                    // match payload.trial_decrypt(&self.fvk) {
+                    //     Some(swap) => {
+                    //         let swap_position = self.sct.insert(Keep, payload.commitment)?;
+                    //         let batch_data =
+                    //             block.swap_outputs.get(&swap.trading_pair).ok_or_else(|| {
+                    //                 anyhow::anyhow!("server gave invalid compact block")
+                    //             })?;
 
-                            let source = clone_payload.source().clone();
-                            let nullifier = Nullifier::derive(
-                                self.fvk.nullifier_key(),
-                                swap_position,
-                                clone_payload.commitment(),
-                            );
+                    //         let source = clone_payload.source().clone();
+                    //         let nullifier = Nullifier::derive(
+                    //             self.fvk.nullifier_key(),
+                    //             swap_position,
+                    //             clone_payload.commitment(),
+                    //         );
 
-                            let swap_record = SwapRecord {
-                                swap_commitment: *clone_payload.commitment(),
-                                swap: swap.clone(),
-                                position: swap_position,
-                                nullifier,
-                                source,
-                                output_data: *batch_data,
-                                height_claimed: None,
-                            };
-                            self.swaps.insert(payload.commitment, swap_record);
+                    //         let swap_record = SwapRecord {
+                    //             swap_commitment: *clone_payload.commitment(),
+                    //             swap: swap.clone(),
+                    //             position: swap_position,
+                    //             nullifier,
+                    //             source,
+                    //             output_data: *batch_data,
+                    //             height_claimed: None,
+                    //         };
+                    //         self.swaps.insert(payload.commitment, swap_record);
 
-                            let batch_data =
-                                block.swap_outputs.get(&swap.trading_pair).ok_or_else(|| {
-                                    anyhow::anyhow!("server gave invalid compact block")
-                                })?;
+                    //         let batch_data =
+                    //             block.swap_outputs.get(&swap.trading_pair).ok_or_else(|| {
+                    //                 anyhow::anyhow!("server gave invalid compact block")
+                    //             })?;
 
-                            let (output_1, output_2) = swap.output_notes(batch_data);
+                    //         let (output_1, output_2) = swap.output_notes(batch_data);
 
-                            self.storage.store_advice(output_1).await?;
-                            self.storage.store_advice(output_2).await?;
-                            found_new_data = true;
-                        }
-                        None => {
-                            self.sct.insert(Forget, payload.commitment)?;
-                        }
-                    }
+                    //         self.storage.store_advice(output_1).await?;
+                    //         self.storage.store_advice(output_2).await?;
+                    //         found_new_data = true;
+                    //     }
+                    //     None => {
+                    //         self.sct.insert(Forget, payload.commitment)?;
+                    //     }
+                    // }
                 }
                 StatePayload::RolledUp { commitment, .. } => {
-                    // This is a note we anticipated, so retain its auth path.
+                    // // This is a note we anticipated, so retain its auth path.
 
-                    let advice_result = self.storage.read_advice(commitment).await?;
+                    // let advice_result = self.storage.read_advice(commitment).await?;
 
-                    match advice_result {
-                        None => {
-                            self.sct.insert(Forget, commitment)?;
-                        }
-                        Some(note) => {
-                            let position = self.sct.insert(Keep, commitment)?;
+                    // match advice_result {
+                    //     None => {
+                    //         self.sct.insert(Forget, commitment)?;
+                    //     }
+                    //     Some(note) => {
+                    //         let position = self.sct.insert(Keep, commitment)?;
 
-                            let address_index_1 = self
-                                .fvk
-                                .incoming()
-                                .index_for_diversifier(note.diversifier());
+                    //         let address_index_1 = self
+                    //             .fvk
+                    //             .incoming()
+                    //             .index_for_diversifier(note.diversifier());
 
-                            let nullifier =
-                                Nullifier::derive(self.fvk.nullifier_key(), position, &commitment);
+                    //         let nullifier =
+                    //             Nullifier::derive(self.fvk.nullifier_key(), position, &commitment);
 
-                            let source = clone_payload.source().clone();
+                    //         let source = clone_payload.source().clone();
 
-                            let spendable_note = SpendableNoteRecord {
-                                note_commitment: note.commit(),
-                                height_spent: None,
-                                height_created: block.height,
-                                note: note.clone(),
-                                address_index: address_index_1,
-                                nullifier,
-                                position,
-                                source,
-                                return_address: None,
-                            };
-                            self.notes
-                                .insert(spendable_note.note_commitment, spendable_note.clone());
-                            found_new_data = true;
-                        }
-                    }
+                    //         let spendable_note = SpendableNoteRecord {
+                    //             note_commitment: note.commit(),
+                    //             height_spent: None,
+                    //             height_created: block.height,
+                    //             note: note.clone(),
+                    //             address_index: address_index_1,
+                    //             nullifier,
+                    //             position,
+                    //             source,
+                    //             return_address: None,
+                    //         };
+                    //         self.notes
+                    //             .insert(spendable_note.note_commitment, spendable_note.clone());
+                    //         found_new_data = true;
+                    //     }
+                    // }
                 }
             }
         }
