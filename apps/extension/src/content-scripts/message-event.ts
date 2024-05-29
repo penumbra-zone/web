@@ -25,8 +25,18 @@ export const isPraxFailureMessageEvent = (
   return status === PraxConnection.Denied || status === PraxConnection.NeedsLogin;
 };
 
+export const isPraxEndMessageEvent = (
+  ev: MessageEvent<unknown>,
+): ev is MessageEvent<PraxMessage<PraxConnection.End>> =>
+  // @ts-expect-error - ts can't understand the injected string
+  isPraxMessageEventData(ev.data) && ev.data[PRAX] === PraxConnection.End;
+
 export const isPraxPortMessageEvent = (
   ev: MessageEvent<unknown>,
 ): ev is MessageEvent<PraxMessage<MessagePort>> =>
   // @ts-expect-error - ts can't understand the injected string
   isPraxMessageEventData(ev.data) && ev.data[PRAX] instanceof MessagePort;
+
+export const unwrapPraxMessage = <T = unknown>(ev: MessageEvent<PraxMessage<T>>): T =>
+  // @ts-expect-error - ts can't understand the injected string
+  ev.data[PRAX] as T;

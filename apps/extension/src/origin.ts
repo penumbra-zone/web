@@ -11,6 +11,29 @@ export const originAlreadyApproved = async (url: string): Promise<boolean> => {
   return existingRecord?.choice === UserChoice.Approved;
 };
 
+export const removeOrigin = async (sender: chrome.runtime.MessageSender): Promise<void> => {
+  // parses the origin and returns a consistent format
+  const { origin: senderOrigin } = sender;
+
+  if (!senderOrigin) {
+    console.warn('No record for origin', sender);
+    return;
+  }
+
+  const urlOrigin = new URL(senderOrigin).origin;
+  const knownSites = await localExtStorage.get('knownSites');
+  const sansDeletant = knownSites.filter(site => site.origin !== urlOrigin);
+
+  if (sansDeletant.length === knownSites.length) {
+    console.warn('No site record found:', urlOrigin);
+    return;
+  }
+
+  if (!sansDeletant.length) console.warn('No site records remaining:', sansDeletant);
+
+  void localExtStorage.set('knownSites', sansDeletant);
+};
+
 export const approveOrigin = async ({
   origin: senderOrigin,
   tab,

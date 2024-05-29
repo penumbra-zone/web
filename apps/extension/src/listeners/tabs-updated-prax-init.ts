@@ -1,4 +1,4 @@
-import { originAlreadyApproved } from '../approve-origin';
+import { originAlreadyApproved } from '../origin';
 import { PraxConnection } from '../message/prax';
 
 // trigger injected-connection-port to init when a known page is loaded.

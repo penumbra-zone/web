@@ -86,7 +86,11 @@ export const createChannelTransport = ({
   };
 
   const transportListener = ({ data }: MessageEvent<unknown>) => {
-    if (isTransportEvent(data)) {
+    if (!data) {
+      console.warn(data);
+      // likely 'false' indicating a disconnect
+      listenerError.reject(new ConnectError('Connection closed', Code.Unavailable));
+    } else if (isTransportEvent(data)) {
       // this is a response to a specific request.  the port may be shared, so it
       // may contain a requestId we don't know about.  the response may be
       // successful, or contain an error conveyed only to the caller.
