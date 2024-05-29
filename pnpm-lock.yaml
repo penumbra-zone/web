@@ -323,6 +323,9 @@ importers:
 
   packages/client:
     dependencies:
+      '@connectrpc/connect':
+        specifier: ^1.4.0
+        version: 1.4.0(@bufbuild/protobuf@1.10.0)
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../protobuf
