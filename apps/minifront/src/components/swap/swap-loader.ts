@@ -1,6 +1,5 @@
 import { LoaderFunction } from 'react-router-dom';
 import { useStore } from '../../state';
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
 import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { fetchUnclaimedSwaps } from '../../fetchers/unclaimed-swaps';
@@ -57,8 +56,6 @@ export const unclaimedSwapsWithMetadata = async (): Promise<UnclaimedSwapsWithMe
 };
 
 export const SwapLoader: LoaderFunction = async (): Promise<SwapLoaderResponse> => {
-  await throwIfPraxNotConnectedTimeout();
-
   const assets = await getAllAssets();
   const swappableAssets = assets.filter(isSwappable);
 
