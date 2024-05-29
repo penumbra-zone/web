@@ -206,6 +206,7 @@ pub async fn transaction_info_inner(
     // First, create a TxP with the payload keys visible to our FVK and no other data.
     let mut txp = penumbra_transaction::TransactionPerspective {
         payload_keys: tx.payload_keys(&fvk)?,
+        transaction_id: tx.id(),
         ..Default::default()
     };
 
