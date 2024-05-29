@@ -1,18 +1,24 @@
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
+import {
+  AuctionId,
+  DutchAuction,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { formatAmount } from '@penumbra-zone/types/amount';
 import { ReactNode } from 'react';
-import { Separator } from '../separator';
+import { Separator } from '../../separator';
 import { getPrice } from './get-price';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { cn } from '../../../lib/utils';
+import { cn } from '../../../../lib/utils';
+import { AuctionIdComponent } from '../../auction-id-component';
 
 export const ExpandedDetails = ({
+  auctionId,
   dutchAuction,
   inputMetadata,
   outputMetadata,
   fullSyncHeight,
 }: {
+  auctionId?: AuctionId;
   dutchAuction: DutchAuction;
   inputMetadata?: Metadata;
   outputMetadata?: Metadata;
@@ -37,14 +43,14 @@ export const ExpandedDetails = ({
   const outputExponent = getDisplayDenomExponent(outputMetadata);
 
   return (
-    <div className='flex w-full flex-col'>
+    <div className='flex w-full flex-col overflow-hidden'>
       {maxPrice && (
         <Row label='Maximum'>
           {formatAmount(maxPrice, outputExponent)}
           {outputMetadata && (
             <span className='font-mono text-xs'>
               {' '}
-              {outputMetadata.symbol} / {inputMetadata?.symbol} @{' '}
+              {outputMetadata.symbol} / {inputMetadata?.symbol} @ block{' '}
               {description.startHeight.toString()}
             </span>
           )}
@@ -57,7 +63,7 @@ export const ExpandedDetails = ({
           {outputMetadata && (
             <span className='font-mono text-xs'>
               {' '}
-              {outputMetadata.symbol} / {inputMetadata?.symbol} @ {fullSyncHeight.toString()}
+              {outputMetadata.symbol} / {inputMetadata?.symbol} @ block {fullSyncHeight.toString()}
             </span>
           )}
         </Row>
@@ -69,7 +75,8 @@ export const ExpandedDetails = ({
           {outputMetadata && (
             <span className='font-mono text-xs'>
               {' '}
-              {outputMetadata.symbol} / {inputMetadata?.symbol} @ {description.endHeight.toString()}
+              {outputMetadata.symbol} / {inputMetadata?.symbol} @ block{' '}
+              {description.endHeight.toString()}
             </span>
           )}
         </Row>
@@ -88,6 +95,12 @@ export const ExpandedDetails = ({
           {outputMetadata && <span className='font-mono text-xs'> {outputMetadata.symbol}</span>}
         </Row>
       )}
+
+      {auctionId && (
+        <Row label='Auction ID'>
+          <AuctionIdComponent auctionId={auctionId} />
+        </Row>
+      )}
     </div>
   );
 };
@@ -102,8 +115,10 @@ const Row = ({
   highlight?: boolean;
 }) => (
   <div className='flex items-center justify-between'>
-    <span className={cn('font-mono', !highlight && 'text-muted-foreground')}>{label}</span>
+    <span className={cn('font-mono text-nowrap', !highlight && 'text-muted-foreground')}>
+      {label}
+    </span>
     <Separator />
-    <span className={!highlight ? 'text-muted-foreground' : undefined}>{children}</span>
+    <span className={cn('overflow-hidden', !highlight && 'text-muted-foreground')}>{children}</span>
   </div>
 );

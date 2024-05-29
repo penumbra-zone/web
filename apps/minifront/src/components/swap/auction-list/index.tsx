@@ -82,7 +82,9 @@ export const AuctionList = () => {
           filter === 'all' &&
           "You don't currently have any auctions."}
 
-        {!filteredAuctionInfos.length && `You don't currently have any ${filter} auctions.`}
+        {!filteredAuctionInfos.length &&
+          filter !== 'all' &&
+          `You don't currently have any ${filter} auctions.`}
 
         <LayoutGroup>
           {filteredAuctionInfos.map(auctionInfo => (
@@ -93,6 +95,7 @@ export const AuctionList = () => {
               className='bg-charcoal'
             >
               <DutchAuctionComponent
+                auctionId={auctionInfo.id}
                 dutchAuction={auctionInfo.auction}
                 inputMetadata={getMetadata(
                   metadataByAssetId,

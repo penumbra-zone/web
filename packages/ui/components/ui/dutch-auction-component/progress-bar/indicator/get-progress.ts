@@ -12,7 +12,9 @@ export const getProgress = (
   startHeight: bigint,
   endHeight: bigint,
   fullSyncHeight?: bigint,
+  seqNum?: bigint,
 ): number => {
+  if (seqNum) return 1;
   if (!fullSyncHeight) return 0;
 
   const currentDistanceFromStartHeightInclusive = Number(fullSyncHeight) - Number(startHeight) + 1;
