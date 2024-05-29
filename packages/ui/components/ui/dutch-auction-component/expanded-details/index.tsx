@@ -5,11 +5,11 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { formatAmount } from '@penumbra-zone/types/amount';
 import { ReactNode } from 'react';
-import { Separator } from '../separator';
+import { Separator } from '../../separator';
 import { getPrice } from './get-price';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { cn } from '../../../lib/utils';
-import { AuctionIdComponent } from '../auction-id-component';
+import { cn } from '../../../../lib/utils';
+import { AuctionIdComponent } from '../../auction-id-component';
 
 export const ExpandedDetails = ({
   auctionId,
