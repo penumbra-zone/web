@@ -9,7 +9,7 @@ import { DutchAuctionSlice } from '.';
 import { viewClient } from '../../../clients';
 import { GDA_RECIPES, GdaRecipe, STEP_COUNT } from '../constants';
 import { BLOCKS_PER_MINUTE } from '../../constants';
-import { getPoissonDistribution } from './get-poisson-distribution';
+import { timeUntilNextEvent } from './time-until-next-event';
 import { splitLoHi } from '@penumbra-zone/types/lo-hi';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { BigNumber } from 'bignumber.js';
@@ -35,7 +35,7 @@ const getSubAuctionStartHeights = (overallStartHeight: bigint, recipe: GdaRecipe
   let currentHeight = overallStartHeight;
 
   for (let i = 0n; i < recipe.numberOfSubAuctions; i++) {
-    const fastForwardClock = getPoissonDistribution(lambda, Number(recipe.numberOfSubAuctions));
+    const fastForwardClock = timeUntilNextEvent(lambda);
     currentHeight += BigInt(Math.ceil(fastForwardClock));
     startHeights.push(currentHeight);
   }
@@ -52,8 +52,8 @@ export const getSubAuctions = async ({
   duration,
 }: Pick<SwapSlice, 'amount' | 'assetIn' | 'assetOut' | 'duration'> &
   Pick<DutchAuctionSlice, 'minOutput' | 'maxOutput'>): Promise<
-  TransactionPlannerRequest_ActionDutchAuctionSchedule[]
-> => {
+    TransactionPlannerRequest_ActionDutchAuctionSchedule[]
+  > => {
   if (duration === 'instant') return [];
   const inputAssetId = getAssetIdFromValueView(assetIn?.balanceView);
   const outputAssetId = getAssetId(assetOut);
@@ -94,8 +94,8 @@ export const getSubAuctions = async ({
   const overallStartHeight = getStartHeight(fullSyncHeight);
 
   return getSubAuctionStartHeights(overallStartHeight, recipe).map(
-    startHeight =>
-      new TransactionPlannerRequest_ActionDutchAuctionSchedule({
+    startHeight => {
+      return new TransactionPlannerRequest_ActionDutchAuctionSchedule({
         description: {
           startHeight,
           endHeight: startHeight + recipe.subAuctionDurationInBlocks,
@@ -105,6 +105,7 @@ export const getSubAuctions = async ({
           minOutput: scaledMinOutputAmount,
           maxOutput: scaledMaxOutputAmount,
         },
-      }),
+      });
+    }
   );
-};
+  };
