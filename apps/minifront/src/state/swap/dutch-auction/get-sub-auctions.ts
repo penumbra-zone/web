@@ -31,7 +31,7 @@ const getStartHeight = (fullSyncHeight: bigint) => fullSyncHeight + BLOCKS_PER_M
  */
 const getSubAuctionStartHeights = (overallStartHeight: bigint, recipe: GdaRecipe): bigint[] => {
   const startHeights: bigint[] = [];
-  const lambda = recipe.poissonIntensityPerBlock * Number(recipe.durationInBlocks);
+  const lambda = recipe.poissonIntensityPerBlock;
   let currentHeight = overallStartHeight;
 
   for (let i = 0n; i < recipe.numberOfSubAuctions; i++) {

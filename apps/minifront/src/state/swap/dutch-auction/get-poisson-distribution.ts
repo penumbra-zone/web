@@ -3,7 +3,7 @@
  */
 export const getPoissonDistribution = (lambda: number, length: number): number => {
   const sampleNextEventTime = () => {
-    return -Math.log(Math.random()) / lambda;
+    return Math.abs(Math.log(Math.random()) / lambda);
   };
 
   let time = 0;
