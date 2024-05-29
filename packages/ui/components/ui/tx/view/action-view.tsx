@@ -11,6 +11,7 @@ import { SwapViewComponent } from './swap';
 import { ActionDutchAuctionScheduleViewComponent } from './action-dutch-auction-schedule-view';
 import { ActionDutchAuctionEndComponent } from './action-dutch-auction-end';
 import { ActionDutchAuctionWithdrawViewComponent } from './action-dutch-auction-withdraw-view';
+import { CumulativeLayoutIdProvider } from '../../../contexts/cumulative-layout-id/provider';
 
 const CASE_TO_LABEL: Record<string, string> = {
   daoDeposit: 'DAO Deposit',
@@ -44,7 +45,13 @@ const getLabelForActionCase = (actionCase: string | undefined): string => {
   return String(actionCase);
 };
 
-export const ActionViewComponent = ({ av: { actionView } }: { av: ActionView }) => {
+export const ActionViewComponent = ({ av, index }: { av: ActionView; index?: number }) => (
+  <CumulativeLayoutIdProvider layoutId={`ActionViewComponent.${index}`}>
+    <ActionViewComponentInner av={av} />
+  </CumulativeLayoutIdProvider>
+);
+
+export const ActionViewComponentInner = ({ av: { actionView } }: { av: ActionView }) => {
   switch (actionView.case) {
     case 'spend':
       return <SpendViewComponent value={actionView.value} />;

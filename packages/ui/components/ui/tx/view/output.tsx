@@ -4,8 +4,11 @@ import { ValueViewComponent } from './value';
 import { ValueWithAddress } from './value-with-address';
 import { getNote } from '@penumbra-zone/getters/output-view';
 import { getAddress } from '@penumbra-zone/getters/note-view';
+import { useCumulativeLayoutId } from '../../../contexts/cumulative-layout-id';
 
 export const OutputViewComponent = ({ value }: { value: OutputView }) => {
+  const layoutId = useCumulativeLayoutId('OutputViewComponent');
+
   if (value.outputView.case === 'visible') {
     const note = getNote(value);
     const address = getAddress(note);
@@ -13,6 +16,7 @@ export const OutputViewComponent = ({ value }: { value: OutputView }) => {
     return (
       <ViewBox
         label='Output'
+        layoutId={layoutId}
         visibleContent={
           <ValueWithAddress addressView={address} label='to'>
             <ValueViewComponent view={note.value} />
@@ -23,7 +27,7 @@ export const OutputViewComponent = ({ value }: { value: OutputView }) => {
   }
 
   if (value.outputView.case === 'opaque') {
-    return <ViewBox label='Output' />;
+    return <ViewBox layoutId={layoutId} label='Output' />;
   }
 
   return <div>Invalid OutputView</div>;

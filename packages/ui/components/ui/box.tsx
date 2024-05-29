@@ -1,5 +1,6 @@
 import { VariantProps, cva } from 'class-variance-authority';
-import { PropsWithChildren } from 'react';
+import { motion } from 'framer-motion';
+import { PropsWithChildren, ReactNode } from 'react';
 
 const variants = cva('rounded-lg border bg-background', {
   variants: {
@@ -28,11 +29,22 @@ export const Box = ({
   label,
   spacing,
   state,
-}: PropsWithChildren<VariantProps<typeof variants> & { label?: string }>) => {
+  layoutId,
+}: PropsWithChildren<VariantProps<typeof variants> & { label?: ReactNode; layoutId?: string }>) => {
   return (
-    <div className={variants({ spacing, state })}>
-      {label && <div className='mb-2 font-bold'>{label}</div>}
-      {children}
-    </div>
+    <motion.div
+      layout={layoutId ? true : false}
+      layoutId={layoutId}
+      className={variants({ spacing, state })}
+    >
+      {label && (
+        <motion.div layout layoutId={`${layoutId}.label`}>
+          <div className='mb-2 font-bold'>{label}</div>
+        </motion.div>
+      )}
+      <motion.div layout className='origin-top' initial={{ scaleY: 0 }} animate={{ scaleY: 1 }}>
+        {children}
+      </motion.div>
+    </motion.div>
   );
 };

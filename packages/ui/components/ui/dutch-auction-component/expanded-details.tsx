@@ -7,6 +7,32 @@ import { getPrice } from './get-price';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { cn } from '../../../lib/utils';
 
+const getPriceLabel = (outputSymbol?: string, inputSymbol?: string, height?: bigint): string => {
+  if (outputSymbol && inputSymbol && height !== undefined) {
+    return `${outputSymbol} / ${inputSymbol} @ ${height.toString()}`;
+  }
+
+  if (outputSymbol && inputSymbol) {
+    return `${outputSymbol} / ${inputSymbol}`;
+  }
+
+  if (outputSymbol && height) {
+    return `${outputSymbol} per input token @ ${height.toString()}`;
+  }
+
+  if (inputSymbol && height) {
+    return `per ${inputSymbol} @ ${height.toString()}`;
+  }
+
+  if (height) return `@ ${height.toString()}`;
+
+  if (outputSymbol) return outputSymbol;
+
+  if (inputSymbol) return `per ${inputSymbol}`;
+
+  return '';
+};
+
 export const ExpandedDetails = ({
   dutchAuction,
   inputMetadata,
@@ -33,45 +59,38 @@ export const ExpandedDetails = ({
     fullSyncHeight >= description.startHeight &&
     fullSyncHeight <= description.endHeight;
 
-  const inputExponent = getDisplayDenomExponent(inputMetadata);
-  const outputExponent = getDisplayDenomExponent(outputMetadata);
+  const inputExponent = getDisplayDenomExponent.optional()(inputMetadata);
+  const outputExponent = getDisplayDenomExponent.optional()(outputMetadata);
 
   return (
     <div className='flex w-full flex-col'>
-      {maxPrice && (
+      {maxPrice !== undefined && (
         <Row label='Maximum'>
           {formatAmount(maxPrice, outputExponent)}
-          {outputMetadata && (
-            <span className='font-mono text-xs'>
-              {' '}
-              {outputMetadata.symbol} / {inputMetadata?.symbol} @{' '}
-              {description.startHeight.toString()}
-            </span>
-          )}
+          <span className='font-mono text-xs'>
+            {' '}
+            {getPriceLabel(outputMetadata?.symbol, inputMetadata?.symbol, description.startHeight)}
+          </span>
         </Row>
       )}
 
       {showCurrent && (
         <Row label='Current' highlight>
           {formatAmount(currentPrice, outputExponent)}
-          {outputMetadata && (
-            <span className='font-mono text-xs'>
-              {' '}
-              {outputMetadata.symbol} / {inputMetadata?.symbol} @ {fullSyncHeight.toString()}
-            </span>
-          )}
+          <span className='font-mono text-xs'>
+            {' '}
+            {getPriceLabel(outputMetadata?.symbol, inputMetadata?.symbol, fullSyncHeight)}
+          </span>
         </Row>
       )}
 
-      {minPrice && (
+      {minPrice !== undefined && (
         <Row label='Minimum'>
           {formatAmount(minPrice, outputExponent)}
-          {outputMetadata && (
-            <span className='font-mono text-xs'>
-              {' '}
-              {outputMetadata.symbol} / {inputMetadata?.symbol} @ {description.endHeight.toString()}
-            </span>
-          )}
+          <span className='font-mono text-xs'>
+            {' '}
+            {getPriceLabel(outputMetadata?.symbol, inputMetadata?.symbol, description.endHeight)}
+          </span>
         </Row>
       )}
 
