@@ -28,7 +28,7 @@ export const ValueViewComponent = ({
     const { amount = new Amount(), metadata } = view.valueView.value;
     const exponent = getDisplayDenomExponent.optional()(metadata);
     const formattedAmount = formatAmount(amount, exponent);
-    const symbol = metadata.symbol || metadata.display || 'Unknown Asset';
+    const symbol = metadata.symbol || metadata.display;
     return (
       <ValueComponent
         formattedAmount={formattedAmount}
