@@ -18,14 +18,13 @@ export const ProgressBar = ({
   inputMetadata,
   outputMetadata,
   fullSyncHeight,
-  seqNum,
 }: {
   dutchAuction: DutchAuction;
   inputMetadata?: Metadata;
   outputMetadata?: Metadata;
   fullSyncHeight?: bigint;
-  seqNum?: bigint;
 }) => {
+  const seqNum = dutchAuction.state?.seq;
   const description = getDescription(dutchAuction);
   const auctionIsUpcoming =
     seqNum === 0n && !!fullSyncHeight && fullSyncHeight < description.startHeight;
