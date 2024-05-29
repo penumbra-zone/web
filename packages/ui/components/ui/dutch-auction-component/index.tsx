@@ -67,10 +67,9 @@ export const DutchAuctionComponent = ({
 
           <ProgressBar
             fullSyncHeight={fullSyncHeight}
-            auction={description}
+            dutchAuction={dutchAuction}
             inputMetadata={inputMetadata}
             outputMetadata={outputMetadata}
-            seqNum={dutchAuction.state?.seq}
           />
         </button>
 
