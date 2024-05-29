@@ -78,3 +78,12 @@ In any workspace where this package is installed, you can use
 Which will acquire the default keys and display checksum validation, if a key
 manifest is already present. You can further specify a version and custom
 manifest file.
+
+#### Updating the keys
+
+If new keys are released by core, change the `defaultKeysVersion` variable in the `download-keys` script to the new version of the keys. Then:
+
+1. Run the `download-keys` script (per the instructions above)
+2. `cd keys`
+3. `shasum -a 256 *.bin > ../shasums/vX.X.X.shasum` (change `vX.X.X` to the actual version number of the keys)
+4. Commit your changes.
