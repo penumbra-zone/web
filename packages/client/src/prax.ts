@@ -23,6 +23,9 @@ export class PraxManifestError extends Error {}
 export const getPraxPort = async () => {
   const provider = window[PenumbraSymbol]?.[prax_origin];
   if (!provider) throw new PraxNotInstalledError('Prax not installed');
+
+  await throwIfPraxNotConnectedTimeout();
+
   return provider.connect();
 };
 
