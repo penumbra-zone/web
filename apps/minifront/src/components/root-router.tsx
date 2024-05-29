@@ -1,6 +1,6 @@
 import { createHashRouter, redirect } from 'react-router-dom';
 import { PagePath } from './metadata/paths';
-import { Layout, LayoutLoader } from './layout';
+import { Layout } from './layout';
 import AssetsTable, { AssetsLoader } from './dashboard/assets-table';
 import TransactionTable from './dashboard/transaction-table';
 import { DashboardLayout } from './dashboard/layout';
@@ -18,7 +18,6 @@ import { IbcLayout } from './ibc/layout';
 export const rootRouter = createHashRouter([
   {
     path: '/',
-    loader: LayoutLoader,
     element: <Layout />,
     errorElement: <ErrorBoundary />,
     children: [

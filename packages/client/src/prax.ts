@@ -4,8 +4,10 @@
  * additional conveniences.
  */
 
-import type { JsonValue, ServiceType } from '@bufbuild/protobuf';
-import type { Transport } from '@connectrpc/connect';
+import type { JsonValue } from '@bufbuild/protobuf';
+import type { PromiseClient, Transport } from '@connectrpc/connect';
+import type { PenumbraService } from '@penumbra-zone/protobuf';
+
 import { createPromiseClient } from '@connectrpc/connect';
 import { createChannelTransport } from '@penumbra-zone/transport-dom/create';
 import { PenumbraSymbol } from '.';
@@ -15,82 +17,99 @@ const prax_id = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe';
 const prax_origin = `chrome-extension://${prax_id}`;
 const prax_manifest = `chrome-extension://${prax_id}/manifest.json`;
 
-export class PraxNotAvailableError extends Error {}
-export class PraxNotConnectedError extends Error {}
-export class PraxNotInstalledError extends Error {}
-export class PraxManifestError extends Error {}
-
-export const getPraxPort = async () => {
-  const provider = window[PenumbraSymbol]?.[prax_origin];
-  if (!provider) throw new Error('Prax not installed');
-  return provider.connect();
-};
-
-export const requestPraxConnection = async () => {
-  if (window[PenumbraSymbol]?.[prax_origin]?.manifest !== prax_manifest) {
-    throw new PraxManifestError('Incorrect Prax manifest href');
-  }
-  return window[PenumbraSymbol][prax_origin].request();
-};
+export const isPraxAvailable = () => Boolean(window[PenumbraSymbol]?.[prax_origin]);
 
 export const isPraxConnected = () => Boolean(window[PenumbraSymbol]?.[prax_origin]?.isConnected());
 
-export const isPraxConnectedTimeout = (timeout: number) =>
-  new Promise<boolean>(resolve => {
-    if (window[PenumbraSymbol]?.[prax_origin]?.isConnected()) resolve(true);
-
-    const interval = setInterval(() => {
-      if (window[PenumbraSymbol]?.[prax_origin]?.isConnected()) {
-        clearInterval(interval);
-        resolve(true);
-      }
-    }, 100);
-
-    setTimeout(() => {
-      clearInterval(interval);
-      resolve(false);
-    }, timeout);
-  });
-
-export const throwIfPraxNotConnectedTimeout = async (timeout = 500) => {
-  const isConnected = await isPraxConnectedTimeout(timeout);
-  if (!isConnected) throw new PraxNotConnectedError('Prax not connected');
+export const isPraxInstalled = async () => {
+  try {
+    // can check independent of injection presence, as the manifest url is known
+    const { ok } = await fetch(prax_manifest);
+    return ok;
+  } catch {
+    return false;
+  }
 };
 
-export const isPraxAvailable = () => Boolean(window[PenumbraSymbol]?.[prax_origin]);
-
 export const throwIfPraxNotAvailable = () => {
-  if (!isPraxAvailable()) throw new PraxNotAvailableError('Prax not available');
+  if (!isPraxAvailable()) throw new PraxNotAvailableError();
 };
 
 export const throwIfPraxNotConnected = () => {
-  if (!isPraxConnected()) throw new PraxNotConnectedError('Prax not connected');
+  if (!isPraxConnected()) throw new PraxNotConnectedError();
+};
+
+export const throwIfPraxNotInstalled = async () => {
+  if (!(await isPraxInstalled())) throw new PraxNotInstalledError();
 };
 
 export const getPraxManifest = async () => {
-  const response = await fetch(prax_manifest);
-  return (await response.json()) as JsonValue;
-};
-
-export const isPraxInstalled = () =>
-  getPraxManifest().then(
-    () => true,
-    () => false,
+  const json = await fetch(prax_manifest).then(
+    ({ ok, json }) => (ok ? json : Promise.reject(new PraxNotInstalledError())),
+    () => Promise.reject(new PraxNotInstalledError()),
   );
-
-export const throwIfPraxNotInstalled = async () => {
-  const isInstalled = await isPraxInstalled();
-  if (!isInstalled) throw new PraxNotInstalledError('Prax not installed');
+  return (await json()) as JsonValue;
 };
 
-export const createPraxTransport = () =>
-  createChannelTransport({
-    jsonOptions,
-    getPort: getPraxPort,
-  });
+export const getPraxPort = async () => {
+  await throwIfPraxNotInstalled();
+  throwIfPraxNotAvailable();
+  return window[PenumbraSymbol]![prax_origin]!.connect();
+};
+
+export const requestPraxConnection = async () => {
+  await throwIfPraxNotInstalled();
+  throwIfPraxNotAvailable();
+  await window[PenumbraSymbol]![prax_origin]!.request();
+};
+
+export const praxTransportOptions = {
+  jsonOptions,
+  getPort: getPraxPort,
+};
+
+export const createPraxTransport = () => createChannelTransport(praxTransportOptions);
 
 let praxTransport: Transport | undefined;
-export const createPraxClient = <T extends ServiceType>(serviceType: T) => {
-  praxTransport ??= createPraxTransport();
-  return createPromiseClient(serviceType, praxTransport);
-};
+export const createPraxClient = <T extends PenumbraService>(service: T): PromiseClient<T> =>
+  createPromiseClient(service, (praxTransport ??= createPraxTransport()));
+
+export class PraxNotAvailableError extends Error {
+  constructor(
+    message = 'Prax not available',
+    public opts?: ErrorOptions,
+  ) {
+    super(message, opts);
+    this.name = 'PraxNotAvailableError';
+  }
+}
+
+export class PraxNotConnectedError extends Error {
+  constructor(
+    message = 'Prax not connected',
+    public opts?: ErrorOptions,
+  ) {
+    super(message, opts);
+    this.name = 'PraxNotConnectedError';
+  }
+}
+
+export class PraxNotInstalledError extends Error {
+  constructor(
+    message = 'Prax not installed',
+    public opts?: ErrorOptions,
+  ) {
+    super(message, opts);
+    this.name = 'PraxNotInstalledError';
+  }
+}
+
+export class PraxManifestError extends Error {
+  constructor(
+    message = 'Incorrect Prax manifest href',
+    public opts?: ErrorOptions,
+  ) {
+    super(message, opts);
+    this.name = 'PraxManifestError';
+  }
+}

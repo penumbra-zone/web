@@ -24,9 +24,9 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       },
-      "./*": {
-        "types": "./dist/*.d.ts",
-        "default": "./dist/*.js"
+      "./prax": {
+        "types": "./dist/prax.d.ts",
+        "default": "./dist/prax.js"
       }
     }
   },
