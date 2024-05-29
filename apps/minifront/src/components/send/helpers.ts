@@ -16,7 +16,11 @@ export const penumbraAddrValidation = (): Validation => {
   };
 };
 
-const nonTransferableAssetPatterns = [assetPatterns.proposalNft, assetPatterns.auctionNft];
+const nonTransferableAssetPatterns = [
+  assetPatterns.proposalNft,
+  assetPatterns.auctionNft,
+  assetPatterns.lpNft,
+];
 
 export const isTransferable = (metadata: Metadata) =>
   nonTransferableAssetPatterns.every(pattern => !pattern.matches(getDisplay(metadata)));

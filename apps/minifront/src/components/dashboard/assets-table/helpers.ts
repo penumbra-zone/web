@@ -5,7 +5,7 @@ import { getMetadata } from '@penumbra-zone/getters/value-view';
 
 // We don't have to disclose auctionNft to the user since it is a kind of utility asset needed only
 // for the implementation of the Dutch auction
-const hiddenAssetPatterns = [assetPatterns.auctionNft];
+const hiddenAssetPatterns = [assetPatterns.auctionNft, assetPatterns.lpNft];
 
 export const isUnknown = (balancesResponse: BalancesResponse) =>
   balancesResponse.balanceView?.valueView.case === 'unknownAssetId';
