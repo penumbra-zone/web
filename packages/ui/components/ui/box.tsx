@@ -4,7 +4,7 @@ import { PropsWithChildren, ReactNode } from 'react';
 import { RESOLVED_TAILWIND_CONFIG } from '@penumbra-zone/tailwind-config/resolved-tailwind-config';
 import { cn } from '../../lib/utils';
 
-const variants = cva('overflow-hidden rounded-lg border bg-background', {
+const variants = cva('rounded-lg border bg-background', {
   variants: {
     spacing: {
       /** Useful for e.g., wrapping around a transparent `<Input />`. */
@@ -54,18 +54,21 @@ export const Box = ({
        */
       style={{ borderRadius: RESOLVED_TAILWIND_CONFIG.theme.borderRadius.lg }}
     >
-      <div className='flex items-center justify-between'>
-        {label && (
-          <motion.div layout layoutId={layoutId ? `${layoutId}.label` : undefined}>
-            <div className='grow font-bold'>{label}</div>
-          </motion.div>
-        )}
-        {headerContent && (
-          <motion.div layout className='grow-0'>
-            {headerContent}
-          </motion.div>
-        )}
-      </div>
+      {(label ?? headerContent) && (
+        <div className='flex items-center justify-between'>
+          {label && (
+            <motion.div layout layoutId={layoutId ? `${layoutId}.label` : undefined}>
+              <div className='grow font-bold'>{label}</div>
+            </motion.div>
+          )}
+          {headerContent && (
+            <motion.div layout className='grow-0'>
+              {headerContent}
+            </motion.div>
+          )}
+        </div>
+      )}
+
       {children && (
         <motion.div layout className='origin-top' animate={{ scaleY: 1 }} exit={{ scaleY: 0 }}>
           {children}

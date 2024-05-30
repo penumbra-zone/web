@@ -124,7 +124,7 @@ const DialogContent = React.forwardRef<
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content ref={ref} className={cn(dialogContentVariants({ size }))}>
-      <motion.div layout layoutId={layoutId} className='bg-card-radial'>
+      <motion.div layout layoutId={layoutId} className='rounded-lg bg-card-radial'>
         {children}
       </motion.div>
     </DialogPrimitive.Content>

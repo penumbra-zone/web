@@ -66,7 +66,7 @@ export const FormDialog = ({
         {!!open && !!action && (
           <>
             <DialogHeader>{getCapitalizedAction(action)}</DialogHeader>
-            <form className='flex flex-col gap-4 overflow-hidden px-4 pb-4' onSubmit={handleSubmit}>
+            <form className='flex flex-col gap-4 overflow-hidden p-4' onSubmit={handleSubmit}>
               <div className='flex flex-col'>
                 <div className='truncate'>{validator.name}</div>
                 <IdentityKeyComponent identityKey={getIdentityKey(validator)} />
