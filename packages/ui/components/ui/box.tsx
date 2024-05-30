@@ -1,7 +1,8 @@
-import { VariantProps, cva } from 'class-variance-authority';
+import { cva, VariantProps } from 'class-variance-authority';
 import { motion } from 'framer-motion';
 import { PropsWithChildren, ReactNode } from 'react';
 import { RESOLVED_TAILWIND_CONFIG } from '@penumbra-zone/tailwind-config/resolved-tailwind-config';
+import { cn } from '../../lib/utils';
 
 const variants = cva('overflow-hidden rounded-lg border bg-background', {
   variants: {
@@ -45,7 +46,7 @@ export const Box = ({
     <motion.div
       layout={layout ?? !!layoutId}
       layoutId={layoutId}
-      className={variants({ spacing, state })}
+      className={cn('flex flex-col gap-4', variants({ spacing, state }))}
       /**
        * Set the border radius via the style prop so it doesn't get distorted by framer-motion.
        *
@@ -53,7 +54,7 @@ export const Box = ({
        */
       style={{ borderRadius: RESOLVED_TAILWIND_CONFIG.theme.borderRadius.lg }}
     >
-      <div className='mb-4 flex items-center justify-between'>
+      <div className='flex items-center justify-between'>
         {label && (
           <motion.div layout layoutId={layoutId ? `${layoutId}.label` : undefined}>
             <div className='grow font-bold'>{label}</div>
@@ -65,9 +66,11 @@ export const Box = ({
           </motion.div>
         )}
       </div>
-      <motion.div layout className='origin-top' animate={{ scaleY: 1 }} exit={{ scaleY: 0 }}>
-        {children}
-      </motion.div>
+      {children && (
+        <motion.div layout className='origin-top' animate={{ scaleY: 1 }} exit={{ scaleY: 0 }}>
+          {children}
+        </motion.div>
+      )}
     </motion.div>
   );
 };

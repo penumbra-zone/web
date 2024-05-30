@@ -31,7 +31,7 @@ export const Output = ({ layoutId }: { layoutId: string }) => {
   return (
     <Box
       layoutId={layoutId}
-      label='Output'
+      label='Gradual Dutch Auction'
       headerContent={
         <EstimateButton disabled={estimateButtonDisabled} onClick={() => void estimate()} />
       }
