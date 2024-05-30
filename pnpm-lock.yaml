@@ -655,9 +655,6 @@ importers:
       '@buf/cosmos_ibc.connectrpc_es':
         specifier: 1.4.0-20240514155357-266dbe8e0fc5.2
         version: 1.4.0-20240514155357-266dbe8e0fc5.2(@bufbuild/protobuf@1.9.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.9.0))
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.9.0-20240520205529-36b404d2dbac.1
-        version: 1.9.0-20240520205529-36b404d2dbac.1(@bufbuild/protobuf@1.9.0)
       '@buf/penumbra-zone_penumbra.connectrpc_es':
         specifier: 1.4.0-20240520205529-36b404d2dbac.2
         version: 1.4.0-20240520205529-36b404d2dbac.2(@bufbuild/protobuf@1.9.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.9.0))

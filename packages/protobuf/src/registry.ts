@@ -1,27 +1,12 @@
 import { IMessageTypeRegistry, createRegistry } from '@bufbuild/protobuf';
 
-import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
-import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
+import * as ibcCore from './ibc-core';
+import * as penumbra from './penumbra';
+import * as penumbraCore from './penumbra-core';
+import * as penumbraProxy from './penumbra-proxy';
 
-import { TendermintProxyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/util/tendermint_proxy/v1/tendermint_proxy_connect';
-
-import { Query as IbcChannelService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/channel/v1/query_connect';
-import { Query as IbcClientService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
-import { Query as IbcConnectionService } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/connection/v1/query_connect';
-
-import { QueryService as AppService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/app/v1/app_connect';
-import { QueryService as CompactBlockService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/compact_block/v1/compact_block_connect';
-import {
-  QueryService as DexService,
-  SimulationService as DexSimulationService,
-} from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/dex/v1/dex_connect';
-import { QueryService as GovernanceService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/governance/v1/governance_connect';
-import { QueryService as SctService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/sct/v1/sct_connect';
-import { QueryService as ShieldedPoolService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/shielded_pool/v1/shielded_pool_connect';
-import { QueryService as StakeService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
-
+// Necessary types not explicitly referenced by any above services
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
-import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 
 /**
  * This type registry is for JSON serialization of protobuf messages.
@@ -35,28 +20,12 @@ import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/c
  */
 
 export const typeRegistry: IMessageTypeRegistry = createRegistry(
-  CustodyService,
-  ViewService,
+  ...Object.values(ibcCore),
+  ...Object.values(penumbra),
+  ...Object.values(penumbraCore),
+  ...Object.values(penumbraProxy),
 
-  TendermintProxyService,
-
-  AppService,
-  CompactBlockService,
-  DexService,
-  DexSimulationService,
-  GovernanceService,
-  IbcClientService,
-  IbcChannelService,
-  IbcConnectionService,
-  SctService,
-  ShieldedPoolService,
-  StakeService,
-
-  // Types not explicitly referenced by any above services should be added here.
-  // Otherwise, it will not be possible to serialize/deserialize these types if,
-  // e.g., they're used in an `Any` protobuf.
   ClientState,
-  DutchAuction,
 );
 
 /**
