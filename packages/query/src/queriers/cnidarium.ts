@@ -1,15 +1,15 @@
 import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils';
-import { QueryService as CnidariumQueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/cnidarium/v1/cnidarium_connect';
+import { CnidariumService } from '@penumbra-zone/protobuf';
 import { KeyValueRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/cnidarium/v1/cnidarium_pb';
 import { CnidariumQuerierInterface } from '@penumbra-zone/types/querier';
 import { MerkleRoot } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 
 export class CnidariumQuerier implements CnidariumQuerierInterface {
-  private readonly client: PromiseClient<typeof CnidariumQueryService>;
+  private readonly client: PromiseClient<typeof CnidariumService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
-    this.client = createClient(grpcEndpoint, CnidariumQueryService);
+    this.client = createClient(grpcEndpoint, CnidariumService);
   }
 
   async fetchRemoteRoot(blockHeight: bigint): Promise<MerkleRoot> {

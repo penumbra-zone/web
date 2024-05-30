@@ -1,5 +1,5 @@
 import { AuctionQuerierInterface } from '@penumbra-zone/types/querier';
-import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/auction/v1/auction_connect';
+import { AuctionService } from '@penumbra-zone/protobuf';
 import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils';
 import {
@@ -9,10 +9,10 @@ import {
 import { typeUrlMatchesTypeName } from '@penumbra-zone/types/protobuf';
 
 export class AuctionQuerier implements AuctionQuerierInterface {
-  private readonly client: PromiseClient<typeof QueryService>;
+  private readonly client: PromiseClient<typeof AuctionService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
-    this.client = createClient(grpcEndpoint, QueryService);
+    this.client = createClient(grpcEndpoint, AuctionService);
   }
 
   async auctionStateById(id: AuctionId): Promise<

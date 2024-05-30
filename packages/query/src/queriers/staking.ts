@@ -1,6 +1,6 @@
 import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils';
-import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
+import { StakeService } from '@penumbra-zone/protobuf';
 import {
   ValidatorInfoResponse,
   ValidatorPenaltyRequest,
@@ -8,11 +8,11 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { StakingQuerierInterface } from '@penumbra-zone/types/querier';
 
-export class StakingQuerier implements StakingQuerierInterface {
-  private readonly client: PromiseClient<typeof StakingService>;
+export class StakeQuerier implements StakingQuerierInterface {
+  private readonly client: PromiseClient<typeof StakeService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
-    this.client = createClient(grpcEndpoint, StakingService);
+    this.client = createClient(grpcEndpoint, StakeService);
   }
 
   allValidatorInfos(): AsyncIterable<ValidatorInfoResponse> {

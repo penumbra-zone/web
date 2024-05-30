@@ -7,7 +7,7 @@ import {
   HandlerContext,
   PromiseClient,
 } from '@connectrpc/connect';
-import { stakingClientCtx } from '../ctx/staking-client';
+import { stakeClientCtx } from '../ctx/stake-client';
 import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
 import {
   AssetMetadataByIdResponse,
@@ -228,7 +228,7 @@ describe('DelegationsByAddressIndex request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues().set(
-        stakingClientCtx,
+        stakeClientCtx,
         mockStakingClient as unknown as PromiseClient<typeof StakingService>,
       ),
     });

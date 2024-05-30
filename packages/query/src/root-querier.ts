@@ -4,7 +4,7 @@ import { TendermintQuerier } from './queriers/tendermint';
 import { ShieldedPoolQuerier } from './queriers/shielded-pool';
 import { IbcClientQuerier } from './queriers/ibc-client';
 import { CnidariumQuerier } from './queriers/cnidarium';
-import { StakingQuerier } from './queriers/staking';
+import { StakeQuerier } from './queriers/staking';
 import type { RootQuerierInterface } from '@penumbra-zone/types/querier';
 import { AuctionQuerier } from './queriers/auction';
 
@@ -16,7 +16,7 @@ export class RootQuerier implements RootQuerierInterface {
   readonly tendermint: TendermintQuerier;
   readonly shieldedPool: ShieldedPoolQuerier;
   readonly ibcClient: IbcClientQuerier;
-  readonly staking: StakingQuerier;
+  readonly staking: StakeQuerier;
   readonly cnidarium: CnidariumQuerier;
   readonly auction: AuctionQuerier;
 
@@ -26,7 +26,7 @@ export class RootQuerier implements RootQuerierInterface {
     this.tendermint = new TendermintQuerier({ grpcEndpoint });
     this.shieldedPool = new ShieldedPoolQuerier({ grpcEndpoint });
     this.ibcClient = new IbcClientQuerier({ grpcEndpoint });
-    this.staking = new StakingQuerier({ grpcEndpoint });
+    this.staking = new StakeQuerier({ grpcEndpoint });
     this.cnidarium = new CnidariumQuerier({ grpcEndpoint });
     this.auction = new AuctionQuerier({ grpcEndpoint });
   }

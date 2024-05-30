@@ -9,7 +9,7 @@ import { balances } from '../balances';
 import { getIsClaimable, isUnbondingTokenBalance } from './helpers';
 import { Any } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { stakingClientCtx } from '../../ctx/staking-client';
+import { stakeClientCtx } from '../../ctx/stake-client';
 import { getValidatorInfo } from '@penumbra-zone/getters/get-validator-info-response';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import {
@@ -20,7 +20,7 @@ import { identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 
 export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'] =
   async function* (req, ctx) {
-    const stakingClient = ctx.values.get(stakingClientCtx);
+    const stakingClient = ctx.values.get(stakeClientCtx);
     if (!stakingClient) throw new Error('Staking context not found');
     for await (const balancesResponse of balances(
       new BalancesRequest({ accountFilter: req.addressIndex }),

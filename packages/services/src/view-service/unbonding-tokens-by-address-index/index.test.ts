@@ -13,7 +13,7 @@ import { unbondingTokensByAddressIndex } from '.';
 import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
-import { stakingClientCtx } from '../../ctx/staking-client';
+import { stakeClientCtx } from '../../ctx/stake-client';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
 const mockBalances = vi.hoisted(() => vi.fn());
@@ -42,7 +42,7 @@ const mockCtx = createHandlerContext({
   requestMethod: 'MOCK',
   url: '/mock',
   contextValues: createContextValues().set(
-    stakingClientCtx,
+    stakeClientCtx,
     mockStakingClient as unknown as PromiseClient<typeof StakingService>,
   ),
 });

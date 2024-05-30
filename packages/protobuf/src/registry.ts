@@ -3,6 +3,7 @@ import { IMessageTypeRegistry, createRegistry } from '@bufbuild/protobuf';
 import * as ibcCore from './ibc-core';
 import * as penumbra from './penumbra';
 import * as penumbraCore from './penumbra-core';
+import * as penumbraCnidarium from './penumbra-cnidarium';
 import * as penumbraProxy from './penumbra-proxy';
 
 // Necessary types not explicitly referenced by any above services
@@ -23,6 +24,7 @@ export const typeRegistry: IMessageTypeRegistry = createRegistry(
   ...Object.values(ibcCore),
   ...Object.values(penumbra),
   ...Object.values(penumbraCore),
+  ...Object.values(penumbraCnidarium),
   ...Object.values(penumbraProxy),
 
   ClientState,

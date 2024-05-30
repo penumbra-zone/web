@@ -1,5 +1,5 @@
 import { Code, ConnectError, createPromiseClient } from '@connectrpc/connect';
-import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/app/v1/app_connect';
+import { AppService } from '@penumbra-zone/protobuf';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AllSlices } from '../../../state';
@@ -59,7 +59,7 @@ export const useGrpcEndpointForm = () => {
 
       try {
         const trialClient = createPromiseClient(
-          QueryService,
+          AppService,
           createGrpcWebTransport({ baseUrl: grpcEndpointInput }),
         );
         const { appParameters } = await trialClient.appParameters({});

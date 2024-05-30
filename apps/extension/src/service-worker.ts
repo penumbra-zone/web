@@ -34,10 +34,9 @@ import { getFullViewingKey } from './ctx/full-viewing-key';
 import { getSpendKey } from './ctx/spend-key';
 
 // context clients
-import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
-import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
+import { StakeService, CustodyService } from '@penumbra-zone/protobuf';
 import { custodyClientCtx } from '@penumbra-zone/services/ctx/custody-client';
-import { stakingClientCtx } from '@penumbra-zone/services/ctx/staking-client';
+import { stakeClientCtx } from '@penumbra-zone/services/ctx/stake-client';
 import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
 
 // storage
@@ -78,7 +77,7 @@ const getServiceHandler = async () => {
   const rpcImpls = getRpcImpls(grpcEndpoint);
 
   let custodyClient: PromiseClient<typeof CustodyService> | undefined;
-  let stakingClient: PromiseClient<typeof StakingService> | undefined;
+  let stakeClient: PromiseClient<typeof StakeService> | undefined;
 
   return connectChannelAdapter({
     jsonOptions,
@@ -93,9 +92,9 @@ const getServiceHandler = async () => {
 
       // initialize or reuse context clients
       custodyClient ??= createDirectClient(CustodyService, handler, { jsonOptions });
-      stakingClient ??= createDirectClient(StakingService, handler, { jsonOptions });
+      stakeClient ??= createDirectClient(StakeService, handler, { jsonOptions });
       contextValues.set(custodyClientCtx, custodyClient);
-      contextValues.set(stakingClientCtx, stakingClient);
+      contextValues.set(stakeClientCtx, stakeClient);
 
       // remaining context for all services
       contextValues.set(fvkCtx, getFullViewingKey);
