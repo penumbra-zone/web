@@ -127,7 +127,7 @@ export const AssetSelector = ({ assets, onChange, value, filter }: AssetSelector
                     onClick={() => onChange(metadata)}
                   >
                     <AssetIcon metadata={metadata} />
-                    <p className='truncate'>{metadata.symbol}</p>
+                    <p className='truncate'>{metadata.symbol || metadata.display}</p>
                   </div>
                 </DialogClose>
               </div>

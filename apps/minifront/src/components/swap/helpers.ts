@@ -24,6 +24,7 @@ const nonSwappableAssetPatterns = [
   assetPatterns.proposalNft,
   assetPatterns.votingReceipt,
   assetPatterns.auctionNft,
+  assetPatterns.lpNft,
 
   // In theory, these asset types are swappable, but we have removed them for now to get a better UX
   assetPatterns.delegationToken,
@@ -38,6 +39,7 @@ const isKnown = (balancesResponse: BalancesResponse) =>
 
 export const getSwappableBalancesResponses = async (): Promise<BalancesResponse[]> => {
   const balancesResponses = await getBalances();
+
   return balancesResponses
     .filter(isKnown)
     .filter(balance => isSwappable(getMetadata(balance.balanceView)))
