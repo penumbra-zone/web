@@ -9,7 +9,7 @@ import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
 import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picker';
 import { useMemo } from 'react';
 import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
-import { LayoutGroup } from 'framer-motion';
+import { LayoutGroup, motion } from 'framer-motion';
 import { SORT_FUNCTIONS, getMetadata } from './helpers';
 
 const auctionListSelector = (state: AllSlices) => ({
@@ -58,12 +58,12 @@ export const AuctionList = () => {
   );
 
   return (
-    <Card>
+    <Card layout>
       <div className='mb-4 flex items-center justify-between'>
-        <GradientHeader>My Auctions</GradientHeader>
+        <GradientHeader layout>My Auctions</GradientHeader>
 
-        <div className='flex items-center gap-2'>
-          {!!filteredAuctionInfos.length && <QueryLatestStateButton />}
+        <motion.div layout className='flex items-center gap-2'>
+          {!!auctionInfos.length && <QueryLatestStateButton />}
 
           <SegmentedPicker
             value={filter}
@@ -74,7 +74,7 @@ export const AuctionList = () => {
               { label: 'All', value: 'all' },
             ]}
           />
-        </div>
+        </motion.div>
       </div>
 
       <div className='flex flex-col gap-2'>

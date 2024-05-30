@@ -1,7 +1,10 @@
-import { VariantProps, cva } from 'class-variance-authority';
-import { PropsWithChildren } from 'react';
+import { cva, VariantProps } from 'class-variance-authority';
+import { motion } from 'framer-motion';
+import { PropsWithChildren, ReactNode } from 'react';
+import { RESOLVED_TAILWIND_CONFIG } from '@penumbra-zone/tailwind-config/resolved-tailwind-config';
+import { cn } from '../../lib/utils';
 
-const variants = cva('overflow-hidden rounded-lg border bg-background', {
+const variants = cva('rounded-lg border bg-background', {
   variants: {
     spacing: {
       /** Useful for e.g., wrapping around a transparent `<Input />`. */
@@ -28,11 +31,49 @@ export const Box = ({
   label,
   spacing,
   state,
-}: PropsWithChildren<VariantProps<typeof variants> & { label?: string }>) => {
+  layout,
+  layoutId,
+  headerContent,
+}: PropsWithChildren<
+  VariantProps<typeof variants> & {
+    label?: ReactNode;
+    layout?: boolean;
+    layoutId?: string;
+    headerContent?: ReactNode;
+  }
+>) => {
   return (
-    <div className={variants({ spacing, state })}>
-      {label && <div className='mb-2 font-bold'>{label}</div>}
-      {children}
-    </div>
+    <motion.div
+      layout={layout ?? !!layoutId}
+      layoutId={layoutId}
+      className={cn('flex flex-col gap-4', variants({ spacing, state }))}
+      /**
+       * Set the border radius via the style prop so it doesn't get distorted by framer-motion.
+       *
+       * @see https://www.framer.com/motion/layout-animations/##scale-correction
+       */
+      style={{ borderRadius: RESOLVED_TAILWIND_CONFIG.theme.borderRadius.lg }}
+    >
+      {(label ?? headerContent) && (
+        <div className='flex items-center justify-between'>
+          {label && (
+            <motion.div layout layoutId={layoutId ? `${layoutId}.label` : undefined}>
+              <div className='grow font-bold'>{label}</div>
+            </motion.div>
+          )}
+          {headerContent && (
+            <motion.div layout className='grow-0'>
+              {headerContent}
+            </motion.div>
+          )}
+        </div>
+      )}
+
+      {children && (
+        <motion.div layout className='origin-top' animate={{ scaleY: 1 }} exit={{ scaleY: 0 }}>
+          {children}
+        </motion.div>
+      )}
+    </motion.div>
   );
 };

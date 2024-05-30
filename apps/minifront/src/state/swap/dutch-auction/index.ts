@@ -12,6 +12,18 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { viewClient } from '../../../clients';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
+import { sendSimulateTradeRequest } from '../helpers';
+import { fromBaseUnitAmount, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
+
+/**
+ * Multipliers to use with the output of the swap simulation, to determine
+ * reasonable maximum and minimimum outputs for the auction.
+ */
+const MAX_OUTPUT_ESTIMATE_MULTIPLIER = 2;
+const MIN_OUTPUT_ESTIMATE_MULTIPLIER = 0.5;
 
 export interface AuctionInfo {
   id: AuctionId;
@@ -30,6 +42,7 @@ interface Actions {
   withdraw: (auctionId: AuctionId, currentSeqNum: bigint) => Promise<void>;
   reset: VoidFunction;
   setFilter: (filter: Filter) => void;
+  estimate: () => Promise<void>;
 }
 
 interface State {
@@ -40,6 +53,8 @@ interface State {
   loadAuctionInfosAbortController?: AbortController;
   metadataByAssetId: Record<string, Metadata>;
   filter: Filter;
+  estimateLoading: boolean;
+  estimatedOutput?: Amount;
 }
 
 export type DutchAuctionSlice = Actions & State;
@@ -51,6 +66,8 @@ const INITIAL_STATE: State = {
   auctionInfos: [],
   metadataByAssetId: {},
   filter: 'active',
+  estimateLoading: false,
+  estimatedOutput: undefined,
 };
 
 export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (set, get) => ({
@@ -58,11 +75,13 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   setMinOutput: minOutput => {
     set(({ swap }) => {
       swap.dutchAuction.minOutput = minOutput;
+      swap.dutchAuction.estimatedOutput = undefined;
     });
   },
   setMaxOutput: maxOutput => {
     set(({ swap }) => {
       swap.dutchAuction.maxOutput = maxOutput;
+      swap.dutchAuction.estimatedOutput = undefined;
     });
   },
 
@@ -172,5 +191,39 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     set(({ swap }) => {
       swap.dutchAuction.filter = filter;
     });
+  },
+
+  estimate: async () => {
+    try {
+      set(({ swap }) => {
+        swap.dutchAuction.estimateLoading = true;
+      });
+
+      const res = await sendSimulateTradeRequest(get().swap);
+      const estimatedOutputAmount = res.output?.output?.amount;
+
+      if (estimatedOutputAmount) {
+        const assetOut = get().swap.assetOut;
+        const exponent = getDisplayDenomExponent(assetOut);
+
+        set(({ swap }) => {
+          swap.dutchAuction.maxOutput = fromBaseUnitAmount(
+            multiplyAmountByNumber(estimatedOutputAmount, MAX_OUTPUT_ESTIMATE_MULTIPLIER),
+            exponent,
+          ).toString();
+          swap.dutchAuction.minOutput = fromBaseUnitAmount(
+            multiplyAmountByNumber(estimatedOutputAmount, MIN_OUTPUT_ESTIMATE_MULTIPLIER),
+            exponent,
+          ).toString();
+          swap.dutchAuction.estimatedOutput = estimatedOutputAmount;
+        });
+      }
+    } catch (e) {
+      errorToast(e, 'Error estimating swap').render();
+    } finally {
+      set(({ swap }) => {
+        swap.dutchAuction.estimateLoading = false;
+      });
+    }
   },
 });

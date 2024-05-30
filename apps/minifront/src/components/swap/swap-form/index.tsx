@@ -1,13 +1,14 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { AllSlices } from '../../../state';
-import { SimulateSwapButton } from './simulate-swap-button';
-import { SimulateSwapResult } from './simulate-swap-result';
 import { TokenSwapInput } from './token-swap-input';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { DurationSlider } from '../duration-slider';
 import { InputBlock } from '../../shared/input-block';
 import { Output } from './output';
 import { Card } from '@penumbra-zone/ui/components/ui/card';
+import { SimulateSwap } from './simulate-swap';
+import { LayoutGroup } from 'framer-motion';
+import { useId } from 'react';
 
 const swapFormSelector = (state: AllSlices) => ({
   onSubmit:
@@ -23,47 +24,41 @@ export const SwapForm = () => {
   const { onSubmit, submitButtonLabel, duration, submitButtonDisabled } =
     useStoreShallow(swapFormSelector);
 
+  const sharedLayoutId = useId();
+
   return (
-    <Card>
-      <form
-        className='flex flex-col gap-4 xl:gap-3'
-        onSubmit={e => {
-          e.preventDefault();
-          void onSubmit();
-        }}
-      >
-        <TokenSwapInput />
+    <Card layout>
+      <LayoutGroup>
+        <form
+          className='flex flex-col gap-4 xl:gap-3'
+          onSubmit={e => {
+            e.preventDefault();
+            void onSubmit();
+          }}
+        >
+          <TokenSwapInput />
 
-        <InputBlock label='Speed'>
-          <div className='mt-2'>
+          <InputBlock label='Speed' layout>
             <DurationSlider />
-          </div>
-        </InputBlock>
-
-        {duration !== 'instant' && (
-          <InputBlock label='Output'>
-            <div className='mt-2'>
-              <Output />
-            </div>
           </InputBlock>
-        )}
 
-        <div className='mt-3 flex gap-2'>
-          {duration === 'instant' && <SimulateSwapButton />}
+          {duration === 'instant' ? (
+            <SimulateSwap layoutId={sharedLayoutId} />
+          ) : (
+            <Output layoutId={sharedLayoutId} />
+          )}
 
           <Button
             type='submit'
             variant='gradient'
             size='lg'
-            className='grow'
+            className='mt-3 flex grow'
             disabled={submitButtonDisabled}
           >
             {submitButtonLabel}
           </Button>
-        </div>
-
-        {duration === 'instant' && <SimulateSwapResult />}
-      </form>
+        </form>
+      </LayoutGroup>
     </Card>
   );
 };

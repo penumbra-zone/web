@@ -9,13 +9,30 @@ interface InputBlockProps {
   validations?: Validation[] | undefined;
   value?: unknown;
   children: ReactNode;
+  layout?: boolean;
+  layoutId?: string;
 }
 
-export const InputBlock = ({ label, className, validations, value, children }: InputBlockProps) => {
+export const InputBlock = ({
+  label,
+  className,
+  validations,
+  value,
+  children,
+  layout,
+  layoutId,
+}: InputBlockProps) => {
   const vResult = typeof value === 'string' ? validationResult(value, validations) : undefined;
 
   return (
-    <Box>
+    <Box
+      label={label}
+      headerContent={
+        vResult ? <div className={cn('italic', 'text-red-400')}>{vResult.issue}</div> : null
+      }
+      layout={layout}
+      layoutId={layoutId}
+    >
       <div
         className={cn(
           'flex flex-col gap-1',
@@ -24,11 +41,6 @@ export const InputBlock = ({ label, className, validations, value, children }: I
           className,
         )}
       >
-        <div className='flex items-center gap-2'>
-          <p className='text-base font-bold'>{label}</p>
-          {vResult ? <div className={cn('italic', 'text-red-400')}>{vResult.issue}</div> : null}
-        </div>
-
         {children}
       </div>
     </Box>

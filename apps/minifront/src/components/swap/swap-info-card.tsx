@@ -26,5 +26,5 @@ const swapInfoCardSelector = (state: AllSlices) => {
 export const SwapInfoCard = () => {
   const props = useStoreShallow(swapInfoCardSelector);
 
-  return <EduInfoCard {...props} />;
+  return <EduInfoCard {...props} layout />;
 };

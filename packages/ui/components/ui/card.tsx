@@ -1,26 +1,28 @@
 import * as React from 'react';
 import { cn } from '../../lib/utils';
+import { motion } from 'framer-motion';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   gradient?: boolean;
   light?: boolean;
+  layout?: boolean;
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, gradient, light, children, ...props }, ref) => {
+  ({ className, gradient, light, children, layout }, ref) => {
     const baseClasses = 'rounded-lg shadow-sm p-[30px] overflow-hidden';
     return (
-      <div
+      <motion.div
+        layout={layout}
         ref={ref}
         className={cn(
           baseClasses,
           light ? 'bg-stone-300' : gradient ? 'bg-card-radial' : 'bg-charcoal',
           className,
         )}
-        {...props}
       >
         {children}
-      </div>
+      </motion.div>
     );
   },
 );
