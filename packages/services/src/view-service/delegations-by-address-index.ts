@@ -48,8 +48,8 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
     throw new Error('Missing `addressIndex` in `DelegationsByAddressIndex` request');
   }
 
-  const stakingClient = ctx.values.get(stakeClientCtx);
-  if (!stakingClient) throw new Error('Staking context not found');
+  const mockStakeClient = ctx.values.get(stakeClientCtx);
+  if (!mockStakeClient) throw new Error('Staking context not found');
 
   const assetBalances = await Array.fromAsync(
     balances(new BalancesRequest({ accountFilter: addressIndex }), ctx),
@@ -59,7 +59,7 @@ export const delegationsByAddressIndex: Impl['delegationsByAddressIndex'] = asyn
   // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
   const showInactive = req.filter === DelegationsByAddressIndexRequest_Filter.ALL;
 
-  for await (const validatorInfoResponse of stakingClient.validatorInfo({ showInactive })) {
+  for await (const validatorInfoResponse of mockStakeClient.validatorInfo({ showInactive })) {
     const validatorInfo = getValidatorInfo(validatorInfoResponse);
     const extendedMetadata = new Any({
       typeUrl: ValidatorInfo.typeName,

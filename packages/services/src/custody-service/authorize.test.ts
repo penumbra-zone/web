@@ -5,7 +5,7 @@ import { servicesCtx } from '../ctx/prax';
 import { testFullViewingKey, testSpendKey } from '../test-utils';
 import { authorize } from './authorize';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
-import { CustodyService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/custody/v1/custody_connect';
+import { CustodyService } from '@penumbra-zone/protobuf';
 import {
   AuthorizationData,
   TransactionPlan,

@@ -16,7 +16,7 @@ export class RootQuerier implements RootQuerierInterface {
   readonly tendermint: TendermintQuerier;
   readonly shieldedPool: ShieldedPoolQuerier;
   readonly ibcClient: IbcClientQuerier;
-  readonly staking: StakeQuerier;
+  readonly stake: StakeQuerier;
   readonly cnidarium: CnidariumQuerier;
   readonly auction: AuctionQuerier;
 
@@ -26,7 +26,7 @@ export class RootQuerier implements RootQuerierInterface {
     this.tendermint = new TendermintQuerier({ grpcEndpoint });
     this.shieldedPool = new ShieldedPoolQuerier({ grpcEndpoint });
     this.ibcClient = new IbcClientQuerier({ grpcEndpoint });
-    this.staking = new StakeQuerier({ grpcEndpoint });
+    this.stake = new StakeQuerier({ grpcEndpoint });
     this.cnidarium = new CnidariumQuerier({ grpcEndpoint });
     this.auction = new AuctionQuerier({ grpcEndpoint });
   }

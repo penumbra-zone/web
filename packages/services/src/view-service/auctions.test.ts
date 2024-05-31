@@ -13,7 +13,7 @@ import {
   DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
-import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
+import { ViewService } from '@penumbra-zone/protobuf';
 import { ServicesInterface } from '@penumbra-zone/types/services';
 import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
 import { servicesCtx } from '../ctx/prax';

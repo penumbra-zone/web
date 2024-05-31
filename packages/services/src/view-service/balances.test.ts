@@ -1,7 +1,7 @@
 import { servicesCtx } from '../ctx/prax';
 import { balances } from './balances';
 
-import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
+import { ViewService } from '@penumbra-zone/protobuf';
 
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import {

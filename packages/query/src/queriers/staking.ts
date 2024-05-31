@@ -6,9 +6,9 @@ import {
   ValidatorPenaltyRequest,
   ValidatorPenaltyResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { StakingQuerierInterface } from '@penumbra-zone/types/querier';
+import { StakeQuerierInterface } from '@penumbra-zone/types/querier';
 
-export class StakeQuerier implements StakingQuerierInterface {
+export class StakeQuerier implements StakeQuerierInterface {
   private readonly client: PromiseClient<typeof StakeService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {

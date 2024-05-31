@@ -20,8 +20,8 @@ import { identityKeyFromBech32m } from '@penumbra-zone/bech32m/penumbravalid';
 
 export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'] =
   async function* (req, ctx) {
-    const stakingClient = ctx.values.get(stakeClientCtx);
-    if (!stakingClient) throw new Error('Staking context not found');
+    const stakeClient = ctx.values.get(stakeClientCtx);
+    if (!stakeClient) throw new Error('Staking context not found');
     for await (const balancesResponse of balances(
       new BalancesRequest({ accountFilter: req.addressIndex }),
       ctx,
@@ -49,7 +49,7 @@ export const unbondingTokensByAddressIndex: Impl['unbondingTokensByAddressIndex'
       );
       if (!regexResult) throw new Error('expected delegation token identity key not present');
 
-      const validatorInfoResponse = await stakingClient.getValidatorInfo({
+      const validatorInfoResponse = await stakeClient.getValidatorInfo({
         identityKey: identityKeyFromBech32m(regexResult.idKey),
       });
       const validatorInfo = getValidatorInfo(validatorInfoResponse);

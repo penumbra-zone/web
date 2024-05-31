@@ -16,8 +16,14 @@
   },
   "publishConfig": {
     "exports": {
-      ".": "./dist/index.js",
-      "./*": "./dist/*.js"
+      ".": {
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "./*": {
+        "import": "./dist/*.js",
+        "types": "./dist/*.d.ts"
+      }
     }
   },
   "devDependencies": {

@@ -6,13 +6,13 @@ import {
   UnbondingTokensByAddressIndexRequest_Filter,
   UnbondingTokensByAddressIndexResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
+import { ViewService } from '@penumbra-zone/protobuf';
 import { createContextValues, createHandlerContext, PromiseClient } from '@connectrpc/connect';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { unbondingTokensByAddressIndex } from '.';
 import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
-import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
+import { StakeService } from '@penumbra-zone/protobuf';
 import { stakeClientCtx } from '../../ctx/stake-client';
 import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 
@@ -43,7 +43,7 @@ const mockCtx = createHandlerContext({
   url: '/mock',
   contextValues: createContextValues().set(
     stakeClientCtx,
-    mockStakingClient as unknown as PromiseClient<typeof StakingService>,
+    mockStakingClient as unknown as PromiseClient<typeof StakeService>,
   ),
 });
 

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { IndexedDbMock, MockServices } from '../test-utils';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
+import { StakeService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax';
 import {
   GetValidatorInfoRequest,
@@ -35,8 +35,8 @@ describe('GetValidatorInfo request handler', () => {
       ) as MockServices['getWalletServices'],
     };
     mockCtx = createHandlerContext({
-      service: StakingService,
-      method: StakingService.methods.validatorInfo,
+      service: StakeService,
+      method: StakeService.methods.validatorInfo,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
