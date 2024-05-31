@@ -21,16 +21,16 @@
     "exponential-backoff": "^3.1.1"
   },
   "devDependencies": {
-    "@buf/cosmos_ibc.bufbuild_es": "1.9.0-20240514155357-266dbe8e0fc5.1",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1",
-    "@bufbuild/protobuf": "^1.9.0",
+    "@buf/cosmos_ibc.bufbuild_es": "1.9.0-20240530142100-ad4444393387.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
+    "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0",
     "@connectrpc/connect-web": "^1.4.0"
   },
   "peerDependencies": {
-    "@buf/cosmos_ibc.bufbuild_es": "1.9.0-20240514155357-266dbe8e0fc5.1",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1",
-    "@bufbuild/protobuf": "^1.9.0",
+    "@buf/cosmos_ibc.bufbuild_es": "1.9.0-20240530142100-ad4444393387.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
+    "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0",
     "@connectrpc/connect-web": "^1.4.0"
   }
