@@ -11,6 +11,7 @@ import { amountMoreThanBalance } from '../../../state/send';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
+import { Candlesticks } from '@penumbra-zone/ui/components/ui/candlesticks';
 
 const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
@@ -24,6 +25,8 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
   amount: state.swap.amount,
   setAmount: state.swap.setAmount,
   balancesResponses: state.swap.balancesResponses,
+  candlestickData: state.swap.candlestick.data,
+  latestKnownBlockHeight: state.status.latestKnownBlockHeight,
 });
 
 /**
@@ -42,6 +45,8 @@ export const TokenSwapInput = () => {
     assetOut,
     setAssetOut,
     balancesResponses,
+    candlestickData,
+    latestKnownBlockHeight,
   } = useStoreShallow(tokenSwapInputSelector);
   const maxAmount = getAmount.optional()(assetIn);
   const maxAmountAsString = maxAmount ? joinLoHiAmount(maxAmount).toString() : undefined;
@@ -56,7 +61,7 @@ export const TokenSwapInput = () => {
   return (
     <Box label='Trade' layout>
       <div className='flex flex-col items-start gap-4 sm:flex-row'>
-        <div className='flex grow flex-col items-start gap-2'>
+        <div className='flex grow flex-row items-start gap-2'>
           <Input
             value={amount}
             type='number'
@@ -87,6 +92,12 @@ export const TokenSwapInput = () => {
             <AssetSelector assets={swappableAssets} value={assetOut} onChange={setAssetOut} />
           </div>
         </div>
+      </div>
+      <div className='bg-charcoal p-4 m-4'>
+        <Candlesticks
+          candles={candlestickData}
+          latestKnownBlockHeight={Number(latestKnownBlockHeight)}
+        />
       </div>
     </Box>
   );

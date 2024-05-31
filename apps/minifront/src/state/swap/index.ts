@@ -4,10 +4,14 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import {
+  CandlestickData,
+  SwapExecution_Trace,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { DutchAuctionSlice, createDutchAuctionSlice } from './dutch-auction';
 import { InstantSwapSlice, createInstantSwapSlice } from './instant-swap';
 import { DurationOption } from './constants';
+import { sendCandlestickDataRequest } from './helpers';
 
 export interface SimulateSwapResult {
   output: ValueView;
@@ -25,6 +29,7 @@ interface Actions {
   setAssetOut: (metadata: Metadata) => void;
   setDuration: (duration: DurationOption) => void;
   resetSubslices: VoidFunction;
+  loadCandlestick: () => Promise<void>;
 }
 
 interface State {
@@ -35,6 +40,11 @@ interface State {
   assetOut?: Metadata;
   duration: DurationOption;
   txInProgress: boolean;
+  candlestick: {
+    abort: AbortController['abort'];
+    data: CandlestickData[];
+    loading: boolean;
+  };
 }
 
 interface Subslices {
@@ -48,6 +58,11 @@ const INITIAL_STATE: State = {
   balancesResponses: [],
   duration: 'instant',
   txInProgress: false,
+  candlestick: {
+    abort: () => void 0,
+    data: [],
+    loading: false,
+  },
 };
 
 export type SwapSlice = Actions & State & Subslices;
@@ -70,12 +85,14 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
     set(({ swap }) => {
       swap.assetIn = asset;
     });
+    get().swap.loadCandlestick();
   },
   setAssetOut: metadata => {
     get().swap.resetSubslices();
     set(({ swap }) => {
       swap.assetOut = metadata;
     });
+    get().swap.loadCandlestick();
   },
   setAmount: amount => {
     get().swap.resetSubslices();
@@ -94,5 +111,41 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
   resetSubslices: () => {
     get().swap.dutchAuction.reset();
     get().swap.instantSwap.reset();
+  },
+  candlestick: {
+    abort: () => void 0,
+    loading: false,
+    data: [],
+  },
+  loadCandlestick: async () => {
+    const abortThisLoad = new AbortController();
+
+    const {
+      assetIn,
+      assetOut,
+      candlestick: { loading, abort: abortOldLoad },
+    } = get().swap;
+
+    if (loading) abortOldLoad();
+
+    set(({ swap }) => {
+      swap.candlestick.data = [];
+      swap.candlestick.abort = () => abortThisLoad.abort('Slice abort');
+      swap.candlestick.loading = true;
+    });
+
+    try {
+      const { data } = await sendCandlestickDataRequest(
+        { assetIn, assetOut },
+        abortThisLoad.signal,
+      );
+      set(({ swap }) => {
+        swap.candlestick.data = data;
+      });
+    } finally {
+      set(({ swap }) => {
+        swap.candlestick.loading = false;
+      });
+    }
   },
 });

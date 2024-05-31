@@ -7,11 +7,14 @@ import {
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { BigNumber } from 'bignumber.js';
 import {
+  CandlestickDataRequest,
+  CandlestickDataResponse,
   SimulateTradeRequest,
   SimulateTradeResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { simulationClient } from '../../clients';
+import { simulationClient, dexClient } from '../../clients';
+import { getAssetIdFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 
 export const sendSimulateTradeRequest = ({
   assetIn,
@@ -34,4 +37,21 @@ export const sendSimulateTradeRequest = ({
   });
 
   return simulationClient.simulateTrade(req);
+};
+
+export const sendCandlestickDataRequest = async (
+  { assetIn, assetOut }: Pick<SwapSlice, 'assetIn' | 'assetOut'>,
+  signal?: AbortSignal,
+): Promise<CandlestickDataResponse> => {
+  if (!assetIn || !assetOut) throw new Error('Both asset in and out need to be set');
+
+  const req = new CandlestickDataRequest({
+    pair: {
+      start: getAssetIdFromBalancesResponseOptional(assetIn),
+      end: assetOut.penumbraAssetId,
+    },
+    limit: 20_000n,
+  });
+
+   return await dexClient.candlestickData(req, { signal });
 };
