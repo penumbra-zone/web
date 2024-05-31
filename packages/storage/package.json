@@ -19,7 +19,7 @@
     "./indexed-db/*": "./src/indexed-db/*.ts"
   },
   "dependencies": {
-    "@penumbra-labs/registry": "7.4.1",
+    "@penumbra-labs/registry": "7.5.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
