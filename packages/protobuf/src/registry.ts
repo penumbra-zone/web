@@ -6,8 +6,8 @@ import * as penumbraCore from './penumbra-core';
 import * as penumbraCnidarium from './penumbra-cnidarium';
 import * as penumbraProxy from './penumbra-proxy';
 
-// Necessary types not explicitly referenced by any above services
 import { ClientState } from '@buf/cosmos_ibc.bufbuild_es/ibc/lightclients/tendermint/v1/tendermint_pb';
+import { DutchAuction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 
 /**
  * This type registry is for JSON serialization of protobuf messages.
@@ -27,7 +27,11 @@ export const typeRegistry: IMessageTypeRegistry = createRegistry(
   ...Object.values(penumbraCnidarium),
   ...Object.values(penumbraProxy),
 
+  // Types not explicitly referenced by any above services should be added here.
+  // Otherwise, it will not be possible to serialize/deserialize these types if,
+  // e.g., they're used in an `Any` protobuf.
   ClientState,
+  DutchAuction,
 );
 
 /**
