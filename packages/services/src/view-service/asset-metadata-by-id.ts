@@ -1,6 +1,6 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../ctx/prax';
-import {assetPatterns} from "@penumbra-zone/types/assets";
+import { assetPatterns } from '@penumbra-zone/types/assets';
 
 export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, ctx) => {
   if (!assetId) throw new Error('No asset id passed in request');
