@@ -11,8 +11,6 @@ pub static DELEGATION_TOKEN_REGEX: &str =
     "^udelegation_(?P<data>penumbravalid1(?P<id>[a-zA-HJ-NP-Z0-9]+))$";
 pub static AUCTION_NFT_REGEX: &str =
     "^auctionnft_(?P<data>(?<seq_num>[a-z_0-9]+)_pauctid1(?P<id>[a-zA-HJ-NP-Z0-9]+))$";
-pub static ICS20_TRANSFER_REGEX: &str =
-    "^transfer/channel-(?P<channel>\\d+)/(?P<asset>[a-zA-HJ-NP-Z0-9]+)$";
 pub static SHORTENED_ID_LENGTH: usize = 8;
 
 /// Given a binary-encoded `Metadata`, returns a new binary-encoded `Metadata`
@@ -65,13 +63,6 @@ pub fn customize_symbol_inner(metadata: Metadata) -> WasmResult<Metadata> {
             symbol: format!("auction@{seq_num}({shortened_id}…)"),
             ..metadata
         });
-    } else if let Some(captures) = ics20_re.captures(&metadata.base) {
-        let channel_num = get_channel_num(&captures)?;
-
-        return Ok(Metadata {
-            symbol: format!("Unknown IBC asset (channel-{channel_num})"),
-            ..metadata
-        });
     }
 
     Ok(metadata)
@@ -92,15 +83,6 @@ fn get_seq_num(captures: &regex::Captures) -> WasmResult<String> {
     Ok(captures
         .name("seq_num")
         .ok_or_else(|| anyhow!("<seq_num> not matched in auction NFT token regex"))?
-        .as_str()
-        .chars()
-        .collect())
-}
-
-fn get_channel_num(captures: &regex::Captures) -> WasmResult<String> {
-    Ok(captures
-        .name("channel")
-        .ok_or_else(|| anyhow!("<channel> not matched in ICS20 transfer regex"))?
         .as_str()
         .chars()
         .collect())
@@ -232,18 +214,6 @@ mod customize_symbol_inner_tests {
         let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
 
         assert_eq!(customized_metadata.symbol, "auction@123(jqyupqnz…)");
-    }
-
-    #[test]
-    fn it_modifies_ics20_transfer_symbol() {
-        let metadata = Metadata {
-            name: String::from(""),
-            symbol: String::from(""),
-            ..test_helpers::get_metadata_for("transfer/channel-2/uusdc", true)
-        };
-        let customized_metadata = customize_symbol_inner(metadata.clone()).unwrap();
-
-        assert_eq!(customized_metadata.symbol, "Unknown IBC asset (channel-2)");
     }
 }
 
