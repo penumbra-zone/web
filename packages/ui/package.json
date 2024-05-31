@@ -51,8 +51,8 @@
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1",
-    "@bufbuild/protobuf": "^1.9.0",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
+    "@bufbuild/protobuf": "^1.10.0",
     "@storybook/addon-essentials": "^8.1.1",
     "@storybook/addon-interactions": "^8.1.1",
     "@storybook/addon-links": "^8.1.1",
@@ -75,7 +75,7 @@
     "tailwindcss": "^3.4.3"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1",
-    "@bufbuild/protobuf": "^1.9.0"
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
+    "@bufbuild/protobuf": "^1.10.0"
   }
 }
