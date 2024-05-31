@@ -1,5 +1,6 @@
 import type { Impl } from '.';
 import { servicesCtx } from '../ctx/prax';
+import { assetPatterns } from '@penumbra-zone/types/assets';
 
 export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, ctx) => {
   if (!assetId) throw new Error('No asset id passed in request');
@@ -16,7 +17,10 @@ export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, 
   if (localMetadata) return { denomMetadata: localMetadata };
 
   const remoteMetadata = await querier.shieldedPool.assetMetadataById(assetId);
-  if (remoteMetadata) {
+
+  const isIbcAsset = remoteMetadata && assetPatterns.ibc.matches(remoteMetadata.display);
+
+  if (remoteMetadata && !isIbcAsset) {
     void indexedDb.saveAssetsMetadata(remoteMetadata);
     return { denomMetadata: remoteMetadata };
   }
