@@ -77,10 +77,28 @@ export const formatNumber = (number: number, options: FormatOptions): string => 
     : parseFloat(number.toFixed(precision)).toString();
 };
 
-export const formatAmount = (amount: Amount, exponent = 0) =>
-  fromBaseUnitAmount(amount, exponent)
-    .toFormat(6)
-    .replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
+export const removeTrailingZeros = (strNum: string): string => {
+  return strNum.replace(/(\.\d*?[1-9])0+$|\.0*$/, '$1');
+};
+
+export const formatAmount = ({
+  amount,
+  exponent = 0,
+  commas = false,
+  decimalPlaces = 6,
+}: {
+  amount: Amount;
+  exponent?: number;
+  commas?: boolean;
+  decimalPlaces?: number;
+}) => {
+  const result = fromBaseUnitAmount(amount, exponent).toFormat(decimalPlaces, {
+    decimalSeparator: '.',
+    groupSeparator: commas ? ',' : '',
+    groupSize: 3,
+  });
+  return removeTrailingZeros(result);
+};
 
 /**
  * Exchange rates in core are expressed as whole numbers on the order of 10 to

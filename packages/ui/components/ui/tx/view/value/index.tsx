@@ -26,7 +26,7 @@ export const ValueViewComponent = ({
   if (view.valueView.case === 'knownAssetId' && view.valueView.value.metadata) {
     const { amount = new Amount(), metadata } = view.valueView.value;
     const exponent = getDisplayDenomExponent.optional()(metadata);
-    const formattedAmount = formatAmount(amount, exponent);
+    const formattedAmount = formatAmount({ amount, exponent, commas: true });
     const symbol = metadata.symbol || 'Unknown asset';
     return (
       <ValueComponent
@@ -44,7 +44,7 @@ export const ValueViewComponent = ({
 
   if (view.valueView.case === 'unknownAssetId') {
     const { amount = new Amount() } = view.valueView.value;
-    const formattedAmount = formatAmount(amount);
+    const formattedAmount = formatAmount({ amount, commas: true });
     const symbol = 'Unknown asset';
     return (
       <ValueComponent

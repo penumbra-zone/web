@@ -2,7 +2,7 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { formatAmount } from '@penumbra-zone/types/amount';
+import { formatAmount, removeTrailingZeros } from '@penumbra-zone/types/amount';
 import { BigNumber } from 'bignumber.js';
 
 export const Price = ({
@@ -23,14 +23,22 @@ export const Price = ({
     if (firstValueMetadata?.symbol && lastValueMetadata?.symbol) {
       const inputDisplayDenomExponent = getDisplayDenomExponent.optional()(firstValueMetadata) ?? 0;
       const outputDisplayDenomExponent = getDisplayDenomExponent.optional()(lastValueMetadata) ?? 0;
-      const formattedInputAmount = formatAmount(inputValue.amount, inputDisplayDenomExponent);
-      const formattedOutputAmount = formatAmount(outputValue.amount, outputDisplayDenomExponent);
+      const formattedInputAmount = formatAmount({
+        amount: inputValue.amount,
+        exponent: inputDisplayDenomExponent,
+      });
+      const formattedOutputAmount = formatAmount({
+        amount: outputValue.amount,
+        exponent: outputDisplayDenomExponent,
+      });
 
       const outputToInputRatio = new BigNumber(formattedOutputAmount)
         .dividedBy(formattedInputAmount)
         .toFormat(outputDisplayDenomExponent);
 
-      price = `1 ${firstValueMetadata.symbol} = ${outputToInputRatio} ${lastValueMetadata.symbol}`;
+      const outputToInputFormatted = removeTrailingZeros(outputToInputRatio);
+
+      price = `1 ${firstValueMetadata.symbol} = ${outputToInputFormatted} ${lastValueMetadata.symbol}`;
     }
   }
 
