@@ -1,5 +1,19 @@
 # @penumbra-zone/storage
 
+## 3.4.0
+
+### Minor Changes
+
+- 3ea1e6c: update buf types dependencies
+
+### Patch Changes
+
+- Updated dependencies [120b654]
+- Updated dependencies [3ea1e6c]
+  - @penumbra-zone/getters@4.1.0
+  - @penumbra-zone/bech32m@3.2.0
+  - @penumbra-zone/crypto-web@3.0.7
+
 ## 3.3.0
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @penumbra-zone/client
 
+## 4.2.0
+
+### Minor Changes
+
+- 3ea1e6c: update buf types dependencies
+
+### Patch Changes
+
+- Updated dependencies [4f8c150]
+- Updated dependencies [029eebb]
+- Updated dependencies [3ea1e6c]
+  - @penumbra-zone/protobuf@2.1.0
+  - @penumbra-zone/transport-dom@4.1.0
+
 ## 4.1.2
 
 ### Patch Changes

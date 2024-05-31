@@ -1,5 +1,11 @@
 # @penumbra-zone/transport-dom
 
+## 4.1.0
+
+### Minor Changes
+
+- 3ea1e6c: update buf types dependencies
+
 ## 4.0.0
 
 ### Major Changes

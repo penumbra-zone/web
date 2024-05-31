@@ -1,5 +1,21 @@
 # @penumbra-zone/services
 
+## 3.2.0
+
+### Minor Changes
+
+- 3ea1e6c: update buf types dependencies
+
+### Patch Changes
+
+- Updated dependencies [029eebb]
+- Updated dependencies [e86448e]
+- Updated dependencies [3ea1e6c]
+  - @penumbra-zone/query@4.0.0
+  - @penumbra-zone/types@6.0.0
+  - @penumbra-zone/wasm@5.1.0
+  - @penumbra-zone/storage@3.4.0
+
 ## 3.1.1
 
 ### Patch Changes
