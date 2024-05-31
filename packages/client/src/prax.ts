@@ -4,64 +4,54 @@
  * additional conveniences.
  */
 
-import type { JsonValue } from '@bufbuild/protobuf';
 import type { PromiseClient, Transport } from '@connectrpc/connect';
 import type { PenumbraService } from '@penumbra-zone/protobuf';
 
 import { createPromiseClient } from '@connectrpc/connect';
+import { jsonOptions } from '@penumbra-zone/protobuf';
 import { createChannelTransport } from '@penumbra-zone/transport-dom/create';
 import { PenumbraSymbol } from '.';
-import { jsonOptions } from '@penumbra-zone/protobuf';
-import { PraxNotAvailableError, PraxNotConnectedError, PraxNotInstalledError } from './error';
+import { PenumbraNotConnectedError } from './error';
+import { PenumbraNotInstalledError } from './error';
 
 const prax_id = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe';
 const prax_origin = `chrome-extension://${prax_id}`;
 const prax_manifest = `chrome-extension://${prax_id}/manifest.json`;
 
-export const isPraxAvailable = () => Boolean(window[PenumbraSymbol]?.[prax_origin]);
+export const getPraxManifest = async () => {
+  const res = await fetch(prax_manifest);
+  return (await res.json()) as unknown;
+};
 
 export const isPraxConnected = () => Boolean(window[PenumbraSymbol]?.[prax_origin]?.isConnected());
 
 export const isPraxInstalled = async () => {
   try {
-    // can check independent of injection presence, as the manifest url is known
-    const { ok } = await fetch(prax_manifest);
-    return ok;
+    await getPraxManifest();
+    return true;
   } catch {
     return false;
   }
 };
 
-export const throwIfPraxNotAvailable = () => {
-  if (!isPraxAvailable()) throw new PraxNotAvailableError();
-};
-
 export const throwIfPraxNotConnected = () => {
-  if (!isPraxConnected()) throw new PraxNotConnectedError();
+  if (!isPraxConnected())
+    throw new PenumbraNotConnectedError('Prax not connected', { cause: prax_origin });
 };
 
 export const throwIfPraxNotInstalled = async () => {
-  if (!(await isPraxInstalled())) throw new PraxNotInstalledError();
-};
-
-export const getPraxManifest = async () => {
-  const json = await fetch(prax_manifest).then(
-    ({ ok, json }) => (ok ? json : Promise.reject(new PraxNotInstalledError())),
-    () => Promise.reject(new PraxNotInstalledError()),
-  );
-  return (await json()) as JsonValue;
+  if (!(await isPraxInstalled()))
+    throw new PenumbraNotInstalledError('Prax not installed', { cause: prax_origin });
 };
 
 export const getPraxPort = async () => {
   await throwIfPraxNotInstalled();
-  throwIfPraxNotAvailable();
   return window[PenumbraSymbol]![prax_origin]!.connect();
 };
 
-export const requestPraxConnection = async () => {
+export const requestPraxAccess = async () => {
   await throwIfPraxNotInstalled();
-  throwIfPraxNotAvailable();
-  await window[PenumbraSymbol]![prax_origin]!.request();
+  await window[PenumbraSymbol]?.[prax_origin]?.request();
 };
 
 export const praxTransportOptions = {

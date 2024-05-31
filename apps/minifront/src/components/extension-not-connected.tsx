@@ -4,7 +4,7 @@ import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
 import { errorToast, warningToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { HeadTag } from './metadata/head-tag';
 
-import { requestPraxConnection } from '@penumbra-zone/client/prax';
+import { requestPraxAccess } from '@penumbra-zone/client/prax';
 import { useState } from 'react';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
 
@@ -37,7 +37,7 @@ const useExtConnector = () => {
 
   const request = async () => {
     try {
-      await requestPraxConnection();
+      await requestPraxAccess();
       location.reload();
     } catch (e) {
       handleErr(e);

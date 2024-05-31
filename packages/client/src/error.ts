@@ -1,39 +1,43 @@
-export class PraxNotAvailableError extends Error {
+export enum PenumbraRequestFailure {
+  Denied = 'Denied',
+  NeedsLogin = 'NeedsLogin',
+}
+
+export class PenumbraNotAvailableError extends Error {
   constructor(
-    message = 'Prax not available',
+    message = "Penumbra global `window[Symbol.for('penumbra')]` is not available",
     public opts?: ErrorOptions,
   ) {
     super(message, opts);
-    this.name = 'PraxNotAvailableError';
+    this.name = 'PenumbraNotAvailableError';
   }
 }
 
-export class PraxNotConnectedError extends Error {
+export class PenumbraNotConnectedError extends Error {
   constructor(
-    message = 'Prax not connected',
+    message = 'Penumbra extension not connected',
     public opts?: ErrorOptions,
   ) {
     super(message, opts);
-    this.name = 'PraxNotConnectedError';
+    this.name = 'PenumbraNotConnectedError';
   }
 }
 
-export class PraxNotInstalledError extends Error {
+export class PenumbraRequestError extends Error {
   constructor(
-    message = 'Prax not installed',
-    public opts?: ErrorOptions,
+    message = 'Penumbra request failed',
+    public opts?: ErrorOptions & { cause: PenumbraRequestFailure },
   ) {
     super(message, opts);
-    this.name = 'PraxNotInstalledError';
+    this.name = 'PenumbraRequestError';
   }
 }
-
-export class PraxManifestError extends Error {
+export class PenumbraNotInstalledError extends Error {
   constructor(
-    message = 'Incorrect Prax manifest href',
+    message = 'Penumbra not installed',
     public opts?: ErrorOptions,
   ) {
     super(message, opts);
-    this.name = 'PraxManifestError';
+    this.name = 'PenumbraNotInstalledError';
   }
 }

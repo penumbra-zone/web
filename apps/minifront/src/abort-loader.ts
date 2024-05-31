@@ -4,17 +4,23 @@ import {
   throwIfPraxNotInstalled,
 } from '@penumbra-zone/client/prax';
 
-const retry = (fn: () => boolean, ms: number) =>
+/**
+ * Retry test, resolving `true`, or resolving `false` if timeout reached.
+ *
+ * @param fn test method returning a boolean
+ * @param ms millisecond maximum wait. default half a second
+ * @param rate wait between attempts. default `ms/10`, stays above 50ms unless set.
+ * @returns promise that resolves to true if `fn` returns true, or false at timeout
+ */
+const retry = async (fn: () => boolean, ms = 500, rate = Math.max(ms / 10, 50)) =>
+  fn() ||
   new Promise<boolean>(resolve => {
-    if (fn()) resolve(true);
-    const interval = setInterval(
-      () => {
-        if (!fn()) return;
+    const interval = setInterval(() => {
+      if (fn()) {
         clearInterval(interval);
         resolve(true);
-      },
-      Math.max(ms / 10, 50),
-    );
+      }
+    }, rate);
     setTimeout(() => {
       clearInterval(interval);
       resolve(false);
@@ -25,10 +31,9 @@ const retry = (fn: () => boolean, ms: number) =>
  * Resolves fast if Prax is connected, or rejects if Prax is not connected after
  * timeout. This is a temporary solution until loaders properly await Prax
  * connection.
- *
- * @param timeout maximum wait in milliseconds (default 500)
  */
-export const abortLoader = async (timeout = 500): Promise<void> => {
+export const abortLoader = async (): Promise<void> => {
   await throwIfPraxNotInstalled();
-  (await retry(() => isPraxConnected(), timeout)) || throwIfPraxNotConnected();
+  await retry(() => isPraxConnected());
+  throwIfPraxNotConnected();
 };

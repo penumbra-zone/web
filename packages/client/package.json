@@ -35,7 +35,6 @@
     "@penumbra-zone/transport-dom": "workspace:*"
   },
   "devDependencies": {
-    "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0"
   },
   "peerDependencies": {
