@@ -1,41 +1,44 @@
 # `@penumbra-zone/protobuf`
 
-**To use this package, you need to [enable the Buf Schema Registry](https://buf.build/docs/bsr/generated-sdks/npm)**
+## If you are looking for a Penumbra extension client
+
+You should install `@penumbra-zone/client`. This package is provided for
+developers interested in lower-level work or more detailed configuration.
+
+---
+
+This package collects types and some configuration intended for use with
+`@penumbra-zone/transport-dom`.
+
+**To use this package, you need to [enable the Buf Schema Registry](https://buf.build/docs/bsr/generated-sdks/npm):**
 
 ```sh
 echo "@buf:registry=https://buf.build/gen/npm/v1/" >> .npmrc
 ```
 
-This package exports a `typeRegistry` (and inclusive `jsonOptions`) for use with
-`@bufbuild` and `@connectrpc` tooling, particularly
-`@penumbra-zone/transport-dom`.
+### Exports
 
-All message types necessary for a Connect `Transport` to serialize/deserialize
-communication with Prax or any other Penumbra extension are included.
+This package exports a `typeRegistry` (and `jsonOptions` including said
+registry) for use with `createChannelTransport` or any `@connectrpc` transport.
 
-## If you simply need a Penumbra extension client
+All types necessary for a to serialize/deserialize communication with Prax or
+any other Penumbra extension are included.
 
-You're looking for `@penumbra-zone/client`, which handles this process for you
-and also performs some basic safety checks.
+Service definitions for all relevant services are also re-exported.
 
-This package is provided for those who are interested in lower-level work or
-more detailed configuration.
+### A Simple example
 
-### Simple example
-
-```ts
+```js
 import { jsonOptions } from '@penumbra-zone/protobuf';
-
 import { createChannelTransport } from '@penumbra-zone/transport-dom';
-import type { ServiceType } from '@bufbuild/protobuf';
 
-// unsafely get first available provider
-const getPort = () => Object.values(window[Symbol.for('penumbra')])[0].connect();
+// naively get first available provider
+const provider = Object.values(window[Symbol.for('penumbra')])[0];
+void provider.request();
 
-// establish transport
-const transport = createChannelTransport({ jsonOptions, getPort });
+// establish a transport
+const transport = createChannelTransport({ jsonOptions, getPort: provider.connect });
 
-// function to create client
-export const createPenumbraClient = (serviceType: ServiceType) =>
-  createPromiseClient(serviceType, transport);
+// export function to create client
+export const createPenumbraClient = serviceType => createPromiseClient(serviceType, transport);
 ```

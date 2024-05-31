@@ -28,7 +28,7 @@ export interface RootQuerierInterface {
   tendermint: TendermintQuerierInterface;
   shieldedPool: ShieldedPoolQuerierInterface;
   ibcClient: IbcClientQuerierInterface;
-  staking: StakingQuerierInterface;
+  stake: StakeQuerierInterface;
   cnidarium: CnidariumQuerierInterface;
   auction: AuctionQuerierInterface;
 }
@@ -62,7 +62,7 @@ export interface IbcClientQuerierInterface {
   ibcClientStates(req: QueryClientStatesRequest): Promise<QueryClientStatesResponse>;
 }
 
-export interface StakingQuerierInterface {
+export interface StakeQuerierInterface {
   allValidatorInfos(req: ValidatorInfoRequest): AsyncIterable<ValidatorInfoResponse>;
   validatorPenalty(req: ValidatorPenaltyRequest): Promise<ValidatorPenaltyResponse>;
 }

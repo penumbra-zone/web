@@ -4,12 +4,12 @@ import { AllSlices, initializeStore } from '../..';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
-const mockSimulateClient = vi.hoisted(() => ({
+const mockSimulationClient = vi.hoisted(() => ({
   simulateTrade: vi.fn(),
 }));
 
 vi.mock('../../../clients', () => ({
-  simulateClient: mockSimulateClient,
+  simulationClient: mockSimulationClient,
 }));
 
 describe('Dutch auction slice', () => {
@@ -21,7 +21,7 @@ describe('Dutch auction slice', () => {
 
   describe('estimate()', () => {
     beforeEach(() => {
-      mockSimulateClient.simulateTrade.mockResolvedValue({
+      mockSimulationClient.simulateTrade.mockResolvedValue({
         output: {
           output: {
             amount: {

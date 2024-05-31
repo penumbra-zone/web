@@ -3,7 +3,7 @@ import {
   CompactBlock,
   CompactBlockRangeRequest,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/compact_block/v1/compact_block_pb';
-import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/compact_block/v1/compact_block_connect';
+import { CompactBlockService } from '@penumbra-zone/protobuf';
 import { createClient } from './utils';
 import type {
   CompactBlockQuerierInterface,
@@ -11,10 +11,10 @@ import type {
 } from '@penumbra-zone/types/querier';
 
 export class CompactBlockQuerier implements CompactBlockQuerierInterface {
-  private readonly client: PromiseClient<typeof QueryService>;
+  private readonly client: PromiseClient<typeof CompactBlockService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
-    this.client = createClient(grpcEndpoint, QueryService);
+    this.client = createClient(grpcEndpoint, CompactBlockService);
   }
 
   async *compactBlockRange({

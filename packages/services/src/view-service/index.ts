@@ -1,6 +1,5 @@
-import type { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
 import type { ServiceImpl } from '@connectrpc/connect';
-
+import type { ViewService } from '@penumbra-zone/protobuf';
 import { addressByIndex } from './address-by-index';
 import { appParameters } from './app-parameters';
 import { assetMetadataById } from './asset-metadata-by-id';

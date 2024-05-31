@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { delegationsByAddressIndex } from './delegations-by-address-index';
-import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
+import { ViewService } from '@penumbra-zone/protobuf';
 import {
   createContextValues,
   createHandlerContext,
   HandlerContext,
   PromiseClient,
 } from '@connectrpc/connect';
-import { stakingClientCtx } from '../ctx/staking-client';
-import { QueryService as StakingService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/stake/v1/stake_connect';
+import { stakeClientCtx } from '../ctx/stake-client';
+import { StakeService } from '@penumbra-zone/protobuf';
 import {
   AssetMetadataByIdResponse,
   BalancesResponse,
@@ -181,7 +181,7 @@ const MOCK_BALANCES = [
 ];
 
 describe('DelegationsByAddressIndex request handler', () => {
-  const mockStakingClient = {
+  const mockStakeClient = {
     validatorInfo: vi.fn(),
   };
   let mockCtx: HandlerContext;
@@ -209,7 +209,7 @@ describe('DelegationsByAddressIndex request handler', () => {
 
     // Miniature mock staking client that actually switches what response it
     // gives based on `req.showInactive`.
-    mockStakingClient.validatorInfo.mockImplementation((req: ValidatorInfoRequest) =>
+    mockStakeClient.validatorInfo.mockImplementation((req: ValidatorInfoRequest) =>
       req.showInactive ? mockAllValidatorInfosResponse : mockActiveValidatorInfosResponse,
     );
     MOCK_ALL_VALIDATOR_INFOS.forEach(value =>
@@ -228,8 +228,8 @@ describe('DelegationsByAddressIndex request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues().set(
-        stakingClientCtx,
-        mockStakingClient as unknown as PromiseClient<typeof StakingService>,
+        stakeClientCtx,
+        mockStakeClient as unknown as PromiseClient<typeof StakeService>,
       ),
     });
   });

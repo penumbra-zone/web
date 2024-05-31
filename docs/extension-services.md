@@ -33,7 +33,7 @@ For developing a dapp that connects to Prax, you may use the convenience functio
 
 ```ts
 import { createPraxClient } from '@penumbra-zone/client';
-import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
+import { ViewService } from '@penumbra-zone/protobuf';
 
 const viewClient = createPraxClient(ViewService);
 ```
@@ -54,7 +54,7 @@ you'd like. Use of the client is identical.
 
 ```ts
 import { getAnyPenumbraPort } from '@penumbra-zone/client';
-import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
+import { ViewService } from '@penumbra-zone/protobuf';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
 const channelTransport = createChannelTransport({

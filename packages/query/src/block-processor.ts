@@ -538,7 +538,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async updateValidatorInfos(nextEpochStartHeight: bigint): Promise<void> {
-    for await (const validatorInfoResponse of this.querier.staking.allValidatorInfos()) {
+    for await (const validatorInfoResponse of this.querier.stake.allValidatorInfos()) {
       if (!validatorInfoResponse.validatorInfo) continue;
 
       // Await the upsert. This makes it possible for users of this method to
