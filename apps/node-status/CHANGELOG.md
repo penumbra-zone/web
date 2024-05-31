@@ -1,5 +1,28 @@
 # node-status
 
+## 3.0.0
+
+### Major Changes
+
+- 029eebb: use service definitions from protobuf collection package
+
+### Minor Changes
+
+- 3ea1e6c: update buf types dependencies
+
+### Patch Changes
+
+- Updated dependencies [fc9418c]
+- Updated dependencies [120b654]
+- Updated dependencies [4f8c150]
+- Updated dependencies [029eebb]
+- Updated dependencies [029eebb]
+- Updated dependencies [3ea1e6c]
+  - @penumbra-zone/ui@3.3.0
+  - @penumbra-zone/protobuf@2.1.0
+  - @penumbra-zone/types@6.0.0
+  - @penumbra-zone/crypto-web@3.0.7
+
 ## 2.0.9
 
 ### Patch Changes

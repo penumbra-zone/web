@@ -1,5 +1,18 @@
 # @penumbra-zone/wasm
 
+## 5.1.0
+
+### Minor Changes
+
+- 3ea1e6c: update buf types dependencies
+
+### Patch Changes
+
+- e86448e: include transaction id when generating perspective
+- Updated dependencies [029eebb]
+- Updated dependencies [3ea1e6c]
+  - @penumbra-zone/types@6.0.0
+
 ## 5.0.1
 
 ## 5.0.0

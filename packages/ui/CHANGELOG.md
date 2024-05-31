@@ -1,5 +1,23 @@
 # @penumbra-zone/ui
 
+## 3.3.0
+
+### Minor Changes
+
+- 120b654: Support estimates of outputs for auctions; redesign the estimate results part of the swap/auction UI
+- 3ea1e6c: update buf types dependencies
+
+### Patch Changes
+
+- fc9418c: Fixed a couple bugs, and displayed the auction ID in its details.
+- Updated dependencies [120b654]
+- Updated dependencies [029eebb]
+- Updated dependencies [3ea1e6c]
+  - @penumbra-zone/getters@4.1.0
+  - @penumbra-zone/types@6.0.0
+  - @penumbra-zone/perspective@2.1.0
+  - @penumbra-zone/bech32m@3.2.0
+
 ## 3.2.0
 
 ### Minor Changes

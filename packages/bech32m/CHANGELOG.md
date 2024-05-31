@@ -1,5 +1,11 @@
 # @penumbra-zone/bech32
 
+## 3.2.0
+
+### Minor Changes
+
+- 3ea1e6c: update buf types dependencies
+
 ## 3.1.1
 
 ### Patch Changes
