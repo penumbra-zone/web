@@ -5,12 +5,13 @@ import { ActionDetails } from './action-details';
 import {
   getOutput1ValueOptional,
   getOutput2ValueOptional,
+  getSwapClaimFee,
 } from '@penumbra-zone/getters/swap-claim-view';
 import { getAmount } from '@penumbra-zone/getters/value-view';
-import { isZero } from '@penumbra-zone/types/amount';
+import { getAmount as getAmountFee } from '@penumbra-zone/getters/fee';
+import { isZero, joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { ValueViewComponent } from './value';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { UnimplementedView } from './unimplemented-view';
 
 const getClaimLabel = (
   output1Amount?: Amount,
@@ -59,7 +60,24 @@ export const SwapClaimViewComponent = ({ value }: { value: SwapClaimView }) => {
   }
 
   if (value.swapClaimView.case === 'opaque') {
-    return <UnimplementedView label='Swap Claim' />;
+    const claimFee = getSwapClaimFee(value);
+
+    return (
+      <ViewBox
+        label='Swap'
+        visibleContent={
+          <div className='flex flex-col gap-4'>
+            <ActionDetails>
+              <ActionDetails.Row label='Prepaid Claim Fee'>
+                <div className='font-mono'>
+                  {joinLoHiAmount(getAmountFee(claimFee)).toString()} upenumbra
+                </div>
+              </ActionDetails.Row>
+            </ActionDetails>
+          </div>
+        }
+      />
+    );
   }
 
   return <div>Invalid SpendView</div>;

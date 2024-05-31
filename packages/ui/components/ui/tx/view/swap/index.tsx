@@ -11,7 +11,6 @@ import {
 } from '@penumbra-zone/getters/swap-view';
 import { ValueViewComponent } from '../value';
 import { ActionDetails } from '../action-details';
-import { UnimplementedView } from '../unimplemented-view';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { getAmount } from '@penumbra-zone/getters/fee';
 
@@ -39,7 +38,7 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
                 </ActionDetails.Row>
               )}
 
-              <ActionDetails.Row label='Fee'>
+              <ActionDetails.Row label='Prepaid Claim Fee'>
                 <div className='font-mono'>
                   {joinLoHiAmount(getAmount(claimFee)).toString()} upenumbra
                 </div>
@@ -58,7 +57,23 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
   }
 
   if (value.swapView.case === 'opaque') {
-    return <UnimplementedView label='Swap' />;
+    const oneWaySwap = isOneWaySwap(value) ? getOneWaySwapValues(value) : undefined;
+    return (
+      <ViewBox
+        label='Swap'
+        visibleContent={
+          <div className='flex flex-col gap-4'>
+            <ActionDetails>
+              {oneWaySwap?.unfilled && (
+                <ActionDetails.Row label='Unfilled'>
+                  <ValueViewComponent view={oneWaySwap.unfilled} />
+                </ActionDetails.Row>
+              )}
+            </ActionDetails>
+          </div>
+        }
+      />
+    );
   }
 
   return <div>Invalid SwapView</div>;
