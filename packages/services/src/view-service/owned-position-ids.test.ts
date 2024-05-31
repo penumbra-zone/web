@@ -1,4 +1,4 @@
-import { ViewService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/view/v1/view_connect';
+import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';

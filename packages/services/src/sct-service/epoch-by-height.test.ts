@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { epochByHeight } from './epoch-by-height';
 import { IndexedDbMock, MockServices } from '../test-utils';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { QueryService as SctService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/sct/v1/sct_connect';
+import { SctService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax';
 import {
   Epoch,

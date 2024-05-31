@@ -11,7 +11,7 @@ import {
   SimulateTradeResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { simulateClient } from '../../clients';
+import { simulationClient } from '../../clients';
 
 export const sendSimulateTradeRequest = ({
   assetIn,
@@ -33,5 +33,5 @@ export const sendSimulateTradeRequest = ({
     output: getAssetId(assetOut),
   });
 
-  return simulateClient.simulateTrade(req);
+  return simulationClient.simulateTrade(req);
 };

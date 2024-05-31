@@ -56,10 +56,10 @@ export interface MockQuerier {
   auction?: AuctionMock;
   tendermint?: TendermintMock;
   shieldedPool?: ShieldedPoolMock;
-  staking?: StakingMock;
+  stake?: StakeMock;
 }
 
-export interface StakingMock {
+export interface StakeMock {
   validatorPenalty?: Mock;
 }
 

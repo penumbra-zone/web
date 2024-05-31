@@ -1,5 +1,16 @@
 # @penumbra-zone/protobuf
 
+## 2.1.0
+
+### Minor Changes
+
+- 3ea1e6c: update buf types dependencies
+
+### Patch Changes
+
+- 4f8c150: restore DutchAuction type to registry
+- 029eebb: organize internally, export service definitions
+
 ## 2.0.0
 
 ### Major Changes

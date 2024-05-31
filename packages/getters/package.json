@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/getters",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Convenience getters for the deeply nested optionals of Penumbra's protobuf types",
   "type": "module",
@@ -25,11 +25,11 @@
     "@penumbra-zone/bech32m": "workspace:*"
   },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1",
-    "@bufbuild/protobuf": "^1.9.0"
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
+    "@bufbuild/protobuf": "^1.10.0"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1",
-    "@bufbuild/protobuf": "^1.9.0"
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
+    "@bufbuild/protobuf": "^1.10.0"
   }
 }

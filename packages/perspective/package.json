@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/perspective",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Tools for assuming different perspectives of Penumbra transactions",
   "type": "module",
@@ -27,9 +27,9 @@
     "@penumbra-zone/wasm": "workspace:*"
   },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1"
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1"
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1"
   }
 }

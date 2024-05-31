@@ -1,5 +1,39 @@
 # chrome-extension
 
+## 9.0.0
+
+### Major Changes
+
+- 029eebb: use service definitions from protobuf collection package
+
+### Minor Changes
+
+- 3ea1e6c: update buf types dependencies
+
+### Patch Changes
+
+- Updated dependencies [fc9418c]
+- Updated dependencies [120b654]
+- Updated dependencies [4f8c150]
+- Updated dependencies [029eebb]
+- Updated dependencies [029eebb]
+- Updated dependencies [e86448e]
+- Updated dependencies [3ea1e6c]
+  - @penumbra-zone/ui@3.3.0
+  - @penumbra-zone/protobuf@2.1.0
+  - @penumbra-zone/services@4.0.0
+  - @penumbra-zone/query@4.0.0
+  - @penumbra-zone/types@6.0.0
+  - @penumbra-zone/wasm@5.1.0
+  - @penumbra-zone/services-context@3.2.0
+  - @penumbra-zone/transport-chrome@2.2.0
+  - @penumbra-zone/transport-dom@4.1.0
+  - @penumbra-zone/perspective@2.1.0
+  - @penumbra-zone/bech32m@3.2.0
+  - @penumbra-zone/storage@3.4.0
+  - @penumbra-zone/client@4.2.0
+  - @penumbra-zone/crypto-web@3.0.7
+
 ## 8.1.1
 
 ### Patch Changes

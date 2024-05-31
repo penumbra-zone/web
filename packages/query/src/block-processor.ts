@@ -369,7 +369,10 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     const metadataFromNode = await this.querier.shieldedPool.assetMetadataById(assetId);
 
-    if (metadataFromNode) {
+    //do not save IBC token metadata that are not in the prax registry
+    const isIbcAsset = metadataFromNode && assetPatterns.ibc.matches(metadataFromNode.display);
+
+    if (metadataFromNode && !isIbcAsset) {
       await this.indexedDb.saveAssetsMetadata(customizeSymbol(metadataFromNode));
       return metadataFromNode;
     }
@@ -538,7 +541,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async updateValidatorInfos(nextEpochStartHeight: bigint): Promise<void> {
-    for await (const validatorInfoResponse of this.querier.staking.allValidatorInfos()) {
+    for await (const validatorInfoResponse of this.querier.stake.allValidatorInfos()) {
       if (!validatorInfoResponse.validatorInfo) continue;
 
       // Await the upsert. This makes it possible for users of this method to

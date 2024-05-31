@@ -1,6 +1,6 @@
 import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils';
-import { Query as IbcClientQuery } from '@buf/cosmos_ibc.connectrpc_es/ibc/core/client/v1/query_connect';
+import { IbcClientService } from '@penumbra-zone/protobuf';
 import {
   QueryClientStatesRequest,
   QueryClientStatesResponse,
@@ -8,10 +8,10 @@ import {
 import type { IbcClientQuerierInterface } from '@penumbra-zone/types/querier';
 
 export class IbcClientQuerier implements IbcClientQuerierInterface {
-  private readonly client: PromiseClient<typeof IbcClientQuery>;
+  private readonly client: PromiseClient<typeof IbcClientService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
-    this.client = createClient(grpcEndpoint, IbcClientQuery);
+    this.client = createClient(grpcEndpoint, IbcClientService);
   }
 
   async ibcClientStates(req: QueryClientStatesRequest): Promise<QueryClientStatesResponse> {

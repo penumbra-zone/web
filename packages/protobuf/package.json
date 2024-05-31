@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/protobuf",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Exports a `@bufbuild/protobuf` type registry with all message types necessary to communicate with a Penumbra extension",
   "type": "module",
@@ -11,26 +11,30 @@
     "prepack": "pnpm clean && pnpm build"
   },
   "exports": {
-    ".": "./src/registry.ts"
+    ".": "./src/index.ts",
+    "./*": "./src/*"
   },
   "publishConfig": {
     "exports": {
       ".": {
-        "import": "./dist/registry.js",
-        "types": "./dist/registry.d.ts"
+        "import": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      },
+      "./*": {
+        "import": "./dist/*.js",
+        "types": "./dist/*.d.ts"
       }
     }
   },
   "devDependencies": {
-    "@bufbuild/protobuf": "^1.9.0",
+    "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0"
   },
   "peerDependencies": {
-    "@buf/cosmos_ibc.bufbuild_es": "1.9.0-20240514155357-266dbe8e0fc5.1",
-    "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20240514155357-266dbe8e0fc5.2",
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240520205529-36b404d2dbac.2",
-    "@bufbuild/protobuf": "^1.9.0",
+    "@buf/cosmos_ibc.bufbuild_es": "1.9.0-20240530142100-ad4444393387.1",
+    "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20240530142100-ad4444393387.2",
+    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240528180215-8fe1c79485f8.2",
+    "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0"
   }
 }

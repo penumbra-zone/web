@@ -1,5 +1,11 @@
 # @penumbra-zone/keys
 
+## 4.1.0
+
+### Minor Changes
+
+- 87de709: proving keys 77
+
 ## 4.0.0
 
 ### Major Changes

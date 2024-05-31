@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/transport-chrome",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Tools for adapting `@penumbra-zone/transport` to Chrome's extension runtime messaging API",
   "scripts": {
@@ -23,11 +23,11 @@
     "@penumbra-zone/transport-dom": "workspace:*"
   },
   "devDependencies": {
-    "@bufbuild/protobuf": "^1.9.0",
+    "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0"
   },
   "peerDependencies": {
-    "@bufbuild/protobuf": "^1.9.0",
+    "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0"
   }
 }

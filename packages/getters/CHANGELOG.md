@@ -1,5 +1,17 @@
 # @penumbra-zone/getters
 
+## 4.1.0
+
+### Minor Changes
+
+- 120b654: Support estimates of outputs for auctions; redesign the estimate results part of the swap/auction UI
+- 3ea1e6c: update buf types dependencies
+
+### Patch Changes
+
+- Updated dependencies [3ea1e6c]
+  - @penumbra-zone/bech32m@3.2.0
+
 ## 4.0.0
 
 ### Major Changes

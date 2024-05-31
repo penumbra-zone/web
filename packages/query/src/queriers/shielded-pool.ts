@@ -1,6 +1,6 @@
 import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils';
-import { QueryService } from '@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/shielded_pool/v1/shielded_pool_connect';
+import { ShieldedPoolService } from '@penumbra-zone/protobuf';
 import {
   AssetId,
   Metadata,
@@ -8,10 +8,10 @@ import {
 import type { ShieldedPoolQuerierInterface } from '@penumbra-zone/types/querier';
 
 export class ShieldedPoolQuerier implements ShieldedPoolQuerierInterface {
-  private readonly client: PromiseClient<typeof QueryService>;
+  private readonly client: PromiseClient<typeof ShieldedPoolService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
-    this.client = createClient(grpcEndpoint, QueryService);
+    this.client = createClient(grpcEndpoint, ShieldedPoolService);
   }
 
   async assetMetadataById(assetId: AssetId): Promise<Metadata | undefined> {

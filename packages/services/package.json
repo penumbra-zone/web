@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/services",
-  "version": "3.2.1",
+  "version": "4.0.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
@@ -15,15 +15,7 @@
   ],
   "exports": {
     "./ctx/*": "./src/ctx/*.ts",
-    "./custody-service": "./src/custody-service/index.ts",
-    "./custody-service/*": "./src/custody-service/*.ts",
-    "./sct-service": "./src/sct-service/index.ts",
-    "./sct-service/*": "./src/sct-service/*.ts",
-    "./staking-service": "./src/staking-service/index.ts",
-    "./staking-service/*": "./src/staking-service/*.ts",
-    "./view-service": "./src/view-service/index.ts",
-    "./view-service/*": "./src/view-service/*.ts",
-    "./offscreen-client": "./src/offscreen-client.ts"
+    "./*": "./src/*/index.ts"
   },
   "dependencies": {
     "@penumbra-zone/bech32m": "workspace:*",
@@ -31,6 +23,7 @@
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/perspective": "workspace:*",
     "@penumbra-zone/polyfills": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/query": "workspace:*",
     "@penumbra-zone/services-context": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
@@ -39,15 +32,13 @@
     "@penumbra-zone/wasm": "workspace:*"
   },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240520205529-36b404d2dbac.2",
-    "@bufbuild/protobuf": "^1.9.0",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
+    "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240520205529-36b404d2dbac.1",
-    "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240520205529-36b404d2dbac.2",
-    "@bufbuild/protobuf": "^1.9.0",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
+    "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0"
   }
 }
