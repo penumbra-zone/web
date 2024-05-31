@@ -369,7 +369,10 @@ export class BlockProcessor implements BlockProcessorInterface {
 
     const metadataFromNode = await this.querier.shieldedPool.assetMetadataById(assetId);
 
-    if (metadataFromNode) {
+    //do not save IBC token metadata that are not in the prax registry
+    const isIbcAsset = metadataFromNode && assetPatterns.ibc.matches(metadataFromNode.display);
+
+    if (metadataFromNode && !isIbcAsset) {
       await this.indexedDb.saveAssetsMetadata(customizeSymbol(metadataFromNode));
       return metadataFromNode;
     }

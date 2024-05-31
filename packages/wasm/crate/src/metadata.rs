@@ -35,7 +35,6 @@ pub fn customize_symbol_inner(metadata: Metadata) -> WasmResult<Metadata> {
     let unbonding_re = Regex::new(UNBONDING_TOKEN_REGEX)?;
     let delegation_re = Regex::new(DELEGATION_TOKEN_REGEX)?;
     let auction_re = Regex::new(AUCTION_NFT_REGEX)?;
-    let ics20_re = Regex::new(ICS20_TRANSFER_REGEX)?;
 
     if let Some(captures) = unbonding_re.captures(&metadata.base) {
         let shortened_id = shorten_id(&captures)?;
