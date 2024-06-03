@@ -1,5 +1,22 @@
 # @penumbra-zone/router
 
+## 4.0.3
+
+### Patch Changes
+
+- Updated dependencies [8fe4de6]
+  - @penumbra-zone/transport-dom@6.0.0
+  - @penumbra-zone/perspective@4.0.0
+  - @penumbra-zone/protobuf@4.0.0
+  - @penumbra-zone/bech32m@5.0.0
+  - @penumbra-zone/getters@6.0.0
+  - @penumbra-zone/wasm@7.0.0
+  - @penumbra-zone/query@4.0.2
+  - @penumbra-zone/storage@3.4.3
+  - @penumbra-zone/types@7.0.1
+  - @penumbra-zone/services-context@3.2.3
+  - @penumbra-zone/crypto-web@3.0.9
+
 ## 4.0.2
 
 ### Patch Changes

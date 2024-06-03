@@ -1,5 +1,19 @@
 # @penumbra-zone/perspective
 
+## 4.0.0
+
+### Major Changes
+
+- 8fe4de6: correct ordering of default export
+
+### Patch Changes
+
+- Updated dependencies [8fe4de6]
+  - @penumbra-zone/bech32m@5.0.0
+  - @penumbra-zone/getters@6.0.0
+  - @penumbra-zone/wasm@7.0.0
+  - @penumbra-zone/types@7.0.1
+
 ## 3.0.0
 
 ### Major Changes
