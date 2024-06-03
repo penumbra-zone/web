@@ -52,8 +52,8 @@ export const getSubAuctions = async ({
   duration,
 }: Pick<SwapSlice, 'amount' | 'assetIn' | 'assetOut' | 'duration'> &
   Pick<DutchAuctionSlice, 'minOutput' | 'maxOutput'>): Promise<
-    TransactionPlannerRequest_ActionDutchAuctionSchedule[]
-  > => {
+  TransactionPlannerRequest_ActionDutchAuctionSchedule[]
+> => {
   if (duration === 'instant') return [];
   const inputAssetId = getAssetIdFromValueView(assetIn?.balanceView);
   const outputAssetId = getAssetId(assetOut);
@@ -93,19 +93,17 @@ export const getSubAuctions = async ({
 
   const overallStartHeight = getStartHeight(fullSyncHeight);
 
-  return getSubAuctionStartHeights(overallStartHeight, recipe).map(
-    startHeight => {
-      return new TransactionPlannerRequest_ActionDutchAuctionSchedule({
-        description: {
-          startHeight,
-          endHeight: startHeight + recipe.subAuctionDurationInBlocks,
-          input: { amount: scaledInputAmount, assetId: inputAssetId },
-          outputId: outputAssetId,
-          stepCount: STEP_COUNT,
-          minOutput: scaledMinOutputAmount,
-          maxOutput: scaledMaxOutputAmount,
-        },
-      });
-    }
-  );
-  };
+  return getSubAuctionStartHeights(overallStartHeight, recipe).map(startHeight => {
+    return new TransactionPlannerRequest_ActionDutchAuctionSchedule({
+      description: {
+        startHeight,
+        endHeight: startHeight + recipe.subAuctionDurationInBlocks,
+        input: { amount: scaledInputAmount, assetId: inputAssetId },
+        outputId: outputAssetId,
+        stepCount: STEP_COUNT,
+        minOutput: scaledMinOutputAmount,
+        maxOutput: scaledMaxOutputAmount,
+      },
+    });
+  });
+};

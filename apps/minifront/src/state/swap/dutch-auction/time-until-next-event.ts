@@ -4,5 +4,5 @@ export const timeUntilNextEvent = (lambda: number): number => {
     return Math.abs(Math.log(Math.random()) / lambda);
   };
 
- return sampleNextEventTime()
+  return sampleNextEventTime();
 };
