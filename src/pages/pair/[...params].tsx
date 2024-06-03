@@ -327,7 +327,7 @@ export default function TradingPairs() {
           joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))
         ) / Number(BigInt(10 ** asset2Token.decimals));
 
-      const price: number = inputValue / outputValue;
+      const price: number = outputValue / inputValue;
 
       // First trace will have best price, so set only on first iteration
       if (trace === simulatedMultiHopAsset1SellData!.traces[0]) {
@@ -373,7 +373,7 @@ export default function TradingPairs() {
           joinLoHi(BigInt(output!.amount!.lo), BigInt(output!.amount!.hi))
         ) / Number(BigInt(10 ** asset2Token.decimals));
 
-      const price: number = inputValue / outputValue;
+      const price: number = outputValue / inputValue;
 
       // First trace will have best price, so set only on first iteration
       if (trace === simulatedSingleHopAsset1SellData!.traces[0]) {
@@ -428,7 +428,7 @@ export default function TradingPairs() {
         ) / Number(BigInt(10 ** asset1Token.decimals));
 
       // ! Important to note that the price is inverted here, so we do input/output instead of output/input
-      const price: number = outputValue / inputValue;
+      const price: number = inputValue / outputValue;
 
       // First trace will have best price, so set only on first iteration
       if (trace === simulatedMultiHopAsset1BuyData!.traces[0]) {
@@ -475,7 +475,7 @@ export default function TradingPairs() {
         ) / Number(BigInt(10 ** asset1Token.decimals));
 
       // ! Important to note that the price is inverted here, so we do input/output instead of output/input
-      const price: number = outputValue / inputValue;
+      const price: number = inputValue / outputValue;
 
       // First trace will have best price, so set only on first iteration
       if (trace === simulatedSingleHopAsset1BuyData!.traces[0]) {
@@ -588,7 +588,9 @@ export default function TradingPairs() {
                       fontFamily="monospace"
                       paddingBottom={"0em"}
                       fontSize={"md"}
-                    >{`${asset1Token!.display} / ${asset2Token!.display}`}</Text>
+                    >{`${asset1Token!.display} / ${
+                      asset2Token!.display
+                    }`}</Text>
                     {/*
                       <Text
                         fontSize={"sm"}
@@ -598,13 +600,12 @@ export default function TradingPairs() {
                         Liquidity
                       </Text>
                     */}
+                    {/* Note the reversal of names here since buy and sell side is inverted at this stage (i.e. sell side == buy demand side) */}
                     <DepthChart
-                      buySideData={depthChartMultiHopAsset1BuyPoints}
-                      sellSideData={depthChartMultiHopAsset1SellPoints}
-                      buySideSingleHopData={depthChartSingleHopAsset1BuyPoints}
-                      sellSideSingleHopData={
-                        depthChartSingleHopAsset1SellPoints
-                      }
+                      buySideData={depthChartMultiHopAsset1SellPoints}
+                      sellSideData={depthChartMultiHopAsset1BuyPoints}
+                      buySideSingleHopData={depthChartSingleHopAsset1SellPoints}
+                      sellSideSingleHopData={depthChartSingleHopAsset1BuyPoints}
                       asset1Token={asset1Token!}
                       asset2Token={asset2Token!}
                     />
@@ -621,11 +622,12 @@ export default function TradingPairs() {
                     borderRadius={"10px"}
                     height="600px"
                   >
+                    {/* Note the same reversal here */}
                     <BuySellChart
-                      buySidePositions={lpsBuySide}
-                      sellSidePositions={lpsSellSide}
-                      asset1Token={asset1Token!}
-                      asset2Token={asset2Token!}
+                      buySidePositions={lpsSellSide}
+                      sellSidePositions={lpsBuySide}
+                      asset1Token={asset2Token!}
+                      asset2Token={asset1Token!}
                     />
                   </VStack>
                 </VStack>
@@ -633,7 +635,7 @@ export default function TradingPairs() {
             </Box>
           </VStack>
         </Center>
-      ) : !isLoading  ? (
+      ) : !isLoading ? (
         <Center height="100vh">
           <Text>{`${error}`}</Text>
         </Center>
