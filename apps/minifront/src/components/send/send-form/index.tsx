@@ -87,9 +87,9 @@ export const SendForm = () => {
         selection={selection}
         setSelection={setSelection}
         value={amount}
-        onChange={e => {
-          if (Number(e.target.value) < 0) return;
-          setAmount(e.target.value);
+        onInputChange={amount => {
+          if (Number(amount) < 0) return;
+          setAmount(amount);
         }}
         validations={[
           {

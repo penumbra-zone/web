@@ -1,8 +1,6 @@
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { formatAmount } from '@penumbra-zone/types/amount';
 import { ValueComponent } from './value';
+import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 
 interface ValueViewProps {
   view: ValueView | undefined;
@@ -23,10 +21,10 @@ export const ValueViewComponent = ({
 }: ValueViewProps) => {
   if (!view) return null;
 
+  const formattedAmount = getFormattedAmtFromValueView(view, true);
+
   if (view.valueView.case === 'knownAssetId' && view.valueView.value.metadata) {
-    const { amount = new Amount(), metadata } = view.valueView.value;
-    const exponent = getDisplayDenomExponent.optional()(metadata);
-    const formattedAmount = formatAmount({ amount, exponent, commas: true });
+    const { metadata } = view.valueView.value;
     const symbol = metadata.symbol || 'Unknown asset';
     return (
       <ValueComponent
@@ -43,13 +41,10 @@ export const ValueViewComponent = ({
   }
 
   if (view.valueView.case === 'unknownAssetId') {
-    const { amount = new Amount() } = view.valueView.value;
-    const formattedAmount = formatAmount({ amount, commas: true });
-    const symbol = 'Unknown asset';
     return (
       <ValueComponent
         formattedAmount={formattedAmount}
-        symbol={symbol}
+        symbol='Unknown asset'
         variant={variant}
         showIcon={showIcon}
         showValue={showValue}

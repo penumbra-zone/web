@@ -2,10 +2,10 @@ import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import BalanceSelector from './balance-selector';
 import { Validation } from './validation-result';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { InputBlock } from './input-block';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { WalletIcon } from '@penumbra-zone/ui/components/ui/icons/wallet';
+import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
+import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 
 interface InputTokenProps {
   label: string;
@@ -17,7 +17,7 @@ interface InputTokenProps {
   setSelection: (selection: BalancesResponse) => void;
   validations?: Validation[];
   balances: BalancesResponse[];
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onInputChange: (amount: string) => void;
 }
 
 export default function InputToken({
@@ -30,8 +30,16 @@ export default function InputToken({
   inputClassName,
   setSelection,
   balances,
-  onChange,
+  onInputChange,
 }: InputTokenProps) {
+  const setInputToBalanceMax = () => {
+    const match = balances.find(b => b.balanceView?.equals(selection?.balanceView));
+    if (match?.balanceView) {
+      const formattedAmt = getFormattedAmtFromValueView(match.balanceView);
+      onInputChange(formattedAmt);
+    }
+  };
+
   return (
     <InputBlock label={label} value={value} validations={validations} className={className}>
       <div className='flex items-center justify-between gap-4'>
@@ -44,15 +52,16 @@ export default function InputToken({
             inputClassName,
           )}
           value={value}
-          onChange={onChange}
+          onChange={e => onInputChange(e.target.value)}
         />
         <BalanceSelector value={selection} onChange={setSelection} balances={balances} />
       </div>
 
       <div className='mt-[6px] flex items-center justify-between gap-2'>
         <div className='flex items-start gap-1 truncate'>
-          <WalletIcon className='size-5' />
-          <ValueViewComponent view={selection?.balanceView} showIcon={false} />
+          {selection?.balanceView && (
+            <BalanceValueView valueView={selection.balanceView} onClick={setInputToBalanceMax} />
+          )}
         </div>
       </div>
     </InputBlock>
