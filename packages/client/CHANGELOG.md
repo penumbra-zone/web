@@ -1,5 +1,17 @@
 # @penumbra-zone/client
 
+## 6.0.0
+
+### Major Changes
+
+- 8fe4de6: correct ordering of default export
+
+### Patch Changes
+
+- Updated dependencies [8fe4de6]
+  - @penumbra-zone/transport-dom@6.0.0
+  - @penumbra-zone/protobuf@4.0.0
+
 ## 5.0.0
 
 ### Major Changes

@@ -1,5 +1,15 @@
 # @penumbra-zone/ui
 
+## 3.3.2
+
+### Patch Changes
+
+- Updated dependencies [8fe4de6]
+  - @penumbra-zone/perspective@4.0.0
+  - @penumbra-zone/bech32m@5.0.0
+  - @penumbra-zone/getters@6.0.0
+  - @penumbra-zone/types@7.0.1
+
 ## 3.3.1
 
 ### Patch Changes
