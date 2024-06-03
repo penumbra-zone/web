@@ -17,10 +17,10 @@ export const EstimatedOutputExplanation = () => {
   );
 
   if (!estimatedOutput) return null;
-  const formattedAmount = formatAmount(
-    estimatedOutput,
-    getDisplayDenomExponent.optional()(assetOut),
-  );
+  const formattedAmount = formatAmount({
+    amount: estimatedOutput,
+    exponent: getDisplayDenomExponent.optional()(assetOut),
+  });
   const asssetInSymbol = getSymbolFromValueView.optional()(assetIn?.balanceView);
 
   return (
