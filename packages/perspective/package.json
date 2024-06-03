@@ -16,16 +16,16 @@
   "publishConfig": {
     "exports": {
       "./plan/*": {
-        "default": "./dist/plan/*.js",
-        "types": "./dist/plan/*.d.ts"
+        "types": "./dist/plan/*.d.ts",
+        "default": "./dist/plan/*.js"
       },
       "./transaction/*": {
-        "default": "./dist/transaction/*.js",
-        "types": "./dist/transaction/*.d.ts"
+        "types": "./dist/transaction/*.d.ts",
+        "default": "./dist/transaction/*.js"
       },
       "./translators/*": {
-        "default": "./dist/translators/*.js",
-        "types": "./dist/translators/*.d.ts"
+        "types": "./dist/translators/*.d.ts",
+        "default": "./dist/translators/*.js"
       }
     }
   },
