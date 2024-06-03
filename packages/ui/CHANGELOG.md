@@ -1,5 +1,17 @@
 # @penumbra-zone/ui
 
+## 3.3.1
+
+### Patch Changes
+
+- bb5f621: formatAmount() takes new args
+- Updated dependencies [bb5f621]
+- Updated dependencies [8b121ec]
+  - @penumbra-zone/types@7.0.0
+  - @penumbra-zone/perspective@3.0.0
+  - @penumbra-zone/bech32m@4.0.0
+  - @penumbra-zone/getters@5.0.0
+
 ## 3.3.0
 
 ### Minor Changes

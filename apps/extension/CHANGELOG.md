@@ -1,5 +1,26 @@
 # chrome-extension
 
+## 9.0.2
+
+### Patch Changes
+
+- Updated dependencies [bb5f621]
+- Updated dependencies [8b121ec]
+  - @penumbra-zone/types@7.0.0
+  - @penumbra-zone/ui@3.3.1
+  - @penumbra-zone/transport-dom@5.0.0
+  - @penumbra-zone/perspective@3.0.0
+  - @penumbra-zone/protobuf@3.0.0
+  - @penumbra-zone/bech32m@4.0.0
+  - @penumbra-zone/client@5.0.0
+  - @penumbra-zone/wasm@6.0.0
+  - @penumbra-zone/crypto-web@3.0.8
+  - @penumbra-zone/query@4.0.1
+  - @penumbra-zone/services@4.0.2
+  - @penumbra-zone/services-context@3.2.2
+  - @penumbra-zone/storage@3.4.2
+  - @penumbra-zone/transport-chrome@2.2.1
+
 ## 9.0.1
 
 ### Patch Changes

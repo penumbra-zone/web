@@ -1,5 +1,12 @@
 # @penumbra-zone/transport-chrome
 
+## 2.2.1
+
+### Patch Changes
+
+- Updated dependencies [8b121ec]
+  - @penumbra-zone/transport-dom@5.0.0
+
 ## 2.2.0
 
 ### Minor Changes

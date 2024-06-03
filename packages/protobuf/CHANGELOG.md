@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 3.0.0
+
+### Major Changes
+
+- 8b121ec: change package exports to use 'default' field
+
 ## 2.1.0
 
 ### Minor Changes

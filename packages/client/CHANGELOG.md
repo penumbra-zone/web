@@ -1,5 +1,17 @@
 # @penumbra-zone/client
 
+## 5.0.0
+
+### Major Changes
+
+- 8b121ec: change package exports to use 'default' field
+
+### Patch Changes
+
+- Updated dependencies [8b121ec]
+  - @penumbra-zone/transport-dom@5.0.0
+  - @penumbra-zone/protobuf@3.0.0
+
 ## 4.2.0
 
 ### Minor Changes
