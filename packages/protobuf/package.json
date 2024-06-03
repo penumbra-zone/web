@@ -11,18 +11,13 @@
     "prepack": "pnpm clean && pnpm build"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./*": "./src/*"
+    ".": "./src/index.ts"
   },
   "publishConfig": {
     "exports": {
       ".": {
-        "import": "./dist/index.js",
+        "default": "./dist/index.js",
         "types": "./dist/index.d.ts"
-      },
-      "./*": {
-        "import": "./dist/*.js",
-        "types": "./dist/*.d.ts"
       }
     }
   },

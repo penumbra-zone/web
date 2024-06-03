@@ -20,7 +20,7 @@
   "publishConfig": {
     "exports": {
       "./*": {
-        "import": "./dist/*.js",
+        "default": "./dist/*.js",
         "types": "./dist/*.d.ts"
       }
     }
