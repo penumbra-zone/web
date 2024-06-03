@@ -9,9 +9,9 @@ export const ExtensionNotInstalled = () => {
     <>
       <HeadTag />
       <SplashPage title='Welcome to Penumbra'>
-        <div className='flex items-center justify-between gap-4'>
+        <div className='flex items-center justify-between gap-[1em] text-lg'>
           To get started, install the Penumbra Chrome extension.
-          <Button asChild className='px-4 text-white'>
+          <Button asChild variant='gradient'>
             <a
               href={`https://chrome.google.com/webstore/detail/penumbra-wallet/${CHROME_EXTENSION_ID}`}
               target='_blank'

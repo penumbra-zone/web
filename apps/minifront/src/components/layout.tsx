@@ -1,15 +1,8 @@
-import { LoaderFunction, Outlet, useLoaderData } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { HeadTag } from './metadata/head-tag';
 import { Header } from './header/header';
 import { Toaster } from '@penumbra-zone/ui/components/ui/toaster';
-import { ExtensionNotConnected } from './extension-not-connected';
-import { ExtensionNotInstalled } from './extension-not-installed';
 import { Footer } from './footer/footer';
-import {
-  isPraxConnected,
-  isPraxConnectedTimeout,
-  isPraxAvailable,
-} from '@penumbra-zone/client/prax';
 import '@penumbra-zone/ui/styles/globals.css';
 import { getChainId } from '../fetchers/chain-id';
 import { useEffect, useState } from 'react';
@@ -17,28 +10,12 @@ import { TestnetBanner } from '@penumbra-zone/ui/components/ui/testnet-banner';
 import { Status } from './Status';
 import { MotionConfig } from 'framer-motion';
 
-export interface LayoutLoaderResult {
-  isInstalled: boolean;
-  isConnected: boolean;
-}
-
-export const LayoutLoader: LoaderFunction = async (): Promise<LayoutLoaderResult> => {
-  const isInstalled = isPraxAvailable();
-  if (!isInstalled) return { isInstalled, isConnected: false };
-  const isConnected = isPraxConnected() || (await isPraxConnectedTimeout(1000));
-  return { isInstalled, isConnected };
-};
-
 export const Layout = () => {
-  const { isInstalled, isConnected } = useLoaderData() as LayoutLoaderResult;
   const [chainId, setChainId] = useState<string | undefined>();
 
   useEffect(() => {
-    if (isInstalled && isConnected) void getChainId().then(id => setChainId(id));
-  }, [isInstalled, isConnected]);
-
-  if (!isInstalled) return <ExtensionNotInstalled />;
-  if (!isConnected) return <ExtensionNotConnected />;
+    void getChainId().then(id => setChainId(id));
+  }, []);
 
   return (
     <MotionConfig transition={{ duration: 0.1 }}>

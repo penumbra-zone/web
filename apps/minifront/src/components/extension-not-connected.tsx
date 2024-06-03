@@ -4,11 +4,7 @@ import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
 import { errorToast, warningToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { HeadTag } from './metadata/head-tag';
 
-import {
-  requestPraxConnection,
-  throwIfPraxNotAvailable,
-  throwIfPraxNotInstalled,
-} from '@penumbra-zone/client/prax';
+import { requestPraxAccess } from '@penumbra-zone/client/prax';
 import { useState } from 'react';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
 
@@ -41,9 +37,7 @@ const useExtConnector = () => {
 
   const request = async () => {
     try {
-      throwIfPraxNotAvailable();
-      await throwIfPraxNotInstalled();
-      await requestPraxConnection();
+      await requestPraxAccess();
       location.reload();
     } catch (e) {
       handleErr(e);
@@ -62,15 +56,15 @@ export const ExtensionNotConnected = () => {
     <>
       <HeadTag />
       <Toaster />
-      <SplashPage title='Welcome to Penumbra'>
+      <SplashPage title='Connect to Penumbra'>
         <div className='flex items-center justify-between gap-[1em] text-lg'>
           <div>To get started, connect the Penumbra Chrome extension.</div>
           {!result ? (
-            <Button variant='gradient' onClick={() => void request()} className='px-4'>
+            <Button variant='gradient' onClick={() => void request()}>
               Connect
             </Button>
           ) : (
-            <Button variant='gradient' className='px-4' onClick={() => location.reload()}>
+            <Button variant='gradient' onClick={() => location.reload()}>
               Reload
             </Button>
           )}

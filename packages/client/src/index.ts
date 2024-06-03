@@ -1,7 +1,4 @@
-export enum PenumbraRequestFailure {
-  Denied = 'Denied',
-  NeedsLogin = 'NeedsLogin',
-}
+export * from './error';
 
 export const PenumbraSymbol = Symbol.for('penumbra');
 
