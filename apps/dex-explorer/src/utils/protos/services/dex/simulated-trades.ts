@@ -1,6 +1,6 @@
 import { PromiseClient } from "@connectrpc/connect";
 import { createClient } from "../utils";
-import { SimulationService } from "@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/dex/v1/dex_connect";
+import { SimulationService } from "@penumbra-zone/protobuf";
 import { SimulationServiceInterface } from "../../types/SimulationQuerier";
 import { SimulateTradeRequest, SimulateTradeResponse, SwapExecution } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 
