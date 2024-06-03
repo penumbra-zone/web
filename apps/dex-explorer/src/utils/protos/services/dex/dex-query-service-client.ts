@@ -1,15 +1,15 @@
 import { PromiseClient } from "@connectrpc/connect";
 import { createClient } from "../utils";
-import { QueryService } from "@buf/penumbra-zone_penumbra.connectrpc_es/penumbra/core/component/dex/v1/dex_connect";
+import { DexService } from "@penumbra-zone/protobuf"
 import { PositionId, Position, DirectedTradingPair, SwapExecution } from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
 import { DexQueryServiceClientInterface, SwapExecutionWithBlockHeight } from "../../types/DexQueryServiceClientInterface";
 import { Readable } from "stream";
 
 export class DexQueryServiceClient implements DexQueryServiceClientInterface {
-  private readonly client: PromiseClient<typeof QueryService>;
+  private readonly client: PromiseClient<typeof DexService>;
 
   constructor({ grpcEndpoint }: { grpcEndpoint: string }) {
-    this.client = createClient(grpcEndpoint, QueryService);
+    this.client = createClient(grpcEndpoint, DexService);
   }
 
   async liquidityPositionById(positionId: PositionId): Promise<Position | undefined> {
