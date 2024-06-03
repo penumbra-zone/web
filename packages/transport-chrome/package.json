@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/transport-chrome",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "license": "(MIT OR Apache-2.0)",
   "description": "Tools for adapting `@penumbra-zone/transport` to Chrome's extension runtime messaging API",
   "scripts": {
