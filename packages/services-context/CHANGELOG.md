@@ -1,5 +1,13 @@
 # @penumbra-zone/services
 
+## 3.2.1
+
+### Patch Changes
+
+- a22d3a8: Update registry (noble/testnet channel update)
+- Updated dependencies [a22d3a8]
+  - @penumbra-zone/storage@3.4.1
+
 ## 3.2.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @penumbra-zone/router
 
+## 4.0.1
+
+### Patch Changes
+
+- Updated dependencies [a22d3a8]
+  - @penumbra-zone/services-context@3.2.1
+  - @penumbra-zone/storage@3.4.1
+
 ## 4.0.0
 
 ### Major Changes

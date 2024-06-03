@@ -1,5 +1,15 @@
 # chrome-extension
 
+## 9.0.1
+
+### Patch Changes
+
+- a22d3a8: Update registry (noble/testnet channel update)
+- Updated dependencies [a22d3a8]
+  - @penumbra-zone/services-context@3.2.1
+  - @penumbra-zone/storage@3.4.1
+  - @penumbra-zone/services@4.0.1
+
 ## 9.0.0
 
 ### Major Changes

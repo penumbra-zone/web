@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/storage",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
