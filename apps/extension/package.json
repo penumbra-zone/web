@@ -1,6 +1,6 @@
 {
   "name": "chrome-extension",
-  "version": "9.0.0",
+  "version": "9.0.1",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "description": "chrome-extension",
@@ -18,7 +18,7 @@
     "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0",
     "@connectrpc/connect-web": "^1.4.0",
-    "@penumbra-labs/registry": "7.5.0",
+    "@penumbra-labs/registry": "7.6.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/client": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",

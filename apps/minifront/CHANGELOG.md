@@ -1,5 +1,11 @@
 # minifront
 
+## 5.0.1
+
+### Patch Changes
+
+- a22d3a8: Update registry (noble/testnet channel update)
+
 ## 5.0.0
 
 ### Major Changes

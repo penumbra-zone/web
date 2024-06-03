@@ -1,5 +1,11 @@
 # @penumbra-zone/storage
 
+## 3.4.1
+
+### Patch Changes
+
+- a22d3a8: Update registry (noble/testnet channel update)
+
 ## 3.4.0
 
 ### Minor Changes
