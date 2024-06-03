@@ -1,6 +1,12 @@
 import { BigNumber } from 'bignumber.js';
 
-BigNumber.config({ EXPONENTIAL_AT: [-20, 20] });
+BigNumber.config({
+  EXPONENTIAL_AT: [-20, 20],
+  FORMAT: {
+    decimalSeparator: '.',
+    groupSeparator: '',
+  },
+});
 
 /**
  * In protobufs, it's common to split a single u128 into two u64's.

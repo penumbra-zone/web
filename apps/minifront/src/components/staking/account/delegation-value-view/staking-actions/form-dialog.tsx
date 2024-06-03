@@ -2,13 +2,13 @@ import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Dialog, DialogContent, DialogHeader } from '@penumbra-zone/ui/components/ui/dialog';
 import { IdentityKeyComponent } from '@penumbra-zone/ui/components/ui/identity-key-component';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { InputBlock } from '../../../../shared/input-block';
 import { Validator } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { FormEvent } from 'react';
 import { getIdentityKey } from '@penumbra-zone/getters/validator';
-import { WalletIcon } from '@penumbra-zone/ui/components/ui/icons/wallet';
+import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
+import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
 
 const getCapitalizedAction = (action: 'delegate' | 'undelegate') =>
   action.replace(/^./, firstCharacter => firstCharacter.toLocaleUpperCase());
@@ -60,6 +60,14 @@ export const FormDialog = ({
     onSubmit();
   };
 
+  const setInputToBalanceMax = () => {
+    const type = action === 'delegate' ? unstakedTokens : delegationTokens;
+    if (type) {
+      const formattedAmt = getFormattedAmtFromValueView(type);
+      onChangeAmount(formattedAmt);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent size='sm'>
@@ -90,12 +98,14 @@ export const FormDialog = ({
                   autoFocus
                 />
 
-                <div className='flex items-start gap-1 truncate text-muted-foreground'>
-                  <WalletIcon className='size-5' />
-                  <ValueViewComponent
-                    view={action === 'delegate' ? unstakedTokens : delegationTokens}
-                    showIcon={false}
-                  />
+                <div className='flex'>
+                  {action === 'delegate' && unstakedTokens && (
+                    <BalanceValueView valueView={unstakedTokens} onClick={setInputToBalanceMax} />
+                  )}
+
+                  {action === 'undelegate' && (
+                    <BalanceValueView valueView={delegationTokens} onClick={setInputToBalanceMax} />
+                  )}
                 </div>
               </InputBlock>
 
