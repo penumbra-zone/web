@@ -18,7 +18,10 @@
   },
   "publishConfig": {
     "exports": {
-      "./*": "./dist/*.js"
+      "./*": {
+        "default": "./dist/*.js",
+        "types": "./dist/*.d.ts"
+      }
     }
   },
   "dependencies": {

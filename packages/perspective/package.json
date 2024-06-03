@@ -15,9 +15,18 @@
   ],
   "publishConfig": {
     "exports": {
-      "./plan/*": "./dist/plan/*.js",
-      "./transaction/*": "./dist/transaction/*.js",
-      "./translators/*": "./dist/translators/*.js"
+      "./plan/*": {
+        "default": "./dist/plan/*.js",
+        "types": "./dist/plan/*.d.ts"
+      },
+      "./transaction/*": {
+        "default": "./dist/transaction/*.js",
+        "types": "./dist/transaction/*.d.ts"
+      },
+      "./translators/*": {
+        "default": "./dist/translators/*.js",
+        "types": "./dist/translators/*.d.ts"
+      }
     }
   },
   "dependencies": {
