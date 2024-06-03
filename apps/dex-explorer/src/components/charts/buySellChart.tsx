@@ -119,6 +119,7 @@ export default dynamic(
           const innerStr = uint8ArrayToBase64(positionId.inner);
           const bech32Id = innerToBech32Address(innerStr, "plpid");
 
+          console.warn("price", price)
           return {
             price: price,
             reserves1: Number.parseFloat(reserves1.toFixed(6)),
