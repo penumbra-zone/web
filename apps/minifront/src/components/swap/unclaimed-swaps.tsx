@@ -2,15 +2,14 @@ import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { UnclaimedSwapsWithMetadata } from './swap-loader';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
-import { AllSlices, useStore } from '../../state';
+import { useStore } from '../../state';
 import { useRevalidateUnclaimedSwaps, useUnclaimedSwaps } from '../../state/unclaimed-swaps';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
-import { StoreApi, UseBoundStore } from 'zustand';
 
 export const UnclaimedSwaps = () => {
-  const unclaimedSwaps = useUnclaimedSwaps(useStore as UseBoundStore<StoreApi<AllSlices>>);
+  const unclaimedSwaps = useUnclaimedSwaps();
 
   const sortedUnclaimedSwaps = (unclaimedSwaps.data ?? []).sort(
     (a, b) => Number(b.swap.outputData?.height) - Number(a.swap.outputData?.height),
@@ -23,7 +22,7 @@ export const UnclaimedSwaps = () => {
 };
 
 const _UnclaimedSwaps = ({ unclaimedSwaps }: { unclaimedSwaps: UnclaimedSwapsWithMetadata[] }) => {
-  const revalidate = useRevalidateUnclaimedSwaps(useStore as UseBoundStore<StoreApi<AllSlices>>);
+  const revalidate = useRevalidateUnclaimedSwaps();
   const { claimSwap, isInProgress } = useStore(state => state.unclaimedSwaps);
 
   return (
