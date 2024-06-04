@@ -65,17 +65,17 @@ export default dynamic(
           );
 
           let price = Number.parseFloat(
-            direction === 1 ? q.div(p).toFixed(6) : p.div(q).toFixed(6)
+            direction === 1 ? p.div(q).toFixed(6) : q.div(p).toFixed(6)
           );
 
           const willingToBuy = Number.parseFloat(
-            direction === 1 ? reserves1.toFixed(6) : reserves2.toFixed(6)
+            (Number(direction === 1 ? reserves2.toFixed(6) : reserves1.toFixed(6)) / price).toFixed(6)
           );
 
           // Reconstruct a 'real' Position object from the JSON object as it is slightly different
           // somewhere up the stack. we need a real Position with toBinary to
           // enter wasm. this is sufficient for now.
-          console.log("position", position)
+          //console.log("position", position)
           const protoPosition = Position.fromJson({
             phi: {
               component: {
@@ -113,13 +113,12 @@ export default dynamic(
               },
             },
           });
-          console.log("protoPosition", protoPosition)
+          //console.log("buy protoPosition", protoPosition)
           const positionId = computePositionId(protoPosition);
           // Convert inner byte array to bech32
           const innerStr = uint8ArrayToBase64(positionId.inner);
           const bech32Id = innerToBech32Address(innerStr, "plpid");
 
-          console.warn("price", price)
           return {
             price: price,
             reserves1: Number.parseFloat(reserves1.toFixed(6)),
@@ -174,13 +173,13 @@ export default dynamic(
           );
 
           let price = Number.parseFloat(
-            direction === 1 ? q.div(p).toFixed(6) : p.div(q).toFixed(6)
+            direction === 1 ? p.div(q).toFixed(6) : q.div(p).toFixed(6)
           );
 
           // Reconstruct a 'real' Position object from the JSON object as it is slightly different
           // somewhere up the stack. we need a real Position with toBinary to
           // enter wasm. this is sufficient for now.
-          console.log("position", position);
+          //console.log("sell position", position);
           const protoPosition = Position.fromJson({
             phi: {
               component: {
@@ -218,7 +217,7 @@ export default dynamic(
               },
             },
           });
-          console.log("protoPosition", protoPosition);
+          //console.log("sell protoPosition", protoPosition);
           const positionId = computePositionId(protoPosition);
           // Convert inner byte array to bech32
           const innerStr = uint8ArrayToBase64(positionId.inner);
@@ -226,8 +225,9 @@ export default dynamic(
 
           const willingToSell =
             Number.parseFloat(
-              direction === 1 ? reserves2.toFixed(6) : reserves1.toFixed(6)
-            ) * price;
+              direction === 1 ? reserves1.toFixed(6) : reserves2.toFixed(6)
+            );
+
           return {
             price: price,
             reserves1: Number.parseFloat(reserves1.toFixed(6)),
@@ -310,7 +310,7 @@ export default dynamic(
               {price.toFixed(6)}
             </Text>
             <Spacer />
-            <Text textAlign="right" paddingRight="70px">
+            <Text textAlign="right" paddingRight="60px">
               {amount.toFixed(2)}
             </Text>
             {/* show only first and last 6 chars */}
@@ -355,7 +355,7 @@ export default dynamic(
             <Text>{`Price (${asset2Token.symbol})`}</Text>
             <Spacer />
             <Text
-              paddingRight="80px"
+              paddingRight="115px"
               textAlign={"right"}
             >{`Amount (${asset1Token.symbol})`}</Text>
             <Text>{`LP ID`}</Text>
