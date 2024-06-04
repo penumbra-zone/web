@@ -13,8 +13,9 @@ export interface ZQueryState<DataType> {
   };
 }
 
-const capitalizeFirstLetter = <Name extends string>(stringToCapitalize: Name): Capitalize<Name> =>
-  (stringToCapitalize.charAt(0).toUpperCase() + stringToCapitalize.slice(1)) as Capitalize<Name>;
+/** `hello world` -> `Hello world` */
+const capitalize = <Str extends string>(str: Str): Capitalize<Str> =>
+  (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<Str>;
 
 /**
  * Not exported from Zustand, so we need to copy it here.
@@ -25,16 +26,12 @@ type ExtractState<S> = S extends {
   ? T
   : never;
 
-type UseHookName<Name extends string> = `use${Capitalize<Name>}`;
-type UseRevalidateHookName<Name extends string> = `useRevalidate${Capitalize<Name>}`;
-type SliceName<Name extends string> = `${Name}Slice`;
-
 type ZQuery<Name extends string, DataType> = {
-  [key in UseHookName<Name>]: () => ZQueryState<DataType>;
+  [key in `use${Capitalize<Name>}`]: () => ZQueryState<DataType>;
 } & {
-  [key in UseRevalidateHookName<Name>]: () => VoidFunction;
+  [key in `useRevalidate${Capitalize<Name>}`]: () => VoidFunction;
 } & {
-  [key in SliceName<Name>]: ZQueryState<DataType>;
+  [key in `${Name}Slice`]: ZQueryState<DataType>;
 };
 
 export const createZQuery =
@@ -48,7 +45,7 @@ export const createZQuery =
   ) => ZQuery<Name, DataType>) =>
   (set, get) =>
     ({
-      [`use${capitalizeFirstLetter(name)}`]: () =>
+      [`use${capitalize(name)}`]: () =>
         useStore(
           useShallow(state => {
             const zQuery = get(state);
@@ -61,7 +58,7 @@ export const createZQuery =
           }),
         ),
 
-      [`useRevalidate${capitalizeFirstLetter(name)}`]: () =>
+      [`useRevalidate${capitalize(name)}`]: () =>
         useStore(useShallow(state => get(state).revalidate)),
 
       [`${name}Slice`]: {
