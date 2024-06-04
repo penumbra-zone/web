@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { StoreApi, UseBoundStore } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -34,11 +35,16 @@ export const createZQuery = <StoreType, Name extends string, DataType>(
   get: (state: StoreType) => ZQueryState<DataType>,
 ): ZQuery<Name, DataType, StoreType> =>
   ({
-    [`use${capitalize(name)}`]: (useStore: UseBoundStore<StoreApi<StoreType>>) =>
-      useStore(
-        useShallow((state: StoreType) => {
+    [`use${capitalize(name)}`]: (useStore: UseBoundStore<StoreApi<StoreType>>) => {
+      const fetch = get(useStore.getState())._zQueryInternal.fetch;
+
+      useEffect(() => {
+        void fetch();
+      }, [fetch]);
+
+      return useStore(
+        useShallow(state => {
           const zQuery = get(state);
-          void zQuery._zQueryInternal.fetch();
 
           return {
             data: zQuery.data,
@@ -46,7 +52,8 @@ export const createZQuery = <StoreType, Name extends string, DataType>(
             error: zQuery.error,
           };
         }),
-      ),
+      );
+    },
 
     [`useRevalidate${capitalize(name)}`]: (useStore: UseBoundStore<StoreApi<StoreType>>) =>
       useStore(useShallow((state: StoreType) => get(state).revalidate)),
@@ -56,7 +63,7 @@ export const createZQuery = <StoreType, Name extends string, DataType>(
       loading: false,
       error: undefined,
 
-      revalidate: () => Promise.resolve(),
+      revalidate: () => void get(store.getState())._zQueryInternal.fetch(),
 
       _zQueryInternal: {
         fetch: async () => {
