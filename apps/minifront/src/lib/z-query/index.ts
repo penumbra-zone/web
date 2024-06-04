@@ -30,9 +30,7 @@ type ZQuery<Name extends string, DataType> = {
   [key in `use${Capitalize<Name>}`]: () => ZQueryState<DataType>;
 } & {
   [key in `useRevalidate${Capitalize<Name>}`]: () => VoidFunction;
-} & {
-  [key in `${Name}Slice`]: ZQueryState<DataType>;
-};
+} & Record<Name, ZQueryState<DataType>>;
 
 export const createZQuery =
   <Name extends string, DataType, StoreType>(
@@ -61,7 +59,7 @@ export const createZQuery =
       [`useRevalidate${capitalize(name)}`]: () =>
         useStore(useShallow(state => get(state).revalidate)),
 
-      [`${name}Slice`]: {
+      [name]: {
         data: undefined,
         loading: false,
         error: undefined,
