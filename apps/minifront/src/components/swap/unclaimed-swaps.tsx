@@ -1,21 +1,20 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Card } from '@penumbra-zone/ui/components/ui/card';
-import { useLoaderData, useRevalidator } from 'react-router-dom';
-import { SwapLoaderResponse, UnclaimedSwapsWithMetadata } from './swap-loader';
+import { UnclaimedSwapsWithMetadata } from './swap-loader';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 import { useStore } from '../../state';
-import { unclaimedSwapsSelector } from '../../state/unclaimed-swaps';
+import { useRevalidateUnclaimedSwaps, useUnclaimedSwaps } from '../../state/unclaimed-swaps';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
 
 export const UnclaimedSwaps = () => {
-  const unclaimedSwaps = useLoaderData() as SwapLoaderResponse;
+  const unclaimedSwaps = useUnclaimedSwaps(useStore);
 
-  const sortedUnclaimedSwaps = unclaimedSwaps.sort(
+  const sortedUnclaimedSwaps = (unclaimedSwaps.data ?? []).sort(
     (a, b) => Number(b.swap.outputData?.height) - Number(a.swap.outputData?.height),
   );
-  return !unclaimedSwaps.length ? (
+  return !unclaimedSwaps.data?.length ? (
     <div className='hidden xl:block'></div>
   ) : (
     <_UnclaimedSwaps unclaimedSwaps={sortedUnclaimedSwaps}></_UnclaimedSwaps>
@@ -23,8 +22,8 @@ export const UnclaimedSwaps = () => {
 };
 
 const _UnclaimedSwaps = ({ unclaimedSwaps }: { unclaimedSwaps: UnclaimedSwapsWithMetadata[] }) => {
-  const { revalidate } = useRevalidator();
-  const { claimSwap, isInProgress } = useStore(unclaimedSwapsSelector);
+  const revalidate = useRevalidateUnclaimedSwaps(useStore);
+  const { claimSwap, isInProgress } = useStore(state => state.unclaimedSwaps);
 
   return (
     <Card layout>
