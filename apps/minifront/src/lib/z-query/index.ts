@@ -23,9 +23,9 @@ type ZQuery<Name extends string, DataType, StoreType> = {
   [key in `revalidate${Capitalize<Name>}Selector`]: () => VoidFunction;
 } & Record<Name, (store: StoreApi<StoreType>) => ZQueryState<DataType>>;
 
-export const createZQuery = <StoreType, Name extends string, DataType>(
+export const createZQuery = <StoreType, Name extends string, DataType, FetchArgs extends unknown[]>(
   name: Name,
-  fetch: () => Promise<DataType>,
+  fetch: (...args: FetchArgs) => Promise<DataType>,
   set: (value: ZQueryState<DataType>) => void,
   get: (state: StoreType) => ZQueryState<DataType>,
 ): ZQuery<Name, DataType, StoreType> =>
@@ -51,9 +51,9 @@ export const createZQuery = <StoreType, Name extends string, DataType>(
       revalidate: () => Promise.resolve(),
 
       _zQueryInternal: {
-        fetch: async () => {
+        fetch: async (...args: FetchArgs) => {
           try {
-            const data = await fetch();
+            const data = await fetch(...args);
             set({ ...get(store.getState()), data });
           } catch (error) {
             set({ ...get(store.getState()), error });
