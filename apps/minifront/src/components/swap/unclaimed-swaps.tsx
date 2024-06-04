@@ -3,7 +3,7 @@ import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { UnclaimedSwapsWithMetadata } from './swap-loader';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 import { useStore } from '../../state';
-import { useRevalidateUnclaimedSwaps, useUnclaimedSwaps } from '../../state/unclaimed-swaps';
+import { useUnclaimedSwaps } from '../../state/unclaimed-swaps';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
@@ -22,7 +22,6 @@ export const UnclaimedSwaps = () => {
 };
 
 const _UnclaimedSwaps = ({ unclaimedSwaps }: { unclaimedSwaps: UnclaimedSwapsWithMetadata[] }) => {
-  const revalidate = useRevalidateUnclaimedSwaps();
   const { claimSwap, isInProgress } = useStore(state => state.unclaimedSwaps);
 
   return (
@@ -45,7 +44,7 @@ const _UnclaimedSwaps = ({ unclaimedSwaps }: { unclaimedSwaps: UnclaimedSwapsWit
 
             <Button
               className='ml-auto w-20'
-              onClick={() => void claimSwap(id, swap, revalidate)}
+              onClick={() => void claimSwap(id, swap)}
               disabled={isInProgress(id)}
             >
               {isInProgress(id) ? 'Claiming' : 'Claim'}

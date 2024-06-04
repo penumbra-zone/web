@@ -7,7 +7,7 @@ export interface ZQueryState<DataType> {
   loading: boolean;
   error?: unknown;
 
-  revalidate: () => Promise<void>;
+  revalidate: () => void;
 
   _zQueryInternal: {
     fetch: () => Promise<void>;
