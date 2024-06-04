@@ -23,7 +23,7 @@ export interface UnclaimedSwapsSlice {
   unclaimedSwaps: ZQueryState<UnclaimedSwapsWithMetadata[]>;
 }
 
-export const { unclaimedSwaps, useRevalidateUnclaimedSwaps, useUnclaimedSwaps } = createZQuery(
+export const { unclaimedSwaps, useUnclaimedSwaps, useRevalidateUnclaimedSwaps } = createZQuery(
   'unclaimedSwaps',
   fetchUnclaimedSwaps,
 
