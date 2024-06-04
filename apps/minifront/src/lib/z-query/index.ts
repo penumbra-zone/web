@@ -48,8 +48,8 @@ export const createZQuery =
   ) => ZQuery<Name, DataType>) =>
   (set, get) =>
     ({
-      [`use${capitalizeFirstLetter(name)}`]: () => {
-        return useStore(
+      [`use${capitalizeFirstLetter(name)}`]: () =>
+        useStore(
           useShallow(state => {
             const zQuery = get(state);
 
@@ -59,10 +59,10 @@ export const createZQuery =
               error: zQuery.error,
             };
           }),
-        );
-      },
+        ),
 
-      [`useRevalidate${capitalizeFirstLetter(name)}`]: () => useStore(useShallow(get)).revalidate,
+      [`useRevalidate${capitalizeFirstLetter(name)}`]: () =>
+        useStore(useShallow(state => get(state).revalidate)),
 
       [`${name}Slice`]: {
         data: undefined,
