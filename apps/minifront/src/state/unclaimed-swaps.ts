@@ -5,6 +5,7 @@ import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { ZQueryState, createZQuery } from '../lib/z-query';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { fetchUnclaimedSwaps } from '../fetchers/unclaimed-swaps';
+import { StoreApi } from 'zustand';
 
 type SwapCommitmentId = string;
 
@@ -64,5 +65,5 @@ export const createUnclaimedSwapsSlice =
       setStatus('remove', id);
       reloadData();
     },
-    unclaimedSwaps: unclaimedSwaps(store),
+    unclaimedSwaps: unclaimedSwaps(store as StoreApi<AllSlices>),
   });
