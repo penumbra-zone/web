@@ -19,11 +19,7 @@ export interface UnclaimedSwapsSlice {
   inProgress: SwapCommitmentId[];
   isInProgress: (id: SwapCommitmentId) => boolean;
   setProgressStatus: (action: 'add' | 'remove', id: SwapCommitmentId) => void;
-  claimSwap: (
-    id: SwapCommitmentId,
-    swap: SwapRecord,
-    reloadData: () => void, // Used to refresh page state after action
-  ) => Promise<void>;
+  claimSwap: (id: SwapCommitmentId, swap: SwapRecord) => Promise<void>;
   unclaimedSwaps: ZQueryState<UnclaimedSwapsWithMetadata[]>;
 }
 
@@ -56,14 +52,14 @@ export const createUnclaimedSwapsSlice = (): SliceCreator<UnclaimedSwapsSlice> =
       });
     }
   },
-  claimSwap: async (id, swap, reloadData) => {
+  claimSwap: async (id, swap) => {
     const setStatus = get().unclaimedSwaps.setProgressStatus;
     setStatus('add', id);
 
     const commitment = getSwapRecordCommitment(swap);
     await issueSwapClaim(commitment);
     setStatus('remove', id);
-    reloadData();
+    get().unclaimedSwaps.unclaimedSwaps.revalidate();
   },
   unclaimedSwaps,
 });
