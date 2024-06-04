@@ -24,6 +24,60 @@ type ZQuery<Name extends string, DataType> = {
   [key in `useRevalidate${Capitalize<Name>}`]: () => VoidFunction;
 } & Record<Name, ZQueryState<DataType>>;
 
+/**
+ * Creates a ZQuery object that can be used to store server data in Zustand
+ * state.
+ *
+ * ## Usage
+ * First, create a ZQuery object (see individual parameters for docs on how to
+ * use them):
+ *
+ * ```ts
+ * const { puppyPhotos, usePuppyPhotos, useRevalidatePuppyPhotos } = createZQuery(
+ *   'puppyPhotos',
+ *   asyncFunctionThatFetchesAndReturnsPuppyPhotos,
+ *   () => useStore,
+ *   newValue => {
+ *     useStore.setState(state => {
+ *       ...state,
+ *       puppyPhotos: newValue,
+ *     }),
+ *   },
+ *   state => state.puppyPhotos,
+ * )
+ * ```
+ *
+ * Then, attach that object to your Zustand state:
+ *
+ * ```ts
+ * const useStore = create<State>()(set => ({
+ *  // ...
+ *  puppyPhotos,
+ * }))
+ * ```
+ *
+ * Finally, in your component, use the hooks as needed:
+ *
+ * ```tsx
+ * const PuppyPhotos = () => {
+ *   const puppyPhotos = usePuppyPhotos()
+ *   const revalidate = useRevalidatePuppyPhotos()
+ *
+ *   return (
+ *     <div>
+ *       {puppyPhotos.error && <div>{JSON.stringify(puppyPhotos.error)}</div>}
+ *       {puppyPhotos.data?.map(puppyPhoto => (
+ *         <img src={puppyPhoto.src} alt={puppyPhoto.alt} />
+ *       ))}
+ *
+ *       <button disabled={puppyPhotos.loading} onClick={revalidate}>
+ *         Reload puppy photos
+ *       </button>
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
 export const createZQuery = <StoreType, Name extends string, DataType>(
   /** The name of this property in the state/slice. */
   name: Name,
