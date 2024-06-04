@@ -208,7 +208,7 @@ export const ibcValidationErrors = (state: AllSlices) => {
 
 /**
  * Matches the given address to the chain's address prefix.
- * We don't know what format foreign addresses are in. so this only checks:
+ * We don't know what format foreign addresses are in, so this only checks:
  * - it's valid bech32 OR valid bech32m
  * - the prefix matches the chain
  */
