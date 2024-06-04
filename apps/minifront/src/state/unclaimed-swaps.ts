@@ -26,11 +26,14 @@ export interface UnclaimedSwapsSlice {
 export const { unclaimedSwaps, useRevalidateUnclaimedSwaps, useUnclaimedSwaps } = createZQuery(
   'unclaimedSwaps',
   fetchUnclaimedSwaps,
+
   () => useStore as UseBoundStore<StoreApi<AllSlices>>,
+
   newValue =>
     useStore.setState(state => {
       Object.assign(state.unclaimedSwaps.unclaimedSwaps, newValue);
     }),
+
   state => state.unclaimedSwaps.unclaimedSwaps,
 );
 
