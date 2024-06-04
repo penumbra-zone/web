@@ -11,6 +11,13 @@ import { amountMoreThanBalance } from '../../../state/send';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
+import { getAddressIndex } from '@penumbra-zone/getters/address-view';
+import { useMemo } from 'react';
+import {
+  ValueView,
+  ValueView_KnownAssetId,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 
 const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
@@ -46,6 +53,32 @@ export const TokenSwapInput = () => {
   const maxAmount = getAmount.optional()(assetIn);
   const maxAmountAsString = maxAmount ? joinLoHiAmount(maxAmount).toString() : undefined;
 
+  const balanceOut = useMemo(() => {
+    const matchedBalance = balancesResponses.find(balance => {
+      const balanceViewMetadata = (balance.balanceView?.valueView.value as ValueView_KnownAssetId)
+        .metadata;
+      return (
+        balance.accountAddress?.equals(assetIn?.accountAddress) &&
+        assetOut?.equals(balanceViewMetadata)
+      );
+    })?.balanceView;
+    return (
+      matchedBalance ??
+      new ValueView({
+        valueView: {
+          case: 'knownAssetId',
+          value: {
+            amount: new Amount({
+              lo: 0n,
+              hi: 0n,
+            }),
+            metadata: assetOut,
+          },
+        },
+      })
+    );
+  }, [assetOut, balancesResponses, assetIn]);
+
   const setInputToBalanceMax = () => {
     if (assetIn?.balanceView) {
       const formattedAmt = getFormattedAmtFromValueView(assetIn.balanceView);
@@ -71,26 +104,30 @@ export const TokenSwapInput = () => {
           }}
         />
 
-        <div className='ml-auto flex h-full flex-col justify-end self-end'>
-          <span className='mr-2 block whitespace-nowrap text-xs text-muted-foreground'>
-            Account 1
-          </span>
-        </div>
+        <div className='flex gap-4 sm:contents'>
+          {assetIn && (
+            <div className='ml-auto hidden h-full flex-col justify-end self-end sm:flex'>
+              <span className='mr-2 block whitespace-nowrap text-xs text-muted-foreground'>
+                Account {getAddressIndex(assetIn.accountAddress).account}
+              </span>
+            </div>
+          )}
 
-        <div className='flex h-full flex-col gap-2'>
-          <BalanceSelector value={assetIn} onChange={setAssetIn} balances={balancesResponses} />
-          {assetIn?.balanceView && (
-            <BalanceValueView valueView={assetIn.balanceView} onClick={setInputToBalanceMax} />
-          )}
-        </div>
-        <div className='flex flex-col gap-2 pt-2'>
-          <ArrowRight size={16} className='text-muted-foreground' />
-        </div>
-        <div className='flex h-full flex-col gap-2'>
-          <AssetSelector assets={swappableAssets} value={assetOut} onChange={setAssetOut} />
-          {assetIn?.balanceView && (
-            <BalanceValueView valueView={assetIn.balanceView} onClick={setInputToBalanceMax} />
-          )}
+          <div className='flex h-full flex-col gap-2'>
+            <BalanceSelector value={assetIn} onChange={setAssetIn} balances={balancesResponses} />
+            {assetIn?.balanceView && (
+              <BalanceValueView valueView={assetIn.balanceView} onClick={setInputToBalanceMax} />
+            )}
+          </div>
+
+          <div className='flex flex-col gap-2 pt-2'>
+            <ArrowRight size={16} className='text-muted-foreground' />
+          </div>
+
+          <div className='flex h-full flex-col gap-2'>
+            <AssetSelector assets={swappableAssets} value={assetOut} onChange={setAssetOut} />
+            {assetOut && <BalanceValueView valueView={balanceOut} />}
+          </div>
         </div>
       </div>
     </Box>
