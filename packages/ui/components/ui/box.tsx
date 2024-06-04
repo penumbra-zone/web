@@ -34,19 +34,21 @@ export const Box = ({
   layout,
   layoutId,
   headerContent,
+  className,
 }: PropsWithChildren<
   VariantProps<typeof variants> & {
     label?: ReactNode;
     layout?: boolean;
     layoutId?: string;
     headerContent?: ReactNode;
+    className?: string;
   }
 >) => {
   return (
     <motion.div
       layout={layout ?? !!layoutId}
       layoutId={layoutId}
-      className={cn('flex flex-col gap-4', variants({ spacing, state }))}
+      className={cn('flex flex-col gap-4', className, variants({ spacing, state }))}
       /**
        * Set the border radius via the style prop so it doesn't get distorted by framer-motion.
        *
