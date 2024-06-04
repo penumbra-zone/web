@@ -18,24 +18,22 @@ export interface ZQueryState<DataType> {
 const capitalize = <Str extends string>(str: Str): Capitalize<Str> =>
   (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<Str>;
 
-type ZQuery<Name extends string, DataType, StoreType> = {
-  [key in `use${Capitalize<Name>}`]: (
-    useStore: UseBoundStore<StoreApi<StoreType>>,
-  ) => ZQueryState<DataType>;
+type ZQuery<Name extends string, DataType> = {
+  [key in `use${Capitalize<Name>}`]: () => ZQueryState<DataType>;
 } & {
-  [key in `useRevalidate${Capitalize<Name>}`]: (
-    useStore: UseBoundStore<StoreApi<StoreType>>,
-  ) => VoidFunction;
-} & Record<Name, (store: StoreApi<StoreType>) => ZQueryState<DataType>>;
+  [key in `useRevalidate${Capitalize<Name>}`]: () => VoidFunction;
+} & Record<Name, ZQueryState<DataType>>;
 
 export const createZQuery = <StoreType, Name extends string, DataType>(
   name: Name,
   fetch: () => Promise<DataType>,
+  getUseStore: () => UseBoundStore<StoreApi<StoreType>>,
   set: (value: ZQueryState<DataType>) => void,
   get: (state: StoreType) => ZQueryState<DataType>,
-): ZQuery<Name, DataType, StoreType> =>
+): ZQuery<Name, DataType> =>
   ({
-    [`use${capitalize(name)}`]: (useStore: UseBoundStore<StoreApi<StoreType>>) => {
+    [`use${capitalize(name)}`]: () => {
+      const useStore = getUseStore();
       const fetch = get(useStore.getState())._zQueryInternal.fetch;
 
       useEffect(() => {
@@ -55,25 +53,27 @@ export const createZQuery = <StoreType, Name extends string, DataType>(
       );
     },
 
-    [`useRevalidate${capitalize(name)}`]: (useStore: UseBoundStore<StoreApi<StoreType>>) =>
-      useStore(useShallow((state: StoreType) => get(state).revalidate)),
+    [`useRevalidate${capitalize(name)}`]: () => {
+      const useStore = getUseStore();
+      return useStore(useShallow((state: StoreType) => get(state).revalidate));
+    },
 
-    [name]: (store: StoreApi<StoreType>) => ({
+    [name]: {
       data: undefined,
       loading: false,
       error: undefined,
 
-      revalidate: () => void get(store.getState())._zQueryInternal.fetch(),
+      revalidate: () => void get(getUseStore().getState())._zQueryInternal.fetch(),
 
       _zQueryInternal: {
         fetch: async () => {
           try {
             const data = await fetch();
-            set({ ...get(store.getState()), data });
+            set({ ...get(getUseStore().getState()), data });
           } catch (error) {
-            set({ ...get(store.getState()), error });
+            set({ ...get(getUseStore().getState()), error });
           }
         },
       },
-    }),
-  }) as ZQuery<Name, DataType, StoreType>;
+    },
+  }) as ZQuery<Name, DataType>;
