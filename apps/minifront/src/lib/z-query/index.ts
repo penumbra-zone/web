@@ -13,35 +13,6 @@ export interface ZQueryState<DataType> {
   };
 }
 
-type ZQueryCreator<DataType> = (
-  set: (value: ZQueryState<DataType>) => void,
-  get: () => ZQueryState<DataType>,
-) => ZQueryState<DataType>;
-
-export const zQuery =
-  <DataType>(fetch: () => Promise<DataType>): ZQueryCreator<DataType> =>
-  (set, get) => ({
-    data: undefined,
-    loading: false,
-    error: undefined,
-
-    revalidate: () => Promise.resolve(),
-
-    _zQueryInternal: {
-      fetch: async () => {
-        try {
-          const data = await fetch();
-          set({ ...get(), data });
-        } catch (error) {
-          set({ ...get(), error });
-        }
-      },
-    },
-  });
-
-export const isZQuerySlice = (object: unknown): object is ZQueryState<unknown> =>
-  typeof object === 'object' && !!object && '_zQueryInternal' in object;
-
 const capitalizeFirstLetter = <Name extends string>(stringToCapitalize: Name): Capitalize<Name> =>
   (stringToCapitalize.charAt(0).toUpperCase() + stringToCapitalize.slice(1)) as Capitalize<Name>;
 
