@@ -15,17 +15,19 @@ export const LPSearchBar = () => {
     }
 
     return (
-        <form onSubmit={onSearch}>
+      // TODO: Massage on mobile
+      <form onSubmit={onSearch}>
         <Input
-            placeholder="Search by Liquidity Position ID"
-            width={"30em"}
-            height={"2.5em"}
-            fontSize={"0.8em"}
-            value={LpId}
-            onChange={(e) => setLpId(e.target.value)}
+          placeholder="Search by Liquidity Position ID"
+          width={"37.5em"}
+          height={"2.5em"}
+          fontSize={"0.8em"}
+          value={LpId}
+          spellCheck={false}
+          onChange={(e) => setLpId(e.target.value)}
         />
-        </form>
-    )
+      </form>
+    );
 }
 
 const sanitizeInput = (input: string): string => {

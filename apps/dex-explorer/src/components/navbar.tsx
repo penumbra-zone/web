@@ -15,7 +15,7 @@ const Links = [{'name': 'Trades', 'link': '/trades'}, {'name': 'Pairs', 'link': 
   
 const NavLink = (props: NavLinkProps) => {
     return (
-        <Box as="a" px={5} py={1} href={props.link}>
+        <Box as="a" px={5} py={1} href={props.link} fontFamily={"monospace"} fontWeight={"bold"}>
             {props.children}
         </Box>
     )
@@ -26,7 +26,7 @@ export const Navbar = () => {
 
     return (
         <Box px={4}>
-            <Flex alignItems={'center'} justifyContent={'space-between'}>
+            <Flex alignItems={'center'} justifyContent={'space-between'} paddingBottom="1em">
                 <IconButton
                     size={'md'}
                     colorScheme={"blackAlpha"}
@@ -42,7 +42,7 @@ export const Navbar = () => {
                     </HStack>
                 </Box>
                 <HStack as={'nav'} spacing={4} display={{base: 'none', md: 'flex'}}>
-                    {Links.map((x) => (<NavLink key={x.name} link={x.link}>{x.name}</NavLink>))}
+                    {Links.map((x) => (<NavLink key={x.name} link={x.link} >{x.name}</NavLink>))}
                     <Flex paddingLeft={10} display={{base: 'none', md: 'flex'}}>
                         <LPSearchBar/>
                     </Flex>
