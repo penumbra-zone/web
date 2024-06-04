@@ -1,9 +1,18 @@
-import { AllSlices, SliceCreator } from '.';
+import { AllSlices, SliceCreator, useStore } from '.';
 import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { issueSwapClaim } from './swap/instant-swap';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
+import { ZQueryState, createZQuery } from '../lib/z-query';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { fetchUnclaimedSwaps } from '../fetchers/unclaimed-swaps';
 
 type SwapCommitmentId = string;
+
+export interface UnclaimedSwapsWithMetadata {
+  swap: SwapRecord;
+  asset1: Metadata;
+  asset2: Metadata;
+}
 
 export interface UnclaimedSwapsSlice {
   inProgress: SwapCommitmentId[];
@@ -14,10 +23,21 @@ export interface UnclaimedSwapsSlice {
     swap: SwapRecord,
     reloadData: () => void, // Used to refresh page state after action
   ) => Promise<void>;
+  unclaimedSwaps: ZQueryState<UnclaimedSwapsWithMetadata[]>;
 }
 
-export const createUnclaimedSwapsSlice = (): SliceCreator<UnclaimedSwapsSlice> => (set, get) => {
-  return {
+export const { unclaimedSwaps, useRevalidateUnclaimedSwaps, useUnclaimedSwaps } = createZQuery(
+  'unclaimedSwaps',
+  fetchUnclaimedSwaps,
+  newValue =>
+    useStore.setState(state => {
+      Object.assign(state.unclaimedSwaps.unclaimedSwaps, newValue);
+    }),
+  (state: AllSlices) => state.unclaimedSwaps.unclaimedSwaps,
+);
+
+export const createUnclaimedSwapsSlice =
+  (): SliceCreator<UnclaimedSwapsSlice> => (set, get, store) => ({
     inProgress: [],
     isInProgress: id => {
       return get().unclaimedSwaps.inProgress.includes(id);
@@ -44,7 +64,5 @@ export const createUnclaimedSwapsSlice = (): SliceCreator<UnclaimedSwapsSlice> =
       setStatus('remove', id);
       reloadData();
     },
-  };
-};
-
-export const unclaimedSwapsSelector = (state: AllSlices) => state.unclaimedSwaps;
+    unclaimedSwaps: unclaimedSwaps(store),
+  });
