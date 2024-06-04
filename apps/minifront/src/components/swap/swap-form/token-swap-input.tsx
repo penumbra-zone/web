@@ -55,37 +55,42 @@ export const TokenSwapInput = () => {
 
   return (
     <Box label='Trade' layout>
-      <div className='flex flex-col items-start gap-4 sm:flex-row'>
-        <div className='flex grow flex-col items-start gap-2'>
-          <Input
-            value={amount}
-            type='number'
-            inputMode='decimal'
-            variant='transparent'
-            placeholder='Enter an amount...'
-            max={maxAmountAsString}
-            step='any'
-            className={'font-bold leading-10 md:h-8 md:text-xl xl:h-10 xl:text-3xl'}
-            onChange={e => {
-              if (!isValidAmount(e.target.value, assetIn)) return;
-              setAmount(e.target.value);
-            }}
-          />
+      <div className='flex flex-col items-stretch gap-4 sm:flex-row'>
+        <Input
+          value={amount}
+          type='number'
+          inputMode='decimal'
+          variant='transparent'
+          placeholder='Enter an amount...'
+          max={maxAmountAsString}
+          step='any'
+          className={'font-bold leading-10 md:h-8 md:text-xl xl:h-10 xl:text-3xl'}
+          onChange={e => {
+            if (!isValidAmount(e.target.value, assetIn)) return;
+            setAmount(e.target.value);
+          }}
+        />
+
+        <div className='ml-auto flex h-full flex-col justify-end self-end'>
+          <span className='mr-2 block whitespace-nowrap text-xs text-muted-foreground'>
+            Account 1
+          </span>
+        </div>
+
+        <div className='flex h-full flex-col gap-2'>
+          <BalanceSelector value={assetIn} onChange={setAssetIn} balances={balancesResponses} />
           {assetIn?.balanceView && (
             <BalanceValueView valueView={assetIn.balanceView} onClick={setInputToBalanceMax} />
           )}
         </div>
-
-        <div className='flex items-center justify-between gap-4'>
-          <div className='flex flex-col gap-1'>
-            <BalanceSelector value={assetIn} onChange={setAssetIn} balances={balancesResponses} />
-          </div>
-
+        <div className='flex flex-col gap-2 pt-2'>
           <ArrowRight size={16} className='text-muted-foreground' />
-
-          <div className='flex flex-col items-end gap-1'>
-            <AssetSelector assets={swappableAssets} value={assetOut} onChange={setAssetOut} />
-          </div>
+        </div>
+        <div className='flex h-full flex-col gap-2'>
+          <AssetSelector assets={swappableAssets} value={assetOut} onChange={setAssetOut} />
+          {assetIn?.balanceView && (
+            <BalanceValueView valueView={assetIn.balanceView} onClick={setInputToBalanceMax} />
+          )}
         </div>
       </div>
     </Box>
