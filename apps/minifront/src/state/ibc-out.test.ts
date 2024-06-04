@@ -110,6 +110,17 @@ describe('IBC Slice', () => {
 
       expect(validationErrors.recipientErr).toBeFalsy();
     });
+
+    test('destination address validation per selected chain fails with incorrect address', () => {
+      const osmoAddress = 'osmo1xxxxxx';
+
+      useStore.getState().ibcOut.setChain(chain);
+      useStore.getState().ibcOut.setDestinationChainAddress(osmoAddress);
+
+      const validationErrors = ibcValidationErrors(useStore.getState());
+
+      expect(validationErrors.recipientErr).toBeTruthy();
+    });
   });
 
   describe('setSelection', () => {
