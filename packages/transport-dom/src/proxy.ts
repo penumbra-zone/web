@@ -1,5 +1,11 @@
 import type { ServiceType } from '@bufbuild/protobuf';
-import type { CallOptions, HandlerContext, MethodImpl, PromiseClient } from '@connectrpc/connect';
+import type {
+  CallOptions,
+  HandlerContext,
+  MethodImpl,
+  PromiseClient,
+  ServiceImpl,
+} from '@connectrpc/connect';
 import { CreateAnyMethodImpl, makeAnyServiceImpl } from './any-impl';
 
 export type ProxyContextHandler = <I>(i: I, ctx: HandlerContext) => [I, CallOptions];
@@ -43,6 +49,16 @@ export const simpleContextHandler: ProxyContextHandler = (i, ctx) => {
   return [i, opt];
 };
 
+export const loggingContextHandler: ProxyContextHandler = (i, ctx) => {
+  const opt = {
+    contextValues: ctx.values,
+    signal: ctx.signal,
+    headers: ctx.requestHeader,
+    timeoutMs: ctx.timeoutMs(),
+  } as CallOptions;
+  return [i, opt];
+};
+
 /**
  * Creates a proxy implementation of a service, suitable for hosting in a
  * ConnectRouter, from a given service type definition and a matching client to
@@ -57,11 +73,20 @@ export const createProxyImpl = <S extends ServiceType>(
   service: S,
   client: PromiseClient<S>,
   contextHandler = defaultContextHandler,
+  makePartialServiceImpl?: (c: PromiseClient<S>) => Partial<ServiceImpl<S>>,
 ) => {
   const makeAnyProxyMethod: CreateAnyMethodImpl<S> = (method, localName) => {
     const clientMethod = client[localName] as (cI: unknown, cOpt: CallOptions) => unknown;
-    const impl = (hI: unknown, hCtx: HandlerContext) => clientMethod(...contextHandler(hI, hCtx));
+    const impl = (hI: unknown, hCtx: HandlerContext) => {
+      //console.log('proxying', localName, hI, hCtx);
+      const res = clientMethod(...contextHandler(hI, hCtx));
+      //void Promise.resolve(res).then((r: unknown) => console.log('proxied', localName, hI, hCtx, r),);
+      return res;
+    };
     return impl as MethodImpl<typeof method>;
   };
-  return makeAnyServiceImpl(service, makeAnyProxyMethod);
+  return {
+    ...makeAnyServiceImpl(service, makeAnyProxyMethod),
+    ...makePartialServiceImpl?.(client),
+  };
 };

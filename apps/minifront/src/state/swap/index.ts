@@ -11,7 +11,8 @@ import {
 import { DutchAuctionSlice, createDutchAuctionSlice } from './dutch-auction';
 import { InstantSwapSlice, createInstantSwapSlice } from './instant-swap';
 import { DurationOption } from './constants';
-import { sendCandlestickDataRequest } from './helpers';
+import { sendCandlestickDataRequest, sendGetBlockByHeightRequestsForTimestamps } from './helpers';
+import { getAssetIdFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 
 export interface SimulateSwapResult {
   output: ValueView;
@@ -116,8 +117,9 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
     abort: () => void 0,
     loading: false,
     data: [],
+    timestamps: new Map(),
   },
-  loadCandlestick: async () => {
+  loadCandlestick: async (height?: bigint) => {
     const abortThisLoad = new AbortController();
 
     const {
@@ -128,17 +130,23 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
 
     if (loading) abortOldLoad();
 
+    if (!height)
+      set(({ swap }) => {
+        swap.candlestick.data = [];
+      });
     set(({ swap }) => {
-      swap.candlestick.data = [];
       swap.candlestick.abort = () => abortThisLoad.abort('Slice abort');
       swap.candlestick.loading = true;
     });
 
     try {
+      const limit = 2500n;
       const { data } = await sendCandlestickDataRequest(
         { assetIn, assetOut },
+        { limit, startHeight: height && height - limit },
         abortThisLoad.signal,
       );
+
       set(({ swap }) => {
         swap.candlestick.data = data;
       });

@@ -6,12 +6,17 @@ import { AssetSelector } from '../../shared/asset-selector';
 import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
-import { getAmount } from '@penumbra-zone/getters/balances-response';
+import {
+  getAmount,
+  getMetadataFromBalancesResponse,
+} from '@penumbra-zone/getters/balances-response';
 import { amountMoreThanBalance } from '../../../state/send';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { Candlesticks } from '@penumbra-zone/ui/components/ui/candlesticks';
+import { getBlockDate } from '../../../fetchers/block-date';
+import { useEffect } from 'react';
 
 const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
@@ -26,6 +31,7 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
   setAmount: state.swap.setAmount,
   balancesResponses: state.swap.balancesResponses,
   candlestickData: state.swap.candlestick.data,
+  loadCandlestick: state.swap.loadCandlestick,
   latestKnownBlockHeight: state.status.latestKnownBlockHeight,
 });
 
@@ -46,8 +52,12 @@ export const TokenSwapInput = () => {
     setAssetOut,
     balancesResponses,
     candlestickData,
+    loadCandlestick,
     latestKnownBlockHeight,
   } = useStoreShallow(tokenSwapInputSelector);
+
+  useEffect(() => void loadCandlestick(latestKnownBlockHeight), [latestKnownBlockHeight]);
+
   const maxAmount = getAmount.optional()(assetIn);
   const maxAmountAsString = maxAmount ? joinLoHiAmount(maxAmount).toString() : undefined;
 
@@ -58,46 +68,55 @@ export const TokenSwapInput = () => {
     }
   };
 
+  const beginMetadata = getMetadataFromBalancesResponse(assetIn);
+
   return (
     <Box label='Trade' layout>
-      <div className='flex flex-col items-start gap-4 sm:flex-row'>
-        <div className='flex grow flex-row items-start gap-2'>
-          <Input
-            value={amount}
-            type='number'
-            inputMode='decimal'
-            variant='transparent'
-            placeholder='Enter an amount...'
-            max={maxAmountAsString}
-            step='any'
-            className={'font-bold leading-10 md:h-8 md:text-xl xl:h-10 xl:text-3xl'}
-            onChange={e => {
-              if (!isValidAmount(e.target.value, assetIn)) return;
-              setAmount(e.target.value);
-            }}
-          />
-          {assetIn?.balanceView && (
-            <BalanceValueView valueView={assetIn.balanceView} onClick={setInputToBalanceMax} />
-          )}
-        </div>
-
-        <div className='flex items-center justify-between gap-4'>
-          <div className='flex flex-col gap-1'>
-            <BalanceSelector value={assetIn} onChange={setAssetIn} balances={balancesResponses} />
+      <div className='gap-4'>
+        <div className='flex flex-col items-start gap-4 sm:flex-row'>
+          <div className='flex grow flex-row items-start gap-2'>
+            <Input
+              value={amount}
+              type='number'
+              inputMode='decimal'
+              variant='transparent'
+              placeholder='Enter an amount...'
+              max={maxAmountAsString}
+              step='any'
+              className={'font-bold leading-10 md:h-8 md:text-xl xl:h-10 xl:text-3xl'}
+              onChange={e => {
+                if (!isValidAmount(e.target.value, assetIn)) return;
+                setAmount(e.target.value);
+              }}
+            />
+            {assetIn?.balanceView && (
+              <BalanceValueView valueView={assetIn.balanceView} onClick={setInputToBalanceMax} />
+            )}
           </div>
 
-          <ArrowRight size={16} className='text-muted-foreground' />
+          <div className='flex items-center justify-between gap-4'>
+            <div className='flex flex-col gap-1'>
+              <BalanceSelector value={assetIn} onChange={setAssetIn} balances={balancesResponses} />
+            </div>
 
-          <div className='flex flex-col items-end gap-1'>
-            <AssetSelector assets={swappableAssets} value={assetOut} onChange={setAssetOut} />
+            <ArrowRight size={16} className='text-muted-foreground' />
+
+            <div className='flex flex-col items-end gap-1'>
+              <AssetSelector assets={swappableAssets} value={assetOut} onChange={setAssetOut} />
+            </div>
           </div>
         </div>
-      </div>
-      <div className='bg-charcoal p-4 m-4'>
-        <Candlesticks
-          candles={candlestickData}
-          latestKnownBlockHeight={Number(latestKnownBlockHeight)}
-        />
+        {Boolean(assetIn && assetOut && candlestickData.length) && (
+          <div className='bg-charcoal w-full h-[480px]'>
+            <Candlesticks
+              candles={candlestickData}
+              beginMetadata={beginMetadata}
+              endMetadata={assetOut}
+              latestKnownBlockHeight={Number(latestKnownBlockHeight)}
+              getBlockDate={getBlockDate}
+            />
+          </div>
+        )}
       </div>
     </Box>
   );

@@ -22,6 +22,7 @@
     "lint:rust": "turbo lint:rust",
     "lint:syncpack": "syncpack lint",
     "postinstall": "syncpack list-mismatches",
+    "predev": "pnpm install",
     "pretest": "playwright install",
     "test": "turbo test",
     "test:rust": "turbo test:rust"

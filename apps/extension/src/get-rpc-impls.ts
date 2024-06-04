@@ -24,6 +24,7 @@ import { stakeImpl } from '@penumbra-zone/services/stake-service';
 import { viewImpl } from '@penumbra-zone/services/view-service';
 import { createProxyImpl, noContextHandler } from '@penumbra-zone/transport-dom/proxy';
 import { rethrowImplErrors } from './utils/rethrow-impl-errors';
+import { makeTendermintProxyZeroNanos } from './makeTendermintProxyZeroNanos';
 
 type RpcImplTuple<T extends ServiceType> = [T, Partial<ServiceImpl<T>>];
 
@@ -40,7 +41,6 @@ export const getRpcImpls = (baseUrl: string) => {
     IbcConnectionService,
     ShieldedPoolService,
     SimulationService,
-    TendermintProxyService,
   ].map(
     serviceType =>
       [
@@ -53,14 +53,29 @@ export const getRpcImpls = (baseUrl: string) => {
       ] as const,
   );
 
+  const tendermintProxyClient: RpcImplTuple<typeof TendermintProxyService> = [
+    TendermintProxyService,
+    createProxyImpl(
+      TendermintProxyService,
+      createPromiseClient(TendermintProxyService, webTransport),
+      noContextHandler,
+      makeTendermintProxyZeroNanos,
+    ),
+  ];
+
   const rpcImpls: RpcImplTuple<ServiceType>[] = [
     // rpc local implementations
     [CustodyService, rethrowImplErrors(CustodyService, custodyImpl)],
     [SctService, rethrowImplErrors(SctService, sctImpl)],
     [StakeService, rethrowImplErrors(StakeService, stakeImpl)],
     [ViewService, rethrowImplErrors(ViewService, viewImpl)],
+    // customized proxy
+    tendermintProxyClient,
     // rpc remote proxies
-    ...penumbraProxies,
+    ...penumbraProxies.map(
+      ([serviceType, impl]) =>
+        [serviceType, rethrowImplErrors(serviceType, impl)] as [typeof serviceType, typeof impl],
+    ),
   ] as const;
 
   return rpcImpls;
