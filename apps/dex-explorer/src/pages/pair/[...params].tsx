@@ -626,8 +626,8 @@ export default function TradingPairs() {
                     <BuySellChart
                       buySidePositions={lpsSellSide}
                       sellSidePositions={lpsBuySide}
-                      asset1Token={asset2Token!}
-                      asset2Token={asset1Token!}
+                      asset1Token={asset1Token!}
+                      asset2Token={asset2Token!}
                     />
                   </VStack>
                 </VStack>

@@ -290,7 +290,7 @@ const DepthChart = ({
       ...newRenderedSellSideData.map((p) => p.y),
       ...newRenderedBuySideData.map((p) => p.y)
     );
-    console.log("maY", calculateMaxY(liquidityMax));
+    console.log("maxY", calculateMaxY(liquidityMax));
     setMaxY(calculateMaxY(liquidityMax));
 
     // Update the last zoom level
@@ -384,7 +384,18 @@ const DepthChart = ({
     if (maxLiquidity < 10) return 10; // If less than 10, round up to 10
 
     // Round to the nearest upper number, eg for 1500, round to 2000, for 2000, round to 3000, for 10345 round to 11000, for 12790, round to 13000
-    const roundedNumber = Math.ceil(maxLiquidity / 1000) * 1000;
+    let roundedNumber = Math.ceil(maxLiquidity / 1000) * 1000;
+
+    // If under 1000, round to the nearest upper 100, eg for 500, round to 600, for 900, round to 1000
+    if (roundedNumber <= 1000) {
+      roundedNumber = Math.ceil(maxLiquidity / 100) * 100;
+    }
+
+    // If under 100, round to the nearest upper 10, eg for 50, round to 60, for 90, round to 100
+    if (roundedNumber <= 100) {
+      roundedNumber = Math.ceil(maxLiquidity / 10) * 10;
+    }
+
     return roundedNumber;
   }
 
