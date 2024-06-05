@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { StoreApi, UseBoundStore } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 
 export interface ZQueryState<DataType> {
@@ -17,6 +16,22 @@ export interface ZQueryState<DataType> {
 /** `hello world` -> `Hello world` */
 const capitalize = <Str extends string>(str: Str): Capitalize<Str> =>
   (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<Str>;
+
+/**
+ * A simplified version of `UseBoundStore<StoreApi<State>>`.
+ *
+ * We only use the `useStore()` hook and the `useStore.getState()` method in
+ * ZQuery, and we don't want to have to accommodate all of the different types
+ * that a `useStore` object can have when used with various middlewares, etc.
+ * For example, a "normal" `useStore` object is typed as
+ * `UseBoundStore<StoreApi<State>>`, but a `useStore` object created with Immer
+ * middleware is typed as `UseBoundStore<WithImmer<StoreApi<State>>>`. A
+ * function that accepts a `useStore` of the former type won't accept a
+ * `useStore` of the latter type (or of various other store types that mutated
+ * by middleware), so we'll just create a loose typing for `useStore` that can
+ * accommodate whatever middleware is being used.
+ */
+type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
 
 type ZQuery<Name extends string, DataType> = {
   [key in `use${Capitalize<Name>}`]: () => ZQueryState<DataType>;
@@ -93,7 +108,7 @@ export const createZQuery = <State, Name extends string, DataType>(
    * pass a function that returns `useStore`, so that it can be used later (once
    * `useStore` is defined).
    */
-  getUseStore: () => UseBoundStore<StoreApi<State>>,
+  getUseStore: () => UseStore<State>,
   /**
    * A setter that takes an updated ZQuery state object and assigns it to the
    * location in your overall Zustand state object where this ZQuery state
