@@ -31,7 +31,7 @@ const capitalize = <Str extends string>(str: Str): Capitalize<Str> =>
  * by middleware), so we'll just create a loose typing for `useStore` that can
  * accommodate whatever middleware is being used.
  */
-type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
+export type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
 
 /**
  * The type returned by calling the `use<Name>()` hook.
