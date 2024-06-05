@@ -16,11 +16,11 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 const getClaimLabel = (
   output1Amount?: Amount,
   output2Amount?: Amount,
-): 'Claimed amount' | 'Claimed amounts' => {
-  if (!output1Amount || !output2Amount) return 'Claimed amount';
-  if (isZero(output1Amount) || isZero(output2Amount)) return 'Claimed amount';
+): 'Claimed Amount' | 'Claimed Amounts' => {
+  if (!output1Amount || !output2Amount) return 'Claimed Amount';
+  if (isZero(output1Amount) || isZero(output2Amount)) return 'Claimed Amount';
 
-  return 'Claimed amounts';
+  return 'Claimed Amounts';
 };
 
 export const SwapClaimViewComponent = ({ value }: { value: SwapClaimView }) => {
@@ -49,7 +49,7 @@ export const SwapClaimViewComponent = ({ value }: { value: SwapClaimView }) => {
             </ActionDetails.Row>
 
             {swapTxId && (
-              <ActionDetails.Row label='Swap transaction'>
+              <ActionDetails.Row label='Swap Transaction'>
                 <TransactionIdComponent transactionId={swapTxId} />
               </ActionDetails.Row>
             )}
