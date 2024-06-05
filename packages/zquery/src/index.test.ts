@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { UseStore, createZQuery } from '.';
+import { createZQuery } from '.';
+import { UseStore } from './types';
 
 describe('createZQuery()', () => {
   type MockState = null;
@@ -14,14 +15,14 @@ describe('createZQuery()', () => {
   });
 
   describe('the return value', () => {
-    const result = createZQuery(
-      'puppyPhotos',
-      () => Promise.resolve(null),
-      () => mockUseStore,
-      () => {
+    const result = createZQuery({
+      name: 'puppyPhotos',
+      fetch: () => Promise.resolve(null),
+      getUseStore: () => mockUseStore,
+      set: () => {
         /* no-op */
       },
-      () => ({
+      get: () => ({
         _zQueryInternal: {
           fetch: vi.fn(),
         },
@@ -30,16 +31,16 @@ describe('createZQuery()', () => {
         data: undefined,
         error: undefined,
       }),
-    );
+    });
 
     it('includes hooks and a Zustand slice that use the passed-in name', () => {
       expect(result).toHaveProperty('puppyPhotos');
-      expect(result.usePuppyPhotos).toBeTypeOf('function');
-      expect(result.useRevalidatePuppyPhotos).toBeTypeOf('function');
+      expect(result['usePuppyPhotos']).toBeTypeOf('function');
+      expect(result['useRevalidatePuppyPhotos']).toBeTypeOf('function');
     });
 
     it('includes the correct default state', () => {
-      expect(result.puppyPhotos).toEqual({
+      expect(result['puppyPhotos']).toEqual({
         data: undefined,
         error: undefined,
         loading: false,
