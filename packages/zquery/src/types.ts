@@ -1,5 +1,5 @@
 export interface ZQueryState<DataType> {
-  data?: DataType;
+  data?: DataType | undefined;
   loading: boolean;
   error?: unknown;
 
@@ -31,7 +31,7 @@ export type StreamType<DataType> =
   | ((state: DataType[], item: DataType) => DataType[])
   | ((state: DataType[], item: DataType) => Promise<DataType[]>);
 
-interface CreateZQueryCommonProps<State, DataType, FetchArgs extends unknown[]> {
+interface CreateZQueryCommonProps<State> {
   /** The name of this property in the state/slice. */
   name: string;
   /**
@@ -43,6 +43,13 @@ interface CreateZQueryCommonProps<State, DataType, FetchArgs extends unknown[]> 
    * `useStore` is defined).
    */
   getUseStore: () => UseStore<State>;
+}
+
+export interface CreateZQueryUnaryProps<State, DataType, FetchArgs extends unknown[]>
+  extends CreateZQueryCommonProps<State> {
+  stream?: undefined;
+  /** A function that executes the query. */
+  fetch: FetchTypePromise<DataType, FetchArgs>;
   /**
    * A selector that takes the root Zustand state and returns just this ZQuery
    * state object.
@@ -62,15 +69,7 @@ interface CreateZQueryCommonProps<State, DataType, FetchArgs extends unknown[]> 
    * )
    * ```
    */
-  get: (
-    state: State,
-  ) => ZQueryState<
-    DataTypeInState<
-      DataType,
-      FetchTypePromise<DataType, FetchArgs> | FetchTypeAsyncGenerator<DataType, FetchArgs>,
-      FetchArgs
-    >
-  >;
+  get: (state: State) => ZQueryState<DataType>;
   /**
    * A setter that takes an updated ZQuery state object and assigns it to the
    * location in your overall Zustand state object where this ZQuery state
@@ -100,24 +99,11 @@ interface CreateZQueryCommonProps<State, DataType, FetchArgs extends unknown[]> 
    * )
    * ```
    */
-  set: (
-    value: ZQueryState<
-      DataTypeInState<
-        DataType,
-        FetchTypePromise<DataType, FetchArgs> | FetchTypeAsyncGenerator<DataType, FetchArgs>,
-        FetchArgs
-      >
-    >,
-  ) => void;
+  set: (value: ZQueryState<DataType>) => void;
 }
 
-interface CreateZQueryUnaryProps<DataType, FetchArgs extends unknown[]> {
-  stream?: never;
-  /** A function that executes the query. */
-  fetch: FetchTypePromise<DataType, FetchArgs>;
-}
-
-interface CreateZQueryStreamingProps<DataType, FetchArgs extends unknown[]> {
+export interface CreateZQueryStreamingProps<State, DataType, FetchArgs extends unknown[]>
+  extends CreateZQueryCommonProps<State> {
   /** A function that executes the query. */
   fetch: FetchTypeAsyncGenerator<DataType, FetchArgs>;
   /**
@@ -131,6 +117,56 @@ interface CreateZQueryStreamingProps<DataType, FetchArgs extends unknown[]> {
    * be useful for e.g. sorting items in the state as new items are streamed.
    */
   stream: StreamType<DataType>;
+  /**
+   * A selector that takes the root Zustand state and returns just this ZQuery
+   * state object.
+   *
+   * This ZQuery object doesn't know anything about the store or where this
+   * ZQuery object is located within it, so it can't call
+   * `getUseStore().getState()` and then navigate to its own location within
+   * state. Thus, you need to pass it a selector so it can find itself.
+   *
+   * ```ts
+   * createZQuery(
+   *   // ...
+   *   // ...
+   *   // ...
+   *   // ...
+   *   state => state.deeply.nested.object,
+   * )
+   * ```
+   */
+  get: (state: State) => ZQueryState<DataType[]>;
+  /**
+   * A setter that takes an updated ZQuery state object and assigns it to the
+   * location in your overall Zustand state object where this ZQuery state
+   * object is located.
+   *
+   * This ZQuery object doesn't know anything about the store or where this
+   * ZQuery object is located within it, so it can't call `set()` with the
+   * necessary spreads/etc. to ensure that the rest of the state is untouched
+   * when the ZQuery state is updated. So your setter needs to handle that. For
+   * example, if you have a deeply nested ZQuery object (located at
+   * `state.deeply.nested.object`) and you're using Zustand's Immer middleware
+   * to be able to imitate object mutations, you could pass this setter:
+   *
+   * ```ts
+   * createZQuery(
+   *   // ...
+   *   // ...
+   *   // ...
+   *   newValue => {
+   *     // `newValue` is the entire ZQuery state object, and can be assigned
+   *     // as-is to the property that holds the ZQuery state.
+   *     useStore.setState(state => {
+   *       state.deeply.nested.object = newValue;
+   *     })
+   *   },
+   *   // ...
+   * )
+   * ```
+   */
+  set: (value: ZQueryState<DataType[]>) => void;
 }
 
 /**
@@ -163,10 +199,3 @@ export type ZQuery<Name extends string, DataType> = {
 } & {
   [key in `useRevalidate${Capitalize<Name>}`]: () => VoidFunction;
 } & Record<Name, ZQueryState<DataType>>;
-
-export type CreateZQueryProps<
-  State,
-  DataType,
-  FetchArgs extends unknown[],
-> = CreateZQueryCommonProps<State, DataType, FetchArgs> &
-  (CreateZQueryUnaryProps<DataType, FetchArgs> | CreateZQueryStreamingProps<DataType, FetchArgs>);
