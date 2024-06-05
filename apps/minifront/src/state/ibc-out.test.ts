@@ -12,9 +12,9 @@ import { produce } from 'immer';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { addressFromBech32m } from '@penumbra-zone/bech32m/penumbra';
 import { Chain } from '@penumbra-labs/registry';
-import { currentTimePlusTwoDaysRounded } from './ibc-out';
+import { currentTimePlusTwoDaysRounded, ibcValidationErrors } from './ibc-out';
 
-describe.skip('IBC Slice', () => {
+describe('IBC Slice', () => {
   const selectionExample = new BalancesResponse({
     balanceView: new ValueView({
       valueView: {
@@ -58,7 +58,8 @@ describe.skip('IBC Slice', () => {
       expect(useStore.getState().ibcOut.amount).toBe('2');
     });
 
-    test('validate high enough amount validates', () => {
+    // TODO [vanishmax, 2024-06-04]: Remove test skipping
+    test.skip('validate high enough amount validates', () => {
       const assetBalance = new Amount({ hi: 1n });
       const state = produce(selectionExample, draft => {
         draft.balanceView!.valueView.value!.amount = assetBalance;
@@ -71,7 +72,7 @@ describe.skip('IBC Slice', () => {
       expect(amountErr).toBeFalsy();
     });
 
-    test('validate error when too low the balance of the asset', () => {
+    test.skip('validate error when too low the balance of the asset', () => {
       const assetBalance = new Amount({ lo: 2n });
       const state = produce(selectionExample, draft => {
         draft.balanceView!.valueView.value!.amount = assetBalance;
@@ -85,18 +86,40 @@ describe.skip('IBC Slice', () => {
   });
 
   describe('setChain', () => {
-    test('chain can be set', () => {
-      const chain = {
-        displayName: 'Osmosis',
-        chainId: 'osmosis-test-5',
-        channelId: 'channel-0',
-        counterpartyChannelId: 'channel-999',
-        images: [{ svg: '/test.svg' }],
-        addressPrefix: 'osmo',
-      } satisfies Chain;
+    const chain = {
+      displayName: 'Osmosis',
+      chainId: 'osmosis-test-5',
+      channelId: 'channel-0',
+      counterpartyChannelId: 'channel-999',
+      images: [{ svg: '/test.svg' }],
+      addressPrefix: 'osmo',
+    } satisfies Chain;
 
+    test('chain can be set', () => {
       useStore.getState().ibcOut.setChain(chain);
       expect(useStore.getState().ibcOut.chain).toBe(chain);
+    });
+
+    test('destination address validation per selected chain', () => {
+      const osmoAddress = 'osmo1dyrr4r42ql4em7d46srcmnn5ymxk9asvcv95sg';
+
+      useStore.getState().ibcOut.setChain(chain);
+      useStore.getState().ibcOut.setDestinationChainAddress(osmoAddress);
+
+      const validationErrors = ibcValidationErrors(useStore.getState());
+
+      expect(validationErrors.recipientErr).toBeFalsy();
+    });
+
+    test('destination address validation per selected chain fails with incorrect address', () => {
+      const osmoAddress = 'osmo1xxxxxx';
+
+      useStore.getState().ibcOut.setChain(chain);
+      useStore.getState().ibcOut.setDestinationChainAddress(osmoAddress);
+
+      const validationErrors = ibcValidationErrors(useStore.getState());
+
+      expect(validationErrors.recipientErr).toBeTruthy();
     });
   });
 

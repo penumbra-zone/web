@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/bech32m",
-  "version": "3.2.0",
+  "version": "5.0.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Tools for manipulating Penumbra bech32m strings",
   "type": "module",
@@ -20,12 +20,12 @@
   "publishConfig": {
     "exports": {
       ".": {
-        "import": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       },
       "./*": {
-        "import": "./dist/*.js",
-        "types": "./dist/*.d.ts"
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
       }
     }
   },

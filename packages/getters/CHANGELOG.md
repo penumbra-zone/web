@@ -1,5 +1,27 @@
 # @penumbra-zone/getters
 
+## 6.0.0
+
+### Major Changes
+
+- 8fe4de6: correct ordering of default export
+
+### Patch Changes
+
+- Updated dependencies [8fe4de6]
+  - @penumbra-zone/bech32m@5.0.0
+
+## 5.0.0
+
+### Major Changes
+
+- 8b121ec: change package exports to use 'default' field
+
+### Patch Changes
+
+- Updated dependencies [8b121ec]
+  - @penumbra-zone/bech32m@4.0.0
+
 ## 4.1.0
 
 ### Minor Changes

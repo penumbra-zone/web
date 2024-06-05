@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { AllSlices, useStore } from '../../state';
-import { throwIfPraxNotConnectedTimeout } from '@penumbra-zone/client/prax';
+import { abortLoader } from '../../abort-loader';
 import { Card, CardContent, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
 import { Header } from './account/header';
 import { Delegations } from './account/delegations';
@@ -11,7 +11,7 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { getStakingTokenMetadata } from '../../fetchers/registry';
 
 export const StakingLoader: LoaderFunction = async (): Promise<Metadata> => {
-  await throwIfPraxNotConnectedTimeout();
+  await abortLoader();
   // Await to avoid screen flicker.
   await useStore.getState().staking.loadAndReduceBalances();
 

@@ -46,7 +46,7 @@ export const ExpandedDetails = ({
     <div className='flex w-full flex-col overflow-hidden'>
       {maxPrice && (
         <Row label='Maximum'>
-          {formatAmount(maxPrice, outputExponent)}
+          {formatAmount({ amount: maxPrice, exponent: outputExponent })}
           {outputMetadata && (
             <span className='font-mono text-xs'>
               {' '}
@@ -59,7 +59,7 @@ export const ExpandedDetails = ({
 
       {showCurrent && (
         <Row label='Current' highlight>
-          {formatAmount(currentPrice, outputExponent)}
+          {formatAmount({ amount: currentPrice, exponent: outputExponent })}
           {outputMetadata && (
             <span className='font-mono text-xs'>
               {' '}
@@ -71,7 +71,7 @@ export const ExpandedDetails = ({
 
       {minPrice && (
         <Row label='Minimum'>
-          {formatAmount(minPrice, outputExponent)}
+          {formatAmount({ amount: minPrice, exponent: outputExponent })}
           {outputMetadata && (
             <span className='font-mono text-xs'>
               {' '}
@@ -84,14 +84,14 @@ export const ExpandedDetails = ({
 
       {inputReservesAmount && (
         <Row label='Input reserves'>
-          {formatAmount(inputReservesAmount, inputExponent)}
+          {formatAmount({ amount: inputReservesAmount, exponent: inputExponent })}
           {inputMetadata && <span className='font-mono text-xs'> {inputMetadata.symbol}</span>}
         </Row>
       )}
 
       {outputReservesAmount && (
         <Row label='Output reserves'>
-          {formatAmount(outputReservesAmount, outputExponent)}
+          {formatAmount({ amount: outputReservesAmount, exponent: outputExponent })}
           {outputMetadata && <span className='font-mono text-xs'> {outputMetadata.symbol}</span>}
         </Row>
       )}

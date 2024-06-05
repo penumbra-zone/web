@@ -1,5 +1,43 @@
 # minifront
 
+## 5.0.3
+
+### Patch Changes
+
+- Updated dependencies [8fe4de6]
+  - @penumbra-zone/transport-dom@6.0.0
+  - @penumbra-zone/perspective@4.0.0
+  - @penumbra-zone/protobuf@4.0.0
+  - @penumbra-zone/bech32m@5.0.0
+  - @penumbra-zone/getters@6.0.0
+  - @penumbra-zone/client@6.0.0
+  - @penumbra-zone/ui@3.3.2
+  - @penumbra-zone/types@7.0.1
+  - @penumbra-zone/crypto-web@3.0.9
+
+## 5.0.2
+
+### Patch Changes
+
+- bb5f621: formatAmount() takes new args
+- Updated dependencies [bb5f621]
+- Updated dependencies [8b121ec]
+  - @penumbra-zone/types@7.0.0
+  - @penumbra-zone/ui@3.3.1
+  - @penumbra-zone/transport-dom@5.0.0
+  - @penumbra-zone/perspective@3.0.0
+  - @penumbra-zone/protobuf@3.0.0
+  - @penumbra-zone/bech32m@4.0.0
+  - @penumbra-zone/getters@5.0.0
+  - @penumbra-zone/client@5.0.0
+  - @penumbra-zone/crypto-web@3.0.8
+
+## 5.0.1
+
+### Patch Changes
+
+- a22d3a8: Update registry (noble/testnet channel update)
+
 ## 5.0.0
 
 ### Major Changes

@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/client",
-  "version": "4.2.0",
+  "version": "6.0.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Package for connecting to any Penumbra extension, including Prax.",
   "type": "module",
@@ -21,12 +21,12 @@
   "publishConfig": {
     "exports": {
       ".": {
-        "import": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       },
-      "./*": {
-        "import": "./dist/*.js",
-        "types": "./dist/*.d.ts"
+      "./prax": {
+        "types": "./dist/prax.d.ts",
+        "default": "./dist/prax.js"
       }
     }
   },
@@ -35,7 +35,6 @@
     "@penumbra-zone/transport-dom": "workspace:*"
   },
   "devDependencies": {
-    "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0"
   },
   "peerDependencies": {

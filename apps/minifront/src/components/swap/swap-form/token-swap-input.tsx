@@ -10,6 +10,7 @@ import { getAmount } from '@penumbra-zone/getters/balances-response';
 import { amountMoreThanBalance } from '../../../state/send';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
+import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 
 const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
@@ -43,8 +44,14 @@ export const TokenSwapInput = () => {
     balancesResponses,
   } = useStoreShallow(tokenSwapInputSelector);
   const maxAmount = getAmount.optional()(assetIn);
-  let maxAmountAsString: string | undefined;
-  if (maxAmount) maxAmountAsString = joinLoHiAmount(maxAmount).toString();
+  const maxAmountAsString = maxAmount ? joinLoHiAmount(maxAmount).toString() : undefined;
+
+  const setInputToBalanceMax = () => {
+    if (assetIn?.balanceView) {
+      const formattedAmt = getFormattedAmtFromValueView(assetIn.balanceView);
+      setAmount(formattedAmt);
+    }
+  };
 
   return (
     <Box label='Trade' layout>
@@ -64,7 +71,9 @@ export const TokenSwapInput = () => {
               setAmount(e.target.value);
             }}
           />
-          {assetIn?.balanceView && <BalanceValueView valueView={assetIn.balanceView} />}
+          {assetIn?.balanceView && (
+            <BalanceValueView valueView={assetIn.balanceView} onClick={setInputToBalanceMax} />
+          )}
         </div>
 
         <div className='flex items-center justify-between gap-4'>

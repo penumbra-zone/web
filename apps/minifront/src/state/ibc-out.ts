@@ -199,7 +199,7 @@ export const ibcValidationErrors = (state: AllSlices) => {
   return {
     recipientErr: !state.ibcOut.destinationChainAddress
       ? false
-      : !validateUnknownAddress(state.ibcOut.chain, state.ibcOut.destinationChainAddress),
+      : !unknownAddrIsValid(state.ibcOut.chain, state.ibcOut.destinationChainAddress),
     amountErr: !state.ibcOut.selection
       ? false
       : amountMoreThanBalance(state.ibcOut.selection, state.ibcOut.amount),
@@ -207,15 +207,16 @@ export const ibcValidationErrors = (state: AllSlices) => {
 };
 
 /**
- * we don't know what format foreign addresses are in. so this only checks:
+ * Matches the given address to the chain's address prefix.
+ * We don't know what format foreign addresses are in, so this only checks:
  * - it's valid bech32 OR valid bech32m
  * - the prefix matches the chain
  */
-const validateUnknownAddress = (chain: Chain | undefined, address: string): boolean => {
+const unknownAddrIsValid = (chain: Chain | undefined, address: string): boolean => {
   if (!chain || address === '') return false;
   const { prefix, words } =
     bech32.decodeUnsafe(address, Infinity) ?? bech32m.decodeUnsafe(address, Infinity) ?? {};
-  return !words || prefix !== chain.addressPrefix;
+  return !!words && prefix === chain.addressPrefix;
 };
 
 /**

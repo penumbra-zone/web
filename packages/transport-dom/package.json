@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/transport-dom",
-  "version": "4.1.0",
+  "version": "6.0.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
@@ -20,8 +20,8 @@
   "publishConfig": {
     "exports": {
       "./*": {
-        "import": "./dist/*.js",
-        "types": "./dist/*.d.ts"
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
       }
     }
   },

@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { MessageWarningIcon } from '../../icons/message-warning';
 import { MobileNavMenu } from './mobile-nav-menu';
 import { Navbar } from './navbar';
@@ -13,7 +13,6 @@ import { PagePath } from '../metadata/paths';
 import { TabletNavMenu } from './tablet-nav-menu';
 import { useEffect, useState } from 'react';
 import { getChainId } from '../../fetchers/chain-id';
-import { LayoutLoaderResult } from '../layout';
 
 // Infinite-expiry invite link to the #web-ext-feedback channel. Provided by
 // Henry (@hdevalence) and thus tied to his Discord account, so reach out to him
@@ -21,12 +20,11 @@ import { LayoutLoaderResult } from '../layout';
 const WEB_EXT_FEEDBACK_DISCORD_CHANNEL = 'https://discord.gg/XDNcrhKVwV';
 
 export const TopRow = () => {
-  const { isInstalled, isConnected } = useLoaderData() as LayoutLoaderResult;
   const [chainId, setChainId] = useState<string | undefined>();
 
   useEffect(() => {
-    if (isInstalled && isConnected) void getChainId().then(setChainId);
-  }, [isInstalled, isConnected]);
+    void getChainId().then(setChainId);
+  }, []);
 
   return (
     <div className='flex w-full flex-col items-center justify-between px-6 md:h-[82px] md:flex-row md:gap-12 md:px-12'>

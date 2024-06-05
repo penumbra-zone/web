@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/wasm",
-  "version": "5.1.0",
+  "version": "7.0.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
@@ -27,8 +27,8 @@
   "publishConfig": {
     "exports": {
       "./*": {
-        "import": "./dist/*.js",
-        "types": "./dist/*.d.ts"
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
       }
     }
   },

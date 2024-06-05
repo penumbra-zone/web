@@ -1,5 +1,34 @@
 # @penumbra-zone/services
 
+## 3.2.3
+
+### Patch Changes
+
+- Updated dependencies [8fe4de6]
+  - @penumbra-zone/wasm@7.0.0
+  - @penumbra-zone/query@4.0.2
+  - @penumbra-zone/storage@3.4.3
+  - @penumbra-zone/types@7.0.1
+
+## 3.2.2
+
+### Patch Changes
+
+- Updated dependencies [bb5f621]
+- Updated dependencies [8b121ec]
+  - @penumbra-zone/types@7.0.0
+  - @penumbra-zone/wasm@6.0.0
+  - @penumbra-zone/query@4.0.1
+  - @penumbra-zone/storage@3.4.2
+
+## 3.2.1
+
+### Patch Changes
+
+- a22d3a8: Update registry (noble/testnet channel update)
+- Updated dependencies [a22d3a8]
+  - @penumbra-zone/storage@3.4.1
+
 ## 3.2.0
 
 ### Minor Changes

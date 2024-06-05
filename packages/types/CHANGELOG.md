@@ -1,5 +1,25 @@
 # @penumbra-zone/types
 
+## 7.0.1
+
+### Patch Changes
+
+- Updated dependencies [8fe4de6]
+  - @penumbra-zone/bech32m@5.0.0
+  - @penumbra-zone/getters@6.0.0
+
+## 7.0.0
+
+### Major Changes
+
+- bb5f621: formatAmount() takes new args
+
+### Patch Changes
+
+- Updated dependencies [8b121ec]
+  - @penumbra-zone/bech32m@4.0.0
+  - @penumbra-zone/getters@5.0.0
+
 ## 6.0.0
 
 ### Major Changes

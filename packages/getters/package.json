@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/getters",
-  "version": "4.1.0",
+  "version": "6.0.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Convenience getters for the deeply nested optionals of Penumbra's protobuf types",
   "type": "module",
@@ -18,7 +18,10 @@
   },
   "publishConfig": {
     "exports": {
-      "./*": "./dist/*.js"
+      "./*": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.js"
+      }
     }
   },
   "dependencies": {

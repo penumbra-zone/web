@@ -1,5 +1,17 @@
 # @penumbra-zone/transport-dom
 
+## 6.0.0
+
+### Major Changes
+
+- 8fe4de6: correct ordering of default export
+
+## 5.0.0
+
+### Major Changes
+
+- 8b121ec: change package exports to use 'default' field
+
 ## 4.1.0
 
 ### Minor Changes

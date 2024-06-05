@@ -7,6 +7,7 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { getIbcConnections, getStakingTokenMetadata } from '../../fetchers/registry';
 import { getAllAssets } from '../../fetchers/assets';
 import { filterBalancesPerChain } from '../../state/ibc-out';
+import { abortLoader } from '../../abort-loader';
 
 export interface IbcLoaderResponse {
   balances: BalancesResponse[];
@@ -16,6 +17,7 @@ export interface IbcLoaderResponse {
 }
 
 export const IbcLoader: LoaderFunction = async (): Promise<IbcLoaderResponse> => {
+  await abortLoader();
   const assetBalances = await getBalances();
   const ibcConnections = await getIbcConnections();
   const stakingTokenMetadata = await getStakingTokenMetadata();
