@@ -13,7 +13,7 @@ enum Environment {
 declare global {
   interface Window {
     // This file has many environments running it. Makes it hard to please every runtime.
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     chrome?: {
       runtime?: {

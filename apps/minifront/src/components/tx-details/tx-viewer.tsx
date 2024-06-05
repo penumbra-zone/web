@@ -38,7 +38,7 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
         </>
       )}
       {option === TxDetailsTab.PUBLIC && (
-        <TransactionViewComponent txv={asPublicTransactionView(txInfo.view!)} />
+        <TransactionViewComponent txv={asPublicTransactionView(txInfo.view)} />
       )}
     </div>
   );

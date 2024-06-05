@@ -149,7 +149,7 @@ export const getOneWaySwapValuesOpaque = (
     },
   });
 
-  let output: ValueView = isZero(delta2I) ? output2! : output1!;
+  let output = isZero(delta2I) ? output2 : output1;
 
   if (!output) {
     output = new ValueView({

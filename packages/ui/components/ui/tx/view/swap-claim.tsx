@@ -5,7 +5,6 @@ import { ActionDetails } from './action-details';
 import {
   getOutput1ValueOptional,
   getOutput2ValueOptional,
-  getSwapClaimFee,
   getSwapClaimFeeOpaque,
 } from '@penumbra-zone/getters/swap-claim-view';
 import { getAmount } from '@penumbra-zone/getters/value-view';
