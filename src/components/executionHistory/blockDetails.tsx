@@ -8,24 +8,29 @@ export interface BlockDetailsProps {
 export const BlockDetails = ({ blockSummary }: BlockDetailsProps) => {
 
     return (
-        <>
-          <VStack align={"left"} spacing={2} paddingTop={".5em"}>
-            <Text fontSize={"medium"} fontStyle={"oblique"}>
-              {"Number Positions Opened: "}{blockSummary.openPositionEvents.length}
-            </Text>
-            <Text fontSize={"medium"} fontStyle={"oblique"}>
-              {"Number Positions Closed: "}{blockSummary.closePositionEvents.length}
-            </Text>
-            <Text fontSize={"medium"} fontStyle={"oblique"}>
-              {"Number Positions Withdrawn: "}{blockSummary.withdrawPositionEvents.length}
-            </Text>
-            <Text fontSize={"medium"} fontStyle={"oblique"}>
-              {"Number Swaps: "}{blockSummary.swapExecutions.length}
-            </Text>
-            <Text fontSize={"medium"} fontStyle={"oblique"}>
-              {"Number Arbs: "}{blockSummary.arbExecutions.length}
-            </Text>
-          </VStack>
-        </>
-      );
+      <>
+        <VStack align={"left"} spacing={2} paddingTop={".5em"}>
+          <Text fontSize={"medium"} fontStyle={"monospace"}>
+            {"Positions Opened: "}
+            {blockSummary.openPositionEvents.length}
+          </Text>
+          <Text fontSize={"medium"} fontStyle={"monospace"}>
+            {"Positions Closed: "}
+            {blockSummary.closePositionEvents.length}
+          </Text>
+          <Text fontSize={"medium"} fontStyle={"monospace"}>
+            {"Positions Withdrawn: "}
+            {blockSummary.withdrawPositionEvents.length}
+          </Text>
+          <Text fontSize={"medium"} fontStyle={"monospace"}>
+            {"Swaps: "}
+            {blockSummary.swapExecutions.length}
+          </Text>
+          <Text fontSize={"medium"} fontStyle={"monospace"}>
+            {"Arbs: "}
+            {blockSummary.arbExecutions.length}
+          </Text>
+        </VStack>
+      </>
+    );
 }
