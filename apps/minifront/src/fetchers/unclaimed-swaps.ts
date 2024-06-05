@@ -28,8 +28,13 @@ const fetchMetadataForSwap = async (swap: SwapRecord): Promise<UnclaimedSwapsWit
   };
 };
 
+const byHeightDescending = (a: UnclaimedSwapsWithMetadata, b: UnclaimedSwapsWithMetadata): number =>
+  Number(b.swap.outputData?.height) - Number(a.swap.outputData?.height);
+
 export const fetchUnclaimedSwaps = async (): Promise<UnclaimedSwapsWithMetadata[]> => {
   const responses = await Array.fromAsync(viewClient.unclaimedSwaps({}));
   const unclaimedSwaps = responses.map(getUnclaimedSwaps);
-  return Promise.all(unclaimedSwaps.map(fetchMetadataForSwap));
+  const unclaimedSwapsWithMetadata = await Promise.all(unclaimedSwaps.map(fetchMetadataForSwap));
+
+  return unclaimedSwapsWithMetadata.sort(byHeightDescending);
 };
