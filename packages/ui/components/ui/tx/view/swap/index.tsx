@@ -1,7 +1,12 @@
 import { ViewBox } from '../viewbox';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { TransactionIdComponent } from '../transaction-id';
-import { getOneWaySwapValues, isOneWaySwap } from '@penumbra-zone/types/swap';
+import {
+  getOneWaySwapValues,
+  getOneWaySwapValuesOpaque,
+  isOneWaySwap,
+  isOneWaySwapOpaque,
+} from '@penumbra-zone/types/swap';
 import { OneWaySwap } from './one-way-swap';
 import { ValueWithAddress } from '../value-with-address';
 import {
@@ -57,19 +62,20 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
   }
 
   if (value.swapView.case === 'opaque') {
-    const oneWaySwap = isOneWaySwap(value) ? getOneWaySwapValues(value) : undefined;
+    const oneWaySwap = isOneWaySwapOpaque(value) ? getOneWaySwapValuesOpaque(value) : undefined;
+    if (!isOneWaySwapOpaque(value)) {
+      throw new Error(
+        'Attempted to get one-way swap values from a two-way swap. `getOneWaySwapValues()` should only be called with a `SwapView` containing a one-way swap -- that is, a swap with at least one `swapPlaintext.delta*` that has an amount equal to zero.',
+      );
+    }
+
     return (
       <ViewBox
         label='Swap'
         visibleContent={
           <div className='flex flex-col gap-4'>
-            <ActionDetails>
-              {oneWaySwap?.unfilled && (
-                <ActionDetails.Row label='Unfilled'>
-                  <ValueViewComponent view={oneWaySwap.unfilled} />
-                </ActionDetails.Row>
-              )}
-            </ActionDetails>
+            {oneWaySwap && <OneWaySwap input={oneWaySwap.input} output={oneWaySwap.output} />}
+            {!oneWaySwap && <>Two-way swaps are not supported in this UI.</>}
           </div>
         }
       />

@@ -3,9 +3,9 @@ import { TransactionViewComponent } from '@penumbra-zone/ui/components/ui/tx/vie
 import { TxDetailsLoaderResult } from '.';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
-import { viewFromEmptyPerspective } from '@penumbra-zone/perspective/transaction/perspective';
 import { useState } from 'react';
 import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picker';
+import { asPublicTransactionView } from '@penumbra-zone/perspective/translators/transaction-view';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
@@ -38,7 +38,7 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
         </>
       )}
       {option === TxDetailsTab.PUBLIC && (
-        <TransactionViewComponent txv={viewFromEmptyPerspective(txInfo.transaction!)} />
+        <TransactionViewComponent txv={asPublicTransactionView(txInfo.view!)} />
       )}
     </div>
   );

@@ -3,6 +3,7 @@ import { Translator } from './types';
 import { asOpaqueSpendView } from './spend-view';
 import { asOpaqueOutputView, asReceiverOutputView } from './output-view';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { asOpaqueSwapView } from './swap-view';
 
 export const asPublicActionView: Translator<ActionView> = actionView => {
   switch (actionView?.actionView.case) {
@@ -19,6 +20,14 @@ export const asPublicActionView: Translator<ActionView> = actionView => {
         actionView: {
           case: 'output',
           value: asOpaqueOutputView(actionView.actionView.value),
+        },
+      });
+
+    case 'swap':
+      return new ActionView({
+        actionView: {
+          case: 'swap',
+          value: asOpaqueSwapView(actionView.actionView.value),
         },
       });
 
