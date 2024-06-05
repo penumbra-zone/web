@@ -1,11 +1,10 @@
-import { AllSlices, SliceCreator, useStore } from '.';
+import { SliceCreator, useStore } from '.';
 import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { issueSwapClaim } from './swap/instant-swap';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { ZQueryState, createZQuery } from '../lib/z-query';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { fetchUnclaimedSwaps } from '../fetchers/unclaimed-swaps';
-import { StoreApi, UseBoundStore } from 'zustand';
 
 type SwapCommitmentId = string;
 
@@ -27,7 +26,7 @@ export const { unclaimedSwaps, useUnclaimedSwaps, useRevalidateUnclaimedSwaps } 
   'unclaimedSwaps',
   fetchUnclaimedSwaps,
 
-  () => useStore as UseBoundStore<StoreApi<AllSlices>>,
+  () => useStore,
 
   newValue =>
     useStore.setState(state => {
