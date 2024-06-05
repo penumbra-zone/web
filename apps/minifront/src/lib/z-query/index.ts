@@ -80,7 +80,7 @@ type ZQuery<Name extends string, DataType> = {
  * }
  * ```
  */
-export const createZQuery = <StoreType, Name extends string, DataType>(
+export const createZQuery = <State, Name extends string, DataType>(
   /** The name of this property in the state/slice. */
   name: Name,
   /** A function that executes the query. */
@@ -93,7 +93,7 @@ export const createZQuery = <StoreType, Name extends string, DataType>(
    * pass a function that returns `useStore`, so that it can be used later (once
    * `useStore` is defined).
    */
-  getUseStore: () => UseBoundStore<StoreApi<StoreType>>,
+  getUseStore: () => UseBoundStore<StoreApi<State>>,
   /**
    * A setter that takes an updated ZQuery state object and assigns it to the
    * location in your overall Zustand state object where this ZQuery state
@@ -143,7 +143,7 @@ export const createZQuery = <StoreType, Name extends string, DataType>(
    * )
    * ```
    */
-  get: (state: StoreType) => ZQueryState<DataType>,
+  get: (state: State) => ZQueryState<DataType>,
 ): ZQuery<Name, DataType> =>
   ({
     [`use${capitalize(name)}`]: () => {
@@ -169,7 +169,7 @@ export const createZQuery = <StoreType, Name extends string, DataType>(
 
     [`useRevalidate${capitalize(name)}`]: () => {
       const useStore = getUseStore();
-      return useStore(useShallow((state: StoreType) => get(state).revalidate));
+      return useStore(useShallow((state: State) => get(state).revalidate));
     },
 
     [name]: {
