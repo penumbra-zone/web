@@ -33,7 +33,7 @@ type ZQuery<Name extends string, DataType> = {
  * use them):
  *
  * ```ts
- * const { puppyPhotos, usePuppyPhotos, useRevalidatePuppyPhotos } = createZQuery(
+ * export const { puppyPhotos, usePuppyPhotos, useRevalidatePuppyPhotos } = createZQuery(
  *   'puppyPhotos',
  *   asyncFunctionThatFetchesAndReturnsPuppyPhotos,
  *   () => useStore,
@@ -47,18 +47,20 @@ type ZQuery<Name extends string, DataType> = {
  * )
  * ```
  *
- * Then, attach that object to your Zustand state:
+ * Then, attach the property with the object's name to your Zustand state:
  *
  * ```ts
  * const useStore = create<State>()(set => ({
  *  // ...
- *  puppyPhotos,
+ *  puppyPhotos, // destructured from the return value of `createZQuery()` above
  * }))
  * ```
  *
  * Finally, in your component, use the hooks as needed:
  *
  * ```tsx
+ * import { usePuppyPhotos, useRevalidatePuppyPhotos } from './state'
+ *
  * const PuppyPhotos = () => {
  *   const puppyPhotos = usePuppyPhotos()
  *   const revalidate = useRevalidatePuppyPhotos()
