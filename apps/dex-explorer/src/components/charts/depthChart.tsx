@@ -55,13 +55,25 @@ const DepthChart = ({
   // Mid point is the middle of the price between the lowest sell and highest buy
   let midMarketPrice = 0;
 
+  // Look at synthetic - synthetic data first, and then synthetic - direct, and then finally direct - direct, check just synthetic, or just direct
   if (sellSideData.length > 0 && buySideData.length > 0) {
     midMarketPrice = (sellSideData[0].x + buySideData[0].x) / 2;
+  } else if (sellSideData.length > 0 && buySideSingleHopData.length > 0) {
+    midMarketPrice = (sellSideData[0].x + buySideSingleHopData[0].x) / 2;
+  } else if (sellSideSingleHopData.length > 0 && buySideData.length > 0) {  
+    midMarketPrice = (sellSideSingleHopData[0].x + buySideData[0].x) / 2;
+  } else if (sellSideSingleHopData.length > 0 && buySideSingleHopData.length > 0) {
+    midMarketPrice = (sellSideSingleHopData[0].x + buySideSingleHopData[0].x) / 2;
+  } else if (sellSideData.length > 0) {
+    midMarketPrice = sellSideData[0].x;
+  } else if (buySideData.length > 0) {
+    midMarketPrice = buySideData[0].x;
   } else if (sellSideSingleHopData.length > 0) {
     midMarketPrice = sellSideSingleHopData[0].x;
   } else {
     midMarketPrice = buySideSingleHopData[0].x;
   }
+  console.log("midMarketPrice", midMarketPrice);
 
   // Update all single hope data to have a point at the same x values as the non single hop data does so that we always can render both points on the tooltip
   // Make the duplicate point have the same y value as the last point in the single hop data, or 0 if the point before DNE, or dont change if the point is already there
@@ -174,8 +186,9 @@ const DepthChart = ({
   );
   const [maxY, setMaxY] = useState<number>(calculateMaxY(maxLiquidity));
   const [minXValue, setMinXValue] = useState<number>(0);
+  // Max sell side value if present, otherwise max buy side value
   const [maxXValue, setMaxXValue] = useState<number>(
-    sellSideData[sellSideData.length - 1].x
+    sellSideData[sellSideData.length - 1]?.x || buySideData[0]?.x || 0
   );
 
   const xRange = maxXValue - minXValue;
@@ -191,9 +204,14 @@ const DepthChart = ({
 
   // Control the zoom level of the chart
   useEffect(() => {
+    if (sellSideData.length === 0 || buySideData.length === 0) {
+      setDisablePlusButton(true);
+      setDisableMinusButton(true);
+      return;
+    }
     if (zoomIndex === lastZoomIndex && pageLoad) return;
     // Change zoom to only show points within how close they are to the midpoint price,
-    // If zoom index is 1, show all points, if zoom index is 2, show middle 50% of points, if zoom index is 3, show middle 25% of points, etc.
+    // If zoom index is 1, show all points, if z oom index is 2, show middle 50% of points, if zoom index is 3, show middle 25% of points, etc.
     const localMin = 0;
     const localMax = midMarketPrice * 2;
     const range = (localMax - localMin) / zoomLevels[zoomIndex] / 2;
