@@ -33,8 +33,17 @@ const capitalize = <Str extends string>(str: Str): Capitalize<Str> =>
  */
 type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
 
+/**
+ * The type returned by calling the `use<Name>()` hook.
+ */
+export interface UseZQuery<DataType> {
+  data?: DataType;
+  loading: boolean;
+  error?: unknown;
+}
+
 type ZQuery<Name extends string, DataType> = {
-  [key in `use${Capitalize<Name>}`]: () => ZQueryState<DataType>;
+  [key in `use${Capitalize<Name>}`]: () => UseZQuery<DataType>;
 } & {
   [key in `useRevalidate${Capitalize<Name>}`]: () => VoidFunction;
 } & Record<Name, ZQueryState<DataType>>;
