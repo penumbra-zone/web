@@ -1,52 +1,24 @@
 import { useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import type {
+  CreateZQueryProps,
+  DataTypeInState,
+  FetchTypeAsyncGenerator,
+  FetchTypePromise,
+  StreamType,
+  ZQuery,
+} from './types';
 
-export interface ZQueryState<DataType> {
-  data?: DataType;
-  loading: boolean;
-  error?: unknown;
-
-  revalidate: () => void;
-
-  _zQueryInternal: {
-    fetch: () => Promise<void>;
-  };
-}
+export type { ZQueryState } from './types';
 
 /** `hello world` -> `Hello world` */
 const capitalize = <Str extends string>(str: Str): Capitalize<Str> =>
   (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<Str>;
 
-/**
- * A simplified version of `UseBoundStore<StoreApi<State>>`.
- *
- * We only use the `useStore()` hook and the `useStore.getState()` method in
- * ZQuery, and we don't want to have to accommodate all of the different types
- * that a `useStore` object can have when used with various middlewares, etc.
- * For example, a "normal" `useStore` object is typed as
- * `UseBoundStore<StoreApi<State>>`, but a `useStore` object created with Immer
- * middleware is typed as `UseBoundStore<WithImmer<StoreApi<State>>>`. A
- * function that accepts a `useStore` of the former type won't accept a
- * `useStore` of the latter type (or of various other store types that mutated
- * by middleware), so we'll just create a loose typing for `useStore` that can
- * accommodate whatever middleware is being used.
- */
-export type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
-
-/**
- * The type returned by calling the `use<Name>()` hook.
- */
-export interface UseZQuery<DataType> {
-  data?: DataType;
-  loading: boolean;
-  error?: unknown;
-}
-
-type ZQuery<Name extends string, DataType> = {
-  [key in `use${Capitalize<Name>}`]: () => UseZQuery<DataType>;
-} & {
-  [key in `useRevalidate${Capitalize<Name>}`]: () => VoidFunction;
-} & Record<Name, ZQueryState<DataType>>;
+const isStreamingResponse = <DataType, FetchArgs extends unknown[]>(
+  _fetch: FetchTypePromise<DataType, FetchArgs> | FetchTypeAsyncGenerator<DataType, FetchArgs>,
+  stream?: StreamType<DataType>,
+): _fetch is FetchTypeAsyncGenerator<DataType, FetchArgs> => !!stream;
 
 /**
  * Creates a ZQuery object that can be used to store server data in Zustand
@@ -104,71 +76,17 @@ type ZQuery<Name extends string, DataType> = {
  * }
  * ```
  */
-export const createZQuery = <State, Name extends string, DataType>(
-  /** The name of this property in the state/slice. */
-  name: Name,
-  /** A function that executes the query. */
-  fetch: () => Promise<DataType>,
-  /**
-   * A function that returns your `useStore` object -- e.g.: `() => useStore`
-   *
-   * If you passed `useStore` directly to `createZQuery`, which is called while
-   * defining `useStore`, you'd get a circular dependency. To work around that,
-   * pass a function that returns `useStore`, so that it can be used later (once
-   * `useStore` is defined).
-   */
-  getUseStore: () => UseStore<State>,
-  /**
-   * A setter that takes an updated ZQuery state object and assigns it to the
-   * location in your overall Zustand state object where this ZQuery state
-   * object is located.
-   *
-   * This ZQuery object doesn't know anything about the store or where this
-   * ZQuery object is located within it, so it can't call `set()` with the
-   * necessary spreads/etc. to ensure that the rest of the state is untouched
-   * when the ZQuery state is updated. So your setter needs to handle that. For
-   * example, if you have a deeply nested ZQuery object (located at
-   * `state.deeply.nested.object`) and you're using Zustand's Immer middleware
-   * to be able to imitate object mutations, you could pass this setter:
-   *
-   * ```ts
-   * createZQuery(
-   *   // ...
-   *   // ...
-   *   // ...
-   *   newValue => {
-   *     // `newValue` is the entire ZQuery state object, and can be assigned
-   *     // as-is to the property that holds the ZQuery state.
-   *     useStore.setState(state => {
-   *       state.deeply.nested.object = newValue;
-   *     })
-   *   },
-   *   // ...
-   * )
-   * ```
-   */
-  set: (value: ZQueryState<DataType>) => void,
-  /**
-   * A selector that takes the root Zustand state and returns just this ZQuery
-   * state object.
-   *
-   * This ZQuery object doesn't know anything about the store or where this
-   * ZQuery object is located within it, so it can't call
-   * `getUseStore().getState()` and then navigate to its own location within
-   * state. Thus, you need to pass it a selector so it can find itself.
-   *
-   * ```ts
-   * createZQuery(
-   *   // ...
-   *   // ...
-   *   // ...
-   *   // ...
-   *   state => state.deeply.nested.object,
-   * )
-   * ```
-   */
-  get: (state: State) => ZQueryState<DataType>,
-): ZQuery<Name, DataType> =>
+export const createZQuery = <State, Name extends string, DataType, FetchArgs extends unknown[]>({
+  name,
+  fetch,
+  stream,
+  getUseStore,
+  set,
+  get,
+}: CreateZQueryProps<State, DataType, FetchArgs>): ZQuery<
+  Name,
+  DataTypeInState<DataType, typeof fetch, Parameters<typeof fetch>>
+> =>
   ({
     [`use${capitalize(name)}`]: () => {
       const useStore = getUseStore();
@@ -204,14 +122,30 @@ export const createZQuery = <State, Name extends string, DataType>(
       revalidate: () => void get(getUseStore().getState())._zQueryInternal.fetch(),
 
       _zQueryInternal: {
-        fetch: async () => {
-          try {
-            const data = await fetch();
+        fetch: async (...args: FetchArgs) => {
+          if (isStreamingResponse<DataType, FetchArgs>(fetch, stream)) {
+            const result = fetch(...args);
+            let data: DataType[] = [];
             set({ ...get(getUseStore().getState()), data });
-          } catch (error) {
-            set({ ...get(getUseStore().getState()), error });
+
+            for await (const item of result) {
+              if (typeof stream === 'function') {
+                data = await stream(data, item);
+              } else {
+                data.push(item);
+              }
+
+              set({ ...get(getUseStore().getState()), data });
+            }
+          } else {
+            try {
+              const data = await fetch(...args);
+              set({ ...get(getUseStore().getState()), data });
+            } catch (error) {
+              set({ ...get(getUseStore().getState()), error });
+            }
           }
         },
       },
     },
-  }) as ZQuery<Name, DataType>;
+  }) as ZQuery<Name, DataTypeInState<DataType, typeof fetch, Parameters<typeof fetch>>>;
