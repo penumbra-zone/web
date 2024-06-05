@@ -178,7 +178,7 @@ pub fn build_parallel(
 ///     full_viewing_key: `byte representation inner FullViewingKey`
 ///     tx: `pbt::Transaction`
 ///     idb_constants: IndexedDbConstants
-/// Returns: `TxInfoResponse`
+/// Returns: Javascript array of two numeric arrays
 #[wasm_bindgen]
 pub async fn transaction_info(
     full_viewing_key: &[u8],
@@ -192,8 +192,10 @@ pub async fn transaction_info(
     let fvk = FullViewingKey::decode(full_viewing_key)?;
     let response = transaction_info_inner(fvk, transaction, constants).await?;
 
-    let result = serde_wasm_bindgen::to_value(&response)?;
-    Ok(result)
+    Ok(serde_wasm_bindgen::to_value(&vec![
+        prost::Message::encode_to_vec(&response.txp),
+        prost::Message::encode_to_vec(&response.txv),
+    ])?)
 }
 
 pub async fn transaction_info_inner(

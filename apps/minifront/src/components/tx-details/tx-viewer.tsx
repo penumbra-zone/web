@@ -6,6 +6,7 @@ import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { viewFromEmptyPerspective } from '@penumbra-zone/perspective/transaction/perspective';
 import { useState } from 'react';
 import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picker';
+import { typeRegistry } from '@penumbra-zone/protobuf';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
@@ -33,7 +34,7 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
           <TransactionViewComponent txv={txInfo.view!} />
           <div className='mt-8'>
             <div className='text-xl font-bold'>Raw JSON</div>
-            <JsonViewer jsonObj={txInfo.toJson() as Jsonified<TransactionInfo>} />
+            <JsonViewer jsonObj={txInfo.toJson({ typeRegistry }) as Jsonified<TransactionInfo>} />
           </div>
         </>
       )}
