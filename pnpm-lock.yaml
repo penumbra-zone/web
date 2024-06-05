@@ -1103,6 +1103,9 @@ importers:
       '@types/react':
         specifier: ^18.3.2
         version: 18.3.2
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@20.12.13)(@vitest/browser@1.6.0)(jsdom@24.0.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.0)
 
 packages:
 
@@ -18198,7 +18201,7 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
     optionalDependencies:
-      vitest: 1.6.0(@types/node@20.12.13)(@vitest/browser@1.6.0(playwright@1.44.0)(vitest@1.6.0))(jsdom@24.0.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.0)
+      vitest: 1.6.0(@types/node@20.12.13)(@vitest/browser@1.6.0)(jsdom@24.0.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.0)
 
   '@testing-library/react@15.0.7(@types/react@18.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -18697,7 +18700,7 @@ snapshots:
       '@vitest/utils': 1.6.0
       magic-string: 0.30.10
       sirv: 2.0.4
-      vitest: 1.6.0(@types/node@20.12.12)(@vitest/browser@1.6.0)(jsdom@24.0.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.0)
+      vitest: 1.6.0(@types/node@20.12.13)(@vitest/browser@1.6.0)(jsdom@24.0.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.0)
     optionalDependencies:
       playwright: 1.44.0
 
@@ -21098,7 +21101,7 @@ snapshots:
       '@typescript-eslint/utils': 7.10.0(eslint@9.3.0)(typescript@5.4.5)
       eslint: 9.3.0
     optionalDependencies:
-      vitest: 1.6.0(@types/node@20.12.12)(@vitest/browser@1.6.0)(jsdom@24.0.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.0)
+      vitest: 1.6.0(@types/node@20.12.12)(@vitest/browser@1.6.0(playwright@1.44.0)(vitest@1.6.0))(jsdom@24.0.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.0)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -26086,7 +26089,7 @@ snapshots:
       debug: 4.3.4
       pathe: 1.1.2
       picocolors: 1.0.1
-      vite: 5.2.11(@types/node@20.12.12)(terser@5.31.0)
+      vite: 5.2.12(@types/node@20.12.12)(terser@5.31.0)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -26103,7 +26106,7 @@ snapshots:
       debug: 4.3.4
       pathe: 1.1.2
       picocolors: 1.0.1
-      vite: 5.2.11(@types/node@20.12.13)(terser@5.31.0)
+      vite: 5.2.12(@types/node@20.12.13)(terser@5.31.0)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -26113,7 +26116,6 @@ snapshots:
       - sugarss
       - supports-color
       - terser
-    optional: true
 
   vite-plugin-dts@3.9.1(@types/node@20.12.12)(rollup@4.18.0)(typescript@5.4.5)(vite@5.2.11(@types/node@20.12.12)(terser@5.31.0)):
     dependencies:
@@ -26182,16 +26184,15 @@ snapshots:
       fsevents: 2.3.3
       terser: 5.31.0
 
-  vite@5.2.11(@types/node@20.12.13)(terser@5.31.0):
+  vite@5.2.12(@types/node@20.12.12)(terser@5.31.0):
     dependencies:
       esbuild: 0.20.2
       postcss: 8.4.38
-      rollup: 4.17.2
+      rollup: 4.18.0
     optionalDependencies:
-      '@types/node': 20.12.13
+      '@types/node': 20.12.12
       fsevents: 2.3.3
       terser: 5.31.0
-    optional: true
 
   vite@5.2.12(@types/node@20.12.13)(terser@5.31.0):
     dependencies:
@@ -26202,6 +26203,42 @@ snapshots:
       '@types/node': 20.12.13
       fsevents: 2.3.3
       terser: 5.31.0
+
+  vitest@1.6.0(@types/node@20.12.12)(@vitest/browser@1.6.0(playwright@1.44.0)(vitest@1.6.0))(jsdom@24.0.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.0):
+    dependencies:
+      '@vitest/expect': 1.6.0
+      '@vitest/runner': 1.6.0
+      '@vitest/snapshot': 1.6.0
+      '@vitest/spy': 1.6.0
+      '@vitest/utils': 1.6.0
+      acorn-walk: 8.3.2
+      chai: 4.4.1
+      debug: 4.3.4
+      execa: 8.0.1
+      local-pkg: 0.5.0
+      magic-string: 0.30.10
+      pathe: 1.1.2
+      picocolors: 1.0.1
+      std-env: 3.7.0
+      strip-literal: 2.1.0
+      tinybench: 2.8.0
+      tinypool: 0.8.4
+      vite: 5.2.12(@types/node@20.12.12)(terser@5.31.0)
+      vite-node: 1.6.0(@types/node@20.12.12)(terser@5.31.0)
+      why-is-node-running: 2.2.2
+    optionalDependencies:
+      '@types/node': 20.12.12
+      '@vitest/browser': 1.6.0(playwright@1.44.0)(vitest@1.6.0)
+      jsdom: 24.0.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)
+    transitivePeerDependencies:
+      - less
+      - lightningcss
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+    optional: true
 
   vitest@1.6.0(@types/node@20.12.12)(@vitest/browser@1.6.0)(jsdom@24.0.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.0):
     dependencies:
@@ -26238,7 +26275,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@1.6.0(@types/node@20.12.13)(@vitest/browser@1.6.0(playwright@1.44.0)(vitest@1.6.0))(jsdom@24.0.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.0):
+  vitest@1.6.0(@types/node@20.12.13)(@vitest/browser@1.6.0)(jsdom@24.0.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.0):
     dependencies:
       '@vitest/expect': 1.6.0
       '@vitest/runner': 1.6.0
@@ -26257,7 +26294,7 @@ snapshots:
       strip-literal: 2.1.0
       tinybench: 2.8.0
       tinypool: 0.8.4
-      vite: 5.2.11(@types/node@20.12.13)(terser@5.31.0)
+      vite: 5.2.12(@types/node@20.12.13)(terser@5.31.0)
       vite-node: 1.6.0(@types/node@20.12.13)(terser@5.31.0)
       why-is-node-running: 2.2.2
     optionalDependencies:
@@ -26272,7 +26309,6 @@ snapshots:
       - sugarss
       - supports-color
       - terser
-    optional: true
 
   vm-browserify@1.1.2: {}
 
