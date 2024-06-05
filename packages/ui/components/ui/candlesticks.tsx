@@ -1,4 +1,3 @@
-//import candlestickJson from './candlestick.json';
 import { BoxPlot } from '@visx/stats';
 import { CandlestickData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { scaleLinear } from '@visx/scale';
@@ -24,7 +23,7 @@ const openPrice = (d: CandlestickData) => d.open;
 const closePrice = (d: CandlestickData) => d.close;
 const midPrice = (d: CandlestickData) => (openPrice(d) + closePrice(d)) / 2;
 const priceMovement = (d: CandlestickData) => closePrice(d) - openPrice(d);
-const priceSpread = (d: CandlestickData) => highPrice(d) - lowPrice(d);
+//const priceSpread = (d: CandlestickData) => highPrice(d) - lowPrice(d);
 const priceMovementColor = (d: CandlestickData) => {
   const movement = priceMovement(d);
   if (movement > 0) return 'green';
@@ -32,7 +31,7 @@ const priceMovementColor = (d: CandlestickData) => {
   else return 'white';
 };
 
-type CandlestickPlotProps = {
+interface CandlestickPlotProps {
   parentWidth?: number;
   parentHeight?: number;
   width?: number;
@@ -42,7 +41,7 @@ type CandlestickPlotProps = {
   latestKnownBlockHeight?: number;
   beginMetadata?: Metadata;
   endMetadata?: Metadata;
-};
+}
 
 export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
   ({
@@ -200,7 +199,7 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
                   },
                   onMouseLeave: () => {
                     setTooltipDataHeight(undefined);
-                    //hideTooltip();
+                    hideTooltip();
                   },
                 };
 
@@ -286,9 +285,9 @@ export const CandlesticksTooltip = ({
   //const beginDisplay = beginMetadata.denomUnits.filter(d => d.denom === beginMetadata.display)[0]!;
   return (
     <Tooltip
-      //{...{ top, left }}
+      {...{ top, left }}
       style={{}} // unset styles
-      className='absolute top right font-mono m-2 bg-secondary opacity-80 p-2 border-light-brown border-solid border-[1px] text-xs'
+      className='absolute m-2 border border-solid border-light-brown bg-secondary p-2 font-mono text-xs opacity-80'
     >
       <div className='flex flex-row justify-between'>
         <div>
@@ -312,7 +311,7 @@ export const CandlesticksTooltip = ({
           )
         }
       </div>
-      <div className='grid grid-rows-2 grid-flow-col gap-x-2 text-right'>
+      <div className='grid grid-flow-col grid-rows-2 gap-x-2 text-right'>
         <div>
           high: {Number(data.high).toFixed(4)} {beginBase.denom}
         </div>
