@@ -140,7 +140,7 @@ export function createZQuery<State, Name extends string, DataType, FetchArgs ext
               if (typeof props.stream === 'function') {
                 data = await props.stream(data, item);
               } else {
-                data.push(item);
+                data = [...data, item];
               }
 
               props.set({ ...props.get(getUseStore().getState()), data });
