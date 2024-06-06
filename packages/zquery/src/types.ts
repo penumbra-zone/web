@@ -200,5 +200,5 @@ export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> =
     error?: unknown;
   };
 } & {
-  [key in `useRevalidate${Capitalize<Name>}`]: () => VoidFunction;
+  [key in `useRevalidate${Capitalize<Name>}`]: () => (...args: FetchArgs) => void;
 } & Record<Name, ZQueryState<DataType, FetchArgs>>;
