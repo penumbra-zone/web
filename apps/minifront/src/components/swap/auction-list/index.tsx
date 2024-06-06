@@ -11,9 +11,9 @@ import { useMemo } from 'react';
 import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
 import { LayoutGroup, motion } from 'framer-motion';
 import { SORT_FUNCTIONS, getMetadata } from './helpers';
+import { useAuctionInfos } from '../../../state/swap/dutch-auction';
 
 const auctionListSelector = (state: AllSlices) => ({
-  auctionInfos: state.swap.dutchAuction.auctionInfos,
   metadataByAssetId: state.swap.dutchAuction.metadataByAssetId,
   fullSyncHeight: state.status.fullSyncHeight,
   endAuction: state.swap.dutchAuction.endAuction,
@@ -39,15 +39,9 @@ const getButtonProps = (
 };
 
 export const AuctionList = () => {
-  const {
-    auctionInfos,
-    metadataByAssetId,
-    fullSyncHeight,
-    endAuction,
-    withdraw,
-    filter,
-    setFilter,
-  } = useStoreShallow(auctionListSelector);
+  const auctionInfos = useAuctionInfos();
+  const { metadataByAssetId, fullSyncHeight, endAuction, withdraw, filter, setFilter } =
+    useStoreShallow(auctionListSelector);
 
   const filteredAuctionInfos = useMemo(
     () =>
