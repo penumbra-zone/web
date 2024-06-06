@@ -59,6 +59,8 @@ General documentation is available in [docs/README.md](docs/README.md). Package-
 ### Prerequisites
 
 - [Install Rust and Cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html) (probably with rustup)
+- [Install Wasm-pack](https://rustwasm.github.io/wasm-pack/installer/)
+- Install [cargo-watch](https://crates.io/crates/cargo-watch): `cargo install cargo-watch`
 - [Install Node.js](https://nodejs.org/en/download/package-manager) however you like (at least version 20)
 - [Install pnpm](https://pnpm.io/installation) (probably via corepack)
 - Install Google Chrome
