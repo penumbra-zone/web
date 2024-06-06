@@ -1,12 +1,12 @@
-export interface ZQueryState<DataType> {
+export interface ZQueryState<DataType, FetchArgs extends unknown[]> {
   data?: DataType | undefined;
   loading: boolean;
   error?: unknown;
 
-  revalidate: () => void;
+  revalidate: (...args: FetchArgs) => void;
 
   _zQueryInternal: {
-    fetch: () => Promise<void>;
+    fetch: (...args: FetchArgs) => Promise<void>;
   };
 }
 
@@ -73,7 +73,7 @@ export interface CreateZQueryUnaryProps<
    * )
    * ```
    */
-  get: (state: State) => ZQueryState<DataType>;
+  get: (state: State) => ZQueryState<DataType, FetchArgs>;
   /**
    * A setter that takes an updated ZQuery state object and assigns it to the
    * location in your overall Zustand state object where this ZQuery state
@@ -103,7 +103,7 @@ export interface CreateZQueryUnaryProps<
    * )
    * ```
    */
-  set: (value: ZQueryState<DataType>) => void;
+  set: (value: ZQueryState<DataType, FetchArgs>) => void;
 }
 
 export interface CreateZQueryStreamingProps<
@@ -144,7 +144,7 @@ export interface CreateZQueryStreamingProps<
    * )
    * ```
    */
-  get: (state: State) => ZQueryState<DataType[]>;
+  get: (state: State) => ZQueryState<DataType[], FetchArgs>;
   /**
    * A setter that takes an updated ZQuery state object and assigns it to the
    * location in your overall Zustand state object where this ZQuery state
@@ -174,7 +174,7 @@ export interface CreateZQueryStreamingProps<
    * )
    * ```
    */
-  set: (value: ZQueryState<DataType[]>) => void;
+  set: (value: ZQueryState<DataType[], FetchArgs>) => void;
 }
 
 /**
@@ -193,12 +193,12 @@ export interface CreateZQueryStreamingProps<
  */
 export type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
 
-export type ZQuery<Name extends string, DataType> = {
-  [key in `use${Capitalize<Name>}`]: () => {
+export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> = {
+  [key in `use${Capitalize<Name>}`]: (...args: FetchArgs) => {
     data?: DataType;
     loading: boolean;
     error?: unknown;
   };
 } & {
   [key in `useRevalidate${Capitalize<Name>}`]: () => VoidFunction;
-} & Record<Name, ZQueryState<DataType>>;
+} & Record<Name, ZQueryState<DataType, FetchArgs>>;
