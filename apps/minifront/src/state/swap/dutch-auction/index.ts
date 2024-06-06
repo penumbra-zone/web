@@ -1,14 +1,8 @@
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { SliceCreator, useStore } from '../..';
-import {
-  AssetId,
-  Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { planBuildBroadcast } from '../../helpers';
 import { assembleScheduleRequest } from './assemble-schedule-request';
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
-import { viewClient } from '../../../clients';
-import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { sendSimulateTradeRequest } from '../helpers';
 import { fromBaseUnitAmount, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
@@ -30,7 +24,6 @@ interface Actions {
   setMinOutput: (minOutput: string) => void;
   setMaxOutput: (maxOutput: string) => void;
   onSubmit: () => Promise<void>;
-  loadMetadata: (assetId?: AssetId) => Promise<void>;
   endAuction: (auctionId: AuctionId) => Promise<void>;
   withdraw: (auctionId: AuctionId, currentSeqNum: bigint) => Promise<void>;
   reset: VoidFunction;
@@ -42,9 +35,7 @@ interface State {
   minOutput: string;
   maxOutput: string;
   txInProgress: boolean;
-  auctionInfos: ZQueryState<AuctionInfo[]>;
-  loadAuctionInfosAbortController?: AbortController;
-  metadataByAssetId: Record<string, Metadata>;
+  auctionInfos: ZQueryState<AuctionInfo[], Parameters<typeof getAuctionInfos>>;
   filter: Filter;
   estimateLoading: boolean;
   estimatedOutput?: Amount;
@@ -70,7 +61,6 @@ const INITIAL_STATE: State = {
   maxOutput: '1000',
   txInProgress: false,
   auctionInfos,
-  metadataByAssetId: {},
   filter: 'active',
   estimateLoading: false,
   estimatedOutput: undefined,
@@ -115,18 +105,6 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     }
   },
 
-  loadMetadata: async assetId => {
-    if (!assetId || get().swap.dutchAuction.metadataByAssetId[bech32mAssetId(assetId)]) return;
-
-    const { denomMetadata } = await viewClient.assetMetadataById({ assetId });
-
-    if (denomMetadata) {
-      set(({ swap }) => {
-        swap.dutchAuction.metadataByAssetId[bech32mAssetId(assetId)] = denomMetadata;
-      });
-    }
-  },
-
   endAuction: async auctionId => {
     const req = new TransactionPlannerRequest({ dutchAuctionEndActions: [{ auctionId }] });
     await planBuildBroadcast('dutchAuctionEnd', req);
@@ -147,11 +125,8 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
         ...swap.dutchAuction,
         ...INITIAL_STATE,
 
-        // preserve loaded auctions and metadata:
+        // preserve loaded auctions and filter:
         auctionInfos: swap.dutchAuction.auctionInfos,
-        metadataByAssetId: swap.dutchAuction.metadataByAssetId,
-
-        // preserve filter:
         filter: swap.dutchAuction.filter,
       };
     }),
