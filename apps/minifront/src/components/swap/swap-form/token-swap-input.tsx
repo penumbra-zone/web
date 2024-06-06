@@ -6,21 +6,42 @@ import { AssetSelector } from '../../shared/asset-selector';
 import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
-import { getAmount } from '@penumbra-zone/getters/balances-response';
+import {
+  getAmount,
+  getBalanceView,
+  getMetadataFromBalancesResponse,
+} from '@penumbra-zone/getters/balances-response';
 import { amountMoreThanBalance } from '../../../state/send';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
+import { getKnownZeroValueView } from '@penumbra-zone/getters/value-view';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { useMemo } from 'react';
-import {
-  ValueView,
-  ValueView_KnownAssetId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 
 const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
+
+const getAssetOutBalance = (
+  balances: BalancesResponse[],
+  assetIn?: BalancesResponse,
+  assetOut?: Metadata,
+) => {
+  const matchedBalance = getBalanceView.optional()(
+    balances.find(balance => {
+      const balanceViewMetadata = getMetadataFromBalancesResponse(balance);
+
+      return (
+        assetIn &&
+        assetOut &&
+        balance.accountAddress?.equals(assetIn.accountAddress) &&
+        assetOut.equals(balanceViewMetadata)
+      );
+    }),
+  );
+  return matchedBalance ?? getKnownZeroValueView(assetOut);
+};
 
 const tokenSwapInputSelector = (state: AllSlices) => ({
   swappableAssets: state.swap.swappableAssets,
@@ -53,38 +74,17 @@ export const TokenSwapInput = () => {
   const maxAmount = getAmount.optional()(assetIn);
   const maxAmountAsString = maxAmount ? joinLoHiAmount(maxAmount).toString() : undefined;
 
-  const balanceOut = useMemo(() => {
-    const matchedBalance = balancesResponses.find(balance => {
-      const balanceViewMetadata = (balance.balanceView?.valueView.value as ValueView_KnownAssetId)
-        .metadata;
-      return (
-        balance.accountAddress?.equals(assetIn?.accountAddress) &&
-        assetOut?.equals(balanceViewMetadata)
-      );
-    })?.balanceView;
-    return (
-      matchedBalance ??
-      new ValueView({
-        valueView: {
-          case: 'knownAssetId',
-          value: {
-            amount: new Amount({
-              lo: 0n,
-              hi: 0n,
-            }),
-            metadata: assetOut,
-          },
-        },
-      })
-    );
-  }, [assetOut, balancesResponses, assetIn]);
-
   const setInputToBalanceMax = () => {
     if (assetIn?.balanceView) {
       const formattedAmt = getFormattedAmtFromValueView(assetIn.balanceView);
       setAmount(formattedAmt);
     }
   };
+
+  const assetOutBalance = useMemo(
+    () => getAssetOutBalance(balancesResponses, assetIn, assetOut),
+    [balancesResponses, assetIn, assetOut],
+  );
 
   return (
     <Box label='Trade' layout>
@@ -126,7 +126,7 @@ export const TokenSwapInput = () => {
 
           <div className='flex h-full flex-col gap-2'>
             <AssetSelector assets={swappableAssets} value={assetOut} onChange={setAssetOut} />
-            {assetOut && <BalanceValueView valueView={balanceOut} />}
+            {assetOut && <BalanceValueView valueView={assetOutBalance} />}
           </div>
         </div>
       </div>
