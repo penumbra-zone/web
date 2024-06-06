@@ -1,4 +1,4 @@
-export interface ZQueryState<DataType, FetchArgs extends unknown[]> {
+export interface ZQueryState<DataType, FetchArgs extends unknown[] = []> {
   data?: DataType | undefined;
   loading: boolean;
   error?: unknown;
@@ -17,11 +17,6 @@ export type FetchTypePromise<DataType, FetchArgs extends unknown[]> = (
 export type FetchTypeAsyncGenerator<DataType, FetchArgs extends unknown[]> = (
   ...args: FetchArgs
 ) => AsyncGenerator<DataType>;
-
-export type StreamType<DataType> =
-  | true
-  | ((state: DataType[], item: DataType) => DataType[])
-  | ((state: DataType[], item: DataType) => Promise<DataType[]>);
 
 interface CreateZQueryCommonProps<Name extends string, State> {
   /** The name of this property in the state/slice. */
@@ -103,6 +98,7 @@ export interface CreateZQueryStreamingProps<
   State,
   DataType,
   FetchArgs extends unknown[],
+  ProcessedDataType,
 > extends CreateZQueryCommonProps<Name, State> {
   /** A function that executes the query. */
   fetch: FetchTypeAsyncGenerator<DataType, FetchArgs>;
@@ -116,7 +112,7 @@ export interface CreateZQueryStreamingProps<
    * desired new state (or a promise containing the desired new state). This can
    * be useful for e.g. sorting items in the state as new items are streamed.
    */
-  stream: StreamType<DataType>;
+  stream: (prevData: ProcessedDataType | undefined, item: DataType) => ProcessedDataType;
   /**
    * A selector that takes the root Zustand state and returns just this ZQuery
    * state object.
@@ -136,7 +132,7 @@ export interface CreateZQueryStreamingProps<
    * )
    * ```
    */
-  get: (state: State) => ZQueryState<DataType[], FetchArgs>;
+  get: (state: State) => ZQueryState<ProcessedDataType, FetchArgs>;
   /**
    * A setter that takes an updated ZQuery state object and assigns it to the
    * location in your overall Zustand state object where this ZQuery state
@@ -166,7 +162,7 @@ export interface CreateZQueryStreamingProps<
    * )
    * ```
    */
-  set: (value: ZQueryState<DataType[], FetchArgs>) => void;
+  set: (value: ZQueryState<ProcessedDataType, FetchArgs>) => void;
 }
 
 /**
