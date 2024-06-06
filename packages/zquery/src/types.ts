@@ -14,9 +14,9 @@ export type FetchTypePromise<DataType, FetchArgs extends unknown[]> = (
   ...args: FetchArgs
 ) => Promise<DataType>;
 
-export type FetchTypeAsyncGenerator<DataType, FetchArgs extends unknown[]> = (
+export type FetchTypeAsyncIterable<DataType, FetchArgs extends unknown[]> = (
   ...args: FetchArgs
-) => AsyncGenerator<DataType>;
+) => AsyncIterable<DataType>;
 
 interface CreateZQueryCommonProps<Name extends string, State> {
   /** The name of this property in the state/slice. */
@@ -101,10 +101,10 @@ export interface CreateZQueryStreamingProps<
   ProcessedDataType,
 > extends CreateZQueryCommonProps<Name, State> {
   /** A function that executes the query. */
-  fetch: FetchTypeAsyncGenerator<DataType, FetchArgs>;
+  fetch: FetchTypeAsyncIterable<DataType, FetchArgs>;
   /**
    * Set to `true` if `fetch` will return a streaming response in the form of an
-   * `AsyncGenerator`.
+   * `AsyncIterable`.
    *
    * Or, if you wish to modify the streaming results as they come in before
    * they're added to the state, set this to a function that takes the current state
