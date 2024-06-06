@@ -6,7 +6,9 @@ export interface ZQueryState<DataType, FetchArgs extends unknown[] = []> {
   revalidate: (...args: FetchArgs) => void;
 
   _zQueryInternal: {
+    referenceCounter: number;
     fetch: (...args: FetchArgs) => Promise<void>;
+    abortController?: AbortController;
   };
 }
 
@@ -90,7 +92,7 @@ export interface CreateZQueryUnaryProps<
    * )
    * ```
    */
-  set: (value: ZQueryState<DataType, FetchArgs>) => void;
+  set: (setter: <DataType, T extends ZQueryState<DataType>>(prevState: T) => T) => void;
 }
 
 export interface CreateZQueryStreamingProps<
@@ -162,7 +164,11 @@ export interface CreateZQueryStreamingProps<
    * )
    * ```
    */
-  set: (value: ZQueryState<ProcessedDataType, FetchArgs>) => void;
+  set: (
+    setter: <DataType extends ProcessedDataType, T extends ZQueryState<DataType>>(
+      prevState: T,
+    ) => T,
+  ) => void;
 }
 
 /**
@@ -181,12 +187,25 @@ export interface CreateZQueryStreamingProps<
  */
 export type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
 
+// Temporary empty interface for TODO
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface FetchOptions {
+  // TODO: implement `disabled`
+  // disabled?: boolean;
+}
+
 export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> = {
-  [key in `use${Capitalize<Name>}`]: (...args: FetchArgs) => {
+  [key in `use${Capitalize<Name>}`]: (
+    opts?: FetchOptions,
+    ...args: FetchArgs
+  ) => {
     data?: DataType;
     loading: boolean;
     error?: unknown;
   };
 } & {
-  [key in `useRevalidate${Capitalize<Name>}`]: () => (...args: FetchArgs) => void;
+  [key in `useRevalidate${Capitalize<Name>}`]: () => (
+    opts?: FetchOptions,
+    ...args: FetchArgs
+  ) => void;
 } & Record<Name, ZQueryState<DataType, FetchArgs>>;

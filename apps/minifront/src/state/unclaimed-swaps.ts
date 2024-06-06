@@ -28,10 +28,13 @@ export const { unclaimedSwaps, useUnclaimedSwaps, useRevalidateUnclaimedSwaps } 
 
   getUseStore: () => useStore,
 
-  set: newValue =>
+  set: setter => {
+    const newState = setter(useStore.getState().unclaimedSwaps.unclaimedSwaps);
+
     useStore.setState(state => {
-      Object.assign(state.unclaimedSwaps.unclaimedSwaps, newValue);
-    }),
+      Object.assign(state.unclaimedSwaps.unclaimedSwaps, newState);
+    });
+  },
 
   get: state => state.unclaimedSwaps.unclaimedSwaps,
 });

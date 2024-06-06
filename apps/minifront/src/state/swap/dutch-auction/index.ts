@@ -49,9 +49,10 @@ export const { auctionInfos, useAuctionInfos, useRevalidateAuctionInfos } = crea
     auctionInfo,
   ],
   getUseStore: () => useStore,
-  set: newValue => {
+  set: setter => {
+    const newState = setter(useStore.getState().swap.dutchAuction.auctionInfos);
     useStore.setState(state => {
-      state.swap.dutchAuction.auctionInfos = newValue;
+      state.swap.dutchAuction.auctionInfos = newState;
     });
   },
   get: state => state.swap.dutchAuction.auctionInfos,

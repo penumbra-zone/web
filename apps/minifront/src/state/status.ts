@@ -17,17 +17,18 @@ export const { status, useStatus } = createZQuery({
   }),
   getUseStore: () => useStore,
   get: state => state.status.status,
-  set: newValue =>
+  set: setter => {
+    const newState = setter(useStore.getState().status.status);
     useStore.setState(state => {
-      state.status.status = newValue;
-    }),
+      state.status.status = newState;
+    });
+  },
 });
 
 export interface StatusSlice {
   status: ZQueryState<{
     fullSyncHeight?: bigint;
     latestKnownBlockHeight?: bigint;
-    error?: unknown;
   }>;
 }
 

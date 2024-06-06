@@ -1,6 +1,11 @@
 import { useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import type { CreateZQueryStreamingProps, CreateZQueryUnaryProps, ZQuery } from './types';
+import type {
+  CreateZQueryStreamingProps,
+  CreateZQueryUnaryProps,
+  FetchOptions,
+  ZQuery,
+} from './types';
 
 export type { ZQueryState } from './types';
 
@@ -20,6 +25,8 @@ const isStreaming = <
     | CreateZQueryStreamingProps<Name, State, DataType, FetchArgs, ProcessedDataType>,
 ): props is CreateZQueryStreamingProps<Name, State, DataType, FetchArgs, ProcessedDataType> =>
   !!props.stream;
+
+const DEFAULT_FETCH_OPTIONS: Required<FetchOptions> = {};
 
 /**
  * Creates a ZQuery object that can be used to store server data in Zustand
@@ -77,9 +84,15 @@ const isStreaming = <
  * }
  * ```
  */
-export function createZQuery<State, Name extends string, DataType, FetchArgs extends unknown[]>(
-  props: CreateZQueryUnaryProps<Name, State, DataType, FetchArgs>,
-): ZQuery<Name, DataType, FetchArgs>;
+export function createZQuery<
+  State,
+  Name extends string,
+  DataType,
+  FetchArgs extends unknown[],
+  ProcessedDataType extends DataType = DataType,
+>(
+  props: CreateZQueryUnaryProps<Name, State, ProcessedDataType, FetchArgs>,
+): ZQuery<Name, ProcessedDataType, FetchArgs>;
 
 export function createZQuery<
   State,
@@ -101,16 +114,74 @@ export function createZQuery<
   props:
     | CreateZQueryUnaryProps<Name, State, DataType, FetchArgs>
     | CreateZQueryStreamingProps<Name, State, DataType, FetchArgs, ProcessedDataType>,
-): ZQuery<Name, DataType, FetchArgs> | ZQuery<Name, ProcessedDataType, FetchArgs> {
-  const { name, get, getUseStore } = props;
+): ZQuery<Name, ProcessedDataType, FetchArgs> {
+  const { name, get, set, getUseStore } = props;
+
+  const setAbortController = (abortController: AbortController | undefined) => {
+    set(prevState => ({
+      ...prevState,
+      _zQueryInternal: {
+        ...prevState?._zQueryInternal,
+        abortController,
+      },
+    }));
+  };
+
+  const incrementReferenceCounter = () => {
+    const newReferenceCounter = get(getUseStore().getState())._zQueryInternal.referenceCounter + 1;
+
+    set(prevState => ({
+      ...prevState,
+      _zQueryInternal: {
+        ...prevState._zQueryInternal,
+        referenceCounter: newReferenceCounter,
+      },
+    }));
+
+    return newReferenceCounter;
+  };
+
+  const decrementReferenceCounter = () => {
+    const newReferenceCounter = get(getUseStore().getState())._zQueryInternal.referenceCounter - 1;
+
+    set(prevState => ({
+      ...prevState,
+      _zQueryInternal: {
+        ...prevState._zQueryInternal,
+        referenceCounter: newReferenceCounter,
+      },
+    }));
+
+    return newReferenceCounter;
+  };
 
   return {
     [`use${capitalize(name)}`]: (...args: FetchArgs) => {
       const useStore = getUseStore();
-      const fetch = get(useStore.getState())._zQueryInternal.fetch;
 
       useEffect(() => {
-        void fetch(...args);
+        const fetch = get(useStore.getState())._zQueryInternal.fetch;
+        if (!get(useStore.getState())?._zQueryInternal) return;
+
+        {
+          const newReferenceCounter = incrementReferenceCounter();
+
+          if (newReferenceCounter === 1) {
+            setAbortController(new AbortController());
+            void fetch(...args);
+          }
+        }
+
+        const onUnmount = () => {
+          const newReferenceCounter = decrementReferenceCounter();
+
+          if (newReferenceCounter === 0) {
+            get(useStore.getState())._zQueryInternal.abortController?.abort();
+            setAbortController(undefined);
+          }
+        };
+
+        return onUnmount;
       }, [fetch]);
 
       const returnValue = useStore(
@@ -139,11 +210,17 @@ export function createZQuery<
       loading: false,
       error: undefined,
 
-      revalidate: (...args: FetchArgs) =>
-        void get(getUseStore().getState())._zQueryInternal.fetch(...args),
+      revalidate: (...args: FetchArgs) => {
+        const { _zQueryInternal } = get(getUseStore().getState());
+        _zQueryInternal.abortController?.abort();
+        setAbortController(new AbortController());
+        void _zQueryInternal.fetch(...args);
+      },
 
       _zQueryInternal: {
-        fetch: async (...args: FetchArgs) => {
+        referenceCounter: 0,
+
+        fetch: async ({}: FetchOptions = DEFAULT_FETCH_OPTIONS, ...args: FetchArgs) => {
           // We have to use the `props` object (rather than its destructured
           // properties) since we're passing the full `props` object to
           // `isStreaming`, which is a type predicate. If we use previously
@@ -153,25 +230,27 @@ export function createZQuery<
           if (isStreaming<Name, State, DataType, FetchArgs, ProcessedDataType>(props)) {
             const result = props.fetch(...args);
 
-            props.set({ ...props.get(getUseStore().getState()), data: undefined });
+            props.set(prevState => ({
+              ...prevState,
+              data: undefined,
+            }));
 
             try {
               for await (const item of result) {
-                const prevState = props.get(getUseStore().getState());
-                const data = props.stream(prevState.data, item);
-
-                props.set({ ...prevState, data });
+                props.set(prevState => ({
+                  ...prevState,
+                  data: props.stream(prevState.data, item),
+                }));
               }
             } catch (error) {
-              const prevState = props.get(getUseStore().getState());
-              props.set({ ...prevState, error });
+              props.set(prevState => ({ ...prevState, error }));
             }
           } else {
             try {
               const data = await props.fetch(...args);
-              props.set({ ...props.get(getUseStore().getState()), data });
+              props.set(prevState => ({ ...prevState, data }));
             } catch (error) {
-              props.set({ ...props.get(getUseStore().getState()), error });
+              props.set(prevState => ({ ...prevState, error }));
             }
           }
         },
