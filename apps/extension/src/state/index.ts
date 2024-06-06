@@ -44,7 +44,7 @@ export const initializeStore = (
     connectedSites: createConnectedSitesSlice(local)(setState, getState, store),
     txApproval: createTxApprovalSlice()(setState, getState, store),
     originApproval: createOriginApprovalSlice()(setState, getState, store),
-    defaultFrontend: createDefaultFrontendSlice()(setState, getState, store),
+    defaultFrontend: createDefaultFrontendSlice(local)(setState, getState, store),
   }));
 };
 
