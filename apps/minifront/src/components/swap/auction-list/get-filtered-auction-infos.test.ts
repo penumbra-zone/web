@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
-import { AuctionInfo } from '../../../state/swap/dutch-auction';
 import {
   AuctionId,
   DutchAuction,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
+import { AuctionInfo } from '../../../fetchers/auction-infos';
 
 const MOCK_AUCTION_1 = new DutchAuction({
   description: {
