@@ -19,7 +19,7 @@ export const getAuctionInfos = async function* ({
 }: {
   queryLatestState?: boolean;
   abortController?: AbortController;
-}): AsyncGenerator<AuctionInfo> {
+} = {}): AsyncGenerator<AuctionInfo> {
   abortController?.abort();
   const newAbortController = new AbortController();
 
