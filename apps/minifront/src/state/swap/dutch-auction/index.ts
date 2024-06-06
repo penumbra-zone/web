@@ -44,7 +44,10 @@ interface State {
 export const { auctionInfos, useAuctionInfos, useRevalidateAuctionInfos } = createZQuery({
   name: 'auctionInfos',
   fetch: getAuctionInfos,
-  stream: true,
+  stream: (prevState: AuctionInfo[] | undefined, auctionInfo: AuctionInfo) => [
+    ...(prevState ?? []),
+    auctionInfo,
+  ],
   getUseStore: () => useStore,
   set: newValue => {
     useStore.setState(state => {

@@ -8,11 +8,18 @@ export type { ZQueryState } from './types';
 const capitalize = <Str extends string>(str: Str): Capitalize<Str> =>
   (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<Str>;
 
-const isStreaming = <Name extends string, State, DataType, FetchArgs extends unknown[]>(
+const isStreaming = <
+  Name extends string,
+  State,
+  DataType,
+  FetchArgs extends unknown[],
+  ProcessedDataType,
+>(
   props:
     | CreateZQueryUnaryProps<Name, State, DataType, FetchArgs>
-    | CreateZQueryStreamingProps<Name, State, DataType, FetchArgs>,
-): props is CreateZQueryStreamingProps<Name, State, DataType, FetchArgs> => !!props.stream;
+    | CreateZQueryStreamingProps<Name, State, DataType, FetchArgs, ProcessedDataType>,
+): props is CreateZQueryStreamingProps<Name, State, DataType, FetchArgs, ProcessedDataType> =>
+  !!props.stream;
 
 /**
  * Creates a ZQuery object that can be used to store server data in Zustand
@@ -74,15 +81,27 @@ export function createZQuery<State, Name extends string, DataType, FetchArgs ext
   props: CreateZQueryUnaryProps<Name, State, DataType, FetchArgs>,
 ): ZQuery<Name, DataType, FetchArgs>;
 
-export function createZQuery<State, Name extends string, DataType, FetchArgs extends unknown[]>(
-  props: CreateZQueryStreamingProps<Name, State, DataType, FetchArgs>,
+export function createZQuery<
+  State,
+  Name extends string,
+  DataType,
+  FetchArgs extends unknown[],
+  ProcessedDataType,
+>(
+  props: CreateZQueryStreamingProps<Name, State, DataType, FetchArgs, ProcessedDataType>,
 ): ZQuery<Name, DataType[], FetchArgs>;
 
-export function createZQuery<State, Name extends string, DataType, FetchArgs extends unknown[]>(
+export function createZQuery<
+  State,
+  Name extends string,
+  DataType,
+  FetchArgs extends unknown[],
+  ProcessedDataType = DataType,
+>(
   props:
     | CreateZQueryUnaryProps<Name, State, DataType, FetchArgs>
-    | CreateZQueryStreamingProps<Name, State, DataType, FetchArgs>,
-): ZQuery<Name, DataType, FetchArgs> | ZQuery<Name, DataType[], FetchArgs> {
+    | CreateZQueryStreamingProps<Name, State, DataType, FetchArgs, ProcessedDataType>,
+): ZQuery<Name, DataType, FetchArgs> | ZQuery<Name, ProcessedDataType, FetchArgs> {
   const { name, get, getUseStore } = props;
 
   return {
@@ -131,19 +150,16 @@ export function createZQuery<State, Name extends string, DataType, FetchArgs ext
           // destructured properties after the type predicate, the type
           // predicate won't apply to them, since the type predicate was called
           // after destructuring.
-          if (isStreaming<Name, State, DataType, FetchArgs>(props)) {
+          if (isStreaming<Name, State, DataType, FetchArgs, ProcessedDataType>(props)) {
             const result = props.fetch(...args);
-            let data: DataType[] = [];
-            props.set({ ...props.get(getUseStore().getState()), data });
+
+            props.set({ ...props.get(getUseStore().getState()), data: undefined });
 
             for await (const item of result) {
-              if (typeof props.stream === 'function') {
-                data = await props.stream(data, item);
-              } else {
-                data = [...data, item];
-              }
+              const prevState = props.get(getUseStore().getState());
+              const data = props.stream(prevState.data, item);
 
-              props.set({ ...props.get(getUseStore().getState()), data });
+              props.set({ ...prevState, data });
             }
           } else {
             try {
@@ -156,5 +172,5 @@ export function createZQuery<State, Name extends string, DataType, FetchArgs ext
         },
       },
     },
-  } as ZQuery<Name, DataType, FetchArgs> | ZQuery<Name, DataType[], FetchArgs>;
+  } as ZQuery<Name, DataType, FetchArgs> | ZQuery<Name, ProcessedDataType, FetchArgs>;
 }
