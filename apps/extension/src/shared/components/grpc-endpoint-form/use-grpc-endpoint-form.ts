@@ -31,7 +31,7 @@ const getRpcsFromRegistry = () => {
 };
 
 export const useGrpcEndpointForm = () => {
-  const grpcEndpoints = getRpcsFromRegistry();
+  const grpcEndpoints = useMemo(() => getRpcsFromRegistry(), []);
 
   // Get the rpc set in storage (if present)
   const { grpcEndpoint, setGrpcEndpoint } = useStoreShallow(useSaveGrpcEndpointSelector);
