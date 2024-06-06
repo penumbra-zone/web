@@ -14,7 +14,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@penumbra-labs/registry": "7.6.0",
+    "@penumbra-labs/registry": "8.0.0",
     "@penumbra-zone/query": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
