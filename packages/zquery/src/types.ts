@@ -10,14 +10,6 @@ export interface ZQueryState<DataType, FetchArgs extends unknown[]> {
   };
 }
 
-export type DataTypeInState<
-  DataType,
-  FetchType extends
-    | FetchTypePromise<DataType, FetchArgs>
-    | FetchTypeAsyncGenerator<DataType, FetchArgs>,
-  FetchArgs extends unknown[],
-> = FetchType extends FetchTypePromise<DataType, FetchArgs> ? DataType : DataType[];
-
 export type FetchTypePromise<DataType, FetchArgs extends unknown[]> = (
   ...args: FetchArgs
 ) => Promise<DataType>;
