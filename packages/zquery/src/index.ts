@@ -37,18 +37,18 @@ const DEFAULT_FETCH_OPTIONS: Required<FetchOptions> = {};
  * use them):
  *
  * ```ts
- * export const { puppyPhotos, usePuppyPhotos, useRevalidatePuppyPhotos } = createZQuery(
- *   'puppyPhotos',
- *   asyncFunctionThatFetchesAndReturnsPuppyPhotos,
- *   () => useStore,
- *   newValue => {
+ * export const { puppyPhotos, usePuppyPhotos, useRevalidatePuppyPhotos } = createZQuery({
+ *   name: 'puppyPhotos',
+ *   fetch: asyncFunctionThatFetchesAndReturnsPuppyPhotos,
+ *   getUseStore: () => useStore,
+ *   set: setter => {
  *     useStore.setState(state => {
  *       ...state,
- *       puppyPhotos: newValue,
+ *       puppyPhotos: setter(state),
  *     }),
  *   },
- *   state => state.puppyPhotos,
- * )
+ *   get: state => state.puppyPhotos,
+ * })
  * ```
  *
  * Then, attach the property with the object's name to your Zustand state:
