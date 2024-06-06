@@ -128,31 +128,31 @@ export function createZQuery<
   };
 
   const incrementReferenceCounter = () => {
-    const newReferenceCounter = get(getUseStore().getState())._zQueryInternal.referenceCounter + 1;
+    const newReferenceCount = get(getUseStore().getState())._zQueryInternal.referenceCount + 1;
 
     set(prevState => ({
       ...prevState,
       _zQueryInternal: {
         ...prevState._zQueryInternal,
-        referenceCounter: newReferenceCounter,
+        referenceCount: newReferenceCount,
       },
     }));
 
-    return newReferenceCounter;
+    return newReferenceCount;
   };
 
   const decrementReferenceCounter = () => {
-    const newReferenceCounter = get(getUseStore().getState())._zQueryInternal.referenceCounter - 1;
+    const newReferenceCount = get(getUseStore().getState())._zQueryInternal.referenceCount - 1;
 
     set(prevState => ({
       ...prevState,
       _zQueryInternal: {
         ...prevState._zQueryInternal,
-        referenceCounter: newReferenceCounter,
+        referenceCount: newReferenceCount,
       },
     }));
 
-    return newReferenceCounter;
+    return newReferenceCount;
   };
 
   return {
@@ -164,18 +164,18 @@ export function createZQuery<
         if (!get(useStore.getState())?._zQueryInternal) return;
 
         {
-          const newReferenceCounter = incrementReferenceCounter();
+          const newReferenceCount = incrementReferenceCounter();
 
-          if (newReferenceCounter === 1) {
+          if (newReferenceCount === 1) {
             setAbortController(new AbortController());
             void fetch(...args);
           }
         }
 
         const onUnmount = () => {
-          const newReferenceCounter = decrementReferenceCounter();
+          const newReferenceCount = decrementReferenceCounter();
 
-          if (newReferenceCounter === 0) {
+          if (newReferenceCount === 0) {
             get(useStore.getState())._zQueryInternal.abortController?.abort();
             setAbortController(undefined);
           }
@@ -218,7 +218,7 @@ export function createZQuery<
       },
 
       _zQueryInternal: {
-        referenceCounter: 0,
+        referenceCount: 0,
 
         fetch: async ({}: FetchOptions = DEFAULT_FETCH_OPTIONS, ...args: FetchArgs) => {
           // We have to use the `props` object (rather than its destructured

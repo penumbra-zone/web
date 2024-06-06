@@ -6,7 +6,7 @@ export interface ZQueryState<DataType, FetchArgs extends unknown[] = []> {
   revalidate: (...args: FetchArgs) => void;
 
   _zQueryInternal: {
-    referenceCounter: number;
+    referenceCount: number;
     fetch: (...args: FetchArgs) => Promise<void>;
     abortController?: AbortController;
   };
