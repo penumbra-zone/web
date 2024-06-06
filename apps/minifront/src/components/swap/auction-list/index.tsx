@@ -51,7 +51,7 @@ export const AuctionList = () => {
 
   const filteredAuctionInfos = useMemo(
     () =>
-      [...getFilteredAuctionInfos(auctionInfos, filter, fullSyncHeight)].sort(
+      [...getFilteredAuctionInfos(auctionInfos.data ?? [], filter, fullSyncHeight)].sort(
         SORT_FUNCTIONS[filter],
       ),
     [auctionInfos, filter, fullSyncHeight],
@@ -63,7 +63,7 @@ export const AuctionList = () => {
         <GradientHeader layout>My Auctions</GradientHeader>
 
         <motion.div layout className='flex items-center gap-2'>
-          {!!auctionInfos.length && <QueryLatestStateButton />}
+          {!!auctionInfos.data?.length && <QueryLatestStateButton />}
 
           <SegmentedPicker
             value={filter}

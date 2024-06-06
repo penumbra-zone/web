@@ -34,7 +34,6 @@ export const SwapLoader: LoaderFunction = async (): Promise<null> => {
   const balancesResponses = await getAndSetDefaultAssetBalances(swappableAssets);
   useStore.getState().swap.setBalancesResponses(balancesResponses);
   useStore.getState().swap.setSwappableAssets(swappableAssets);
-  void useStore.getState().swap.dutchAuction.loadAuctionInfos();
 
   return null;
 };

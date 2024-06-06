@@ -22,19 +22,19 @@ export interface UnclaimedSwapsSlice {
   unclaimedSwaps: ZQueryState<UnclaimedSwapsWithMetadata[]>;
 }
 
-export const { unclaimedSwaps, useUnclaimedSwaps, useRevalidateUnclaimedSwaps } = createZQuery(
-  'unclaimedSwaps',
-  fetchUnclaimedSwaps,
+export const { unclaimedSwaps, useUnclaimedSwaps, useRevalidateUnclaimedSwaps } = createZQuery({
+  name: 'unclaimedSwaps',
+  fetch: fetchUnclaimedSwaps,
 
-  () => useStore,
+  getUseStore: () => useStore,
 
-  newValue =>
+  set: newValue =>
     useStore.setState(state => {
       Object.assign(state.unclaimedSwaps.unclaimedSwaps, newValue);
     }),
 
-  state => state.unclaimedSwaps.unclaimedSwaps,
-);
+  get: state => state.unclaimedSwaps.unclaimedSwaps,
+});
 
 export const createUnclaimedSwapsSlice = (): SliceCreator<UnclaimedSwapsSlice> => (set, get) => ({
   inProgress: [],
