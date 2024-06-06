@@ -1,4 +1,4 @@
-import { transaction_info } from '../wasm';
+import { transaction_perspective_and_view } from '../wasm';
 import {
   Transaction,
   TransactionPerspective,
@@ -13,20 +13,15 @@ export const generateTransactionInfo = async (
   tx: Transaction,
   idbConstants: IdbConstants,
 ) => {
-  const txInfo: unknown = await transaction_info(
+  const { txp, txv } = await transaction_perspective_and_view(
     fullViewingKey.toBinary(),
     tx.toBinary(),
     idbConstants,
   );
-
-  if (!Array.isArray(txInfo) || !Array.isArray(txInfo[0]) || !Array.isArray(txInfo[1]))
-    throw new Error('Invalid transaction info');
-
-  const txpBin = new Uint8Array(txInfo[0] as number[]);
-  const txvBin = new Uint8Array(txInfo[1] as number[]);
+  console.log({ txp, txv });
 
   return {
-    txp: TransactionPerspective.fromBinary(txpBin),
-    txv: TransactionView.fromBinary(txvBin),
+    txp: TransactionPerspective.fromBinary(txp),
+    txv: TransactionView.fromBinary(txv),
   };
 };

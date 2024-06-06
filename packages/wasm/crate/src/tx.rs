@@ -17,27 +17,15 @@ use penumbra_transaction::txhash::TransactionId;
 use penumbra_transaction::Action;
 use penumbra_transaction::{AuthorizationData, Transaction, WitnessData};
 use rand_core::OsRng;
-use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
+use web_sys::js_sys;
 
 use crate::error::{WasmError, WasmResult};
 use crate::storage::IndexedDBStorage;
 use crate::storage::IndexedDbConstants;
 use crate::utils;
 use crate::view_server::{load_tree, StoredTree};
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct TxInfoResponse {
-    txp: TransactionPerspective,
-    txv: TransactionView,
-}
-
-impl TxInfoResponse {
-    pub fn new(txp: TransactionPerspective, txv: TransactionView) -> TxInfoResponse {
-        Self { txp, txv }
-    }
-}
 
 /// authorize transaction (sign  transaction using  spend key)
 /// Arguments:
@@ -173,36 +161,48 @@ pub fn build_parallel(
     Ok(tx.encode_to_vec())
 }
 
-/// Get transaction view, transaction perspective
-/// Arguments:
-///     full_viewing_key: `byte representation inner FullViewingKey`
-///     tx: `pbt::Transaction`
-///     idb_constants: IndexedDbConstants
-/// Returns: Javascript array of two numeric arrays
-#[wasm_bindgen]
-pub async fn transaction_info(
+#[wasm_bindgen(typescript_custom_section)]
+const TRANSACTION_VIEW_PERSPECTIVE_TS: &'static str = r#"
+export function transaction_perspective_and_view(full_viewing_key: Uint8Array, tx: Uint8Array, idb_constants: any): Promise<{ txp: Uint8Array, txv: Uint8Array }>;
+"#;
+
+#[wasm_bindgen(skip_typescript)]
+pub async fn transaction_perspective_and_view(
     full_viewing_key: &[u8],
     tx: &[u8],
     idb_constants: JsValue,
-) -> WasmResult<JsValue> {
+) -> WasmResult<js_sys::Object> {
     utils::set_panic_hook();
 
     let transaction = Transaction::decode(tx)?;
     let constants = serde_wasm_bindgen::from_value(idb_constants)?;
     let fvk = FullViewingKey::decode(full_viewing_key)?;
-    let response = transaction_info_inner(fvk, transaction, constants).await?;
+    let (txp, txv) = transaction_info_inner(fvk, transaction, constants).await?;
 
-    Ok(serde_wasm_bindgen::to_value(&vec![
-        prost::Message::encode_to_vec(&response.txp),
-        prost::Message::encode_to_vec(&response.txv),
-    ])?)
+    let response = js_sys::Object::new();
+
+    js_sys::Reflect::set(
+        &response,
+        &"txp".into(),
+        &js_sys::Uint8Array::from(prost::Message::encode_to_vec(&txp).as_slice()),
+    )
+    .expect("Must set txp");
+
+    js_sys::Reflect::set(
+        &response,
+        &"txv".into(),
+        &js_sys::Uint8Array::from(prost::Message::encode_to_vec(&txv).as_slice()),
+    )
+    .expect("Must set txv");
+
+    Ok(response)
 }
 
-pub async fn transaction_info_inner(
+async fn transaction_info_inner(
     fvk: FullViewingKey,
     tx: Transaction,
     idb_constants: IndexedDbConstants,
-) -> WasmResult<TxInfoResponse> {
+) -> Result<(TransactionPerspective, TransactionView), WasmError> {
     let storage = IndexedDBStorage::new(idb_constants).await?;
 
     // First, create a TxP with the payload keys visible to our FVK and no other data.
@@ -381,11 +381,7 @@ pub async fn transaction_info_inner(
     // Finally, compute the full TxV from the full TxP:
     let txv = tx.view_from_perspective(&txp);
 
-    let response = TxInfoResponse {
-        txp: txp.into(),
-        txv: txv.into(),
-    };
-    Ok(response)
+    Ok((txp.into(), txv.into()))
 }
 
 async fn add_swap_claim_txn_to_perspective(
