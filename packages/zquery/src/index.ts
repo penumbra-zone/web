@@ -177,5 +177,5 @@ export function createZQuery<
         },
       },
     },
-  } as ZQuery<Name, DataType, FetchArgs> | ZQuery<Name, ProcessedDataType, FetchArgs>;
+  } as ZQuery<Name, ProcessedDataType, FetchArgs>;
 }
