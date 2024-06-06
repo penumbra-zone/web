@@ -149,5 +149,5 @@ export function createZQuery<State, Name extends string, DataType, FetchArgs ext
         },
       },
     },
-  } as ZQuery<Name, DataType[]>;
+  } as ZQuery<Name, DataType> | ZQuery<Name, DataType[]>;
 }
