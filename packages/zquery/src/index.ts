@@ -83,12 +83,12 @@ export function createZQuery<State, Name extends string, DataType, FetchArgs ext
     | CreateZQueryUnaryProps<Name, State, DataType, FetchArgs>
     | CreateZQueryStreamingProps<Name, State, DataType, FetchArgs>,
 ): ZQuery<Name, DataType> | ZQuery<Name, DataType[]> {
-  const { name, getUseStore } = props;
+  const { name, get, getUseStore } = props;
 
   return {
-    [`use${capitalize(props.name)}`]: () => {
-      const useStore = props.getUseStore();
-      const fetch = props.get(useStore.getState())._zQueryInternal.fetch;
+    [`use${capitalize(name)}`]: () => {
+      const useStore = getUseStore();
+      const fetch = get(useStore.getState())._zQueryInternal.fetch;
 
       useEffect(() => {
         void fetch();
@@ -96,7 +96,7 @@ export function createZQuery<State, Name extends string, DataType, FetchArgs ext
 
       const returnValue = useStore(
         useShallow(state => {
-          const zQuery = props.get(state);
+          const zQuery = get(state);
 
           return {
             data: zQuery.data,
@@ -109,9 +109,9 @@ export function createZQuery<State, Name extends string, DataType, FetchArgs ext
       return returnValue;
     },
 
-    [`useRevalidate${capitalize(props.name)}`]: () => {
-      const useStore = props.getUseStore();
-      const returnValue = useStore(useShallow((state: State) => props.get(state).revalidate));
+    [`useRevalidate${capitalize(name)}`]: () => {
+      const useStore = getUseStore();
+      const returnValue = useStore(useShallow((state: State) => get(state).revalidate));
       return returnValue;
     },
 
@@ -120,10 +120,16 @@ export function createZQuery<State, Name extends string, DataType, FetchArgs ext
       loading: false,
       error: undefined,
 
-      revalidate: () => void props.get(getUseStore().getState())._zQueryInternal.fetch(),
+      revalidate: () => void get(getUseStore().getState())._zQueryInternal.fetch(),
 
       _zQueryInternal: {
         fetch: async (...args: FetchArgs) => {
+          // We have to use the `props` object (rather than its destructured
+          // properties) since we're passing the full `props` object to
+          // `isStreaming`, which is a type predicate. If we use previously
+          // destructured properties after the type predicate, the type
+          // predicate won't apply to them, since the type predicate was called
+          // after destructuring.
           if (isStreaming<Name, State, DataType, FetchArgs>(props)) {
             const result = props.fetch(...args);
             let data: DataType[] = [];
