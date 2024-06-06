@@ -155,11 +155,16 @@ export function createZQuery<
 
             props.set({ ...props.get(getUseStore().getState()), data: undefined });
 
-            for await (const item of result) {
-              const prevState = props.get(getUseStore().getState());
-              const data = props.stream(prevState.data, item);
+            try {
+              for await (const item of result) {
+                const prevState = props.get(getUseStore().getState());
+                const data = props.stream(prevState.data, item);
 
-              props.set({ ...prevState, data });
+                props.set({ ...prevState, data });
+              }
+            } catch (error) {
+              const prevState = props.get(getUseStore().getState());
+              props.set({ ...prevState, error });
             }
           } else {
             try {
