@@ -161,11 +161,16 @@ pub fn build_parallel(
     Ok(tx.encode_to_vec())
 }
 
+/// Get transaction perspective, transaction view
+/// Arguments:
+///     full_viewing_key: `FullViewingKey` inner bytes
+///     tx: Binary-encoded `Transaction` message
+///     idb_constants: IndexedDbConstants
+/// Returns: `{ txp: Uint8Array, txv: Uint8Array }` representing binary-encoded `TransactionPerspective` and `TransactionView`
 #[wasm_bindgen(typescript_custom_section)]
 const TRANSACTION_VIEW_PERSPECTIVE_TS: &'static str = r#"
 export function transaction_perspective_and_view(full_viewing_key: Uint8Array, tx: Uint8Array, idb_constants: any): Promise<{ txp: Uint8Array, txv: Uint8Array }>;
 "#;
-
 #[wasm_bindgen(skip_typescript)]
 pub async fn transaction_perspective_and_view(
     full_viewing_key: &[u8],
