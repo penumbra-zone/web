@@ -6,7 +6,7 @@ import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { ServicesMessage } from '@penumbra-zone/types/services';
 import debounce from 'lodash/debounce';
-import { useRpcEndpoints } from '../../../hooks/registry';
+import { ChainRegistryClient } from '@penumbra-labs/registry';
 
 const randomSort = () => (Math.random() >= 0.5 ? 1 : -1);
 
@@ -24,10 +24,14 @@ const isValidUrl = (url: string) => {
   }
 };
 
+const getRpcsFromRegistry = () => {
+  const registryClient = new ChainRegistryClient();
+  const { rpcs } = registryClient.globals();
+  return rpcs.toSorted(randomSort);
+};
+
 export const useGrpcEndpointForm = () => {
-  // Fetch latest rpc list from registry
-  const rpcsQuery = useRpcEndpoints();
-  const grpcEndpoints = useMemo(() => (rpcsQuery.data ?? []).toSorted(randomSort), [rpcsQuery]);
+  const grpcEndpoints = getRpcsFromRegistry();
 
   // Get the rpc set in storage (if present)
   const { grpcEndpoint, setGrpcEndpoint } = useStoreShallow(useSaveGrpcEndpointSelector);
@@ -152,6 +156,5 @@ export const useGrpcEndpointForm = () => {
     onSubmit,
     isSubmitButtonEnabled,
     isCustomGrpcEndpoint,
-    rpcsQuery,
   };
 };
