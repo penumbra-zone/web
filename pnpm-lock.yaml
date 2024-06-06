@@ -1061,6 +1061,9 @@ importers:
 
   packages/wasm:
     dependencies:
+      '@penumbra-zone/protobuf':
+        specifier: workspace:*
+        version: link:../protobuf
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
