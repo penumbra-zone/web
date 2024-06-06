@@ -89,7 +89,7 @@ export function createZQuery<
   ProcessedDataType,
 >(
   props: CreateZQueryStreamingProps<Name, State, DataType, FetchArgs, ProcessedDataType>,
-): ZQuery<Name, DataType[], FetchArgs>;
+): ZQuery<Name, ProcessedDataType, FetchArgs>;
 
 export function createZQuery<
   State,
