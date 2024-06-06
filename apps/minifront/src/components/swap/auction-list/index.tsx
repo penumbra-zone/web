@@ -10,11 +10,10 @@ import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picke
 import { useMemo } from 'react';
 import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
 import { LayoutGroup, motion } from 'framer-motion';
-import { SORT_FUNCTIONS, getMetadata } from './helpers';
+import { SORT_FUNCTIONS } from './helpers';
 import { useAuctionInfos } from '../../../state/swap/dutch-auction';
 
 const auctionListSelector = (state: AllSlices) => ({
-  metadataByAssetId: state.swap.dutchAuction.metadataByAssetId,
   fullSyncHeight: state.status.fullSyncHeight,
   endAuction: state.swap.dutchAuction.endAuction,
   withdraw: state.swap.dutchAuction.withdraw,
@@ -40,7 +39,7 @@ const getButtonProps = (
 
 export const AuctionList = () => {
   const auctionInfos = useAuctionInfos();
-  const { metadataByAssetId, fullSyncHeight, endAuction, withdraw, filter, setFilter } =
+  const { fullSyncHeight, endAuction, withdraw, filter, setFilter } =
     useStoreShallow(auctionListSelector);
 
   const filteredAuctionInfos = useMemo(
@@ -91,14 +90,8 @@ export const AuctionList = () => {
               <DutchAuctionComponent
                 auctionId={auctionInfo.id}
                 dutchAuction={auctionInfo.auction}
-                inputMetadata={getMetadata(
-                  metadataByAssetId,
-                  auctionInfo.auction.description?.input?.assetId,
-                )}
-                outputMetadata={getMetadata(
-                  metadataByAssetId,
-                  auctionInfo.auction.description?.outputId,
-                )}
+                inputMetadata={auctionInfo.inputMetadata}
+                outputMetadata={auctionInfo.outputMetadata}
                 fullSyncHeight={fullSyncHeight}
                 {...getButtonProps(
                   auctionInfo.id,
