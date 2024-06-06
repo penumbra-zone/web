@@ -50,8 +50,6 @@ export const typeRegistry: IMessageTypeRegistry = createRegistry(
   DutchAuction,
 );
 
-console.log('typeRegistry', typeRegistry);
-
 /**
  * Appropriate for any ConnectRPC `Transport` object or protobuf `Any`
  * pack/unpack that handles protojson expected to contain these registry types.

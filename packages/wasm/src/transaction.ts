@@ -18,7 +18,6 @@ export const generateTransactionInfo = async (
     tx.toBinary(),
     idbConstants,
   );
-  console.log({ txp, txv });
 
   return {
     txp: TransactionPerspective.fromBinary(txp),
