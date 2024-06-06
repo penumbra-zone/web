@@ -3,23 +3,28 @@ import { TransactionViewComponent } from '@penumbra-zone/ui/components/ui/tx/vie
 import { TxDetailsLoaderResult } from '.';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
-import { viewFromEmptyPerspective } from '@penumbra-zone/perspective/transaction/perspective';
 import { useState } from 'react';
 import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picker';
-import { typeRegistry } from '@penumbra-zone/protobuf';
+import { asPublicTransactionView } from '@penumbra-zone/perspective/translators/transaction-view';
+import useReceiverView from './hooks';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
   PRIVATE = 'private',
+  RECIEVER = 'reciever',
 }
 
 const OPTIONS = [
   { label: 'Your View', value: TxDetailsTab.PRIVATE },
   { label: 'Public View', value: TxDetailsTab.PUBLIC },
+  { label: 'Reciever View', value: TxDetailsTab.RECIEVER },
 ];
 
 export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
   const [option, setOption] = useState(TxDetailsTab.PRIVATE);
+
+  // Define custom hooks that call async translators.
+  const { receiverView } = useReceiverView(txInfo, option);
 
   return (
     <div>
@@ -34,12 +39,15 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
           <TransactionViewComponent txv={txInfo.view!} />
           <div className='mt-8'>
             <div className='text-xl font-bold'>Raw JSON</div>
-            <JsonViewer jsonObj={txInfo.toJson({ typeRegistry }) as Jsonified<TransactionInfo>} />
+            <JsonViewer jsonObj={txInfo.toJson() as Jsonified<TransactionInfo>} />
           </div>
         </>
       )}
+      {option === TxDetailsTab.RECIEVER && receiverView && (
+        <TransactionViewComponent txv={receiverView} />
+      )}
       {option === TxDetailsTab.PUBLIC && (
-        <TransactionViewComponent txv={viewFromEmptyPerspective(txInfo.transaction!)} />
+        <TransactionViewComponent txv={asPublicTransactionView(txInfo.view)} />
       )}
     </div>
   );
