@@ -31,9 +31,9 @@ export type StreamType<DataType> =
   | ((state: DataType[], item: DataType) => DataType[])
   | ((state: DataType[], item: DataType) => Promise<DataType[]>);
 
-interface CreateZQueryCommonProps<State> {
+interface CreateZQueryCommonProps<Name extends string, State> {
   /** The name of this property in the state/slice. */
-  name: string;
+  name: Name;
   /**
    * A function that returns your `useStore` object -- e.g.: `() => useStore`
    *
@@ -45,8 +45,12 @@ interface CreateZQueryCommonProps<State> {
   getUseStore: () => UseStore<State>;
 }
 
-export interface CreateZQueryUnaryProps<State, DataType, FetchArgs extends unknown[]>
-  extends CreateZQueryCommonProps<State> {
+export interface CreateZQueryUnaryProps<
+  Name extends string,
+  State,
+  DataType,
+  FetchArgs extends unknown[],
+> extends CreateZQueryCommonProps<Name, State> {
   stream?: undefined;
   /** A function that executes the query. */
   fetch: FetchTypePromise<DataType, FetchArgs>;
@@ -102,8 +106,12 @@ export interface CreateZQueryUnaryProps<State, DataType, FetchArgs extends unkno
   set: (value: ZQueryState<DataType>) => void;
 }
 
-export interface CreateZQueryStreamingProps<State, DataType, FetchArgs extends unknown[]>
-  extends CreateZQueryCommonProps<State> {
+export interface CreateZQueryStreamingProps<
+  Name extends string,
+  State,
+  DataType,
+  FetchArgs extends unknown[],
+> extends CreateZQueryCommonProps<Name, State> {
   /** A function that executes the query. */
   fetch: FetchTypeAsyncGenerator<DataType, FetchArgs>;
   /**
@@ -185,17 +193,12 @@ export interface CreateZQueryStreamingProps<State, DataType, FetchArgs extends u
  */
 export type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
 
-/**
- * The type returned by calling the `use<Name>()` hook.
- */
-export interface UseZQuery<DataType> {
-  data?: DataType;
-  loading: boolean;
-  error?: unknown;
-}
-
 export type ZQuery<Name extends string, DataType> = {
-  [key in `use${Capitalize<Name>}`]: () => UseZQuery<DataType>;
+  [key in `use${Capitalize<Name>}`]: () => {
+    data?: DataType;
+    loading: boolean;
+    error?: unknown;
+  };
 } & {
   [key in `useRevalidate${Capitalize<Name>}`]: () => VoidFunction;
 } & Record<Name, ZQueryState<DataType>>;
