@@ -29,26 +29,23 @@ const _UnclaimedSwaps = ({ unclaimedSwaps }: { unclaimedSwaps: UnclaimedSwapsWit
   return (
     <Card layout>
       <GradientHeader layout>Unclaimed Swaps</GradientHeader>
-      <p className='text-gray-400'>
-        Swaps on Penumbra are a two step process. The first transaction issues the request and the
-        second claims the result of the swap action. For some reason, these second transactions were
-        not completed. Claim them!
-      </p>
       {unclaimedSwaps.map(({ swap, asset1, asset2 }) => {
         const id = uint8ArrayToBase64(getSwapRecordCommitment(swap).inner);
 
         return (
-          <div key={id} className='mt-4 flex justify-between'>
-            <div className='flex flex-col gap-2'>
-              <div>Block Height: {Number(swap.outputData?.height)}</div>
-              <div className='flex items-center gap-2'>
-                <AssetIcon metadata={asset1} />
-                <span>↔</span>
-                <AssetIcon metadata={asset2} />
-              </div>
+          <div key={id} className='mt-4 flex items-center gap-4 rounded-md border p-2'>
+            <div className='flex items-center gap-2'>
+              <AssetIcon metadata={asset1} />
+              <p className='truncate'>{asset1.symbol || 'Unknown asset'}</p>
+              <span>↔</span>
+              <AssetIcon metadata={asset2} />
+              <p className='truncate'>{asset2.symbol || 'Unknown asset'}</p>
             </div>
+
+            <div className='hidden sm:block'>Block Height: {Number(swap.outputData?.height)}</div>
+
             <Button
-              className='w-20'
+              className='ml-auto w-20'
               onClick={() => void claimSwap(id, swap, revalidate)}
               disabled={isInProgress(id)}
             >

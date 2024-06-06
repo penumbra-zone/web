@@ -13,13 +13,13 @@ export const SwapLayout = () => {
           <div className='flex flex-col overflow-hidden grid-std-spacing md:col-span-2'>
             <SwapForm />
 
+            <UnclaimedSwaps />
+
             <AuctionList />
           </div>
 
           <div className='flex flex-col grid-std-spacing'>
             <SwapInfoCard />
-
-            <UnclaimedSwaps />
           </div>
         </div>
       </LayoutGroup>
