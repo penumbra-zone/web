@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '.';
 import { localDefaults } from '@penumbra-zone/storage/chrome/local';
@@ -32,7 +32,6 @@ describe('Connected Sites Slice', () => {
         connectedSites: {
           ...state.connectedSites,
           knownSites: localDefaults.knownSites,
-          frontendUrl: localDefaults.frontendUrl,
         },
       }));
     });
@@ -84,17 +83,6 @@ describe('Connected Sites Slice', () => {
           localDefaults.knownSites,
         );
       });
-    });
-  });
-
-  describe('setFrontendUrl', () => {
-    test('updates the frontendUrl in storage', async () => {
-      const newFrontendUrl = 'https://example.com/test';
-      useStore.getState().connectedSites.setFrontendUrl(newFrontendUrl);
-
-      await vi.waitFor(() =>
-        expect(localStorage.get('frontendUrl')).resolves.toEqual(newFrontendUrl),
-      );
     });
   });
 });

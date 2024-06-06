@@ -7,8 +7,6 @@ export interface ConnectedSitesSlice {
   setFilter: (search?: string) => void;
   knownSites: OriginRecord[];
   discardKnownSite: (originRecord: OriginRecord) => Promise<void>;
-  frontendUrl?: string;
-  setFrontendUrl: (frontendUrl: string) => void;
 }
 
 export const createConnectedSitesSlice =
@@ -28,15 +26,11 @@ export const createConnectedSitesSlice =
     },
 
     discardKnownSite: async (siteToDiscard: { origin: string }) => {
-      const { knownSites, frontendUrl, setFrontendUrl } = get().connectedSites;
+      const { knownSites } = get().connectedSites;
       const knownSitesWithoutDiscardedSite = knownSites.filter(
         known => known.origin !== siteToDiscard.origin,
       );
       await local.set('knownSites', knownSitesWithoutDiscardedSite);
-
-      if (frontendUrl === siteToDiscard.origin && knownSitesWithoutDiscardedSite[0]) {
-        setFrontendUrl(knownSitesWithoutDiscardedSite[0].origin);
-      }
     },
   });
 

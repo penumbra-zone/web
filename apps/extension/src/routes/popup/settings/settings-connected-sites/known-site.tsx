@@ -3,14 +3,6 @@ import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { TrashIcon } from 'lucide-react';
 import { DisplayOriginURL } from '../../../../shared/components/display-origin-url';
-import { useStoreShallow } from '../../../../utils/use-store-shallow';
-import { AllSlices } from '../../../../state';
-import { FrontendUrlButton } from './frontend-url-button';
-
-const knownSiteSelector = (state: AllSlices) => ({
-  frontendUrl: state.connectedSites.frontendUrl,
-  setFrontendUrl: state.connectedSites.setFrontendUrl,
-});
 
 export const KnownSite = ({
   site,
@@ -19,8 +11,6 @@ export const KnownSite = ({
   site: OriginRecord;
   discard: (d: OriginRecord) => Promise<void>;
 }) => {
-  const { frontendUrl, setFrontendUrl } = useStoreShallow(knownSiteSelector);
-
   return (
     <div key={site.origin} role='listitem' className='flex items-center justify-between'>
       {site.choice === UserChoice.Approved && (
@@ -45,13 +35,6 @@ export const KnownSite = ({
       )}
 
       <div className='flex items-center gap-2'>
-        {site.choice === UserChoice.Approved && (
-          <FrontendUrlButton
-            isSelected={frontendUrl === site.origin}
-            onClick={() => setFrontendUrl(site.origin)}
-          />
-        )}
-
         <Button
           aria-description='Remove'
           className='h-auto bg-transparent'

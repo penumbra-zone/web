@@ -44,7 +44,7 @@ const getAddrByIndex =
 
 export const PopupIndex = () => {
   const activeWallet = useStore(getActiveWallet);
-  const frontendUrl = useStore(state => state.connectedSites.frontendUrl);
+  const frontendUrl = 'useStore(state => state.connectedSites.frontendUrl)';
 
   return (
     <>
@@ -61,6 +61,7 @@ export const PopupIndex = () => {
 
         <div className='grow' />
 
+        {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
         {!!frontendUrl && (
           <a href={frontendUrl} target='_blank' rel='noreferrer'>
             <Button className='flex w-full items-center gap-2' variant='gradient'>
