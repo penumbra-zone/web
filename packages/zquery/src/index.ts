@@ -221,6 +221,7 @@ export function createZQuery<
         referenceCount: 0,
 
         fetch: async ({}: FetchOptions = DEFAULT_FETCH_OPTIONS, ...args: FetchArgs) => {
+          const abortController = get(getUseStore().getState())._zQueryInternal.abortController;
           // We have to use the `props` object (rather than its destructured
           // properties) since we're passing the full `props` object to
           // `isStreaming`, which is a type predicate. If we use previously
@@ -237,6 +238,8 @@ export function createZQuery<
 
             try {
               for await (const item of result) {
+                if (abortController?.signal.aborted) return;
+
                 props.set(prevState => ({
                   ...prevState,
                   data: props.stream(prevState.data, item),
