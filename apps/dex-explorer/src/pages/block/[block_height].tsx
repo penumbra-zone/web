@@ -17,6 +17,7 @@ export default function Block() {
     const [isLoading, setIsLoading] = useState(true);
     const [blockHeight, setBlockHeight] = useState(-1);
     const [blockData, setBlockData] = useState<BlockDetailedSummaryData>();
+    const [error, setError] = useState<string | undefined>(undefined);
 
     // Get detailed block data
     useEffect(() => {
@@ -36,6 +37,14 @@ export default function Block() {
                 const otherPositionData: LiquidityPositionEvent[] = liquidityPositionOtherResponse as LiquidityPositionEvent[];
                 const arbData: SwapExecutionWithBlockHeight[] = arbsResponse as SwapExecutionWithBlockHeight[];
                 const swapData: SwapExecutionWithBlockHeight[] = swapsResponse as SwapExecutionWithBlockHeight[];
+
+                if (blockInfoList.length === 0) {
+                    setError(`No data for block ${block_height} found`);
+                    setIsLoading(false)
+                    console.log(`No data for block ${block_height} found`);
+                    return;
+                }
+                console.log("Fetching data for block...");
 
                 const detailedBlockSummaryData : BlockDetailedSummaryData = {
                     openPositionEvents: [],
@@ -76,21 +85,56 @@ export default function Block() {
         } else {
             setIsLoading(false)
         }
-    })
+    }, [block_height, blockHeight])
 
     return (
-        <Layout pageTitle={`Block - ${blockHeight}`}>
-            {isLoading ? (
-              <LoadingSpinner />
-            ) : 
-            <>
-                <VStack paddingTop={"5em"}>
-                    <Text>{"Block : " + blockHeight }</Text>
-                    <Link href={testnetConstants.cuiloaUrl + "/block/" + blockHeight}> Cuiloa Link</Link>
-                    
-                </VStack>
-            </>}
-        </Layout>
-    )
+      <Layout pageTitle={`Block - ${blockHeight}`}>
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : error ? (
+          <Box
+            position="relative"
+            display="flex"
+            flexDirection="column"
+            width="100%"
+            height="100%"
+            paddingTop="20%"
+            justifyContent={"center"}
+            alignItems={"center"}
+          >
+            <Text>{error}</Text>
+          </Box>
+        ) : (
+          <>
+            <VStack paddingTop={"5em"}>
+              <Text
+                fontWeight={"bold"}
+                width={"100%"}
+                fontSize={"1.5em"}
+                textAlign={"center"}
+              >
+                {"Block " + blockHeight}
+              </Text>
+              <Text>
+                <a
+                  href={testnetConstants.cuiloaUrl + "/block/" + blockHeight}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    textDecoration: "underline",
+                    color: "var(--charcoal-tertiary-bright)",
+                    display: "flex",
+                    fontSize: "small",
+                    fontFamily: "monospace",
+                  }}
+                >
+                  See more block specific details in Cuiloa
+                </a>
+              </Text>
+            </VStack>
+          </>
+        )}
+      </Layout>
+    );
 
 }
