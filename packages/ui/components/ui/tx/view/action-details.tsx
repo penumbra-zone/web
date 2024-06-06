@@ -1,6 +1,7 @@
-import { ReactNode } from 'react';
+import { KeyboardEventHandler, ReactNode, useState } from 'react';
 import { IncognitoIcon } from '../../icons/incognito';
 import { Separator } from '../../separator';
+import { cn } from '../../../../lib/utils';
 
 /**
  * Render key/value pairs inside a `<ViewBox />`.
@@ -24,19 +25,40 @@ export const ActionDetails = ({ children, label }: { children: ReactNode; label?
   );
 };
 
+/**
+ * Renders an accessible truncated text that can be expanded by clicking or pressing on it
+ */
+const ActionDetailsTruncatedText = ({ children }: { children?: ReactNode }) => {
+  const [isTruncated, setIsTruncated] = useState(true);
+
+  const toggleTruncate = () => setIsTruncated(prev => !prev);
+  const toggleTruncateEnter: KeyboardEventHandler<HTMLButtonElement> = event => {
+    if (event.key === 'Enter') {
+      toggleTruncate();
+    }
+  };
+
+  return (
+    <span
+      className={cn('hover:underline', { truncate: isTruncated })}
+      title={isTruncated && typeof children === 'string' ? children : undefined}
+      role='button'
+      tabIndex={0}
+      onClick={toggleTruncate}
+      onKeyDown={toggleTruncateEnter}
+    >
+      {children}
+    </span>
+  );
+};
+
 const ActionDetailsRow = ({
   label,
   children,
-  truncate,
   isOpaque,
 }: {
   label: string;
   children?: ReactNode;
-  /**
-   * If `children` is a string, passing `truncate` will automatically truncate
-   * the text if it doesn't fit in a single line.
-   */
-  truncate?: boolean;
   /**
    * If set to true, add styles indicating that the row's data is _not_ visible.
    */
@@ -57,9 +79,10 @@ const ActionDetailsRow = ({
 
       <Separator />
 
-      {truncate ? <span className='truncate'>{children}</span> : children}
+      {children}
     </div>
   );
 };
 
 ActionDetails.Row = ActionDetailsRow;
+ActionDetails.TruncatedText = ActionDetailsTruncatedText;
