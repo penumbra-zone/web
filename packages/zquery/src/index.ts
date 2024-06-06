@@ -72,26 +72,26 @@ const isStreaming = <Name extends string, State, DataType, FetchArgs extends unk
  */
 export function createZQuery<State, Name extends string, DataType, FetchArgs extends unknown[]>(
   props: CreateZQueryUnaryProps<Name, State, DataType, FetchArgs>,
-): ZQuery<Name, DataType>;
+): ZQuery<Name, DataType, FetchArgs>;
 
 export function createZQuery<State, Name extends string, DataType, FetchArgs extends unknown[]>(
   props: CreateZQueryStreamingProps<Name, State, DataType, FetchArgs>,
-): ZQuery<Name, DataType[]>;
+): ZQuery<Name, DataType[], FetchArgs>;
 
 export function createZQuery<State, Name extends string, DataType, FetchArgs extends unknown[]>(
   props:
     | CreateZQueryUnaryProps<Name, State, DataType, FetchArgs>
     | CreateZQueryStreamingProps<Name, State, DataType, FetchArgs>,
-): ZQuery<Name, DataType> | ZQuery<Name, DataType[]> {
+): ZQuery<Name, DataType, FetchArgs> | ZQuery<Name, DataType[], FetchArgs> {
   const { name, get, getUseStore } = props;
 
   return {
-    [`use${capitalize(name)}`]: () => {
+    [`use${capitalize(name)}`]: (...args: FetchArgs) => {
       const useStore = getUseStore();
       const fetch = get(useStore.getState())._zQueryInternal.fetch;
 
       useEffect(() => {
-        void fetch();
+        void fetch(...args);
       }, [fetch]);
 
       const returnValue = useStore(
@@ -120,7 +120,8 @@ export function createZQuery<State, Name extends string, DataType, FetchArgs ext
       loading: false,
       error: undefined,
 
-      revalidate: () => void get(getUseStore().getState())._zQueryInternal.fetch(),
+      revalidate: (...args: FetchArgs) =>
+        void get(getUseStore().getState())._zQueryInternal.fetch(...args),
 
       _zQueryInternal: {
         fetch: async (...args: FetchArgs) => {
@@ -155,5 +156,5 @@ export function createZQuery<State, Name extends string, DataType, FetchArgs ext
         },
       },
     },
-  } as ZQuery<Name, DataType> | ZQuery<Name, DataType[]>;
+  } as ZQuery<Name, DataType, FetchArgs> | ZQuery<Name, DataType[], FetchArgs>;
 }
