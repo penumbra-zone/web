@@ -12,9 +12,9 @@ import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
 import { LayoutGroup, motion } from 'framer-motion';
 import { SORT_FUNCTIONS } from './helpers';
 import { useAuctionInfos } from '../../../state/swap/dutch-auction';
+import { useStatus } from '../../../state/status';
 
 const auctionListSelector = (state: AllSlices) => ({
-  fullSyncHeight: state.status.fullSyncHeight,
   endAuction: state.swap.dutchAuction.endAuction,
   withdraw: state.swap.dutchAuction.withdraw,
   filter: state.swap.dutchAuction.filter,
@@ -39,15 +39,15 @@ const getButtonProps = (
 
 export const AuctionList = () => {
   const auctionInfos = useAuctionInfos();
-  const { fullSyncHeight, endAuction, withdraw, filter, setFilter } =
-    useStoreShallow(auctionListSelector);
+  const { endAuction, withdraw, filter, setFilter } = useStoreShallow(auctionListSelector);
+  const { data: status } = useStatus();
 
   const filteredAuctionInfos = useMemo(
     () =>
-      [...getFilteredAuctionInfos(auctionInfos.data ?? [], filter, fullSyncHeight)].sort(
+      [...getFilteredAuctionInfos(auctionInfos.data ?? [], filter, status?.fullSyncHeight)].sort(
         SORT_FUNCTIONS[filter],
       ),
-    [auctionInfos, filter, fullSyncHeight],
+    [auctionInfos, filter, status?.fullSyncHeight],
   );
 
   return (
@@ -92,7 +92,7 @@ export const AuctionList = () => {
                 dutchAuction={auctionInfo.auction}
                 inputMetadata={auctionInfo.inputMetadata}
                 outputMetadata={auctionInfo.outputMetadata}
-                fullSyncHeight={fullSyncHeight}
+                fullSyncHeight={status?.fullSyncHeight}
                 {...getButtonProps(
                   auctionInfo.id,
                   endAuction,
