@@ -35,12 +35,12 @@ describe('createZQuery()', () => {
 
     it('includes hooks and a Zustand slice that use the passed-in name', () => {
       expect(result).toHaveProperty('puppyPhotos');
-      expect(result['usePuppyPhotos']).toBeTypeOf('function');
-      expect(result['useRevalidatePuppyPhotos']).toBeTypeOf('function');
+      expect(result.usePuppyPhotos).toBeTypeOf('function');
+      expect(result.useRevalidatePuppyPhotos).toBeTypeOf('function');
     });
 
     it('includes the correct default state', () => {
-      expect(result['puppyPhotos']).toEqual({
+      expect(result.puppyPhotos).toEqual({
         data: undefined,
         error: undefined,
         loading: false,

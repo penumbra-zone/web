@@ -6,10 +6,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { planBuildBroadcast } from '../../helpers';
 import { assembleScheduleRequest } from './assemble-schedule-request';
-import {
-  AuctionId,
-  DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
+import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { viewClient } from '../../../clients';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { sendSimulateTradeRequest } from '../helpers';
@@ -18,7 +15,7 @@ import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
-import { getAuctionInfos } from '../../../fetchers/auction-infos';
+import { AuctionInfo, getAuctionInfos } from '../../../fetchers/auction-infos';
 
 /**
  * Multipliers to use with the output of the swap simulation, to determine
@@ -26,11 +23,6 @@ import { getAuctionInfos } from '../../../fetchers/auction-infos';
  */
 const MAX_OUTPUT_ESTIMATE_MULTIPLIER = 2;
 const MIN_OUTPUT_ESTIMATE_MULTIPLIER = 0.5;
-
-export interface AuctionInfo {
-  id: AuctionId;
-  auction: DutchAuction;
-}
 
 export type Filter = 'active' | 'upcoming' | 'all';
 
