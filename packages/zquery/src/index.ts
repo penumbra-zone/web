@@ -13,6 +13,12 @@ export type { ZQueryState } from './types';
 const capitalize = <Str extends string>(str: Str): Capitalize<Str> =>
   (str.charAt(0).toUpperCase() + str.slice(1)) as Capitalize<Str>;
 
+/**
+ * Some of the `createZQuery` props work differently depending on whether
+ * `props.fetch` returns a promise or an `AsyncIterable`. This utility function
+ * is a type predicate that informs our code both at compile- and run-time which
+ * type of props and data we're working with.
+ */
 const isStreaming = <
   Name extends string,
   State,
