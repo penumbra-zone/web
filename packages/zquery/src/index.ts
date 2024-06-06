@@ -84,46 +84,47 @@ export function createZQuery<State, Name extends string, DataType, FetchArgs ext
     | CreateZQueryStreamingProps<Name, State, DataType, FetchArgs>,
 ): ZQuery<Name, DataType> | ZQuery<Name, DataType[]> {
   const { name, getUseStore } = props;
-  if (isStreaming<Name, State, DataType, FetchArgs>(props)) {
-    return {
-      [`use${capitalize(props.name)}`]: () => {
-        const useStore = props.getUseStore();
-        const fetch = props.get(useStore.getState())._zQueryInternal.fetch;
 
-        useEffect(() => {
-          void fetch();
-        }, [fetch]);
+  return {
+    [`use${capitalize(props.name)}`]: () => {
+      const useStore = props.getUseStore();
+      const fetch = props.get(useStore.getState())._zQueryInternal.fetch;
 
-        const returnValue = useStore(
-          useShallow(state => {
-            const zQuery = props.get(state);
+      useEffect(() => {
+        void fetch();
+      }, [fetch]);
 
-            return {
-              data: zQuery.data,
-              loading: zQuery.loading,
-              error: zQuery.error,
-            };
-          }),
-        );
+      const returnValue = useStore(
+        useShallow(state => {
+          const zQuery = props.get(state);
 
-        return returnValue;
-      },
+          return {
+            data: zQuery.data,
+            loading: zQuery.loading,
+            error: zQuery.error,
+          };
+        }),
+      );
 
-      [`useRevalidate${capitalize(props.name)}`]: () => {
-        const useStore = props.getUseStore();
-        const returnValue = useStore(useShallow((state: State) => props.get(state).revalidate));
-        return returnValue;
-      },
+      return returnValue;
+    },
 
-      [name]: {
-        data: undefined,
-        loading: false,
-        error: undefined,
+    [`useRevalidate${capitalize(props.name)}`]: () => {
+      const useStore = props.getUseStore();
+      const returnValue = useStore(useShallow((state: State) => props.get(state).revalidate));
+      return returnValue;
+    },
 
-        revalidate: () => void props.get(getUseStore().getState())._zQueryInternal.fetch(),
+    [name]: {
+      data: undefined,
+      loading: false,
+      error: undefined,
 
-        _zQueryInternal: {
-          fetch: async (...args: FetchArgs) => {
+      revalidate: () => void props.get(getUseStore().getState())._zQueryInternal.fetch(),
+
+      _zQueryInternal: {
+        fetch: async (...args: FetchArgs) => {
+          if (isStreaming<Name, State, DataType, FetchArgs>(props)) {
             const result = props.fetch(...args);
             let data: DataType[] = [];
             props.set({ ...props.get(getUseStore().getState()), data });
@@ -137,59 +138,16 @@ export function createZQuery<State, Name extends string, DataType, FetchArgs ext
 
               props.set({ ...props.get(getUseStore().getState()), data });
             }
-          },
-        },
-      },
-    } as ZQuery<Name, DataType[]>;
-  } else {
-    return {
-      [`use${capitalize(props.name)}`]: () => {
-        const useStore = props.getUseStore();
-        const fetch = props.get(useStore.getState())._zQueryInternal.fetch;
-
-        useEffect(() => {
-          void fetch();
-        }, [fetch]);
-
-        const returnValue = useStore(
-          useShallow(state => {
-            const zQuery = props.get(state);
-
-            return {
-              data: zQuery.data,
-              loading: zQuery.loading,
-              error: zQuery.error,
-            };
-          }),
-        );
-
-        return returnValue;
-      },
-
-      [`useRevalidate${capitalize(props.name)}`]: () => {
-        const useStore = props.getUseStore();
-        const returnValue = useStore(useShallow((state: State) => props.get(state).revalidate));
-        return returnValue;
-      },
-
-      [name]: {
-        data: undefined,
-        loading: false,
-        error: undefined,
-
-        revalidate: () => void props.get(getUseStore().getState())._zQueryInternal.fetch(),
-
-        _zQueryInternal: {
-          fetch: async (...args: FetchArgs) => {
+          } else {
             try {
               const data = await props.fetch(...args);
               props.set({ ...props.get(getUseStore().getState()), data });
             } catch (error) {
               props.set({ ...props.get(getUseStore().getState()), error });
             }
-          },
+          }
         },
       },
-    } as ZQuery<Name, DataType>;
-  }
+    },
+  } as ZQuery<Name, DataType[]>;
 }
