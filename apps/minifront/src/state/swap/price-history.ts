@@ -5,14 +5,14 @@ import { AllSlices, SliceCreator } from '..';
 import { sendCandlestickDataRequest } from './helpers';
 
 interface Actions {
-  load: (ac?: AbortController) => void;
+  load: (ac?: AbortController) => AbortController['abort'];
 }
 
-type State = {
+interface State {
   candles: CandlestickData[];
   endMetadata?: Metadata;
   startMetadata?: Metadata;
-};
+}
 
 export type PriceHistorySlice = Actions & State;
 
@@ -22,7 +22,7 @@ const INITIAL_STATE: State = {
 
 export const createPriceHistorySlice = (): SliceCreator<PriceHistorySlice> => (set, get) => ({
   ...INITIAL_STATE,
-  load: (ac = new AbortController()): AbortController['abort'] | undefined => {
+  load: (ac = new AbortController()): AbortController['abort'] => {
     const { assetIn, assetOut } = get().swap;
     const startMetadata = getMetadataFromBalancesResponseOptional(assetIn);
     const endMetadata = assetOut;

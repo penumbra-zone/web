@@ -52,11 +52,14 @@ export const TokenSwapInput = () => {
   } = useStoreShallow(tokenSwapInputSelector);
 
   useEffect(() => {
-    if (assetIn && assetOut) return priceHistory.load();
+    if (!assetIn || !assetOut) return;
+    else return priceHistory.load();
   }, [assetIn, assetOut]);
 
   useEffect(() => {
-    if (priceHistory.candles.length && !(latestKnownBlockHeight % 10n)) return priceHistory.load();
+    if (!priceHistory.candles.length) return;
+    else if (latestKnownBlockHeight % 10n) return;
+    else return priceHistory.load();
   }, [priceHistory, latestKnownBlockHeight]);
 
   const maxAmount = getAmount.optional()(assetIn);
@@ -109,7 +112,7 @@ export const TokenSwapInput = () => {
         </div>
         {priceHistory.startMetadata && priceHistory.endMetadata && priceHistory.candles.length && (
           <CandlestickPlot
-            className='bg-charcoal w-full h-[480px]'
+            className='h-[480px] w-full bg-charcoal'
             candles={priceHistory.candles}
             startMetadata={priceHistory.startMetadata}
             endMetadata={priceHistory.endMetadata}

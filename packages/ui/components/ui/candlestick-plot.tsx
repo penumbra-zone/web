@@ -127,7 +127,7 @@ export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData
 
     return (
       <>
-        <div className={className || 'size-full'} ref={parentRef}>
+        <div className={className ?? 'size-full'} ref={parentRef}>
           <svg className='select-none' width={w} height={h}>
             <Group>
               <AxisBottom
