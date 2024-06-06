@@ -12,6 +12,8 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { Wallet } from '@penumbra-zone/types/wallet';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
+import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
+import { Jsonified } from '@penumbra-zone/types/jsonified';
 
 export interface ServicesConfig {
   readonly idbVersion: number;
@@ -88,12 +90,32 @@ export class Services implements ServicesInterface {
 
   private async initializeWalletServices(): Promise<WalletServices> {
     const { walletId, fullViewingKey, idbVersion: dbVersion } = await this.config;
-    const params = await this.querier.app.appParams();
-    if (!params.sctParams?.epochDuration) throw new Error('Epoch duration unknown');
-    const {
-      chainId,
-      sctParams: { epochDuration },
-    } = params;
+
+    // read params from storage
+    const storedParams = await localExtStorage
+      .get('params')
+      .then(j => j && AppParameters.fromJson(j));
+    // try to fetch params from network
+    const queriedParams = await this.querier.app.appParams().catch((e: unknown) => void e);
+
+    // prefer fetched params
+    const chainId = queriedParams?.chainId ?? storedParams?.chainId;
+    const epochDuration =
+      queriedParams?.sctParams?.epochDuration ?? storedParams?.sctParams?.epochDuration;
+
+    // store chainId if it was missing
+    if (!storedParams?.chainId && queriedParams?.chainId)
+      await localExtStorage.set('params', queriedParams.toJson() as Jsonified<AppParameters>);
+
+    // fail if chainId is mismatched
+    if (storedParams?.chainId && storedParams.chainId !== chainId)
+      throw new Error(
+        'Stored chainId does not match the remote chainId. Your local state may\
+        be invalid, and you cannot use this remote endpoint without clearing\
+        your cached chain.',
+      );
+
+    if (!chainId) throw new Error('Cannot initialize without chainId');
 
     const registryClient = new ChainRegistryClient();
 
@@ -105,6 +127,8 @@ export class Services implements ServicesInterface {
     });
 
     void syncLastBlockWithLocal(indexedDb);
+
+    if (!epochDuration) throw new Error('Cannot initialize without epoch duration');
 
     const viewServer = await ViewServer.initialize({
       fullViewingKey,

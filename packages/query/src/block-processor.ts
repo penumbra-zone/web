@@ -100,7 +100,8 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.syncPromise ??= backOff(() => this.syncAndStore(), {
       maxDelay: 30_000, // 30 seconds
       retry: async (e, attemptNumber) => {
-        console.warn('Sync failure', attemptNumber, e);
+        if (process.env['NODE_ENV'] === 'development')
+          console.debug('Sync failure', attemptNumber, e);
         await this.viewServer.resetTreeToStored();
         return !this.abortController.signal.aborted;
       },
@@ -173,7 +174,11 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async syncAndStore() {
     const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
     const startHeight = fullSyncHeight !== undefined ? fullSyncHeight + 1n : 0n; // Must compare to undefined as 0n is falsy
-    let latestKnownBlockHeight = await this.querier.tendermint.latestBlockHeight();
+    let latestKnownBlockHeight = await backOff(
+      // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+      async () => (await this.querier.tendermint.latestBlockHeight()) ?? Promise.reject(),
+      { retry: () => true },
+    );
 
     if (startHeight === 0n) {
       // In the `for` loop below, we only update validator infos once we've

@@ -61,6 +61,7 @@ describe('Balances request handler', () => {
     mockIndexedDb = {
       getAssetsMetadata: vi.fn(),
       getPricesForAsset: vi.fn(),
+      getFullSyncHeight: vi.fn(() => Promise.resolve()),
       iterateSpendableNotes: () => mockIterateSpendableNotes,
     };
 
@@ -69,7 +70,7 @@ describe('Balances request handler', () => {
     };
 
     mockTendermint = {
-      latestBlockHeight: vi.fn(),
+      latestBlockHeight: vi.fn(() => Promise.resolve()),
     };
 
     mockServices = {

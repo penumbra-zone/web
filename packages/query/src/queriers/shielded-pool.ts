@@ -14,8 +14,9 @@ export class ShieldedPoolQuerier implements ShieldedPoolQuerierInterface {
     this.client = createClient(grpcEndpoint, ShieldedPoolService);
   }
 
-  async assetMetadataById(assetId: AssetId): Promise<Metadata | undefined> {
-    const res = await this.client.assetMetadataById({ assetId });
-    return res.denomMetadata;
-  }
+  assetMetadataById = (assetId: AssetId): Promise<Metadata | undefined> =>
+    this.client.assetMetadataById({ assetId }).then(
+      ({ denomMetadata }) => denomMetadata,
+      () => undefined,
+    );
 }

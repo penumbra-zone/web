@@ -12,10 +12,11 @@ export class TendermintQuerier implements TendermintQuerierInterface {
     this.client = createClient(grpcEndpoint, TendermintProxyService);
   }
 
-  async latestBlockHeight() {
-    const res = await this.client.getStatus({});
-    return res.syncInfo!.latestBlockHeight;
-  }
+  latestBlockHeight = () =>
+    this.client.getStatus({}).then(
+      ({ syncInfo }) => syncInfo?.latestBlockHeight,
+      () => undefined,
+    );
 
   async broadcastTx(tx: Transaction) {
     const params = tx.toBinary();
