@@ -1,19 +1,19 @@
 import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { SwapSlice } from '.';
-import {
-  getAssetIdFromValueView,
-  getDisplayDenomExponentFromValueView,
-} from '@penumbra-zone/getters/value-view';
-import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
-import { BigNumber } from 'bignumber.js';
 import {
   CandlestickData,
   SimulateTradeRequest,
   SimulateTradeResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { simulationClient, dexClient } from '../../clients';
-import { getAssetIdFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import {
+  getAssetIdFromValueView,
+  getDisplayDenomExponentFromValueView,
+} from '@penumbra-zone/getters/value-view';
+import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
+import { BigNumber } from 'bignumber.js';
+import { SwapSlice } from '.';
+import { dexClient, simulationClient } from '../../clients';
+import { PriceHistorySlice } from './price-history';
 
 export const sendSimulateTradeRequest = ({
   assetIn,
@@ -39,28 +39,27 @@ export const sendSimulateTradeRequest = ({
 };
 
 export const sendCandlestickDataRequest = async (
-  { assetIn, assetOut }: Pick<SwapSlice, 'assetIn' | 'assetOut'>,
-  {
-    limit,
-    startHeight,
-  }: {
-    limit?: bigint;
-    startHeight?: bigint;
-  },
+  { startMetadata, endMetadata }: Pick<PriceHistorySlice, 'startMetadata' | 'endMetadata'>,
+  limit: bigint,
   signal?: AbortSignal,
 ): Promise<CandlestickData[] | undefined> => {
-  if (!assetIn || !assetOut) return;
-  const start = getAssetIdFromBalancesResponseOptional(assetIn);
-  const end = assetOut.penumbraAssetId;
+  const start = startMetadata?.penumbraAssetId;
+  const end = endMetadata?.penumbraAssetId;
 
-  const { data } = await dexClient.candlestickData(
-    {
-      pair: { start, end },
-      limit,
-      startHeight,
-    },
-    { signal },
-  );
+  if (!start || !end) throw new Error('Asset pair incomplete');
+  if (start.equals(end)) throw new Error('Asset pair equivalent');
 
-  return data;
+  try {
+    const { data } = await dexClient.candlestickData(
+      {
+        pair: { start, end },
+        limit,
+      },
+      { signal },
+    );
+    return data;
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') return;
+    else throw err;
+  }
 };

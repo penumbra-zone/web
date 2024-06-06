@@ -1,22 +1,19 @@
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { Box } from '@penumbra-zone/ui/components/ui/box';
-import BalanceSelector from '../../shared/balance-selector';
-import { ArrowRight } from 'lucide-react';
-import { AssetSelector } from '../../shared/asset-selector';
-import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
-import { Input } from '@penumbra-zone/ui/components/ui/input';
+import { getAmount } from '@penumbra-zone/getters/balances-response';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
-import {
-  getAmount,
-  getMetadataFromBalancesResponse,
-} from '@penumbra-zone/getters/balances-response';
-import { amountMoreThanBalance } from '../../../state/send';
-import { AllSlices } from '../../../state';
-import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
-import { Candlesticks } from '@penumbra-zone/ui/components/ui/candlesticks';
-import { getBlockDate } from '../../../fetchers/block-date';
+import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
+import { Box } from '@penumbra-zone/ui/components/ui/box';
+import { CandlestickPlot } from '@penumbra-zone/ui/components/ui/candlestick-plot';
+import { Input } from '@penumbra-zone/ui/components/ui/input';
+import { ArrowRight } from 'lucide-react';
 import { useEffect } from 'react';
+import { getBlockDate } from '../../../fetchers/block-date';
+import { AllSlices } from '../../../state';
+import { amountMoreThanBalance } from '../../../state/send';
+import { useStoreShallow } from '../../../utils/use-store-shallow';
+import { AssetSelector } from '../../shared/asset-selector';
+import BalanceSelector from '../../shared/balance-selector';
 
 const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
@@ -30,8 +27,7 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
   amount: state.swap.amount,
   setAmount: state.swap.setAmount,
   balancesResponses: state.swap.balancesResponses,
-  candlestickData: state.swap.candlestick.data,
-  loadCandlestick: state.swap.loadCandlestick,
+  priceHistory: state.swap.priceHistory,
   latestKnownBlockHeight: state.status.latestKnownBlockHeight,
 });
 
@@ -51,17 +47,17 @@ export const TokenSwapInput = () => {
     assetOut,
     setAssetOut,
     balancesResponses,
-    candlestickData,
-    loadCandlestick,
-    latestKnownBlockHeight,
+    priceHistory,
+    latestKnownBlockHeight = 0n,
   } = useStoreShallow(tokenSwapInputSelector);
 
   useEffect(() => {
-    if (!assetIn || !assetOut) return;
-    const ac = new AbortController();
-    void loadCandlestick(latestKnownBlockHeight, ac);
-    return () => ac.abort('Cleanup token-swap-input');
-  }, [latestKnownBlockHeight, assetIn, assetOut]);
+    if (assetIn && assetOut) return priceHistory.load();
+  }, [assetIn, assetOut]);
+
+  useEffect(() => {
+    if (priceHistory.candles.length && !(latestKnownBlockHeight % 10n)) return priceHistory.load();
+  }, [priceHistory, latestKnownBlockHeight]);
 
   const maxAmount = getAmount.optional()(assetIn);
   const maxAmountAsString = maxAmount ? joinLoHiAmount(maxAmount).toString() : undefined;
@@ -72,8 +68,6 @@ export const TokenSwapInput = () => {
       setAmount(formattedAmt);
     }
   };
-
-  const beginMetadata = getMetadataFromBalancesResponse(assetIn);
 
   return (
     <Box label='Trade' layout>
@@ -113,16 +107,15 @@ export const TokenSwapInput = () => {
             </div>
           </div>
         </div>
-        {Boolean(assetIn && assetOut && candlestickData.length) && (
-          <div className='bg-charcoal w-full h-[480px]'>
-            <Candlesticks
-              candles={candlestickData}
-              beginMetadata={beginMetadata}
-              endMetadata={assetOut}
-              latestKnownBlockHeight={Number(latestKnownBlockHeight)}
-              getBlockDate={getBlockDate}
-            />
-          </div>
+        {priceHistory.startMetadata && priceHistory.endMetadata && priceHistory.candles.length && (
+          <CandlestickPlot
+            className='bg-charcoal w-full h-[480px]'
+            candles={priceHistory.candles}
+            startMetadata={priceHistory.startMetadata}
+            endMetadata={priceHistory.endMetadata}
+            latestKnownBlockHeight={Number(latestKnownBlockHeight)}
+            getBlockDate={getBlockDate}
+          />
         )}
       </div>
     </Box>

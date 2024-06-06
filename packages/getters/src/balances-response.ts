@@ -19,6 +19,8 @@ export const getDisplayFromBalancesResponse = getBalanceView
 
 export const getMetadataFromBalancesResponse = getBalanceView.pipe(getMetadata);
 
+export const getMetadataFromBalancesResponseOptional = getBalanceView.optional().pipe(getMetadata);
+
 export const getAddressIndex = createGetter((balancesResponse?: BalancesResponse) =>
   balancesResponse?.accountAddress?.addressView.case === 'decoded'
     ? balancesResponse.accountAddress.addressView.value.index

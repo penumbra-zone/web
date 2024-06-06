@@ -32,31 +32,35 @@ const priceMovementColor = (d: CandlestickData) => {
 type GetBlockDateFn = (h: bigint, s?: AbortSignal) => Promise<Date | undefined>;
 
 interface CandlestickPlotProps {
+  className: React.HTMLAttributes<HTMLDivElement>['className'];
+
   parentWidth?: number;
   parentHeight?: number;
   width?: number;
   height?: number;
   candles: CandlestickData[];
-  getBlockDate: GetBlockDateFn;
   latestKnownBlockHeight?: number;
-  beginMetadata?: Metadata;
-  endMetadata?: Metadata;
+  startMetadata: Metadata;
+  endMetadata: Metadata;
+  getBlockDate: GetBlockDateFn;
 }
 
 interface CandlestickTooltipProps {
   top?: number;
   left?: number;
   data: CandlestickData;
+  startMetadata: Metadata;
   endMetadata: Metadata;
-  beginMetadata: Metadata;
   getBlockDate: GetBlockDateFn;
 }
 
-export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
+export const CandlestickPlot = withTooltip<CandlestickPlotProps, CandlestickData>(
   ({
+    className,
+
     // plot props
     candles,
-    beginMetadata,
+    startMetadata,
     endMetadata,
     latestKnownBlockHeight,
     getBlockDate,
@@ -100,7 +104,7 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
       [],
     );
 
-    if (!candles.length || !endMetadata || !beginMetadata) return null;
+    if (!candles.length) return null;
 
     // assertions here okay because we've just checked length
     const startBlock = blockHeight(candles[0]!);
@@ -109,7 +113,7 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
     // candle width as fraction of graph width. likely too thin to really
     // matter. if there's lots of records this will overlap, and we'll need to
     // implement some kind of binning.
-    const blockWidth = Math.min(w / candles.length, 8);
+    const blockWidth = Math.min(w / candles.length, 6);
 
     const blockScale = scaleLinear<number>({
       range: [50, w - 5],
@@ -123,8 +127,8 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
 
     return (
       <>
-        <div className='size-full select-none' ref={parentRef}>
-          <svg width={w} height={h}>
+        <div className={className || 'size-full'} ref={parentRef}>
+          <svg className='select-none' width={w} height={h}>
             <Group>
               <AxisBottom
                 tickLabelProps={{
@@ -200,12 +204,12 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
                         firstQuartile={Math.min(open, close)}
                         thirdQuartile={Math.max(open, close)}
                         // box position and dimensions
-                        left={blockScale(blockHeight(d)) - blockWidth / 2}
-                        boxWidth={blockWidth}
+                        left={blockScale(blockHeight(d)) - blockWidth / 2 + 1}
+                        boxWidth={blockWidth - 2}
                         // basic styles
                         fill={movementColor}
                         stroke={'rgba(255,255,255,0.5)'}
-                        strokeWidth={blockWidth / 2}
+                        strokeWidth={1}
                         // compositional props
                         boxProps={{
                           ...useTooltipProps,
@@ -235,7 +239,7 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
             data={tooltipData}
             getBlockDate={getBlockDate}
             endMetadata={endMetadata}
-            beginMetadata={beginMetadata}
+            startMetadata={startMetadata}
           />
         )}
       </>
@@ -249,7 +253,7 @@ export const CandlesticksTooltip = ({
   data,
   getBlockDate,
   endMetadata,
-  beginMetadata,
+  startMetadata,
 }: CandlestickTooltipProps) => {
   const [blockDate, setBlockDate] = useState<Date>();
   useEffect(() => {
@@ -259,7 +263,7 @@ export const CandlesticksTooltip = ({
   }, [data]);
 
   const endBase = endMetadata.denomUnits.filter(d => !d.exponent)[0]!;
-  const beginBase = beginMetadata.denomUnits.filter(d => !d.exponent)[0]!;
+  const startBase = startMetadata.denomUnits.filter(d => !d.exponent)[0]!;
   return (
     <Tooltip
       unstyled={true}
@@ -274,7 +278,7 @@ export const CandlesticksTooltip = ({
             block {String(data.height)} ({blockDate?.toLocaleString()})
           </div>
           <div>
-            Price of {endBase.denom} in {beginBase.denom}
+            Price of {endBase.denom} in {startBase.denom}
           </div>
         </div>
         {
@@ -292,16 +296,16 @@ export const CandlesticksTooltip = ({
       </div>
       <div className='grid grid-flow-col grid-rows-2 gap-x-2 text-right'>
         <div>
-          high: {Number(data.high).toFixed(4)} {beginBase.denom}
+          high: {Number(data.high).toFixed(4)} {startBase.denom}
         </div>
         <div>
-          low: {Number(data.low).toFixed(4)} {beginBase.denom}
+          low: {Number(data.low).toFixed(4)} {startBase.denom}
         </div>
         <div>
-          open: {Number(data.open).toFixed(4)} {beginBase.denom}
+          open: {Number(data.open).toFixed(4)} {startBase.denom}
         </div>
         <div>
-          close: {Number(data.close).toFixed(4)} {beginBase.denom}
+          close: {Number(data.close).toFixed(4)} {startBase.denom}
         </div>
       </div>
       <div>{Number(data.directVolume)} direct trades</div>

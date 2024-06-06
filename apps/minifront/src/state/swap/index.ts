@@ -1,74 +1,64 @@
-import { SliceCreator } from '..';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import {
-  CandlestickData,
-  SwapExecution_Trace,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { SliceCreator } from '..';
+import { DurationOption } from './constants';
 import { DutchAuctionSlice, createDutchAuctionSlice } from './dutch-auction';
 import { InstantSwapSlice, createInstantSwapSlice } from './instant-swap';
-import { DurationOption } from './constants';
-import { sendCandlestickDataRequest } from './helpers';
+import { PriceHistorySlice, createPriceHistorySlice } from './price-history';
 
 export interface SimulateSwapResult {
+  metadataByAssetId: Record<string, Metadata>;
   output: ValueView;
-  unfilled: ValueView;
   priceImpact: number | undefined;
   traces?: SwapExecution_Trace[];
-  metadataByAssetId: Record<string, Metadata>;
+  unfilled: ValueView;
 }
 
 interface Actions {
-  setBalancesResponses: (balancesResponses: BalancesResponse[]) => void;
-  setSwappableAssets: (assets: Metadata[]) => void;
-  setAssetIn: (asset: BalancesResponse) => void;
-  setAmount: (amount: string) => void;
-  setAssetOut: (metadata: Metadata) => void;
-  setDuration: (duration: DurationOption) => void;
   resetSubslices: VoidFunction;
-  loadCandlestick: (height?: bigint, ac?: AbortController) => Promise<void>;
+  setAmount: (amount: string) => void;
+  setAssetIn: (asset: BalancesResponse) => void;
+  setAssetOut: (metadata: Metadata) => void;
+  setBalancesResponses: (balancesResponses: BalancesResponse[]) => void;
+  setDuration: (duration: DurationOption) => void;
+  setSwappableAssets: (assets: Metadata[]) => void;
 }
 
 interface State {
-  balancesResponses: BalancesResponse[];
-  swappableAssets: Metadata[];
-  assetIn?: BalancesResponse;
   amount: string;
+  assetIn?: BalancesResponse;
   assetOut?: Metadata;
+  balancesResponses: BalancesResponse[];
   duration: DurationOption;
+  swappableAssets: Metadata[];
   txInProgress: boolean;
-  candlestick: {
-    abort: AbortController['abort'];
-    data: CandlestickData[];
-    loading: boolean;
-  };
 }
 
 interface Subslices {
   dutchAuction: DutchAuctionSlice;
   instantSwap: InstantSwapSlice;
+  priceHistory: PriceHistorySlice;
 }
 
 const INITIAL_STATE: State = {
   amount: '',
-  swappableAssets: [],
   balancesResponses: [],
   duration: 'instant',
+  swappableAssets: [],
   txInProgress: false,
-  candlestick: {
-    abort: () => void 0,
-    data: [],
-    loading: false,
-  },
 };
 
 export type SwapSlice = Actions & State & Subslices;
 
 export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) => ({
   ...INITIAL_STATE,
+  dutchAuction: createDutchAuctionSlice()(set, get, store),
+  instantSwap: createInstantSwapSlice()(set, get, store),
+  priceHistory: createPriceHistorySlice()(set, get, store),
   setBalancesResponses: balancesResponses => {
     set(state => {
       state.swap.balancesResponses = balancesResponses;
@@ -79,7 +69,6 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
       state.swap.swappableAssets = swappableAssets;
     });
   },
-  assetIn: undefined,
   setAssetIn: asset => {
     get().swap.resetSubslices();
     set(({ swap }) => {
@@ -98,8 +87,6 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
       swap.amount = amount;
     });
   },
-  dutchAuction: createDutchAuctionSlice()(set, get, store),
-  instantSwap: createInstantSwapSlice()(set, get, store),
   setDuration: duration => {
     get().swap.resetSubslices();
     set(state => {
@@ -109,51 +96,5 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
   resetSubslices: () => {
     get().swap.dutchAuction.reset();
     get().swap.instantSwap.reset();
-  },
-  candlestick: {
-    abort: () => void 0,
-    loading: false,
-    data: [],
-    timestamps: new Map(),
-  },
-  loadCandlestick: async (height?: bigint, ac?: AbortController) => {
-    const abortThisLoad = ac ?? new AbortController();
-
-    const {
-      assetIn,
-      assetOut,
-      candlestick: { loading, abort: abortOldLoad },
-    } = get().swap;
-
-    if (loading) abortOldLoad();
-
-    if (!height)
-      set(({ swap }) => {
-        swap.candlestick.data = [];
-      });
-    set(({ swap }) => {
-      swap.candlestick.abort = () => abortThisLoad.abort('Slice abort');
-      swap.candlestick.loading = true;
-    });
-
-    try {
-      // there's no UI to set limit yet, and most ranges don't always happen to
-      // include price records. 2500 at least scales well when there is data
-      const limit = 2500n;
-      const data = await sendCandlestickDataRequest(
-        { assetIn, assetOut },
-        { limit, startHeight: height && height - limit },
-        abortThisLoad.signal,
-      );
-
-      if (!data) return;
-      set(({ swap }) => {
-        swap.candlestick.data = data;
-      });
-    } finally {
-      set(({ swap }) => {
-        swap.candlestick.loading = false;
-      });
-    }
   },
 });
