@@ -49,16 +49,6 @@ export const simpleContextHandler: ProxyContextHandler = (i, ctx) => {
   return [i, opt];
 };
 
-export const loggingContextHandler: ProxyContextHandler = (i, ctx) => {
-  const opt = {
-    contextValues: ctx.values,
-    signal: ctx.signal,
-    headers: ctx.requestHeader,
-    timeoutMs: ctx.timeoutMs(),
-  } as CallOptions;
-  return [i, opt];
-};
-
 /**
  * Creates a proxy implementation of a service, suitable for hosting in a
  * ConnectRouter, from a given service type definition and a matching client to
@@ -67,7 +57,11 @@ export const loggingContextHandler: ProxyContextHandler = (i, ctx) => {
  * To do this, it iterates over each method in the service type definition,
  * creating a method on the proxy impl that calls the provided client.
  *
- * You can provide a contextHandler function to modify any request.
+ * You can provide a contextHandler function to modify any request or the
+ * client-side contextValues of any request.
+ *
+ * The optional makePartialServiceImpl parameter can be provided to override the
+ * generated proxy methods with your own implementations.
  */
 export const createProxyImpl = <S extends ServiceType>(
   service: S,
@@ -77,12 +71,7 @@ export const createProxyImpl = <S extends ServiceType>(
 ) => {
   const makeAnyProxyMethod: CreateAnyMethodImpl<S> = (method, localName) => {
     const clientMethod = client[localName] as (cI: unknown, cOpt: CallOptions) => unknown;
-    const impl = (hI: unknown, hCtx: HandlerContext) => {
-      //console.log('proxying', localName, hI, hCtx);
-      const res = clientMethod(...contextHandler(hI, hCtx));
-      //void Promise.resolve(res).then((r: unknown) => console.log('proxied', localName, hI, hCtx, r),);
-      return res;
-    };
+    const impl = (hI: unknown, hCtx: HandlerContext) => clientMethod(...contextHandler(hI, hCtx));
     return impl as MethodImpl<typeof method>;
   };
   return {

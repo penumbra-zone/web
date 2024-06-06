@@ -56,7 +56,12 @@ export const TokenSwapInput = () => {
     latestKnownBlockHeight,
   } = useStoreShallow(tokenSwapInputSelector);
 
-  useEffect(() => void loadCandlestick(latestKnownBlockHeight), [latestKnownBlockHeight]);
+  useEffect(() => {
+    if (!assetIn || !assetOut) return;
+    const ac = new AbortController();
+    void loadCandlestick(latestKnownBlockHeight, ac);
+    return () => ac.abort('Cleanup token-swap-input');
+  }, [latestKnownBlockHeight, assetIn, assetOut]);
 
   const maxAmount = getAmount.optional()(assetIn);
   const maxAmountAsString = maxAmount ? joinLoHiAmount(maxAmount).toString() : undefined;
@@ -90,7 +95,9 @@ export const TokenSwapInput = () => {
               }}
             />
             {assetIn?.balanceView && (
-              <BalanceValueView valueView={assetIn.balanceView} onClick={setInputToBalanceMax} />
+              <div className='h-6'>
+                <BalanceValueView valueView={assetIn.balanceView} onClick={setInputToBalanceMax} />
+              </div>
             )}
           </div>
 

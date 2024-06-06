@@ -1,19 +1,18 @@
-import { BoxPlot } from '@visx/stats';
-import { CandlestickData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { scaleLinear } from '@visx/scale';
-import { useEffect, useMemo, useState } from 'react';
-import { Threshold } from '@visx/threshold';
-import { curveLinear } from '@visx/curve';
-import { Group } from '@visx/group';
-import { AxisLeft, AxisBottom } from '@visx/axis';
-import { GridRows } from '@visx/grid';
-import { LinePath } from '@visx/shape';
-import { withParentSize, useParentSize } from '@visx/responsive';
-import { withTooltip, Tooltip } from '@visx/tooltip';
-import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-
-import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { CandlestickData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import { AxisBottom, AxisLeft } from '@visx/axis';
+import { curveLinear } from '@visx/curve';
+import { GridRows } from '@visx/grid';
+import { Group } from '@visx/group';
+import { useParentSize } from '@visx/responsive';
+import { scaleLinear } from '@visx/scale';
+import { LinePath } from '@visx/shape';
+import { BoxPlot } from '@visx/stats';
+import { Threshold } from '@visx/threshold';
+import { Tooltip, withTooltip } from '@visx/tooltip';
+import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
+import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // accessors
 const blockHeight = (d: CandlestickData) => Number(d.height);
@@ -23,7 +22,6 @@ const openPrice = (d: CandlestickData) => d.open;
 const closePrice = (d: CandlestickData) => d.close;
 const midPrice = (d: CandlestickData) => (openPrice(d) + closePrice(d)) / 2;
 const priceMovement = (d: CandlestickData) => closePrice(d) - openPrice(d);
-//const priceSpread = (d: CandlestickData) => highPrice(d) - lowPrice(d);
 const priceMovementColor = (d: CandlestickData) => {
   const movement = priceMovement(d);
   if (movement > 0) return 'green';
@@ -31,16 +29,27 @@ const priceMovementColor = (d: CandlestickData) => {
   else return 'white';
 };
 
+type GetBlockDateFn = (h: bigint, s?: AbortSignal) => Promise<Date | undefined>;
+
 interface CandlestickPlotProps {
   parentWidth?: number;
   parentHeight?: number;
   width?: number;
   height?: number;
   candles: CandlestickData[];
-  getBlockDate: (h: bigint, s?: AbortSignal) => Promise<Date | undefined>;
+  getBlockDate: GetBlockDateFn;
   latestKnownBlockHeight?: number;
   beginMetadata?: Metadata;
   endMetadata?: Metadata;
+}
+
+interface CandlestickTooltipProps {
+  top?: number;
+  left?: number;
+  data: CandlestickData;
+  endMetadata: Metadata;
+  beginMetadata: Metadata;
+  getBlockDate: GetBlockDateFn;
 }
 
 export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
@@ -49,10 +58,10 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
     candles,
     beginMetadata,
     endMetadata,
-    getBlockDate,
     latestKnownBlockHeight,
+    getBlockDate,
 
-    // tooltip props
+    // withTooltip props
     tooltipOpen,
     tooltipLeft,
     tooltipTop,
@@ -61,9 +70,6 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
     hideTooltip,
   }: CandlestickPlotProps & WithTooltipProvidedProps<CandlestickData>) => {
     const { parentRef, width: w, height: h } = useParentSize({ debounceTime: 150 });
-
-    const [tooltipDataHeight, setTooltipDataHeight] = useState<bigint>();
-    const [tooltipDataDate, setTooltipDataDate] = useState<Date>();
 
     const { maxPrice, minPrice } = useMemo(
       () =>
@@ -76,19 +82,23 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
         ),
       [candles],
     );
+    const maxSpread = maxPrice - minPrice;
 
-    const between = maxPrice - minPrice;
-
-    useEffect(() => {
-      if (!tooltipDataHeight) {
-        setTooltipDataDate(undefined);
-        return;
-      } else {
-        const ac = new AbortController();
-        void getBlockDate(tooltipDataHeight, ac.signal).then(setTooltipDataDate);
-        return () => ac.abort('useEffect cleanup');
-      }
-    }, [tooltipDataHeight]);
+    const useTooltip = useCallback(
+      (d: CandlestickData) => ({
+        onMouseOver: () => {
+          showTooltip({
+            tooltipTop: priceScale(midPrice(d)),
+            tooltipLeft: blockScale(blockHeight(d)),
+            tooltipData: d,
+          });
+        },
+        onMouseLeave: () => {
+          hideTooltip();
+        },
+      }),
+      [],
+    );
 
     if (!candles.length || !endMetadata || !beginMetadata) return null;
 
@@ -96,8 +106,9 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
     const startBlock = blockHeight(candles[0]!);
     const endBlock = blockHeight(candles[candles.length - 1]!);
 
-    // candles fitting graph witdth. likely too thin to really matter
-    //const blockWidth = w / (endBlock - startBlock);
+    // candle width as fraction of graph width. likely too thin to really
+    // matter. if there's lots of records this will overlap, and we'll need to
+    // implement some kind of binning.
     const blockWidth = Math.min(w / candles.length, 8);
 
     const blockScale = scaleLinear<number>({
@@ -107,8 +118,7 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
 
     const priceScale = scaleLinear<number>({
       range: [h, 0],
-      //range: [0, h],
-      domain: [minPrice - between / 2, maxPrice + between / 2],
+      domain: [minPrice - maxSpread / 2, maxPrice + maxSpread / 2],
     });
 
     return (
@@ -129,8 +139,10 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
               />
               <GridRows // price axis grid
                 scale={priceScale}
+                left={60}
                 width={w}
-                stroke='rgba(255,255,255,0.1)'
+                stroke='white'
+                strokeOpacity={0.1}
                 numTicks={3}
               />
               <AxisLeft // price axis
@@ -139,33 +151,27 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
                   fill: 'white',
                   textAnchor: 'end',
                 }}
-                left={50}
+                left={60}
                 scale={priceScale}
                 numTicks={3}
               />
-              {
-                <Threshold
-                  id='price-spread'
-                  curve={curveLinear}
-                  data={candles}
-                  x={(d: CandlestickData) => blockScale(blockHeight(d))}
-                  y0={(d: CandlestickData) => priceScale(lowPrice(d))}
-                  y1={(d: CandlestickData) => priceScale(highPrice(d))}
-                  clipAboveTo={0}
-                  clipBelowTo={h}
-                  belowAreaProps={{
-                    // spread shading
-                    fill: 'black',
-                    fillOpacity: 0.1,
-                  }}
-                  aboveAreaProps={{
-                    // should not happen shading
-                    fill: 'magenta',
-                    fillOpacity: 0.2,
-                  }}
-                />
-              }
+              <Threshold
+                // low-high area shading
+                id='price-spread'
+                curve={curveLinear}
+                data={candles}
+                x={(d: CandlestickData) => blockScale(blockHeight(d))}
+                y0={(d: CandlestickData) => priceScale(lowPrice(d))}
+                y1={(d: CandlestickData) => priceScale(highPrice(d))}
+                clipAboveTo={0}
+                clipBelowTo={h}
+                belowAreaProps={{
+                  fill: 'white',
+                  fillOpacity: 0.1,
+                }}
+              />
               <LinePath
+                // mid price line
                 id='median-price'
                 curve={curveLinear}
                 data={candles}
@@ -175,74 +181,50 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
                 strokeOpacity={0.2}
                 strokeWidth={2}
               />
-              {candles.map((d: CandlestickData, i) => {
-                const movementColor = priceMovementColor(d);
+              {
+                // render a candle for every price record
+                candles.map((d: CandlestickData) => {
+                  const movementColor = priceMovementColor(d);
+                  const open = openPrice(d);
+                  const close = closePrice(d);
+                  const useTooltipProps = useTooltip(d);
 
-                const gray = 'rgba(255,255,255,0.5)';
-
-                const open = openPrice(d);
-                const close = closePrice(d);
-                const low = lowPrice(d);
-                const high = highPrice(d);
-                const median = midPrice(d);
-
-                const boxLeft = blockScale(blockHeight(d)) - blockWidth / 2;
-
-                const toolTip = {
-                  onMouseOver: () => {
-                    setTooltipDataHeight(d.height);
-                    showTooltip({
-                      tooltipTop: priceScale(median),
-                      tooltipLeft: blockScale(blockHeight(d)),
-                      tooltipData: d,
-                    });
-                  },
-                  onMouseLeave: () => {
-                    setTooltipDataHeight(undefined);
-                    hideTooltip();
-                  },
-                };
-
-                return (
-                  <g key={i}>
-                    <BoxPlot
-                      boxProps={{
-                        ...toolTip,
-                        strokeWidth: 0,
-                        stroke: movementColor,
-                        rx: 0,
-                        ry: 0,
-                      }}
-                      min={low}
-                      max={high}
-                      left={boxLeft}
-                      median={median}
-                      containerProps={{
-                        ...toolTip,
-                      }}
-                      medianProps={{
-                        ...toolTip,
-                        stroke: 'transparent',
-                        //strokeWidth: 5,
-                        //stroke: 'transparent',
-                      }}
-                      firstQuartile={Math.min(open, close)}
-                      thirdQuartile={Math.max(open, close)}
-                      fill={movementColor}
-                      boxWidth={blockWidth}
-                      stroke={gray}
-                      strokeWidth={blockWidth / 2}
-                      minProps={{
-                        ...toolTip,
-                      }}
-                      maxProps={{
-                        ...toolTip,
-                      }}
-                      valueScale={priceScale}
-                    />
-                  </g>
-                );
-              })}
+                  return (
+                    <g key={d.height}>
+                      <BoxPlot
+                        valueScale={priceScale}
+                        // data
+                        min={lowPrice(d)}
+                        max={highPrice(d)}
+                        median={midPrice(d)}
+                        firstQuartile={Math.min(open, close)}
+                        thirdQuartile={Math.max(open, close)}
+                        // box position and dimensions
+                        left={blockScale(blockHeight(d)) - blockWidth / 2}
+                        boxWidth={blockWidth}
+                        // basic styles
+                        fill={movementColor}
+                        stroke={'rgba(255,255,255,0.5)'}
+                        strokeWidth={blockWidth / 2}
+                        // compositional props
+                        boxProps={{
+                          ...useTooltipProps,
+                          // box fill provides color
+                          strokeWidth: 0,
+                          stroke: movementColor,
+                          // no stroke radius
+                          rx: 0,
+                          ry: 0,
+                        }}
+                        containerProps={useTooltipProps}
+                        minProps={useTooltipProps}
+                        maxProps={useTooltipProps}
+                        medianProps={{ display: 'none' }}
+                      />
+                    </g>
+                  );
+                })
+              }
             </Group>
           </svg>
         </div>
@@ -251,9 +233,9 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
             top={tooltipTop}
             left={tooltipLeft}
             data={tooltipData}
+            getBlockDate={getBlockDate}
             endMetadata={endMetadata}
             beginMetadata={beginMetadata}
-            dataDate={tooltipDataDate}
           />
         )}
       </>
@@ -261,38 +243,35 @@ export const Candlesticks = withTooltip<CandlestickPlotProps, CandlestickData>(
   },
 );
 
-export const CandlesticksWithParentSize = withParentSize(Candlesticks);
-
 export const CandlesticksTooltip = ({
   top,
   left,
-  data, //getBlockDate,
+  data,
+  getBlockDate,
   endMetadata,
   beginMetadata,
-  dataDate,
-}: {
-  top?: number;
-  left?: number;
-  data: CandlestickData;
-  endMetadata: Metadata;
-  beginMetadata: Metadata;
-  //getBlockDate: (h: bigint, s?: AbortSignal) => Promise<Date | undefined>;
-  dataDate?: Date;
-}) => {
+}: CandlestickTooltipProps) => {
+  const [blockDate, setBlockDate] = useState<Date>();
+  useEffect(() => {
+    const ac = new AbortController();
+    void getBlockDate(data.height, ac.signal).then(setBlockDate);
+    return () => ac.abort('Abort tooltip date query');
+  }, [data]);
+
   const endBase = endMetadata.denomUnits.filter(d => !d.exponent)[0]!;
   const beginBase = beginMetadata.denomUnits.filter(d => !d.exponent)[0]!;
-  //const endDisplay = endMetadata.denomUnits.filter(d => d.denom === endMetadata.display)[0]!;
-  //const beginDisplay = beginMetadata.denomUnits.filter(d => d.denom === beginMetadata.display)[0]!;
   return (
     <Tooltip
-      {...{ top, left }}
-      style={{}} // unset styles
+      unstyled={true}
+      applyPositionStyle={true}
+      top={top}
+      left={left}
       className='absolute m-2 border border-solid border-light-brown bg-secondary p-2 font-mono text-xs opacity-80'
     >
       <div className='flex flex-row justify-between'>
         <div>
           <div>
-            block {String(data.height)} ({dataDate?.toLocaleString()})
+            block {String(data.height)} ({blockDate?.toLocaleString()})
           </div>
           <div>
             Price of {endBase.denom} in {beginBase.denom}

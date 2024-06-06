@@ -7,12 +7,12 @@ import {
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { BigNumber } from 'bignumber.js';
 import {
-  CandlestickDataResponse,
+  CandlestickData,
   SimulateTradeRequest,
   SimulateTradeResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { simulationClient, dexClient, tendermintClient } from '../../clients';
+import { simulationClient, dexClient } from '../../clients';
 import { getAssetIdFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 
 export const sendSimulateTradeRequest = ({
@@ -48,12 +48,12 @@ export const sendCandlestickDataRequest = async (
     startHeight?: bigint;
   },
   signal?: AbortSignal,
-): Promise<CandlestickDataResponse> => {
-  if (!assetIn || !assetOut) throw new Error('Both asset in and out need to be set');
+): Promise<CandlestickData[] | undefined> => {
+  if (!assetIn || !assetOut) return;
   const start = getAssetIdFromBalancesResponseOptional(assetIn);
   const end = assetOut.penumbraAssetId;
 
-  return dexClient.candlestickData(
+  const { data } = await dexClient.candlestickData(
     {
       pair: { start, end },
       limit,
@@ -61,4 +61,6 @@ export const sendCandlestickDataRequest = async (
     },
     { signal },
   );
+
+  return data;
 };

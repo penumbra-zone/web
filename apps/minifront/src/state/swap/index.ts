@@ -11,8 +11,7 @@ import {
 import { DutchAuctionSlice, createDutchAuctionSlice } from './dutch-auction';
 import { InstantSwapSlice, createInstantSwapSlice } from './instant-swap';
 import { DurationOption } from './constants';
-import { sendCandlestickDataRequest, sendGetBlockByHeightRequestsForTimestamps } from './helpers';
-import { getAssetIdFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import { sendCandlestickDataRequest } from './helpers';
 
 export interface SimulateSwapResult {
   output: ValueView;
@@ -30,7 +29,7 @@ interface Actions {
   setAssetOut: (metadata: Metadata) => void;
   setDuration: (duration: DurationOption) => void;
   resetSubslices: VoidFunction;
-  loadCandlestick: () => Promise<void>;
+  loadCandlestick: (height?: bigint, ac?: AbortController) => Promise<void>;
 }
 
 interface State {
@@ -86,14 +85,12 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
     set(({ swap }) => {
       swap.assetIn = asset;
     });
-    get().swap.loadCandlestick();
   },
   setAssetOut: metadata => {
     get().swap.resetSubslices();
     set(({ swap }) => {
       swap.assetOut = metadata;
     });
-    get().swap.loadCandlestick();
   },
   setAmount: amount => {
     get().swap.resetSubslices();
@@ -119,8 +116,8 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
     data: [],
     timestamps: new Map(),
   },
-  loadCandlestick: async (height?: bigint) => {
-    const abortThisLoad = new AbortController();
+  loadCandlestick: async (height?: bigint, ac?: AbortController) => {
+    const abortThisLoad = ac ?? new AbortController();
 
     const {
       assetIn,
@@ -140,13 +137,16 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
     });
 
     try {
+      // there's no UI to set limit yet, and most ranges don't always happen to
+      // include price records. 2500 at least scales well when there is data
       const limit = 2500n;
-      const { data } = await sendCandlestickDataRequest(
+      const data = await sendCandlestickDataRequest(
         { assetIn, assetOut },
         { limit, startHeight: height && height - limit },
         abortThisLoad.signal,
       );
 
+      if (!data) return;
       set(({ swap }) => {
         swap.candlestick.data = data;
       });
