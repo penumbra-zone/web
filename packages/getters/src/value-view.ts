@@ -1,14 +1,10 @@
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { createGetter } from './utils/create-getter';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { getDisplayDenomExponent, getSymbol } from './metadata';
 import { Any } from '@bufbuild/protobuf';
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { getIdentityKeyFromValidatorInfo } from './validator-info';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 
 export const getMetadata = createGetter((valueView?: ValueView) =>
   valueView?.valueView.case === 'knownAssetId' ? valueView.valueView.value.metadata : undefined,
@@ -88,23 +84,3 @@ export const getDisplayDenomFromView = createGetter((view?: ValueView) => {
 
   return 'unknown';
 });
-
-export const getKnownValueView = createGetter(
-  (value?: { amount?: Amount; metadata?: Metadata }) =>
-    new ValueView({
-      valueView: {
-        case: 'knownAssetId',
-        value: { amount: value?.amount, metadata: value?.metadata },
-      },
-    }),
-);
-
-export const getKnownZeroValueView = createGetter((metadata?: Metadata) =>
-  getKnownValueView({
-    amount: new Amount({
-      lo: 0n,
-      hi: 0n,
-    }),
-    metadata,
-  }),
-);
