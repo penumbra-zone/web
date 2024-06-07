@@ -3,23 +3,46 @@ import { TransactionViewComponent } from '@penumbra-zone/ui/components/ui/tx/vie
 import { TxDetailsLoaderResult } from '.';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
-import { viewFromEmptyPerspective } from '@penumbra-zone/perspective/transaction/perspective';
 import { useState } from 'react';
 import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picker';
+import { asPublicTransactionView } from '@penumbra-zone/perspective/translators/transaction-view';
 import { typeRegistry } from '@penumbra-zone/protobuf';
+import { useQuery } from '@tanstack/react-query';
+import fetchReceiverView from './hooks';
+import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
   PRIVATE = 'private',
+  RECIEVER = 'reciever',
 }
 
 const OPTIONS = [
   { label: 'Your View', value: TxDetailsTab.PRIVATE },
   { label: 'Public View', value: TxDetailsTab.PUBLIC },
+  { label: 'Reciever View', value: TxDetailsTab.RECIEVER },
 ];
 
 export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
   const [option, setOption] = useState(TxDetailsTab.PRIVATE);
+
+  // classify the transaction type
+  const transactionClassification = classifyTransaction(txInfo.view);
+
+  // filter for reciever view
+  const showReceiverTransactionView = transactionClassification === 'send';
+  const filteredOptions = showReceiverTransactionView
+    ? OPTIONS
+    : OPTIONS.filter(option => option.value !== TxDetailsTab.RECIEVER);
+
+  // use React-Query to invoke custom hooks that call async translators.
+  const { data: receiverView } = useQuery(
+    ['receiverView', txInfo, option],
+    () => fetchReceiverView(txInfo),
+    {
+      enabled: option === TxDetailsTab.RECIEVER && !!txInfo,
+    },
+  );
 
   return (
     <div>
@@ -27,7 +50,13 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
       <div className='mb-8 break-all font-mono italic text-muted-foreground'>{hash}</div>
 
       <div className='mx-auto mb-4 max-w-[70%]'>
-        <SegmentedPicker options={OPTIONS} value={option} onChange={setOption} grow size='lg' />
+        <SegmentedPicker
+          options={filteredOptions}
+          value={option}
+          onChange={setOption}
+          grow
+          size='lg'
+        />
       </div>
       {option === TxDetailsTab.PRIVATE && (
         <>
@@ -38,8 +67,11 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
           </div>
         </>
       )}
+      {option === TxDetailsTab.RECIEVER && receiverView && showReceiverTransactionView && (
+        <TransactionViewComponent txv={receiverView} />
+      )}
       {option === TxDetailsTab.PUBLIC && (
-        <TransactionViewComponent txv={viewFromEmptyPerspective(txInfo.transaction!)} />
+        <TransactionViewComponent txv={asPublicTransactionView(txInfo.view)} />
       )}
     </div>
   );
