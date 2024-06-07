@@ -15,7 +15,12 @@ export class ShieldedPoolQuerier implements ShieldedPoolQuerierInterface {
   }
 
   async assetMetadataById(assetId: AssetId): Promise<Metadata | undefined> {
-    const res = await this.client.assetMetadataById({ assetId });
-    return res.denomMetadata;
+    try {
+      const { denomMetadata } = await this.client.assetMetadataById({ assetId });
+      return denomMetadata;
+    } catch (e) {
+      if (process.env['NODE_ENV'] === 'development') console.debug(e);
+      return undefined;
+    }
   }
 }
