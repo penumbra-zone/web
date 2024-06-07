@@ -1,7 +1,4 @@
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { getAmount } from '@penumbra-zone/getters/balances-response';
-import { joinLoHiAmount } from '@penumbra-zone/types/amount';
-import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
 import { Box } from '@penumbra-zone/ui/components/ui/box';
 import { CandlestickPlot } from '@penumbra-zone/ui/components/ui/candlestick-plot';
@@ -151,7 +148,7 @@ export const TokenSwapInput = () => {
             {assetOut && <BalanceValueView valueView={assetOutBalance} />}
           </div>
         </div>
-        {priceHistory.startMetadata && priceHistory.endMetadata && priceHistory.candles.length && (
+        {priceHistory.startMetadata && priceHistory.endMetadata && priceHistory.candles.length ? (
           <CandlestickPlot
             className='h-[480px] w-full bg-charcoal'
             candles={priceHistory.candles}
@@ -160,7 +157,7 @@ export const TokenSwapInput = () => {
             latestKnownBlockHeight={Number(latestKnownBlockHeight)}
             getBlockDate={getBlockDate}
           />
-        )}
+        ) : null}
       </div>
     </Box>
   );
