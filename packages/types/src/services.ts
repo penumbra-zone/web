@@ -11,12 +11,5 @@ export interface WalletServices {
 }
 
 export interface ServicesInterface {
-  readonly querier: RootQuerierInterface;
-  initialize(): Promise<void>;
   getWalletServices(): Promise<WalletServices>;
-}
-
-export enum ServicesMessage {
-  OnboardComplete = 'OnboardComplete',
-  ClearCache = 'ClearCache',
 }

@@ -2,77 +2,27 @@ import { BlockProcessor } from '@penumbra-zone/query/block-processor';
 import { RootQuerier } from '@penumbra-zone/query/root-querier';
 import { IndexedDb } from '@penumbra-zone/storage/indexed-db';
 import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
-import { syncLastBlockWithLocal } from '@penumbra-zone/storage/chrome/syncer';
 import { ViewServer } from '@penumbra-zone/wasm/view-server';
-import { ServicesInterface, ServicesMessage, WalletServices } from '@penumbra-zone/types/services';
-import type { JsonValue } from '@bufbuild/protobuf';
+import { ServicesInterface, WalletServices } from '@penumbra-zone/types/services';
 import {
   FullViewingKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { Wallet } from '@penumbra-zone/types/wallet';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import { Jsonified } from '@penumbra-zone/types/jsonified';
 
 export interface ServicesConfig {
   readonly idbVersion: number;
-  readonly grpcEndpoint?: string;
-  readonly walletId?: WalletId;
-  readonly fullViewingKey?: FullViewingKey;
+  readonly grpcEndpoint: string;
+  readonly walletId: WalletId;
+  readonly fullViewingKey: FullViewingKey;
 }
-
-const isCompleteServicesConfig = (c: Partial<ServicesConfig>): c is Required<ServicesConfig> =>
-  c.grpcEndpoint != null && c.idbVersion != null && c.walletId != null && c.fullViewingKey != null;
 
 export class Services implements ServicesInterface {
   private walletServicesPromise: Promise<WalletServices> | undefined;
-  private config: Promise<Required<ServicesConfig>>;
 
-  constructor(initConfig: ServicesConfig) {
-    const {
-      promise: completeConfig,
-      resolve: resolveConfig,
-      reject: rejectConfig,
-    } = Promise.withResolvers<Required<ServicesConfig>>();
-    this.config = completeConfig;
-
-    if (isCompleteServicesConfig(initConfig)) resolveConfig(initConfig);
-
-    // Attach a listener to allow extension documents to control services.
-    // Note that you can't activate this handler from another part of the background script.
-    chrome.runtime.onMessage.addListener((req: JsonValue, sender, respond: () => void) => {
-      const emptyResponse = () => respond();
-      if (sender.origin !== origin || typeof req !== 'string') return false;
-      switch (req in ServicesMessage && (req as ServicesMessage)) {
-        case false:
-          return false;
-        case ServicesMessage.ClearCache:
-          void this.clearCache().then(emptyResponse);
-          return true;
-        case ServicesMessage.OnboardComplete:
-          void this.completeConfig(initConfig)
-            .then(resolveConfig, rejectConfig)
-            .then(emptyResponse);
-          return true;
-      }
-    });
-  }
-
-  private _querier: RootQuerier | undefined;
-
-  get querier(): RootQuerier {
-    if (!this._querier) throw new Error('Services have not been initialized');
-    return this._querier;
-  }
-
-  public async initialize(): Promise<void> {
-    const { grpcEndpoint } = await this.config;
-    this._querier = new RootQuerier({ grpcEndpoint });
-
-    // initialize walletServices separately without exponential backoff to bubble up errors immediately
-    await this.getWalletServices();
-  }
+  constructor(private config: ServicesConfig) {}
 
   // If getWalletServices() is called multiple times concurrently,
   // they'll all wait for the same promise rather than each starting their own initialization process.
@@ -88,87 +38,103 @@ export class Services implements ServicesInterface {
     return this.walletServicesPromise;
   }
 
-  private async initializeWalletServices(): Promise<WalletServices> {
-    const { walletId, fullViewingKey, idbVersion: dbVersion } = await this.config;
-
-    // read params from storage
+  /**
+   * Attempt to fetch the AppParameters from the remote fullnode, or fall back
+   * to the local storage. Will throw to abort if the remote node reports an
+   * unexpected chainId.
+   *
+   * @returns completed AppParameters from remote or storage
+   */
+  private async getParams(querier: RootQuerier): Promise<AppParameters> {
+    // try to read params from storage
     const storedParams = await localExtStorage
       .get('params')
-      .then(j => j && AppParameters.fromJson(j));
+      .then(j => j && AppParameters.fromJson(j))
+      .catch(() => undefined);
     // try to fetch params from network
-    const queriedParams = await this.querier.app.appParams().catch((e: unknown) => void e);
+    const queriedParams = await querier.app.appParams().catch(() => undefined);
 
-    // prefer fetched params
-    const chainId = queriedParams?.chainId ?? storedParams?.chainId;
-    const epochDuration =
-      queriedParams?.sctParams?.epochDuration ?? storedParams?.sctParams?.epochDuration;
-
-    // store chainId if it was missing
-    if (!storedParams?.chainId && queriedParams?.chainId)
+    // verify params by chainId
+    if (
+      storedParams?.chainId &&
+      queriedParams?.chainId &&
+      storedParams.chainId !== queriedParams.chainId
+    ) {
+      // fail mismatch
+      const badChainIdMsg =
+        'Local chainId does not match the remote chainId. Your local state may\
+        be invalid, or you may be connecting to the wrong chain. You cannot use\
+        this RPC endpoint without clearing your local chain state.';
+      // log flamboyantly
+      console.error(`%c${badChainIdMsg}`, 'font-weight: bold; font-size: 2em;', {
+        storedParams,
+        queriedParams,
+      });
+      throw new Error(badChainIdMsg);
+    } else if (queriedParams?.chainId) {
+      // fetched params exist and are ok. store and return
       await localExtStorage.set('params', queriedParams.toJson() as Jsonified<AppParameters>);
+      return queriedParams;
+    } else if (storedParams?.chainId) {
+      // none fetched, use stored
+      return storedParams;
+    } else throw new Error('No available chainId');
+  }
 
-    // fail if chainId is mismatched
-    if (storedParams?.chainId && storedParams.chainId !== chainId)
-      throw new Error(
-        'Stored chainId does not match the remote chainId. Your local state may\
-        be invalid, and you cannot use this remote endpoint without clearing\
-        your cached chain.',
-      );
-
-    if (!chainId) throw new Error('Cannot initialize without chainId');
-
+  private async initializeWalletServices(): Promise<WalletServices> {
+    const { grpcEndpoint, walletId, fullViewingKey, idbVersion } = this.config;
+    const querier = new RootQuerier({ grpcEndpoint });
+    const params = await this.getParams(querier);
     const registryClient = new ChainRegistryClient();
-
     const indexedDb = await IndexedDb.initialize({
-      chainId,
-      dbVersion,
+      chainId: params.chainId,
+      idbVersion,
       walletId,
       registryClient,
     });
 
-    void syncLastBlockWithLocal(indexedDb);
+    void this.syncLastBlockWithLocal(indexedDb);
 
-    if (!epochDuration) throw new Error('Cannot initialize without epoch duration');
+    if (!params.sctParams?.epochDuration)
+      throw new Error('Cannot initialize viewServer without epoch duration');
 
     const viewServer = await ViewServer.initialize({
       fullViewingKey,
-      epochDuration,
+      epochDuration: params.sctParams.epochDuration,
       getStoredTree: () => indexedDb.getStateCommitmentTree(),
       idbConstants: indexedDb.constants(),
     });
 
-    const registry = registryClient.get(chainId);
+    const registry = registryClient.get(params.chainId);
     const blockProcessor = new BlockProcessor({
       viewServer,
-      querier: this.querier,
+      querier,
       indexedDb,
       stakingTokenMetadata: registry.getMetadata(registry.stakingAssetId),
       numeraires: registry.numeraires.map(numeraires => registry.getMetadata(numeraires)),
     });
 
-    return { viewServer, blockProcessor, indexedDb, querier: this.querier };
+    return { viewServer, blockProcessor, indexedDb, querier };
   }
 
-  private async completeConfig(initConfig: ServicesConfig): Promise<Required<ServicesConfig>> {
-    const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
-    const wallet0 = (await localExtStorage.get('wallets'))[0];
-    if (!wallet0) throw Error('No wallets found');
-    if (!grpcEndpoint) throw Error('No gRPC endpoint found');
-    const { id: walletId, fullViewingKey } = Wallet.fromJson(wallet0);
-    return {
-      ...initConfig,
-      grpcEndpoint,
-      walletId: WalletId.fromJsonString(walletId),
-      fullViewingKey: FullViewingKey.fromJsonString(fullViewingKey),
-    };
-  }
-
-  private async clearCache() {
+  public async clearCache() {
     const ws = await this.getWalletServices();
 
     ws.blockProcessor.stop('clearCache');
     await ws.indexedDb.clear();
     this.walletServicesPromise = undefined;
-    await this.initialize();
+    void this.getWalletServices();
   }
+
+  // Syncs the IndexedDb last block number with chrome.storage.local
+  // Later used to synchronize with Zustand store
+  private syncLastBlockWithLocal = async (indexedDb: IndexedDb) => {
+    const fullSyncHeightDb = await indexedDb.getFullSyncHeight();
+    await localExtStorage.set('fullSyncHeight', Number(fullSyncHeightDb));
+
+    const subscription = indexedDb.subscribe('FULL_SYNC_HEIGHT');
+    for await (const update of subscription) {
+      await localExtStorage.set('fullSyncHeight', Number(update.value));
+    }
+  };
 }
