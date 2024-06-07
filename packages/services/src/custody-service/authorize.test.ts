@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { approverCtx } from '../ctx/approver';
-import { servicesCtx } from '../ctx/prax';
 import { testFullViewingKey, testSpendKey } from '../test-utils';
 import { authorize } from './authorize';
 import { AuthorizeRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/custody/v1/custody_pb';
@@ -10,19 +9,26 @@ import {
   AuthorizationData,
   TransactionPlan,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { fvkCtx } from '../ctx/full-viewing-key';
 import { skCtx } from '../ctx/spend-key';
+import { idbCtx } from '../ctx/prax';
 
 describe('Authorize request handler', () => {
   let req: AuthorizeRequest;
 
+  const mockIterateMetadata = {
+    next: vi.fn(),
+    [Symbol.asyncIterator]: () => mockIterateMetadata,
+  };
+
   const mockApproverCtx = vi.fn(() => Promise.resolve<UserChoice>(UserChoice.Approved));
   const mockFullViewingKeyCtx = vi.fn(() => Promise.resolve(testFullViewingKey));
   const mockSpendKeyCtx = vi.fn(() => Promise.resolve(testSpendKey));
-  const mockServicesCtx: Mock<[], Promise<ServicesInterface>> = vi.fn();
+  const mockIdbCtx = vi.fn(() =>
+    Promise.resolve({ iterateAssetsMetadata: () => mockIterateMetadata }),
+  );
 
   const handlerContextInit = {
     service: CustodyService,
@@ -34,7 +40,7 @@ describe('Authorize request handler', () => {
 
   const contextValues = createContextValues()
     .set(approverCtx, mockApproverCtx as unknown)
-    .set(servicesCtx, mockServicesCtx)
+    .set(idbCtx, mockIdbCtx as unknown)
     .set(fvkCtx, mockFullViewingKeyCtx)
     .set(skCtx, mockSpendKeyCtx);
 
@@ -44,20 +50,6 @@ describe('Authorize request handler', () => {
   });
 
   beforeEach(() => {
-    const mockIterateMetadata = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateMetadata,
-    };
-
-    mockServicesCtx.mockResolvedValue({
-      getWalletServices: () =>
-        Promise.resolve({
-          indexedDb: {
-            iterateAssetsMetadata: () => mockIterateMetadata,
-          },
-        }),
-    } as unknown as ServicesInterface);
-
     for (const record of testAssetsMetadata) {
       mockIterateMetadata.next.mockResolvedValue({
         value: record,
@@ -93,7 +85,7 @@ describe('Authorize request handler', () => {
       ...handlerContextInit,
       contextValues: createContextValues()
         .set(approverCtx, mockApproverCtx as unknown)
-        .set(servicesCtx, mockServicesCtx)
+        .set(idbCtx, mockIdbCtx as unknown)
         .set(skCtx, mockSpendKeyCtx),
     });
     await expect(authorize(req, ctxWithoutFullViewingKey)).rejects.toThrow('[failed_precondition]');
@@ -104,7 +96,7 @@ describe('Authorize request handler', () => {
       ...handlerContextInit,
       contextValues: createContextValues()
         .set(approverCtx, mockApproverCtx as unknown)
-        .set(servicesCtx, mockServicesCtx)
+        .set(idbCtx, mockIdbCtx as unknown)
         .set(fvkCtx, mockFullViewingKeyCtx),
     });
     await expect(authorize(req, ctxWithoutSpendKey)).rejects.toThrow('[failed_precondition]');
@@ -114,7 +106,7 @@ describe('Authorize request handler', () => {
     const ctxWithoutApprover = createHandlerContext({
       ...handlerContextInit,
       contextValues: createContextValues()
-        .set(servicesCtx, mockServicesCtx)
+        .set(idbCtx, mockIdbCtx as unknown)
         .set(fvkCtx, mockFullViewingKeyCtx)
         .set(skCtx, mockSpendKeyCtx),
     });

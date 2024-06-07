@@ -1,12 +1,3 @@
-import { notes } from './notes';
-
-import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-
-import { beforeEach, describe, expect, test, vi } from 'vitest';
-
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import {
@@ -14,11 +5,14 @@ import {
   NotesResponse,
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from '../test-utils';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import { ViewService } from '@penumbra-zone/protobuf';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { idbCtx } from '../ctx/prax';
+import { IndexedDbMock } from '../test-utils';
+import { notes } from './notes';
 
 describe('Notes request handler', () => {
-  let mockServices: MockServices;
   let mockCtx: HandlerContext;
   let mockIndexedDb: IndexedDbMock;
 
@@ -34,20 +28,14 @@ describe('Notes request handler', () => {
       iterateSpendableNotes: () => mockIterateSpendableNotes,
     };
 
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
-
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.notes,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(idbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown),
       ),
     });
 

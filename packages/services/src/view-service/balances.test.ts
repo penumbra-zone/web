@@ -1,35 +1,31 @@
-import { servicesCtx } from '../ctx/prax';
-import { balances } from './balances';
-
-import { ViewService } from '@penumbra-zone/protobuf';
-
-import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import {
-  BalancesRequest,
-  BalancesResponse,
-  SpendableNoteRecord,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { beforeEach, describe, expect, test, vi } from 'vitest';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils';
 import {
   AssetId,
   EquivalentValue,
   EstimatedPrice,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import {
+  BalancesRequest,
+  BalancesResponse,
+  SpendableNoteRecord,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
+import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import {
   getAmount,
   getAssetIdFromValueView,
   getEquivalentValues,
   getMetadata,
 } from '@penumbra-zone/getters/value-view';
-import { getAddressIndex } from '@penumbra-zone/getters/address-view';
-import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+import { ViewService } from '@penumbra-zone/protobuf';
 import { multiplyAmountByNumber } from '@penumbra-zone/types/amount';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { fvkCtx } from '../ctx/full-viewing-key';
+import { idbCtx, querierCtx } from '../ctx/prax';
+import { IndexedDbMock, TendermintMock, testFullViewingKey } from '../test-utils';
+import { balances } from './balances';
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {
   const account0Res = responses.filter(
@@ -45,7 +41,7 @@ const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: numb
 
 describe('Balances request handler', () => {
   let req: BalancesRequest;
-  let mockServices: MockServices;
+
   let mockCtx: HandlerContext;
   let mockIndexedDb: IndexedDbMock;
   let mockTendermint: TendermintMock;
@@ -72,19 +68,6 @@ describe('Balances request handler', () => {
       latestBlockHeight: vi.fn(),
     };
 
-    mockServices = {
-      // @ts-expect-error TODO: Improve mocking types
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({
-          indexedDb: mockIndexedDb,
-          querier: {
-            shieldedPool: mockShieldedPool,
-            tendermint: mockTendermint,
-          },
-        }),
-      ) as MockServices['getWalletServices'],
-    };
-
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.balances,
@@ -92,7 +75,13 @@ describe('Balances request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
+        .set(idbCtx, () => Promise.resolve(mockIndexedDb as unknown))
+        .set(querierCtx, () =>
+          Promise.resolve({
+            shieldedPool: mockShieldedPool,
+            tendermint: mockTendermint,
+          } as unknown),
+        )
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
 

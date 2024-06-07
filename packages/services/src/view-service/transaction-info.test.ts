@@ -1,19 +1,15 @@
-import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-
-import { beforeEach, describe, expect, test, vi } from 'vitest';
-
 import {
   TransactionInfo,
   TransactionInfoRequest,
   TransactionInfoResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices, testFullViewingKey } from '../test-utils';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { transactionInfo } from './transaction-info';
+import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
+import { ViewService } from '@penumbra-zone/protobuf';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { fvkCtx } from '../ctx/full-viewing-key';
+import { idbCtx } from '../ctx/prax';
+import { IndexedDbMock, testFullViewingKey } from '../test-utils';
+import { transactionInfo } from './transaction-info';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/transaction', () => ({
@@ -21,7 +17,6 @@ vi.mock('@penumbra-zone/wasm/transaction', () => ({
 }));
 
 describe('TransactionInfo request handler', () => {
-  let mockServices: MockServices;
   let mockCtx: HandlerContext;
   let mockIndexedDb: IndexedDbMock;
   let req: TransactionInfoRequest;
@@ -39,12 +34,6 @@ describe('TransactionInfo request handler', () => {
       constants: vi.fn(),
     };
 
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
-
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.transactionInfo,
@@ -52,7 +41,7 @@ describe('TransactionInfo request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
+        .set(idbCtx, () => Promise.resolve(mockIndexedDb as unknown))
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
 

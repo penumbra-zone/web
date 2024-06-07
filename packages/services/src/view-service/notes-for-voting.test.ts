@@ -1,17 +1,15 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   NotesForVotingRequest,
   NotesForVotingResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices } from '../test-utils';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { idbCtx } from '../ctx/prax';
+import { IndexedDbMock } from '../test-utils';
 import { notesForVoting } from './notes-for-voting';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('NotesForVoting request handler', () => {
-  let mockServices: MockServices;
   let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
 
@@ -21,19 +19,15 @@ describe('NotesForVoting request handler', () => {
     mockIndexedDb = {
       getNotesForVoting: vi.fn(),
     };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
+
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.notesForVoting,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(idbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown),
       ),
     });
   });

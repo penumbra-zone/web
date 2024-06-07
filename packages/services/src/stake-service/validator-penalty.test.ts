@@ -1,18 +1,17 @@
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import { validatorPenalty } from './validator-penalty';
-import { MockServices } from '../test-utils';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { StakeService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
 import {
   ValidatorPenaltyRequest,
   ValidatorPenaltyResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import { StakeService } from '@penumbra-zone/protobuf';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { querierCtx } from '../ctx/prax';
+import { MockQuerier } from '../test-utils';
+import { validatorPenalty } from './validator-penalty';
 
 describe('ValidatorPenalty request handler', () => {
-  let mockServices: MockServices;
   let mockStakingQuerierValidatorPenalty: Mock;
+  let mockQuerier: MockQuerier;
   let mockCtx: HandlerContext;
   const mockValidatorPenaltyResponse = new ValidatorPenaltyResponse({
     penalty: { inner: new Uint8Array([0, 1, 2, 3]) },
@@ -23,11 +22,9 @@ describe('ValidatorPenalty request handler', () => {
 
     mockStakingQuerierValidatorPenalty = vi.fn().mockResolvedValue(mockValidatorPenaltyResponse);
 
-    mockServices = {
-      querier: {
-        stake: { validatorPenalty: mockStakingQuerierValidatorPenalty },
-      },
-    } satisfies MockServices;
+    mockQuerier = {
+      stake: { validatorPenalty: mockStakingQuerierValidatorPenalty },
+    };
 
     mockCtx = createHandlerContext({
       service: StakeService,
@@ -35,8 +32,8 @@ describe('ValidatorPenalty request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(querierCtx, () =>
+        Promise.resolve(mockQuerier as unknown),
       ),
     });
   });

@@ -1,24 +1,23 @@
-import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
+import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
-import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
+import type { Impl } from '.';
+import { idbCtx, querierCtx } from '../ctx/prax';
 
 export const broadcastTransaction: Impl['broadcastTransaction'] = async function* (req, ctx) {
-  const services = await ctx.values.get(servicesCtx)();
-  const { tendermint } = services.querier;
-  const { indexedDb } = await services.getWalletServices();
+  const idb = await ctx.values.get(idbCtx)();
+  const querier = await ctx.values.get(querierCtx)();
   if (!req.transaction)
     throw new ConnectError('No transaction provided in request', Code.InvalidArgument);
 
   // start subscription early to prevent race condition
-  const subscription = indexedDb.subscribe('TRANSACTIONS');
+  const subscription = idb.subscribe('TRANSACTIONS');
 
   const id = new TransactionId({ inner: await sha256Hash(req.transaction.toBinary()) });
 
-  const broadcastId = await tendermint.broadcastTx(req.transaction);
+  const broadcastId = await querier.tendermint.broadcastTx(req.transaction);
   if (!id.equals(broadcastId)) {
     console.error('broadcast transaction id disagrees', id, broadcastId);
     throw new Error(

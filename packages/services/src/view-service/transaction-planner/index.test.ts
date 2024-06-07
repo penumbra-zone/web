@@ -1,23 +1,21 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../../ctx/prax';
-import { IndexedDbMock, MockServices, testFullViewingKey } from '../../test-utils';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
-import { SctParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
+import { SctParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
+import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
+import { ViewService } from '@penumbra-zone/protobuf';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { transactionPlanner } from '.';
 import { fvkCtx } from '../../ctx/full-viewing-key';
+import { idbCtx } from '../../ctx/prax';
+import { IndexedDbMock, testFullViewingKey } from '../../test-utils';
 
 const mockPlanTransaction = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/planner', () => ({
   planTransaction: mockPlanTransaction,
 }));
 describe('TransactionPlanner request handler', () => {
-  let mockServices: MockServices;
   let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
   let req: TransactionPlannerRequest;
@@ -32,14 +30,6 @@ describe('TransactionPlanner request handler', () => {
       constants: vi.fn(),
     };
 
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({
-          indexedDb: mockIndexedDb,
-        }),
-      ) as MockServices['getWalletServices'],
-    };
-
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.transactionPlanner,
@@ -47,7 +37,7 @@ describe('TransactionPlanner request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
+        .set(idbCtx, () => Promise.resolve(mockIndexedDb as unknown))
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
 

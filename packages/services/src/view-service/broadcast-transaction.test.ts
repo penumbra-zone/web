@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import {
   BroadcastTransactionRequest,
   BroadcastTransactionResponse,
@@ -6,12 +7,10 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { Transaction } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
+import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { idbCtx, querierCtx } from '../ctx/prax';
+import { IndexedDbMock, TendermintMock } from '../test-utils';
 import { broadcastTransaction } from './broadcast-transaction';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
-import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils';
 
 const mockSha256 = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/crypto-web/sha256', () => ({
@@ -19,7 +18,6 @@ vi.mock('@penumbra-zone/crypto-web/sha256', () => ({
 }));
 
 describe('BroadcastTransaction request handler', () => {
-  let mockServices: MockServices;
   let mockCtx: HandlerContext;
   let mockIndexedDb: IndexedDbMock;
   let mockTendermint: TendermintMock;
@@ -47,14 +45,6 @@ describe('BroadcastTransaction request handler', () => {
         throw new Error('Table not supported');
       },
     };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-      querier: {
-        tendermint: mockTendermint,
-      },
-    };
 
     mockCtx = createHandlerContext({
       service: ViewService,
@@ -62,9 +52,9 @@ describe('BroadcastTransaction request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
-      ),
+      contextValues: createContextValues()
+        .set(idbCtx, () => Promise.resolve(mockIndexedDb as unknown))
+        .set(querierCtx, () => Promise.resolve({ tendermint: mockTendermint } as unknown)),
     });
 
     broadcastTransactionRequest = new BroadcastTransactionRequest({

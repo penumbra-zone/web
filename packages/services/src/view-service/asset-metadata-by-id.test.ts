@@ -5,17 +5,15 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices, ShieldedPoolMock } from '../test-utils';
+import { idbCtx, querierCtx } from '../ctx/prax';
+import { IndexedDbMock, ShieldedPoolMock } from '../test-utils';
 import {
   AssetId,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { assetMetadataById } from './asset-metadata-by-id';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('AssetMetadataById request handler', () => {
-  let mockServices: MockServices;
   let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
   let mockShieldedPool: ShieldedPoolMock;
@@ -31,25 +29,15 @@ describe('AssetMetadataById request handler', () => {
     mockShieldedPool = {
       assetMetadataById: vi.fn(),
     };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({
-          indexedDb: mockIndexedDb,
-          querier: {
-            shieldedPool: mockShieldedPool,
-          },
-        }),
-      ) as MockServices['getWalletServices'],
-    };
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.assetMetadataById,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
-      ),
+      contextValues: createContextValues()
+        .set(idbCtx, () => Promise.resolve(mockIndexedDb as unknown))
+        .set(querierCtx, () => Promise.resolve({ shieldedPool: mockShieldedPool } as unknown)),
     });
 
     request = new AssetMetadataByIdRequest({

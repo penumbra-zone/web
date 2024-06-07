@@ -1,18 +1,16 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { IndexedDbMock, MockServices } from '../test-utils';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { StakeService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
 import {
   GetValidatorInfoRequest,
   GetValidatorInfoResponse,
   ValidatorState_ValidatorStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
+import { StakeService } from '@penumbra-zone/protobuf';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { idbCtx } from '../ctx/prax';
+import { IndexedDbMock } from '../test-utils';
 import { getValidatorInfo } from './get-validator-info';
 
 describe('GetValidatorInfo request handler', () => {
-  let mockServices: MockServices;
   let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
   let req: GetValidatorInfoRequest;
@@ -29,19 +27,14 @@ describe('GetValidatorInfo request handler', () => {
     mockIndexedDb = {
       getValidatorInfo: vi.fn(),
     };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
     mockCtx = createHandlerContext({
       service: StakeService,
       method: StakeService.methods.validatorInfo,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(idbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown),
       ),
     });
 

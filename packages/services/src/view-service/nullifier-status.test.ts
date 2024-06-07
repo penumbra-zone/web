@@ -1,24 +1,18 @@
-import { nullifierStatus } from './nullifier-status';
-
-import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
-
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
-
 import { Nullifier } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
 import {
   NullifierStatusRequest,
   SpendableNoteRecord,
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from '../test-utils';
+import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
+import { ViewService } from '@penumbra-zone/protobuf';
 import { stringToUint8Array } from '@penumbra-zone/types/string';
+import { Mock, beforeEach, describe, expect, test, vi } from 'vitest';
+import { idbCtx } from '../ctx/prax';
+import { IndexedDbMock } from '../test-utils';
+import { nullifierStatus } from './nullifier-status';
 
 describe('nullifierStatus', () => {
-  let mockServices: MockServices;
   let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
   let noteSubNext: Mock;
@@ -48,11 +42,6 @@ describe('nullifierStatus', () => {
         throw new Error('Table not supported');
       },
     };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
 
     mockCtx = createHandlerContext({
       service: ViewService,
@@ -60,8 +49,8 @@ describe('nullifierStatus', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(idbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown),
       ),
     });
   });

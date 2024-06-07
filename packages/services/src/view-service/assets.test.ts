@@ -9,14 +9,12 @@ import {
 import { ViewService } from '@penumbra-zone/protobuf';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { servicesCtx } from '../ctx/prax';
 import { assets } from './assets';
-import { IndexedDbMock, MockServices } from '../test-utils';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { IndexedDbMock } from '../test-utils';
+import { idbCtx } from '../ctx/prax';
 
 describe('Assets request handler', () => {
   let req: AssetsRequest;
-  let mockServices: MockServices;
   let mockCtx: HandlerContext;
 
   beforeEach(() => {
@@ -31,20 +29,14 @@ describe('Assets request handler', () => {
       iterateAssetsMetadata: () => mockIterateMetadata,
     };
 
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
-
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.assets,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(idbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown),
       ),
     });
 

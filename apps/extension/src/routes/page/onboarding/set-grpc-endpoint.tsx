@@ -2,14 +2,12 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@penumbra-zone/ui/
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { ServicesMessage } from '@penumbra-zone/types/services';
 import { GrpcEndpointForm } from '../../../shared/components/grpc-endpoint-form';
 
 export const SetGrpcEndpoint = () => {
   const navigate = usePageNav();
 
   const onSuccess = (): void => {
-    void chrome.runtime.sendMessage(ServicesMessage.OnboardComplete);
     navigate(PagePath.ONBOARDING_SUCCESS);
   };
 

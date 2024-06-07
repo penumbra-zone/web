@@ -1,12 +1,10 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+import { idbCtx } from '../ctx/prax';
 
 export const unclaimedSwaps: Impl['unclaimedSwaps'] = async function* (_, ctx) {
-  const services = await ctx.values.get(servicesCtx)();
+  const idb = await ctx.values.get(idbCtx)();
 
-  const { indexedDb } = await services.getWalletServices();
-
-  for await (const swap of indexedDb.iterateSwaps()) {
+  for await (const swap of idb.iterateSwaps()) {
     if (swap.heightClaimed !== 0n) continue;
     yield { swap };
   }

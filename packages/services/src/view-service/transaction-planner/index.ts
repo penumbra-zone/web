@@ -1,30 +1,27 @@
-import type { Impl } from '..';
-import { servicesCtx } from '../../ctx/prax';
-import { planTransaction } from '@penumbra-zone/wasm/planner';
-import { Code, ConnectError } from '@connectrpc/connect';
-import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { Code, ConnectError } from '@connectrpc/connect';
+import { planTransaction } from '@penumbra-zone/wasm/planner';
+import type { Impl } from '..';
 import { fvkCtx } from '../../ctx/full-viewing-key';
+import { idbCtx } from '../../ctx/prax';
+import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb } = await services.getWalletServices();
+  const idb = await ctx.values.get(idbCtx)();
 
   const fvk = ctx.values.get(fvkCtx);
 
   assertValidRequest(req);
 
-  const fmdParams = await indexedDb.getFmdParams();
+  const fmdParams = await idb.getFmdParams();
   if (!fmdParams) throw new ConnectError('FmdParameters not available', Code.FailedPrecondition);
-  const { chainId, sctParams } = (await indexedDb.getAppParams()) ?? {};
+  const { chainId, sctParams } = (await idb.getAppParams()) ?? {};
   if (!sctParams) throw new ConnectError('SctParameters not available', Code.FailedPrecondition);
   if (!chainId) throw new ConnectError('ChainId not available', Code.FailedPrecondition);
-  const gasPrices = await indexedDb.getGasPrices();
+  const gasPrices = await idb.getGasPrices();
   if (!gasPrices) throw new ConnectError('Gas prices is not available', Code.FailedPrecondition);
 
-  const idbConstants = indexedDb.constants();
-
-  const plan = await planTransaction(idbConstants, req, await fvk());
+  const plan = await planTransaction(idb.constants(), req, await fvk());
   return { plan };
 };
 

@@ -1,10 +1,9 @@
-import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
 import { assetPatterns, RegexMatcher } from '@penumbra-zone/types/assets';
+import type { Impl } from '.';
+import { idbCtx } from '../ctx/prax';
 
 export const assets: Impl['assets'] = async function* (req, ctx) {
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb } = await services.getWalletServices();
+  const idb = await ctx.values.get(idbCtx)();
 
   const {
     filtered,
@@ -46,7 +45,7 @@ export const assets: Impl['assets'] = async function* (req, ctx) {
     })),
   ].filter(i => i.includeReq);
 
-  for await (const metadata of indexedDb.iterateAssetsMetadata()) {
+  for await (const metadata of idb.iterateAssetsMetadata()) {
     if (filtered && !patterns.find(p => p.pattern.matches(metadata.display))) continue;
     yield { denomMetadata: metadata };
   }

@@ -1,5 +1,5 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+import { idbCtx, querierCtx } from '../ctx/prax';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 
 export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, ctx) => {
@@ -10,10 +10,10 @@ export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, 
       'Either `inner`, `altBaseDenom`, or `altBech32m` must be set on the asset ID passed in the `assetMetadataById` request',
     );
 
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb, querier } = await services.getWalletServices();
+  const idb = await ctx.values.get(idbCtx)();
+  const querier = await ctx.values.get(querierCtx)();
 
-  const localMetadata = await indexedDb.getAssetsMetadata(assetId);
+  const localMetadata = await idb.getAssetsMetadata(assetId);
   if (localMetadata) return { denomMetadata: localMetadata };
 
   const remoteMetadata = await querier.shieldedPool.assetMetadataById(assetId);
@@ -21,7 +21,7 @@ export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, 
   const isIbcAsset = remoteMetadata && assetPatterns.ibc.matches(remoteMetadata.display);
 
   if (remoteMetadata && !isIbcAsset) {
-    void indexedDb.saveAssetsMetadata(remoteMetadata);
+    void idb.saveAssetsMetadata(remoteMetadata);
     return { denomMetadata: remoteMetadata };
   }
 

@@ -1,18 +1,16 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import {
   GasPricesRequest,
   GasPricesResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices } from '../test-utils';
-import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { idbCtx } from '../ctx/prax';
+import { IndexedDbMock } from '../test-utils';
 import { gasPrices } from './gas-prices';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('GasPrices request handler', () => {
-  let mockServices: MockServices;
   let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
 
@@ -22,19 +20,15 @@ describe('GasPrices request handler', () => {
     mockIndexedDb = {
       getGasPrices: vi.fn(),
     };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
+
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.gasPrices,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(idbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown),
       ),
     });
   });

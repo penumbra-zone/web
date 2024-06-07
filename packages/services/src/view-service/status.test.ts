@@ -1,17 +1,15 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   StatusRequest,
   StatusResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { idbCtx, querierCtx } from '../ctx/prax';
+import { IndexedDbMock, TendermintMock } from '../test-utils';
 import { status } from './status';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 describe('Status request handler', () => {
-  let mockServices: MockServices;
   let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
   let mockTendermint: TendermintMock;
@@ -27,24 +25,15 @@ describe('Status request handler', () => {
       latestBlockHeight: vi.fn(),
     };
 
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-      querier: {
-        tendermint: mockTendermint,
-      },
-    };
-
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.status,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
-      ),
+      contextValues: createContextValues()
+        .set(idbCtx, () => Promise.resolve(mockIndexedDb as unknown))
+        .set(querierCtx, () => Promise.resolve({ tendermint: mockTendermint } as unknown)),
     });
   });
 

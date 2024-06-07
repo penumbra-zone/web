@@ -1,15 +1,15 @@
-import { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
 import { Code, ConnectError } from '@connectrpc/connect';
+import { Impl } from '.';
+import { idbCtx } from '../ctx/prax';
 
 export const getValidatorInfo: Impl['getValidatorInfo'] = async (req, ctx) => {
   if (!req.identityKey) {
     throw new ConnectError('Missing identityKey in request', Code.InvalidArgument);
   }
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb } = await services.getWalletServices();
 
-  const validatorInfo = await indexedDb.getValidatorInfo(req.identityKey);
+  const idb = await ctx.values.get(idbCtx)();
+
+  const validatorInfo = await idb.getValidatorInfo(req.identityKey);
 
   if (!validatorInfo) {
     throw new ConnectError('No found validator info', Code.NotFound);

@@ -2,10 +2,9 @@ import {
   SpendableNoteRecord,
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
-
 import { Code, ConnectError } from '@connectrpc/connect';
+import type { Impl } from '.';
+import { idbCtx } from '../ctx/prax';
 
 const watchStream = async <U>(
   subscription: AsyncGenerator<U>,
@@ -19,22 +18,21 @@ export const nullifierStatus: Impl['nullifierStatus'] = async (req, ctx) => {
   const { nullifier } = req;
   if (!nullifier) throw new ConnectError('No nullifier passed', Code.InvalidArgument);
 
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb } = await services.getWalletServices();
+  const idb = await ctx.values.get(idbCtx)();
 
   // grab subscription to table updates before checking the tables.  this avoids
   // a race condition: if instead we checked the tables, and *then* subscribed,
   // it would be possible to miss updates that arrived in the short time between
   // the two calls.
-  const swapStream = indexedDb.subscribe('SWAPS');
-  const noteStream = indexedDb.subscribe('SPENDABLE_NOTES');
+  const swapStream = idb.subscribe('SWAPS');
+  const noteStream = idb.subscribe('SPENDABLE_NOTES');
 
   // If present, a swap or note should never have an undefined height, and a
   // zero-height spend should never appear. So if one of these is truthy, the
   // nullifier is spent.
   const [swap, note] = await Promise.all([
-    indexedDb.getSwapByNullifier(nullifier),
-    indexedDb.getSpendableNoteByNullifier(nullifier),
+    idb.getSwapByNullifier(nullifier),
+    idb.getSpendableNoteByNullifier(nullifier),
   ]);
   const spent = Boolean(swap?.heightClaimed) || Boolean(note?.heightSpent);
 

@@ -1,10 +1,3 @@
-import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
-import { getAmount } from '@penumbra-zone/getters/value-view';
-import {
-  getAmountFromRecord,
-  getAssetIdFromRecord,
-} from '@penumbra-zone/getters/spendable-note-record';
 import {
   AssetId,
   EquivalentValue,
@@ -17,6 +10,7 @@ import {
   AddressIndex,
   AddressView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import {
   AddressByIndexRequest,
   AssetMetadataByIdRequest,
@@ -25,27 +19,32 @@ import {
   SpendableNoteRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { HandlerContext } from '@connectrpc/connect';
-import { assetMetadataById } from './asset-metadata-by-id';
-import { addressByIndex } from './address-by-index';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
-import { addLoHi } from '@penumbra-zone/types/lo-hi';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import {
+  getAmountFromRecord,
+  getAssetIdFromRecord,
+} from '@penumbra-zone/getters/spendable-note-record';
+import { getAmount } from '@penumbra-zone/getters/value-view';
 import { isZero, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
+import { Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { Stringified } from '@penumbra-zone/types/jsonified';
+import { addLoHi } from '@penumbra-zone/types/lo-hi';
+import type { Impl } from '.';
+import { idbCtx, querierCtx } from '../ctx/prax';
+import { addressByIndex } from './address-by-index';
+import { assetMetadataById } from './asset-metadata-by-id';
 
 // Handles aggregating amounts and filtering by account number/asset id
 export const balances: Impl['balances'] = async function* (req, ctx) {
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb, querier } = await services.getWalletServices();
+  const idb = await ctx.values.get(idbCtx)();
+  const querier = await ctx.values.get(querierCtx)();
 
   // latestBlockHeight is needed to calculate the threshold of price relevance,
   //it is better to use  rather than fullSyncHeight to avoid displaying old prices during the synchronization process
   const latestBlockHeight = await querier.tendermint.latestBlockHeight();
 
-  const aggregator = new BalancesAggregator(ctx, indexedDb, latestBlockHeight);
+  const aggregator = new BalancesAggregator(ctx, latestBlockHeight);
 
-  for await (const noteRecord of indexedDb.iterateSpendableNotes()) {
+  for await (const noteRecord of idb.iterateSpendableNotes()) {
     if (noteRecord.heightSpent !== 0n) continue;
     if (isZero(getAmountFromRecord(noteRecord))) continue;
 
@@ -79,7 +78,6 @@ class BalancesAggregator {
 
   constructor(
     private readonly ctx: HandlerContext,
-    private readonly indexedDb: IndexedDbInterface,
     private readonly latestBlockHeight: bigint,
   ) {}
 
@@ -181,6 +179,7 @@ class BalancesAggregator {
 
   // Amount initialized to 0
   private async initializeValueView(ctx: HandlerContext, assetId: AssetId): Promise<ValueView> {
+    const idb = await ctx.values.get(idbCtx)();
     const req = new AssetMetadataByIdRequest({ assetId });
     const { denomMetadata } = await assetMetadataById(req, ctx);
 
@@ -190,7 +189,7 @@ class BalancesAggregator {
       });
     } else {
       if (!this.estimatedPriceByPricedAsset[uint8ArrayToBase64(assetId.inner)]) {
-        const prices = await this.indexedDb.getPricesForAsset(
+        const prices = await idb.getPricesForAsset(
           denomMetadata as Metadata,
           this.latestBlockHeight,
         );

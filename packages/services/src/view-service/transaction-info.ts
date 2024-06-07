@@ -1,16 +1,15 @@
-import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { generateTransactionInfo } from '@penumbra-zone/wasm/transaction';
+import type { Impl } from '.';
 import { fvkCtx } from '../ctx/full-viewing-key';
+import { idbCtx } from '../ctx/prax';
 
 export const transactionInfo: Impl['transactionInfo'] = async function* (req, ctx) {
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb } = await services.getWalletServices();
+  const idb = await ctx.values.get(idbCtx)();
 
   const fvk = ctx.values.get(fvkCtx);
 
-  for await (const txRecord of indexedDb.iterateTransactions()) {
+  for await (const txRecord of idb.iterateTransactions()) {
     // filter transactions between startHeight and endHeight, inclusive
     if (
       !txRecord.transaction ||
@@ -22,7 +21,7 @@ export const transactionInfo: Impl['transactionInfo'] = async function* (req, ct
     const { txp: perspective, txv: view } = await generateTransactionInfo(
       await fvk(),
       txRecord.transaction,
-      indexedDb.constants(),
+      idb.constants(),
     );
     const txInfo = new TransactionInfo({
       height: txRecord.height,

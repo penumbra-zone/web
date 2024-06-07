@@ -1,15 +1,10 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+import { idbCtx } from '../ctx/prax';
 
 export const ownedPositionIds: Impl['ownedPositionIds'] = async function* (req, ctx) {
-  const services = await ctx.values.get(servicesCtx)();
+  const idb = await ctx.values.get(idbCtx)();
 
-  const { indexedDb } = await services.getWalletServices();
-
-  for await (const positionId of indexedDb.getOwnedPositionIds(
-    req.positionState,
-    req.tradingPair,
-  )) {
+  for await (const positionId of idb.getOwnedPositionIds(req.positionState, req.tradingPair)) {
     yield { positionId: positionId };
   }
 };

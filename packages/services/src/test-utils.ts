@@ -63,17 +63,6 @@ export interface StakeMock {
   validatorPenalty?: Mock;
 }
 
-interface MockServicesInner {
-  indexedDb?: IndexedDbMock;
-  viewServer?: ViewServerMock;
-  querier?: MockQuerier;
-}
-
-export interface MockServices {
-  getWalletServices?: Mock<[], Promise<MockServicesInner>>;
-  querier?: MockQuerier;
-}
-
 export interface MockExtLocalCtx {
   get: Mock;
 }

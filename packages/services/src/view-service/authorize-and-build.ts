@@ -1,5 +1,5 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+import { idbCtx } from '../ctx/prax';
 import { optimisticBuild } from './util/build-tx';
 import { custodyAuthorize } from './util/custody-authorize';
 import { getWitness } from '@penumbra-zone/wasm/build';
@@ -10,13 +10,12 @@ export const authorizeAndBuild: Impl['authorizeAndBuild'] = async function* (
   { transactionPlan },
   ctx,
 ) {
-  const services = await ctx.values.get(servicesCtx)();
   if (!transactionPlan) throw new ConnectError('No tx plan in request', Code.InvalidArgument);
 
-  const { indexedDb } = await services.getWalletServices();
+  const idb = await ctx.values.get(idbCtx)();
   const fvk = ctx.values.get(fvkCtx);
 
-  const sct = await indexedDb.getStateCommitmentTree();
+  const sct = await idb.getStateCommitmentTree();
   const witnessData = getWitness(transactionPlan, sct);
 
   yield* optimisticBuild(

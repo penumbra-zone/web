@@ -27,14 +27,14 @@ import { connectChannelAdapter } from '@penumbra-zone/transport-dom/adapter';
 // context
 import { approverCtx } from '@penumbra-zone/services/ctx/approver';
 import { fvkCtx } from '@penumbra-zone/services/ctx/full-viewing-key';
-import { servicesCtx } from '@penumbra-zone/services/ctx/prax';
+import { idbCtx, querierCtx } from '@penumbra-zone/services/ctx/prax';
 import { skCtx } from '@penumbra-zone/services/ctx/spend-key';
 import { approveTransaction } from './approve-transaction';
 import { getFullViewingKey } from './ctx/full-viewing-key';
 import { getSpendKey } from './ctx/spend-key';
 
 // context clients
-import { StakeService, CustodyService } from '@penumbra-zone/protobuf';
+import { CustodyService, StakeService } from '@penumbra-zone/protobuf';
 import { custodyClientCtx } from '@penumbra-zone/services/ctx/custody-client';
 import { stakeClientCtx } from '@penumbra-zone/services/ctx/stake-client';
 import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
@@ -44,14 +44,14 @@ import {
   FullViewingKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import type { WalletJson } from '@penumbra-zone/types/wallet';
 import {
   fixEmptyGrpcEndpointAfterOnboarding,
   onboardGrpcEndpoint,
   onboardWallet,
 } from './storage/onboard';
 
-const startServices = async (wallet: WalletJson) => {
+const startServices = async () => {
+  const wallet = await onboardWallet();
   const grpcEndpoint = await onboardGrpcEndpoint();
   const services = new Services({
     idbVersion: IDB_VERSION,
@@ -65,8 +65,7 @@ const startServices = async (wallet: WalletJson) => {
 };
 
 const getServiceHandler = async () => {
-  const wallet = await onboardWallet();
-  const services = backOff(() => startServices(wallet), {
+  const services = backOff(() => startServices(), {
     retry: (e, attemptNumber) => {
       console.log("Prax couldn't start services-context", attemptNumber, e);
       return true;
@@ -98,7 +97,13 @@ const getServiceHandler = async () => {
 
       // remaining context for all services
       contextValues.set(fvkCtx, getFullViewingKey);
-      contextValues.set(servicesCtx, () => services);
+
+      // prax-specific keys that need refactor
+      contextValues.set(idbCtx, async () => (await (await services).getWalletServices()).indexedDb);
+      contextValues.set(
+        querierCtx,
+        async () => (await (await services).getWalletServices()).querier,
+      );
 
       // additional context for custody service only
       const { pathname } = new URL(req.url);
