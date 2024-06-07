@@ -7,7 +7,7 @@ interface BlockTimestampProps {
   timestamp: string;
 }
 
-function formatTimestampShort(timestamp: string) {
+export function formatTimestampShort(timestamp: string) {
   const date = new Date(timestamp);
   const month = date.toLocaleString("en-US", { month: "short" });
   const day = date.getUTCDate();
