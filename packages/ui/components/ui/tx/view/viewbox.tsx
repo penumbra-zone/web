@@ -17,7 +17,7 @@ export const ViewBox = ({ label, visibleContent, isOpaque }: ViewBoxProps) => {
   // if isOpaque is undefined, set it to !visibleContent
   isOpaque = isOpaque ?? !visibleContent;
   return (
-    <Box>
+    <Box overflow='xHidden'>
       <div
         className={cn(
           'flex flex-col gap-1 break-all overflow-hidden',

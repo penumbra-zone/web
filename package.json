@@ -9,6 +9,7 @@
     "buf-update": "pnpm update --latest \"@buf/*\" \"@bufbuild/*\" \"@connectrpc/*\" && pnpm syncpack fix-mismatches && pnpm install",
     "build": "turbo build",
     "clean": "turbo clean",
+    "clean-modules": "rm -rf node_modules apps/*/node_modules packages/*/node_modules pnpm-lock.yaml",
     "clean:vitest-mjs": "find . -type f -name 'vite*.config.ts.timestamp-*-*.mjs' -ls -delete",
     "compile": "turbo compile",
     "dev": "turbo dev",

@@ -3,7 +3,7 @@ import path from 'path';
 import CopyPlugin from 'copy-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import url from 'url';
-// eslint-disable-next-line import/no-named-as-default
+
 import webpack from 'webpack';
 
 // Loads default vars from `.env.testnet` & `.env.mainnet` file in this directory.
@@ -23,7 +23,6 @@ const keysPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbr
  *   This is why `JSON.stringify()` is used, to ensure the values include quotes in the final output.
  */
 const definitions = {
-  CHAIN_ID: JSON.stringify(process.env['CHAIN_ID']),
   PRAX: JSON.stringify(process.env['PRAX']),
   PRAX_ORIGIN: JSON.stringify(`chrome-extension://${process.env['PRAX']}`),
   IDB_VERSION: JSON.stringify(Number(process.env['IDB_VERSION'])),

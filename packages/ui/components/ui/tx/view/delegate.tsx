@@ -29,8 +29,10 @@ export const DelegateComponent = ({ value }: { value: Delegate }) => {
 
           {/** @todo: Render validator name/etc. after fetching? */}
           {!!value.validatorIdentity && (
-            <ActionDetails.Row label='Validator identity' truncate>
-              {bech32mIdentityKey(value.validatorIdentity)}
+            <ActionDetails.Row label='Validator identity'>
+              <ActionDetails.TruncatedText>
+                {bech32mIdentityKey(value.validatorIdentity)}
+              </ActionDetails.TruncatedText>
             </ActionDetails.Row>
           )}
         </ActionDetails>

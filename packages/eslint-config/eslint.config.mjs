@@ -5,7 +5,6 @@ import { fixupConfigRules } from '@eslint/compat';
 import importPlugin from 'eslint-plugin-import';
 import tailwindPlugin from 'eslint-plugin-tailwindcss';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
-import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import reactRecommended from 'eslint-plugin-react/configs/recommended.js';
 import turboPlugin from 'eslint-plugin-turbo';
 import vitestPlugin from 'eslint-plugin-vitest';
@@ -24,7 +23,6 @@ export const penumbraEslintConfig = {
   plugins: {
     import: importPlugin,
     tailwindcss: tailwindPlugin,
-    'react-hooks': reactHooksPlugin,
     turbo: turboPlugin,
     vitest: vitestPlugin,
     storybook: storybookPlugin,
@@ -45,7 +43,6 @@ export const penumbraEslintConfig = {
     },
   },
   rules: {
-    ...reactHooksPlugin.configs.recommended.rules,
     ...tailwindPlugin.configs.recommended.rules,
     ...vitestPlugin.configs.recommended.rules,
     ...storybookPlugin.configs.recommended.rules,
