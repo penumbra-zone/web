@@ -37,7 +37,7 @@ const BlockTimestampView: FC<BlockTimestampProps> = ({
         </Text>
         <Text>
           <a
-            href={`block/${blockHeight}`}
+            href={`/block/${blockHeight}`}
             target="_blank"
             rel="noreferrer"
             style={{
