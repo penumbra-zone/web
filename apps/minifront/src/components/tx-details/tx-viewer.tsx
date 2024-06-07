@@ -6,7 +6,10 @@ import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { useState } from 'react';
 import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picker';
 import { asPublicTransactionView } from '@penumbra-zone/perspective/translators/transaction-view';
-import useReceiverView from './hooks';
+import { typeRegistry } from '@penumbra-zone/protobuf';
+import { useQuery } from '@tanstack/react-query';
+import fetchReceiverView from './hooks';
+import { classifyTransaction } from '@penumbra-zone/perspective/transaction/classify';
 
 export enum TxDetailsTab {
   PUBLIC = 'public',
@@ -23,8 +26,23 @@ const OPTIONS = [
 export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
   const [option, setOption] = useState(TxDetailsTab.PRIVATE);
 
-  // Define custom hooks that call async translators.
-  const { receiverView } = useReceiverView(txInfo, option);
+  // classify the transaction type
+  let transactionClassification = classifyTransaction(txInfo.view);
+
+  // filter for reciever view
+  const showReceiverTransactionView = transactionClassification === 'send';
+  const filteredOptions = showReceiverTransactionView
+    ? OPTIONS
+    : OPTIONS.filter(option => option.value !== TxDetailsTab.RECIEVER);
+
+  // use React-Query to invoke custom hooks that call async translators.
+  const { data: receiverView } = useQuery(
+    ['receiverView', txInfo, option],
+    () => fetchReceiverView(txInfo),
+    {
+      enabled: option === TxDetailsTab.RECIEVER && !!txInfo,
+    },
+  );
 
   return (
     <div>
@@ -32,18 +50,24 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
       <div className='mb-8 break-all font-mono italic text-muted-foreground'>{hash}</div>
 
       <div className='mx-auto mb-4 max-w-[70%]'>
-        <SegmentedPicker options={OPTIONS} value={option} onChange={setOption} grow size='lg' />
+        <SegmentedPicker
+          options={filteredOptions}
+          value={option}
+          onChange={setOption}
+          grow
+          size='lg'
+        />
       </div>
       {option === TxDetailsTab.PRIVATE && (
         <>
           <TransactionViewComponent txv={txInfo.view!} />
           <div className='mt-8'>
             <div className='text-xl font-bold'>Raw JSON</div>
-            <JsonViewer jsonObj={txInfo.toJson() as Jsonified<TransactionInfo>} />
+            <JsonViewer jsonObj={txInfo.toJson({ typeRegistry }) as Jsonified<TransactionInfo>} />
           </div>
         </>
       )}
-      {option === TxDetailsTab.RECIEVER && receiverView && (
+      {option === TxDetailsTab.RECIEVER && receiverView && showReceiverTransactionView && (
         <TransactionViewComponent txv={receiverView} />
       )}
       {option === TxDetailsTab.PUBLIC && (
