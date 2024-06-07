@@ -156,7 +156,8 @@ export class IndexerQuerier {
       b.height as block_height
     FROM attributes a
     INNER JOIN events e ON a.event_id = e.rowid
-    INNER JOIN tx_results tr ON e.block_id = tr.block_id and e.block_id = tr.block_id
+    INNER JOIN tx_events te ON a.value = te.value and te.composite_key = a.composite_key
+    INNER JOIN tx_results tr ON tr.block_id = e.block_id and te.index = tr.index
     INNER JOIN block_events b ON e.block_id = b.block_id and b.key = 'height' and b.type = 'block'
     LEFT JOIN attributes additional_attributes ON additional_attributes.event_id = a.event_id
     WHERE b.height >= $1 and b.height < $2 and (a.composite_key like '%PositionOpen%' or a.composite_key like '%PositionWithdraw%' or a.composite_key like '%PositionClose%s')
@@ -189,7 +190,8 @@ export class IndexerQuerier {
       FROM attributes a
       INNER JOIN events e ON a.event_id = e.rowid
       INNER JOIN block_events b ON e.block_id = b.block_id AND b.key = 'height'
-      INNER JOIN tx_results tr ON tr.block_id = e.block_id
+      INNER JOIN tx_events te ON a.value = te.value and te.composite_key = a.composite_key
+      INNER JOIN tx_results tr ON tr.block_id = e.block_id and te.index = tr.index
       LEFT JOIN attributes additional_attributes ON additional_attributes.event_id = a.event_id
       WHERE b.height = $1 AND a.composite_key LIKE '%dex%' 
       GROUP BY a.event_id, e.block_id, e.tx_id, e.type, tr.tx_hash, tr.created_at, tr.index, b.height
@@ -206,7 +208,7 @@ export class IndexerQuerier {
       block_height
   FROM RankedTrades
   WHERE 
-      cnt = 1 OR rn > 1; -- Exclude the lowest tr.index when there are duplicates for an event_id
+      cnt = 1 OR rn > 1 AND type like '%EventPosition%'; -- Exclude the lowest tr.index when there are duplicates for an event_id
   `;
     // Use parameterized query to prevent SQL injection
     const res = await this.query(queryText, [`${blockHeight}`]);
