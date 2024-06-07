@@ -162,7 +162,7 @@ pub fn build_parallel(
 }
 
 #[wasm_bindgen(getter_with_clone)]
-pub struct TxInfo {
+pub struct TxpAndTxvBytes {
     pub txp: Vec<u8>,
     pub txv: Vec<u8>,
 }
@@ -178,7 +178,7 @@ pub async fn transaction_perspective_and_view(
     full_viewing_key: &[u8],
     tx: &[u8],
     idb_constants: JsValue,
-) -> WasmResult<TxInfo> {
+) -> WasmResult<TxpAndTxvBytes> {
     utils::set_panic_hook();
 
     let transaction = Transaction::decode(tx)?;
@@ -186,7 +186,7 @@ pub async fn transaction_perspective_and_view(
     let fvk = FullViewingKey::decode(full_viewing_key)?;
     let (txp, txv) = transaction_info_inner(fvk, transaction, constants).await?;
 
-    Ok(TxInfo {
+    Ok(TxpAndTxvBytes {
         txp: txp.encode_to_vec(),
         txv: txv.encode_to_vec(),
     })
