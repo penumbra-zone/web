@@ -4,4 +4,3 @@ declare const PRAX: string;
 declare const PRAX_ORIGIN: string;
 declare const IDB_VERSION: number;
 declare const MINIFRONT_URL: string;
-declare const CHAIN_ID: string;

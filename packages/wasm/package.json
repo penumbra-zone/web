@@ -33,6 +33,7 @@
     }
   },
   "dependencies": {
+    "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "zod": "^3.23.8"
   },

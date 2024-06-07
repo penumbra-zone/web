@@ -16,7 +16,7 @@ import { Services } from '@penumbra-zone/services-context';
 import { backOff } from 'exponential-backoff';
 
 // all rpc implementations, local and proxy
-import { getRpcImpls } from './get-rpc-impls';
+import { getRpcImpls } from './rpc';
 
 // adapter
 import { ConnectRouter, createContextValues, PromiseClient } from '@connectrpc/connect';

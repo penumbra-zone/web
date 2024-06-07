@@ -1,9 +1,10 @@
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { Box } from '@penumbra-zone/ui/components/ui/box';
-import BalanceSelector from '../../shared/balance-selector';
-import { ArrowRight } from 'lucide-react';
-import { AssetSelector } from '../../shared/asset-selector';
+import { getAmount } from '@penumbra-zone/getters/balances-response';
+import { joinLoHiAmount } from '@penumbra-zone/types/amount';
+import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
+import { Box } from '@penumbra-zone/ui/components/ui/box';
+import { CandlestickPlot } from '@penumbra-zone/ui/components/ui/candlestick-plot';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import {
@@ -11,14 +12,19 @@ import {
   getBalanceView,
   getMetadataFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
-import { amountMoreThanBalance } from '../../../state/send';
+import { ArrowRight } from 'lucide-react';
+import { useEffect } from 'react';
+import { getBlockDate } from '../../../fetchers/block-date';
 import { AllSlices } from '../../../state';
+import { amountMoreThanBalance } from '../../../state/send';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { getKnownZeroValueView } from '@penumbra-zone/getters/value-view';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { useMemo } from 'react';
+import { AssetSelector } from '../../shared/asset-selector';
+import BalanceSelector from '../../shared/balance-selector';
 
 const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
@@ -52,6 +58,8 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
   amount: state.swap.amount,
   setAmount: state.swap.setAmount,
   balancesResponses: state.swap.balancesResponses,
+  priceHistory: state.swap.priceHistory,
+  latestKnownBlockHeight: state.status.latestKnownBlockHeight,
 });
 
 /**
@@ -70,7 +78,21 @@ export const TokenSwapInput = () => {
     assetOut,
     setAssetOut,
     balancesResponses,
+    priceHistory,
+    latestKnownBlockHeight = 0n,
   } = useStoreShallow(tokenSwapInputSelector);
+
+  useEffect(() => {
+    if (!assetIn || !assetOut) return;
+    else return priceHistory.load();
+  }, [assetIn, assetOut]);
+
+  useEffect(() => {
+    if (!priceHistory.candles.length) return;
+    else if (latestKnownBlockHeight % 10n) return;
+    else return priceHistory.load();
+  }, [priceHistory, latestKnownBlockHeight]);
+
   const maxAmount = getAmount.optional()(assetIn);
   const maxAmountAsString = maxAmount ? joinLoHiAmount(maxAmount).toString() : undefined;
 
@@ -129,6 +151,16 @@ export const TokenSwapInput = () => {
             {assetOut && <BalanceValueView valueView={assetOutBalance} />}
           </div>
         </div>
+        {priceHistory.startMetadata && priceHistory.endMetadata && priceHistory.candles.length && (
+          <CandlestickPlot
+            className='h-[480px] w-full bg-charcoal'
+            candles={priceHistory.candles}
+            startMetadata={priceHistory.startMetadata}
+            endMetadata={priceHistory.endMetadata}
+            latestKnownBlockHeight={Number(latestKnownBlockHeight)}
+            getBlockDate={getBlockDate}
+          />
+        )}
       </div>
     </Box>
   );

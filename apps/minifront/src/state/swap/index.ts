@@ -1,20 +1,21 @@
-import { SliceCreator } from '..';
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { SliceCreator } from '..';
+import { DurationOption } from './constants';
 import { DutchAuctionSlice, createDutchAuctionSlice } from './dutch-auction';
 import { InstantSwapSlice, createInstantSwapSlice } from './instant-swap';
-import { DurationOption } from './constants';
+import { PriceHistorySlice, createPriceHistorySlice } from './price-history';
 
 export interface SimulateSwapResult {
+  metadataByAssetId: Record<string, Metadata>;
   output: ValueView;
-  unfilled: ValueView;
   priceImpact: number | undefined;
   traces?: SwapExecution_Trace[];
-  metadataByAssetId: Record<string, Metadata>;
+  unfilled: ValueView;
 }
 
 interface Actions {
@@ -40,6 +41,7 @@ interface State {
 interface Subslices {
   dutchAuction: DutchAuctionSlice;
   instantSwap: InstantSwapSlice;
+  priceHistory: PriceHistorySlice;
 }
 
 const INITIAL_STATE: State = {
@@ -54,6 +56,9 @@ export type SwapSlice = Actions & State & Subslices;
 
 export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) => ({
   ...INITIAL_STATE,
+  dutchAuction: createDutchAuctionSlice()(set, get, store),
+  instantSwap: createInstantSwapSlice()(set, get, store),
+  priceHistory: createPriceHistorySlice()(set, get, store),
   setBalancesResponses: balancesResponses => {
     set(state => {
       state.swap.balancesResponses = balancesResponses;
@@ -64,7 +69,6 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
       state.swap.swappableAssets = swappableAssets;
     });
   },
-  assetIn: undefined,
   setAssetIn: asset => {
     get().swap.resetSubslices();
     set(({ swap }) => {
@@ -83,8 +87,6 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
       swap.amount = amount;
     });
   },
-  dutchAuction: createDutchAuctionSlice()(set, get, store),
-  instantSwap: createInstantSwapSlice()(set, get, store),
   setDuration: duration => {
     get().swap.resetSubslices();
     set(state => {

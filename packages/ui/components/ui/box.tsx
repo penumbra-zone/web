@@ -16,6 +16,9 @@ const variants = cva('rounded-lg border bg-background', {
       default: '',
       error: 'border-red',
     },
+    overflow: {
+      xHidden: 'overflow-x-hidden',
+    },
   },
   defaultVariants: {
     spacing: 'default',
@@ -31,6 +34,7 @@ export const Box = ({
   label,
   spacing,
   state,
+  overflow,
   layout,
   layoutId,
   headerContent,
@@ -46,7 +50,7 @@ export const Box = ({
     <motion.div
       layout={layout ?? !!layoutId}
       layoutId={layoutId}
-      className={cn('flex flex-col gap-4', variants({ spacing, state }))}
+      className={cn('flex flex-col gap-4', variants({ spacing, state, overflow }))}
       /**
        * Set the border radius via the style prop so it doesn't get distorted by framer-motion.
        *

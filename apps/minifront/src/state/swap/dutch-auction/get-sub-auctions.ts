@@ -9,7 +9,7 @@ import { DutchAuctionSlice } from '.';
 import { viewClient } from '../../../clients';
 import { GDA_RECIPES, GdaRecipe, STEP_COUNT } from '../constants';
 import { BLOCKS_PER_MINUTE } from '../../constants';
-import { getPoissonDistribution } from './get-poisson-distribution';
+import { timeUntilNextEvent } from './time-until-next-event';
 import { splitLoHi } from '@penumbra-zone/types/lo-hi';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { BigNumber } from 'bignumber.js';
@@ -31,11 +31,11 @@ const getStartHeight = (fullSyncHeight: bigint) => fullSyncHeight + BLOCKS_PER_M
  */
 const getSubAuctionStartHeights = (overallStartHeight: bigint, recipe: GdaRecipe): bigint[] => {
   const startHeights: bigint[] = [];
-  const lambda = recipe.poissonIntensityPerBlock * Number(recipe.durationInBlocks);
+  const lambda = recipe.poissonIntensityPerBlock;
   let currentHeight = overallStartHeight;
 
   for (let i = 0n; i < recipe.numberOfSubAuctions; i++) {
-    const fastForwardClock = getPoissonDistribution(lambda, Number(recipe.numberOfSubAuctions));
+    const fastForwardClock = timeUntilNextEvent(lambda);
     currentHeight += BigInt(Math.ceil(fastForwardClock));
     startHeights.push(currentHeight);
   }
@@ -93,18 +93,17 @@ export const getSubAuctions = async ({
 
   const overallStartHeight = getStartHeight(fullSyncHeight);
 
-  return getSubAuctionStartHeights(overallStartHeight, recipe).map(
-    startHeight =>
-      new TransactionPlannerRequest_ActionDutchAuctionSchedule({
-        description: {
-          startHeight,
-          endHeight: startHeight + recipe.subAuctionDurationInBlocks,
-          input: { amount: scaledInputAmount, assetId: inputAssetId },
-          outputId: outputAssetId,
-          stepCount: STEP_COUNT,
-          minOutput: scaledMinOutputAmount,
-          maxOutput: scaledMaxOutputAmount,
-        },
-      }),
-  );
+  return getSubAuctionStartHeights(overallStartHeight, recipe).map(startHeight => {
+    return new TransactionPlannerRequest_ActionDutchAuctionSchedule({
+      description: {
+        startHeight,
+        endHeight: startHeight + recipe.subAuctionDurationInBlocks,
+        input: { amount: scaledInputAmount, assetId: inputAssetId },
+        outputId: outputAssetId,
+        stepCount: STEP_COUNT,
+        minOutput: scaledMinOutputAmount,
+        maxOutput: scaledMaxOutputAmount,
+      },
+    });
+  });
 };

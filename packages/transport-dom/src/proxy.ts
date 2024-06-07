@@ -1,5 +1,11 @@
 import type { ServiceType } from '@bufbuild/protobuf';
-import type { CallOptions, HandlerContext, MethodImpl, PromiseClient } from '@connectrpc/connect';
+import type {
+  CallOptions,
+  HandlerContext,
+  MethodImpl,
+  PromiseClient,
+  ServiceImpl,
+} from '@connectrpc/connect';
 import { CreateAnyMethodImpl, makeAnyServiceImpl } from './any-impl';
 
 export type ProxyContextHandler = <I>(i: I, ctx: HandlerContext) => [I, CallOptions];
@@ -51,17 +57,25 @@ export const simpleContextHandler: ProxyContextHandler = (i, ctx) => {
  * To do this, it iterates over each method in the service type definition,
  * creating a method on the proxy impl that calls the provided client.
  *
- * You can provide a contextHandler function to modify any request.
+ * You can provide a contextHandler function to modify any request or the
+ * client-side contextValues of any request.
+ *
+ * The optional makePartialServiceImpl parameter can be provided to override the
+ * generated proxy methods with your own implementations.
  */
 export const createProxyImpl = <S extends ServiceType>(
   service: S,
   client: PromiseClient<S>,
   contextHandler = defaultContextHandler,
+  makePartialServiceImpl?: (c: PromiseClient<S>) => Partial<ServiceImpl<S>>,
 ) => {
   const makeAnyProxyMethod: CreateAnyMethodImpl<S> = (method, localName) => {
     const clientMethod = client[localName] as (cI: unknown, cOpt: CallOptions) => unknown;
     const impl = (hI: unknown, hCtx: HandlerContext) => clientMethod(...contextHandler(hI, hCtx));
     return impl as MethodImpl<typeof method>;
   };
-  return makeAnyServiceImpl(service, makeAnyProxyMethod);
+  return {
+    ...makeAnyServiceImpl(service, makeAnyProxyMethod),
+    ...makePartialServiceImpl?.(client),
+  };
 };
