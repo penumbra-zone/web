@@ -27,7 +27,7 @@ export const TxViewer = ({ txInfo, hash }: TxDetailsLoaderResult) => {
   const [option, setOption] = useState(TxDetailsTab.PRIVATE);
 
   // classify the transaction type
-  let transactionClassification = classifyTransaction(txInfo.view);
+  const transactionClassification = classifyTransaction(txInfo.view);
 
   // filter for reciever view
   const showReceiverTransactionView = transactionClassification === 'send';
