@@ -14,6 +14,10 @@ export const pageIndexLoader = async () => {
 
   if (!wallets.length) return redirect(PagePath.WELCOME);
 
+  const numeraireAssetId = await localExtStorage.get('numeraireAssetId');
+
+  if (!numeraireAssetId) return redirect(PagePath.SET_GRPC_ENDPOINT);
+
   return null;
 };
 
