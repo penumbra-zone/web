@@ -9,6 +9,7 @@ import { LoadingSpinner } from "@/components/util/loadingSpinner";
 import { testnetConstants } from "@/constants/configConstants";
 import { formatTimestampShort } from "@/components/blockTimestamp";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
+import { innerToBech32Address } from "@/utils/math/bech32";
 
 export default function Block() {
   const router = useRouter();
@@ -142,12 +143,22 @@ export default function Block() {
     }
   }, [block_height, blockHeight]);
 
+  // Enum for the different types of data boxes
+  enum DataBoxType {
+    OPEN_POSITIONS = "open_positions",
+    CLOSE_POSITIONS = "close_positions",
+    ARBS = "arbs",
+    SWAPS = "swaps",
+  }
+
   const DataBox = ({
     title,
     dataLength,
+    type,
   }: {
     title: string;
     dataLength: number;
+    type: DataBoxType;
   }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -185,8 +196,61 @@ export default function Block() {
         )}
         {isExpanded && dataLength > 0 && (
           <Box marginTop="10px">
-            {/* Render additional details here */}
-            <Text>Details about {title}</Text>
+            {type === DataBoxType.OPEN_POSITIONS ? (
+              <VStack
+                fontSize={"small"}
+                fontFamily={"monospace"}
+                spacing={"10px"}
+                paddingTop={"10px"}
+              >
+                {blockData!.openPositionEvents.map((positionEvent) => (
+                  <a
+                    key={positionEvent.lpevent_attributes.positionId.inner}
+                    href={`/lp/${innerToBech32Address(
+                      positionEvent.lpevent_attributes.positionId.inner,
+                      "plpid"
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <Text>
+                      {innerToBech32Address(
+                        positionEvent.lpevent_attributes.positionId.inner,
+                        "plpid"
+                      )}
+                    </Text>
+                  </a>
+                ))}
+              </VStack>
+            ) : type === DataBoxType.CLOSE_POSITIONS ? (
+              <VStack
+                fontSize={"small"}
+                fontFamily={"monospace"}
+                spacing={"10px"}
+                paddingTop={"10px"}
+              >
+                {blockData!.closePositionEvents.map((positionEvent) => (
+                  <a
+                    key={positionEvent.lpevent_attributes.positionId.inner}
+                    href={`/lp/${innerToBech32Address(
+                      positionEvent.lpevent_attributes.positionId.inner,
+                      "plpid"
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <Text>
+                      {innerToBech32Address(
+                        positionEvent.lpevent_attributes.positionId.inner,
+                        "plpid"
+                      )}
+                    </Text>
+                  </a>
+                ))}
+              </VStack>
+            ) : (
+              <Text>Unimplemented type: {type}</Text>
+            )}
           </Box>
         )}
       </Box>
@@ -256,18 +320,25 @@ export default function Block() {
             alignContent={"center"}
             textAlign={"center"}
           >
-            <DataBox title="Positions Opened" dataLength={1} />
+            <DataBox
+              title="Positions Opened"
+              dataLength={blockData!.openPositionEvents.length}
+              type={DataBoxType.OPEN_POSITIONS}
+            />
             <DataBox
               title="Arbs"
               dataLength={blockData!.arbExecutions.length}
+              type={DataBoxType.ARBS}
             />
             <DataBox
               title="Batch Swaps"
               dataLength={blockData!.swapExecutions.length}
+              type={DataBoxType.SWAPS}
             />
             <DataBox
               title="Positions Closed"
               dataLength={blockData!.closePositionEvents.length}
+              type={DataBoxType.CLOSE_POSITIONS}
             />
           </VStack>
         </>
