@@ -1,6 +1,6 @@
 import Layout from "@/components/layout";
 import { useRouter } from "next/router";
-import { Box, Link, Text, VStack, IconButton } from "@chakra-ui/react";
+import { Box, Text, VStack, IconButton } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { BlockDetailedSummaryData } from "@/utils/types/block";
 import { BlockInfo, LiquidityPositionEvent } from "@/utils/indexer/types/lps";
@@ -10,6 +10,102 @@ import { testnetConstants } from "@/constants/configConstants";
 import { formatTimestampShort } from "@/components/blockTimestamp";
 import { AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { innerToBech32Address } from "@/utils/math/bech32";
+import {
+  SwapExecution,
+  SwapExecution_Trace,
+} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb";
+import BigNumber from "bignumber.js";
+import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
+import { Token } from "@/utils/types/token";
+
+export const Price = ({
+  trace,
+  metadataByAssetId,
+}: {
+  trace: SwapExecution_Trace;
+  metadataByAssetId: Record<string, Token>;
+}) => {
+  const inputValue = trace.value[0];
+  const outputValue = trace.value[trace.value.length - 1];
+  let price: string | undefined;
+
+  if (
+    inputValue?.amount &&
+    outputValue?.amount &&
+    inputValue.assetId &&
+    outputValue.assetId
+  ) {
+    const firstValueMetadata =
+      metadataByAssetId[inputValue.assetId.inner as unknown as string];
+    const lastValueMetadata =
+      metadataByAssetId[outputValue.assetId.inner as unknown as string];
+
+    if (firstValueMetadata?.symbol && lastValueMetadata?.symbol) {
+      const inputDisplayDenomExponent = firstValueMetadata.decimals ?? 0;
+      const outputDisplayDenomExponent = lastValueMetadata.decimals ?? 0;
+      const formattedInputAmount =
+        Number(inputValue.amount) / 10 ** inputDisplayDenomExponent;
+      const formattedOutputAmount =
+        Number(outputValue.amount) / 10 ** outputDisplayDenomExponent;
+      const outputToInputRatio = new BigNumber(formattedOutputAmount)
+        .dividedBy(formattedInputAmount)
+        .toFormat(outputDisplayDenomExponent);
+
+      // Remove trailing zeros
+      const outputToInputFormatted = outputToInputRatio.replace(/\.?0+$/, "");
+
+      price = `1 ${firstValueMetadata.symbol} = ${outputToInputFormatted} ${lastValueMetadata.symbol}`;
+    }
+  }
+
+  if (!price) return null;
+  return <span className="text-xs text-muted-foreground">{price}</span>;
+};
+
+// Enum for the different types of data boxes
+enum DataBoxType {
+  OPEN_POSITIONS = "open_positions",
+  CLOSE_POSITIONS = "close_positions",
+  ARBS = "arbs",
+  SWAPS = "swaps",
+}
+
+// Trace Type enum
+enum TraceType {
+  SWAP = DataBoxType.SWAPS,
+  ARB = DataBoxType.ARBS,
+}
+
+export const Trace = ({
+  trace,
+  metadataByAssetId,
+  type,
+}: {
+  trace: SwapExecution_Trace;
+  metadataByAssetId: Record<string, Token>;
+  type: TraceType;
+}) => {
+  return (
+    <div>
+      <div>
+        <span>
+          TODO - Display trace
+        </span>
+      </div>
+      {/* Only render price for non arbs (bc arbs are circular) */}
+      {type !== TraceType.ARB && (
+        <Price trace={trace} metadataByAssetId={metadataByAssetId} />
+      )}
+    </div>
+  );
+};
+
+const formatTimestampOrDefault = (timestamp: any) => {
+  if (timestamp === undefined || timestamp === "") {
+    return "Missing data in indexer to display timestamp";
+  }
+  return formatTimestampShort(timestamp);
+};
 
 export default function Block() {
   const router = useRouter();
@@ -72,10 +168,13 @@ export default function Block() {
               swapsResponse as SwapExecutionWithBlockHeight[];
 
             if (blockInfoList.length === 0) {
-              setError(`No data for block ${block_height} found`);
-              setIsLoading(false);
+              //setError(`No data for block ${block_height} found`);
+              //setIsLoading(false);
               console.log(`No data for block ${block_height} found`);
-              return;
+              blockInfoList.push({
+                height: height,
+                created_at: "",
+              });
             }
             console.log("Fetching data for block...");
 
@@ -143,14 +242,6 @@ export default function Block() {
     }
   }, [block_height, blockHeight]);
 
-  // Enum for the different types of data boxes
-  enum DataBoxType {
-    OPEN_POSITIONS = "open_positions",
-    CLOSE_POSITIONS = "close_positions",
-    ARBS = "arbs",
-    SWAPS = "swaps",
-  }
-
   const DataBox = ({
     title,
     dataLength,
@@ -161,6 +252,17 @@ export default function Block() {
     type: DataBoxType;
   }) => {
     const [isExpanded, setIsExpanded] = useState(false);
+    const tokenAssets = fetchAllTokenAssets();
+    const metadataByAssetId: Record<string, Token> = {};
+    tokenAssets.forEach((asset) => {
+      metadataByAssetId[asset.inner] = {
+        symbol: asset.symbol,
+        display: asset.display,
+        decimals: asset.decimals,
+        inner: asset.inner,
+        imagePath: asset.imagePath,
+      };
+    });
 
     const toggleExpand = () => {
       setIsExpanded(!isExpanded);
@@ -248,6 +350,40 @@ export default function Block() {
                   </a>
                 ))}
               </VStack>
+            ) : type === DataBoxType.ARBS ? (
+              <VStack
+                fontSize={"small"}
+                fontFamily={"monospace"}
+                spacing={"10px"}
+                paddingTop={"10px"}
+              >
+                {blockData!.arbExecutions.map(
+                  (swapExecution: SwapExecution) => (
+                    <>
+                      {/* TODO: summary per arb? */}
+                      <Text>
+                        -----------------------Arb-----------------------
+                      </Text>
+                      <VStack spacing={0}>
+                        {swapExecution.traces.map(
+                          (trace: SwapExecution_Trace, index: number) => (
+                            <>
+                              {/* TODO: summary per trace? */}
+                              <Text>-----------Trace-------------</Text>
+                              <Trace
+                                key={index}
+                                trace={trace}
+                                metadataByAssetId={metadataByAssetId}
+                                type={TraceType.ARB}
+                              />
+                            </>
+                          )
+                        )}
+                      </VStack>
+                    </>
+                  )
+                )}
+              </VStack>
             ) : (
               <Text>Unimplemented type: {type}</Text>
             )}
@@ -292,7 +428,7 @@ export default function Block() {
               textAlign={"center"}
               textColor="var(--charcoal-tertiary-bright)"
             >
-              {formatTimestampShort(blockData!.createdAt)}
+              {formatTimestampOrDefault(blockData?.createdAt)}
             </Text>
             <Text>
               <a
