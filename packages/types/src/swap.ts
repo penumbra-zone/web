@@ -35,14 +35,16 @@ const getUnfilledAmount = (swapView: SwapView): ValueView | undefined => {
   const delta1I = getDelta1IFromSwapViewGeneric(swapView);
   const delta2I = getDelta2IFromSwapViewGeneric(swapView);
 
-  const output1Value = getOutput1ValueOptionalGeneric(swapView) as ValueView;
-  const output2Value = getOutput2ValueOptionalGeneric(swapView) as ValueView;
+  const output1Value = getOutput1ValueOptionalGeneric(swapView);
+  const output2Value = getOutput2ValueOptionalGeneric(swapView);
 
   const is1To2Swap = isZero(delta2I);
   const is2To1Swap = isZero(delta1I);
 
-  if (is1To2Swap && output1Value && !isZero(getAmount(output1Value))) return output1Value;
-  if (is2To1Swap && output2Value && !isZero(getAmount(output2Value))) return output2Value;
+  if (is1To2Swap && output1Value && !isZero(getAmount(output1Value as ValueView)))
+    return output1Value as ValueView;
+  if (is2To1Swap && output2Value && !isZero(getAmount(output2Value as ValueView)))
+    return output2Value as ValueView;
 
   return undefined;
 };
@@ -64,10 +66,6 @@ export const getOneWaySwapValuesGeneric = (
       'Attempted to get one-way swap values from a two-way swap. `getOneWaySwapValues()` should only be called with a `SwapView` containing a one-way swap -- that is, a swap with at least one `swapPlaintext.delta*` that has an amount equal to zero.',
     );
   }
-
-  const output1 = getOutput1ValueOptionalGeneric(swapView);
-  const output2 = getOutput2ValueOptionalGeneric(swapView);
-
   const delta1I = getDelta1IFromSwapViewGeneric(swapView);
   const delta2I = getDelta2IFromSwapViewGeneric(swapView);
 
@@ -83,20 +81,16 @@ export const getOneWaySwapValuesGeneric = (
     },
   });
 
-  let output = (isZero(delta2I) ? output2 : output1) as ValueView;
-
-  if (!output) {
-    output = new ValueView({
-      valueView: {
-        case: 'knownAssetId',
-        value: {
-          metadata: isZero(delta2I)
-            ? getAsset2MetadataGeneric(swapView)
-            : getAsset1MetadataGeneric(swapView),
-        },
+  const output = new ValueView({
+    valueView: {
+      case: 'knownAssetId',
+      value: {
+        metadata: isZero(delta2I)
+          ? getAsset2MetadataGeneric(swapView)
+          : getAsset1MetadataGeneric(swapView),
       },
-    });
-  }
+    },
+  });
 
   return {
     input,
