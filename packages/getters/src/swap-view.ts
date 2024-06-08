@@ -1,70 +1,82 @@
-import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { createGetter } from './utils/create-getter';
-import { getValue, getValueOpaque } from './note-view';
 import {
-  getClaimFee,
-  getDelta1I,
-  getDelta1IOpaque,
-  getDelta2I,
-  getDelta2IOpaque,
-} from './swap-plaintext';
+  SwapBody,
+  SwapPlaintext,
+  SwapView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import { createGetter } from './utils/create-getter';
+import { getGenericValue } from './note-view';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 
-export const getOutput1 = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'visible' ? swapView.swapView.value.output1 : undefined,
+// Generic getter function for 'Output1'
+export const getOutput1Generic = createGetter((swapView?: SwapView) => {
+  if (!swapView) return undefined;
+
+  switch (swapView.swapView.case) {
+    case 'visible':
+      return swapView.swapView.value.output1!;
+    case 'opaque':
+      return swapView.swapView.value.output1Value!;
+    default:
+      return undefined;
+  }
+});
+export const getOutput1ValueGeneric = getOutput1Generic.pipe(getGenericValue);
+export const getOutput1ValueOptionalGeneric = getOutput1Generic.optional().pipe(getGenericValue);
+
+// Generic getter function for 'Output2'
+export const getOutput2Generic = createGetter((swapView?: SwapView) => {
+  if (!swapView) return undefined;
+
+  switch (swapView.swapView.case) {
+    case 'visible':
+      return swapView.swapView.value.output2;
+    case 'opaque':
+      return swapView.swapView.value.output2Value;
+    default:
+      return undefined;
+  }
+});
+export const getOutput2ValueGeneric = getOutput2Generic.pipe(getGenericValue);
+export const getOutput2ValueOptionalGeneric = getOutput2Generic.optional().pipe(getGenericValue);
+
+// Generic getter function for 'SwapPlaintext' and 'SwapBody' within SwapView
+const createSwapGetter = <T>(property: keyof T) => {
+  return createGetter((swapView?: SwapView) => {
+    if (!swapView) return undefined;
+
+    switch (swapView.swapView.case) {
+      case 'visible':
+        return swapView.swapView.value.swapPlaintext?.[property as keyof SwapPlaintext] as Amount;
+      case 'opaque':
+        return swapView.swapView.value.swap?.body?.[property as keyof SwapBody] as Amount;
+      default:
+        return undefined;
+    }
+  });
+};
+
+// Specific getters using the combined generic function
+export const getDelta1IFromSwapViewGeneric = createSwapGetter<SwapPlaintext & SwapBody>('delta1I');
+export const getDelta2IFromSwapViewGeneric = createSwapGetter<SwapPlaintext & SwapBody>('delta2I');
+export const getClaimFeeFromSwapViewGeneric = createSwapGetter<SwapPlaintext>('claimFee');
+
+// Generic getter function for 'Asset1Metadata'
+export const getAsset1MetadataGeneric = createGetter((swapView?: SwapView) =>
+  swapView?.swapView.case === 'visible' || swapView?.swapView.case === 'opaque'
+    ? swapView.swapView.value.asset1Metadata
+    : undefined,
 );
-export const getOutput1Value = getOutput1.pipe(getValue);
-export const getOutput1ValueOptional = getOutput1.optional().pipe(getValue);
 
-export const getOutput2 = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'visible' ? swapView.swapView.value.output2 : undefined,
-);
-export const getOutput2Value = getOutput2.pipe(getValue);
-export const getOutput2ValueOptional = getOutput2.optional().pipe(getValue);
-
-export const getSwapPlaintext = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'visible' ? swapView.swapView.value.swapPlaintext : undefined,
+// Generic getter function for 'Asset2Metadata'
+export const getAsset2MetadataGeneric = createGetter((swapView?: SwapView) =>
+  swapView?.swapView.case === 'visible' || swapView?.swapView.case === 'opaque'
+    ? swapView.swapView.value.asset2Metadata
+    : undefined,
 );
 
-export const getClaimFeeFromSwapView = getSwapPlaintext.pipe(getClaimFee);
-
-export const getDelta1IFromSwapView = getSwapPlaintext.pipe(getDelta1I);
-export const getDelta2IFromSwapView = getSwapPlaintext.pipe(getDelta2I);
-
-export const getAsset1Metadata = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'visible' ? swapView.swapView.value.asset1Metadata : undefined,
-);
-
-export const getAsset2Metadata = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'visible' ? swapView.swapView.value.asset2Metadata : undefined,
-);
-
+// Getter function for 'ClaimTx'
 export const getClaimTx = createGetter((swapView?: SwapView) =>
   swapView?.swapView.case === 'visible' ? swapView.swapView.value.claimTx : undefined,
-);
-
-export const getSwapPlaintextOpaque = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'opaque' ? swapView.swapView.value.swap?.body : undefined,
-);
-export const getDelta1IFromSwapViewOpaque = getSwapPlaintextOpaque.pipe(getDelta1IOpaque);
-export const getDelta2IFromSwapViewOpaque = getSwapPlaintextOpaque.pipe(getDelta2IOpaque);
-
-export const getOutput1Opaque = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'opaque' ? swapView.swapView.value.output1Value! : undefined,
-);
-export const getOutput2Opaque = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'opaque' ? swapView.swapView.value.output2Value : undefined,
-);
-
-export const getOutput1ValueOpaqueView = getOutput1Opaque.optional().pipe(getValueOpaque);
-export const getOutput1ValueOptionalOpaque = getOutput1Opaque.optional().pipe(getValueOpaque);
-export const getOutput2ValueOptionalOpaque = getOutput2Opaque.optional().pipe(getValueOpaque);
-
-export const getAsset1MetadataOpaque = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'opaque' ? swapView.swapView.value.asset1Metadata : undefined,
-);
-
-export const getAsset2MetadataOpaque = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'opaque' ? swapView.swapView.value.asset2Metadata : undefined,
 );
 
 /**

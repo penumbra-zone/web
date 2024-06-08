@@ -5,3 +5,11 @@ import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 export const getValue = createGetter((noteView?: NoteView) => noteView?.value);
 export const getAddress = createGetter((noteView?: NoteView) => noteView?.address);
 export const getValueOpaque = createGetter((valueView?: ValueView) => valueView);
+
+// Create a generic getter for both 'NoteView' and 'ValueView'
+export const getGenericValue = createGetter((view?: NoteView | ValueView) => {
+  if (view && 'value' in view) {
+    return view.value;
+  }
+  return view;
+});
