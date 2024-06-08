@@ -104,6 +104,7 @@ personal profile.
    - You can pin the Prax extension button to your toolbar for quick access.
 
 ## Security
+
 If you believe you've found a security-related issue with Penumbra,
 please disclose responsibly by contacting the Penumbra Labs team at
 security@penumbralabs.xyz.
