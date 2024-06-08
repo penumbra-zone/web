@@ -71,7 +71,6 @@ interface MockServicesInner {
 
 export interface MockServices {
   getWalletServices?: Mock<[], Promise<MockServicesInner>>;
-  querier?: MockQuerier;
 }
 
 export interface MockExtLocalCtx {

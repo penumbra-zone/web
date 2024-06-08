@@ -4,7 +4,7 @@ import { createGrpcWebTransport } from '@connectrpc/connect-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { ServicesMessage } from '@penumbra-zone/types/services';
+import { ServicesMessage } from '../../../message/services';
 import debounce from 'lodash/debounce';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 

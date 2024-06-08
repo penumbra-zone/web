@@ -11,10 +11,6 @@
 // side-effectful import attaches listeners
 import './listeners';
 
-// services
-import { Services } from '@penumbra-zone/services-context';
-import { backOff } from 'exponential-backoff';
-
 // all rpc implementations, local and proxy
 import { getRpcImpls } from './rpc';
 
@@ -40,41 +36,14 @@ import { stakeClientCtx } from '@penumbra-zone/services/ctx/stake-client';
 import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
 
 // storage
-import {
-  FullViewingKey,
-  WalletId,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import type { WalletJson } from '@penumbra-zone/types/wallet';
-import {
-  fixEmptyGrpcEndpointAfterOnboarding,
-  onboardGrpcEndpoint,
-  onboardWallet,
-} from './storage/onboard';
+import { fixEmptyGrpcEndpointAfterOnboarding, onboardGrpcEndpoint } from './storage/onboard';
 
-const startServices = async (wallet: WalletJson) => {
-  const grpcEndpoint = await onboardGrpcEndpoint();
-  const services = new Services({
-    idbVersion: IDB_VERSION,
-    grpcEndpoint,
-    walletId: WalletId.fromJsonString(wallet.id),
-    fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
-  });
-  await services.initialize();
-
-  return services;
-};
+// idb, querier, block processor
+import { startWalletServices } from './wallet-services';
 
 const getServiceHandler = async () => {
-  const wallet = await onboardWallet();
-  const services = backOff(() => startServices(wallet), {
-    retry: (e, attemptNumber) => {
-      console.log("Prax couldn't start services-context", attemptNumber, e);
-      return true;
-    },
-  });
-
-  const grpcEndpoint = await onboardGrpcEndpoint();
-  const rpcImpls = getRpcImpls(grpcEndpoint);
+  const walletServices = startWalletServices();
+  const rpcImpls = getRpcImpls(await onboardGrpcEndpoint());
 
   let custodyClient: PromiseClient<typeof CustodyService> | undefined;
   let stakeClient: PromiseClient<typeof StakeService> | undefined;
@@ -98,7 +67,7 @@ const getServiceHandler = async () => {
 
       // remaining context for all services
       contextValues.set(fvkCtx, getFullViewingKey);
-      contextValues.set(servicesCtx, () => services);
+      contextValues.set(servicesCtx, () => walletServices);
 
       // additional context for custody service only
       const { pathname } = new URL(req.url);

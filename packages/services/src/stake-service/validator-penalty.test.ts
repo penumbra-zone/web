@@ -24,9 +24,13 @@ describe('ValidatorPenalty request handler', () => {
     mockStakingQuerierValidatorPenalty = vi.fn().mockResolvedValue(mockValidatorPenaltyResponse);
 
     mockServices = {
-      querier: {
-        stake: { validatorPenalty: mockStakingQuerierValidatorPenalty },
-      },
+      getWalletServices: vi.fn(() =>
+        Promise.resolve({
+          querier: {
+            stake: { validatorPenalty: mockStakingQuerierValidatorPenalty },
+          },
+        }),
+      ) as MockServices['getWalletServices'],
     } satisfies MockServices;
 
     mockCtx = createHandlerContext({

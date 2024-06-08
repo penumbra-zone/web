@@ -29,11 +29,13 @@ describe('Status request handler', () => {
 
     mockServices = {
       getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
+        Promise.resolve({
+          indexedDb: mockIndexedDb,
+          querier: {
+            tendermint: mockTendermint,
+          },
+        }),
       ) as MockServices['getWalletServices'],
-      querier: {
-        tendermint: mockTendermint,
-      },
     };
 
     mockCtx = createHandlerContext({
