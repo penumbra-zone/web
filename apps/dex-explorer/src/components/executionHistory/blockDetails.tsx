@@ -27,7 +27,7 @@ export const BlockDetails = ({ blockSummary }: BlockDetailsProps) => {
             {blockSummary.swapExecutions.length}
           </Text>
           <Text fontSize={"medium"} fontStyle={"monospace"}>
-            {"Arbs: "}
+            {"Asset Arbs: "}
             {blockSummary.arbExecutions.length}
           </Text>
         </VStack>
