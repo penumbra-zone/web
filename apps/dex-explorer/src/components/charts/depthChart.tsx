@@ -70,9 +70,13 @@ const DepthChart = ({
     midMarketPrice = buySideData[0].x;
   } else if (sellSideSingleHopData.length > 0) {
     midMarketPrice = sellSideSingleHopData[0].x;
-  } else {
+  } else if (buySideSingleHopData.length > 0) {
     midMarketPrice = buySideSingleHopData[0].x;
+  } else {
+    midMarketPrice = 0;
+    console.log("No data for this pair")
   }
+
   console.log("midMarketPrice", midMarketPrice);
 
   // Update all single hope data to have a point at the same x values as the non single hop data does so that we always can render both points on the tooltip
