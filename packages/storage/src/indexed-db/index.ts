@@ -100,9 +100,11 @@ export class IndexedDb implements IndexedDbInterface {
 
         db.createObjectStore('FULL_SYNC_HEIGHT');
         db.createObjectStore('ASSETS', { keyPath: 'penumbraAssetId.inner' });
-        db.createObjectStore('SPENDABLE_NOTES', {
+        const spendableNoteStore = db.createObjectStore('SPENDABLE_NOTES', {
           keyPath: 'noteCommitment.inner',
-        }).createIndex('nullifier', 'nullifier.inner');
+        });
+        spendableNoteStore.createIndex('nullifier', 'nullifier.inner');
+        spendableNoteStore.createIndex('assetId', 'note.value.assetId.inner');
         db.createObjectStore('TRANSACTIONS', { keyPath: 'id.inner' });
         db.createObjectStore('TREE_LAST_POSITION');
         db.createObjectStore('TREE_LAST_FORGOTTEN');
@@ -139,9 +141,6 @@ export class IndexedDb implements IndexedDbInterface {
 
     const existing0thEpoch = await instance.getEpochByHeight(0n);
     if (!existing0thEpoch) await instance.addEpoch(0n); // Create first epoch
-
-    // set non-zero gas prices in indexDB since the testnet has not yet enabled gas fees.
-    await instance.initGasPrices();
 
     return instance;
   }
@@ -283,23 +282,6 @@ export class IndexedDb implements IndexedDbInterface {
         SpendableNoteRecord,
       ),
     );
-  }
-
-  async initGasPrices() {
-    const savedGasPrices = await this.getGasPrices();
-    // These are arbitrarily set, but can take on any value.
-    // The gas prices set here will determine the fees to use Penumbra.
-    //
-    // Note: this is a temporary measure to enable gas prices in the web, but once
-    // https://github.com/penumbra-zone/penumbra/issues/4306 is merged, we can remove this.
-    if (!savedGasPrices) {
-      await this.saveGasPrices({
-        verificationPrice: 1n,
-        executionPrice: 1n,
-        blockSpacePrice: 1n,
-        compactBlockSpacePrice: 1n,
-      });
-    }
   }
 
   async *iterateTransactions() {
@@ -801,5 +783,13 @@ export class IndexedDb implements IndexedDbInterface {
       input: Value.fromJson(result.input),
       output: Value.fromJson(result.output),
     };
+  }
+
+  async hasNativeAssetBalance(): Promise<boolean> {
+    let key = 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=';
+    const jsonArray = await this.db.getAllFromIndex('SPENDABLE_NOTES', 'assetId', key);
+    if (!jsonArray || jsonArray.length === 0) return false;
+
+    return true;
   }
 }

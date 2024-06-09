@@ -141,6 +141,8 @@ export interface IndexedDbInterface {
   getAuctionOutstandingReserves(
     auctionId: AuctionId,
   ): Promise<{ input: Value; output: Value } | undefined>;
+
+  hasNativeAssetBalance(): Promise<boolean>;
 }
 
 export interface PenumbraDb extends DBSchema {
@@ -191,6 +193,9 @@ export interface PenumbraDb extends DBSchema {
     value: Jsonified<SpendableNoteRecord>;
     indexes: {
       nullifier: Jsonified<Required<SpendableNoteRecord>['nullifier']['inner']>; // base64
+      assetId: Jsonified<
+        Required<Required<Required<SpendableNoteRecord>['note']>['value']>['assetId']['inner']
+      >; // base64
     };
   };
 
