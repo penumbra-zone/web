@@ -43,7 +43,7 @@ export default function TradingPairs() {
   const [token2Symbol, setToken2Symbol] = useState<string>("unknown");
 
   useEffect(() => {
-    const params = router.query as { params: string[] | string | undefined};
+    const params = router.query as { params: string[] | string | undefined };
     if (!params.params) {
       return;
     }
@@ -143,7 +143,9 @@ export default function TradingPairs() {
       setIsLoading(false);
       setIsChartLoading(false);
       setIsLPsLoading(false);
-      setError("Token not found in token config map.");
+      setError(
+        `Token not found: ${!asset1Token ? token1Symbol : token2Symbol}`
+      );
       return;
     }
     setError(undefined);
@@ -244,7 +246,9 @@ export default function TradingPairs() {
         setIsLoading(false);
         setIsChartLoading(false);
         setIsLPsLoading(false);
-        setError("Token not found in token config map.");
+        setError(
+          `Token not found: ${!asset1Token ? token1Symbol : token2Symbol}`
+        );
         return;
       }
       setError(undefined);
@@ -281,7 +285,7 @@ export default function TradingPairs() {
         .finally(() => {
           setIsLPsLoading(false);
         });
-        setError(undefined);
+      setError(undefined);
     } catch (error) {
       console.error("Error querying liquidity positions", error);
       setError("Error querying liquidity positions");
@@ -309,8 +313,8 @@ export default function TradingPairs() {
     setDepthChartMultiHopAsset1SellPoints([]);
     setDepthChartSingleHopAsset1SellPoints([]);
 
-    console.log(asset1Token)
-    console.log(asset2Token)
+    console.log(asset1Token);
+    console.log(asset2Token);
 
     // Set single and multi hop depth chart data
     simulatedMultiHopAsset1SellData!.traces.forEach((trace) => {
@@ -549,19 +553,32 @@ export default function TradingPairs() {
     );
 
     // TODO: these should really be &&s but theres no real market so sometimes they can be 0 (we should also handle this edgecase gracefully)
-    if (
-      depthChartMultiHopAsset1SellPoints.length > 0 ||
-      depthChartSingleHopAsset1SellPoints.length > 0 ||
-      depthChartMultiHopAsset1BuyPoints.length > 0 ||
-      depthChartSingleHopAsset1BuyPoints.length > 0
-    ) {
-      setIsChartLoading(false);
-    }
+
+    // ! If this point is reached with no data, it means there is no liquidity
+    // TODO: Consider rendering something extra to denote theres no error, just no liquidity
+
+    setIsChartLoading(false);
   }, [
     simulatedMultiHopAsset1SellData,
     simulatedSingleHopAsset1SellData,
     simulatedMultiHopAsset1BuyData,
     simulatedSingleHopAsset1BuyData,
+    asset1Token,
+    asset2Token,
+  ]);
+
+  useEffect(() => {
+    console.log("isLoading", isLoading);
+    console.log("isChartLoading", isChartLoading);
+    console.log("isLPsLoading", isLPsLoading);
+    console.log("error", error);
+    console.log("asset1Token", asset1Token);
+    console.log("asset2Token", asset2Token);
+  }, [
+    isLoading,
+    isChartLoading,
+    isLPsLoading,
+    error,
     asset1Token,
     asset2Token,
   ]);
