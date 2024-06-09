@@ -10,6 +10,12 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
+  // Query idb directly for the existence of 'UM' spendable notes
+  let nativeToken = await indexedDb.hasNativeAssetBalance();
+
+  // Use alt token denom for gas fees
+  if (!nativeToken) {}
+
   const fvk = ctx.values.get(fvkCtx);
 
   assertValidRequest(req);
