@@ -786,9 +786,9 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async hasNativeAssetBalance(): Promise<boolean> {
-    let key = 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=';
+    const key = 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=';
     const jsonArray = await this.db.getAllFromIndex('SPENDABLE_NOTES', 'assetId', key);
-    if (!jsonArray || jsonArray.length === 0) return false;
+    if (jsonArray.length === 0) return false;
 
     return true;
   }

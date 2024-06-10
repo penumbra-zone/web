@@ -25,8 +25,8 @@ export const extractAltFee = (request: TransactionPlannerRequest): AssetId => {
 
   type PossibleTypes = TransactionPlannerRequest_Output | TransactionPlannerRequest_Swap;
 
-  let action = nonEmptyField!.value[0] as PossibleTypes;
-  let assetId = action.value?.assetId!;
+  const action = nonEmptyField!.value[0] as PossibleTypes;
+  const assetId = action.value?.assetId!;
 
   return assetId;
 };

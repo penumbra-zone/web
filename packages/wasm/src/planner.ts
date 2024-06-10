@@ -4,16 +4,19 @@ import { JsonValue } from '@bufbuild/protobuf';
 import { plan_transaction } from '../wasm';
 import type { IdbConstants } from '@penumbra-zone/types/indexed-db';
 import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export const planTransaction = async (
   idbConstants: IdbConstants,
   request: TransactionPlannerRequest,
   fullViewingKey: FullViewingKey,
+  assetId: AssetId,
 ) => {
   const plan = (await plan_transaction(
     idbConstants,
     request.toBinary(),
     fullViewingKey.toBinary(),
+    assetId.toBinary(),
   )) as JsonValue;
   return TransactionPlan.fromJson(plan);
 };

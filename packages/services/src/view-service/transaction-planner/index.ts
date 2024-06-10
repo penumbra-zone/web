@@ -5,16 +5,28 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { fvkCtx } from '../../ctx/full-viewing-key';
+import { extractAltFee } from '../fees';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
-  // Query idb directly for the existence of 'UM' spendable notes
-  let nativeToken = await indexedDb.hasNativeAssetBalance();
+  // Query IndexedDB directly to check for the existence of spendable 'UM'
+  // notes (native asset balance)
+  const nativeToken = await indexedDb.hasNativeAssetBalance();
 
-  // Use alt token denom for gas fees
-  if (!nativeToken) {}
+  // Initialize the gas fee token using an alternate token's asset ID
+  let gasFeeToken = new AssetId({
+    inner: new Uint8Array(base64ToUint8Array('KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=')),
+  });
+
+  // If there is no native token balance, extract and use an alternate gas fee token
+  // from the transaction request
+  if (!nativeToken) {
+    gasFeeToken = extractAltFee(req);
+  }
 
   const fvk = ctx.values.get(fvkCtx);
 
@@ -30,7 +42,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
 
   const idbConstants = indexedDb.constants();
 
-  const plan = await planTransaction(idbConstants, req, await fvk());
+  const plan = await planTransaction(idbConstants, req, await fvk(), gasFeeToken);
   return { plan };
 };
 

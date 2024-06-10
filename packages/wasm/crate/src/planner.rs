@@ -136,7 +136,7 @@ pub async fn plan_transaction(
     idb_constants: JsValue,
     request: &[u8],
     full_viewing_key: &[u8],
-    // gas_fee_token: &[u8]
+    gas_fee_token: &[u8],
 ) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
@@ -204,17 +204,21 @@ pub async fn plan_transaction(
         }
     };
 
-    // let alt_gas: Id = Id::decode(gas_fee_token)?;
+    // Decode the gas fee token into an `Id` type
+    let alt_gas: Id = Id::decode(gas_fee_token)?;
 
-    // if alt_gas != *STAKING_TOKEN_ASSET_ID {
-    //     gas_prices = GasPrices {
-    //         asset_id: alt_gas,
-    //         block_space_price: gas_prices.block_space_price * 10,
-    //         compact_block_space_price: gas_prices.compact_block_space_price * 10,
-    //         verification_price: gas_prices.verification_price * 10,
-    //         execution_price: gas_prices.execution_price
-    //     };
-    // };
+    // Check if the decoded gas fee token is different from the staking token asset ID.
+    // If the gas fee token is different, use the alternative gas fee token with a 10x
+    // multiplier.
+    if alt_gas != *STAKING_TOKEN_ASSET_ID {
+        gas_prices = GasPrices {
+            asset_id: alt_gas,
+            block_space_price: gas_prices.block_space_price * 10,
+            compact_block_space_price: gas_prices.compact_block_space_price * 10,
+            verification_price: gas_prices.verification_price * 10,
+            execution_price: gas_prices.execution_price * 10,
+        };
+    };
 
     let mut actions_list = ActionList::default();
 
