@@ -18,6 +18,13 @@ export function formatTimestampShort(timestamp: string) {
   return `${month} ${day}, ${year}\n${hour}:${minute} UTC`;
 }
 
+export const formatTimestampOrDefault = (timestamp: any) => {
+  if (timestamp === undefined || timestamp === "") {
+    return "Missing data in indexer to display timestamp";
+  }
+  return formatTimestampShort(timestamp);
+};
+
 const BlockTimestampView: FC<BlockTimestampProps> = ({
   blockHeight,
   timestamp,
@@ -62,7 +69,7 @@ const BlockTimestampView: FC<BlockTimestampProps> = ({
         }}
       >
         {" "}
-        {formatTimestampShort(timestamp)}
+        {formatTimestampOrDefault(timestamp)}
       </Text>
     </>
   );
