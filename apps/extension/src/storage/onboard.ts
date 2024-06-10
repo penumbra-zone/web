@@ -46,6 +46,25 @@ export const onboardWallet = async (): Promise<WalletJson> => {
   });
 };
 
+export const onboardNumeraire = async (): Promise<string> => {
+  const numeraireAssetId = await localExtStorage.get('numeraireAssetId');
+  if (numeraireAssetId) return numeraireAssetId;
+
+  return new Promise(resolve => {
+    const storageListener = (changes: Record<string, { newValue?: unknown }>) => {
+      const storageItem = changes['numeraireAssetId']?.newValue as
+        | StorageItem<LocalStorageState['numeraireAssetId']>
+        | undefined;
+      const numeraireAssetId = storageItem?.value;
+      if (numeraireAssetId) {
+        resolve(numeraireAssetId);
+        localExtStorage.removeListener(storageListener);
+      }
+    };
+    localExtStorage.addListener(storageListener);
+  });
+};
+
 /**
  This fixes an issue where some users do not have 'grpcEndpoint' set after they have finished onboarding
  */

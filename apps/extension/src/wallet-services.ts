@@ -4,19 +4,23 @@ import {
   FullViewingKey,
   WalletId,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import { onboardGrpcEndpoint, onboardWallet } from './storage/onboard';
+import { onboardGrpcEndpoint, onboardNumeraire, onboardWallet } from './storage/onboard';
 import { ServicesMessage } from './message/services';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export const startWalletServices = () =>
   backOff(
     async () => {
       const wallet = await onboardWallet();
       const grpcEndpoint = await onboardGrpcEndpoint();
+      const numeraireAssetId = await onboardNumeraire();
+
       const services = new Services({
         idbVersion: IDB_VERSION,
         grpcEndpoint,
         walletId: WalletId.fromJsonString(wallet.id),
         fullViewingKey: FullViewingKey.fromJsonString(wallet.fullViewingKey),
+        numeraireAssetId: AssetId.fromJsonString(numeraireAssetId),
       });
 
       // initialize

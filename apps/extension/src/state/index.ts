@@ -13,12 +13,14 @@ import { createTxApprovalSlice, TxApprovalSlice } from './tx-approval';
 import { createOriginApprovalSlice, OriginApprovalSlice } from './origin-approval';
 import { ConnectedSitesSlice, createConnectedSitesSlice } from './connected-sites';
 import { createDefaultFrontendSlice, DefaultFrontendSlice } from './default-frontend';
+import {createNumeraireSlice, NumeraireSlice} from "./numeraire";
 
 export interface AllSlices {
   wallets: WalletsSlice;
   password: PasswordSlice;
   seedPhrase: SeedPhraseSlice;
   network: NetworkSlice;
+  numeraire: NumeraireSlice;
   txApproval: TxApprovalSlice;
   originApproval: OriginApprovalSlice;
   connectedSites: ConnectedSitesSlice;
@@ -41,6 +43,7 @@ export const initializeStore = (
     password: createPasswordSlice(session, local)(setState, getState, store),
     seedPhrase: createSeedPhraseSlice(setState, getState, store),
     network: createNetworkSlice(local)(setState, getState, store),
+    numeraire: createNumeraireSlice(local)(setState, getState,store),
     connectedSites: createConnectedSitesSlice(local)(setState, getState, store),
     txApproval: createTxApprovalSlice()(setState, getState, store),
     originApproval: createOriginApprovalSlice()(setState, getState, store),

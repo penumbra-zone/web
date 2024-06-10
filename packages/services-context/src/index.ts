@@ -11,12 +11,14 @@ import {
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import { Jsonified } from '@penumbra-zone/types/jsonified';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export interface ServicesConfig {
   readonly idbVersion: number;
   readonly grpcEndpoint: string;
   readonly walletId: WalletId;
   readonly fullViewingKey: FullViewingKey;
+  readonly numeraireAssetId: AssetId;
 }
 
 export class Services implements ServicesInterface {
@@ -82,7 +84,7 @@ export class Services implements ServicesInterface {
   }
 
   private async initializeWalletServices(): Promise<WalletServices> {
-    const { grpcEndpoint, walletId, fullViewingKey, idbVersion } = this.config;
+    const { grpcEndpoint, walletId, fullViewingKey, idbVersion, numeraireAssetId } = this.config;
     const querier = new RootQuerier({ grpcEndpoint });
     const params = await this.getParams(querier);
     const registryClient = new ChainRegistryClient();
@@ -111,7 +113,7 @@ export class Services implements ServicesInterface {
       querier,
       indexedDb,
       stakingTokenMetadata: registry.getMetadata(registry.stakingAssetId),
-      numeraires: registry.numeraires.map(numeraires => registry.getMetadata(numeraires)),
+      numeraire: registry.getMetadata(numeraireAssetId),
     });
 
     return { viewServer, blockProcessor, indexedDb, querier };

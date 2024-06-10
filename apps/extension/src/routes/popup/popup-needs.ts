@@ -12,7 +12,9 @@ export const needsLogin = async (): Promise<Response | null> => {
 
 export const needsOnboard = async () => {
   const wallets = await localExtStorage.get('wallets');
-  if (wallets.length) return null;
+  const numeraireAssetId = await localExtStorage.get('numeraireAssetId');
+
+  if (wallets.length && numeraireAssetId) return null;
 
   void chrome.runtime.openOptionsPage();
   window.close();

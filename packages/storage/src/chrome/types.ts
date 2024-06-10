@@ -23,5 +23,5 @@ export interface LocalStorageState {
   fullSyncHeight: number | undefined;
   knownSites: OriginRecord[];
   params: Jsonified<AppParameters> | undefined;
-  numeraireAssetId: string;
+  numeraireAssetId: string | undefined;
 }
