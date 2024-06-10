@@ -160,7 +160,7 @@ export const Trace = ({
   );
 };
 
-const formatTimestampOrDefault = (timestamp: any) => {
+export const formatTimestampOrDefault = (timestamp: any) => {
   if (timestamp === undefined || timestamp === "") {
     return "Missing data in indexer to display timestamp";
   }
@@ -172,13 +172,13 @@ export const ArbSummary = ({
   metadataByAssetId,
   index,
   isExpanded,
-  toggleExpand,
+  toggleArbExpand,
 }: {
   swapExecution: SwapExecution;
   metadataByAssetId: Record<string, Token>;
   index: number;
   isExpanded: boolean;
-  toggleExpand: (index: number) => void;
+  toggleArbExpand: (index: number) => void;
 }) => {
   const arbPerAsset: Record<string, number> = {};
   const tracesPerAsset: Record<string, number> = {};
@@ -245,7 +245,7 @@ export const ArbSummary = ({
           );
         })}
         <IconButton
-          onClick={() => toggleExpand(index)}
+          onClick={() => toggleArbExpand(index)}
           icon={isExpanded ? <MinusIcon /> : <AddIcon />}
           size="xs"
           aria-label="Expand/Collapse"
@@ -288,14 +288,6 @@ export default function Block() {
   const [blockHeight, setBlockHeight] = useState(-1);
   const [blockData, setBlockData] = useState<BlockDetailedSummaryData>();
   const [error, setError] = useState<string | undefined>(undefined);
-  const [expandedArbs, setExpandedArbs] = useState<Record<number, boolean>>({});
-
-  const toggleArbExpand = (index: number) => {
-    setExpandedArbs((prevState) => ({
-      ...prevState,
-      [index]: !prevState[index],
-    }));
-  };
 
   // Get detailed block data
   useEffect(() => {
@@ -448,6 +440,17 @@ export default function Block() {
       setIsExpanded(!isExpanded);
     };
 
+    const [expandedArbs, setExpandedArbs] = useState<Record<number, boolean>>(
+      {}
+    );
+
+    const toggleArbExpand = (index: number) => {
+      setExpandedArbs((prevState) => ({
+        ...prevState,
+        [index]: !prevState[index],
+      }));
+    };
+
     return (
       <Box
         className="neon-box"
@@ -547,7 +550,7 @@ export default function Block() {
                       metadataByAssetId={metadataByAssetId}
                       index={index}
                       isExpanded={!!expandedArbs[index]}
-                      toggleExpand={toggleArbExpand}
+                      toggleArbExpand={toggleArbExpand}
                     />
                   )
                 )}
