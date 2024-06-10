@@ -22,4 +22,3 @@ global.chrome = {
 };
 
 global.DEFAULT_GRPC_URL = 'https://rpc.example.com/';
-global.MINIFRONT_URL = 'https://app.example.com';

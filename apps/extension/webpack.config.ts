@@ -26,7 +26,6 @@ const definitions = {
   PRAX: JSON.stringify(process.env['PRAX']),
   PRAX_ORIGIN: JSON.stringify(`chrome-extension://${process.env['PRAX']}`),
   IDB_VERSION: JSON.stringify(Number(process.env['IDB_VERSION'])),
-  MINIFRONT_URL: JSON.stringify(process.env['MINIFRONT_URL']),
 };
 
 const __dirname = new URL('.', import.meta.url).pathname;
