@@ -10,7 +10,7 @@ interface Status {
 
 export const { status, useStatus } = createZQuery({
   name: 'status',
-  fetch: getStatusStream,
+  fetch: ({ abortSignal }) => getStatusStream(abortSignal),
   stream: (_prevState: Status | undefined, item: Status): Status => ({
     fullSyncHeight: item.fullSyncHeight,
     latestKnownBlockHeight: item.latestKnownBlockHeight,

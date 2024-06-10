@@ -1,3 +1,8 @@
+interface Cache<DataType> {
+  data?: DataType | undefined;
+  loading: boolean;
+  error?: unknown;
+}
 export interface ZQueryState<DataType, FetchArgs extends unknown[] = []> {
   data?: DataType | undefined;
   loading: boolean;
@@ -9,14 +14,32 @@ export interface ZQueryState<DataType, FetchArgs extends unknown[] = []> {
     referenceCount: number;
     fetch: (...args: FetchArgs) => Promise<void>;
     abortController?: AbortController;
+    cache: Record<string, Cache<DataType>>;
   };
 }
 
+// type FetchArgsWithAbortSignal<FetchArgs extends unknown[]> = [
+//   {
+//     abortSignal?: AbortSignal;
+//   },
+//   ...FetchArgs,
+// ];
+
 export type FetchTypePromise<DataType, FetchArgs extends unknown[]> = (
+  {
+    abortSignal,
+  }: {
+    abortSignal?: AbortSignal;
+  },
   ...args: FetchArgs
 ) => Promise<DataType>;
 
 export type FetchTypeAsyncIterable<DataType, FetchArgs extends unknown[]> = (
+  {
+    abortSignal,
+  }: {
+    abortSignal?: AbortSignal;
+  },
   ...args: FetchArgs
 ) => AsyncIterable<DataType>;
 
@@ -92,7 +115,7 @@ export interface CreateZQueryUnaryProps<
    * )
    * ```
    */
-  set: (setter: <DataType, T extends ZQueryState<DataType>>(prevState: T) => T) => void;
+  set: (setter: <DataType, T extends ZQueryState<DataType, FetchArgs>>(prevState: T) => T) => void;
 }
 
 export interface CreateZQueryStreamingProps<
@@ -165,7 +188,7 @@ export interface CreateZQueryStreamingProps<
    * ```
    */
   set: (
-    setter: <DataType extends ProcessedDataType, T extends ZQueryState<DataType>>(
+    setter: <DataType extends ProcessedDataType, T extends ZQueryState<DataType, FetchArgs>>(
       prevState: T,
     ) => T,
   ) => void;
@@ -187,25 +210,12 @@ export interface CreateZQueryStreamingProps<
  */
 export type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
 
-// Temporary empty interface for TODO
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface FetchOptions {
-  // TODO: implement `disabled`
-  // disabled?: boolean;
-}
-
 export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> = {
-  [key in `use${Capitalize<Name>}`]: (
-    opts?: FetchOptions,
-    ...args: FetchArgs
-  ) => {
+  [key in `use${Capitalize<Name>}`]: (...args: FetchArgs) => {
     data?: DataType;
     loading: boolean;
     error?: unknown;
   };
 } & {
-  [key in `useRevalidate${Capitalize<Name>}`]: () => (
-    opts?: FetchOptions,
-    ...args: FetchArgs
-  ) => void;
+  [key in `useRevalidate${Capitalize<Name>}`]: () => (...args: FetchArgs) => void;
 } & Record<Name, ZQueryState<DataType, FetchArgs>>;

@@ -24,7 +24,7 @@ export interface UnclaimedSwapsSlice {
 
 export const { unclaimedSwaps, useUnclaimedSwaps, useRevalidateUnclaimedSwaps } = createZQuery({
   name: 'unclaimedSwaps',
-  fetch: fetchUnclaimedSwaps,
+  fetch: ({ abortSignal }) => fetchUnclaimedSwaps(abortSignal),
 
   getUseStore: () => useStore,
 

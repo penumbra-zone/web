@@ -1,11 +1,6 @@
 import { useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import type {
-  CreateZQueryStreamingProps,
-  CreateZQueryUnaryProps,
-  FetchOptions,
-  ZQuery,
-} from './types';
+import type { CreateZQueryStreamingProps, CreateZQueryUnaryProps, ZQuery } from './types';
 
 export type { ZQueryState } from './types';
 
@@ -31,8 +26,6 @@ const isStreaming = <
     | CreateZQueryStreamingProps<Name, State, DataType, FetchArgs, ProcessedDataType>,
 ): props is CreateZQueryStreamingProps<Name, State, DataType, FetchArgs, ProcessedDataType> =>
   !!props.stream;
-
-const DEFAULT_FETCH_OPTIONS: Required<FetchOptions> = {};
 
 /**
  * Creates a ZQuery object that can be used to store server data in Zustand
@@ -226,7 +219,7 @@ export function createZQuery<
       _zQueryInternal: {
         referenceCount: 0,
 
-        fetch: async ({}: FetchOptions = DEFAULT_FETCH_OPTIONS, ...args: FetchArgs) => {
+        fetch: async (...args: FetchArgs) => {
           const abortController = get(getUseStore().getState())._zQueryInternal.abortController;
           // We have to use the `props` object (rather than its destructured
           // properties) since we're passing the full `props` object to
@@ -235,7 +228,7 @@ export function createZQuery<
           // predicate won't apply to them, since the type predicate was called
           // after destructuring.
           if (isStreaming<Name, State, DataType, FetchArgs, ProcessedDataType>(props)) {
-            const result = props.fetch(...args);
+            const result = props.fetch({ abortSignal: abortController?.signal }, ...args);
 
             props.set(prevState => ({
               ...prevState,
@@ -244,6 +237,10 @@ export function createZQuery<
 
             try {
               for await (const item of result) {
+                if (props.name === 'status')
+                  console.log('fetch got result', {
+                    referenceCount: get(getUseStore().getState())._zQueryInternal.referenceCount,
+                  });
                 if (abortController?.signal.aborted) return;
 
                 props.set(prevState => ({
@@ -256,7 +253,7 @@ export function createZQuery<
             }
           } else {
             try {
-              const data = await props.fetch(...args);
+              const data = await props.fetch({ abortSignal: abortController?.signal }, ...args);
               props.set(prevState => ({ ...prevState, data }));
             } catch (error) {
               props.set(prevState => ({ ...prevState, error }));
