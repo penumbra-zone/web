@@ -12,14 +12,6 @@ export interface ZQueryState<DataType, FetchArgs extends unknown[] = []> {
   };
 }
 
-export type PromiseFetch<DataType, FetchArgs extends unknown[]> = (
-  ...args: FetchArgs
-) => Promise<DataType>;
-
-export type AsyncIterableFetch<DataType, FetchArgs extends unknown[]> = (
-  ...args: FetchArgs
-) => AsyncIterable<DataType>;
-
 interface CreateZQueryCommonProps<Name extends string, State> {
   /** The name of this property in the state/slice. */
   name: Name;
@@ -42,7 +34,7 @@ export interface CreateZQueryUnaryProps<
 > extends CreateZQueryCommonProps<Name, State> {
   stream?: undefined;
   /** A function that executes the query. */
-  fetch: PromiseFetch<DataType, FetchArgs>;
+  fetch: (...args: FetchArgs) => Promise<DataType>;
   /**
    * A selector that takes the root Zustand state and returns just this ZQuery
    * state object.
@@ -103,7 +95,7 @@ export interface CreateZQueryStreamingProps<
   ProcessedDataType,
 > extends CreateZQueryCommonProps<Name, State> {
   /** A function that executes the query. */
-  fetch: AsyncIterableFetch<DataType, FetchArgs>;
+  fetch: (...args: FetchArgs) => AsyncIterable<DataType>;
   /**
    * Set to `true` if `fetch` will return a streaming response in the form of an
    * `AsyncIterable`.
