@@ -1,4 +1,4 @@
-import { SliceCreator } from '.';
+import { AllSlices, SliceCreator } from '.';
 import { ExtensionStorage } from '@penumbra-zone/storage/chrome/base';
 import { LocalStorageState } from '@penumbra-zone/storage/chrome/types';
 
@@ -15,3 +15,5 @@ export const createDefaultFrontendSlice =
       void local.set('frontendUrl', url);
     },
   });
+
+export const getDefaultFrontend = (state: AllSlices) => state.defaultFrontend.url;

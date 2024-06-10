@@ -12,6 +12,8 @@ import {
   useState,
 } from 'react';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { isValidUrl } from '../utils/is-valid-url';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 
 // Extracts the first-level domain from a URL – needed to display the title
 const extractDomain = (url: string): string => {
@@ -56,6 +58,10 @@ const useIsFocus = (ref: MutableRefObject<HTMLElement | null>): boolean => {
   return isFocus;
 };
 
+const getUrlValidity = (url: string, initialUrl?: string): boolean => {
+  return isValidUrl(url) && url !== initialUrl;
+};
+
 const useDefaultFrontendSelector = (state: AllSlices) => {
   const frontends = getFrontendsFromRegistry();
   return {
@@ -68,20 +74,25 @@ const useDefaultFrontendSelector = (state: AllSlices) => {
 
 const NewFrontendInput = ({
   selected,
-  customValue,
+  defaultFrontend,
   onSelect,
 }: {
-  customValue?: string;
+  defaultFrontend?: string;
   selected: boolean;
   onSelect: (url: string) => void;
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const isFocus = useIsFocus(inputRef);
+  const customValue = defaultFrontend && selected ? defaultFrontend : '';
 
-  const [customFrontend, setCustomFrontend] = useState<string>(customValue ?? '');
+  const [customFrontend, setCustomFrontend] = useState<string>(customValue);
+  const isError = !getUrlValidity(customFrontend, defaultFrontend);
 
   const onBlur: FocusEventHandler<HTMLInputElement> = () => {
-    if (!customFrontend) return;
+    if (!customFrontend || isError) {
+      setCustomFrontend(customValue);
+      return;
+    }
     onSelect(customFrontend);
   };
 
@@ -90,7 +101,7 @@ const NewFrontendInput = ({
       inputRef.current?.blur();
     } else if (event.key === 'Escape') {
       event.preventDefault();
-      setCustomFrontend(customValue ?? '');
+      setCustomFrontend(customValue);
       inputRef.current?.blur();
     }
   };
@@ -111,7 +122,9 @@ const NewFrontendInput = ({
             ref={inputRef}
             value={customFrontend}
             placeholder='https://example.com'
-            className='w-full bg-transparent'
+            className={cn('w-full rounded bg-transparent focus:p-1 focus:border outline-0', {
+              'border-red-400': isFocus && isError,
+            })}
             onInput={event => setCustomFrontend(event.currentTarget.value)}
             onKeyDown={onEnter}
             onBlur={onBlur}
@@ -121,7 +134,7 @@ const NewFrontendInput = ({
         isSelected={selected}
       />
 
-      <div key='add-to-list' className='mt-1 text-right'>
+      <div key='add-to-list' className='my-1 text-right'>
         <a
           href='https://github.com/prax-wallet/registry'
           target='_blank'
@@ -160,7 +173,7 @@ export const DefaultFrontendForm = () => {
         />
       ))}
       <NewFrontendInput
-        customValue={isCustomSelected ? selected : undefined}
+        defaultFrontend={selected}
         selected={isCustomSelected}
         onSelect={selectUrl}
       />

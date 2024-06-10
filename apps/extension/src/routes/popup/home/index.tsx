@@ -14,6 +14,7 @@ import {
 import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
 import { Wallet } from '@penumbra-zone/types/wallet';
 import { ValidateAddress } from './validate-address';
+import { getDefaultFrontend } from '../../../state/default-frontend';
 
 export interface PopupLoaderData {
   fullSyncHeight?: number;
@@ -44,7 +45,7 @@ const getAddrByIndex =
 
 export const PopupIndex = () => {
   const activeWallet = useStore(getActiveWallet);
-  const frontendUrl = 'useStore(state => state.connectedSites.frontendUrl)';
+  const frontendUrl = useStore(getDefaultFrontend);
 
   return (
     <>
@@ -61,14 +62,11 @@ export const PopupIndex = () => {
 
         <div className='grow' />
 
-        {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
-        {!!frontendUrl && (
-          <a href={frontendUrl} target='_blank' rel='noreferrer'>
-            <Button className='flex w-full items-center gap-2' variant='gradient'>
-              Manage portfolio <ExternalLink size={16} />
-            </Button>
-          </a>
-        )}
+        <a href={frontendUrl} target='_blank' rel='noreferrer'>
+          <Button className='flex w-full items-center gap-2' variant='gradient'>
+            Manage portfolio <ExternalLink size={16} />
+          </Button>
+        </a>
       </div>
     </>
   );
