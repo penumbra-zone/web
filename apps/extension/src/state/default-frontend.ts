@@ -9,9 +9,13 @@ export interface DefaultFrontendSlice {
 
 export const createDefaultFrontendSlice =
   (local: ExtensionStorage<LocalStorageState>): SliceCreator<DefaultFrontendSlice> =>
-  () => ({
+  set => ({
     url: undefined,
     setUrl: url => {
+      set(state => {
+        state.defaultFrontend.url = url;
+      });
+
       void local.set('frontendUrl', url);
     },
   });
