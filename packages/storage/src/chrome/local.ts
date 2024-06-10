@@ -2,10 +2,13 @@ import { ExtensionStorage } from './base';
 import { v1Migrations } from './v1-migration';
 import { LocalStorageState, LocalStorageVersion } from './types';
 
-export const localDefaults: LocalStorageState = {
+export const localDefaults: Required<LocalStorageState> = {
   wallets: [],
   fullSyncHeight: undefined,
+  grpcEndpoint: undefined,
   knownSites: [],
+  params: undefined,
+  passwordKeyPrint: undefined,
   frontendUrl: '',
 };
 

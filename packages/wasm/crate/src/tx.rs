@@ -16,10 +16,10 @@ use penumbra_transaction::plan::TransactionPlan;
 use penumbra_transaction::txhash::TransactionId;
 use penumbra_transaction::Action;
 use penumbra_transaction::{AuthorizationData, Transaction, WitnessData};
+use prost::Message;
 use rand_core::OsRng;
 use wasm_bindgen::prelude::wasm_bindgen;
 use wasm_bindgen::JsValue;
-use web_sys::js_sys;
 
 use crate::error::{WasmError, WasmResult};
 use crate::storage::IndexedDBStorage;
@@ -161,22 +161,24 @@ pub fn build_parallel(
     Ok(tx.encode_to_vec())
 }
 
+#[wasm_bindgen(getter_with_clone)]
+pub struct TxpAndTxvBytes {
+    pub txp: Vec<u8>,
+    pub txv: Vec<u8>,
+}
+
 /// Get transaction perspective, transaction view
 /// Arguments:
 ///     full_viewing_key: `FullViewingKey` inner bytes
 ///     tx: Binary-encoded `Transaction` message
 ///     idb_constants: IndexedDbConstants
 /// Returns: `{ txp: Uint8Array, txv: Uint8Array }` representing binary-encoded `TransactionPerspective` and `TransactionView`
-#[wasm_bindgen(typescript_custom_section)]
-const TRANSACTION_VIEW_PERSPECTIVE_TS: &'static str = r#"
-export function transaction_perspective_and_view(full_viewing_key: Uint8Array, tx: Uint8Array, idb_constants: any): Promise<{ txp: Uint8Array, txv: Uint8Array }>;
-"#;
-#[wasm_bindgen(skip_typescript)]
+#[wasm_bindgen]
 pub async fn transaction_perspective_and_view(
     full_viewing_key: &[u8],
     tx: &[u8],
     idb_constants: JsValue,
-) -> WasmResult<js_sys::Object> {
+) -> WasmResult<TxpAndTxvBytes> {
     utils::set_panic_hook();
 
     let transaction = Transaction::decode(tx)?;
@@ -184,23 +186,10 @@ pub async fn transaction_perspective_and_view(
     let fvk = FullViewingKey::decode(full_viewing_key)?;
     let (txp, txv) = transaction_info_inner(fvk, transaction, constants).await?;
 
-    let response = js_sys::Object::new();
-
-    js_sys::Reflect::set(
-        &response,
-        &"txp".into(),
-        &js_sys::Uint8Array::from(prost::Message::encode_to_vec(&txp).as_slice()),
-    )
-    .expect("Must set txp");
-
-    js_sys::Reflect::set(
-        &response,
-        &"txv".into(),
-        &js_sys::Uint8Array::from(prost::Message::encode_to_vec(&txv).as_slice()),
-    )
-    .expect("Must set txv");
-
-    Ok(response)
+    Ok(TxpAndTxvBytes {
+        txp: txp.encode_to_vec(),
+        txv: txv.encode_to_vec(),
+    })
 }
 
 async fn transaction_info_inner(

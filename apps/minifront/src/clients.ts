@@ -1,6 +1,7 @@
 import { createPraxClient } from '@penumbra-zone/client/prax';
 import {
   CustodyService,
+  DexService,
   IbcChannelService,
   IbcClientService,
   IbcConnectionService,
@@ -12,6 +13,7 @@ import {
 } from '@penumbra-zone/protobuf';
 
 export const custodyClient = createPraxClient(CustodyService);
+export const dexClient = createPraxClient(DexService);
 export const ibcChannelClient = createPraxClient(IbcChannelService);
 export const ibcClient = createPraxClient(IbcClientService);
 export const ibcConnectionClient = createPraxClient(IbcConnectionService);

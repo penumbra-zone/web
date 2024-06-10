@@ -62,7 +62,7 @@ describe('IndexedDb', () => {
   const chainId = 'penumbra-testnet-deimos-6';
   const generateInitialProps = () => ({
     chainId,
-    dbVersion: 1,
+    idbVersion: 1,
     walletId: new WalletId({
       inner: Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)),
     }),
@@ -106,7 +106,7 @@ describe('IndexedDb', () => {
 
       const version2Props = {
         chainId,
-        dbVersion: 2,
+        idbVersion: 2,
         walletId: version1Props.walletId,
         registryClient: new ChainRegistryClient(),
       };
@@ -289,7 +289,7 @@ describe('IndexedDb', () => {
     it('should be pre-loaded with hardcoded assets', async () => {
       const propsWithAssets = {
         chainId,
-        dbVersion: 2,
+        idbVersion: 2,
         walletId: new WalletId({
           inner: Uint8Array.from({ length: 32 }, () => Math.floor(Math.random() * 256)),
         }),

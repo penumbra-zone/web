@@ -49,7 +49,7 @@ export interface CompactBlockQuerierInterface {
 }
 
 export interface TendermintQuerierInterface {
-  latestBlockHeight(): Promise<bigint>;
+  latestBlockHeight(): Promise<bigint | undefined>;
   broadcastTx(tx: Transaction): Promise<TransactionId>;
   getTransaction(txId: TransactionId): Promise<{ height: bigint; transaction: Transaction }>;
 }

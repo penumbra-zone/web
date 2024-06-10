@@ -94,23 +94,27 @@ export class BlockProcessor implements BlockProcessorInterface {
     this.stakingTokenMetadata = stakingTokenMetadata;
   }
 
-  // If syncBlocks() is called multiple times concurrently, they'll all wait for
+  // If sync() is called multiple times concurrently, they'll all wait for
   // the same promise rather than each starting their own sync process.
-  public sync(): Promise<void> {
-    this.syncPromise ??= backOff(() => this.syncAndStore(), {
-      maxDelay: 30_000, // 30 seconds
+  public sync = (): Promise<void> =>
+    (this.syncPromise ??= backOff(() => this.syncAndStore(), {
+      delayFirstAttempt: false,
+      startingDelay: 5_000, // 5 seconds
+      numOfAttempts: Infinity,
+      maxDelay: 20_000, // 20 seconds
       retry: async (e, attemptNumber) => {
-        console.warn('Sync failure', attemptNumber, e);
+        if (process.env['NODE_ENV'] === 'development')
+          console.debug('Sync failure', attemptNumber, e);
         await this.viewServer.resetTreeToStored();
         return !this.abortController.signal.aborted;
       },
-    });
-    return this.syncPromise;
-  }
+    })).finally(
+      // if the above promise completes, exponential backoff has ended (aborted).
+      // reset the rejected promise to allow for a new sync to be started.
+      () => (this.syncPromise = undefined),
+    );
 
-  public stop(r: string) {
-    this.abortController.abort(`Sync abort ${r}`);
-  }
+  public stop = (r: string) => this.abortController.abort(`Sync stop ${r}`);
 
   async identifyTransactions(
     spentNullifiers: Set<Nullifier>,
@@ -171,9 +175,19 @@ export class BlockProcessor implements BlockProcessorInterface {
   }
 
   private async syncAndStore() {
-    const fullSyncHeight = await this.indexedDb.getFullSyncHeight();
-    const startHeight = fullSyncHeight !== undefined ? fullSyncHeight + 1n : 0n; // Must compare to undefined as 0n is falsy
-    let latestKnownBlockHeight = await this.querier.tendermint.latestBlockHeight();
+    // start at next block, or 0 if height is undefined
+    const startHeight = ((await this.indexedDb.getFullSyncHeight()) ?? -1n) + 1n;
+
+    // this is the first network query of the block processor. use backoff to
+    // delay until network is available
+    let latestKnownBlockHeight = await backOff(
+      async () => {
+        const latest = await this.querier.tendermint.latestBlockHeight();
+        if (!latest) throw new Error('Unknown latest block height');
+        return latest;
+      },
+      { retry: () => true },
+    );
 
     if (startHeight === 0n) {
       // In the `for` loop below, we only update validator infos once we've

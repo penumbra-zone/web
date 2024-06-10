@@ -1,17 +1,19 @@
 import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { SwapSlice } from '.';
+import {
+  CandlestickData,
+  SimulateTradeRequest,
+  SimulateTradeResponse,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import { getAssetId } from '@penumbra-zone/getters/metadata';
 import {
   getAssetIdFromValueView,
   getDisplayDenomExponentFromValueView,
 } from '@penumbra-zone/getters/value-view';
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { BigNumber } from 'bignumber.js';
-import {
-  SimulateTradeRequest,
-  SimulateTradeResponse,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
-import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { simulationClient } from '../../clients';
+import { SwapSlice } from '.';
+import { dexClient, simulationClient } from '../../clients';
+import { PriceHistorySlice } from './price-history';
 
 export const sendSimulateTradeRequest = ({
   assetIn,
@@ -34,4 +36,30 @@ export const sendSimulateTradeRequest = ({
   });
 
   return simulationClient.simulateTrade(req);
+};
+
+export const sendCandlestickDataRequest = async (
+  { startMetadata, endMetadata }: Pick<PriceHistorySlice, 'startMetadata' | 'endMetadata'>,
+  limit: bigint,
+  signal?: AbortSignal,
+): Promise<CandlestickData[] | undefined> => {
+  const start = startMetadata?.penumbraAssetId;
+  const end = endMetadata?.penumbraAssetId;
+
+  if (!start || !end) throw new Error('Asset pair incomplete');
+  if (start.equals(end)) throw new Error('Asset pair equivalent');
+
+  try {
+    const { data } = await dexClient.candlestickData(
+      {
+        pair: { start, end },
+        limit,
+      },
+      { signal },
+    );
+    return data;
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') return;
+    else throw err;
+  }
 };
