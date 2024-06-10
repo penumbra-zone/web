@@ -3,6 +3,22 @@ import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { TrashIcon } from 'lucide-react';
 import { DisplayOriginURL } from '../../../../shared/components/display-origin-url';
+import { StarIcon, StarFilledIcon } from '@radix-ui/react-icons';
+import { AllSlices } from '../../../../state';
+import { useStoreShallow } from '../../../../utils/use-store-shallow';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@penumbra-zone/ui/components/ui/tooltip';
+
+const useKnownSiteSelector = (url: string) => (state: AllSlices) => {
+  return {
+    isDefaultFrontend: state.defaultFrontend.url === url,
+    setDefaultFrontend: state.defaultFrontend.setUrl,
+  };
+};
 
 export const KnownSite = ({
   site,
@@ -11,6 +27,15 @@ export const KnownSite = ({
   site: OriginRecord;
   discard: (d: OriginRecord) => Promise<void>;
 }) => {
+  const { isDefaultFrontend, setDefaultFrontend } = useStoreShallow(
+    useKnownSiteSelector(site.origin),
+  );
+
+  const onToggleDefault = () => {
+    if (isDefaultFrontend) return;
+    setDefaultFrontend(site.origin);
+  };
+
   return (
     <div key={site.origin} role='listitem' className='flex items-center justify-between'>
       {site.choice === UserChoice.Approved && (
@@ -32,6 +57,22 @@ export const KnownSite = ({
         <span className='line-through decoration-red decoration-wavy brightness-75'>
           <DisplayOriginURL url={new URL(site.origin)} />
         </span>
+      )}
+
+      {site.choice === UserChoice.Approved && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger
+              className='ml-auto cursor-pointer border-0 bg-transparent'
+              onClick={onToggleDefault}
+            >
+              {isDefaultFrontend ? <StarFilledIcon /> : <StarIcon />}
+            </TooltipTrigger>
+            <TooltipContent>
+              {isDefaultFrontend ? 'Primary Penumbra frontend' : 'Set as primary Penumbra frontend'}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       )}
 
       <div className='flex items-center gap-2'>
