@@ -664,6 +664,7 @@ export default function Block() {
             fontFamily={"monospace"}
             alignContent={"center"}
             textAlign={"center"}
+            paddingBottom={"40px"}
           >
             <DataBox
               title="Positions Opened"
