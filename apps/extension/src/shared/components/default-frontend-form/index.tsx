@@ -1,6 +1,5 @@
 import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-import { randomSort } from '../../utils/random-sort';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { useRef } from 'react';
@@ -9,10 +8,17 @@ import { NewFrontendInput } from './new-frontend-input';
 import { useIsFocus } from './use-is-focus';
 import { extractDomain } from './extract-domain';
 
-const getFrontendsFromRegistry = () => {
+const getFrontendsFromRegistry = (): { title: string; url: string }[] => {
   const registryClient = new ChainRegistryClient();
-  const { frontends } = registryClient.globals();
-  return frontends.toSorted(randomSort);
+  const { frontends, rpcs } = registryClient.globals();
+
+  const registeredFrontends = frontends.map(frontend => ({
+    title: extractDomain(frontend),
+    url: frontend,
+  }));
+  const rpcFrontends = rpcs.map(rpc => ({ title: rpc.name, url: `${rpc.url}/app/` }));
+
+  return [...registeredFrontends, ...rpcFrontends];
 };
 
 const useDefaultFrontendSelector = (state: AllSlices) => {
@@ -21,7 +27,9 @@ const useDefaultFrontendSelector = (state: AllSlices) => {
     frontends,
     selected: state.defaultFrontend.url,
     selectUrl: state.defaultFrontend.setUrl,
-    isCustomSelected: !!state.defaultFrontend.url && !frontends.includes(state.defaultFrontend.url),
+    isCustomSelected:
+      !!state.defaultFrontend.url &&
+      !frontends.some(item => item.url === state.defaultFrontend.url),
   };
 };
 
@@ -37,11 +45,11 @@ export const DefaultFrontendForm = ({ isOnboarding }: { isOnboarding?: boolean }
     <SelectList>
       {frontends.map(option => (
         <SelectList.Option
-          key={option}
-          value={option}
-          secondary={option}
-          label={extractDomain(option)}
-          isSelected={option === selected}
+          key={option.url}
+          value={option.url}
+          secondary={option.url}
+          label={option.title}
+          isSelected={option.url === selected}
           onSelect={selectUrl}
         />
       ))}
