@@ -120,7 +120,7 @@ export function createZQuery<
     set(prevState => ({
       ...prevState,
       _zQueryInternal: {
-        ...prevState?._zQueryInternal,
+        ...prevState._zQueryInternal,
         abortController,
       },
     }));
@@ -160,7 +160,6 @@ export function createZQuery<
 
       useEffect(() => {
         const fetch = get(useStore.getState())._zQueryInternal.fetch;
-        if (!get(useStore.getState())?._zQueryInternal) return;
 
         {
           const newReferenceCount = incrementReferenceCounter();
