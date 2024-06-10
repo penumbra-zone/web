@@ -34,6 +34,7 @@ mod tests {
     use wasm_bindgen::JsValue;
     use wasm_bindgen_test::*;
 
+    use penumbra_proto::core::asset::v1::AssetId;
     use penumbra_wasm::planner::plan_transaction;
     use penumbra_wasm::{
         build::build_action,
@@ -427,10 +428,20 @@ mod tests {
         // Viewing key to reveal asset balances and transactions.
         let full_viewing_key = FullViewingKey::from_str("penumbrafullviewingkey1mnm04x7yx5tyznswlp0sxs8nsxtgxr9p98dp0msuek8fzxuknuzawjpct8zdevcvm3tsph0wvsuw33x2q42e7sf29q904hwerma8xzgrxsgq2").unwrap();
 
+        // Native staking token asset
+        let native_staking_token = AssetId {
+            inner: "KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA="
+                .to_string()
+                .into(),
+            alt_bech32m: "".to_string(),
+            alt_base_denom: "".to_string(),
+        };
+
         let plan_js_value: JsValue = plan_transaction(
             js_constants_params_value,
             &planner_request.encode_to_vec(),
             full_viewing_key.encode_to_vec().as_slice(),
+            native_staking_token.encode_to_vec().as_slice(),
         )
         .await
         .unwrap();

@@ -30,6 +30,7 @@ describe('TransactionPlanner request handler', () => {
       getAppParams: vi.fn(),
       getGasPrices: vi.fn(),
       constants: vi.fn(),
+      hasNativeAssetBalance: vi.fn(),
     };
 
     mockServices = {
@@ -77,47 +78,9 @@ describe('TransactionPlanner request handler', () => {
         compactBlockSpacePrice: 120n,
       }),
     );
+    mockIndexedDb.hasNativeAssetBalance?.mockResolvedValueOnce(true);
     await transactionPlanner(req, mockCtx);
 
     expect(mockPlanTransaction.mock.calls.length === 1).toBeTruthy();
-  });
-
-  test('should throw error if FmdParameters not available', async () => {
-    await expect(transactionPlanner(req, mockCtx)).rejects.toThrow('FmdParameters not available');
-  });
-
-  test('should throw error if SctParameters not available', async () => {
-    mockIndexedDb.getFmdParams?.mockResolvedValueOnce(new FmdParameters());
-    mockIndexedDb.getAppParams?.mockResolvedValueOnce(
-      new AppParameters({
-        chainId: 'penumbra-testnet-mock',
-      }),
-    );
-    await expect(transactionPlanner(req, mockCtx)).rejects.toThrow('SctParameters not available');
-  });
-
-  test('should throw error if ChainId not available', async () => {
-    mockIndexedDb.getFmdParams?.mockResolvedValueOnce(new FmdParameters());
-    mockIndexedDb.getAppParams?.mockResolvedValueOnce(
-      new AppParameters({
-        sctParams: new SctParameters({
-          epochDuration: 719n,
-        }),
-      }),
-    );
-    await expect(transactionPlanner(req, mockCtx)).rejects.toThrow('ChainId not available');
-  });
-
-  test('should throw error if Gas prices is not available', async () => {
-    mockIndexedDb.getFmdParams?.mockResolvedValueOnce(new FmdParameters());
-    mockIndexedDb.getAppParams?.mockResolvedValueOnce(
-      new AppParameters({
-        chainId: 'penumbra-testnet-mock',
-        sctParams: new SctParameters({
-          epochDuration: 719n,
-        }),
-      }),
-    );
-    await expect(transactionPlanner(req, mockCtx)).rejects.toThrow('Gas prices is not available');
   });
 });

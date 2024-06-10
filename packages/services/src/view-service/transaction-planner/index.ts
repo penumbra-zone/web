@@ -17,7 +17,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   // notes (native asset balance)
   const nativeToken = await indexedDb.hasNativeAssetBalance();
 
-  // Initialize the gas fee token using an alternate token's asset ID
+  // Initialize the gas fee token using an native staking token's asset ID
   let gasFeeToken = new AssetId({
     inner: new Uint8Array(base64ToUint8Array('KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=')),
   });
@@ -25,7 +25,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   // If there is no native token balance, extract and use an alternate gas fee token
   // from the transaction request
   if (!nativeToken) {
-    gasFeeToken = extractAltFee(req);
+    gasFeeToken = extractAltFee(req)!;
   }
 
   const fvk = ctx.values.get(fvkCtx);

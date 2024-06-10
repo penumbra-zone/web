@@ -5,7 +5,7 @@ import {
   TransactionPlannerRequest_Swap,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
-export const extractAltFee = (request: TransactionPlannerRequest): AssetId => {
+export const extractAltFee = (request: TransactionPlannerRequest): AssetId | undefined => {
   const fields = [
     { name: 'outputs', value: request.outputs },
     { name: 'swaps', value: request.swaps },
@@ -23,10 +23,18 @@ export const extractAltFee = (request: TransactionPlannerRequest): AssetId => {
 
   const nonEmptyField = fields.find(field => field.value.length > 0);
 
+  if (!nonEmptyField) {
+    console.warn('No non-empty field found in the request');
+    return undefined;
+  }
+
   type PossibleTypes = TransactionPlannerRequest_Output | TransactionPlannerRequest_Swap;
 
-  const action = nonEmptyField!.value[0] as PossibleTypes;
-  const assetId = action.value?.assetId!;
+  const action = nonEmptyField.value[0] as PossibleTypes;
 
-  return assetId;
+  if (!action.value?.assetId) {
+    return undefined;
+  }
+
+  return action.value.assetId;
 };
