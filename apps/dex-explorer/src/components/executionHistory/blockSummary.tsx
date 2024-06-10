@@ -15,7 +15,7 @@ export const BlockSummary = ({ blockHeight, blockSummary }: BlockSummaryProps) =
           <VStack spacing={".5em"} align={"flex-start"}>
             <BlockTimestampView
               blockHeight={blockHeight}
-              timestamp={blockSummary.createdAt}
+              timestamp={blockSummary.createdAt ?? undefined}
             />
           </VStack>
           <Box
