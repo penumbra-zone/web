@@ -39,8 +39,8 @@ export const ExpandedDetails = ({
     fullSyncHeight >= description.startHeight &&
     fullSyncHeight <= description.endHeight;
 
-  const inputExponent = getDisplayDenomExponent(inputMetadata);
-  const outputExponent = getDisplayDenomExponent(outputMetadata);
+  const inputExponent = getDisplayDenomExponent.optional()(inputMetadata);
+  const outputExponent = getDisplayDenomExponent.optional()(outputMetadata);
 
   return (
     <div className='flex w-full flex-col overflow-hidden'>
