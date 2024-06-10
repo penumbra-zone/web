@@ -110,8 +110,13 @@ export default {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'gradient-x': 'gradient-x 1s ease-out',
+        'expand-down': 'expand 0.1s ease-in-out',
       },
       keyframes: {
+        'expand-down': {
+          from: { transform: 'translateY(-50%) scaleY(0)' },
+          to: { transform: 'translateY(0) scaleY(1)' },
+        },
         'accordion-down': {
           from: { height: '0' },
           to: { height: 'var(--radix-accordion-content-height)' },

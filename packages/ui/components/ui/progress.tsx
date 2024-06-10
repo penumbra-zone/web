@@ -37,7 +37,7 @@ const Progress = ({
 }: ProgressProps) => (
   <ProgressPrimitive.Root
     className={cn(
-      'relative z-0',
+      'relative',
       size === 'lg' && 'h-3',
       size === 'sm' && 'h-1',
       'w-full overflow-hidden',
@@ -47,7 +47,7 @@ const Progress = ({
   >
     <ProgressPrimitive.Indicator
       className={cn(
-        'h-full w-full flex-1 transition-all z-20',
+        'h-full w-full flex-1 transition-all',
         progressVariants({ shape }),
         progressVariants({ status }),
       )}

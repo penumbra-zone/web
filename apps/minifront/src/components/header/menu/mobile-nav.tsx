@@ -5,14 +5,14 @@ import {
   SheetTrigger,
 } from '@penumbra-zone/ui/components/ui/sheet';
 import { HamburgerMenuIcon } from '@radix-ui/react-icons';
-import { headerLinks } from './constants';
+import { headerLinks } from '../constants';
 import { Link } from 'react-router-dom';
 
-export const MobileNavMenu = () => {
+export const MobileNav = () => {
   return (
     <Sheet>
-      <SheetTrigger asChild>
-        <HamburgerMenuIcon className='z-10 size-6 cursor-pointer text-muted hover:opacity-50' />
+      <SheetTrigger>
+        <HamburgerMenuIcon className='z-10 size-6 cursor-pointer text-muted hover:opacity-50 md:invisible' />
       </SheetTrigger>
       <SheetContent side='left' className='w-[311px] bg-charcoal-secondary p-5 '>
         <SheetHeader className='z-10' />
