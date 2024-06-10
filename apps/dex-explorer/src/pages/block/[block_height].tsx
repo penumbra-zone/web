@@ -139,7 +139,11 @@ export const Trace = ({
                   borderRadius={"30px"}
                   backgroundColor="var(--charcoal-tertiary)"
                 >
-                  <Avatar src={metadata?.imagePath} size={"xs"} />
+                  {metadata?.imagePath ? (
+                    <Avatar src={metadata.imagePath} size={"xs"} />
+                  ) : (
+                    <Avatar size={"xs"} />
+                  )}
                   <Text fontSize={"small"} fontFamily={"monospace"}>
                     {formattedAmount} {metadata?.symbol}
                   </Text>
@@ -163,6 +167,117 @@ const formatTimestampOrDefault = (timestamp: any) => {
   return formatTimestampShort(timestamp);
 };
 
+export const ArbSummary = ({
+  swapExecution,
+  metadataByAssetId,
+  index,
+  isExpanded,
+  toggleExpand,
+}: {
+  swapExecution: SwapExecution;
+  metadataByAssetId: Record<string, Token>;
+  index: number;
+  isExpanded: boolean;
+  toggleExpand: (index: number) => void;
+}) => {
+  const arbPerAsset: Record<string, number> = {};
+  const tracesPerAsset: Record<string, number> = {};
+
+  swapExecution.traces.forEach((trace: SwapExecution_Trace) => {
+    const firstTrace = trace.value[0];
+    const lastTrace = trace.value[trace.value.length - 1];
+    if (!firstTrace.assetId?.inner != !lastTrace.assetId?.inner) {
+      console.error("First and last trace asset id must be equal");
+      return;
+    }
+
+    const assetId = firstTrace.assetId?.inner as unknown as string;
+    const displayDenomExponent = metadataByAssetId[assetId]?.decimals ?? 0;
+
+    const formattedInputAmount = fromBaseUnit(
+      BigInt(firstTrace.amount?.lo ?? 0),
+      BigInt(firstTrace.amount?.hi ?? 0),
+      displayDenomExponent
+    ).toNumber();
+
+    const formattedOutputAmount = fromBaseUnit(
+      BigInt(lastTrace.amount?.lo ?? 0),
+      BigInt(lastTrace.amount?.hi ?? 0),
+      displayDenomExponent
+    ).toNumber();
+
+    if (tracesPerAsset[assetId]) {
+      tracesPerAsset[assetId] += 1;
+    } else {
+      tracesPerAsset[assetId] = 1;
+    }
+
+    const arbedAmount = formattedOutputAmount - formattedInputAmount;
+
+    if (arbPerAsset[assetId]) {
+      arbPerAsset[assetId] += arbedAmount;
+    } else {
+      arbPerAsset[assetId] = arbedAmount;
+    }
+  });
+
+  return (
+    <Box overflowX="auto" width="100%" textAlign={"left"}>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        {Object.entries(arbPerAsset).map(([assetId, amount]) => {
+          const metadata = metadataByAssetId[assetId];
+          return (
+            <HStack key={assetId} align="left">
+              <Box>
+                <HStack padding="8px" borderRadius={"30px"}>
+                  {metadata?.imagePath ? (
+                    <Avatar src={metadata.imagePath} size={"xs"} />
+                  ) : (
+                    <Avatar size={"xs"} />
+                  )}
+                  <Text fontSize={"md"} fontFamily={"monospace"}>
+                    {amount.toFixed(6)} {metadata?.symbol} in{" "}
+                    {tracesPerAsset[assetId]} routes
+                  </Text>
+                </HStack>
+              </Box>
+            </HStack>
+          );
+        })}
+        <IconButton
+          onClick={() => toggleExpand(index)}
+          icon={isExpanded ? <MinusIcon /> : <AddIcon />}
+          size="xs"
+          aria-label="Expand/Collapse"
+          colorScheme="purple"
+        />
+      </Box>
+      {isExpanded && (
+        <Box overflowX="auto" width="100%">
+          <VStack
+            spacing={2}
+            align="left"
+            justifyContent="left"
+            paddingTop="10px"
+            width={"100%"}
+          >
+            {swapExecution.traces.map(
+              (trace: SwapExecution_Trace, traceIndex: number) => (
+                <Trace
+                  key={traceIndex}
+                  trace={trace}
+                  metadataByAssetId={metadataByAssetId}
+                  type={TraceType.ARB}
+                />
+              )
+            )}
+          </VStack>
+        </Box>
+      )}
+    </Box>
+  );
+};
+
 export default function Block() {
   const router = useRouter();
   const { block_height } = router.query as { block_height: string };
@@ -173,6 +288,14 @@ export default function Block() {
   const [blockHeight, setBlockHeight] = useState(-1);
   const [blockData, setBlockData] = useState<BlockDetailedSummaryData>();
   const [error, setError] = useState<string | undefined>(undefined);
+  const [expandedArbs, setExpandedArbs] = useState<Record<number, boolean>>({});
+
+  const toggleArbExpand = (index: number) => {
+    setExpandedArbs((prevState) => ({
+      ...prevState,
+      [index]: !prevState[index],
+    }));
+  };
 
   // Get detailed block data
   useEffect(() => {
@@ -308,7 +431,7 @@ export default function Block() {
     type: DataBoxType;
   }) => {
     // ! Expand default
-    const [isExpanded, setIsExpanded] = useState(false); // EXPAND
+    const [isExpanded, setIsExpanded] = useState(true); // EXPAND
     const tokenAssets = fetchAllTokenAssets();
     const metadataByAssetId: Record<string, Token> = {};
     tokenAssets.forEach((asset) => {
@@ -417,40 +540,15 @@ export default function Block() {
                 width={"100%"}
               >
                 {blockData!.arbExecutions.map(
-                  (swapExecution: SwapExecution) => (
-                    <>
-                      {/* TODO: summary per arb? 
-                      <Text>
-                        -----------------------Arb-----------------------
-                      </Text>
-                      */}
-                      <Box overflowX="auto" width="100%">
-                        <VStack
-                          spacing={2}
-                          align="left"
-                          justifyContent="left"
-                          paddingTop="10px"
-                          width={"100%"}
-                        >
-                          {swapExecution.traces.map(
-                            (trace: SwapExecution_Trace, index: number) => (
-                              <>
-                                {/* TODO: summary per trace? 
-                                <Text>-----------Trace-------------</Text>
-                                */}
-                                <Trace
-                                  key={index}
-                                  trace={trace}
-                                  metadataByAssetId={metadataByAssetId}
-                                  type={TraceType.ARB}
-                                />
-                                <Box paddingTop="3px" />
-                              </>
-                            )
-                          )}
-                        </VStack>
-                      </Box>
-                    </>
+                  (swapExecution: SwapExecution, index: number) => (
+                    <ArbSummary
+                      key={index}
+                      swapExecution={swapExecution}
+                      metadataByAssetId={metadataByAssetId}
+                      index={index}
+                      isExpanded={!!expandedArbs[index]}
+                      toggleExpand={toggleArbExpand}
+                    />
                   )
                 )}
               </VStack>
@@ -570,7 +668,7 @@ export default function Block() {
               type={DataBoxType.OPEN_POSITIONS}
             />
             <DataBox
-              title="Asset Arbs"
+              title="Arbs"
               dataLength={blockData!.arbExecutions.length}
               type={DataBoxType.ARBS}
             />
