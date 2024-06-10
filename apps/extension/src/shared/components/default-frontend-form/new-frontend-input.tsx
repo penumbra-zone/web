@@ -66,7 +66,6 @@ export const NewFrontendInput = forwardRef<HTMLInputElement, NewFrontendInputPro
 
     return (
       <SelectList.Option
-        key='custom-input'
         label='Custom frontend URL'
         secondary={
           <input

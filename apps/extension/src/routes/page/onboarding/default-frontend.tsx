@@ -2,7 +2,6 @@ import { Card, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/car
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { ServicesMessage } from '@penumbra-zone/types/services';
 import { DefaultFrontendForm } from '../../../shared/components/default-frontend-form';
 import { FormEventHandler } from 'react';
 
@@ -11,7 +10,6 @@ export const SetDefaultFrontendPage = () => {
 
   const onSubmit: FormEventHandler = (event): void => {
     event.preventDefault();
-    void chrome.runtime.sendMessage(ServicesMessage.OnboardComplete);
     navigate(PagePath.ONBOARDING_SUCCESS);
   };
 

@@ -7,5 +7,8 @@ export const localTestDefaults: LocalStorageState = {
   wallets: [],
   fullSyncHeight: undefined,
   knownSites: [{ origin: EXAMPLE_MINIFRONT_URL, choice: UserChoice.Approved, date: Date.now() }],
+  params: undefined,
+  grpcEndpoint: undefined,
+  passwordKeyPrint: undefined,
   frontendUrl: EXAMPLE_MINIFRONT_URL,
 };

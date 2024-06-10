@@ -47,6 +47,7 @@ export const DefaultFrontendForm = ({ isOnboarding }: { isOnboarding?: boolean }
       ))}
 
       <NewFrontendInput
+        key='custom-input'
         ref={inputRef}
         defaultFrontend={selected}
         selected={isCustomSelected}
@@ -64,8 +65,13 @@ export const DefaultFrontendForm = ({ isOnboarding }: { isOnboarding?: boolean }
         </a>
       </div>
 
-      {((isOnboarding && Boolean(selected)) ?? isFocused) && (
-        <Button key='save-button' variant='gradient' type={isOnboarding ? 'submit' : 'button'}>
+      {(isOnboarding ?? isFocused) && (
+        <Button
+          key='save-button'
+          variant='gradient'
+          disabled={isOnboarding && !selected}
+          type={isOnboarding ? 'submit' : 'button'}
+        >
           {isOnboarding ? 'Next' : 'Save'}
         </Button>
       )}

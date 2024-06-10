@@ -9,7 +9,7 @@ export const localDefaults: Required<LocalStorageState> = {
   knownSites: [],
   params: undefined,
   passwordKeyPrint: undefined,
-  frontendUrl: '',
+  frontendUrl: undefined,
 };
 
 // Meant to be used for long-term persisted data. It is cleared when the extension is removed.
