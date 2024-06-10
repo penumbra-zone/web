@@ -103,7 +103,6 @@ function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: S
       | undefined;
     set(
       produce((state: AllSlices) => {
-        // TODO: do we need ?? state.defaultFrontend.url
         state.defaultFrontend.url = stored?.value ?? state.defaultFrontend.url;
       }),
     );
