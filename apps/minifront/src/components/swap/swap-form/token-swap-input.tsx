@@ -24,6 +24,7 @@ import {
 import { AssetSelector } from '../../shared/asset-selector';
 import BalanceSelector from '../../shared/balance-selector';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { useStatus } from '../../../state/status';
 
 const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
@@ -61,7 +62,6 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
   setAmount: state.swap.setAmount,
   balancesResponses: state.swap.balancesResponses,
   priceHistory: state.swap.priceHistory,
-  latestKnownBlockHeight: state.status.latestKnownBlockHeight,
   assetOutBalance: assetOutBalanceSelector(state),
 });
 
@@ -72,6 +72,8 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
  * amount.
  */
 export const TokenSwapInput = () => {
+  const status = useStatus();
+  const latestKnownBlockHeight = status.data?.latestKnownBlockHeight ?? 0n;
   const {
     swappableAssets,
     amount,
@@ -82,7 +84,6 @@ export const TokenSwapInput = () => {
     setAssetOut,
     balancesResponses,
     priceHistory,
-    latestKnownBlockHeight = 0n,
     assetOutBalance,
   } = useStoreShallow(tokenSwapInputSelector);
 
