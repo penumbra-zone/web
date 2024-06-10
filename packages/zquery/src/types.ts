@@ -45,13 +45,13 @@ export interface CreateZQueryUnaryProps<
    * state. Thus, you need to pass it a selector so it can find itself.
    *
    * ```ts
-   * createZQuery(
+   * createZQuery({
    *   // ...
    *   // ...
    *   // ...
    *   // ...
-   *   state => state.deeply.nested.object,
-   * )
+   *   get: state => state.deeply.nested.object,
+   * })
    * ```
    */
   get: (state: State) => ZQueryState<DataType, FetchArgs>;
@@ -69,11 +69,11 @@ export interface CreateZQueryUnaryProps<
    * to be able to imitate object mutations, you could pass this setter:
    *
    * ```ts
-   * createZQuery(
+   * createZQuery({
    *   // ...
    *   // ...
    *   // ...
-   *   newValue => {
+   *   set: newValue => {
    *     // `newValue` is the entire ZQuery state object, and can be assigned
    *     // as-is to the property that holds the ZQuery state.
    *     useStore.setState(state => {
@@ -81,7 +81,7 @@ export interface CreateZQueryUnaryProps<
    *     })
    *   },
    *   // ...
-   * )
+   * })
    * ```
    */
   set: (setter: <DataType, T extends ZQueryState<DataType>>(prevState: T) => T) => void;
@@ -117,13 +117,13 @@ export interface CreateZQueryStreamingProps<
    * state. Thus, you need to pass it a selector so it can find itself.
    *
    * ```ts
-   * createZQuery(
+   * createZQuery({
    *   // ...
    *   // ...
    *   // ...
    *   // ...
-   *   state => state.deeply.nested.object,
-   * )
+   *   get: state => state.deeply.nested.object,
+   * })
    * ```
    */
   get: (state: State) => ZQueryState<ProcessedDataType, FetchArgs>;
@@ -141,11 +141,11 @@ export interface CreateZQueryStreamingProps<
    * to be able to imitate object mutations, you could pass this setter:
    *
    * ```ts
-   * createZQuery(
+   * createZQuery({
    *   // ...
    *   // ...
    *   // ...
-   *   newValue => {
+   *   set: newValue => {
    *     // `newValue` is the entire ZQuery state object, and can be assigned
    *     // as-is to the property that holds the ZQuery state.
    *     useStore.setState(state => {
@@ -153,7 +153,7 @@ export interface CreateZQueryStreamingProps<
    *     })
    *   },
    *   // ...
-   * )
+   * })
    * ```
    */
   set: (
