@@ -15,14 +15,9 @@ export interface AuctionInfo {
 
 export const getAuctionInfos = async function* ({
   queryLatestState = false,
-  abortController,
 }: {
   queryLatestState?: boolean;
-  abortController?: AbortController;
 } = {}): AsyncGenerator<AuctionInfo> {
-  abortController?.abort();
-  const newAbortController = new AbortController();
-
   for await (const response of viewClient.auctions(
     { queryLatestState, includeInactive: true },
     /**
@@ -34,9 +29,7 @@ export const getAuctionInfos = async function* ({
      *
      * @see https://connectrpc.com/docs/web/cancellation-and-timeouts/
      */
-    { signal: newAbortController.signal },
   )) {
-    if (newAbortController.signal.aborted) return;
     if (!response.auction || !response.id) continue;
 
     const auction = DutchAuction.fromBinary(response.auction.value);
