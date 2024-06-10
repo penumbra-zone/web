@@ -3,7 +3,6 @@ import {
   DialogClose,
   DialogContent,
   DialogHeader,
-  DialogTrigger,
 } from '@penumbra-zone/ui/components/ui/dialog';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
 import {
@@ -11,10 +10,11 @@ import {
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { IconInput } from '@penumbra-zone/ui/components/ui/icon-input';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { Box } from '@penumbra-zone/ui/components/ui/box';
+import { motion } from 'framer-motion';
 
 interface AssetSelectorProps {
   assets: Metadata[];
@@ -87,6 +87,9 @@ export const AssetSelector = ({ assets, onChange, value, filter }: AssetSelector
     filter,
   });
 
+  const layoutId = useId();
+  const [isOpen, setIsOpen] = useState(false);
+
   /**
    * @todo: Refactor to not use `ValueViewComponent`, since it's not intended to
    * just display an asset icon/symbol without a value.
@@ -97,44 +100,61 @@ export const AssetSelector = ({ assets, onChange, value, filter }: AssetSelector
   );
 
   return (
-    <Dialog>
-      <DialogTrigger className='block'>
-        <div className='flex h-9 min-w-[100px] max-w-[150px] items-center justify-center gap-2 rounded-lg bg-light-brown px-2'>
+    <>
+      {!isOpen && (
+        <motion.div
+          layout
+          layoutId={layoutId}
+          className='flex min-w-[100px] max-w-[200px] cursor-pointer items-center justify-center rounded-lg bg-light-brown px-2'
+          onClick={() => setIsOpen(true)}
+        >
           <ValueViewComponent view={valueView} showValue={false} />
-        </div>
-      </DialogTrigger>
-      <DialogContent>
-        <div className='flex max-h-screen flex-col'>
-          <DialogHeader>Select asset</DialogHeader>
+        </motion.div>
+      )}
 
-          <div className='flex flex-col gap-2 overflow-auto p-4'>
-            <Box spacing='compact'>
-              <IconInput
-                icon={<MagnifyingGlassIcon className='size-5 text-muted-foreground' />}
-                value={search}
-                onChange={setSearch}
-                placeholder='Search assets...'
-              />
-            </Box>
-
-            {filteredAssets.map(metadata => (
-              <div key={metadata.display} className='flex flex-col'>
-                <DialogClose>
-                  <div
-                    className={
-                      'flex cursor-pointer justify-start gap-[6px] overflow-hidden py-[10px] font-bold text-muted-foreground hover:-mx-4 hover:bg-light-brown hover:px-4'
-                    }
-                    onClick={() => onChange(metadata)}
-                  >
-                    <AssetIcon metadata={metadata} />
-                    <p className='truncate'>{metadata.symbol || 'Unknown asset'}</p>
-                  </div>
-                </DialogClose>
-              </div>
-            ))}
+      {isOpen && (
+        <>
+          {/* 0-opacity placeholder for layout's sake */}
+          <div className='flex min-w-[100px] max-w-[200px] px-2 opacity-0'>
+            <ValueViewComponent view={valueView} showValue={false} />
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </>
+      )}
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent layoutId={layoutId}>
+          <div className='flex max-h-screen flex-col'>
+            <DialogHeader>Select asset</DialogHeader>
+
+            <div className='flex flex-col gap-2 overflow-auto p-4'>
+              <Box spacing='compact'>
+                <IconInput
+                  icon={<MagnifyingGlassIcon className='size-5 text-muted-foreground' />}
+                  value={search}
+                  onChange={setSearch}
+                  placeholder='Search assets...'
+                />
+              </Box>
+
+              {filteredAssets.map(metadata => (
+                <div key={metadata.display} className='flex flex-col'>
+                  <DialogClose>
+                    <div
+                      className={
+                        'flex cursor-pointer justify-start gap-[6px] overflow-hidden py-[10px] font-bold text-muted-foreground hover:-mx-4 hover:bg-light-brown hover:px-4'
+                      }
+                      onClick={() => onChange(metadata)}
+                    >
+                      <AssetIcon metadata={metadata} />
+                      <p className='truncate'>{metadata.symbol || 'Unknown asset'}</p>
+                    </div>
+                  </DialogClose>
+                </div>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
