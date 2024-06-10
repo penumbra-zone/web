@@ -18,18 +18,7 @@ export const getAuctionInfos = async function* ({
 }: {
   queryLatestState?: boolean;
 } = {}): AsyncGenerator<AuctionInfo> {
-  for await (const response of viewClient.auctions(
-    { queryLatestState, includeInactive: true },
-    /**
-     * Weirdly, just passing the newAbortController.signal here doesn't seem to
-     * have any effect, despite the ConnectRPC docs saying that it should
-     * work. I still left this line in, though, since it seems right and
-     * perhaps will be fixed in a later ConnectRPC release. But in the
-     * meantime, returning early from the `for` loop below fixes this issue.
-     *
-     * @see https://connectrpc.com/docs/web/cancellation-and-timeouts/
-     */
-  )) {
+  for await (const response of viewClient.auctions({ queryLatestState, includeInactive: true })) {
     if (!response.auction || !response.id) continue;
 
     const auction = DutchAuction.fromBinary(response.auction.value);
