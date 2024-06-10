@@ -8,7 +8,7 @@ export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
   if (!txv.bodyView) throw new Error('transaction view missing body view');
   if (!txv.bodyView.transactionParameters?.fee?.amount) throw new Error('Missing fee amount');
 
-  const fee = joinLoHiAmount(txv.bodyView.transactionParameters.fee.amount).toString();
+  const fee =(Number(joinLoHiAmount(txv.bodyView.transactionParameters.fee.amount)) / 1000000).toString()
 
   return (
     <div className='flex flex-col gap-8'>
