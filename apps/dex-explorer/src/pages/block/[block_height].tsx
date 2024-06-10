@@ -431,7 +431,7 @@ export default function Block() {
     type: DataBoxType;
   }) => {
     // ! Expand default
-    const [isExpanded, setIsExpanded] = useState(true); // EXPAND
+    const [isExpanded, setIsExpanded] = useState(false); // EXPAND
     const tokenAssets = fetchAllTokenAssets();
     const metadataByAssetId: Record<string, Token> = {};
     tokenAssets.forEach((asset) => {
