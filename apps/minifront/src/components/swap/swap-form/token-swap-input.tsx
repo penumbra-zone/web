@@ -110,16 +110,18 @@ export const TokenSwapInput = () => {
             </div>
           </div>
         </div>
-        {priceHistory.startMetadata && priceHistory.endMetadata && priceHistory.candles.length && (
-          <CandlestickPlot
-            className='h-[480px] w-full bg-charcoal'
-            candles={priceHistory.candles}
-            startMetadata={priceHistory.startMetadata}
-            endMetadata={priceHistory.endMetadata}
-            latestKnownBlockHeight={Number(latestKnownBlockHeight)}
-            getBlockDate={getBlockDate}
-          />
-        )}
+        {priceHistory.startMetadata &&
+          priceHistory.endMetadata &&
+          !!priceHistory.candles.length && (
+            <CandlestickPlot
+              className='h-[480px] w-full bg-charcoal'
+              candles={priceHistory.candles}
+              startMetadata={priceHistory.startMetadata}
+              endMetadata={priceHistory.endMetadata}
+              latestKnownBlockHeight={Number(latestKnownBlockHeight)}
+              getBlockDate={getBlockDate}
+            />
+          )}
       </div>
     </Box>
   );
