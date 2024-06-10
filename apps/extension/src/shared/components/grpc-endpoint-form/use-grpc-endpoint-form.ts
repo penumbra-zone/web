@@ -7,22 +7,13 @@ import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { ServicesMessage } from '@penumbra-zone/types/services';
 import debounce from 'lodash/debounce';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
-
-const randomSort = () => (Math.random() >= 0.5 ? 1 : -1);
+import { randomSort } from '../../utils/random-sort';
+import { isValidUrl } from '../../utils/is-valid-url';
 
 const useSaveGrpcEndpointSelector = (state: AllSlices) => ({
   grpcEndpoint: state.network.grpcEndpoint,
   setGrpcEndpoint: state.network.setGRPCEndpoint,
 });
-
-const isValidUrl = (url: string) => {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-};
 
 const getRpcsFromRegistry = () => {
   const registryClient = new ChainRegistryClient();

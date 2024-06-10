@@ -85,14 +85,16 @@ export const GrpcEndpointForm = ({
             />
           </SelectList>
 
-          <a
-            href='https://github.com/prax-wallet/registry'
-            target='_blank'
-            rel='noreferrer'
-            className='block text-right text-xs text-muted-foreground'
-          >
-            Add to this list
-          </a>
+          <div className='text-right'>
+            <a
+              href='https://github.com/prax-wallet/registry'
+              target='_blank'
+              rel='noreferrer'
+              className='text-xs text-muted-foreground'
+            >
+              Add to this list
+            </a>
+          </div>
 
           <Button variant='gradient' type='submit' disabled={!isSubmitButtonEnabled}>
             {submitButtonLabel}

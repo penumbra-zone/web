@@ -21,10 +21,6 @@ export const createConnectedSitesSlice =
       });
     },
 
-    setFrontendUrl: (frontendUrl: string) => {
-      void local.set('frontendUrl', frontendUrl);
-    },
-
     discardKnownSite: async (siteToDiscard: { origin: string }) => {
       const { knownSites } = get().connectedSites;
       const knownSitesWithoutDiscardedSite = knownSites.filter(
