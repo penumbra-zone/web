@@ -22,10 +22,7 @@ import {
   getDisplayDenomFromView,
   getValidatorInfoFromValueView,
 } from '@penumbra-zone/getters/value-view';
-import {
-  getRateData,
-  getVotingPowerFromValidatorInfo,
-} from '@penumbra-zone/getters/validator-info';
+import { getVotingPowerFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
 import {
   getVotingPowerByValidatorInfo,
   isDelegationTokenForValidator,
@@ -33,13 +30,14 @@ import {
 } from '@penumbra-zone/types/staking';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { splitLoHi, toBaseUnit } from '@penumbra-zone/types/lo-hi';
-import { viewClient } from '../../clients';
+import { stakeClient, viewClient } from '../../clients';
 import { getValueView as getValueViewFromDelegationsByAddressIndexResponse } from '@penumbra-zone/getters/delegations-by-address-index-response';
 import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse } from '@penumbra-zone/getters/unbonding-tokens-by-address-index-response';
 import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { getStakingTokenMetadata } from '../../fetchers/registry';
 import { zeroValueView } from '../../utils/zero-value-view';
 import { assetPatterns } from '@penumbra-zone/types/assets';
+import { getIdentityKey } from '@penumbra-zone/getters/validator';
 
 interface UnbondingTokensForAccount {
   claimable: {
@@ -331,7 +329,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
     try {
       const stakingTokenMetadata = await getStakingTokenMetadata();
 
-      const req = assembleDelegateRequest(get().staking, stakingTokenMetadata);
+      const req = await assembleDelegateRequest(get().staking, stakingTokenMetadata);
 
       // Reset form _after_ building the transaction planner request, since it depends on
       // the state.
@@ -354,7 +352,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
   },
   undelegate: async () => {
     try {
-      const req = assembleUndelegateRequest(get().staking);
+      const req = await assembleUndelegateRequest(get().staking);
 
       // Reset form _after_ assembling the transaction planner request, since it
       // depends on the state.
@@ -409,22 +407,25 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
   votingPowerByValidatorInfo: {},
 });
 
-const assembleDelegateRequest = (
+const assembleDelegateRequest = async (
   { account, amount, validatorInfo }: StakingSlice,
   stakingAssetMetadata: Metadata,
 ) => {
+  const currentValidatorRate = await stakeClient.currentValidatorRate({
+    identityKey: getIdentityKey(validatorInfo?.validator),
+  });
   return new TransactionPlannerRequest({
     delegations: [
       {
         amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponent(stakingAssetMetadata)),
-        rateData: getRateData(validatorInfo),
+        rateData: currentValidatorRate.data,
       },
     ],
     source: { account },
   });
 };
 
-const assembleUndelegateRequest = ({
+const assembleUndelegateRequest = async ({
   account,
   amount,
   delegationsByAccount,
@@ -436,10 +437,14 @@ const assembleUndelegateRequest = ({
   if (!delegation)
     throw new Error('Tried to assemble undelegate request from account with no delegation tokens');
 
+  const currentValidatorRate = await stakeClient.currentValidatorRate({
+    identityKey: getIdentityKey(validatorInfo?.validator),
+  });
+
   return new TransactionPlannerRequest({
     undelegations: [
       {
-        rateData: getRateData(validatorInfo),
+        rateData: currentValidatorRate.data,
         value: {
           amount: toBaseUnit(BigNumber(amount), getDisplayDenomExponentFromValueView(delegation)),
           assetId: getAssetIdFromValueView(delegation),

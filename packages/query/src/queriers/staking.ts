@@ -2,6 +2,8 @@ import { PromiseClient } from '@connectrpc/connect';
 import { createClient } from './utils';
 import { StakeService } from '@penumbra-zone/protobuf';
 import {
+  CurrentValidatorRateRequest,
+  CurrentValidatorRateResponse,
   ValidatorInfoResponse,
   ValidatorPenaltyRequest,
   ValidatorPenaltyResponse,
@@ -26,5 +28,9 @@ export class StakeQuerier implements StakeQuerierInterface {
 
   validatorPenalty(req: ValidatorPenaltyRequest): Promise<ValidatorPenaltyResponse> {
     return this.client.validatorPenalty(req);
+  }
+
+  currentValidatorRate(req: CurrentValidatorRateRequest): Promise<CurrentValidatorRateResponse> {
+    return this.client.currentValidatorRate(req);
   }
 }
