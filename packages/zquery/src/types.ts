@@ -179,25 +179,12 @@ export interface CreateZQueryStreamingProps<
  */
 export type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
 
-// Temporary empty interface for TODO
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface FetchOptions {
-  // TODO: implement `disabled`
-  // disabled?: boolean;
-}
-
 export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> = {
-  [key in `use${Capitalize<Name>}`]: (
-    opts?: FetchOptions,
-    ...args: FetchArgs
-  ) => {
+  [key in `use${Capitalize<Name>}`]: (...args: FetchArgs) => {
     data?: DataType;
     loading: boolean;
     error?: unknown;
   };
 } & {
-  [key in `useRevalidate${Capitalize<Name>}`]: () => (
-    opts?: FetchOptions,
-    ...args: FetchArgs
-  ) => void;
+  [key in `useRevalidate${Capitalize<Name>}`]: () => (...args: FetchArgs) => void;
 } & Record<Name, ZQueryState<DataType, FetchArgs>>;

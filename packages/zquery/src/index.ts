@@ -1,11 +1,6 @@
 import { useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import type {
-  CreateZQueryStreamingProps,
-  CreateZQueryUnaryProps,
-  FetchOptions,
-  ZQuery,
-} from './types';
+import type { CreateZQueryStreamingProps, CreateZQueryUnaryProps, ZQuery } from './types';
 
 export type { ZQueryState } from './types';
 
@@ -31,8 +26,6 @@ const isStreaming = <
     | CreateZQueryStreamingProps<Name, State, DataType, FetchArgs, ProcessedDataType>,
 ): props is CreateZQueryStreamingProps<Name, State, DataType, FetchArgs, ProcessedDataType> =>
   !!props.stream;
-
-const DEFAULT_FETCH_OPTIONS: Required<FetchOptions> = {};
 
 /**
  * Creates a ZQuery object that can be used to store server data in Zustand
@@ -226,7 +219,7 @@ export function createZQuery<
       _zQueryInternal: {
         referenceCount: 0,
 
-        fetch: async ({}: FetchOptions = DEFAULT_FETCH_OPTIONS, ...args: FetchArgs) => {
+        fetch: async (...args: FetchArgs) => {
           const abortController = get(getUseStore().getState())._zQueryInternal.abortController;
           // We have to use the `props` object (rather than its destructured
           // properties) since we're passing the full `props` object to
