@@ -1,7 +1,8 @@
 'use client';
 
 import * as SliderPrimitive from '@radix-ui/react-slider';
-import { cn } from '../../lib/utils';
+import { cn } from '../../../lib/utils';
+import { Thumbs } from './thumbs';
 
 interface BaseProps {
   /**
@@ -10,6 +11,7 @@ interface BaseProps {
    */
   value: number[];
   onValueChange: (value: number[]) => void;
+  thumbTooltip?: boolean | ((value?: number) => string);
 }
 
 // When `segmented` is `true`, the other props are required.
@@ -54,6 +56,7 @@ const Slider = ({
   min,
   max,
   step,
+  thumbTooltip,
 }: PropsWithSegmented | PropsWithoutSegmented) => {
   const segmentCount =
     !!segmented && (max - min + 1) % step === 0 ? Math.max((max - min + 1) / step - 1, 1) : 1;
@@ -84,14 +87,7 @@ const Slider = ({
           ))}
       </div>
 
-      {Array(value.length)
-        .fill(null)
-        .map((_, index) => (
-          <SliderPrimitive.Thumb
-            key={index}
-            className='block size-5 rounded-full border-2 border-secondary bg-background ring-offset-background transition-colors focus-visible:border-white focus-visible:outline-none focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50'
-          />
-        ))}
+      <Thumbs value={value} thumbTooltip={thumbTooltip} />
     </SliderPrimitive.Root>
   );
 };

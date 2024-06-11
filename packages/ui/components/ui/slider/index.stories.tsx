@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useArgs } from '@storybook/preview-api';
 
-import { Slider } from './slider';
+import { Slider } from '.';
 
 const meta: Meta<typeof Slider> = {
   component: Slider,
@@ -19,6 +19,7 @@ export const Basic: Story = {
     step: 1,
     value: [1, 2],
     segmented: false,
+    thumbTooltip: value => `Current value: ${value}`,
   },
 
   render: function Render(props) {

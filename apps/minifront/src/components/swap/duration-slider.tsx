@@ -34,6 +34,7 @@ export const DurationSlider = () => {
           value={[DURATION_OPTIONS.indexOf(duration)]}
           onValueChange={handleChange}
           segmented
+          thumbTooltip={value => '~ ' + DURATION_OPTIONS[value!]!}
         />
 
         <span className='text-right text-xs text-muted-foreground'>
