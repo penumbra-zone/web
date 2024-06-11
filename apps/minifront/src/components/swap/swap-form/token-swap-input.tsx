@@ -38,14 +38,13 @@ const getKnownZeroValueView = (metadata?: Metadata) => {
 };
 
 const assetOutBalanceSelector = ({ swap: { balancesResponses, assetIn, assetOut } }: AllSlices) => {
+  if (!assetIn || !assetOut) return getKnownZeroValueView();
+
   const match = balancesResponses.find(balance => {
     const balanceViewMetadata = getMetadataFromBalancesResponse(balance);
 
     return (
-      assetIn &&
-      assetOut &&
-      balance.accountAddress?.equals(assetIn.accountAddress) &&
-      assetOut.equals(balanceViewMetadata)
+      balance.accountAddress?.equals(assetIn.accountAddress) && assetOut.equals(balanceViewMetadata)
     );
   });
   const matchedBalance = getBalanceView.optional()(match);
@@ -151,18 +150,16 @@ export const TokenSwapInput = () => {
             {assetOut && <BalanceValueView valueView={assetOutBalance} />}
           </div>
         </div>
-        {priceHistory.startMetadata &&
-          priceHistory.endMetadata &&
-          !!priceHistory.candles.length && (
-            <CandlestickPlot
-              className='h-[480px] w-full bg-charcoal'
-              candles={priceHistory.candles}
-              startMetadata={priceHistory.startMetadata}
-              endMetadata={priceHistory.endMetadata}
-              latestKnownBlockHeight={Number(latestKnownBlockHeight)}
-              getBlockDate={getBlockDate}
-            />
-          )}
+        {priceHistory.startMetadata && priceHistory.endMetadata && priceHistory.candles.length ? (
+          <CandlestickPlot
+            className='h-[480px] w-full bg-charcoal'
+            candles={priceHistory.candles}
+            startMetadata={priceHistory.startMetadata}
+            endMetadata={priceHistory.endMetadata}
+            latestKnownBlockHeight={Number(latestKnownBlockHeight)}
+            getBlockDate={getBlockDate}
+          />
+        ) : null}
       </div>
     </Box>
   );
