@@ -8,8 +8,7 @@ import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 
 export const broadcastTransaction: Impl['broadcastTransaction'] = async function* (req, ctx) {
   const services = await ctx.values.get(servicesCtx)();
-  const { tendermint } = services.querier;
-  const { indexedDb } = await services.getWalletServices();
+  const { indexedDb, querier } = await services.getWalletServices();
   if (!req.transaction)
     throw new ConnectError('No transaction provided in request', Code.InvalidArgument);
 
@@ -18,7 +17,7 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async function
 
   const id = new TransactionId({ inner: await sha256Hash(req.transaction.toBinary()) });
 
-  const broadcastId = await tendermint.broadcastTx(req.transaction);
+  const broadcastId = await querier.tendermint.broadcastTx(req.transaction);
   if (!id.equals(broadcastId)) {
     console.error('broadcast transaction id disagrees', id, broadcastId);
     throw new Error(

@@ -41,9 +41,10 @@ export const balances: Impl['balances'] = async function* (req, ctx) {
 
   // latestBlockHeight is needed to calculate the threshold of price relevance,
   //it is better to use  rather than fullSyncHeight to avoid displaying old prices during the synchronization process
-  const latestBlockHeight = await querier.tendermint.latestBlockHeight();
+  const latestKnownBlockHeight =
+    (await querier.tendermint.latestBlockHeight()) ?? (await indexedDb.getFullSyncHeight()) ?? 0n;
 
-  const aggregator = new BalancesAggregator(ctx, indexedDb, latestBlockHeight);
+  const aggregator = new BalancesAggregator(ctx, indexedDb, latestKnownBlockHeight);
 
   for await (const noteRecord of indexedDb.iterateSpendableNotes()) {
     if (noteRecord.heightSpent !== 0n) continue;

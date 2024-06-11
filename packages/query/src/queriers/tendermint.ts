@@ -13,8 +13,13 @@ export class TendermintQuerier implements TendermintQuerierInterface {
   }
 
   async latestBlockHeight() {
-    const res = await this.client.getStatus({});
-    return res.syncInfo!.latestBlockHeight;
+    try {
+      const { syncInfo } = await this.client.getStatus({});
+      return syncInfo?.latestBlockHeight;
+    } catch (e) {
+      if (process.env['NODE_ENV'] === 'development') console.debug(e);
+      return undefined;
+    }
   }
 
   async broadcastTx(tx: Transaction) {
