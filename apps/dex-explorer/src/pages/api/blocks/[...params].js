@@ -1,4 +1,5 @@
-// pages/api/lp/positionsByBlockHeight/[...params].js
+// pages/api/blocks/[...params].js
+
 import { IndexerQuerier } from "../../../utils/indexer/connector";
 import { testnetConstants } from "../../../constants/configConstants";
 
