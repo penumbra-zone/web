@@ -27,6 +27,7 @@ import { servicesCtx } from '@penumbra-zone/services/ctx/prax';
 import { skCtx } from '@penumbra-zone/services/ctx/spend-key';
 import { approveTransaction } from './approve-transaction';
 import { getFullViewingKey } from './ctx/full-viewing-key';
+import { getWalletId } from './ctx/wallet-id';
 import { getSpendKey } from './ctx/spend-key';
 
 // context clients
@@ -40,8 +41,11 @@ import { fixEmptyGrpcEndpointAfterOnboarding, onboardGrpcEndpoint } from './stor
 
 // idb, querier, block processor
 import { startWalletServices } from './wallet-services';
+import { walletIdCtx } from '@penumbra-zone/services/ctx/wallet-id';
 
-const getServiceHandler = async () => {
+await fixEmptyGrpcEndpointAfterOnboarding();
+
+const handler = await (async () => {
   const walletServices = startWalletServices();
   const rpcImpls = getRpcImpls(await onboardGrpcEndpoint());
 
@@ -68,6 +72,7 @@ const getServiceHandler = async () => {
       // remaining context for all services
       contextValues.set(fvkCtx, getFullViewingKey);
       contextValues.set(servicesCtx, () => walletServices);
+      contextValues.set(walletIdCtx, getWalletId);
 
       // additional context for custody service only
       const { pathname } = new URL(req.url);
@@ -79,9 +84,6 @@ const getServiceHandler = async () => {
       return Promise.resolve({ ...req, contextValues });
     },
   });
-};
+})();
 
-await fixEmptyGrpcEndpointAfterOnboarding();
-
-const handler = await getServiceHandler();
 CRSessionManager.init(PRAX, handler);

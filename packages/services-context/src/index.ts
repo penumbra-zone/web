@@ -1,7 +1,6 @@
 import { BlockProcessor } from '@penumbra-zone/query/block-processor';
 import { RootQuerier } from '@penumbra-zone/query/root-querier';
 import { IndexedDb } from '@penumbra-zone/storage/indexed-db';
-import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 import { ViewServer } from '@penumbra-zone/wasm/view-server';
 import { ServicesInterface, WalletServices } from '@penumbra-zone/types/services';
 import {
@@ -10,9 +9,9 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
-import { Jsonified } from '@penumbra-zone/types/jsonified';
 
 export interface ServicesConfig {
+  readonly chainId: string;
   readonly idbVersion: number;
   readonly grpcEndpoint: string;
   readonly walletId: WalletId;
@@ -45,12 +44,10 @@ export class Services implements ServicesInterface {
    *
    * @returns completed AppParameters from remote or storage
    */
-  private async getParams(querier: RootQuerier): Promise<AppParameters> {
-    // try to read params from storage
-    const storedParams = await localExtStorage
-      .get('params')
-      .then(j => j && AppParameters.fromJson(j))
-      .catch(() => undefined);
+  private async getParams(indexedDb: IndexedDb, querier: RootQuerier): Promise<AppParameters> {
+    // try to read params from idb
+    const storedParams = await indexedDb.getAppParams();
+
     // try to fetch params from network
     const queriedParams = await querier.app.appParams().catch(() => undefined);
 
@@ -71,41 +68,38 @@ export class Services implements ServicesInterface {
         queriedParams,
       });
       throw new Error(badChainIdMsg);
-    } else if (queriedParams?.chainId) {
-      // fetched params exist and are ok. store and return
-      await localExtStorage.set('params', queriedParams.toJson() as Jsonified<AppParameters>);
-      return queriedParams;
     } else if (storedParams?.chainId) {
-      // none fetched, use stored
+      // stored params exist and are ok. if there were updates, the block processor will handle those at the appropriate time.
       return storedParams;
+    } else if (queriedParams?.chainId) {
+      // none stored, but fetched are ok.
+      return queriedParams;
     } else throw new Error('No available chainId');
   }
 
   private async initializeWalletServices(): Promise<WalletServices> {
-    const { grpcEndpoint, walletId, fullViewingKey, idbVersion } = this.config;
+    const { chainId, grpcEndpoint, walletId, fullViewingKey, idbVersion } = this.config;
     const querier = new RootQuerier({ grpcEndpoint });
-    const params = await this.getParams(querier);
     const registryClient = new ChainRegistryClient();
     const indexedDb = await IndexedDb.initialize({
-      chainId: params.chainId,
+      chainId,
       idbVersion,
       walletId,
       registryClient,
     });
 
-    void this.syncLastBlockWithLocal(indexedDb);
-
-    if (!params.sctParams?.epochDuration)
+    const { sctParams } = await this.getParams(indexedDb, querier);
+    if (!sctParams?.epochDuration)
       throw new Error('Cannot initialize viewServer without epoch duration');
 
     const viewServer = await ViewServer.initialize({
       fullViewingKey,
-      epochDuration: params.sctParams.epochDuration,
+      epochDuration: sctParams.epochDuration,
       getStoredTree: () => indexedDb.getStateCommitmentTree(),
       idbConstants: indexedDb.constants(),
     });
 
-    const registry = registryClient.get(params.chainId);
+    const registry = registryClient.get(chainId);
     const blockProcessor = new BlockProcessor({
       viewServer,
       querier,
@@ -116,25 +110,4 @@ export class Services implements ServicesInterface {
 
     return { viewServer, blockProcessor, indexedDb, querier };
   }
-
-  public async clearCache() {
-    const ws = await this.getWalletServices();
-
-    ws.blockProcessor.stop('clearCache');
-    await ws.indexedDb.clear();
-    this.walletServicesPromise = undefined;
-    void this.getWalletServices();
-  }
-
-  // Syncs the IndexedDb last block number with chrome.storage.local
-  // Later used to synchronize with Zustand store
-  private syncLastBlockWithLocal = async (indexedDb: IndexedDb) => {
-    const fullSyncHeightDb = await indexedDb.getFullSyncHeight();
-    await localExtStorage.set('fullSyncHeight', Number(fullSyncHeightDb));
-
-    const subscription = indexedDb.subscribe('FULL_SYNC_HEIGHT');
-    for await (const update of subscription) {
-      await localExtStorage.set('fullSyncHeight', Number(update.value));
-    }
-  };
 }
