@@ -57,7 +57,7 @@ interface QueryClientProps {
   querier: RootQuerier;
   indexedDb: IndexedDbInterface;
   viewServer: ViewServerInterface;
-  numeraire: Metadata;
+  numeraires: Metadata[];
   stakingTokenMetadata: Metadata;
 }
 
@@ -76,7 +76,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly indexedDb: IndexedDbInterface;
   private readonly viewServer: ViewServerInterface;
   private readonly abortController: AbortController = new AbortController();
-  private readonly numeraire: Metadata;
+  private readonly numeraires: Metadata[];
   private readonly stakingTokenMetadata: Metadata;
   private syncPromise: Promise<void> | undefined;
 
@@ -84,13 +84,13 @@ export class BlockProcessor implements BlockProcessorInterface {
     indexedDb,
     viewServer,
     querier,
-                numeraire,
+    numeraires,
     stakingTokenMetadata,
   }: QueryClientProps) {
     this.indexedDb = indexedDb;
     this.viewServer = viewServer;
     this.querier = querier;
-    this.numeraire = numeraire;
+    this.numeraires = numeraires;
     this.stakingTokenMetadata = stakingTokenMetadata;
   }
 
@@ -284,7 +284,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       if (blockInPriceRelevanceThreshold && compactBlock.swapOutputs.length) {
         await updatePricesFromSwaps(
           this.indexedDb,
-          this.numeraire,
+          this.numeraires,
           compactBlock.swapOutputs,
           compactBlock.height,
         );

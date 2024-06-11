@@ -41,12 +41,14 @@ export const calculatePrice = (delta: Amount, unfilled: Amount, lambda: Amount):
 
 export const updatePricesFromSwaps = async (
   indexedDb: IndexedDbInterface,
-  numeraire: Metadata,
+  numeraires: Metadata[],
   swapOutputs: BatchSwapOutputData[],
   height: bigint,
 ) => {
-    const numeraireAssetId = getAssetId(numeraire);
+  for (const numeraireMetadata of numeraires) {
+    const numeraireAssetId = getAssetId(numeraireMetadata);
     await deriveAndSavePriceFromBSOD(indexedDb, numeraireAssetId, swapOutputs, height);
+  }
 };
 
 /**

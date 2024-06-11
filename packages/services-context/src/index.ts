@@ -9,7 +9,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
-import {AssetId} from "@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb";
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export interface ServicesConfig {
   readonly chainId: string;
@@ -17,7 +17,7 @@ export interface ServicesConfig {
   readonly grpcEndpoint: string;
   readonly walletId: WalletId;
   readonly fullViewingKey: FullViewingKey;
-  readonly numeraireAssetId: AssetId;
+  readonly numeraires: AssetId[];
 }
 
 export class Services implements ServicesInterface {
@@ -84,7 +84,7 @@ export class Services implements ServicesInterface {
   }
 
   private async initializeWalletServices(): Promise<WalletServices> {
-    const { chainId, grpcEndpoint, walletId, fullViewingKey, idbVersion,numeraireAssetId } = this.config;
+    const { chainId, grpcEndpoint, walletId, fullViewingKey, idbVersion, numeraires } = this.config;
     const querier = new RootQuerier({ grpcEndpoint });
     const registryClient = new ChainRegistryClient();
     const indexedDb = await IndexedDb.initialize({
@@ -111,7 +111,7 @@ export class Services implements ServicesInterface {
       querier,
       indexedDb,
       stakingTokenMetadata: registry.getMetadata(registry.stakingAssetId),
-      numeraire: registry.getMetadata(numeraireAssetId),
+      numeraires: numeraires.map(registry.getMetadata),
     });
 
     return { viewServer, blockProcessor, indexedDb, querier };
