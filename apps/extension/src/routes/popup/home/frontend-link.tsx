@@ -10,6 +10,7 @@ export const FrontendLink = () => {
   const frontendUrl = useStore(getDefaultFrontend);
   const navigate = usePopupNav();
 
+  // In case the frontendUrl is not set, prevent the link action, and open the settings page instead
   const onClick: MouseEventHandler = event => {
     if (frontendUrl) return;
     event.stopPropagation();

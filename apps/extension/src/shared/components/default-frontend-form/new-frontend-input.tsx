@@ -11,7 +11,7 @@ import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
 import { cn } from '@penumbra-zone/ui/lib/utils';
 import { isValidUrl } from '../../utils/is-valid-url';
 
-const getUrlValidity = (url: string, initialUrl?: string): boolean => {
+const isValidAndNotInitial = (url: string, initialUrl?: string): boolean => {
   return isValidUrl(url) && url !== initialUrl;
 };
 
@@ -39,7 +39,7 @@ export const NewFrontendInput = forwardRef<HTMLInputElement, NewFrontendInputPro
     const customValue = defaultFrontend && selected ? defaultFrontend : '';
 
     const [customFrontend, setCustomFrontend] = useState<string>(customValue);
-    const isError = !getUrlValidity(customFrontend, defaultFrontend);
+    const isError = !isValidAndNotInitial(customFrontend, defaultFrontend);
 
     const onBlur: FocusEventHandler<HTMLInputElement> = () => {
       if (!customFrontend || isError) {

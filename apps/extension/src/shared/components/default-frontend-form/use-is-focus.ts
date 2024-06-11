@@ -1,6 +1,6 @@
-// Subscribe to the focus state of any given element
 import { MutableRefObject, useEffect, useState } from 'react';
 
+// Subscribe to the focus state of any given element
 export const useIsFocus = (ref: MutableRefObject<HTMLElement | null>): boolean => {
   const [isFocus, setIsFocus] = useState(false);
 
