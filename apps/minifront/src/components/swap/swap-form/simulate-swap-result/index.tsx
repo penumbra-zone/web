@@ -16,20 +16,13 @@ export const SimulateSwapResult = ({ result }: { result: TSimulateSwapResult }) 
 
   return (
     <motion.div layout initial={HIDE} animate={SHOW} exit={HIDE} className='flex flex-col gap-4'>
-      <div className='flex items-end justify-end gap-4'>
-        <div className='flex flex-col items-center'>
-          <PriceImpact amount={priceImpact} />
-          <span className='font-mono text-[12px] italic text-gray-500'>Price impact</span>
-        </div>
-        <div className='flex flex-col items-center'>
-          <ValueViewComponent view={output} size='sm' />
-          <span className='font-mono text-[12px] italic text-gray-500'>Filled amount</span>
-        </div>
+      <div className='flex items-center gap-1'>
+        Filling <ValueViewComponent view={output} size='sm' /> causes a price impact of{' '}
+        <PriceImpact amount={priceImpact} />.
         {hasUnfilled && (
-          <div className='flex flex-col items-center'>
-            <ValueViewComponent view={unfilled} size='sm' />
-            <span className='font-mono text-[12px] italic text-gray-500'>Unfilled amount</span>
-          </div>
+          <>
+            <ValueViewComponent view={unfilled} size='sm' /> will remain unfilled.
+          </>
         )}
       </div>
 
