@@ -36,18 +36,15 @@ import { custodyClientCtx } from '@penumbra-zone/services/ctx/custody-client';
 import { stakeClientCtx } from '@penumbra-zone/services/ctx/stake-client';
 import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
 
-// storage
-import { fixEmptyGrpcEndpointAfterOnboarding, onboardGrpcEndpoint } from './storage/onboard';
-
 // idb, querier, block processor
 import { startWalletServices } from './wallet-services';
 import { walletIdCtx } from '@penumbra-zone/services/ctx/wallet-id';
 
-await fixEmptyGrpcEndpointAfterOnboarding();
+import { backOff } from 'exponential-backoff';
 
-const handler = await (async () => {
+const initHandler = async () => {
   const walletServices = startWalletServices();
-  const rpcImpls = getRpcImpls(await onboardGrpcEndpoint());
+  const rpcImpls = await getRpcImpls();
 
   let custodyClient: PromiseClient<typeof CustodyService> | undefined;
   let stakeClient: PromiseClient<typeof StakeService> | undefined;
@@ -74,7 +71,7 @@ const handler = await (async () => {
       contextValues.set(servicesCtx, () => walletServices);
       contextValues.set(walletIdCtx, getWalletId);
 
-      // additional context for custody service only
+      // discriminate context available to specific services
       const { pathname } = new URL(req.url);
       if (pathname.startsWith('/penumbra.custody.v1.Custody')) {
         contextValues.set(skCtx, getSpendKey);
@@ -84,6 +81,17 @@ const handler = await (async () => {
       return Promise.resolve({ ...req, contextValues });
     },
   });
-})();
+};
+
+const handler = await backOff(() => initHandler(), {
+  delayFirstAttempt: false,
+  startingDelay: 5_000, // 5 seconds
+  numOfAttempts: Infinity,
+  maxDelay: 20_000, // 20 seconds
+  retry: (e, attemptNumber) => {
+    console.log("Prax couldn't start wallet services", attemptNumber, e);
+    return true;
+  },
+});
 
 CRSessionManager.init(PRAX, handler);

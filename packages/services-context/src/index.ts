@@ -23,12 +23,14 @@ export class Services implements ServicesInterface {
 
   constructor(private config: ServicesConfig) {}
 
-  // If getWalletServices() is called multiple times concurrently,
-  // they'll all wait for the same promise rather than each starting their own initialization process.
+  // If getWalletServices() is called multiple times concurrently, they'll all
+  // wait for the same promise rather than each starting their own
+  // initialization process.
   public async getWalletServices(): Promise<WalletServices> {
     if (!this.walletServicesPromise) {
       this.walletServicesPromise = this.initializeWalletServices().catch((e: unknown) => {
-        // If promise rejected, reset promise to `undefined` so next caller can try again
+        // If promise rejected, reset promise to `undefined` so next caller can
+        // try again
         this.walletServicesPromise = undefined;
         throw e;
       });
@@ -38,11 +40,12 @@ export class Services implements ServicesInterface {
   }
 
   /**
-   * Attempt to fetch the AppParameters from the remote fullnode, or fall back
-   * to the local storage. Will throw to abort if the remote node reports an
-   * unexpected chainId.
+   * Attempt to fetch parameters from the remote fullnode, or fall back to known
+   * parameters in indexedDb.
    *
-   * @returns completed AppParameters from remote or storage
+   * Will throw to abort if the remote node reports an unexpected chainId.
+   *
+   * @returns `AppParameters`
    */
   private async getParams(indexedDb: IndexedDb, querier: RootQuerier): Promise<AppParameters> {
     // try to read params from idb
@@ -69,7 +72,8 @@ export class Services implements ServicesInterface {
       });
       throw new Error(badChainIdMsg);
     } else if (storedParams?.chainId) {
-      // stored params exist and are ok. if there were updates, the block processor will handle those at the appropriate time.
+      // stored params exist and are ok.  if there were updates, the block
+      // processor will handle those at the appropriate time.
       return storedParams;
     } else if (queriedParams?.chainId) {
       // none stored, but fetched are ok.

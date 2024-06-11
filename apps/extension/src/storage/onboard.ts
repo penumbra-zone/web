@@ -9,6 +9,8 @@ import { LocalStorageState } from './types';
  * requests against it.
  */
 export const onboardGrpcEndpoint = async (): Promise<string> => {
+  await fixEmptyGrpcEndpointAfterOnboarding();
+
   const grpcEndpoint = await localExtStorage.get('grpcEndpoint');
   if (grpcEndpoint) return grpcEndpoint;
 

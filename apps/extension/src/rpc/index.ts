@@ -23,13 +23,14 @@ import { sctImpl } from '@penumbra-zone/services/sct-service';
 import { stakeImpl } from '@penumbra-zone/services/stake-service';
 import { viewImpl } from '@penumbra-zone/services/view-service';
 import { createProxyImpl, noContextHandler } from '@penumbra-zone/transport-dom/proxy';
+import { onboardGrpcEndpoint } from '../storage/onboard';
 import { rethrowImplErrors } from './rethrow-impl-errors';
 import { makeTendermintProxyZeroNanos } from './tendermint-proxy';
 
 type RpcImplTuple<T extends ServiceType> = [T, Partial<ServiceImpl<T>>];
 
-export const getRpcImpls = (baseUrl: string) => {
-  const webTransport = createGrpcWebTransport({ baseUrl });
+export const getRpcImpls = async () => {
+  const webTransport = createGrpcWebTransport({ baseUrl: await onboardGrpcEndpoint() });
 
   const penumbraProxies: RpcImplTuple<ServiceType>[] = [
     AppService,
