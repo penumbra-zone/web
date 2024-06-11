@@ -129,7 +129,7 @@ export const Trace = ({
             BigInt(value.amount?.lo ?? 0),
             BigInt(value.amount?.hi ?? 0),
             displayDenomExponent
-          ).toFixed(2);
+          ).toFixed(6);
           return (
             <HStack key={index} align="left" zIndex={1}>
               <Box>
