@@ -119,7 +119,6 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async syncAndStore() {
     // start at next block, or genesis if height is undefined
     let currentHeight = (await this.indexedDb.getFullSyncHeight()) ?? -1n;
-    const startHeight = currentHeight + 1n;
 
     // this is the first network query of the block processor. use backoff to
     // delay until network is available
@@ -132,7 +131,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       { retry: () => true },
     );
 
-    if (startHeight === 0n) {
+    if (currentHeight === -1n) {
       // In the `for` loop below, we only update validator infos once we've
       // reached the latest known epoch. This means that, if a user is syncing
       // for the first time, they could experience a broken UI until the latest
@@ -146,13 +145,17 @@ export class BlockProcessor implements BlockProcessorInterface {
     // this is an indefinite stream of the (compact) chain from the network
     // intended to run continuously
     for await (const compactBlock of this.querier.compactBlock.compactBlockRange({
-      startHeight,
+      startHeight: currentHeight + 1n,
       keepAlive: true,
       abortSignal: this.abortController.signal,
     })) {
-      if (compactBlock.height !== ++currentHeight) {
-        throw new Error(`Unexpected block: Recieved ${compactBlock.height} at ${currentHeight}`);
+      // confirm block height to prevent corruption of local state
+      if (compactBlock.height === currentHeight + 1n) {
+        currentHeight = compactBlock.height;
+      } else {
+        throw new Error(`Unexpected block height: ${compactBlock.height} at ${currentHeight}`);
       }
+
       if (compactBlock.appParametersUpdated) {
         await this.indexedDb.saveAppParams(await this.querier.app.appParams());
       }
