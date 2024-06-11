@@ -1,7 +1,7 @@
-import { Listener, StorageItem } from '@penumbra-zone/storage/chrome/base';
-import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
+import { Listener, StorageItem } from './base';
+import { localExtStorage } from './local';
 import { WalletJson } from '@penumbra-zone/types/wallet';
-import { LocalStorageState } from '@penumbra-zone/storage/chrome/types';
+import { LocalStorageState } from './types';
 
 /**
  * When a user first onboards with the extension, they won't have chosen a gRPC

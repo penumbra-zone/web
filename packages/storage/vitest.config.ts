@@ -6,7 +6,6 @@ export default defineConfig({
   plugins: [wasm(), topLevelAwait()],
   test: {
     include: ['**/*.test.ts'],
-    setupFiles: ['./src/chrome/test-utils/tests-setup.js'],
     browser: {
       name: 'chromium',
       provider: 'playwright',

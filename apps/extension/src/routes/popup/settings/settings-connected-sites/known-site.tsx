@@ -1,4 +1,4 @@
-import { OriginRecord } from '@penumbra-zone/storage/chrome/types';
+import { OriginRecord } from '../../../../storage/types';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { TrashIcon } from 'lucide-react';

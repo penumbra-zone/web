@@ -6,7 +6,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { onboardGrpcEndpoint, onboardWallet } from './storage/onboard';
 import { ServicesMessage } from './message/services';
-import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
+import { localExtStorage } from './storage/local';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import { AppService } from '@penumbra-zone/protobuf';
 import { createGrpcWebTransport } from '@connectrpc/connect-web';

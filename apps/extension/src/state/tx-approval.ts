@@ -17,7 +17,7 @@ import {
   asPublicTransactionView,
   asReceiverTransactionView,
 } from '@penumbra-zone/perspective/translators/transaction-view';
-import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
+import { localExtStorage } from '../storage/local';
 import {
   AssetId,
   Metadata,

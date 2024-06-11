@@ -1,4 +1,4 @@
-import { LocalStorageState } from '@penumbra-zone/storage/chrome/types';
+import { LocalStorageState } from '../storage/types';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 
 export const EXAMPLE_MINIFRONT_URL = 'https://app.example.com';

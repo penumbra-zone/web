@@ -1,4 +1,4 @@
-import { OriginRecord } from '@penumbra-zone/storage/chrome/types';
+import { OriginRecord } from '../../../../storage/types';
 import { useStore } from '../../../../state';
 import { KnownSite } from './known-site';
 

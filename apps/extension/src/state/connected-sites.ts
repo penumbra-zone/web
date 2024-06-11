@@ -1,5 +1,5 @@
-import { ExtensionStorage } from '@penumbra-zone/storage/chrome/base';
-import { LocalStorageState, OriginRecord } from '@penumbra-zone/storage/chrome/types';
+import { ExtensionStorage } from '../storage/base';
+import { LocalStorageState, OriginRecord } from '../storage/types';
 import { AllSlices, SliceCreator } from '.';
 
 export interface ConnectedSitesSlice {

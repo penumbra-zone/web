@@ -2,7 +2,7 @@ import { redirect } from 'react-router-dom';
 import { PagePath } from './paths';
 import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
+import { localExtStorage } from '../../storage/local';
 import { useStore } from '../../state';
 import { getDefaultFrontend } from '../../state/default-frontend';
 

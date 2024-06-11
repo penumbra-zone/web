@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from 'vitest';
-import { MockStorageArea } from './test-utils/mock';
+import { MockStorageArea } from './mock';
 import { ExtensionStorage } from './base';
 
 interface MockV1State {

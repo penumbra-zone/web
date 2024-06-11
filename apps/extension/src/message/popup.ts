@@ -6,7 +6,7 @@ import type {
 } from '@penumbra-zone/types/internal-msg/shared';
 import type { UserChoice } from '@penumbra-zone/types/user-choice';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
-import { OriginRecord } from '@penumbra-zone/storage/chrome/types';
+import { OriginRecord } from '../storage/types';
 
 export enum PopupType {
   TxApproval = 'TxApproval',
