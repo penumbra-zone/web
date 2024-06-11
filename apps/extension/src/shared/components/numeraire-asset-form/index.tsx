@@ -2,6 +2,7 @@ import { FormEvent, useRef } from 'react';
 import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Network } from 'lucide-react';
+import {useNumeraireForm} from "./use-numeraire-asset-form";
 
 
 /**
@@ -27,7 +28,7 @@ export const Index = ({
         rpcError,
         isSubmitButtonEnabled,
         isCustomGrpcEndpoint,
-    } = useNumeraireAssetForm();
+    } = useNumeraireForm();
     const customGrpcEndpointInput = useRef<HTMLInputElement | null>(null);
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {

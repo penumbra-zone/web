@@ -15,31 +15,20 @@ const useSaveNumeraireSelector = (state: AllSlices) => ({
 
 const getNumerairesFromRegistry = () => {
     const registryClient = new ChainRegistryClient();
-    const { numeraires } = registryClient.get('');
-    return numeraires.map(registryClient);
+    const registry = registryClient.get('');
+    return registry.numeraires.map(numeraire => registry.getMetadata(numeraire));
 };
 
 export const useNumeraireForm = () => {
     const numeraires = useMemo(() => getNumerairesFromRegistry(), []);
 
     // Get the rpc set in storage (if present)
-    const { grpcEndpoint, setGrpcEndpoint } = useStoreShallow(useSaveGrpcEndpointSelector);
+    const { numeraireAssetId, setNumeraireAssetId } = useStoreShallow(useSaveNumeraireSelector);
 
-    const [originalChainId, setOriginalChainId] = useState<string | undefined>();
-    const [chainId, setChainId] = useState<string>();
-    const [grpcEndpointInput, setGrpcEndpointInput] = useState<string>('');
-    const [rpcError, setRpcError] = useState<string>();
     const [isSubmitButtonEnabled, setIsSubmitButtonEnabled] = useState(false);
     const [confirmChangedChainIdPromise, setConfirmChangedChainIdPromise] = useState<
         PromiseWithResolvers<void> | undefined
     >();
-
-    const isCustomGrpcEndpoint =
-        grpcEndpointInput !== '' && !grpcEndpoints.some(({ url }) => url === grpcEndpointInput);
-
-    const setGrpcEndpointInputOnLoadFromState = useCallback(() => {
-        if (grpcEndpoint) setGrpcEndpointInput(grpcEndpoint);
-    }, [grpcEndpoint]);
 
     useEffect(setGrpcEndpointInputOnLoadFromState, [setGrpcEndpointInputOnLoadFromState]);
 
