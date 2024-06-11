@@ -2,40 +2,51 @@ import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { NewFrontendInput } from './new-frontend-input';
 import { useIsFocus } from './use-is-focus';
 import { extractDomain } from './extract-domain';
 
-const getFrontendsFromRegistry = (): { title: string; url: string }[] => {
+interface DisplayedFrontend {
+  title: string;
+  url: string;
+}
+
+const getFrontendsFromRegistry = (selectedRpc?: string): DisplayedFrontend[] => {
   const registryClient = new ChainRegistryClient();
-  const { frontends, rpcs } = registryClient.globals();
+  const { frontends } = registryClient.globals();
 
   const registeredFrontends = frontends.map(frontend => ({
     title: extractDomain(frontend),
     url: frontend,
   }));
-  const rpcFrontends = rpcs.map(rpc => ({ title: rpc.name, url: `${rpc.url}/app/` }));
 
-  return [...registeredFrontends, ...rpcFrontends];
+  if (selectedRpc) {
+    registeredFrontends.push({ title: 'Embedded RPC frontend', url: `${selectedRpc}/app/` });
+  }
+
+  return registeredFrontends;
+};
+
+const getIsCustomFrontendSelected = (frontends: DisplayedFrontend[], selected?: string) => {
+  return !!selected && !frontends.some(item => item.url === selected);
 };
 
 const useDefaultFrontendSelector = (state: AllSlices) => {
-  const frontends = getFrontendsFromRegistry();
   return {
-    frontends,
-    selected: state.defaultFrontend.url,
+    selectedFrontend: state.defaultFrontend.url,
     selectUrl: state.defaultFrontend.setUrl,
-    isCustomSelected:
-      !!state.defaultFrontend.url &&
-      !frontends.some(item => item.url === state.defaultFrontend.url),
+    selectedRpc: state.network.grpcEndpoint,
   };
 };
 
 export const DefaultFrontendForm = ({ isOnboarding }: { isOnboarding?: boolean }) => {
-  const { selected, selectUrl, frontends, isCustomSelected } = useStoreShallow(
-    useDefaultFrontendSelector,
+  const { selectedFrontend, selectUrl, selectedRpc } = useStoreShallow(useDefaultFrontendSelector);
+  const frontends = useMemo(() => getFrontendsFromRegistry(selectedRpc), [selectedRpc]);
+  const isCustomSelected = useMemo(
+    () => getIsCustomFrontendSelected(frontends, selectedFrontend),
+    [frontends, selectedFrontend],
   );
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -49,7 +60,7 @@ export const DefaultFrontendForm = ({ isOnboarding }: { isOnboarding?: boolean }
           value={option.url}
           secondary={option.url}
           label={option.title}
-          isSelected={option.url === selected}
+          isSelected={option.url === selectedFrontend}
           onSelect={selectUrl}
         />
       ))}
@@ -57,7 +68,7 @@ export const DefaultFrontendForm = ({ isOnboarding }: { isOnboarding?: boolean }
       <NewFrontendInput
         key='custom-input'
         ref={inputRef}
-        defaultFrontend={selected}
+        defaultFrontend={selectedFrontend}
         selected={isCustomSelected}
         onSelect={selectUrl}
       />
@@ -77,7 +88,7 @@ export const DefaultFrontendForm = ({ isOnboarding }: { isOnboarding?: boolean }
         <Button
           key='save-button'
           variant='gradient'
-          disabled={isOnboarding && !selected}
+          disabled={isOnboarding && !selectedFrontend}
           type={isOnboarding ? 'submit' : 'button'}
         >
           {isOnboarding ? 'Next' : 'Save'}

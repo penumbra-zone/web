@@ -66,21 +66,24 @@ export const NewFrontendInput = forwardRef<HTMLInputElement, NewFrontendInputPro
 
     return (
       <SelectList.Option
-        label='Custom frontend URL'
+        key='opt1'
+        label='Custom frontend'
+        isSelected={selected}
         secondary={
           <input
             type='url'
             ref={mergeRefs(ref, inputRef)}
             value={customFrontend}
-            placeholder='https://example.com'
-            className={cn('w-full rounded bg-transparent focus:p-1 focus:border outline-0')}
+            placeholder='Enter the URL'
+            className={cn(
+              'w-full rounded border p-1 border-secondary bg-background hover:border-gray-400 focus:border-gray-400 transition outline-0',
+            )}
             onInput={event => setCustomFrontend(event.currentTarget.value)}
             onKeyDown={onEnter}
             onBlur={onBlur}
           />
         }
         onSelect={onFocus}
-        isSelected={selected}
       />
     );
   },

@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
@@ -17,8 +17,12 @@ export const SetDefaultFrontendPage = () => {
     <FadeTransition>
       <Card className='w-[400px]' gradient>
         <CardHeader>
-          <CardTitle>Select your preferred frontend endpoint</CardTitle>
+          <CardTitle>Select your preferred frontend app</CardTitle>
         </CardHeader>
+
+        <CardDescription>
+          Prax has a shortcut for your portfolio page. You can always change this later
+        </CardDescription>
 
         <form className='mt-6' onSubmit={onSubmit}>
           <DefaultFrontendForm isOnboarding />

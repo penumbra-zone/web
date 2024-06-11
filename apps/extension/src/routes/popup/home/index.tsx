@@ -5,8 +5,6 @@ import { BlockSync } from './block-sync';
 import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
 import { getActiveWallet } from '../../../state/wallets';
 import { needsLogin } from '../popup-needs';
-import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { ExternalLink } from 'lucide-react';
 import {
   Address,
   FullViewingKey,
@@ -14,7 +12,7 @@ import {
 import { getAddressByIndex, getEphemeralByIndex } from '@penumbra-zone/wasm/keys';
 import { Wallet } from '@penumbra-zone/types/wallet';
 import { ValidateAddress } from './validate-address';
-import { getDefaultFrontend } from '../../../state/default-frontend';
+import { FrontendLink } from './frontend-link';
 
 export interface PopupLoaderData {
   fullSyncHeight?: number;
@@ -45,7 +43,6 @@ const getAddrByIndex =
 
 export const PopupIndex = () => {
   const activeWallet = useStore(getActiveWallet);
-  const frontendUrl = useStore(getDefaultFrontend);
 
   return (
     <>
@@ -62,11 +59,7 @@ export const PopupIndex = () => {
 
         <div className='grow' />
 
-        <a href={frontendUrl} target='_blank' rel='noreferrer'>
-          <Button className='flex w-full items-center gap-2' variant='gradient'>
-            Manage portfolio <ExternalLink size={16} />
-          </Button>
-        </a>
+        <FrontendLink />
       </div>
     </>
   );
