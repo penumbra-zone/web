@@ -13,7 +13,7 @@ interface TimelinePositionProps {
 }
 
 export const POSITION_OPEN_EVENT = "EventPositionOpen";
-export const POSITION_CLOSE_EVENT = "EventPositionClose";
+export const POSITION_CLOSE_EVENT = "EventQueuePositionClose";
 export const POSITION_WITHDRAW_EVENT = "EventPositionWithdraw";
 
 const TimelinePosition = ({ nftId, lp_event }: TimelinePositionProps) => {
