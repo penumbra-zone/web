@@ -90,7 +90,7 @@ const Option = <T,>({ label, secondary, isSelected, image, ...rest }: OptionProp
       else if (rest.onSelect) rest.onSelect();
     }}
   >
-    <div className='flex size-8 shrink-0 items-center justify-center'>{image}</div>
+    {image && <div className='flex size-8 shrink-0 items-center justify-center'>{image}</div>}
 
     <div className='flex grow flex-col gap-1'>
       <div>{label}</div>

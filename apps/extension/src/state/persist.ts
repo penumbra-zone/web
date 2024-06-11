@@ -38,7 +38,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
         state.wallets.all = walletsFromJson(wallets);
         state.network.grpcEndpoint = grpcEndpoint;
         state.connectedSites.knownSites = knownSites;
-        state.connectedSites.frontendUrl = frontendUrl;
+        state.defaultFrontend.url = frontendUrl;
       }),
     );
 
@@ -103,7 +103,7 @@ function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: S
       | undefined;
     set(
       produce((state: AllSlices) => {
-        state.connectedSites.frontendUrl = stored?.value ?? state.connectedSites.frontendUrl;
+        state.defaultFrontend.url = stored?.value ?? state.defaultFrontend.url;
       }),
     );
   }

@@ -6,12 +6,8 @@ import url from 'url';
 
 import webpack from 'webpack';
 
-// Loads default vars from `.env.testnet` & `.env.mainnet` file in this directory.
-// Reference package.json build script.
-// TODO: add `.env.mainnet` when ready.
-//       const envPath = process.env['NODE_ENV'] === 'mainnet' ? '.env.mainnet' : '.env.testnet';
-//       dotenv.config({ path: envPath });
-dotenv.config({ path: '.env.testnet' });
+// Loads default vars from `.env` file in this directory.
+dotenv.config({ path: '.env' });
 
 const keysPackage = path.dirname(url.fileURLToPath(import.meta.resolve('@penumbra-zone/keys')));
 
@@ -26,7 +22,6 @@ const definitions = {
   PRAX: JSON.stringify(process.env['PRAX']),
   PRAX_ORIGIN: JSON.stringify(`chrome-extension://${process.env['PRAX']}`),
   IDB_VERSION: JSON.stringify(Number(process.env['IDB_VERSION'])),
-  MINIFRONT_URL: JSON.stringify(process.env['MINIFRONT_URL']),
 };
 
 const __dirname = new URL('.', import.meta.url).pathname;

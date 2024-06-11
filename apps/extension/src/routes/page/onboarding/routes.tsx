@@ -7,6 +7,7 @@ import { OnboardingSuccess } from './success';
 import { SetPassword } from './set-password';
 import { pageIndexLoader } from '..';
 import { SetGrpcEndpoint } from './set-grpc-endpoint';
+import { SetDefaultFrontendPage } from './default-frontend';
 
 export const onboardingRoutes = [
   {
@@ -32,6 +33,10 @@ export const onboardingRoutes = [
   {
     path: PagePath.SET_GRPC_ENDPOINT,
     element: <SetGrpcEndpoint />,
+  },
+  {
+    path: PagePath.SET_DEFAULT_FRONTEND,
+    element: <SetDefaultFrontendPage />,
   },
   {
     path: PagePath.ONBOARDING_SUCCESS,
