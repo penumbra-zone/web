@@ -45,16 +45,15 @@ export const DurationSlider = () => {
       </div>
 
       {duration === 'instant' && (
-        <div className='flex flex-col items-center'>
-          Now
-          <span className='text-xs text-muted-foreground'>single trade at market price</span>
+        <div>
+          Now &bull; <span className='text-muted-foreground'>single trade at market price</span>
         </div>
       )}
 
       {duration !== 'instant' && (
-        <div className='flex flex-col items-center'>
-          ~ {duration}{' '}
-          <span className='text-xs text-muted-foreground'>
+        <div>
+          ~ {duration} &bull;{' '}
+          <span className='text-muted-foreground'>
             distributed across {GDA_RECIPES[duration].numberOfSubAuctions.toString()} auctions
           </span>
         </div>
