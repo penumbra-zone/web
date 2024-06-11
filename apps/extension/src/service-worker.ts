@@ -27,6 +27,7 @@ import { servicesCtx } from '@penumbra-zone/services/ctx/prax';
 import { skCtx } from '@penumbra-zone/services/ctx/spend-key';
 import { approveTransaction } from './approve-transaction';
 import { getFullViewingKey } from './ctx/full-viewing-key';
+import { getWalletId } from './ctx/wallet-id';
 import { getSpendKey } from './ctx/spend-key';
 
 // context clients
@@ -35,15 +36,15 @@ import { custodyClientCtx } from '@penumbra-zone/services/ctx/custody-client';
 import { stakeClientCtx } from '@penumbra-zone/services/ctx/stake-client';
 import { createDirectClient } from '@penumbra-zone/transport-dom/direct';
 
-// storage
-import { fixEmptyGrpcEndpointAfterOnboarding, onboardGrpcEndpoint } from './storage/onboard';
-
 // idb, querier, block processor
 import { startWalletServices } from './wallet-services';
+import { walletIdCtx } from '@penumbra-zone/services/ctx/wallet-id';
 
-const getServiceHandler = async () => {
+import { backOff } from 'exponential-backoff';
+
+const initHandler = async () => {
   const walletServices = startWalletServices();
-  const rpcImpls = getRpcImpls(await onboardGrpcEndpoint());
+  const rpcImpls = await getRpcImpls();
 
   let custodyClient: PromiseClient<typeof CustodyService> | undefined;
   let stakeClient: PromiseClient<typeof StakeService> | undefined;
@@ -68,8 +69,9 @@ const getServiceHandler = async () => {
       // remaining context for all services
       contextValues.set(fvkCtx, getFullViewingKey);
       contextValues.set(servicesCtx, () => walletServices);
+      contextValues.set(walletIdCtx, getWalletId);
 
-      // additional context for custody service only
+      // discriminate context available to specific services
       const { pathname } = new URL(req.url);
       if (pathname.startsWith('/penumbra.custody.v1.Custody')) {
         contextValues.set(skCtx, getSpendKey);
@@ -81,7 +83,15 @@ const getServiceHandler = async () => {
   });
 };
 
-await fixEmptyGrpcEndpointAfterOnboarding();
+const handler = await backOff(() => initHandler(), {
+  delayFirstAttempt: false,
+  startingDelay: 5_000, // 5 seconds
+  numOfAttempts: Infinity,
+  maxDelay: 20_000, // 20 seconds
+  retry: (e, attemptNumber) => {
+    console.log("Prax couldn't start wallet services", attemptNumber, e);
+    return true;
+  },
+});
 
-const handler = await getServiceHandler();
 CRSessionManager.init(PRAX, handler);

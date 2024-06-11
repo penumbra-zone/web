@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test } from 'vitest';
-import { MockStorageArea } from './test-utils/mock';
+import { MockStorageArea } from './mock';
 import { ExtensionStorage } from './base';
 import { v1Migrations } from './v1-migration';
 import { localDefaults } from './local';

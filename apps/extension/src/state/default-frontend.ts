@@ -1,6 +1,6 @@
 import { AllSlices, SliceCreator } from '.';
-import { ExtensionStorage } from '@penumbra-zone/storage/chrome/base';
-import { LocalStorageState } from '@penumbra-zone/storage/chrome/types';
+import { ExtensionStorage } from '../storage/base';
+import { LocalStorageState } from '../storage/types';
 
 export interface DefaultFrontendSlice {
   url?: string;
