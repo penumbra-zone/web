@@ -5,7 +5,7 @@ import { ActionDetails } from './action-details';
 import {
   getOutput1ValueOptional,
   getOutput2ValueOptional,
-  getSwapClaimFeeGeneric,
+  getSwapClaimFee,
 } from '@penumbra-zone/getters/swap-claim-view';
 import { getAmount } from '@penumbra-zone/getters/value-view';
 import { getAmount as getAmountFee } from '@penumbra-zone/getters/fee';
@@ -60,7 +60,7 @@ export const SwapClaimViewComponent = ({ value }: { value: SwapClaimView }) => {
   }
 
   if (value.swapClaimView.case === 'opaque') {
-    const claimFee = getSwapClaimFeeGeneric(value);
+    const claimFee = getSwapClaimFee(value);
 
     return (
       <ViewBox

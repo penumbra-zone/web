@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getOneWaySwapValuesGeneric, isOneWaySwapGeneric } from './swap';
+import { getOneWaySwapValues, isOneWaySwap } from './swap';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import {
   Metadata,
@@ -29,7 +29,7 @@ describe('isOneWaySwap()', () => {
       },
     });
 
-    expect(isOneWaySwapGeneric(swapView)).toBe(true);
+    expect(isOneWaySwap(swapView)).toBe(true);
   });
 
   it('returns true when only delta 2 is zero', () => {
@@ -45,7 +45,7 @@ describe('isOneWaySwap()', () => {
       },
     });
 
-    expect(isOneWaySwapGeneric(swapView)).toBe(true);
+    expect(isOneWaySwap(swapView)).toBe(true);
   });
 
   it('returns true when both deltas are zero', () => {
@@ -61,7 +61,7 @@ describe('isOneWaySwap()', () => {
       },
     });
 
-    expect(isOneWaySwapGeneric(swapView)).toBe(true);
+    expect(isOneWaySwap(swapView)).toBe(true);
   });
 
   it('returns false when both deltas are nonzero', () => {
@@ -77,7 +77,7 @@ describe('isOneWaySwap()', () => {
       },
     });
 
-    expect(isOneWaySwapGeneric(swapView)).toBe(false);
+    expect(isOneWaySwap(swapView)).toBe(false);
   });
 });
 
@@ -96,7 +96,7 @@ describe('getOneWaySwapValues()', () => {
     });
 
     it('throws', () => {
-      expect(() => getOneWaySwapValuesGeneric(swapViewWithNoNonzeroInputs)).toThrow(
+      expect(() => getOneWaySwapValues(swapViewWithNoNonzeroInputs)).toThrow(
         'Attempted to get one-way swap values from a two-way swap.',
       );
     });
@@ -143,7 +143,7 @@ describe('getOneWaySwapValues()', () => {
       });
 
       it('returns the values in the correct fields', () => {
-        expect(getOneWaySwapValuesGeneric(swapViewWithOneNonzeroInput)).toEqual({
+        expect(getOneWaySwapValues(swapViewWithOneNonzeroInput)).toEqual({
           input: new ValueView({
             valueView: {
               case: 'knownAssetId',
@@ -198,7 +198,7 @@ describe('getOneWaySwapValues()', () => {
       });
 
       it('returns the values in the correct fields', () => {
-        expect(getOneWaySwapValuesGeneric(swapViewWithOneNonzeroInput)).toEqual({
+        expect(getOneWaySwapValues(swapViewWithOneNonzeroInput)).toEqual({
           input: new ValueView({
             valueView: {
               case: 'knownAssetId',
@@ -253,7 +253,7 @@ describe('getOneWaySwapValues()', () => {
       });
 
       it('returns an unfilled amount', () => {
-        expect(getOneWaySwapValuesGeneric(swapViewWithTwoNonzeroOutputs)).toEqual({
+        expect(getOneWaySwapValues(swapViewWithTwoNonzeroOutputs)).toEqual({
           input: new ValueView({
             valueView: {
               case: 'knownAssetId',
@@ -310,7 +310,7 @@ describe('getOneWaySwapValues()', () => {
     });
 
     it('returns the values in the order asset1 -> asset2', () => {
-      expect(getOneWaySwapValuesGeneric(swapViewWithOneNonzeroInput)).toEqual({
+      expect(getOneWaySwapValues(swapViewWithOneNonzeroInput)).toEqual({
         input: new ValueView({
           valueView: {
             case: 'knownAssetId',
