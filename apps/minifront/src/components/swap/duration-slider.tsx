@@ -30,8 +30,10 @@ export const DurationSlider = () => {
         <Slider
           min={0}
           max={DURATION_OPTIONS.length - 1}
+          step={1}
           value={[DURATION_OPTIONS.indexOf(duration)]}
           onValueChange={handleChange}
+          segmented
         />
 
         <span className='text-right text-xs text-muted-foreground'>
