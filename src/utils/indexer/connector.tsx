@@ -241,6 +241,19 @@ export class IndexerQuerier {
     return res
   }
 
+  public async fetchBlocksByHeight(heights: number[]): Promise<BlockInfo[]> {
+    const queryText = `
+    SELECT
+      height,
+      created_at
+    FROM blocks
+    WHERE height = ANY($1)
+    ORDER BY height DESC
+    `;
+    const res = await this.query(queryText, [heights]);
+    return res
+  }
+
   /**
    * Closes the database connection pool.
    */
