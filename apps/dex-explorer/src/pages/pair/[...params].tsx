@@ -601,22 +601,22 @@ export default function TradingPairs() {
               <HStack spacing={8} width="100%" height="100%">
                 <VStack flex={1} height="100%">
                   <>
-                    <Text
-                      fontFamily="monospace"
-                      paddingBottom={"0em"}
-                      fontSize={"md"}
-                    >{`${asset1Token!.display} / ${
-                      asset2Token!.display
-                    }`}</Text>
-                    {/*
+                    <HStack paddingBottom={"2px"}>
+                      <Text
+                        fontFamily="monospace"
+                        fontSize={"md"}
+                        fontWeight={"bold"}
+                      >
+                        {`${asset1Token!.display}`}
+                      </Text>
                       <Text
                         fontSize={"sm"}
                         fontFamily="monospace"
-                        paddingBottom={"1em"}
                       >
-                        Liquidity
+                        {` / ${asset2Token!.display}`}
                       </Text>
-                    */}
+                    </HStack>
+
                     {/* Note the reversal of names here since buy and sell side is inverted at this stage (i.e. sell side == buy demand side) */}
                     <DepthChart
                       buySideData={depthChartMultiHopAsset1SellPoints}
