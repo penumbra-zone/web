@@ -1,4 +1,3 @@
-import { Button } from '@interchain-ui/react';
 import { WalletStatus } from 'cosmos-kit';
 import { WalletIcon } from '@penumbra-zone/ui/components/ui/icons/wallet';
 import { MouseEventHandler } from 'react';
@@ -6,6 +5,7 @@ import { useStore } from '../../../state';
 import { ibcInSelector } from '../../../state/ibc-in';
 
 import { useChainConnector } from './hooks';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 
 export const ConnectWalletButton = () => {
   const { connect, openView, status } = useChainConnector();
@@ -52,19 +52,27 @@ interface BaseProps {
 
 const WalletButtonBase = ({ buttonText, isLoading, isDisabled, onClick }: BaseProps) => {
   return (
-    <Button
-      fluidWidth
-      size='md'
-      isLoading={isLoading}
+    <button
       disabled={isDisabled}
       onClick={onClick}
-      className='relative'
+      className={cn(
+        'relative',
+        isDisabled && 'hover:cursor-not-allowed',
+        isLoading && 'hover:cursor-wait',
+      )}
     >
-      <div className='absolute inset-0 z-0 -m-px rounded-lg bg-gradient-to-r from-[rgba(157,75,199,1)] via-[rgba(138,78,201.5,1)] to-[rgba(119,81,204,1)]'></div>
+      <div
+        className={cn(
+          'absolute inset-0 z-0 -m-px rounded-lg bg-gradient-to-r',
+          'from-[rgba(157,75,199,1)] via-[rgba(138,78,201.5,1)] to-[rgba(119,81,204,1)]',
+          isDisabled &&
+            'from-[rgba(157,75,199,0.7)] via-[rgba(138,78,201,0.7)] to-[rgba(119,81,204,0.7)]',
+        )}
+      />
       <div className='relative z-10 flex items-center justify-center gap-1 rounded p-2'>
         <WalletIcon />
         <span className='font-bold'>{buttonText ? buttonText : 'Connect Wallet'}</span>
       </div>
-    </Button>
+    </button>
   );
 };
