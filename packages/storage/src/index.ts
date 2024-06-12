@@ -46,13 +46,7 @@ import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validato
 import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
-import {
-  IDB_TABLES,
-  IdbConstants,
-  IdbUpdate,
-  IndexedDbInterface,
-  PenumbraDb,
-} from '@penumbra-zone/types/indexed-db';
+import { IDB_TABLES, IdbConstants, IdbUpdate, PenumbraDb } from '@penumbra-zone/types/indexed-db';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import type {
   ScanBlockResult,
@@ -74,7 +68,7 @@ interface IndexedDbProps {
   registryClient: ChainRegistryClient;
 }
 
-export class IndexedDb implements IndexedDbInterface {
+export class IndexedDb {
   private constructor(
     private readonly db: IDBPDatabase<PenumbraDb>,
     private readonly u: IbdUpdater,

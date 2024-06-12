@@ -2,7 +2,6 @@ import { BlockProcessor } from '@penumbra-zone/query/block-processor';
 import { RootQuerier } from '@penumbra-zone/query/root-querier';
 import { IndexedDb } from '@penumbra-zone/storage';
 import { ViewServer } from '@penumbra-zone/wasm/view-server';
-import { ServicesInterface, WalletServices } from '@penumbra-zone/types/services';
 import {
   FullViewingKey,
   WalletId,
@@ -17,15 +16,22 @@ export interface ServicesConfig {
   readonly fullViewingKey: FullViewingKey;
 }
 
-export class Services implements ServicesInterface {
-  private walletServicesPromise: Promise<WalletServices> | undefined;
+export class Services {
+  private walletServicesPromise:
+    | Promise<{
+        blockProcessor: BlockProcessor;
+        indexedDb: IndexedDb;
+        querier: RootQuerier;
+        viewServer: ViewServer;
+      }>
+    | undefined;
 
   constructor(private config: ServicesConfig) {}
 
   // If getWalletServices() is called multiple times concurrently, they'll all
   // wait for the same promise rather than each starting their own
   // initialization process.
-  public async getWalletServices(): Promise<WalletServices> {
+  public async getWalletServices() {
     if (!this.walletServicesPromise) {
       this.walletServicesPromise = this.initializeWalletServices().catch((e: unknown) => {
         // If promise rejected, reset promise to `undefined` so next caller can
@@ -80,7 +86,7 @@ export class Services implements ServicesInterface {
     } else throw new Error('No available chainId');
   }
 
-  private async initializeWalletServices(): Promise<WalletServices> {
+  private async initializeWalletServices() {
     const { chainId, grpcEndpoint, walletId, fullViewingKey } = this.config;
     const querier = new RootQuerier({ grpcEndpoint });
     const registryClient = new ChainRegistryClient();
