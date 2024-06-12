@@ -4,7 +4,7 @@ import { ReactNode, useRef } from 'react';
 import { TooltipPortal } from '@radix-ui/react-tooltip';
 
 const ThumbBase = ({ children }: { children?: ReactNode }) => (
-  <SliderPrimitive.Thumb className='block size-5 rounded-full border-2 border-secondary bg-background ring-offset-background transition-colors focus-visible:border-white focus-visible:outline-none focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50'>
+  <SliderPrimitive.Thumb className='block size-5 cursor-pointer rounded-full border-2 border-secondary bg-background ring-offset-background transition-colors focus-visible:border-white focus-visible:outline-none focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50'>
     {children}
   </SliderPrimitive.Thumb>
 );
@@ -25,15 +25,16 @@ const ThumbWithTooltip = ({
         `<SliderPrimitive.Thumb />`, rather than vice versa, because the thumb
         is absolute-positioned. Reversing this hierarchy would cause weird
         layout glitches. */}
-        <SliderPrimitive.Thumb className='block size-5 rounded-full border-2 border-secondary bg-background ring-offset-background transition-colors focus-visible:border-white focus-visible:outline-none focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50'>
+        <ThumbBase>
           <TooltipTrigger
             ref={triggerRef}
             // Negative margin to accommodate border
             className='ml-[-2px] mt-[-2px] size-5'
-            // Otherwise, it is treated as a submit button when inside a form
+            // Prevent default so that it is not treated as a submit button when
+            // inside a form
             onClick={e => e.preventDefault()}
           />
-        </SliderPrimitive.Thumb>
+        </ThumbBase>
 
         <TooltipPortal>
           <TooltipContent
