@@ -6,13 +6,15 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils';
+import { DbMock, MockServices, TendermintMock } from '../test-utils';
 import { status } from './status';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { dbCtx } from '../ctx/database';
+import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
 describe('Status request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
+  let mockIndexedDb: DbMock;
   let mockCtx: HandlerContext;
   let mockTendermint: TendermintMock;
 
@@ -30,7 +32,6 @@ describe('Status request handler', () => {
     mockServices = {
       getWalletServices: vi.fn(() =>
         Promise.resolve({
-          indexedDb: mockIndexedDb,
           querier: {
             tendermint: mockTendermint,
           },
@@ -44,9 +45,9 @@ describe('Status request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
-      ),
+      contextValues: createContextValues()
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface))
+        .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface)),
     });
   });
 

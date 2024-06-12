@@ -1,13 +1,11 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
 
 import { SpendableNoteRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-
 import { Code, ConnectError } from '@connectrpc/connect';
+import { dbCtx } from '../ctx/database';
 
 export const noteByCommitment: Impl['noteByCommitment'] = async (req, ctx) => {
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
   if (!req.noteCommitment)
     throw new ConnectError('Missing note commitment in request', Code.InvalidArgument);
 

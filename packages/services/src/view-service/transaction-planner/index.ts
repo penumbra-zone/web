@@ -1,14 +1,14 @@
 import type { Impl } from '..';
-import { servicesCtx } from '../../ctx/prax';
-import { planTransaction } from '@penumbra-zone/wasm/planner';
-import { Code, ConnectError } from '@connectrpc/connect';
-import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
+
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { Code, ConnectError } from '@connectrpc/connect';
+import { planTransaction } from '@penumbra-zone/wasm/planner';
+import { dbCtx } from '../../ctx/database';
 import { fvkCtx } from '../../ctx/full-viewing-key';
+import { assertSwapAssetsAreNotTheSame } from './assert-swap-assets-are-not-the-same';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
 
   const fvk = ctx.values.get(fvkCtx);
 

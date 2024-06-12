@@ -1,11 +1,11 @@
+import type { Impl } from '.';
+
 import {
   SpendableNoteRecord,
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
-
 import { Code, ConnectError } from '@connectrpc/connect';
+import { dbCtx } from '../ctx/database';
 
 const watchStream = async <U>(
   subscription: AsyncGenerator<U>,
@@ -19,8 +19,7 @@ export const nullifierStatus: Impl['nullifierStatus'] = async (req, ctx) => {
   const { nullifier } = req;
   if (!nullifier) throw new ConnectError('No nullifier passed', Code.InvalidArgument);
 
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
 
   // grab subscription to table updates before checking the tables.  this avoids
   // a race condition: if instead we checked the tables, and *then* subscribed,

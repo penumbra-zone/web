@@ -1,10 +1,8 @@
 import { nullifierStatus } from './nullifier-status';
 
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
 
 import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 
@@ -14,12 +12,13 @@ import {
   SpendableNoteRecord,
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from '../test-utils';
+import { DbMock } from '../test-utils';
 import { stringToUint8Array } from '@penumbra-zone/types/string';
+import { dbCtx } from '../ctx/database';
+import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
 describe('nullifierStatus', () => {
-  let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
+  let mockIndexedDb: DbMock;
   let mockCtx: HandlerContext;
   let noteSubNext: Mock;
   let swapSubNext: Mock;
@@ -48,11 +47,6 @@ describe('nullifierStatus', () => {
         throw new Error('Table not supported');
       },
     };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
 
     mockCtx = createHandlerContext({
       service: ViewService,
@@ -60,8 +54,8 @@ describe('nullifierStatus', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(dbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface),
       ),
     });
   });

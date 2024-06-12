@@ -1,10 +1,10 @@
-import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+
+import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
+import { dbCtx } from '../ctx/database';
 
 export const appParameters: Impl['appParameters'] = async (_, ctx) => {
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
 
   const subscription = indexedDb.subscribe('APP_PARAMETERS');
   const parameters = await indexedDb.getAppParams();

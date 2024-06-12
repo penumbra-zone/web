@@ -6,17 +6,19 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices, ShieldedPoolMock } from '../test-utils';
+import { DbMock, MockServices, ShieldedPoolMock } from '../test-utils';
 import {
   AssetId,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { assetMetadataById } from './asset-metadata-by-id';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { dbCtx } from '../ctx/database';
 
 describe('AssetMetadataById request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
+  let mockIndexedDb: DbMock;
   let mockCtx: HandlerContext;
   let mockShieldedPool: ShieldedPoolMock;
   let request: AssetMetadataByIdRequest;
@@ -34,7 +36,6 @@ describe('AssetMetadataById request handler', () => {
     mockServices = {
       getWalletServices: vi.fn(() =>
         Promise.resolve({
-          indexedDb: mockIndexedDb,
           querier: {
             shieldedPool: mockShieldedPool,
           },
@@ -47,9 +48,9 @@ describe('AssetMetadataById request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
-      ),
+      contextValues: createContextValues()
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface))
+        .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface)),
     });
 
     request = new AssetMetadataByIdRequest({

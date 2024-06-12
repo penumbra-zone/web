@@ -5,7 +5,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { fullViewingKeyFromBech32m } from '@penumbra-zone/bech32m/penumbrafullviewingkey';
 
-export interface IndexedDbMock {
+export interface DbMock {
   constants?: Mock;
   getAppParams?: Mock;
   getAssetsMetadata?: Mock;
@@ -64,7 +64,6 @@ export interface StakeMock {
 }
 
 interface MockServicesInner {
-  indexedDb?: IndexedDbMock;
   viewServer?: ViewServerMock;
   querier?: MockQuerier;
 }

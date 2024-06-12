@@ -1,4 +1,5 @@
 import type { Impl } from '.';
+import { dbCtx } from '../ctx/database';
 import { servicesCtx } from '../ctx/prax';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 
@@ -11,7 +12,8 @@ export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, 
     );
 
   const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb, querier } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
+  const { querier } = await services.getWalletServices();
 
   const localMetadata = await indexedDb.getAssetsMetadata(assetId);
   if (localMetadata) return { denomMetadata: localMetadata };

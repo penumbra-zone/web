@@ -1,5 +1,4 @@
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 
@@ -10,10 +9,11 @@ import {
   TransactionInfoRequest,
   TransactionInfoResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices, testFullViewingKey } from '../test-utils';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { DbMock, testFullViewingKey } from '../test-utils';
 import { transactionInfo } from './transaction-info';
 import { fvkCtx } from '../ctx/full-viewing-key';
+import { dbCtx } from '../ctx/database';
+import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/transaction', () => ({
@@ -21,9 +21,8 @@ vi.mock('@penumbra-zone/wasm/transaction', () => ({
 }));
 
 describe('TransactionInfo request handler', () => {
-  let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
+  let mockIndexedDb: DbMock;
   let req: TransactionInfoRequest;
 
   beforeEach(() => {
@@ -39,12 +38,6 @@ describe('TransactionInfo request handler', () => {
       constants: vi.fn(),
     };
 
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
-
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.transactionInfo,
@@ -52,7 +45,7 @@ describe('TransactionInfo request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface))
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
 

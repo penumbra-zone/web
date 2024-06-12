@@ -4,12 +4,14 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { generateTransactionInfo } from '@penumbra-zone/wasm/transaction';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { fvkCtx } from '../ctx/full-viewing-key';
+import { dbCtx } from '../ctx/database';
 
 export const transactionInfoByHash: Impl['transactionInfoByHash'] = async (req, ctx) => {
   if (!req.id) throw new ConnectError('Missing transaction ID in request', Code.InvalidArgument);
 
   const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb, querier } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
+  const { querier } = await services.getWalletServices();
   const fvk = ctx.values.get(fvkCtx);
 
   // Check database for transaction first

@@ -1,10 +1,9 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+
+import { dbCtx } from '../ctx/database';
 
 export const ownedPositionIds: Impl['ownedPositionIds'] = async function* (req, ctx) {
-  const services = await ctx.values.get(servicesCtx)();
-
-  const { indexedDb } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
 
   for await (const positionId of indexedDb.getOwnedPositionIds(
     req.positionState,

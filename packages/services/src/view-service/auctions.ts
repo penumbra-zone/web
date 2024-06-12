@@ -19,6 +19,7 @@ import { servicesCtx } from '../ctx/prax';
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { HandlerContext } from '@connectrpc/connect';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { dbCtx } from '../ctx/database';
 
 const getBech32mAuctionId = (
   balancesResponse: PartialMessage<BalancesResponse>,
@@ -50,7 +51,8 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
   const { includeInactive, queryLatestState, accountFilter } = req;
 
   const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb, querier } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
+  const { querier } = await services.getWalletServices();
 
   for await (const auctionId of iterateAuctionsThisUserControls(ctx, accountFilter)) {
     const id = new AuctionId(auctionIdFromBech32(auctionId));

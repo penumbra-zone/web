@@ -5,15 +5,14 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices } from '../test-utils';
+import { DbMock } from '../test-utils';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { fMDParameters } from './fmd-parameters';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { dbCtx } from '../ctx/database';
 
 describe('FmdParameters request handler', () => {
-  let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
+  let mockIndexedDb: DbMock;
   let mockCtx: HandlerContext;
 
   beforeEach(() => {
@@ -22,19 +21,15 @@ describe('FmdParameters request handler', () => {
     mockIndexedDb = {
       getFmdParams: vi.fn(),
     };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
+
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.fMDParameters,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(dbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface),
       ),
     });
   });

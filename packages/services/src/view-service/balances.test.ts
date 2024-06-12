@@ -13,7 +13,7 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils';
+import { DbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils';
 import {
   AssetId,
   EquivalentValue,
@@ -30,6 +30,8 @@ import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { fvkCtx } from '../ctx/full-viewing-key';
+import { dbCtx } from '../ctx/database';
+import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {
   const account0Res = responses.filter(
@@ -47,7 +49,7 @@ describe('Balances request handler', () => {
   let req: BalancesRequest;
   let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
+  let mockIndexedDb: DbMock;
   let mockTendermint: TendermintMock;
 
   beforeEach(() => {
@@ -77,7 +79,6 @@ describe('Balances request handler', () => {
       // @ts-expect-error TODO: Improve mocking types
       getWalletServices: vi.fn(() =>
         Promise.resolve({
-          indexedDb: mockIndexedDb,
           querier: {
             shieldedPool: mockShieldedPool,
             tendermint: mockTendermint,
@@ -93,6 +94,7 @@ describe('Balances request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface))
         .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });

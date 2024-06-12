@@ -6,7 +6,7 @@ import {
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
 import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils';
+import { DbMock, MockServices, TendermintMock, testFullViewingKey } from '../test-utils';
 import { transactionInfoByHash } from './transaction-info-by-hash';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
@@ -15,6 +15,8 @@ import {
   TransactionPerspective,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { fvkCtx } from '../ctx/full-viewing-key';
+import { dbCtx } from '../ctx/database';
+import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/transaction', () => ({
@@ -22,7 +24,7 @@ vi.mock('@penumbra-zone/wasm/transaction', () => ({
 }));
 describe('TransactionInfoByHash request handler', () => {
   let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
+  let mockIndexedDb: DbMock;
   let mockCtx: HandlerContext;
   let mockTendermint: TendermintMock;
 
@@ -39,7 +41,6 @@ describe('TransactionInfoByHash request handler', () => {
     mockServices = {
       getWalletServices: vi.fn(() =>
         Promise.resolve({
-          indexedDb: mockIndexedDb,
           querier: {
             tendermint: mockTendermint,
           },
@@ -54,6 +55,7 @@ describe('TransactionInfoByHash request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface))
         .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });

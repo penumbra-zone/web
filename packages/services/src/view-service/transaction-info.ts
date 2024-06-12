@@ -1,12 +1,12 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { generateTransactionInfo } from '@penumbra-zone/wasm/transaction';
+import { dbCtx } from '../ctx/database';
 import { fvkCtx } from '../ctx/full-viewing-key';
 
 export const transactionInfo: Impl['transactionInfo'] = async function* (req, ctx) {
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
 
   const fvk = ctx.values.get(fvkCtx);
 

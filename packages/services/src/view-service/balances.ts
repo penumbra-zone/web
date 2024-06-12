@@ -33,11 +33,13 @@ import { addLoHi } from '@penumbra-zone/types/lo-hi';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import { isZero, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { Stringified } from '@penumbra-zone/types/jsonified';
+import { dbCtx } from '../ctx/database';
 
 // Handles aggregating amounts and filtering by account number/asset id
 export const balances: Impl['balances'] = async function* (req, ctx) {
   const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb, querier } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
+  const { querier } = await services.getWalletServices();
 
   // latestBlockHeight is needed to calculate the threshold of price relevance,
   //it is better to use  rather than fullSyncHeight to avoid displaying old prices during the synchronization process

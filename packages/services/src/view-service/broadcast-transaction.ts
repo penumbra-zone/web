@@ -5,10 +5,12 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
+import { dbCtx } from '../ctx/database';
 
 export const broadcastTransaction: Impl['broadcastTransaction'] = async function* (req, ctx) {
   const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb, querier } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
+  const { querier } = await services.getWalletServices();
   if (!req.transaction)
     throw new ConnectError('No transaction provided in request', Code.InvalidArgument);
 

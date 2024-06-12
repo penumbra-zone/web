@@ -17,10 +17,12 @@ import { ViewService } from '@penumbra-zone/protobuf';
 import { ServicesInterface } from '@penumbra-zone/types/services';
 import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
 import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockQuerier, MockServices } from '../test-utils';
+import { DbMock, MockQuerier, MockServices } from '../test-utils';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { dbCtx } from '../ctx/database';
+import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 
 const AUCTION_ID_1 = new AuctionId({ inner: new Uint8Array(Array(32).fill(1)) });
 const BECH32M_AUCTION_ID_1 = bech32mAuctionId(AUCTION_ID_1);
@@ -119,7 +121,7 @@ const TEST_DATA = [
 
 describe('Auctions request handler', () => {
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
+  let mockIndexedDb: DbMock;
   let mockQuerier: MockQuerier;
 
   beforeEach(() => {
@@ -143,7 +145,6 @@ describe('Auctions request handler', () => {
       Promise.resolve({
         getWalletServices: vi.fn(() =>
           Promise.resolve({
-            indexedDb: mockIndexedDb,
             querier: mockQuerier,
           }),
         ) as MockServices['getWalletServices'],
@@ -155,7 +156,9 @@ describe('Auctions request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, mockServices),
+      contextValues: createContextValues()
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface))
+        .set(servicesCtx, mockServices),
     });
   });
 
