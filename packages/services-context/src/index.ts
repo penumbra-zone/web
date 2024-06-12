@@ -1,6 +1,6 @@
 import { BlockProcessor } from '@penumbra-zone/query/block-processor';
 import { RootQuerier } from '@penumbra-zone/query/root-querier';
-import { IndexedDb } from '@penumbra-zone/storage/indexed-db';
+import { IndexedDb } from '@penumbra-zone/storage';
 import { ViewServer } from '@penumbra-zone/wasm/view-server';
 import { ServicesInterface, WalletServices } from '@penumbra-zone/types/services';
 import {
@@ -12,7 +12,6 @@ import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 
 export interface ServicesConfig {
   readonly chainId: string;
-  readonly idbVersion: number;
   readonly grpcEndpoint: string;
   readonly walletId: WalletId;
   readonly fullViewingKey: FullViewingKey;
@@ -82,12 +81,11 @@ export class Services implements ServicesInterface {
   }
 
   private async initializeWalletServices(): Promise<WalletServices> {
-    const { chainId, grpcEndpoint, walletId, fullViewingKey, idbVersion } = this.config;
+    const { chainId, grpcEndpoint, walletId, fullViewingKey } = this.config;
     const querier = new RootQuerier({ grpcEndpoint });
     const registryClient = new ChainRegistryClient();
     const indexedDb = await IndexedDb.initialize({
       chainId,
-      idbVersion,
       walletId,
       registryClient,
     });

@@ -8,15 +8,10 @@
     "test": "vitest run"
   },
   "files": [
-    "src/",
-    "*.md",
-    "!**/*.test.ts",
-    "!src/chrome/test-utils/"
+    "src"
   ],
   "exports": {
-    "./chrome/*": "./src/chrome/*.ts",
-    "./indexed-db": "./src/indexed-db/index.ts",
-    "./indexed-db/*": "./src/indexed-db/*.ts"
+    ".": "./src/index.ts"
   },
   "dependencies": {
     "@penumbra-labs/registry": "8.0.1",

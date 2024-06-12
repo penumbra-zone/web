@@ -65,9 +65,10 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { PartialMessage } from '@bufbuild/protobuf';
+import IDB_VERSION from './version';
 
 interface IndexedDbProps {
-  idbVersion: number; // Incremented during schema changes
+  idbVersion?: number; // Incremented during schema changes
   chainId: string;
   walletId: WalletId;
   registryClient: ChainRegistryClient;
@@ -82,7 +83,7 @@ export class IndexedDb implements IndexedDbInterface {
   ) {}
 
   static async initialize({
-    idbVersion,
+    idbVersion = IDB_VERSION,
     walletId,
     chainId,
     registryClient,
