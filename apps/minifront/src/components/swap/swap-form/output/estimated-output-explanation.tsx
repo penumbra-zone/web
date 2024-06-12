@@ -27,13 +27,20 @@ export const EstimatedOutputExplanation = () => {
   const assetInSymbol = getSymbolFromValueView.optional()(assetIn?.balanceView);
 
   return (
-    <div className='text-xs text-muted-foreground'>
+    <div className='text-xs'>
       {noLiquidityAvailable ? (
-        'No liquidity is currently available for this swap, so it is impossible to estimate maximum and minimum outputs.'
+        <span className='text-muted-foreground'>
+          No liquidity is currently available for this swap, so it is impossible to estimate maximum
+          and minimum outputs.
+        </span>
       ) : (
         <>
-          Based on the current estimated market price of {formattedAmount} {assetOut?.symbol} for{' '}
-          {amount} {assetInSymbol}.
+          <span className='text-muted-foreground'>
+            Based on the current estimated market price of{' '}
+          </span>
+          {formattedAmount} {assetOut?.symbol} <span className='text-muted-foreground'>for </span>
+          {amount} {assetInSymbol}
+          <span className='text-muted-foreground'>.</span>
         </>
       )}
     </div>
