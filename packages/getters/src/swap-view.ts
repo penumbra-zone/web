@@ -32,18 +32,21 @@ export const getOutput2Value = createGetter((swapView?: SwapView) => {
 // Generic getter function that returns the value of a specified property from either 'swapPlaintext' or 'swapBody'.
 // This pattern utilizes parameterized types, 'T', to handle property access, 'K' within different nested objects based on the case
 // of 'SwapView'. These parameterized types can represent an intersection of multiple types.
-const createSwapGetter = <T, K extends keyof T>(property: K) => {
+type SwapBodyCombined = SwapPlaintext & SwapBody;
+const createSwapGetter = <K extends keyof SwapBodyCombined>(property: K) => {
   return createGetter((swapView?: SwapView) => {
-    let swapValue: T[K] | undefined;
+    let swapValue: SwapBodyCombined[K] | undefined;
 
     switch (swapView?.swapView.case) {
       case 'visible':
-        swapValue = swapView.swapView.value.swapPlaintext?.[
-          property as keyof SwapPlaintext
-        ] as T[K];
+        swapValue = swapView.swapView.value.swapPlaintext?.[property as keyof SwapPlaintext] as
+          | SwapBodyCombined[K]
+          | undefined;
         break;
       case 'opaque':
-        swapValue = swapView.swapView.value.swap?.body?.[property as keyof SwapBody] as T[K];
+        swapValue = swapView.swapView.value.swap?.body?.[property as keyof SwapBody] as
+          | SwapBodyCombined[K]
+          | undefined;
         break;
       default:
         return undefined;
@@ -58,19 +61,13 @@ const createSwapGetter = <T, K extends keyof T>(property: K) => {
 };
 
 // Generic getter function for 'delta1I'
-export const getDelta1IFromSwapView = createSwapGetter<SwapPlaintext & SwapBody, 'delta1I'>(
-  'delta1I',
-);
+export const getDelta1IFromSwapView = createSwapGetter<'delta1I'>('delta1I');
 
 // Generic getter function for 'delta2I'
-export const getDelta2IFromSwapView = createSwapGetter<SwapPlaintext & SwapBody, 'delta2I'>(
-  'delta2I',
-);
+export const getDelta2IFromSwapView = createSwapGetter<'delta2I'>('delta2I');
 
 // Generic getter function for 'claimFee'
-export const getClaimFeeFromSwapView = createSwapGetter<SwapPlaintext & SwapBody, 'claimFee'>(
-  'claimFee',
-);
+export const getClaimFeeFromSwapView = createSwapGetter<'claimFee'>('claimFee');
 
 // Generic getter function for 'Asset1Metadata'
 export const getAsset1Metadata = createGetter((swapView?: SwapView) =>
