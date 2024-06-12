@@ -3,12 +3,11 @@ import { AllSlices, SliceCreator } from '.';
 import { ExtensionStorage } from '../storage/base';
 import { Stringified } from '@penumbra-zone/types/jsonified';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { ServicesMessage } from '../message/services';
 
 export interface NumerairesSlice {
   selectedNumeraires: Stringified<AssetId>[];
   selectNumeraire: (numeraire: Stringified<AssetId>) => void;
-  saveNumeraires: () => void;
+  saveNumeraires: () => Promise<void>;
 }
 
 export const createNumerairesSlice =
@@ -28,7 +27,6 @@ export const createNumerairesSlice =
       },
       saveNumeraires: async () => {
         await local.set('numeraires', get().numeraires.selectedNumeraires);
-        await chrome.runtime.sendMessage(ServicesMessage.ChangeNumeraires);
       },
     };
   };
