@@ -7,7 +7,6 @@ import '@penumbra-zone/ui/styles/globals.css';
 import { getChainId } from '../fetchers/chain-id';
 import { useEffect, useState } from 'react';
 import { TestnetBanner } from '@penumbra-zone/ui/components/ui/testnet-banner';
-import { Status } from './Status';
 import { MotionConfig } from 'framer-motion';
 
 export const Layout = () => {
@@ -19,7 +18,6 @@ export const Layout = () => {
 
   return (
     <MotionConfig transition={{ duration: 0.1 }}>
-      <Status />
       <TestnetBanner chainId={chainId} />
       <HeadTag />
       <div className='flex min-h-screen w-full flex-col'>

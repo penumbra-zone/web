@@ -5,17 +5,16 @@ import {
   TooltipTrigger,
 } from '@penumbra-zone/ui/components/ui/tooltip';
 import { ReloadIcon } from '@radix-ui/react-icons';
-import { useStore } from '../../../state';
+import { useRevalidateAuctionInfos } from '../../../state/swap/dutch-auction';
 
 export const QueryLatestStateButton = () => {
-  const loadAuctionInfos = useStore(state => state.swap.dutchAuction.loadAuctionInfos);
-  const handleClick = () => void loadAuctionInfos(true);
+  const revalidate = useRevalidateAuctionInfos();
 
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger
-          onClick={handleClick}
+          onClick={() => revalidate({ queryLatestState: true })}
           aria-label='Get the current auction reserves (makes a request to a fullnode)'
         >
           <div className='p-2'>

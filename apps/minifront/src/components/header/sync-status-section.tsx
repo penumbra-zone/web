@@ -1,22 +1,16 @@
 import { CondensedBlockSyncStatus } from '@penumbra-zone/ui/components/ui/block-sync-status/condensed';
-import { AllSlices } from '../../state';
-import { useStoreShallow } from '../../utils/use-store-shallow';
-
-const syncStatusSectionSelector = (state: AllSlices) => ({
-  fullSyncHeight: state.status.fullSyncHeight,
-  latestKnownBlockHeight: state.status.latestKnownBlockHeight,
-  error: state.status.error,
-});
+import { useStatus } from '../../state/status';
 
 export const SyncStatusSection = () => {
-  const { fullSyncHeight, latestKnownBlockHeight, error } =
-    useStoreShallow(syncStatusSectionSelector);
+  const { data, error } = useStatus();
 
   return (
     <div className='relative z-30 flex w-full flex-col'>
       <CondensedBlockSyncStatus
-        fullSyncHeight={fullSyncHeight ? Number(fullSyncHeight) : undefined}
-        latestKnownBlockHeight={latestKnownBlockHeight ? Number(latestKnownBlockHeight) : undefined}
+        fullSyncHeight={data?.fullSyncHeight ? Number(data.fullSyncHeight) : undefined}
+        latestKnownBlockHeight={
+          data?.latestKnownBlockHeight ? Number(data.latestKnownBlockHeight) : undefined
+        }
         error={error}
       />
     </div>

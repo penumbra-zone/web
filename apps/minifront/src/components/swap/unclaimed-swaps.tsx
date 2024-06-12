@@ -1,35 +1,28 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Card } from '@penumbra-zone/ui/components/ui/card';
-import { useLoaderData, useRevalidator } from 'react-router-dom';
-import { SwapLoaderResponse, UnclaimedSwapsWithMetadata } from './swap-loader';
 import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
-import { useStore } from '../../state';
-import { unclaimedSwapsSelector } from '../../state/unclaimed-swaps';
+import { AllSlices } from '../../state';
+import { useUnclaimedSwaps } from '../../state/unclaimed-swaps';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
+import { useStoreShallow } from '../../utils/use-store-shallow';
+
+const unclaimedSwapsSelector = (state: AllSlices) => ({
+  claimSwap: state.unclaimedSwaps.claimSwap,
+  isInProgress: state.unclaimedSwaps.isInProgress,
+});
 
 export const UnclaimedSwaps = () => {
-  const unclaimedSwaps = useLoaderData() as SwapLoaderResponse;
+  const unclaimedSwaps = useUnclaimedSwaps();
+  const { claimSwap, isInProgress } = useStoreShallow(unclaimedSwapsSelector);
 
-  const sortedUnclaimedSwaps = unclaimedSwaps.sort(
-    (a, b) => Number(b.swap.outputData?.height) - Number(a.swap.outputData?.height),
-  );
-  return !unclaimedSwaps.length ? (
+  return !unclaimedSwaps.data?.length ? (
     <div className='hidden xl:block'></div>
   ) : (
-    <_UnclaimedSwaps unclaimedSwaps={sortedUnclaimedSwaps}></_UnclaimedSwaps>
-  );
-};
-
-const _UnclaimedSwaps = ({ unclaimedSwaps }: { unclaimedSwaps: UnclaimedSwapsWithMetadata[] }) => {
-  const { revalidate } = useRevalidator();
-  const { claimSwap, isInProgress } = useStore(unclaimedSwapsSelector);
-
-  return (
     <Card layout>
       <GradientHeader layout>Unclaimed Swaps</GradientHeader>
-      {unclaimedSwaps.map(({ swap, asset1, asset2 }) => {
+      {unclaimedSwaps.data.map(({ swap, asset1, asset2 }) => {
         const id = uint8ArrayToBase64(getSwapRecordCommitment(swap).inner);
 
         return (
@@ -46,7 +39,7 @@ const _UnclaimedSwaps = ({ unclaimedSwaps }: { unclaimedSwaps: UnclaimedSwapsWit
 
             <Button
               className='ml-auto w-20'
-              onClick={() => void claimSwap(id, swap, revalidate)}
+              onClick={() => void claimSwap(id, swap)}
               disabled={isInProgress(id)}
             >
               {isInProgress(id) ? 'Claiming' : 'Claim'}

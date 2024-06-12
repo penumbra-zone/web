@@ -1,22 +1,15 @@
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { SliceCreator } from '../..';
-import {
-  AssetId,
-  Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { SliceCreator, useStore } from '../..';
 import { planBuildBroadcast } from '../../helpers';
 import { assembleScheduleRequest } from './assemble-schedule-request';
-import {
-  AuctionId,
-  DutchAuction,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
-import { viewClient } from '../../../clients';
-import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
+import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { sendSimulateTradeRequest } from '../helpers';
 import { fromBaseUnitAmount, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
+import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
+import { AuctionInfo, getAuctionInfos } from '../../../fetchers/auction-infos';
 
 /**
  * Multipliers to use with the output of the swap simulation, to determine
@@ -25,19 +18,12 @@ import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 const MAX_OUTPUT_ESTIMATE_MULTIPLIER = 2;
 const MIN_OUTPUT_ESTIMATE_MULTIPLIER = 0.5;
 
-export interface AuctionInfo {
-  id: AuctionId;
-  auction: DutchAuction;
-}
-
 export type Filter = 'active' | 'upcoming' | 'all';
 
 interface Actions {
   setMinOutput: (minOutput: string) => void;
   setMaxOutput: (maxOutput: string) => void;
   onSubmit: () => Promise<void>;
-  loadAuctionInfos: (queryLatestState?: boolean) => Promise<void>;
-  loadMetadata: (assetId?: AssetId) => Promise<void>;
   endAuction: (auctionId: AuctionId) => Promise<void>;
   withdraw: (auctionId: AuctionId, currentSeqNum: bigint) => Promise<void>;
   reset: VoidFunction;
@@ -49,13 +35,28 @@ interface State {
   minOutput: string;
   maxOutput: string;
   txInProgress: boolean;
-  auctionInfos: AuctionInfo[];
-  loadAuctionInfosAbortController?: AbortController;
-  metadataByAssetId: Record<string, Metadata>;
+  auctionInfos: ZQueryState<AuctionInfo[], Parameters<typeof getAuctionInfos>>;
   filter: Filter;
   estimateLoading: boolean;
   estimatedOutput?: Amount;
 }
+
+export const { auctionInfos, useAuctionInfos, useRevalidateAuctionInfos } = createZQuery({
+  name: 'auctionInfos',
+  fetch: getAuctionInfos,
+  stream: (prevState: AuctionInfo[] | undefined, auctionInfo: AuctionInfo) => [
+    ...(prevState ?? []),
+    auctionInfo,
+  ],
+  getUseStore: () => useStore,
+  set: setter => {
+    const newState = setter(useStore.getState().swap.dutchAuction.auctionInfos);
+    useStore.setState(state => {
+      state.swap.dutchAuction.auctionInfos = newState;
+    });
+  },
+  get: state => state.swap.dutchAuction.auctionInfos,
+});
 
 export type DutchAuctionSlice = Actions & State;
 
@@ -63,8 +64,7 @@ const INITIAL_STATE: State = {
   minOutput: '1',
   maxOutput: '1000',
   txInProgress: false,
-  auctionInfos: [],
-  metadataByAssetId: {},
+  auctionInfos,
   filter: 'active',
   estimateLoading: false,
   estimatedOutput: undefined,
@@ -101,7 +101,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
       await planBuildBroadcast('dutchAuctionSchedule', req);
 
       get().swap.setAmount('');
-      void get().swap.dutchAuction.loadAuctionInfos();
+      get().swap.dutchAuction.auctionInfos.revalidate();
     } finally {
       set(state => {
         state.swap.dutchAuction.txInProgress = false;
@@ -109,59 +109,10 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     }
   },
 
-  loadAuctionInfos: async (queryLatestState = false) => {
-    get().swap.dutchAuction.loadAuctionInfosAbortController?.abort();
-    const newAbortController = new AbortController();
-
-    set(({ swap }) => {
-      swap.dutchAuction.auctionInfos = [];
-      swap.dutchAuction.loadAuctionInfosAbortController = newAbortController;
-    });
-
-    for await (const response of viewClient.auctions(
-      { queryLatestState, includeInactive: true },
-      /**
-       * Weirdly, just passing the newAbortController.signal here doesn't seem to
-       * have any effect, despite the ConnectRPC docs saying that it should
-       * work. I still left this line in, though, since it seems right and
-       * perhaps will be fixed in a later ConnectRPC release. But in the
-       * meantime, returning early from the `for` loop below fixes this issue.
-       *
-       * @see https://connectrpc.com/docs/web/cancellation-and-timeouts/
-       */
-      { signal: newAbortController.signal },
-    )) {
-      if (newAbortController.signal.aborted) return;
-      if (!response.auction || !response.id) continue;
-
-      const auction = DutchAuction.fromBinary(response.auction.value);
-      const auctions = [...get().swap.dutchAuction.auctionInfos, { id: response.id, auction }];
-
-      void get().swap.dutchAuction.loadMetadata(auction.description?.input?.assetId);
-      void get().swap.dutchAuction.loadMetadata(auction.description?.outputId);
-
-      set(state => {
-        state.swap.dutchAuction.auctionInfos = auctions;
-      });
-    }
-  },
-
-  loadMetadata: async assetId => {
-    if (!assetId || get().swap.dutchAuction.metadataByAssetId[bech32mAssetId(assetId)]) return;
-
-    const { denomMetadata } = await viewClient.assetMetadataById({ assetId });
-
-    if (denomMetadata) {
-      set(({ swap }) => {
-        swap.dutchAuction.metadataByAssetId[bech32mAssetId(assetId)] = denomMetadata;
-      });
-    }
-  },
-
   endAuction: async auctionId => {
     const req = new TransactionPlannerRequest({ dutchAuctionEndActions: [{ auctionId }] });
     await planBuildBroadcast('dutchAuctionEnd', req);
-    void get().swap.dutchAuction.loadAuctionInfos();
+    get().swap.dutchAuction.auctionInfos.revalidate();
   },
 
   withdraw: async (auctionId, currentSeqNum) => {
@@ -169,7 +120,7 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
       dutchAuctionWithdrawActions: [{ auctionId, seq: currentSeqNum + 1n }],
     });
     await planBuildBroadcast('dutchAuctionWithdraw', req);
-    void get().swap.dutchAuction.loadAuctionInfos();
+    get().swap.dutchAuction.auctionInfos.revalidate();
   },
 
   reset: () =>
@@ -178,11 +129,8 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
         ...swap.dutchAuction,
         ...INITIAL_STATE,
 
-        // preserve loaded auctions and metadata:
+        // preserve loaded auctions and filter:
         auctionInfos: swap.dutchAuction.auctionInfos,
-        metadataByAssetId: swap.dutchAuction.metadataByAssetId,
-
-        // preserve filter:
         filter: swap.dutchAuction.filter,
       };
     }),

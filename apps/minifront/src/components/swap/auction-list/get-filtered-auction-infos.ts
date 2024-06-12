@@ -1,4 +1,5 @@
-import { AuctionInfo, Filter } from '../../../state/swap/dutch-auction';
+import { AuctionInfo } from '../../../fetchers/auction-infos';
+import { Filter } from '../../../state/swap/dutch-auction';
 
 type FilterMatchableAuctionInfo = AuctionInfo & {
   auction: {
