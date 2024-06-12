@@ -2,14 +2,12 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@penumbra-zone/ui/
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { FormEventHandler } from 'react';
 import { NumeraireForm } from '../../../shared/components/numeraires';
 
 export const SetNumerairesPage = () => {
   const navigate = usePageNav();
 
-  const onSubmit: FormEventHandler = (event): void => {
-    event.preventDefault();
+  const onSuccess = (): void => {
     navigate(PagePath.ONBOARDING_SUCCESS);
   };
 
@@ -25,9 +23,7 @@ export const SetNumerairesPage = () => {
           asset prices locally by selected denomination
         </CardDescription>
 
-        <form className='mt-6' onSubmit={onSubmit}>
-          <NumeraireForm isOnboarding />
-        </form>
+          <NumeraireForm isOnboarding onSuccess={onSuccess} />
       </Card>
     </FadeTransition>
   );

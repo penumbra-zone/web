@@ -79,6 +79,7 @@ export class IndexedDb implements IndexedDbInterface {
     private readonly u: IbdUpdater,
     private readonly c: IdbConstants,
     private readonly chainId: string,
+    private readonly stakingTokenAssetId: AssetId,
   ) {}
 
   static async initialize({
@@ -134,7 +135,13 @@ export class IndexedDb implements IndexedDbInterface {
       tables: IDB_TABLES,
     } satisfies IdbConstants;
 
-    const instance = new this(db, new IbdUpdater(db), constants, chainId);
+    const instance = new this(
+      db,
+      new IbdUpdater(db),
+      constants,
+      chainId,
+      registryClient.get(chainId).stakingAssetId,
+    );
     await instance.saveRegistryAssets(registryClient, chainId); // Pre-load asset metadata from registry
 
     const existing0thEpoch = await instance.getEpochByHeight(0n);
@@ -659,6 +666,15 @@ export class IndexedDb implements IndexedDbInterface {
     return results
       .map(price => EstimatedPrice.fromJson(price))
       .filter(price => price.asOfHeight >= minHeight);
+  }
+
+  async clearSwapBasedPrices(): Promise<void> {
+    for await (const cursor of this.db.transaction('PRICES').store) {
+      const price = EstimatedPrice.fromJson(cursor.value);
+      // Do not delete prices for delegation assets
+      if (price.numeraire?.equals(this.stakingTokenAssetId)) continue;
+      await this.db.delete('PRICES', cursor.key);
+    }
   }
 
   private determinePriceRelevanceThresholdForAsset(assetMetadata: Metadata): number {
