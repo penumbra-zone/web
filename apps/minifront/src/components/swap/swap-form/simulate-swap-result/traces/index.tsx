@@ -28,25 +28,27 @@ export const Traces = ({
         tokens.
       </p>
 
-      <div className='mt-4 overflow-auto [scrollbar-width:thin]'>
-        <div className='flex justify-between'>
-          <div className='flex flex-col items-start gap-2'>
-            <ValueViewComponent view={input} size='sm' />
-            <ArrowDown size={16} />
+      <div className='mt-4 flex overflow-auto [scrollbar-width:thin]'>
+        <div className='mx-2 w-min grow'>
+          <div className='-mx-2 -mb-8 flex justify-between'>
+            <div className='flex flex-col items-start gap-2'>
+              <ValueViewComponent view={input} size='sm' />
+              <ArrowDown size={17} className='relative z-10' />
+            </div>
+            <div className='flex flex-col items-end gap-2'>
+              <ValueViewComponent view={output} size='sm' />
+              <ArrowUp size={17} className='relative z-10' />
+            </div>
           </div>
-          <div className='flex flex-col items-end gap-2'>
-            <ValueViewComponent view={output} size='sm' />
-            <ArrowUp size={16} />
-          </div>
-        </div>
-        <div className='mx-2'>
-          <div className='inline-flex w-max min-w-full flex-col border-b border-dashed border-light-brown'>
+          <div className='inline-flex w-max min-w-full flex-col pb-10'>
             {traces.map((trace, index) => (
               <div
                 key={index}
-                className='flex items-center border-x border-dashed border-light-brown py-2'
+                className='flex items-center border-x border-b border-dashed border-light-brown px-8 pb-2'
               >
-                <Trace trace={trace} metadataByAssetId={metadataByAssetId} />
+                <div className='w-full translate-y-10'>
+                  <Trace trace={trace} metadataByAssetId={metadataByAssetId} />
+                </div>
               </div>
             ))}
           </div>
