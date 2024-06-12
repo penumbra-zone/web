@@ -9,6 +9,7 @@ import { DurationOption } from './constants';
 import { DutchAuctionSlice, createDutchAuctionSlice } from './dutch-auction';
 import { InstantSwapSlice, createInstantSwapSlice } from './instant-swap';
 import { PriceHistorySlice, createPriceHistorySlice } from './price-history';
+import { getMetadata } from '@penumbra-zone/getters/value-view';
 
 export interface SimulateSwapResult {
   metadataByAssetId: Record<string, Metadata>;
@@ -54,6 +55,25 @@ const INITIAL_STATE: State = {
 
 export type SwapSlice = Actions & State & Subslices;
 
+const balancesResponseAndMetadataAreSameAsset = (
+  balancesResponse?: BalancesResponse,
+  metadata?: Metadata,
+) => getMetadata.optional()(balancesResponse?.balanceView)?.equals(metadata);
+
+const getFirstBalancesResponseNotMatchingMetadata = (
+  balancesResponses: BalancesResponse[],
+  metadata?: Metadata,
+) =>
+  balancesResponses.find(
+    balancesResponse => !balancesResponseAndMetadataAreSameAsset(balancesResponse, metadata),
+  );
+
+const getFirstMetadataNotMatchingBalancesResponse = (
+  metadatas: Metadata[],
+  balancesResponse: BalancesResponse,
+) =>
+  metadatas.find(metadata => !balancesResponseAndMetadataAreSameAsset(balancesResponse, metadata));
+
 export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) => ({
   ...INITIAL_STATE,
   dutchAuction: createDutchAuctionSlice()(set, get, store),
@@ -73,12 +93,26 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
     get().swap.resetSubslices();
     set(({ swap }) => {
       swap.assetIn = asset;
+
+      if (balancesResponseAndMetadataAreSameAsset(asset, get().swap.assetOut)) {
+        swap.assetOut = getFirstMetadataNotMatchingBalancesResponse(
+          get().swap.swappableAssets,
+          asset,
+        );
+      }
     });
   },
   setAssetOut: metadata => {
     get().swap.resetSubslices();
     set(({ swap }) => {
       swap.assetOut = metadata;
+
+      if (balancesResponseAndMetadataAreSameAsset(get().swap.assetIn, metadata)) {
+        swap.assetIn = getFirstBalancesResponseNotMatchingMetadata(
+          get().swap.balancesResponses,
+          metadata,
+        );
+      }
     });
   },
   setAmount: amount => {
