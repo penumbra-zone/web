@@ -1,37 +1,89 @@
-import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import {
+  SwapBody,
+  SwapPlaintext,
+  SwapView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { createGetter } from './utils/create-getter';
-import { getValue } from './note-view';
-import { getClaimFee, getDelta1I, getDelta2I } from './swap-plaintext';
 
-export const getOutput1 = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'visible' ? swapView.swapView.value.output1 : undefined,
-);
-export const getOutput1Value = getOutput1.pipe(getValue);
-export const getOutput1ValueOptional = getOutput1.optional().pipe(getValue);
+// Generic getter function for 'Output1'
+export const getOutput1Value = createGetter((swapView?: SwapView) => {
+  switch (swapView?.swapView.case) {
+    case 'visible':
+      return swapView.swapView.value.output1?.value;
+    case 'opaque':
+      return swapView.swapView.value.output1Value;
+    default:
+      return undefined;
+  }
+});
 
-export const getOutput2 = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'visible' ? swapView.swapView.value.output2 : undefined,
-);
-export const getOutput2Value = getOutput2.pipe(getValue);
-export const getOutput2ValueOptional = getOutput2.optional().pipe(getValue);
+// Generic getter function for 'Output2'
+export const getOutput2Value = createGetter((swapView?: SwapView) => {
+  switch (swapView?.swapView.case) {
+    case 'visible':
+      return swapView.swapView.value.output2?.value;
+    case 'opaque':
+      return swapView.swapView.value.output2Value;
+    default:
+      return undefined;
+  }
+});
 
-export const getSwapPlaintext = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'visible' ? swapView.swapView.value.swapPlaintext : undefined,
-);
+// Generic getter function that returns the value of a specified property from either 'swapPlaintext' or 'swapBody'.
+// This pattern utilizes parameterized types, 'T', to handle property access, 'K' within different nested objects based on the case
+// of 'SwapView'. These parameterized types can represent an intersection of multiple types.
+type SwapBodyCombined = SwapPlaintext & SwapBody;
+const createSwapGetter = <K extends keyof SwapBodyCombined>(property: K) => {
+  return createGetter((swapView?: SwapView) => {
+    let swapValue: SwapBodyCombined[K] | undefined;
 
-export const getClaimFeeFromSwapView = getSwapPlaintext.pipe(getClaimFee);
+    switch (swapView?.swapView.case) {
+      case 'visible':
+        swapValue = swapView.swapView.value.swapPlaintext?.[property as keyof SwapPlaintext] as
+          | SwapBodyCombined[K]
+          | undefined;
+        break;
+      case 'opaque':
+        swapValue = swapView.swapView.value.swap?.body?.[property as keyof SwapBody] as
+          | SwapBodyCombined[K]
+          | undefined;
+        break;
+      default:
+        return undefined;
+    }
 
-export const getDelta1IFromSwapView = getSwapPlaintext.pipe(getDelta1I);
-export const getDelta2IFromSwapView = getSwapPlaintext.pipe(getDelta2I);
+    if (swapValue === undefined) {
+      return undefined;
+    }
 
+    return swapValue;
+  });
+};
+
+// Generic getter function for 'delta1I'
+export const getDelta1IFromSwapView = createSwapGetter<'delta1I'>('delta1I');
+
+// Generic getter function for 'delta2I'
+export const getDelta2IFromSwapView = createSwapGetter<'delta2I'>('delta2I');
+
+// Generic getter function for 'claimFee'
+export const getClaimFeeFromSwapView = createSwapGetter<'claimFee'>('claimFee');
+
+// Generic getter function for 'Asset1Metadata'
 export const getAsset1Metadata = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'visible' ? swapView.swapView.value.asset1Metadata : undefined,
+  swapView?.swapView.case === 'visible' || swapView?.swapView.case === 'opaque'
+    ? swapView.swapView.value.asset1Metadata
+    : undefined,
 );
 
+// Generic getter function for 'Asset2Metadata'
 export const getAsset2Metadata = createGetter((swapView?: SwapView) =>
-  swapView?.swapView.case === 'visible' ? swapView.swapView.value.asset2Metadata : undefined,
+  swapView?.swapView.case === 'visible' || swapView?.swapView.case === 'opaque'
+    ? swapView.swapView.value.asset2Metadata
+    : undefined,
 );
 
+// Getter function for 'ClaimTx'
 export const getClaimTx = createGetter((swapView?: SwapView) =>
   swapView?.swapView.case === 'visible' ? swapView.swapView.value.claimTx : undefined,
 );

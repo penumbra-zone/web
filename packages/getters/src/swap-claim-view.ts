@@ -16,3 +16,9 @@ export const getOutput2 = createGetter((swapClaimView?: SwapClaimView) =>
 
 export const getOutput1ValueOptional = getOutput1.optional().pipe(getValue);
 export const getOutput2ValueOptional = getOutput2.optional().pipe(getValue);
+
+export const getSwapClaimFee = createGetter((swapClaimView?: SwapClaimView) =>
+  swapClaimView?.swapClaimView.case === 'visible' || swapClaimView?.swapClaimView.case === 'opaque'
+    ? swapClaimView.swapClaimView.value.swapClaim?.body?.fee
+    : undefined,
+);

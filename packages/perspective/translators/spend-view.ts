@@ -2,7 +2,9 @@ import { SpendView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { Translator } from './types';
 
 export const asOpaqueSpendView: Translator<SpendView> = spendView => {
-  if (spendView?.spendView.case === 'opaque') return spendView;
+  if (spendView?.spendView.case === 'opaque') {
+    return spendView;
+  }
 
   return new SpendView({
     spendView: {

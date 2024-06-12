@@ -8,7 +8,6 @@ export default defineConfig({
       entry: {
         classification: './transaction/classification.ts',
         classify: './transaction/classify.ts',
-        perspective: './transaction/perspective.ts',
         'action-view': './translators/action-view.ts',
         'address-view': './translators/address-view.ts',
         'memo-view': './translators/memo-view.ts',
