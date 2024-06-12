@@ -21,7 +21,8 @@ export const SetNumerairesPage = () => {
         </CardHeader>
 
         <CardDescription>
-          Prax has a shortcut for your portfolio page. You can always change this later
+          Prax does not use third-party price providers for privacy reasons, instead Prax indexes
+          asset prices locally by selected denomination
         </CardDescription>
 
         <form className='mt-6' onSubmit={onSubmit}>
