@@ -21,17 +21,6 @@ describe('Dutch auction slice', () => {
 
   describe('estimate()', () => {
     beforeEach(() => {
-      mockSimulationClient.simulateTrade.mockResolvedValue({
-        output: {
-          output: {
-            amount: {
-              hi: 0n,
-              lo: 222n,
-            },
-          },
-        },
-      });
-
       useStore.setState(state => ({
         ...state,
         swap: {
@@ -61,20 +50,68 @@ describe('Dutch auction slice', () => {
             denomUnits: [{ denom: 'ugm' }, { denom: 'gm', exponent: 6 }],
             penumbraAssetId: { inner: new Uint8Array([2]) },
           }),
+
+          dutchAuction: {
+            ...state.swap.dutchAuction,
+            minOutput: '1.234',
+            maxOutput: '5.678',
+          },
         },
       }));
     });
 
-    it('sets `maxOutput` to twice the estimated market price', async () => {
-      await useStore.getState().swap.dutchAuction.estimate();
+    describe('when the estimation is a non-zero amount', () => {
+      beforeEach(() => {
+        mockSimulationClient.simulateTrade.mockResolvedValue({
+          output: {
+            output: {
+              amount: {
+                hi: 0n,
+                lo: 222n,
+              },
+            },
+          },
+        });
+      });
 
-      expect(useStore.getState().swap.dutchAuction.maxOutput).toEqual('0.000444');
+      it('sets `maxOutput` to twice the estimated market price', async () => {
+        await useStore.getState().swap.dutchAuction.estimate();
+
+        expect(useStore.getState().swap.dutchAuction.maxOutput).toEqual('0.000444');
+      });
+
+      it('sets `minOutput` to half the estimated market price', async () => {
+        await useStore.getState().swap.dutchAuction.estimate();
+
+        expect(useStore.getState().swap.dutchAuction.minOutput).toEqual('0.000111');
+      });
     });
 
-    it('sets `minOutput` to half the estimated market price', async () => {
-      await useStore.getState().swap.dutchAuction.estimate();
+    describe('when the estimation is zero (because there is no liquidity)', () => {
+      beforeEach(() => {
+        mockSimulationClient.simulateTrade.mockResolvedValue({
+          output: {
+            output: {
+              amount: {
+                hi: 0n,
+                lo: 0n,
+              },
+            },
+          },
+        });
+      });
 
-      expect(useStore.getState().swap.dutchAuction.minOutput).toEqual('0.000111');
+      it('leaves `maxOutput` at its previous value', async () => {
+        await useStore.getState().swap.dutchAuction.estimate();
+
+        expect(useStore.getState().swap.dutchAuction.maxOutput).toEqual('5.678');
+      });
+
+      it('leaves `minOutput` at its previous value', async () => {
+        await useStore.getState().swap.dutchAuction.estimate();
+
+        expect(useStore.getState().swap.dutchAuction.minOutput).toEqual('1.234');
+      });
     });
   });
 });

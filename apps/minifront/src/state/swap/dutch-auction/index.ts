@@ -4,7 +4,7 @@ import { planBuildBroadcast } from '../../helpers';
 import { assembleScheduleRequest } from './assemble-schedule-request';
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { sendSimulateTradeRequest } from '../helpers';
-import { fromBaseUnitAmount, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
+import { fromBaseUnitAmount, isZero, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
@@ -155,16 +155,21 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
         const exponent = getDisplayDenomExponent(assetOut);
 
         set(({ swap }) => {
-          swap.dutchAuction.maxOutput = fromBaseUnitAmount(
-            multiplyAmountByNumber(estimatedOutputAmount, MAX_OUTPUT_ESTIMATE_MULTIPLIER),
-            exponent,
-          ).toString();
-          swap.dutchAuction.minOutput = fromBaseUnitAmount(
-            multiplyAmountByNumber(estimatedOutputAmount, MIN_OUTPUT_ESTIMATE_MULTIPLIER),
-            exponent,
-          ).toString();
           swap.dutchAuction.estimatedOutput = estimatedOutputAmount;
         });
+
+        if (!isZero(estimatedOutputAmount)) {
+          set(({ swap }) => {
+            swap.dutchAuction.maxOutput = fromBaseUnitAmount(
+              multiplyAmountByNumber(estimatedOutputAmount, MAX_OUTPUT_ESTIMATE_MULTIPLIER),
+              exponent,
+            ).toString();
+            swap.dutchAuction.minOutput = fromBaseUnitAmount(
+              multiplyAmountByNumber(estimatedOutputAmount, MIN_OUTPUT_ESTIMATE_MULTIPLIER),
+              exponent,
+            ).toString();
+          });
+        }
       }
     } catch (e) {
       errorToast(e, 'Error estimating swap').render();
