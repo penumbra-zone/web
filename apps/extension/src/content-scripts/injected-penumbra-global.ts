@@ -34,7 +34,7 @@ class PraxInjection {
   private static singleton?: PraxInjection = new PraxInjection();
 
   public static get penumbra() {
-    return PraxInjection.singleton!.injection;
+    return new PraxInjection().injection;
   }
 
   private manifestUrl = `${PRAX_ORIGIN}/manifest.json`;
@@ -80,7 +80,14 @@ class PraxInjection {
   private state(): boolean | undefined {
     if (this.disconnectState) return false;
     if (this.requestState === 'rejected') return false;
-    return this.connectState && this.connectState === 'fulfilled';
+    switch (this.connectState) {
+      case 'rejected':
+        return false;
+      case 'fulfilled':
+        return true;
+      case undefined:
+        return undefined;
+    }
   }
 
   // this listener will resolve the connection promise AND request promise when
@@ -122,13 +129,14 @@ class PraxInjection {
   // 3. request
   private get connectionFailure() {
     // Promise.race checks in order of the list index. so if more than one
-    // promise is settled, Promise.race responds with the earlier index
+    // promise in the list is already settled, it responds with the result of
+    // the earlier index
     return Promise.race([
-      // rejects with disconnect success, rejects with disconnect failure
+      // rejects with disconnect failure, or 'Disconnected' if disconnect was successful
       this._disconnect.promise.then(() => Promise.reject(Error('Disconnected'))),
-      // ignores connection success, rejects with connection failure
+      // rejects with connect failure, never resolves
       this._connect.promise.then(() => new Promise<never>(() => null)),
-      // rejects with previous success, rejects with previous failure
+      // rejects with previous failure, or 'Disconnected' if request was successful
       this._request.promise.then(() => Promise.reject(Error('Disconnected'))),
       // this should be unreachable
       Promise.reject(Error('Unknown failure')),
@@ -189,13 +197,15 @@ class PraxInjection {
   }
 }
 
-// if the global isn't present, create it.
-if (!window[PenumbraSymbol])
-  Object.defineProperty(window, PenumbraSymbol, { value: {}, writable: false });
-
-// reveal
-Object.defineProperty(window[PenumbraSymbol], PRAX_ORIGIN, {
-  value: PraxInjection.penumbra,
-  writable: false,
-  enumerable: true,
-});
+// inject prax
+Object.defineProperty(
+  window[PenumbraSymbol] ??
+    // create the global if not present
+    Object.defineProperty(window, PenumbraSymbol, { value: {}, writable: false })[PenumbraSymbol],
+  PRAX_ORIGIN,
+  {
+    value: PraxInjection.penumbra,
+    writable: false,
+    enumerable: true,
+  },
+);

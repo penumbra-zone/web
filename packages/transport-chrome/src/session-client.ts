@@ -24,32 +24,32 @@ import { ChannelLabel, nameConnection } from './channel-names';
 import { isTransportInitChannel, TransportInitChannel } from './message';
 import { PortStreamSink, PortStreamSource } from './stream';
 
-const localErrorJson = (e: unknown, m?: unknown) =>
-  e instanceof Error
+const localErrorJson = (err: unknown, relevantMessage?: unknown) =>
+  err instanceof Error
     ? {
-        message: e.message,
+        message: err.message,
         details: [
           {
-            type: e.name,
-            value: e.cause,
+            type: err.name,
+            value: err.cause,
           },
-          m,
+          relevantMessage,
         ],
       }
     : {
-        message: String(e),
+        message: String(err),
         details: [
           {
             type: String(
-              typeof e === 'function'
-                ? e.name
-                : typeof e === 'object'
-                  ? (Object.getPrototypeOf(e) as unknown)?.constructor?.name ?? String(e)
-                  : typeof e,
+              typeof err === 'function'
+                ? err.name
+                : typeof err === 'object'
+                  ? (Object.getPrototypeOf(err) as unknown)?.constructor?.name ?? String(err)
+                  : typeof err,
             ),
-            value: e,
+            value: err,
           },
-          m,
+          relevantMessage,
         ],
       };
 
@@ -108,15 +108,15 @@ export class CRSessionClient {
     }
   };
 
-  private serviceListener = (m: unknown) => {
+  private serviceListener = (msg: unknown) => {
     try {
-      if (m === true) this.clientPort.postMessage(true);
-      else if (isTransportError(m) || isTransportMessage(m)) this.clientPort.postMessage(m);
-      else if (isTransportInitChannel(m))
-        this.clientPort.postMessage(...this.acceptChannelStreamResponse(m));
-      else console.warn('Unknown item from service', m);
+      if (msg === true) this.clientPort.postMessage(true);
+      else if (isTransportError(msg) || isTransportMessage(msg)) this.clientPort.postMessage(msg);
+      else if (isTransportInitChannel(msg))
+        this.clientPort.postMessage(...this.acceptChannelStreamResponse(msg));
+      else console.warn('Unknown item from service', msg);
     } catch (e) {
-      this.clientPort.postMessage({ error: localErrorJson(e, m) });
+      this.clientPort.postMessage({ error: localErrorJson(e, msg) });
     }
   };
 

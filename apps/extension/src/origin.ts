@@ -22,16 +22,14 @@ export const removeOrigin = async (sender: chrome.runtime.MessageSender): Promis
 
   const urlOrigin = new URL(senderOrigin).origin;
   const knownSites = await localExtStorage.get('knownSites');
-  const sansDeletant = knownSites.filter(site => site.origin !== urlOrigin);
+  const knownSitesWithoutDeletedSite = knownSites.filter(site => site.origin !== urlOrigin);
 
-  if (sansDeletant.length === knownSites.length) {
+  if (knownSitesWithoutDeletedSite.length === knownSites.length) {
     console.warn('No site record found:', urlOrigin);
     return;
   }
 
-  if (!sansDeletant.length) console.warn('No site records remaining:', sansDeletant);
-
-  void localExtStorage.set('knownSites', sansDeletant);
+  void localExtStorage.set('knownSites', knownSitesWithoutDeletedSite);
 };
 
 export const approveOrigin = async ({
