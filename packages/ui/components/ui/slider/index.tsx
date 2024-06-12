@@ -11,7 +11,7 @@ interface BaseProps {
    */
   value: number[];
   onValueChange: (value: number[]) => void;
-  thumbTooltip?: boolean | ((value?: number) => string);
+  thumbTooltip?: boolean | ((value: number) => string);
 }
 
 // When `segmented` is `true`, the other props are required.

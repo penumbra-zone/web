@@ -7,6 +7,9 @@ const meta: Meta<typeof Slider> = {
   component: Slider,
   title: 'Slider',
   tags: ['autodocs'],
+  argTypes: {
+    thumbTooltip: { control: false },
+  },
 };
 export default meta;
 

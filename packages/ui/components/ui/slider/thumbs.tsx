@@ -13,8 +13,8 @@ const ThumbWithTooltip = ({
   value,
   thumbTooltip,
 }: {
-  value?: number;
-  thumbTooltip?: boolean | ((value?: number) => string);
+  value: number;
+  thumbTooltip?: boolean | ((value: number) => string);
 }) => {
   const triggerRef = useRef<HTMLButtonElement | null>(null);
 
@@ -57,17 +57,12 @@ export const Thumbs = ({
   thumbTooltip,
 }: {
   value: number[];
-  thumbTooltip?: boolean | ((value?: number) => string);
-}) => (
-  <>
-    {Array(value.length)
-      .fill(null)
-      .map((_, index) =>
-        thumbTooltip ? (
-          <ThumbWithTooltip key={index} value={value[index]} thumbTooltip={thumbTooltip} />
-        ) : (
-          <ThumbBase key={index} />
-        ),
-      )}
-  </>
-);
+  thumbTooltip?: boolean | ((value: number) => string);
+}) =>
+  value.map((thisValue, index) =>
+    thumbTooltip ? (
+      <ThumbWithTooltip key={index} value={thisValue} thumbTooltip={thumbTooltip} />
+    ) : (
+      <ThumbBase key={index} />
+    ),
+  );
