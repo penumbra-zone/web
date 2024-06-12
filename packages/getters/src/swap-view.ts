@@ -1,4 +1,8 @@
-import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
+import {
+  SwapBody,
+  SwapPlaintext,
+  SwapView,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { createGetter } from './utils/create-getter';
 
 // Generic getter function for 'Output1'
@@ -25,56 +29,48 @@ export const getOutput2Value = createGetter((swapView?: SwapView) => {
   }
 });
 
-// Generic getter function for 'SwapPlaintext' and 'SwapBody' within SwapView
-// const createSwapGetter = <T, K extends keyof T>(property: K) => {
-//   return createGetter((swapView?: SwapView) => {
-//     switch (swapView?.swapView.case) {
-//       case 'visible':
-//         return swapView.swapView.value.swapPlaintext?.[property as keyof SwapPlaintext] as T[K];
-//       case 'opaque':
-//         return swapView.swapView.value.swap?.body?.[property as keyof SwapBody] as T[K];
-//       default:
-//         return undefined;
-//     }
-//   });
-// };
+// Generic getter function that returns the value of a specified property from either 'swapPlaintext' or 'swapBody'.
+// This pattern utilizes parameterized types, 'T', to handle property access, 'K' within different nested objects based on the case
+// of 'SwapView'. These parameterized types can represent an intersection of multiple types.
+const createSwapGetter = <T, K extends keyof T>(property: K) => {
+  return createGetter((swapView?: SwapView) => {
+    let swapValue: T[K] | undefined;
 
-// export const getDelta1IFromSwapViewGeneric = createSwapGetter<SwapPlaintext & SwapBody, 'delta1I'>(
-//   'delta1I',
-// );
+    switch (swapView?.swapView.case) {
+      case 'visible':
+        swapValue = swapView.swapView.value.swapPlaintext?.[
+          property as keyof SwapPlaintext
+        ] as T[K];
+        break;
+      case 'opaque':
+        swapValue = swapView.swapView.value.swap?.body?.[property as keyof SwapBody] as T[K];
+        break;
+      default:
+        return undefined;
+    }
 
-export const getDelta1IFromSwapView = createGetter((swapView?: SwapView) => {
-  switch (swapView?.swapView.case) {
-    case 'visible':
-      return swapView.swapView.value.swapPlaintext?.delta1I;
-    case 'opaque':
-      return swapView.swapView.value.swap?.body?.delta1I;
-    default:
+    if (swapValue === undefined) {
       return undefined;
-  }
-});
+    }
 
-export const getDelta2IFromSwapView = createGetter((swapView?: SwapView) => {
-  switch (swapView?.swapView.case) {
-    case 'visible':
-      return swapView.swapView.value.swapPlaintext?.delta2I;
-    case 'opaque':
-      return swapView.swapView.value.swap?.body?.delta2I;
-    default:
-      return undefined;
-  }
-});
+    return swapValue;
+  });
+};
 
-export const getClaimFeeFromSwapView = createGetter((swapView?: SwapView) => {
-  switch (swapView?.swapView.case) {
-    case 'visible':
-      return swapView.swapView.value.swapPlaintext?.claimFee;
-    // case 'opaque':
-    // return swapView.swapView.value.swap?.body.feeCommitment;
-    default:
-      return undefined;
-  }
-});
+// Generic getter function for 'delta1I'
+export const getDelta1IFromSwapView = createSwapGetter<SwapPlaintext & SwapBody, 'delta1I'>(
+  'delta1I',
+);
+
+// Generic getter function for 'delta2I'
+export const getDelta2IFromSwapView = createSwapGetter<SwapPlaintext & SwapBody, 'delta2I'>(
+  'delta2I',
+);
+
+// Generic getter function for 'claimFee'
+export const getClaimFeeFromSwapView = createSwapGetter<SwapPlaintext & SwapBody, 'claimFee'>(
+  'claimFee',
+);
 
 // Generic getter function for 'Asset1Metadata'
 export const getAsset1Metadata = createGetter((swapView?: SwapView) =>

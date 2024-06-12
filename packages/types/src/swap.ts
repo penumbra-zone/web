@@ -69,8 +69,8 @@ export const getOneWaySwapValues = (
     );
   }
 
-  const output1 = getOutput1Value(swapView);
-  const output2 = getOutput2Value(swapView);
+  const output1 = getOutput1Value.optional()(swapView);
+  const output2 = getOutput2Value.optional()(swapView);
 
   const delta1I = getDelta1IFromSwapView(swapView);
   const delta2I = getDelta2IFromSwapView(swapView);
@@ -87,8 +87,6 @@ export const getOneWaySwapValues = (
 
   let output = isZero(delta2I) ? output2 : output1;
 
-  // TODO: Why is this needed?
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!output) {
     output = new ValueView({
       valueView: {
