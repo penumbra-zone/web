@@ -21,7 +21,7 @@ export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
         ))}
       </ViewSection>
       <ViewSection heading='Parameters'>
-        <ViewBox label='Fee' visibleContent={<div className='font-mono'>{fee} upenumbra</div>} />
+        <ViewBox label='Fee' visibleContent={<div className='font-mono'>{fee} UM</div>} />
         <ViewBox
           label='Chain ID'
           visibleContent={

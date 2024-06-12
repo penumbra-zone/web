@@ -65,6 +65,8 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { PartialMessage } from '@bufbuild/protobuf';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { addLoHi } from '@penumbra-zone/types/lo-hi';
 
 interface IndexedDbProps {
   idbVersion: number; // Incremented during schema changes
@@ -276,6 +278,15 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async *iterateSpendableNotes() {
+    yield* new ReadableStream(
+      new IdbCursorSource(
+        this.db.transaction('SPENDABLE_NOTES').store.openCursor(),
+        SpendableNoteRecord,
+      ),
+    );
+  }
+
+  async *iterateSpendableStakingNotes() {
     yield* new ReadableStream(
       new IdbCursorSource(
         this.db.transaction('SPENDABLE_NOTES').store.openCursor(),
@@ -785,11 +796,43 @@ export class IndexedDb implements IndexedDbInterface {
     };
   }
 
-  async hasNativeAssetBalance(): Promise<boolean> {
-    const key = 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=';
-    const jsonArray = await this.db.getAllFromIndex('SPENDABLE_NOTES', 'assetId', key);
-    if (jsonArray.length === 0) return false;
+  async fetchStakingTokenId(): Promise<AssetId> {
+    const registryClient = new ChainRegistryClient();
+    const registry = registryClient.get(this.chainId);
+    const stakingTokenMetadata = registry.getMetadata(registry.stakingAssetId);
+    const stakingToken = getAssetId(stakingTokenMetadata);
 
-    return true;
+    return stakingToken;
+  }
+
+  async hasStakingAssetBalance(assetId: AssetId): Promise<boolean> {
+    const spendableUMNotes = await this.db.getAllFromIndex(
+      'SPENDABLE_NOTES',
+      'assetId',
+      uint8ArrayToBase64(assetId.inner),
+    );
+
+    // Iterate over the spendable UM notes, and acrue balance for unspent notesz
+    let stakingTokenBalance = new Amount();
+    for (const note of spendableUMNotes) {
+      let umNote = note as unknown as SpendableNoteRecord;
+      if (umNote.heightSpent == undefined) {
+        const newAmount = addLoHi(
+          { lo: stakingTokenBalance.lo, hi: stakingTokenBalance.hi },
+          {
+            lo: BigInt(umNote.note?.value?.amount?.lo ?? 0n),
+            hi: BigInt(umNote.note?.value?.amount?.hi ?? 0n),
+          },
+        );
+        stakingTokenBalance.lo = newAmount.lo;
+        stakingTokenBalance.hi = newAmount.hi;
+      }
+    }
+
+    if (stakingTokenBalance.lo > 0) {
+      return true;
+    }
+
+    return false;
   }
 }

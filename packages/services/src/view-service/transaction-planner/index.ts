@@ -7,19 +7,20 @@ import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_
 import { fvkCtx } from '../../ctx/full-viewing-key';
 import { extractAltFee } from '../fees';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
-  // Query IndexedDB directly to check for the existence of spendable 'UM'
-  // notes (native asset balance)
-  const nativeToken = await indexedDb.hasNativeAssetBalance();
+  // Retrieve the staking token from asset registry
+  const stakingTokenId = await indexedDb.fetchStakingTokenId();
+
+  // Query IndexedDB directly to check for the existence of staking token
+  const nativeToken = await indexedDb.hasStakingAssetBalance(stakingTokenId);
 
   // Initialize the gas fee token using an native staking token's asset ID
   let gasFeeToken = new AssetId({
-    inner: new Uint8Array(base64ToUint8Array('KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=')),
+    inner: stakingTokenId.inner,
   });
 
   // If there is no native token balance, extract and use an alternate gas fee token

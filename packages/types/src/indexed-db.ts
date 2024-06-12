@@ -142,7 +142,9 @@ export interface IndexedDbInterface {
     auctionId: AuctionId,
   ): Promise<{ input: Value; output: Value } | undefined>;
 
-  hasNativeAssetBalance(): Promise<boolean>;
+  hasStakingAssetBalance(assetId: AssetId): Promise<boolean>;
+
+  fetchStakingTokenId(): Promise<AssetId>;
 }
 
 export interface PenumbraDb extends DBSchema {
