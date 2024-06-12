@@ -12,6 +12,7 @@ import {
   HStack,
   Input,
   Button,
+  ButtonGroup
 } from "@chakra-ui/react";
 import { useSearchParams } from "next/navigation";
 import {
@@ -22,6 +23,7 @@ import { LoadingSpinner } from "../../components/util/loadingSpinner";
 import { base64ToUint8Array } from "@/utils/math/base64";
 import { joinLoHi, splitLoHi } from "@/utils/math/hiLo";
 import DepthChart from "@/components/charts/depthChart";
+import OHLCChart from "@/components/charts/ohlcChart";
 import BuySellChart from "@/components/charts/buySellChart";
 import { Token } from "@/utils/types/token";
 import { fetchAllTokenAssets } from "@/utils/token/tokenFetch";
@@ -36,6 +38,7 @@ export default function TradingPairs() {
   const [isChartLoading, setIsChartLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
   const searchParams = useSearchParams();
+  const [activeChart, setActiveChart] = useState<"Depth" | "OHLC" >("Depth");
 
   // Pairs are in the form of baseToken:quoteToken
   const router = useRouter();
@@ -599,8 +602,42 @@ export default function TradingPairs() {
               height="100%"
             >
               <HStack spacing={8} width="100%" height="100%">
-                <VStack flex={1} height="100%">
+                <VStack flex={1} height="100%" position="relative">
                   <>
+                    <ButtonGroup
+                      size="xs"
+                      isAttached
+                      alignContent={"left"}
+                      position={"absolute"}
+                      top={-3}
+                      left={-1}
+                      zIndex={1}
+                      borderRadius={10}
+                      outline={"2px solid var(--complimentary-background)"}
+                    >
+                      <Button
+                        borderRadius={10}
+                        onClick={() => setActiveChart("Depth")}
+                        colorScheme={
+                          activeChart === "Depth"
+                            ? "purple"
+                            : "var(--charcoal-tertiary-blended)"
+                        }
+                      >
+                        Depth
+                      </Button>
+                      <Button
+                        borderRadius={10}
+                        onClick={() => setActiveChart("OHLC")}
+                        colorScheme={
+                          activeChart === "OHLC"
+                            ? "purple"
+                            : "var(--charcoal-tertiary-blended)"
+                        }
+                      >
+                        Candlestick
+                      </Button>
+                    </ButtonGroup>
                     <HStack paddingBottom={"2px"}>
                       <Text
                         fontFamily="monospace"
@@ -609,23 +646,29 @@ export default function TradingPairs() {
                       >
                         {`${asset1Token!.display}`}
                       </Text>
-                      <Text
-                        fontSize={"sm"}
-                        fontFamily="monospace"
-                      >
+                      <Text fontSize={"sm"} fontFamily="monospace">
                         {` / ${asset2Token!.display}`}
                       </Text>
                     </HStack>
-
-                    {/* Note the reversal of names here since buy and sell side is inverted at this stage (i.e. sell side == buy demand side) */}
-                    <DepthChart
-                      buySideData={depthChartMultiHopAsset1SellPoints}
-                      sellSideData={depthChartMultiHopAsset1BuyPoints}
-                      buySideSingleHopData={depthChartSingleHopAsset1SellPoints}
-                      sellSideSingleHopData={depthChartSingleHopAsset1BuyPoints}
-                      asset1Token={asset1Token!}
-                      asset2Token={asset2Token!}
-                    />
+                    {activeChart === "OHLC" ? (
+                      <OHLCChart
+                        asset1Token={asset1Token!}
+                        asset2Token={asset2Token!}
+                      />
+                    ) : (
+                      <DepthChart
+                        buySideData={depthChartMultiHopAsset1SellPoints}
+                        sellSideData={depthChartMultiHopAsset1BuyPoints}
+                        buySideSingleHopData={
+                          depthChartSingleHopAsset1SellPoints
+                        }
+                        sellSideSingleHopData={
+                          depthChartSingleHopAsset1BuyPoints
+                        }
+                        asset1Token={asset1Token!}
+                        asset2Token={asset2Token!}
+                      />
+                    )}
                   </>
                 </VStack>
                 <VStack width="60em" height="650px">

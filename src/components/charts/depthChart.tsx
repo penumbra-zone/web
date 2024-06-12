@@ -1,3 +1,5 @@
+// src/components/charts/depthChart.tsx
+
 import React, { useRef, useEffect, useState } from "react";
 import {
   ChartEvent,
@@ -60,10 +62,14 @@ const DepthChart = ({
     midMarketPrice = (sellSideData[0].x + buySideData[0].x) / 2;
   } else if (sellSideData.length > 0 && buySideSingleHopData.length > 0) {
     midMarketPrice = (sellSideData[0].x + buySideSingleHopData[0].x) / 2;
-  } else if (sellSideSingleHopData.length > 0 && buySideData.length > 0) {  
+  } else if (sellSideSingleHopData.length > 0 && buySideData.length > 0) {
     midMarketPrice = (sellSideSingleHopData[0].x + buySideData[0].x) / 2;
-  } else if (sellSideSingleHopData.length > 0 && buySideSingleHopData.length > 0) {
-    midMarketPrice = (sellSideSingleHopData[0].x + buySideSingleHopData[0].x) / 2;
+  } else if (
+    sellSideSingleHopData.length > 0 &&
+    buySideSingleHopData.length > 0
+  ) {
+    midMarketPrice =
+      (sellSideSingleHopData[0].x + buySideSingleHopData[0].x) / 2;
   } else if (sellSideData.length > 0) {
     midMarketPrice = sellSideData[0].x;
   } else if (buySideData.length > 0) {
@@ -74,7 +80,7 @@ const DepthChart = ({
     midMarketPrice = buySideSingleHopData[0].x;
   } else {
     midMarketPrice = 0;
-    console.log("No data for this pair")
+    console.log("No data for this pair");
   }
 
   console.log("midMarketPrice", midMarketPrice);
@@ -91,7 +97,7 @@ const DepthChart = ({
     );
 
     // This will hold the modified single hop data
-    const newSingleHopData:{ x: number; y: number }[] = [];
+    const newSingleHopData: { x: number; y: number }[] = [];
 
     // Track the last y-value seen; default to 0 if no points have been processed
     let lastKnownY = 0;
@@ -102,7 +108,10 @@ const DepthChart = ({
         newSingleHopData.push({ x: dataPoint.x, y: lastKnownY });
       } else {
         // If the single hop data has the x value, add it with the y value
-        newSingleHopData.push({ x: dataPoint.x, y: singleHopMap.get(dataPoint.x)! });
+        newSingleHopData.push({
+          x: dataPoint.x,
+          y: singleHopMap.get(dataPoint.x)!,
+        });
         lastKnownY = singleHopMap.get(dataPoint.x)!;
       }
     });
@@ -110,14 +119,8 @@ const DepthChart = ({
     return newSingleHopData;
   }
 
-  buySideSingleHopData = synchronizeData(
-    buySideData,
-    buySideSingleHopData
-  );
-  sellSideSingleHopData = synchronizeData(
-    sellSideData,
-    sellSideSingleHopData
-  );
+  buySideSingleHopData = synchronizeData(buySideData, buySideSingleHopData);
+  sellSideSingleHopData = synchronizeData(sellSideData, sellSideSingleHopData);
 
   const chartRef = useRef<any>();
 
@@ -632,6 +635,9 @@ const DepthChart = ({
 
   return (
     <>
+      {/* 
+        // ! Width should be the same as that of the OHLCChart
+        */}
       <VStack height="600px" width={"60em"}>
         <div
           style={{ height: "100%", width: "100%" }}
