@@ -52,6 +52,7 @@ interface PropsWithoutSegmented extends BaseProps {
  *   value={value}
  *   onValueChange={onValueChange}
  *   segmented // to show gaps in the slider for each option
+ *   thumbTooltip={value => `Current value: ${value}`}
  * />
  * ```
  */
