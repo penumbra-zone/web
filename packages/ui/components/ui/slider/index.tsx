@@ -11,6 +11,12 @@ interface BaseProps {
    */
   value: number[];
   onValueChange: (value: number[]) => void;
+  /**
+   * If set to `true`, will show a tooltip with the current value represented by
+   * the thumb that the user's mouse is over. If set to a function, will call
+   * that function with the current value, then use the returned string as the
+   * tooltip content.
+   */
   thumbTooltip?: boolean | ((value: number) => string);
 }
 
