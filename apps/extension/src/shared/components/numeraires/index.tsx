@@ -35,7 +35,7 @@ export const NumeraireForm = ({ isOnboarding }: { isOnboarding?: boolean }) => {
   return (
     <SelectList>
       {frontends.map(metadata => {
-        const icon = metadata?.images[0]?.png || metadata?.images[0]?.svg;
+        const icon = metadata.images[0]?.png || metadata.images[0]?.svg;
         return (
           <SelectList.Option
             key={bech32mAssetId(getAssetId(metadata))}

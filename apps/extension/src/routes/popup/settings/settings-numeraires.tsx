@@ -4,7 +4,7 @@ import { NumerairesGradientIcon } from '../../../icons/numeraires-gradient';
 
 export const SettingsNumeraires = () => {
   return (
-    <SettingsScreen title='Price indexer' IconComponent={NumerairesGradientIcon}>
+    <SettingsScreen title='Price denominations' IconComponent={NumerairesGradientIcon}>
       <NumeraireForm />
     </SettingsScreen>
   );

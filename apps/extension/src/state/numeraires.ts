@@ -3,6 +3,7 @@ import { AllSlices, SliceCreator } from '.';
 import { ExtensionStorage } from '../storage/base';
 import { Stringified } from '@penumbra-zone/types/jsonified';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import {ServicesMessage} from "../message/services";
 
 export interface NumerairesSlice {
   selectedNumeraires: Stringified<AssetId>[];
@@ -27,6 +28,7 @@ export const createNumerairesSlice =
       },
       saveNumeraires: () => {
         void local.set('numeraires', get().numeraires.selectedNumeraires);
+        void chrome.runtime.sendMessage(ServicesMessage.ChangeNumeraires);
       },
     };
   };
