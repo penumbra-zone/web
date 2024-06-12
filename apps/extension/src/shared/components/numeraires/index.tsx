@@ -2,13 +2,12 @@ import { SelectList } from '@penumbra-zone/ui/components/ui/select-list';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { useChainIdQuery } from '../../../hooks/chain-id';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { useIsFocus } from '../default-frontend-form/use-is-focus';
 
 const getNumeraireFromRegistry = (chainId: string): Metadata[] => {
   const registryClient = new ChainRegistryClient();
@@ -19,55 +18,53 @@ const getNumeraireFromRegistry = (chainId: string): Metadata[] => {
 const useNumerairesSelector = (state: AllSlices) => {
   return {
     selectedNumeraires: state.numeraires.selectedNumeraires,
-    setNumeraires: state.numeraires.addNumeraire,
+    selectNumeraire: state.numeraires.selectNumeraire,
+    saveNumeraires: state.numeraires.saveNumeraires,
   };
 };
 
 export const NumeraireForm = ({ isOnboarding }: { isOnboarding?: boolean }) => {
   const { chainId } = useChainIdQuery();
-  const { selectedNumeraires, setNumeraires } = useStoreShallow(useNumerairesSelector);
+  const { selectedNumeraires, selectNumeraire, saveNumeraires } =
+    useStoreShallow(useNumerairesSelector);
   const frontends = useMemo(
     () => getNumeraireFromRegistry(chainId || 'penumbra-testnet-deimos-8'),
     [chainId],
   );
 
-  const inputRef = useRef<HTMLInputElement>(null);
-  const isFocused = useIsFocus(inputRef);
-
   return (
     <SelectList>
-      {frontends.map(option => (
-        <SelectList.Option
-          key={bech32mAssetId(getAssetId(option))}
-          value={getAssetId(option).toJsonString()}
-          secondary={getAssetId(option).toJsonString()}
-          label={option.symbol}
-          isSelected={selectedNumeraires.includes(getAssetId(option).toJsonString())}
-          onSelect={setNumeraires}
-        />
-      ))}
+      {frontends.map(metadata => {
+        const icon = metadata?.images[0]?.png || metadata?.images[0]?.svg;
+        return (
+          <SelectList.Option
+            key={bech32mAssetId(getAssetId(metadata))}
+            value={getAssetId(metadata).toJsonString()}
+            label={metadata.symbol}
+            isSelected={selectedNumeraires.includes(getAssetId(metadata).toJsonString())}
+            onSelect={() => selectNumeraire(getAssetId(metadata).toJsonString())}
+            image={
+              !!icon && (
+                <img
+                  src={icon}
+                  className='size-full object-contain'
+                  alt='rpc endpoint brand image'
+                />
+              )
+            }
+          />
+        );
+      })}
 
-      <div key='add-to-list' className='my-1 text-right'>
-        <a
-          href='https://github.com/prax-wallet/registry'
-          target='_blank'
-          rel='noreferrer'
-          className='text-xs text-muted-foreground'
-        >
-          Add to this list
-        </a>
-      </div>
-
-      {(isOnboarding ?? isFocused) && (
-        <Button
-          key='save-button'
-          variant='gradient'
-          disabled={isOnboarding}
-          type={isOnboarding ? 'submit' : 'button'}
-        >
-          {isOnboarding ? 'Next' : 'Save'}
-        </Button>
-      )}
+      <Button
+        className='my-5'
+        key='save-button'
+        variant='gradient'
+        type={isOnboarding ? 'submit' : 'button'}
+        onClick={saveNumeraires}
+      >
+        {isOnboarding ? 'Next' : 'Save'}
+      </Button>
     </SelectList>
   );
 };

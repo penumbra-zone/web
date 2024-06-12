@@ -1,24 +1,32 @@
 import { LocalStorageState } from '../storage/types';
-import { ExtensionStorage } from '../storage/base';
 import { AllSlices, SliceCreator } from '.';
-import type { Stringified } from '@penumbra-zone/types/jsonified';
+import { ExtensionStorage } from '../storage/base';
+import { Stringified } from '@penumbra-zone/types/jsonified';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 export interface NumerairesSlice {
   selectedNumeraires: Stringified<AssetId>[];
-  addNumeraire: (numeraire: Stringified<AssetId>) => Promise<void>;
+  selectNumeraire: (numeraire: Stringified<AssetId>) => void;
+  saveNumeraires: () => void;
 }
 
 export const createNumerairesSlice =
   (local: ExtensionStorage<LocalStorageState>): SliceCreator<NumerairesSlice> =>
-  set => {
+  (set, get) => {
     return {
       selectedNumeraires: [],
-      addNumeraire: async (numeraire: Stringified<AssetId>) => {
+      selectNumeraire: (numeraire: Stringified<AssetId>) => {
         set(state => {
-          state.numeraires.selectedNumeraires.push(numeraire);
-          void local.set('numeraires', state.numeraires.selectedNumeraires);
+          const index = state.numeraires.selectedNumeraires.indexOf(numeraire);
+          if (index > -1) {
+            state.numeraires.selectedNumeraires.splice(index, 1);
+          } else {
+            state.numeraires.selectedNumeraires.push(numeraire);
+          }
         });
+      },
+      saveNumeraires: () => {
+        void local.set('numeraires', get().numeraires.selectedNumeraires);
       },
     };
   };
