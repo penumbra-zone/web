@@ -1,5 +1,32 @@
 # @penumbra-zone/ui
 
+## 3.4.0
+
+### Minor Changes
+
+- ab9d743: decouple service/rpc init
+- 282eabf: Click wallet for max amount
+- 0076a1d: add candlestick component
+- 24c8b4f: Add ActionDetails.TruncatedText component
+
+### Patch Changes
+
+- 6b06e04: Introduce ZQuery package and use throughout minifront
+- 24c8b4f: fix delegation prompting window being too wide
+- e7d7ffc: 'chrome-extension': Add an onboarding screen for the default frontend selection
+
+  '@penumbra-zone/storage': Remove the MINIFRONT_URL env usages
+
+  '@penumbra-zone/ui': Don't show the image in SelectList.Option component if it is not passed
+
+- Updated dependencies [ab9d743]
+- Updated dependencies [282eabf]
+- Updated dependencies [6b06e04]
+- Updated dependencies [c8e8d15]
+  - @penumbra-zone/types@7.1.0
+  - @penumbra-zone/getters@6.1.0
+  - @penumbra-zone/perspective@4.0.1
+
 ## 3.3.2
 
 ### Patch Changes

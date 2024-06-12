@@ -1,5 +1,26 @@
 # @penumbra-zone/query
 
+## 4.1.0
+
+### Minor Changes
+
+- ab9d743: decouple service/rpc init
+
+### Patch Changes
+
+- 6ee8222: prevent processing the same block twice
+- Updated dependencies [ab9d743]
+- Updated dependencies [282eabf]
+- Updated dependencies [81b9536]
+- Updated dependencies [14ba562]
+- Updated dependencies [6b06e04]
+- Updated dependencies [c8e8d15]
+  - @penumbra-zone/types@7.1.0
+  - @penumbra-zone/protobuf@4.1.0
+  - @penumbra-zone/wasm@7.1.0
+  - @penumbra-zone/getters@6.1.0
+  - @penumbra-zone/crypto-web@3.0.10
+
 ## 4.0.2
 
 ### Patch Changes

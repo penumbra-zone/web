@@ -1,5 +1,28 @@
 # @penumbra-zone/services
 
+## 3.3.0
+
+### Minor Changes
+
+- ab9d743: decouple service/rpc init
+
+### Patch Changes
+
+- adf3a28: Update to june 12 testnet registry
+- Updated dependencies [4012c48]
+- Updated dependencies [adf3a28]
+- Updated dependencies [ab9d743]
+- Updated dependencies [282eabf]
+- Updated dependencies [81b9536]
+- Updated dependencies [14ba562]
+- Updated dependencies [c8e8d15]
+- Updated dependencies [6ee8222]
+- Updated dependencies [e7d7ffc]
+  - @penumbra-zone/storage@4.0.0
+  - @penumbra-zone/query@4.1.0
+  - @penumbra-zone/types@7.1.0
+  - @penumbra-zone/wasm@7.1.0
+
 ## 3.2.3
 
 ### Patch Changes
