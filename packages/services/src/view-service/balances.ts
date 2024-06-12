@@ -30,10 +30,9 @@ import { addressByIndex } from './address-by-index';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { addLoHi } from '@penumbra-zone/types/lo-hi';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import { isZero, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { Stringified } from '@penumbra-zone/types/jsonified';
-import { dbCtx } from '../ctx/database';
+import { DatabaseCtx, dbCtx } from '../ctx/database';
 
 // Handles aggregating amounts and filtering by account number/asset id
 export const balances: Impl['balances'] = async function* (req, ctx) {
@@ -82,7 +81,7 @@ class BalancesAggregator {
 
   constructor(
     private readonly ctx: HandlerContext,
-    private readonly indexedDb: IndexedDbInterface,
+    private readonly indexedDb: DatabaseCtx,
     private readonly latestBlockHeight: bigint,
   ) {}
 

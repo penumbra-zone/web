@@ -9,7 +9,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { getValidatorInfo } from './get-validator-info';
 import { dbCtx } from '../ctx/database';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { DatabaseCtx } from '../ctx/database';
 
 describe('GetValidatorInfo request handler', () => {
   let mockIndexedDb: DbMock;
@@ -36,7 +36,7 @@ describe('GetValidatorInfo request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues().set(dbCtx, () =>
-        Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface),
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
 

@@ -13,7 +13,7 @@ import { DbMock, testFullViewingKey } from '../test-utils';
 import { transactionInfo } from './transaction-info';
 import { fvkCtx } from '../ctx/full-viewing-key';
 import { dbCtx } from '../ctx/database';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { DatabaseCtx } from '../ctx/database';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/transaction', () => ({
@@ -45,7 +45,7 @@ describe('TransactionInfo request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface))
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as DatabaseCtx))
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
 

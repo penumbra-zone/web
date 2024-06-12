@@ -8,7 +8,7 @@ import { ViewService } from '@penumbra-zone/protobuf';
 import { DbMock } from '../test-utils';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { fMDParameters } from './fmd-parameters';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { DatabaseCtx } from '../ctx/database';
 import { dbCtx } from '../ctx/database';
 
 describe('FmdParameters request handler', () => {
@@ -29,7 +29,7 @@ describe('FmdParameters request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues().set(dbCtx, () =>
-        Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface),
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
   });

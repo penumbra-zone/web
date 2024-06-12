@@ -9,7 +9,7 @@ export const statusStream: Impl['statusStream'] = async function* (_, ctx) {
 
   // This should stream forever unless cancelled.
   let remoteBlockHeight: bigint | undefined;
-  for await (const { value: syncHeight } of indexedDb.subscribe('FULL_SYNC_HEIGHT')) {
+  for await (const syncHeight of indexedDb.subscribeFullSyncHeight()) {
     remoteBlockHeight ??= await querier.tendermint.latestBlockHeight();
     if (remoteBlockHeight) {
       yield {

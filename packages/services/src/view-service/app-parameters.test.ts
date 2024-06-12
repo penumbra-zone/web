@@ -8,7 +8,7 @@ import { ViewService } from '@penumbra-zone/protobuf';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import { appParameters } from './app-parameters';
 import { DbMock } from '../test-utils';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { DatabaseCtx } from '../ctx/database';
 import { dbCtx } from '../ctx/database';
 
 describe('AppParameters request handler', () => {
@@ -41,7 +41,7 @@ describe('AppParameters request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues().set(dbCtx, () =>
-        Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface),
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
   });

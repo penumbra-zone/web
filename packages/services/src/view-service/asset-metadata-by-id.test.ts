@@ -13,7 +13,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { assetMetadataById } from './asset-metadata-by-id';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { DatabaseCtx } from '../ctx/database';
 import { dbCtx } from '../ctx/database';
 
 describe('AssetMetadataById request handler', () => {
@@ -49,7 +49,7 @@ describe('AssetMetadataById request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface))
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as DatabaseCtx))
         .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface)),
     });
 

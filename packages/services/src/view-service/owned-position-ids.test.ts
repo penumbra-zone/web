@@ -12,7 +12,7 @@ import { DbMock } from '../test-utils';
 import { PositionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { ownedPositionIds } from './owned-position-ids';
 import { dbCtx } from '../ctx/database';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { DatabaseCtx } from '../ctx/database';
 
 describe('OwnedPositionIds request handler', () => {
   let mockCtx: HandlerContext;
@@ -38,7 +38,7 @@ describe('OwnedPositionIds request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues().set(dbCtx, () =>
-        Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface),
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
 

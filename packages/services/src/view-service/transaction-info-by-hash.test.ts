@@ -16,7 +16,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { fvkCtx } from '../ctx/full-viewing-key';
 import { dbCtx } from '../ctx/database';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { DatabaseCtx } from '../ctx/database';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/transaction', () => ({
@@ -55,7 +55,7 @@ describe('TransactionInfoByHash request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface))
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as DatabaseCtx))
         .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });

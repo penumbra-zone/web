@@ -9,7 +9,7 @@ import {
   ValidatorState_ValidatorStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { PartialMessage } from '@bufbuild/protobuf';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { DatabaseCtx } from '../ctx/database';
 import { dbCtx } from '../ctx/database';
 
 describe('ValidatorInfo request handler', () => {
@@ -54,7 +54,7 @@ describe('ValidatorInfo request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues().set(dbCtx, () =>
-        Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface),
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
   });

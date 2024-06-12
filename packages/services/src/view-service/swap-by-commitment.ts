@@ -1,6 +1,5 @@
 import type { Impl } from '.';
 
-import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { dbCtx } from '../ctx/database';
 
@@ -14,8 +13,7 @@ export const swapByCommitment: Impl['swapByCommitment'] = async (req, ctx) => {
   if (swap) return { swap };
 
   if (req.awaitDetection) {
-    for await (const { value: swapJson } of indexedDb.subscribe('SWAPS')) {
-      const swap = SwapRecord.fromJson(swapJson);
+    for await (const swap of indexedDb.subscribeSwapRecords()) {
       if (swap.swapCommitment?.equals(swapCommitment)) return { swap };
     }
   }

@@ -13,7 +13,7 @@ import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { DbMock, MockServices, TendermintMock } from '../test-utils';
 import { dbCtx } from '../ctx/database';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { DatabaseCtx } from '../ctx/database';
 
 const mockSha256 = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/crypto-web/sha256', () => ({
@@ -66,7 +66,7 @@ describe('BroadcastTransaction request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface))
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as DatabaseCtx))
         .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface)),
     });
 

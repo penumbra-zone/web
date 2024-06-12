@@ -12,7 +12,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { assets } from './assets';
 import { DbMock } from '../test-utils';
 import { dbCtx } from '../ctx/database';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { DatabaseCtx } from '../ctx/database';
 
 describe('Assets request handler', () => {
   let req: AssetsRequest;
@@ -37,7 +37,7 @@ describe('Assets request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues().set(dbCtx, () =>
-        Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface),
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
 

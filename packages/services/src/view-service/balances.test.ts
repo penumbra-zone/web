@@ -31,7 +31,7 @@ import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 import { multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { fvkCtx } from '../ctx/full-viewing-key';
 import { dbCtx } from '../ctx/database';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { DatabaseCtx } from '../ctx/database';
 
 const assertOnlyUniqueAssetIds = (responses: BalancesResponse[], accountId: number) => {
   const account0Res = responses.filter(
@@ -94,7 +94,7 @@ describe('Balances request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface))
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as DatabaseCtx))
         .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });

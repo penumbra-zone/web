@@ -8,7 +8,7 @@ import { ViewService } from '@penumbra-zone/protobuf';
 import { DbMock } from '../test-utils';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { gasPrices } from './gas-prices';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { DatabaseCtx } from '../ctx/database';
 import { dbCtx } from '../ctx/database';
 
 describe('GasPrices request handler', () => {
@@ -29,7 +29,7 @@ describe('GasPrices request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues().set(dbCtx, () =>
-        Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface),
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
   });

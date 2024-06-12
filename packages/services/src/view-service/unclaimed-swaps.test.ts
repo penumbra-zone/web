@@ -12,7 +12,7 @@ import {
 import { DbMock } from '../test-utils';
 import { unclaimedSwaps } from './unclaimed-swaps';
 import { dbCtx } from '../ctx/database';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { DatabaseCtx } from '../ctx/database';
 
 describe('UnclaimedSwaps request handler', () => {
   let mockCtx: HandlerContext;
@@ -38,7 +38,7 @@ describe('UnclaimedSwaps request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues().set(dbCtx, () =>
-        Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface),
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
 

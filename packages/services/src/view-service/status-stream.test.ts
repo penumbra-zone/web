@@ -10,7 +10,7 @@ import { DbMock, MockServices, TendermintMock } from '../test-utils';
 import { statusStream } from './status-stream';
 import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { dbCtx } from '../ctx/database';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
+import { DatabaseCtx } from '../ctx/database';
 
 describe('Status stream request handler', () => {
   let mockServices: MockServices;
@@ -54,7 +54,7 @@ describe('Status stream request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as IndexedDbInterface))
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as DatabaseCtx))
         .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface)),
     });
 

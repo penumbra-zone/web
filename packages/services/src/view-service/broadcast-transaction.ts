@@ -1,9 +1,9 @@
 import type { Impl } from '.';
+
 import { servicesCtx } from '../ctx/prax';
 import { TransactionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/txhash/v1/txhash_pb';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
-import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import { dbCtx } from '../ctx/database';
 
@@ -15,7 +15,7 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async function
     throw new ConnectError('No transaction provided in request', Code.InvalidArgument);
 
   // start subscription early to prevent race condition
-  const subscription = indexedDb.subscribe('TRANSACTIONS');
+  const subscription = indexedDb.subscribeTransactionInfo();
 
   const id = new TransactionId({ inner: await sha256Hash(req.transaction.toBinary()) });
 
@@ -37,8 +37,7 @@ export const broadcastTransaction: Impl['broadcastTransaction'] = async function
   if (!req.awaitDetection) return;
 
   // Wait until DB records a new transaction with this id
-  for await (const { value } of subscription) {
-    const { height: detectionHeight, id: detectionId } = TransactionInfo.fromJson(value);
+  for await (const { height: detectionHeight, id: detectionId } of subscription) {
     if (id.equals(detectionId)) {
       yield {
         status: {
