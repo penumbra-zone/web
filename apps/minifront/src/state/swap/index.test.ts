@@ -1,6 +1,6 @@
 import { create, StoreApi, UseBoundStore } from 'zustand';
 import { AllSlices, initializeStore } from '..';
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, it, test } from 'vitest';
 import {
   Metadata,
   ValueView,
@@ -72,36 +72,98 @@ describe('Swap Slice', () => {
     expect(useStore.getState().swap.amount).toBe('22.44');
   });
 
-  test('changing assetIn clears simulation', () => {
-    expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeUndefined();
-    useStore.setState(state => {
-      state.swap.instantSwap.simulateSwapResult = {
-        output: new ValueView(),
-        unfilled: new ValueView(),
-        priceImpact: undefined,
-        metadataByAssetId: {},
-      };
-      return state;
+  describe('setAssetIn()', () => {
+    it('clears the simulation results', () => {
+      expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeUndefined();
+      useStore.setState(state => {
+        state.swap.instantSwap.simulateSwapResult = {
+          output: new ValueView(),
+          unfilled: new ValueView(),
+          priceImpact: undefined,
+          metadataByAssetId: {},
+        };
+        return state;
+      });
+      expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeDefined();
+      useStore.getState().swap.setAssetIn(new BalancesResponse());
+      expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeUndefined();
     });
-    expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeDefined();
-    useStore.getState().swap.setAssetIn({} as BalancesResponse);
-    expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeUndefined();
+
+    describe('when the new assetIn is the same asset as assetOut', () => {
+      it('changes the assetOut to the next available asset', () => {
+        const metadata1 = new Metadata({ penumbraAssetId: { inner: new Uint8Array([1]) } });
+        const metadata2 = new Metadata({ penumbraAssetId: { inner: new Uint8Array([2]) } });
+
+        const balancesResponseWithMetadata1 = new BalancesResponse({
+          balanceView: { valueView: { case: 'knownAssetId', value: { metadata: metadata1 } } },
+        });
+        const balancesResponseWithMetadata2 = new BalancesResponse({
+          balanceView: { valueView: { case: 'knownAssetId', value: { metadata: metadata2 } } },
+        });
+
+        useStore.setState(state => {
+          state.swap.swappableAssets = [metadata1, metadata2];
+          state.swap.balancesResponses = [
+            balancesResponseWithMetadata1,
+            balancesResponseWithMetadata2,
+          ];
+          state.swap.assetIn = balancesResponseWithMetadata1;
+          state.swap.assetOut = metadata2;
+          return state;
+        });
+
+        useStore.getState().swap.setAssetIn(balancesResponseWithMetadata2);
+
+        expect(useStore.getState().swap.assetOut).toEqual(metadata1);
+      });
+    });
   });
 
-  test('changing assetOut clears simulation', () => {
-    expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeUndefined();
-    useStore.setState(state => {
-      state.swap.instantSwap.simulateSwapResult = {
-        output: new ValueView(),
-        unfilled: new ValueView(),
-        priceImpact: undefined,
-        metadataByAssetId: {},
-      };
-      return state;
+  describe('setAssetOut', () => {
+    it('clears the simulation results', () => {
+      expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeUndefined();
+      useStore.setState(state => {
+        state.swap.instantSwap.simulateSwapResult = {
+          output: new ValueView(),
+          unfilled: new ValueView(),
+          priceImpact: undefined,
+          metadataByAssetId: {},
+        };
+        return state;
+      });
+      expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeDefined();
+      useStore.getState().swap.setAssetOut({} as Metadata);
+      expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeUndefined();
     });
-    expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeDefined();
-    useStore.getState().swap.setAssetOut({} as Metadata);
-    expect(useStore.getState().swap.instantSwap.simulateSwapResult).toBeUndefined();
+
+    describe('when the new assetOut is the same asset as assetIn', () => {
+      it('changes the assetIn to the next available asset', () => {
+        const metadata1 = new Metadata({ penumbraAssetId: { inner: new Uint8Array([1]) } });
+        const metadata2 = new Metadata({ penumbraAssetId: { inner: new Uint8Array([2]) } });
+
+        const balancesResponseWithMetadata1 = new BalancesResponse({
+          balanceView: { valueView: { case: 'knownAssetId', value: { metadata: metadata1 } } },
+        });
+        const balancesResponseWithMetadata2 = new BalancesResponse({
+          balanceView: { valueView: { case: 'knownAssetId', value: { metadata: metadata2 } } },
+        });
+
+        useStore.setState(state => {
+          state.swap.swappableAssets = [metadata1, metadata2];
+          state.swap.balancesResponses = [
+            balancesResponseWithMetadata1,
+            balancesResponseWithMetadata2,
+          ];
+          state.swap.assetIn = balancesResponseWithMetadata1;
+          state.swap.assetOut = metadata2;
+          return state;
+        });
+
+        useStore.getState().swap.setAssetOut(metadata2);
+
+        expect(useStore.getState().swap.assetIn).toEqual(balancesResponseWithMetadata1);
+      });
+    });
   });
 
   test('changing amount clears simulation', () => {
