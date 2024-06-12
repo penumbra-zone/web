@@ -111,7 +111,7 @@ export class Services implements ServicesInterface {
       querier,
       indexedDb,
       stakingTokenMetadata: registry.getMetadata(registry.stakingAssetId),
-      numeraires: numeraires.map(registry.getMetadata),
+      numeraires: numeraires,
     });
 
     return { viewServer, blockProcessor, indexedDb, querier };

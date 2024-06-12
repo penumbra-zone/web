@@ -2,8 +2,8 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@penumbra-zone/ui/
 import { FadeTransition } from '@penumbra-zone/ui/components/ui/fade-transition';
 import { usePageNav } from '../../../utils/navigate';
 import { PagePath } from '../paths';
-import { DefaultFrontendForm } from '../../../shared/components/default-frontend-form';
 import { FormEventHandler } from 'react';
+import { NumeraireForm } from '../../../shared/components/numeraires';
 
 export const SetNumerairesPage = () => {
   const navigate = usePageNav();
@@ -25,7 +25,7 @@ export const SetNumerairesPage = () => {
         </CardDescription>
 
         <form className='mt-6' onSubmit={onSubmit}>
-          <DefaultFrontendForm isOnboarding />
+          <NumeraireForm isOnboarding />
         </form>
       </Card>
     </FadeTransition>
