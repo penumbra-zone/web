@@ -9,12 +9,10 @@ export default defineConfig({
     lib: {
       entry: {
         adapter: './src/adapter.ts',
-        impl: './src/any-impl.ts',
         create: './src/create.ts',
         direct: './src/direct.ts',
         messages: './src/messages.ts',
         proxy: './src/proxy.ts',
-        stream: './src/stream.ts',
       },
       formats: ['es'],
     },

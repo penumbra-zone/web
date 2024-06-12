@@ -3,53 +3,46 @@ import {
   AssetMetadataByIdRequest,
   AssetMetadataByIdResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices, ShieldedPoolMock } from '../test-utils';
+import {
+  createContextValues,
+  createHandlerContext,
+  createRouterTransport,
+  HandlerContext,
+} from '@connectrpc/connect';
+import { ShieldedPoolService, ViewService } from '@penumbra-zone/protobuf';
 import {
   AssetId,
   Metadata,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { DatabaseCtx } from '../ctx/database';
+import { dbCtx } from '../ctx/database';
+import { fullnodeCtx } from '../ctx/fullnode';
 import { assetMetadataById } from './asset-metadata-by-id';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { mockShieldedPoolService } from '../test-utils';
+import { mockIndexedDb } from '../test-utils';
 
 describe('AssetMetadataById request handler', () => {
-  let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
-  let mockShieldedPool: ShieldedPoolMock;
   let request: AssetMetadataByIdRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockIndexedDb = {
-      getAssetsMetadata: vi.fn(),
-      saveAssetsMetadata: vi.fn(),
-    };
-    mockShieldedPool = {
-      assetMetadataById: vi.fn(),
-    };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({
-          indexedDb: mockIndexedDb,
-          querier: {
-            shieldedPool: mockShieldedPool,
-          },
-        }),
-      ) as MockServices['getWalletServices'],
-    };
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.assetMetadataById,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
-      ),
+      contextValues: createContextValues()
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as DatabaseCtx))
+        .set(fullnodeCtx, () =>
+          Promise.resolve(
+            createRouterTransport(({ service }) => {
+              service(ShieldedPoolService, mockShieldedPoolService);
+            }),
+          ),
+        ),
     });
 
     request = new AssetMetadataByIdRequest({
@@ -58,7 +51,7 @@ describe('AssetMetadataById request handler', () => {
   });
 
   test('should successfully respond with metadata when idb record is present', async () => {
-    mockIndexedDb.getAssetsMetadata?.mockResolvedValue(metadataFromIdb);
+    mockIndexedDb.getAssetsMetadata.mockResolvedValue(metadataFromIdb);
     const metadataByIdResponse = new AssetMetadataByIdResponse(
       await assetMetadataById(request, mockCtx),
     );
@@ -66,8 +59,10 @@ describe('AssetMetadataById request handler', () => {
   });
 
   test('should successfully respond with metadata when idb record is absent, but metadata is available from remote rpc', async () => {
-    mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
-    mockShieldedPool.assetMetadataById.mockResolvedValueOnce(metadataFromNode);
+    mockIndexedDb.getAssetsMetadata.mockResolvedValue(undefined);
+    mockShieldedPoolService.assetMetadataById.mockResolvedValueOnce({
+      denomMetadata: metadataFromNode,
+    });
     const metadataByIdResponse = new AssetMetadataByIdResponse(
       await assetMetadataById(request, mockCtx),
     );
@@ -75,8 +70,8 @@ describe('AssetMetadataById request handler', () => {
   });
 
   test('should successfully respond even when no metadata is available', async () => {
-    mockIndexedDb.getAssetsMetadata?.mockResolvedValue(undefined);
-    mockShieldedPool.assetMetadataById.mockResolvedValueOnce(undefined);
+    mockIndexedDb.getAssetsMetadata.mockResolvedValue(undefined);
+    mockShieldedPoolService.assetMetadataById.mockResolvedValueOnce({ denomMetadata: undefined });
     const metadataByIdResponse = new AssetMetadataByIdResponse(
       await assetMetadataById(request, mockCtx),
     );

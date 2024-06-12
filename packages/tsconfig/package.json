@@ -2,5 +2,8 @@
   "name": "tsconfig",
   "version": "1.0.0",
   "private": true,
-  "license": "(MIT OR Apache-2.0)"
+  "license": "(MIT OR Apache-2.0)",
+  "engines": {
+    "node": ">=22"
+  }
 }

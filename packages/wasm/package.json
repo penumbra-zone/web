@@ -19,7 +19,9 @@
   },
   "files": [
     "wasm",
-    "dist"
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/**/*.map"
   ],
   "exports": {
     "./*": "./src/*.ts"
@@ -42,6 +44,9 @@
     "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "fake-indexeddb": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "optionalDependencies": {
     "@penumbra-zone/keys": "workspace:*"

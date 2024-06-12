@@ -11,10 +11,16 @@ import {
   SctUpdatesSchema,
   StateCommitmentTree,
 } from '@penumbra-zone/types/state-commitment-tree';
-import type { IdbConstants } from '@penumbra-zone/types/indexed-db';
-import type { ViewServerInterface } from '@penumbra-zone/types/servers';
+import type { IdbConstants } from './idb';
 import { validateSchema } from '@penumbra-zone/types/validation';
 import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+
+export interface ViewServerInterface {
+  scanBlock(compactBlock: CompactBlock): Promise<boolean>;
+  flushUpdates(): ScanBlockResult;
+  resetTreeToStored(): Promise<void>;
+  getSctRoot(): MerkleRoot;
+}
 
 interface ViewServerProps {
   fullViewingKey: FullViewingKey;

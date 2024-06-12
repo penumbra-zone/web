@@ -1,7 +1,7 @@
 import { ViewBox } from '../viewbox';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { TransactionIdComponent } from '../transaction-id';
-import { getOneWaySwapValues, isOneWaySwap } from '@penumbra-zone/types/swap';
+import { getOneWaySwapValues, isOneWaySwap } from './swap';
 import { OneWaySwap } from './one-way-swap';
 import { ValueWithAddress } from '../value-with-address';
 import {

@@ -1,71 +1,41 @@
-import { Mock, beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   AppParametersRequest,
   AppParametersResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import { appParameters } from './app-parameters';
-import { IndexedDbMock, MockServices } from '../test-utils';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+
+import { DatabaseCtx } from '../ctx/database';
+import { dbCtx } from '../ctx/database';
+import { mockIndexedDb } from '../test-utils';
 
 describe('AppParameters request handler', () => {
-  let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
-  let apSubNext: Mock;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    apSubNext = vi.fn();
-
-    const mockAppParametersSubscription = {
-      next: apSubNext,
-      [Symbol.asyncIterator]: () => mockAppParametersSubscription,
-    };
-
-    mockIndexedDb = {
-      getAppParams: vi.fn(),
-      subscribe: (table: string) => {
-        if (table === 'APP_PARAMETERS') return mockAppParametersSubscription;
-        throw new Error('Table not supported');
-      },
-    };
-
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.appParameters,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(dbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
   });
 
   test('should successfully get appParameters when idb has them', async () => {
-    mockIndexedDb.getAppParams?.mockResolvedValue(testData);
+    mockIndexedDb.getAppParams.mockResolvedValue(testData);
     const appParameterResponse = new AppParametersResponse(
       await appParameters(new AppParametersRequest(), mockCtx),
     );
     expect(appParameterResponse.parameters?.equals(testData)).toBeTruthy();
-  });
-
-  test('should wait for appParameters when idb has none', async () => {
-    mockIndexedDb.getAppParams?.mockResolvedValue(undefined);
-    apSubNext.mockResolvedValueOnce({
-      value: { value: new AppParametersRequest(), table: 'APP_PARAMETERS' },
-    });
-    await expect(appParameters(new AppParametersRequest(), mockCtx)).resolves.toBeTruthy();
   });
 });
 

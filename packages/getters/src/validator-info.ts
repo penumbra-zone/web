@@ -2,7 +2,7 @@ import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/
 import { createGetter } from './utils/create-getter';
 import { getBondingState, getState, getVotingPower } from './validator-status';
 import { getValidatorStateEnum } from './validator-state';
-import { getValidatorRewardRate } from './rate-data';
+import { getValidatorExchangeRate, getValidatorRewardRate } from './rate-data';
 import { getBondingStateEnum } from './bonding-state';
 import { getFundingStreams, getIdentityKey } from './validator';
 
@@ -30,3 +30,4 @@ export const getValidatorRewardRateFromValidatorInfoOptional = getStatus
 export const getFundingStreamsFromValidatorInfo = getValidator.pipe(getFundingStreams);
 
 export const getIdentityKeyFromValidatorInfo = getValidator.pipe(getIdentityKey);
+export const getExchangeRateFromValidatorInfo = getRateData.pipe(getValidatorExchangeRate);

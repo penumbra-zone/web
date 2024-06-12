@@ -1,47 +1,34 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { epochByHeight } from './epoch-by-height';
-import { IndexedDbMock, MockServices } from '../test-utils';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+
+import { createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { SctService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
 import {
   Epoch,
   EpochByHeightRequest,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { createMockContextValues, mockIndexedDb } from '../test-utils';
 
 describe('EpochByHeight request handler', () => {
-  let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockIndexedDb = {
-      getEpochByHeight: vi.fn(),
-    };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
     mockCtx = createHandlerContext({
       service: SctService,
       method: SctService.methods.epochByHeight,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
-      ),
+      contextValues: createMockContextValues({ db: mockIndexedDb }),
     });
   });
 
   it('returns an `EpochByHeightResponse` with the result of the database query', async () => {
     const expected = new Epoch({ startHeight: 0n, index: 0n });
 
-    mockIndexedDb.getEpochByHeight?.mockResolvedValue(expected);
+    mockIndexedDb.getEpochByHeight.mockResolvedValue(expected);
     const req = new EpochByHeightRequest({ height: 0n });
 
     const result = await epochByHeight(req, mockCtx);

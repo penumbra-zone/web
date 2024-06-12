@@ -13,14 +13,22 @@ import {
   DutchAuctionDescription,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
-import { ViewService } from '@penumbra-zone/protobuf';
-import { ServicesInterface } from '@penumbra-zone/types/services';
-import { HandlerContext, createContextValues, createHandlerContext } from '@connectrpc/connect';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockQuerier, MockServices } from '../test-utils';
+import { AuctionService, ViewService } from '@penumbra-zone/protobuf';
+import {
+  HandlerContext,
+  createContextValues,
+  createHandlerContext,
+  createRouterTransport,
+} from '@connectrpc/connect';
+
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { Value } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { dbCtx } from '../ctx/database';
+import { DatabaseCtx } from '../ctx/database';
+import { fullnodeCtx } from '../ctx/fullnode';
+import { mockAuctionService, mockIndexedDb } from '../test-utils';
+import { Any } from '@bufbuild/protobuf';
 
 const AUCTION_ID_1 = new AuctionId({ inner: new Uint8Array(Array(32).fill(1)) });
 const BECH32M_AUCTION_ID_1 = bech32mAuctionId(AUCTION_ID_1);
@@ -119,35 +127,19 @@ const TEST_DATA = [
 
 describe('Auctions request handler', () => {
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
-  let mockQuerier: MockQuerier;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockIndexedDb = {
-      getAuction: vi.fn((auctionId: AuctionId) =>
-        Promise.resolve(TEST_DATA.find(({ id }) => id.equals(auctionId))?.value),
-      ),
-      getSpendableNoteByCommitment: vi.fn().mockResolvedValue(MOCK_SPENDABLE_NOTE_RECORD),
-      getAuctionOutstandingReserves: vi.fn().mockResolvedValue(undefined),
-    };
+    mockAuctionService.auctionStateById.mockResolvedValue({
+      auction: Any.pack(new DutchAuction({ state: { seq: 1234n } })),
+    });
 
-    mockQuerier = {
-      auction: {
-        auctionStateById: vi.fn().mockResolvedValue(new DutchAuction({ state: { seq: 1234n } })),
-      },
-    };
-
-    const mockServices = () =>
-      Promise.resolve({
-        getWalletServices: vi.fn(() =>
-          Promise.resolve({
-            indexedDb: mockIndexedDb,
-            querier: mockQuerier,
-          }),
-        ) as MockServices['getWalletServices'],
-      } as unknown as ServicesInterface);
+    mockIndexedDb.getAuction.mockImplementation((auctionId: AuctionId) =>
+      Promise.resolve(TEST_DATA.find(({ id }) => id.equals(auctionId))!.value),
+    );
+    mockIndexedDb.getSpendableNoteByCommitment.mockResolvedValue(MOCK_SPENDABLE_NOTE_RECORD);
+    mockIndexedDb.getAuctionOutstandingReserves.mockResolvedValue(undefined);
 
     mockCtx = createHandlerContext({
       service: ViewService,
@@ -155,7 +147,13 @@ describe('Auctions request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, mockServices),
+      contextValues: createContextValues()
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as DatabaseCtx))
+        .set(fullnodeCtx, () =>
+          Promise.resolve(
+            createRouterTransport(({ service }) => service(AuctionService, mockAuctionService)),
+          ),
+        ),
     });
   });
 
@@ -207,31 +205,27 @@ describe('Auctions request handler', () => {
   });
 
   it('includes the latest state from the fullnode if `queryLatestState` is `true`', async () => {
-    expect.hasAssertions();
-
     const req = new AuctionsRequest({ queryLatestState: true });
-    const results = await Array.fromAsync(auctions(req, mockCtx));
-
-    results.forEach(result => {
-      const dutchAuction = DutchAuction.fromBinary(result.auction!.value!);
-
+    for await (const { auction } of auctions(req, mockCtx)) {
+      const dutchAuction = new DutchAuction();
+      new Any(auction).unpackTo(dutchAuction);
       expect(dutchAuction.state?.seq).toBe(1234n);
-    });
+    }
   });
 
   it('includes the outstanding reserves if any exist in the database (i.e., for an ended auction)', async () => {
     expect.hasAssertions();
 
-    mockIndexedDb.getAuctionOutstandingReserves?.mockImplementation((auctionId: AuctionId) => {
-      if (auctionId.equals(AUCTION_ID_2)) {
-        return {
-          input: new Value({ amount: { hi: 0n, lo: 1234n } }),
-          output: new Value({ amount: { hi: 0n, lo: 5678n } }),
-        };
-      }
-
-      return undefined;
-    });
+    mockIndexedDb.getAuctionOutstandingReserves.mockImplementation((auctionId: AuctionId) =>
+      Promise.resolve(
+        auctionId.equals(AUCTION_ID_2)
+          ? {
+              input: new Value({ amount: { hi: 0n, lo: 1234n } }),
+              output: new Value({ amount: { hi: 0n, lo: 5678n } }),
+            }
+          : undefined,
+      ),
+    );
 
     const req = new AuctionsRequest({ includeInactive: true });
     const results = await Array.fromAsync(auctions(req, mockCtx));

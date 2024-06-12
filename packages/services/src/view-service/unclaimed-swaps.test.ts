@@ -1,42 +1,21 @@
-import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-
-import { beforeEach, describe, expect, test, vi } from 'vitest';
-
 import {
   SwapRecord,
   UnclaimedSwapsRequest,
   UnclaimedSwapsResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from '../test-utils';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import { ViewService } from '@penumbra-zone/protobuf';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { DatabaseCtx, dbCtx } from '../ctx/database';
+import { mockIndexedDb } from '../test-utils';
 import { unclaimedSwaps } from './unclaimed-swaps';
 
 describe('UnclaimedSwaps request handler', () => {
-  let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
   let req: UnclaimedSwapsRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    const mockIterateSwaps = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateSwaps,
-    };
-
-    mockIndexedDb = {
-      iterateSwaps: () => mockIterateSwaps,
-    };
-
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
 
     mockCtx = createHandlerContext({
       service: ViewService,
@@ -44,19 +23,15 @@ describe('UnclaimedSwaps request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(dbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
 
-    for (const record of testData) {
-      mockIterateSwaps.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIterateSwaps.next.mockResolvedValueOnce({
-      done: true,
+    mockIndexedDb.iterateSwaps.mockImplementation(async function* () {
+      yield* await Promise.resolve(testData);
     });
+
     req = new UnclaimedSwapsRequest();
   });
 

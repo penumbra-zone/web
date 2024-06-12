@@ -4,29 +4,38 @@
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "scripts": {
+    "build": "tsc && vite build",
+    "clean": "rm -rfv dist package penumbra-zone-services-*.tgz",
     "lint": "eslint src",
+    "prebuild": "$npm_execpath run clean",
     "test": "vitest run"
   },
   "files": [
-    "src/",
-    "*.md",
-    "!**/*.test.ts",
-    "!test-utils.ts"
+    "dist"
   ],
   "exports": {
     "./ctx/*": "./src/ctx/*.ts",
     "./*": "./src/*/index.ts"
   },
+  "publishConfig": {
+    "exports": {
+      "./ctx/*": {
+        "default": "./dist/ctx-*.js",
+        "types": "./dist/ctx-*.d.ts"
+      },
+      "./*-service": {
+        "default": "./dist/*-service.js",
+        "types": "./dist/*-service.d.ts"
+      }
+    }
+  },
   "dependencies": {
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/idb": "workspace:*",
     "@penumbra-zone/perspective": "workspace:*",
-    "@penumbra-zone/polyfills": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
-    "@penumbra-zone/query": "workspace:*",
-    "@penumbra-zone/services-context": "workspace:*",
-    "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
@@ -34,7 +43,11 @@
   "devDependencies": {
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
     "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0"
+    "@connectrpc/connect": "^1.4.0",
+    "@penumbra-zone/polyfills": "workspace:*"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "peerDependencies": {
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",

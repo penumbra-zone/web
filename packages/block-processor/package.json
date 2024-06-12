@@ -1,0 +1,57 @@
+{
+  "name": "@penumbra-zone/block-processor",
+  "version": "0.0.1",
+  "license": "(MIT OR Apache-2.0)",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rfv dist package penumbra-zone-block-processor-*.tgz",
+    "lint": "eslint src",
+    "prebuild": "$npm_execpath run clean",
+    "prepack": "$npm_execpath run build",
+    "test": "vitest run"
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/**/*.map"
+  ],
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "dependencies": {
+    "@penumbra-zone/bech32m": "workspace:*",
+    "@penumbra-zone/crypto-web": "workspace:*",
+    "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/idb": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
+    "@penumbra-zone/wasm": "workspace:*",
+    "exponential-backoff": "^3.1.1"
+  },
+  "devDependencies": {
+    "@buf/cosmos_ibc.bufbuild_es": "1.9.0-20240530142100-ad4444393387.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
+    "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/connect-web": "^1.4.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "peerDependencies": {
+    "@buf/cosmos_ibc.bufbuild_es": "1.9.0-20240530142100-ad4444393387.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
+    "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/connect-web": "^1.4.0"
+  }
+}

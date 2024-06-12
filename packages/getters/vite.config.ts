@@ -22,7 +22,6 @@ export default defineConfig({
         'undelegate-claim-body': './src/undelegate-claim-body.ts',
         validator: './src/validator.ts',
         'validator-info': './src/validator-info.ts',
-        'validator-info-response': './src/validator-info-response.ts',
         'validator-state': './src/validator-state.ts',
         'validator-status': './src/validator-status.ts',
         value: './src/value.ts',

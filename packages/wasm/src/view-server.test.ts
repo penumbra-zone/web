@@ -2,7 +2,7 @@ import 'fake-indexeddb/auto'; // Instanitating ViewServer requires opening up In
 import { describe, expect, it } from 'vitest';
 import { generateSpendKey, getFullViewingKey } from './keys';
 import { ViewServer } from '../wasm';
-import { IDB_TABLES, IdbConstants } from '@penumbra-zone/types/indexed-db';
+import { IDB_TABLES } from './idb';
 
 describe('wasmViewServer', () => {
   it('does not raise zod validation error', async () => {
@@ -15,7 +15,7 @@ describe('wasmViewServer', () => {
       name: 'dbName',
       version: 123,
       tables: IDB_TABLES,
-    } satisfies IdbConstants;
+    };
 
     const storedTree = {
       hashes: [],

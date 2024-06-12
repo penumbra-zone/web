@@ -18,5 +18,8 @@
   },
   "bin": {
     "penumbra-download-keys": "./download-keys"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

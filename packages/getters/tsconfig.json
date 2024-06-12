@@ -1,8 +1,12 @@
 {
   "extends": "tsconfig/base.json",
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "dist"],
+  "include": ["src"],
   "compilerOptions": {
     "outDir": "dist",
-    "noEmit": true
+    "rootDir": "src",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
   }
 }

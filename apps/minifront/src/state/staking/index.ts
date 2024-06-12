@@ -30,7 +30,7 @@ import {
   getVotingPowerByValidatorInfo,
   isDelegationTokenForValidator,
   VotingPowerAsIntegerPercentage,
-} from '@penumbra-zone/types/staking';
+} from '@penumbra-zone/ui/lib/format/staking';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { splitLoHi, toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { viewClient } from '../../clients';

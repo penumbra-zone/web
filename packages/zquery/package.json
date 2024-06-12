@@ -15,5 +15,8 @@
   "devDependencies": {
     "@types/react": "^18.3.2",
     "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

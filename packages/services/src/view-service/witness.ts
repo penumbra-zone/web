@@ -1,16 +1,13 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
-
-import { getWitness } from '@penumbra-zone/wasm/build';
 
 import { Code, ConnectError } from '@connectrpc/connect';
+import { getWitness } from '@penumbra-zone/wasm/build';
+import { dbCtx } from '../ctx/database';
 
 export const witness: Impl['witness'] = async (req, ctx) => {
-  const services = await ctx.values.get(servicesCtx)();
-
   if (!req.transactionPlan) throw new ConnectError('No tx plan in request', Code.InvalidArgument);
 
-  const { indexedDb } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
   const sct = await indexedDb.getStateCommitmentTree();
 
   const witnessData = getWitness(req.transactionPlan, sct);

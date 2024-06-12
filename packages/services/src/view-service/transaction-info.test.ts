@@ -1,19 +1,15 @@
-import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-
-import { beforeEach, describe, expect, test, vi } from 'vitest';
-
 import {
   TransactionInfo,
   TransactionInfoRequest,
   TransactionInfoResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices, testFullViewingKey } from '../test-utils';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
-import { transactionInfo } from './transaction-info';
+import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import { ViewService } from '@penumbra-zone/protobuf';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { DatabaseCtx, dbCtx } from '../ctx/database';
 import { fvkCtx } from '../ctx/full-viewing-key';
+import { mockIndexedDb, testFullViewingKey } from '../test-utils';
+import { transactionInfo } from './transaction-info';
 
 const mockTransactionInfo = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/transaction', () => ({
@@ -21,29 +17,11 @@ vi.mock('@penumbra-zone/wasm/transaction', () => ({
 }));
 
 describe('TransactionInfo request handler', () => {
-  let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
   let req: TransactionInfoRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    const mockIterateTransactionInfo = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateTransactionInfo,
-    };
-
-    mockIndexedDb = {
-      iterateTransactions: () => mockIterateTransactionInfo,
-      constants: vi.fn(),
-    };
-
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
 
     mockCtx = createHandlerContext({
       service: ViewService,
@@ -52,8 +30,12 @@ describe('TransactionInfo request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as DatabaseCtx))
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
+    });
+
+    mockIndexedDb.iterateTransactionInfo.mockImplementation(async function* () {
+      yield* await Promise.resolve(testData);
     });
 
     mockTransactionInfo.mockReturnValue({
@@ -61,14 +43,6 @@ describe('TransactionInfo request handler', () => {
       txv: {},
     });
 
-    for (const record of testData) {
-      mockIterateTransactionInfo.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIterateTransactionInfo.next.mockResolvedValueOnce({
-      done: true,
-    });
     req = new TransactionInfoRequest();
   });
 

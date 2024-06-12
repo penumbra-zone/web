@@ -5,40 +5,30 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices } from '../test-utils';
 import { witness } from './witness';
 import {
   TransactionPlan,
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { dbCtx } from '../ctx/database';
+import { DatabaseCtx } from '../ctx/database';
+import { mockIndexedDb } from '../test-utils';
 
 describe('Witness request handler', () => {
-  let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
   let req: WitnessRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockIndexedDb = {
-      getStateCommitmentTree: vi.fn(),
-    };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.witness,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(dbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
     req = new WitnessRequest({
@@ -47,7 +37,7 @@ describe('Witness request handler', () => {
   });
 
   test('should successfully create witness data', async () => {
-    mockIndexedDb.getStateCommitmentTree?.mockResolvedValue(testSct);
+    mockIndexedDb.getStateCommitmentTree.mockResolvedValue(testSct);
     const witnessResponse = new WitnessResponse(await witness(req, mockCtx));
     expect(witnessResponse.witnessData).instanceof(WitnessData);
   });

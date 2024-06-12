@@ -2,43 +2,26 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../../ctx/prax';
-import { IndexedDbMock, MockServices, testFullViewingKey } from '../../test-utils';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { mockIndexedDb, testFullViewingKey } from '../../test-utils';
 import { FmdParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/shielded_pool/v1/shielded_pool_pb';
 import { AppParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/app/v1/app_pb';
 import { SctParameters } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
 import { GasPrices } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
 import { transactionPlanner } from '.';
 import { fvkCtx } from '../../ctx/full-viewing-key';
+import { dbCtx } from '../../ctx/database';
+import { DatabaseCtx } from '../../ctx/database';
 
 const mockPlanTransaction = vi.hoisted(() => vi.fn());
 vi.mock('@penumbra-zone/wasm/planner', () => ({
   planTransaction: mockPlanTransaction,
 }));
 describe('TransactionPlanner request handler', () => {
-  let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
   let req: TransactionPlannerRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    mockIndexedDb = {
-      getFmdParams: vi.fn(),
-      getAppParams: vi.fn(),
-      getGasPrices: vi.fn(),
-      constants: vi.fn(),
-    };
-
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({
-          indexedDb: mockIndexedDb,
-        }),
-      ) as MockServices['getWalletServices'],
-    };
 
     mockCtx = createHandlerContext({
       service: ViewService,
@@ -47,7 +30,7 @@ describe('TransactionPlanner request handler', () => {
       requestMethod: 'MOCK',
       url: '/mock',
       contextValues: createContextValues()
-        .set(servicesCtx, () => Promise.resolve(mockServices as unknown as ServicesInterface))
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as DatabaseCtx))
         .set(fvkCtx, () => Promise.resolve(testFullViewingKey)),
     });
 
@@ -55,13 +38,13 @@ describe('TransactionPlanner request handler', () => {
   });
 
   test('should create a transaction plan if all necessary data exists in indexed-db', async () => {
-    mockIndexedDb.getFmdParams?.mockResolvedValueOnce(
+    mockIndexedDb.getFmdParams.mockResolvedValueOnce(
       new FmdParameters({
         precisionBits: 12,
         asOfBlockHeight: 2n,
       }),
     );
-    mockIndexedDb.getAppParams?.mockResolvedValueOnce(
+    mockIndexedDb.getAppParams.mockResolvedValueOnce(
       new AppParameters({
         chainId: 'penumbra-testnet-mock',
         sctParams: new SctParameters({
@@ -69,7 +52,7 @@ describe('TransactionPlanner request handler', () => {
         }),
       }),
     );
-    mockIndexedDb.getGasPrices?.mockResolvedValueOnce(
+    mockIndexedDb.getGasPrices.mockResolvedValueOnce(
       new GasPrices({
         verificationPrice: 22n,
         executionPrice: 222n,
@@ -87,8 +70,8 @@ describe('TransactionPlanner request handler', () => {
   });
 
   test('should throw error if SctParameters not available', async () => {
-    mockIndexedDb.getFmdParams?.mockResolvedValueOnce(new FmdParameters());
-    mockIndexedDb.getAppParams?.mockResolvedValueOnce(
+    mockIndexedDb.getFmdParams.mockResolvedValueOnce(new FmdParameters());
+    mockIndexedDb.getAppParams.mockResolvedValueOnce(
       new AppParameters({
         chainId: 'penumbra-testnet-mock',
       }),
@@ -97,8 +80,8 @@ describe('TransactionPlanner request handler', () => {
   });
 
   test('should throw error if ChainId not available', async () => {
-    mockIndexedDb.getFmdParams?.mockResolvedValueOnce(new FmdParameters());
-    mockIndexedDb.getAppParams?.mockResolvedValueOnce(
+    mockIndexedDb.getFmdParams.mockResolvedValueOnce(new FmdParameters());
+    mockIndexedDb.getAppParams.mockResolvedValueOnce(
       new AppParameters({
         sctParams: new SctParameters({
           epochDuration: 719n,
@@ -109,8 +92,8 @@ describe('TransactionPlanner request handler', () => {
   });
 
   test('should throw error if Gas prices is not available', async () => {
-    mockIndexedDb.getFmdParams?.mockResolvedValueOnce(new FmdParameters());
-    mockIndexedDb.getAppParams?.mockResolvedValueOnce(
+    mockIndexedDb.getFmdParams.mockResolvedValueOnce(new FmdParameters());
+    mockIndexedDb.getAppParams.mockResolvedValueOnce(
       new AppParameters({
         chainId: 'penumbra-testnet-mock',
         sctParams: new SctParameters({

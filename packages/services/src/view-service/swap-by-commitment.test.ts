@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   SwapByCommitmentRequest,
   SwapByCommitmentResponse,
@@ -6,45 +6,33 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices } from '../test-utils';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { swapByCommitment } from './swap-by-commitment';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { dbCtx } from '../ctx/database';
+import { DatabaseCtx } from '../ctx/database';
+import { mockIndexedDb } from '../test-utils';
 
 describe('SwapByCommitment request handler', () => {
-  let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
   let request: SwapByCommitmentRequest;
-  let swapSubNext: Mock;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    swapSubNext = vi.fn();
-    const mockSwapSubscription = {
-      next: swapSubNext,
-      [Symbol.asyncIterator]: () => mockSwapSubscription,
-    };
+    mockIndexedDb.subscribeSwapRecords.mockImplementation(async function* () {
+      for await (const swapRecord of [testSwap]) {
+        yield swapRecord;
+      }
+    });
 
-    mockIndexedDb = {
-      getSwapByCommitment: vi.fn(),
-      subscribe: () => mockSwapSubscription,
-    };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.swapByCommitment,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(dbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
 
@@ -52,7 +40,7 @@ describe('SwapByCommitment request handler', () => {
   });
 
   test('should successfully get swap by commitment when idb has them', async () => {
-    mockIndexedDb.getSwapByCommitment?.mockResolvedValue(testSwap);
+    mockIndexedDb.getSwapByCommitment.mockResolvedValue(testSwap);
     const swapByCommitmentResponse = new SwapByCommitmentResponse(
       await swapByCommitment(request, mockCtx),
     );
@@ -66,17 +54,14 @@ describe('SwapByCommitment request handler', () => {
   });
 
   test('should throw an error if swap  no found in idb and awaitDetection is false', async () => {
-    mockIndexedDb.getSwapByCommitment?.mockResolvedValue(undefined);
+    mockIndexedDb.getSwapByCommitment.mockResolvedValue(undefined);
     request.awaitDetection = false;
     await expect(swapByCommitment(request, mockCtx)).rejects.toThrow('Swap not found');
   });
 
   test('should get swap if swap is not found in idb, but awaitDetection is true, and has been detected', async () => {
-    mockIndexedDb.getSwapByCommitment?.mockResolvedValue(undefined);
+    mockIndexedDb.getSwapByCommitment.mockResolvedValue(undefined);
     request.awaitDetection = true;
-    swapSubNext.mockResolvedValueOnce({
-      value: { value: testSwap.toJson() },
-    });
     const swapByCommitmentResponse = new SwapByCommitmentResponse(
       await swapByCommitment(request, mockCtx),
     );
@@ -84,14 +69,10 @@ describe('SwapByCommitment request handler', () => {
   });
 
   test('should throw error if swap is not found in idb, and has not been detected', async () => {
-    mockIndexedDb.getSwapByCommitment?.mockResolvedValue(undefined);
+    mockIndexedDb.getSwapByCommitment.mockResolvedValue(undefined);
     request.awaitDetection = true;
-
-    swapSubNext.mockResolvedValueOnce({
-      value: { value: swapWithAnotherCommitment.toJson() },
-    });
-    swapSubNext.mockResolvedValueOnce({
-      done: true,
+    mockIndexedDb.subscribeSwapRecords.mockImplementation(async function* () {
+      yield await Promise.resolve(swapWithAnotherCommitment);
     });
     await expect(swapByCommitment(request, mockCtx)).rejects.toThrow('Swap not found');
   });

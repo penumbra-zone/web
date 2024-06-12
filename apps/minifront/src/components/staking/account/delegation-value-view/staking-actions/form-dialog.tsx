@@ -7,8 +7,8 @@ import { Validator } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { FormEvent } from 'react';
 import { getIdentityKey } from '@penumbra-zone/getters/validator';
-import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
+import { getFormattedAmtFromValueView } from '@penumbra-zone/ui/lib/format/value-view';
 
 const getCapitalizedAction = (action: 'delegate' | 'undelegate') =>
   action.replace(/^./, firstCharacter => firstCharacter.toLocaleUpperCase());

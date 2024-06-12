@@ -1,19 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { IndexedDbMock, MockServices } from '../test-utils';
+
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { StakeService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
 import {
   GetValidatorInfoRequest,
   GetValidatorInfoResponse,
   ValidatorState_ValidatorStateEnum,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
 import { getValidatorInfo } from './get-validator-info';
+import { dbCtx } from '../ctx/database';
+import { DatabaseCtx } from '../ctx/database';
+import { mockIndexedDb } from '../test-utils';
 
 describe('GetValidatorInfo request handler', () => {
-  let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
   let req: GetValidatorInfoRequest;
   const mockGetValidatorInfoResponse = new GetValidatorInfoResponse({
@@ -26,22 +25,14 @@ describe('GetValidatorInfo request handler', () => {
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockIndexedDb = {
-      getValidatorInfo: vi.fn(),
-    };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
     mockCtx = createHandlerContext({
       service: StakeService,
       method: StakeService.methods.validatorInfo,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(dbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
 
@@ -51,7 +42,7 @@ describe('GetValidatorInfo request handler', () => {
   });
 
   it('should successfully get validator info when idb has them', async () => {
-    mockIndexedDb.getValidatorInfo?.mockResolvedValueOnce(
+    mockIndexedDb.getValidatorInfo.mockResolvedValueOnce(
       mockGetValidatorInfoResponse.validatorInfo,
     );
 

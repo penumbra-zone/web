@@ -1,14 +1,16 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+import { dbCtx } from '../ctx/database';
+import { fullnodeCtx } from '../ctx/fullnode';
+import { queryBlockHeight } from './fullnode/block-height';
 
 export const statusStream: Impl['statusStream'] = async function* (_, ctx) {
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb, querier } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
+  const fullnode = await ctx.values.get(fullnodeCtx)();
 
   // This should stream forever unless cancelled.
   let remoteBlockHeight: bigint | undefined;
-  for await (const { value: syncHeight } of indexedDb.subscribe('FULL_SYNC_HEIGHT')) {
-    remoteBlockHeight ??= await querier.tendermint.latestBlockHeight();
+  for await (const syncHeight of indexedDb.subscribeFullSyncHeight()) {
+    remoteBlockHeight ??= await queryBlockHeight(fullnode);
     if (remoteBlockHeight) {
       yield {
         latestKnownBlockHeight: syncHeight <= remoteBlockHeight ? remoteBlockHeight : syncHeight,

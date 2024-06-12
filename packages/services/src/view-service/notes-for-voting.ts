@@ -1,9 +1,9 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+
+import { dbCtx } from '../ctx/database';
 
 export const notesForVoting: Impl['notesForVoting'] = async function* (req, ctx) {
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
   const votingNotes = await indexedDb.getNotesForVoting(req.addressIndex, req.votableAtHeight);
 
   yield* votingNotes;

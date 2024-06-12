@@ -1,13 +1,10 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
-
-import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 import { Code, ConnectError } from '@connectrpc/connect';
+import { dbCtx } from '../ctx/database';
 
 export const swapByCommitment: Impl['swapByCommitment'] = async (req, ctx) => {
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
   const { swapCommitment } = req;
   if (!swapCommitment)
     throw new ConnectError('Missing swap commitment in request', Code.InvalidArgument);
@@ -16,8 +13,8 @@ export const swapByCommitment: Impl['swapByCommitment'] = async (req, ctx) => {
   if (swap) return { swap };
 
   if (req.awaitDetection) {
-    for await (const { value: swapJson } of indexedDb.subscribe('SWAPS')) {
-      const swap = SwapRecord.fromJson(swapJson);
+    for await (const swap of indexedDb.subscribeSwapRecords()) {
+      console.log('awaited swap', swap);
       if (swap.swapCommitment?.equals(swapCommitment)) return { swap };
     }
   }

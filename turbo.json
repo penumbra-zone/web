@@ -21,7 +21,7 @@
     "build": {
       "dependsOn": ["compile", "^build"],
       "dotEnv": [".env"],
-      "env": ["PRAX", "IDB_VERSION"],
+      "env": ["PRAX"],
       "outputs": ["dist/**"]
     },
     "clean": {

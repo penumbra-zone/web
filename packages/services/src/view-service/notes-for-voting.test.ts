@@ -5,41 +5,32 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices } from '../test-utils';
+
 import { notesForVoting } from './notes-for-voting';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { dbCtx } from '../ctx/database';
+import { DatabaseCtx } from '../ctx/database';
+import { mockIndexedDb } from '../test-utils';
 
 describe('NotesForVoting request handler', () => {
-  let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockIndexedDb = {
-      getNotesForVoting: vi.fn(),
-    };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.notesForVoting,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(dbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
   });
 
   test('should successfully get notes for voting', async () => {
-    mockIndexedDb.getNotesForVoting?.mockResolvedValueOnce(testData);
+    mockIndexedDb.getNotesForVoting.mockResolvedValueOnce(testData);
     const responses: NotesForVotingResponse[] = [];
     const req = new NotesForVotingRequest({});
     for await (const res of notesForVoting(req, mockCtx)) {

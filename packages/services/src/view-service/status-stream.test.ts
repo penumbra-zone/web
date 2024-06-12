@@ -1,50 +1,34 @@
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
 import {
   StatusStreamRequest,
   StatusStreamResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
-import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices, TendermintMock } from '../test-utils';
+import {
+  createContextValues,
+  createHandlerContext,
+  createRouterTransport,
+  HandlerContext,
+} from '@connectrpc/connect';
+import { TendermintProxyService, ViewService } from '@penumbra-zone/protobuf';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { DatabaseCtx, dbCtx } from '../ctx/database';
+import { fullnodeCtx } from '../ctx/fullnode';
+
 import { statusStream } from './status-stream';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { mockIndexedDb, mockTendermintService } from '../test-utils';
 
 describe('Status stream request handler', () => {
-  let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
-  let mockTendermint: TendermintMock;
-  let lastBlockSubNext: Mock;
+
   let request: StatusStreamRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    lastBlockSubNext = vi.fn();
-    const mockLastBlockSubscription = {
-      next: lastBlockSubNext,
-      [Symbol.asyncIterator]: () => mockLastBlockSubscription,
-    };
-
-    mockIndexedDb = {
-      subscribe: () => mockLastBlockSubscription,
-    };
-
-    mockTendermint = {
-      latestBlockHeight: vi.fn(),
-    };
-
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({
-          indexedDb: mockIndexedDb,
-          querier: {
-            tendermint: mockTendermint,
-          },
-        }),
-      ) as MockServices['getWalletServices'],
-    };
+    mockIndexedDb.subscribeFullSyncHeight.mockImplementation(async function* () {
+      for (let i = 200n; i < 222n; i++) {
+        yield await Promise.resolve(i);
+      }
+    });
 
     mockCtx = createHandlerContext({
       service: ViewService,
@@ -52,28 +36,22 @@ describe('Status stream request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
-      ),
+      contextValues: createContextValues()
+        .set(dbCtx, () => Promise.resolve(mockIndexedDb as unknown as DatabaseCtx))
+        .set(fullnodeCtx, () =>
+          Promise.resolve(
+            createRouterTransport(({ service }) =>
+              service(TendermintProxyService, mockTendermintService),
+            ),
+          ),
+        ),
     });
 
     request = new StatusStreamRequest();
-
-    for (let i = 200; i < 222; i++) {
-      lastBlockSubNext.mockResolvedValueOnce({
-        value: {
-          value: BigInt(i),
-        },
-      });
-    }
-    // synchronization never ends, but the test can't last indefinitely, so we end the stream
-    lastBlockSubNext.mockResolvedValueOnce({
-      done: true,
-    });
   });
 
   test('should receive a status stream when view service synchronizes and lags behind last known block in tendermint', async () => {
-    mockTendermint.latestBlockHeight?.mockResolvedValue(222n);
+    mockTendermintService.getStatus.mockResolvedValue({ syncInfo: { latestBlockHeight: 222n } });
     for await (const res of statusStream(request, mockCtx)) {
       const response = new StatusStreamResponse(res);
       expect(response.latestKnownBlockHeight === 222n).toBeTruthy();
@@ -82,7 +60,7 @@ describe('Status stream request handler', () => {
   });
 
   test('should receive a status stream when view service is synchronized block by block', async () => {
-    mockTendermint.latestBlockHeight?.mockResolvedValue(200n);
+    mockTendermintService.getStatus.mockResolvedValue({ syncInfo: { latestBlockHeight: 200n } });
     for await (const res of statusStream(request, mockCtx)) {
       const response = new StatusStreamResponse(res);
       expect(response.partialSyncHeight === response.fullSyncHeight).toBeTruthy();

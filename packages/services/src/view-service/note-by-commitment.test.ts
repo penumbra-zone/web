@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, Mock, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   NoteByCommitmentRequest,
   NoteByCommitmentResponse,
@@ -6,53 +6,40 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
-import { IndexedDbMock, MockServices } from '../test-utils';
+
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
 import { noteByCommitment } from './note-by-commitment';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { dbCtx } from '../ctx/database';
+import { DatabaseCtx } from '../ctx/database';
+import { mockIndexedDb } from '../test-utils';
 
 describe('NoteByCommitment request handler', () => {
-  let mockServices: MockServices;
-  let mockIndexedDb: IndexedDbMock;
   let mockCtx: HandlerContext;
   let request: NoteByCommitmentRequest;
-  let noteSubNext: Mock;
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    noteSubNext = vi.fn();
-    const mockNoteSubscription = {
-      next: noteSubNext,
-      [Symbol.asyncIterator]: () => mockNoteSubscription,
-    };
-
-    mockIndexedDb = {
-      getSpendableNoteByCommitment: vi.fn(),
-      subscribe: () => mockNoteSubscription,
-    };
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
     mockCtx = createHandlerContext({
       service: ViewService,
       method: ViewService.methods.noteByCommitment,
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(dbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
+    });
+
+    mockIndexedDb.subscribeSpendableNoteRecords.mockImplementation(async function* () {
+      /* noop */
     });
 
     request = new NoteByCommitmentRequest({ noteCommitment: testCommitment });
   });
 
   test('should successfully get note by commitment when idb has them', async () => {
-    mockIndexedDb.getSpendableNoteByCommitment?.mockResolvedValue(testNote);
+    mockIndexedDb.getSpendableNoteByCommitment.mockResolvedValue(testNote);
     const noteByCommitmentResponse = new NoteByCommitmentResponse(
       await noteByCommitment(request, mockCtx),
     );
@@ -66,16 +53,16 @@ describe('NoteByCommitment request handler', () => {
   });
 
   test('should throw an error if note  no found in idb and awaitDetection is false', async () => {
-    mockIndexedDb.getSpendableNoteByCommitment?.mockResolvedValue(undefined);
+    mockIndexedDb.getSpendableNoteByCommitment.mockResolvedValue(undefined);
     request.awaitDetection = false;
     await expect(noteByCommitment(request, mockCtx)).rejects.toThrow('Note not found');
   });
 
   test('should get note if note is not found in idb, but awaitDetection is true, and has been detected', async () => {
-    mockIndexedDb.getSpendableNoteByCommitment?.mockResolvedValue(undefined);
+    mockIndexedDb.getSpendableNoteByCommitment.mockResolvedValue(undefined);
     request.awaitDetection = true;
-    noteSubNext.mockResolvedValueOnce({
-      value: { value: testNote.toJson() },
+    mockIndexedDb.subscribeSpendableNoteRecords.mockImplementation(async function* () {
+      yield await Promise.resolve(testNote);
     });
     const noteByCommitmentResponse = new NoteByCommitmentResponse(
       await noteByCommitment(request, mockCtx),
@@ -84,15 +71,13 @@ describe('NoteByCommitment request handler', () => {
   });
 
   test('should throw error if note is not found in idb, and has not been detected', async () => {
-    mockIndexedDb.getSpendableNoteByCommitment?.mockResolvedValue(undefined);
+    mockIndexedDb.getSpendableNoteByCommitment.mockResolvedValue(undefined);
     request.awaitDetection = true;
 
-    noteSubNext.mockResolvedValueOnce({
-      value: { value: noteWithAnotherCommitment.toJson() },
+    mockIndexedDb.subscribeSpendableNoteRecords.mockImplementation(async function* () {
+      yield await Promise.resolve(noteWithAnotherCommitment);
     });
-    noteSubNext.mockResolvedValueOnce({
-      done: true,
-    });
+
     await expect(noteByCommitment(request, mockCtx)).rejects.toThrow('Note not found');
   });
 });

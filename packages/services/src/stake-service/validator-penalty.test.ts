@@ -1,18 +1,20 @@
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { validatorPenalty } from './validator-penalty';
-import { MockServices } from '../test-utils';
-import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
+import {
+  createContextValues,
+  createHandlerContext,
+  createRouterTransport,
+  HandlerContext,
+} from '@connectrpc/connect';
 import { StakeService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
 import {
   ValidatorPenaltyRequest,
   ValidatorPenaltyResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+import { fullnodeCtx } from '../ctx/fullnode';
+import { mockStakeService } from '../test-utils';
 
 describe('ValidatorPenalty request handler', () => {
-  let mockServices: MockServices;
-  let mockStakingQuerierValidatorPenalty: Mock;
   let mockCtx: HandlerContext;
   const mockValidatorPenaltyResponse = new ValidatorPenaltyResponse({
     penalty: { inner: new Uint8Array([0, 1, 2, 3]) },
@@ -21,17 +23,7 @@ describe('ValidatorPenalty request handler', () => {
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockStakingQuerierValidatorPenalty = vi.fn().mockResolvedValue(mockValidatorPenaltyResponse);
-
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({
-          querier: {
-            stake: { validatorPenalty: mockStakingQuerierValidatorPenalty },
-          },
-        }),
-      ) as MockServices['getWalletServices'],
-    } satisfies MockServices;
+    mockStakeService.validatorPenalty.mockResolvedValue(mockValidatorPenaltyResponse);
 
     mockCtx = createHandlerContext({
       service: StakeService,
@@ -39,8 +31,10 @@ describe('ValidatorPenalty request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(fullnodeCtx, () =>
+        Promise.resolve(
+          createRouterTransport(({ service }) => service(StakeService, mockStakeService)),
+        ),
       ),
     });
   });
@@ -49,7 +43,7 @@ describe('ValidatorPenalty request handler', () => {
     const req = new ValidatorPenaltyRequest();
     const result = await validatorPenalty(req, mockCtx);
 
-    expect(mockStakingQuerierValidatorPenalty).toHaveBeenCalledWith(req);
+    expect(mockStakeService.validatorPenalty).toHaveBeenCalled();
     expect(result as ValidatorPenaltyResponse).toEqual(mockValidatorPenaltyResponse);
   });
 });

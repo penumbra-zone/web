@@ -7,5 +7,8 @@
   "dependencies": {
     "tailwindcss": "^3.4.3",
     "tailwindcss-animate": "^1.0.7"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

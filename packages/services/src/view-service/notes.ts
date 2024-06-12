@@ -1,12 +1,11 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
 
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { addAmounts, joinLoHiAmount } from '@penumbra-zone/types/amount';
+import { dbCtx } from '../ctx/database';
 
 export const notes: Impl['notes'] = async function* (req, ctx) {
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
 
   const { assetId, addressIndex, includeSpent, amountToSpend } = req;
 

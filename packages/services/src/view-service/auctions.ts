@@ -15,10 +15,13 @@ import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { Any, PartialMessage } from '@bufbuild/protobuf';
-import { servicesCtx } from '../ctx/prax';
+
 import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { HandlerContext } from '@connectrpc/connect';
 import { AddressIndex } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+import { dbCtx } from '../ctx/database';
+import { fullnodeCtx } from '../ctx/fullnode';
+import { queryAuctionStateById } from './fullnode/auction-state';
 
 const getBech32mAuctionId = (
   balancesResponse: PartialMessage<BalancesResponse>,
@@ -49,8 +52,8 @@ const iterateAuctionsThisUserControls = async function* (
 export const auctions: Impl['auctions'] = async function* (req, ctx) {
   const { includeInactive, queryLatestState, accountFilter } = req;
 
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb, querier } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
+  const fullnode = await ctx.values.get(fullnodeCtx)();
 
   for await (const auctionId of iterateAuctionsThisUserControls(ctx, accountFilter)) {
     const id = new AuctionId(auctionIdFromBech32(auctionId));
@@ -64,7 +67,7 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
 
     let state: DutchAuctionState | undefined;
     if (queryLatestState) {
-      const auction = await querier.auction.auctionStateById(id);
+      const auction = await queryAuctionStateById(fullnode, id);
       state = auction?.state;
     }
 

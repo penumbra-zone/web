@@ -67,5 +67,8 @@
     "vite-plugin-top-level-await": "^1.4.1",
     "vite-plugin-wasm": "^3.3.0",
     "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

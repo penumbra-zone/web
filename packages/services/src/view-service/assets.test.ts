@@ -9,33 +9,18 @@ import {
 import { ViewService } from '@penumbra-zone/protobuf';
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { servicesCtx } from '../ctx/prax';
 import { assets } from './assets';
-import { IndexedDbMock, MockServices } from '../test-utils';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+
+import { dbCtx } from '../ctx/database';
+import { DatabaseCtx } from '../ctx/database';
+import { mockIndexedDb } from '../test-utils';
 
 describe('Assets request handler', () => {
   let req: AssetsRequest;
-  let mockServices: MockServices;
   let mockCtx: HandlerContext;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    const mockIterateMetadata = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIterateMetadata,
-    };
-
-    const mockIndexedDb: IndexedDbMock = {
-      iterateAssetsMetadata: () => mockIterateMetadata,
-    };
-
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
 
     mockCtx = createHandlerContext({
       service: ViewService,
@@ -43,18 +28,15 @@ describe('Assets request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(dbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
 
-    for (const record of testData) {
-      mockIterateMetadata.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIterateMetadata.next.mockResolvedValueOnce({
-      done: true,
+    mockIndexedDb.iterateAssetsMetadata.mockImplementation(async function* () {
+      for await (const record of testData) {
+        yield record;
+      }
     });
     req = new AssetsRequest({});
   });

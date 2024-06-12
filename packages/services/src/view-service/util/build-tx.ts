@@ -5,7 +5,7 @@ import {
   WitnessData,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 import { buildParallel } from '@penumbra-zone/wasm/build';
-import { offscreenClient } from '../../offscreen-client';
+import { buildActionsOffscreen } from '../../offscreen-runner';
 import {
   AuthorizeAndBuildResponse,
   WitnessAndBuildResponse,
@@ -16,6 +16,7 @@ import { ConnectError } from '@connectrpc/connect';
 import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 
 export const optimisticBuild = async function* (
+  offscreenUrl: string,
   transactionPlan: TransactionPlan,
   witnessData: WitnessData,
   authorizationRequest: PromiseLike<AuthorizationData>,
@@ -31,14 +32,20 @@ export const optimisticBuild = async function* (
   );
 
   // kick off the parallel actions build
-  const offscreenTasks = offscreenClient.buildActions(transactionPlan, witnessData, fvk, cancel);
+  const workerTasks = buildActionsOffscreen(
+    offscreenUrl,
+    transactionPlan,
+    witnessData,
+    fvk,
+    cancel,
+  );
 
   // status updates
-  yield* progressStream(offscreenTasks, cancel);
+  yield* progressStream(workerTasks, cancel);
 
   // final build is synchronous
   const transaction: Transaction = buildParallel(
-    await Promise.all(offscreenTasks),
+    await Promise.all(workerTasks),
     transactionPlan,
     witnessData,
     await authorizationRequest,

@@ -12,7 +12,9 @@
     "prepack": "$npm_execpath run build"
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/**/*.map"
   ],
   "exports": {
     ".": "./src/index.ts",
@@ -36,6 +38,9 @@
   },
   "devDependencies": {
     "@connectrpc/connect": "^1.4.0"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.10.0",

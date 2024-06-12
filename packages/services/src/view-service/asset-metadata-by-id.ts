@@ -1,6 +1,9 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+
 import { assetPatterns } from '@penumbra-zone/types/assets';
+import { dbCtx } from '../ctx/database';
+import { fullnodeCtx } from '../ctx/fullnode';
+import { queryAssetMetadata } from './fullnode/asset-metadata';
 
 export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, ctx) => {
   if (!assetId) throw new Error('No asset id passed in request');
@@ -10,20 +13,17 @@ export const assetMetadataById: Impl['assetMetadataById'] = async ({ assetId }, 
       'Either `inner`, `altBaseDenom`, or `altBech32m` must be set on the asset ID passed in the `assetMetadataById` request',
     );
 
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb, querier } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
+  const fullnode = await ctx.values.get(fullnodeCtx)();
 
-  const localMetadata = await indexedDb.getAssetsMetadata(assetId);
-  if (localMetadata) return { denomMetadata: localMetadata };
+  let denomMetadata = await indexedDb.getAssetsMetadata(assetId);
+  if (!denomMetadata) {
+    denomMetadata = await queryAssetMetadata(fullnode, assetId);
 
-  const remoteMetadata = await querier.shieldedPool.assetMetadataById(assetId);
-
-  const isIbcAsset = remoteMetadata && assetPatterns.ibc.matches(remoteMetadata.display);
-
-  if (remoteMetadata && !isIbcAsset) {
-    void indexedDb.saveAssetsMetadata(remoteMetadata);
-    return { denomMetadata: remoteMetadata };
+    if (denomMetadata?.display && assetPatterns.ibc.matches(denomMetadata.display)) {
+      void indexedDb.saveAssetsMetadata(denomMetadata);
+    }
   }
 
-  return { denomMetadata: undefined };
+  return { denomMetadata };
 };

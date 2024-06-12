@@ -21,5 +21,8 @@
     "eslint-plugin-turbo": "^1.13.3",
     "eslint-plugin-vitest": "^0.5.4",
     "typescript-eslint": "^7.10.0"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

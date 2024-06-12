@@ -8,7 +8,7 @@
     "test": "vitest run"
   },
   "files": [
-    "src/",
+    "src",
     "*.md",
     "!**/*.test.ts"
   ],
@@ -24,5 +24,8 @@
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

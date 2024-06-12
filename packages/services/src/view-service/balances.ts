@@ -1,5 +1,5 @@
 import type { Impl } from '.';
-import { servicesCtx } from '../ctx/prax';
+
 import { getAmount } from '@penumbra-zone/getters/value-view';
 import {
   getAmountFromRecord,
@@ -30,19 +30,21 @@ import { addressByIndex } from './address-by-index';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { Base64Str, uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { addLoHi } from '@penumbra-zone/types/lo-hi';
-import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import { isZero, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { Stringified } from '@penumbra-zone/types/jsonified';
+import { DatabaseCtx, dbCtx } from '../ctx/database';
+import { queryBlockHeight } from './fullnode/block-height';
+import { fullnodeCtx } from '../ctx/fullnode';
 
 // Handles aggregating amounts and filtering by account number/asset id
 export const balances: Impl['balances'] = async function* (req, ctx) {
-  const services = await ctx.values.get(servicesCtx)();
-  const { indexedDb, querier } = await services.getWalletServices();
+  const indexedDb = await ctx.values.get(dbCtx)();
+  const fullnode = await ctx.values.get(fullnodeCtx)();
 
   // latestBlockHeight is needed to calculate the threshold of price relevance,
   //it is better to use  rather than fullSyncHeight to avoid displaying old prices during the synchronization process
   const latestKnownBlockHeight =
-    (await querier.tendermint.latestBlockHeight()) ?? (await indexedDb.getFullSyncHeight()) ?? 0n;
+    (await queryBlockHeight(fullnode)) ?? (await indexedDb.getFullSyncHeight()) ?? 0n;
 
   const aggregator = new BalancesAggregator(ctx, indexedDb, latestKnownBlockHeight);
 
@@ -80,7 +82,7 @@ class BalancesAggregator {
 
   constructor(
     private readonly ctx: HandlerContext,
-    private readonly indexedDb: IndexedDbInterface,
+    private readonly indexedDb: DatabaseCtx,
     private readonly latestBlockHeight: bigint,
   ) {}
 

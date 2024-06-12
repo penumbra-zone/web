@@ -1,5 +1,4 @@
 import { ViewService } from '@penumbra-zone/protobuf';
-import { servicesCtx } from '../ctx/prax';
 
 import { createContextValues, createHandlerContext, HandlerContext } from '@connectrpc/connect';
 
@@ -9,34 +8,19 @@ import {
   OwnedPositionIdsRequest,
   OwnedPositionIdsResponse,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { IndexedDbMock, MockServices } from '../test-utils';
-import type { ServicesInterface } from '@penumbra-zone/types/services';
+
 import { PositionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { ownedPositionIds } from './owned-position-ids';
+import { dbCtx } from '../ctx/database';
+import { DatabaseCtx } from '../ctx/database';
+import { mockIndexedDb } from '../test-utils';
 
 describe('OwnedPositionIds request handler', () => {
-  let mockServices: MockServices;
   let mockCtx: HandlerContext;
-  let mockIndexedDb: IndexedDbMock;
   let req: OwnedPositionIdsRequest;
 
   beforeEach(() => {
     vi.resetAllMocks();
-
-    const mockIteratePositions = {
-      next: vi.fn(),
-      [Symbol.asyncIterator]: () => mockIteratePositions,
-    };
-
-    mockIndexedDb = {
-      getOwnedPositionIds: () => mockIteratePositions,
-    };
-
-    mockServices = {
-      getWalletServices: vi.fn(() =>
-        Promise.resolve({ indexedDb: mockIndexedDb }),
-      ) as MockServices['getWalletServices'],
-    };
 
     mockCtx = createHandlerContext({
       service: ViewService,
@@ -44,19 +28,17 @@ describe('OwnedPositionIds request handler', () => {
       protocolName: 'mock',
       requestMethod: 'MOCK',
       url: '/mock',
-      contextValues: createContextValues().set(servicesCtx, () =>
-        Promise.resolve(mockServices as unknown as ServicesInterface),
+      contextValues: createContextValues().set(dbCtx, () =>
+        Promise.resolve(mockIndexedDb as unknown as DatabaseCtx),
       ),
     });
 
-    for (const record of testData) {
-      mockIteratePositions.next.mockResolvedValueOnce({
-        value: record,
-      });
-    }
-    mockIteratePositions.next.mockResolvedValueOnce({
-      done: true,
+    mockIndexedDb.getOwnedPositionIds.mockImplementation(async function* () {
+      for await (const record of testData) {
+        yield record;
+      }
     });
+
     req = new OwnedPositionIdsRequest();
   });
 

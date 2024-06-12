@@ -8,7 +8,8 @@
     "build": "tsc --build",
     "clean": "rm -rfv dist",
     "lint": "eslint src",
-    "prepack": "pnpm clean && pnpm build"
+    "prebuild": "$npm_execpath run clean",
+    "prepack": "$npm_execpath run build"
   },
   "exports": {
     ".": "./src/index.ts"
@@ -24,6 +25,9 @@
   "devDependencies": {
     "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "peerDependencies": {
     "@buf/cosmos_ibc.bufbuild_es": "1.9.0-20240530142100-ad4444393387.1",
