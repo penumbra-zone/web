@@ -10,6 +10,7 @@ import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/nu
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { AuctionInfo, getAuctionInfos } from '../../../fetchers/auction-infos';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 /**
  * Multipliers to use with the output of the swap simulation, to determine
@@ -70,17 +71,28 @@ const INITIAL_STATE: State = {
   estimatedOutput: undefined,
 };
 
+const getSmallestPossibleAmountAboveZero = (metadata?: Metadata): number =>
+  metadata ? 1 / 10 ** getDisplayDenomExponent(metadata) : 0;
+
 export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (set, get) => ({
   ...INITIAL_STATE,
   setMinOutput: minOutput => {
     set(({ swap }) => {
-      swap.dutchAuction.minOutput = minOutput;
+      const minMinOutput = getSmallestPossibleAmountAboveZero(get().swap.assetOut);
+
+      if (Number(minOutput) > 0) swap.dutchAuction.minOutput = minOutput;
+      else swap.dutchAuction.minOutput = minMinOutput.toString();
+
       swap.dutchAuction.estimatedOutput = undefined;
     });
   },
   setMaxOutput: maxOutput => {
     set(({ swap }) => {
-      swap.dutchAuction.maxOutput = maxOutput;
+      const minMaxOutput = getSmallestPossibleAmountAboveZero(get().swap.assetOut);
+
+      if (Number(maxOutput) > 0) swap.dutchAuction.maxOutput = maxOutput;
+      else swap.dutchAuction.maxOutput = minMaxOutput.toString();
+
       swap.dutchAuction.estimatedOutput = undefined;
     });
   },

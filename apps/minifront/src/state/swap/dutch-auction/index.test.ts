@@ -3,6 +3,7 @@ import { StoreApi, UseBoundStore, create } from 'zustand';
 import { AllSlices, initializeStore } from '../..';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 
 const mockSimulationClient = vi.hoisted(() => ({
   simulateTrade: vi.fn(),
@@ -77,13 +78,13 @@ describe('Dutch auction slice', () => {
       it('sets `maxOutput` to twice the estimated market price', async () => {
         await useStore.getState().swap.dutchAuction.estimate();
 
-        expect(useStore.getState().swap.dutchAuction.maxOutput).toEqual('0.000444');
+        expect(useStore.getState().swap.dutchAuction.maxOutput).toBe('0.000444');
       });
 
       it('sets `minOutput` to half the estimated market price', async () => {
         await useStore.getState().swap.dutchAuction.estimate();
 
-        expect(useStore.getState().swap.dutchAuction.minOutput).toEqual('0.000111');
+        expect(useStore.getState().swap.dutchAuction.minOutput).toBe('0.000111');
       });
     });
 
@@ -104,13 +105,83 @@ describe('Dutch auction slice', () => {
       it('leaves `maxOutput` at its previous value', async () => {
         await useStore.getState().swap.dutchAuction.estimate();
 
-        expect(useStore.getState().swap.dutchAuction.maxOutput).toEqual('5.678');
+        expect(useStore.getState().swap.dutchAuction.maxOutput).toBe('5.678');
       });
 
       it('leaves `minOutput` at its previous value', async () => {
         await useStore.getState().swap.dutchAuction.estimate();
 
-        expect(useStore.getState().swap.dutchAuction.minOutput).toEqual('1.234');
+        expect(useStore.getState().swap.dutchAuction.minOutput).toBe('1.234');
+      });
+    });
+  });
+
+  describe('setMaxOutput()', () => {
+    beforeEach(() => {
+      useStore.setState(state => {
+        state.swap.assetOut = new Metadata({
+          base: 'uasset',
+          display: 'asset',
+          denomUnits: [{ denom: 'uasset' }, { denom: 'asset', exponent: 6 }],
+        });
+        state.swap.dutchAuction.maxOutput = '1.234';
+        state.swap.dutchAuction.estimatedOutput = new Amount({ hi: 0n, lo: 123n });
+        return state;
+      });
+    });
+
+    it('updates the `maxOutput`', () => {
+      useStore.getState().swap.dutchAuction.setMaxOutput('5.678');
+
+      expect(useStore.getState().swap.dutchAuction.maxOutput).toBe('5.678');
+    });
+
+    it('clears the `estimatedOutput`', () => {
+      useStore.getState().swap.dutchAuction.setMaxOutput('5.678');
+
+      expect(useStore.getState().swap.dutchAuction.estimatedOutput).toBeUndefined();
+    });
+
+    describe('when passed `0`', () => {
+      it("updates `maxOutput` to the smallest possible value above 0 for the given asset's display denom exponent", () => {
+        useStore.getState().swap.dutchAuction.setMaxOutput('0');
+
+        expect(useStore.getState().swap.dutchAuction.maxOutput).toBe('0.000001');
+      });
+    });
+  });
+
+  describe('setMinOutput()', () => {
+    beforeEach(() => {
+      useStore.setState(state => {
+        state.swap.assetOut = new Metadata({
+          base: 'uasset',
+          display: 'asset',
+          denomUnits: [{ denom: 'uasset' }, { denom: 'asset', exponent: 6 }],
+        });
+        state.swap.dutchAuction.minOutput = '1.234';
+        state.swap.dutchAuction.estimatedOutput = new Amount({ hi: 0n, lo: 123n });
+        return state;
+      });
+    });
+
+    it('updates the `minOutput`', () => {
+      useStore.getState().swap.dutchAuction.setMinOutput('5.678');
+
+      expect(useStore.getState().swap.dutchAuction.minOutput).toBe('5.678');
+    });
+
+    it('clears the `estimatedOutput`', () => {
+      useStore.getState().swap.dutchAuction.setMinOutput('5.678');
+
+      expect(useStore.getState().swap.dutchAuction.estimatedOutput).toBeUndefined();
+    });
+
+    describe('when passed `0`', () => {
+      it("updates `minOutput` to the smallest possible value above 0 for the given asset's display denom exponent", () => {
+        useStore.getState().swap.dutchAuction.setMinOutput('0');
+
+        expect(useStore.getState().swap.dutchAuction.minOutput).toBe('0.000001');
       });
     });
   });
