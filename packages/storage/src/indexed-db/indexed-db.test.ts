@@ -594,9 +594,12 @@ describe('IndexedDb', () => {
 
     const numeraireAssetId = new AssetId({ inner: new Uint8Array([5, 6, 7, 8]) });
 
+    const stakingAssetId = AssetId.fromJson({
+      inner: 'KeqcLzNx9qSH5+lcJHBB9KNW+YPrBk5dKzvPMiypahA=',
+    });
     beforeEach(async () => {
       db = await IndexedDb.initialize({ ...generateInitialProps() });
-      await db.updatePrice(delegationMetadataA.penumbraAssetId!, numeraireAssetId, 1.23, 50n);
+      await db.updatePrice(delegationMetadataA.penumbraAssetId!, stakingAssetId, 1.23, 50n);
       await db.updatePrice(metadataA.penumbraAssetId!, numeraireAssetId, 22.15, 40n);
     });
 
@@ -627,6 +630,11 @@ describe('IndexedDb', () => {
           asOfHeight: 50n,
         }),
       ]);
+    });
+
+    it('should delete only prices with a numeraires different from the staking token', async () => {
+      await db.clearSwapBasedPrices();
+      await expect(db.getPricesForAsset(metadataA, 50n)).resolves.toEqual([]);
     });
   });
 

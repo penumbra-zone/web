@@ -669,12 +669,18 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async clearSwapBasedPrices(): Promise<void> {
-    for await (const cursor of this.db.transaction('PRICES').store) {
+    const tx = this.db.transaction('PRICES', 'readwrite');
+    const store = tx.objectStore('PRICES');
+
+    let cursor = await store.openCursor();
+    while (cursor) {
       const price = EstimatedPrice.fromJson(cursor.value);
-      // Do not delete prices for delegation assets
-      if (price.numeraire?.equals(this.stakingTokenAssetId)) continue;
-      await this.db.delete('PRICES', cursor.key);
+      if (!price.numeraire?.equals(this.stakingTokenAssetId)) {
+        cursor.delete();
+      }
+      cursor = await cursor.continue();
     }
+    await tx.done;
   }
 
   private determinePriceRelevanceThresholdForAsset(assetMetadata: Metadata): number {
