@@ -24,14 +24,17 @@ const getButtonProps = (
   auctionId: AuctionId,
   endAuction: (auctionId: AuctionId) => Promise<void>,
   withdraw: (auctionId: AuctionId, seqNum: bigint) => Promise<void>,
-  seqNum?: bigint,
+  localSeqNum?: bigint,
 ):
   | { buttonType: 'end' | 'withdraw'; onClickButton: VoidFunction }
   | { buttonType: undefined; onClickButton: undefined } => {
-  if (seqNum === 0n) return { buttonType: 'end', onClickButton: () => void endAuction(auctionId) };
+  if (localSeqNum === 0n) {
+    return { buttonType: 'end', onClickButton: () => void endAuction(auctionId) };
+  }
 
-  if (seqNum === 1n)
-    return { buttonType: 'withdraw', onClickButton: () => void withdraw(auctionId, seqNum) };
+  if (localSeqNum === 1n) {
+    return { buttonType: 'withdraw', onClickButton: () => void withdraw(auctionId, localSeqNum) };
+  }
 
   return { buttonType: undefined, onClickButton: undefined };
 };
@@ -84,12 +87,7 @@ export const AuctionList = () => {
                 inputMetadata={auctionInfo.inputMetadata}
                 outputMetadata={auctionInfo.outputMetadata}
                 fullSyncHeight={status?.fullSyncHeight}
-                {...getButtonProps(
-                  auctionInfo.id,
-                  endAuction,
-                  withdraw,
-                  auctionInfo.auction.state?.seq,
-                )}
+                {...getButtonProps(auctionInfo.id, endAuction, withdraw, auctionInfo.localSeqNum)}
                 renderButtonPlaceholder
               />
             </div>

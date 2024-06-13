@@ -9,6 +9,7 @@ import { getInputAssetId, getOutputAssetId } from '@penumbra-zone/getters/dutch-
 export interface AuctionInfo {
   id: AuctionId;
   auction: DutchAuction;
+  localSeqNum: bigint;
   inputMetadata?: Metadata;
   outputMetadata?: Metadata;
 }
@@ -41,6 +42,7 @@ export const getAuctionInfos = async function* ({
     yield {
       id: response.id,
       auction,
+      localSeqNum: response.localSeq,
       inputMetadata: inputMetadata?.denomMetadata,
       outputMetadata: outputMetadata?.denomMetadata,
     };
