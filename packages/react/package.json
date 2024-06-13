@@ -1,0 +1,53 @@
+{
+  "name": "@penumbra-zone/react",
+  "version": "0.0.1",
+  "license": "(MIT OR Apache-2.0)",
+  "description": "Reactive package for connecting to any Penumbra extension, including Prax.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --build && tsc-alias",
+    "clean": "rm -rfv dist package penumbra-zone-react-*.tgz",
+    "lint": "eslint src",
+    "prebuild": "$npm_execpath run clean",
+    "prepack": "$npm_execpath run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./components/*": "./src/components/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./components/*": {
+        "types": "./dist/components/*.d.ts",
+        "default": "./dist/components/*.js"
+      },
+      "./hooks/*": {
+        "types": "./dist/hooks/*.d.ts",
+        "default": "./dist/hooks/*.js"
+      }
+    }
+  },
+  "dependencies": {
+    "@penumbra-zone/client": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
+    "@penumbra-zone/transport-dom": "workspace:*"
+  },
+  "devDependencies": {
+    "@connectrpc/connect": "^1.4.0",
+    "@types/react": "^18.3.2",
+    "react": "^18.3.1"
+  },
+  "peerDependencies": {
+    "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.4.0",
+    "react": "^18.3.1"
+  }
+}

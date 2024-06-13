@@ -56,19 +56,19 @@ importers:
         version: link:packages/tsconfig
       '@storybook/react-vite':
         specifier: 8.1.1
-        version: 8.1.1(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.18.0)(typescript@5.5.1-rc)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
+        version: 8.1.1(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.18.0)(typescript@5.5.1-rc)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))
       '@turbo/gen':
         specifier: ^1.13.3
         version: 1.13.4(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.1-rc)
       '@vitejs/plugin-basic-ssl':
         specifier: ^1.1.0
-        version: 1.1.0(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
+        version: 1.1.0(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))
       '@vitejs/plugin-react':
         specifier: ^4.2.1
-        version: 4.3.1(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
+        version: 4.3.1(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))
       '@vitejs/plugin-react-swc':
         specifier: ^3.6.0
-        version: 3.7.0(@swc/helpers@0.5.11)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
+        version: 3.7.0(@swc/helpers@0.5.11)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))
       '@vitest/browser':
         specifier: ^1.6.0
         version: 1.6.0(playwright@1.45.0)(vitest@1.6.0)
@@ -77,7 +77,7 @@ importers:
         version: 10.4.19(postcss@8.4.38)
       jsdom:
         specifier: ^24.0.0
-        version: 24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)
+        version: 24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       playwright:
         specifier: ^1.44.0
         version: 1.45.0
@@ -104,19 +104,19 @@ importers:
         version: 5.5.1-rc
       vite:
         specifier: ^5.2.11
-        version: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
+        version: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
       vite-plugin-node-stdlib-browser:
         specifier: ^0.2.1
-        version: 0.2.1(node-stdlib-browser@1.2.0)(rollup@4.18.0)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
+        version: 0.2.1(node-stdlib-browser@1.2.0)(rollup@4.18.0)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))
       vite-plugin-top-level-await:
         specifier: ^1.4.1
-        version: 1.4.1(@swc/helpers@0.5.11)(rollup@4.18.0)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
+        version: 1.4.1(@swc/helpers@0.5.11)(rollup@4.18.0)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))
       vite-plugin-wasm:
         specifier: ^3.3.0
-        version: 3.3.0(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
+        version: 3.3.0(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))
       vitest:
         specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
+        version: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
 
   apps/minifront:
     dependencies:
@@ -125,19 +125,19 @@ importers:
         version: 1.10.0
       '@cosmjs/proto-signing':
         specifier: ^0.32.3
-        version: 0.32.3
+        version: 0.32.4
       '@cosmjs/stargate':
         specifier: ^0.32.3
-        version: 0.32.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+        version: 0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@cosmos-kit/core':
         specifier: ^2.12.0
         version: 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@cosmos-kit/react':
         specifier: ^2.15.0
-        version: 2.17.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@interchain-ui/react@1.23.23(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
+        version: 2.17.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@interchain-ui/react@1.23.24(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
       '@interchain-ui/react':
         specifier: ^1.23.16
-        version: 1.23.23(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 1.23.24(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@penumbra-labs/registry':
         specifier: 9.1.0
         version: 9.1.0
@@ -200,10 +200,10 @@ importers:
         version: 9.1.2
       chain-registry:
         specifier: ^1.62.8
-        version: 1.63.10
+        version: 1.63.11
       cosmos-kit:
         specifier: ^2.17.0
-        version: 2.18.1(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@terra-money/terra.js@3.1.10)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(axios@1.7.2)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(react@18.3.1)(utf-8-validate@5.0.10)
+        version: 2.18.2(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(axios@1.7.2)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(react@18.3.1)(utf-8-validate@5.0.10)
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
@@ -245,20 +245,20 @@ importers:
         version: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.1-rc))
       zustand:
         specifier: ^4.5.2
-        version: 4.5.3(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1)
+        version: 4.5.4(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1)
     devDependencies:
       '@chain-registry/types':
         specifier: ^0.44.6
         version: 0.44.11
       '@testing-library/jest-dom':
         specifier: ^6.4.5
-        version: 6.4.6(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))
+        version: 6.4.6(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))
       '@testing-library/react':
         specifier: ^15.0.7
         version: 15.0.7(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@types/lodash':
         specifier: ^4.17.4
-        version: 4.17.5
+        version: 4.17.6
       '@types/react':
         specifier: ^18.3.2
         version: 18.3.3
@@ -270,7 +270,7 @@ importers:
         version: 6.1.11
       vite:
         specifier: ^5.2.11
-        version: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
+        version: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
 
   apps/node-status:
     dependencies:
@@ -365,10 +365,10 @@ importers:
         version: 9.1.0(eslint@9.5.0)
       eslint-import-resolver-typescript:
         specifier: ^3.6.1
-        version: 3.6.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2))(eslint-plugin-import@2.29.1)(eslint@9.5.0)
+        version: 3.6.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc))(eslint-plugin-import@2.29.1)(eslint@9.5.0)
       eslint-plugin-import:
         specifier: ^2.29.1
-        version: 2.29.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2))(eslint-import-resolver-typescript@3.6.1)(eslint@9.5.0)
+        version: 2.29.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc))(eslint-import-resolver-typescript@3.6.1)(eslint@9.5.0)
       eslint-plugin-prettier:
         specifier: ^5.1.3
         version: 5.1.3(@types/eslint@8.56.10)(eslint-config-prettier@9.1.0(eslint@9.5.0))(eslint@9.5.0)(prettier@3.3.2)
@@ -380,19 +380,19 @@ importers:
         version: 4.6.2(eslint@9.5.0)
       eslint-plugin-storybook:
         specifier: ^0.8.0
-        version: 0.8.0(eslint@9.5.0)(typescript@5.5.2)
+        version: 0.8.0(eslint@9.5.0)(typescript@5.5.1-rc)
       eslint-plugin-tailwindcss:
         specifier: ^3.15.2
-        version: 3.17.4(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2)))
+        version: 3.17.4(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.1-rc)))
       eslint-plugin-turbo:
         specifier: ^1.13.3
         version: 1.13.4(eslint@9.5.0)
       eslint-plugin-vitest:
         specifier: ^0.5.4
-        version: 0.5.4(eslint@9.5.0)(typescript@5.5.2)(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))
+        version: 0.5.4(eslint@9.5.0)(typescript@5.5.1-rc)(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))
       typescript-eslint:
         specifier: ^7.10.0
-        version: 7.14.1(eslint@9.5.0)(typescript@5.5.2)
+        version: 7.14.1(eslint@9.5.0)(typescript@5.5.1-rc)
 
   packages/getters:
     dependencies:
@@ -484,6 +484,31 @@ importers:
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
+
+  packages/react:
+    dependencies:
+      '@bufbuild/protobuf':
+        specifier: ^1.10.0
+        version: 1.10.0
+      '@penumbra-zone/client':
+        specifier: workspace:*
+        version: link:../client
+      '@penumbra-zone/protobuf':
+        specifier: workspace:*
+        version: link:../protobuf
+      '@penumbra-zone/transport-dom':
+        specifier: workspace:*
+        version: link:../transport-dom
+    devDependencies:
+      '@connectrpc/connect':
+        specifier: ^1.4.0
+        version: 1.4.0(@bufbuild/protobuf@1.10.0)
+      '@types/react':
+        specifier: ^18.3.2
+        version: 18.3.3
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
 
   packages/services:
     dependencies:
@@ -694,7 +719,7 @@ importers:
         version: 1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@testing-library/jest-dom':
         specifier: ^6.4.5
-        version: 6.4.6(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))
+        version: 6.4.6(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))
       '@textea/json-viewer':
         specifier: ^3.4.1
         version: 3.4.1(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@mui/material@5.15.20(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.3)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -775,7 +800,7 @@ importers:
         version: 2.3.0
       tailwindcss:
         specifier: ^3.4.3
-        version: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2))
+        version: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.1-rc))
       tinycolor2:
         specifier: ^1.6.0
         version: 1.6.0
@@ -791,28 +816,28 @@ importers:
         version: link:../tailwind-config
       '@storybook/addon-essentials':
         specifier: ^8.1.1
-        version: 8.1.10(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@storybook/addon-interactions':
         specifier: ^8.1.1
-        version: 8.1.10(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))
+        version: 8.1.11(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))
       '@storybook/addon-links':
         specifier: ^8.1.1
-        version: 8.1.10(react@18.3.1)
+        version: 8.1.11(react@18.3.1)
       '@storybook/addon-postcss':
         specifier: ^2.0.0
         version: 2.0.0(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2))
       '@storybook/blocks':
         specifier: ^8.1.1
-        version: 8.1.10(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@storybook/preview-api':
         specifier: ^8.1.1
-        version: 8.1.10
+        version: 8.1.11
       '@storybook/react':
         specifier: ^8.1.1
-        version: 8.1.10(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.2)
+        version: 8.1.11(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.1-rc)
       '@storybook/react-vite':
         specifier: 8.1.1
-        version: 8.1.1(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.18.0)(typescript@5.5.2)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
+        version: 8.1.1(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.18.0)(typescript@5.5.1-rc)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))
       '@testing-library/dom':
         specifier: ^10.1.0
         version: 10.2.0
@@ -836,7 +861,7 @@ importers:
         version: 15.8.1
       storybook:
         specifier: ^8.1.1
-        version: 8.1.10(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@6.0.4)
+        version: 8.1.11(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
 
   packages/wasm:
     dependencies:
@@ -871,7 +896,7 @@ importers:
         version: 18.3.1
       zustand:
         specifier: ^4.5.2
-        version: 4.5.3(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1)
+        version: 4.5.4(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1)
     devDependencies:
       '@testing-library/dom':
         specifier: ^10.1.0
@@ -887,7 +912,7 @@ importers:
         version: 18.3.0
       vitest:
         specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
+        version: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
 
 packages:
 
@@ -1752,17 +1777,17 @@ packages:
   '@bufbuild/protobuf@1.10.0':
     resolution: {integrity: sha512-QDdVFLoN93Zjg36NoQPZfsVH9tZew7wKDKyV5qRdj8ntT4wQCOradQjRaTdwMhWUYsgKsvCINKKm87FdEk96Ag==}
 
-  '@chain-registry/client@1.48.7':
-    resolution: {integrity: sha512-Xi0Jy1j+GJJ/cSDZLqM79bB/YgomyDqMqCbgFSKHQ4sKnjFxARBJI+8IT/o0+waH40V3FebCKBY9tbgj2ApQmQ==}
+  '@chain-registry/client@1.48.8':
+    resolution: {integrity: sha512-So5AwYCARjos30QkJfIlrWvVAd9Br24soe8ZZbk7FggNniaNoLzbgaeDXSIYIHEh5x1W6nPMLnfPxkptlf7+oQ==}
 
-  '@chain-registry/cosmostation@1.66.10':
-    resolution: {integrity: sha512-af1b/ii/ZBepgNApogIBIiwNs4S2Wmc8sKwja1B4NFB+GcIHUCXfONgiUiRBK8blWzFm3/rTxaDmG0PStouWcg==}
+  '@chain-registry/cosmostation@1.66.11':
+    resolution: {integrity: sha512-H3diwiEjtbOuOXbHbkwMSAuriQYBb3iwK8s6sEwa2Z6YTtLOl0puS2usB5AA+CMfGHzF3Mge49Jqt3vgFtmoAw==}
 
   '@chain-registry/cosmostation@1.66.2':
     resolution: {integrity: sha512-Jwsu1DluwGm5cY06cTXVfqVMvbJ4yIKCpXLYwxMDYu9DM2oLPK6r/hPucm2zumUXvEyUqBsFDDPEWq2JagVEhw==}
 
-  '@chain-registry/keplr@1.68.10':
-    resolution: {integrity: sha512-MwUyplNS4jtJDHgBxROsH/GOPWtrgG8E2c7BqIZjFZcIj4Pveqbne8DxS+3Gy4q4XpCSbAzR5GPZhvxQ+65xkw==}
+  '@chain-registry/keplr@1.68.11':
+    resolution: {integrity: sha512-DQkTPYxd/UNdTl9RfJlwL0oQE8vP/ZaRdldjCuXsXX4AWXyvTrlPizwKjpLQ8p7kFWOY5xjAx9kADubpg2vhbw==}
 
   '@chain-registry/keplr@1.68.2':
     resolution: {integrity: sha512-H3rdf/cLx7bNyyKo+1nI9HpLTlLzyeqi0Rmt+ggwtFRC63ZmDaMg/3vPY4rHvu38OdcaOid4Nyfc+7h3EEPW8Q==}
@@ -1773,11 +1798,11 @@ packages:
   '@chain-registry/types@0.45.1':
     resolution: {integrity: sha512-xDq3RZwLM6VZt7Bwrilm588xTce7mOZIpLIjpwaT/V6HD3TuzJC3FWMRAxUtMuhQldcjW8b8em5HdFY467FRhA==}
 
-  '@chain-registry/types@0.45.7':
-    resolution: {integrity: sha512-7448QRctg+iQUDoHTaQqm3iglLTfL9lTcXT5idobYRucmGYDhJvYz8A5Yh8V2lXCyt6MVxb14pe7lrXjL27VDg==}
+  '@chain-registry/types@0.45.8':
+    resolution: {integrity: sha512-AGwyYb7gNpQasLvWj0P3UfiBR/iLsGBG0TANYw5KEjxZrttp6HrJUdkJByLOdtcR0kLTCU7LxXF29BqHok0vvw==}
 
-  '@chain-registry/utils@1.46.7':
-    resolution: {integrity: sha512-EDFX96vntLRUMYD5RnyqnlIbloQs/2IT1xSe6OFZKKmUYdCrC6qt9wmM3ick9wm3b/rHihpkk9b4WAoMB4SZOw==}
+  '@chain-registry/utils@1.46.8':
+    resolution: {integrity: sha512-OXZ3Gllfz5HOSBt+cfkvBm3JM38e9RpF+ReWv7x6NkSFRuyLT+oKrhRlYu0Z5m3G8N4fNh8Y/AP4CKeWAvvP2w==}
 
   '@changesets/apply-release-plan@7.0.3':
     resolution: {integrity: sha512-klL6LCdmfbEe9oyfLxnidIf/stFXmrbFO/3gT5LU5pcyoZytzJe4gWpTBx3BPmyNPl16dZ1xrkcW7b98e3tYkA==}
@@ -1858,38 +1883,50 @@ packages:
   '@cosmjs/amino@0.32.3':
     resolution: {integrity: sha512-G4zXl+dJbqrz1sSJ56H/25l5NJEk/pAPIr8piAHgbXYw88OdAOlpA26PQvk2IbSN/rRgVbvlLTNgX2tzz1dyUA==}
 
-  '@cosmjs/cosmwasm-stargate@0.32.3':
-    resolution: {integrity: sha512-pqkt+QsLIPNMTRh9m+igJgIpzXXgn1BxmxfAb9zlC23kvsuzY/12un9M7iAdim1NwKXDFeYw46xC2YkprwQp+g==}
+  '@cosmjs/amino@0.32.4':
+    resolution: {integrity: sha512-zKYOt6hPy8obIFtLie/xtygCkH9ZROiQ12UHfKsOkWaZfPQUvVbtgmu6R4Kn1tFLI/SRkw7eqhaogmW/3NYu/Q==}
 
-  '@cosmjs/crypto@0.32.3':
-    resolution: {integrity: sha512-niQOWJHUtlJm2GG4F00yGT7sGPKxfUwz+2qQ30uO/E3p58gOusTcH2qjiJNVxb8vScYJhFYFqpm/OA/mVqoUGQ==}
+  '@cosmjs/cosmwasm-stargate@0.32.4':
+    resolution: {integrity: sha512-Fuo9BGEiB+POJ5WeRyBGuhyKR1ordvxZGLPuPosFJOH9U0gKMgcjwKMCgAlWFkMlHaTB+tNdA8AifWiHrI7VgA==}
 
-  '@cosmjs/encoding@0.32.3':
-    resolution: {integrity: sha512-p4KF7hhv8jBQX3MkB3Defuhz/W0l3PwWVYU2vkVuBJ13bJcXyhU9nJjiMkaIv+XP+W2QgRceqNNgFUC5chNR7w==}
+  '@cosmjs/crypto@0.32.4':
+    resolution: {integrity: sha512-zicjGU051LF1V9v7bp8p7ovq+VyC91xlaHdsFOTo2oVry3KQikp8L/81RkXmUIT8FxMwdx1T7DmFwVQikcSDIw==}
 
-  '@cosmjs/json-rpc@0.32.3':
-    resolution: {integrity: sha512-JwFRWZa+Y95KrAG8CuEbPVOSnXO2uMSEBcaAB/FBU3Mo4jQnDoUjXvt3vwtFWxfAytrWCn1I4YDFaOAinnEG/Q==}
+  '@cosmjs/encoding@0.32.4':
+    resolution: {integrity: sha512-tjvaEy6ZGxJchiizzTn7HVRiyTg1i4CObRRaTRPknm5EalE13SV+TCHq38gIDfyUeden4fCuaBVEdBR5+ti7Hw==}
 
-  '@cosmjs/math@0.32.3':
-    resolution: {integrity: sha512-amumUtZs8hCCnV+lSBaJIiZkGabQm22QGg/IotYrhcmoOEOjt82n7hMNlNXRs7V6WLMidGrGYcswB5zcmp0Meg==}
+  '@cosmjs/json-rpc@0.32.4':
+    resolution: {integrity: sha512-/jt4mBl7nYzfJ2J/VJ+r19c92mUKF0Lt0JxM3MXEJl7wlwW5haHAWtzRujHkyYMXOwIR+gBqT2S0vntXVBRyhQ==}
+
+  '@cosmjs/math@0.32.4':
+    resolution: {integrity: sha512-++dqq2TJkoB8zsPVYCvrt88oJWsy1vMOuSOKcdlnXuOA/ASheTJuYy4+oZlTQ3Fr8eALDLGGPhJI02W2HyAQaw==}
 
   '@cosmjs/proto-signing@0.32.3':
     resolution: {integrity: sha512-kSZ0ZUY0DwcRT0NcIn2HkadH4NKlwjfZgbLj1ABwh/4l0RgeT84QCscZCu63tJYq3K6auwqTiZSZERwlO4/nbg==}
 
-  '@cosmjs/socket@0.32.3':
-    resolution: {integrity: sha512-F2WwNmaUPdZ4SsH6Uyreq3wQk7jpaEkb3wfOP951f5Jt6HCW/PxbxhKzHkAAf6+Sqks6SPhkbWoE8XaZpjL2KA==}
+  '@cosmjs/proto-signing@0.32.4':
+    resolution: {integrity: sha512-QdyQDbezvdRI4xxSlyM1rSVBO2st5sqtbEIl3IX03uJ7YiZIQHyv6vaHVf1V4mapusCqguiHJzm4N4gsFdLBbQ==}
+
+  '@cosmjs/socket@0.32.4':
+    resolution: {integrity: sha512-davcyYziBhkzfXQTu1l5NrpDYv0K9GekZCC9apBRvL1dvMc9F/ygM7iemHjUA+z8tJkxKxrt/YPjJ6XNHzLrkw==}
 
   '@cosmjs/stargate@0.32.3':
     resolution: {integrity: sha512-OQWzO9YWKerUinPIxrO1MARbe84XkeXJAW0lyMIjXIEikajuXZ+PwftiKA5yA+8OyditVmHVLtPud6Pjna2s5w==}
 
-  '@cosmjs/stream@0.32.3':
-    resolution: {integrity: sha512-J2zVWDojkynYifAUcRmVczzmp6STEpyiAARq0rSsviqjreGIfspfuws/8rmkPa6qQBZvpQOBQCm2HyZZwYplIw==}
+  '@cosmjs/stargate@0.32.4':
+    resolution: {integrity: sha512-usj08LxBSsPRq9sbpCeVdyLx2guEcOHfJS9mHGCLCXpdAPEIEQEtWLDpEUc0LEhWOx6+k/ChXTc5NpFkdrtGUQ==}
+
+  '@cosmjs/stream@0.32.4':
+    resolution: {integrity: sha512-Gih++NYHEiP+oyD4jNEUxU9antoC0pFSg+33Hpp0JlHwH0wXhtD3OOKnzSfDB7OIoEbrzLJUpEjOgpCp5Z+W3A==}
 
   '@cosmjs/tendermint-rpc@0.32.3':
     resolution: {integrity: sha512-xeprW+VR9xKGstqZg0H/KBZoUp8/FfFyS9ljIUTLM/UINjP2MhiwncANPS2KScfJVepGufUKk0/phHUeIBSEkw==}
 
-  '@cosmjs/utils@0.32.3':
-    resolution: {integrity: sha512-WCZK4yksj2hBDz4w7xFZQTRZQ/RJhBX26uFHmmQFIcNUUVAihrLO+RerqJgk0dZqC42wstM9pEUQGtPmLcIYvg==}
+  '@cosmjs/tendermint-rpc@0.32.4':
+    resolution: {integrity: sha512-MWvUUno+4bCb/LmlMIErLypXxy7ckUuzEmpufYYYd9wgbdCXaTaO08SZzyFM5PI8UJ/0S2AmUrgWhldlbxO8mw==}
+
+  '@cosmjs/utils@0.32.4':
+    resolution: {integrity: sha512-D1Yc+Zy8oL/hkUkFUL/bwxvuDBzRGpc4cF7/SkdhxX4iHpSLgdOuTt1mhCh9+kl6NQREy9t7SYZ6xeW5gFe60w==}
 
   '@cosmology/lcd@0.13.3':
     resolution: {integrity: sha512-lihAHCoap0GN/32qcOhiMp6HcoZP8A7GeScZMlmmvBtBk6ocGAStNHjvBR4MayrvyHSCOZCvCAWPh36iFTT8Sw==}
@@ -2657,8 +2694,8 @@ packages:
     peerDependencies:
       google-protobuf: ^3.14.0
 
-  '@interchain-ui/react@1.23.23':
-    resolution: {integrity: sha512-aoqmZYRINgKqYtCLW6377H8SGvz+ni04rjBbsk7DGcxNwV9jG0jBNPGZpNL8t6CVtApIPBUwm1/43rPERzggeA==}
+  '@interchain-ui/react@1.23.24':
+    resolution: {integrity: sha512-QQpeUyHkmJZEm+p4d8G07p/KByyithXHYij/U1UvV4wbTMX1nNBj4XZ88UMt6KlzAlfDcjUCgJ9XmEz0xw/Bnw==}
     peerDependencies:
       react: ^16.14.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
@@ -2728,20 +2765,20 @@ packages:
   '@keplr-wallet/proto-types@0.12.28':
     resolution: {integrity: sha512-ukti/eCTltPUP64jxtk5TjtwJogyfKPqlBIT3KGUCGzBLIPeYMsffL5w5aoHsMjINzOITjYqzXyEF8LTIK/fmw==}
 
-  '@keplr-wallet/provider-extension@0.12.106':
-    resolution: {integrity: sha512-8jV1rNb28JdLzt7tnEy51gsAiLd+wUiHNEZUzaQDezAVlU9TO1Wcl/bJ1ahtboKGHiMN9vJvmS4BC+42Nv2Czw==}
+  '@keplr-wallet/provider-extension@0.12.107':
+    resolution: {integrity: sha512-DQ+l88ymghb8KBmruFmo25Y+BIAGNW4+I827Xfd0F4zqjyJWBU9+9Ni5aBruwkN4cuUJ+kRpJmJNQmuJzOFWaA==}
 
-  '@keplr-wallet/provider@0.12.106':
-    resolution: {integrity: sha512-0fg+0dp1flp6rRVOJxUvDkwcD9HqNgYrUwcb9ChcPnOj1MoA0Ig7t52ubfHTru2vH2Kxi/beAYV+Lca/mUcULw==}
+  '@keplr-wallet/provider@0.12.107':
+    resolution: {integrity: sha512-i3CBGJ3QapP7SOpUDdw1rlLQTU7HfmaNdui4PxYFbEWAQIG45aHwVtvD6Sa8uySOhsRz5RoqUIMhB60ISJ4Bzg==}
 
-  '@keplr-wallet/router@0.12.106':
-    resolution: {integrity: sha512-ZI5RC9pfmcX49HebhZgrhhAGZ+yQ9RzhnTUdr/Eo6qBKKtKSy05PW0ne2dXeLoCj8rKudhlCdDCCCAK0hOHu8Q==}
+  '@keplr-wallet/router@0.12.107':
+    resolution: {integrity: sha512-gWzcfnev1dtdjvETJaLDoSnfxJj7w8RshYcA5/5j2mJQisF9IY12YJ5Y/o/GEmtqcYc7bXO6XDft0Vww4708rA==}
 
   '@keplr-wallet/simple-fetch@0.12.28':
     resolution: {integrity: sha512-T2CiKS2B5n0ZA7CWw0CA6qIAH0XYI1siE50MP+i+V0ZniCGBeL+BMcDw64vFJUcEH+1L5X4sDAzV37fQxGwllA==}
 
-  '@keplr-wallet/types@0.12.106':
-    resolution: {integrity: sha512-2M8vlxIcpA4Fv0Tua9kmjhKnyhoPOfq5C+mYOacrh6HDy8OAqLCcLQm37/dzxQ61yGKBBApHICwjHANKsTL+5g==}
+  '@keplr-wallet/types@0.12.107':
+    resolution: {integrity: sha512-jBpjJO+nNL8cgsJLjZYoq84n+7nXHDdztTgRMVnnomFb+Vy0FVIEI8VUl89ImmHDUImDd0562ywsvA496/0yCA==}
 
   '@keplr-wallet/types@0.12.28':
     resolution: {integrity: sha512-EcM9d46hYDm3AO4lf4GUbTSLRySONtTmhKb7p88q56OQOgJN3MMjRacEo2p9jX9gpPe7gRIjMUalhAfUiFpZoQ==}
@@ -2749,8 +2786,8 @@ packages:
   '@keplr-wallet/unit@0.12.28':
     resolution: {integrity: sha512-kpXigHDBJGOmhtPkv9hqsQid9zkFo7OQPeKgO2n8GUlOINIXW6kWG5LXYTi/Yg9Uiw1CQF69gFMuZCJ8IzVHlA==}
 
-  '@keplr-wallet/wc-client@0.12.106':
-    resolution: {integrity: sha512-wsTNyD/pTfDc+BXbH0su58GjCX65RyVG7meNIuvMMSFkVwZp2Hj7hqLMjECSRQGAg5JucNO2KrVIIWqxaox6vw==}
+  '@keplr-wallet/wc-client@0.12.107':
+    resolution: {integrity: sha512-2DuiUWHpFU0PkiaAW/oqjtP/QhjkfEPpiuRuJy48if16AS6lcWZR+3vyCNt999Jpond3Hh3DEatXMDGFImziFw==}
     peerDependencies:
       '@walletconnect/sign-client': ^2
       '@walletconnect/types': ^2
@@ -4412,53 +4449,53 @@ packages:
   '@stablelib/x25519@1.0.3':
     resolution: {integrity: sha512-KnTbKmUhPhHavzobclVJQG5kuivH+qDLpe84iRqX3CLrKp881cF160JvXJ+hjn1aMyCwYOKeIZefIH/P5cJoRw==}
 
-  '@storybook/addon-actions@8.1.10':
-    resolution: {integrity: sha512-1MjncuynvkT3rJtrkWPHLo92Pfno+LUWtaHiNDt9nXYowclTN2cT4a4gNDh6eKkB9dITHxkD7/4mxjHpFUvyrA==}
+  '@storybook/addon-actions@8.1.11':
+    resolution: {integrity: sha512-jqYXgBgOVInStOCk//AA+dGkrfN8R7rDXA4lyu82zM59kvICtG9iqgmkSRDn0Z3zUkM+lIHZGoz0aLVQ8pxsgw==}
 
-  '@storybook/addon-backgrounds@8.1.10':
-    resolution: {integrity: sha512-nX9Hmcq5U/13S2ETcjGaLqfDcaSKTNPD3RBzWUoNQuZB/bB1q4qLLncQnQfaa6uruP9k6GIFZvtXeJAs9r0POw==}
+  '@storybook/addon-backgrounds@8.1.11':
+    resolution: {integrity: sha512-naGf1ovmsU2pSWb270yRO1IidnO+0YCZ5Tcb8I4rPhZ0vsdXNURYKS1LPSk1OZkvaUXdeB4Im9HhHfUBJOW9oQ==}
 
-  '@storybook/addon-controls@8.1.10':
-    resolution: {integrity: sha512-98uLezKv6W/1byJL+Zri5kA1Cfi+DUBsbdjz7fFJl8xMtAGwuv9cnOueQl0ouDhqqwnZ4LWHYQsSsPPMz1Lmkg==}
+  '@storybook/addon-controls@8.1.11':
+    resolution: {integrity: sha512-q/Vt4meNVlFlBWIMCJhx6r+bqiiYocCta2RoUK5nyIZUiLzHncKHX6JnCU36EmJzRyah9zkwjfCb2G1r9cjnoQ==}
 
-  '@storybook/addon-docs@8.1.10':
-    resolution: {integrity: sha512-jzmIeCoykiHg/KLPrYEDtXO/+dcQaEOqyJHS77eTzAO2iSXJlE+yva5Uwc8apG7UxDVa4Ycc1lPwMzB5GaHsGQ==}
+  '@storybook/addon-docs@8.1.11':
+    resolution: {integrity: sha512-69dv+CE4R5wFU7xnJmhuyEbLN2PEVDV3N/BbgJqeucIYPmm6zDV83Q66teCHKYtRln3BFUqPH5mxsjiHobxfJQ==}
 
-  '@storybook/addon-essentials@8.1.10':
-    resolution: {integrity: sha512-xgAXdl/MaKWmwqJJpw4z1YaD1V/r74VHHLqY3Z4YaU9DmlApkCa+FmZSS9QVAf7g6JNUcD1Dbtw5j62uNn+YyA==}
+  '@storybook/addon-essentials@8.1.11':
+    resolution: {integrity: sha512-uRTpcIZQnflML8H+2onicUNIIssKfuviW8Lyrs/KFwSZ1rMcYzhwzCNbGlIbAv04tgHe5NqEyNhb+DVQcZQBzg==}
 
-  '@storybook/addon-highlight@8.1.10':
-    resolution: {integrity: sha512-s9QKGtU6WGB/+CggNWg940NIi+u0tcxpPxqg/ltg3EOHr8J0NAZur6mibs3Z4Q5CXkAuNdWrvopLu+/27i1rQQ==}
+  '@storybook/addon-highlight@8.1.11':
+    resolution: {integrity: sha512-Iu8FCAd4ETsB6QF4xDE/OLLZY3HOFopuLM5KE0f58jnccF5zAVGr1Rj/54p6TeK0PEou0tLRPFuZs+LPlEzrSw==}
 
-  '@storybook/addon-interactions@8.1.10':
-    resolution: {integrity: sha512-GGU66TxYv6Bis10mmlgMhLOyai1am1amKVvX7ML8XYfsi6lA9zCnfQSVXulYLfjfzyIR6Ld8Kxe5awvjucPxSw==}
+  '@storybook/addon-interactions@8.1.11':
+    resolution: {integrity: sha512-nkc01z61mYM1kxf0ncBQLlFnnwW4RAVPfRSxK9BdbFN3AAvFiHCwVZdn71mi+C3L8oTqYR6o32e0RlXk+AjhHA==}
 
-  '@storybook/addon-links@8.1.10':
-    resolution: {integrity: sha512-SxCuK7k7A0/qIPzV68u25qfye3Fb0PkC1izlRbt7u64wIUIxGzgfjM3dFRWK2VaJzCsEQWSmIdv7YHi7Wv5y3w==}
+  '@storybook/addon-links@8.1.11':
+    resolution: {integrity: sha512-HlV2RQSrZyi+55W1B1a9eWNuJdNpWx0g3j7s2arNlNmbd6/kfWAp84axBstI1tL0nW4svut7bWlCsMSOIden+A==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
     peerDependenciesMeta:
       react:
         optional: true
 
-  '@storybook/addon-measure@8.1.10':
-    resolution: {integrity: sha512-akhdg3WBOBvDsolzSSvW4TIdZLMVlL9DS6rpZvhydXeX8pG0sjb+sON6VUL4h8Gs7qa8QumauXCr+Y4q1FhZhw==}
+  '@storybook/addon-measure@8.1.11':
+    resolution: {integrity: sha512-LkQD3SiLWaWt53aLB3EnmhD9Im8EOO+HKSUE+XGnIJRUcHHRqHfvDkN9KX7T1DCWbfRE5WzMHF5o23b3UiAANw==}
 
-  '@storybook/addon-outline@8.1.10':
-    resolution: {integrity: sha512-Edn5TWpV1DcumOjx0qG9bBKja6vz210ip7O47JbRDu7IDR8lguaM2X9xbmhXhBQq4fmqvobZmfRnrSeCtSYeyQ==}
+  '@storybook/addon-outline@8.1.11':
+    resolution: {integrity: sha512-vco3RLVjkcS25dNtj1lxmjq4fC0Nq08KNLMS5cbNPVJWNTuSUi/2EthSTQQCdpfMV/p6u+D5uF20A9Pl0xJFXw==}
 
   '@storybook/addon-postcss@2.0.0':
     resolution: {integrity: sha512-Nt82A7e9zJH4+A+VzLKKswUfru+T6FJTakj4dccP0i8DSn7a0CkzRPrLuZBq8tg4voV6gD74bcDf3gViCVBGtA==}
     engines: {node: '>=10', yarn: ^1.17.0}
 
-  '@storybook/addon-toolbars@8.1.10':
-    resolution: {integrity: sha512-5bRcCWrhaTX5Y91EWmHilPZ7kZaneaY414Gn5a6gsaNgaVPkSx9KD9j8M9DyXJ4yQNs265TiPWQqWrPB3Q2VgA==}
+  '@storybook/addon-toolbars@8.1.11':
+    resolution: {integrity: sha512-reIKB0+JTiP+GNzynlDcRf4xmv9+j/DQ94qiXl2ZG5+ufKilH8DiRZpVA/i0x+4+TxdGdOJr1/pOf8tAmhNEoQ==}
 
-  '@storybook/addon-viewport@8.1.10':
-    resolution: {integrity: sha512-rJpyAwTVQa+6yqjdMDeqNKoW5aPoSzBAtMywtNMP5lHwF6NpJUvm67c/ox0//d5dPPPjlJDz2QC2COWqjviQyw==}
+  '@storybook/addon-viewport@8.1.11':
+    resolution: {integrity: sha512-qk4IcGnAgiAUQxt8l5PIQ293Za+w6wxlJQIpxr7+QM8OVkADPzXY0MmQfYWU9EQplrxAC2MSx3/C1gZeq+MDOQ==}
 
-  '@storybook/blocks@8.1.10':
-    resolution: {integrity: sha512-8ZGgLIUBdSafcyaKR5Zs0CFisFCPoxZBVt3GMUCZtN+G17YhEg4+OnZs5aMZknfnh28BUnZS2STjWTGStAE5Rw==}
+  '@storybook/blocks@8.1.11':
+    resolution: {integrity: sha512-eMed7PpL/hAVM6tBS7h70bEAyzbiSU9I/kye4jZ7DkCbAsrX6OKmC7pcHSDn712WTcf3vVqxy5jOKUmOXpc0eg==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
@@ -4468,8 +4505,8 @@ packages:
       react-dom:
         optional: true
 
-  '@storybook/builder-manager@8.1.10':
-    resolution: {integrity: sha512-dhg54zpaglR9XKNAiwMqm5/IONMCEG/hO/iTfNHJI1rAGeWhvM71cmhF+VlKUcjpTlIfHe7J19+TL+sWQJNgtg==}
+  '@storybook/builder-manager@8.1.11':
+    resolution: {integrity: sha512-U7bmed4Ayg+OlJ8HPmLeGxLTHzDY7rxmxM4aAs4YL01fufYfBcjkIP9kFhJm+GJOvGm+YJEUAPe5mbM1P/bn0Q==}
 
   '@storybook/builder-vite@8.1.1':
     resolution: {integrity: sha512-+BSmXuZ9j95oKCvHcKztzjZNzBVeXYMoRO2TuflLnknMUA0v9ySp1PhiQxHM4DgAW6t9db1akzc9HoTA5sjTWg==}
@@ -4489,24 +4526,24 @@ packages:
   '@storybook/channels@8.1.1':
     resolution: {integrity: sha512-vG7y97QB++TRkuxYLNKaWJmgr9QBUHyjQgNCWvHIeSYW5zxum9sm6VSR2j1r2G3XUGFSxDwenYBTQuwZJLhWNQ==}
 
-  '@storybook/channels@8.1.10':
-    resolution: {integrity: sha512-CxZE4XrQoe+F+S2mo8Z9HTvFZKfKHIIiwYfoXKCryVp2U/z7ZKrely2PbfxWsrQvF3H0+oegfYYhYRHRiM21Zw==}
+  '@storybook/channels@8.1.11':
+    resolution: {integrity: sha512-fu5FTqo6duOqtJFa6gFzKbiSLJoia+8Tibn3xFfB6BeifWrH81hc+AZq0lTmHo5qax2G5t8ZN8JooHjMw6k2RA==}
 
-  '@storybook/cli@8.1.10':
-    resolution: {integrity: sha512-7Fm2Qgk33sHayZ0QABqwe1Jto4yyVRVW6kTrSeP5IuLh+mn244RgxBvWtGCyL1EcWDFI7PYUFa0HxgTCq7C+OA==}
+  '@storybook/cli@8.1.11':
+    resolution: {integrity: sha512-4U48w9C7mVEKrykcPcfHwJkRyCqJ28XipbElACbjIIkQEqaHaOVtP3GeKIrgkoOXe/HK3O4zKWRP2SqlVS0r4A==}
     hasBin: true
 
   '@storybook/client-logger@8.1.1':
     resolution: {integrity: sha512-9AWPgIN3K0eLusChJUqB5Ft+9P2pW5/s4vOMoj3TCvu8lrdq8AH8ctvxk7x2Kw2wEwQ/g9DyE6C/rDQUARbxew==}
 
-  '@storybook/client-logger@8.1.10':
-    resolution: {integrity: sha512-sVXCOo7jnlCgRPOcMlQGODAEt6ipPj+8xGkRUws0kie77qiDld1drLSB6R380dWc9lUrbv9E1GpxCd/Y4ZzSJQ==}
+  '@storybook/client-logger@8.1.11':
+    resolution: {integrity: sha512-DVMh2usz3yYmlqCLCiCKy5fT8/UR9aTh+gSqwyNFkGZrIM4otC5A8eMXajXifzotQLT5SaOEnM3WzHwmpvMIEA==}
 
-  '@storybook/codemod@8.1.10':
-    resolution: {integrity: sha512-HZ/vrseP/sHfbO2RZpImP5eeqOakJ0X31BIiD4uxDBIKGltMXhlPKHTI93O2YGR+vbB33otoTVRjE+ZpPmC6SA==}
+  '@storybook/codemod@8.1.11':
+    resolution: {integrity: sha512-/LCozjH1IQ1TOs9UQV59BE0X6UZ9q+C0NEUz7qmJZPrwAii3FkW4l7D/fwxblpMExaoxv0oE8NQfUz49U/5Ymg==}
 
-  '@storybook/components@8.1.10':
-    resolution: {integrity: sha512-fL2odC3Ct3NiFJEiGLmMNB3Tw3CdUDA/+va3Ka/JEhjaRhbsND2JgriHYmED8SnX9CCqwXoxl5QA8qwl+Oyolw==}
+  '@storybook/components@8.1.11':
+    resolution: {integrity: sha512-iXKsNu7VmrLBtjMfPj7S4yJ6T13GU6joKcVcrcw8wfrQJGlPFp4YaURPBUEDxvCt1XWi5JkaqJBvb48kIrROEQ==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
@@ -4519,8 +4556,8 @@ packages:
       prettier:
         optional: true
 
-  '@storybook/core-common@8.1.10':
-    resolution: {integrity: sha512-+0GhgDRQwUlXu1lY77NdLnVBVycCEW0DG7eu7rvLYYkTyNRxbdl2RWsQpjr/j4sxqT6u82l9/b+RWpmsl4MgMQ==}
+  '@storybook/core-common@8.1.11':
+    resolution: {integrity: sha512-Ix0nplD4I4DrV2t9B+62jaw1baKES9UbR/Jz9LVKFF9nsua3ON0aVe73dOjMxFWBngpzBYWe+zYBTZ7aQtDH4Q==}
     peerDependencies:
       prettier: ^2 || ^3
     peerDependenciesMeta:
@@ -4530,23 +4567,23 @@ packages:
   '@storybook/core-events@8.1.1':
     resolution: {integrity: sha512-WpeiBV6RWTZ6t8SI1YdQh8NlbvQtZs9WRr4CPfpzHAly+oxFy6PtPz0h5TMKsU5/kt/L9yL7tE9ZzPYzvFWH/A==}
 
-  '@storybook/core-events@8.1.10':
-    resolution: {integrity: sha512-aS4zsBVyJds74+rAW0IfTEjULDCQwXecVpQfv11B8/89/07s3bOPssGGoTtCTaN4pHbduywE6MxbmFvTmXOFCA==}
+  '@storybook/core-events@8.1.11':
+    resolution: {integrity: sha512-vXaNe2KEW9BGlLrg0lzmf5cJ0xt+suPjWmEODH5JqBbrdZ67X6ApA2nb6WcxDQhykesWCuFN5gp1l+JuDOBi7A==}
 
-  '@storybook/core-server@8.1.10':
-    resolution: {integrity: sha512-jNL5/daNyo7Rcu+y/bOmSB1P65pmcaLwvpr31EUEIISaAqvgruaneS3GKHg2TR0wcxEoHaM4abqhW6iwkI/XYQ==}
+  '@storybook/core-server@8.1.11':
+    resolution: {integrity: sha512-L6dzQTmR0np/kagNONvvlm6lSvF1FNc9js3vxsEEPnEypLbhx8bDZaHmuhmBpYUzKyUMpRVQTE/WgjHLuBBuxA==}
 
   '@storybook/csf-plugin@8.1.1':
     resolution: {integrity: sha512-aZ2F3PY601MuW8xWf7/f928/anhZyaXYnysa8ViHooBEnJS1FBJfCsDDSM54FTDRyyOQF6AZtHeY53snd+e9ng==}
 
-  '@storybook/csf-plugin@8.1.10':
-    resolution: {integrity: sha512-EwW9Olw85nKamUH/2YrkD+bxDvDP4TJ2MqS1qR3UU+lBP/HMQA2zFAgiW1TUmmdHmhAeiDOXbDhijxMa30sppQ==}
+  '@storybook/csf-plugin@8.1.11':
+    resolution: {integrity: sha512-hkA8gjFtSN/tabG0cuvmEqanMXtxPr3qTkp4UNSt1R6jBEgFHRG2y/KYLl367kDwOSFTT987ZgRfJJruU66Fvw==}
 
   '@storybook/csf-tools@8.1.1':
     resolution: {integrity: sha512-BaS1bFx8Rj9Nj7gxsJrifu9lFoli7CD4DxBGEeagVOvCcBX95RI0I9JLhr81LdMl5DwPP1xBGZjCVNsC7eIR4w==}
 
-  '@storybook/csf-tools@8.1.10':
-    resolution: {integrity: sha512-bm/J1jAJf1YaKhcXgOlsNN02sf8XvILXuVAvr9cFC3aFkxVoGbC2AKCss4cgXAd8EQxUNtyETkOcheB5mJ5IlA==}
+  '@storybook/csf-tools@8.1.11':
+    resolution: {integrity: sha512-6qMWAg/dBwCVIHzANM9lSHoirwqSS+wWmv+NwAs0t9S94M75IttHYxD3IyzwaSYCC5llp0EQFvtXXAuSfFbibg==}
 
   '@storybook/csf@0.0.1':
     resolution: {integrity: sha512-USTLkZze5gkel8MYCujSRBVIrUQ3YPBrLOx7GNk/0wttvVtlzWXAq9eLbQ4p/NicGxP+3T7KPEMVV//g+yubpw==}
@@ -4560,8 +4597,8 @@ packages:
   '@storybook/docs-tools@8.1.1':
     resolution: {integrity: sha512-BPq9e6bl4uRru0GSLHS56eg0SV5LEMJSzrMIzeSrTf9xoZdBeLM05oblo2oebEGZUE97uduhKoaUeUJtsuMIxw==}
 
-  '@storybook/docs-tools@8.1.10':
-    resolution: {integrity: sha512-FsO/+L9CrUfAIbm9cdH9UpjTusT7L5RZxN4WCXkiF5SpAVyBoY8kar3RzTZVoh4aQxt1yGWYC+SZGjgf++xa4g==}
+  '@storybook/docs-tools@8.1.11':
+    resolution: {integrity: sha512-mEXtR9rS7Y+OdKtT/QG6JBGYR1L41mcDhIqhnk7RmYl9qJstVAegrCKWR53sPKFdTVOHU7dmu6k+BD+TqHpyyw==}
 
   '@storybook/global@5.0.0':
     resolution: {integrity: sha512-FcOqPAXACP0I3oJ/ws6/rrPT9WGhu915Cg8D02a9YxLo0DE9zI+a9A5gRGvmQ09fiWPukqI8ZAEoQEdWUKMQdQ==}
@@ -4573,14 +4610,14 @@ packages:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
 
-  '@storybook/instrumenter@8.1.10':
-    resolution: {integrity: sha512-/TZ3JpTCorbhThCfaR5k4Vs0Svp6xz6t+FVaim/v7N9VErEfmtn+d76CqYLfvmo68DzkEzvArOFBdh2MXtscsw==}
+  '@storybook/instrumenter@8.1.11':
+    resolution: {integrity: sha512-r/U9hcqnodNMHuzRt1g56mWrVsDazR85Djz64M3KOwBhrTj5d46DF4/EE80w/5zR5JOrT7p8WmjJRowiVteOCQ==}
 
-  '@storybook/manager-api@8.1.10':
-    resolution: {integrity: sha512-9aZ+zoNrTo1BJskVmCKE/yqlBXmWaKVZh1W/+/xu3WL9wdm/tBlozRvQwegIZlRVvUOxtjOg28Vd2hySYL58zg==}
+  '@storybook/manager-api@8.1.11':
+    resolution: {integrity: sha512-QSgwKfAw01K9YvvZj30iGBMgQ4YaCT3vojmttuqdH5ukyXkiO7pENLJj4Y+alwUeSi0g+SJeadCI3PXySBHOGg==}
 
-  '@storybook/manager@8.1.10':
-    resolution: {integrity: sha512-dQmRBfT4CABIPhv0kL25qKcQk2SiU5mIZ1DuVzckIbZW+iYEOAusyJ/0HExM9leCrymaW3BgZGlHbIXL7EvZtw==}
+  '@storybook/manager@8.1.11':
+    resolution: {integrity: sha512-e02y9dmxowo7cTKYm9am7UO6NOHoHy6Xi7xZf/UA932qLwFZUtk5pnwIEFaZWI3OQsRUCGhP+FL5zizU7uVZeg==}
 
   '@storybook/node-logger@6.5.16':
     resolution: {integrity: sha512-YjhBKrclQtjhqFNSO+BZK+RXOx6EQypAELJKoLFaawg331e8VUfvUuRCNB3fcEWp8G9oH13PQQte0OTjLyyOYg==}
@@ -4588,14 +4625,14 @@ packages:
   '@storybook/node-logger@8.1.1':
     resolution: {integrity: sha512-l+B8eu3yBZfrHvCR/FVqGyObgA0KSLp+06NkWDMn0p7qu0tCTROquopKdn2gXKitZp8wGwhgJV56OvW5C12XQA==}
 
-  '@storybook/node-logger@8.1.10':
-    resolution: {integrity: sha512-djgbAROgGAvz/gr49egBxCHn1+rui57e76qa9aOMPzEBcxsGrnnKKp0uNdiNt4M7Xv6S2QHbJ2SfOlHhWmMeaA==}
+  '@storybook/node-logger@8.1.11':
+    resolution: {integrity: sha512-wdzFo7B2naGhS52L3n1qBkt5BfvQjs8uax6B741yKRpiGgeAN8nz8+qelkD25MbSukxvbPgDot7WJvsMU/iCzg==}
 
   '@storybook/preview-api@8.1.1':
     resolution: {integrity: sha512-5EcByqtJgj7a7ZWICMLif8mK3cRmdIMbdSPEDf4X6aTQ8LZOg6updLrkb/Eh6qfeYv46TK/MP8BXa89wfOxWGQ==}
 
-  '@storybook/preview-api@8.1.10':
-    resolution: {integrity: sha512-0Gl8WHDtp/srrA5uBYXl7YbC8kFQA7IxVmwWN7dIS7HAXu63JZ6JfxaFcfy+kCBfZSBD7spFG4J0f5JXRDYbpg==}
+  '@storybook/preview-api@8.1.11':
+    resolution: {integrity: sha512-8ZChmFV56GKppCJ0hnBd/kNTfGn2gWVq1242kuet13pbJtBpvOhyq4W01e/Yo14tAPXvgz8dSnMvWLbJx4QfhQ==}
 
   '@storybook/preview@8.1.1':
     resolution: {integrity: sha512-P8iBi9v/62AhTztbCYjVxH6idNO0h9uO583GHwi3uq2Io7F1gUSgwG/HYZ7PnclOsMnmG0FJvAwrvdRc6sWSNw==}
@@ -4606,8 +4643,8 @@ packages:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
 
-  '@storybook/react-dom-shim@8.1.10':
-    resolution: {integrity: sha512-+HS75Pq8jb3xkVq0hK33D84aGfbJCURRB+GN2vfTMmmjguQt7z2+MnGqRgrUCt6h2rxU3VdPg9OBnYi/UC0Zrg==}
+  '@storybook/react-dom-shim@8.1.11':
+    resolution: {integrity: sha512-KVDSuipqkFjpGfldoRM5xR/N1/RNmbr+sVXqMmelr0zV2jGnexEZnoa7wRHk7IuXuivLWe8BxMxzvQWqjIa4GA==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
@@ -4631,8 +4668,8 @@ packages:
       typescript:
         optional: true
 
-  '@storybook/react@8.1.10':
-    resolution: {integrity: sha512-y0ycq19tTLLk+4rB+nfCPCtoFBWC0QvmMaJY32dbAjWPk+UNFGhWdqjg0oP1NwXYL18WnhRzlyz1Rojw0aXk1w==}
+  '@storybook/react@8.1.11':
+    resolution: {integrity: sha512-t+EYXOkgwg3ropLGS9y8gGvX5/Okffu/6JYL3YWksrBGAZSqVV4NkxCnVJZepS717SyhR0tN741gv/SxxFPJMg==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
@@ -4642,17 +4679,17 @@ packages:
       typescript:
         optional: true
 
-  '@storybook/router@8.1.10':
-    resolution: {integrity: sha512-JDEgZ0vVDx0GLz+dKD+R1xqWwjqsCdA2F+s3/si7upHqkFRWU5ocextZ63oKsRnCoaeUh6OavAU4EdkrKiQtQw==}
+  '@storybook/router@8.1.11':
+    resolution: {integrity: sha512-nU5lsBvy0L8wBYOkjagh29ztZicDATpZNYrHuavlhQ2jznmmHdJvXKYk+VrMAbthjQ6ZBqfeeMNPR1UlnqR5Rw==}
 
-  '@storybook/telemetry@8.1.10':
-    resolution: {integrity: sha512-pwiMWrq85D0AnaAgYNfB2w2BDgqnetQ+tXwsUAw4fUEFwA4oPU6r0uqekRbNNE6wmSSYjiiFP3JgknBFqjd2hg==}
+  '@storybook/telemetry@8.1.11':
+    resolution: {integrity: sha512-Jqvm7HcZismKzPuebhyLECO6KjGiSk4ycbca1WUM/TUvifxCXqgoUPlHHQEEfaRdHS63/MSqtMNjLsQRLC/vNQ==}
 
-  '@storybook/test@8.1.10':
-    resolution: {integrity: sha512-uskw/xb/GkGLRTEKPao/5xUKxjP1X3DnDpE52xDF46ZmTvM+gPQbkex97qdG6Mfv37/0lhVhufAsV3g5+CrYKQ==}
+  '@storybook/test@8.1.11':
+    resolution: {integrity: sha512-k+V3HemF2/I8fkRxRqM8uH8ULrpBSAAdBOtWSHWLvHguVcb2YA4g4kKo6tXBB9256QfyDW4ZiaAj0/9TMxmJPQ==}
 
-  '@storybook/theming@8.1.10':
-    resolution: {integrity: sha512-W7mth4hwdTqWLneqYCyUnIEiDg4vSokoad8HEodPz6JC9XUPUX3Yi2W4W3xFvqrW4Z5RXfuJ53iG2HN+0AgaQw==}
+  '@storybook/theming@8.1.11':
+    resolution: {integrity: sha512-Chn/opjO6Rl1isNobutYqAH2PjKNkj09YBw/8noomk6gElSa3JbUTyaG/+JCHA6OG/9kUsqoKDb5cZmAKNq/jA==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
@@ -4665,8 +4702,8 @@ packages:
   '@storybook/types@8.1.1':
     resolution: {integrity: sha512-QSQ63aKr2IXrGjX2/Fg1oiGWk+2Nuf+TplaHRC2NKBMgvyn+M0BHUgMTDHQVrFaH4bpl2PkE0r0tzOKP4JI43A==}
 
-  '@storybook/types@8.1.10':
-    resolution: {integrity: sha512-UJ97iqI+0Mk13I6ayd3TaBfSFBkWnEauwTnFMQe1dN/L3wTh8laOBaLa0Vr3utRSnt2b5hpcw/nq7azB/Gx4Yw==}
+  '@storybook/types@8.1.11':
+    resolution: {integrity: sha512-k9N5iRuY2+t7lVRL6xeu6diNsxO3YI3lS4Juv3RZ2K4QsE/b3yG5ElfJB8DjHDSHwRH4ORyrU71KkOCUVfvtnw==}
 
   '@swc/core-darwin-arm64@1.6.5':
     resolution: {integrity: sha512-RGQhMdni2v1/ANQ/2K+F+QYdzaucekYBewZcX1ogqJ8G5sbPaBdYdDN1qQ4kHLCIkPtGP6qC7c71qPEqL2RidQ==}
@@ -4794,13 +4831,34 @@ packages:
     peerDependencies:
       '@terra-money/terra.js': ^3.1.6
 
+  '@testing-library/dom@10.1.0':
+    resolution: {integrity: sha512-wdsYKy5zupPyLCW2Je5DLHSxSfbIp6h80WoHOQc+RPtmPGA52O9x5MJEkv92Sjonpq+poOAtUKhh1kBGAXBrNA==}
+    engines: {node: '>=18'}
+
   '@testing-library/dom@10.2.0':
     resolution: {integrity: sha512-CytIvb6tVOADRngTHGWNxH8LPgO/3hi/BdCEHOf7Qd2GvZVClhVP0Wo/QHzWhpki49Bk0b4VT6xpt3fx8HTSIw==}
     engines: {node: '>=18'}
 
-  '@testing-library/dom@9.3.4':
-    resolution: {integrity: sha512-FlS4ZWlp97iiNWig0Muq8p+3rVDjRiYE+YKGbAqXOu9nwJFFOdL00kFpz42M+4huzYi86vAK1sOOfyOG45muIQ==}
-    engines: {node: '>=14'}
+  '@testing-library/jest-dom@6.4.5':
+    resolution: {integrity: sha512-AguB9yvTXmCnySBP1lWjfNNUwpbElsaQ567lt2VdGqAdHtpieLgjmcVyv1q7PMIvLbgpDdkWV5Ydv3FEejyp2A==}
+    engines: {node: '>=14', npm: '>=6', yarn: '>=1'}
+    peerDependencies:
+      '@jest/globals': '>= 28'
+      '@types/bun': latest
+      '@types/jest': '>= 28'
+      jest: '>= 28'
+      vitest: '>= 0.32'
+    peerDependenciesMeta:
+      '@jest/globals':
+        optional: true
+      '@types/bun':
+        optional: true
+      '@types/jest':
+        optional: true
+      jest:
+        optional: true
+      vitest:
+        optional: true
 
   '@testing-library/jest-dom@6.4.6':
     resolution: {integrity: sha512-8qpnGVincVDLEcQXWaHOf6zmlbwTKc6Us6PPu4CRnPXCzo2OGBS5cwgMMOWdxDpEz1mkbvXHpEy99M5Yvt682w==}
@@ -5013,8 +5071,8 @@ packages:
   '@types/json5@0.0.29':
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
 
-  '@types/lodash@4.17.5':
-    resolution: {integrity: sha512-MBIOHVZqVqgfro1euRDWX7OO0fBVUUMrN6Pwm8LQsz8cWhEpihlvR70ENj3f40j58TNxZaWv2ndSkInykNBBJw==}
+  '@types/lodash@4.17.6':
+    resolution: {integrity: sha512-OpXEVoCKSS3lQqjx9GGGOapBeuW5eUboYHRlHP9urXPX25IKZ6AnP5ZRxtVf63iieUbsHxLn8NQ5Nlftc6yzAA==}
 
   '@types/long@4.0.2':
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
@@ -5303,9 +5361,6 @@ packages:
       webdriverio:
         optional: true
 
-  '@vitest/expect@1.3.1':
-    resolution: {integrity: sha512-xofQFwIzfdmLLlHa6ag0dPV8YsnKOCP1KdAeVVh34vSjN2dcUiXYCD9htu/9eM7t8Xln4v03U9HLxLpPlsXdZw==}
-
   '@vitest/expect@1.6.0':
     resolution: {integrity: sha512-ixEvFVQjycy/oNgHjqsL6AZCDduC+tflRluaHIzKIsdbzkLn2U/iBnVeJwB6HsIjQBdfMR8Z0tRxKUsvFJEeWQ==}
 
@@ -5315,14 +5370,8 @@ packages:
   '@vitest/snapshot@1.6.0':
     resolution: {integrity: sha512-+Hx43f8Chus+DCmygqqfetcAZrDJwvTj0ymqjQq4CvmpKFSTVteEOBzCusu1x2tt4OJcvBflyHUE0DZSLgEMtQ==}
 
-  '@vitest/spy@1.3.1':
-    resolution: {integrity: sha512-xAcW+S099ylC9VLU7eZfdT9myV67Nor9w9zhf0mGCYJSO+zM2839tOeROTdikOi/8Qeusffvxb/MyBSOja1Uig==}
-
   '@vitest/spy@1.6.0':
     resolution: {integrity: sha512-leUTap6B/cqi/bQkXUu6bQV5TZPx7pmMBKBQiI0rJA8c3pB56ZsaTbREnF7CJfmvAS4V2cXIBAh/3rVwrrCYgw==}
-
-  '@vitest/utils@1.3.1':
-    resolution: {integrity: sha512-d3Waie/299qqRyHTm2DjADeTaNdNSVsnwHPWrs20JMpjh6eiVq7ggggweO8rc4arhf6rRkWuHKwvxGvejUXZZQ==}
 
   '@vitest/utils@1.6.0':
     resolution: {integrity: sha512-21cPiuGMoMZwiOHa2i4LXkMkMkCGzA+MVFV70jRwHo95dL4x/ts5GZhML1QWuy7yfp3WzK3lRvZi3JnXTYqrBw==}
@@ -5608,9 +5657,6 @@ packages:
   aria-hidden@1.2.4:
     resolution: {integrity: sha512-y+CcFFwelSXpLZk/7fMB2mUbGtX9lKycf1MWJ7CaTIERyitVlyQx6C+sxcROU2BAJ24OiZyK+8wj2i8AlBoS3A==}
     engines: {node: '>=10'}
-
-  aria-query@5.1.3:
-    resolution: {integrity: sha512-R5iJ5lkuHybztUfuOAznmboyjWq8O6sqNqtK7CLOqdydi54VNbORp49mb14KbWgG1QD3JFO9hJdZ+y4KutfdOQ==}
 
   aria-query@5.3.0:
     resolution: {integrity: sha512-b0P0sZPKtyu8HkeRAfCq0IfURZK+SuwMjY1UXGBU27wpAiTwQAIlq56IbIO+ytk/JjS1fMR14ee5WBBfKi5J6A==}
@@ -5916,15 +5962,15 @@ packages:
   camelize@1.0.1:
     resolution: {integrity: sha512-dU+Tx2fsypxTgtLoE36npi3UqcjSSMNYfkqgmoEhtZrraP5VWq0K7FkWVTYa8eMPtnU/G2txVsfdCJTn9uzpuQ==}
 
-  caniuse-lite@1.0.30001637:
-    resolution: {integrity: sha512-1x0qRI1mD1o9e+7mBI7XtzFAP4XszbHaVWsMiGbSPLYekKTJF7K+FNk6AsXH4sUpc+qrsI3pVgf1Jdl/uGkuSQ==}
+  caniuse-lite@1.0.30001638:
+    resolution: {integrity: sha512-5SuJUJ7cZnhPpeLHaH0c/HPAnAHZvS6ElWyHK9GSIbVOQABLzowiI2pjmpvZ1WEbkyz46iFd4UXlOHR5SqgfMQ==}
 
   chai@4.4.1:
     resolution: {integrity: sha512-13sOfMv2+DWduEU+/xbun3LScLoqN17nBeTLUsmDfKdoiC1fr0n9PU4guu4AhRcOVFk/sW8LyZWHuhWtQZiF+g==}
     engines: {node: '>=4'}
 
-  chain-registry@1.63.10:
-    resolution: {integrity: sha512-Ukn/nhg7XpZd5MhZkaOu0S049ZyoLldFSS6EwmemrPO1xzOFUZD9rEs+dY7x9m97BlLFZPmkY7QBMZs9HE2JHg==}
+  chain-registry@1.63.11:
+    resolution: {integrity: sha512-yGAOdEwlK9wWmq3r8X1xrsD+gQn2MGX0Lp6zGAfJMZN0Kz3ras6Qmt4C1rDYqQPGefAZo3WIKnvMiLmsZNEx1w==}
 
   chalk-template@1.1.0:
     resolution: {integrity: sha512-T2VJbcDuZQ0Tb2EWwSotMPJjgpy1/tGee1BTpUNsGZ/qgNjV2t7Mvu+d4600U564nbLesN1x2dPL+xii174Ekg==}
@@ -6174,8 +6220,8 @@ packages:
   cosmjs-types@0.9.0:
     resolution: {integrity: sha512-MN/yUe6mkJwHnCFfsNPeCfXVhyxHYW6c/xDUzrSbBycYzw++XvWDMJArXp2pLdgD6FQ8DW79vkPjeNKVrXaHeQ==}
 
-  cosmos-kit@2.18.1:
-    resolution: {integrity: sha512-JivxVoeJyPyfbIfskiaQNtp4a9gMoP6ozUNrf6BPw3DuamJ//CHtrp9WAS56sQFe6r8iHCxbw9Z24E5VA8gumg==}
+  cosmos-kit@2.18.2:
+    resolution: {integrity: sha512-eyN2wV9DOQiCNfKP/PU3VaOIlE6WCI+kXFPKw1C0Shab2l73p1/8IQ11tRiNwATMI6EN625z1RjCRkP6UcRhng==}
 
   create-ecdh@4.0.4:
     resolution: {integrity: sha512-mf+TCx8wWc9VpuxfP2ht0iSISLZnt0JgWlrOKZiNqyUZWnjIaCIVNQArMHnCZKfEYRg6IM7A+NeJoN8gf/Ws0A==}
@@ -6364,10 +6410,6 @@ packages:
   deep-eql@4.1.4:
     resolution: {integrity: sha512-SUwdGfqdKOwxCPeVYjwSyRpJ7Z+fhpwIAtmCUdZIWZ/YP5R9WAsyuSgpLVDi9bjWoN2LXHNss/dk3urXtdQxGg==}
     engines: {node: '>=6'}
-
-  deep-equal@2.2.3:
-    resolution: {integrity: sha512-ZIwpnevOurS8bpT4192sqAowWM76JDKSHYzMLty3BZGSswgq6pBaH3DhCSW5xVAZICZyKdOBPjwww5wfgT/6PA==}
-    engines: {node: '>= 0.4'}
 
   deep-extend@0.6.0:
     resolution: {integrity: sha512-LOHxIOaPYdHlJRtCQfDIVZtfw/ufM8+rVj649RIHzcm/vGwQRXFt6OPqIFWsm2XEMrNIEtWR64sY1LEKD2vAOA==}
@@ -6558,8 +6600,8 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-to-chromium@1.4.812:
-    resolution: {integrity: sha512-7L8fC2Ey/b6SePDFKR2zHAy4mbdp1/38Yk5TsARO66W3hC5KEaeKMMHoxwtuH+jcu2AYLSn9QX04i95t6Fl1Hg==}
+  electron-to-chromium@1.4.813:
+    resolution: {integrity: sha512-VyJ4tS2uD5iXFBz30wD2c0KtKZoiSQEfRuhrgfsDBbRMDiQCH+ki+nqe8jVR2miEeLTbZ5dNbSt88fHO01Vc9A==}
 
   elliptic@6.5.4:
     resolution: {integrity: sha512-iLhC6ULemrljPZb+QutR5TQGB+pdW6KGD5RSegS+8sorOZT+rdQFbsQFJgvN3eRqNALqJer4oQ16YvJHlU8hzQ==}
@@ -6622,9 +6664,6 @@ packages:
   es-errors@1.3.0:
     resolution: {integrity: sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==}
     engines: {node: '>= 0.4'}
-
-  es-get-iterator@1.1.3:
-    resolution: {integrity: sha512-sPZmqHBe6JIiTfN5q2pEi//TwxmAFHwj/XEuYjTuse78i8KxaqMTTzxPoFKuzRpDpTJ+0NAbpfenkmH2rePtuw==}
 
   es-iterator-helpers@1.0.19:
     resolution: {integrity: sha512-zoMwbCcH5hwUkKJkT8kDIBZSz9I6mVG//+lDCinLCGov4+r7NIy0ld8o03M0cJxl2spVf6ESYVS6/gpIfq1FFw==}
@@ -6987,8 +7026,8 @@ packages:
   flatted@3.3.1:
     resolution: {integrity: sha512-X8cqMLLie7KsNUDSdzeN8FYK9rEt4Dt67OsG/DNGnYTSDBG4uFAJFBnUeiV+zCVAvwFy56IjM9sH51jVaEhNxw==}
 
-  flow-parser@0.238.2:
-    resolution: {integrity: sha512-fs7FSnzzKF6oSzjk14JlBHt82DPchYHVsXtPi4Fkn+qrunVjWaBZY7nSO/mC9X4l9+wRah/R69DRd5NGDOrWqw==}
+  flow-parser@0.238.3:
+    resolution: {integrity: sha512-hNUhucq8V6KWSX1skXUS3vnDmrRNuKWzDvEVK5b+n97uMF32zj2y8pmcLDQEqlY5u926B0GYGWT/3XhwDJfLOQ==}
     engines: {node: '>=0.4.0'}
 
   follow-redirects@1.15.6:
@@ -7678,10 +7717,6 @@ packages:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
     engines: {node: '>= 10.13.0'}
 
-  jiti@1.21.3:
-    resolution: {integrity: sha512-uy2bNX5zQ+tESe+TiC7ilGRz8AtRGmnJH55NC5S0nSUjvvvM2hJHmefHErugGXN4pNv4Qx7vLsnNw9qJ9mtIsw==}
-    hasBin: true
-
   jiti@1.21.6:
     resolution: {integrity: sha512-2yTgeWTWzMWkHu6Jp9NKgePDaYHbntiwvYuuJLbbN9vl7DC9DvXKOB2BC3ZZ92D3cvV/aflH0osDfwpHepQ53w==}
     hasBin: true
@@ -7832,8 +7867,8 @@ packages:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
     engines: {node: '>=10'}
 
-  lilconfig@3.1.1:
-    resolution: {integrity: sha512-O18pf7nyvHTckunPWCV1XUNXU1piu01y2b7ATJ0ppkUkk8ocqVWBrYjJBCwHDjD/ZWcfyrA0P4gKhzWGi5EINQ==}
+  lilconfig@3.1.2:
+    resolution: {integrity: sha512-eop+wDAvpItUys0FWkHIKeC9ybYrTGbU41U5K7+bttZZeohvnY7M9dZ5kB21GNWiFT2q1OoPTvncPCgSOVO5ow==}
     engines: {node: '>=14'}
 
   lines-and-columns@1.2.4:
@@ -9365,15 +9400,11 @@ packages:
     resolution: {integrity: sha512-UhDfHmA92YAlNnCfhmq0VeNL5bDbiZGg7sZ2IvPsXubGkiNa9EC+tUTsjBRsYUAz87btI6/1wf4XoVvQ3uRnmQ==}
     engines: {node: '>=18'}
 
-  stop-iteration-iterator@1.0.0:
-    resolution: {integrity: sha512-iCGQj+0l0HOdZ2AEeBADlsRC+vsnDsZsbdSiH1yNSjcfKM7fdpCMfqAL/dwF5BLiw/XhRft/Wax6zQbhq2BcjQ==}
-    engines: {node: '>= 0.4'}
-
   store2@2.14.3:
     resolution: {integrity: sha512-4QcZ+yx7nzEFiV4BMLnr/pRa5HYzNITX2ri0Zh6sT9EyQHbBHacC6YigllUPU9X3D0f/22QCgfokpKs52YRrUg==}
 
-  storybook@8.1.10:
-    resolution: {integrity: sha512-HHlZibyc/QkcQj8aEnYnYwEl+ItNZ/uRbCdkvJzu/vIWYon5jUg30mHFIGZprgLSt27CxOs30Et8yT9z4VhwjA==}
+  storybook@8.1.11:
+    resolution: {integrity: sha512-3KjIhF8lczXhKKHyHbOqV30dvuRYJSxc0d1as/C8kybuwE7cLaydhWGma7VBv5bTSPv0rDzucx7KcO+achArPg==}
     hasBin: true
 
   stream-browserify@3.0.0:
@@ -9874,11 +9905,6 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typescript@5.5.2:
-    resolution: {integrity: sha512-NcRtPEOsPFFWjobJEtfihkLCZCXZt/os3zf8nTxjVH3RvTSxjrCamJpbExGvYOF+tFHc3pA65qpdwPbzjohhew==}
-    engines: {node: '>=14.17'}
-    hasBin: true
-
   ufo@1.5.3:
     resolution: {integrity: sha512-Y7HYmWaFwPUmkoQCUIAYpKqkOf+SbVj/2fJJZ4RJMCfZp0rTGwRbzQD+HghfnhKOjL9E01okqz+ncJskGYfBNw==}
 
@@ -10070,10 +10096,6 @@ packages:
     resolution: {integrity: sha512-Z6czzLq4u8fPOyx7TU6X3dvUZVvoJmxSQ+IcrlmagKhilxlhZgxPK6C5Jqbkw1IDUmFTM+cz9QDnnLTwDz/2gQ==}
     engines: {node: '>=6.14.2'}
 
-  utf-8-validate@6.0.4:
-    resolution: {integrity: sha512-xu9GQDeFp+eZ6LnCywXN/zBancWvOpUMzgjLPSjy4BRHSmTelvn2E0DG0o1sTiw5hkCKBHo8rwSKncfRfv2EEQ==}
-    engines: {node: '>=6.14.2'}
-
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -10127,8 +10149,8 @@ packages:
     peerDependencies:
       vite: ^2 || ^3 || ^4 || ^5
 
-  vite@5.3.1:
-    resolution: {integrity: sha512-XBmSKRLXLxiaPYamLv3/hnP/KXDai1NDexN0FpkTaZXTfycHvkRHoenpgl/fvuK/kPbB6xAgoyiryAhQNxYmAQ==}
+  vite@5.3.2:
+    resolution: {integrity: sha512-6lA7OBHBlXUxiJxbO5aAY2fsHHzDr1q7DvXYnyZycRs2Dz+dXBWuhpWHvmljTRTpQC2uvGmUFFkSHF2vGo90MA==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
@@ -10363,8 +10385,8 @@ packages:
     resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
     engines: {node: '>= 6'}
 
-  yaml@2.4.3:
-    resolution: {integrity: sha512-sntgmxj8o7DE7g/Qi60cqpLBA3HG3STcDA0kO+WfB05jEKhZMbY7umNm2rBpQvsmZ16/lPXCJGW2672dgOUkrg==}
+  yaml@2.4.5:
+    resolution: {integrity: sha512-aBx2bnqDzVOyNKfsysjA2ms5ZlnjSAW2eG3/L5G/CSujfjLJTJsEw1bGw8kCf04KodQWk1pxlGnZ56CRxiawmg==}
     engines: {node: '>= 14'}
     hasBin: true
 
@@ -10383,8 +10405,8 @@ packages:
   zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
-  zustand@4.5.3:
-    resolution: {integrity: sha512-iH1gA/3uOMR0Gz260Fsklxo7wWEXJ008p1bO9O6gxwkbvBUaTDlcVChkDKGGSsvdbOyVce0nQfBitVH6sbYyew==}
+  zustand@4.5.4:
+    resolution: {integrity: sha512-/BPMyLKJPtFEvVL0E9E9BTUM63MNyhPGlvxk1XjrfWTUlV+BR8jufjsovHzrtR6YNcBEcL7cMHovL1n9xHawEg==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
       '@types/react': '>=16.8'
@@ -11524,37 +11546,37 @@ snapshots:
 
   '@bufbuild/protobuf@1.10.0': {}
 
-  '@chain-registry/client@1.48.7':
+  '@chain-registry/client@1.48.8':
     dependencies:
-      '@chain-registry/types': 0.45.7
-      '@chain-registry/utils': 1.46.7
+      '@chain-registry/types': 0.45.8
+      '@chain-registry/utils': 1.46.8
       bfs-path: 1.0.2
       cross-fetch: 3.1.8
     transitivePeerDependencies:
       - encoding
 
-  '@chain-registry/cosmostation@1.66.10':
+  '@chain-registry/cosmostation@1.66.11':
     dependencies:
-      '@chain-registry/types': 0.45.7
-      '@chain-registry/utils': 1.46.7
+      '@chain-registry/types': 0.45.8
+      '@chain-registry/utils': 1.46.8
       '@cosmostation/extension-client': 0.1.15
 
   '@chain-registry/cosmostation@1.66.2':
     dependencies:
-      '@chain-registry/types': 0.45.7
-      '@chain-registry/utils': 1.46.7
+      '@chain-registry/types': 0.45.8
+      '@chain-registry/utils': 1.46.8
       '@cosmostation/extension-client': 0.1.15
 
-  '@chain-registry/keplr@1.68.10':
+  '@chain-registry/keplr@1.68.11':
     dependencies:
-      '@chain-registry/types': 0.45.7
+      '@chain-registry/types': 0.45.8
       '@keplr-wallet/cosmos': 0.12.28
       '@keplr-wallet/crypto': 0.12.28
       semver: 7.6.2
 
   '@chain-registry/keplr@1.68.2':
     dependencies:
-      '@chain-registry/types': 0.45.7
+      '@chain-registry/types': 0.45.8
       '@keplr-wallet/cosmos': 0.12.28
       '@keplr-wallet/crypto': 0.12.28
       semver: 7.6.2
@@ -11563,11 +11585,11 @@ snapshots:
 
   '@chain-registry/types@0.45.1': {}
 
-  '@chain-registry/types@0.45.7': {}
+  '@chain-registry/types@0.45.8': {}
 
-  '@chain-registry/utils@1.46.7':
+  '@chain-registry/utils@1.46.8':
     dependencies:
-      '@chain-registry/types': 0.45.7
+      '@chain-registry/types': 0.45.8
       bignumber.js: 9.1.2
       sha.js: 2.4.11
 
@@ -11753,21 +11775,28 @@ snapshots:
 
   '@cosmjs/amino@0.32.3':
     dependencies:
-      '@cosmjs/crypto': 0.32.3
-      '@cosmjs/encoding': 0.32.3
-      '@cosmjs/math': 0.32.3
-      '@cosmjs/utils': 0.32.3
+      '@cosmjs/crypto': 0.32.4
+      '@cosmjs/encoding': 0.32.4
+      '@cosmjs/math': 0.32.4
+      '@cosmjs/utils': 0.32.4
 
-  '@cosmjs/cosmwasm-stargate@0.32.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmjs/amino@0.32.4':
     dependencies:
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/crypto': 0.32.3
-      '@cosmjs/encoding': 0.32.3
-      '@cosmjs/math': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
-      '@cosmjs/stargate': 0.32.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmjs/tendermint-rpc': 0.32.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmjs/utils': 0.32.3
+      '@cosmjs/crypto': 0.32.4
+      '@cosmjs/encoding': 0.32.4
+      '@cosmjs/math': 0.32.4
+      '@cosmjs/utils': 0.32.4
+
+  '@cosmjs/cosmwasm-stargate@0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+    dependencies:
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/crypto': 0.32.4
+      '@cosmjs/encoding': 0.32.4
+      '@cosmjs/math': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
+      '@cosmjs/stargate': 0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmjs/tendermint-rpc': 0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmjs/utils': 0.32.4
       cosmjs-types: 0.9.0
       pako: 2.1.0
     transitivePeerDependencies:
@@ -11775,43 +11804,52 @@ snapshots:
       - debug
       - utf-8-validate
 
-  '@cosmjs/crypto@0.32.3':
+  '@cosmjs/crypto@0.32.4':
     dependencies:
-      '@cosmjs/encoding': 0.32.3
-      '@cosmjs/math': 0.32.3
-      '@cosmjs/utils': 0.32.3
+      '@cosmjs/encoding': 0.32.4
+      '@cosmjs/math': 0.32.4
+      '@cosmjs/utils': 0.32.4
       '@noble/hashes': 1.4.0
       bn.js: 5.2.1
       elliptic: 6.5.5
       libsodium-wrappers-sumo: 0.7.13
 
-  '@cosmjs/encoding@0.32.3':
+  '@cosmjs/encoding@0.32.4':
     dependencies:
       base64-js: 1.5.1
       bech32: 1.1.4
       readonly-date: 1.0.0
 
-  '@cosmjs/json-rpc@0.32.3':
+  '@cosmjs/json-rpc@0.32.4':
     dependencies:
-      '@cosmjs/stream': 0.32.3
+      '@cosmjs/stream': 0.32.4
       xstream: 11.14.0
 
-  '@cosmjs/math@0.32.3':
+  '@cosmjs/math@0.32.4':
     dependencies:
       bn.js: 5.2.1
 
   '@cosmjs/proto-signing@0.32.3':
     dependencies:
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/crypto': 0.32.3
-      '@cosmjs/encoding': 0.32.3
-      '@cosmjs/math': 0.32.3
-      '@cosmjs/utils': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/crypto': 0.32.4
+      '@cosmjs/encoding': 0.32.4
+      '@cosmjs/math': 0.32.4
+      '@cosmjs/utils': 0.32.4
       cosmjs-types: 0.9.0
 
-  '@cosmjs/socket@0.32.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmjs/proto-signing@0.32.4':
     dependencies:
-      '@cosmjs/stream': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/crypto': 0.32.4
+      '@cosmjs/encoding': 0.32.4
+      '@cosmjs/math': 0.32.4
+      '@cosmjs/utils': 0.32.4
+      cosmjs-types: 0.9.0
+
+  '@cosmjs/socket@0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+    dependencies:
+      '@cosmjs/stream': 0.32.4
       isomorphic-ws: 4.0.1(ws@7.5.10(bufferutil@4.0.8)(utf-8-validate@5.0.10))
       ws: 7.5.10(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       xstream: 11.14.0
@@ -11822,13 +11860,13 @@ snapshots:
   '@cosmjs/stargate@0.32.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
       '@confio/ics23': 0.6.8
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/encoding': 0.32.3
-      '@cosmjs/math': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
-      '@cosmjs/stream': 0.32.3
-      '@cosmjs/tendermint-rpc': 0.32.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmjs/utils': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/encoding': 0.32.4
+      '@cosmjs/math': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
+      '@cosmjs/stream': 0.32.4
+      '@cosmjs/tendermint-rpc': 0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmjs/utils': 0.32.4
       cosmjs-types: 0.9.0
       xstream: 11.14.0
     transitivePeerDependencies:
@@ -11836,19 +11874,36 @@ snapshots:
       - debug
       - utf-8-validate
 
-  '@cosmjs/stream@0.32.3':
+  '@cosmjs/stargate@0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+    dependencies:
+      '@confio/ics23': 0.6.8
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/encoding': 0.32.4
+      '@cosmjs/math': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
+      '@cosmjs/stream': 0.32.4
+      '@cosmjs/tendermint-rpc': 0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmjs/utils': 0.32.4
+      cosmjs-types: 0.9.0
+      xstream: 11.14.0
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - utf-8-validate
+
+  '@cosmjs/stream@0.32.4':
     dependencies:
       xstream: 11.14.0
 
   '@cosmjs/tendermint-rpc@0.32.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmjs/crypto': 0.32.3
-      '@cosmjs/encoding': 0.32.3
-      '@cosmjs/json-rpc': 0.32.3
-      '@cosmjs/math': 0.32.3
-      '@cosmjs/socket': 0.32.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmjs/stream': 0.32.3
-      '@cosmjs/utils': 0.32.3
+      '@cosmjs/crypto': 0.32.4
+      '@cosmjs/encoding': 0.32.4
+      '@cosmjs/json-rpc': 0.32.4
+      '@cosmjs/math': 0.32.4
+      '@cosmjs/socket': 0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmjs/stream': 0.32.4
+      '@cosmjs/utils': 0.32.4
       axios: 1.7.2
       readonly-date: 1.0.0
       xstream: 11.14.0
@@ -11857,7 +11912,24 @@ snapshots:
       - debug
       - utf-8-validate
 
-  '@cosmjs/utils@0.32.3': {}
+  '@cosmjs/tendermint-rpc@0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+    dependencies:
+      '@cosmjs/crypto': 0.32.4
+      '@cosmjs/encoding': 0.32.4
+      '@cosmjs/json-rpc': 0.32.4
+      '@cosmjs/math': 0.32.4
+      '@cosmjs/socket': 0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmjs/stream': 0.32.4
+      '@cosmjs/utils': 0.32.4
+      axios: 1.7.2
+      readonly-date: 1.0.0
+      xstream: 11.14.0
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - utf-8-validate
+
+  '@cosmjs/utils@0.32.4': {}
 
   '@cosmology/lcd@0.13.3':
     dependencies:
@@ -11865,11 +11937,11 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@cosmos-kit/cdcwallet-extension@2.13.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/cdcwallet-extension@2.13.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
       '@chain-registry/keplr': 1.68.2
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -11892,9 +11964,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/cdcwallet@2.13.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/cdcwallet@2.13.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/cdcwallet-extension': 2.13.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/cdcwallet-extension': 2.13.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -11918,11 +11990,11 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/coin98-extension@2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/coin98-extension@2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
       '@chain-registry/keplr': 1.68.2
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       cosmjs-types: 0.9.0
     transitivePeerDependencies:
@@ -11946,9 +12018,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/coin98@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/coin98@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/coin98-extension': 2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/coin98-extension': 2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -11972,11 +12044,11 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/compass-extension@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/compass-extension@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
       '@chain-registry/keplr': 1.68.2
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -11999,9 +12071,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/compass@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/compass@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/compass-extension': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/compass-extension': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12027,14 +12099,14 @@ snapshots:
 
   '@cosmos-kit/core@2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@chain-registry/client': 1.48.7
-      '@chain-registry/keplr': 1.68.10
-      '@chain-registry/types': 0.45.7
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/cosmwasm-stargate': 0.32.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmjs/proto-signing': 0.32.3
-      '@cosmjs/stargate': 0.32.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@dao-dao/cosmiframe': 0.1.0(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)
+      '@chain-registry/client': 1.48.8
+      '@chain-registry/keplr': 1.68.11
+      '@chain-registry/types': 0.45.8
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/cosmwasm-stargate': 0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmjs/proto-signing': 0.32.4
+      '@cosmjs/stargate': 0.32.4(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@dao-dao/cosmiframe': 0.1.0(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)
       '@walletconnect/types': 2.11.0
       bowser: 2.11.0
       cosmjs-types: 0.9.0
@@ -12062,11 +12134,11 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/cosmostation-extension@2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/cosmostation-extension@2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@chain-registry/cosmostation': 1.66.10
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@chain-registry/cosmostation': 1.66.11
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       cosmjs-types: 0.9.0
     transitivePeerDependencies:
@@ -12090,11 +12162,11 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/cosmostation-mobile@2.11.1(@cosmjs/amino@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/cosmostation-mobile@2.11.1(@cosmjs/amino@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
       '@chain-registry/cosmostation': 1.66.2
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/walletconnect': 2.10.0(@cosmjs/amino@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/walletconnect': 2.10.0(@cosmjs/amino@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12118,10 +12190,10 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/cosmostation@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/cosmostation@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/cosmostation-extension': 2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/cosmostation-mobile': 2.11.1(@cosmjs/amino@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/cosmostation-extension': 2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/cosmostation-mobile': 2.11.1(@cosmjs/amino@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12146,10 +12218,10 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/exodus-extension@2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/exodus-extension@2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       react-icons: 4.4.0(react@18.3.1)
     transitivePeerDependencies:
@@ -12174,9 +12246,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/exodus@2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/exodus@2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/exodus-extension': 2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)
+      '@cosmos-kit/exodus-extension': 2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12201,11 +12273,11 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/fin-extension@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/fin-extension@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
       '@chain-registry/keplr': 1.68.2
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -12228,9 +12300,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/fin@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/fin@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/fin-extension': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/fin-extension': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12254,10 +12326,10 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/frontier-extension@2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/frontier-extension@2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -12280,9 +12352,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/frontier@2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/frontier@2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/frontier-extension': 2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/frontier-extension': 2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12306,14 +12378,14 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/galaxy-station-extension@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/galaxy-station-extension@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
       '@chain-registry/types': 0.45.1
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@hexxagon/feather.js': 1.0.11
-      '@hexxagon/station-connector': 1.0.19(@cosmjs/amino@0.32.3)(@hexxagon/feather.js@1.0.11)(axios@1.7.2)
+      '@hexxagon/station-connector': 1.0.19(@cosmjs/amino@0.32.4)(@hexxagon/feather.js@1.0.11)(axios@1.7.2)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12336,9 +12408,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/galaxy-station@2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/galaxy-station@2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/galaxy-station-extension': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/galaxy-station-extension': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12363,14 +12435,14 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/keplr-extension@2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/keplr-extension@2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@chain-registry/keplr': 1.68.10
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@chain-registry/keplr': 1.68.11
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@keplr-wallet/provider-extension': 0.12.106
-      '@keplr-wallet/types': 0.12.106
+      '@keplr-wallet/provider-extension': 0.12.107
+      '@keplr-wallet/types': 0.12.107
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12392,16 +12464,16 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/keplr-mobile@2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/keplr-mobile@2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
       '@chain-registry/keplr': 1.68.2
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/keplr-extension': 2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/walletconnect': 2.10.0(@cosmjs/amino@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@keplr-wallet/provider-extension': 0.12.106
-      '@keplr-wallet/wc-client': 0.12.106(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)
+      '@cosmos-kit/keplr-extension': 2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/walletconnect': 2.10.0(@cosmjs/amino@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@keplr-wallet/provider-extension': 0.12.107
+      '@keplr-wallet/wc-client': 0.12.107(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12425,10 +12497,10 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/keplr@2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/keplr@2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/keplr-extension': 2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/keplr-mobile': 2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/keplr-extension': 2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/keplr-mobile': 2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12454,11 +12526,11 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/leap-extension@2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/leap-extension@2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
       '@chain-registry/keplr': 1.68.2
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -12481,11 +12553,11 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/leap-metamask-cosmos-snap@0.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/leap-metamask-cosmos-snap@0.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(utf-8-validate@5.0.10)':
     dependencies:
       '@chain-registry/keplr': 1.68.2
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@leapwallet/cosmos-snap-provider': 0.1.26
       '@metamask/providers': 11.1.2
@@ -12511,11 +12583,11 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/leap-mobile@2.11.1(@cosmjs/amino@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/leap-mobile@2.11.1(@cosmjs/amino@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
       '@chain-registry/keplr': 1.68.2
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/walletconnect': 2.10.0(@cosmjs/amino@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/walletconnect': 2.10.0(@cosmjs/amino@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12539,11 +12611,11 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/leap@2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/leap@2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/leap-extension': 2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/leap-metamask-cosmos-snap': 0.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(utf-8-validate@5.0.10)
-      '@cosmos-kit/leap-mobile': 2.11.1(@cosmjs/amino@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/leap-extension': 2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/leap-metamask-cosmos-snap': 0.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(utf-8-validate@5.0.10)
+      '@cosmos-kit/leap-mobile': 2.11.1(@cosmjs/amino@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12569,10 +12641,10 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/ledger@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/ledger@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@ledgerhq/hw-app-cosmos': 6.30.0
       '@ledgerhq/hw-transport-webhid': 6.29.0
@@ -12598,10 +12670,10 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/okxwallet-extension@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/okxwallet-extension@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -12624,12 +12696,12 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/omni-mobile@2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/omni-mobile@2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/walletconnect': 2.10.0(@cosmjs/amino@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/walletconnect': 2.10.0(@cosmjs/amino@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12652,9 +12724,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/omni@2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/omni@2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/omni-mobile': 2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/omni-mobile': 2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12679,13 +12751,13 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/owallet-extension@2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/owallet-extension@2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
       '@chain-registry/keplr': 1.68.2
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@keplr-wallet/types': 0.12.106
+      '@keplr-wallet/types': 0.12.107
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12707,9 +12779,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/owallet@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/owallet@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/owallet-extension': 2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/owallet-extension': 2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12733,11 +12805,11 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/react-lite@2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/react-lite@2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
     dependencies:
-      '@chain-registry/types': 0.45.7
+      '@chain-registry/types': 0.45.8
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@dao-dao/cosmiframe': 0.1.0(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)
+      '@dao-dao/cosmiframe': 0.1.0(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)
       '@types/react': 18.3.3
       '@types/react-dom': 18.3.0
       react: 18.3.1
@@ -12765,12 +12837,12 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/react@2.17.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@interchain-ui/react@1.23.23(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/react@2.17.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@interchain-ui/react@1.23.24(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
     dependencies:
-      '@chain-registry/types': 0.45.7
+      '@chain-registry/types': 0.45.8
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/react-lite': 2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
-      '@interchain-ui/react': 1.23.23(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@cosmos-kit/react-lite': 2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@types/react-dom@18.3.0)(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
+      '@interchain-ui/react': 1.23.24(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@react-icons/all-files': 4.1.0(react@18.3.1)
       '@types/react': 18.3.3
       '@types/react-dom': 18.3.0
@@ -12799,11 +12871,11 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/shell-extension@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/shell-extension@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
       '@chain-registry/keplr': 1.68.2
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -12826,9 +12898,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/shell@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/shell@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/shell-extension': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/shell-extension': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12852,14 +12924,14 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/station-extension@2.11.1(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/station-extension@2.11.1(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
       '@chain-registry/types': 0.44.11
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@terra-money/feather.js': 1.2.1
-      '@terra-money/station-connector': 1.1.4(@cosmjs/amino@0.32.3)(axios@1.7.2)
+      '@terra-money/station-connector': 1.1.4(@cosmjs/amino@0.32.4)(axios@1.7.2)
       '@terra-money/wallet-types': 3.11.2(@terra-money/terra.js@3.1.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -12884,9 +12956,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/station@2.10.1(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/station@2.10.1(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/station-extension': 2.11.1(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/station-extension': 2.11.1(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -12961,10 +13033,10 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/trust-extension@2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/trust-extension@2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -12987,12 +13059,12 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/trust-mobile@2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/trust-mobile@2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/walletconnect': 2.10.0(@cosmjs/amino@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/walletconnect': 2.10.0(@cosmjs/amino@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -13015,10 +13087,10 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/trust@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/trust@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/trust-extension': 2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/trust-mobile': 2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/trust-extension': 2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/trust-mobile': 2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -13043,11 +13115,11 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/vectis-extension@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/vectis-extension@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
       '@chain-registry/keplr': 1.68.2
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -13070,9 +13142,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/vectis@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/vectis@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/vectis-extension': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/vectis-extension': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -13096,10 +13168,10 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/walletconnect@2.10.0(@cosmjs/amino@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/walletconnect@2.10.0(@cosmjs/amino@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@walletconnect/sign-client': 2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@walletconnect/types': 2.13.3
@@ -13126,10 +13198,10 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/xdefi-extension@2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/xdefi-extension@2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       '@cosmos-kit/core': 2.13.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -13152,9 +13224,9 @@ snapshots:
       - uWebSockets.js
       - utf-8-validate
 
-  '@cosmos-kit/xdefi@2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@cosmos-kit/xdefi@2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
-      '@cosmos-kit/xdefi-extension': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/xdefi-extension': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -13184,10 +13256,10 @@ snapshots:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
 
-  '@dao-dao/cosmiframe@0.1.0(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)':
+  '@dao-dao/cosmiframe@0.1.0(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)':
     dependencies:
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       uuid: 9.0.1
 
   '@discoveryjs/json-ext@0.5.7': {}
@@ -13781,9 +13853,9 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@hexxagon/station-connector@1.0.19(@cosmjs/amino@0.32.3)(@hexxagon/feather.js@1.0.11)(axios@1.7.2)':
+  '@hexxagon/station-connector@1.0.19(@cosmjs/amino@0.32.4)(@hexxagon/feather.js@1.0.11)(axios@1.7.2)':
     dependencies:
-      '@cosmjs/amino': 0.32.3
+      '@cosmjs/amino': 0.32.4
       '@hexxagon/feather.js': 1.0.11
       axios: 1.7.2
       bech32: 2.0.0
@@ -13797,7 +13869,7 @@ snapshots:
       browser-headers: 0.4.1
       google-protobuf: 3.21.2
 
-  '@interchain-ui/react@1.23.23(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@interchain-ui/react@1.23.24(@types/react@18.3.3)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@floating-ui/core': 1.6.3
       '@floating-ui/dom': 1.6.6
@@ -13823,7 +13895,7 @@ snapshots:
       react-aria: 3.33.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-dom: 18.3.1(react@18.3.1)
       react-stately: 3.31.1(react@18.3.1)
-      zustand: 4.5.3(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1)
+      zustand: 4.5.4(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1)
     transitivePeerDependencies:
       - '@types/react'
       - babel-plugin-macros
@@ -13858,25 +13930,15 @@ snapshots:
     dependencies:
       '@sinclair/typebox': 0.27.8
 
-  '@joshwooding/vite-plugin-react-docgen-typescript@0.3.1(typescript@5.5.1-rc)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))':
+  '@joshwooding/vite-plugin-react-docgen-typescript@0.3.1(typescript@5.5.1-rc)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))':
     dependencies:
       glob: 7.2.3
       glob-promise: 4.2.2(glob@7.2.3)
       magic-string: 0.27.0
       react-docgen-typescript: 2.2.2(typescript@5.5.1-rc)
-      vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
+      vite: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
     optionalDependencies:
       typescript: 5.5.1-rc
-
-  '@joshwooding/vite-plugin-react-docgen-typescript@0.3.1(typescript@5.5.2)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))':
-    dependencies:
-      glob: 7.2.3
-      glob-promise: 4.2.2(glob@7.2.3)
-      magic-string: 0.27.0
-      react-docgen-typescript: 2.2.2(typescript@5.5.2)
-      vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
-    optionalDependencies:
-      typescript: 5.5.2
 
   '@jridgewell/gen-mapping@0.3.5':
     dependencies:
@@ -13943,25 +14005,25 @@ snapshots:
       long: 4.0.0
       protobufjs: 6.11.4
 
-  '@keplr-wallet/provider-extension@0.12.106':
+  '@keplr-wallet/provider-extension@0.12.107':
     dependencies:
-      '@keplr-wallet/types': 0.12.106
+      '@keplr-wallet/types': 0.12.107
       deepmerge: 4.3.1
       long: 4.0.0
 
-  '@keplr-wallet/provider@0.12.106':
+  '@keplr-wallet/provider@0.12.107':
     dependencies:
-      '@keplr-wallet/router': 0.12.106
-      '@keplr-wallet/types': 0.12.106
+      '@keplr-wallet/router': 0.12.107
+      '@keplr-wallet/types': 0.12.107
       buffer: 6.0.3
       deepmerge: 4.3.1
       long: 4.0.0
 
-  '@keplr-wallet/router@0.12.106': {}
+  '@keplr-wallet/router@0.12.107': {}
 
   '@keplr-wallet/simple-fetch@0.12.28': {}
 
-  '@keplr-wallet/types@0.12.106':
+  '@keplr-wallet/types@0.12.107':
     dependencies:
       long: 4.0.0
 
@@ -13975,10 +14037,10 @@ snapshots:
       big-integer: 1.6.52
       utility-types: 3.11.0
 
-  '@keplr-wallet/wc-client@0.12.106(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)':
+  '@keplr-wallet/wc-client@0.12.107(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)':
     dependencies:
-      '@keplr-wallet/provider': 0.12.106
-      '@keplr-wallet/types': 0.12.106
+      '@keplr-wallet/provider': 0.12.107
+      '@keplr-wallet/types': 0.12.107
       '@walletconnect/sign-client': 2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@walletconnect/types': 2.13.3
       buffer: 6.0.3
@@ -13987,8 +14049,8 @@ snapshots:
 
   '@leapwallet/cosmos-snap-provider@0.1.26':
     dependencies:
-      '@cosmjs/amino': 0.32.3
-      '@cosmjs/proto-signing': 0.32.3
+      '@cosmjs/amino': 0.32.4
+      '@cosmjs/proto-signing': 0.32.4
       bignumber.js: 9.1.2
       long: 5.2.3
 
@@ -16085,24 +16147,24 @@ snapshots:
       '@stablelib/random': 1.0.2
       '@stablelib/wipe': 1.0.1
 
-  '@storybook/addon-actions@8.1.10':
+  '@storybook/addon-actions@8.1.11':
     dependencies:
-      '@storybook/core-events': 8.1.10
+      '@storybook/core-events': 8.1.11
       '@storybook/global': 5.0.0
       '@types/uuid': 9.0.8
       dequal: 2.0.3
       polished: 4.3.1
       uuid: 9.0.1
 
-  '@storybook/addon-backgrounds@8.1.10':
+  '@storybook/addon-backgrounds@8.1.11':
     dependencies:
       '@storybook/global': 5.0.0
       memoizerific: 1.11.3
       ts-dedent: 2.2.0
 
-  '@storybook/addon-controls@8.1.10(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@storybook/addon-controls@8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@storybook/blocks': 8.1.10(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/blocks': 8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       dequal: 2.0.3
       lodash: 4.17.21
       ts-dedent: 2.2.0
@@ -16115,21 +16177,21 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@storybook/addon-docs@8.1.10(@types/react-dom@18.3.0)(prettier@3.3.2)':
+  '@storybook/addon-docs@8.1.11(@types/react-dom@18.3.0)(prettier@3.3.2)':
     dependencies:
       '@babel/core': 7.24.7
       '@mdx-js/react': 3.0.1(@types/react@18.3.3)(react@18.3.1)
-      '@storybook/blocks': 8.1.10(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/client-logger': 8.1.10
-      '@storybook/components': 8.1.10(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/csf-plugin': 8.1.10
-      '@storybook/csf-tools': 8.1.10
+      '@storybook/blocks': 8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/client-logger': 8.1.11
+      '@storybook/components': 8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/csf-plugin': 8.1.11
+      '@storybook/csf-tools': 8.1.11
       '@storybook/global': 5.0.0
-      '@storybook/node-logger': 8.1.10
-      '@storybook/preview-api': 8.1.10
-      '@storybook/react-dom-shim': 8.1.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/theming': 8.1.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/types': 8.1.10
+      '@storybook/node-logger': 8.1.11
+      '@storybook/preview-api': 8.1.11
+      '@storybook/react-dom-shim': 8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/theming': 8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/types': 8.1.11
       '@types/react': 18.3.3
       fs-extra: 11.2.0
       react: 18.3.1
@@ -16143,21 +16205,21 @@ snapshots:
       - prettier
       - supports-color
 
-  '@storybook/addon-essentials@8.1.10(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@storybook/addon-essentials@8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@storybook/addon-actions': 8.1.10
-      '@storybook/addon-backgrounds': 8.1.10
-      '@storybook/addon-controls': 8.1.10(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/addon-docs': 8.1.10(@types/react-dom@18.3.0)(prettier@3.3.2)
-      '@storybook/addon-highlight': 8.1.10
-      '@storybook/addon-measure': 8.1.10
-      '@storybook/addon-outline': 8.1.10
-      '@storybook/addon-toolbars': 8.1.10
-      '@storybook/addon-viewport': 8.1.10
-      '@storybook/core-common': 8.1.10(prettier@3.3.2)
-      '@storybook/manager-api': 8.1.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/node-logger': 8.1.10
-      '@storybook/preview-api': 8.1.10
+      '@storybook/addon-actions': 8.1.11
+      '@storybook/addon-backgrounds': 8.1.11
+      '@storybook/addon-controls': 8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/addon-docs': 8.1.11(@types/react-dom@18.3.0)(prettier@3.3.2)
+      '@storybook/addon-highlight': 8.1.11
+      '@storybook/addon-measure': 8.1.11
+      '@storybook/addon-outline': 8.1.11
+      '@storybook/addon-toolbars': 8.1.11
+      '@storybook/addon-viewport': 8.1.11
+      '@storybook/core-common': 8.1.11(prettier@3.3.2)
+      '@storybook/manager-api': 8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/node-logger': 8.1.11
+      '@storybook/preview-api': 8.1.11
       ts-dedent: 2.2.0
     transitivePeerDependencies:
       - '@types/react'
@@ -16168,16 +16230,16 @@ snapshots:
       - react-dom
       - supports-color
 
-  '@storybook/addon-highlight@8.1.10':
+  '@storybook/addon-highlight@8.1.11':
     dependencies:
       '@storybook/global': 5.0.0
 
-  '@storybook/addon-interactions@8.1.10(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))':
+  '@storybook/addon-interactions@8.1.11(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))':
     dependencies:
       '@storybook/global': 5.0.0
-      '@storybook/instrumenter': 8.1.10
-      '@storybook/test': 8.1.10(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))
-      '@storybook/types': 8.1.10
+      '@storybook/instrumenter': 8.1.11
+      '@storybook/test': 8.1.11(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))
+      '@storybook/types': 8.1.11
       polished: 4.3.1
       ts-dedent: 2.2.0
     transitivePeerDependencies:
@@ -16187,7 +16249,7 @@ snapshots:
       - jest
       - vitest
 
-  '@storybook/addon-links@8.1.10(react@18.3.1)':
+  '@storybook/addon-links@8.1.11(react@18.3.1)':
     dependencies:
       '@storybook/csf': 0.1.9
       '@storybook/global': 5.0.0
@@ -16195,12 +16257,12 @@ snapshots:
     optionalDependencies:
       react: 18.3.1
 
-  '@storybook/addon-measure@8.1.10':
+  '@storybook/addon-measure@8.1.11':
     dependencies:
       '@storybook/global': 5.0.0
       tiny-invariant: 1.3.3
 
-  '@storybook/addon-outline@8.1.10':
+  '@storybook/addon-outline@8.1.11':
     dependencies:
       '@storybook/global': 5.0.0
       ts-dedent: 2.2.0
@@ -16215,27 +16277,27 @@ snapshots:
     transitivePeerDependencies:
       - webpack
 
-  '@storybook/addon-toolbars@8.1.10': {}
+  '@storybook/addon-toolbars@8.1.11': {}
 
-  '@storybook/addon-viewport@8.1.10':
+  '@storybook/addon-viewport@8.1.11':
     dependencies:
       memoizerific: 1.11.3
 
-  '@storybook/blocks@8.1.10(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@storybook/blocks@8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@storybook/channels': 8.1.10
-      '@storybook/client-logger': 8.1.10
-      '@storybook/components': 8.1.10(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/core-events': 8.1.10
+      '@storybook/channels': 8.1.11
+      '@storybook/client-logger': 8.1.11
+      '@storybook/components': 8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/core-events': 8.1.11
       '@storybook/csf': 0.1.9
-      '@storybook/docs-tools': 8.1.10(prettier@3.3.2)
+      '@storybook/docs-tools': 8.1.11(prettier@3.3.2)
       '@storybook/global': 5.0.0
       '@storybook/icons': 1.2.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/manager-api': 8.1.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/preview-api': 8.1.10
-      '@storybook/theming': 8.1.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/types': 8.1.10
-      '@types/lodash': 4.17.5
+      '@storybook/manager-api': 8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/preview-api': 8.1.11
+      '@storybook/theming': 8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/types': 8.1.11
+      '@types/lodash': 4.17.6
       color-convert: 2.0.1
       dequal: 2.0.3
       lodash: 4.17.21
@@ -16257,12 +16319,12 @@ snapshots:
       - prettier
       - supports-color
 
-  '@storybook/builder-manager@8.1.10(prettier@3.3.2)':
+  '@storybook/builder-manager@8.1.11(prettier@3.3.2)':
     dependencies:
       '@fal-works/esbuild-plugin-global-externals': 2.1.2
-      '@storybook/core-common': 8.1.10(prettier@3.3.2)
-      '@storybook/manager': 8.1.10
-      '@storybook/node-logger': 8.1.10
+      '@storybook/core-common': 8.1.11(prettier@3.3.2)
+      '@storybook/manager': 8.1.11
+      '@storybook/node-logger': 8.1.11
       '@types/ejs': 3.1.5
       '@yarnpkg/esbuild-plugin-pnp': 3.0.0-rc.15(esbuild@0.20.2)
       browser-assert: 1.2.1
@@ -16278,7 +16340,7 @@ snapshots:
       - prettier
       - supports-color
 
-  '@storybook/builder-vite@8.1.1(prettier@3.3.2)(typescript@5.5.1-rc)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))':
+  '@storybook/builder-vite@8.1.1(prettier@3.3.2)(typescript@5.5.1-rc)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))':
     dependencies:
       '@storybook/channels': 8.1.1
       '@storybook/client-logger': 8.1.1
@@ -16297,36 +16359,9 @@ snapshots:
       fs-extra: 11.2.0
       magic-string: 0.30.10
       ts-dedent: 2.2.0
-      vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
+      vite: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
     optionalDependencies:
       typescript: 5.5.1-rc
-    transitivePeerDependencies:
-      - encoding
-      - prettier
-      - supports-color
-
-  '@storybook/builder-vite@8.1.1(prettier@3.3.2)(typescript@5.5.2)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))':
-    dependencies:
-      '@storybook/channels': 8.1.1
-      '@storybook/client-logger': 8.1.1
-      '@storybook/core-common': 8.1.1(prettier@3.3.2)
-      '@storybook/core-events': 8.1.1
-      '@storybook/csf-plugin': 8.1.1
-      '@storybook/node-logger': 8.1.1
-      '@storybook/preview': 8.1.1
-      '@storybook/preview-api': 8.1.1
-      '@storybook/types': 8.1.1
-      '@types/find-cache-dir': 3.2.1
-      browser-assert: 1.2.1
-      es-module-lexer: 1.5.4
-      express: 4.19.2
-      find-cache-dir: 3.3.2
-      fs-extra: 11.2.0
-      magic-string: 0.30.10
-      ts-dedent: 2.2.0
-      vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
-    optionalDependencies:
-      typescript: 5.5.2
     transitivePeerDependencies:
       - encoding
       - prettier
@@ -16340,27 +16375,27 @@ snapshots:
       telejson: 7.2.0
       tiny-invariant: 1.3.3
 
-  '@storybook/channels@8.1.10':
+  '@storybook/channels@8.1.11':
     dependencies:
-      '@storybook/client-logger': 8.1.10
-      '@storybook/core-events': 8.1.10
+      '@storybook/client-logger': 8.1.11
+      '@storybook/core-events': 8.1.11
       '@storybook/global': 5.0.0
       telejson: 7.2.0
       tiny-invariant: 1.3.3
 
-  '@storybook/cli@8.1.10(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@6.0.4)':
+  '@storybook/cli@8.1.11(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
     dependencies:
       '@babel/core': 7.24.7
       '@babel/types': 7.24.7
       '@ndelangen/get-tarball': 3.0.9
-      '@storybook/codemod': 8.1.10
-      '@storybook/core-common': 8.1.10(prettier@3.3.2)
-      '@storybook/core-events': 8.1.10
-      '@storybook/core-server': 8.1.10(bufferutil@4.0.8)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@6.0.4)
-      '@storybook/csf-tools': 8.1.10
-      '@storybook/node-logger': 8.1.10
-      '@storybook/telemetry': 8.1.10(prettier@3.3.2)
-      '@storybook/types': 8.1.10
+      '@storybook/codemod': 8.1.11
+      '@storybook/core-common': 8.1.11(prettier@3.3.2)
+      '@storybook/core-events': 8.1.11
+      '@storybook/core-server': 8.1.11(bufferutil@4.0.8)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
+      '@storybook/csf-tools': 8.1.11
+      '@storybook/node-logger': 8.1.11
+      '@storybook/telemetry': 8.1.11(prettier@3.3.2)
+      '@storybook/types': 8.1.11
       '@types/semver': 7.5.8
       '@yarnpkg/fslib': 2.10.3
       '@yarnpkg/libzip': 2.3.0
@@ -16399,19 +16434,19 @@ snapshots:
     dependencies:
       '@storybook/global': 5.0.0
 
-  '@storybook/client-logger@8.1.10':
+  '@storybook/client-logger@8.1.11':
     dependencies:
       '@storybook/global': 5.0.0
 
-  '@storybook/codemod@8.1.10':
+  '@storybook/codemod@8.1.11':
     dependencies:
       '@babel/core': 7.24.7
       '@babel/preset-env': 7.24.7(@babel/core@7.24.7)
       '@babel/types': 7.24.7
       '@storybook/csf': 0.1.9
-      '@storybook/csf-tools': 8.1.10
-      '@storybook/node-logger': 8.1.10
-      '@storybook/types': 8.1.10
+      '@storybook/csf-tools': 8.1.11
+      '@storybook/node-logger': 8.1.11
+      '@storybook/types': 8.1.11
       '@types/cross-spawn': 6.0.6
       cross-spawn: 7.0.3
       globby: 14.0.1
@@ -16423,16 +16458,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@storybook/components@8.1.10(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@storybook/components@8.1.11(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@radix-ui/react-dialog': 1.0.5(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-slot': 1.1.0(@types/react@18.3.3)(react@18.3.1)
-      '@storybook/client-logger': 8.1.10
+      '@storybook/client-logger': 8.1.11
       '@storybook/csf': 0.1.9
       '@storybook/global': 5.0.0
       '@storybook/icons': 1.2.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/theming': 8.1.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/types': 8.1.10
+      '@storybook/theming': 8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/types': 8.1.11
       memoizerific: 1.11.3
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -16478,12 +16513,12 @@ snapshots:
       - encoding
       - supports-color
 
-  '@storybook/core-common@8.1.10(prettier@3.3.2)':
+  '@storybook/core-common@8.1.11(prettier@3.3.2)':
     dependencies:
-      '@storybook/core-events': 8.1.10
-      '@storybook/csf-tools': 8.1.10
-      '@storybook/node-logger': 8.1.10
-      '@storybook/types': 8.1.10
+      '@storybook/core-events': 8.1.11
+      '@storybook/csf-tools': 8.1.11
+      '@storybook/node-logger': 8.1.11
+      '@storybook/types': 8.1.11
       '@yarnpkg/fslib': 2.10.3
       '@yarnpkg/libzip': 2.3.0
       chalk: 4.1.2
@@ -16520,31 +16555,31 @@ snapshots:
       '@storybook/csf': 0.1.9
       ts-dedent: 2.2.0
 
-  '@storybook/core-events@8.1.10':
+  '@storybook/core-events@8.1.11':
     dependencies:
       '@storybook/csf': 0.1.9
       ts-dedent: 2.2.0
 
-  '@storybook/core-server@8.1.10(bufferutil@4.0.8)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@6.0.4)':
+  '@storybook/core-server@8.1.11(bufferutil@4.0.8)(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
     dependencies:
       '@aw-web-design/x-default-browser': 1.4.126
       '@babel/core': 7.24.7
       '@babel/parser': 7.24.7
       '@discoveryjs/json-ext': 0.5.7
-      '@storybook/builder-manager': 8.1.10(prettier@3.3.2)
-      '@storybook/channels': 8.1.10
-      '@storybook/core-common': 8.1.10(prettier@3.3.2)
-      '@storybook/core-events': 8.1.10
+      '@storybook/builder-manager': 8.1.11(prettier@3.3.2)
+      '@storybook/channels': 8.1.11
+      '@storybook/core-common': 8.1.11(prettier@3.3.2)
+      '@storybook/core-events': 8.1.11
       '@storybook/csf': 0.1.9
-      '@storybook/csf-tools': 8.1.10
+      '@storybook/csf-tools': 8.1.11
       '@storybook/docs-mdx': 3.1.0-next.0
       '@storybook/global': 5.0.0
-      '@storybook/manager': 8.1.10
-      '@storybook/manager-api': 8.1.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/node-logger': 8.1.10
-      '@storybook/preview-api': 8.1.10
-      '@storybook/telemetry': 8.1.10(prettier@3.3.2)
-      '@storybook/types': 8.1.10
+      '@storybook/manager': 8.1.11
+      '@storybook/manager-api': 8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/node-logger': 8.1.11
+      '@storybook/preview-api': 8.1.11
+      '@storybook/telemetry': 8.1.11(prettier@3.3.2)
+      '@storybook/types': 8.1.11
       '@types/detect-port': 1.3.5
       '@types/diff': 5.2.1
       '@types/node': 18.19.39
@@ -16571,7 +16606,7 @@ snapshots:
       util: 0.12.5
       util-deprecate: 1.0.2
       watchpack: 2.4.1
-      ws: 8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4)
+      ws: 8.17.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -16588,9 +16623,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@storybook/csf-plugin@8.1.10':
+  '@storybook/csf-plugin@8.1.11':
     dependencies:
-      '@storybook/csf-tools': 8.1.10
+      '@storybook/csf-tools': 8.1.11
       unplugin: 1.10.1
     transitivePeerDependencies:
       - supports-color
@@ -16609,14 +16644,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@storybook/csf-tools@8.1.10':
+  '@storybook/csf-tools@8.1.11':
     dependencies:
       '@babel/generator': 7.24.7
       '@babel/parser': 7.24.7
       '@babel/traverse': 7.24.7
       '@babel/types': 7.24.7
       '@storybook/csf': 0.1.9
-      '@storybook/types': 8.1.10
+      '@storybook/types': 8.1.11
       fs-extra: 11.2.0
       recast: 0.23.9
       ts-dedent: 2.2.0
@@ -16648,12 +16683,12 @@ snapshots:
       - prettier
       - supports-color
 
-  '@storybook/docs-tools@8.1.10(prettier@3.3.2)':
+  '@storybook/docs-tools@8.1.11(prettier@3.3.2)':
     dependencies:
-      '@storybook/core-common': 8.1.10(prettier@3.3.2)
-      '@storybook/core-events': 8.1.10
-      '@storybook/preview-api': 8.1.10
-      '@storybook/types': 8.1.10
+      '@storybook/core-common': 8.1.11(prettier@3.3.2)
+      '@storybook/core-events': 8.1.11
+      '@storybook/preview-api': 8.1.11
+      '@storybook/types': 8.1.11
       '@types/doctrine': 0.0.3
       assert: 2.1.0
       doctrine: 3.0.0
@@ -16670,27 +16705,27 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@storybook/instrumenter@8.1.10':
+  '@storybook/instrumenter@8.1.11':
     dependencies:
-      '@storybook/channels': 8.1.10
-      '@storybook/client-logger': 8.1.10
-      '@storybook/core-events': 8.1.10
+      '@storybook/channels': 8.1.11
+      '@storybook/client-logger': 8.1.11
+      '@storybook/core-events': 8.1.11
       '@storybook/global': 5.0.0
-      '@storybook/preview-api': 8.1.10
+      '@storybook/preview-api': 8.1.11
       '@vitest/utils': 1.6.0
       util: 0.12.5
 
-  '@storybook/manager-api@8.1.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@storybook/manager-api@8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@storybook/channels': 8.1.10
-      '@storybook/client-logger': 8.1.10
-      '@storybook/core-events': 8.1.10
+      '@storybook/channels': 8.1.11
+      '@storybook/client-logger': 8.1.11
+      '@storybook/core-events': 8.1.11
       '@storybook/csf': 0.1.9
       '@storybook/global': 5.0.0
       '@storybook/icons': 1.2.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/router': 8.1.10
-      '@storybook/theming': 8.1.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/types': 8.1.10
+      '@storybook/router': 8.1.11
+      '@storybook/theming': 8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/types': 8.1.11
       dequal: 2.0.3
       lodash: 4.17.21
       memoizerific: 1.11.3
@@ -16701,7 +16736,7 @@ snapshots:
       - react
       - react-dom
 
-  '@storybook/manager@8.1.10': {}
+  '@storybook/manager@8.1.11': {}
 
   '@storybook/node-logger@6.5.16':
     dependencies:
@@ -16713,7 +16748,7 @@ snapshots:
 
   '@storybook/node-logger@8.1.1': {}
 
-  '@storybook/node-logger@8.1.10': {}
+  '@storybook/node-logger@8.1.11': {}
 
   '@storybook/preview-api@8.1.1':
     dependencies:
@@ -16732,14 +16767,14 @@ snapshots:
       ts-dedent: 2.2.0
       util-deprecate: 1.0.2
 
-  '@storybook/preview-api@8.1.10':
+  '@storybook/preview-api@8.1.11':
     dependencies:
-      '@storybook/channels': 8.1.10
-      '@storybook/client-logger': 8.1.10
-      '@storybook/core-events': 8.1.10
+      '@storybook/channels': 8.1.11
+      '@storybook/client-logger': 8.1.11
+      '@storybook/core-events': 8.1.11
       '@storybook/csf': 0.1.9
       '@storybook/global': 5.0.0
-      '@storybook/types': 8.1.10
+      '@storybook/types': 8.1.11
       '@types/qs': 6.9.15
       dequal: 2.0.3
       lodash: 4.17.21
@@ -16756,16 +16791,16 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@storybook/react-dom-shim@8.1.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@storybook/react-dom-shim@8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@storybook/react-vite@8.1.1(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.18.0)(typescript@5.5.1-rc)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))':
+  '@storybook/react-vite@8.1.1(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.18.0)(typescript@5.5.1-rc)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))':
     dependencies:
-      '@joshwooding/vite-plugin-react-docgen-typescript': 0.3.1(typescript@5.5.1-rc)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
+      '@joshwooding/vite-plugin-react-docgen-typescript': 0.3.1(typescript@5.5.1-rc)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))
       '@rollup/pluginutils': 5.1.0(rollup@4.18.0)
-      '@storybook/builder-vite': 8.1.1(prettier@3.3.2)(typescript@5.5.1-rc)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
+      '@storybook/builder-vite': 8.1.1(prettier@3.3.2)(typescript@5.5.1-rc)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))
       '@storybook/node-logger': 8.1.1
       '@storybook/react': 8.1.1(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.1-rc)
       '@storybook/types': 8.1.1
@@ -16776,32 +16811,7 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       resolve: 1.22.8
       tsconfig-paths: 4.2.0
-      vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
-    transitivePeerDependencies:
-      - '@preact/preset-vite'
-      - encoding
-      - prettier
-      - rollup
-      - supports-color
-      - typescript
-      - vite-plugin-glimmerx
-
-  '@storybook/react-vite@8.1.1(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.18.0)(typescript@5.5.2)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))':
-    dependencies:
-      '@joshwooding/vite-plugin-react-docgen-typescript': 0.3.1(typescript@5.5.2)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
-      '@rollup/pluginutils': 5.1.0(rollup@4.18.0)
-      '@storybook/builder-vite': 8.1.1(prettier@3.3.2)(typescript@5.5.2)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))
-      '@storybook/node-logger': 8.1.1
-      '@storybook/react': 8.1.1(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.2)
-      '@storybook/types': 8.1.1
-      find-up: 5.0.0
-      magic-string: 0.30.10
-      react: 18.3.1
-      react-docgen: 7.0.3
-      react-dom: 18.3.1(react@18.3.1)
-      resolve: 1.22.8
-      tsconfig-paths: 4.2.0
-      vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
+      vite: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
     transitivePeerDependencies:
       - '@preact/preset-vite'
       - encoding
@@ -16843,14 +16853,14 @@ snapshots:
       - prettier
       - supports-color
 
-  '@storybook/react@8.1.1(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.2)':
+  '@storybook/react@8.1.11(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.1-rc)':
     dependencies:
-      '@storybook/client-logger': 8.1.1
-      '@storybook/docs-tools': 8.1.1(prettier@3.3.2)
+      '@storybook/client-logger': 8.1.11
+      '@storybook/docs-tools': 8.1.11(prettier@3.3.2)
       '@storybook/global': 5.0.0
-      '@storybook/preview-api': 8.1.1
-      '@storybook/react-dom-shim': 8.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/types': 8.1.1
+      '@storybook/preview-api': 8.1.11
+      '@storybook/react-dom-shim': 8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@storybook/types': 8.1.11
       '@types/escodegen': 0.0.6
       '@types/estree': 0.0.51
       '@types/node': 18.19.39
@@ -16869,55 +16879,23 @@ snapshots:
       type-fest: 2.19.0
       util-deprecate: 1.0.2
     optionalDependencies:
-      typescript: 5.5.2
+      typescript: 5.5.1-rc
     transitivePeerDependencies:
       - encoding
       - prettier
       - supports-color
 
-  '@storybook/react@8.1.10(prettier@3.3.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.5.2)':
+  '@storybook/router@8.1.11':
     dependencies:
-      '@storybook/client-logger': 8.1.10
-      '@storybook/docs-tools': 8.1.10(prettier@3.3.2)
-      '@storybook/global': 5.0.0
-      '@storybook/preview-api': 8.1.10
-      '@storybook/react-dom-shim': 8.1.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/types': 8.1.10
-      '@types/escodegen': 0.0.6
-      '@types/estree': 0.0.51
-      '@types/node': 18.19.39
-      acorn: 7.4.1
-      acorn-jsx: 5.3.2(acorn@7.4.1)
-      acorn-walk: 7.2.0
-      escodegen: 2.1.0
-      html-tags: 3.3.1
-      lodash: 4.17.21
-      prop-types: 15.8.1
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      react-element-to-jsx-string: 15.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      semver: 7.6.2
-      ts-dedent: 2.2.0
-      type-fest: 2.19.0
-      util-deprecate: 1.0.2
-    optionalDependencies:
-      typescript: 5.5.2
-    transitivePeerDependencies:
-      - encoding
-      - prettier
-      - supports-color
-
-  '@storybook/router@8.1.10':
-    dependencies:
-      '@storybook/client-logger': 8.1.10
+      '@storybook/client-logger': 8.1.11
       memoizerific: 1.11.3
       qs: 6.12.1
 
-  '@storybook/telemetry@8.1.10(prettier@3.3.2)':
+  '@storybook/telemetry@8.1.11(prettier@3.3.2)':
     dependencies:
-      '@storybook/client-logger': 8.1.10
-      '@storybook/core-common': 8.1.10(prettier@3.3.2)
-      '@storybook/csf-tools': 8.1.10
+      '@storybook/client-logger': 8.1.11
+      '@storybook/core-common': 8.1.11(prettier@3.3.2)
+      '@storybook/csf-tools': 8.1.11
       chalk: 4.1.2
       detect-package-manager: 2.0.1
       fetch-retry: 5.0.6
@@ -16928,16 +16906,16 @@ snapshots:
       - prettier
       - supports-color
 
-  '@storybook/test@8.1.10(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))':
+  '@storybook/test@8.1.11(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))':
     dependencies:
-      '@storybook/client-logger': 8.1.10
-      '@storybook/core-events': 8.1.10
-      '@storybook/instrumenter': 8.1.10
-      '@storybook/preview-api': 8.1.10
-      '@testing-library/dom': 9.3.4
-      '@testing-library/jest-dom': 6.4.6(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))
-      '@testing-library/user-event': 14.5.2(@testing-library/dom@9.3.4)
-      '@vitest/expect': 1.3.1
+      '@storybook/client-logger': 8.1.11
+      '@storybook/core-events': 8.1.11
+      '@storybook/instrumenter': 8.1.11
+      '@storybook/preview-api': 8.1.11
+      '@testing-library/dom': 10.1.0
+      '@testing-library/jest-dom': 6.4.5(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))
+      '@testing-library/user-event': 14.5.2(@testing-library/dom@10.1.0)
+      '@vitest/expect': 1.6.0
       '@vitest/spy': 1.6.0
       util: 0.12.5
     transitivePeerDependencies:
@@ -16947,10 +16925,10 @@ snapshots:
       - jest
       - vitest
 
-  '@storybook/theming@8.1.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@storybook/theming@8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@emotion/use-insertion-effect-with-fallbacks': 1.0.1(react@18.3.1)
-      '@storybook/client-logger': 8.1.10
+      '@storybook/client-logger': 8.1.11
       '@storybook/global': 5.0.0
       memoizerific: 1.11.3
     optionalDependencies:
@@ -16963,9 +16941,9 @@ snapshots:
       '@types/express': 4.17.21
       file-system-cache: 2.3.0
 
-  '@storybook/types@8.1.10':
+  '@storybook/types@8.1.11':
     dependencies:
-      '@storybook/channels': 8.1.10
+      '@storybook/channels': 8.1.11
       '@types/express': 4.17.21
       file-system-cache: 2.3.0
 
@@ -17061,9 +17039,9 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@terra-money/station-connector@1.1.4(@cosmjs/amino@0.32.3)(axios@1.7.2)':
+  '@terra-money/station-connector@1.1.4(@cosmjs/amino@0.32.4)(axios@1.7.2)':
     dependencies:
-      '@cosmjs/amino': 0.32.3
+      '@cosmjs/amino': 0.32.4
       axios: 1.7.2
       bech32: 2.0.0
 
@@ -17118,6 +17096,17 @@ snapshots:
     dependencies:
       '@terra-money/terra.js': 3.1.10
 
+  '@testing-library/dom@10.1.0':
+    dependencies:
+      '@babel/code-frame': 7.24.7
+      '@babel/runtime': 7.24.7
+      '@types/aria-query': 5.0.4
+      aria-query: 5.3.0
+      chalk: 4.1.2
+      dom-accessibility-api: 0.5.16
+      lz-string: 1.5.0
+      pretty-format: 27.5.1
+
   '@testing-library/dom@10.2.0':
     dependencies:
       '@babel/code-frame': 7.24.7
@@ -17129,18 +17118,7 @@ snapshots:
       lz-string: 1.5.0
       pretty-format: 27.5.1
 
-  '@testing-library/dom@9.3.4':
-    dependencies:
-      '@babel/code-frame': 7.24.7
-      '@babel/runtime': 7.24.7
-      '@types/aria-query': 5.0.4
-      aria-query: 5.1.3
-      chalk: 4.1.2
-      dom-accessibility-api: 0.5.16
-      lz-string: 1.5.0
-      pretty-format: 27.5.1
-
-  '@testing-library/jest-dom@6.4.6(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))':
+  '@testing-library/jest-dom@6.4.5(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))':
     dependencies:
       '@adobe/css-tools': 4.4.0
       '@babel/runtime': 7.24.7
@@ -17151,7 +17129,20 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
     optionalDependencies:
-      vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
+      vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
+
+  '@testing-library/jest-dom@6.4.6(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))':
+    dependencies:
+      '@adobe/css-tools': 4.4.0
+      '@babel/runtime': 7.24.7
+      aria-query: 5.3.0
+      chalk: 3.0.0
+      css.escape: 1.5.1
+      dom-accessibility-api: 0.6.3
+      lodash: 4.17.21
+      redent: 3.0.0
+    optionalDependencies:
+      vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
 
   '@testing-library/react@15.0.7(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -17163,9 +17154,9 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.3
 
-  '@testing-library/user-event@14.5.2(@testing-library/dom@9.3.4)':
+  '@testing-library/user-event@14.5.2(@testing-library/dom@10.1.0)':
     dependencies:
-      '@testing-library/dom': 9.3.4
+      '@testing-library/dom': 10.1.0
 
   '@textea/json-viewer@3.4.1(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@mui/material@5.15.20(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.3)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -17176,7 +17167,7 @@ snapshots:
       copy-to-clipboard: 3.3.3
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      zustand: 4.5.3(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1)
+      zustand: 4.5.4(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1)
     transitivePeerDependencies:
       - '@types/react'
       - immer
@@ -17377,7 +17368,7 @@ snapshots:
 
   '@types/json5@0.0.29': {}
 
-  '@types/lodash@4.17.5': {}
+  '@types/lodash@4.17.6': {}
 
   '@types/long@4.0.2': {}
 
@@ -17459,34 +17450,34 @@ snapshots:
 
   '@types/uuid@9.0.8': {}
 
-  '@typescript-eslint/eslint-plugin@7.14.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2))(eslint@9.5.0)(typescript@5.5.2)':
+  '@typescript-eslint/eslint-plugin@7.14.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc))(eslint@9.5.0)(typescript@5.5.1-rc)':
     dependencies:
       '@eslint-community/regexpp': 4.10.1
-      '@typescript-eslint/parser': 7.14.1(eslint@9.5.0)(typescript@5.5.2)
+      '@typescript-eslint/parser': 7.14.1(eslint@9.5.0)(typescript@5.5.1-rc)
       '@typescript-eslint/scope-manager': 7.14.1
-      '@typescript-eslint/type-utils': 7.14.1(eslint@9.5.0)(typescript@5.5.2)
-      '@typescript-eslint/utils': 7.14.1(eslint@9.5.0)(typescript@5.5.2)
+      '@typescript-eslint/type-utils': 7.14.1(eslint@9.5.0)(typescript@5.5.1-rc)
+      '@typescript-eslint/utils': 7.14.1(eslint@9.5.0)(typescript@5.5.1-rc)
       '@typescript-eslint/visitor-keys': 7.14.1
       eslint: 9.5.0
       graphemer: 1.4.0
       ignore: 5.3.1
       natural-compare: 1.4.0
-      ts-api-utils: 1.3.0(typescript@5.5.2)
+      ts-api-utils: 1.3.0(typescript@5.5.1-rc)
     optionalDependencies:
-      typescript: 5.5.2
+      typescript: 5.5.1-rc
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2)':
+  '@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc)':
     dependencies:
       '@typescript-eslint/scope-manager': 7.14.1
       '@typescript-eslint/types': 7.14.1
-      '@typescript-eslint/typescript-estree': 7.14.1(typescript@5.5.2)
+      '@typescript-eslint/typescript-estree': 7.14.1(typescript@5.5.1-rc)
       '@typescript-eslint/visitor-keys': 7.14.1
       debug: 4.3.5
       eslint: 9.5.0
     optionalDependencies:
-      typescript: 5.5.2
+      typescript: 5.5.1-rc
     transitivePeerDependencies:
       - supports-color
 
@@ -17500,15 +17491,15 @@ snapshots:
       '@typescript-eslint/types': 7.14.1
       '@typescript-eslint/visitor-keys': 7.14.1
 
-  '@typescript-eslint/type-utils@7.14.1(eslint@9.5.0)(typescript@5.5.2)':
+  '@typescript-eslint/type-utils@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc)':
     dependencies:
-      '@typescript-eslint/typescript-estree': 7.14.1(typescript@5.5.2)
-      '@typescript-eslint/utils': 7.14.1(eslint@9.5.0)(typescript@5.5.2)
+      '@typescript-eslint/typescript-estree': 7.14.1(typescript@5.5.1-rc)
+      '@typescript-eslint/utils': 7.14.1(eslint@9.5.0)(typescript@5.5.1-rc)
       debug: 4.3.5
       eslint: 9.5.0
-      ts-api-utils: 1.3.0(typescript@5.5.2)
+      ts-api-utils: 1.3.0(typescript@5.5.1-rc)
     optionalDependencies:
-      typescript: 5.5.2
+      typescript: 5.5.1-rc
     transitivePeerDependencies:
       - supports-color
 
@@ -17516,7 +17507,7 @@ snapshots:
 
   '@typescript-eslint/types@7.14.1': {}
 
-  '@typescript-eslint/typescript-estree@5.62.0(typescript@5.5.2)':
+  '@typescript-eslint/typescript-estree@5.62.0(typescript@5.5.1-rc)':
     dependencies:
       '@typescript-eslint/types': 5.62.0
       '@typescript-eslint/visitor-keys': 5.62.0
@@ -17524,13 +17515,13 @@ snapshots:
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.6.2
-      tsutils: 3.21.0(typescript@5.5.2)
+      tsutils: 3.21.0(typescript@5.5.1-rc)
     optionalDependencies:
-      typescript: 5.5.2
+      typescript: 5.5.1-rc
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/typescript-estree@7.14.1(typescript@5.5.2)':
+  '@typescript-eslint/typescript-estree@7.14.1(typescript@5.5.1-rc)':
     dependencies:
       '@typescript-eslint/types': 7.14.1
       '@typescript-eslint/visitor-keys': 7.14.1
@@ -17539,20 +17530,20 @@ snapshots:
       is-glob: 4.0.3
       minimatch: 9.0.5
       semver: 7.6.2
-      ts-api-utils: 1.3.0(typescript@5.5.2)
+      ts-api-utils: 1.3.0(typescript@5.5.1-rc)
     optionalDependencies:
-      typescript: 5.5.2
+      typescript: 5.5.1-rc
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@5.62.0(eslint@9.5.0)(typescript@5.5.2)':
+  '@typescript-eslint/utils@5.62.0(eslint@9.5.0)(typescript@5.5.1-rc)':
     dependencies:
       '@eslint-community/eslint-utils': 4.4.0(eslint@9.5.0)
       '@types/json-schema': 7.0.15
       '@types/semver': 7.5.8
       '@typescript-eslint/scope-manager': 5.62.0
       '@typescript-eslint/types': 5.62.0
-      '@typescript-eslint/typescript-estree': 5.62.0(typescript@5.5.2)
+      '@typescript-eslint/typescript-estree': 5.62.0(typescript@5.5.1-rc)
       eslint: 9.5.0
       eslint-scope: 5.1.1
       semver: 7.6.2
@@ -17560,12 +17551,12 @@ snapshots:
       - supports-color
       - typescript
 
-  '@typescript-eslint/utils@7.14.1(eslint@9.5.0)(typescript@5.5.2)':
+  '@typescript-eslint/utils@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc)':
     dependencies:
       '@eslint-community/eslint-utils': 4.4.0(eslint@9.5.0)
       '@typescript-eslint/scope-manager': 7.14.1
       '@typescript-eslint/types': 7.14.1
-      '@typescript-eslint/typescript-estree': 7.14.1(typescript@5.5.2)
+      '@typescript-eslint/typescript-estree': 7.14.1(typescript@5.5.1-rc)
       eslint: 9.5.0
     transitivePeerDependencies:
       - supports-color
@@ -17663,7 +17654,7 @@ snapshots:
 
   '@visx/responsive@3.10.2(react@18.3.1)':
     dependencies:
-      '@types/lodash': 4.17.5
+      '@types/lodash': 4.17.6
       '@types/react': 18.3.3
       lodash: 4.17.21
       prop-types: 15.8.1
@@ -17677,7 +17668,7 @@ snapshots:
     dependencies:
       '@types/d3-path': 1.0.11
       '@types/d3-shape': 1.3.12
-      '@types/lodash': 4.17.5
+      '@types/lodash': 4.17.6
       '@types/react': 18.3.3
       '@visx/curve': 3.3.0
       '@visx/group': 3.3.0(react@18.3.1)
@@ -17702,7 +17693,7 @@ snapshots:
 
   '@visx/text@3.3.0(react@18.3.1)':
     dependencies:
-      '@types/lodash': 4.17.5
+      '@types/lodash': 4.17.6
       '@types/react': 18.3.3
       classnames: 2.5.1
       lodash: 4.17.21
@@ -17751,25 +17742,25 @@ snapshots:
       d3-time-format: 4.1.0
       internmap: 2.0.3
 
-  '@vitejs/plugin-basic-ssl@1.1.0(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))':
+  '@vitejs/plugin-basic-ssl@1.1.0(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))':
     dependencies:
-      vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
+      vite: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
 
-  '@vitejs/plugin-react-swc@3.7.0(@swc/helpers@0.5.11)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))':
+  '@vitejs/plugin-react-swc@3.7.0(@swc/helpers@0.5.11)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))':
     dependencies:
       '@swc/core': 1.6.5(@swc/helpers@0.5.11)
-      vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
+      vite: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
     transitivePeerDependencies:
       - '@swc/helpers'
 
-  '@vitejs/plugin-react@4.3.1(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1))':
+  '@vitejs/plugin-react@4.3.1(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1))':
     dependencies:
       '@babel/core': 7.24.7
       '@babel/plugin-transform-react-jsx-self': 7.24.7(@babel/core@7.24.7)
       '@babel/plugin-transform-react-jsx-source': 7.24.7(@babel/core@7.24.7)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
+      vite: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -17778,15 +17769,9 @@ snapshots:
       '@vitest/utils': 1.6.0
       magic-string: 0.30.10
       sirv: 2.0.4
-      vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
+      vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
     optionalDependencies:
       playwright: 1.45.0
-
-  '@vitest/expect@1.3.1':
-    dependencies:
-      '@vitest/spy': 1.3.1
-      '@vitest/utils': 1.3.1
-      chai: 4.4.1
 
   '@vitest/expect@1.6.0':
     dependencies:
@@ -17806,20 +17791,9 @@ snapshots:
       pathe: 1.1.2
       pretty-format: 29.7.0
 
-  '@vitest/spy@1.3.1':
-    dependencies:
-      tinyspy: 2.2.1
-
   '@vitest/spy@1.6.0':
     dependencies:
       tinyspy: 2.2.1
-
-  '@vitest/utils@1.3.1':
-    dependencies:
-      diff-sequences: 29.6.3
-      estree-walker: 3.0.3
-      loupe: 2.3.7
-      pretty-format: 29.7.0
 
   '@vitest/utils@1.6.0':
     dependencies:
@@ -18308,10 +18282,6 @@ snapshots:
     dependencies:
       tslib: 2.6.3
 
-  aria-query@5.1.3:
-    dependencies:
-      deep-equal: 2.2.3
-
   aria-query@5.3.0:
     dependencies:
       dequal: 2.0.3
@@ -18425,7 +18395,7 @@ snapshots:
   autoprefixer@10.4.19(postcss@8.4.38):
     dependencies:
       browserslist: 4.23.1
-      caniuse-lite: 1.0.30001637
+      caniuse-lite: 1.0.30001638
       fraction.js: 4.3.7
       normalize-range: 0.1.2
       picocolors: 1.0.1
@@ -18653,8 +18623,8 @@ snapshots:
 
   browserslist@4.23.1:
     dependencies:
-      caniuse-lite: 1.0.30001637
-      electron-to-chromium: 1.4.812
+      caniuse-lite: 1.0.30001638
+      electron-to-chromium: 1.4.813
       node-releases: 2.0.14
       update-browserslist-db: 1.0.16(browserslist@4.23.1)
 
@@ -18715,7 +18685,7 @@ snapshots:
 
   camelize@1.0.1: {}
 
-  caniuse-lite@1.0.30001637: {}
+  caniuse-lite@1.0.30001638: {}
 
   chai@4.4.1:
     dependencies:
@@ -18727,9 +18697,9 @@ snapshots:
       pathval: 1.1.1
       type-detect: 4.0.8
 
-  chain-registry@1.63.10:
+  chain-registry@1.63.11:
     dependencies:
-      '@chain-registry/types': 0.45.7
+      '@chain-registry/types': 0.45.8
 
   chalk-template@1.1.0:
     dependencies:
@@ -18980,28 +18950,28 @@ snapshots:
 
   cosmjs-types@0.9.0: {}
 
-  cosmos-kit@2.18.1(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@terra-money/terra.js@3.1.10)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(axios@1.7.2)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(react@18.3.1)(utf-8-validate@5.0.10):
+  cosmos-kit@2.18.2(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(axios@1.7.2)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(react@18.3.1)(utf-8-validate@5.0.10):
     dependencies:
-      '@cosmos-kit/cdcwallet': 2.13.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/coin98': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/compass': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/cosmostation': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/exodus': 2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)
-      '@cosmos-kit/fin': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/frontier': 2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/galaxy-station': 2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/keplr': 2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/leap': 2.12.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(utf-8-validate@5.0.10)
-      '@cosmos-kit/ledger': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/okxwallet-extension': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/omni': 2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/owallet': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/shell': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/station': 2.10.1(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/cdcwallet': 2.13.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/coin98': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/compass': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/cosmostation': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/exodus': 2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)
+      '@cosmos-kit/fin': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/frontier': 2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/galaxy-station': 2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/keplr': 2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/sign-client@2.13.3(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/leap': 2.12.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(cosmjs-types@0.9.0)(utf-8-validate@5.0.10)
+      '@cosmos-kit/ledger': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/okxwallet-extension': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/omni': 2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/owallet': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/shell': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/station': 2.10.1(@chain-registry/types@0.44.11)(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@terra-money/terra.js@3.1.10)(axios@1.7.2)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@cosmos-kit/tailwind': 1.5.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/trust': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/vectis': 2.11.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@cosmos-kit/xdefi': 2.10.1(@cosmjs/amino@0.32.3)(@cosmjs/proto-signing@0.32.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/trust': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(@walletconnect/types@2.13.3)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/vectis': 2.11.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@cosmos-kit/xdefi': 2.10.1(@cosmjs/amino@0.32.4)(@cosmjs/proto-signing@0.32.4)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -19230,27 +19200,6 @@ snapshots:
     dependencies:
       type-detect: 4.0.8
 
-  deep-equal@2.2.3:
-    dependencies:
-      array-buffer-byte-length: 1.0.1
-      call-bind: 1.0.7
-      es-get-iterator: 1.1.3
-      get-intrinsic: 1.2.4
-      is-arguments: 1.1.1
-      is-array-buffer: 3.0.4
-      is-date-object: 1.0.5
-      is-regex: 1.1.4
-      is-shared-array-buffer: 1.0.3
-      isarray: 2.0.5
-      object-is: 1.1.6
-      object-keys: 1.1.1
-      object.assign: 4.1.5
-      regexp.prototype.flags: 1.5.2
-      side-channel: 1.0.6
-      which-boxed-primitive: 1.0.2
-      which-collection: 1.0.2
-      which-typed-array: 1.1.15
-
   deep-extend@0.6.0: {}
 
   deep-is@0.1.4: {}
@@ -19429,7 +19378,7 @@ snapshots:
     dependencies:
       jake: 10.9.1
 
-  electron-to-chromium@1.4.812: {}
+  electron-to-chromium@1.4.813: {}
 
   elliptic@6.5.4:
     dependencies:
@@ -19539,18 +19488,6 @@ snapshots:
       get-intrinsic: 1.2.4
 
   es-errors@1.3.0: {}
-
-  es-get-iterator@1.1.3:
-    dependencies:
-      call-bind: 1.0.7
-      get-intrinsic: 1.2.4
-      has-symbols: 1.0.3
-      is-arguments: 1.1.1
-      is-map: 2.0.3
-      is-set: 2.0.3
-      is-string: 1.0.7
-      isarray: 2.0.5
-      stop-iteration-iterator: 1.0.0
 
   es-iterator-helpers@1.0.19:
     dependencies:
@@ -19680,13 +19617,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2))(eslint-plugin-import@2.29.1)(eslint@9.5.0):
+  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc))(eslint-plugin-import@2.29.1)(eslint@9.5.0):
     dependencies:
       debug: 4.3.5
       enhanced-resolve: 5.17.0
       eslint: 9.5.0
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2))(eslint-plugin-import@2.29.1)(eslint@9.5.0))(eslint@9.5.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2))(eslint-import-resolver-typescript@3.6.1)(eslint@9.5.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc))(eslint-plugin-import@2.29.1)(eslint@9.5.0))(eslint@9.5.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc))(eslint-import-resolver-typescript@3.6.1)(eslint@9.5.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.14.0
@@ -19697,18 +19634,18 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2))(eslint-plugin-import@2.29.1)(eslint@9.5.0))(eslint@9.5.0):
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc))(eslint-plugin-import@2.29.1)(eslint@9.5.0))(eslint@9.5.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
-      '@typescript-eslint/parser': 7.14.1(eslint@9.5.0)(typescript@5.5.2)
+      '@typescript-eslint/parser': 7.14.1(eslint@9.5.0)(typescript@5.5.1-rc)
       eslint: 9.5.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2))(eslint-plugin-import@2.29.1)(eslint@9.5.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc))(eslint-plugin-import@2.29.1)(eslint@9.5.0)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2))(eslint-import-resolver-typescript@3.6.1)(eslint@9.5.0):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc))(eslint-import-resolver-typescript@3.6.1)(eslint@9.5.0):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlastindex: 1.2.5
@@ -19718,7 +19655,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.5.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2))(eslint-plugin-import@2.29.1)(eslint@9.5.0))(eslint@9.5.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc))(eslint-plugin-import@2.29.1)(eslint@9.5.0))(eslint@9.5.0)
       hasown: 2.0.2
       is-core-module: 2.14.0
       is-glob: 4.0.3
@@ -19729,7 +19666,7 @@ snapshots:
       semver: 6.3.1
       tsconfig-paths: 3.15.0
     optionalDependencies:
-      '@typescript-eslint/parser': 7.14.1(eslint@9.5.0)(typescript@5.5.2)
+      '@typescript-eslint/parser': 7.14.1(eslint@9.5.0)(typescript@5.5.1-rc)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
@@ -19771,10 +19708,10 @@ snapshots:
       semver: 6.3.1
       string.prototype.matchall: 4.0.11
 
-  eslint-plugin-storybook@0.8.0(eslint@9.5.0)(typescript@5.5.2):
+  eslint-plugin-storybook@0.8.0(eslint@9.5.0)(typescript@5.5.1-rc):
     dependencies:
       '@storybook/csf': 0.0.1
-      '@typescript-eslint/utils': 5.62.0(eslint@9.5.0)(typescript@5.5.2)
+      '@typescript-eslint/utils': 5.62.0(eslint@9.5.0)(typescript@5.5.1-rc)
       eslint: 9.5.0
       requireindex: 1.2.0
       ts-dedent: 2.2.0
@@ -19782,23 +19719,23 @@ snapshots:
       - supports-color
       - typescript
 
-  eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2))):
+  eslint-plugin-tailwindcss@3.17.4(tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.1-rc))):
     dependencies:
       fast-glob: 3.3.2
       postcss: 8.4.38
-      tailwindcss: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2))
+      tailwindcss: 3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.1-rc))
 
   eslint-plugin-turbo@1.13.4(eslint@9.5.0):
     dependencies:
       dotenv: 16.0.3
       eslint: 9.5.0
 
-  eslint-plugin-vitest@0.5.4(eslint@9.5.0)(typescript@5.5.2)(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)):
+  eslint-plugin-vitest@0.5.4(eslint@9.5.0)(typescript@5.5.1-rc)(vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)):
     dependencies:
-      '@typescript-eslint/utils': 7.14.1(eslint@9.5.0)(typescript@5.5.2)
+      '@typescript-eslint/utils': 7.14.1(eslint@9.5.0)(typescript@5.5.1-rc)
       eslint: 9.5.0
     optionalDependencies:
-      vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
+      vitest: 1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -20116,7 +20053,7 @@ snapshots:
 
   flatted@3.3.1: {}
 
-  flow-parser@0.238.2: {}
+  flow-parser@0.238.3: {}
 
   follow-redirects@1.15.6: {}
 
@@ -20832,8 +20769,6 @@ snapshots:
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
-  jiti@1.21.3: {}
-
   jiti@1.21.6: {}
 
   jju@1.4.0: {}
@@ -20869,7 +20804,7 @@ snapshots:
       '@babel/register': 7.24.6(@babel/core@7.24.7)
       babel-core: 7.0.0-bridge.0(@babel/core@7.24.7)
       chalk: 4.1.2
-      flow-parser: 0.238.2
+      flow-parser: 0.238.3
       graceful-fs: 4.2.11
       micromatch: 4.0.7
       neo-async: 2.6.2
@@ -20884,7 +20819,7 @@ snapshots:
 
   jscrypto@1.0.3: {}
 
-  jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4):
+  jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     dependencies:
       cssstyle: 4.0.1
       data-urls: 5.0.0
@@ -20905,7 +20840,7 @@ snapshots:
       whatwg-encoding: 3.1.1
       whatwg-mimetype: 4.0.0
       whatwg-url: 14.0.0
-      ws: 8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4)
+      ws: 8.17.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       xml-name-validator: 5.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -21007,7 +20942,7 @@ snapshots:
 
   lilconfig@2.1.0: {}
 
-  lilconfig@3.1.1: {}
+  lilconfig@3.1.2: {}
 
   lines-and-columns@1.2.4: {}
 
@@ -21806,19 +21741,11 @@ snapshots:
 
   postcss-load-config@4.0.2(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.1-rc)):
     dependencies:
-      lilconfig: 3.1.1
-      yaml: 2.4.3
+      lilconfig: 3.1.2
+      yaml: 2.4.5
     optionalDependencies:
       postcss: 8.4.38
       ts-node: 10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.1-rc)
-
-  postcss-load-config@4.0.2(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2)):
-    dependencies:
-      lilconfig: 3.1.1
-      yaml: 2.4.3
-    optionalDependencies:
-      postcss: 8.4.38
-      ts-node: 10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2)
 
   postcss-loader@4.3.0(postcss@7.0.39)(webpack@5.92.1(@swc/core@1.6.5(@swc/helpers@0.5.11))(esbuild@0.20.2)):
     dependencies:
@@ -22106,10 +22033,6 @@ snapshots:
   react-docgen-typescript@2.2.2(typescript@5.5.1-rc):
     dependencies:
       typescript: 5.5.1-rc
-
-  react-docgen-typescript@2.2.2(typescript@5.5.2):
-    dependencies:
-      typescript: 5.5.2
 
   react-docgen@7.0.3:
     dependencies:
@@ -22763,15 +22686,11 @@ snapshots:
 
   stdin-discarder@0.2.2: {}
 
-  stop-iteration-iterator@1.0.0:
-    dependencies:
-      internal-slot: 1.0.7
-
   store2@2.14.3: {}
 
-  storybook@8.1.10(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@6.0.4):
+  storybook@8.1.11(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10):
     dependencies:
-      '@storybook/cli': 8.1.10(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@6.0.4)
+      '@storybook/cli': 8.1.11(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@babel/preset-env'
       - bufferutil
@@ -22997,7 +22916,7 @@ snapshots:
       fast-glob: 3.3.2
       glob-parent: 6.0.2
       is-glob: 4.0.3
-      jiti: 1.21.3
+      jiti: 1.21.6
       lilconfig: 2.1.0
       micromatch: 4.0.7
       normalize-path: 3.0.0
@@ -23007,33 +22926,6 @@ snapshots:
       postcss-import: 15.1.0(postcss@8.4.38)
       postcss-js: 4.0.1(postcss@8.4.38)
       postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.1-rc))
-      postcss-nested: 6.0.1(postcss@8.4.38)
-      postcss-selector-parser: 6.1.0
-      resolve: 1.22.8
-      sucrase: 3.35.0
-    transitivePeerDependencies:
-      - ts-node
-
-  tailwindcss@3.4.4(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2)):
-    dependencies:
-      '@alloc/quick-lru': 5.2.0
-      arg: 5.0.2
-      chokidar: 3.6.0
-      didyoumean: 1.2.2
-      dlv: 1.1.3
-      fast-glob: 3.3.2
-      glob-parent: 6.0.2
-      is-glob: 4.0.3
-      jiti: 1.21.3
-      lilconfig: 2.1.0
-      micromatch: 4.0.7
-      normalize-path: 3.0.0
-      object-hash: 3.0.0
-      picocolors: 1.0.1
-      postcss: 8.4.38
-      postcss-import: 15.1.0(postcss@8.4.38)
-      postcss-js: 4.0.1(postcss@8.4.38)
-      postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2))
       postcss-nested: 6.0.1(postcss@8.4.38)
       postcss-selector-parser: 6.1.0
       resolve: 1.22.8
@@ -23203,9 +23095,9 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  ts-api-utils@1.3.0(typescript@5.5.2):
+  ts-api-utils@1.3.0(typescript@5.5.1-rc):
     dependencies:
-      typescript: 5.5.2
+      typescript: 5.5.1-rc
 
   ts-dedent@2.2.0: {}
 
@@ -23230,27 +23122,6 @@ snapshots:
       yn: 3.1.1
     optionalDependencies:
       '@swc/core': 1.6.5(@swc/helpers@0.5.11)
-
-  ts-node@10.9.2(@swc/core@1.6.5(@swc/helpers@0.5.11))(@types/node@20.14.9)(typescript@5.5.2):
-    dependencies:
-      '@cspotcode/source-map-support': 0.8.1
-      '@tsconfig/node10': 1.0.11
-      '@tsconfig/node12': 1.0.11
-      '@tsconfig/node14': 1.0.3
-      '@tsconfig/node16': 1.0.4
-      '@types/node': 20.14.9
-      acorn: 8.12.0
-      acorn-walk: 8.3.3
-      arg: 4.1.3
-      create-require: 1.1.1
-      diff: 4.0.2
-      make-error: 1.3.6
-      typescript: 5.5.2
-      v8-compile-cache-lib: 3.0.1
-      yn: 3.1.1
-    optionalDependencies:
-      '@swc/core': 1.6.5(@swc/helpers@0.5.11)
-    optional: true
 
   ts-toolbelt@9.6.0: {}
 
@@ -23282,10 +23153,10 @@ snapshots:
 
   tslib@2.6.3: {}
 
-  tsutils@3.21.0(typescript@5.5.2):
+  tsutils@3.21.0(typescript@5.5.1-rc):
     dependencies:
       tslib: 1.14.1
-      typescript: 5.5.2
+      typescript: 5.5.1-rc
 
   tty-browserify@0.0.1: {}
 
@@ -23373,22 +23244,20 @@ snapshots:
 
   typeforce@1.18.0: {}
 
-  typescript-eslint@7.14.1(eslint@9.5.0)(typescript@5.5.2):
+  typescript-eslint@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc):
     dependencies:
-      '@typescript-eslint/eslint-plugin': 7.14.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.2))(eslint@9.5.0)(typescript@5.5.2)
-      '@typescript-eslint/parser': 7.14.1(eslint@9.5.0)(typescript@5.5.2)
-      '@typescript-eslint/utils': 7.14.1(eslint@9.5.0)(typescript@5.5.2)
+      '@typescript-eslint/eslint-plugin': 7.14.1(@typescript-eslint/parser@7.14.1(eslint@9.5.0)(typescript@5.5.1-rc))(eslint@9.5.0)(typescript@5.5.1-rc)
+      '@typescript-eslint/parser': 7.14.1(eslint@9.5.0)(typescript@5.5.1-rc)
+      '@typescript-eslint/utils': 7.14.1(eslint@9.5.0)(typescript@5.5.1-rc)
       eslint: 9.5.0
     optionalDependencies:
-      typescript: 5.5.2
+      typescript: 5.5.1-rc
     transitivePeerDependencies:
       - supports-color
 
   typescript@5.4.2: {}
 
   typescript@5.5.1-rc: {}
-
-  typescript@5.5.2: {}
 
   ufo@1.5.3: {}
 
@@ -23552,11 +23421,6 @@ snapshots:
     dependencies:
       node-gyp-build: 4.8.1
 
-  utf-8-validate@6.0.4:
-    dependencies:
-      node-gyp-build: 4.8.1
-    optional: true
-
   util-deprecate@1.0.2: {}
 
   util@0.12.5:
@@ -23590,7 +23454,7 @@ snapshots:
       debug: 4.3.5
       pathe: 1.1.2
       picocolors: 1.0.1
-      vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
+      vite: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -23601,29 +23465,29 @@ snapshots:
       - supports-color
       - terser
 
-  vite-plugin-node-stdlib-browser@0.2.1(node-stdlib-browser@1.2.0)(rollup@4.18.0)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1)):
+  vite-plugin-node-stdlib-browser@0.2.1(node-stdlib-browser@1.2.0)(rollup@4.18.0)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1)):
     dependencies:
       '@rollup/plugin-inject': 5.0.5(rollup@4.18.0)
       node-stdlib-browser: 1.2.0
-      vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
+      vite: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
     transitivePeerDependencies:
       - rollup
 
-  vite-plugin-top-level-await@1.4.1(@swc/helpers@0.5.11)(rollup@4.18.0)(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1)):
+  vite-plugin-top-level-await@1.4.1(@swc/helpers@0.5.11)(rollup@4.18.0)(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1)):
     dependencies:
       '@rollup/plugin-virtual': 3.0.2(rollup@4.18.0)
       '@swc/core': 1.6.5(@swc/helpers@0.5.11)
       uuid: 9.0.1
-      vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
+      vite: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
     transitivePeerDependencies:
       - '@swc/helpers'
       - rollup
 
-  vite-plugin-wasm@3.3.0(vite@5.3.1(@types/node@20.14.9)(terser@5.31.1)):
+  vite-plugin-wasm@3.3.0(vite@5.3.2(@types/node@20.14.9)(terser@5.31.1)):
     dependencies:
-      vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
+      vite: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
 
-  vite@5.3.1(@types/node@20.14.9)(terser@5.31.1):
+  vite@5.3.2(@types/node@20.14.9)(terser@5.31.1):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.38
@@ -23633,7 +23497,7 @@ snapshots:
       fsevents: 2.3.3
       terser: 5.31.1
 
-  vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1):
+  vitest@1.6.0(@types/node@20.14.9)(@vitest/browser@1.6.0(playwright@1.45.0)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1):
     dependencies:
       '@vitest/expect': 1.6.0
       '@vitest/runner': 1.6.0
@@ -23652,13 +23516,13 @@ snapshots:
       strip-literal: 2.1.0
       tinybench: 2.8.0
       tinypool: 0.8.4
-      vite: 5.3.1(@types/node@20.14.9)(terser@5.31.1)
+      vite: 5.3.2(@types/node@20.14.9)(terser@5.31.1)
       vite-node: 1.6.0(@types/node@20.14.9)(terser@5.31.1)
       why-is-node-running: 2.2.2
     optionalDependencies:
       '@types/node': 20.14.9
       '@vitest/browser': 1.6.0(playwright@1.45.0)(vitest@1.6.0)
-      jsdom: 24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)
+      jsdom: 24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - less
       - lightningcss
@@ -23844,10 +23708,10 @@ snapshots:
       bufferutil: 4.0.8
       utf-8-validate: 5.0.10
 
-  ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@6.0.4):
+  ws@8.17.1(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     optionalDependencies:
       bufferutil: 4.0.8
-      utf-8-validate: 6.0.4
+      utf-8-validate: 5.0.10
 
   xml-name-validator@5.0.0: {}
 
@@ -23868,7 +23732,7 @@ snapshots:
 
   yaml@1.10.2: {}
 
-  yaml@2.4.3: {}
+  yaml@2.4.5: {}
 
   yn@3.1.1: {}
 
@@ -23878,7 +23742,7 @@ snapshots:
 
   zod@3.23.8: {}
 
-  zustand@4.5.3(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1):
+  zustand@4.5.4(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1):
     dependencies:
       use-sync-external-store: 1.2.0(react@18.3.1)
     optionalDependencies:
