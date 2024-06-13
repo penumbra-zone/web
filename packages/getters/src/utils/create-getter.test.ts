@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { assertType, describe, expect, it } from 'vitest';
 import { createGetter } from './create-getter';
 
 interface Address {
@@ -83,6 +83,28 @@ describe('createGetter()', () => {
           getAddress.optional().pipe(getCity).pipe(getFirstLetter)(employee),
         ).not.toThrow();
       });
+
+      it('does not throw when a later getter is used with `.optional()` and some value in the chain is undefined', () => {
+        const baseGetter = getAddress.pipe(getCity).pipe(getFirstLetter);
+
+        // Before testing that it _doesn't_ throw with `.optional()`, first make
+        // sure that it _does_ throw without it, to ensure that this test is
+        // valid.
+        expect(() => baseGetter(employee)).toThrow();
+        expect(() => baseGetter.optional()(employee)).not.toThrow();
+      });
+
+      it('does throw when used without `.optional()` and some value in the chain is undefined', () => {
+        expect(() => getAddress.pipe(getCity).pipe(getFirstLetter)(employee)).toThrow();
+      });
     });
   });
+
+  // Type assertions - these will be run at build time, rather than at test
+  // time.
+  assertType<string>(getAddress.pipe(getCity)(employee));
+  // @ts-expect-error - Assert that `string` on its own is incorrect for an
+  // optional getter -- it should be `string | undefined`.
+  assertType<string>(getAddress.pipe(getCity).optional()(employee));
+  assertType<string | undefined>(getAddress.pipe(getCity).optional()(employee));
 });
