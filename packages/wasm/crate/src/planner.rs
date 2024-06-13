@@ -142,6 +142,8 @@ pub async fn plan_transaction(
 
     let request = TransactionPlannerRequest::decode(request)?;
 
+    let expiry_height: u64 = request.expiry_height;
+
     let mut source_address_index: AddressIndex = request
         .source
         .map(TryInto::try_into)
@@ -179,11 +181,6 @@ pub async fn plan_transaction(
 
     let chain_id: String = app_parameters.chain_id;
 
-    let transaction_parameters = TransactionParameters {
-        chain_id,
-        ..Default::default()
-    };
-
     // Request information about current gas prices
     let mut gas_prices: GasPrices = {
         let gas_prices: penumbra_proto::core::component::fee::v1::GasPrices =
@@ -219,6 +216,13 @@ pub async fn plan_transaction(
             execution_price: gas_prices.execution_price * 10,
         };
     };
+
+    let mut transaction_parameters = TransactionParameters {
+        chain_id,
+        expiry_height,
+        ..Default::default()
+    };
+    transaction_parameters.fee.0.asset_id = alt_gas;
 
     let mut actions_list = ActionList::default();
 

@@ -3,13 +3,21 @@ import { MemoViewComponent } from './memo-view';
 import { ActionViewComponent } from './action-view';
 import { ViewBox, ViewSection } from './viewbox';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
+import { getStakingTokenMetaData } from './registry';
+import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 
 export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
   if (!txv.bodyView) throw new Error('transaction view missing body view');
   if (!txv.bodyView.transactionParameters?.fee?.amount) throw new Error('Missing fee amount');
 
+  // Request the asset metadata
+  let chain_id = txv.bodyView.transactionParameters.chainId;
+  let asset_id = txv.bodyView.transactionParameters.fee.assetId!;
+  let exponent = getDisplayDenomExponent(getStakingTokenMetaData(chain_id, asset_id));
+
   const fee = (
-    Number(joinLoHiAmount(txv.bodyView.transactionParameters.fee.amount)) / 1000000
+    Number(joinLoHiAmount(txv.bodyView.transactionParameters.fee.amount)) /
+    10 ** exponent
   ).toString();
 
   return (

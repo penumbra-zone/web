@@ -4,8 +4,12 @@ import { useStore } from '../../../state';
 import { sendSelector, sendValidationErrors } from '../../../state/send';
 import { InputBlock } from '../../shared/input-block';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { useMemo } from 'react';
-import { getTransferableBalancesResponses, penumbraAddrValidation } from '../helpers';
+import { useMemo, useState } from 'react';
+import {
+  getTransferableBalancesResponses,
+  hasStakingToken,
+  penumbraAddrValidation,
+} from '../helpers';
 import { abortLoader } from '../../../abort-loader';
 import InputToken from '../../shared/input-token';
 import { useRefreshFee } from './use-refresh-fee';
@@ -51,6 +55,11 @@ export const SendForm = () => {
     sendTx,
     txInProgress,
   } = useStore(sendSelector);
+  // State to manage privacy warning display
+  const [showWarning, setShowWarning] = useState(false);
+
+  // Check if the user has native staking tokens
+  let stakingToken = hasStakingToken(assetBalances, feeAssetMetadata);
 
   useRefreshFee();
 
@@ -90,6 +99,8 @@ export const SendForm = () => {
         onInputChange={amount => {
           if (Number(amount) < 0) return;
           setAmount(amount);
+          // Conditionally prompt a privacy warning about non-native fee tokens
+          setShowWarning(Number(amount) > 0 && !stakingToken);
         }}
         validations={[
           {
@@ -100,6 +111,15 @@ export const SendForm = () => {
         ]}
         balances={assetBalances}
       />
+      {showWarning && (
+        <div className='border border-yellow-500 bg-gray-800 text-yellow-500 p-4 rounded'>
+          <strong>Privacy Warning:</strong>
+          <span className='block'>
+            Using non-native tokens for transaction fees may pose a privacy risk. It is recommended
+            to use the native token (UM) for better privacy and security.
+          </span>
+        </div>
+      )}
 
       <GasFee
         fee={fee}

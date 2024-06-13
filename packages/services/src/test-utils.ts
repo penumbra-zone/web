@@ -32,7 +32,7 @@ export interface IndexedDbMock {
   getPricesForAsset?: Mock;
   getAuction?: Mock;
   getAuctionOutstandingReserves?: Mock;
-  hasNativeAssetBalance?: Mock;
+  hasStakingAssetBalance?: Mock;
 }
 
 export interface AuctionMock {

@@ -30,7 +30,7 @@ describe('TransactionPlanner request handler', () => {
       getAppParams: vi.fn(),
       getGasPrices: vi.fn(),
       constants: vi.fn(),
-      hasNativeAssetBalance: vi.fn(),
+      hasStakingAssetBalance: vi.fn(),
     };
 
     mockServices = {
@@ -78,7 +78,7 @@ describe('TransactionPlanner request handler', () => {
         compactBlockSpacePrice: 120n,
       }),
     );
-    mockIndexedDb.hasNativeAssetBalance?.mockResolvedValueOnce(true);
+    mockIndexedDb.hasStakingAssetBalance?.mockResolvedValueOnce(true);
     await transactionPlanner(req, mockCtx);
 
     expect(mockPlanTransaction.mock.calls.length === 1).toBeTruthy();

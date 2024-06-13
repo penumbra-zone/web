@@ -7,6 +7,7 @@ import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumb
 import { getBalances } from '../../fetchers/balances';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 import { isUnknown } from '../dashboard/assets-table/helpers';
+import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 
 export const penumbraAddrValidation = (): Validation => {
   return {
@@ -30,4 +31,23 @@ export const getTransferableBalancesResponses = async (): Promise<BalancesRespon
   return balancesResponses.filter(
     balance => isUnknown(balance) || isTransferable(getMetadata(balance.balanceView)),
   );
+};
+
+export const hasStakingToken = (
+  assetBalances: BalancesResponse[],
+  feeAssetMetadata: Metadata,
+): boolean => {
+  let stakingToken = false;
+  for (const asset of assetBalances) {
+    if (asset.balanceView?.valueView.case == 'knownAssetId') {
+      if (
+        uint8ArrayToBase64(asset?.balanceView?.valueView.value.metadata?.penumbraAssetId?.inner!) ==
+        uint8ArrayToBase64(feeAssetMetadata.penumbraAssetId?.inner!)
+      ) {
+        stakingToken = true;
+      }
+    }
+  }
+
+  return stakingToken;
 };

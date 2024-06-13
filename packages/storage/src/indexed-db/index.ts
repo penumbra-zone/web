@@ -799,8 +799,7 @@ export class IndexedDb implements IndexedDbInterface {
   async fetchStakingTokenId(): Promise<AssetId> {
     const registryClient = new ChainRegistryClient();
     const registry = registryClient.get(this.chainId);
-    const stakingTokenMetadata = registry.getMetadata(registry.stakingAssetId);
-    const stakingToken = getAssetId(stakingTokenMetadata);
+    const stakingToken = registry.stakingAssetId;
 
     return stakingToken;
   }
@@ -812,20 +811,20 @@ export class IndexedDb implements IndexedDbInterface {
       uint8ArrayToBase64(assetId.inner),
     );
 
-    // Iterate over the spendable UM notes, and acrue balance for unspent notesz
+    // Iterate over the spendable UM notes, and accrue balance for unspent notes
     let stakingTokenBalance = new Amount();
     for (const note of spendableUMNotes) {
-      let umNote = note as unknown as SpendableNoteRecord;
-      if (umNote.heightSpent == undefined) {
-        const newAmount = addLoHi(
+      const umNote = SpendableNoteRecord.fromJson(note);
+      if (umNote.heightSpent === 0n) {
+        const noteAmount = addLoHi(
           { lo: stakingTokenBalance.lo, hi: stakingTokenBalance.hi },
           {
             lo: BigInt(umNote.note?.value?.amount?.lo ?? 0n),
             hi: BigInt(umNote.note?.value?.amount?.hi ?? 0n),
           },
         );
-        stakingTokenBalance.lo = newAmount.lo;
-        stakingTokenBalance.hi = newAmount.hi;
+        stakingTokenBalance.lo = noteAmount.lo;
+        stakingTokenBalance.hi = noteAmount.hi;
       }
     }
 

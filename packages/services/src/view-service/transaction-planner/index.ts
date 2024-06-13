@@ -7,13 +7,14 @@ import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_
 import { fvkCtx } from '../../ctx/full-viewing-key';
 import { extractAltFee } from '../fees';
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { TransactionPlan } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/transaction/v1/transaction_pb';
 
 export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) => {
   const services = await ctx.values.get(servicesCtx)();
   const { indexedDb } = await services.getWalletServices();
 
   // Retrieve the staking token from asset registry
-  const stakingTokenId = await indexedDb.fetchStakingTokenId();
+  let stakingTokenId = await indexedDb.fetchStakingTokenId();
 
   // Query IndexedDB directly to check for the existence of staking token
   const nativeToken = await indexedDb.hasStakingAssetBalance(stakingTokenId);
@@ -24,7 +25,6 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   });
 
   // If there is no native token balance, extract and use an alternate gas fee token
-  // from the transaction request
   if (!nativeToken) {
     gasFeeToken = extractAltFee(req)!;
   }
@@ -43,7 +43,8 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
 
   const idbConstants = indexedDb.constants();
 
-  const plan = await planTransaction(idbConstants, req, await fvk(), gasFeeToken);
+  const plan: TransactionPlan = await planTransaction(idbConstants, req, await fvk(), gasFeeToken);
+
   return { plan };
 };
 
