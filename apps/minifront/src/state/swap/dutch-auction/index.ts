@@ -19,6 +19,13 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 const MAX_OUTPUT_ESTIMATE_MULTIPLIER = 2;
 const MIN_OUTPUT_ESTIMATE_MULTIPLIER = 0.5;
 
+/**
+ * Penumbra core's built-in limit for an auction's output.
+ *
+ * @see https://github.com/penumbra-zone/web/issues/1224#issuecomment-2164419140
+ */
+export const OUTPUT_LIMIT = 2 ** 52 - 1;
+
 export type Filter = 'active' | 'upcoming' | 'all';
 
 interface Actions {
@@ -79,9 +86,17 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   setMinOutput: minOutput => {
     set(({ swap }) => {
       const minMinOutput = getSmallestPossibleAmountAboveZero(get().swap.assetOut);
+      const exponent = getDisplayDenomExponent.optional()(get().swap.assetOut) ?? 0;
+      const minOutputAsBaseUnit = Number(minOutput) * 10 ** exponent;
+      const outputLimitAsDisplayUnit = (OUTPUT_LIMIT / 10 ** exponent).toString();
 
-      if (Number(minOutput) > 0) swap.dutchAuction.minOutput = minOutput;
-      else swap.dutchAuction.minOutput = minMinOutput.toString();
+      if (minOutputAsBaseUnit > OUTPUT_LIMIT) {
+        swap.dutchAuction.minOutput = outputLimitAsDisplayUnit;
+      } else if (Number(minOutput) > 0) {
+        swap.dutchAuction.minOutput = minOutput;
+      } else {
+        swap.dutchAuction.minOutput = minMinOutput.toString();
+      }
 
       swap.dutchAuction.estimatedOutput = undefined;
     });
@@ -89,9 +104,17 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
   setMaxOutput: maxOutput => {
     set(({ swap }) => {
       const minMaxOutput = getSmallestPossibleAmountAboveZero(get().swap.assetOut);
+      const exponent = getDisplayDenomExponent.optional()(get().swap.assetOut) ?? 0;
+      const maxOutputAsBaseUnit = Number(maxOutput) * 10 ** exponent;
+      const outputLimitAsDisplayUnit = (OUTPUT_LIMIT / 10 ** exponent).toString();
 
-      if (Number(maxOutput) > 0) swap.dutchAuction.maxOutput = maxOutput;
-      else swap.dutchAuction.maxOutput = minMaxOutput.toString();
+      if (maxOutputAsBaseUnit > OUTPUT_LIMIT) {
+        swap.dutchAuction.maxOutput = outputLimitAsDisplayUnit;
+      } else if (Number(maxOutput) > 0) {
+        swap.dutchAuction.maxOutput = maxOutput;
+      } else {
+        swap.dutchAuction.maxOutput = minMaxOutput.toString();
+      }
 
       swap.dutchAuction.estimatedOutput = undefined;
     });
