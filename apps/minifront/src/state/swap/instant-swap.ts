@@ -1,4 +1,4 @@
-import { SliceCreator } from '..';
+import { AllSlices, SliceCreator } from '..';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { planBuildBroadcast } from '../helpers';
 import {
@@ -233,3 +233,6 @@ const getMatchingAmount = (values: Value[], toMatch: AssetId): Amount => {
 
   return match.amount;
 };
+
+export const instantSwapSubmitButtonDisabledSelector = (state: AllSlices) =>
+  state.swap.duration === 'instant' && state.swap.instantSwap.txInProgress;
