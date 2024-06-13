@@ -39,6 +39,40 @@ interface PropsWithoutSegmented extends BaseProps {
   step?: number;
 }
 
+const getSegmentCount = ({
+  segmented,
+  max,
+  min,
+  step,
+}: PropsWithSegmented | PropsWithoutSegmented) => {
+  if (!segmented) return 1;
+
+  const rangeInclusive = max - min + 1;
+  const rangeDividesEvenlyIntoStepSize = rangeInclusive % step === 0;
+
+  if (!rangeDividesEvenlyIntoStepSize) return 1;
+
+  const numberOfOptions = rangeInclusive / step;
+
+  // Subtract 1 from the number of options, since the thumb can be on either
+  // side of a segment, so there are 1 fewer segments than possible values.
+  //
+  // For example, imagine each dash in this range slider is a segment, and each
+  // gap is the gap between segments:
+  // |o- - - - | value: 0
+  // | -o- - - | value: 1
+  // | - -o- - | value: 2
+  // | - - -o- | value: 3
+  // | - - - -o| value: 4
+  // The thumb (represented by the `o`) sits _in the gaps between segments_. In
+  // the illustration above, the range of values is 0 (at the far left) to 4 (at
+  // the far right), for a total of 5 possible values. Thus, we have 5 - 1 = 4
+  // segments.
+  const segmentCount = numberOfOptions - 1;
+
+  return Math.max(segmentCount, 1);
+};
+
 /**
  * Renders a draggable range slider:
  * |---o-------------|
@@ -56,17 +90,8 @@ interface PropsWithoutSegmented extends BaseProps {
  * />
  * ```
  */
-const Slider = ({
-  segmented,
-  value,
-  onValueChange,
-  min,
-  max,
-  step,
-  thumbTooltip,
-}: PropsWithSegmented | PropsWithoutSegmented) => {
-  const segmentCount =
-    !!segmented && (max - min + 1) % step === 0 ? Math.max((max - min + 1) / step - 1, 1) : 1;
+const Slider = (props: PropsWithSegmented | PropsWithoutSegmented) => {
+  const { value, onValueChange, min, max, step, thumbTooltip } = props;
 
   return (
     <SliderPrimitive.Root
@@ -80,7 +105,7 @@ const Slider = ({
       {/* We include `px-2` in the wrapper div so that the thumb is centered on
       the gaps */}
       <div className='flex h-2 w-full gap-1 px-2'>
-        {Array(segmentCount)
+        {Array(getSegmentCount(props))
           .fill(null)
           .map((_, index, array) => (
             <SliderPrimitive.Track
