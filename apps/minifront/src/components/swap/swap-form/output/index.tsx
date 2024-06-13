@@ -19,6 +19,10 @@ const outputSelector = (state: AllSlices) => ({
   outputStepSize: state.swap.assetOut
     ? 1 / 10 ** getDisplayDenomExponent(state.swap.assetOut)
     : 'any',
+  error:
+    Number(state.swap.dutchAuction.minOutput) >= Number(state.swap.dutchAuction.maxOutput)
+      ? 'The maximum output must be greater than the minimum output.'
+      : undefined,
 });
 
 export const Output = ({ layoutId }: { layoutId: string }) => {
@@ -31,6 +35,7 @@ export const Output = ({ layoutId }: { layoutId: string }) => {
     estimate,
     estimateButtonDisabled,
     outputStepSize,
+    error,
   } = useStoreShallow(outputSelector);
 
   return (
@@ -83,6 +88,8 @@ export const Output = ({ layoutId }: { layoutId: string }) => {
         </motion.div>
 
         <EstimatedOutputExplanation />
+
+        {error && <span className='text-xs text-red'>{error}</span>}
       </motion.div>
     </Box>
   );

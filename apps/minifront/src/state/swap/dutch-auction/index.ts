@@ -1,5 +1,5 @@
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { SliceCreator, useStore } from '../..';
+import { AllSlices, SliceCreator, useStore } from '../..';
 import { planBuildBroadcast } from '../../helpers';
 import { assembleScheduleRequest } from './assemble-schedule-request';
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
@@ -192,3 +192,8 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     }
   },
 });
+
+export const dutchAuctionSubmitButtonDisabledSelector = (state: AllSlices) =>
+  state.swap.duration !== 'instant' &&
+  (Number(state.swap.dutchAuction.minOutput) >= Number(state.swap.dutchAuction.maxOutput) ||
+    state.swap.dutchAuction.txInProgress);

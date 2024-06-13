@@ -4,10 +4,18 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { SliceCreator } from '..';
+import { AllSlices, SliceCreator } from '..';
 import { DurationOption } from './constants';
-import { DutchAuctionSlice, createDutchAuctionSlice } from './dutch-auction';
-import { InstantSwapSlice, createInstantSwapSlice } from './instant-swap';
+import {
+  DutchAuctionSlice,
+  createDutchAuctionSlice,
+  dutchAuctionSubmitButtonDisabledSelector,
+} from './dutch-auction';
+import {
+  InstantSwapSlice,
+  createInstantSwapSlice,
+  instantSwapSubmitButtonDisabledSelector,
+} from './instant-swap';
 import { PriceHistorySlice, createPriceHistorySlice } from './price-history';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
 
@@ -132,3 +140,8 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
     get().swap.instantSwap.reset();
   },
 });
+
+export const submitButtonDisabledSelector = (state: AllSlices) =>
+  !state.swap.amount ||
+  dutchAuctionSubmitButtonDisabledSelector(state) ||
+  instantSwapSubmitButtonDisabledSelector(state);
