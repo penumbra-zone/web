@@ -1,5 +1,18 @@
 # @penumbra-zone/types
 
+## 7.1.0
+
+### Minor Changes
+
+- ab9d743: decouple service/rpc init
+- 282eabf: Click wallet for max amount
+
+### Patch Changes
+
+- c8e8d15: Bug fix in getFormattedAmtFromValueView: support known assets without metadata
+- Updated dependencies [6b06e04]
+  - @penumbra-zone/getters@6.1.0
+
 ## 7.0.1
 
 ### Patch Changes

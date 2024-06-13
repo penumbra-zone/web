@@ -1,5 +1,21 @@
 # @penumbra-zone/wasm
 
+## 7.1.0
+
+### Minor Changes
+
+- 81b9536: add ibc types to registry, address wasm ser/de of protobuf.Any types
+
+### Patch Changes
+
+- 14ba562: Update transaction_perspective_and_view return type
+- Updated dependencies [ab9d743]
+- Updated dependencies [282eabf]
+- Updated dependencies [81b9536]
+- Updated dependencies [c8e8d15]
+  - @penumbra-zone/types@7.1.0
+  - @penumbra-zone/protobuf@4.1.0
+
 ## 7.0.0
 
 ### Major Changes

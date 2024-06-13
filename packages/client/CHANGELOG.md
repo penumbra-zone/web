@@ -1,5 +1,13 @@
 # @penumbra-zone/client
 
+## 6.0.1
+
+### Patch Changes
+
+- 3be0580: change some package exports
+- Updated dependencies [81b9536]
+  - @penumbra-zone/protobuf@4.1.0
+
 ## 6.0.0
 
 ### Major Changes

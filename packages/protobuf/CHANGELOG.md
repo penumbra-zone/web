@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 4.1.0
+
+### Minor Changes
+
+- 81b9536: add ibc types to registry, address wasm ser/de of protobuf.Any types
+
 ## 4.0.0
 
 ### Major Changes
