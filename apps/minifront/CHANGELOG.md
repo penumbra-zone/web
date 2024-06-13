@@ -1,5 +1,37 @@
 # minifront
 
+## 5.1.0
+
+### Minor Changes
+
+- 282eabf: Click wallet for max amount
+
+### Patch Changes
+
+- 20bb7ac: fix destination address validation in the "shield funds" page
+- adf3a28: Update to june 12 testnet registry
+- 6b06e04: Introduce ZQuery package and use throughout minifront
+- cf2594d: add display for the both in- and out-tokens on the swap page
+- 94e3240: Change styles of the unclaimed swap block
+- Updated dependencies [ab9d743]
+- Updated dependencies [282eabf]
+- Updated dependencies [0076a1d]
+- Updated dependencies [81b9536]
+- Updated dependencies [3be0580]
+- Updated dependencies [6b06e04]
+- Updated dependencies [24c8b4f]
+- Updated dependencies [c8e8d15]
+- Updated dependencies [24c8b4f]
+- Updated dependencies [e7d7ffc]
+  - @penumbra-zone/types@7.1.0
+  - @penumbra-zone/ui@3.4.0
+  - @penumbra-zone/protobuf@4.1.0
+  - @penumbra-zone/client@6.0.1
+  - @penumbra-zone/zquery@1.0.0
+  - @penumbra-zone/getters@6.1.0
+  - @penumbra-zone/crypto-web@3.0.10
+  - @penumbra-zone/perspective@4.0.1
+
 ## 5.0.3
 
 ### Patch Changes

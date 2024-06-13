@@ -1,6 +1,7 @@
 import {
   DashboardIcon,
   ExitIcon,
+  HomeIcon,
   Link1Icon,
   LockClosedIcon,
   Share1Icon,
@@ -22,6 +23,11 @@ const links = [
     title: 'RPC',
     icon: <Share1Icon className='size-5 text-muted-foreground' />,
     href: PopupPath.SETTINGS_RPC,
+  },
+  {
+    title: 'Default frontend',
+    icon: <HomeIcon className='size-5 text-muted-foreground' />,
+    href: PopupPath.SETTINGS_DEFAULT_FRONTEND,
   },
   {
     title: 'Connected sites',

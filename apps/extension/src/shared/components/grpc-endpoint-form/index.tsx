@@ -70,10 +70,11 @@ export const GrpcEndpointForm = ({
               secondary={
                 <input
                   type='url'
+                  placeholder='Enter URL'
                   ref={customGrpcEndpointInput}
                   value={isCustomGrpcEndpoint && !!grpcEndpointInput ? grpcEndpointInput : ''}
                   onChange={e => setGrpcEndpointInput(e.target.value)}
-                  className='w-full bg-transparent'
+                  className='w-full rounded border border-secondary bg-background p-1 outline-0 transition hover:border-gray-400 focus:border-gray-400'
                 />
               }
               onSelect={() => {
@@ -85,14 +86,16 @@ export const GrpcEndpointForm = ({
             />
           </SelectList>
 
-          <a
-            href='https://github.com/prax-wallet/registry'
-            target='_blank'
-            rel='noreferrer'
-            className='block text-right text-xs text-muted-foreground'
-          >
-            Add to this list
-          </a>
+          <div className='text-right'>
+            <a
+              href='https://github.com/prax-wallet/registry'
+              target='_blank'
+              rel='noreferrer'
+              className='text-xs text-muted-foreground'
+            >
+              Add to this list
+            </a>
+          </div>
 
           <Button variant='gradient' type='submit' disabled={!isSubmitButtonEnabled}>
             {submitButtonLabel}

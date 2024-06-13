@@ -1,5 +1,27 @@
 # @penumbra-zone/storage
 
+## 4.0.0
+
+### Major Changes
+
+- 4012c48: remove chrome storage exports
+
+### Minor Changes
+
+- ab9d743: decouple service/rpc init
+- e7d7ffc: 'chrome-extension': Add an onboarding screen for the default frontend selection
+
+  '@penumbra-zone/storage': Remove the MINIFRONT_URL env usages
+
+  '@penumbra-zone/ui': Don't show the image in SelectList.Option component if it is not passed
+
+### Patch Changes
+
+- adf3a28: Update to june 12 testnet registry
+- Updated dependencies [6b06e04]
+  - @penumbra-zone/getters@6.1.0
+  - @penumbra-zone/crypto-web@3.0.10
+
 ## 3.4.3
 
 ### Patch Changes

@@ -9,6 +9,7 @@ import { SettingsPassphrase } from './settings-passphrase';
 import { SettingsRPC } from './settings-rpc';
 import { SettingsSecurity } from './settings-security';
 import { SettingsSpendKey } from './settings-spend-key';
+import { SettingsDefaultFrontend } from './settings-default-frontend';
 
 export const settingsRoutes = [
   {
@@ -26,6 +27,10 @@ export const settingsRoutes = [
   {
     path: PopupPath.SETTINGS_RPC,
     element: <SettingsRPC />,
+  },
+  {
+    path: PopupPath.SETTINGS_DEFAULT_FRONTEND,
+    element: <SettingsDefaultFrontend />,
   },
   {
     path: PopupPath.SETTINGS_AUTO_LOCK,

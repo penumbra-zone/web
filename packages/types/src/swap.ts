@@ -3,8 +3,8 @@ import {
   getAsset2Metadata,
   getDelta1IFromSwapView,
   getDelta2IFromSwapView,
-  getOutput1ValueOptional,
-  getOutput2ValueOptional,
+  getOutput1Value,
+  getOutput2Value,
 } from '@penumbra-zone/getters/swap-view';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
@@ -35,14 +35,18 @@ const getUnfilledAmount = (swapView: SwapView): ValueView | undefined => {
   const delta1I = getDelta1IFromSwapView(swapView);
   const delta2I = getDelta2IFromSwapView(swapView);
 
-  const output1Value = getOutput1ValueOptional(swapView);
-  const output2Value = getOutput2ValueOptional(swapView);
+  const output1Value = getOutput1Value.optional()(swapView);
+  const output2Value = getOutput2Value.optional()(swapView);
 
   const is1To2Swap = isZero(delta2I);
   const is2To1Swap = isZero(delta1I);
 
-  if (is1To2Swap && output1Value && !isZero(getAmount(output1Value))) return output1Value;
-  if (is2To1Swap && output2Value && !isZero(getAmount(output2Value))) return output2Value;
+  if (is1To2Swap && output1Value && !isZero(getAmount(output1Value))) {
+    return output1Value;
+  }
+  if (is2To1Swap && output2Value && !isZero(getAmount(output2Value))) {
+    return output2Value;
+  }
 
   return undefined;
 };
@@ -65,8 +69,8 @@ export const getOneWaySwapValues = (
     );
   }
 
-  const output1 = getOutput1ValueOptional(swapView);
-  const output2 = getOutput2ValueOptional(swapView);
+  const output1 = getOutput1Value.optional()(swapView);
+  const output2 = getOutput2Value.optional()(swapView);
 
   const delta1I = getDelta1IFromSwapView(swapView);
   const delta2I = getDelta2IFromSwapView(swapView);

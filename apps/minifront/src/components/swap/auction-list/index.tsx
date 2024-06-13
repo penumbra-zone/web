@@ -10,12 +10,11 @@ import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picke
 import { useMemo } from 'react';
 import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
 import { LayoutGroup, motion } from 'framer-motion';
-import { SORT_FUNCTIONS, getMetadata } from './helpers';
+import { SORT_FUNCTIONS } from './helpers';
+import { useAuctionInfos } from '../../../state/swap/dutch-auction';
+import { useStatus } from '../../../state/status';
 
 const auctionListSelector = (state: AllSlices) => ({
-  auctionInfos: state.swap.dutchAuction.auctionInfos,
-  metadataByAssetId: state.swap.dutchAuction.metadataByAssetId,
-  fullSyncHeight: state.status.fullSyncHeight,
   endAuction: state.swap.dutchAuction.endAuction,
   withdraw: state.swap.dutchAuction.withdraw,
   filter: state.swap.dutchAuction.filter,
@@ -39,22 +38,16 @@ const getButtonProps = (
 };
 
 export const AuctionList = () => {
-  const {
-    auctionInfos,
-    metadataByAssetId,
-    fullSyncHeight,
-    endAuction,
-    withdraw,
-    filter,
-    setFilter,
-  } = useStoreShallow(auctionListSelector);
+  const auctionInfos = useAuctionInfos();
+  const { endAuction, withdraw, filter, setFilter } = useStoreShallow(auctionListSelector);
+  const { data: status } = useStatus();
 
   const filteredAuctionInfos = useMemo(
     () =>
-      [...getFilteredAuctionInfos(auctionInfos, filter, fullSyncHeight)].sort(
+      [...getFilteredAuctionInfos(auctionInfos.data ?? [], filter, status?.fullSyncHeight)].sort(
         SORT_FUNCTIONS[filter],
       ),
-    [auctionInfos, filter, fullSyncHeight],
+    [auctionInfos, filter, status?.fullSyncHeight],
   );
 
   return (
@@ -63,7 +56,7 @@ export const AuctionList = () => {
         <GradientHeader layout>My Auctions</GradientHeader>
 
         <motion.div layout className='flex items-center gap-2'>
-          {!!auctionInfos.length && <QueryLatestStateButton />}
+          {!!auctionInfos.data?.length && <QueryLatestStateButton />}
 
           <SegmentedPicker
             value={filter}
@@ -97,15 +90,9 @@ export const AuctionList = () => {
               <DutchAuctionComponent
                 auctionId={auctionInfo.id}
                 dutchAuction={auctionInfo.auction}
-                inputMetadata={getMetadata(
-                  metadataByAssetId,
-                  auctionInfo.auction.description?.input?.assetId,
-                )}
-                outputMetadata={getMetadata(
-                  metadataByAssetId,
-                  auctionInfo.auction.description?.outputId,
-                )}
-                fullSyncHeight={fullSyncHeight}
+                inputMetadata={auctionInfo.inputMetadata}
+                outputMetadata={auctionInfo.outputMetadata}
+                fullSyncHeight={status?.fullSyncHeight}
                 {...getButtonProps(
                   auctionInfo.id,
                   endAuction,

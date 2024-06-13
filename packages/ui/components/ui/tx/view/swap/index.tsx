@@ -11,7 +11,6 @@ import {
 } from '@penumbra-zone/getters/swap-view';
 import { ValueViewComponent } from '../value';
 import { ActionDetails } from '../action-details';
-import { UnimplementedView } from '../unimplemented-view';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { getAmount } from '@penumbra-zone/getters/fee';
 
@@ -44,7 +43,7 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
               </ActionDetails.Row>
 
               {claimTx && (
-                <ActionDetails.Row label='Swap claim transaction'>
+                <ActionDetails.Row label='Swap Claim Transaction'>
                   <TransactionIdComponent transactionId={claimTx} />
                 </ActionDetails.Row>
               )}
@@ -56,7 +55,19 @@ export const SwapViewComponent = ({ value }: { value: SwapView }) => {
   }
 
   if (value.swapView.case === 'opaque') {
-    return <UnimplementedView label='Swap' />;
+    const oneWaySwap = isOneWaySwap(value) ? getOneWaySwapValues(value) : undefined;
+
+    return (
+      <ViewBox
+        label='Swap'
+        visibleContent={
+          <div className='flex flex-col gap-4'>
+            {oneWaySwap && <OneWaySwap input={oneWaySwap.input} output={oneWaySwap.output} />}
+            {!oneWaySwap && <>Two-way swaps are not supported in this UI.</>}
+          </div>
+        }
+      />
+    );
   }
 
   return <div>Invalid SwapView</div>;

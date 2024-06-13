@@ -1,5 +1,46 @@
 # chrome-extension
 
+## 9.1.0
+
+### Minor Changes
+
+- e7d7ffc: 'chrome-extension': Add an onboarding screen for the default frontend selection
+
+  '@penumbra-zone/storage': Remove the MINIFRONT_URL env usages
+
+  '@penumbra-zone/ui': Don't show the image in SelectList.Option component if it is not passed
+
+- 309223c: New registry: rpcs no longer require chain id
+
+### Patch Changes
+
+- adf3a28: Update to june 12 testnet registry
+- Updated dependencies [4012c48]
+- Updated dependencies [adf3a28]
+- Updated dependencies [ab9d743]
+- Updated dependencies [282eabf]
+- Updated dependencies [0076a1d]
+- Updated dependencies [81b9536]
+- Updated dependencies [3be0580]
+- Updated dependencies [14ba562]
+- Updated dependencies [6b06e04]
+- Updated dependencies [24c8b4f]
+- Updated dependencies [c8e8d15]
+- Updated dependencies [24c8b4f]
+- Updated dependencies [6ee8222]
+- Updated dependencies [e7d7ffc]
+  - @penumbra-zone/storage@4.0.0
+  - @penumbra-zone/services-context@3.3.0
+  - @penumbra-zone/services@4.1.0
+  - @penumbra-zone/query@4.1.0
+  - @penumbra-zone/types@7.1.0
+  - @penumbra-zone/ui@3.4.0
+  - @penumbra-zone/protobuf@4.1.0
+  - @penumbra-zone/wasm@7.1.0
+  - @penumbra-zone/client@6.0.1
+  - @penumbra-zone/crypto-web@3.0.10
+  - @penumbra-zone/perspective@4.0.1
+
 ## 9.0.3
 
 ### Patch Changes

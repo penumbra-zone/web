@@ -5,21 +5,22 @@ import { ActionDetails } from './action-details';
 import {
   getOutput1ValueOptional,
   getOutput2ValueOptional,
+  getSwapClaimFee,
 } from '@penumbra-zone/getters/swap-claim-view';
 import { getAmount } from '@penumbra-zone/getters/value-view';
-import { isZero } from '@penumbra-zone/types/amount';
+import { getAmount as getAmountFee } from '@penumbra-zone/getters/fee';
+import { isZero, joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { ValueViewComponent } from './value';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { UnimplementedView } from './unimplemented-view';
 
 const getClaimLabel = (
   output1Amount?: Amount,
   output2Amount?: Amount,
-): 'Claimed amount' | 'Claimed amounts' => {
-  if (!output1Amount || !output2Amount) return 'Claimed amount';
-  if (isZero(output1Amount) || isZero(output2Amount)) return 'Claimed amount';
+): 'Claimed Amount' | 'Claimed Amounts' => {
+  if (!output1Amount || !output2Amount) return 'Claimed Amount';
+  if (isZero(output1Amount) || isZero(output2Amount)) return 'Claimed Amount';
 
-  return 'Claimed amounts';
+  return 'Claimed Amounts';
 };
 
 export const SwapClaimViewComponent = ({ value }: { value: SwapClaimView }) => {
@@ -48,7 +49,7 @@ export const SwapClaimViewComponent = ({ value }: { value: SwapClaimView }) => {
             </ActionDetails.Row>
 
             {swapTxId && (
-              <ActionDetails.Row label='Swap transaction'>
+              <ActionDetails.Row label='Swap Transaction'>
                 <TransactionIdComponent transactionId={swapTxId} />
               </ActionDetails.Row>
             )}
@@ -59,7 +60,24 @@ export const SwapClaimViewComponent = ({ value }: { value: SwapClaimView }) => {
   }
 
   if (value.swapClaimView.case === 'opaque') {
-    return <UnimplementedView label='Swap Claim' />;
+    const claimFee = getSwapClaimFee(value);
+
+    return (
+      <ViewBox
+        label='Swap'
+        visibleContent={
+          <div className='flex flex-col gap-4'>
+            <ActionDetails>
+              <ActionDetails.Row label='Prepaid Claim Fee'>
+                <div className='font-mono'>
+                  {joinLoHiAmount(getAmountFee(claimFee)).toString()} upenumbra
+                </div>
+              </ActionDetails.Row>
+            </ActionDetails>
+          </div>
+        }
+      />
+    );
   }
 
   return <div>Invalid SpendView</div>;

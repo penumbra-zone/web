@@ -1,7 +1,7 @@
 import { redirect } from 'react-router-dom';
 import { PopupPath } from './paths';
-import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
-import { sessionExtStorage } from '@penumbra-zone/storage/chrome/session';
+import { localExtStorage } from '../../storage/local';
+import { sessionExtStorage } from '../../storage/session';
 
 export const needsLogin = async (): Promise<Response | null> => {
   const password = await sessionExtStorage.get('passwordKey');

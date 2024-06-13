@@ -8,7 +8,7 @@ export const SetGrpcEndpoint = () => {
   const navigate = usePageNav();
 
   const onSuccess = (): void => {
-    navigate(PagePath.ONBOARDING_SUCCESS);
+    navigate(PagePath.SET_DEFAULT_FRONTEND);
   };
 
   return (

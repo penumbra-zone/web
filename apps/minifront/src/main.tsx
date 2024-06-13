@@ -1,3 +1,9 @@
+// Importing `./state` before any components ensures that `useStore` gets
+// defined before any slices get used. Otherwise, we'll get an error like
+// `Cannot access 'createXSlice' before initialization` due to circular
+// references.
+import './state';
+
 import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';

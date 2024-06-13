@@ -1,8 +1,8 @@
 import { AllSlices, SliceCreator } from '.';
 import { Key, KeyJson, KeyPrint } from '@penumbra-zone/crypto-web/encryption';
-import { ExtensionStorage } from '@penumbra-zone/storage/chrome/base';
-import { LocalStorageState } from '@penumbra-zone/storage/chrome/types';
-import { SessionStorageState } from '@penumbra-zone/storage/chrome/session';
+import { ExtensionStorage } from '../storage/base';
+import { LocalStorageState } from '../storage/types';
+import { SessionStorageState } from '../storage/session';
 
 // Documentation in /docs/custody.md
 

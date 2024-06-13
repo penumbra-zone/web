@@ -12,12 +12,11 @@ export const getAssetIdFromBalancesResponseOptional = getBalanceView
   .pipe(getMetadata)
   .pipe(getAssetId);
 
-export const getDisplayFromBalancesResponse = getBalanceView
-  .pipe(getMetadata)
+export const getMetadataFromBalancesResponse = getBalanceView.pipe(getMetadata);
+
+export const getDisplayFromBalancesResponse = getMetadataFromBalancesResponse
   .optional()
   .pipe(getDisplay);
-
-export const getMetadataFromBalancesResponse = getBalanceView.pipe(getMetadata);
 
 export const getMetadataFromBalancesResponseOptional = getBalanceView.optional().pipe(getMetadata);
 

@@ -1,7 +1,7 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { LinkGradientIcon } from '../../../../icons/link-gradient';
-import { OriginRecord } from '@penumbra-zone/storage/chrome/types';
+import { OriginRecord } from '../../../../storage/types';
 import { AllSlices, useStore } from '../../../../state';
 import { UserChoice } from '@penumbra-zone/types/user-choice';
 import { SettingsScreen } from '../settings-screen';

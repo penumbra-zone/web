@@ -2,10 +2,10 @@ import { StateCreator, StoreMutatorIdentifier } from 'zustand';
 import { AllSlices } from '.';
 import { produce } from 'immer';
 
-import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
-import { LocalStorageState } from '@penumbra-zone/storage/chrome/types';
-import { sessionExtStorage, SessionStorageState } from '@penumbra-zone/storage/chrome/session';
-import { StorageItem } from '@penumbra-zone/storage/chrome/base';
+import { localExtStorage } from '../storage/local';
+import { LocalStorageState } from '../storage/types';
+import { sessionExtStorage, SessionStorageState } from '../storage/session';
+import { StorageItem } from '../storage/base';
 import { walletsFromJson } from '@penumbra-zone/types/wallet';
 
 export type Middleware = <
@@ -38,7 +38,7 @@ export const customPersistImpl: Persist = f => (set, get, store) => {
         state.wallets.all = walletsFromJson(wallets);
         state.network.grpcEndpoint = grpcEndpoint;
         state.connectedSites.knownSites = knownSites;
-        state.connectedSites.frontendUrl = frontendUrl;
+        state.defaultFrontend.url = frontendUrl;
       }),
     );
 
@@ -103,7 +103,7 @@ function syncLocal(changes: Record<string, chrome.storage.StorageChange>, set: S
       | undefined;
     set(
       produce((state: AllSlices) => {
-        state.connectedSites.frontendUrl = stored?.value ?? state.connectedSites.frontendUrl;
+        state.defaultFrontend.url = stored?.value ?? state.defaultFrontend.url;
       }),
     );
   }

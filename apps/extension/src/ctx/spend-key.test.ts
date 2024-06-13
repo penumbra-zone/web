@@ -1,22 +1,19 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import {
-  mockLocalExtStorage,
-  mockSessionExtStorage,
-} from '@penumbra-zone/storage/chrome/test-utils/mock';
+import { mockLocalExtStorage, mockSessionExtStorage } from '../storage/mock';
 
 const localExtStorage = mockLocalExtStorage();
 const sessionExtStorage = mockSessionExtStorage();
 
-vi.doMock('@penumbra-zone/storage/chrome/local', async importOriginal => {
-  const mod = await importOriginal<typeof import('@penumbra-zone/storage/chrome/local')>();
+vi.doMock('../storage/local', async importOriginal => {
+  const mod = await importOriginal<typeof import('../storage/local')>();
   return {
     ...mod,
     localExtStorage,
   };
 });
 
-vi.doMock('@penumbra-zone/storage/chrome/session', async importOriginal => {
-  const mod = await importOriginal<typeof import('@penumbra-zone/storage/chrome/session')>();
+vi.doMock('../storage/session', async importOriginal => {
+  const mod = await importOriginal<typeof import('../storage/session')>();
   return {
     ...mod,
     sessionExtStorage,

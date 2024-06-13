@@ -5,13 +5,14 @@ import { customPersist } from './persist';
 import { createPasswordSlice, PasswordSlice } from './password';
 import { createSeedPhraseSlice, SeedPhraseSlice } from './seed-phrase';
 import { createNetworkSlice, NetworkSlice } from './network';
-import { localExtStorage } from '@penumbra-zone/storage/chrome/local';
-import { LocalStorageState } from '@penumbra-zone/storage/chrome/types';
-import { sessionExtStorage, SessionStorageState } from '@penumbra-zone/storage/chrome/session';
-import { ExtensionStorage } from '@penumbra-zone/storage/chrome/base';
+import { localExtStorage } from '../storage/local';
+import { LocalStorageState } from '../storage/types';
+import { sessionExtStorage, SessionStorageState } from '../storage/session';
+import { ExtensionStorage } from '../storage/base';
 import { createTxApprovalSlice, TxApprovalSlice } from './tx-approval';
 import { createOriginApprovalSlice, OriginApprovalSlice } from './origin-approval';
-import { createConnectedSitesSlice, ConnectedSitesSlice } from './connected-sites';
+import { ConnectedSitesSlice, createConnectedSitesSlice } from './connected-sites';
+import { createDefaultFrontendSlice, DefaultFrontendSlice } from './default-frontend';
 
 export interface AllSlices {
   wallets: WalletsSlice;
@@ -21,6 +22,7 @@ export interface AllSlices {
   txApproval: TxApprovalSlice;
   originApproval: OriginApprovalSlice;
   connectedSites: ConnectedSitesSlice;
+  defaultFrontend: DefaultFrontendSlice;
 }
 
 export type SliceCreator<SliceInterface> = StateCreator<
@@ -42,6 +44,7 @@ export const initializeStore = (
     connectedSites: createConnectedSitesSlice(local)(setState, getState, store),
     txApproval: createTxApprovalSlice()(setState, getState, store),
     originApproval: createOriginApprovalSlice()(setState, getState, store),
+    defaultFrontend: createDefaultFrontendSlice(local)(setState, getState, store),
   }));
 };
 

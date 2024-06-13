@@ -13,7 +13,7 @@ export const CosmosWalletConnector = () => {
 
   return (
     <div className='flex flex-col items-center justify-center gap-4'>
-      <div className='w-52'>
+      <div className='flex w-52 flex-col justify-center'>
         <ConnectWalletButton />
       </div>
       {address && <WalletAddrCard username={username} address={address} />}

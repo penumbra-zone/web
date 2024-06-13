@@ -1,4 +1,4 @@
-import { sessionExtStorage } from '@penumbra-zone/storage/chrome/session';
+import { sessionExtStorage } from './storage/session';
 import { PopupMessage, PopupRequest, PopupType } from './message/popup';
 import { PopupPath } from './routes/popup/paths';
 import type { InternalRequest, InternalResponse } from '@penumbra-zone/types/internal-msg/shared';
