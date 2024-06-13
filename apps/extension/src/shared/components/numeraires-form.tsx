@@ -9,8 +9,9 @@ import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
-const getNumeraireFromRegistry = (chainId: string): Metadata[] => {
+const getNumeraireFromRegistry = (chainId?: string): Metadata[] => {
   const registryClient = new ChainRegistryClient();
+  if (!chainId) return [];
   const registry = registryClient.get(chainId);
   return registry.numeraires.map(n => registry.getMetadata(n));
 };
@@ -20,6 +21,7 @@ const useNumerairesSelector = (state: AllSlices) => {
     selectedNumeraires: state.numeraires.selectedNumeraires,
     selectNumeraire: state.numeraires.selectNumeraire,
     saveNumeraires: state.numeraires.saveNumeraires,
+    networkChainId: state.network.chainId,
   };
 };
 
@@ -31,11 +33,9 @@ export const NumeraireForm = ({
   onSuccess: () => void | Promise<void>;
 }) => {
   const { chainId } = useChainIdQuery();
-  const { selectedNumeraires, selectNumeraire, saveNumeraires } = useStore(useNumerairesSelector);
-  const numeraires = useMemo(
-    () => getNumeraireFromRegistry(chainId ?? 'penumbra-testnet-deimos-8'),
-    [chainId],
-  );
+  const { selectedNumeraires, selectNumeraire, saveNumeraires, networkChainId } =
+    useStore(useNumerairesSelector);
+  const numeraires = useMemo(() => getNumeraireFromRegistry(chainId ?? networkChainId), [chainId]);
 
   const [loading, setLoading] = useState(false);
 

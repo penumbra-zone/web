@@ -609,7 +609,7 @@ describe('IndexedDb', () => {
       await expect(db.getPricesForAsset(delegationMetadataA, 50n)).resolves.toEqual([
         new EstimatedPrice({
           pricedAsset: delegationMetadataA.penumbraAssetId!,
-          numeraire: numeraireAssetId,
+          numeraire: stakingAssetId,
           numerairePerUnit: 1.23,
           asOfHeight: 50n,
         }),
@@ -625,7 +625,7 @@ describe('IndexedDb', () => {
       await expect(db.getPricesForAsset(delegationMetadataA, 241n)).resolves.toEqual([
         new EstimatedPrice({
           pricedAsset: delegationMetadataA.penumbraAssetId!,
-          numeraire: numeraireAssetId,
+          numeraire: stakingAssetId,
           numerairePerUnit: 1.23,
           asOfHeight: 50n,
         }),

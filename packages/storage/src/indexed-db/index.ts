@@ -676,7 +676,7 @@ export class IndexedDb implements IndexedDbInterface {
     while (cursor) {
       const price = EstimatedPrice.fromJson(cursor.value);
       if (!price.numeraire?.equals(this.stakingTokenAssetId)) {
-        cursor.delete();
+        await cursor.delete();
       }
       cursor = await cursor.continue();
     }
