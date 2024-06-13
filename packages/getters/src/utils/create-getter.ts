@@ -19,8 +19,8 @@ export const createGetter = <SourceType, TargetType, Optional extends boolean = 
       try {
         return getterFunction(value);
       } catch (e) {
-        if (!(e instanceof GetterMissingValueError)) throw e;
-        else return undefined;
+        if (e instanceof GetterMissingValueError) return undefined;
+        else throw e;
       }
     }, true);
 
