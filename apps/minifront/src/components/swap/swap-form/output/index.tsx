@@ -47,6 +47,8 @@ export const Output = ({ layoutId }: { layoutId: string }) => {
       }
     >
       <motion.div layout className='flex flex-col gap-4'>
+        <EstimatedOutputExplanation />
+
         <motion.div layout className='flex max-w-[200px] grow flex-col gap-2'>
           <div className='flex grow items-center gap-2'>
             <span className='text-muted-foreground'>Maximum:</span>
@@ -86,8 +88,6 @@ export const Output = ({ layoutId }: { layoutId: string }) => {
             )}
           </div>
         </motion.div>
-
-        <EstimatedOutputExplanation />
 
         {error && <span className='text-xs text-red'>{error}</span>}
       </motion.div>
