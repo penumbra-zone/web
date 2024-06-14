@@ -97,11 +97,141 @@ export interface CreateZQueryStreamingProps<
   /** A function that executes the query. */
   fetch: (...args: FetchArgs) => AsyncIterable<DataType>;
   /**
-   * A function that takes the current state as its first argument and the
-   * streamed item as its second, and returns the desired new state. This can be
-   * useful for e.g. sorting items in the state as new items are streamed.
+   * This function is called whenever the fetch function is called. It receives
+   * the current state at the start of the stream, and should return an object
+   * containing at least an `onValue` method. See the individual methods' docs
+   * for more information on how to use them.
+   *
+   * `stream` is a function rather than an object because you may wish to
+   * maintain scope over the course of an entire stream. For example, you may
+   * want to keep track of all the items that were received during this stream,
+   * so that at the end of the stream, you can discard items from previous
+   * streams.
+   *
+   * @example
+   * ```ts
+   * const { puppyPhotos, usePuppyPhotos } = createZQuery({
+   *   name: 'puppyPhotos',
+   *   fetch: fetchFunctionThatReturnsAStream,
+   *   stream: () => {
+   *     const puppyPhotoIdsToKeep = new Set<string>()
+   *
+   *     return {
+   *       onValue: (prevState: PuppyPhotos[] | undefined = [], puppyPhoto: PuppyPhoto) => {
+   *         puppyPhotoIdsToKeep.add(puppyPhoto.id);
+   *
+   *         const existingIndex = prevState.findIndex(({ id }) => id === puppyPhoto.id)
+   *
+   *         // Update any existing items in place, rather than appending
+   *         // duplicates.
+   *         if (existingIndex >= 0) return prevState.toSpliced(existingIndex, 1, puppyPhoto)
+   *         else return [...prevState, puppyPhoto]
+   *       },
+   *
+   *       onEnd: (prevState = []) =>
+   *         // Discard any puppy photos from a previous stream.
+   *         prevState.filter(puppyPhoto => puppyPhotoIdsToKeep.has(puppyPhoto.id)),
+   *     }
+   *   },
+   * })
+   * ```
    */
-  stream: (prevData: ProcessedDataType | undefined, item: DataType) => ProcessedDataType;
+  stream: (startState: ProcessedDataType | undefined) => {
+    /**
+     * Called when a stream starts -- i.e., when the fetch function is called.
+     *
+     * Receives the previous state, and should return a new state. This can be
+     * useful for e.g., clearing out existing state when a new fetch is started.
+     */
+    onStart?: (prevData: ProcessedDataType | undefined) => ProcessedDataType | undefined;
+    /**
+     * Called when a new value is received from the stream. Receives the
+     * previous state and the new value, and should return a new state.
+     *
+     * Note that the return type of this function determines the TypeScript type
+     * that is stored in state. So, if your fetch function returns an
+     * `AsyncIterable<PuppyPhoto>`, and you use `onValue` to collect those into
+     * an array, your stored data type will be `PuppyPhoto[] | undefined`:
+     *
+     * @example
+     * ```ts
+     * {
+     *   stream: () => ({
+     *     // The type stored in state will be `PuppyPhoto[] | undefined`
+     *     onValue: (prevState: PuppyPhotos[] | undefined = [], puppyPhoto: PuppyPhoto) =>
+     *       [...prevState, puppyPhoto]
+     *   })
+     * }
+     * ```
+     *
+     * Or, if you use `onValue` to replace the previous streamed puppy photo
+     * with the current one, your stored data type will be `PuppyPhoto |
+     * undefined`:
+     *
+     * @example
+     * ```ts
+     * {
+     *   stream: () => ({
+     *     // The type stored in state will be `PuppyPhoto | undefined`
+     *     onValue: (_, puppyPhoto: PuppyPhoto) => puppyPhoto
+     *   })
+     * }
+     * ```
+     *
+     * Lastly, you can also reduce the stream to any arbitrary data type you
+     * like, and your stored data type will be whatever type `onValue` returns.
+     *
+     * @example
+     * ```ts
+     * {
+     *   stream: () => ({
+     *     // The type stored in state will be `number | undefined`, and will
+     *     // represent the total number of puppy photos streamed thus far.
+     *     onValue: (prevState: number | undefined = 0) => prevState + 1,
+     *   })
+     * }
+     *
+     * // or...
+     *
+     * {
+     *   stream: () => ({
+     *     // The type stored in state will be `string | undefined`, and will
+     *     // be a comma-separated list of puppy names.
+     *     onValue: (prevState: string | undefined = '', puppyPhoto: PuppyPhoto) =>
+     *       [...prevState.split(', '), puppyPhoto.name].join(', '),
+     *   })
+     * }
+     * ```
+     *
+     * Note that the type stored in state includes `| undefined`. That's because
+     * the initial state is always `undefined`.
+     */
+    onValue: (
+      prevData: ProcessedDataType | undefined,
+      value: DataType,
+    ) => ProcessedDataType | undefined;
+    /**
+     * Called when a stream ends. Receives the state, and should return a new
+     * state.
+     *
+     * Note that, if the stream errors or is aborted, `onEnd` is called _after_
+     * `onError` or `onAbort`.
+     */
+    onEnd?: (prevData: ProcessedDataType | undefined) => ProcessedDataType | undefined;
+    /**
+     * Called when a stream errors. Receives the state and the error, and should
+     * return a new state.
+     */
+    onError?: (
+      prevData: ProcessedDataType | undefined,
+      error: unknown,
+    ) => ProcessedDataType | undefined;
+    /**
+     * Called when a stream is aborted. Receives the state, and should return a
+     * new state.
+     */
+    onAbort?: (prevData: ProcessedDataType | undefined) => ProcessedDataType | undefined;
+  };
   /**
    * A selector that takes the root Zustand state and returns just this ZQuery
    * state object.
