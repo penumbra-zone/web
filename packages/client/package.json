@@ -5,14 +5,16 @@
   "description": "Package for connecting to any Penumbra extension, including Prax.",
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "clean": "rm -rfv dist package penumbra-zone-client-*.tgz",
+    "build": "tsup src/*.ts --dts --minify --format esm",
+    "clean": "rm -rfv dist",
     "lint": "eslint src",
-    "prebuild": "$npm_execpath run clean",
-    "prepack": "$npm_execpath run build"
+    "prebuild": "pnpm clean",
+    "prepack": "pnpm build"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
   ],
   "exports": {
     ".": "./src/index.ts",
@@ -35,7 +37,8 @@
     "@penumbra-zone/transport-dom": "workspace:*"
   },
   "devDependencies": {
-    "@connectrpc/connect": "^1.4.0"
+    "@connectrpc/connect": "^1.4.0",
+    "tsup": "^8.1.0"
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.10.0",

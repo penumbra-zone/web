@@ -5,13 +5,15 @@
   "description": "Tools for manipulating Penumbra bech32m strings",
   "type": "module",
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsup src/*.ts --dts --minify --format esm",
     "clean": "rm -rfv dist",
     "lint": "eslint src",
     "test": "vitest run"
   },
   "files": [
-    "./dist"
+    "./dist",
+    "README.md",
+    "CHANGELOG.md"
   ],
   "exports": {
     ".": "./src/index.ts",
@@ -33,7 +35,8 @@
     "bech32": "^2.0.0"
   },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1"
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
+    "tsup": "^8.1.0"
   },
   "peerDependencies": {
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1"
