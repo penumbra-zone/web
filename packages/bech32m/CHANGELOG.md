@@ -1,5 +1,15 @@
 # @penumbra-zone/bech32
 
+## 5.1.0
+
+### Minor Changes
+
+- a75256f: Improve build processes in multiple packages within monorepo
+
+### Patch Changes
+
+- a75256f: Fix bech32m library exports
+
 ## 5.0.0
 
 ### Major Changes

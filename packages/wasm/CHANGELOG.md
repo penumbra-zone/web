@@ -1,5 +1,13 @@
 # @penumbra-zone/wasm
 
+## 7.1.1
+
+### Patch Changes
+
+- Updated dependencies [a75256f]
+  - @penumbra-zone/protobuf@4.2.0
+  - @penumbra-zone/types@7.1.1
+
 ## 7.1.0
 
 ### Minor Changes
