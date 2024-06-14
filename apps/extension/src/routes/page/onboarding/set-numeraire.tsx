@@ -18,7 +18,7 @@ export const SetNumerairesPage = () => {
           <CardTitle>In which token denomination would you prefer to price assets?</CardTitle>
           <CardDescription>
             Prax does not use third-party price providers for privacy reasons, instead Prax indexes
-            asset prices locally by selected denomination
+            asset prices locally by selected denomination.
           </CardDescription>
         </CardHeader>
         <div className='mt-6'>
