@@ -94,4 +94,75 @@ describe('`use[Name]()` hook', () => {
       });
     });
   });
+
+  describe('streaming responses', () => {
+    /**
+     * A "remote control" that we'll use to control the streaming of responses
+     * in the mock fetch function.
+     */
+    let yieldRemoteControl: PromiseWithResolvers<void>;
+
+    beforeEach(() => {
+      fetch.mockReset();
+
+      yieldRemoteControl = Promise.withResolvers<void>();
+
+      fetch.mockImplementation(async function* () {
+        for (const puppyPhoto of MOCK_PUPPY_PHOTOS) {
+          await yieldRemoteControl.promise;
+          yield puppyPhoto;
+
+          yieldRemoteControl = Promise.withResolvers<void>();
+        }
+      });
+
+      ({ puppyPhotos, usePuppyPhotos } = createZQuery({
+        name: 'puppyPhotos',
+        fetch,
+        stream: () => ({
+          onValue: (prevState: PuppyPhoto[] | undefined = [], value: PuppyPhoto) => [
+            ...prevState,
+            value,
+          ],
+        }),
+        getUseStore: () => useStore,
+        get: state => state.puppyPhotos,
+        set: setter => {
+          const newState = setter(useStore.getState().puppyPhotos);
+          useStore.setState(state => ({
+            ...state,
+            puppyPhotos: newState,
+          }));
+        },
+      }));
+
+      useStore = create<State>()(() => ({
+        puppyPhotos,
+      }));
+    });
+
+    it('streams responses to state', async () => {
+      const { rerender, result } = renderHook(usePuppyPhotos);
+
+      expect(result.current.data).toBeUndefined();
+
+      yieldRemoteControl.resolve();
+      await waitFor(() => {
+        rerender();
+        expect(result.current.data?.length).toBe(1);
+      });
+
+      yieldRemoteControl.resolve();
+      await waitFor(() => {
+        rerender();
+        expect(result.current.data?.length).toBe(2);
+      });
+
+      yieldRemoteControl.resolve();
+      await waitFor(() => {
+        rerender();
+        expect(result.current.data?.length).toBe(3);
+      });
+    });
+  });
 });
