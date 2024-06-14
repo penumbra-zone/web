@@ -15,19 +15,13 @@
     "README.md"
   ],
   "exports": {
-    ".": "./dist/index.js",
-    "./*": "./dist/*.js"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": {
+    ".": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
-      },
-      "./*": {
+    },
+    "./*": {
         "types": "./dist/*.d.ts",
         "default": "./dist/*.js"
-      }
     }
   },
   "dependencies": {
