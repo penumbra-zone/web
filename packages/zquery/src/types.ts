@@ -97,14 +97,9 @@ export interface CreateZQueryStreamingProps<
   /** A function that executes the query. */
   fetch: (...args: FetchArgs) => AsyncIterable<DataType>;
   /**
-   * Set to `true` if `fetch` will return a streaming response in the form of an
-   * `AsyncIterable`.
-   *
-   * Or, if you wish to modify the streaming results as they come in before
-   * they're added to the state, set this to a function that takes the current state
-   * as its first argument and the streamed item as its second, and returns the
-   * desired new state (or a promise containing the desired new state). This can
-   * be useful for e.g. sorting items in the state as new items are streamed.
+   * A function that takes the current state as its first argument and the
+   * streamed item as its second, and returns the desired new state. This can be
+   * useful for e.g. sorting items in the state as new items are streamed.
    */
   stream: (prevData: ProcessedDataType | undefined, item: DataType) => ProcessedDataType;
   /**
