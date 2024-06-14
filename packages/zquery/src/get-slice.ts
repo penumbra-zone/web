@@ -106,11 +106,21 @@ export const getSlice = <
             }));
           }
         } else {
+          props.set(prevState => ({
+            ...prevState,
+            loading: true,
+          }));
+
           try {
             const data = await props.fetch(...args);
             props.set(prevState => ({ ...prevState, data }));
           } catch (error) {
             props.set(prevState => ({ ...prevState, error }));
+          } finally {
+            props.set(prevState => ({
+              ...prevState,
+              loading: false,
+            }));
           }
         }
       },
