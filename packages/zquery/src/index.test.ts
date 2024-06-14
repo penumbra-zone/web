@@ -5,18 +5,13 @@ import { StoreApi, UseBoundStore, create } from 'zustand';
 
 describe('createZQuery()', () => {
   let puppyPhotos: ZQueryState<PuppyPhoto[]>;
-  let usePuppyPhotos: () => {
-    data?: PuppyPhoto[] | undefined;
-    loading: boolean;
-    error?: unknown;
-  };
   let useStore: UseBoundStore<StoreApi<State>>;
   const fetch = vi.fn().mockResolvedValue(MOCK_PUPPY_PHOTOS);
 
   beforeEach(() => {
     fetch.mockClear();
 
-    ({ puppyPhotos, usePuppyPhotos } = createZQuery({
+    ({ puppyPhotos } = createZQuery({
       name: 'puppyPhotos',
       fetch,
       getUseStore: () => useStore,
