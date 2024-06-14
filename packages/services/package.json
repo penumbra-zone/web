@@ -39,7 +39,6 @@
     "@penumbra-zone/perspective": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/query": "workspace:*",
-    "@penumbra-zone/services-context": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/types": "workspace:*",

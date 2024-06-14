@@ -539,9 +539,6 @@ importers:
       '@penumbra-zone/query':
         specifier: workspace:*
         version: link:../query
-      '@penumbra-zone/services-context':
-        specifier: workspace:*
-        version: link:../services-context
       '@penumbra-zone/storage':
         specifier: workspace:*
         version: link:../storage
@@ -558,34 +555,6 @@ importers:
       '@types/chrome':
         specifier: ^0.0.268
         version: 0.0.268
-
-  packages/services-context:
-    dependencies:
-      '@penumbra-labs/registry':
-        specifier: 8.0.1
-        version: 8.0.1
-      '@penumbra-zone/query':
-        specifier: workspace:*
-        version: link:../query
-      '@penumbra-zone/storage':
-        specifier: workspace:*
-        version: link:../storage
-      '@penumbra-zone/types':
-        specifier: workspace:*
-        version: link:../types
-      '@penumbra-zone/wasm':
-        specifier: workspace:*
-        version: link:../wasm
-      exponential-backoff:
-        specifier: ^3.1.1
-        version: 3.1.1
-    devDependencies:
-      '@buf/penumbra-zone_penumbra.bufbuild_es':
-        specifier: 1.9.0-20240528180215-8fe1c79485f8.1
-        version: 1.9.0-20240528180215-8fe1c79485f8.1(@bufbuild/protobuf@1.10.0)
-      '@bufbuild/protobuf':
-        specifier: ^1.10.0
-        version: 1.10.0
 
   packages/storage:
     dependencies:
