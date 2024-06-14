@@ -10,8 +10,8 @@ import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 const getNumeraireFromRegistry = (chainId?: string): Metadata[] => {
-  if (!chainId) return [];
   const registryClient = new ChainRegistryClient();
+  if (!chainId) return [];
   const registry = registryClient.get(chainId);
   return registry.numeraires.map(n => registry.getMetadata(n));
 };
