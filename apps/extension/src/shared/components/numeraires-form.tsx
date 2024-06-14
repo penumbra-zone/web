@@ -49,46 +49,45 @@ export const NumeraireForm = ({
   };
 
   return (
-      <div className='flex flex-col gap-2'>
-        <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
-          <SelectList>
-            {numeraires.map(metadata => {
-              // Image default is "" and thus cannot do nullish-coalescing
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-              const icon = metadata.images[0]?.png || metadata.images[0]?.svg;
-              return (
-                <SelectList.Option
-                  key={bech32mAssetId(getAssetId(metadata))}
-                  value={getAssetId(metadata).toJsonString()}
-                  label={metadata.symbol}
-                  isSelected={selectedNumeraires.includes(getAssetId(metadata).toJsonString())}
-                  onSelect={() => selectNumeraire(getAssetId(metadata).toJsonString())}
-                  image={
-                    !!icon && (
-                      <img
-                        src={icon}
-                        className='size-full object-contain'
-                        alt='rpc endpoint brand image'
-                      />
-                    )
-                  }
-                />
-              );
-            })}
+    <div className='flex flex-col gap-2'>
+      <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
+        <SelectList>
+          {numeraires.map(metadata => {
+            // Image default is "" and thus cannot do nullish-coalescing
+            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+            const icon = metadata.images[0]?.png || metadata.images[0]?.svg;
+            return (
+              <SelectList.Option
+                key={bech32mAssetId(getAssetId(metadata))}
+                value={getAssetId(metadata).toJsonString()}
+                label={metadata.symbol}
+                isSelected={selectedNumeraires.includes(getAssetId(metadata).toJsonString())}
+                onSelect={() => selectNumeraire(getAssetId(metadata).toJsonString())}
+                image={
+                  !!icon && (
+                    <img
+                      src={icon}
+                      className='size-full object-contain'
+                      alt='rpc endpoint brand image'
+                    />
+                  )
+                }
+              />
+            );
+          })}
 
-            <Button
-              className='my-5'
-              key='save-button'
-              variant='gradient'
-              type='submit'
-              disabled={loading}
-              onClick={handleSubmit}
-            >
-              {isOnboarding ? 'Next' : loading ? 'Saving...' : 'Save'}
-            </Button>
-          </SelectList>
-        </form>
-      </div>
-    </>
+          <Button
+            className='my-5'
+            key='save-button'
+            variant='gradient'
+            type='submit'
+            disabled={loading}
+            onClick={handleSubmit}
+          >
+            {isOnboarding ? 'Next' : loading ? 'Saving...' : 'Save'}
+          </Button>
+        </SelectList>
+      </form>
+    </div>
   );
 };
