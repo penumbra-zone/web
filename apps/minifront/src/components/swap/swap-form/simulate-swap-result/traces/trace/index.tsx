@@ -6,9 +6,7 @@ import {
 import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
-import { Fragment } from 'react';
 import { Price } from './price';
-import { Separator } from '@penumbra-zone/ui/components/ui/separator';
 
 const getValueView = (metadataByAssetId: Record<string, Metadata>, { amount, assetId }: Value) =>
   new ValueView({
@@ -29,20 +27,18 @@ export const Trace = ({
   metadataByAssetId: Record<string, Metadata>;
 }) => {
   return (
-    <div className='flex w-full flex-col gap-0.5'>
-      <div className='flex w-full items-center justify-between gap-2'>
-        {trace.value.map((value, index) => (
-          <Fragment key={index}>
-            <div className='flex shrink-0 items-center gap-1'>
-              <ValueViewComponent view={getValueView(metadataByAssetId, value)} size='sm' />
-            </div>
+    <div className='flex w-full items-center justify-between gap-8'>
+      {trace.value.map((value, index) => (
+        <div key={index} className='flex shrink-0 flex-col gap-1'>
+          <ValueViewComponent view={getValueView(metadataByAssetId, value)} size='sm' />
 
-            {index < trace.value.length - 1 && <Separator />}
-          </Fragment>
-        ))}
-      </div>
+          {index === 0 && <Price trace={trace} metadataByAssetId={metadataByAssetId} />}
 
-      <Price trace={trace} metadataByAssetId={metadataByAssetId} />
+          {/* Placeholder to ensure all values are aligned, even if the price
+          isn't underneath them. */}
+          {index > 0 && <span className='text-xs'>&nbsp;</span>}
+        </div>
+      ))}
     </div>
   );
 };

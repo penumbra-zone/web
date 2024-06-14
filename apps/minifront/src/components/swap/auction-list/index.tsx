@@ -6,40 +6,42 @@ import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header'
 import { QueryLatestStateButton } from './query-latest-state-button';
 import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
-import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picker';
 import { useMemo } from 'react';
 import { getFilteredAuctionInfos } from './get-filtered-auction-infos';
 import { LayoutGroup, motion } from 'framer-motion';
-import { SORT_FUNCTIONS } from './helpers';
 import { useAuctionInfos } from '../../../state/swap/dutch-auction';
 import { useStatus } from '../../../state/status';
+import { SORT_FUNCTIONS } from './helpers';
+import { Filters } from './filters';
 
 const auctionListSelector = (state: AllSlices) => ({
   endAuction: state.swap.dutchAuction.endAuction,
   withdraw: state.swap.dutchAuction.withdraw,
   filter: state.swap.dutchAuction.filter,
-  setFilter: state.swap.dutchAuction.setFilter,
 });
 
 const getButtonProps = (
   auctionId: AuctionId,
   endAuction: (auctionId: AuctionId) => Promise<void>,
   withdraw: (auctionId: AuctionId, seqNum: bigint) => Promise<void>,
-  seqNum?: bigint,
+  localSeqNum?: bigint,
 ):
   | { buttonType: 'end' | 'withdraw'; onClickButton: VoidFunction }
   | { buttonType: undefined; onClickButton: undefined } => {
-  if (seqNum === 0n) return { buttonType: 'end', onClickButton: () => void endAuction(auctionId) };
+  if (localSeqNum === 0n) {
+    return { buttonType: 'end', onClickButton: () => void endAuction(auctionId) };
+  }
 
-  if (seqNum === 1n)
-    return { buttonType: 'withdraw', onClickButton: () => void withdraw(auctionId, seqNum) };
+  if (localSeqNum === 1n) {
+    return { buttonType: 'withdraw', onClickButton: () => void withdraw(auctionId, localSeqNum) };
+  }
 
   return { buttonType: undefined, onClickButton: undefined };
 };
 
 export const AuctionList = () => {
   const auctionInfos = useAuctionInfos();
-  const { endAuction, withdraw, filter, setFilter } = useStoreShallow(auctionListSelector);
+  const { endAuction, withdraw, filter } = useStoreShallow(auctionListSelector);
   const { data: status } = useStatus();
 
   const filteredAuctionInfos = useMemo(
@@ -58,15 +60,7 @@ export const AuctionList = () => {
         <motion.div layout className='flex items-center gap-2'>
           {!!auctionInfos.data?.length && <QueryLatestStateButton />}
 
-          <SegmentedPicker
-            value={filter}
-            onChange={setFilter}
-            options={[
-              { label: 'Active', value: 'active' },
-              { label: 'Upcoming', value: 'upcoming' },
-              { label: 'All', value: 'all' },
-            ]}
-          />
+          <Filters />
         </motion.div>
       </div>
 
@@ -93,12 +87,7 @@ export const AuctionList = () => {
                 inputMetadata={auctionInfo.inputMetadata}
                 outputMetadata={auctionInfo.outputMetadata}
                 fullSyncHeight={status?.fullSyncHeight}
-                {...getButtonProps(
-                  auctionInfo.id,
-                  endAuction,
-                  withdraw,
-                  auctionInfo.auction.state?.seq,
-                )}
+                {...getButtonProps(auctionInfo.id, endAuction, withdraw, auctionInfo.localSeqNum)}
                 renderButtonPlaceholder
               />
             </div>

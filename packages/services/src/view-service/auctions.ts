@@ -88,6 +88,7 @@ export const auctions: Impl['auctions'] = async function* (req, ctx) {
       id,
       auction,
       noteRecord,
+      localSeq: value.seqNum,
     });
   }
 };
