@@ -1,5 +1,19 @@
 # @penumbra-zone/query
 
+## 4.1.1
+
+### Patch Changes
+
+- Updated dependencies [a75256f]
+- Updated dependencies [468ecc7]
+- Updated dependencies [a75256f]
+  - @penumbra-zone/bech32m@5.1.0
+  - @penumbra-zone/getters@6.2.0
+  - @penumbra-zone/protobuf@4.2.0
+  - @penumbra-zone/types@7.1.1
+  - @penumbra-zone/wasm@7.1.1
+  - @penumbra-zone/crypto-web@3.0.11
+
 ## 4.1.0
 
 ### Minor Changes

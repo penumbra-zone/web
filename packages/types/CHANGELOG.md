@@ -1,5 +1,15 @@
 # @penumbra-zone/types
 
+## 7.1.1
+
+### Patch Changes
+
+- Updated dependencies [a75256f]
+- Updated dependencies [468ecc7]
+- Updated dependencies [a75256f]
+  - @penumbra-zone/bech32m@5.1.0
+  - @penumbra-zone/getters@6.2.0
+
 ## 7.1.0
 
 ### Minor Changes

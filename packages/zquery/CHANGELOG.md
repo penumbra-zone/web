@@ -1,5 +1,11 @@
 # @penumbra-zone/zquery
 
+## 1.0.1
+
+### Patch Changes
+
+- 82068fc: Add missing scripts and fix tests
+
 ## 1.0.0
 
 ### Major Changes
