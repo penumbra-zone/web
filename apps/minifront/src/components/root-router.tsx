@@ -1,7 +1,7 @@
 import { createHashRouter, redirect } from 'react-router-dom';
 import { PagePath } from './metadata/paths';
 import { Layout } from './layout';
-import AssetsTable, { AssetsLoader } from './dashboard/assets-table';
+import AssetsTable from './dashboard/assets-table';
 import TransactionTable from './dashboard/transaction-table';
 import { DashboardLayout } from './dashboard/layout';
 import { TxDetails, TxDetailsErrorBoundary, TxDetailsLoader } from './tx-details';
@@ -14,6 +14,7 @@ import { SwapLoader } from './swap/swap-loader';
 import { StakingLayout, StakingLoader } from './staking/layout';
 import { IbcLoader } from './ibc/ibc-loader';
 import { IbcLayout } from './ibc/layout';
+import { abortLoader } from '../abort-loader';
 import type { Router } from '@remix-run/router';
 
 export const rootRouter: Router = createHashRouter([
@@ -29,7 +30,7 @@ export const rootRouter: Router = createHashRouter([
         children: [
           {
             index: true,
-            loader: AssetsLoader,
+            loader: abortLoader,
             element: <AssetsTable />,
           },
           {
