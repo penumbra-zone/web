@@ -25,6 +25,7 @@ describe('createZQuery()', () => {
       get: () => ({
         _zQueryInternal: {
           fetch: vi.fn(),
+          referenceCount: 0,
         },
         loading: false,
         revalidate: vi.fn(),
@@ -49,6 +50,7 @@ describe('createZQuery()', () => {
         _zQueryInternal: {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           fetch: expect.any(Function),
+          referenceCount: 0,
         },
       });
     });
