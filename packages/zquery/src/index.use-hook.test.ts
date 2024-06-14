@@ -6,6 +6,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { StoreApi, UseBoundStore, create } from 'zustand';
 import { ZQueryState } from './types';
 import { createZQuery } from '.';
+import verifyNeverOccurs from './test/verify-never-occurs';
 
 interface PuppyPhoto {
   id: string;
@@ -162,6 +163,86 @@ describe('`use[Name]()` hook', () => {
       await waitFor(() => {
         rerender();
         expect(result.current.data?.length).toBe(3);
+      });
+    });
+
+    it('stops streaming responses when the component using the hook unmounts', async () => {
+      const { rerender, result, unmount } = renderHook(usePuppyPhotos);
+
+      yieldRemoteControl.resolve();
+      await waitFor(() => {
+        rerender();
+        expect(result.current.data?.length).toBe(1);
+      });
+
+      yieldRemoteControl.resolve();
+      await waitFor(() => {
+        rerender();
+        expect(result.current.data?.length).toBe(2);
+      });
+
+      unmount();
+
+      yieldRemoteControl.resolve();
+      await verifyNeverOccurs(() => {
+        // Can't use rerender(), since the component is unmounted. So we'll
+        // check the store's value directly.
+        expect(useStore.getState().puppyPhotos.data?.length).toBe(3);
+      });
+    });
+
+    describe('when a second component uses the same hook', () => {
+      it('keeps streaming responses when only one component using the hook unmounts', async () => {
+        const component1 = renderHook(usePuppyPhotos);
+        const component2 = renderHook(usePuppyPhotos);
+
+        yieldRemoteControl.resolve();
+        await waitFor(() => {
+          component1.rerender();
+          expect(component1.result.current.data?.length).toBe(1);
+        });
+
+        yieldRemoteControl.resolve();
+        await waitFor(() => {
+          component1.rerender();
+          expect(component1.result.current.data?.length).toBe(2);
+        });
+
+        component1.unmount();
+
+        yieldRemoteControl.resolve();
+        await waitFor(() => {
+          component2.rerender();
+          expect(component2.result.current.data?.length).toBe(3);
+        });
+      });
+
+      it('stops streaming responses when the second component also unmounts', async () => {
+        const component1 = renderHook(usePuppyPhotos);
+        const component2 = renderHook(usePuppyPhotos);
+
+        yieldRemoteControl.resolve();
+        await waitFor(() => {
+          component1.rerender();
+          expect(component1.result.current.data?.length).toBe(1);
+        });
+
+        component1.unmount();
+
+        yieldRemoteControl.resolve();
+        await waitFor(() => {
+          component2.rerender();
+          expect(component2.result.current.data?.length).toBe(2);
+        });
+
+        component2.unmount();
+
+        yieldRemoteControl.resolve();
+        await verifyNeverOccurs(() => {
+          // Can't use rerender(), since the component is unmounted. So we'll
+          // check the store's value directly.
+          expect(useStore.getState().puppyPhotos.data?.length).toBe(3);
+        });
       });
     });
   });
