@@ -7,7 +7,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsup --clean src/*.ts --dts --minify --keep-names --format esm",
+    "build": "tsup --clean --entry 'src/*.ts' --entry '!src/*.test.ts' --dts --minify --keep-names --format esm",
     "clean": "rm -rfv dist package penumbra-zone-*.tgz",
     "lint": "eslint src",
     "prepack": "$npm_execpath run build",
