@@ -1,5 +1,5 @@
 {
   "extends": "tsconfig/tsup.json",
-  "exclude": ["node_modules", "dist"],
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }
