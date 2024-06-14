@@ -3,7 +3,11 @@ import { SliceCreator, useStore } from '.';
 import { viewClient } from '../clients';
 import { getTransactionClassificationLabel } from '@penumbra-zone/perspective/transaction/classify';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
-import { TransactionInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import {
+  TransactionInfo,
+  TransactionInfoResponse,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { getTxInfoByHash } from '../fetchers/tx-info-by-hash';
 
 export interface TransactionSummary {
   height: number;
@@ -53,10 +57,25 @@ export const { summaries, useSummaries } = createZQuery({
   },
 });
 
+export const { transactionInfo, useTransactionInfo } = createZQuery({
+  name: 'transactionInfo',
+  fetch: getTxInfoByHash,
+  getUseStore: () => useStore,
+  get: state => state.transactions.transactionInfo,
+  set: setter => {
+    const newState = setter(useStore.getState().transactions.transactionInfo);
+    useStore.setState(state => {
+      state.transactions.transactionInfo = newState;
+    });
+  },
+});
+
 export interface TransactionsSlice {
+  transactionInfo: ZQueryState<TransactionInfo, Parameters<typeof getTxInfoByHash>>;
   summaries: ZQueryState<TransactionSummary[]>;
 }
 
 export const createTransactionsSlice = (): SliceCreator<TransactionsSlice> => () => ({
   summaries,
+  transactionInfo,
 });

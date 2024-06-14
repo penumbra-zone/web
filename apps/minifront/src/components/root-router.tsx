@@ -4,7 +4,7 @@ import { Layout } from './layout';
 import AssetsTable from './dashboard/assets-table';
 import TransactionTable from './dashboard/transaction-table';
 import { DashboardLayout } from './dashboard/layout';
-import { TxDetails, TxDetailsErrorBoundary, TxDetailsLoader } from './tx-details';
+import { TxDetails, TxDetailsErrorBoundary } from './tx-details';
 import { SendLayout } from './send/layout';
 import { SendForm } from './send/send-form';
 import { Receive } from './send/receive';
@@ -61,7 +61,7 @@ export const rootRouter: Router = createHashRouter([
       },
       {
         path: PagePath.TRANSACTION_DETAILS,
-        loader: TxDetailsLoader,
+        loader: abortLoader,
         element: <TxDetails />,
         errorElement: <TxDetailsErrorBoundary />,
       },

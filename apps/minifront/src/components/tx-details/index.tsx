@@ -3,25 +3,9 @@ import { FadeTransition } from '@repo/ui/components/ui/fade-transition';
 import { TxViewer } from './tx-viewer';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card';
 import { EduPanel } from '../shared/edu-panels/content';
-import { LoaderFunction, useLoaderData, useRouteError } from 'react-router-dom';
-import { getTxInfoByHash } from '../../fetchers/tx-info-by-hash';
-import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { abortLoader } from '../../abort-loader';
+import { useParams, useRouteError } from 'react-router-dom';
 import { RestrictMaxWidth } from '../shared/restrict-max-width';
-
-export interface TxDetailsLoaderResult {
-  hash: string;
-  txInfo: TransactionInfo;
-}
-
-export const TxDetailsLoader: LoaderFunction = async ({
-  params,
-}): Promise<TxDetailsLoaderResult> => {
-  await abortLoader();
-  const hash = params['hash']!;
-  const txInfo = await getTxInfoByHash(hash);
-  return { txInfo, hash };
-};
+import { useTransactionInfo } from '../../state/transactions';
 
 export const TxDetailsErrorBoundary = () => {
   const error = useRouteError();
@@ -30,14 +14,23 @@ export const TxDetailsErrorBoundary = () => {
 };
 
 export const TxDetails = () => {
-  const { txInfo, hash } = useLoaderData() as TxDetailsLoaderResult;
+  const { hash } = useParams<{ hash: string }>();
+
+  const txInfo = useTransactionInfo(hash!);
+
+  if (
+    !txInfo.data?.id ||
+    // Don't show a previously loaded transaction while a new one is loading
+    txInfo.loading
+  )
+    return null;
 
   return (
     <FadeTransition className='flex min-h-[calc(100vh-122px)] flex-col items-stretch justify-start'>
       <RestrictMaxWidth>
         <div className='relative grid grid-std-spacing lg:grid-cols-3'>
           <Card gradient className='flex-1 p-5 md:p-4 lg:col-span-2 lg:row-span-2 xl:p-5'>
-            <TxViewer txInfo={txInfo} hash={hash} />
+            <TxViewer txInfo={txInfo.data} hash={txInfo.data.id} />
           </Card>
           <EduInfoCard
             className='row-span-1'
