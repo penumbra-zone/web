@@ -5,23 +5,24 @@
   "description": "Convenience getters for the deeply nested optionals of Penumbra's protobuf types",
   "type": "module",
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "tsup src/*.ts --dts --minify --format esm --out-dir dist",
     "clean": "rm -rfv dist",
     "lint": "eslint src",
     "test": "vitest run"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
   ],
   "exports": {
-    "./*": "./src/*.ts"
-  },
-  "publishConfig": {
-    "exports": {
-      "./*": {
-        "types": "./dist/*.d.ts",
-        "default": "./dist/*.js"
-      }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
     }
   },
   "dependencies": {
@@ -29,7 +30,8 @@
   },
   "devDependencies": {
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
-    "@bufbuild/protobuf": "^1.10.0"
+    "@bufbuild/protobuf": "^1.10.0",
+    "tsup": "^8.1.0"
   },
   "peerDependencies": {
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",

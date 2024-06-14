@@ -12,7 +12,8 @@
   },
   "files": [
     "./dist",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "exports": {
     ".": {
