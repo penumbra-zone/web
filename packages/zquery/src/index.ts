@@ -199,7 +199,7 @@ export function createZQuery<
 
     [`useRevalidate${capitalize(name)}`]: () => {
       const useStore = getUseStore();
-      const returnValue = useStore(useShallow((state: State) => get(state).revalidate));
+      const returnValue = useStore((state: State) => get(state).revalidate);
       return returnValue;
     },
 
