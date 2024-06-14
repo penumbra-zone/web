@@ -10,6 +10,7 @@ import { getPrice } from './get-price';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { cn } from '../../../../lib/utils';
 import { AuctionIdComponent } from '../../auction-id-component';
+import { motion } from 'framer-motion';
 
 export const ExpandedDetails = ({
   auctionId,
@@ -114,11 +115,11 @@ const Row = ({
   children: ReactNode;
   highlight?: boolean;
 }) => (
-  <div className='flex items-center justify-between'>
+  <motion.div layout className='flex items-center justify-between'>
     <span className={cn('font-mono text-nowrap', !highlight && 'text-muted-foreground')}>
       {label}
     </span>
     <Separator />
     <span className={cn('overflow-hidden', !highlight && 'text-muted-foreground')}>{children}</span>
-  </div>
+  </motion.div>
 );
