@@ -65,6 +65,7 @@ export const { auctionInfos, useAuctionInfos, useRevalidateAuctionInfos } = crea
 
         const existingIndex = prevState.findIndex(({ id }) => id.equals(auctionInfo.id));
 
+        // Update existing auctions in place, rather than appending duplicates.
         if (existingIndex >= 0) return prevState.toSpliced(existingIndex, 1, auctionInfo);
         else return [...prevState, auctionInfo];
       },
