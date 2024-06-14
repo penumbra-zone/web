@@ -364,6 +364,9 @@ importers:
       '@connectrpc/connect':
         specifier: ^1.4.0
         version: 1.4.0(@bufbuild/protobuf@1.10.0)
+      tsup:
+        specifier: ^8.1.0
+        version: 8.1.0(@microsoft/api-extractor@7.43.0(@types/node@20.14.2))(@swc/core@1.5.28(@swc/helpers@0.5.11))(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.28(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))(typescript@5.4.5)
 
   packages/crypto:
     dependencies:
@@ -438,6 +441,9 @@ importers:
       '@bufbuild/protobuf':
         specifier: ^1.10.0
         version: 1.10.0
+      tsup:
+        specifier: ^8.1.0
+        version: 8.1.0(@microsoft/api-extractor@7.43.0(@types/node@20.14.2))(@swc/core@1.5.28(@swc/helpers@0.5.11))(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.28(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))(typescript@5.4.5)
 
   packages/keys: {}
 
@@ -481,9 +487,9 @@ importers:
       '@bufbuild/protobuf':
         specifier: ^1.10.0
         version: 1.10.0
-      '@connectrpc/connect':
-        specifier: ^1.4.0
-        version: 1.4.0(@bufbuild/protobuf@1.10.0)
+      tsup:
+        specifier: ^8.1.0
+        version: 8.1.0(@microsoft/api-extractor@7.43.0(@types/node@20.14.2))(@swc/core@1.5.28(@swc/helpers@0.5.11))(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.28(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))(typescript@5.4.5)
 
   packages/query:
     dependencies:
