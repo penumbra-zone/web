@@ -11,6 +11,7 @@ import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { AuctionInfo, getAuctionInfos } from '../../../fetchers/auction-infos';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
 
 /**
  * Multipliers to use with the output of the swap simulation, to determine
@@ -52,10 +53,28 @@ interface State {
 export const { auctionInfos, useAuctionInfos, useRevalidateAuctionInfos } = createZQuery({
   name: 'auctionInfos',
   fetch: getAuctionInfos,
-  stream: (prevState: AuctionInfo[] | undefined, auctionInfo: AuctionInfo) => [
-    ...(prevState ?? []),
-    auctionInfo,
-  ],
+  stream: () => {
+    // Keep track of which auction IDs have appeared in this stream, so that we
+    // can discard any auctions from a previous stream once this stream has
+    // finished.
+    const auctionIdsToKeep = new Set<string>();
+
+    return {
+      onValue: (prevState: AuctionInfo[] | undefined = [], auctionInfo: AuctionInfo) => {
+        auctionIdsToKeep.add(bech32mAuctionId(auctionInfo.id));
+
+        const existingIndex = prevState.findIndex(({ id }) => id.equals(auctionInfo.id));
+
+        // Update existing auctions in place, rather than appending duplicates.
+        if (existingIndex >= 0) return prevState.toSpliced(existingIndex, 1, auctionInfo);
+        else return [...prevState, auctionInfo];
+      },
+
+      onEnd: (prevState = []) =>
+        // Discard any auctions from a previous stream.
+        prevState.filter(auctionInfo => auctionIdsToKeep.has(bech32mAuctionId(auctionInfo.id))),
+    };
+  },
   getUseStore: () => useStore,
   set: setter => {
     const newState = setter(useStore.getState().swap.dutchAuction.auctionInfos);
