@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { renderHook, waitFor } from '@testing-library/react';
 import { StoreApi, UseBoundStore, create } from 'zustand';
 import { ZQueryState } from './types';
 import { createZQuery } from '.';
@@ -39,13 +39,15 @@ describe('`use[Name]()` hook', () => {
     loading: boolean;
     error?: unknown;
   };
-
   let useStore: UseBoundStore<StoreApi<State>>;
+  const fetch = vi.fn().mockResolvedValue(MOCK_PUPPY_PHOTOS);
 
   beforeEach(() => {
+    fetch.mockClear();
+
     ({ puppyPhotos, usePuppyPhotos } = createZQuery({
       name: 'puppyPhotos',
-      fetch: () => Promise.resolve(MOCK_PUPPY_PHOTOS),
+      fetch,
       getUseStore: () => useStore,
       get: state => state.puppyPhotos,
       set: setter => {
@@ -68,8 +70,26 @@ describe('`use[Name]()` hook', () => {
 
       expect(result.current).toEqual({
         data: undefined,
-        loading: false,
+        loading: true,
         error: undefined,
+      });
+    });
+
+    it('calls fetch()', () => {
+      renderHook(usePuppyPhotos);
+      expect(fetch).toHaveBeenCalled();
+    });
+
+    it('re-renders with data once data has loaded', async () => {
+      const { rerender, result } = renderHook(usePuppyPhotos);
+
+      await waitFor(() => {
+        rerender();
+        expect(result.current).toEqual({
+          data: MOCK_PUPPY_PHOTOS,
+          loading: false,
+          error: undefined,
+        });
       });
     });
   });
