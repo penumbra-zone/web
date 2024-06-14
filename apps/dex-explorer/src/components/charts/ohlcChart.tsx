@@ -191,11 +191,7 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
         axisLine: { onZero: false },
         splitLine: { show: false },
         splitNumber: 20,
-        axisLabel: {
-          formatter: function (value: string) {
-            return value.replace(/ /g, "\n"); // Replace space with a newline
-          },
-        },
+        axisLabel: { show: false },
         min: "dataMin",
         max: "dataMax",
       },
@@ -206,7 +202,11 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
         axisLine: { onZero: false },
         axisTick: { show: false },
         splitLine: { show: false },
-        axisLabel: { show: false },
+        axisLabel: {
+          formatter: function (value: string) {
+            return value.replace(/ /g, "\n"); // Replace space with a newline
+          },
+        },
         min: "dataMin",
         max: "dataMax",
       },
@@ -234,8 +234,8 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
       {
         left: "10%",
         right: "8%",
-        top: "76%",
-        height: "15%",
+        top: "74%",
+        height: "12%",
       },
     ],
     series: [
