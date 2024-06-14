@@ -1,17 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ZQueryState, createZQuery } from '.';
+import { createZQuery } from '.';
 import { MOCK_PUPPY_PHOTOS, PuppyPhoto, State } from './test/mock-state';
 import { StoreApi, UseBoundStore, create } from 'zustand';
+import { ZQuery } from './types';
 
 describe('createZQuery()', () => {
-  let puppyPhotos: ZQueryState<PuppyPhoto[]>;
+  let zQuery: ZQuery<'puppyPhotos', PuppyPhoto[], []>;
   let useStore: UseBoundStore<StoreApi<State>>;
   const fetch = vi.fn().mockResolvedValue(MOCK_PUPPY_PHOTOS);
 
   beforeEach(() => {
     fetch.mockClear();
 
-    ({ puppyPhotos } = createZQuery({
+    zQuery = createZQuery({
       name: 'puppyPhotos',
       fetch,
       getUseStore: () => useStore,
@@ -23,7 +24,9 @@ describe('createZQuery()', () => {
           puppyPhotos: newState,
         }));
       },
-    }));
+    });
+
+    const { puppyPhotos } = zQuery;
 
     useStore = create<State>()(() => ({
       puppyPhotos,
@@ -31,34 +34,15 @@ describe('createZQuery()', () => {
   });
 
   describe('the return value', () => {
-    const result = createZQuery({
-      name: 'puppyPhotos',
-      fetch: () => Promise.resolve(null),
-      getUseStore: () => useStore,
-      set: () => {
-        /* no-op */
-      },
-      get: () => ({
-        _zQueryInternal: {
-          fetch: vi.fn(),
-          referenceCount: 0,
-        },
-        loading: false,
-        revalidate: vi.fn(),
-        data: undefined,
-        error: undefined,
-      }),
-    });
-
     it('includes hooks and a Zustand slice that use the passed-in name', () => {
-      expect(result).toHaveProperty('puppyPhotos');
-      expect(result.usePuppyPhotos).toBeTypeOf('function');
-      expect(result.useRevalidatePuppyPhotos).toBeTypeOf('function');
+      expect(zQuery).toHaveProperty('puppyPhotos');
+      expect(zQuery.usePuppyPhotos).toBeTypeOf('function');
+      expect(zQuery.useRevalidatePuppyPhotos).toBeTypeOf('function');
     });
 
     describe('the ZQuery slice', () => {
       it('has the correct default state', () => {
-        expect(result.puppyPhotos).toEqual({
+        expect(zQuery.puppyPhotos).toEqual({
           data: undefined,
           error: undefined,
           loading: false,
