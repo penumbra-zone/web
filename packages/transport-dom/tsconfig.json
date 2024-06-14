@@ -1,8 +1,5 @@
 {
-  "extends": "tsconfig/base.json",
   "exclude": ["node_modules", "dist"],
-  "compilerOptions": {
-    "outDir": "dist",
-    "noEmit": true
-  }
+  "extends": "tsconfig/tsup.json",
+  "include": ["src"]
 }

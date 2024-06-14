@@ -29,7 +29,7 @@ import type { BlockProcessorInterface } from '@penumbra-zone/types/block-process
 import type { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/servers';
 import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
-import { updatePricesFromSwaps } from './price-indexer';
+import { updatePricesFromSwaps } from './helpers/price-indexer';
 import {
   AssetId,
   Metadata,

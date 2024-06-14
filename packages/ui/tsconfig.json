@@ -1,5 +1,8 @@
 {
-  "extends": "tsconfig/react-library.json",
-  "include": [".", "./tests-setup.ts"],
-  "exclude": ["dist", "build", "node_modules"]
+  "extends": "tsconfig/tsup.json",
+  "include": ["components", "lib", "tests-setup.ts"],
+  "exclude": ["dist"],
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  }
 }

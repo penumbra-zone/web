@@ -3,6 +3,9 @@
   "version": "7.1.1",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
+  "engine": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "tsc --build",
     "clean": "rm -rfv dist wasm package penumbra-zone-wasm-*.tgz",

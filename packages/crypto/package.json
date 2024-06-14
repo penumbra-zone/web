@@ -3,19 +3,29 @@
   "version": "3.0.11",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
+  "engine": {
+    "node": ">=22"
+  },
   "scripts": {
+    "build": "tsup --clean src/*.ts --dts --minify --keep-names --format esm",
+    "clean": "rm -rfv dist package penumbra-zone-*.tgz",
     "lint": "eslint src",
+    "prepack": "$npm_execpath run build",
     "test": "vitest run"
   },
   "files": [
-    "src/",
-    "*.md",
-    "!**/*.test.ts"
+    "dist"
   ],
   "exports": {
-    "./mnemonic": "./src/mnemonic.ts",
-    "./encryption": "./src/encryption.ts",
-    "./sha256": "./src/sha256.ts"
+    "./*": "./src/*.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      "./*": {
+        "default": "./dist/*.js",
+        "types": "./dist/*.d.ts"
+      }
+    }
   },
   "dependencies": {
     "@penumbra-zone/types": "workspace:*",

@@ -1,15 +1,31 @@
 {
   "name": "@penumbra-zone/query",
   "version": "4.1.1",
-  "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
+  "engine": {
+    "node": ">=22"
+  },
   "scripts": {
+    "build": "tsup --clean src/*.ts --dts --minify --keep-names --format esm",
+    "clean": "rm -rfv dist package penumbra-zone-*.tgz",
     "lint": "eslint src",
+    "prepack": "$npm_execpath run build",
     "test": "vitest run"
   },
+  "files": [
+    "dist"
+  ],
   "exports": {
     "./*": "./src/*.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      "./*": {
+        "default": "./dist/*.js",
+        "types": "./dist/*.d.ts"
+      }
+    }
   },
   "dependencies": {
     "@penumbra-zone/bech32m": "workspace:*",

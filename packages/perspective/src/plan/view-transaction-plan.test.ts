@@ -3,7 +3,7 @@ import {
   FullViewingKey,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { describe, expect, test, vi } from 'vitest';
-import { viewTransactionPlan } from '.';
+import { viewTransactionPlan } from './view-transaction-plan';
 import {
   MemoView_Visible,
   TransactionPlan,

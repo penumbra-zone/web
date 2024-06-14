@@ -1,10 +1,10 @@
 import { z, ZodTypeAny } from 'zod';
-import { isDevEnv } from './environment';
 
 // Given performance critical nature of some features (like syncing),
 // we only validate in dev mode in attempts to catch any schema variance
 export const validateSchema = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
-  if (isDevEnv()) {
+  // @ts-ignore -- just checking
+  if (process.env['NODE_ENV'] === 'development') {
     return schema.parse(data);
   } else {
     return data as T;

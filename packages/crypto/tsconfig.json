@@ -1,5 +1,5 @@
 {
-  "extends": "tsconfig/base.json",
-  "include": ["."],
-  "exclude": ["dist", "build", "node_modules"]
+  "extends": "tsconfig/tsup.json",
+  "include": ["src", "test/mnemonic.test.ts", "test/encryption.test.ts", "test/sha256.test.ts"],
+  "exclude": ["node_modules", "dist"]
 }

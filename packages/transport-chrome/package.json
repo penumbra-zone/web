@@ -3,28 +3,35 @@
   "version": "2.2.2",
   "license": "(MIT OR Apache-2.0)",
   "description": "Tools for adapting `@penumbra-zone/transport` to Chrome's extension runtime messaging API",
+  "type": "module",
+  "engine": {
+    "node": ">=22"
+  },
   "scripts": {
+    "build": "tsup --clean --entry 'src/*.ts' --entry '!src/*.test.ts' --dts --minify --keep-names --format esm",
+    "clean": "rm -rfv dist package penumbra-zone-transport-dom-*.tgz",
     "lint": "eslint src",
+    "prepack": "$npm_execpath run build",
     "test": "vitest run"
   },
-  "files": [
-    "src/",
-    "*.md",
-    "!**/*.test.ts"
-  ],
   "exports": {
-    "./channel-names": "./src/channel-names.ts",
-    "./message": "./src/message.ts",
-    "./session-client": "./src/session-client.ts",
-    "./session-manager": "./src/session-manager.ts",
-    "./stream": "./src/stream.ts"
+    "./*": "./src/*.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      "./*": {
+        "default": "./dist/*.js",
+        "types": "./dist/*.d.ts"
+      }
+    }
   },
   "dependencies": {
     "@penumbra-zone/transport-dom": "workspace:*"
   },
   "devDependencies": {
     "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0"
+    "@connectrpc/connect": "^1.4.0",
+    "@types/chrome": "^0.0.268"
   },
   "peerDependencies": {
     "@bufbuild/protobuf": "^1.10.0",

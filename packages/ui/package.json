@@ -1,15 +1,31 @@
 {
   "name": "@penumbra-zone/ui",
   "version": "3.5.0",
-  "private": true,
+  "private": false,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
+  "engine": {
+    "node": ">=22"
+  },
   "scripts": {
+    "build": "tsup --clean --entry './components/**/*.ts*' --entry './lib/**/*.ts' --entry '!./**/*.test.*' --entry '!./**/*.stories.*' --dts --minify --keep-names --format 'esm'",
     "build-storybook": "storybook build",
+    "clean": "rm -rf dist package penumbra-zone-*.tgz",
     "lint": "eslint components lib",
+    "prepack": "$npm_execpath run build",
     "storybook": "storybook dev -p 6006",
     "test": "vitest run",
     "ui:add": "pnpm dlx shadcn-ui@latest add"
+  },
+  "files": [
+    "dist",
+    "fonts",
+    "styles"
+  ],
+  "publishConfig": {
+    "exports": {
+      "./chunk-*": null
+    }
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -73,6 +89,7 @@
     "@storybook/preview-api": "^8.1.1",
     "@storybook/react": "^8.1.1",
     "@storybook/react-vite": "8.1.1",
+    "@testing-library/dom": "^10.1.0",
     "@testing-library/react": "^15.0.7",
     "@types/humanize-duration": "^3.27.4",
     "@types/react": "^18.3.2",
