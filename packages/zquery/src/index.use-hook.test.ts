@@ -67,32 +67,30 @@ describe('`use[Name]()` hook', () => {
     }));
   });
 
-  describe('the returned hook', () => {
-    it('returns an object with `data`/`loading`/`error` properties', () => {
-      const { result } = renderHook(usePuppyPhotos);
+  it('returns an object with `data`/`loading`/`error` properties', () => {
+    const { result } = renderHook(usePuppyPhotos);
 
+    expect(result.current).toEqual({
+      data: undefined,
+      loading: true,
+      error: undefined,
+    });
+  });
+
+  it('calls fetch()', () => {
+    renderHook(usePuppyPhotos);
+    expect(fetch).toHaveBeenCalled();
+  });
+
+  it('re-renders with data once data has loaded', async () => {
+    const { rerender, result } = renderHook(usePuppyPhotos);
+
+    await waitFor(() => {
+      rerender();
       expect(result.current).toEqual({
-        data: undefined,
-        loading: true,
+        data: MOCK_PUPPY_PHOTOS,
+        loading: false,
         error: undefined,
-      });
-    });
-
-    it('calls fetch()', () => {
-      renderHook(usePuppyPhotos);
-      expect(fetch).toHaveBeenCalled();
-    });
-
-    it('re-renders with data once data has loaded', async () => {
-      const { rerender, result } = renderHook(usePuppyPhotos);
-
-      await waitFor(() => {
-        rerender();
-        expect(result.current).toEqual({
-          data: MOCK_PUPPY_PHOTOS,
-          loading: false,
-          error: undefined,
-        });
       });
     });
   });
