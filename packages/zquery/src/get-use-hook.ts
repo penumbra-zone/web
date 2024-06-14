@@ -2,6 +2,9 @@ import { useEffect } from 'react';
 import { CreateZQueryStreamingProps, CreateZQueryUnaryProps } from './types';
 import { useShallow } from 'zustand/react/shallow';
 
+/**
+ * Returns a hook that can be used via `use[Name]()` to access the ZQuery state.
+ */
 export const getUseHook = <
   Name extends string,
   State,
@@ -13,8 +16,6 @@ export const getUseHook = <
     | CreateZQueryUnaryProps<Name, State, DataType, FetchArgs>
     | CreateZQueryStreamingProps<Name, State, DataType, FetchArgs, ProcessedDataType>,
 ) => {
-  const useStore = props.getUseStore();
-
   const setAbortController = (abortController: AbortController | undefined) => {
     props.set(prevState => ({
       ...prevState,
@@ -56,6 +57,8 @@ export const getUseHook = <
   };
 
   const useHook = (...args: FetchArgs) => {
+    const useStore = props.getUseStore();
+
     useEffect(() => {
       const fetch = props.get(useStore.getState())._zQueryInternal.fetch;
 
