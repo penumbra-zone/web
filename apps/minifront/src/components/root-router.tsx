@@ -14,8 +14,9 @@ import { SwapLoader } from './swap/swap-loader';
 import { StakingLayout, StakingLoader } from './staking/layout';
 import { IbcLoader } from './ibc/ibc-loader';
 import { IbcLayout } from './ibc/layout';
+import type { Router } from '@remix-run/router';
 
-export const rootRouter = createHashRouter([
+export const rootRouter: Router = createHashRouter([
   {
     path: '/',
     element: <Layout />,
