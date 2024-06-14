@@ -5,7 +5,7 @@
   "description": "Package for connecting to any Penumbra extension, including Prax.",
   "type": "module",
   "scripts": {
-    "build": "tsup src/*.ts --dts --minify --format esm --out-dir dist",
+    "build": "tsup src/*.ts --dts --minify --format esm",
     "clean": "rm -rfv dist",
     "lint": "eslint src",
     "prebuild": "pnpm clean",
@@ -17,13 +17,19 @@
     "CHANGELOG.md"
   ],
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    },
-    "./prax": {
-      "types": "./dist/prax.d.ts",
-      "default": "./dist/prax.js"
+    ".": "./src/index.ts",
+    "./prax": "./src/prax.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./prax": {
+        "types": "./dist/prax.d.ts",
+        "default": "./dist/prax.js"
+      }
     }
   },
   "dependencies": {
