@@ -49,7 +49,7 @@ export const AuctionList = () => {
       [...getFilteredAuctionInfos(auctionInfos.data ?? [], filter, status?.fullSyncHeight)].sort(
         SORT_FUNCTIONS[filter],
       ),
-    [auctionInfos, filter, status?.fullSyncHeight],
+    [auctionInfos.data, filter, status?.fullSyncHeight],
   );
 
   return (
