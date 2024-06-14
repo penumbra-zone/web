@@ -7,34 +7,7 @@ import { StoreApi, UseBoundStore, create } from 'zustand';
 import { ZQueryState } from './types';
 import { createZQuery } from '.';
 import verifyNeverOccurs from './test/verify-never-occurs';
-
-interface PuppyPhoto {
-  id: string;
-  name: string;
-  url: string;
-}
-
-const MOCK_PUPPY_PHOTOS: PuppyPhoto[] = [
-  {
-    id: 'a',
-    name: 'Croissant',
-    url: 'croissant.jpg',
-  },
-  {
-    id: 'b',
-    name: 'Rocket',
-    url: 'rocket.jpg',
-  },
-  {
-    id: 'c',
-    name: 'Cookie',
-    url: 'cookie.jpg',
-  },
-];
-
-interface State {
-  puppyPhotos: ZQueryState<PuppyPhoto[]>;
-}
+import { MOCK_PUPPY_PHOTOS, PuppyPhoto, State } from './test/mock-state';
 
 describe('`use[Name]()` hook', () => {
   let puppyPhotos: ZQueryState<PuppyPhoto[]>;

@@ -2,34 +2,7 @@ import { beforeEach, describe, vi } from 'vitest';
 import { ZQueryState } from './types';
 import { StoreApi, UseBoundStore, create } from 'zustand';
 import { createZQuery } from '.';
-
-interface PuppyPhoto {
-  id: string;
-  name: string;
-  url: string;
-}
-
-const MOCK_PUPPY_PHOTOS: PuppyPhoto[] = [
-  {
-    id: 'a',
-    name: 'Croissant',
-    url: 'croissant.jpg',
-  },
-  {
-    id: 'b',
-    name: 'Rocket',
-    url: 'rocket.jpg',
-  },
-  {
-    id: 'c',
-    name: 'Cookie',
-    url: 'cookie.jpg',
-  },
-];
-
-interface State {
-  puppyPhotos: ZQueryState<PuppyPhoto[]>;
-}
+import { MOCK_PUPPY_PHOTOS, PuppyPhoto, State } from './test/mock-state';
 
 describe('the ZQuery slice', () => {
   let puppyPhotos: ZQueryState<PuppyPhoto[]>;
