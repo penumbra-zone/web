@@ -41,7 +41,6 @@
     "@penumbra-zone/query": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
-    "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
   },
   "devDependencies": {

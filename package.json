@@ -44,6 +44,7 @@
     "@penumbra-zone/eslint-config": "workspace:*",
     "@penumbra-zone/polyfills": "workspace:*",
     "@penumbra-zone/tailwind-config": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
     "@storybook/react-vite": "8.1.1",
     "@turbo/gen": "^1.13.3",
     "@types/node": "^20.14.2",

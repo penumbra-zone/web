@@ -27,7 +27,6 @@
     "@penumbra-zone/perspective": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
-    "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/ui": "workspace:*",
     "@penumbra-zone/zquery": "workspace:*",
     "@radix-ui/react-dialog": "1.0.5",
@@ -67,7 +66,6 @@
     "autoprefixer": "^10.4.19",
     "firebase-tools": "^13.9.0",
     "postcss": "^8.4.38",
-    "promise.withresolvers": "^1.0.3",
     "vite-plugin-node-stdlib-browser": "^0.2.1"
   }
 }

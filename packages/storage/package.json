@@ -30,7 +30,6 @@
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
-    "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*",
     "idb": "^8.0.0"
   },
