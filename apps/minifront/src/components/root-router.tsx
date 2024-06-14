@@ -6,7 +6,7 @@ import TransactionTable from './dashboard/transaction-table';
 import { DashboardLayout } from './dashboard/layout';
 import { TxDetails, TxDetailsErrorBoundary, TxDetailsLoader } from './tx-details';
 import { SendLayout } from './send/layout';
-import { SendAssetBalanceLoader, SendForm } from './send/send-form';
+import { SendForm } from './send/send-form';
 import { Receive } from './send/receive';
 import { ErrorBoundary } from './shared/error-boundary';
 import { SwapLayout } from './swap/layout';
@@ -45,7 +45,7 @@ export const rootRouter: Router = createHashRouter([
         children: [
           {
             index: true,
-            loader: SendAssetBalanceLoader,
+            loader: abortLoader,
             element: <SendForm />,
           },
           {

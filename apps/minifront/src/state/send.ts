@@ -1,4 +1,4 @@
-import { AllSlices, SliceCreator } from '.';
+import { AllSlices, SliceCreator, useStore } from '.';
 
 import {
   BalancesResponse,
@@ -20,8 +20,50 @@ import { getAddress, getAddressIndex } from '@penumbra-zone/getters/address-view
 import { toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { fromValueView } from '@penumbra-zone/types/amount';
 import { isAddress } from '@penumbra-zone/bech32m/penumbra';
+import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
+import { getTransferableBalancesResponses } from '../components/send/helpers';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { getStakingTokenMetadata } from '../fetchers/registry';
+
+export const { transferableBalancesResponses, useTransferableBalancesResponses } = createZQuery({
+  name: 'transferableBalancesResponses',
+  fetch: async () => {
+    const balancesResponses = await getTransferableBalancesResponses();
+
+    if (balancesResponses[0] && !useStore.getState().send.selection) {
+      useStore.setState(state => {
+        state.send.selection = balancesResponses[0];
+      });
+    }
+
+    return balancesResponses;
+  },
+  getUseStore: () => useStore,
+  get: state => state.send.transferableBalancesResponses,
+  set: setter => {
+    const newState = setter(useStore.getState().send.transferableBalancesResponses);
+    useStore.setState(state => {
+      state.send.transferableBalancesResponses = newState;
+    });
+  },
+});
+
+export const { stakingTokenMetadata, useStakingTokenMetadata } = createZQuery({
+  name: 'stakingTokenMetadata',
+  fetch: getStakingTokenMetadata,
+  getUseStore: () => useStore,
+  get: state => state.send.stakingTokenMetadata,
+  set: setter => {
+    const newState = setter(useStore.getState().send.stakingTokenMetadata);
+    useStore.setState(state => {
+      state.send.stakingTokenMetadata = newState;
+    });
+  },
+});
 
 export interface SendSlice {
+  transferableBalancesResponses: ZQueryState<BalancesResponse[]>;
+  stakingTokenMetadata: ZQueryState<Metadata>;
   selection: BalancesResponse | undefined;
   setSelection: (selection: BalancesResponse) => void;
   amount: string;
@@ -40,6 +82,8 @@ export interface SendSlice {
 
 export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   return {
+    transferableBalancesResponses,
+    stakingTokenMetadata,
     selection: undefined,
     amount: '',
     recipient: '',
