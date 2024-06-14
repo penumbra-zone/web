@@ -9,7 +9,7 @@ import { createStatusSlice, StatusSlice } from './status';
 import { createUnclaimedSwapsSlice, UnclaimedSwapsSlice } from './unclaimed-swaps';
 import { createTransactionsSlice, TransactionsSlice } from './transactions';
 import { createIbcInSlice, IbcInSlice } from './ibc-in';
-import { BalancesSlice, createBalancesSlice } from './balances';
+import { createBalancesSlice, BalancesSlice } from './balances';
 
 /**
  * Required to enable use of `Map`s in Zustand state when using Immer
