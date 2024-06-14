@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import { z, ZodTypeAny } from 'zod';
 
 // Given performance critical nature of some features (like syncing),
 // we only validate in dev mode in attempts to catch any schema variance
 export const validateSchema = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore -- just checking
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (process?.env['NODE_ENV'] === 'development' || process?.env['NODE_ENV'] === 'test') {
     return schema.parse(data);
   } else {
