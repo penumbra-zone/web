@@ -1,24 +1,45 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createZQuery } from '.';
-import { UseStore } from './types';
+import { ZQueryState, createZQuery } from '.';
+import { MOCK_PUPPY_PHOTOS, PuppyPhoto, State } from './test/mock-state';
+import { StoreApi, UseBoundStore, create } from 'zustand';
 
 describe('createZQuery()', () => {
-  type MockState = null;
-  let mockUseStore: UseStore<MockState>;
-  let mockState: MockState;
+  let puppyPhotos: ZQueryState<PuppyPhoto[]>;
+  let usePuppyPhotos: () => {
+    data?: PuppyPhoto[] | undefined;
+    loading: boolean;
+    error?: unknown;
+  };
+  let useStore: UseBoundStore<StoreApi<State>>;
+  const fetch = vi.fn().mockResolvedValue(MOCK_PUPPY_PHOTOS);
 
   beforeEach(() => {
-    mockState = null;
-    mockUseStore = Object.assign(<T>(selector: (state: MockState) => T) => selector(mockState), {
-      getState: () => mockState,
-    });
+    fetch.mockClear();
+
+    ({ puppyPhotos, usePuppyPhotos } = createZQuery({
+      name: 'puppyPhotos',
+      fetch,
+      getUseStore: () => useStore,
+      get: state => state.puppyPhotos,
+      set: setter => {
+        const newState = setter(useStore.getState().puppyPhotos);
+        useStore.setState(state => ({
+          ...state,
+          puppyPhotos: newState,
+        }));
+      },
+    }));
+
+    useStore = create<State>()(() => ({
+      puppyPhotos,
+    }));
   });
 
   describe('the return value', () => {
     const result = createZQuery({
       name: 'puppyPhotos',
       fetch: () => Promise.resolve(null),
-      getUseStore: () => mockUseStore,
+      getUseStore: () => useStore,
       set: () => {
         /* no-op */
       },
@@ -40,18 +61,20 @@ describe('createZQuery()', () => {
       expect(result.useRevalidatePuppyPhotos).toBeTypeOf('function');
     });
 
-    it('includes the correct default state', () => {
-      expect(result.puppyPhotos).toEqual({
-        data: undefined,
-        error: undefined,
-        loading: false,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        revalidate: expect.any(Function),
-        _zQueryInternal: {
+    describe('the ZQuery slice', () => {
+      it('has the correct default state', () => {
+        expect(result.puppyPhotos).toEqual({
+          data: undefined,
+          error: undefined,
+          loading: false,
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          fetch: expect.any(Function),
-          referenceCount: 0,
-        },
+          revalidate: expect.any(Function),
+          _zQueryInternal: {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            fetch: expect.any(Function),
+            referenceCount: 0,
+          },
+        });
       });
     });
   });
