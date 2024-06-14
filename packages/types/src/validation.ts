@@ -5,7 +5,7 @@ import { z, ZodTypeAny } from 'zod';
 export const validateSchema = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore -- just checking
-  if (process.env['NODE_ENV'] === 'development') {
+  if (process?.env['NODE_ENV'] === 'development' || process?.env['NODE_ENV'] === 'test') {
     return schema.parse(data);
   } else {
     return data as T;
