@@ -49,7 +49,6 @@ export const NumeraireForm = ({
   };
 
   return (
-    <>
       <div className='flex flex-col gap-2'>
         <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
           <SelectList>
