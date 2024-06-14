@@ -35,9 +35,6 @@ export const NumeraireForm = ({
   const { chainId } = useChainIdQuery();
   const { selectedNumeraires, selectNumeraire, saveNumeraires, networkChainId } =
     useStore(useNumerairesSelector);
-
-  // 'chainId' from 'useChainIdQuery' is not available during onboarding,
-  // this forces you to use two sources to guarantee 'chainId' for both settings and onboarding
   const numeraires = useMemo(() => getNumeraireFromRegistry(chainId ?? networkChainId), [chainId]);
 
   const [loading, setLoading] = useState(false);
