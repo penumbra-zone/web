@@ -59,7 +59,7 @@ export const SendForm = () => {
   const [showWarning, setShowWarning] = useState(false);
 
   // Check if the user has native staking tokens
-  let stakingToken = hasStakingToken(assetBalances, feeAssetMetadata);
+  const stakingToken = hasStakingToken(assetBalances, feeAssetMetadata);
 
   useRefreshFee();
 
@@ -112,7 +112,7 @@ export const SendForm = () => {
         balances={assetBalances}
       />
       {showWarning && (
-        <div className='border border-yellow-500 bg-gray-800 text-yellow-500 p-4 rounded'>
+        <div className='rounded border border-yellow-500 bg-gray-800 p-4 text-yellow-500'>
           <strong>Privacy Warning:</strong>
           <span className='block'>
             Using non-native tokens for transaction fees may pose a privacy risk. It is recommended

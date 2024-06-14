@@ -144,7 +144,7 @@ export interface IndexedDbInterface {
 
   hasStakingAssetBalance(assetId: AssetId): Promise<boolean>;
 
-  fetchStakingTokenId(): Promise<AssetId>;
+  fetchStakingTokenId(): AssetId;
 }
 
 export interface PenumbraDb extends DBSchema {

@@ -796,7 +796,7 @@ export class IndexedDb implements IndexedDbInterface {
     };
   }
 
-  async fetchStakingTokenId(): Promise<AssetId> {
+  fetchStakingTokenId(): AssetId {
     const registryClient = new ChainRegistryClient();
     const registry = registryClient.get(this.chainId);
     const stakingToken = registry.stakingAssetId;
@@ -812,7 +812,7 @@ export class IndexedDb implements IndexedDbInterface {
     );
 
     // Iterate over the spendable UM notes, and accrue balance for unspent notes
-    let stakingTokenBalance = new Amount();
+    const stakingTokenBalance = new Amount();
     for (const note of spendableUMNotes) {
       const umNote = SpendableNoteRecord.fromJson(note);
       if (umNote.heightSpent === 0n) {

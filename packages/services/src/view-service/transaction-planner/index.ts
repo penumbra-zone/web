@@ -14,7 +14,7 @@ export const transactionPlanner: Impl['transactionPlanner'] = async (req, ctx) =
   const { indexedDb } = await services.getWalletServices();
 
   // Retrieve the staking token from asset registry
-  let stakingTokenId = await indexedDb.fetchStakingTokenId();
+  const stakingTokenId = indexedDb.fetchStakingTokenId();
 
   // Query IndexedDB directly to check for the existence of staking token
   const nativeToken = await indexedDb.hasStakingAssetBalance(stakingTokenId);

@@ -11,9 +11,9 @@ export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
   if (!txv.bodyView.transactionParameters?.fee?.amount) throw new Error('Missing fee amount');
 
   // Request the asset metadata
-  let chain_id = txv.bodyView.transactionParameters.chainId;
-  let asset_id = txv.bodyView.transactionParameters.fee.assetId!;
-  let exponent = getDisplayDenomExponent(getStakingTokenMetaData(chain_id, asset_id));
+  const chain_id = txv.bodyView.transactionParameters.chainId;
+  const asset_id = txv.bodyView.transactionParameters.fee.assetId;
+  const exponent = getDisplayDenomExponent(getStakingTokenMetaData(chain_id, asset_id));
 
   const fee = (
     Number(joinLoHiAmount(txv.bodyView.transactionParameters.fee.amount)) /

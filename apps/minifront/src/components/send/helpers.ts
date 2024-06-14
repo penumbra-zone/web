@@ -39,11 +39,10 @@ export const hasStakingToken = (
 ): boolean => {
   let stakingToken = false;
   for (const asset of assetBalances) {
-    if (asset.balanceView?.valueView.case == 'knownAssetId') {
-      if (
-        uint8ArrayToBase64(asset?.balanceView?.valueView.value.metadata?.penumbraAssetId?.inner!) ==
-        uint8ArrayToBase64(feeAssetMetadata.penumbraAssetId?.inner!)
-      ) {
+    if (asset.balanceView?.valueView.case === 'knownAssetId') {
+      const assetId = asset.balanceView.valueView.value.metadata?.penumbraAssetId?.inner;
+      const feeAssetId = feeAssetMetadata.penumbraAssetId?.inner;
+      if (assetId && feeAssetId && uint8ArrayToBase64(assetId) === uint8ArrayToBase64(feeAssetId)) {
         stakingToken = true;
       }
     }

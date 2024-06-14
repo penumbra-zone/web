@@ -1,5 +1,4 @@
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { Ics20Withdrawal } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/ibc/v1/ibc_pb';
 import {
   TransactionPlannerRequest,
   TransactionPlannerRequest_ActionDutchAuctionEnd,
@@ -10,6 +9,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 
 export const extractAltFee = (request: TransactionPlannerRequest): AssetId | undefined => {
+  // Note: expand the possible types as we expand our support to more actions in the future.
   const fields = [
     { name: 'outputs', value: request.outputs },
     { name: 'swaps', value: request.swaps },
@@ -25,15 +25,7 @@ export const extractAltFee = (request: TransactionPlannerRequest): AssetId | und
     return undefined;
   }
 
-  // Note: expand the possible types as we expand our support to more actions in the future.
-  type PossibleTypes =
-    | TransactionPlannerRequest_Output
-    | TransactionPlannerRequest_Swap
-    | TransactionPlannerRequest_ActionDutchAuctionSchedule
-    | TransactionPlannerRequest_ActionDutchAuctionEnd
-    | TransactionPlannerRequest_ActionDutchAuctionWithdraw;
-
-  const action = nonEmptyField.value[0] as PossibleTypes;
+  const action = nonEmptyField.value[0]!;
 
   switch (nonEmptyField.name) {
     case 'outputs':
