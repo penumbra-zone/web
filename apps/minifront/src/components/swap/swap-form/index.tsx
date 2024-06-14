@@ -9,6 +9,7 @@ import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { SimulateSwap } from './simulate-swap';
 import { LayoutGroup } from 'framer-motion';
 import { useId } from 'react';
+import { submitButtonDisabledSelector } from '../../../state/swap';
 
 const swapFormSelector = (state: AllSlices) => ({
   onSubmit:
@@ -16,7 +17,7 @@ const swapFormSelector = (state: AllSlices) => ({
       ? state.swap.instantSwap.initiateSwapTx
       : state.swap.dutchAuction.onSubmit,
   submitButtonLabel: state.swap.duration === 'instant' ? 'Swap' : 'Start auctions',
-  submitButtonDisabled: state.swap.dutchAuction.txInProgress || !state.swap.amount,
+  submitButtonDisabled: submitButtonDisabledSelector(state),
   duration: state.swap.duration,
 });
 

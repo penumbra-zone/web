@@ -1,15 +1,16 @@
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { SliceCreator, useStore } from '../..';
+import { AllSlices, SliceCreator, useStore } from '../..';
 import { planBuildBroadcast } from '../../helpers';
 import { assembleScheduleRequest } from './assemble-schedule-request';
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { sendSimulateTradeRequest } from '../helpers';
-import { fromBaseUnitAmount, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
+import { fromBaseUnitAmount, isZero, multiplyAmountByNumber } from '@penumbra-zone/types/amount';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 import { AuctionInfo, getAuctionInfos } from '../../../fetchers/auction-infos';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 
 /**
  * Multipliers to use with the output of the swap simulation, to determine
@@ -17,6 +18,13 @@ import { AuctionInfo, getAuctionInfos } from '../../../fetchers/auction-infos';
  */
 const MAX_OUTPUT_ESTIMATE_MULTIPLIER = 2;
 const MIN_OUTPUT_ESTIMATE_MULTIPLIER = 0.5;
+
+/**
+ * Penumbra core's built-in limit for an auction's output.
+ *
+ * @see https://github.com/penumbra-zone/web/issues/1224#issuecomment-2164419140
+ */
+export const OUTPUT_LIMIT = 2 ** 52 - 1;
 
 export type Filter = 'active' | 'upcoming' | 'all';
 
@@ -70,17 +78,44 @@ const INITIAL_STATE: State = {
   estimatedOutput: undefined,
 };
 
+const getSmallestPossibleAmountAboveZero = (metadata?: Metadata): number =>
+  metadata ? 1 / 10 ** getDisplayDenomExponent(metadata) : 0;
+
 export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (set, get) => ({
   ...INITIAL_STATE,
   setMinOutput: minOutput => {
     set(({ swap }) => {
-      swap.dutchAuction.minOutput = minOutput;
+      const minMinOutput = getSmallestPossibleAmountAboveZero(get().swap.assetOut);
+      const exponent = getDisplayDenomExponent.optional()(get().swap.assetOut) ?? 0;
+      const minOutputAsBaseUnit = Number(minOutput) * 10 ** exponent;
+      const outputLimitAsDisplayUnit = (OUTPUT_LIMIT / 10 ** exponent).toString();
+
+      if (minOutputAsBaseUnit > OUTPUT_LIMIT) {
+        swap.dutchAuction.minOutput = outputLimitAsDisplayUnit;
+      } else if (Number(minOutput) > 0) {
+        swap.dutchAuction.minOutput = minOutput;
+      } else {
+        swap.dutchAuction.minOutput = minMinOutput.toString();
+      }
+
       swap.dutchAuction.estimatedOutput = undefined;
     });
   },
   setMaxOutput: maxOutput => {
     set(({ swap }) => {
-      swap.dutchAuction.maxOutput = maxOutput;
+      const minMaxOutput = getSmallestPossibleAmountAboveZero(get().swap.assetOut);
+      const exponent = getDisplayDenomExponent.optional()(get().swap.assetOut) ?? 0;
+      const maxOutputAsBaseUnit = Number(maxOutput) * 10 ** exponent;
+      const outputLimitAsDisplayUnit = (OUTPUT_LIMIT / 10 ** exponent).toString();
+
+      if (maxOutputAsBaseUnit > OUTPUT_LIMIT) {
+        swap.dutchAuction.maxOutput = outputLimitAsDisplayUnit;
+      } else if (Number(maxOutput) > 0) {
+        swap.dutchAuction.maxOutput = maxOutput;
+      } else {
+        swap.dutchAuction.maxOutput = minMaxOutput.toString();
+      }
+
       swap.dutchAuction.estimatedOutput = undefined;
     });
   },
@@ -155,16 +190,21 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
         const exponent = getDisplayDenomExponent(assetOut);
 
         set(({ swap }) => {
-          swap.dutchAuction.maxOutput = fromBaseUnitAmount(
-            multiplyAmountByNumber(estimatedOutputAmount, MAX_OUTPUT_ESTIMATE_MULTIPLIER),
-            exponent,
-          ).toString();
-          swap.dutchAuction.minOutput = fromBaseUnitAmount(
-            multiplyAmountByNumber(estimatedOutputAmount, MIN_OUTPUT_ESTIMATE_MULTIPLIER),
-            exponent,
-          ).toString();
           swap.dutchAuction.estimatedOutput = estimatedOutputAmount;
         });
+
+        if (!isZero(estimatedOutputAmount)) {
+          set(({ swap }) => {
+            swap.dutchAuction.maxOutput = fromBaseUnitAmount(
+              multiplyAmountByNumber(estimatedOutputAmount, MAX_OUTPUT_ESTIMATE_MULTIPLIER),
+              exponent,
+            ).toString();
+            swap.dutchAuction.minOutput = fromBaseUnitAmount(
+              multiplyAmountByNumber(estimatedOutputAmount, MIN_OUTPUT_ESTIMATE_MULTIPLIER),
+              exponent,
+            ).toString();
+          });
+        }
       }
     } catch (e) {
       errorToast(e, 'Error estimating swap').render();
@@ -175,3 +215,8 @@ export const createDutchAuctionSlice = (): SliceCreator<DutchAuctionSlice> => (s
     }
   },
 });
+
+export const dutchAuctionSubmitButtonDisabledSelector = (state: AllSlices) =>
+  state.swap.duration !== 'instant' &&
+  (Number(state.swap.dutchAuction.minOutput) >= Number(state.swap.dutchAuction.maxOutput) ||
+    state.swap.dutchAuction.txInProgress);

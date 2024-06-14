@@ -19,6 +19,7 @@ const MOCK_AUCTION_ID_1 = new AuctionId({ inner: new Uint8Array([1]) });
 const MOCK_AUCTION_INFO_1: AuctionInfo = {
   auction: MOCK_AUCTION_1,
   id: MOCK_AUCTION_ID_1,
+  localSeqNum: 0n,
 };
 
 const MOCK_AUCTION_2 = new DutchAuction({
@@ -34,6 +35,7 @@ const MOCK_AUCTION_ID_2 = new AuctionId({ inner: new Uint8Array([2]) });
 const MOCK_AUCTION_INFO_2: AuctionInfo = {
   auction: MOCK_AUCTION_2,
   id: MOCK_AUCTION_ID_2,
+  localSeqNum: 0n,
 };
 
 const MOCK_AUCTION_3 = new DutchAuction({
@@ -49,6 +51,7 @@ const MOCK_AUCTION_ID_3 = new AuctionId({ inner: new Uint8Array([3]) });
 const MOCK_AUCTION_INFO_3: AuctionInfo = {
   auction: MOCK_AUCTION_3,
   id: MOCK_AUCTION_ID_3,
+  localSeqNum: 0n,
 };
 
 const MOCK_AUCTION_4 = new DutchAuction({
@@ -64,6 +67,7 @@ const MOCK_AUCTION_ID_4 = new AuctionId({ inner: new Uint8Array([4]) });
 const MOCK_AUCTION_INFO_4: AuctionInfo = {
   auction: MOCK_AUCTION_4,
   id: MOCK_AUCTION_ID_4,
+  localSeqNum: 0n,
 };
 
 const MOCK_FULL_SYNC_HEIGHT = 15n;

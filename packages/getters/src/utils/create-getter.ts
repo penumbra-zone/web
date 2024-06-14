@@ -15,7 +15,14 @@ export const createGetter = <SourceType, TargetType, Optional extends boolean = 
   };
 
   getter.optional = () =>
-    createGetter<SourceType, TargetType, true>(value => getterFunction(value), true);
+    createGetter<SourceType, TargetType, true>(value => {
+      try {
+        return getterFunction(value);
+      } catch (e) {
+        if (e instanceof GetterMissingValueError) return undefined;
+        else throw e;
+      }
+    }, true);
 
   getter.pipe = <PipedTargetType = unknown>(
     next: Getter<TargetType, PipedTargetType, Optional>,
