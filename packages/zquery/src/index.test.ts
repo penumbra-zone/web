@@ -57,7 +57,7 @@ describe('createZQuery()', () => {
         });
       });
 
-      describe('when `fetch` streams responses', () => {
+      describe('the reducers returned by the `stream()` function', () => {
         /**
          * A "remote control" that we'll use to control the streaming of responses
          * in the mock fetch function.
