@@ -57,7 +57,7 @@ interface QueryClientProps {
   querier: RootQuerier;
   indexedDb: IndexedDbInterface;
   viewServer: ViewServerInterface;
-  numeraires: Metadata[];
+  numeraires: AssetId[];
   stakingTokenMetadata: Metadata;
 }
 
@@ -76,7 +76,7 @@ export class BlockProcessor implements BlockProcessorInterface {
   private readonly indexedDb: IndexedDbInterface;
   private readonly viewServer: ViewServerInterface;
   private readonly abortController: AbortController = new AbortController();
-  private readonly numeraires: Metadata[];
+  private numeraires: AssetId[];
   private readonly stakingTokenMetadata: Metadata;
   private syncPromise: Promise<void> | undefined;
 
@@ -115,6 +115,10 @@ export class BlockProcessor implements BlockProcessorInterface {
     );
 
   public stop = (r: string) => this.abortController.abort(`Sync stop ${r}`);
+
+  setNumeraires(numeraires: AssetId[]): void {
+    this.numeraires = numeraires;
+  }
 
   private async syncAndStore() {
     // start at next block, or genesis if height is undefined
