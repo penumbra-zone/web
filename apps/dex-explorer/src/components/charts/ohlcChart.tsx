@@ -22,6 +22,7 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
   const [chartData, setChartData] = useState<
     [string, number, number, number, number][]
   >([]); // [[date, open, close, low, high]]
+  const [volumeData, setVolumeData] = useState<[string, number][]>([]);
 
   // TODO: Decide how to set the start block and limit
   const startBlock = 0;
@@ -151,10 +152,13 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
           (ohlc["close"] as number).toFixed(6),
           (ohlc["low"] as number).toFixed(6),
           (ohlc["high"] as number).toFixed(6),
+          // Volume
+          (ohlc["swapVolume"] as number).toFixed(2),
         ];
       })
       .filter((item) => item !== null) as [
       string,
+      number,
       number,
       number,
       number,
@@ -163,23 +167,80 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
 
     console.log("Prepared data: ", preparedData);
 
-    setChartData(preparedData);
+    // Divide volume by decimals of the quote token depending on the direction of the canldestick data
+    const volumePreparedData = preparedData.map((item) => [
+      item[0],
+      item[5] / 10 ** asset2Token.decimals,
+    ]) as [string, number][];
+
+    setChartData(
+      preparedData.map((item) => [item[0], item[1], item[2], item[3], item[4]])
+    );
+    setVolumeData(volumePreparedData);
 
     setIsLoading(false);
   }, [ohlcData, blockToTimestamp, isOHLCDataLoading, isTimestampsLoading]);
 
   const options = {
-    xAxis: {
-      type: "category",
-      data: chartData.map((item) => item[0]),
-      scale: true,
-      boundaryGap: true, // Add this to ensure the zoom works correctly
-    },
-    yAxis: {
-      scale: true,
-    },
+    xAxis: [
+      {
+        type: "category",
+        data: chartData.map((item) => item[0]),
+        scale: true,
+        boundaryGap: true,
+        axisLine: { onZero: false },
+        splitLine: { show: false },
+        splitNumber: 20,
+        axisLabel: {
+          formatter: function (value: string) {
+            return value.replace(/ /g, "\n"); // Replace space with a newline
+          },
+        },
+        min: "dataMin",
+        max: "dataMax",
+      },
+      {
+        type: "category",
+        gridIndex: 1,
+        data: volumeData.map((item) => item[0]),
+        axisLine: { onZero: false },
+        axisTick: { show: false },
+        splitLine: { show: false },
+        axisLabel: { show: false },
+        min: "dataMin",
+        max: "dataMax",
+      },
+    ],
+    yAxis: [
+      {
+        scale: true,
+      },
+      {
+        scale: true,
+        gridIndex: 1,
+        splitNumber: 2,
+        axisLabel: { show: false },
+        axisLine: { show: false },
+        axisTick: { show: false },
+        splitLine: { show: false },
+      },
+    ],
+    grid: [
+      {
+        left: "10%",
+        right: "8%",
+        height: "60%",
+      },
+      {
+        left: "10%",
+        right: "8%",
+        top: "76%",
+        height: "15%",
+      },
+    ],
     series: [
       {
+        name: "OHLC",
         type: "candlestick",
         data: chartData.map((item) => [item[1], item[2], item[3], item[4]]),
         itemStyle: {
@@ -189,6 +250,21 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
           borderColor0: "rgba(255, 73, 108, 1)", // Neon Red
         },
       },
+      {
+        name: "Volume",
+        type: "bar",
+        xAxisIndex: 1,
+        yAxisIndex: 1,
+        data: volumeData.map((item) => item[1]),
+        itemStyle: {
+          color: (params: any) => {
+            const ohlc = chartData[params.dataIndex];
+            return ohlc[1] > ohlc[2]
+              ? "rgba(255, 73, 108, 1)"
+              : "rgba(51, 255, 87, 1)";
+          },
+        },
+      },
     ],
     tooltip: {
       trigger: "axis",
@@ -196,28 +272,43 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
         type: "cross",
       },
       formatter: (params: any) => {
-        const [date, open, close, low, high] = params[0].data;
-        return `
-        <strong>Open:</strong> ${open}<br/>
-        <strong>Close:</strong> ${close}<br/>
-        <strong>Low:</strong> ${low}<br/>
-        <strong>High:</strong> ${high}<br/>
-      `;
+        let tooltipText = "";
+        params.forEach((param: any) => {
+          if (param.seriesType === "candlestick") {
+            const [date, open, close, low, high] = param.data;
+            tooltipText += `
+            <strong>${params[0].name}</strong><br/>
+            <strong>Open:</strong> ${open}<br/>
+            <strong>Close:</strong> ${close}<br/>
+            <strong>Low:</strong> ${low}<br/>
+            <strong>High:</strong> ${high}<br/>
+          `;
+          } else if (
+            param.seriesType === "bar" &&
+            param.seriesName === "Volume"
+          ) {
+            tooltipText += `<strong>${params[0].name}</strong><br/>
+            <strong>Volume:</strong> ${param.data}<br/>`;
+          }
+        });
+        return tooltipText;
       },
     },
     dataZoom: [
       {
         type: "inside",
-        xAxisIndex: [0],
+        xAxisIndex: [0, 1],
         start: 0,
         end: 100,
       },
       {
         type: "slider",
-        xAxisIndex: [0],
+        xAxisIndex: [0, 1],
         start: 0,
         end: 100,
         backgroundColor: "rgba(0, 0, 0, 0)", // Transparent background
+        showDataShadow: true, //  show data shadow
+        showDetail: true, //  show detailed information
         dataBackground: {
           areaStyle: {
             color: "rgba(255, 255, 255, 0.1)", // Light grey background
@@ -228,6 +319,7 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
         },
         fillerColor: "rgba(255, 255, 255, 0.2)", // Slightly brighter fill color
         borderColor: "rgba(255, 255, 255, 0.2)", // Light grey border
+        //handleIcon:"M8.2,13.4c0,0.6-0.4,1-1,1H1.8c-0.6,0-1-0.4-1-1v-6.8c0-0.6,0.4-1,1-1h5.4c0.6,0,1,0.4,1,1V13.4z", // Handle icon
         handleSize: "100%", // Size of the handle
         handleStyle: {
           color: "rgba(255, 255, 255, 0.6)", // Light grey handle
