@@ -1,6 +1,10 @@
 import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { Ics20Withdrawal } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/ibc/v1/ibc_pb';
 import {
   TransactionPlannerRequest,
+  TransactionPlannerRequest_ActionDutchAuctionEnd,
+  TransactionPlannerRequest_ActionDutchAuctionSchedule,
+  TransactionPlannerRequest_ActionDutchAuctionWithdraw,
   TransactionPlannerRequest_Output,
   TransactionPlannerRequest_Swap,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
@@ -9,32 +13,45 @@ export const extractAltFee = (request: TransactionPlannerRequest): AssetId | und
   const fields = [
     { name: 'outputs', value: request.outputs },
     { name: 'swaps', value: request.swaps },
-    { name: 'swapClaims', value: request.swapClaims },
-    { name: 'delegations', value: request.delegations },
-    { name: 'undelegations', value: request.undelegations },
-    { name: 'undelegationClaims', value: request.undelegationClaims },
-    { name: 'ibcRelayActions', value: request.ibcRelayActions },
-    { name: 'ics20Withdrawals', value: request.ics20Withdrawals },
-    { name: 'positionOpens', value: request.positionOpens },
-    { name: 'positionCloses', value: request.positionCloses },
-    { name: 'positionWithdraws', value: request.positionWithdraws },
     { name: 'dutchAuctionScheduleActions', value: request.dutchAuctionScheduleActions },
+    { name: 'dutchAuctionEndActions', value: request.dutchAuctionEndActions },
+    { name: 'dutchAuctionWithdrawActions', value: request.dutchAuctionWithdrawActions },
   ];
 
   const nonEmptyField = fields.find(field => field.value.length > 0);
 
   if (!nonEmptyField) {
-    console.warn('No non-empty field found in the request');
+    console.warn('No non-empty field found in the request.');
     return undefined;
   }
 
-  type PossibleTypes = TransactionPlannerRequest_Output | TransactionPlannerRequest_Swap;
+  // Note: expand the possible types as we expand our support to more actions in the future.
+  type PossibleTypes =
+    | TransactionPlannerRequest_Output
+    | TransactionPlannerRequest_Swap
+    | TransactionPlannerRequest_ActionDutchAuctionSchedule
+    | TransactionPlannerRequest_ActionDutchAuctionEnd
+    | TransactionPlannerRequest_ActionDutchAuctionWithdraw;
 
   const action = nonEmptyField.value[0] as PossibleTypes;
 
-  if (!action.value?.assetId) {
-    return undefined;
+  switch (nonEmptyField.name) {
+    case 'outputs':
+      return (action as TransactionPlannerRequest_Output).value?.assetId;
+    case 'swaps':
+      return (action as TransactionPlannerRequest_Swap).value?.assetId;
+    case 'dutchAuctionScheduleActions':
+      return (action as TransactionPlannerRequest_ActionDutchAuctionSchedule).description?.outputId;
+    case 'dutchAuctionEndActions':
+      return new AssetId({
+        inner: (action as TransactionPlannerRequest_ActionDutchAuctionEnd).auctionId?.inner,
+      });
+    case 'dutchAuctionWithdrawActions':
+      return new AssetId({
+        inner: (action as TransactionPlannerRequest_ActionDutchAuctionWithdraw).auctionId?.inner,
+      });
+    default:
+      console.warn('Unsupported action type.');
+      return undefined;
   }
-
-  return action.value.assetId;
 };
