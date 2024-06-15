@@ -6,15 +6,13 @@ import { Stat } from './stat';
 import { AllSlices } from '../../../../state';
 import { UnbondingTokens } from './unbonding-tokens';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
-import { useLoaderData } from 'react-router-dom';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { zeroValueView } from '../../../../utils/zero-value-view';
+import { useStakingTokenMetadata } from '../../../../state/shared';
+import { useStakingTokensAndFilter } from '../../../../state/staking';
 
 const headerSelector = (state: AllSlices) => ({
   account: state.staking.account,
   setAccount: state.staking.setAccount,
-  accountSwitcherFilter: state.staking.accountSwitcherFilter,
-  unstakedTokensByAccount: state.staking.unstakedTokensByAccount,
   unbondingTokensByAccount: state.staking.unbondingTokensByAccount,
   undelegateClaim: state.staking.undelegateClaim,
 });
@@ -24,18 +22,14 @@ const headerSelector = (state: AllSlices) => ({
  * various token types related to staking.
  */
 export const Header = () => {
-  const {
-    account,
-    setAccount,
-    accountSwitcherFilter,
-    unstakedTokensByAccount,
-    unbondingTokensByAccount,
-    undelegateClaim,
-  } = useStoreShallow(headerSelector);
-  const unstakedTokens = unstakedTokensByAccount.get(account);
+  const { account, setAccount, unbondingTokensByAccount, undelegateClaim } =
+    useStoreShallow(headerSelector);
+  const stakingTokensAndFilter = useStakingTokensAndFilter();
+  const { accountSwitcherFilter, unstakedTokensByAccount } = stakingTokensAndFilter.data ?? {};
+  const unstakedTokens = unstakedTokensByAccount?.get(account);
   const unbondingTokens = unbondingTokensByAccount.get(account);
+  const stakingTokenMetadata = useStakingTokenMetadata();
 
-  const stakingTokenMetadata = useLoaderData() as Metadata;
   return (
     <Card gradient>
       <CardContent>
@@ -44,7 +38,11 @@ export const Header = () => {
 
           <div className='flex items-start justify-center gap-8'>
             <Stat label='Available to delegate'>
-              <ValueViewComponent view={unstakedTokens ?? zeroValueView(stakingTokenMetadata)} />
+              {(unstakedTokens ?? stakingTokenMetadata.data) && (
+                <ValueViewComponent
+                  view={unstakedTokens ?? zeroValueView(stakingTokenMetadata.data)}
+                />
+              )}
             </Stat>
 
             <Stat label='Unbonding amount'>
@@ -52,7 +50,7 @@ export const Header = () => {
                 helpText='Total amount of UM you will receive, assuming no slashing, when you claim your unbonding tokens that are currently still in their unbonding period.'
                 tokens={unbondingTokens?.notYetClaimable.tokens}
                 total={unbondingTokens?.notYetClaimable.total}
-                stakingTokenMetadata={stakingTokenMetadata}
+                stakingTokenMetadata={stakingTokenMetadata.data}
               />
             </Stat>
 
@@ -61,7 +59,7 @@ export const Header = () => {
                 helpText='Total amount of UM you will receive, assuming no slashing, when you claim your unbonding tokens that are currently eligible for claiming.'
                 tokens={unbondingTokens?.claimable.tokens}
                 total={unbondingTokens?.claimable.total}
-                stakingTokenMetadata={stakingTokenMetadata}
+                stakingTokenMetadata={stakingTokenMetadata.data}
               >
                 {!!unbondingTokens?.claimable.tokens.length && (
                   <Button

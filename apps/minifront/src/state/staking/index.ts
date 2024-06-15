@@ -1,5 +1,5 @@
 import { ValidatorInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { SliceCreator } from '..';
+import { SliceCreator, useStore } from '..';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
 import {
   Metadata,
@@ -39,6 +39,7 @@ import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse }
 import { getStakingTokenMetadata } from '../../fetchers/registry';
 import { zeroValueView } from '../../utils/zero-value-view';
 import { assetPatterns } from '@penumbra-zone/types/assets';
+import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
 
 interface UnbondingTokensForAccount {
   claimable: {
@@ -66,20 +67,8 @@ export interface StakingSlice {
   account: number;
   /** Switch to view a different account. */
   setAccount: (account: number) => void;
-  /**
-   * All accounts for which staking is relevant, to be passed to
-   * `<AccountSwitcher />` as the `filter` prop. This includes accounts with:
-   * - delegation tokens
-   * - unbonding tokens
-   * - staking (UM) tokens (since they can be delegated)
-   */
-  accountSwitcherFilter: number[];
   /** A map of numeric account indexes to delegations for that account. */
   delegationsByAccount: Map<number, ValueView[]>;
-  /**
-   * A map of numeric account indexes to unstaked (UM) tokens for that account.
-   */
-  unstakedTokensByAccount: Map<number, ValueView | undefined>;
   /**
    * A map of numeric account indexes to information about unbonding tokens for
    * that account.
@@ -110,12 +99,6 @@ export interface StakingSlice {
    * Build and submit Undelegate Claim transaction(s).
    */
   undelegateClaim: () => Promise<void>;
-  /**
-   * Loads all the user's balances and reduces them to:
-   * 1. The `unstakedTokensByAccount` property on the state.
-   * 2. The `accountSwitcherFilter` property on the state.
-   */
-  loadAndReduceBalances: () => Promise<void>;
   loading: boolean;
   error: unknown;
   votingPowerByValidatorInfo: Record<string, VotingPowerAsIntegerPercentage>;
@@ -146,6 +129,20 @@ export interface StakingSlice {
    * delegate or undelegate button for.
    */
   validatorInfo?: ValidatorInfo;
+  stakingTokensAndFilter: ZQueryState<{
+    /**
+     * A map of numeric account indexes to unstaked (UM) tokens for that account.
+     */
+    unstakedTokensByAccount: Map<number, ValueView | undefined>;
+    /**
+     * All accounts for which staking is relevant, to be passed to
+     * `<AccountSwitcher />` as the `filter` prop. This includes accounts with:
+     * - delegation tokens
+     * - unbonding tokens
+     * - staking (UM) tokens (since they can be delegated)
+     */
+    accountSwitcherFilter: number[];
+  }>;
 }
 
 /**
@@ -169,6 +166,40 @@ const byBalanceAndVotingPower = (valueViewA: ValueView, valueViewB: ValueView): 
   return byVotingPower;
 };
 
+export const { stakingTokensAndFilter, useStakingTokensAndFilter } = createZQuery({
+  name: 'stakingTokensAndFilter',
+  fetch: async () => {
+    const balancesByAccount = await getBalancesByAccount();
+
+    const stakingTokenMetadata = await getStakingTokenMetadata();
+
+    // It's slightly inefficient to reduce over an array twice, rather than
+    // combining the reducers into one. But this is much more readable; and
+    // anyway, `balancesByAccount` will be a single-item array for the vast
+    // majority of users.
+    const unstakedTokensByAccount = balancesByAccount.reduce(
+      (acc: Map<number, ValueView>, cur: BalancesByAccount) =>
+        toUnstakedTokensByAccount(acc, cur, stakingTokenMetadata),
+      new Map(),
+    );
+    const accountSwitcherFilter = balancesByAccount.reduce(
+      (acc: number[], cur: BalancesByAccount) =>
+        toAccountSwitcherFilter(acc, cur, stakingTokenMetadata),
+      [],
+    );
+
+    return { unstakedTokensByAccount, accountSwitcherFilter };
+  },
+  getUseStore: () => useStore,
+  get: state => state.staking.stakingTokensAndFilter,
+  set: setter => {
+    const newState = setter(useStore.getState().staking.stakingTokensAndFilter);
+    useStore.setState(state => {
+      state.staking.stakingTokensAndFilter = newState;
+    });
+  },
+});
+
 /**
  * Tuned to give optimal performance when throttling the rendering delegation
  * tokens.
@@ -176,8 +207,8 @@ const byBalanceAndVotingPower = (valueViewA: ValueView, valueViewB: ValueView): 
 export const THROTTLE_MS = 200;
 
 export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) => ({
+  stakingTokensAndFilter,
   account: 0,
-  accountSwitcherFilter: [],
   setAccount: (account: number) =>
     set(state => {
       state.staking.account = account;
@@ -199,7 +230,6 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       state.staking.amount = amount;
     }),
   delegationsByAccount: new Map(),
-  unstakedTokensByAccount: new Map(),
   unbondingTokensByAccount: new Map(),
   loadDelegationsForCurrentAccount: async () => {
     const existingAbortController = get().staking.loadDelegationsForCurrentAccountAbortController;
@@ -302,30 +332,6 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       state.staking.unbondingTokensByAccount.set(addressIndex.account, unbondingTokensForAccount);
     });
   },
-  loadAndReduceBalances: async () => {
-    const balancesByAccount = await getBalancesByAccount();
-
-    const stakingTokenMetadata = await getStakingTokenMetadata();
-
-    // It's slightly inefficient to reduce over an array twice, rather than
-    // combining the reducers into one. But this is much more readable; and
-    // anyway, `balancesByAccount` will be a single-item array for the vast
-    // majority of users.
-    const unstakedTokensByAccount = balancesByAccount.reduce(
-      (acc: Map<number, ValueView>, cur: BalancesByAccount) =>
-        toUnstakedTokensByAccount(acc, cur, stakingTokenMetadata),
-      new Map(),
-    );
-    const accountSwitcherFilter = balancesByAccount.reduce(
-      (acc: number[], cur: BalancesByAccount) =>
-        toAccountSwitcherFilter(acc, cur, stakingTokenMetadata),
-      [],
-    );
-    set(state => {
-      state.staking.unstakedTokensByAccount = unstakedTokensByAccount;
-      state.staking.accountSwitcherFilter = accountSwitcherFilter;
-    });
-  },
   delegate: async () => {
     try {
       const stakingTokenMetadata = await getStakingTokenMetadata();
@@ -344,7 +350,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       // Reload delegation tokens and unstaked tokens to reflect their updated
       // balances.
       void get().staking.loadDelegationsForCurrentAccount();
-      void get().staking.loadAndReduceBalances();
+      get().staking.stakingTokensAndFilter.revalidate();
     } finally {
       set(state => {
         state.staking.amount = '';
@@ -367,7 +373,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
       // Reload delegation tokens and unstaked tokens to reflect their updated
       // balances.
       void get().staking.loadDelegationsForCurrentAccount();
-      void get().staking.loadAndReduceBalances();
+      get().staking.stakingTokensAndFilter.revalidate();
       void get().staking.loadUnbondingTokensForCurrentAccount();
     } finally {
       set(state => {
@@ -395,7 +401,7 @@ export const createStakingSlice = (): SliceCreator<StakingSlice> => (set, get) =
 
       // Reload unbonding tokens and unstaked tokens to reflect their updated
       // balances.
-      void get().staking.loadAndReduceBalances();
+      get().staking.stakingTokensAndFilter.revalidate();
       void get().staking.loadUnbondingTokensForCurrentAccount();
     } finally {
       set(state => {

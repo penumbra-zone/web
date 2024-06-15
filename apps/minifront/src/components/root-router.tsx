@@ -11,7 +11,7 @@ import { Receive } from './send/receive';
 import { ErrorBoundary } from './shared/error-boundary';
 import { SwapLayout } from './swap/layout';
 import { SwapLoader } from './swap/swap-loader';
-import { StakingLayout, StakingLoader } from './staking/layout';
+import { StakingLayout } from './staking/layout';
 import { IbcLoader } from './ibc/ibc-loader';
 import { IbcLayout } from './ibc/layout';
 import { abortLoader } from '../abort-loader';
@@ -67,7 +67,7 @@ export const rootRouter: Router = createHashRouter([
       },
       {
         path: PagePath.STAKING,
-        loader: StakingLoader,
+        loader: abortLoader,
         element: <StakingLayout />,
       },
       {

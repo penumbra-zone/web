@@ -4,7 +4,6 @@ import { useStore } from '../../../state';
 import {
   sendSelector,
   sendValidationErrors,
-  useStakingTokenMetadata,
   useTransferableBalancesResponses,
 } from '../../../state/send';
 import { InputBlock } from '../../shared/input-block';
@@ -14,6 +13,7 @@ import InputToken from '../../shared/input-token';
 import { useRefreshFee } from './use-refresh-fee';
 import { GasFee } from '../../shared/gas-fee';
 import { hasStakingToken } from '../../../fetchers/staking-token';
+import { useStakingTokenMetadata } from '../../../state/shared';
 
 export const SendForm = () => {
   const stakingTokenMetadata = useStakingTokenMetadata();

@@ -1,22 +1,10 @@
 import { useEffect } from 'react';
 import { AllSlices, useStore } from '../../state';
-import { abortLoader } from '../../abort-loader';
 import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui/components/ui/card';
 import { Header } from './account/header';
 import { Delegations } from './account/delegations';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { useStoreShallow } from '../../utils/use-store-shallow';
 import { RestrictMaxWidth } from '../shared/restrict-max-width';
-import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { getStakingTokenMetadata } from '../../fetchers/registry';
-
-export const StakingLoader: LoaderFunction = async (): Promise<Metadata> => {
-  await abortLoader();
-  // Await to avoid screen flicker.
-  await useStore.getState().staking.loadAndReduceBalances();
-
-  return await getStakingTokenMetadata();
-};
 
 const stakingLayoutSelector = (state: AllSlices) => ({
   account: state.staking.account,
@@ -25,7 +13,6 @@ const stakingLayoutSelector = (state: AllSlices) => ({
 });
 
 export const StakingLayout = () => {
-  const stakingTokenMetadata = useLoaderData() as Metadata;
   const { account, loadDelegationsForCurrentAccount, loadUnbondingTokensForCurrentAccount } =
     useStoreShallow(stakingLayoutSelector);
 
@@ -44,7 +31,7 @@ export const StakingLayout = () => {
             <CardTitle>Delegation tokens</CardTitle>
           </CardHeader>
           <CardContent>
-            <Delegations stakingTokenMetadata={stakingTokenMetadata} />
+            <Delegations />
           </CardContent>
         </Card>
       </div>

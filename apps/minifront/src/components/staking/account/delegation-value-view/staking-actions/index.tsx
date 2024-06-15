@@ -8,8 +8,10 @@ import { useStoreShallow } from '../../../../../utils/use-store-shallow';
 import { getValidator } from '@penumbra-zone/getters/validator-info';
 import { getAmount } from '@penumbra-zone/getters/value-view';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
+import { useStakingTokensAndFilter } from '../../../../../state/staking';
 
 const stakingActionsSelector = (state: AllSlices) => ({
+  account: state.staking.account,
   action: state.staking.action,
   amount: state.staking.amount,
   delegate: state.staking.delegate,
@@ -27,7 +29,6 @@ const stakingActionsSelector = (state: AllSlices) => ({
 export const StakingActions = ({
   validatorInfo,
   delegationTokens,
-  unstakedTokens,
 }: {
   /** The validator that these actions will apply to. */
   validatorInfo: ValidatorInfo;
@@ -36,18 +37,21 @@ export const StakingActions = ({
    * to show the user how many tokens they have available to undelegate.
    */
   delegationTokens: ValueView;
-  /**
-   * A `ValueView` representing the address's balance of staking (UM) tokens.
-   * Used to show the user how many tokens they have available to delegate.
-   */
-  unstakedTokens?: ValueView;
 }) => {
   const state = useStoreShallow(stakingActionsSelector);
   const validator = getValidator(validatorInfo);
 
+  const stakingTokensAndFilter = useStakingTokensAndFilter();
+  const unstakedTokensForThisAccount = stakingTokensAndFilter.data?.unstakedTokensByAccount.get(
+    state.account,
+  );
+
   const canDelegate = useMemo(
-    () => (unstakedTokens ? !!joinLoHiAmount(getAmount(unstakedTokens)) : false),
-    [unstakedTokens],
+    () =>
+      unstakedTokensForThisAccount
+        ? !!joinLoHiAmount(getAmount(unstakedTokensForThisAccount))
+        : false,
+    [unstakedTokensForThisAccount],
   );
   const canUndelegate = useMemo(
     () => !!joinLoHiAmount(getAmount(delegationTokens)),
@@ -87,7 +91,7 @@ export const StakingActions = ({
         validator={validator}
         amount={state.amount}
         delegationTokens={delegationTokens}
-        unstakedTokens={unstakedTokens}
+        unstakedTokens={unstakedTokensForThisAccount}
         onChangeAmount={state.setAmount}
         onClose={state.onClose}
         onSubmit={handleSubmit}

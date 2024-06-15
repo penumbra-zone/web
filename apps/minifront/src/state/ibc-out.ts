@@ -229,8 +229,8 @@ const unknownAddrIsValid = (chain: Chain | undefined, address: string): boolean 
 export const filterBalancesPerChain = (
   allBalances: BalancesResponse[],
   chain: Chain | undefined,
-  stakingTokenMetadata: Metadata,
   registryAssets: Metadata[],
+  stakingTokenMetadata?: Metadata,
 ): BalancesResponse[] => {
   const penumbraAssetId = getAssetId(stakingTokenMetadata);
   const assetsWithMatchingChannel = registryAssets
