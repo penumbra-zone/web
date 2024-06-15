@@ -347,7 +347,7 @@ importers:
         version: 1.9.0-20240528180215-8fe1c79485f8.1(@bufbuild/protobuf@1.10.0)
       tsup:
         specifier: ^8.1.0
-        version: 8.1.0(@microsoft/api-extractor@7.43.0(@types/node@20.14.2))(@swc/core@1.5.28(@swc/helpers@0.5.11))(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.28(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))(typescript@5.4.5)
+        version: 8.1.0(@microsoft/api-extractor@7.43.0(@types/node@20.14.2))(@swc/core@1.5.25(@swc/helpers@0.5.11))(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.25(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))(typescript@5.4.5)
 
   packages/client:
     dependencies:
@@ -366,7 +366,7 @@ importers:
         version: 1.4.0(@bufbuild/protobuf@1.10.0)
       tsup:
         specifier: ^8.1.0
-        version: 8.1.0(@microsoft/api-extractor@7.43.0(@types/node@20.14.2))(@swc/core@1.5.28(@swc/helpers@0.5.11))(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.28(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))(typescript@5.4.5)
+        version: 8.1.0(@microsoft/api-extractor@7.43.0(@types/node@20.14.2))(@swc/core@1.5.25(@swc/helpers@0.5.11))(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.25(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))(typescript@5.4.5)
 
   packages/crypto:
     dependencies:
@@ -443,7 +443,7 @@ importers:
         version: 1.10.0
       tsup:
         specifier: ^8.1.0
-        version: 8.1.0(@microsoft/api-extractor@7.43.0(@types/node@20.14.2))(@swc/core@1.5.28(@swc/helpers@0.5.11))(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.28(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))(typescript@5.4.5)
+        version: 8.1.0(@microsoft/api-extractor@7.43.0(@types/node@20.14.2))(@swc/core@1.5.25(@swc/helpers@0.5.11))(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.25(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))(typescript@5.4.5)
 
   packages/keys: {}
 
@@ -489,7 +489,7 @@ importers:
         version: 1.10.0
       tsup:
         specifier: ^8.1.0
-        version: 8.1.0(@microsoft/api-extractor@7.43.0(@types/node@20.14.2))(@swc/core@1.5.28(@swc/helpers@0.5.11))(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.28(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))(typescript@5.4.5)
+        version: 8.1.0(@microsoft/api-extractor@7.43.0(@types/node@20.14.2))(@swc/core@1.5.25(@swc/helpers@0.5.11))(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.25(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))(typescript@5.4.5)
 
   packages/query:
     dependencies:
@@ -25358,7 +25358,7 @@ snapshots:
 
   tslib@2.6.3: {}
 
-  tsup@8.1.0(@microsoft/api-extractor@7.43.0(@types/node@20.14.2))(@swc/core@1.5.28(@swc/helpers@0.5.11))(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.28(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))(typescript@5.4.5):
+  tsup@8.1.0(@microsoft/api-extractor@7.43.0(@types/node@20.14.2))(@swc/core@1.5.25(@swc/helpers@0.5.11))(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.25(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))(typescript@5.4.5):
     dependencies:
       bundle-require: 4.2.1(esbuild@0.21.5)
       cac: 6.7.14
@@ -25368,7 +25368,7 @@ snapshots:
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
-      postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.28(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))
+      postcss-load-config: 4.0.2(postcss@8.4.38)(ts-node@10.9.2(@swc/core@1.5.25(@swc/helpers@0.5.11))(@types/node@20.14.2)(typescript@5.4.5))
       resolve-from: 5.0.0
       rollup: 4.18.0
       source-map: 0.8.0-beta.0
@@ -25376,7 +25376,7 @@ snapshots:
       tree-kill: 1.2.2
     optionalDependencies:
       '@microsoft/api-extractor': 7.43.0(@types/node@20.14.2)
-      '@swc/core': 1.5.28(@swc/helpers@0.5.11)
+      '@swc/core': 1.5.25(@swc/helpers@0.5.11)
       postcss: 8.4.38
       typescript: 5.4.5
     transitivePeerDependencies:
