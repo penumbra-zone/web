@@ -1,16 +1,20 @@
-import { LineWave } from 'react-loader-spinner';
 import { CheckIcon } from '@radix-ui/react-icons';
+import { BigNumber } from 'bignumber.js';
 import { motion } from 'framer-motion';
-import { useNewBlockDelay, useSyncProgress } from './hooks';
-import { Progress } from '../progress';
-import { BlockSyncProps, SyncingStateProps } from './shared';
+import { LineWave } from 'react-loader-spinner';
 import { cn } from '../../../lib/utils';
+import { Progress } from '../progress';
+import { useNewBlockDelay, useSyncProgress } from './hooks';
 
 export const CondensedBlockSyncStatus = ({
   latestKnownBlockHeight,
   fullSyncHeight,
   error,
-}: Partial<BlockSyncProps>) => {
+}: {
+  latestKnownBlockHeight?: bigint;
+  fullSyncHeight?: bigint;
+  error?: unknown;
+}) => {
   if (error) return <BlockSyncErrorState error={error} />;
   if (!latestKnownBlockHeight || !fullSyncHeight)
     return <AwaitingSyncState genesisSyncing={!fullSyncHeight} />;
@@ -71,11 +75,20 @@ const AwaitingSyncState = ({ genesisSyncing }: { genesisSyncing: boolean }) => {
   );
 };
 
-const SyncingState = ({ fullSyncHeight, latestKnownBlockHeight }: SyncingStateProps) => {
+const SyncingState = ({
+  fullSyncHeight: fullSyncHeightBigInt,
+  latestKnownBlockHeight: latestKnownBlockHeightBigInt,
+}: {
+  latestKnownBlockHeight: bigint;
+  fullSyncHeight: bigint;
+}) => {
   const { formattedTimeRemaining, confident } = useSyncProgress(
-    fullSyncHeight,
-    latestKnownBlockHeight,
+    fullSyncHeightBigInt,
+    latestKnownBlockHeightBigInt,
   );
+
+  const fullSyncHeight = BigNumber(String(fullSyncHeightBigInt));
+  const latestKnownBlockHeight = BigNumber(String(latestKnownBlockHeightBigInt));
 
   return (
     <motion.div
@@ -85,7 +98,7 @@ const SyncingState = ({ fullSyncHeight, latestKnownBlockHeight }: SyncingStatePr
     >
       <Progress
         status='in-progress'
-        value={(fullSyncHeight / latestKnownBlockHeight) * 100}
+        value={fullSyncHeight.dividedBy(latestKnownBlockHeight).multipliedBy(100).toNumber()}
         background='stone'
         shape='squared'
       />
@@ -102,7 +115,7 @@ const SyncingState = ({ fullSyncHeight, latestKnownBlockHeight }: SyncingStatePr
           </span>
           <span className={confident ? 'opacity-100' : 'opacity-0'}>::</span>
           <span className='font-mono'>
-            {fullSyncHeight} / {latestKnownBlockHeight}
+            {String(fullSyncHeight)} / {String(latestKnownBlockHeight)}
           </span>
         </div>
       </div>
@@ -110,8 +123,16 @@ const SyncingState = ({ fullSyncHeight, latestKnownBlockHeight }: SyncingStatePr
   );
 };
 
-const FullySyncedState = ({ latestKnownBlockHeight, fullSyncHeight }: SyncingStateProps) => {
-  const showLoader = useNewBlockDelay(fullSyncHeight);
+const FullySyncedState = ({
+  latestKnownBlockHeight: latestKnownBlockHeightBigInt,
+  fullSyncHeight: fullSyncHeightBigInt,
+}: {
+  latestKnownBlockHeight: bigint;
+  fullSyncHeight: bigint;
+}) => {
+  const showLoader = useNewBlockDelay(fullSyncHeightBigInt);
+  const fullSyncHeight = BigNumber(String(fullSyncHeightBigInt));
+  const latestKnownBlockHeight = BigNumber(String(latestKnownBlockHeightBigInt));
 
   return (
     <motion.div
@@ -121,7 +142,7 @@ const FullySyncedState = ({ latestKnownBlockHeight, fullSyncHeight }: SyncingSta
     >
       <Progress
         status='done'
-        value={(fullSyncHeight / latestKnownBlockHeight) * 100}
+        value={fullSyncHeight.dividedBy(latestKnownBlockHeight).multipliedBy(100).toNumber()}
         shape='squared'
       />
       <div className='absolute flex w-full justify-between px-2'>
@@ -143,7 +164,7 @@ const FullySyncedState = ({ latestKnownBlockHeight, fullSyncHeight }: SyncingSta
             )}
           />
           <div className='mt-[-5.5px] font-mono text-[10px] text-teal-900'>
-            Block {fullSyncHeight}
+            Block {String(fullSyncHeight)}
           </div>
         </div>
       </div>

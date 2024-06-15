@@ -1,16 +1,14 @@
-import { useState, useEffect } from 'react';
+import { CondensedBlockSyncStatus } from '@penumbra-zone/ui/components/ui/block-sync-status/condensed';
+import { TestnetBanner } from '@penumbra-zone/ui/components/ui/testnet-banner';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getChainId } from '../../fetchers/chain-id';
+import { useStatus } from '../../state/status';
 import { PagePath } from '../metadata/paths';
 import { MenuBar } from './menu/menu';
-import { CondensedBlockSyncStatus } from '@penumbra-zone/ui/components/ui/block-sync-status/condensed';
-import { AllSlices } from '../../state';
-import { useStoreShallow } from '../../utils/use-store-shallow';
-import { TestnetBanner } from '@penumbra-zone/ui/components/ui/testnet-banner';
 
 export const Header = () => {
-  const { fullSyncHeight, latestKnownBlockHeight, error } =
-    useStoreShallow(syncStatusSectionSelector);
+  const { data, error } = useStatus();
   const [chainId, setChainId] = useState<string | undefined>();
 
   useEffect(() => {
@@ -21,8 +19,8 @@ export const Header = () => {
     <header className='w-full overflow-hidden bg-gradient-to-t from-transparent to-black to-40% pb-[3em]'>
       <TestnetBanner chainId={chainId} />
       <CondensedBlockSyncStatus
-        fullSyncHeight={fullSyncHeight ? Number(fullSyncHeight) : undefined}
-        latestKnownBlockHeight={latestKnownBlockHeight ? Number(latestKnownBlockHeight) : undefined}
+        fullSyncHeight={data?.fullSyncHeight}
+        latestKnownBlockHeight={data?.latestKnownBlockHeight}
         error={error}
       />
       <div className='flex w-full flex-col items-center justify-between overflow-hidden px-6 md:h-[82px] md:flex-row md:gap-12 md:px-12'>
@@ -45,9 +43,3 @@ const HeaderLogo = () => (
     </Link>
   </div>
 );
-
-const syncStatusSectionSelector = (state: AllSlices) => ({
-  fullSyncHeight: state.status.fullSyncHeight,
-  latestKnownBlockHeight: state.status.latestKnownBlockHeight,
-  error: state.status.error,
-});
