@@ -1,5 +1,30 @@
 # minifront
 
+## 5.2.0
+
+### Minor Changes
+
+- 6b78e22: Tweaks to the auction UI; create a new PopoverMenu component
+
+### Patch Changes
+
+- 0f30eea: Ensure sane inputs for the swap/auction UI
+- 89a0f22: Use the localSeq property to fix auction UI bugs
+- Updated dependencies [a75256f]
+- Updated dependencies [82068fc]
+- Updated dependencies [468ecc7]
+- Updated dependencies [a75256f]
+- Updated dependencies [6b78e22]
+  - @penumbra-zone/bech32m@5.1.0
+  - @penumbra-zone/zquery@1.0.1
+  - @penumbra-zone/getters@6.2.0
+  - @penumbra-zone/protobuf@4.2.0
+  - @penumbra-zone/client@6.1.0
+  - @penumbra-zone/ui@3.5.0
+  - @penumbra-zone/perspective@4.0.2
+  - @penumbra-zone/types@7.1.1
+  - @penumbra-zone/crypto-web@3.0.11
+
 ## 5.1.0
 
 ### Minor Changes

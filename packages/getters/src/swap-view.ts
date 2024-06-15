@@ -61,13 +61,13 @@ const createSwapGetter = <K extends keyof SwapBodyCombined>(property: K) => {
 };
 
 // Generic getter function for 'delta1I'
-export const getDelta1IFromSwapView = createSwapGetter<'delta1I'>('delta1I');
+export const getDelta1IFromSwapView = createSwapGetter('delta1I');
 
 // Generic getter function for 'delta2I'
-export const getDelta2IFromSwapView = createSwapGetter<'delta2I'>('delta2I');
+export const getDelta2IFromSwapView = createSwapGetter('delta2I');
 
 // Generic getter function for 'claimFee'
-export const getClaimFeeFromSwapView = createSwapGetter<'claimFee'>('claimFee');
+export const getClaimFeeFromSwapView = createSwapGetter('claimFee');
 
 // Generic getter function for 'Asset1Metadata'
 export const getAsset1Metadata = createGetter((swapView?: SwapView) =>

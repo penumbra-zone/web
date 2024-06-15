@@ -1,5 +1,18 @@
 # @penumbra-zone/getters
 
+## 6.2.0
+
+### Minor Changes
+
+- 468ecc7: Allow calling .optional() at any point in a getter chain
+- a75256f: Improve build processes in multiple packages within monorepo
+
+### Patch Changes
+
+- Updated dependencies [a75256f]
+- Updated dependencies [a75256f]
+  - @penumbra-zone/bech32m@5.1.0
+
 ## 6.1.0
 
 ### Minor Changes

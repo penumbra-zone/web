@@ -1,9 +1,13 @@
 {
   "name": "@penumbra-zone/zquery",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint src",
+    "test": "vitest run"
+  },
   "dependencies": {
     "react": "^18.3.1",
     "zustand": "^4.5.2"

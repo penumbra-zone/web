@@ -1,5 +1,11 @@
 # @penumbra-zone/protobuf
 
+## 4.2.0
+
+### Minor Changes
+
+- a75256f: Improve build processes in multiple packages within monorepo
+
 ## 4.1.0
 
 ### Minor Changes

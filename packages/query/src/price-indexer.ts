@@ -1,10 +1,7 @@
 import { BatchSwapOutputData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import { divideAmounts, isZero, subtractAmounts } from '@penumbra-zone/types/amount';
-import {
-  AssetId,
-  Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { AssetId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import {
   getDelta1Amount,
@@ -16,7 +13,6 @@ import {
   getUnfilled1Amount,
   getUnfilled2Amount,
 } from '@penumbra-zone/getters/batch-swap-output-data';
-import { getAssetId } from '@penumbra-zone/getters/metadata';
 
 /**
  *
@@ -41,12 +37,11 @@ export const calculatePrice = (delta: Amount, unfilled: Amount, lambda: Amount):
 
 export const updatePricesFromSwaps = async (
   indexedDb: IndexedDbInterface,
-  numeraires: Metadata[],
+  numeraires: AssetId[],
   swapOutputs: BatchSwapOutputData[],
   height: bigint,
 ) => {
-  for (const numeraireMetadata of numeraires) {
-    const numeraireAssetId = getAssetId(numeraireMetadata);
+  for (const numeraireAssetId of numeraires) {
     await deriveAndSavePriceFromBSOD(indexedDb, numeraireAssetId, swapOutputs, height);
   }
 };

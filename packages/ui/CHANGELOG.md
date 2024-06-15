@@ -1,5 +1,21 @@
 # @penumbra-zone/ui
 
+## 3.5.0
+
+### Minor Changes
+
+- 6b78e22: Tweaks to the auction UI; create a new PopoverMenu component
+
+### Patch Changes
+
+- Updated dependencies [a75256f]
+- Updated dependencies [468ecc7]
+- Updated dependencies [a75256f]
+  - @penumbra-zone/bech32m@5.1.0
+  - @penumbra-zone/getters@6.2.0
+  - @penumbra-zone/perspective@4.0.2
+  - @penumbra-zone/types@7.1.1
+
 ## 3.4.0
 
 ### Minor Changes

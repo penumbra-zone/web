@@ -219,7 +219,6 @@ export function createZQuery<
         referenceCount: 0,
 
         fetch: async (...args: FetchArgs) => {
-          const abortController = get(getUseStore().getState())._zQueryInternal.abortController;
           // We have to use the `props` object (rather than its destructured
           // properties) since we're passing the full `props` object to
           // `isStreaming`, which is a type predicate. If we use previously
@@ -227,24 +226,47 @@ export function createZQuery<
           // predicate won't apply to them, since the type predicate was called
           // after destructuring.
           if (isStreaming<Name, State, DataType, FetchArgs, ProcessedDataType>(props)) {
-            const result = props.fetch(...args);
+            const startState = props.get(props.getUseStore().getState());
+            const abortController = startState._zQueryInternal.abortController;
+
+            const { onStart, onValue, onEnd, onError, onAbort } = props.stream(startState.data);
 
             props.set(prevState => ({
               ...prevState,
-              data: undefined,
+              loading: true,
+              ...(onStart ? { data: onStart(prevState.data) } : {}),
             }));
 
             try {
-              for await (const item of result) {
-                if (abortController?.signal.aborted) return;
+              for await (const item of props.fetch(...args)) {
+                if (abortController?.signal.aborted) {
+                  if (onAbort) {
+                    props.set(prevState => ({
+                      ...prevState,
+                      data: onAbort(prevState.data),
+                    }));
+                  }
+
+                  break;
+                }
 
                 props.set(prevState => ({
                   ...prevState,
-                  data: props.stream(prevState.data, item),
+                  data: onValue(prevState.data, item),
                 }));
               }
             } catch (error) {
-              props.set(prevState => ({ ...prevState, error }));
+              props.set(prevState => ({
+                ...prevState,
+                error,
+                ...(onError ? { data: onError(prevState.data, error) } : {}),
+              }));
+            } finally {
+              props.set(prevState => ({
+                ...prevState,
+                loading: false,
+                ...(onEnd ? { data: onEnd(prevState.data) } : {}),
+              }));
             }
           } else {
             try {

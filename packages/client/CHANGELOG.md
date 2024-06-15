@@ -1,5 +1,16 @@
 # @penumbra-zone/client
 
+## 6.1.0
+
+### Minor Changes
+
+- a75256f: Improve build processes in multiple packages within monorepo
+
+### Patch Changes
+
+- Updated dependencies [a75256f]
+  - @penumbra-zone/protobuf@4.2.0
+
 ## 6.0.1
 
 ### Patch Changes

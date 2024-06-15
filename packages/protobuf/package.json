@@ -1,15 +1,20 @@
 {
   "name": "@penumbra-zone/protobuf",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Exports a `@bufbuild/protobuf` type registry with all message types necessary to communicate with a Penumbra extension",
   "type": "module",
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsup src/index.ts --dts --minify --format esm",
     "clean": "rm -rfv dist",
     "lint": "eslint src",
     "prepack": "pnpm clean && pnpm build"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
   "exports": {
     ".": "./src/index.ts"
   },
@@ -23,13 +28,12 @@
   },
   "devDependencies": {
     "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0"
+    "tsup": "^8.1.0"
   },
   "peerDependencies": {
     "@buf/cosmos_ibc.bufbuild_es": "1.9.0-20240530142100-ad4444393387.1",
     "@buf/cosmos_ibc.connectrpc_es": "1.4.0-20240530142100-ad4444393387.2",
     "@buf/penumbra-zone_penumbra.connectrpc_es": "1.4.0-20240528180215-8fe1c79485f8.2",
-    "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0"
+    "@bufbuild/protobuf": "^1.10.0"
   }
 }

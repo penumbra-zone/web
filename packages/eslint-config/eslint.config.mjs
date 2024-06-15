@@ -27,7 +27,7 @@ export const penumbraEslintConfig = {
     vitest: vitestPlugin,
     storybook: storybookPlugin,
   },
-  ignores: ['**/*.js'],
+  ignores: ['**/*.js', 'dist/*'],
   settings: {
     'import/resolver': {
       typescript: true,
