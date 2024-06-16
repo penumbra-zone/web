@@ -1,7 +1,12 @@
 import { PagePath } from '../metadata/paths';
 import { SwapIcon } from '../../icons/swap';
 import { ReactElement } from 'react';
-import { ArrowTopRightIcon, MixerHorizontalIcon, TextAlignLeftIcon } from '@radix-ui/react-icons';
+import {
+  CubeIcon,
+  ArrowTopRightIcon,
+  MixerHorizontalIcon,
+  TextAlignLeftIcon,
+} from '@radix-ui/react-icons';
 
 export interface HeaderLink {
   href: PagePath;
@@ -38,6 +43,14 @@ export const headerLinks: HeaderLink[] = [
     mobileIcon: <TextAlignLeftIcon className='size-5 text-muted-foreground' />,
   },
 ];
+
+export const dashboardLink = {
+  href: PagePath.DASHBOARD,
+  label: 'Assets',
+  active: true,
+  subLinks: [PagePath.TRANSACTIONS, PagePath.NFTS],
+  mobileIcon: <CubeIcon />,
+};
 
 export const transactionLink = {
   href: PagePath.TRANSACTION_DETAILS,

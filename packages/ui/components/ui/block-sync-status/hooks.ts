@@ -12,14 +12,14 @@ import humanizeDuration from 'humanize-duration';
  *          - confident: A boolean flag indicating whether the speed calculation is considered reliable.
  */
 export const useSyncProgress = (
-  fullSyncHeight: number,
-  latestKnownBlockHeight: number,
+  fullSyncHeight: bigint,
+  latestKnownBlockHeight: bigint,
   syncUpdatesThreshold = 10, // The number of synchronization updates required before the speed calculation is considered reliable
 ) => {
   const ewmaSpeedRef = useRef(new EWMA());
 
   const [speed, setSpeed] = useState<number>(0);
-  const lastSyncedRef = useRef<number>(fullSyncHeight);
+  const lastSyncedRef = useRef(fullSyncHeight);
   const lastUpdateTimeRef = useRef<number>(Date.now());
   const [confident, setConfident] = useState<boolean>(false); // Tracks confidence in the speed calculation
   const [syncUpdates, setSyncUpdates] = useState<number>(0); // Tracks the number of synchronization updates
@@ -27,7 +27,7 @@ export const useSyncProgress = (
   useEffect(() => {
     const now = Date.now();
     const timeElapsedMs = now - lastUpdateTimeRef.current;
-    const blocksSynced = fullSyncHeight - lastSyncedRef.current;
+    const blocksSynced = Number(fullSyncHeight - lastSyncedRef.current);
 
     if (timeElapsedMs > 0 && blocksSynced >= 0) {
       const instantSpeed = (blocksSynced / timeElapsedMs) * 1000; // Calculate speed in blocks per second
@@ -45,7 +45,8 @@ export const useSyncProgress = (
     }
   }, [fullSyncHeight, syncUpdates, syncUpdatesThreshold, confident]);
 
-  const blocksRemaining = latestKnownBlockHeight - fullSyncHeight;
+  // TODO: this may eventually need bigint
+  const blocksRemaining = Number(latestKnownBlockHeight - fullSyncHeight);
   const timeRemaining = speed > 0 ? blocksRemaining / speed : Infinity;
   const formattedTimeRemaining =
     timeRemaining === Infinity ? '' : humanizeDuration(timeRemaining * 1000, { round: true });
@@ -54,7 +55,7 @@ export const useSyncProgress = (
 };
 
 // Meant to show item temporarily when a new value shows
-export const useNewBlockDelay = (value: number, duration = 1000) => {
+export const useNewBlockDelay = (value: bigint, duration = 1000) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {

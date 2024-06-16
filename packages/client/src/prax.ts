@@ -23,6 +23,8 @@ export const getPraxManifest = async () => {
   return (await res.json()) as unknown;
 };
 
+export const getPraxOrigin = () => prax_origin;
+
 export const isPraxConnected = () => Boolean(window[PenumbraSymbol]?.[prax_origin]?.isConnected());
 
 export const isPraxInstalled = async () => {
