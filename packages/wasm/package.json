@@ -7,15 +7,15 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsup --clean --entry 'src/*.ts' --entry '!src/*.test.ts' --loader '.wasm=file' --dts --minify --keep-names --format esm",
     "clean": "rm -rfv dist wasm package penumbra-zone-wasm-*.tgz",
     "clean:rust": "cargo clean --manifest-path ./crate/Cargo.toml",
-    "compile": "cd crate && wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm && touch ../wasm/.npmignore",
+    "compile": "cd crate && wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",
     "dev": "cargo watch -C ./crate --postpone -- pnpm turbo run compile",
     "format:rust": "cd crate && cargo fmt --all",
     "lint": "eslint src",
     "lint:rust": "cd crate && cargo fmt --all -- --check && cargo clippy -- -D warnings && cargo clippy --tests -- -D warnings",
-    "prebuild": "tsc --build --clean",
+    "postcompile": "touch ./wasm/.npmignore",
     "prepack": "$npm_execpath run build",
     "test": "vitest run",
     "test:rust": "cd crate && wasm-pack test --headless --firefox -- --test build --target wasm32-unknown-unknown --release --features 'mock-database'"
