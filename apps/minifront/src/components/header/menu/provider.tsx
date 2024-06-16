@@ -4,11 +4,14 @@ import { getChainId } from '../../../fetchers/chain-id';
 import { useCallback, useEffect, useState } from 'react';
 import { getPraxManifest, getPraxOrigin } from '@penumbra-zone/client/prax';
 import { itemStyle, triggerStyle, dropdownStyle, linkStyle } from './nav-style';
+import { Link1Icon } from '@radix-ui/react-icons';
 
 export const ProviderMenu = () => {
   const [chainId, setChainId] = useState<string | undefined>();
   const [providerManifest, setProviderManifest] = useState<ProviderManifest>();
   const [providerOrigin] = useState(getPraxOrigin());
+
+  const [manifestIconUnavailable, setManifestIconUnavailable] = useState<boolean>();
 
   const disconnect = useCallback(() => {
     console.log('unimplemented');
@@ -33,12 +36,17 @@ export const ProviderMenu = () => {
             'flex flex-row place-items-center justify-evenly',
           )}
         >
-          <img
-            id='provider-icon'
-            className={cn('w-[1.5em]', 'max-w-none', 'h-[1.5em]')}
-            src={String(new URL(providerManifest.icons['128'], providerOrigin))}
-            alt={`${providerManifest.name} Icon`}
-          />
+          {manifestIconUnavailable ? (
+            <Link1Icon className='text-teal-500' />
+          ) : (
+            <img
+              id='provider-icon'
+              className={cn('w-[1.5em]', 'max-w-none', 'h-[1.5em]')}
+              src={String(new URL(providerManifest.icons['128'], providerOrigin))}
+              alt={`${providerManifest.name} Icon`}
+              onError={() => setManifestIconUnavailable(true)}
+            />
+          )}
           {chainId}
         </NavigationMenu.Trigger>
         <NavigationMenu.Content className={cn(...dropdownStyle, 'w-64')}>
