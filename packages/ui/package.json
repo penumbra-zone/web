@@ -47,6 +47,7 @@
     "@visx/stats": "^3.5.0",
     "@visx/threshold": "^3.5.0",
     "@visx/tooltip": "^3.3.0",
+    "bignumber.js": "^9.1.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "0.2.0",

@@ -122,7 +122,11 @@ importers:
         version: 3.3.0(vite@5.2.13(@types/node@20.14.2)(terser@5.31.1))
       vitest:
         specifier: ^1.6.0
+<<<<<<< HEAD
         version: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
+=======
+        version: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
+>>>>>>> main
 
   apps/minifront:
     dependencies:
@@ -183,9 +187,18 @@ importers:
       '@penumbra-zone/zquery':
         specifier: workspace:*
         version: link:../../packages/zquery
+      '@radix-ui/react-dialog':
+        specifier: 1.0.5
+        version: 1.0.5(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-icons':
         specifier: ^1.3.0
         version: 1.3.0(react@18.3.1)
+      '@radix-ui/react-menubar':
+        specifier: ^1.0.4
+        version: 1.0.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-portal':
+        specifier: ^1.0.4
+        version: 1.0.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-query':
         specifier: 4.36.1
         version: 4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -253,6 +266,9 @@ importers:
       '@penumbra-zone/polyfills':
         specifier: workspace:*
         version: link:../../packages/polyfills
+      '@radix-ui/react-navigation-menu':
+        specifier: ^1.1.4
+        version: 1.1.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@testing-library/jest-dom':
         specifier: ^6.4.5
         version: 6.4.5(vitest@1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1))
@@ -819,6 +835,9 @@ importers:
       '@visx/tooltip':
         specifier: ^3.3.0
         version: 3.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      bignumber.js:
+        specifier: ^9.1.2
+        version: 9.1.2
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -969,7 +988,11 @@ importers:
         version: 18.3.3
       vitest:
         specifier: ^1.6.0
+<<<<<<< HEAD
         version: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
+=======
+        version: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
+>>>>>>> main
 
 packages:
 
@@ -3404,6 +3427,32 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
     peerDependenciesMeta:
       '@types/react':
+        optional: true
+
+  '@radix-ui/react-menu@2.0.6':
+    resolution: {integrity: sha512-BVkFLS+bUC8HcImkRKPSiVumA1VPOOEC5WBMiT+QAVsPzW1FJzI9KnqgGxVDPBcql5xXrHkD3JOVoXWEXD8SYA==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+
+  '@radix-ui/react-menubar@1.0.4':
+    resolution: {integrity: sha512-bHgUo9gayKZfaQcWSSLr++LyS0rgh+MvD89DE4fJ6TkGHvjHgPaBZf44hdka7ogOxIOdj9163J+5xL2Dn4qzzg==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
         optional: true
 
   '@radix-ui/react-navigation-menu@1.1.4':
@@ -15686,6 +15735,52 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.3
 
+  '@radix-ui/react-menu@2.0.6(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@babel/runtime': 7.24.7
+      '@radix-ui/primitive': 1.0.1
+      '@radix-ui/react-collection': 1.0.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-context': 1.0.1(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-direction': 1.0.1(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-dismissable-layer': 1.0.5(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-focus-guards': 1.0.1(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-focus-scope': 1.0.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-id': 1.0.1(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-popper': 1.1.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-portal': 1.0.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-presence': 1.0.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-roving-focus': 1.0.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-slot': 1.0.2(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-use-callback-ref': 1.0.1(@types/react@18.3.3)(react@18.3.1)
+      aria-hidden: 1.2.4
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-remove-scroll: 2.5.5(@types/react@18.3.3)(react@18.3.1)
+    optionalDependencies:
+      '@types/react': 18.3.3
+      '@types/react-dom': 18.3.0
+
+  '@radix-ui/react-menubar@1.0.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@babel/runtime': 7.24.7
+      '@radix-ui/primitive': 1.0.1
+      '@radix-ui/react-collection': 1.0.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-context': 1.0.1(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-direction': 1.0.1(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-id': 1.0.1(@types/react@18.3.3)(react@18.3.1)
+      '@radix-ui/react-menu': 2.0.6(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-roving-focus': 1.0.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-use-controllable-state': 1.0.1(@types/react@18.3.3)(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    optionalDependencies:
+      '@types/react': 18.3.3
+      '@types/react-dom': 18.3.0
+
   '@radix-ui/react-navigation-menu@1.1.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@babel/runtime': 7.24.7
@@ -18089,7 +18184,11 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
     optionalDependencies:
+<<<<<<< HEAD
       vitest: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
+=======
+      vitest: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
+>>>>>>> main
 
   '@testing-library/react@15.0.7(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -18733,7 +18832,11 @@ snapshots:
       '@vitest/utils': 1.6.0
       magic-string: 0.30.10
       sirv: 2.0.4
+<<<<<<< HEAD
       vitest: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
+=======
+      vitest: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
+>>>>>>> main
     optionalDependencies:
       playwright: 1.44.1
 
@@ -21073,7 +21176,11 @@ snapshots:
       '@typescript-eslint/utils': 7.12.0(eslint@9.4.0)(typescript@5.4.5)
       eslint: 9.4.0
     optionalDependencies:
+<<<<<<< HEAD
       vitest: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1)
+=======
+      vitest: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1)
+>>>>>>> main
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -25818,7 +25925,11 @@ snapshots:
       fsevents: 2.3.3
       terser: 5.31.1
 
+<<<<<<< HEAD
   vitest@1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(terser@5.31.1):
+=======
+  vitest@1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0)(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1):
+>>>>>>> main
     dependencies:
       '@vitest/expect': 1.6.0
       '@vitest/runner': 1.6.0

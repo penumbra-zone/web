@@ -12,39 +12,39 @@ export const metadata: Record<PagePath, PageMetadata> = {
     description: '',
   },
   [PagePath.DASHBOARD]: {
-    title: 'Penumbra | Assets',
+    title: 'Assets',
     description: eduPanelContent[EduPanel.ASSETS],
   },
   [PagePath.TRANSACTIONS]: {
-    title: 'Penumbra | Transactions',
+    title: 'Transactions',
     description: eduPanelContent[EduPanel.TRANSACTIONS_LIST],
   },
   [PagePath.NFTS]: {
-    title: 'Penumbra | NFTs',
+    title: 'NFTs',
     description: eduPanelContent[EduPanel.TEMP_FILLER],
   },
   [PagePath.SEND]: {
-    title: 'Penumbra | Send',
+    title: 'Send',
     description: eduPanelContent[EduPanel.SENDING_FUNDS],
   },
   [PagePath.RECEIVE]: {
-    title: 'Penumbra | Receive',
+    title: 'Receive',
     description: eduPanelContent[EduPanel.RECEIVING_FUNDS],
   },
   [PagePath.IBC]: {
-    title: 'Penumbra | IBC',
+    title: 'Shield Funds',
     description: eduPanelContent[EduPanel.TEMP_FILLER],
   },
   [PagePath.SWAP]: {
-    title: 'Penumbra | Swap',
+    title: 'Swap',
     description: eduPanelContent[EduPanel.SWAP],
   },
   [PagePath.STAKING]: {
-    title: 'Penumbra | Staking',
+    title: 'Staking',
     description: eduPanelContent[EduPanel.STAKING],
   },
   [PagePath.TRANSACTION_DETAILS]: {
-    title: 'Penumbra | Transaction',
+    title: 'Transaction',
     description: 'More details about transaction',
   },
 };
