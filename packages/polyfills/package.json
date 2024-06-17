@@ -11,8 +11,5 @@
   "exports": {
     "./ReadableStream[Symbol.asyncIterator]": "./src/ReadableStream_Symbol.asyncIterator_.ts",
     "./*": "./src/*.ts"
-  },
-  "dependencies": {
-    "array-from-async": "^3.0.0"
   }
 }

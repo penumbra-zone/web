@@ -1,5 +1,4 @@
 import { IdentityKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
-import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
 import { assetPatterns } from '@penumbra-zone/types/assets';
 import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';

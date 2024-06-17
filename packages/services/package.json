@@ -7,9 +7,10 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsc",
     "clean": "rm -rfv dist package penumbra-zone-*.tgz",
     "lint": "eslint src",
+    "prebuild": "$npm_execpath run clean",
     "prepack": "$npm_execpath run build",
     "test": "vitest run"
   },
@@ -32,15 +33,13 @@
       }
     }
   },
-  "dependencies": {
-    "@connectrpc/connect": "^1.4.0"
-  },
   "devDependencies": {
     "@types/chrome": "^0.0.268"
   },
   "peerDependencies": {
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
     "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.4.0",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/perspective": "workspace:*",

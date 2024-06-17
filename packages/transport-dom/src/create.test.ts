@@ -11,7 +11,6 @@ import { createRegistry } from '@bufbuild/protobuf';
 import { TransportMessage } from './messages';
 
 import ReadableStream from '@penumbra-zone/polyfills/ReadableStream.from';
-import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 
 const typeRegistry = createRegistry(ElizaService);
 

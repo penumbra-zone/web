@@ -61,7 +61,7 @@
     "tsconfig": "workspace:*",
     "tsup": "^8.1.0",
     "turbo": "^1.13.3",
-    "typescript": "^5.4.5",
+    "typescript": "5.5.1-rc",
     "vite": "^5.2.11",
     "vite-plugin-node-stdlib-browser": "^0.2.1",
     "vite-plugin-top-level-await": "^1.4.1",
