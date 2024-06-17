@@ -1,18 +1,15 @@
 {
   "name": "@penumbra-zone/ui",
   "version": "3.5.0",
-  "private": false,
+  "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsup",
     "build-storybook": "storybook build",
-    "clean": "rm -rf dist package penumbra-zone-*.tgz",
     "lint": "eslint components lib",
-    "prepack": "$npm_execpath run build",
     "storybook": "storybook dev -p 6006",
     "test": "vitest run",
     "ui:add": "pnpm dlx shadcn-ui@latest add"
@@ -83,6 +80,7 @@
     "@emotion/styled": "^11.11.5",
     "@mui/material": "^5.15.18",
     "@penumbra-labs/registry": "8.0.1",
+    "@penumbra-zone/types": "workspace:*",
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dialog": "1.0.5",

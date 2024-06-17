@@ -37,8 +37,10 @@
     "@connectrpc/connect": "^1.4.0",
     "@connectrpc/connect-web": "^1.4.0",
     "@penumbra-zone/bech32m": "workspace:*",
+    "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
   }
 }
