@@ -30,10 +30,7 @@ let MOCK_STAKING_TOKENS_AND_FILTER:
       unstakedTokensByAccount: Map<number, ValueView | undefined>;
       accountSwitcherFilter: number[];
     }
-  | undefined = vi.hoisted(() => ({
-  unstakedTokensByAccount: new Map(),
-  accountSwitcherFilter: [],
-}));
+  | undefined;
 
 vi.mock('../../../../../state/staking', async () => ({
   ...(await vi.importActual('../../../../../state/staking')),
