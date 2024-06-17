@@ -65,8 +65,8 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { PartialMessage } from '@bufbuild/protobuf';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
-import { addLoHi } from '@penumbra-zone/types/lo-hi';
+import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
+import { isZero } from '@penumbra-zone/types/amount';
 
 interface IndexedDbProps {
   idbVersion: number; // Incremented during schema changes
@@ -285,15 +285,6 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   async *iterateSpendableNotes() {
-    yield* new ReadableStream(
-      new IdbCursorSource(
-        this.db.transaction('SPENDABLE_NOTES').store.openCursor(),
-        SpendableNoteRecord,
-      ),
-    );
-  }
-
-  async *iterateSpendableStakingNotes() {
     yield* new ReadableStream(
       new IdbCursorSource(
         this.db.transaction('SPENDABLE_NOTES').store.openCursor(),
@@ -833,27 +824,9 @@ export class IndexedDb implements IndexedDbInterface {
       uint8ArrayToBase64(assetId.inner),
     );
 
-    // Iterate over the spendable UM notes, and accrue balance for unspent notes
-    const stakingTokenBalance = new Amount();
-    for (const note of spendableUMNotes) {
+    return spendableUMNotes.some(note => {
       const umNote = SpendableNoteRecord.fromJson(note);
-      if (umNote.heightSpent === 0n) {
-        const noteAmount = addLoHi(
-          { lo: stakingTokenBalance.lo, hi: stakingTokenBalance.hi },
-          {
-            lo: BigInt(umNote.note?.value?.amount?.lo ?? 0n),
-            hi: BigInt(umNote.note?.value?.amount?.hi ?? 0n),
-          },
-        );
-        stakingTokenBalance.lo = noteAmount.lo;
-        stakingTokenBalance.hi = noteAmount.hi;
-      }
-    }
-
-    if (stakingTokenBalance.lo > 0) {
-      return true;
-    }
-
-    return false;
+      return umNote.heightSpent === 0n && !isZero(getAmountFromRecord(umNote));
+    });
   }
 }

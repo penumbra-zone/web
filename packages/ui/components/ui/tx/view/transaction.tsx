@@ -2,23 +2,24 @@ import { TransactionView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbr
 import { MemoViewComponent } from './memo-view';
 import { ActionViewComponent } from './action-view';
 import { ViewBox, ViewSection } from './viewbox';
-import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import { getStakingTokenMetaData } from './registry';
-import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { ValueViewComponent } from './value';
 
 export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
   if (!txv.bodyView) throw new Error('transaction view missing body view');
   if (!txv.bodyView.transactionParameters?.fee?.amount) throw new Error('Missing fee amount');
 
-  // Request the asset metadata
-  const chain_id = txv.bodyView.transactionParameters.chainId;
-  const asset_id = txv.bodyView.transactionParameters.fee.assetId;
-  const exponent = getDisplayDenomExponent(getStakingTokenMetaData(chain_id, asset_id));
-
-  const fee = (
-    Number(joinLoHiAmount(txv.bodyView.transactionParameters.fee.amount)) /
-    10 ** exponent
-  ).toString();
+  // Request the fee 'Metadata' and construct a 'ValueView' object
+  const chainId = txv.bodyView.transactionParameters.chainId;
+  const assetId = txv.bodyView.transactionParameters.fee.assetId;
+  const feeAssetMetadata = getStakingTokenMetaData(chainId, assetId);
+  const feeValueView = new ValueView({
+    valueView: {
+      case: 'knownAssetId',
+      value: { amount: txv.bodyView.transactionParameters.fee.amount, metadata: feeAssetMetadata },
+    },
+  });
 
   return (
     <div className='flex flex-col gap-8'>
@@ -29,7 +30,7 @@ export const TransactionViewComponent = ({ txv }: { txv: TransactionView }) => {
         ))}
       </ViewSection>
       <ViewSection heading='Parameters'>
-        <ViewBox label='Fee' visibleContent={<div className='font-mono'>{fee} UM</div>} />
+        <ViewBox label='Fee' visibleContent={<ValueViewComponent view={feeValueView} />} />
         <ViewBox
           label='Chain ID'
           visibleContent={

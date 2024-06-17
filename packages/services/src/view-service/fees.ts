@@ -7,6 +7,7 @@ import {
   TransactionPlannerRequest_Output,
   TransactionPlannerRequest_Swap,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { Code, ConnectError } from '@connectrpc/connect';
 
 export const extractAltFee = (request: TransactionPlannerRequest): AssetId | undefined => {
   // Note: expand the possible types as we expand our support to more actions in the future.
@@ -21,8 +22,7 @@ export const extractAltFee = (request: TransactionPlannerRequest): AssetId | und
   const nonEmptyField = fields.find(field => field.value.length > 0);
 
   if (!nonEmptyField) {
-    console.warn('No non-empty field found in the request.');
-    return undefined;
+    throw new ConnectError('No non-empty field found in the request.', Code.InvalidArgument);
   }
 
   const action = nonEmptyField.value[0]!;
@@ -44,6 +44,6 @@ export const extractAltFee = (request: TransactionPlannerRequest): AssetId | und
       });
     default:
       console.warn('Unsupported action type.');
-      return undefined;
+      throw new ConnectError('Unsupported action type.', Code.InvalidArgument);
   }
 };

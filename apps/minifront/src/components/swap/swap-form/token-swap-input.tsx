@@ -10,7 +10,7 @@ import {
   getMetadataFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
 import { ArrowRight } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getBlockDate } from '../../../fetchers/block-date';
 import { AllSlices } from '../../../state';
 import { amountMoreThanBalance } from '../../../state/send';
@@ -25,6 +25,7 @@ import { AssetSelector } from '../../shared/asset-selector';
 import BalanceSelector from '../../shared/balance-selector';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { useStatus } from '../../../state/status';
+import { hasStakingToken } from '../../../fetchers/staking-token';
 
 const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
@@ -63,6 +64,7 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
   balancesResponses: state.swap.balancesResponses,
   priceHistory: state.swap.priceHistory,
   assetOutBalance: assetOutBalanceSelector(state),
+  hasStakingTokenMeta: state.swap.stakingAssetMetadata,
 });
 
 /**
@@ -85,7 +87,13 @@ export const TokenSwapInput = () => {
     balancesResponses,
     priceHistory,
     assetOutBalance,
+    hasStakingTokenMeta,
   } = useStoreShallow(tokenSwapInputSelector);
+  // State to manage privacy warning display
+  const [showNonNativeFeeWarning, setshowNonNativeFeeWarning] = useState(false);
+
+  // Check if the user has native staking tokens
+  const stakingToken = hasStakingToken(balancesResponses, hasStakingTokenMeta);
 
   useEffect(() => {
     if (!assetIn || !assetOut) return;
@@ -123,9 +131,9 @@ export const TokenSwapInput = () => {
           onChange={e => {
             if (!isValidAmount(e.target.value, assetIn)) return;
             setAmount(e.target.value);
+            setshowNonNativeFeeWarning(Number(e.target.value) > 0 && !stakingToken);
           }}
         />
-
         <div className='flex gap-4 sm:contents'>
           {assetIn && (
             <div className='ml-auto hidden h-full flex-col justify-end self-end sm:flex'>
@@ -162,6 +170,18 @@ export const TokenSwapInput = () => {
           />
         ) : null}
       </div>
+      {showNonNativeFeeWarning && (
+        <>
+          <div className='h-4'></div> {/* This div adds an empty line */}
+          <div className='rounded border border-yellow-500 bg-gray-800 p-4 text-yellow-500'>
+            <strong>Privacy Warning:</strong>
+            <span className='block'>
+              Using non-native tokens for transaction fees may pose a privacy risk. It is
+              recommended to use the native token (UM) for better privacy and security.
+            </span>
+          </div>
+        </>
+      )}
     </Box>
   );
 };
