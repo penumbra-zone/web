@@ -170,9 +170,9 @@ export class BlockProcessor implements BlockProcessorInterface {
         // TODO #1310 pre-populate assetId for native GasPrices using stakingTokenAssetId
         await this.indexedDb.saveGasPrices(compactBlock.gasPrices);
       }
-      if (compactBlock.altGasPrices) {
-        // TODO #1310 save altGasPrices to indexed-db
-      }
+      // if (compactBlock.altGasPrices) {
+      // TODO #1310 save altGasPrices to indexed-db
+      // }
 
       // wasm view server scan
       // - decrypts new notes
