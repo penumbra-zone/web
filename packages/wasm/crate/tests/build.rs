@@ -441,7 +441,7 @@ mod tests {
             js_constants_params_value,
             &planner_request.encode_to_vec(),
             full_viewing_key.encode_to_vec().as_slice(),
-            native_staking_token.encode_to_vec().as_slice(),
+            STAKING_TOKEN_ASSET_ID.encode_to_vec().as_slice(),
         )
         .await
         .unwrap();
