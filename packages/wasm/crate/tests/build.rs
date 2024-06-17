@@ -34,7 +34,6 @@ mod tests {
     use wasm_bindgen::JsValue;
     use wasm_bindgen_test::*;
 
-    use penumbra_proto::core::asset::v1::AssetId;
     use penumbra_wasm::planner::plan_transaction;
     use penumbra_wasm::{
         build::build_action,
