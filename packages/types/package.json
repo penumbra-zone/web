@@ -7,7 +7,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsup --clean --entry 'src/*.ts' --entry '!src/*.test.ts' --dts --minify --keep-names --format esm",
+    "build": "tsup",
     "clean": "rm -rfv dist package penumbra-zone-*.tgz",
     "lint": "eslint src",
     "prepack": "$npm_execpath run build",
@@ -17,13 +17,18 @@
     "dist"
   ],
   "exports": {
-    "./*": "./src/*.ts"
+    "./*": "./src/*.ts",
+    "./internal-msg/*": "./src/internal-msg/*.ts"
   },
   "publishConfig": {
     "exports": {
       "./*": {
         "default": "./dist/*.js",
         "types": "./dist/*.d.ts"
+      },
+      "./internal-msg/*": {
+        "default": "./dist/internal-msg/*.js",
+        "types": "./dist/internal-msg/*.d.ts"
       },
       "./chunk-*": null
     }

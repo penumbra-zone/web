@@ -8,7 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsup --clean --entry './components/**/*.ts*' --entry './lib/**/*.ts' --entry '!./**/*.test.*' --entry '!./**/*.stories.*' --dts --minify --keep-names --format 'esm'",
+    "build": "tsup",
     "build-storybook": "storybook build",
     "clean": "rm -rf dist package penumbra-zone-*.tgz",
     "lint": "eslint components lib",

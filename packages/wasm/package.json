@@ -7,7 +7,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsup --clean --entry 'src/*.ts' --entry '!src/*.test.ts' --loader '.wasm=file' --dts --minify --keep-names --format esm",
+    "build": "tsup",
     "clean": "rm -rfv dist wasm package penumbra-zone-wasm-*.tgz",
     "clean:rust": "cargo clean --manifest-path ./crate/Cargo.toml",
     "compile": "cd crate && wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",
