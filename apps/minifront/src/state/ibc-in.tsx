@@ -20,11 +20,6 @@ import { currentTimePlusTwoDaysRounded } from './ibc-out';
 import { EncodeObject } from '@cosmjs/proto-signing';
 import { MsgTransfer } from 'osmo-query/ibc/applications/transfer/v1/tx';
 
-interface PenumbraAddrs {
-  ephemeral: string;
-  normal: string;
-}
-
 export interface IbcInSlice {
   selectedChain?: ChainInfo;
   setSelectedChain: (chain?: ChainInfo) => void;
@@ -34,8 +29,6 @@ export interface IbcInSlice {
   setAmount: (amount?: string) => void;
   account: number;
   setAccount: (account: number) => void;
-  penumbraAddrs?: PenumbraAddrs;
-  fetchPenumbraAddrs: () => Promise<void>;
   issueTx: (
     getClient: ChainWalletContext['getSigningStargateClient'],
     address?: string,
@@ -69,23 +62,6 @@ export const createIbcInSlice = (): SliceCreator<IbcInSlice> => (set, get) => {
       set(state => {
         state.ibcIn.account = account;
       }),
-    penumbraAddrs: undefined,
-    fetchPenumbraAddrs: async () => {
-      const account = get().ibcIn.account;
-
-      const normalAddr = await getAddrByIndex(account, false);
-      const ephemeralAddr = await getAddrByIndex(account, true);
-
-      const chain = get().ibcIn.selectedChain;
-      if (!chain) throw new Error('No chain selected');
-
-      set(({ ibcIn }) => {
-        ibcIn.penumbraAddrs = {
-          normal: bech32mAddress(normalAddr),
-          ephemeral: getCompatibleBech32(chain.chainName, ephemeralAddr),
-        };
-      });
-    },
     issueTx: async (getClient, address) => {
       const toast = new Toast();
       try {
@@ -173,14 +149,18 @@ async function execute(
   address: string,
   getStargateClient: ChainWalletContext['getSigningStargateClient'],
 ) {
-  const { penumbraAddrs, selectedChain, coin, amount } = slice;
-  if (!penumbraAddrs) throw new Error('Penumbra address not available');
+  const { selectedChain, coin, amount, account } = slice;
+
   if (!coin) throw new Error('No token is selected');
   if (!amount) throw new Error('Amount has not been entered');
   if (!selectedChain) throw new Error('No chain has been selected');
 
   const penumbraChainId = await getChainId();
   if (!penumbraChainId) throw new Error('Penumbra chain id could not be retrieved');
+
+  const receiverAddress = await getAddrByIndex(account, true);
+  const penumbraAddress = getCompatibleBech32(selectedChain.chainName, receiverAddress);
+  if (!penumbraAddress) throw new Error('Penumbra address not available');
 
   const { timeoutHeight, timeoutTimestamp } = await getTimeout(penumbraChainId);
   const assetMetadata = augmentToAsset(coin.raw.denom, selectedChain.chainName);
@@ -190,7 +170,7 @@ async function execute(
     sourcePort: 'transfer',
     sourceChannel: getCounterpartyChannelId(selectedChain, penumbraChainId),
     sender: address,
-    receiver: penumbraAddrs.ephemeral,
+    receiver: penumbraAddress,
     token: transferToken,
     timeoutHeight,
     timeoutTimestamp,
