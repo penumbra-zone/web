@@ -65,6 +65,8 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import { ChainRegistryClient } from '@penumbra-labs/registry';
 import { PartialMessage } from '@bufbuild/protobuf';
+import { getAmountFromRecord } from '@penumbra-zone/getters/spendable-note-record';
+import { isZero } from '@penumbra-zone/types/amount';
 
 interface IndexedDbProps {
   idbVersion: number; // Incremented during schema changes
@@ -101,9 +103,11 @@ export class IndexedDb implements IndexedDbInterface {
 
         db.createObjectStore('FULL_SYNC_HEIGHT');
         db.createObjectStore('ASSETS', { keyPath: 'penumbraAssetId.inner' });
-        db.createObjectStore('SPENDABLE_NOTES', {
+        const spendableNoteStore = db.createObjectStore('SPENDABLE_NOTES', {
           keyPath: 'noteCommitment.inner',
-        }).createIndex('nullifier', 'nullifier.inner');
+        });
+        spendableNoteStore.createIndex('nullifier', 'nullifier.inner');
+        spendableNoteStore.createIndex('assetId', 'note.value.assetId.inner');
         db.createObjectStore('TRANSACTIONS', { keyPath: 'id.inner' });
         db.createObjectStore('TREE_LAST_POSITION');
         db.createObjectStore('TREE_LAST_FORGOTTEN');
@@ -146,9 +150,6 @@ export class IndexedDb implements IndexedDbInterface {
 
     const existing0thEpoch = await instance.getEpochByHeight(0n);
     if (!existing0thEpoch) await instance.addEpoch(0n); // Create first epoch
-
-    // set non-zero gas prices in indexDB since the testnet has not yet enabled gas fees.
-    await instance.initGasPrices();
 
     return instance;
   }
@@ -292,23 +293,6 @@ export class IndexedDb implements IndexedDbInterface {
     );
   }
 
-  async initGasPrices() {
-    const savedGasPrices = await this.getGasPrices();
-    // These are arbitrarily set, but can take on any value.
-    // The gas prices set here will determine the fees to use Penumbra.
-    //
-    // Note: this is a temporary measure to enable gas prices in the web, but once
-    // https://github.com/penumbra-zone/penumbra/issues/4306 is merged, we can remove this.
-    if (!savedGasPrices) {
-      await this.saveGasPrices({
-        verificationPrice: 1n,
-        executionPrice: 1n,
-        blockSpacePrice: 1n,
-        compactBlockSpacePrice: 1n,
-      });
-    }
-  }
-
   async *iterateTransactions() {
     yield* new ReadableStream(
       new IdbCursorSource(this.db.transaction('TRANSACTIONS').store.openCursor(), TransactionInfo),
@@ -399,11 +383,15 @@ export class IndexedDb implements IndexedDbInterface {
     return SwapRecord.fromJson(json);
   }
 
+  // TODO #1310 'getGasPrices()' should be renamed to 'getNativeGasPrice()'
   async getGasPrices(): Promise<GasPrices | undefined> {
+    // TODO #1310 use this.stakingTokenAssetId as the key for the query
     const jsonGasPrices = await this.db.get('GAS_PRICES', 'gas_prices');
     if (!jsonGasPrices) return undefined;
     return GasPrices.fromJson(jsonGasPrices);
   }
+
+  // TODO #1310 implement getAltGasPrices()
 
   async saveGasPrices(value: PartialMessage<GasPrices>): Promise<void> {
     await this.u.update({
@@ -823,5 +811,26 @@ export class IndexedDb implements IndexedDbInterface {
       input: Value.fromJson(result.input),
       output: Value.fromJson(result.output),
     };
+  }
+
+  fetchStakingTokenId(): AssetId {
+    const registryClient = new ChainRegistryClient();
+    const registry = registryClient.get(this.chainId);
+    const stakingToken = registry.stakingAssetId;
+
+    return stakingToken;
+  }
+
+  async hasStakingAssetBalance(assetId: AssetId): Promise<boolean> {
+    const spendableUMNotes = await this.db.getAllFromIndex(
+      'SPENDABLE_NOTES',
+      'assetId',
+      uint8ArrayToBase64(assetId.inner),
+    );
+
+    return spendableUMNotes.some(note => {
+      const umNote = SpendableNoteRecord.fromJson(note);
+      return umNote.heightSpent === 0n && !isZero(getAmountFromRecord(umNote));
+    });
   }
 }

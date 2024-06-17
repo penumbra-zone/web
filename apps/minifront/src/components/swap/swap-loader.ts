@@ -5,6 +5,7 @@ import { SwapRecord } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/vie
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { getSwappableBalancesResponses, isSwappable } from './helpers';
 import { getAllAssets } from '../../fetchers/assets';
+import { getStakingTokenMetadata } from '../../fetchers/registry';
 
 export interface UnclaimedSwapsWithMetadata {
   swap: SwapRecord;
@@ -16,11 +17,13 @@ export type SwapLoaderResponse = UnclaimedSwapsWithMetadata[];
 
 const getAndSetDefaultAssetBalances = async (swappableAssets: Metadata[]) => {
   const balancesResponses = await getSwappableBalancesResponses();
+  const stakingTokenAssetMetadata = await getStakingTokenMetadata();
 
   // set initial denom in if there is an available balance
   if (balancesResponses[0]) {
     useStore.getState().swap.setAssetIn(balancesResponses[0]);
     useStore.getState().swap.setAssetOut(swappableAssets[0]!);
+    useStore.getState().swap.setStakingAssetMetadata(stakingTokenAssetMetadata);
   }
 
   return balancesResponses;

@@ -31,12 +31,12 @@ const FEE_TIER_OPTIONS: SegmentedPickerOption<FeeTier_Tier>[] = [
 export const GasFee = ({
   fee,
   feeTier,
-  feeAssetMetadata,
+  stakingAssetMetadata,
   setFeeTier,
 }: {
   fee: Fee | undefined;
   feeTier: FeeTier_Tier;
-  feeAssetMetadata: Metadata;
+  stakingAssetMetadata: Metadata;
   setFeeTier: (feeTier: FeeTier_Tier) => void;
 }) => {
   let feeValueView: ValueView | undefined;
@@ -44,7 +44,7 @@ export const GasFee = ({
     feeValueView = new ValueView({
       valueView: {
         case: 'knownAssetId',
-        value: { amount: fee.amount, metadata: feeAssetMetadata },
+        value: { amount: fee.amount, metadata: stakingAssetMetadata },
       },
     });
 

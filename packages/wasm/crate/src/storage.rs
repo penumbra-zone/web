@@ -323,6 +323,7 @@ impl IndexedDBStorage {
             .transpose()?)
     }
 
+    // TODO #1310 should be changed to get GasPrices by assetId
     pub async fn get_gas_prices(&self) -> WasmResult<Option<JsValue>> {
         let tx = self
             .db
