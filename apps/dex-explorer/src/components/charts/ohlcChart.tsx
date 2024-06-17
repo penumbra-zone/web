@@ -6,7 +6,6 @@ import { Token } from "@/utils/types/token";
 import { LoadingSpinner } from "../util/loadingSpinner";
 import ReactECharts from "echarts-for-react";
 import { format } from "date-fns";
-import { set } from "lodash";
 
 interface OHLCChartProps {
   asset1Token: Token;
@@ -36,22 +35,110 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
     // Get data from the API
 
     // 1. First fetch ohlc data
-    const ohlcData = fetch(
+    const ohlcDataForward = fetch(
       `/api/ohlc/${asset1Token.display}/${asset2Token.display}/${startBlock}/${limit}`
     ).then((res) => res.json());
+    const ohlcDataBackward = fetch(
+      `/api/ohlc/${asset2Token.display}/${asset1Token.display}/${startBlock}/${limit}`
+    ).then((res) => res.json());
 
-    Promise.all([ohlcData])
-      .then(([ohlcDataResponse]) => {
-        if (!ohlcDataResponse || ohlcDataResponse.error) {
+    Promise.all([ohlcDataForward, ohlcDataBackward])
+      .then(([ohlcDataForwardResponse, ohlcDataBackwardResponse]) => {
+        if (
+          !ohlcDataForwardResponse ||
+          ohlcDataForwardResponse.error ||
+          !ohlcDataBackwardResponse ||
+          ohlcDataBackwardResponse.error
+        ) {
           throw new Error("Error fetching data");
         }
-        console.log("ohlcData", ohlcDataResponse);
+        console.log("ohlcDataForward", ohlcDataForwardResponse);
+        console.log("ohlcDataBackward", ohlcDataBackwardResponse);
 
-        if (ohlcDataResponse.length === 0) {
+        if (
+          ohlcDataForwardResponse.length === 0 &&
+          ohlcDataBackwardResponse.length === 0
+        ) {
           setError("No OHLC data found");
         }
 
-        setOHLCData(ohlcDataResponse);
+        // Merge the two arrays, forward will be left alone, however backward will need to have 1/price and volumes will have to account for the pricing and decimal difference
+        ohlcDataBackwardResponse.forEach((item: any) => {
+          item.open = 1 / item.open;
+          item.close = 1 / item.close;
+          item.high = 1 / item.high;
+          item.low = 1 / item.low;
+          // TODO: Adjust volumes based on price? But what price???
+          item.swapVolume =
+            (item.swapVolume * (1 / item.close)) /
+            10 ** Math.abs(asset2Token.decimals - asset2Token.decimals);
+          item.directVolume =
+            (item.directVolume * (1 / item.close)) /
+            10 ** Math.abs(asset1Token.decimals - asset2Token.decimals);
+        });
+
+        // If theres any data at the same height, combine them
+        const combinedDataMap = new Map();
+        ohlcDataForwardResponse.forEach((item: any) => {
+          if (
+            combinedDataMap.has(item.height) &&
+            combinedDataMap.get(item.height).height === item.height
+          ) {
+            const combinedItem = combinedDataMap.get(item.height);
+            // OHLC should be weighted average
+            const totalVolume = item.swapVolume + item.directVolume;
+            const oldTotalVolume =
+              combinedItem.swapVolume + combinedItem.directVolume;
+
+            combinedItem.open =
+              (combinedItem.open * oldTotalVolume + item.open * totalVolume) /
+              (oldTotalVolume + totalVolume);
+            combinedItem.close =
+              (combinedItem.close * oldTotalVolume + item.close * totalVolume) /
+              (oldTotalVolume + totalVolume);
+            combinedItem.high = Math.max(combinedItem.high, item.high);
+            combinedItem.low = Math.min(combinedItem.low, item.low);
+
+            combinedItem.directVolume += item.directVolume;
+            combinedItem.swapVolume += item.swapVolume;
+          } else {
+            combinedDataMap.set(item.height, item);
+          }
+        });
+        ohlcDataBackwardResponse.forEach((item: any) => {
+          if (
+            combinedDataMap.has(item.height) &&
+            combinedDataMap.get(item.height).height === item.height
+          ) {
+            const combinedItem = combinedDataMap.get(item.height);
+            // OHLC should be weighted average
+            const totalVolume = item.swapVolume + item.directVolume;
+            const oldTotalVolume =
+              combinedItem.swapVolume + combinedItem.directVolume;
+
+            combinedItem.open =
+              (combinedItem.open * oldTotalVolume + item.open * totalVolume) /
+              (oldTotalVolume + totalVolume);
+            combinedItem.close =
+              (combinedItem.close * oldTotalVolume + item.close * totalVolume) /
+              (oldTotalVolume + totalVolume);
+            combinedItem.high = Math.max(combinedItem.high, item.high);
+            combinedItem.low = Math.min(combinedItem.low, item.low);
+
+            combinedItem.directVolume += item.directVolume;
+            combinedItem.swapVolume += item.swapVolume;
+          } else {
+            combinedDataMap.set(item.height, item);
+          }
+        });
+
+        // Sort the data by height
+        const sortedData = Array.from(combinedDataMap.values()).sort(
+          (a, b) => a.height - b.height
+        );
+
+        console.log("Combined data map: ", combinedDataMap);
+        setOHLCData(sortedData as any);
         setIsOHLCDataLoading(false);
       })
       .catch((error) => {
@@ -146,14 +233,22 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
           );
           return null;
         }
+
+        const decimalCorrection =
+          10 ** Math.abs(asset2Token.decimals - asset1Token.decimals);
         return [
           formattedDate,
-          (ohlc["open"] as number).toFixed(6),
-          (ohlc["close"] as number).toFixed(6),
-          (ohlc["low"] as number).toFixed(6),
-          (ohlc["high"] as number).toFixed(6),
+          ((ohlc["open"] as number) / decimalCorrection).toFixed(6),
+          ((ohlc["close"] as number) / decimalCorrection).toFixed(6),
+          ((ohlc["low"] as number) / decimalCorrection).toFixed(6),
+          ((ohlc["high"] as number) / decimalCorrection).toFixed(6),
           // Volume
-          (ohlc["swapVolume"] as number).toFixed(2),
+          // Divide volume by decimals of the quote token depending on the direction of the canldestick data
+          (
+            (((ohlc["swapVolume"] as number) +
+              ohlc["directVolume"]) as number) /
+            10 ** asset1Token.decimals
+          ).toFixed(2),
         ];
       })
       .filter((item) => item !== null) as [
@@ -167,10 +262,9 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
 
     console.log("Prepared data: ", preparedData);
 
-    // Divide volume by decimals of the quote token depending on the direction of the canldestick data
     const volumePreparedData = preparedData.map((item) => [
       item[0],
-      item[5] / 10 ** asset2Token.decimals,
+      item[5],
     ]) as [string, number][];
 
     setChartData(
