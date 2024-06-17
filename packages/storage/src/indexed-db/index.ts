@@ -383,11 +383,15 @@ export class IndexedDb implements IndexedDbInterface {
     return SwapRecord.fromJson(json);
   }
 
+  // TODO #1310 'getGasPrices()' should be renamed to 'getNativeGasPrice()'
   async getGasPrices(): Promise<GasPrices | undefined> {
+    // TODO #1310 use this.stakingTokenAssetId as the key for the query
     const jsonGasPrices = await this.db.get('GAS_PRICES', 'gas_prices');
     if (!jsonGasPrices) return undefined;
     return GasPrices.fromJson(jsonGasPrices);
   }
+
+  // TODO #1310 implement getAltGasPrices()
 
   async saveGasPrices(value: PartialMessage<GasPrices>): Promise<void> {
     await this.u.update({

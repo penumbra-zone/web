@@ -28,5 +28,6 @@ export const gasPrices: Impl['gasPrices'] = async (_, ctx) => {
 
   return {
     gasPrices,
+    // TODO #1310 add altGasPrices
   };
 };

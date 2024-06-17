@@ -182,6 +182,7 @@ pub async fn plan_transaction(
     let chain_id: String = app_parameters.chain_id;
 
     // Request information about current gas prices
+    // TODO #1310 GasPrices record may not exist for alternative fee assets
     let mut gas_prices: GasPrices = {
         let gas_prices: penumbra_proto::core::component::fee::v1::GasPrices =
             serde_wasm_bindgen::from_value(
