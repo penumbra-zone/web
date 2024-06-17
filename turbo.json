@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["NODE_ENV", "MODE"],
+  "globalEnv": ["DEV"],
   "pipeline": {
     "//#clean:vitest-mjs": {
       "cache": false
@@ -21,7 +21,6 @@
     "build": {
       "dependsOn": ["compile", "^build"],
       "dotEnv": [".env"],
-      "env": ["PRAX", "IDB_VERSION"],
       "outputs": ["dist/**"]
     },
     "clean": {

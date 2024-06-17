@@ -48,9 +48,10 @@ import { processActionDutchAuctionSchedule } from './helpers/process-action-dutc
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw';
 
 declare global {
-  // `var` required for global declaration (as let/const are block scoped)
   // eslint-disable-next-line no-var
-  var ASSERT_ROOT_VALID: boolean | undefined;
+  var __DEV__: boolean | undefined;
+  // eslint-disable-next-line no-var
+  var __ASSERT_ROOT__: boolean | undefined;
 }
 
 interface QueryClientProps {
@@ -103,8 +104,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       numOfAttempts: Infinity,
       maxDelay: 20_000, // 20 seconds
       retry: async (e, attemptNumber) => {
-        if (process.env['NODE_ENV'] === 'development')
-          console.debug('Sync failure', attemptNumber, e);
+        if (globalThis.__DEV__) console.debug('Sync failure', attemptNumber, e);
         await this.viewServer.resetTreeToStored();
         return !this.abortController.signal.aborted;
       },
@@ -312,8 +312,26 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
       }
 
-      if (globalThis.ASSERT_ROOT_VALID) {
-        await this.assertRootValid(compactBlock.height);
+      if (__ASSERT_ROOT__) {
+        /*
+         * Compares the locally stored, filtered TCT root with the actual one on chain. They should match.
+         * This is expensive to do every block, so should only be done in development for debugging purposes.
+         */
+        const remoteRoot = await this.querier.cnidarium.fetchRemoteRoot(compactBlock.height);
+        const inMemoryRoot = this.viewServer.getSctRoot();
+
+        if (remoteRoot.equals(inMemoryRoot)) {
+          console.log(
+            `Block height: ${compactBlock.height} root matches remote ✅ \n`,
+            `Hash: ${uint8ArrayToHex(inMemoryRoot.inner)}`,
+          );
+        } else {
+          console.log(
+            `Block height: ${compactBlock.height} root does not match remote ❌ \n`,
+            `Local hash: ${uint8ArrayToHex(inMemoryRoot.inner)} \n`,
+            `Remote hash: ${uint8ArrayToHex(remoteRoot.inner)}`,
+          );
+        }
       }
     }
   }
@@ -522,30 +540,6 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async saveTransactions(height: bigint, relevantTx: Map<TransactionId, Transaction>) {
     for (const [id, transaction] of relevantTx) {
       await this.indexedDb.saveTransaction(id, height, transaction);
-    }
-  }
-
-  /*
-   * Compares the locally stored, filtered TCT root with the actual one on chain. They should match.
-   * This is expensive to do every block, so should only be done in development for debugging purposes.
-   * Note: In order for this to run, you must do this in the service worker console:
-   *       globalThis.ASSERT_ROOT_VALID = true
-   */
-  private async assertRootValid(blockHeight: bigint): Promise<void> {
-    const remoteRoot = await this.querier.cnidarium.fetchRemoteRoot(blockHeight);
-    const inMemoryRoot = this.viewServer.getSctRoot();
-
-    if (remoteRoot.equals(inMemoryRoot)) {
-      console.log(
-        `Block height: ${blockHeight} root matches remote ✅ \n`,
-        `Hash: ${uint8ArrayToHex(inMemoryRoot.inner)}`,
-      );
-    } else {
-      console.log(
-        `Block height: ${blockHeight} root does not match remote ❌ \n`,
-        `Local hash: ${uint8ArrayToHex(inMemoryRoot.inner)} \n`,
-        `Remote hash: ${uint8ArrayToHex(remoteRoot.inner)}`,
-      );
     }
   }
 

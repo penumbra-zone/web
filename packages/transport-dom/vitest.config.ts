@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   test: {
-    include: ['**/*.test.ts'],
+    include: ['src/*.test.ts'],
     browser: {
       name: 'chromium',
       provider: 'playwright',
