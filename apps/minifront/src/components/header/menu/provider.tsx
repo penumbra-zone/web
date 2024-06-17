@@ -32,8 +32,7 @@ export const ProviderMenu = () => {
           className={cn(
             'group',
             ...triggerStyle,
-            'w-64',
-            'flex flex-row place-items-center justify-evenly',
+            'flex flex-row gap-2 place-items-center justify-evenly whitespace-nowrap',
           )}
         >
           {manifestIconUnavailable ? (
@@ -71,7 +70,8 @@ export const ProviderMenu = () => {
     </NavigationMenu.Root>
   );
 };
-export interface ProviderManifest {
+
+interface ProviderManifest {
   options_ui?: {
     page: string;
   };

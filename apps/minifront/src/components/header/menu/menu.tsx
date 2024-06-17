@@ -6,7 +6,7 @@ import { TabletNav } from './tablet-nav';
 
 export const MenuBar = () => {
   return (
-    <div className={cn('flex w-full flex-row justify-between gap-8 list-none')}>
+    <div className={cn('flex w-full items-center justify-between gap-8 list-none')}>
       <MobileNav />
       <DesktopNav />
       <TabletNav />
