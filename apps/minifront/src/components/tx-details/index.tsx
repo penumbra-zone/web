@@ -30,7 +30,7 @@ export const TxDetails = () => {
       <RestrictMaxWidth>
         <div className='relative grid grid-std-spacing lg:grid-cols-3'>
           <Card gradient className='flex-1 p-5 md:p-4 lg:col-span-2 lg:row-span-2 xl:p-5'>
-            <TxViewer txInfo={txInfo.data} hash={txInfo.data.id} />
+            <TxViewer txInfo={txInfo.data} />
           </Card>
           <EduInfoCard
             className='row-span-1'
