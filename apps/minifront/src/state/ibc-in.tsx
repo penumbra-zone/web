@@ -32,6 +32,8 @@ export interface IbcInSlice {
   setCoin: (coin?: CosmosAssetBalance) => void;
   amount?: string;
   setAmount: (amount?: string) => void;
+  account: number;
+  setAccount: (account: number) => void;
   penumbraAddrs?: PenumbraAddrs;
   fetchPenumbraAddrs: () => Promise<void>;
   issueTx: (
@@ -62,10 +64,17 @@ export const createIbcInSlice = (): SliceCreator<IbcInSlice> => (set, get) => {
         ibcIn.coin = undefined;
       });
     },
+    account: 0,
+    setAccount: (account: number) =>
+      set(state => {
+        state.ibcIn.account = account;
+      }),
     penumbraAddrs: undefined,
     fetchPenumbraAddrs: async () => {
-      const normalAddr = await getAddrByIndex(0, false);
-      const ephemeralAddr = await getAddrByIndex(0, true);
+      const account = get().ibcIn.account;
+
+      const normalAddr = await getAddrByIndex(account, false);
+      const ephemeralAddr = await getAddrByIndex(account, true);
 
       const chain = get().ibcIn.selectedChain;
       if (!chain) throw new Error('No chain selected');
