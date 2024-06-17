@@ -312,7 +312,7 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
       }
 
-      if (__ASSERT_ROOT__) {
+      if (globalThis.__ASSERT_ROOT__) {
         /*
          * Compares the locally stored, filtered TCT root with the actual one on chain. They should match.
          * This is expensive to do every block, so should only be done in development for debugging purposes.

@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@connectrpc/connect-web": "^1.4.0",
-    "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/ui": "workspace:*",
     "date-fns": "^3.6.0",

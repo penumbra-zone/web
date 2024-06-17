@@ -6,5 +6,6 @@ export default defineConfig({
   entry: ['src/ctx/*.ts', 'src/*/index.ts'],
   format: ['esm'],
   keepNames: true,
-  minify: true,
+  minify: false,
+  splitting: false,
 });

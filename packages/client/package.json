@@ -32,11 +32,9 @@
       }
     }
   },
-  "dependencies": {
-    "@connectrpc/connect": "^1.4.0",
-    "@penumbra-zone/transport-dom": "workspace:*"
-  },
   "peerDependencies": {
-    "@penumbra-zone/protobuf": "workspace:*"
+    "@connectrpc/connect": "^1.4.0",
+    "@penumbra-zone/protobuf": "workspace:*",
+    "@penumbra-zone/transport-dom": "workspace:*"
   }
 }
