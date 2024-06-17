@@ -1,5 +1,12 @@
 # node-status
 
+## 3.0.5
+
+### Patch Changes
+
+- Updated dependencies [1ee18e0]
+  - @penumbra-zone/ui@3.6.0
+
 ## 3.0.4
 
 ### Patch Changes

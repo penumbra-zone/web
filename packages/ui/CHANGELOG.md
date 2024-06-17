@@ -1,5 +1,11 @@
 # @penumbra-zone/ui
 
+## 3.6.0
+
+### Minor Changes
+
+- 1ee18e0: relocate navigationmenu into minifront
+
 ## 3.5.0
 
 ### Minor Changes
