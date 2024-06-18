@@ -143,12 +143,10 @@ export class Key {
       // Decrypt the ciphertext using the nonce and key
       return await decrypt(box.cipherText, box.nonce, this.key);
     } catch (e) {
-      // Handle specific known errors without exposing sensitive information and avoid throwing errors
-      if (e instanceof TypeError || (e instanceof DOMException && e.name === 'OperationError')) {
-        return null;
+      // Logging a generic unknown error to avoid exposing sensitive information via throwing
+      if (!(e instanceof TypeError || (e instanceof DOMException && e.name === 'OperationError'))) {
+        console.error('Decryption failed due to an unexpected error.');
       }
-      // Log a generic error message
-      console.error('Decryption failed due to an unexpected error.');
       return null;
     }
   }
