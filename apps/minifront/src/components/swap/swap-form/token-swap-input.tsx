@@ -90,7 +90,7 @@ export const TokenSwapInput = () => {
     hasStakingTokenMeta,
   } = useStoreShallow(tokenSwapInputSelector);
   // State to manage privacy warning display
-  const [showNonNativeFeeWarning, setshowNonNativeFeeWarning] = useState(false);
+  const [showNonNativeFeeWarning, setShowNonNativeFeeWarning] = useState(false);
 
   // Check if the user has native staking tokens
   const stakingToken = hasStakingToken(balancesResponses, hasStakingTokenMeta);
@@ -131,7 +131,7 @@ export const TokenSwapInput = () => {
           onChange={e => {
             if (!isValidAmount(e.target.value, assetIn)) return;
             setAmount(e.target.value);
-            setshowNonNativeFeeWarning(Number(e.target.value) > 0 && !stakingToken);
+            setShowNonNativeFeeWarning(Number(e.target.value) > 0 && !stakingToken);
           }}
         />
         <div className='flex gap-4 sm:contents'>
