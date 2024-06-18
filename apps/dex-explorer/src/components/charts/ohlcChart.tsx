@@ -1,7 +1,7 @@
 // src/components/charts/ohlcChart.tsx
 
 import React, { useEffect, useState } from "react";
-import { VStack, Text } from "@chakra-ui/react";
+import { VStack, Text, Button, ButtonGroup } from "@chakra-ui/react";
 import { Token } from "@/utils/types/token";
 import { LoadingSpinner } from "../util/loadingSpinner";
 import ReactECharts from "echarts-for-react";
@@ -16,12 +16,16 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
   const [isOHLCDataLoading, setIsOHLCDataLoading] = useState(true);
   const [isTimestampsLoading, setIsTimestampsLoading] = useState(true);
   const [ohlcData, setOHLCData] = useState([]); // [{open, high, low, close, directVolume, swapVolume, height}]
+  const [originalOHLCData, setOriginalOHLCData] = useState([]); // [{open, high, low, close, directVolume, swapVolume, height}
   const [blockToTimestamp, setBlockToTimestamp] = useState({}); // {height: timestamp}
   const [error, setError] = useState<string | undefined>(undefined); // [error message]
   const [chartData, setChartData] = useState<
     [string, number, number, number, number][]
   >([]); // [[date, open, close, low, high]]
   const [volumeData, setVolumeData] = useState<[string, number][]>([]);
+  // Time aggregate, 30s, 1m, 5m to start off
+  const [timeAggregateSeconds, setTimeAggregateSeconds] = useState<number>(30);
+  const [isAggregating, setIsAggregating] = useState(true);
 
   // TODO: Decide how to set the start block and limit
   const startBlock = 0;
@@ -133,12 +137,13 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
         });
 
         // Sort the data by height
+        // Put it back into an array
         const sortedData = Array.from(combinedDataMap.values()).sort(
           (a, b) => a.height - b.height
         );
 
-        console.log("Combined data map: ", combinedDataMap);
         setOHLCData(sortedData as any);
+        setOriginalOHLCData(sortedData as any);
         setIsOHLCDataLoading(false);
       })
       .catch((error) => {
@@ -153,8 +158,8 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
 
   useEffect(() => {
     if (
-      !ohlcData ||
-      ohlcData.length === 0 ||
+      !originalOHLCData ||
+      originalOHLCData.length === 0 ||
       (isOHLCDataLoading && error === undefined) ||
       !isTimestampsLoading
     ) {
@@ -164,7 +169,9 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
     // Process the data and make a list of OHLC heights
     // format needed is '/api/blockTimestamps/{height1}/{height2}/{height3}'
     const timestampsForHeights = fetch(
-      `/api/blockTimestamps/${ohlcData.map((ohlc) => ohlc["height"]).join("/")}`
+      `/api/blockTimestamps/${originalOHLCData
+        .map((ohlc) => ohlc["height"])
+        .join("/")}`
     ).then((res) => res.json());
 
     Promise.all([timestampsForHeights])
@@ -180,7 +187,8 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
 
         // If we have less timestamps than heights, we need to throw an error
         if (
-          Object.keys(timestampsForHeightsResponse).length < ohlcData.length
+          Object.keys(timestampsForHeightsResponse).length <
+          originalOHLCData.length
         ) {
           throw new Error(
             `Error fetching data: ${timestampsForHeightsResponse}`
@@ -207,10 +215,15 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
         setIsLoading(false);
         setIsTimestampsLoading(false);
       });
-  }, [ohlcData, isOHLCDataLoading]);
+  }, [originalOHLCData, isOHLCDataLoading]);
 
   useEffect(() => {
-    if (isOHLCDataLoading || isTimestampsLoading) {
+    if (
+      isOHLCDataLoading ||
+      isTimestampsLoading ||
+      error !== undefined ||
+      isAggregating
+    ) {
       return;
     }
 
@@ -231,6 +244,7 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
               blockToTimestamp[ohlc["height"]]
             }`
           );
+          setError("Missing timestamp for height " + ohlc["height"]);
           return null;
         }
 
@@ -273,7 +287,95 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
     setVolumeData(volumePreparedData);
 
     setIsLoading(false);
-  }, [ohlcData, blockToTimestamp, isOHLCDataLoading, isTimestampsLoading]);
+  }, [
+    ohlcData,
+    blockToTimestamp,
+    isOHLCDataLoading,
+    isTimestampsLoading,
+    error,
+    isAggregating,
+  ]);
+
+  // Aggregate data base on the timeAggregateSeconds
+  useEffect(() => {
+    if (isOHLCDataLoading || isTimestampsLoading) {
+      return;
+    }
+
+    setIsLoading(true);
+    setIsAggregating(true);
+
+    // Function to aggregate OHLC data into time intervals
+    const aggregateOHLCData = () => {
+      const aggregatedData: any[] = [];
+      const intervalInMillis = timeAggregateSeconds * 1000;
+
+      let currentBatch: any[] = [];
+      let currentBatchStartTime: Date | null = null;
+
+      // ! Always aggregated based on the originalOHLCData
+      originalOHLCData.forEach((ohlc) => {
+        const timestamp = new Date(blockToTimestamp[ohlc["height"]]);
+
+        if (!currentBatchStartTime) {
+          currentBatchStartTime = timestamp;
+        }
+
+        // Check if current timestamp is within the current batch interval
+        if (
+          timestamp.getTime() <
+          currentBatchStartTime.getTime() + intervalInMillis
+        ) {
+          currentBatch.push(ohlc);
+        } else {
+          // If it's outside the current batch interval, push current batch to aggregated data
+          if (currentBatch.length > 0) {
+            aggregatedData.push(batchOHLCData(currentBatch));
+          }
+
+          // Start new batch
+          currentBatch = [ohlc];
+          currentBatchStartTime = timestamp;
+        }
+      });
+
+      // Push the last batch
+      if (currentBatch.length > 0) {
+        aggregatedData.push(batchOHLCData(currentBatch));
+      }
+
+      return aggregatedData;
+    };
+
+    // Function to batch OHLC data into a single OHLC object
+    const batchOHLCData = (batch: any[]) => {
+      const aggregatedOHLC: any = {
+        open: batch[0].open,
+        high: Math.max(...batch.map((ohlc) => ohlc.high)),
+        low: Math.min(...batch.map((ohlc) => ohlc.low)),
+        close: batch[batch.length - 1].close,
+        directVolume: batch.reduce((acc, ohlc) => acc + ohlc.directVolume, 0),
+        swapVolume: batch.reduce((acc, ohlc) => acc + ohlc.swapVolume, 0),
+        height: batch[0].height,
+      };
+
+      return aggregatedOHLC;
+    };
+
+    const aggregatedData = aggregateOHLCData();
+    console.log("Aggregated data: ", aggregatedData);
+
+    // Further processing or state setting with aggregatedData
+    setOHLCData(aggregatedData as any);
+    setIsLoading(false);
+    setIsAggregating(false);
+  }, [
+    timeAggregateSeconds,
+    isOHLCDataLoading,
+    isTimestampsLoading,
+    blockToTimestamp,
+    error,
+  ]);
 
   const options = {
     xAxis: [
@@ -442,10 +544,59 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
           <Text>{`${error}`}</Text>
         </VStack>
       ) : (
-        <ReactECharts
-          option={options}
-          style={{ height: "600px", width: "100%" }}
-        />
+        <>
+          <VStack flex={1} height="100%" width="100%" position="relative">
+            <ButtonGroup
+              size="xs"
+              isAttached
+              alignContent={"right"}
+              position={"absolute"}
+              top={0}
+              left={-1}
+              zIndex={1}
+              borderRadius={10}
+              outline={"2px solid var(--complimentary-background)"}
+            >
+              <Button
+                borderRadius={10}
+                onClick={() => setTimeAggregateSeconds(30)}
+                colorScheme={
+                  timeAggregateSeconds === 30
+                    ? "purple"
+                    : "var(--charcoal-tertiary-blended)"
+                }
+              >
+                30s
+              </Button>
+              <Button
+                borderRadius={10}
+                onClick={() => setTimeAggregateSeconds(60)}
+                colorScheme={
+                  timeAggregateSeconds === 60
+                    ? "purple"
+                    : "var(--charcoal-tertiary-blended)"
+                }
+              >
+                1m
+              </Button>
+              <Button
+                borderRadius={10}
+                onClick={() => setTimeAggregateSeconds(60 * 5)}
+                colorScheme={
+                  timeAggregateSeconds === 60 * 5
+                    ? "purple"
+                    : "var(--charcoal-tertiary-blended)"
+                }
+              >
+                5m
+              </Button>
+            </ButtonGroup>
+            <ReactECharts
+              option={options}
+              style={{ height: "600px", width: "105%" }}
+            />
+          </VStack>
+        </>
       )}
     </VStack>
   );
