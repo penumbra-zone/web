@@ -3,17 +3,20 @@
   "version": "7.1.1",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
+  "engine": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "tsc --build",
     "clean": "rm -rfv dist wasm package penumbra-zone-wasm-*.tgz",
     "clean:rust": "cargo clean --manifest-path ./crate/Cargo.toml",
-    "compile": "cd crate && wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm && touch ../wasm/.npmignore",
+    "compile": "cd crate && wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",
     "dev": "cargo watch -C ./crate --postpone -- pnpm turbo run compile",
     "format:rust": "cd crate && cargo fmt --all",
     "lint": "eslint src",
     "lint:rust": "cd crate && cargo fmt --all -- --check && cargo clippy -- -D warnings && cargo clippy --tests -- -D warnings",
+    "postcompile": "touch ./wasm/.npmignore",
     "prebuild": "tsc --build --clean",
-    "prepack": "$npm_execpath run build",
     "test": "vitest run",
     "test:rust": "cd crate && wasm-pack test --headless --firefox -- --test build --target wasm32-unknown-unknown --release --features 'mock-database'"
   },
@@ -32,22 +35,17 @@
       }
     }
   },
-  "dependencies": {
-    "@penumbra-zone/protobuf": "workspace:*",
-    "@penumbra-zone/types": "workspace:*",
-    "zod": "^3.23.8"
-  },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
-    "@bufbuild/protobuf": "^1.10.0",
-    "@penumbra-zone/bech32m": "workspace:*",
     "fake-indexeddb": "^6.0.0"
   },
   "optionalDependencies": {
     "@penumbra-zone/keys": "workspace:*"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
-    "@bufbuild/protobuf": "^1.10.0"
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240616005217-ca45ca80333e.1",
+    "@bufbuild/protobuf": "^1.10.0",
+    "@penumbra-zone/bech32m": "workspace:*",
+    "@penumbra-zone/protobuf": "workspace:*",
+    "@penumbra-zone/types": "workspace:*"
   }
 }

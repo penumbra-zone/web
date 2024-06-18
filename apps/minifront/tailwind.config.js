@@ -1,1 +1,1 @@
-export { default } from '@penumbra-zone/tailwind-config';
+export { default } from '@repo/tailwind-config';

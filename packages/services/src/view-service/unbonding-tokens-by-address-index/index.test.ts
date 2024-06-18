@@ -10,7 +10,6 @@ import { ViewService } from '@penumbra-zone/protobuf';
 import { createContextValues, createHandlerContext, PromiseClient } from '@connectrpc/connect';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { unbondingTokensByAddressIndex } from '.';
-import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { getDisplayDenomFromView } from '@penumbra-zone/getters/value-view';
 import { StakeService } from '@penumbra-zone/protobuf';
 import { stakeClientCtx } from '../../ctx/stake-client';

@@ -1,10 +1,10 @@
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { cn } from '@repo/ui/lib/utils';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { getChainId } from '../../../fetchers/chain-id';
 import { useCallback, useEffect, useState } from 'react';
-import { getPraxManifest, getPraxOrigin } from '@penumbra-zone/client/prax';
 import { itemStyle, triggerStyle, dropdownStyle, linkStyle } from './nav-style';
 import { Link1Icon } from '@radix-ui/react-icons';
+import { getPraxManifest, getPraxOrigin } from '../../../prax';
 
 export const ProviderMenu = () => {
   const [chainId, setChainId] = useState<string | undefined>();

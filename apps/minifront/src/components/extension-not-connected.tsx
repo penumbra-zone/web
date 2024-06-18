@@ -1,12 +1,12 @@
-import { Button } from '@penumbra-zone/ui/components/ui/button';
-import { Toaster } from '@penumbra-zone/ui/components/ui/toaster';
-import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
-import { errorToast, warningToast } from '@penumbra-zone/ui/lib/toast/presets';
+import { Button } from '@repo/ui/components/ui/button';
+import { Toaster } from '@repo/ui/components/ui/toaster';
+import { SplashPage } from '@repo/ui/components/ui/splash-page';
+import { errorToast, warningToast } from '@repo/ui/lib/toast/presets';
 import { HeadTag } from './metadata/head-tag';
 
-import { requestPraxAccess } from '@penumbra-zone/client/prax';
 import { useState } from 'react';
 import { PenumbraRequestFailure } from '@penumbra-zone/client';
+import { requestPraxAccess } from '../prax';
 
 const handleErr = (e: unknown) => {
   if (e instanceof Error && e.cause) {

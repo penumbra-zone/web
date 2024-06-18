@@ -36,7 +36,6 @@ import { splitLoHi, toBaseUnit } from '@penumbra-zone/types/lo-hi';
 import { viewClient } from '../../clients';
 import { getValueView as getValueViewFromDelegationsByAddressIndexResponse } from '@penumbra-zone/getters/delegations-by-address-index-response';
 import { getValueView as getValueViewFromUnbondingTokensByAddressIndexResponse } from '@penumbra-zone/getters/unbonding-tokens-by-address-index-response';
-import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { getStakingTokenMetadata } from '../../fetchers/registry';
 import { zeroValueView } from '../../utils/zero-value-view';
 import { assetPatterns } from '@penumbra-zone/types/assets';

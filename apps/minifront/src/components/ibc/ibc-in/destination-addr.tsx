@@ -1,6 +1,6 @@
 import { AllSlices } from '../../../state';
 import { useEffect } from 'react';
-import { IncognitoIcon } from '@penumbra-zone/ui/components/ui/icons/incognito';
+import { IncognitoIcon } from '@repo/ui/components/ui/icons/incognito';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 
 const addrsSelector = ({ ibcIn }: AllSlices) => ({

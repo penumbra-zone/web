@@ -1,8 +1,8 @@
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
-import { Box } from '@penumbra-zone/ui/components/ui/box';
-import { CandlestickPlot } from '@penumbra-zone/ui/components/ui/candlestick-plot';
-import { Input } from '@penumbra-zone/ui/components/ui/input';
+import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';
+import { Box } from '@repo/ui/components/ui/box';
+import { CandlestickPlot } from '@repo/ui/components/ui/candlestick-plot';
+import { Input } from '@repo/ui/components/ui/input';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import {
   getAmount,

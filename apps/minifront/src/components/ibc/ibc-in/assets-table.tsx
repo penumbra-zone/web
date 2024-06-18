@@ -8,9 +8,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@penumbra-zone/ui/components/ui/table';
-import { Avatar, AvatarImage } from '@penumbra-zone/ui/components/ui/avatar';
-import { Identicon } from '@penumbra-zone/ui/components/ui/identicon';
+} from '@repo/ui/components/ui/table';
+import { Avatar, AvatarImage } from '@repo/ui/components/ui/avatar';
+import { Identicon } from '@repo/ui/components/ui/identicon';
 import { LineWave } from 'react-loader-spinner';
 
 export const AssetsTable = () => {

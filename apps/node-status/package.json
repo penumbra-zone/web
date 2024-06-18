@@ -12,13 +12,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
-    "@buf/tendermint_tendermint.bufbuild_es": "1.9.0-20231117195010-33ed361a9051.1",
     "@connectrpc/connect-web": "^1.4.0",
-    "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
-    "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/ui": "workspace:*",
+    "@repo/ui": "workspace:*",
     "date-fns": "^3.6.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -27,6 +23,8 @@
     "tailwindcss": "^3.4.3"
   },
   "devDependencies": {
+    "@penumbra-zone/crypto-web": "workspace:*",
+    "@penumbra-zone/types": "workspace:*",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0"
   }

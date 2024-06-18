@@ -1,11 +1,8 @@
-import { RootQuerier } from './root-querier';
-import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
-import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/dex';
-
 import {
-  getExchangeRateFromValidatorInfoResponse,
-  getIdentityKeyFromValidatorInfoResponse,
-} from '@penumbra-zone/getters/validator-info-response';
+  AssetId,
+  Metadata,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
 import {
   PositionState,
   PositionState_PositionStateEnum,
@@ -14,6 +11,7 @@ import {
   CommitmentSource,
   Nullifier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/sct/v1/sct_pb';
+import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import {
   Action,
   Transaction,
@@ -24,33 +22,35 @@ import {
   SpendableNoteRecord,
   SwapRecord,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { backOff } from 'exponential-backoff';
+import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
+import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
+import { sha256Hash } from '@penumbra-zone/crypto-web/sha256';
+import { getAssetId } from '@penumbra-zone/getters/metadata';
+import {
+  getExchangeRateFromValidatorInfoResponse,
+  getIdentityKeyFromValidatorInfoResponse,
+} from '@penumbra-zone/getters/validator-info-response';
+import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
+import { PRICE_RELEVANCE_THRESHOLDS, assetPatterns } from '@penumbra-zone/types/assets';
 import type { BlockProcessorInterface } from '@penumbra-zone/types/block-processor';
+import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import type { IndexedDbInterface } from '@penumbra-zone/types/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/servers';
-import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
-import { updatePricesFromSwaps } from './price-indexer';
-import {
-  AssetId,
-  Metadata,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { bech32mIdentityKey } from '@penumbra-zone/bech32m/penumbravalid';
-import { getAssetId } from '@penumbra-zone/getters/metadata';
-import { PRICE_RELEVANCE_THRESHOLDS, assetPatterns } from '@penumbra-zone/types/assets';
-import { toDecimalExchangeRate } from '@penumbra-zone/types/amount';
-import { ValidatorInfoResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
-import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
-import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
-import { auctionIdFromBech32 } from '@penumbra-zone/bech32m/pauctid';
 import { ScanBlockResult } from '@penumbra-zone/types/state-commitment-tree';
+import { computePositionId, getLpNftMetadata } from '@penumbra-zone/wasm/dex';
+import { customizeSymbol } from '@penumbra-zone/wasm/metadata';
+import { backOff } from 'exponential-backoff';
+import { updatePricesFromSwaps } from './helpers/price-indexer';
 import { processActionDutchAuctionEnd } from './helpers/process-action-dutch-auction-end';
 import { processActionDutchAuctionSchedule } from './helpers/process-action-dutch-auction-schedule';
 import { processActionDutchAuctionWithdraw } from './helpers/process-action-dutch-auction-withdraw';
+import { RootQuerier } from './root-querier';
 
 declare global {
-  // `var` required for global declaration (as let/const are block scoped)
   // eslint-disable-next-line no-var
-  var ASSERT_ROOT_VALID: boolean | undefined;
+  var __DEV__: boolean | undefined;
+  // eslint-disable-next-line no-var
+  var __ASSERT_ROOT__: boolean | undefined;
 }
 
 interface QueryClientProps {
@@ -103,8 +103,7 @@ export class BlockProcessor implements BlockProcessorInterface {
       numOfAttempts: Infinity,
       maxDelay: 20_000, // 20 seconds
       retry: async (e, attemptNumber) => {
-        if (process.env['NODE_ENV'] === 'development')
-          console.debug('Sync failure', attemptNumber, e);
+        if (globalThis.__DEV__) console.debug('Sync failure', attemptNumber, e);
         await this.viewServer.resetTreeToStored();
         return !this.abortController.signal.aborted;
       },
@@ -312,9 +311,31 @@ export class BlockProcessor implements BlockProcessorInterface {
         await this.handleEpochTransition(compactBlock.height, latestKnownBlockHeight);
       }
 
-      if (globalThis.ASSERT_ROOT_VALID) {
+      if (globalThis.__ASSERT_ROOT__) {
         await this.assertRootValid(compactBlock.height);
       }
+    }
+  }
+
+  /*
+   * Compares the locally stored, filtered TCT root with the actual one on chain. They should match.
+   * This is expensive to do every block, so should only be done in development for debugging purposes.
+   */
+  private async assertRootValid(blockHeight: bigint): Promise<void> {
+    const remoteRoot = await this.querier.cnidarium.fetchRemoteRoot(blockHeight);
+    const inMemoryRoot = this.viewServer.getSctRoot();
+
+    if (remoteRoot.equals(inMemoryRoot)) {
+      console.debug(
+        `Block height: ${blockHeight} root matches remote ✅ \n`,
+        `Hash: ${uint8ArrayToHex(inMemoryRoot.inner)}`,
+      );
+    } else {
+      console.warn(
+        `Block height: ${blockHeight} root does not match remote ❌ \n`,
+        `Local hash: ${uint8ArrayToHex(inMemoryRoot.inner)} \n`,
+        `Remote hash: ${uint8ArrayToHex(remoteRoot.inner)}`,
+      );
     }
   }
 
@@ -522,30 +543,6 @@ export class BlockProcessor implements BlockProcessorInterface {
   private async saveTransactions(height: bigint, relevantTx: Map<TransactionId, Transaction>) {
     for (const [id, transaction] of relevantTx) {
       await this.indexedDb.saveTransaction(id, height, transaction);
-    }
-  }
-
-  /*
-   * Compares the locally stored, filtered TCT root with the actual one on chain. They should match.
-   * This is expensive to do every block, so should only be done in development for debugging purposes.
-   * Note: In order for this to run, you must do this in the service worker console:
-   *       globalThis.ASSERT_ROOT_VALID = true
-   */
-  private async assertRootValid(blockHeight: bigint): Promise<void> {
-    const remoteRoot = await this.querier.cnidarium.fetchRemoteRoot(blockHeight);
-    const inMemoryRoot = this.viewServer.getSctRoot();
-
-    if (remoteRoot.equals(inMemoryRoot)) {
-      console.log(
-        `Block height: ${blockHeight} root matches remote ✅ \n`,
-        `Hash: ${uint8ArrayToHex(inMemoryRoot.inner)}`,
-      );
-    } else {
-      console.log(
-        `Block height: ${blockHeight} root does not match remote ❌ \n`,
-        `Local hash: ${uint8ArrayToHex(inMemoryRoot.inner)} \n`,
-        `Remote hash: ${uint8ArrayToHex(remoteRoot.inner)}`,
-      );
     }
   }
 

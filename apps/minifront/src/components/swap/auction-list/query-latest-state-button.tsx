@@ -3,10 +3,10 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@penumbra-zone/ui/components/ui/tooltip';
+} from '@repo/ui/components/ui/tooltip';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { useAuctionInfos, useRevalidateAuctionInfos } from '../../../state/swap/dutch-auction';
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { cn } from '@repo/ui/lib/utils';
 
 export const QueryLatestStateButton = () => {
   const { loading } = useAuctionInfos();

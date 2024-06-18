@@ -1,8 +1,4 @@
-import {
-  isPraxConnected,
-  throwIfPraxNotConnected,
-  throwIfPraxNotInstalled,
-} from '@penumbra-zone/client/prax';
+import { isPraxConnected, throwIfPraxNotConnected, throwIfPraxNotInstalled } from './prax';
 
 /**
  * Retry test, resolving `true`, or resolving `false` if timeout reached.

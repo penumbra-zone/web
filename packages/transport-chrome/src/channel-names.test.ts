@@ -10,7 +10,7 @@ describe('nameConnection', () => {
     expect(segments.length).toBe(3);
     expect(segments[0]).toBe(prefix);
     expect(segments[1]).toBe(label);
-    expect(segments[2].length).toBe(36);
+    expect(segments[2]?.length).toBe(36);
   });
 });
 

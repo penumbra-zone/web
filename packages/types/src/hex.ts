@@ -1,11 +1,15 @@
 import { Base64StringSchema } from './base64';
-import { validateSchema } from './validation';
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __DEV__: boolean | undefined;
+}
 
 /**
  * @see https://stackoverflow.com/a/39460727/974981
  */
 export const base64ToHex = (base64: string): string => {
-  const validated = validateSchema(Base64StringSchema, base64);
+  const validated = globalThis.__DEV__ ? Base64StringSchema.parse(base64) : base64;
   const bytes = atob(validated);
 
   let result = '';

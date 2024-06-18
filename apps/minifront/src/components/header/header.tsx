@@ -1,5 +1,5 @@
-import { CondensedBlockSyncStatus } from '@penumbra-zone/ui/components/ui/block-sync-status/condensed';
-import { TestnetBanner } from '@penumbra-zone/ui/components/ui/testnet-banner';
+import { CondensedBlockSyncStatus } from '@repo/ui/components/ui/block-sync-status/condensed';
+import { TestnetBanner } from '@repo/ui/components/ui/testnet-banner';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getChainId } from '../../fetchers/chain-id';

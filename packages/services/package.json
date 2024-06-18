@@ -3,42 +3,51 @@
   "version": "4.1.1",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
+  "engine": {
+    "node": ">=22"
+  },
   "scripts": {
+    "build": "tsc --build",
+    "clean": "rm -rfv dist package penumbra-zone-*.tgz tsconfig.tsbuildinfo",
     "lint": "eslint src",
     "test": "vitest run"
   },
   "files": [
-    "src/",
-    "*.md",
-    "!**/*.test.ts",
-    "!test-utils.ts"
+    "dist"
   ],
   "exports": {
     "./ctx/*": "./src/ctx/*.ts",
     "./*": "./src/*/index.ts"
   },
-  "dependencies": {
+  "publishConfig": {
+    "exports": {
+      "./ctx/*": {
+        "default": "./dist/ctx/*.js",
+        "types": "./dist/ctx/*.d.ts"
+      },
+      "./*": {
+        "default": "./dist/*/index.js",
+        "types": "./dist/*/index.d.ts"
+      }
+    }
+  },
+  "devDependencies": {
+    "@penumbra-zone/bech32m": "workspace:*",
+    "@types/chrome": "^0.0.268"
+  },
+  "peerDependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240616005217-ca45ca80333e.1",
+    "@bufbuild/protobuf": "^1.10.0",
+    "@connectrpc/connect": "^1.4.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/crypto-web": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/perspective": "workspace:*",
-    "@penumbra-zone/polyfills": "workspace:*",
     "@penumbra-zone/protobuf": "workspace:*",
     "@penumbra-zone/query": "workspace:*",
-    "@penumbra-zone/services-context": "workspace:*",
     "@penumbra-zone/storage": "workspace:*",
     "@penumbra-zone/transport-dom": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
-  },
-  "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
-    "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0"
-  },
-  "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
-    "@bufbuild/protobuf": "^1.10.0",
-    "@connectrpc/connect": "^1.4.0"
   }
 }

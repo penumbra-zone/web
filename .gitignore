@@ -59,3 +59,5 @@ lerna-debug.log*
 # pack outputs
 penumbra-zone-*.tgz
 packages/*/package
+
+tsconfig.tsbuildinfo

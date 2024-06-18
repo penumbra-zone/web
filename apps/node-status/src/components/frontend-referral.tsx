@@ -1,9 +1,9 @@
-import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Button } from '@repo/ui/components/ui/button';
 import { devFrontend, prodFrontend } from '../constants';
 
 export const FrontendReferral = () => {
   const onClickHandler = () => {
-    window.open(import.meta.env.MODE === 'production' ? prodFrontend : devFrontend);
+    window.open(import.meta.env.DEV ? devFrontend : prodFrontend);
   };
 
   return (

@@ -3,37 +3,40 @@
   "version": "4.0.1",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
+  "engine": {
+    "node": ">=22"
+  },
   "scripts": {
+    "build": "tsc --build",
+    "clean": "rm -rfv dist package penumbra-zone-transport-dom-*.tgz",
     "lint": "eslint src",
     "test": "vitest run"
   },
   "files": [
-    "src/",
-    "*.md",
-    "!**/*.test.ts",
-    "!src/chrome/test-utils/"
+    "dist",
+    "!dist/**/*.test*"
   ],
   "exports": {
-    "./chrome/*": "./src/chrome/*.ts",
-    "./indexed-db": "./src/indexed-db/index.ts",
-    "./indexed-db/*": "./src/indexed-db/*.ts"
+    "./indexed-db": "./src/indexed-db/index.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      "./indexed-db": {
+        "default": "./dist/indexed-db/index.js",
+        "types": "./dist/indexed-db/index.d.ts"
+      }
+    }
   },
   "dependencies": {
     "@penumbra-labs/registry": "8.0.1",
-    "@penumbra-zone/bech32m": "workspace:*",
-    "@penumbra-zone/crypto-web": "workspace:*",
-    "@penumbra-zone/getters": "workspace:*",
     "idb": "^8.0.0"
   },
-  "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
+  "peerDependencies": {
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240616005217-ca45ca80333e.1",
     "@bufbuild/protobuf": "^1.10.0",
-    "@penumbra-zone/polyfills": "workspace:*",
+    "@penumbra-zone/bech32m": "workspace:*",
+    "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/types": "workspace:*",
     "@penumbra-zone/wasm": "workspace:*"
-  },
-  "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
-    "@bufbuild/protobuf": "^1.10.0"
   }
 }

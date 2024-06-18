@@ -4,15 +4,24 @@
   "license": "(MIT OR Apache-2.0)",
   "description": "Tools for assuming different perspectives of Penumbra transactions",
   "type": "module",
+  "engine": {
+    "node": ">=22"
+  },
   "scripts": {
-    "build": "vite build",
-    "clean": "rm -rfv dist",
-    "lint": "eslint plan transaction translators",
+    "build": "tsc --build",
+    "clean": "rm -rfv dist package penumbra-zone-*.tgz tsconfig.tsbuildinfo",
+    "lint": "eslint src",
     "test": "vitest run"
   },
   "files": [
-    "./dist"
+    "dist",
+    "!dist/**/*.test.*"
   ],
+  "exports": {
+    "./plan/*": "./src/plan/*.ts",
+    "./transaction/*": "./src/transaction/*.ts",
+    "./translators/*": "./src/translators/*.ts"
+  },
   "publishConfig": {
     "exports": {
       "./plan/*": {
@@ -29,16 +38,13 @@
       }
     }
   },
-  "dependencies": {
-    "@penumbra-zone/bech32m": "workspace:*",
-    "@penumbra-zone/getters": "workspace:*",
-    "@penumbra-zone/types": "workspace:*",
-    "@penumbra-zone/wasm": "workspace:*"
-  },
   "devDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1"
+    "@penumbra-zone/bech32m": "workspace:*"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1"
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240616005217-ca45ca80333e.1",
+    "@penumbra-zone/bech32m": "workspace:*",
+    "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/wasm": "workspace:*"
   }
 }

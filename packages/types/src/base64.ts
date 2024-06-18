@@ -1,5 +1,9 @@
-import { validateSchema } from './validation';
 import { z } from 'zod';
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __DEV__: boolean | undefined;
+}
 
 export const Base64StringSchema = z.string().refine(
   str => {
@@ -17,7 +21,7 @@ export type Base64Str = z.infer<typeof Base64StringSchema>;
 export const InnerBase64Schema = z.object({ inner: Base64StringSchema });
 
 export const base64ToUint8Array = (base64: string): Uint8Array => {
-  const validated = validateSchema(Base64StringSchema, base64);
+  const validated = globalThis.__DEV__ ? Base64StringSchema.parse(base64) : base64;
   const binString = atob(validated);
   return Uint8Array.from(binString, byte => byte.codePointAt(0)!);
 };
