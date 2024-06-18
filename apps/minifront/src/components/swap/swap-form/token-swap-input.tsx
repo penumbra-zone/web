@@ -26,6 +26,8 @@ import BalanceSelector from '../../shared/balance-selector';
 import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { useStatus } from '../../../state/status';
 import { hasStakingToken } from '../../../fetchers/staking-token';
+import { useStakingTokenMetadata } from '../../../state/shared';
+import { useBalancesResponses, useSwappableAssets } from '../../../state/swap';
 
 const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
@@ -39,7 +41,11 @@ const getKnownZeroValueView = (metadata?: Metadata) => {
   });
 };
 
-const assetOutBalanceSelector = ({ swap: { balancesResponses, assetIn, assetOut } }: AllSlices) => {
+const getAssetOutBalance = (
+  balancesResponses: BalancesResponse[] = [],
+  assetIn?: BalancesResponse,
+  assetOut?: Metadata,
+) => {
   if (!assetIn || !assetOut) return getKnownZeroValueView();
 
   const match = balancesResponses.find(balance => {
@@ -54,17 +60,13 @@ const assetOutBalanceSelector = ({ swap: { balancesResponses, assetIn, assetOut 
 };
 
 const tokenSwapInputSelector = (state: AllSlices) => ({
-  swappableAssets: state.swap.swappableAssets,
   assetIn: state.swap.assetIn,
   setAssetIn: state.swap.setAssetIn,
   assetOut: state.swap.assetOut,
   setAssetOut: state.swap.setAssetOut,
   amount: state.swap.amount,
   setAmount: state.swap.setAmount,
-  balancesResponses: state.swap.balancesResponses,
   priceHistory: state.swap.priceHistory,
-  assetOutBalance: assetOutBalanceSelector(state),
-  hasStakingTokenMeta: state.swap.stakingAssetMetadata,
 });
 
 /**
@@ -76,24 +78,16 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
 export const TokenSwapInput = () => {
   const status = useStatus();
   const latestKnownBlockHeight = status.data?.latestKnownBlockHeight ?? 0n;
-  const {
-    swappableAssets,
-    amount,
-    setAmount,
-    assetIn,
-    setAssetIn,
-    assetOut,
-    setAssetOut,
-    balancesResponses,
-    priceHistory,
-    assetOutBalance,
-    hasStakingTokenMeta,
-  } = useStoreShallow(tokenSwapInputSelector);
+  const stakingTokenMetadata = useStakingTokenMetadata();
+  const balancesResponses = useBalancesResponses();
+  const swappableAssets = useSwappableAssets();
+  const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, priceHistory } =
+    useStoreShallow(tokenSwapInputSelector);
   // State to manage privacy warning display
   const [showNonNativeFeeWarning, setShowNonNativeFeeWarning] = useState(false);
+  const assetOutBalance = getAssetOutBalance(balancesResponses.data, assetIn, assetOut);
 
-  // Check if the user has native staking tokens
-  const stakingToken = hasStakingToken(balancesResponses, hasStakingTokenMeta);
+  const userHasStakingToken = hasStakingToken(balancesResponses.data, stakingTokenMetadata.data);
 
   useEffect(() => {
     if (!assetIn || !assetOut) return;
@@ -131,7 +125,7 @@ export const TokenSwapInput = () => {
           onChange={e => {
             if (!isValidAmount(e.target.value, assetIn)) return;
             setAmount(e.target.value);
-            setShowNonNativeFeeWarning(Number(e.target.value) > 0 && !stakingToken);
+            setShowNonNativeFeeWarning(Number(e.target.value) > 0 && !userHasStakingToken);
           }}
         />
         <div className='flex gap-4 sm:contents'>
@@ -144,7 +138,13 @@ export const TokenSwapInput = () => {
           )}
 
           <div className='flex h-full flex-col gap-2'>
-            <BalanceSelector value={assetIn} onChange={setAssetIn} balances={balancesResponses} />
+            {balancesResponses.data && (
+              <BalanceSelector
+                value={assetIn}
+                onChange={setAssetIn}
+                balances={balancesResponses.data}
+              />
+            )}
             {assetIn?.balanceView && (
               <BalanceValueView valueView={assetIn.balanceView} onClick={setInputToBalanceMax} />
             )}
@@ -155,7 +155,14 @@ export const TokenSwapInput = () => {
           </div>
 
           <div className='flex h-full flex-col gap-2'>
-            <AssetSelector assets={swappableAssets} value={assetOut} onChange={setAssetOut} />
+            {swappableAssets.data && (
+              <AssetSelector
+                assets={swappableAssets.data}
+                value={assetOut}
+                onChange={setAssetOut}
+              />
+            )}
+
             {assetOut && <BalanceValueView valueView={assetOutBalance} />}
           </div>
         </div>
