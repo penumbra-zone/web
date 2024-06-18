@@ -24,14 +24,14 @@ In https://github.com/penumbra-zone/web/pull/38, we implement secure password-ba
 
 Currently, the key material is stored only in the extension's session storage upon login and is correctly cleared when the extension is locked. This key material is used to unseal the encrypted seed phrase ciphertext stored in local state storage and generate the associated spend key.
 
-#### <ins>Remediations</ins>
+#### <ins>Possible Remediation</ins>
 
 While this behavior is correct and expected, there are additional potential privacy-related leaks to consider:
 
 1. The full viewing key material is generated from the spend key, and the plaintext JSON of the full viewing key is stored in local state storage. When the extension is locked, a potential attacker with access to the console can still execute `chrome.storage.local.get().then(console.log)` and access the full viewing key in the clear. To mitigate this, we should:
 
    - Ensure that all access to sensitive data in state storage is gated behind an authentication check to ensure user has logged in,
-   - Consider storing the encrypted full viewing key or not storing the full viewing key at all and deriving it from the spend key each time it is needed.
+   - Consider storing the encrypted full viewing key in local storage / not storing the full viewing key at all, and decrypting / deriving it in session storage from the spend key each time it is needed. **_update_**: the non-encrypted FVK is stored in local storage, which enables block syncing when the extension is logged out. This is an explicit design goal where _read_ access happens when logged out and _write_ access requires login and explicit user authentication.
 
 2. Require a password for the extension upon mainnet launch and warn users that setting an empty password is not advised.
 3. Avoid transmitting errors by default in case keys are exposed in error data. Currently, `unseal` method for instance has the potential to transmit errors that could expose sensitive key information through the error data. Instead, handle errors securely and generalize the emitted error messages.
@@ -53,12 +53,6 @@ WebAssembly.instantiate(maliciousCode, {}).then(instance => {
 });
 ```
 
-#### <ins>Remediations</ins>
+#### <ins>Possible Remediation</ins>
 
 We may instead want to consider serving the Webassembly modules as static files. This approach would allow prax to maintain a more strict content security policy.
-
-```
-Invariant 3.
-
-The extension is not improperly missigning transactions.
-```
