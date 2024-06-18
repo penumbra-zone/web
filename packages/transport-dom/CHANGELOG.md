@@ -1,5 +1,11 @@
 # @penumbra-zone/transport-dom
 
+## 7.0.0
+
+### Major Changes
+
+- f067fab: reconfigure all package builds
+
 ## 6.0.0
 
 ### Major Changes

@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/getters",
-  "version": "6.2.0",
+  "version": "7.0.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Convenience getters for the deeply nested optionals of Penumbra's protobuf types",
   "type": "module",

@@ -1,6 +1,6 @@
 {
   "name": "@penumbra-zone/perspective",
-  "version": "4.0.2",
+  "version": "5.0.0",
   "license": "(MIT OR Apache-2.0)",
   "description": "Tools for assuming different perspectives of Penumbra transactions",
   "type": "module",

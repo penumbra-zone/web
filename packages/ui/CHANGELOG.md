@@ -1,5 +1,24 @@
 # @penumbra-zone/ui
 
+## 4.0.0
+
+### Major Changes
+
+- f067fab: reconfigure all package builds
+
+### Minor Changes
+
+- 1ee18e0: relocate navigationmenu into minifront
+
+### Patch Changes
+
+- Updated dependencies [f067fab]
+  - @repo/tailwind-config@3.0.0
+  - @penumbra-zone/perspective@5.0.0
+  - @penumbra-zone/bech32m@6.0.0
+  - @penumbra-zone/getters@7.0.0
+  - @penumbra-zone/types@8.0.0
+
 ## 3.5.0
 
 ### Minor Changes

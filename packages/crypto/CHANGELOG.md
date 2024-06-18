@@ -1,5 +1,16 @@
 # @penumbra-zone/crypto-web
 
+## 4.0.0
+
+### Major Changes
+
+- f067fab: reconfigure all package builds
+
+### Patch Changes
+
+- Updated dependencies [f067fab]
+  - @penumbra-zone/types@8.0.0
+
 ## 3.0.11
 
 ### Patch Changes

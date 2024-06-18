@@ -1,5 +1,21 @@
 # @penumbra-zone/client
 
+## 7.0.0
+
+### Major Changes
+
+- f067fab: reconfigure all package builds
+
+### Minor Changes
+
+- 1ee18e0: add getPraxOrigin method which returns a static string
+
+### Patch Changes
+
+- Updated dependencies [f067fab]
+  - @penumbra-zone/transport-dom@7.0.0
+  - @penumbra-zone/protobuf@5.0.0
+
 ## 6.1.0
 
 ### Minor Changes
