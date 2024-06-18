@@ -7,8 +7,8 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsc --build",
-    "clean": "rm -rfv dist package penumbra-zone-*.tgz tsconfig.tsbuildinfo",
+    "build": "tsc --build && tsc-alias",
+    "clean": "rm -rfv dist package penumbra-zone-*.tgz",
     "lint": "eslint src",
     "test": "vitest run"
   },
