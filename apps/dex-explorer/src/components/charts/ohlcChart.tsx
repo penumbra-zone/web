@@ -474,17 +474,19 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
             const [date, open, close, low, high] = param.data;
             tooltipText += `
             <strong>${params[0].name}</strong><br/>
-            <strong>Open:</strong> ${open}<br/>
-            <strong>Close:</strong> ${close}<br/>
-            <strong>Low:</strong> ${low}<br/>
-            <strong>High:</strong> ${high}<br/>
+            <strong>Open:</strong> ${Number(open).toLocaleString()}<br/>
+            <strong>Close:</strong> ${Number(close).toLocaleString()}<br/>
+            <strong>Low:</strong> ${Number(low).toLocaleString()}<br/>
+            <strong>High:</strong> ${Number(high).toLocaleString()}<br/>
           `;
           } else if (
             param.seriesType === "bar" &&
             param.seriesName === "Volume"
           ) {
             tooltipText += `<strong>${params[0].name}</strong><br/>
-            <strong>Volume:</strong> ${param.data}<br/>`;
+            <strong>Volume:</strong> ${Number(
+              param.data
+            ).toLocaleString()}<br/>`;
           }
         });
         return tooltipText;
