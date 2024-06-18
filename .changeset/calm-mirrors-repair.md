@@ -1,5 +1,5 @@
 ---
-'@penumbra-zone/ui': minor
+'@repo/ui': minor
 ---
 
 relocate navigationmenu into minifront
