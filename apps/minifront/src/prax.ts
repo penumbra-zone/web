@@ -1,18 +1,13 @@
-/**
- * Prax is the reference implementation of browser-local Penumbra services. This
- * module provides tools for connecting to Prax specifically, and a few
- * additional conveniences.
- */
-
 import type { PromiseClient, Transport } from '@connectrpc/connect';
-import type { PenumbraService } from '@penumbra-zone/protobuf';
-
 import { createPromiseClient } from '@connectrpc/connect';
+import {
+  PenumbraNotConnectedError,
+  PenumbraNotInstalledError,
+  PenumbraSymbol,
+} from '@penumbra-zone/client';
+import type { PenumbraService } from '@penumbra-zone/protobuf';
 import { jsonOptions } from '@penumbra-zone/protobuf';
 import { createChannelTransport } from '@penumbra-zone/transport-dom/create';
-import { PenumbraSymbol } from '.';
-import { PenumbraNotConnectedError } from './error';
-import { PenumbraNotInstalledError } from './error';
 
 const prax_id = 'lkpmkhpnhknhmibgnmmhdhgdilepfghe';
 const prax_origin = `chrome-extension://${prax_id}`;

@@ -1,8 +1,11 @@
 {
-  "extends": "tsconfig/tsup.json",
+  "extends": "tsconfig/base.json",
   "include": ["components", "lib", "tests-setup.ts"],
-  "exclude": ["dist"],
   "compilerOptions": {
+    "noEmit": true,
+    "declarationMap": false,
+    "declaration": false,
+    "sourceMap": false,
     "jsx": "react-jsx"
   }
 }

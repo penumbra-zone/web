@@ -82,9 +82,8 @@ export class KeyPrint {
   }
 }
 
-export const uintArraysEqual = (a: Uint8Array, b: Uint8Array): boolean => {
-  return a.length === b.length && a.every((num, i) => b[i] === num);
-};
+const uintArraysEqual = (a: Uint8Array, b: Uint8Array): boolean =>
+  a.length === b.length && a.every((num, i) => b[i] === num);
 
 export interface KeyJson {
   _inner: JsonWebKey;

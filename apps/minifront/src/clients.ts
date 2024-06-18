@@ -1,4 +1,3 @@
-import { createPraxClient } from '@penumbra-zone/client/prax';
 import {
   CustodyService,
   DexService,
@@ -11,6 +10,7 @@ import {
   TendermintProxyService,
   ViewService,
 } from '@penumbra-zone/protobuf';
+import { createPraxClient } from './prax';
 
 export const custodyClient = createPraxClient(CustodyService);
 export const dexClient = createPraxClient(DexService);

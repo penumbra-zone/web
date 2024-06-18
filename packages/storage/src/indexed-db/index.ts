@@ -43,7 +43,6 @@ import { bech32mIdentityKey, identityKeyFromBech32m } from '@penumbra-zone/bech3
 import { bech32mWalletId } from '@penumbra-zone/bech32m/penumbrawalletid';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 import { getIdentityKeyFromValidatorInfo } from '@penumbra-zone/getters/validator-info';
-import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
 import { uint8ArrayToBase64 } from '@penumbra-zone/types/base64';
 import { uint8ArrayToHex } from '@penumbra-zone/types/hex';
 import {

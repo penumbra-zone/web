@@ -7,14 +7,15 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsc --build",
     "clean": "rm -rfv dist package penumbra-zone-transport-dom-*.tgz",
     "lint": "eslint src",
     "prepack": "$npm_execpath run build",
     "test": "vitest run"
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/**/*.test*"
   ],
   "exports": {
     "./indexed-db": "./src/indexed-db/index.ts"
@@ -22,8 +23,8 @@
   "publishConfig": {
     "exports": {
       "./indexed-db": {
-        "default": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "default": "./dist/indexed-db/index.js",
+        "types": "./dist/indexed-db/index.d.ts"
       }
     }
   },
@@ -32,7 +33,7 @@
     "idb": "^8.0.0"
   },
   "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1",
+    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240616005217-ca45ca80333e.1",
     "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-zone/bech32m": "workspace:*",
     "@penumbra-zone/getters": "workspace:*",

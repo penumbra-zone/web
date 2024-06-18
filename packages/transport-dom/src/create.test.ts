@@ -10,7 +10,7 @@ import {
 import { createRegistry } from '@bufbuild/protobuf';
 import { TransportMessage } from './messages';
 
-import ReadableStream from '@penumbra-zone/polyfills/ReadableStream.from';
+import ReadableStream from './ReadableStream.from';
 
 const typeRegistry = createRegistry(ElizaService);
 

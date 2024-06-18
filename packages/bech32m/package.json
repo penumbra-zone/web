@@ -8,14 +8,16 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsc --build",
     "clean": "rm -rfv dist package penumbra-zone-*.tgz",
     "lint": "eslint src",
     "prepack": "$npm_execpath run build",
     "test": "vitest run"
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/test/util"
   ],
   "exports": {
     ".": "./src/index.ts",
@@ -35,8 +37,5 @@
   },
   "dependencies": {
     "bech32": "^2.0.0"
-  },
-  "peerDependencies": {
-    "@buf/penumbra-zone_penumbra.bufbuild_es": "1.9.0-20240528180215-8fe1c79485f8.1"
   }
 }

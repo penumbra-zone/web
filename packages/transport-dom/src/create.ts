@@ -23,8 +23,7 @@ import {
   TransportStream,
 } from './messages';
 
-import '@penumbra-zone/polyfills/ReadableStream[Symbol.asyncIterator]';
-import ReadableStream from '@penumbra-zone/polyfills/ReadableStream.from';
+import ReadableStream from './ReadableStream.from';
 
 const forceTransportOptions = {
   httpClient: null as never,

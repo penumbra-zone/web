@@ -7,14 +7,15 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsc --build",
     "clean": "rm -rfv dist package penumbra-zone-*.tgz",
     "lint": "eslint src",
     "prepack": "$npm_execpath run build",
     "test": "vitest run"
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/*.test.*"
   ],
   "exports": {
     "./*": "./src/*.ts"

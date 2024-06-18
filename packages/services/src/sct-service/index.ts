@@ -4,6 +4,6 @@ import { epochByHeight } from './epoch-by-height';
 
 export type Impl = ServiceImpl<typeof SctService>;
 
-export const sctImpl: Omit<Impl, 'anchorByHeight'> = {
+export const sctImpl: Omit<Impl, 'anchorByHeight' | 'timestampByHeight'> = {
   epochByHeight,
 };

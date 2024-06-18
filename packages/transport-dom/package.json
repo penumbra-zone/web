@@ -7,7 +7,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsc --build",
     "clean": "rm -rfv dist package penumbra-zone-transport-dom-*.tgz",
     "lint": "eslint src",
     "prepack": "$npm_execpath run build",
@@ -27,7 +27,7 @@
       }
     }
   },
-  "peerDependencies": {
+  "dependencies": {
     "@bufbuild/protobuf": "^1.10.0",
     "@connectrpc/connect": "^1.4.0"
   }
