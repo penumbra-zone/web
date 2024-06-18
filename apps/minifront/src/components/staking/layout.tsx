@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { AllSlices, useStore } from '../../state';
 import { abortLoader } from '../../abort-loader';
-import { Card, CardContent, CardHeader, CardTitle } from '@penumbra-zone/ui/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@repo/ui/components/ui/card';
 import { Header } from './account/header';
 import { Delegations } from './account/delegations';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';

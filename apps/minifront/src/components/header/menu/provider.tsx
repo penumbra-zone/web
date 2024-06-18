@@ -1,4 +1,4 @@
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { cn } from '@repo/ui/lib/utils';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { getChainId } from '../../../fetchers/chain-id';
 import { useCallback, useEffect, useState } from 'react';

@@ -1,4 +1,4 @@
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { ValueViewComponent } from '@repo/ui/components/ui/tx/view/value';
 import { PriceImpact } from './price-impact';
 import { motion } from 'framer-motion';
 import { SimulateSwapResult as TSimulateSwapResult } from '../../../../state/swap';

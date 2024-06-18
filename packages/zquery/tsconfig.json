@@ -1,5 +1,5 @@
 {
-  "extends": "tsconfig/base.json",
+  "extends": "@repo/tsconfig/base.json",
   "include": ["src", "tests-setup.ts"],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {

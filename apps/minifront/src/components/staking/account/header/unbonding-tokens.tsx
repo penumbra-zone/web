@@ -8,8 +8,8 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from '@penumbra-zone/ui/components/ui/tooltip';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+} from '@repo/ui/components/ui/tooltip';
+import { ValueViewComponent } from '@repo/ui/components/ui/tx/view/value';
 import { ReactNode } from 'react';
 import { zeroValueView } from '../../../../utils/zero-value-view';
 

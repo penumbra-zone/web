@@ -1,6 +1,6 @@
 import { PagePath } from '../metadata/paths';
 import { useNavigate } from 'react-router-dom';
-import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picker';
+import { SegmentedPicker } from '@repo/ui/components/ui/segmented-picker';
 import { ComponentProps } from 'react';
 
 export interface Tab {

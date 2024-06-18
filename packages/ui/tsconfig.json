@@ -1,5 +1,5 @@
 {
-  "extends": "tsconfig/base.json",
+  "extends": "@repo/tsconfig/base.json",
   "include": ["components", "lib", "tests-setup.ts"],
   "compilerOptions": {
     "noEmit": true,

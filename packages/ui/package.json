@@ -1,5 +1,5 @@
 {
-  "name": "@penumbra-zone/ui",
+  "name": "@repo/ui",
   "version": "3.5.0",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
@@ -147,7 +147,7 @@
     "@bufbuild/protobuf": "^1.10.0",
     "@penumbra-zone/getters": "workspace:*",
     "@penumbra-zone/perspective": "workspace:*",
-    "@penumbra-zone/tailwind-config": "workspace:*",
+    "@repo/tailwind-config": "workspace:*",
     "postcss": "^8.4.38",
     "react": "^18.3.1",
     "tailwindcss": "^3.4.3"

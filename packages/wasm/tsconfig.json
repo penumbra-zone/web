@@ -1,5 +1,5 @@
 {
-  "extends": "tsconfig/base.json",
+  "extends": "@repo/tsconfig/base.json",
   "include": ["src"],
   "exclude": ["node_modules", "crate", "dist"],
   "compilerOptions": {
