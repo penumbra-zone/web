@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc --build",
-    "clean": "rm -rfv dist package penumbra-zone-*.tgz",
+    "clean": "rm -rfv dist package penumbra-zone-*.tgz tsconfig.tsbuildinfo",
     "lint": "eslint src"
   },
   "files": [

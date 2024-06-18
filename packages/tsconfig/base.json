@@ -25,7 +25,6 @@
     "noUnusedParameters": true,
     "resolveJsonModule": true,
     "target": "ESNext",
-    "module": "ES2022",
-    "incremental": true
+    "module": "ES2022"
   }
 }
