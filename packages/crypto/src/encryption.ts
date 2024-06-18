@@ -139,19 +139,14 @@ export class Key {
   // Attempts to decrypt Box into message. If failure, returns `null`.
   async unseal(box: Box): Promise<string | null> {
     try {
+      // Decrypt the ciphertext using the nonce and key
       return await decrypt(box.cipherText, box.nonce, this.key);
     } catch (e) {
-      if (e instanceof TypeError) {
-        return null;
+      // Logging a generic unknown error to avoid exposing sensitive information via throwing
+      if (!(e instanceof TypeError || (e instanceof DOMException && e.name === 'OperationError'))) {
+        console.error('Decryption failed due to an unexpected error.');
       }
-
-      if (e instanceof DOMException) {
-        if (e.name === 'OperationError') {
-          return null;
-        }
-      }
-
-      throw e;
+      return null;
     }
   }
 
