@@ -17,7 +17,9 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
   const [isTimestampsLoading, setIsTimestampsLoading] = useState(true);
   const [ohlcData, setOHLCData] = useState([]); // [{open, high, low, close, directVolume, swapVolume, height}]
   const [originalOHLCData, setOriginalOHLCData] = useState([]); // [{open, high, low, close, directVolume, swapVolume, height}
-  const [blockToTimestamp, setBlockToTimestamp] = useState({}); // {height: timestamp}
+  const [blockToTimestamp, setBlockToTimestamp] = useState<{
+    [key: string]: string;
+  }>({}); // {height: timestamp}
   const [error, setError] = useState<string | undefined>(undefined); // [error message]
   const [chartData, setChartData] = useState<
     [string, number, number, number, number][]
@@ -28,6 +30,8 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
   const [isAggregating, setIsAggregating] = useState(true);
 
   // TODO: Decide how to set the start block and limit
+  // Potentially show last n days of data based on current block - n days via avg block time
+  const blockTimeSeconds = 5; // 5 seconds
   const startBlock = 0;
   const limit = 10000;
 
@@ -308,40 +312,84 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
     // Function to aggregate OHLC data into time intervals
     const aggregateOHLCData = () => {
       const aggregatedData: any[] = [];
-      const intervalInMillis = timeAggregateSeconds * 1000;
+      const blocksPerInterval = Math.trunc(
+        timeAggregateSeconds / blockTimeSeconds
+      );
 
       let currentBatch: any[] = [];
-      let currentBatchStartTime: Date | null = null;
+      let currentBatchStartBlock: number | null = null;
 
-      // ! Always aggregated based on the originalOHLCData
-      originalOHLCData.forEach((ohlc) => {
-        const timestamp = new Date(blockToTimestamp[ohlc["height"]]);
+      // Helper function to generate a placeholder OHLC object
+      const createPlaceholderOHLC = (blockHeight: number, close: number) => ({
+        open: close,
+        high: close,
+        low: close,
+        close: close,
+        directVolume: 0,
+        swapVolume: 0,
+        height: blockHeight,
+      });
 
-        if (!currentBatchStartTime) {
-          currentBatchStartTime = timestamp;
+      // Always aggregated based on the originalOHLCData
+      originalOHLCData.forEach((ohlc, index) => {
+        const blockHeight = Number(ohlc["height"]);
+
+        if (currentBatchStartBlock === null) {
+          currentBatchStartBlock = blockHeight;
         }
 
-        // Check if current timestamp is within the current batch interval
-        if (
-          timestamp.getTime() <
-          currentBatchStartTime.getTime() + intervalInMillis
-        ) {
+        // Check if the current block is within the current batch interval
+        if (blockHeight < currentBatchStartBlock + blocksPerInterval) {
           currentBatch.push(ohlc);
+          return;
         } else {
-          // If it's outside the current batch interval, push current batch to aggregated data
-          if (currentBatch.length > 0) {
-            aggregatedData.push(batchOHLCData(currentBatch));
+          // If the current block is outside the current batch interval
+          // Aggregate the current batch
+          aggregatedData.push(batchOHLCData(currentBatch));
+
+          // Fill gaps if there are any missing intervals
+          while (currentBatchStartBlock + blocksPerInterval < blockHeight) {
+            const previousOHLC = aggregatedData[aggregatedData.length - 1];
+            const placeholderBlock = currentBatchStartBlock + blocksPerInterval;
+            const placeholderOHLC = createPlaceholderOHLC(
+              placeholderBlock,
+              previousOHLC.close
+            );
+            const lastTimestamp = blockToTimestamp[previousOHLC.height];
+            blockToTimestamp[placeholderBlock] = new Date(
+              new Date(lastTimestamp).getTime() + timeAggregateSeconds * 1000
+            ).toISOString();
+            aggregatedData.push(placeholderOHLC);
+
+            currentBatchStartBlock = currentBatchStartBlock + blocksPerInterval;
           }
 
-          // Start new batch
+          // Start a new batch
           currentBatch = [ohlc];
-          currentBatchStartTime = timestamp;
+          currentBatchStartBlock = blockHeight;
+        }
+
+        // Handle the last batch
+        if (index === originalOHLCData.length - 1 && currentBatch.length > 0) {
+          aggregatedData.push(batchOHLCData(currentBatch));
         }
       });
 
-      // Push the last batch
-      if (currentBatch.length > 0) {
-        aggregatedData.push(batchOHLCData(currentBatch));
+      // Fill gaps at the end if there are any remaining intervals
+      while (
+        currentBatchStartBlock !== null &&
+        currentBatchStartBlock + blocksPerInterval <=
+          originalOHLCData[originalOHLCData.length - 1]["height"]
+      ) {
+        const previousOHLC = aggregatedData[aggregatedData.length - 1];
+        const placeholderBlock = currentBatchStartBlock + blocksPerInterval;
+        const placeholderOHLC = createPlaceholderOHLC(
+          placeholderBlock,
+          previousOHLC.close
+        );
+        aggregatedData.push(placeholderOHLC);
+
+        currentBatchStartBlock = currentBatchStartBlock + blocksPerInterval;
       }
 
       return aggregatedData;
@@ -367,6 +415,7 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
 
     // Further processing or state setting with aggregatedData
     setOHLCData(aggregatedData as any);
+    setBlockToTimestamp(blockToTimestamp);
     setIsLoading(false);
     setIsAggregating(false);
   }, [
@@ -591,6 +640,17 @@ const OHLCChart = ({ asset1Token, asset2Token }: OHLCChartProps) => {
                 }
               >
                 5m
+              </Button>
+              <Button
+                borderRadius={10}
+                onClick={() => setTimeAggregateSeconds(60 * 60)}
+                colorScheme={
+                  timeAggregateSeconds === 60 * 60
+                    ? "purple"
+                    : "var(--charcoal-tertiary-blended)"
+                }
+              >
+                1h
               </Button>
             </ButtonGroup>
             <ReactECharts
