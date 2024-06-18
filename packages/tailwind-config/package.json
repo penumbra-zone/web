@@ -3,22 +3,8 @@
   "version": "2.0.1",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
-  "type": "module",
-  "files": [
-    "dist"
-  ],
-  "exports": {
-    ".": "./index.ts"
-  },
-  "publishConfig": {
-    "exports": {
-      ".": {
-        "default": "./dist/index.js",
-        "types": "./dist/index.d.ts"
-      }
-    }
-  },
-  "peerDependencies": {
+  "main": "index.ts",
+  "dependencies": {
     "tailwindcss": "^3.4.3",
     "tailwindcss-animate": "^1.0.7"
   }

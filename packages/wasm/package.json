@@ -17,7 +17,6 @@
     "lint:rust": "cd crate && cargo fmt --all -- --check && cargo clippy -- -D warnings && cargo clippy --tests -- -D warnings",
     "postcompile": "touch ./wasm/.npmignore",
     "prebuild": "tsc --build --clean",
-    "prepack": "$npm_execpath run build",
     "test": "vitest run",
     "test:rust": "cd crate && wasm-pack test --headless --firefox -- --test build --target wasm32-unknown-unknown --release --features 'mock-database'"
   },

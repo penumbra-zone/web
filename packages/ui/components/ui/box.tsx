@@ -2,6 +2,7 @@ import { cva, VariantProps } from 'class-variance-authority';
 import { motion } from 'framer-motion';
 import { PropsWithChildren, ReactNode } from 'react';
 import { cn } from '../../lib/utils';
+import { RESOLVED_TAILWIND_CONFIG } from '@repo/tailwind-config/resolved-tailwind-config';
 
 const variants = cva('rounded-lg border bg-background', {
   variants: {
@@ -50,6 +51,12 @@ export const Box = ({
       layout={layout ?? !!layoutId}
       layoutId={layoutId}
       className={cn('flex flex-col gap-4', variants({ spacing, state, overflow }))}
+      /**
+       * Set the border radius via the style prop so it doesn't get distorted by framer-motion.
+       *
+       * @see https://www.framer.com/motion/layout-animations/##scale-correction
+       */
+      style={{ borderRadius: RESOLVED_TAILWIND_CONFIG.theme.borderRadius.lg }}
     >
       {(label ?? headerContent) && (
         <div className='flex items-center justify-between'>
