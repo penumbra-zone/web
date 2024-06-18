@@ -373,7 +373,7 @@ export class BlockProcessor implements BlockProcessorInterface {
             return action.value.body?.payload?.commitment;
           case 'swapClaim':
             return [action.value.body?.output1Commitment, action.value.body?.output2Commitment];
-          default: // TODO: what other actions have commitments?
+          default:
             return;
         }
       });
@@ -383,7 +383,7 @@ export class BlockProcessor implements BlockProcessorInterface {
           case 'spend':
           case 'swapClaim':
             return action.value.body?.nullifier;
-          default: // TODO: what other actions have nullifiers?
+          default:
             return;
         }
       });
