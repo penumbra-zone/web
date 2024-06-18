@@ -278,31 +278,31 @@ const DepthChart = ({
     setRenderedBuySideData((prev) => {
       const lastPoint = prev[prev.length - 1];
       if (lastPoint) {
-        return [...prev, { x: -1, y: lastPoint.y }];
+        return [...prev, { x: -1000000, y: lastPoint.y }];
       }
-      return [{ x: -1, y: 0 }];
+      return [{ x: -1000000, y: 0 }];
     });
     setRenderedSellSideData((prev) => {
       const lastPoint = prev[prev.length - 1];
       if (lastPoint) {
         return [...prev, { x: lastPoint.x + 1e18, y: lastPoint.y }];
       }
-      return [{ x: -1, y: 0 }];
+      return [{ x: -1000000, y: 0 }];
     });
 
     setRenderedBuySideSingleHopData((prev) => {
       const lastPoint = prev[prev.length - 1];
       if (lastPoint) {
-        return [...prev, { x: -1, y: lastPoint.y }];
+        return [...prev, { x: -1000000, y: lastPoint.y }];
       }
-      return [{ x: -1, y: 0 }];
+      return [{ x: -1000000, y: 0 }];
     });
     setRenderedSellSideSingleHopData((prev) => {
       const lastPoint = prev[prev.length - 1];
       if (lastPoint) {
         return [...prev, { x: lastPoint.x + 1e18, y: lastPoint.y }];
       }
-      return [{ x: -1, y: 0 }];
+      return [{ x: -1000000, y: 0 }];
     });
 
     // Min and max should be set based on the midMarketPrice and range
@@ -499,7 +499,7 @@ const DepthChart = ({
           // Customize x-axis ticks to show more decimals
           callback: function (val, index) {
             // Convert the value to a number and format it
-            return Number(val).toFixed(3);
+            return Number(Number(val).toFixed(3)).toLocaleString();
           },
           stepSize: tickStepSize,
         },
@@ -580,15 +580,15 @@ const DepthChart = ({
               label += ": ";
             }
             if (context.parsed.y !== null) {
-              label += context.parsed.y.toFixed(3); // Adjust for y value
+              label += Number(context.parsed.y.toFixed(3)).toLocaleString(); // Adjust for y value
             }
             if (context.parsed.x !== null) {
-              label += " at " + context.parsed.x.toFixed(6); // Adjust for x value
+              label += " at " + Number(context.parsed.x.toFixed(6)).toLocaleString(); // Adjust for x value
             }
             return label;
           },
           title: function (context) {
-            return `Price: ${context[0].parsed.x.toFixed(6)}`;
+            return `Price: ${Number(context[0].parsed.x.toFixed(6)).toLocaleString()}`;
           },
         },
       },
@@ -610,7 +610,7 @@ const DepthChart = ({
             borderWidth: 0,
             label: {
               display: true,
-              content: `Mid Market Price: ${midMarketPrice.toFixed(6)}`,
+              content: `Mid Market Price: ${Number(midMarketPrice.toFixed(6)).toLocaleString()}`,
               position: "end",
               backgroundColor: "#6e6eb8",
               font: {
