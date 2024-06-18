@@ -1,5 +1,11 @@
 # @penumbra-zone/bech32
 
+## 6.0.0
+
+### Major Changes
+
+- f067fab: reconfigure all package builds
+
 ## 5.1.0
 
 ### Minor Changes

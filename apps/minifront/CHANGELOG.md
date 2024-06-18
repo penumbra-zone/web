@@ -1,5 +1,35 @@
 # minifront
 
+## 6.0.0
+
+### Major Changes
+
+- f067fab: reconfigure all package builds
+
+### Minor Changes
+
+- 7ac610e: Beef up ZQuery's handling of streams; take advantage of it in minifront.
+
+  BREAKING CHANGE: The `stream` property passed to `createZQuery()` should now return an object containing at least an `onValue` method. See the docs for the `stream` property for more info.
+
+### Patch Changes
+
+- Updated dependencies [1ee18e0]
+- Updated dependencies [7ac610e]
+- Updated dependencies [f067fab]
+- Updated dependencies [1ee18e0]
+- Updated dependencies [f8b6193]
+  - @repo/ui@4.0.0
+  - @penumbra-zone/zquery@2.0.0
+  - @penumbra-zone/transport-dom@7.0.0
+  - @penumbra-zone/perspective@5.0.0
+  - @penumbra-zone/protobuf@5.0.0
+  - @penumbra-zone/bech32m@6.0.0
+  - @penumbra-zone/getters@7.0.0
+  - @penumbra-zone/client@7.0.0
+  - @penumbra-zone/crypto-web@4.0.0
+  - @penumbra-zone/types@8.0.0
+
 ## 5.2.0
 
 ### Minor Changes

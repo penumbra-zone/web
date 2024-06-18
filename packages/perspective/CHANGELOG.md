@@ -1,5 +1,18 @@
 # @penumbra-zone/perspective
 
+## 5.0.0
+
+### Major Changes
+
+- f067fab: reconfigure all package builds
+
+### Patch Changes
+
+- Updated dependencies [f067fab]
+  - @penumbra-zone/bech32m@6.0.0
+  - @penumbra-zone/getters@7.0.0
+  - @penumbra-zone/wasm@8.0.0
+
 ## 4.0.2
 
 ### Patch Changes
