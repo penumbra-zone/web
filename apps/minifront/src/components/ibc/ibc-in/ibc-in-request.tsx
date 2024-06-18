@@ -16,10 +16,9 @@ import { Button } from '@repo/ui/components/ui/button';
 import { LockClosedIcon } from '@radix-ui/react-icons';
 
 const isReadySelector = (state: AllSlices) => {
-  const { amount, coin, selectedChain, penumbraAddrs } = state.ibcIn;
+  const { amount, coin, selectedChain } = state.ibcIn;
   const errorsPresent = Object.values(ibcErrorSelector(state)).some(Boolean);
-  const formsFilled =
-    Boolean(amount) && Boolean(coin) && Boolean(selectedChain) && Boolean(penumbraAddrs);
+  const formsFilled = Boolean(amount) && Boolean(coin) && Boolean(selectedChain);
   return !errorsPresent && formsFilled;
 };
 

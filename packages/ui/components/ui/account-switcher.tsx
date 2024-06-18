@@ -14,6 +14,7 @@ export const AccountSwitcher = ({
   account,
   onChange,
   filter,
+  compact,
 }: {
   account: number;
   onChange: (account: number) => void;
@@ -22,6 +23,8 @@ export const AccountSwitcher = ({
    * options. No need to sort them, as the component will do that for you.
    */
   filter?: number[];
+  /** If true, renders smaller selector */
+  compact?: boolean;
 }) => {
   const [inputCharWidth, setInputCharWidth] = useState(1);
 
@@ -59,6 +62,8 @@ export const AccountSwitcher = ({
   return (
     <div className='flex items-center justify-between'>
       <Button
+        size={compact ? 'sm' : 'default'}
+        type='button'
         variant='ghost'
         className={cn('hover:bg-inherit hover:text-slate-400', account === 0 && 'cursor-default')}
         disabled={!previousButtonEnabled}
@@ -67,11 +72,16 @@ export const AccountSwitcher = ({
           aria-label='Previous account'
           role='button'
           onClick={handleClickPrevious}
-          className='size-6 hover:cursor-pointer'
+          className={cn(compact ? 'size-4' : 'size-6', 'hover:cursor-pointer')}
         />
       </Button>
-      <div className='select-none text-center font-headline text-xl font-semibold leading-[30px]'>
-        <div className='flex flex-row flex-wrap items-end gap-[6px]'>
+      <div
+        className={cn(
+          compact ? 'text-base' : 'font-headline text-xl',
+          'select-none text-center font-semibold leading-[30px]',
+        )}
+      >
+        <label className='flex flex-row flex-wrap items-end gap-[6px]'>
           <span>Account</span>
           <div className='flex items-end gap-0'>
             <p>#</p>
@@ -81,7 +91,10 @@ export const AccountSwitcher = ({
                 aria-disabled={!!filter}
                 variant='transparent'
                 type='number'
-                className='mb-[3px] h-6 py-[2px] font-headline text-xl font-semibold leading-[30px]'
+                className={cn(
+                  compact ? 'text-base' : 'font-headline text-xl',
+                  'mb-[3px] h-6 py-[2px] font-semibold leading-[30px]',
+                )}
                 onChange={e => {
                   /**
                    * Don't allow manual account number entry when there's a
@@ -104,9 +117,11 @@ export const AccountSwitcher = ({
               />
             </div>
           </div>
-        </div>
+        </label>
       </div>
       <Button
+        size={compact ? 'sm' : 'default'}
+        type='button'
         variant='ghost'
         className={cn(
           'hover:bg-inherit hover:text-slate-400',
@@ -118,7 +133,7 @@ export const AccountSwitcher = ({
           aria-label='Next account'
           role='button'
           onClick={handleClickNext}
-          className='size-6 hover:cursor-pointer'
+          className={cn(compact ? 'size-4' : 'size-6', 'hover:cursor-pointer')}
         />
       </Button>
     </div>
