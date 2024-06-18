@@ -1,6 +1,6 @@
-import { Card } from '@penumbra-zone/ui/components/ui/card';
-import { cn } from '@penumbra-zone/ui/lib/utils';
-import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
+import { Card } from '@repo/ui/components/ui/card';
+import { cn } from '@repo/ui/lib/utils';
+import { GradientHeader } from '@repo/ui/components/ui/gradient-header';
 import { EduPanel, eduPanelContent } from './content';
 import { motion } from 'framer-motion';
 

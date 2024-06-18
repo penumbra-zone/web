@@ -1,5 +1,11 @@
 # @penumbra-zone/tailwind-config
 
+## 3.0.0
+
+### Major Changes
+
+- f067fab: reconfigure all package builds
+
 ## 2.0.1
 
 ### Patch Changes

@@ -1,10 +1,10 @@
 import { AllSlices } from '../../../state';
-import { DutchAuctionComponent } from '@penumbra-zone/ui/components/ui/dutch-auction-component';
+import { DutchAuctionComponent } from '@repo/ui/components/ui/dutch-auction-component';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { AuctionId } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/auction/v1/auction_pb';
-import { GradientHeader } from '@penumbra-zone/ui/components/ui/gradient-header';
+import { GradientHeader } from '@repo/ui/components/ui/gradient-header';
 import { QueryLatestStateButton } from './query-latest-state-button';
-import { Card } from '@penumbra-zone/ui/components/ui/card';
+import { Card } from '@repo/ui/components/ui/card';
 import { bech32mAuctionId } from '@penumbra-zone/bech32m/pauctid';
 import { useMemo } from 'react';
 import { getFilteredAuctionInfos } from './get-filtered-auction-infos';

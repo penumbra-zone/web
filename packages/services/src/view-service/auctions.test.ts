@@ -1,4 +1,3 @@
-import Array from '@penumbra-zone/polyfills/Array.fromAsync';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { auctions } from './auctions';
 import {

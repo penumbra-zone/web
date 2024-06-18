@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 import { JsonToMessage, MessageToJson } from './stream';
 import { createRegistry, Message, proto3 } from '@bufbuild/protobuf';
 
-import ReadableStream from '@penumbra-zone/polyfills/ReadableStream.from';
+import ReadableStream from './ReadableStream.from';
 
 import { ElizaService } from '@buf/connectrpc_eliza.connectrpc_es/connectrpc/eliza/v1/eliza_connect';
 import { SayRequest } from '@buf/connectrpc_eliza.bufbuild_es/connectrpc/eliza/v1/eliza_pb';

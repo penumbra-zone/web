@@ -1,7 +1,7 @@
-import { Box } from '@penumbra-zone/ui/components/ui/box';
+import { Box } from '@repo/ui/components/ui/box';
 import { AllSlices } from '../../../../state';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
-import { Input } from '@penumbra-zone/ui/components/ui/input';
+import { Input } from '@repo/ui/components/ui/input';
 import { EstimateButton } from '../estimate-button';
 import { EstimatedOutputExplanation } from './estimated-output-explanation';
 import { motion } from 'framer-motion';

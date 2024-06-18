@@ -9,6 +9,7 @@
     "packageManager",
     "type",
     "main",
+    "engine",
     "scripts",
     "files",
     "exports",

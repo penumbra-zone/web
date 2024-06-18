@@ -7,7 +7,7 @@ use anyhow::anyhow;
 use ark_ff::UniformRand;
 use decaf377::{Fq, Fr};
 use penumbra_asset::asset::{Id, Metadata};
-use penumbra_asset::Value;
+use penumbra_asset::{Value, STAKING_TOKEN_ASSET_ID};
 use penumbra_auction::auction::dutch::actions::ActionDutchAuctionWithdrawPlan;
 use penumbra_auction::auction::dutch::{
     ActionDutchAuctionEnd, ActionDutchAuctionSchedule, DutchAuctionDescription,
@@ -136,10 +136,13 @@ pub async fn plan_transaction(
     idb_constants: JsValue,
     request: &[u8],
     full_viewing_key: &[u8],
+    gas_fee_token: &[u8],
 ) -> WasmResult<JsValue> {
     utils::set_panic_hook();
 
     let request = TransactionPlannerRequest::decode(request)?;
+
+    let expiry_height: u64 = request.expiry_height;
 
     let mut source_address_index: AddressIndex = request
         .source
@@ -178,12 +181,9 @@ pub async fn plan_transaction(
 
     let chain_id: String = app_parameters.chain_id;
 
-    let transaction_parameters = TransactionParameters {
-        chain_id,
-        ..Default::default()
-    };
-
-    let gas_prices: GasPrices = {
+    // Request information about current gas prices
+    // TODO #1310 GasPrices record may not exist for alternative fee assets
+    let mut gas_prices: GasPrices = {
         let gas_prices: penumbra_proto::core::component::fee::v1::GasPrices =
             serde_wasm_bindgen::from_value(
                 storage
@@ -201,6 +201,29 @@ pub async fn plan_transaction(
             return Err(anyhow!("Manual fee mode not yet implemented").into());
         }
     };
+
+    // Decode the gas fee token into an `Id` type
+    let alt_gas: Id = Id::decode(gas_fee_token)?;
+
+    // Check if the decoded gas fee token is different from the staking token asset ID.
+    // If the gas fee token is different, use the alternative gas fee token with a 10x
+    // multiplier.
+    if alt_gas != *STAKING_TOKEN_ASSET_ID {
+        gas_prices = GasPrices {
+            asset_id: alt_gas,
+            block_space_price: gas_prices.block_space_price * 10,
+            compact_block_space_price: gas_prices.compact_block_space_price * 10,
+            verification_price: gas_prices.verification_price * 10,
+            execution_price: gas_prices.execution_price * 10,
+        };
+    };
+
+    let mut transaction_parameters = TransactionParameters {
+        chain_id,
+        expiry_height,
+        ..Default::default()
+    };
+    transaction_parameters.fee.0.asset_id = alt_gas;
 
     let mut actions_list = ActionList::default();
 

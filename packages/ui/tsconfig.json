@@ -1,5 +1,11 @@
 {
-  "extends": "tsconfig/react-library.json",
-  "include": [".", "./tests-setup.ts"],
-  "exclude": ["dist", "build", "node_modules"]
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["components", "lib", "tests-setup.ts"],
+  "compilerOptions": {
+    "noEmit": true,
+    "declarationMap": false,
+    "declaration": false,
+    "sourceMap": false,
+    "jsx": "react-jsx"
+  }
 }

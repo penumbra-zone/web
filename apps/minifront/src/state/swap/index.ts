@@ -29,6 +29,7 @@ export interface SimulateSwapResult {
 
 interface Actions {
   setBalancesResponses: (balancesResponses: BalancesResponse[]) => void;
+  setStakingAssetMetadata: (metadata: Metadata) => void;
   setSwappableAssets: (assets: Metadata[]) => void;
   setAssetIn: (asset: BalancesResponse) => void;
   setAmount: (amount: string) => void;
@@ -39,6 +40,7 @@ interface Actions {
 
 interface State {
   balancesResponses: BalancesResponse[];
+  stakingAssetMetadata: Metadata;
   swappableAssets: Metadata[];
   assetIn?: BalancesResponse;
   amount: string;
@@ -59,6 +61,7 @@ const INITIAL_STATE: State = {
   balancesResponses: [],
   duration: 'instant',
   txInProgress: false,
+  stakingAssetMetadata: new Metadata(),
 };
 
 export type SwapSlice = Actions & State & Subslices;
@@ -90,6 +93,11 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
   setBalancesResponses: balancesResponses => {
     set(state => {
       state.swap.balancesResponses = balancesResponses;
+    });
+  },
+  setStakingAssetMetadata: stakingAssetMetadata => {
+    set(state => {
+      state.swap.stakingAssetMetadata = stakingAssetMetadata;
     });
   },
   setSwappableAssets: swappableAssets => {

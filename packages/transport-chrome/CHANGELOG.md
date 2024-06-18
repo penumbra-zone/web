@@ -1,5 +1,16 @@
 # @penumbra-zone/transport-chrome
 
+## 3.0.0
+
+### Major Changes
+
+- f067fab: reconfigure all package builds
+
+### Patch Changes
+
+- Updated dependencies [f067fab]
+  - @penumbra-zone/transport-dom@7.0.0
+
 ## 2.2.2
 
 ### Patch Changes

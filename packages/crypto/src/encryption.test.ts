@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { Key, KeyPrint, uintArraysEqual } from './encryption';
+import { Key, KeyPrint } from './encryption';
 import { Box } from '@penumbra-zone/types/box';
 
 // NOTE: To have the most accurate representation, these the web crypto API tests run in a browser environment
@@ -136,38 +136,6 @@ describe('encryption', () => {
 
         expect(json).toEqual({ nonce: testNonceBase64, cipherText: testCipherTextBase64 });
       });
-    });
-  });
-
-  describe('uintArraysEqual', () => {
-    test('returns true for identical arrays', () => {
-      const a = new Uint8Array([1, 2, 3, 4, 5]);
-      const b = new Uint8Array([1, 2, 3, 4, 5]);
-      expect(uintArraysEqual(a, b)).toBe(true);
-    });
-
-    test('returns false for arrays of different lengths', () => {
-      const a = new Uint8Array([1, 2, 3, 4, 5]);
-      const b = new Uint8Array([1, 2, 3]);
-      expect(uintArraysEqual(a, b)).toBe(false);
-    });
-
-    test('returns false for arrays of the same length but different values', () => {
-      const a = new Uint8Array([1, 2, 3, 4, 5]);
-      const b = new Uint8Array([1, 2, 3, 4, 6]);
-      expect(uintArraysEqual(a, b)).toBe(false);
-    });
-
-    test('returns true for two empty arrays', () => {
-      const a = new Uint8Array([]);
-      const b = new Uint8Array([]);
-      expect(uintArraysEqual(a, b)).toBe(true);
-    });
-
-    test('returns false when one array is empty and the other is not', () => {
-      const a = new Uint8Array([]);
-      const b = new Uint8Array([1, 2, 3]);
-      expect(uintArraysEqual(a, b)).toBe(false);
     });
   });
 });

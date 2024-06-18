@@ -1,4 +1,4 @@
-import { Slider } from '@penumbra-zone/ui/components/ui/slider';
+import { Slider } from '@repo/ui/components/ui/slider';
 import { DURATION_OPTIONS, GDA_RECIPES } from '../../state/swap/constants';
 import { useStoreShallow } from '../../utils/use-store-shallow';
 import { AllSlices } from '../../state';

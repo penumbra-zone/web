@@ -1,5 +1,18 @@
 # @penumbra-zone/wasm
 
+## 8.0.0
+
+### Major Changes
+
+- f067fab: reconfigure all package builds
+
+### Patch Changes
+
+- Updated dependencies [f067fab]
+  - @penumbra-zone/protobuf@5.0.0
+  - @penumbra-zone/bech32m@6.0.0
+  - @penumbra-zone/types@8.0.0
+
 ## 7.1.1
 
 ### Patch Changes

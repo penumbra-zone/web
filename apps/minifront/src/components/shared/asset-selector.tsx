@@ -1,19 +1,14 @@
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-} from '@penumbra-zone/ui/components/ui/dialog';
-import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
+import { Dialog, DialogClose, DialogContent, DialogHeader } from '@repo/ui/components/ui/dialog';
+import { AssetIcon } from '@repo/ui/components/ui/tx/view/asset-icon';
 import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { ValueViewComponent } from '@repo/ui/components/ui/tx/view/value';
 import { useEffect, useId, useMemo, useState } from 'react';
-import { IconInput } from '@penumbra-zone/ui/components/ui/icon-input';
+import { IconInput } from '@repo/ui/components/ui/icon-input';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { Box } from '@penumbra-zone/ui/components/ui/box';
+import { Box } from '@repo/ui/components/ui/box';
 import { motion } from 'framer-motion';
 
 interface AssetSelectorProps {

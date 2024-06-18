@@ -1,5 +1,17 @@
 # @penumbra-zone/getters
 
+## 7.0.0
+
+### Major Changes
+
+- f067fab: reconfigure all package builds
+
+### Patch Changes
+
+- Updated dependencies [f067fab]
+  - @penumbra-zone/protobuf@5.0.0
+  - @penumbra-zone/bech32m@6.0.0
+
 ## 6.2.0
 
 ### Minor Changes

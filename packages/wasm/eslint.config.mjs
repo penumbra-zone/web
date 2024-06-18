@@ -1,4 +1,4 @@
-import { penumbraEslintConfig } from '@penumbra-zone/eslint-config';
+import { penumbraEslintConfig } from '@repo/eslint-config';
 import { config, parser } from 'typescript-eslint';
 
 export default config({

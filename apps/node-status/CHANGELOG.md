@@ -1,5 +1,18 @@
 # node-status
 
+## 4.0.0
+
+### Major Changes
+
+- f067fab: reconfigure all package builds
+
+### Patch Changes
+
+- Updated dependencies [1ee18e0]
+- Updated dependencies [f067fab]
+  - @repo/ui@4.0.0
+  - @penumbra-zone/protobuf@5.0.0
+
 ## 3.0.4
 
 ### Patch Changes

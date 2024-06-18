@@ -1,8 +1,11 @@
 {
-  "extends": "tsconfig/base.json",
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "outDir": "dist",
-    "noEmit": true
+    "rootDir": "src",
+    "declarationMap": false,
+    "sourceMap": false
   }
 }

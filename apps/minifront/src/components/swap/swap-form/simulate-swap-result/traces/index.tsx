@@ -4,7 +4,7 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { ValueViewComponent } from '@repo/ui/components/ui/tx/view/value';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 
 export const Traces = ({

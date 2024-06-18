@@ -13,8 +13,12 @@ import {
 } from '@penumbra-zone/types/state-commitment-tree';
 import type { IdbConstants } from '@penumbra-zone/types/indexed-db';
 import type { ViewServerInterface } from '@penumbra-zone/types/servers';
-import { validateSchema } from '@penumbra-zone/types/validation';
 import { FullViewingKey } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __DEV__: boolean | undefined;
+}
 
 interface ViewServerProps {
   fullViewingKey: FullViewingKey;
@@ -84,7 +88,9 @@ export class ViewServer implements ViewServerInterface {
     const { height, sct_updates, new_notes, new_swaps } = result;
     return {
       height: BigInt(height ?? 0),
-      sctUpdates: validateSchema(SctUpdatesSchema, sct_updates),
+      sctUpdates: globalThis.__DEV__
+        ? SctUpdatesSchema.parse(sct_updates)
+        : (sct_updates as unknown as ScanBlockResult['sctUpdates']),
       newNotes: (new_notes ?? []).map(n => SpendableNoteRecord.fromJson(n)),
       newSwaps: (new_swaps ?? []).map(s => SwapRecord.fromJson(s)),
     };
