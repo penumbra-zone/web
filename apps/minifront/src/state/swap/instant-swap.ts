@@ -1,5 +1,8 @@
 import { AllSlices, SliceCreator } from '..';
-import { BalancesResponse, TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import {
+  BalancesResponse,
+  TransactionPlannerRequest,
+} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { planBuildBroadcast } from '../helpers';
 import {
   AssetId,
