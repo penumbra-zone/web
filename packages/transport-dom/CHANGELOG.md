@@ -1,5 +1,11 @@
 # @penumbra-zone/transport-dom
 
+## 7.1.0
+
+### Minor Changes
+
+- 9b3f561: properly build esm relative paths
+
 ## 7.0.0
 
 ### Major Changes
