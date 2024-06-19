@@ -1,7 +1,5 @@
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { AddressIcon } from '@repo/ui/components/ui/address-icon';
 import { AddressComponent } from '@repo/ui/components/ui/address-component';
-import { BalancesByAccount, getBalancesByAccount } from '../../../fetchers/balances/by-account';
 import {
   Table,
   TableBody,
@@ -11,7 +9,6 @@ import {
   TableRow,
 } from '@repo/ui/components/ui/table';
 import { ValueViewComponent } from '@repo/ui/components/ui/tx/view/value';
-import { abortLoader } from '../../../abort-loader';
 import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
 import { shouldDisplay } from './helpers';
