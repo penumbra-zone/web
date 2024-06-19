@@ -1,5 +1,17 @@
 # @penumbra-zone/getters
 
+## 8.0.0
+
+### Minor Changes
+
+- 9b3f561: properly build esm relative paths
+
+### Patch Changes
+
+- Updated dependencies [9b3f561]
+  - @penumbra-zone/protobuf@5.1.0
+  - @penumbra-zone/bech32m@6.1.0
+
 ## 7.0.0
 
 ### Major Changes

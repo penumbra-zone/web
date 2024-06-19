@@ -1,6 +1,6 @@
 {
   "name": "@repo/ui",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",

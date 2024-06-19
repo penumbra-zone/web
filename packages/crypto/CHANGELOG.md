@@ -1,5 +1,16 @@
 # @penumbra-zone/crypto-web
 
+## 5.0.0
+
+### Minor Changes
+
+- 9b3f561: properly build esm relative paths
+
+### Patch Changes
+
+- Updated dependencies [9b3f561]
+  - @penumbra-zone/types@9.0.0
+
 ## 4.0.0
 
 ### Major Changes

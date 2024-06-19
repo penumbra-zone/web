@@ -1,5 +1,11 @@
 # @penumbra-zone/bech32
 
+## 6.1.0
+
+### Minor Changes
+
+- 9b3f561: properly build esm relative paths
+
 ## 6.0.0
 
 ### Major Changes

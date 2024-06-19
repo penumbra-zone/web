@@ -1,5 +1,25 @@
 # @penumbra-zone/router
 
+## 6.0.0
+
+### Minor Changes
+
+- 9b3f561: properly build esm relative paths
+
+### Patch Changes
+
+- Updated dependencies [9b3f561]
+  - @penumbra-zone/transport-dom@7.1.0
+  - @penumbra-zone/perspective@6.0.0
+  - @penumbra-zone/protobuf@5.1.0
+  - @penumbra-zone/bech32m@6.1.0
+  - @penumbra-zone/getters@8.0.0
+  - @penumbra-zone/storage@6.0.0
+  - @penumbra-zone/crypto-web@5.0.0
+  - @penumbra-zone/query@6.0.0
+  - @penumbra-zone/types@9.0.0
+  - @penumbra-zone/wasm@9.0.0
+
 ## 5.0.0
 
 ### Major Changes

@@ -1,5 +1,16 @@
 # @penumbra-zone/transport-chrome
 
+## 4.0.0
+
+### Minor Changes
+
+- 9b3f561: properly build esm relative paths
+
+### Patch Changes
+
+- Updated dependencies [9b3f561]
+  - @penumbra-zone/transport-dom@7.1.0
+
 ## 3.0.0
 
 ### Major Changes
