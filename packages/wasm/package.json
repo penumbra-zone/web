@@ -7,7 +7,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsc --build && tsc-alias",
     "clean": "rm -rfv dist wasm package penumbra-zone-wasm-*.tgz",
     "clean:rust": "cargo clean --manifest-path ./crate/Cargo.toml",
     "compile": "cd crate && wasm-pack build --no-pack --target bundler --out-name index --out-dir ../wasm",

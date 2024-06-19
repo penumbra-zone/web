@@ -26,5 +26,15 @@
     "resolveJsonModule": true,
     "target": "ESNext",
     "module": "ES2022"
+  },
+  "tsc-alias": {
+    "verbose": true,
+    "resolveFullPaths": true,
+    "replacers": {
+      "buf-js": {
+        "enabled": true,
+        "file": "../../buf-replacer.js"
+      }
+    }
   }
 }

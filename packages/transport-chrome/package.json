@@ -8,7 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsc --build && tsc-alias",
     "clean": "rm -rfv dist package penumbra-zone-transport-dom-*.tgz",
     "lint": "eslint src",
     "test": "vitest run"
