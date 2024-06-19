@@ -129,7 +129,7 @@ export const TokenSwapInput = () => {
             setShowNonNativeFeeWarning(Number(e.target.value) > 0 && !userHasStakingToken);
           }}
         />
-        <div className='flex grow gap-4'>
+        <div className='flex gap-4'>
           {assetIn && (
             <div className='ml-auto hidden h-full flex-col justify-end self-end sm:flex'>
               <span className='mr-2 block whitespace-nowrap text-xs text-muted-foreground'>
