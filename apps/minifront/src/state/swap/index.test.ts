@@ -102,8 +102,8 @@ describe('Swap Slice', () => {
         });
 
         useStore.setState(state => {
-          state.swap.swappableAssets = [metadata1, metadata2];
-          state.swap.balancesResponses = [
+          state.swap.swappableAssets.data = [metadata1, metadata2];
+          state.swap.balancesResponses.data = [
             balancesResponseWithMetadata1,
             balancesResponseWithMetadata2,
           ];
@@ -149,8 +149,8 @@ describe('Swap Slice', () => {
         });
 
         useStore.setState(state => {
-          state.swap.swappableAssets = [metadata1, metadata2];
-          state.swap.balancesResponses = [
+          state.swap.swappableAssets.data = [metadata1, metadata2];
+          state.swap.balancesResponses.data = [
             balancesResponseWithMetadata1,
             balancesResponseWithMetadata2,
           ];
