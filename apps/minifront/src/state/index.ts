@@ -19,6 +19,10 @@ import { createSharedSlice, SharedSlice } from './shared';
  */
 enableMapSet();
 
+/**
+ * Slices are objects in state that have their own state and actions for a
+ * specific set of concerns.
+ */
 export interface AllSlices {
   balances: BalancesSlice;
   ibcIn: IbcInSlice;
