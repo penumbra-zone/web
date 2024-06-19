@@ -813,11 +813,7 @@ export class IndexedDb implements IndexedDbInterface {
   }
 
   fetchStakingTokenId(): AssetId {
-    const registryClient = new ChainRegistryClient();
-    const registry = registryClient.get(this.chainId);
-    const stakingToken = registry.stakingAssetId;
-
-    return stakingToken;
+    return this.stakingTokenAssetId;
   }
 
   async hasStakingAssetBalance(assetId: AssetId): Promise<boolean> {
