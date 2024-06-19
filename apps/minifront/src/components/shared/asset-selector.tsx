@@ -53,7 +53,7 @@ const useFilteredAssets = ({ assets, value, onChange, filter }: AssetSelectorPro
   const [search, setSearch] = useState('');
 
   let filteredAssets = filter ? sortedAssets.filter(filter) : sortedAssets;
-  filteredAssets = search ? assets.filter(bySearch(search)) : assets;
+  filteredAssets = search ? assets.filter(filterMetadataBySearch(search)) : assets;
 
   useEffect(
     () => switchAssetIfNecessary({ value, onChange, filter, assets: filteredAssets }),
@@ -63,7 +63,7 @@ const useFilteredAssets = ({ assets, value, onChange, filter }: AssetSelectorPro
   return { filteredAssets, search, setSearch };
 };
 
-const bySearch = (search: string) => (asset: Metadata) =>
+export const filterMetadataBySearch = (search: string) => (asset: Metadata) =>
   asset.display.toLocaleLowerCase().includes(search.toLocaleLowerCase()) ||
   asset.symbol.toLocaleLowerCase().includes(search.toLocaleLowerCase());
 
@@ -118,7 +118,7 @@ export const AssetSelector = ({ assets, onChange, value, filter }: AssetSelector
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent layoutId={layoutId}>
-          <div className='flex max-h-screen flex-col'>
+          <div className='flex max-h-[90dvh] flex-col'>
             <DialogHeader>Select asset</DialogHeader>
 
             <div className='flex flex-col gap-2 overflow-auto p-4'>
@@ -127,6 +127,7 @@ export const AssetSelector = ({ assets, onChange, value, filter }: AssetSelector
                   icon={<MagnifyingGlassIcon className='size-5 text-muted-foreground' />}
                   value={search}
                   onChange={setSearch}
+                  autoFocus
                   placeholder='Search assets...'
                 />
               </Box>

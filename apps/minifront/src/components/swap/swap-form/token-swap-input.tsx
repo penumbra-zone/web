@@ -17,30 +17,17 @@ import { amountMoreThanBalance } from '../../../state/send';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { AssetSelector } from '../../shared/asset-selector';
 import BalanceSelector from '../../shared/balance-selector';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
 import { useStatus } from '../../../state/status';
 import { hasStakingToken } from '../../../fetchers/staking-token';
+import { zeroValueView } from '../../../utils/zero-value-view';
 
 const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
   Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
 
-const getKnownZeroValueView = (metadata?: Metadata) => {
-  return new ValueView({
-    valueView: {
-      case: 'knownAssetId',
-      value: { amount: new Amount({ lo: 0n }), metadata },
-    },
-  });
-};
-
 const assetOutBalanceSelector = ({ swap: { balancesResponses, assetIn, assetOut } }: AllSlices) => {
-  if (!assetIn || !assetOut) return getKnownZeroValueView();
+  if (!assetIn || !assetOut) return zeroValueView();
 
   const match = balancesResponses.find(balance => {
     const balanceViewMetadata = getMetadataFromBalancesResponse(balance);
@@ -50,7 +37,7 @@ const assetOutBalanceSelector = ({ swap: { balancesResponses, assetIn, assetOut 
     );
   });
   const matchedBalance = getBalanceView.optional()(match);
-  return matchedBalance ?? getKnownZeroValueView(assetOut);
+  return matchedBalance ?? zeroValueView(assetOut);
 };
 
 const tokenSwapInputSelector = (state: AllSlices) => ({
@@ -144,7 +131,12 @@ export const TokenSwapInput = () => {
           )}
 
           <div className='flex h-full flex-col gap-2'>
-            <BalanceSelector value={assetIn} onChange={setAssetIn} balances={balancesResponses} />
+            <BalanceSelector
+              value={assetIn}
+              onChange={setAssetIn}
+              assets={swappableAssets}
+              balances={balancesResponses}
+            />
             {assetIn?.balanceView && (
               <BalanceValueView valueView={assetIn.balanceView} onClick={setInputToBalanceMax} />
             )}

@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
-import { useId, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { IconInput } from '@repo/ui/components/ui/icon-input';
 import { Dialog, DialogClose, DialogContent, DialogHeader } from '@repo/ui/components/ui/dialog';
 import { cn } from '@repo/ui/lib/utils';
@@ -9,8 +9,21 @@ import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { getDisplayDenomFromView, getSymbolFromValueView } from '@penumbra-zone/getters/value-view';
 import { Box } from '@repo/ui/components/ui/box';
 import { motion } from 'framer-motion';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { filterMetadataBySearch } from './asset-selector';
+import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
+import { AssetIcon } from '@repo/ui/components/ui/tx/view/asset-icon';
+import { emptyBalanceResponse } from '../../utils/empty-balance-response';
 
-const bySearch = (search: string) => (balancesResponse: BalancesResponse) =>
+const isMetadata = (asset: BalancesResponse | Metadata): asset is Metadata => {
+  return Boolean('symbol' in asset && 'name' in asset && 'display' in asset);
+};
+
+const isBalance = (asset: BalancesResponse | Metadata): asset is BalancesResponse => {
+  return 'balanceView' in asset && 'accountAddress' in asset;
+};
+
+const filterBalanceBySearch = (search: string) => (balancesResponse: BalancesResponse) =>
   getDisplayDenomFromView(balancesResponse.balanceView)
     .toLocaleLowerCase()
     .includes(search.toLocaleLowerCase()) ||
@@ -18,10 +31,79 @@ const bySearch = (search: string) => (balancesResponse: BalancesResponse) =>
     .toLocaleLowerCase()
     .includes(search.toLocaleLowerCase());
 
+const bySearch = (search: string) => (asset: Metadata | BalancesResponse) => {
+  if (isMetadata(asset)) {
+    return filterMetadataBySearch(search)(asset);
+  }
+  if (isBalance(asset)) return filterBalanceBySearch(search)(asset);
+  return false;
+};
+
+const mergeBalancesAndAssets = (balances: BalancesResponse[] = [], assets: Metadata[] = []) => {
+  const filteredAssets = assets.filter(asset => {
+    return !balances.some(balance => {
+      const balanceMetadata = getMetadataFromBalancesResponseOptional(balance);
+      return balanceMetadata?.equals(asset);
+    });
+  });
+  return [...balances, ...filteredAssets];
+};
+
+interface BalanceItemProps {
+  asset: BalancesResponse | Metadata;
+  value?: BalancesResponse | Metadata;
+  onSelect: (value: BalancesResponse | Metadata) => void;
+}
+
+const BalanceItem = ({ asset, value, onSelect }: BalanceItemProps) => {
+  const account = isBalance(asset) ? getAddressIndex(asset.accountAddress).account : undefined;
+  const metadata = isMetadata(asset) ? asset : getMetadataFromBalancesResponseOptional(asset);
+
+  const isSelected = useMemo(() => {
+    if (!value) return false;
+    if (isMetadata(value) && isMetadata(asset)) {
+      return value.equals(asset);
+    }
+    if (isBalance(value) && isBalance(asset)) {
+      return value.equals(asset);
+    }
+    return false;
+  }, [asset, value]);
+
+  return (
+    <div className='flex flex-col'>
+      <DialogClose onClick={() => onSelect(asset)}>
+        <div
+          className={cn(
+            'grid grid-cols-4 py-[10px] gap-3 cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4 font-bold text-muted-foreground',
+            isSelected && 'bg-light-brown px-4 -mx-4',
+          )}
+        >
+          {metadata && (
+            <div className='col-span-2 flex items-center justify-start gap-1'>
+              <AssetIcon metadata={metadata} />
+              <p className='truncate'>{metadata.symbol || 'Unknown asset'}</p>
+            </div>
+          )}
+
+          <div className='flex justify-end'>
+            {isBalance(asset) && (
+              <ValueViewComponent showIcon={false} showDenom={false} view={asset.balanceView} />
+            )}
+          </div>
+
+          <p className='flex justify-center'>{account}</p>
+        </div>
+      </DialogClose>
+    </div>
+  );
+};
+
 interface BalanceSelectorProps {
   value: BalancesResponse | undefined;
   onChange: (selection: BalancesResponse) => void;
-  balances: BalancesResponse[];
+  balances?: BalancesResponse[];
+  assets?: Metadata[];
 }
 
 /**
@@ -32,11 +114,26 @@ interface BalanceSelectorProps {
  * Use `<AssetSelector />` if you want to render assets that aren't tied to any
  * balance.
  */
-export default function BalanceSelector({ value, balances, onChange }: BalanceSelectorProps) {
+export default function BalanceSelector({
+  value,
+  balances,
+  onChange,
+  assets,
+}: BalanceSelectorProps) {
   const [search, setSearch] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const filteredBalances = search ? balances.filter(bySearch(search)) : balances;
   const layoutId = useId();
+
+  const allAssets = mergeBalancesAndAssets(balances, assets);
+  const filteredBalances = search ? allAssets.filter(bySearch(search)) : allAssets;
+
+  const onSelect = (asset: BalancesResponse | Metadata) => {
+    if (!isMetadata(asset)) {
+      onChange(asset);
+      return;
+    }
+    onChange(emptyBalanceResponse(asset));
+  };
 
   return (
     <>
@@ -62,7 +159,7 @@ export default function BalanceSelector({ value, balances, onChange }: BalanceSe
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent layoutId={layoutId}>
-          <div className='flex max-h-screen flex-col'>
+          <div className='flex max-h-[90dvh] flex-col'>
             <DialogHeader>Select asset</DialogHeader>
             <div className='flex shrink flex-col gap-4 overflow-auto p-4'>
               <Box spacing='compact'>
@@ -70,38 +167,19 @@ export default function BalanceSelector({ value, balances, onChange }: BalanceSe
                   icon={<MagnifyingGlassIcon className='size-5 text-muted-foreground' />}
                   value={search}
                   onChange={setSearch}
+                  autoFocus
                   placeholder='Search assets...'
                 />
               </Box>
-              <div className='mt-2 grid grid-cols-4 font-headline text-base font-semibold'>
-                <p className='flex justify-start'>Account</p>
-                <p className='col-span-3 flex justify-start'>Asset</p>
+              <div className='mt-2 grid grid-cols-4 gap-3 font-headline text-base font-semibold'>
+                <p className='col-span-2 flex justify-start'>Asset</p>
+                <p className='flex justify-end'>Balance</p>
+                <p className='flex justify-center'>Account</p>
               </div>
               <div className='flex flex-col gap-2'>
-                {filteredBalances.map((b, i) => {
-                  const index = getAddressIndex(b.accountAddress).account;
-
-                  return (
-                    <div key={i} className='flex flex-col'>
-                      <DialogClose>
-                        <div
-                          className={cn(
-                            'grid grid-cols-4 py-[10px] cursor-pointer hover:bg-light-brown hover:px-4 hover:-mx-4 font-bold text-muted-foreground',
-                            value?.balanceView?.equals(b.balanceView) &&
-                              value.accountAddress?.equals(b.accountAddress) &&
-                              'bg-light-brown px-4 -mx-4',
-                          )}
-                          onClick={() => onChange(b)}
-                        >
-                          <p className='flex justify-start'>{index}</p>
-                          <div className='col-span-3 flex justify-start'>
-                            <ValueViewComponent view={b.balanceView} />
-                          </div>
-                        </div>
-                      </DialogClose>
-                    </div>
-                  );
-                })}
+                {filteredBalances.map((asset, i) => (
+                  <BalanceItem key={i} asset={asset} value={value} onSelect={onSelect} />
+                ))}
               </div>
             </div>
           </div>

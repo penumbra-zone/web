@@ -31,9 +31,9 @@ interface Actions {
   setBalancesResponses: (balancesResponses: BalancesResponse[]) => void;
   setStakingAssetMetadata: (metadata: Metadata) => void;
   setSwappableAssets: (assets: Metadata[]) => void;
-  setAssetIn: (asset: BalancesResponse) => void;
+  setAssetIn: (asset?: BalancesResponse) => void;
   setAmount: (amount: string) => void;
-  setAssetOut: (metadata: Metadata) => void;
+  setAssetOut: (metadata?: Metadata) => void;
   setDuration: (duration: DurationOption) => void;
   resetSubslices: VoidFunction;
 }
@@ -110,7 +110,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
     set(({ swap }) => {
       swap.assetIn = asset;
 
-      if (balancesResponseAndMetadataAreSameAsset(asset, get().swap.assetOut)) {
+      if (balancesResponseAndMetadataAreSameAsset(asset, get().swap.assetOut) && asset) {
         swap.assetOut = getFirstMetadataNotMatchingBalancesResponse(
           get().swap.swappableAssets,
           asset,
