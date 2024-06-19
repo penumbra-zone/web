@@ -1,8 +1,8 @@
-import { ChainInfo } from '../components/ibc/ibc-in/chain-dropdown';
-import { CosmosAssetBalance } from '../components/ibc/ibc-in/hooks';
+import { ChainInfo } from '../../components/ibc/ibc-in/chain-dropdown';
+import { CosmosAssetBalance } from '../../components/ibc/ibc-in/hooks';
 import { ChainWalletContext } from '@cosmos-kit/core';
-import { AllSlices, SliceCreator } from '.';
-import { getAddrByIndex } from '../fetchers/address';
+import { AllSlices, SliceCreator } from '..';
+import { getAddrByIndex } from '../../fetchers/address';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 import { Toast } from '@repo/ui/lib/toast/toast';
 import { shorten } from '@penumbra-zone/types/string';
@@ -10,15 +10,16 @@ import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/k
 import { bech32CompatAddress } from '@penumbra-zone/bech32m/penumbracompat1';
 import { calculateFee, GasPrice, SigningStargateClient } from '@cosmjs/stargate';
 import { chains } from 'chain-registry';
-import { getChainId } from '../fetchers/chain-id';
-import { augmentToAsset, fromDisplayAmount } from '../components/ibc/ibc-in/asset-utils';
+import { getChainId } from '../../fetchers/chain-id';
+import { augmentToAsset, fromDisplayAmount } from '../../components/ibc/ibc-in/asset-utils';
 import { cosmos, ibc } from 'osmo-query';
-import { chainRegistryClient } from '../fetchers/registry';
-import { tendermintClient } from '../clients';
-import { BLOCKS_PER_HOUR } from './constants';
-import { currentTimePlusTwoDaysRounded } from './ibc-out';
+import { chainRegistryClient } from '../../fetchers/registry';
+import { tendermintClient } from '../../clients';
+import { BLOCKS_PER_HOUR } from '../constants';
+import { currentTimePlusTwoDaysRounded } from '../ibc-out';
 import { EncodeObject } from '@cosmjs/proto-signing';
 import { MsgTransfer } from 'osmo-query/ibc/applications/transfer/v1/tx';
+import { parseRevisionNumberFromChainId } from './parse-revision-number-from-chain-id';
 
 export interface IbcInSlice {
   selectedChain?: ChainInfo;
@@ -206,21 +207,6 @@ const getCounterpartyChannelId = (
   }
 
   return counterpartyChannelId;
-};
-
-/**
- * Examples:
- * getRevisionNumberFromChainId("grand-1") returns 1n
- * getRevisionNumberFromChainId("osmo-test-5") returns 5n
- * getRevisionNumberFromChainId("penumbra-testnet-deimos-7") returns 7n
- */
-export const parseRevisionNumberFromChainId = (chainId: string): bigint => {
-  const match = chainId.match(/-(\d+)$/);
-  if (match?.[1]) {
-    return BigInt(match[1]);
-  } else {
-    throw new Error(`No revision number found within chain id: ${chainId}`);
-  }
 };
 
 // Get timeout from penumbra chain blocks

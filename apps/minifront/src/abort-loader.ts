@@ -28,8 +28,12 @@ const retry = async (fn: () => boolean, ms = 500, rate = Math.max(ms / 10, 50)) 
  * timeout. This is a temporary solution until loaders properly await Prax
  * connection.
  */
-export const abortLoader = async (): Promise<void> => {
+export const abortLoader = async (): Promise<null> => {
   await throwIfPraxNotInstalled();
   await retry(() => isPraxConnected());
   throwIfPraxNotConnected();
+
+  // Loaders are required to return a value, even if it's null. By returning
+  // `null` here, we can use this loader directly in the router.
+  return null;
 };

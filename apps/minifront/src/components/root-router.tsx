@@ -1,21 +1,23 @@
 import { createHashRouter, redirect } from 'react-router-dom';
 import { PagePath } from './metadata/paths';
 import { Layout } from './layout';
-import AssetsTable, { AssetsLoader } from './dashboard/assets-table';
+import AssetsTable from './dashboard/assets-table';
 import TransactionTable from './dashboard/transaction-table';
 import { DashboardLayout } from './dashboard/layout';
-import { TxDetails, TxDetailsErrorBoundary, TxDetailsLoader } from './tx-details';
+import { TxDetails, TxDetailsErrorBoundary } from './tx-details';
 import { SendLayout } from './send/layout';
-import { SendAssetBalanceLoader, SendForm } from './send/send-form';
+import { SendForm } from './send/send-form';
 import { Receive } from './send/receive';
 import { ErrorBoundary } from './shared/error-boundary';
 import { SwapLayout } from './swap/layout';
 import { SwapLoader } from './swap/swap-loader';
-import { StakingLayout, StakingLoader } from './staking/layout';
+import { StakingLayout } from './staking/layout';
 import { IbcLoader } from './ibc/ibc-loader';
 import { IbcLayout } from './ibc/layout';
+import { abortLoader } from '../abort-loader';
+import type { Router } from '@remix-run/router';
 
-export const rootRouter = createHashRouter([
+export const rootRouter: Router = createHashRouter([
   {
     path: '/',
     element: <Layout />,
@@ -28,7 +30,7 @@ export const rootRouter = createHashRouter([
         children: [
           {
             index: true,
-            loader: AssetsLoader,
+            loader: abortLoader,
             element: <AssetsTable />,
           },
           {
@@ -43,7 +45,7 @@ export const rootRouter = createHashRouter([
         children: [
           {
             index: true,
-            loader: SendAssetBalanceLoader,
+            loader: abortLoader,
             element: <SendForm />,
           },
           {
@@ -59,13 +61,13 @@ export const rootRouter = createHashRouter([
       },
       {
         path: PagePath.TRANSACTION_DETAILS,
-        loader: TxDetailsLoader,
+        loader: abortLoader,
         element: <TxDetails />,
         errorElement: <TxDetailsErrorBoundary />,
       },
       {
         path: PagePath.STAKING,
-        loader: StakingLoader,
+        loader: abortLoader,
         element: <StakingLayout />,
       },
       {

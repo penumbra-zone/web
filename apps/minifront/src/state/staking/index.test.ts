@@ -242,17 +242,14 @@ describe('Staking Slice', () => {
   it('has correct initial state', () => {
     expect(useStore.getState().staking).toEqual({
       account: 0,
-      accountSwitcherFilter: [],
       action: undefined,
       amount: '',
       validatorInfo: undefined,
       delegationsByAccount: new Map(),
-      unstakedTokensByAccount: new Map(),
       unbondingTokensByAccount: new Map(),
       setAccount: expect.any(Function) as unknown,
       loadDelegationsForCurrentAccount: expect.any(Function) as unknown,
       loadUnbondingTokensForCurrentAccount: expect.any(Function) as unknown,
-      loadAndReduceBalances: expect.any(Function) as unknown,
       delegate: expect.any(Function) as unknown,
       undelegate: expect.any(Function) as unknown,
       undelegateClaim: expect.any(Function) as unknown,
@@ -262,6 +259,7 @@ describe('Staking Slice', () => {
       error: undefined,
       loading: false,
       votingPowerByValidatorInfo: {},
+      stakingTokensAndFilter: expect.objectContaining({ data: undefined }) as unknown,
     });
   });
 
@@ -291,15 +289,5 @@ describe('Staking Slice', () => {
     expect(getState().staking.votingPowerByValidatorInfo).toEqual({});
     await getState().staking.loadDelegationsForCurrentAccount();
     expect(Object.values(getState().staking.votingPowerByValidatorInfo).length).toBe(4);
-  });
-
-  describe('loadAndReduceBalances()', () => {
-    beforeEach(async () => {
-      await useStore.getState().staking.loadAndReduceBalances();
-    });
-
-    it('includes accounts with tokens relevant to staking', () => {
-      expect(useStore.getState().staking.accountSwitcherFilter).toEqual([0]);
-    });
   });
 });

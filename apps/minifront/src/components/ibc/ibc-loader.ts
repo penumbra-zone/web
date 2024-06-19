@@ -28,8 +28,8 @@ export const IbcLoader: LoaderFunction = async (): Promise<IbcLoaderResponse> =>
     const initialSelection = filterBalancesPerChain(
       assetBalances,
       initialChain,
-      stakingTokenMetadata,
       assets,
+      stakingTokenMetadata,
     )[0];
 
     // set initial account if accounts exist and asset if account has asset list

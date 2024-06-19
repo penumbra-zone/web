@@ -84,7 +84,7 @@ export interface CreateZQueryUnaryProps<
    * })
    * ```
    */
-  set: (setter: <DataType, T extends ZQueryState<DataType>>(prevState: T) => T) => void;
+  set: (setter: <DataType, T extends ZQueryState<DataType, FetchArgs>>(prevState: T) => T) => void;
 }
 
 export interface CreateZQueryStreamingProps<
@@ -282,7 +282,7 @@ export interface CreateZQueryStreamingProps<
    * ```
    */
   set: (
-    setter: <DataType extends ProcessedDataType, T extends ZQueryState<DataType>>(
+    setter: <DataType extends ProcessedDataType, T extends ZQueryState<DataType, FetchArgs>>(
       prevState: T,
     ) => T,
   ) => void;

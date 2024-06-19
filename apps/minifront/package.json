@@ -34,6 +34,7 @@
     "@radix-ui/react-menubar": "^1.0.4",
     "@radix-ui/react-navigation-menu": "^1.1.4",
     "@radix-ui/react-portal": "^1.0.4",
+    "@remix-run/router": "^1.16.1",
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "4.36.1",
     "bech32": "^2.0.0",
