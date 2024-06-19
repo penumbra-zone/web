@@ -29,6 +29,12 @@
   },
   "tsc-alias": {
     "verbose": true,
-    "resolveFullPaths": true
+    "resolveFullPaths": true,
+    "replacers": {
+      "buf-js": {
+        "enabled": true,
+        "file": "../../buf-replacer.js"
+      }
+    }
   }
 }

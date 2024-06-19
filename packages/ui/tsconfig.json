@@ -1,11 +1,4 @@
 {
-  "extends": "@repo/tsconfig/base.json",
-  "include": ["components", "lib", "tests-setup.ts"],
-  "compilerOptions": {
-    "noEmit": true,
-    "declarationMap": false,
-    "declaration": false,
-    "sourceMap": false,
-    "jsx": "react-jsx"
-  }
+  "extends": "@repo/tsconfig/vite.json",
+  "include": ["components", "lib", "tests-setup.ts"]
 }
