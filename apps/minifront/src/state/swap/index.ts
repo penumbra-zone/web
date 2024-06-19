@@ -15,6 +15,7 @@ import {
   InstantSwapSlice,
   createInstantSwapSlice,
   instantSwapSubmitButtonDisabledSelector,
+  isValidAmount,
 } from './instant-swap';
 import { PriceHistorySlice, createPriceHistorySlice } from './price-history';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
@@ -151,5 +152,6 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
 
 export const submitButtonDisabledSelector = (state: AllSlices) =>
   !state.swap.amount ||
+  !isValidAmount(state.swap.amount, state.swap.assetIn) ||
   dutchAuctionSubmitButtonDisabledSelector(state) ||
   instantSwapSubmitButtonDisabledSelector(state);

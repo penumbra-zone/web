@@ -1,4 +1,3 @@
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';
 import { Box } from '@repo/ui/components/ui/box';
 import { CandlestickPlot } from '@repo/ui/components/ui/candlestick-plot';
@@ -13,7 +12,6 @@ import { ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getBlockDate } from '../../../fetchers/block-date';
 import { AllSlices } from '../../../state';
-import { amountMoreThanBalance } from '../../../state/send';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
@@ -22,9 +20,7 @@ import BalanceSelector from '../../shared/balance-selector';
 import { useStatus } from '../../../state/status';
 import { hasStakingToken } from '../../../fetchers/staking-token';
 import { zeroValueView } from '../../../utils/zero-value-view';
-
-const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
-  Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
+import { isValidAmount } from '../../../state/swap/instant-swap';
 
 const assetOutBalanceSelector = ({ swap: { balancesResponses, assetIn, assetOut } }: AllSlices) => {
   if (!assetIn || !assetOut) return zeroValueView();
@@ -116,7 +112,6 @@ export const TokenSwapInput = () => {
           step='any'
           className={'font-bold leading-10 md:h-8 md:text-xl xl:h-10 xl:text-3xl'}
           onChange={e => {
-            if (!isValidAmount(e.target.value, assetIn)) return;
             setAmount(e.target.value);
             setshowNonNativeFeeWarning(Number(e.target.value) > 0 && !stakingToken);
           }}
@@ -138,7 +133,11 @@ export const TokenSwapInput = () => {
               balances={balancesResponses}
             />
             {assetIn?.balanceView && (
-              <BalanceValueView valueView={assetIn.balanceView} onClick={setInputToBalanceMax} />
+              <BalanceValueView
+                valueView={assetIn.balanceView}
+                error={!isValidAmount(amount, assetIn)}
+                onClick={setInputToBalanceMax}
+              />
             )}
           </div>
 
