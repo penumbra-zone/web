@@ -138,6 +138,13 @@ export const TokenSwapInput = () => {
             </div>
           )}
 
+          <FadeIn condition={!!balancesResponses.error || !!swappableAssets.error}>
+            <div className='flex gap-4 text-red'>
+              {balancesResponses.error instanceof Error && balancesResponses.error.toString()}
+              {swappableAssets.error instanceof Error && swappableAssets.error.toString()}
+            </div>
+          </FadeIn>
+
           <FadeIn condition={!!balancesResponses.data && !!swappableAssets.data}>
             <div className='flex gap-4'>
               <div className='flex h-full flex-col gap-2'>
