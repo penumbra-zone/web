@@ -1,8 +1,8 @@
 import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { cn } from '../../lib/utils';
-import { Button } from './button';
-import { Input } from './input';
+import { cn } from '../../../lib/utils';
+import { Button } from '../button';
+import { Input } from '../input';
 
 const MAX_INDEX = 2 ** 32;
 

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { AccountSwitcher } from './account-switcher';
+import { AccountSwitcher } from '.';
 import { fireEvent, render } from '@testing-library/react';
 
 describe('<AccountSwitcher />', () => {

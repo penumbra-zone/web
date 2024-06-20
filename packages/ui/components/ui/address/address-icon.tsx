@@ -1,8 +1,8 @@
-import { Identicon } from './identicon';
+import { Identicon } from '../identicon';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
-interface AddressIconProps {
+export interface AddressIconProps {
   address: Address;
   size: number;
 }

@@ -1,11 +1,11 @@
-import { AddressIcon } from './address-icon';
+import { AddressIcon } from './address/address-icon';
 import { InfoIcon } from 'lucide-react';
 import { CopyToClipboardIconButton } from './copy-to-clipboard-icon-button';
 import { IncognitoIcon } from './icons/incognito';
 import { Switch } from './switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
 import { useEffect, useState } from 'react';
-import { AddressComponent } from './address-component';
+import { AddressComponent } from './address/address-component';
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { AccountSwitcher } from './account-switcher';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';

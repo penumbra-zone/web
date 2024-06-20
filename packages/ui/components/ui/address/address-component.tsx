@@ -1,7 +1,7 @@
 import { Address } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/keys/v1/keys_pb';
 import { bech32mAddress } from '@penumbra-zone/bech32m/penumbra';
 
-interface AddressComponentProps {
+export interface AddressComponentProps {
   address: Address;
   ephemeral?: boolean;
 }

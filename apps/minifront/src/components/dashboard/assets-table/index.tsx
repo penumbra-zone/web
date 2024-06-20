@@ -1,5 +1,5 @@
-import { AddressIcon } from '@penumbra-zone/ui/components/ui/address-icon';
-import { AddressComponent } from '@penumbra-zone/ui/components/ui/address-component';
+import { AddressIcon } from '@penumbra-zone/ui/components/ui/address/address-icon';
+import { AddressComponent } from '@penumbra-zone/ui/components/ui/address/address-component';
 import {
   Table,
   TableBody,
