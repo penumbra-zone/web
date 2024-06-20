@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SwapViewComponent } from './index';
+import { SwapViewComponent } from '.';
 import { SwapView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { render } from '@testing-library/react';
 

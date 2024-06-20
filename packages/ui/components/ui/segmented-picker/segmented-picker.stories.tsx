@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useArgs } from '@storybook/preview-api';
 
-import { SegmentedPicker } from './index';
+import { SegmentedPicker } from '.';
 
 const meta: Meta<typeof SegmentedPicker> = {
   component: SegmentedPicker,

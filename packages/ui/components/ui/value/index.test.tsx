@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { ValueViewComponent } from './index';
+import { ValueViewComponent } from '.';
 import { render } from '@testing-library/react';
 import {
   Metadata,

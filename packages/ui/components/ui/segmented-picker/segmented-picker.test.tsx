@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render } from '@testing-library/react';
-import { SegmentedPicker } from './index';
+import { SegmentedPicker } from '.';
 
 describe('<SegmentedPicker />', () => {
   const onChange = vi.fn();

@@ -4,11 +4,11 @@ import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { BalanceValueView } from './index';
+import { BalanceValueView } from '.';
 import { base64ToUint8Array } from '@penumbra-zone/types/base64';
 
 // Mocking the WalletIcon component
-vi.mock('./icons/wallet', () => ({
+vi.mock('../icons/wallet', () => ({
   WalletIcon: ({ className }: { className: string }) => (
     <div data-testid='wallet-icon' className={className}></div>
   ),

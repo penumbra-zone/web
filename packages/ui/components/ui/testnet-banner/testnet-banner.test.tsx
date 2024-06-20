@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
-import { TestnetBanner } from './index';
+import { TestnetBanner } from '.';
 
 describe('<TestnetBanner />', () => {
   it('renders banner if chainId is a testnet', () => {
