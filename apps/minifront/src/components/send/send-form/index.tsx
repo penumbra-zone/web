@@ -34,7 +34,7 @@ export const SendForm = () => {
     txInProgress,
   } = useStore(sendSelector);
   // State to manage privacy warning display
-  const [showNonNativeFeeWarning, setshowNonNativeFeeWarning] = useState(false);
+  const [showNonNativeFeeWarning, setShowNonNativeFeeWarning] = useState(false);
 
   // Check if the user has native staking tokens
   const stakingToken = hasStakingToken(
@@ -81,7 +81,7 @@ export const SendForm = () => {
           if (Number(amount) < 0) return;
           setAmount(amount);
           // Conditionally prompt a privacy warning about non-native fee tokens
-          setshowNonNativeFeeWarning(Number(amount) > 0 && !stakingToken);
+          setShowNonNativeFeeWarning(Number(amount) > 0 && !stakingToken);
         }}
         validations={[
           {
