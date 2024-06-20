@@ -1,4 +1,4 @@
-import { CondensedBlockSyncStatus } from '@penumbra-zone/ui/components/ui/block-sync-status/condensed';
+import { CondensedBlockSyncStatus } from '@penumbra-zone/ui/components/ui/block-sync-status';
 import { TestnetBanner } from '@penumbra-zone/ui/components/ui/testnet-banner';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';

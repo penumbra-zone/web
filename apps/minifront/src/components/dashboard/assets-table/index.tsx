@@ -1,5 +1,4 @@
-import { AddressIcon } from '@penumbra-zone/ui/components/ui/address/address-icon';
-import { AddressComponent } from '@penumbra-zone/ui/components/ui/address/address-component';
+import { AddressComponent, AddressIcon } from '@penumbra-zone/ui/components/ui/address';
 import {
   Table,
   TableBody,
@@ -8,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from '@penumbra-zone/ui/components/ui/table';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
 import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
 import { shouldDisplay } from './helpers';

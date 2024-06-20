@@ -1,7 +1,7 @@
 import { ListFilter } from 'lucide-react';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { PopoverMenu, PopoverMenuItem } from '@penumbra-zone/ui/components/ui/popover-menu';
+import { PopoverMenu, PopoverMenuItem } from '@penumbra-zone/ui/components/ui/popover';
 import type { Filter as TFilter } from '../../../state/swap/dutch-auction';
 
 const filtersSelector = (state: AllSlices) => ({

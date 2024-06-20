@@ -7,7 +7,7 @@ import {
   SegmentedPickerOption,
 } from '@penumbra-zone/ui/components/ui/segmented-picker';
 import { InputBlock } from './input-block';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
 import {
   Metadata,
   ValueView,

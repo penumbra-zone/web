@@ -1,6 +1,6 @@
 import { Button } from '@penumbra-zone/ui/components/ui/button';
 import { Card } from '@penumbra-zone/ui/components/ui/card';
-import { AssetIcon } from '@penumbra-zone/ui/components/ui/tx/view/asset-icon';
+import { AssetIcon } from '@penumbra-zone/ui/components/ui/asset-icon';
 import { AllSlices } from '../../state';
 import { useUnclaimedSwaps } from '../../state/unclaimed-swaps';
 import { getSwapRecordCommitment } from '@penumbra-zone/getters/swap-record';

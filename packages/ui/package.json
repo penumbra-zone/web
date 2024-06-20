@@ -20,12 +20,8 @@
     "styles"
   ],
   "exports": {
-    "./components/*": "./components/*.tsx",
-    "./components/ui/dutch-auction-component": "./components/ui/dutch-auction-component/index.tsx",
-    "./components/ui/identicon": "./components/ui/identicon/index.tsx",
-    "./components/ui/slider": "./components/ui/slider/index.tsx",
-    "./components/ui/tx/view/asset-icon": "./components/ui/tx/view/asset-icon/index.tsx",
-    "./components/ui/tx/view/value": "./components/ui/tx/view/value/index.tsx",
+    "./components/ui/icons/*": "./components/ui/icons/*.tsx",
+    "./components/ui/*": "./components/ui/*/index.tsx",
     "./lib/toast/*": "./lib/toast/*.ts",
     "./lib/toast/transaction-toast": "./lib/toast/transaction-toast.tsx",
     "./lib/utils": "./lib/utils.ts",
@@ -34,29 +30,13 @@
   },
   "publishConfig": {
     "exports": {
-      "./components/*": {
-        "default": "./dist/components/*.js",
-        "types": "./dist/components/*.d.ts"
+      "./components/ui/icons/*": {
+        "default": "./dist/components/ui/icons/*.js",
+        "types": "./dist/components/ui/icons/*.d.ts"
       },
-      "./components/ui/dutch-auction-component": {
-        "default": "./dist/components/ui/dutch-auction-component/index.js",
-        "types": "./dist/components/ui/dutch-auction-component/index.d.ts"
-      },
-      "./components/ui/identicon": {
-        "default": "./dist/components/ui/identicon/index.js",
-        "types": "./dist/components/ui/identicon/index.d.ts"
-      },
-      "./components/ui/slider": {
-        "default": "./dist/components/ui/slider/index.js",
-        "types": "./dist/components/ui/slider/index.d.ts"
-      },
-      "./components/ui/tx/view/asset-icon": {
-        "default": "./dist/components/ui/tx/view/asset-icon/index.js",
-        "types": "./dist/components/ui/tx/view/asset-icon/index.d.ts"
-      },
-      "./components/ui/tx/view/value": {
-        "default": "./dist/components/ui/tx/view/value/index.js",
-        "types": "./dist/components/ui/tx/view/value/index.d.ts"
+      "./components/ui/*": {
+        "default": "./dist/components/ui/*/index.js",
+        "types": "./dist/components/ui/*/index.d.ts"
       },
       "./lib/toast/*": {
         "default": "./dist/lib/toast/*.js",
