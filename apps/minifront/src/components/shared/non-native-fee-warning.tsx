@@ -10,7 +10,9 @@ const hasStakingToken = (
   stakingAssetMetadata?: Metadata,
 ): boolean => {
   return balancesResponses.some(asset =>
-    getAssetIdFromValueView(asset.balanceView).equals(getAssetId(stakingAssetMetadata)),
+    getAssetIdFromValueView
+      .optional()(asset.balanceView)
+      ?.equals(getAssetId.optional()(stakingAssetMetadata)),
   );
 };
 
