@@ -1,4 +1,4 @@
-import { cn } from '@repo/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { DesktopNav } from './desktop-nav';
 import { MobileNav } from './mobile-nav';
 import { ProviderMenu } from './provider';

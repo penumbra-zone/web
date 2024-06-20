@@ -1,5 +1,5 @@
-import { Button } from '@repo/ui/components/ui/button';
-import { Input } from '@repo/ui/components/ui/input';
+import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Input } from '@penumbra-zone/ui/components/ui/input';
 import { ChainSelector } from './chain-selector';
 import { useLoaderData } from 'react-router-dom';
 import { useStore } from '../../../state';

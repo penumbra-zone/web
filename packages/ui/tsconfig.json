@@ -1,4 +1,9 @@
 {
   "extends": "@repo/tsconfig/vite.json",
-  "include": ["components", "lib", "tests-setup.ts"]
+  "include": ["components", "lib", "tests-setup.ts"],
+  "compilerOptions": {
+    "outDir": "dist",
+    "declarationMap": false,
+    "sourceMap": false
+  }
 }

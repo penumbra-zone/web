@@ -1,13 +1,18 @@
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useId, useState } from 'react';
-import { IconInput } from '@repo/ui/components/ui/icon-input';
-import { Dialog, DialogClose, DialogContent, DialogHeader } from '@repo/ui/components/ui/dialog';
-import { cn } from '@repo/ui/lib/utils';
-import { ValueViewComponent } from '@repo/ui/components/ui/tx/view/value';
+import { IconInput } from '@penumbra-zone/ui/components/ui/icon-input';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+} from '@penumbra-zone/ui/components/ui/dialog';
+import { cn } from '@penumbra-zone/ui/lib/utils';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { getDisplayDenomFromView, getSymbolFromValueView } from '@penumbra-zone/getters/value-view';
-import { Box } from '@repo/ui/components/ui/box';
+import { Box } from '@penumbra-zone/ui/components/ui/box';
 import { motion } from 'framer-motion';
 
 const bySearch = (search: string) => (balancesResponse: BalancesResponse) =>

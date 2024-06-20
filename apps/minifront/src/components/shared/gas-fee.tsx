@@ -2,9 +2,12 @@ import {
   Fee,
   FeeTier_Tier,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/fee/v1/fee_pb';
-import { SegmentedPicker, SegmentedPickerOption } from '@repo/ui/components/ui/segmented-picker';
+import {
+  SegmentedPicker,
+  SegmentedPickerOption,
+} from '@penumbra-zone/ui/components/ui/segmented-picker';
 import { InputBlock } from './input-block';
-import { ValueViewComponent } from '@repo/ui/components/ui/tx/view/value';
+import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/value';
 import {
   Metadata,
   ValueView,

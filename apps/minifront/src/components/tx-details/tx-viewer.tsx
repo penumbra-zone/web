@@ -1,9 +1,9 @@
-import { JsonViewer } from '@repo/ui/components/ui/json-viewer';
-import { TransactionViewComponent } from '@repo/ui/components/ui/tx/view/transaction';
+import { JsonViewer } from '@penumbra-zone/ui/components/ui/json-viewer';
+import { TransactionViewComponent } from '@penumbra-zone/ui/components/ui/tx/view/transaction';
 import { TransactionInfo } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import type { Jsonified } from '@penumbra-zone/types/jsonified';
 import { useState } from 'react';
-import { SegmentedPicker } from '@repo/ui/components/ui/segmented-picker';
+import { SegmentedPicker } from '@penumbra-zone/ui/components/ui/segmented-picker';
 import { asPublicTransactionView } from '@penumbra-zone/perspective/translators/transaction-view';
 import { typeRegistry } from '@penumbra-zone/protobuf';
 import { useQuery } from '@tanstack/react-query';

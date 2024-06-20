@@ -4,8 +4,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@repo/ui/components/ui/select';
-import { cn } from '@repo/ui/lib/utils';
+} from '@penumbra-zone/ui/components/ui/select';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import { useState } from 'react';
 import { useStore } from '../../../state';
 import { ibcOutSelector } from '../../../state/ibc-out';

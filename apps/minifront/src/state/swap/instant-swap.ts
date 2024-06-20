@@ -10,7 +10,7 @@ import {
 import { BigNumber } from 'bignumber.js';
 import { getAddressByIndex } from '../../fetchers/address';
 import { StateCommitment } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/crypto/tct/v1/tct_pb';
-import { errorToast } from '@repo/ui/lib/toast/presets';
+import { errorToast } from '@penumbra-zone/ui/lib/toast/presets';
 import {
   SwapExecution,
   SwapExecution_Trace,

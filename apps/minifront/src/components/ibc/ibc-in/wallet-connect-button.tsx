@@ -1,11 +1,11 @@
 import { WalletStatus } from 'cosmos-kit';
-import { WalletIcon } from '@repo/ui/components/ui/icons/wallet';
+import { WalletIcon } from '@penumbra-zone/ui/components/ui/icons/wallet';
 import { MouseEventHandler } from 'react';
 import { useStore } from '../../../state';
 import { ibcInSelector } from '../../../state/ibc-in';
 
 import { useChainConnector } from './hooks';
-import { cn } from '@repo/ui/lib/utils';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 
 export const ConnectWalletButton = () => {
   const { connect, openView, status } = useChainConnector();

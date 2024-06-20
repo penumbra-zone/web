@@ -1,10 +1,10 @@
-import { Input } from '@repo/ui/components/ui/input';
-import { cn } from '@repo/ui/lib/utils';
+import { Input } from '@penumbra-zone/ui/components/ui/input';
+import { cn } from '@penumbra-zone/ui/lib/utils';
 import BalanceSelector from './balance-selector';
 import { Validation } from './validation-result';
 import { InputBlock } from './input-block';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';
+import { BalanceValueView } from '@penumbra-zone/ui/components/ui/balance-value-view';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 
 interface InputTokenProps {

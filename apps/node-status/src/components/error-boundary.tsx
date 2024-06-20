@@ -1,4 +1,4 @@
-import { SplashPage } from '@repo/ui/components/ui/splash-page';
+import { SplashPage } from '@penumbra-zone/ui/components/ui/splash-page';
 import { useRouteError } from 'react-router-dom';
 
 export const ErrorBoundary = () => {

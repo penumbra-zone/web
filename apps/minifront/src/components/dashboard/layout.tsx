@@ -1,4 +1,4 @@
-import { Card } from '@repo/ui/components/ui/card';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { dashboardTabs, dashboardTabsHelper } from './constants';
 import { Outlet } from 'react-router-dom';
 import { EduInfoCard } from '../shared/edu-panels/edu-info-card';

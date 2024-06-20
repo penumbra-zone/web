@@ -1,4 +1,4 @@
-import { Card } from '@repo/ui/components/ui/card';
+import { Card } from '@penumbra-zone/ui/components/ui/card';
 import { IbcOutForm } from './ibc-out/ibc-out-form';
 import { InterchainUi } from './ibc-in/interchain-ui';
 import { LongArrowIcon } from './long-arrow';

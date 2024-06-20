@@ -1,14 +1,13 @@
 {
-  "name": "@repo/ui",
+  "name": "@penumbra-zone/ui",
   "version": "5.0.0",
-  "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
     "node": ">=22"
   },
   "scripts": {
-    "build-storybook": "storybook build",
+    "build": "tsc --build && tsc-alias",
     "lint": "eslint components lib",
     "storybook": "storybook dev -p 6006",
     "test": "vitest run",
@@ -16,12 +15,13 @@
   },
   "files": [
     "dist",
+    "components",
     "postcss.config.js",
     "fonts",
     "styles"
   ],
   "exports": {
-    "./components/ui/*": "./components/ui/*.tsx",
+    "./components/*": "./components/*.tsx",
     "./components/ui/dutch-auction-component": "./components/ui/dutch-auction-component/index.tsx",
     "./components/ui/identicon": "./components/ui/identicon/index.tsx",
     "./components/ui/slider": "./components/ui/slider/index.tsx",
@@ -35,9 +35,9 @@
   },
   "publishConfig": {
     "exports": {
-      "./components/ui/*": {
-        "default": "./dist/components/ui/*.js",
-        "types": "./dist/components/ui/*.d.ts"
+      "./components/*": {
+        "default": "./dist/components/*.js",
+        "types": "./dist/components/*.d.ts"
       },
       "./components/ui/dutch-auction-component": {
         "default": "./dist/components/ui/dutch-auction-component/index.js",

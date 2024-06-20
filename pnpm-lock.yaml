@@ -165,6 +165,9 @@ importers:
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@penumbra-zone/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@penumbra-zone/zquery':
         specifier: workspace:*
         version: link:../../packages/zquery
@@ -186,9 +189,6 @@ importers:
       '@remix-run/router':
         specifier: ^1.16.1
         version: 1.16.1
-      '@repo/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       '@tanstack/react-query':
         specifier: 4.36.1
         version: 4.36.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -277,7 +277,7 @@ importers:
       '@penumbra-zone/protobuf':
         specifier: workspace:*
         version: link:../../packages/protobuf
-      '@repo/ui':
+      '@penumbra-zone/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       date-fns:
