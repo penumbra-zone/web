@@ -9,14 +9,16 @@ import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { getDisplayDenomFromView, getSymbolFromValueView } from '@penumbra-zone/getters/value-view';
 import { Box } from '@repo/ui/components/ui/box';
 import { motion } from 'framer-motion';
+import { isKnown } from '../swap/helpers';
 
 const bySearch = (search: string) => (balancesResponse: BalancesResponse) =>
-  getDisplayDenomFromView(balancesResponse.balanceView)
+  isKnown(balancesResponse) &&
+  (getDisplayDenomFromView(balancesResponse.balanceView)
     .toLocaleLowerCase()
     .includes(search.toLocaleLowerCase()) ||
-  getSymbolFromValueView(balancesResponse.balanceView)
-    .toLocaleLowerCase()
-    .includes(search.toLocaleLowerCase());
+    getSymbolFromValueView(balancesResponse.balanceView)
+      .toLocaleLowerCase()
+      .includes(search.toLocaleLowerCase()));
 
 interface BalanceSelectorProps {
   value: BalancesResponse | undefined;

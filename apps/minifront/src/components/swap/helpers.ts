@@ -34,7 +34,7 @@ const nonSwappableAssetPatterns = [
 export const isSwappable = (metadata: Metadata) =>
   nonSwappableAssetPatterns.every(pattern => !pattern.matches(getDisplay(metadata)));
 
-const isKnown = (balancesResponse: BalancesResponse) =>
+export const isKnown = (balancesResponse: BalancesResponse) =>
   balancesResponse.balanceView?.valueView.case === 'knownAssetId';
 
 export const getSwappableBalancesResponses = async (): Promise<BalancesResponse[]> => {
