@@ -24,13 +24,42 @@ export const useShouldRender = (balancesResponses: BalancesResponse[] = [], amou
   return showNonNativeFeeWarning;
 };
 
+/**
+ * Renders a non-native fee warning if A) the user has balance of the staking
+ * token to use for fees, and B) the amount the user has entered for a
+ * transaction (e.g., send or swap) is nonzero -- i.e., a fee will be required.
+ */
 export const NonNativeFeeWarning = ({
   balancesResponses,
   amount,
   wrap = children => children,
 }: {
+  /**
+   * The user's balances that are relevant to this transaction, from which
+   * `<NonNativeFeeWarning />` will determine whether to render.
+   */
   balancesResponses?: BalancesResponse[];
+  /**
+   * The amount that the user is putting into this transaction, which will help
+   * determine whether the warning should render.
+   */
   amount: number;
+  /*
+   * Since this component determines for itself whether to render, a parent
+   * component can't optionally render wrapper markup depending on whether this
+   * component will render or not. To work around this, parent components can
+   * pass a `wrap` function that takes a `children` argument, and provide
+   * wrapper markup that will only be rendered if this component renders.
+   *
+   * @example
+   * ```tsx
+   * <NonNativeFeeWarning
+   *   balancesResponses={balancesResponses}
+   *   amount={amount}
+   *   wrap={children => <div className='mt-5'>{children}</div>}
+   * />
+   * ```
+   */
   wrap?: (children: ReactNode) => ReactNode;
 }) => {
   const shouldRender = useShouldRender(balancesResponses, amount);
