@@ -38,7 +38,7 @@ export const NonNativeFeeWarning = ({
   if (!shouldRender) return null;
 
   return wrap(
-    <div className='rounded border border-yellow-500 bg-gray-800 p-4 text-yellow-500'>
+    <div className='rounded border border-yellow-500 p-4 text-yellow-500'>
       <strong>Privacy Warning:</strong>
       <span className='block'>
         Using non-native tokens for transaction fees may pose a privacy risk. It is recommended to
