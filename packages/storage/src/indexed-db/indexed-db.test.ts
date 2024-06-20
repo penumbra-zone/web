@@ -97,6 +97,8 @@ describe('IndexedDb', () => {
       expect((await dbB.getAssetsMetadata(metadataA.penumbraAssetId!))?.name).toBe(metadataA.name);
     });
 
+    // TODO: Do not skip this test after vitest has been updated to v2.0.0.
+    // use vi.mock to override the IDB_VERSION value (vi.mock is not available in browser mode for vitest 1.6.0).
     it.skip('increasing version should re-create object stores', async () => {
       const version1Props = generateInitialProps();
       const dbA = await IndexedDb.initialize(version1Props);
