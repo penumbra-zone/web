@@ -125,6 +125,9 @@
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
+    "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/perspective": "workspace:*",
+    "@repo/tailwind-config": "workspace:*",
     "@storybook/addon-essentials": "^8.1.1",
     "@storybook/addon-interactions": "^8.1.1",
     "@storybook/addon-links": "^8.1.1",
@@ -145,9 +148,6 @@
   "peerDependencies": {
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240616005217-ca45ca80333e.1",
     "@bufbuild/protobuf": "^1.10.0",
-    "@penumbra-zone/getters": "workspace:*",
-    "@penumbra-zone/perspective": "workspace:*",
-    "@repo/tailwind-config": "workspace:*",
     "postcss": "^8.4.38",
     "react": "^18.3.1",
     "tailwindcss": "^3.4.3"
