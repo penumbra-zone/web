@@ -19,12 +19,13 @@ import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { AssetSelector } from '../../shared/selectors/asset-selector';
 import BalanceSelector from '../../shared/selectors/balance-selector';
 import { useStatus } from '../../../state/status';
-import { useBalancesResponses, useSwappableAssets } from '../../../state/swap';
-import { FadeIn } from '@repo/ui/components/ui/fade-in';
 import { zeroValueView } from '../../../utils/zero-value-view';
 import { isValidAmount } from '../../../state/helpers';
 import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 import { NumberInput } from '../../shared/number-input';
+import { useBalancesResponses, useAssets } from '../../../state/shared';
+import { FadeIn } from '@repo/ui/components/ui/fade-in';
+import { swappableAssetsSelector, swappableBalancesResponsesSelector } from '../helpers';
 
 const getAssetOutBalance = (
   balancesResponses: BalancesResponse[] = [],
@@ -64,8 +65,8 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
 export const TokenSwapInput = () => {
   const status = useStatus();
   const latestKnownBlockHeight = status.data?.latestKnownBlockHeight ?? 0n;
-  const balancesResponses = useBalancesResponses();
-  const swappableAssets = useSwappableAssets();
+  const balancesResponses = useBalancesResponses({ select: swappableBalancesResponsesSelector });
+  const swappableAssets = useAssets({ select: swappableAssetsSelector });
   const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, priceHistory } =
     useStoreShallow(tokenSwapInputSelector);
   const assetOutBalance = getAssetOutBalance(balancesResponses.data, assetIn, assetOut);
