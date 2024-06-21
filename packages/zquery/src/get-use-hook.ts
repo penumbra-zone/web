@@ -58,7 +58,7 @@ export const getUseHook = <
 
   const useHook = ({
     fetchArgs,
-    select = zQueryState => zQueryState,
+    select,
   }: {
     fetchArgs?: FetchArgs;
     select?: <SelectedDataType>(
@@ -96,11 +96,13 @@ export const getUseHook = <
       useShallow(state => {
         const { data, loading, error } = props.get(state);
 
-        return select({
-          data,
-          loading,
-          error,
-        });
+        return select
+          ? select({
+              data,
+              loading,
+              error,
+            })
+          : { data, loading, error };
       }),
     );
 
