@@ -25,9 +25,10 @@ export const useShouldRender = (balancesResponses: BalancesResponse[] = [], amou
 };
 
 /**
- * Renders a non-native fee warning if A) the user has balance of the staking
- * token to use for fees, and B) the amount the user has entered for a
- * transaction (e.g., send or swap) is nonzero -- i.e., a fee will be required.
+ * Renders a non-native fee warning if A) the user does not have any balance of
+ * the staking token to use for fees, and B) the amount the user has entered for
+ * a transaction (e.g., send or swap) is nonzero -- i.e., a fee will be
+ * required.
  */
 export const NonNativeFeeWarning = ({
   balancesResponses,
