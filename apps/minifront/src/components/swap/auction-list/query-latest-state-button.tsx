@@ -16,7 +16,7 @@ export const QueryLatestStateButton = () => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger
-          onClick={() => revalidate({ fetchArgs: [{ queryLatestState: true }] })}
+          onClick={() => revalidate({ queryLatestState: true })}
           aria-label='Get the current auction reserves (makes a request to a fullnode)'
           disabled={loading}
         >

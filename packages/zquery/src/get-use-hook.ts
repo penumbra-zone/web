@@ -56,15 +56,16 @@ export const getUseHook = <
     return newReferenceCount;
   };
 
-  const useHook = ({
-    fetchArgs,
-    select,
-  }: {
-    fetchArgs?: FetchArgs;
-    select?: <SelectedDataType>(
-      zQueryState: ZQueryState<ProcessedDataType, FetchArgs>,
-    ) => SelectedDataType;
-  } = {}) => {
+  const useHook = (
+    {
+      select,
+    }: {
+      select?: <SelectedDataType>(
+        zQueryState: ZQueryState<ProcessedDataType, FetchArgs>,
+      ) => SelectedDataType;
+    } = {},
+    ...fetchArgs: FetchArgs
+  ) => {
     const useStore = props.getUseStore();
 
     useEffect(() => {
@@ -75,8 +76,7 @@ export const getUseHook = <
 
         if (newReferenceCount === 1) {
           setAbortController(new AbortController());
-          if (fetchArgs) void fetch(...fetchArgs);
-          else void fetch();
+          void fetch(...fetchArgs);
         }
       }
 

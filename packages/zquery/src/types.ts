@@ -307,10 +307,12 @@ export type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getS
 export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> = {
   [key in `use${Capitalize<Name>}`]: <
     SelectedDataType = { data?: DataType; loading: boolean; error?: unknown },
-  >(options?: {
-    fetchArgs?: FetchArgs;
-    select?: (zQueryState: ZQueryState<DataType, FetchArgs>) => SelectedDataType;
-  }) => SelectedDataType;
+  >(
+    options?: {
+      select?: (zQueryState: ZQueryState<DataType, FetchArgs>) => SelectedDataType;
+    },
+    ...fetchArgs: FetchArgs
+  ) => SelectedDataType;
 } & {
-  [key in `useRevalidate${Capitalize<Name>}`]: () => (options?: { fetchArgs: FetchArgs }) => void;
+  [key in `useRevalidate${Capitalize<Name>}`]: () => (...fetchArgs: FetchArgs) => void;
 } & Record<Name, ZQueryState<DataType, FetchArgs>>;
