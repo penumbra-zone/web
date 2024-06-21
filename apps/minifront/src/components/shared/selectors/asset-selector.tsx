@@ -10,6 +10,7 @@ import { IconInput } from '@repo/ui/components/ui/icon-input';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { Box } from '@repo/ui/components/ui/box';
 import { motion } from 'framer-motion';
+import { metadataBySearch } from './search-filters';
 
 interface AssetSelectorProps {
   assets: Metadata[];
@@ -53,7 +54,7 @@ const useFilteredAssets = ({ assets, value, onChange, filter }: AssetSelectorPro
   const [search, setSearch] = useState('');
 
   let filteredAssets = filter ? sortedAssets.filter(filter) : sortedAssets;
-  filteredAssets = search ? assets.filter(filterMetadataBySearch(search)) : assets;
+  filteredAssets = search ? assets.filter(metadataBySearch(search)) : assets;
 
   useEffect(
     () => switchAssetIfNecessary({ value, onChange, filter, assets: filteredAssets }),
@@ -62,10 +63,6 @@ const useFilteredAssets = ({ assets, value, onChange, filter }: AssetSelectorPro
 
   return { filteredAssets, search, setSearch };
 };
-
-export const filterMetadataBySearch = (search: string) => (asset: Metadata) =>
-  asset.display.toLocaleLowerCase().includes(search.toLocaleLowerCase()) ||
-  asset.symbol.toLocaleLowerCase().includes(search.toLocaleLowerCase());
 
 /**
  * Allows the user to select any asset known to Penumbra, optionally filtered by

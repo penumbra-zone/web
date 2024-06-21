@@ -17,15 +17,15 @@ import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
-import { AssetSelector } from '../../shared/asset-selector';
-import BalanceSelector from '../../shared/balance-selector';
+import { AssetSelector } from '../../shared/selectors/asset-selector';
+import BalanceSelector from '../../shared/selectors/balance-selector';
 import { useStatus } from '../../../state/status';
 import { hasStakingToken } from '../../../fetchers/staking-token';
 import { useStakingTokenMetadata } from '../../../state/shared';
 import { useBalancesResponses, useSwappableAssets } from '../../../state/swap';
 import { FadeIn } from '@repo/ui/components/ui/fade-in';
 import { zeroValueView } from '../../../utils/zero-value-view';
-import { isValidAmount } from '../../../state/swap/instant-swap';
+import { isValidAmount } from '../../../state/helpers';
 
 const getAssetOutBalance = (
   balancesResponses: BalancesResponse[] = [],

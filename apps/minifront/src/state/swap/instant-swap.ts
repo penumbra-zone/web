@@ -1,9 +1,6 @@
 import { AllSlices, SliceCreator } from '..';
-import {
-  BalancesResponse,
-  TransactionPlannerRequest,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { planBuildBroadcast } from '../helpers';
+import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { isValidAmount, planBuildBroadcast } from '../helpers';
 import {
   AssetId,
   Metadata,
@@ -34,7 +31,6 @@ import { divideAmounts } from '@penumbra-zone/types/amount';
 import { bech32mAssetId } from '@penumbra-zone/bech32m/passet';
 import { SwapSlice } from '.';
 import { sendSimulateTradeRequest } from './helpers';
-import { amountMoreThanBalance } from '../send';
 
 const getMetadataByAssetId = async (
   traces: SwapExecution_Trace[] = [],
@@ -166,9 +162,6 @@ export const createInstantSwapSlice = (): SliceCreator<InstantSwapSlice> => (set
     },
   };
 };
-
-export const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
-  Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
 
 const assembleSwapRequest = async ({
   assetIn,
