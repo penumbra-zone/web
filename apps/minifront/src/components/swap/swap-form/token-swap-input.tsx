@@ -11,7 +11,7 @@ import {
   getMetadataFromBalancesResponse,
 } from '@penumbra-zone/getters/balances-response';
 import { ArrowRight } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { getBlockDate } from '../../../fetchers/block-date';
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
@@ -20,12 +20,11 @@ import { getAddressIndex } from '@penumbra-zone/getters/address-view';
 import { AssetSelector } from '../../shared/selectors/asset-selector';
 import BalanceSelector from '../../shared/selectors/balance-selector';
 import { useStatus } from '../../../state/status';
-import { hasStakingToken } from '../../../fetchers/staking-token';
-import { useStakingTokenMetadata } from '../../../state/shared';
 import { useBalancesResponses, useSwappableAssets } from '../../../state/swap';
 import { FadeIn } from '@repo/ui/components/ui/fade-in';
 import { zeroValueView } from '../../../utils/zero-value-view';
 import { isValidAmount } from '../../../state/helpers';
+import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
 
 const getAssetOutBalance = (
   balancesResponses: BalancesResponse[] = [],
@@ -64,16 +63,11 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
 export const TokenSwapInput = () => {
   const status = useStatus();
   const latestKnownBlockHeight = status.data?.latestKnownBlockHeight ?? 0n;
-  const stakingTokenMetadata = useStakingTokenMetadata();
   const balancesResponses = useBalancesResponses();
   const swappableAssets = useSwappableAssets();
   const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, priceHistory } =
     useStoreShallow(tokenSwapInputSelector);
-  // State to manage privacy warning display
-  const [showNonNativeFeeWarning, setShowNonNativeFeeWarning] = useState(false);
   const assetOutBalance = getAssetOutBalance(balancesResponses.data, assetIn, assetOut);
-
-  const userHasStakingToken = hasStakingToken(balancesResponses.data, stakingTokenMetadata.data);
 
   useEffect(() => {
     if (!assetIn || !assetOut) return;
@@ -110,7 +104,6 @@ export const TokenSwapInput = () => {
           className={'font-bold leading-10 md:h-8 md:text-xl xl:h-10 xl:text-3xl'}
           onChange={e => {
             setAmount(e.target.value);
-            setShowNonNativeFeeWarning(Number(e.target.value) > 0 && !userHasStakingToken);
           }}
         />
         <div className='flex gap-4'>
@@ -178,18 +171,17 @@ export const TokenSwapInput = () => {
           />
         ) : null}
       </div>
-      {showNonNativeFeeWarning && (
-        <>
-          <div className='h-4'></div> {/* This div adds an empty line */}
-          <div className='rounded border border-yellow-500 bg-gray-800 p-4 text-yellow-500'>
-            <strong>Privacy Warning:</strong>
-            <span className='block'>
-              Using non-native tokens for transaction fees may pose a privacy risk. It is
-              recommended to use the native token (UM) for better privacy and security.
-            </span>
-          </div>
-        </>
-      )}
+
+      <NonNativeFeeWarning
+        balancesResponses={balancesResponses.data}
+        amount={Number(amount)}
+        wrap={children => (
+          <>
+            {/* This div adds an empty line */} <div className='h-4' />
+            {children}
+          </>
+        )}
+      />
     </Box>
   );
 };
