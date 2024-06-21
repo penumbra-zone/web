@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { CreateZQueryStreamingProps, CreateZQueryUnaryProps } from './types';
+import { CreateZQueryStreamingProps, CreateZQueryUnaryProps, ZQueryState } from './types';
 import { useShallow } from 'zustand/react/shallow';
 
 /**
@@ -56,7 +56,15 @@ export const getUseHook = <
     return newReferenceCount;
   };
 
-  const useHook = (...args: FetchArgs) => {
+  const useHook = ({
+    fetchArgs,
+    select = zQueryState => zQueryState,
+  }: {
+    fetchArgs?: FetchArgs;
+    select?: <SelectedDataType>(
+      zQueryState: ZQueryState<ProcessedDataType, FetchArgs>,
+    ) => SelectedDataType;
+  } = {}) => {
     const useStore = props.getUseStore();
 
     useEffect(() => {
@@ -67,7 +75,8 @@ export const getUseHook = <
 
         if (newReferenceCount === 1) {
           setAbortController(new AbortController());
-          void fetch(...args);
+          if (fetchArgs) void fetch(...fetchArgs);
+          else void fetch();
         }
       }
 
@@ -85,13 +94,13 @@ export const getUseHook = <
 
     const returnValue = useStore(
       useShallow(state => {
-        const zQuery = props.get(state);
+        const { data, loading, error } = props.get(state);
 
-        return {
-          data: zQuery.data,
-          loading: zQuery.loading,
-          error: zQuery.error,
-        };
+        return select({
+          data,
+          loading,
+          error,
+        });
       }),
     );
 
