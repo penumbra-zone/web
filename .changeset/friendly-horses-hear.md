@@ -11,4 +11,4 @@ Minifront:
 - autofocus the search inputs in `BalanceSelecor` and `AssetSelector`
 - change validations of the swap input to allow entering any possible values
 
-UI: allow passing HTML attributes to the `IconInput` component
+UI: allow passing `autoFocus` attribute to the `IconInput` component
