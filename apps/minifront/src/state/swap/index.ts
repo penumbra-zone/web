@@ -4,7 +4,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { AllSlices, SliceCreator, useStore } from '..';
+import { AllSlices, SliceCreator } from '..';
 import { DurationOption } from './constants';
 import {
   createDutchAuctionSlice,
@@ -18,43 +18,13 @@ import {
 } from './instant-swap';
 import { createPriceHistorySlice, PriceHistorySlice } from './price-history';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
-import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
-import { getSwappableBalancesResponses, isSwappable } from '../../components/swap/helpers';
-import { getAllAssets } from '../../fetchers/assets';
 import { isValidAmount } from '../helpers';
-import { setInitialAssets } from './set-initial-assets';
+
+import {
+  swappableBalancesResponsesSelector,
+  swappableAssetsSelector,
+} from '../../components/swap/helpers';
 import { setSwapQueryParams } from './query-params';
-
-export const { balancesResponses, useBalancesResponses } = createZQuery({
-  name: 'balancesResponses',
-  fetch: () => getSwappableBalancesResponses(),
-  getUseStore: () => useStore,
-  get: state => state.swap.balancesResponses,
-  set: setter => {
-    const newState = setter(useStore.getState().swap.balancesResponses);
-    useStore.setState(state => {
-      state.swap.balancesResponses = newState;
-    });
-    setInitialAssets(useStore);
-  },
-});
-
-export const { swappableAssets, useSwappableAssets } = createZQuery({
-  name: 'swappableAssets',
-  fetch: async () => {
-    const allAssets = await getAllAssets();
-    return allAssets.filter(isSwappable);
-  },
-  getUseStore: () => useStore,
-  get: state => state.swap.swappableAssets,
-  set: setter => {
-    const newState = setter(useStore.getState().swap.swappableAssets);
-    useStore.setState(state => {
-      state.swap.swappableAssets = newState;
-    });
-    setInitialAssets(useStore);
-  },
-});
 
 export interface SimulateSwapResult {
   metadataByAssetId: Record<string, Metadata>;
@@ -73,8 +43,6 @@ interface Actions {
 }
 
 interface State {
-  balancesResponses: ZQueryState<BalancesResponse[]>;
-  swappableAssets: ZQueryState<Metadata[]>;
   assetIn?: BalancesResponse;
   amount: string;
   assetOut?: Metadata;
@@ -90,8 +58,6 @@ interface Subslices {
 
 const INITIAL_STATE: State = {
   amount: '',
-  swappableAssets,
-  balancesResponses,
   duration: 'instant',
   txInProgress: false,
 };
@@ -129,7 +95,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
 
       if (balancesResponseAndMetadataAreSameAsset(asset, get().swap.assetOut)) {
         swap.assetOut = getFirstMetadataNotMatchingBalancesResponse(
-          get().swap.swappableAssets.data ?? [],
+          swappableAssetsSelector(get().shared.assets).data ?? [],
           asset,
         );
       }
@@ -143,7 +109,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
 
       if (balancesResponseAndMetadataAreSameAsset(get().swap.assetIn, metadata)) {
         swap.assetIn = getFirstBalancesResponseNotMatchingMetadata(
-          get().swap.balancesResponses.data ?? [],
+          swappableBalancesResponsesSelector(get().shared.balancesResponses).data ?? [],
           metadata,
         );
       }
