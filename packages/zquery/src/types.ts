@@ -305,11 +305,12 @@ export interface CreateZQueryStreamingProps<
 export type UseStore<State> = (<T>(selector: (state: State) => T) => T) & { getState(): State };
 
 export type ZQuery<Name extends string, DataType, FetchArgs extends unknown[]> = {
-  [key in `use${Capitalize<Name>}`]: (...args: FetchArgs) => {
-    data?: DataType;
-    loading: boolean;
-    error?: unknown;
-  };
+  [key in `use${Capitalize<Name>}`]: <
+    SelectedDataType = { data?: DataType; loading: boolean; error?: unknown },
+  >(options?: {
+    fetchArgs?: FetchArgs;
+    select?: (zQueryState: ZQueryState<DataType, FetchArgs>) => SelectedDataType;
+  }) => SelectedDataType;
 } & {
-  [key in `useRevalidate${Capitalize<Name>}`]: () => (...args: FetchArgs) => void;
+  [key in `useRevalidate${Capitalize<Name>}`]: () => (options?: { fetchArgs: FetchArgs }) => void;
 } & Record<Name, ZQueryState<DataType, FetchArgs>>;
