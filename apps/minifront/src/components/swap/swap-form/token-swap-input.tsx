@@ -1,5 +1,6 @@
-import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Box } from '@repo/ui/components/ui/box';
 import { CandlestickPlot } from '@repo/ui/components/ui/candlestick-plot';
 import { Input } from '@repo/ui/components/ui/input';
@@ -13,41 +14,25 @@ import { ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getBlockDate } from '../../../fetchers/block-date';
 import { AllSlices } from '../../../state';
-import { amountMoreThanBalance } from '../../../state/send';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { getAddressIndex } from '@penumbra-zone/getters/address-view';
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { AssetSelector } from '../../shared/asset-selector';
-import BalanceSelector from '../../shared/balance-selector';
-import { Amount } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/num/v1/num_pb';
+import { AssetSelector } from '../../shared/selectors/asset-selector';
+import BalanceSelector from '../../shared/selectors/balance-selector';
 import { useStatus } from '../../../state/status';
 import { hasStakingToken } from '../../../fetchers/staking-token';
 import { useStakingTokenMetadata } from '../../../state/shared';
 import { useBalancesResponses, useSwappableAssets } from '../../../state/swap';
 import { FadeIn } from '@repo/ui/components/ui/fade-in';
-
-const isValidAmount = (amount: string, assetIn?: BalancesResponse) =>
-  Number(amount) >= 0 && (!assetIn || !amountMoreThanBalance(assetIn, amount));
-
-const getKnownZeroValueView = (metadata?: Metadata) => {
-  return new ValueView({
-    valueView: {
-      case: 'knownAssetId',
-      value: { amount: new Amount({ lo: 0n }), metadata },
-    },
-  });
-};
+import { zeroValueView } from '../../../utils/zero-value-view';
+import { isValidAmount } from '../../../state/helpers';
 
 const getAssetOutBalance = (
   balancesResponses: BalancesResponse[] = [],
   assetIn?: BalancesResponse,
   assetOut?: Metadata,
 ) => {
-  if (!assetIn || !assetOut) return getKnownZeroValueView();
+  if (!assetIn || !assetOut) return zeroValueView();
 
   const match = balancesResponses.find(balance => {
     const balanceViewMetadata = getMetadataFromBalancesResponse(balance);
@@ -57,7 +42,7 @@ const getAssetOutBalance = (
     );
   });
   const matchedBalance = getBalanceView.optional()(match);
-  return matchedBalance ?? getKnownZeroValueView(assetOut);
+  return matchedBalance ?? zeroValueView(assetOut);
 };
 
 const tokenSwapInputSelector = (state: AllSlices) => ({
@@ -124,7 +109,6 @@ export const TokenSwapInput = () => {
           step='any'
           className={'font-bold leading-10 md:h-8 md:text-xl xl:h-10 xl:text-3xl'}
           onChange={e => {
-            if (!isValidAmount(e.target.value, assetIn)) return;
             setAmount(e.target.value);
             setShowNonNativeFeeWarning(Number(e.target.value) > 0 && !userHasStakingToken);
           }}
@@ -151,12 +135,14 @@ export const TokenSwapInput = () => {
                 {balancesResponses.data && (
                   <BalanceSelector
                     value={assetIn}
-                    onChange={setAssetIn}
+                    assets={swappableAssets.data}
                     balances={balancesResponses.data}
+                    onChange={setAssetIn}
                   />
                 )}
                 {assetIn?.balanceView && (
                   <BalanceValueView
+                    error={!isValidAmount(amount, assetIn)}
                     valueView={assetIn.balanceView}
                     onClick={setInputToBalanceMax}
                   />

@@ -66,7 +66,7 @@ describe('Swap Slice', () => {
 
   test('assetOut can be set', () => {
     expect(useStore.getState().swap.assetOut).toBeUndefined();
-    useStore.getState().swap.setAssetOut(registryAssets[0]!);
+    useStore.getState().swap.setAssetOut(registryAssets[0]);
     expect(useStore.getState().swap.assetOut).toBe(registryAssets[0]);
   });
 

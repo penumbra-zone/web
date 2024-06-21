@@ -1,6 +1,6 @@
 import { AllSlices, SliceCreator } from '..';
 import { TransactionPlannerRequest } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { planBuildBroadcast } from '../helpers';
+import { isValidAmount, planBuildBroadcast } from '../helpers';
 import {
   AssetId,
   Metadata,
@@ -168,7 +168,9 @@ const assembleSwapRequest = async ({
   amount,
   assetOut,
 }: Pick<SwapSlice, 'assetIn' | 'assetOut' | 'amount'>) => {
-  if (!assetIn) throw new Error('`assetIn` was undefined');
+  if (!assetIn) throw new Error('`assetIn` is undefined');
+  if (!assetOut) throw new Error('`assetOut` is undefined');
+  if (!isValidAmount(amount, assetIn)) throw new Error('Invalid amount');
 
   const addressIndex = getAddressIndex(assetIn.accountAddress);
 
