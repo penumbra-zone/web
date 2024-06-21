@@ -36,6 +36,8 @@ export interface SendSlice {
   setFeeTier: (feeTier: FeeTier_Tier) => void;
   sendTx: () => Promise<void>;
   txInProgress: boolean;
+  isSendingMax: boolean;
+  SetIsSendingMax: (isSendingMax: boolean) => void;
 }
 
 export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
@@ -47,9 +49,15 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
     fee: undefined,
     feeTier: FeeTier_Tier.LOW,
     txInProgress: false,
+    isSendingMax: false,
     setAmount: amount => {
       set(state => {
         state.send.amount = amount;
+      });
+    },
+    SetIsSendingMax: isSendingMax => {
+      set(state => {
+        state.send.isSendingMax = isSendingMax;
       });
     },
     setSelection: selection => {
@@ -111,7 +119,16 @@ export const createSendSlice = (): SliceCreator<SendSlice> => (set, get) => {
   };
 };
 
-const assembleRequest = ({ amount, feeTier, recipient, selection, memo }: SendSlice) => {
+const assembleRequest = ({
+  amount,
+  feeTier,
+  recipient,
+  selection,
+  memo,
+  isSendingMax,
+}: SendSlice) => {
+  // TODO: switch planner request on `isSendingMax`
+
   return new TransactionPlannerRequest({
     outputs: [
       {

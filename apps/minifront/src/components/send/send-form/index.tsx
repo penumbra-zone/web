@@ -50,6 +50,7 @@ export const SendForm = () => {
     setFeeTier,
     setMemo,
     sendTx,
+    SetIsSendingMax,
     txInProgress,
   } = useStore(sendSelector);
   // State to manage privacy warning display
@@ -92,6 +93,7 @@ export const SendForm = () => {
         className='mb-1'
         selection={selection}
         setSelection={setSelection}
+        SetIsSendingMax={SetIsSendingMax}
         value={amount}
         onInputChange={amount => {
           if (Number(amount) < 0) return;
