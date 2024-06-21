@@ -4,8 +4,8 @@ import { getAssetIdFromValueView } from '@penumbra-zone/getters/value-view';
 import { getAssetId } from '@penumbra-zone/getters/metadata';
 
 export const hasStakingToken = (
-  assetBalances: BalancesResponse[],
-  stakingAssetMetadata: Metadata,
+  assetBalances: BalancesResponse[] = [],
+  stakingAssetMetadata?: Metadata,
 ): boolean => {
   return assetBalances.some(asset =>
     getAssetIdFromValueView(asset.balanceView).equals(getAssetId(stakingAssetMetadata)),

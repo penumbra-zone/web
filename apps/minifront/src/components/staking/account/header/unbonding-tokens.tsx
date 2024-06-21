@@ -24,7 +24,7 @@ export const UnbondingTokens = ({
   tokens?: ValueView[];
   helpText: string;
   children?: ReactNode;
-  stakingTokenMetadata: Metadata;
+  stakingTokenMetadata?: Metadata;
 }) => {
   return (
     <TooltipProvider>

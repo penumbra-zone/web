@@ -14,6 +14,7 @@ import { filterMetadataBySearch } from './asset-selector';
 import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 import { AssetIcon } from '@repo/ui/components/ui/tx/view/asset-icon';
 import { emptyBalanceResponse } from '../../utils/empty-balance-response';
+import { isKnown } from '../swap/helpers';
 
 const isMetadata = (asset: BalancesResponse | Metadata): asset is Metadata => {
   return Boolean('symbol' in asset && 'name' in asset && 'display' in asset);
@@ -24,12 +25,13 @@ const isBalance = (asset: BalancesResponse | Metadata): asset is BalancesRespons
 };
 
 const filterBalanceBySearch = (search: string) => (balancesResponse: BalancesResponse) =>
-  getDisplayDenomFromView(balancesResponse.balanceView)
+  isKnown(balancesResponse) &&
+  (getDisplayDenomFromView(balancesResponse.balanceView)
     .toLocaleLowerCase()
     .includes(search.toLocaleLowerCase()) ||
-  getSymbolFromValueView(balancesResponse.balanceView)
-    .toLocaleLowerCase()
-    .includes(search.toLocaleLowerCase());
+    getSymbolFromValueView(balancesResponse.balanceView)
+      .toLocaleLowerCase()
+      .includes(search.toLocaleLowerCase()));
 
 const bySearch = (search: string) => (asset: Metadata | BalancesResponse) => {
   if (isMetadata(asset)) {

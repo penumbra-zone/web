@@ -1,4 +1,6 @@
 import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';
+import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
+import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Box } from '@repo/ui/components/ui/box';
 import { CandlestickPlot } from '@repo/ui/components/ui/candlestick-plot';
 import { Input } from '@repo/ui/components/ui/input';
@@ -19,10 +21,17 @@ import { AssetSelector } from '../../shared/asset-selector';
 import BalanceSelector from '../../shared/balance-selector';
 import { useStatus } from '../../../state/status';
 import { hasStakingToken } from '../../../fetchers/staking-token';
+import { useStakingTokenMetadata } from '../../../state/shared';
+import { useBalancesResponses, useSwappableAssets } from '../../../state/swap';
+import { FadeIn } from '@repo/ui/components/ui/fade-in';
 import { zeroValueView } from '../../../utils/zero-value-view';
 import { isValidAmount } from '../../../state/swap/instant-swap';
 
-const assetOutBalanceSelector = ({ swap: { balancesResponses, assetIn, assetOut } }: AllSlices) => {
+const getAssetOutBalance = (
+  balancesResponses: BalancesResponse[] = [],
+  assetIn?: BalancesResponse,
+  assetOut?: Metadata,
+) => {
   if (!assetIn || !assetOut) return zeroValueView();
 
   const match = balancesResponses.find(balance => {
@@ -37,17 +46,13 @@ const assetOutBalanceSelector = ({ swap: { balancesResponses, assetIn, assetOut 
 };
 
 const tokenSwapInputSelector = (state: AllSlices) => ({
-  swappableAssets: state.swap.swappableAssets,
   assetIn: state.swap.assetIn,
   setAssetIn: state.swap.setAssetIn,
   assetOut: state.swap.assetOut,
   setAssetOut: state.swap.setAssetOut,
   amount: state.swap.amount,
   setAmount: state.swap.setAmount,
-  balancesResponses: state.swap.balancesResponses,
   priceHistory: state.swap.priceHistory,
-  assetOutBalance: assetOutBalanceSelector(state),
-  hasStakingTokenMeta: state.swap.stakingAssetMetadata,
 });
 
 /**
@@ -59,24 +64,16 @@ const tokenSwapInputSelector = (state: AllSlices) => ({
 export const TokenSwapInput = () => {
   const status = useStatus();
   const latestKnownBlockHeight = status.data?.latestKnownBlockHeight ?? 0n;
-  const {
-    swappableAssets,
-    amount,
-    setAmount,
-    assetIn,
-    setAssetIn,
-    assetOut,
-    setAssetOut,
-    balancesResponses,
-    priceHistory,
-    assetOutBalance,
-    hasStakingTokenMeta,
-  } = useStoreShallow(tokenSwapInputSelector);
+  const stakingTokenMetadata = useStakingTokenMetadata();
+  const balancesResponses = useBalancesResponses();
+  const swappableAssets = useSwappableAssets();
+  const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, priceHistory } =
+    useStoreShallow(tokenSwapInputSelector);
   // State to manage privacy warning display
-  const [showNonNativeFeeWarning, setshowNonNativeFeeWarning] = useState(false);
+  const [showNonNativeFeeWarning, setShowNonNativeFeeWarning] = useState(false);
+  const assetOutBalance = getAssetOutBalance(balancesResponses.data, assetIn, assetOut);
 
-  // Check if the user has native staking tokens
-  const stakingToken = hasStakingToken(balancesResponses, hasStakingTokenMeta);
+  const userHasStakingToken = hasStakingToken(balancesResponses.data, stakingTokenMetadata.data);
 
   useEffect(() => {
     if (!assetIn || !assetOut) return;
@@ -113,10 +110,10 @@ export const TokenSwapInput = () => {
           className={'font-bold leading-10 md:h-8 md:text-xl xl:h-10 xl:text-3xl'}
           onChange={e => {
             setAmount(e.target.value);
-            setshowNonNativeFeeWarning(Number(e.target.value) > 0 && !stakingToken);
+            setShowNonNativeFeeWarning(Number(e.target.value) > 0 && !userHasStakingToken);
           }}
         />
-        <div className='flex gap-4 sm:contents'>
+        <div className='flex gap-4'>
           {assetIn && (
             <div className='ml-auto hidden h-full flex-col justify-end self-end sm:flex'>
               <span className='mr-2 block whitespace-nowrap text-xs text-muted-foreground'>
@@ -125,30 +122,50 @@ export const TokenSwapInput = () => {
             </div>
           )}
 
-          <div className='flex h-full flex-col gap-2'>
-            <BalanceSelector
-              value={assetIn}
-              onChange={setAssetIn}
-              assets={swappableAssets}
-              balances={balancesResponses}
-            />
-            {assetIn?.balanceView && (
-              <BalanceValueView
-                valueView={assetIn.balanceView}
-                error={!isValidAmount(amount, assetIn)}
-                onClick={setInputToBalanceMax}
-              />
-            )}
-          </div>
+          <FadeIn condition={!!balancesResponses.error || !!swappableAssets.error}>
+            <div className='flex gap-4 text-red'>
+              {balancesResponses.error instanceof Error && balancesResponses.error.toString()}
+              {swappableAssets.error instanceof Error && swappableAssets.error.toString()}
+            </div>
+          </FadeIn>
 
-          <div className='flex flex-col gap-2 pt-2'>
-            <ArrowRight size={16} className='text-muted-foreground' />
-          </div>
+          <FadeIn condition={!!balancesResponses.data && !!swappableAssets.data}>
+            <div className='flex gap-4'>
+              <div className='flex h-full flex-col gap-2'>
+                {balancesResponses.data && (
+                  <BalanceSelector
+                    value={assetIn}
+                    assets={swappableAssets.data}
+                    balances={balancesResponses.data}
+                    onChange={setAssetIn}
+                  />
+                )}
+                {assetIn?.balanceView && (
+                  <BalanceValueView
+                    error={!isValidAmount(amount, assetIn)}
+                    valueView={assetIn.balanceView}
+                    onClick={setInputToBalanceMax}
+                  />
+                )}
+              </div>
 
-          <div className='flex h-full flex-col gap-2'>
-            <AssetSelector assets={swappableAssets} value={assetOut} onChange={setAssetOut} />
-            {assetOut && <BalanceValueView valueView={assetOutBalance} />}
-          </div>
+              <div className='size-4 pt-2'>
+                <ArrowRight size={16} className='text-muted-foreground' />
+              </div>
+
+              <div className='flex h-full flex-col gap-2'>
+                {swappableAssets.data && (
+                  <AssetSelector
+                    assets={swappableAssets.data}
+                    value={assetOut}
+                    onChange={setAssetOut}
+                  />
+                )}
+
+                {assetOut && <BalanceValueView valueView={assetOutBalance} />}
+              </div>
+            </div>
+          </FadeIn>
         </div>
         {priceHistory.startMetadata && priceHistory.endMetadata && priceHistory.candles.length ? (
           <CandlestickPlot

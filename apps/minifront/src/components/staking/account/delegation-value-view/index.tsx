@@ -1,7 +1,4 @@
-import {
-  Metadata,
-  ValueView,
-} from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
+import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { ValidatorInfoComponent } from './validator-info-component';
 import { ValueViewComponent } from '@repo/ui/components/ui/tx/view/value';
 import { StakingActions } from './staking-actions';
@@ -13,6 +10,7 @@ import {
   getValidatorInfoFromValueView,
 } from '@penumbra-zone/getters/value-view';
 import { asValueView } from '@penumbra-zone/getters/equivalent-value';
+import { useStakingTokenMetadata } from '../../../../state/shared';
 
 /**
  * Renders a `ValueView` that contains a delegation token, along with the
@@ -26,8 +24,6 @@ export const DelegationValueView = memo(
   ({
     valueView,
     votingPowerAsIntegerPercentage,
-    unstakedTokens,
-    stakingTokenMetadata,
   }: {
     /**
      * A `ValueView` representing the address's balance of the given delegation
@@ -35,24 +31,21 @@ export const DelegationValueView = memo(
      */
     valueView: ValueView;
     votingPowerAsIntegerPercentage?: number;
-    /**
-     * A `ValueView` representing the address's balance of staking (UM) tokens.
-     * Used to show the user how many tokens they have available to delegate.
-     */
-    unstakedTokens?: ValueView;
-    stakingTokenMetadata: Metadata;
   }) => {
+    const stakingTokenMetadata = useStakingTokenMetadata();
     const validatorInfo = getValidatorInfoFromValueView(valueView);
     const metadata = getMetadata(valueView);
 
     const equivalentValueOfStakingToken = useMemo(() => {
       const equivalentValue = getEquivalentValues(valueView).find(equivalentValue =>
-        equivalentValue.numeraire?.penumbraAssetId?.equals(stakingTokenMetadata.penumbraAssetId),
+        equivalentValue.numeraire?.penumbraAssetId?.equals(
+          stakingTokenMetadata.data?.penumbraAssetId,
+        ),
       );
 
       if (equivalentValue) return asValueView(equivalentValue);
       return undefined;
-    }, [valueView, stakingTokenMetadata.penumbraAssetId]);
+    }, [valueView, stakingTokenMetadata.data?.penumbraAssetId]);
 
     return (
       <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-8'>
@@ -76,11 +69,7 @@ export const DelegationValueView = memo(
           )}
         </div>
 
-        <StakingActions
-          validatorInfo={validatorInfo}
-          delegationTokens={valueView}
-          unstakedTokens={unstakedTokens}
-        />
+        <StakingActions validatorInfo={validatorInfo} delegationTokens={valueView} />
       </div>
     );
   },

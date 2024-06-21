@@ -229,10 +229,10 @@ const unknownAddrIsValid = (chain: Chain | undefined, address: string): boolean 
 export const filterBalancesPerChain = (
   allBalances: BalancesResponse[],
   chain: Chain | undefined,
-  stakingTokenMetadata: Metadata,
   registryAssets: Metadata[],
+  stakingTokenMetadata?: Metadata,
 ): BalancesResponse[] => {
-  const penumbraAssetId = getAssetId(stakingTokenMetadata);
+  const penumbraAssetId = getAssetId.optional()(stakingTokenMetadata);
   const assetsWithMatchingChannel = registryAssets
     .filter(a => {
       const match = assetPatterns.ibc.capture(a.base);
@@ -244,6 +244,6 @@ export const filterBalancesPerChain = (
   const assetIdsToCheck = [penumbraAssetId, ...assetsWithMatchingChannel];
 
   return allBalances.filter(({ balanceView }) => {
-    return assetIdsToCheck.some(assetId => assetId.equals(getAssetIdFromValueView(balanceView)));
+    return assetIdsToCheck.some(assetId => assetId?.equals(getAssetIdFromValueView(balanceView)));
   });
 };

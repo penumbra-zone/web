@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { parseRevisionNumberFromChainId } from './ibc-in';
+import { parseRevisionNumberFromChainId } from './parse-revision-number-from-chain-id';
 
 describe('parseRevisionNumberFromChainId', () => {
   test('should extract the number at the end of a well-formatted string as a BigInt', () => {

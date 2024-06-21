@@ -4,7 +4,7 @@ import {
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { SwapExecution_Trace } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { AllSlices, SliceCreator } from '..';
+import { AllSlices, SliceCreator, useStore } from '..';
 import { DurationOption } from './constants';
 import {
   DutchAuctionSlice,
@@ -19,6 +19,52 @@ import {
 } from './instant-swap';
 import { PriceHistorySlice, createPriceHistorySlice } from './price-history';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
+import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
+import { getSwappableBalancesResponses, isSwappable } from '../../components/swap/helpers';
+import { getAllAssets } from '../../fetchers/assets';
+
+export const { balancesResponses, useBalancesResponses } = createZQuery({
+  name: 'balancesResponses',
+  fetch: async () => {
+    const balancesResponses = await getSwappableBalancesResponses();
+
+    if (balancesResponses[0] && !useStore.getState().swap.assetIn) {
+      useStore.getState().swap.setAssetIn(balancesResponses[0]);
+    }
+
+    return balancesResponses;
+  },
+  getUseStore: () => useStore,
+  get: state => state.swap.balancesResponses,
+  set: setter => {
+    const newState = setter(useStore.getState().swap.balancesResponses);
+    useStore.setState(state => {
+      state.swap.balancesResponses = newState;
+    });
+  },
+});
+
+export const { swappableAssets, useSwappableAssets } = createZQuery({
+  name: 'swappableAssets',
+  fetch: async () => {
+    const allAssets = await getAllAssets();
+    const swappableAssets = allAssets.filter(isSwappable);
+
+    if (swappableAssets[0] && !useStore.getState().swap.assetOut) {
+      useStore.getState().swap.setAssetOut(swappableAssets[0]);
+    }
+
+    return swappableAssets;
+  },
+  getUseStore: () => useStore,
+  get: state => state.swap.swappableAssets,
+  set: setter => {
+    const newState = setter(useStore.getState().swap.swappableAssets);
+    useStore.setState(state => {
+      state.swap.swappableAssets = newState;
+    });
+  },
+});
 
 export interface SimulateSwapResult {
   metadataByAssetId: Record<string, Metadata>;
@@ -29,9 +75,6 @@ export interface SimulateSwapResult {
 }
 
 interface Actions {
-  setBalancesResponses: (balancesResponses: BalancesResponse[]) => void;
-  setStakingAssetMetadata: (metadata: Metadata) => void;
-  setSwappableAssets: (assets: Metadata[]) => void;
   setAssetIn: (asset?: BalancesResponse) => void;
   setAmount: (amount: string) => void;
   setAssetOut: (metadata?: Metadata) => void;
@@ -40,9 +83,8 @@ interface Actions {
 }
 
 interface State {
-  balancesResponses: BalancesResponse[];
-  stakingAssetMetadata: Metadata;
-  swappableAssets: Metadata[];
+  balancesResponses: ZQueryState<BalancesResponse[]>;
+  swappableAssets: ZQueryState<Metadata[]>;
   assetIn?: BalancesResponse;
   amount: string;
   assetOut?: Metadata;
@@ -58,11 +100,10 @@ interface Subslices {
 
 const INITIAL_STATE: State = {
   amount: '',
-  swappableAssets: [],
-  balancesResponses: [],
+  swappableAssets,
+  balancesResponses,
   duration: 'instant',
   txInProgress: false,
-  stakingAssetMetadata: new Metadata(),
 };
 
 export type SwapSlice = Actions & State & Subslices;
@@ -91,21 +132,6 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
   dutchAuction: createDutchAuctionSlice()(set, get, store),
   instantSwap: createInstantSwapSlice()(set, get, store),
   priceHistory: createPriceHistorySlice()(set, get, store),
-  setBalancesResponses: balancesResponses => {
-    set(state => {
-      state.swap.balancesResponses = balancesResponses;
-    });
-  },
-  setStakingAssetMetadata: stakingAssetMetadata => {
-    set(state => {
-      state.swap.stakingAssetMetadata = stakingAssetMetadata;
-    });
-  },
-  setSwappableAssets: swappableAssets => {
-    set(state => {
-      state.swap.swappableAssets = swappableAssets;
-    });
-  },
   setAssetIn: asset => {
     get().swap.resetSubslices();
     set(({ swap }) => {
@@ -113,7 +139,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
 
       if (balancesResponseAndMetadataAreSameAsset(asset, get().swap.assetOut) && asset) {
         swap.assetOut = getFirstMetadataNotMatchingBalancesResponse(
-          get().swap.swappableAssets,
+          get().swap.swappableAssets.data ?? [],
           asset,
         );
       }
@@ -126,7 +152,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
 
       if (balancesResponseAndMetadataAreSameAsset(get().swap.assetIn, metadata)) {
         swap.assetIn = getFirstBalancesResponseNotMatchingMetadata(
-          get().swap.balancesResponses,
+          get().swap.balancesResponses.data ?? [],
           metadata,
         );
       }
