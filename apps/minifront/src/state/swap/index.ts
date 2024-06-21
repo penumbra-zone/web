@@ -7,33 +7,42 @@ import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumb
 import { AllSlices, SliceCreator, useStore } from '..';
 import { DurationOption } from './constants';
 import {
-  DutchAuctionSlice,
   createDutchAuctionSlice,
+  DutchAuctionSlice,
   dutchAuctionSubmitButtonDisabledSelector,
 } from './dutch-auction';
 import {
-  InstantSwapSlice,
   createInstantSwapSlice,
+  InstantSwapSlice,
   instantSwapSubmitButtonDisabledSelector,
   isValidAmount,
 } from './instant-swap';
-import { PriceHistorySlice, createPriceHistorySlice } from './price-history';
+import { createPriceHistorySlice, PriceHistorySlice } from './price-history';
 import { getMetadata } from '@penumbra-zone/getters/value-view';
-import { ZQueryState, createZQuery } from '@penumbra-zone/zquery';
+import { createZQuery, ZQueryState } from '@penumbra-zone/zquery';
 import { getSwappableBalancesResponses, isSwappable } from '../../components/swap/helpers';
 import { getAllAssets } from '../../fetchers/assets';
+import { emptyBalanceResponse } from '../../utils/empty-balance-response';
+
+// When both `balancesResponses` and `swappableAssets` are loaded, set initial assetIn and assetOut
+const setInitialAssets = (state: SwapSlice) => {
+  if (state.swappableAssets.loading || state.balancesResponses.loading) return;
+
+  const firstBalancesResponse = state.balancesResponses.data?.[0];
+  const firstMetadata = state.swappableAssets.data?.[0];
+  const secondMetadata = state.swappableAssets.data?.[0];
+  if (firstBalancesResponse) {
+    state.setAssetIn(firstBalancesResponse);
+    state.setAssetOut(firstMetadata);
+  } else if (firstMetadata) {
+    state.setAssetIn(emptyBalanceResponse(firstMetadata));
+    state.setAssetOut(secondMetadata);
+  }
+};
 
 export const { balancesResponses, useBalancesResponses } = createZQuery({
   name: 'balancesResponses',
-  fetch: async () => {
-    const balancesResponses = await getSwappableBalancesResponses();
-
-    if (balancesResponses[0] && !useStore.getState().swap.assetIn) {
-      useStore.getState().swap.setAssetIn(balancesResponses[0]);
-    }
-
-    return balancesResponses;
-  },
+  fetch: () => getSwappableBalancesResponses(),
   getUseStore: () => useStore,
   get: state => state.swap.balancesResponses,
   set: setter => {
@@ -41,6 +50,7 @@ export const { balancesResponses, useBalancesResponses } = createZQuery({
     useStore.setState(state => {
       state.swap.balancesResponses = newState;
     });
+    setInitialAssets(useStore.getState().swap);
   },
 });
 
@@ -48,13 +58,7 @@ export const { swappableAssets, useSwappableAssets } = createZQuery({
   name: 'swappableAssets',
   fetch: async () => {
     const allAssets = await getAllAssets();
-    const swappableAssets = allAssets.filter(isSwappable);
-
-    if (swappableAssets[0] && !useStore.getState().swap.assetOut) {
-      useStore.getState().swap.setAssetOut(swappableAssets[0]);
-    }
-
-    return swappableAssets;
+    return allAssets.filter(isSwappable);
   },
   getUseStore: () => useStore,
   get: state => state.swap.swappableAssets,
@@ -63,6 +67,7 @@ export const { swappableAssets, useSwappableAssets } = createZQuery({
     useStore.setState(state => {
       state.swap.swappableAssets = newState;
     });
+    setInitialAssets(useStore.getState().swap);
   },
 });
 
@@ -75,7 +80,7 @@ export interface SimulateSwapResult {
 }
 
 interface Actions {
-  setAssetIn: (asset?: BalancesResponse) => void;
+  setAssetIn: (asset: BalancesResponse) => void;
   setAmount: (amount: string) => void;
   setAssetOut: (metadata?: Metadata) => void;
   setDuration: (duration: DurationOption) => void;
@@ -137,7 +142,7 @@ export const createSwapSlice = (): SliceCreator<SwapSlice> => (set, get, store) 
     set(({ swap }) => {
       swap.assetIn = asset;
 
-      if (balancesResponseAndMetadataAreSameAsset(asset, get().swap.assetOut) && asset) {
+      if (balancesResponseAndMetadataAreSameAsset(asset, get().swap.assetOut)) {
         swap.assetOut = getFirstMetadataNotMatchingBalancesResponse(
           get().swap.swappableAssets.data ?? [],
           asset,
