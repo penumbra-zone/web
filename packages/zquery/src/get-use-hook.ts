@@ -61,7 +61,10 @@ export const getUseHook = <
       select,
     }: {
       select?: <SelectedDataType>(
-        zQueryState: ZQueryState<ProcessedDataType, FetchArgs>,
+        zQueryState: Pick<
+          ZQueryState<ProcessedDataType | DataType, FetchArgs>,
+          'data' | 'error' | 'loading'
+        >,
       ) => SelectedDataType;
     } = {},
     ...fetchArgs: FetchArgs
