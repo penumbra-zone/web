@@ -24,6 +24,7 @@ import { fromBaseUnitAmount } from '@penumbra-zone/types/amount';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb.js';
 import { isKnown } from '../helpers';
 import { AbridgedZQueryState } from '@penumbra-zone/zquery/src/types';
+import { toPlainMessage } from '@bufbuild/protobuf';
 
 export const sendSimulateTradeRequest = ({
   assetIn,
@@ -50,11 +51,11 @@ export const sendSimulateTradeRequest = ({
   return simulationClient.simulateTrade(req);
 };
 
-export const sendCandlestickDataRequest = async (
+export const sendCandlestickDataRequests = async (
   { startMetadata, endMetadata }: Pick<PriceHistorySlice, 'startMetadata' | 'endMetadata'>,
   limit: bigint,
   signal?: AbortSignal,
-): Promise<CandlestickData[] | undefined> => {
+): Promise<CandlestickData[]> => {
   const start = startMetadata?.penumbraAssetId;
   const end = endMetadata?.penumbraAssetId;
 
@@ -65,22 +66,69 @@ export const sendCandlestickDataRequest = async (
     throw new Error('Asset pair equivalent');
   }
 
-  try {
-    const { data } = await dexClient.candlestickData(
+  const suppressAbort = (err: unknown) => {
+    if (signal && !signal.aborted) {
+      throw err;
+    }
+  };
+
+  const directReq = dexClient
+    .candlestickData(
       {
         pair: { start, end },
         limit,
       },
       { signal },
-    );
-    return data;
-  } catch (err) {
-    if (err instanceof Error && err.name === 'AbortError') {
-      return;
-    } else {
-      throw err;
+    )
+    .catch(suppressAbort);
+
+  const inverseReq = dexClient
+    .candlestickData(
+      {
+        pair: { start: end, end: start },
+        limit,
+      },
+      { signal },
+    )
+    .catch(suppressAbort);
+
+  const candlestickData = (await directReq)?.data ?? [];
+
+  const inverseCandlestickData = (await inverseReq)?.data ?? [];
+
+  const collated = Map.groupBy(
+    [
+      ...candlestickData,
+      ...inverseCandlestickData.map(
+        cd =>
+          new CandlestickData({
+            ...toPlainMessage(cd),
+            close: 1 / cd.close,
+            high: 1 / cd.low,
+            low: 1 / cd.high,
+            open: 1 / cd.open,
+          }),
+      ),
+    ],
+    ({ height }) => height,
+  );
+
+  const combined = Array.from(collated.values()).map(([first, extra]) => {
+    if (first && extra) {
+      return new CandlestickData({
+        directVolume: first.directVolume + extra.directVolume,
+        swapVolume: first.swapVolume + extra.swapVolume,
+        height: first.height,
+        open: (first.open + extra.open) / 2,
+        close: (first.close + extra.close) / 2,
+        high: first.high > extra.high ? first.high : extra.high,
+        low: first.low < extra.low ? first.low : extra.low,
+      });
     }
-  }
+    return first!;
+  });
+
+  return combined;
 };
 
 const byBalanceDescending = (a: BalancesResponse, b: BalancesResponse) => {

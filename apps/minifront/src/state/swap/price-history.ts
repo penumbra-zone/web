@@ -2,7 +2,8 @@ import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/
 import { CandlestickData } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/dex/v1/dex_pb.js';
 import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/balances-response';
 import { AllSlices, SliceCreator } from '..';
-import { sendCandlestickDataRequest } from './helpers';
+import { sendCandlestickDataRequests } from './helpers';
+import { PRICE_RELEVANCE_THRESHOLDS } from '@penumbra-zone/types/assets';
 
 interface Actions {
   load: (ac?: AbortController) => AbortController['abort'];
@@ -26,20 +27,18 @@ export const createPriceHistorySlice = (): SliceCreator<PriceHistorySlice> => (s
     const { assetIn, assetOut } = get().swap;
     const startMetadata = getMetadataFromBalancesResponseOptional(assetIn);
     const endMetadata = assetOut;
-    void sendCandlestickDataRequest(
+    void sendCandlestickDataRequests(
       { startMetadata, endMetadata },
-      // there's no UI to set limit yet, and most ranges don't always happen to
-      // include price records. 2500 at least scales well when there is data
-      2500n,
+      // there's no UI to set limit yet, and any given range won't always happen
+      // to include price records.
+      PRICE_RELEVANCE_THRESHOLDS.default * 2n,
       ac.signal,
-    ).then(data => {
-      if (data) {
-        set(({ swap }) => {
-          swap.priceHistory.startMetadata = startMetadata;
-          swap.priceHistory.endMetadata = endMetadata;
-          swap.priceHistory.candles = data;
-        });
-      }
+    ).then(candles => {
+      set(({ swap }) => {
+        swap.priceHistory.startMetadata = startMetadata;
+        swap.priceHistory.endMetadata = endMetadata;
+        swap.priceHistory.candles = candles;
+      });
     });
 
     return () => ac.abort('Returned slice abort');
