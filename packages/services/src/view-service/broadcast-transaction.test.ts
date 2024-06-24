@@ -115,7 +115,9 @@ describe('BroadcastTransaction request handler', () => {
     await expect(
       (async () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        for await (const _ of broadcastTransaction(broadcastTransactionRequest, mockCtx));
+        for await (const _ of broadcastTransaction(broadcastTransactionRequest, mockCtx)) {
+          /* noop */
+        }
       })(),
     ).rejects.toThrow('broadcast transaction id disagrees');
   });
@@ -125,7 +127,9 @@ describe('BroadcastTransaction request handler', () => {
     await expect(
       (async () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        for await (const _ of broadcastTransaction(broadcastTransactionRequest, mockCtx));
+        for await (const _ of broadcastTransaction(broadcastTransactionRequest, mockCtx)) {
+          /* noop */
+        }
       })(),
     ).rejects.toThrow('broadcast failed');
   });
