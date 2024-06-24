@@ -298,7 +298,6 @@ export const ibcOutMiddleware: Middleware = f => (set, get, store) => {
         stakingTokenMetadata,
       )[0];
 
-      // set initial account if accounts exist and asset if account has asset list
       set(state => ({
         ...state,
         ibcOut: {
