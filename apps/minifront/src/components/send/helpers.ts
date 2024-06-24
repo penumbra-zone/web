@@ -22,7 +22,7 @@ const nonTransferableAssetPatterns = [
   assetPatterns.lpNft,
 ];
 
-export const isTransferable = (metadata: Metadata) =>
+const isTransferable = (metadata: Metadata) =>
   nonTransferableAssetPatterns.every(pattern => !pattern.matches(getDisplay(metadata)));
 
 export const getTransferableBalancesResponses = async (): Promise<BalancesResponse[]> => {
