@@ -3,7 +3,6 @@ import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumb
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { Box } from '@repo/ui/components/ui/box';
 import { CandlestickPlot } from '@repo/ui/components/ui/candlestick-plot';
-import { Input } from '@repo/ui/components/ui/input';
 import { joinLoHiAmount } from '@penumbra-zone/types/amount';
 import {
   getAmount,
@@ -25,7 +24,7 @@ import { FadeIn } from '@repo/ui/components/ui/fade-in';
 import { zeroValueView } from '../../../utils/zero-value-view';
 import { isValidAmount } from '../../../state/helpers';
 import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
-import { useWheelPrevent } from './use-wheel-prevent';
+import { NumberInput } from '../../shared/number-input';
 
 const getAssetOutBalance = (
   balancesResponses: BalancesResponse[] = [],
@@ -69,7 +68,6 @@ export const TokenSwapInput = () => {
   const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, priceHistory } =
     useStoreShallow(tokenSwapInputSelector);
   const assetOutBalance = getAssetOutBalance(balancesResponses.data, assetIn, assetOut);
-  const inputRef = useWheelPrevent();
 
   useEffect(() => {
     if (!assetIn || !assetOut) return;
@@ -95,10 +93,8 @@ export const TokenSwapInput = () => {
   return (
     <Box label='Trade' layout>
       <div className='flex flex-col items-stretch gap-4 sm:flex-row'>
-        <Input
-          ref={inputRef}
+        <NumberInput
           value={amount}
-          type='number'
           inputMode='decimal'
           variant='transparent'
           placeholder='Enter an amount...'
