@@ -25,6 +25,7 @@ import { FadeIn } from '@repo/ui/components/ui/fade-in';
 import { zeroValueView } from '../../../utils/zero-value-view';
 import { isValidAmount } from '../../../state/helpers';
 import { NonNativeFeeWarning } from '../../shared/non-native-fee-warning';
+import { useWheelPrevent } from './use-wheel-prevent';
 
 const getAssetOutBalance = (
   balancesResponses: BalancesResponse[] = [],
@@ -68,6 +69,7 @@ export const TokenSwapInput = () => {
   const { amount, setAmount, assetIn, setAssetIn, assetOut, setAssetOut, priceHistory } =
     useStoreShallow(tokenSwapInputSelector);
   const assetOutBalance = getAssetOutBalance(balancesResponses.data, assetIn, assetOut);
+  const inputRef = useWheelPrevent();
 
   useEffect(() => {
     if (!assetIn || !assetOut) return;
@@ -94,6 +96,7 @@ export const TokenSwapInput = () => {
     <Box label='Trade' layout>
       <div className='flex flex-col items-stretch gap-4 sm:flex-row'>
         <Input
+          ref={inputRef}
           value={amount}
           type='number'
           inputMode='decimal'
