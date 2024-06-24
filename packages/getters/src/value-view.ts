@@ -84,3 +84,5 @@ export const getDisplayDenomFromView = createGetter((view?: ValueView) => {
 
   return 'unknown';
 });
+
+export const getCase = createGetter((valueView?: ValueView) => valueView?.valueView.case);

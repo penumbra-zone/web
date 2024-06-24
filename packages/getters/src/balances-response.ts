@@ -1,6 +1,6 @@
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { createGetter } from './utils/create-getter';
-import { getMetadata } from './value-view';
+import { getCase, getMetadata } from './value-view';
 import { getAssetId, getDisplay } from './metadata';
 
 export const getBalanceView = createGetter(
@@ -29,3 +29,5 @@ export const getAddressIndex = createGetter((balancesResponse?: BalancesResponse
 export const getAmount = createGetter(
   (balancesResponse?: BalancesResponse) => balancesResponse?.balanceView?.valueView.value?.amount,
 );
+
+export const getValueViewCaseFromBalancesResponse = getBalanceView.pipe(getCase);

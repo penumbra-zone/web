@@ -1,13 +1,13 @@
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
-import { isKnown } from '../../swap/helpers';
 import { getDisplayDenomFromView, getSymbolFromValueView } from '@penumbra-zone/getters/value-view';
 import { Metadata } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
 import { type BalanceOrMetadata, isBalance, isMetadata } from './helpers';
+import { getValueViewCaseFromBalancesResponse } from '@penumbra-zone/getters/balances-response';
 
 export const balanceBySearch =
   (search: string) =>
   (balancesResponse: BalancesResponse): boolean =>
-    isKnown(balancesResponse) &&
+    getValueViewCaseFromBalancesResponse.optional()(balancesResponse) === 'knownAssetId' &&
     (getDisplayDenomFromView(balancesResponse.balanceView)
       .toLocaleLowerCase()
       .includes(search.toLocaleLowerCase()) ||
