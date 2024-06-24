@@ -1,11 +1,11 @@
 import { Box } from '@repo/ui/components/ui/box';
 import { AllSlices } from '../../../../state';
 import { useStoreShallow } from '../../../../utils/use-store-shallow';
-import { Input } from '@repo/ui/components/ui/input';
 import { EstimateButton } from '../estimate-button';
 import { EstimatedOutputExplanation } from './estimated-output-explanation';
 import { motion } from 'framer-motion';
 import { getDisplayDenomExponent } from '@penumbra-zone/getters/metadata';
+import { NumberInput } from '../../../shared/number-input';
 
 const outputSelector = (state: AllSlices) => ({
   assetOut: state.swap.assetOut,
@@ -52,12 +52,11 @@ export const Output = ({ layoutId }: { layoutId: string }) => {
         <motion.div layout className='flex max-w-[200px] grow flex-col gap-2'>
           <div className='flex grow items-center gap-2'>
             <span className='text-muted-foreground'>Maximum:</span>
-            <Input
+            <NumberInput
               variant='transparent'
               value={maxOutput}
               min={minOutput}
               onChange={e => setMaxOutput(e.target.value)}
-              type='number'
               inputMode='decimal'
               step={outputStepSize}
               className='text-right'
@@ -71,13 +70,12 @@ export const Output = ({ layoutId }: { layoutId: string }) => {
           <div className='flex grow items-center gap-2'>
             <span className='text-muted-foreground'>Minimum:</span>
 
-            <Input
+            <NumberInput
               variant='transparent'
               value={minOutput}
               min={0}
               max={maxOutput}
               onChange={e => setMinOutput(e.target.value)}
-              type='number'
               inputMode='decimal'
               step={outputStepSize}
               className='text-right'

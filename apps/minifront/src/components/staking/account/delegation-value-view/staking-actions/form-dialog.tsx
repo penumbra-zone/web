@@ -1,7 +1,6 @@
 import { Button } from '@repo/ui/components/ui/button';
 import { Dialog, DialogContent, DialogHeader } from '@repo/ui/components/ui/dialog';
 import { IdentityKeyComponent } from '@repo/ui/components/ui/identity-key-component';
-import { Input } from '@repo/ui/components/ui/input';
 import { InputBlock } from '../../../../shared/input-block';
 import { Validator } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/component/stake/v1/stake_pb';
 import { ValueView } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
@@ -9,6 +8,7 @@ import { FormEvent } from 'react';
 import { getIdentityKey } from '@penumbra-zone/getters/validator';
 import { getFormattedAmtFromValueView } from '@penumbra-zone/types/value-view';
 import { BalanceValueView } from '@repo/ui/components/ui/balance-value-view';
+import { NumberInput } from '../../../../shared/number-input';
 
 const getCapitalizedAction = (action: 'delegate' | 'undelegate') =>
   action.replace(/^./, firstCharacter => firstCharacter.toLocaleUpperCase());
@@ -88,12 +88,11 @@ export const FormDialog = ({
                 boolean `showSelectModal` prop) once asset balances are
                 refactored as `ValueView`s. */}
               <InputBlock label={`Amount to ${action}`} className='mb-1' value={amount}>
-                <Input
+                <NumberInput
                   variant='transparent'
                   className='mb-1 font-bold leading-10 md:h-8 md:w-[calc(100%-80px)] md:text-xl  xl:h-10 xl:w-[calc(100%-160px)] xl:text-3xl'
                   value={amount}
                   onChange={e => onChangeAmount(e.currentTarget.value)}
-                  type='number'
                   inputMode='decimal'
                   autoFocus
                 />
