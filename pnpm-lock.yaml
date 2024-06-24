@@ -641,12 +641,6 @@ importers:
       '@penumbra-zone/bech32m':
         specifier: workspace:*
         version: link:../bech32m
-      '@penumbra-zone/getters':
-        specifier: workspace:*
-        version: link:../getters
-      '@penumbra-zone/perspective':
-        specifier: workspace:*
-        version: link:../perspective
       '@penumbra-zone/types':
         specifier: workspace:*
         version: link:../types
@@ -695,9 +689,6 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.0.7
         version: 1.0.7(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@repo/tailwind-config':
-        specifier: workspace:*
-        version: link:../tailwind-config
       '@testing-library/jest-dom':
         specifier: ^6.4.5
         version: 6.4.6(vitest@1.6.0(@types/node@20.14.4)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0))(jsdom@24.1.0(bufferutil@4.0.8)(utf-8-validate@6.0.4))(terser@5.31.1))
@@ -786,6 +777,15 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0
     devDependencies:
+      '@penumbra-zone/getters':
+        specifier: workspace:*
+        version: link:../getters
+      '@penumbra-zone/perspective':
+        specifier: workspace:*
+        version: link:../perspective
+      '@repo/tailwind-config':
+        specifier: workspace:*
+        version: link:../tailwind-config
       '@storybook/addon-essentials':
         specifier: ^8.1.1
         version: 8.1.10(@types/react-dom@18.3.0)(@types/react@18.3.3)(prettier@3.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

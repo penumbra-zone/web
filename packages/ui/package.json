@@ -1,14 +1,13 @@
 {
   "name": "@repo/ui",
   "version": "5.0.0",
-  "private": true,
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "engine": {
     "node": ">=22"
   },
   "scripts": {
-    "build-storybook": "storybook build",
+    "build": "tsc --build && tsc-alias",
     "lint": "eslint components lib",
     "storybook": "storybook dev -p 6006",
     "test": "vitest run",
@@ -21,12 +20,8 @@
     "styles"
   ],
   "exports": {
-    "./components/ui/*": "./components/ui/*.tsx",
-    "./components/ui/dutch-auction-component": "./components/ui/dutch-auction-component/index.tsx",
-    "./components/ui/identicon": "./components/ui/identicon/index.tsx",
-    "./components/ui/slider": "./components/ui/slider/index.tsx",
-    "./components/ui/tx/view/asset-icon": "./components/ui/tx/view/asset-icon/index.tsx",
-    "./components/ui/tx/view/value": "./components/ui/tx/view/value/index.tsx",
+    "./components/ui/icons/*": "./components/ui/icons/*.tsx",
+    "./components/ui/*": "./components/ui/*/index.tsx",
     "./lib/toast/*": "./lib/toast/*.ts",
     "./lib/toast/transaction-toast": "./lib/toast/transaction-toast.tsx",
     "./lib/utils": "./lib/utils.ts",
@@ -35,29 +30,13 @@
   },
   "publishConfig": {
     "exports": {
+      "./components/ui/icons/*": {
+        "default": "./dist/components/ui/icons/*.js",
+        "types": "./dist/components/ui/icons/*.d.ts"
+      },
       "./components/ui/*": {
-        "default": "./dist/components/ui/*.js",
-        "types": "./dist/components/ui/*.d.ts"
-      },
-      "./components/ui/dutch-auction-component": {
-        "default": "./dist/components/ui/dutch-auction-component/index.js",
-        "types": "./dist/components/ui/dutch-auction-component/index.d.ts"
-      },
-      "./components/ui/identicon": {
-        "default": "./dist/components/ui/identicon/index.js",
-        "types": "./dist/components/ui/identicon/index.d.ts"
-      },
-      "./components/ui/slider": {
-        "default": "./dist/components/ui/slider/index.js",
-        "types": "./dist/components/ui/slider/index.d.ts"
-      },
-      "./components/ui/tx/view/asset-icon": {
-        "default": "./dist/components/ui/tx/view/asset-icon/index.js",
-        "types": "./dist/components/ui/tx/view/asset-icon/index.d.ts"
-      },
-      "./components/ui/tx/view/value": {
-        "default": "./dist/components/ui/tx/view/value/index.js",
-        "types": "./dist/components/ui/tx/view/value/index.d.ts"
+        "default": "./dist/components/ui/*/index.js",
+        "types": "./dist/components/ui/*/index.d.ts"
       },
       "./lib/toast/*": {
         "default": "./dist/lib/toast/*.js",
@@ -125,6 +104,9 @@
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
+    "@penumbra-zone/getters": "workspace:*",
+    "@penumbra-zone/perspective": "workspace:*",
+    "@repo/tailwind-config": "workspace:*",
     "@storybook/addon-essentials": "^8.1.1",
     "@storybook/addon-interactions": "^8.1.1",
     "@storybook/addon-links": "^8.1.1",
@@ -145,9 +127,6 @@
   "peerDependencies": {
     "@buf/penumbra-zone_penumbra.bufbuild_es": "1.10.0-20240616005217-ca45ca80333e.1",
     "@bufbuild/protobuf": "^1.10.0",
-    "@penumbra-zone/getters": "workspace:*",
-    "@penumbra-zone/perspective": "workspace:*",
-    "@repo/tailwind-config": "workspace:*",
     "postcss": "^8.4.38",
     "react": "^18.3.1",
     "tailwindcss": "^3.4.3"

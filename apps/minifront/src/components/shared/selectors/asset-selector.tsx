@@ -1,10 +1,10 @@
 import { Dialog, DialogClose, DialogContent, DialogHeader } from '@repo/ui/components/ui/dialog';
-import { AssetIcon } from '@repo/ui/components/ui/tx/view/asset-icon';
+import { AssetIcon } from '@repo/ui/components/ui/asset-icon';
 import {
   Metadata,
   ValueView,
 } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/core/asset/v1/asset_pb';
-import { ValueViewComponent } from '@repo/ui/components/ui/tx/view/value';
+import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { useEffect, useId, useMemo, useState } from 'react';
 import { IconInput } from '@repo/ui/components/ui/icon-input';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';

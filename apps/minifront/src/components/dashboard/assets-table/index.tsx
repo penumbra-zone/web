@@ -1,5 +1,4 @@
-import { AddressIcon } from '@repo/ui/components/ui/address-icon';
-import { AddressComponent } from '@repo/ui/components/ui/address-component';
+import { AddressComponent, AddressIcon } from '@repo/ui/components/ui/address';
 import {
   Table,
   TableBody,
@@ -8,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from '@repo/ui/components/ui/table';
-import { ValueViewComponent } from '@repo/ui/components/ui/tx/view/value';
+import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
 import { shouldDisplay } from './helpers';

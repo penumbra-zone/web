@@ -4,8 +4,8 @@ import { getMetadataFromBalancesResponseOptional } from '@penumbra-zone/getters/
 import { useMemo } from 'react';
 import { DialogClose } from '@repo/ui/components/ui/dialog';
 import { cn } from '@repo/ui/lib/utils';
-import { AssetIcon } from '@repo/ui/components/ui/tx/view/asset-icon';
-import { ValueViewComponent } from '@repo/ui/components/ui/tx/view/value';
+import { AssetIcon } from '@repo/ui/components/ui/asset-icon';
+import { ValueViewComponent } from '@repo/ui/components/ui/value';
 
 interface BalanceItemProps {
   asset: BalanceOrMetadata;

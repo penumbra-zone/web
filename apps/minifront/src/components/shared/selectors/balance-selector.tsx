@@ -2,7 +2,7 @@ import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { useId, useState } from 'react';
 import { IconInput } from '@repo/ui/components/ui/icon-input';
 import { Dialog, DialogContent, DialogHeader } from '@repo/ui/components/ui/dialog';
-import { ValueViewComponent } from '@repo/ui/components/ui/tx/view/value';
+import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { BalancesResponse } from '@buf/penumbra-zone_penumbra.bufbuild_es/penumbra/view/v1/view_pb';
 import { Box } from '@repo/ui/components/ui/box';
 import { motion } from 'framer-motion';
