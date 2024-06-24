@@ -1,11 +1,11 @@
-import { Button } from '@penumbra-zone/ui/components/ui/button';
+import { Button } from '@repo/ui/components/ui/button';
 import { AllSlices } from '../../../state';
 import { TokenSwapInput } from './token-swap-input';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
 import { DurationSlider } from '../duration-slider';
 import { InputBlock } from '../../shared/input-block';
 import { Output } from './output';
-import { Card } from '@penumbra-zone/ui/components/ui/card';
+import { Card } from '@repo/ui/components/ui/card';
 import { SimulateSwap } from './simulate-swap';
 import { LayoutGroup } from 'framer-motion';
 import { useId } from 'react';

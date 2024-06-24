@@ -1,6 +1,6 @@
 import { AllSlices } from '../../../state';
 import { useStoreShallow } from '../../../utils/use-store-shallow';
-import { AccountSwitcher } from '@penumbra-zone/ui/components/ui/account-switcher';
+import { AccountSwitcher } from '@repo/ui/components/ui/account-switcher';
 
 const addrsSelector = ({ ibcIn }: AllSlices) => ({
   account: ibcIn.account,

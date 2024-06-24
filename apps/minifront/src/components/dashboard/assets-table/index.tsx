@@ -1,4 +1,4 @@
-import { AddressComponent, AddressIcon } from '@penumbra-zone/ui/components/ui/address';
+import { AddressComponent, AddressIcon } from '@repo/ui/components/ui/address';
 import {
   Table,
   TableBody,
@@ -6,8 +6,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@penumbra-zone/ui/components/ui/table';
-import { ValueViewComponent } from '@penumbra-zone/ui/components/ui/value';
+} from '@repo/ui/components/ui/table';
+import { ValueViewComponent } from '@repo/ui/components/ui/value';
 import { EquivalentValues } from './equivalent-values';
 import { Fragment } from 'react';
 import { shouldDisplay } from './helpers';

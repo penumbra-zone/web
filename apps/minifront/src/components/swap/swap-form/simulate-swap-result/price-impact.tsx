@@ -1,6 +1,6 @@
 import { formatNumber } from '@penumbra-zone/types/amount';
-import { Pill } from '@penumbra-zone/ui/components/ui/pill';
-import { cn } from '@penumbra-zone/ui/lib/utils';
+import { Pill } from '@repo/ui/components/ui/pill';
+import { cn } from '@repo/ui/lib/utils';
 
 // The price hit the user takes as a consequence of moving the market with the size of their trade
 export const PriceImpact = ({ amount = 0 }: { amount?: number }) => {

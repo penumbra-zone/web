@@ -24,5 +24,5 @@ export default {
 Finally, import the library CSS to the entry point of your app:
 
 ```js
-import '@penumbra-zone/ui/styles/globals.css';
+import '@repo/ui/styles/globals.css';
 ```
